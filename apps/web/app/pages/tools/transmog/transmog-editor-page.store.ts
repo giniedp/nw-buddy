@@ -1,4 +1,4 @@
-import { Signal, computed, inject } from '@angular/core'
+import { computed, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { Dyecolors, Itemappearancedefinitions } from '@nw-data/generated'
@@ -183,12 +183,27 @@ export const TransmogEditorStore = signalStore(
   }),
   withComputed(({ headAppearanceId, chestAppearanceId, handsAppearanceId, legsAppearanceId, feetAppearanceId }) => {
     const modelService = inject(ModelsService)
+    const headModels = toSignal(modelService.byAppearanceId(toObservable(headAppearanceId)))
+    const chestModels = toSignal(modelService.byAppearanceId(toObservable(chestAppearanceId)))
+    const handsModels = toSignal(modelService.byAppearanceId(toObservable(handsAppearanceId)))
+    const legsModels = toSignal(modelService.byAppearanceId(toObservable(legsAppearanceId)))
+    const feetModels = toSignal(modelService.byAppearanceId(toObservable(feetAppearanceId)))
     return {
-      headModels: toSignal(modelService.byAppearanceId(toObservable(headAppearanceId))),
-      chestModels: toSignal(modelService.byAppearanceId(toObservable(chestAppearanceId))),
-      handsModels: toSignal(modelService.byAppearanceId(toObservable(handsAppearanceId))),
-      legsModels: toSignal(modelService.byAppearanceId(toObservable(legsAppearanceId))),
-      feetModels: toSignal(modelService.byAppearanceId(toObservable(feetAppearanceId))),
+      headModel: computed(() => headModels()?.[0]?.url),
+      chestModel: computed(() => {
+        console.log({
+          handsAppearanceId: handsAppearanceId(),
+          chestModels: chestModels(),
+        })
+        const models = chestModels() ?? []
+        if (handsAppearanceId()) {
+          return models[1]?.url ?? models[0]?.url
+        }
+        return models[0]?.url
+      }),
+      handsModel: computed(() => handsModels()?.[0]?.url),
+      legsModel: computed(() => legsModels()?.[0]?.url),
+      feetModel: computed(() => feetModels()?.[0]?.url),
     }
   }),
   withMethods((state) => {

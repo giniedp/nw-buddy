@@ -198,7 +198,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
       })
       .then((model) => {
         this.model = model
-        this.detectDyeFeature(model)
+        this.detectDyeFeature(model, data.appearance)
       })
   }
 
@@ -210,8 +210,8 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
       return null
     }
 
-    const { createViewer, registerDyePlugin } = await import('./viewer')
-    registerDyePlugin()
+    const { createViewer, registerNwMaterialPlugin } = await import('./viewer')
+    registerNwMaterialPlugin()
     this.viewer = await createViewer({
       element: this.viewerHost.nativeElement,
       zone: this.zone,
@@ -261,9 +261,9 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async detectDyeFeature(model: ViewerModel) {
-    const { getAppearance } = await import('./viewer')
-    const appearance = model.meshes.map((mesh) => getAppearance(mesh.material)).find((it) => !!it)
+  private async detectDyeFeature(model: ViewerModel, appearance: any) {
+    const { NwMaterialExtension } = await import('./viewer')
+    appearance = appearance || model.meshes.map((mesh) => NwMaterialExtension.getAppearance(mesh.material)).find((it) => !!it)
     if (!appearance) {
       this.store.patchState({
         appearance: null,
@@ -291,15 +291,35 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   }
 
   private async updateDye(model: ViewerModel) {
-    const { updateDyeChannel } = await import('./viewer')
-    updateDyeChannel({
-      scene: this.viewer.sceneManager.scene,
-      dyeR: this.store.dyeR$(),
-      dyeG: this.store.dyeG$(),
-      dyeB: this.store.dyeB$(),
-      dyeA: this.store.dyeA$(),
+    const { updateNwMaterial } = await import('./viewer')
+
+    const dyeR = this.store.dyeR$()
+    const dyeG = this.store.dyeG$()
+    const dyeB = this.store.dyeB$()
+    const dyeA = this.store.dyeA$()
+
+    const appearance = this.store.appearance$()
+    updateNwMaterial({
+      meshes: model.meshes,
+      appearance: appearance ? {
+        ...appearance,
+        MaskAGloss: Number(appearance.MaskAGloss) || 0
+      } : null,
+      dyeR: dyeR?.ColorAmount,
+      dyeROverride: dyeR?.ColorOverride,
+      dyeRColor: dyeR?.Color,
+      dyeG: dyeG?.ColorAmount,
+      dyeGOverride: dyeG?.ColorOverride,
+      dyeGColor: dyeG?.Color,
+      dyeB: dyeB?.ColorAmount,
+      dyeBOverride: dyeB?.ColorOverride,
+      dyeBColor: dyeB?.Color,
+      dyeA: dyeA?.SpecAmount,
+      //dyeAOverride: dyeA?.SpecOverride,
+      dyeAColor: dyeA?.SpecColor,
+      glossShift: dyeA?.MaskGlossShift,
+
       debugMask: this.store.dyeDebug$(),
-      dyeEnabled: this.store.canDye$(),
     })
   }
 }

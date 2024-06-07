@@ -38,6 +38,14 @@ export class PreferencesComponent implements OnInit {
   protected set collapseMenu(value: boolean) {
     this.app.collapseMenuMode.set(value ? 'always' : 'auto')
   }
+
+  protected get highQualityModels() {
+    return this.app.highQualityModels.get()
+  }
+  protected set highQualityModels(value: boolean) {
+    this.app.highQualityModels.set(value)
+  }
+
   // protected get web3token() {
   //   return this.app.web3token.get()
   // }

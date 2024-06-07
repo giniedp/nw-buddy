@@ -31,7 +31,7 @@
               <ng-template #tplColor>
                 <div class="p-1 text-xs border border-transparent rounded-sm flex flex-row gap-1 items-center">
                   <span class="inline-block w-4 h-4 rounded-sm" [style.background-color]="slot.color"></span>
-                  <span>Tint color {{ slot.colorStrength | percent : '1.0-0' }} strength</span>
+                  <span>Tint color {{ slot.colorStrength | percent: '1.0-0' }} strength</span>
                 </div>
               </ng-template>
             </span>
@@ -49,7 +49,7 @@
                 <div *ngIf="!slot.dyeEnabled" class="text-error">Dye slot disabled</div>
                 <div *ngIf="slot.dyeEnabled">
                   <span class="text-success">Dye slot enabled, </span>
-                  <span>{{ slot.dyeStrength | percent : '1.0-0' }} strength</span>
+                  <span>{{ slot.dyeStrength | percent: '1.0-0' }} strength</span>
                 </div>
               </div>
             </ng-template>
@@ -58,27 +58,27 @@
       </div>
     </ng-container>
     <ng-container *ngIf="models$ | async; let models">
-      <ng-container *ngIf="!modelViewerOpened">
+      @if (!modelViewerOpened) {
         <button
           class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
           (click)="modelViewerOpened = true"
         >
           View 3D Model
         </button>
-      </ng-container>
-      <ng-container *ngIf="modelViewerOpened">
+      }
+      @if (modelViewerOpened) {
         <nwb-model-viewer
           [models]="models"
           class="w-full rounded-md aspect-square"
           (close)="modelViewerOpened = false"
-        ></nwb-model-viewer>
+        />
         <button
           class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
           (click)="modelViewerOpened = false"
         >
           Close
         </button>
-      </ng-container>
+      }
     </ng-container>
 
     <ng-container *ngIf="vm.other">
@@ -142,11 +142,7 @@
       *ngFor="let item of vm.items; trackBy: trackByIndex"
       class="rounded-md overflow-clip"
     >
-      <nwb-item-detail-header
-        [enableLink]="true"
-        [enableInfoLink]="true"
-        [enableTracker]="true"
-      />
+      <nwb-item-detail-header [enableLink]="true" [enableInfoLink]="true" [enableTracker]="true" />
     </nwb-item-detail>
   </div>
 </ng-container>

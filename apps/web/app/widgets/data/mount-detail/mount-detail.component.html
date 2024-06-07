@@ -25,7 +25,7 @@
       class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
       (click)="modelViewerOpened = !modelViewerOpened"
     >
-      @if (modelViewerOpened) {
+      @if (!modelViewerOpened) {
         View 3D Model
       } @else {
         Close

@@ -1,5 +1,6 @@
 export * from './create-viewer'
 export * from './create-transmog-viewer'
-export * from './dye-loader-extension'
-export * from './dye-material-plugin'
+export * from './nw-material-extension'
+export * from './nw-material-plugin'
+export * from './nw-material-update'
 export type { DefaultViewer } from 'babylonjs-viewer'

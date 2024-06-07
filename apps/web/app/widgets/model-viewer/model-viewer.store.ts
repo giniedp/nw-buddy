@@ -30,6 +30,7 @@ export class ModelViewerStore extends ComponentStore<ModelViewerState> {
   public readonly isEmpty$ = this.selectSignal(({ models }) => !models?.length)
   public readonly hasLoaded$ = this.selectSignal(({ hasLoaded }) => hasLoaded)
   public readonly hasError$ = this.selectSignal(({ hasError }) => hasError)
+  public readonly appearance$ = this.selectSignal(({ appearance }) => appearance)
   public readonly canClose$ = this.selectSignal(({ canClose }) => canClose)
   public readonly canDye$ = this.selectSignal(({ enableDye, appearance }) => enableDye && !!appearance)
   public readonly dyeColors$ = this.selectSignal(({ dyeColors }) => dyeColors)

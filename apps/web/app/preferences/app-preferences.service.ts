@@ -16,6 +16,7 @@ export class AppPreferencesService {
   // public readonly web3token: StorageProperty<string>
   public readonly web3gateway: StorageProperty<string>
   public readonly appMenu: StorageProperty<Record<string, boolean>>
+  public readonly highQualityModels: StorageProperty<boolean>
 
   public constructor(preferences: PreferencesService) {
     const storage = preferences.storage.storageObject('app')
@@ -28,6 +29,7 @@ export class AppPreferencesService {
     // this.web3token = storage.storageProperty('web3token', null)
     // this.web3gateway = storage.storageProperty('web3gateway', null)
     this.appMenu = storage.storageProperty('menu', null)
+    this.highQualityModels = storage.storageProperty('highQualityModels', false)
 
     const session = preferences.session.storageObject('app')
     this.mapActive = session.storageProperty('mapActive', false)

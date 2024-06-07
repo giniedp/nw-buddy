@@ -41,6 +41,13 @@ export async function createViewer(options: {
     })
     viewer.onModelLoadedObservable.add((model) => {
       zone.run(() => {
+        console.log({
+          viewer, model
+        })
+        const name = model.getAnimationNames()?.[0]
+        if (name) {
+          model.playAnimation(name)
+        }
         options?.onModelLoaded?.(model)
       })
     })
@@ -66,7 +73,6 @@ export async function createViewer(options: {
     })
     return new Promise<DefaultViewer>((resolve) => {
       viewer.onInitDoneObservable.addOnce(() => {
-        console.log(viewer)
         resolve(viewer)
       })
     })

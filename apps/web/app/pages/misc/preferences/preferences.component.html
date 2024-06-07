@@ -103,6 +103,12 @@
           <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="collapseMenu" />
         </label>
       </div>
+      <div class="form-control w-full">
+        <label class="cursor-pointer label">
+          <span class="label-text">Prefer high quality models</span>
+          <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="highQualityModels" />
+        </label>
+      </div>
       <ng-container *ngIf="isDevCount > 10">
         <div class="divider"></div>
         <div class="form-control w-full">

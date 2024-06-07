@@ -1,5 +1,17 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, Injector, OnDestroy, computed, effect, inject, signal, viewChild } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Injector,
+  OnDestroy,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router } from '@angular/router'
 import { ToastController } from '@ionic/angular/standalone'
@@ -15,13 +27,15 @@ import { injectBreakpoint } from '~/utils'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
+import { IconsModule } from '~/ui/icons'
+import { PlatformService } from '~/utils/services/platform.service'
+import type { TransmogViewer } from '~/widgets/model-viewer/viewer'
+import { ScreenshotService } from '~/widgets/screenshot'
 import { TransmogEditorStore } from './transmog-editor-page.store'
 import { TransmogEditorPanelComponent } from './transmog-editor-panel.component'
-import { IconsModule } from '~/ui/icons'
-import { ScreenshotService } from '~/widgets/screenshot'
-import type { TransmogViewer } from '~/widgets/model-viewer/viewer'
-import { environment } from 'apps/web/environments'
-import { PlatformService } from '~/utils/services/platform.service'
+import { animate, style, transition, trigger } from '@angular/animations'
+import { FormsModule } from '@angular/forms'
+import { ModelsService } from '~/widgets/model-viewer'
 
 @Component({
   standalone: true,
@@ -36,12 +50,19 @@ import { PlatformService } from '~/utils/services/platform.service'
     TransmogEditorPanelComponent,
     LayoutModule,
     TooltipModule,
-    IconsModule
+    IconsModule,
+    FormsModule
   ],
   host: {
     class: 'ion-page relative h-full',
   },
   providers: [TransmogEditorStore],
+  animations: [
+    trigger('fade', [
+      transition(':enter', [style({ opacity: 0 }), animate('0.3s ease-out', style({ opacity: 1 }))]),
+      transition(':leave', [style({ opacity: 1 }), animate('0.3s ease-out', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class TransmogEditorPageComponent implements OnDestroy {
   private router = inject(Router)
@@ -50,10 +71,13 @@ export class TransmogEditorPageComponent implements OnDestroy {
   private preferences = inject(PreferencesService)
   private screenshots = inject(ScreenshotService)
   private platform = inject(PlatformService)
+  private modelService = inject(ModelsService)
 
   protected encodedState: string = null
   protected iconLink = svgLink
   protected iconCamera = svgCamera
+  protected isLoading = signal(true)
+  protected timeOfDay = signal(0.25)
 
   private store = inject(TransmogEditorStore)
   protected isBooted = signal(false)
@@ -66,6 +90,12 @@ export class TransmogEditorPageComponent implements OnDestroy {
   protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
   protected showSidebar = computed(() => this.isLargeContent())
   protected showModal = computed(() => !this.isLargeContent())
+
+  private modelPlayerMale = this.modelService.playerMaleModel().url
+  private modelPlayerFemale = this.modelService.playerFemaleModel().url
+  //private modelScene = location.origin + '/assets/models/questadiana.glb'
+  //private modelScene = location.origin + '/assets/models/deviceroom.glb'
+  private modelScene = location.origin + '/assets/models/frontend.glb'
 
   protected slots = computed(() => {
     const slotIds = ['head', 'chest', 'hands', 'legs', 'feet']
@@ -155,9 +185,12 @@ export class TransmogEditorPageComponent implements OnDestroy {
       .subscribe(() => {
         this.viewer.resize()
       })
+    this.viewer.useModel('level', this.modelScene).then(() => {
+      this.isLoading.set(false)
+    })
     effect(
       async () => {
-        await this.viewer.useModel('head', this.store.headModels()?.[0]?.url)
+        await this.viewer.useModel('head', this.store.headModel())
         setTimeout(() => this.updateDye())
       },
       {
@@ -166,7 +199,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
     )
     effect(
       async () => {
-        await this.viewer.useModel('chest', this.store.chestModels()?.[0]?.url)
+        await this.viewer.useModel('chest', this.store.chestModel())
         setTimeout(() => this.updateDye())
       },
       {
@@ -175,7 +208,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
     )
     effect(
       async () => {
-        await this.viewer.useModel('hands', this.store.handsModels()?.[0]?.url)
+        await this.viewer.useModel('hands', this.store.handsModel())
         setTimeout(() => this.updateDye())
       },
       {
@@ -184,7 +217,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
     )
     effect(
       async () => {
-        await this.viewer.useModel('legs', this.store.legsModels()?.[0]?.url)
+        await this.viewer.useModel('legs', this.store.legsModel())
         setTimeout(() => this.updateDye())
       },
       {
@@ -193,7 +226,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
     )
     effect(
       async () => {
-        await this.viewer.useModel('feet', this.store.feetModels()?.[0]?.url)
+        await this.viewer.useModel('feet', this.store.feetModel())
         setTimeout(() => this.updateDye())
       },
       {
@@ -204,9 +237,9 @@ export class TransmogEditorPageComponent implements OnDestroy {
       async () => {
         const isMale = this.store.gender() === 'male'
         if (isMale) {
-          await this.viewer.useModel('player', location.origin +'/assets/models/player_male.gltf')
+          await this.viewer.useModel('player', this.modelPlayerMale)
         } else {
-          await this.viewer.useModel('player', location.origin +'/assets/models/player_female.gltf')
+          await this.viewer.useModel('player', this.modelPlayerFemale)
         }
         this.updateNakedMeshes()
       },
@@ -222,12 +255,23 @@ export class TransmogEditorPageComponent implements OnDestroy {
         injector: this.injector,
       },
     )
-    effect(() => {
-      this.updateNakedMeshes()
-    }, {
-      injector: this.injector,
+    effect(
+      () => {
+        this.updateNakedMeshes()
+      },
+      {
+        injector: this.injector,
+      },
+    )
+    effect(
+      () => {
+        this.viewer.setTimeOfDay(this.timeOfDay())
 
-    })
+      },
+      {
+        injector: this.injector,
+      },
+    )
     this.isBooted.set(true)
   }
 
@@ -236,45 +280,50 @@ export class TransmogEditorPageComponent implements OnDestroy {
   }
 
   private updateDye() {
-    this.viewer.useDye('head', {
+    this.viewer.useAppearance('head', {
       dyeR: this.store.headDye().r,
       dyeG: this.store.headDye().g,
       dyeB: this.store.headDye().b,
       dyeA: this.store.headDye().a,
       debugMask: this.store.debug(),
       dyeEnabled: true,
+      appearance: this.store.headAppearance(),
     })
-    this.viewer.useDye('chest', {
+    this.viewer.useAppearance('chest', {
       dyeR: this.store.chestDye().r,
       dyeG: this.store.chestDye().g,
       dyeB: this.store.chestDye().b,
       dyeA: this.store.chestDye().a,
       debugMask: this.store.debug(),
       dyeEnabled: true,
+      appearance: this.store.chestAppearance(),
     })
-    this.viewer.useDye('hands', {
+    this.viewer.useAppearance('hands', {
       dyeR: this.store.handsDye().r,
       dyeG: this.store.handsDye().g,
       dyeB: this.store.handsDye().b,
       dyeA: this.store.handsDye().a,
       debugMask: this.store.debug(),
       dyeEnabled: true,
+      appearance: this.store.handsAppearance(),
     })
-    this.viewer.useDye('legs', {
+    this.viewer.useAppearance('legs', {
       dyeR: this.store.legsDye().r,
       dyeG: this.store.legsDye().g,
       dyeB: this.store.legsDye().b,
       dyeA: this.store.legsDye().a,
       debugMask: this.store.debug(),
       dyeEnabled: true,
+      appearance: this.store.legsAppearance(),
     })
-    this.viewer.useDye('feet', {
+    this.viewer.useAppearance('feet', {
       dyeR: this.store.feetDye().r,
       dyeG: this.store.feetDye().g,
       dyeB: this.store.feetDye().b,
       dyeA: this.store.feetDye().a,
       debugMask: this.store.debug(),
       dyeEnabled: true,
+      appearance: this.store.feetAppearance(),
     })
   }
 

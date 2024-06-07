@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import {
   Housingitems,
   Itemappearancedefinitions,
@@ -9,6 +9,7 @@ import {
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { environment } from '~/../environments'
 import { NwDataService } from '~/data'
+import { AppPreferencesService } from '~/preferences'
 import { humanize } from '~/utils'
 
 export interface ItemModelInfo {
@@ -17,6 +18,7 @@ export interface ItemModelInfo {
   label: string
   itemClass: string[]
   url: string
+  appearance: any
 }
 
 // export interface StatRow {
@@ -29,7 +31,14 @@ export interface ItemModelInfo {
 
 @Injectable({ providedIn: 'root' })
 export class ModelsService {
-  private cdnHost = environment.modelsUrlMid
+  private preferences = inject(AppPreferencesService)
+
+  private get cdnHost() {
+    if (this.preferences.highQualityModels.get()) {
+      return environment.modelsUrlHigh
+    }
+    return environment.modelsUrlMid
+  }
 
   public constructor(private db: NwDataService) {
     //
@@ -42,6 +51,7 @@ export class ModelsService {
       itemId: null,
       label: 'Player',
       url: `${this.cdnHost || ''}/objects/characters/player/male/player_male.glb`.toString().toLowerCase(),
+      appearance: null,
     }
   }
 
@@ -52,6 +62,7 @@ export class ModelsService {
       itemId: null,
       label: 'Player',
       url: `${this.cdnHost || ''}/objects/characters/player/female/player_female.glb`.toString().toLowerCase(),
+      appearance: null,
     }
   }
 
@@ -99,6 +110,7 @@ export class ModelsService {
           itemId: item.HouseItemID,
           label: item.Name,
           url: `${this.cdnHost || ''}/${item.PrefabPath}.glb`.toString().toLowerCase(),
+          appearance: null,
         }
       }),
     )
@@ -122,8 +134,8 @@ export class ModelsService {
       map(({ item, weapon, weaponMale, weaponFemale, mountAttachment, instrument }) => {
         return [
           ...item,
-          // ...weaponMale,
-          // ...weaponFemale,
+          //...weaponMale,
+          //...weaponFemale,
           ...weapon,
           ...mountAttachment,
           ...instrument,
@@ -139,7 +151,7 @@ export class ModelsService {
       vital: this.db.vital(vitalsId$),
     }).pipe(
       map(({ meta, modelsMap, vital }) => {
-        const models = meta.models?.map((it) => modelsMap.get(it))?.filter((it) => !!it)
+        const models = meta?.models?.map((it) => modelsMap.get(it))?.filter((it) => !!it)
         if (!models?.length) {
           return null
         }
@@ -147,9 +159,10 @@ export class ModelsService {
           return {
             name: vital?.DisplayName,
             label: `Model ${i + 1}`,
-            url: `${this.cdnHost || ''}/vitals-${model.id}.glb`.toLowerCase(),
+            url: `${this.cdnHost || ''}/vitals/${model.id}.glb`.toLowerCase(),
             itemClass: [],
             itemId: meta.vitalsID,
+            appearance: null,
           }
         })
       }),
@@ -158,7 +171,7 @@ export class ModelsService {
 
   public byMountId(mountId$: Observable<string>) {
     return this.db.mount(mountId$).pipe(
-      map((mount) => {
+      map((mount): ItemModelInfo[] => {
         if (!mount?.Mesh) {
           return null
         }
@@ -169,6 +182,7 @@ export class ModelsService {
             url: `${this.cdnHost || ''}/mounts/${mount.MountId}.glb`.toLowerCase(),
             itemClass: [],
             itemId: mount.MountId,
+            appearance: mount,
           },
         ]
       }),
@@ -177,7 +191,7 @@ export class ModelsService {
 
   public byCostumeId(costumeId$: Observable<string>) {
     return this.db.costume(costumeId$).pipe(
-      map((value) => {
+      map((value): ItemModelInfo[] => {
         if (!value?.CostumeChangeMesh) {
           return null
         }
@@ -188,6 +202,7 @@ export class ModelsService {
             url: `${this.cdnHost || ''}/costumechanges/${value.CostumeChangeId}.glb`.toLowerCase(),
             itemClass: [],
             itemId: value.CostumeChangeId,
+            appearance: null,
           },
         ]
       }),
@@ -217,25 +232,24 @@ export class ModelsService {
 
   private selectItemModels(item: Itemappearancedefinitions): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
-    if (!item) {
-      return result
-    }
-    if (item.Skin1) {
+    if (item?.Skin1) {
       result.push({
         name: item.Name,
         itemId: item.ItemID,
         url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-Skin1.glb`.toLowerCase(),
-        label: 'Model 1',
+        label: 'Model',
         itemClass: [...(item.ItemClass || [])],
+        appearance: item,
       })
     }
-    if (item.ShortsleeveChestSkin) {
+    if (item?.ShortsleeveChestSkin) {
       result.push({
         name: item.Name,
         itemId: item.ItemID,
         url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-ShortsleeveChestSkin.glb`.toLowerCase(),
-        label: 'Model 1',
+        label: 'Model Shot Sleeve',
         itemClass: [...(item.ItemClass || [])],
+        appearance: item,
       })
     }
     return result
@@ -251,9 +265,10 @@ export class ModelsService {
     result.push({
       name: item.Name,
       itemId: item.WeaponAppearanceID,
-      url: `${this.cdnHost || ''}/weaponappearances/${item.WeaponAppearanceID}-MeshOverride.glb`.toLowerCase(),
+      url: `${this.cdnHost || ''}/${item.MeshOverride}.glb`.toLowerCase(),
       label: 'Model',
       itemClass: [...(item.ItemClass || [])],
+      appearance: item,
     })
     return result
   }
@@ -266,9 +281,10 @@ export class ModelsService {
     result.push({
       name: item.Name,
       itemId: item.WeaponAppearanceID,
-      url: `${this.cdnHost || ''}/instrumentappearances/${item.WeaponAppearanceID}-MeshOverride.glb`.toLowerCase(),
+      url: `${this.cdnHost || ''}/${item.MeshOverride}.glb`.toLowerCase(),
       label: 'Model',
       itemClass: [...(item.ItemClass || [])],
+      appearance: item,
     })
     return result
   }
@@ -278,23 +294,14 @@ export class ModelsService {
     if (!item) {
       return result
     }
-    const keys: Array<keyof ItemdefinitionsWeaponappearances> = ['SkinOverride1', 'SkinOverride2', 'MeshOverride']
-    const labels = {
-      SkinOverride1: 'Model 1',
-      SkinOverride2: 'Model 2',
-      MeshOverride: 'Model 3',
-    }
-    for (const key of keys) {
-      if (item[key]) {
-        result.push({
-          name: item.Name,
-          itemId: item.WeaponAppearanceID,
-          url: `${this.cdnHost || ''}/weaponappearances/${item.WeaponAppearanceID}-${key}.glb`.toLowerCase(),
-          label: labels[key] || key,
-          itemClass: [...(item.ItemClass || [])],
-        })
-      }
-    }
+    // result.push({
+    //   name: item.Name,
+    //   itemId: item.WeaponAppearanceID,
+    //   url: `${this.cdnHost || ''}/weaponappearances/${item.WeaponAppearanceID}-${key}.glb`.toLowerCase(),
+    //   label: 'Model',
+    //   itemClass: [...(item.ItemClass || [])],
+    //   appearance: item,
+    // })
     return result
   }
 }

@@ -1,6 +1,6 @@
 <ng-content select="header"></ng-content>
 <!-- @defer fixes layout issue -->
-@defer {
+@defer (on timer(0.2s)) {
   <cdk-virtual-scroll-viewport
     [itemSize]="itemSize()"
     class="overflow-hidden mx-auto"

@@ -83,11 +83,11 @@ export class VitalDetailCardComponent {
         label: 'Buffs',
         component: VitalDetailBuffsComponent,
       },
-      // {
-      //   id: 'models',
-      //   label: '3D Model',
-      //   component: VitalDetailModelsComponent,
-      // },
+      {
+        id: 'models',
+        label: '3D Model',
+        component: VitalDetailModelsComponent,
+      },
     ].map((it, i) => {
       return {
         ...it,
