@@ -79,7 +79,6 @@ const environment = {
   nwUnpackDir: (workspace) => path.resolve(cwd, env('NW_UNPACK', getWorkspace(workspace))),
   nwConvertDir: (workspace) => tmpDir(dataDir(workspace)),
   nwDataDir: (workspace) => distDir(dataDir(workspace)),
-  nwModelsDir: () => env('NW_MODELS_DIR'),
 }
 
 module.exports = {
