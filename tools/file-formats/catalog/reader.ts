@@ -72,10 +72,10 @@ export async function readAssetcatalog(file: string): Promise<Record<string, str
 
   const assetInfos = assetInfoRefs.map((info) => {
     reader.seekAbsolute(posBlockUUID + 16 * info.uuidIndex2)
-    const assetId = reader.readUInt32()
+    const assetId = reader.readUUID()
 
     reader.seekAbsolute(posBlockUUID + 16 * info.typeIndex)
-    const type = reader.readUInt32()
+    const type = reader.readUUID()
 
     reader.seekAbsolute(posBlockDirs + info.dirOffset)
     const dir = reader.readStringNT()

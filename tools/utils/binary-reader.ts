@@ -285,6 +285,14 @@ export class BinaryReader {
     return result.join('')
   }
 
+  public readUUID() {
+    return this.readBytes(16)
+      .map((it): string => {
+        return it.toString(16).padStart(2, '0')
+      })
+      .join('')
+  }
+
   /**
    * Returns a section of the buffer starting at current position
    *

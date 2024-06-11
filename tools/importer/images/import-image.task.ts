@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import sharp from 'sharp'
+import * as sharp from 'sharp'
 
 export async function importImage({ input, output, update }: { input: string; output: string; update?: boolean }) {
   if (!fs.existsSync(input)) {
