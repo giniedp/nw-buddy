@@ -10,7 +10,7 @@ import {
   isPerkGenerated,
   isPerkInherent,
 } from '@nw-data/common'
-import { Affixstats, ItemClass, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { AffixStatData, ItemClass, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { diceCoefficient } from 'dice-coefficient'
 import { sortBy } from 'lodash'
 import { ItemInstance } from '~/data'
@@ -32,9 +32,9 @@ export interface ItemRecognitionResult {
 export async function recognizeItemFromImage(options: {
   image: ImageLike
   itemClass: ItemClass[]
-  items: ItemDefinitionMaster[]
-  affixMap: Map<string, Affixstats>
-  perksMap: Map<string, Perks>
+  items: MasterItemDefinitions[]
+  affixMap: Map<string, AffixStatData>
+  perksMap: Map<string, PerkData>
   tl8: TranslateFn
 }) {
   const itemPool = selectItemPool(options)
@@ -81,7 +81,7 @@ export async function recognizeItemFromImage(options: {
   return result
 }
 
-function isAplicable(item: ItemDefinitionMaster, perk: Perks) {
+function isAplicable(item: MasterItemDefinitions, perk: PerkData) {
   if (
     item.Perk1 === perk.PerkID ||
     item.Perk2 === perk.PerkID ||

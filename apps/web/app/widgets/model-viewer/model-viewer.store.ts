@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { ItemModelInfo } from './model-viewer.service'
-import { Dyecolors, Itemappearancedefinitions } from '@nw-data/generated'
+import { DyeColorData, ArmorAppearanceDefinitions } from '@nw-data/generated'
 
 export interface ModelViewerState {
   models: ItemModelInfo[]
@@ -12,12 +12,12 @@ export interface ModelViewerState {
   canClose: boolean
   enableDye: boolean
   isSupported: boolean
-  appearance: Itemappearancedefinitions
-  dyeColors: Dyecolors[]
-  dyeR: Dyecolors
-  dyeG: Dyecolors
-  dyeB: Dyecolors
-  dyeA: Dyecolors
+  appearance: ArmorAppearanceDefinitions
+  dyeColors: DyeColorData[]
+  dyeR: DyeColorData
+  dyeG: DyeColorData
+  dyeB: DyeColorData
+  dyeA: DyeColorData
   dyeDebug: boolean
   mode: 'light' | 'dark'
 }

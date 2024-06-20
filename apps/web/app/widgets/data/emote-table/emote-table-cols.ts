@@ -1,9 +1,9 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Emotedefinitions } from '@nw-data/generated'
+import { EmoteData } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type EmoteTableUtils = TableGridUtils<EmoteTableRecord>
-export type EmoteTableRecord = Emotedefinitions
+export type EmoteTableRecord = EmoteData
 
 export function emoteColIcon(util: EmoteTableUtils) {
   return util.colDef({

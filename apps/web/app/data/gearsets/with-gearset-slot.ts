@@ -11,7 +11,7 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { ItemInstance, ItemInstancesDB } from '../items'
 import { NwDataService } from '../nw-data'
@@ -33,7 +33,7 @@ export function withGearsetSlot() {
 
       const instanceId = signal<string>(null)
       const instance = signal<ItemInstance>(null)
-      const item = signal<ItemDefinitionMaster | Housingitems>(null)
+      const item = signal<MasterItemDefinitions | HouseItems>(null)
 
       const connect = rxMethod<WithGearsetSlotState>(
         pipe(
@@ -99,11 +99,11 @@ export function withGearsetSlot() {
   )
 }
 
-function isNamed(item: ItemDefinitionMaster | Housingitems) {
+function isNamed(item: MasterItemDefinitions | HouseItems) {
   return isMasterItem(item) && isItemNamed(item)
 }
 
-function isArtifact(item: ItemDefinitionMaster | Housingitems) {
+function isArtifact(item: MasterItemDefinitions | HouseItems) {
   return isMasterItem(item) && isItemArtifact(item)
 }
 

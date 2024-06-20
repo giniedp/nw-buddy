@@ -4,7 +4,7 @@ import { BinaryReader } from '../../utils/binary-reader'
 
 export async function readAssetcatalog(file: string): Promise<Record<string, string>> {
   const data = await fs.promises.readFile(file)
-  const reader = new BinaryReader(data.buffer as any)
+  const reader = new BinaryReader(data)
 
   const signature = reader.readString(4)
   const version = reader.readUInt32()

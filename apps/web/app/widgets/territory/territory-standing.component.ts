@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Territorydefinitions } from '@nw-data/generated'
+import { TerritoryDefinition } from '@nw-data/generated'
 import { BehaviorSubject, defer, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { TerritoriesService } from '~/nw/territories'
@@ -18,7 +18,7 @@ import { TerritoriesService } from '~/nw/territories'
 })
 export class TerritoryStandingComponent {
   @Input()
-  public set territory(value: Territorydefinitions) {
+  public set territory(value: TerritoryDefinition) {
     this.territoryId = value?.TerritoryID
   }
 

@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_EMOTEDEFINITIONS, Emotedefinitions } from '@nw-data/generated'
+import { COLS_EMOTEDATA, EmoteData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
@@ -47,7 +47,7 @@ export class EmoteTableAdapter implements DataViewAdapter<EmoteTableRecord>, Tab
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<Emotedefinitions> {
+  public virtualOptions(): VirtualGridOptions<EmoteData> {
     return null
   }
 
@@ -78,7 +78,7 @@ function buildOptions(util: TableGridUtils<EmoteTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_EMOTEDEFINITIONS,
+    props: COLS_EMOTEDATA,
   })
   return result
 }

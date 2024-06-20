@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { signalStoreFeature, type, withMethods } from '@ngrx/signals'
-import { Perks } from '@nw-data/generated'
+import { PerkData } from '@nw-data/generated'
 import { ItemInstancesDB } from '../items'
 import { ItemInstanceRecord } from './types'
 
@@ -28,7 +28,7 @@ export function withItemInstanceMethods() {
     }),
     withMethods(({ itemInstance, patchItemInstance }) => {
       return {
-        updateItemInstancePerk: async (perkKey: string, perk: Perks) => {
+        updateItemInstancePerk: async (perkKey: string, perk: PerkData) => {
           const perks = makeCopy(itemInstance()).perks || {}
           if (perk) {
             perks[perkKey] = perk.PerkID

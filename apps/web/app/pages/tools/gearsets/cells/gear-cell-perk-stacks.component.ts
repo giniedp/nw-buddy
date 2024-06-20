@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { NwExpEval, NwExpJoin, getItemGsBonus, getPerkMultiplier, isPerkGenerated, parseNwExpression, walkNwExpression } from '@nw-data/common'
-import { Ability, Statuseffect } from '@nw-data/generated'
+import { AbilityData, StatusEffectData } from '@nw-data/generated'
 import { groupBy, sortBy, sumBy } from 'lodash'
 import { map } from 'rxjs'
 import { LocaleService, TranslateService } from '~/i18n'
@@ -46,8 +46,8 @@ function selectRows({
   tl8
 }: {
   perks: ActivePerk[]
-  effects: Map<string, Statuseffect>
-  abilities: Map<string, Ability>
+  effects: Map<string, StatusEffectData>
+  abilities: Map<string, AbilityData>
   tl8: TranslateService
 }) {
   if (!perks || !effects || !abilities) {
@@ -65,8 +65,8 @@ function selectStackablePerks({
   abilities,
 }: {
   perks: ActivePerk[]
-  effects: Map<string, Statuseffect>
-  abilities: Map<string, Ability>
+  effects: Map<string, StatusEffectData>
+  abilities: Map<string, AbilityData>
 }) {
 
   return perks.filter(({ perk, affix }) => {
@@ -89,7 +89,7 @@ function selectStackablePerks({
   })
 }
 
-function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, Ability>, tl8: TranslateService) {
+function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, AbilityData>, tl8: TranslateService) {
   return Array.from(Object.values(groupBy(perks, (it) => it.perk.PerkID)))
     .map((group) => {
       const { perk, gearScore, item } = group[0]

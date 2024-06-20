@@ -10,12 +10,12 @@ import {
   getVitalHealth,
 } from '@nw-data/common'
 import {
-  Ability,
-  Damagetable,
-  Elementalmutations,
-  Statuseffect,
-  Vitals,
-  Vitalscategories,
+  AbilityData,
+  DamageData,
+  ElementalMutationStaticData,
+  StatusEffectData,
+  VitalsData,
+  VitalsCategoryData,
   VitalsMetadata,
 } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
@@ -33,7 +33,7 @@ export interface VitalDetailState {
 
 export interface DamageTableFile {
   file: string
-  rows: Damagetable[]
+  rows: DamageData[]
 }
 
 @Injectable()
@@ -170,7 +170,7 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
     }
     return combineLatest(
       files.map((file) => {
-        return this.db.data.load<Damagetable[]>(file.replace(/\.xml$/, '.json')).pipe(
+        return this.db.data.load<DamageData[]>(file.replace(/\.xml$/, '.json')).pipe(
           map((rows): DamageTableFile => {
             return {
               file: file,
@@ -183,7 +183,7 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
   }
 }
 
-function selectCategories(vital: Vitals, categories: Map<string, Vitalscategories>) {
+function selectCategories(vital: VitalsData, categories: Map<string, VitalsCategoryData>) {
   return vital.VitalsCategories?.map((id) => categories.get(id))
 }
 
@@ -206,14 +206,14 @@ function selectBuffs({
   abilitiesMap,
   creatureType,
 }: {
-  element: Elementalmutations
+  element: ElementalMutationStaticData
   buffMap: Map<string, BuffBucket>
-  effectMap: Map<string, Statuseffect>
-  abilitiesMap: Map<string, Ability>
+  effectMap: Map<string, StatusEffectData>
+  abilitiesMap: Map<string, AbilityData>
   creatureType: string
 }) {
-  const statusEffects: Array<Statuseffect> = []
-  const abilities: Array<Ability> = []
+  const statusEffects: Array<StatusEffectData> = []
+  const abilities: Array<AbilityData> = []
 
   function collect(bucket: BuffBucket) {
     if (!bucket) {

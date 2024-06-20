@@ -1,6 +1,6 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
-import { Ability } from '@nw-data/generated'
+import { AbilityData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
@@ -64,16 +64,16 @@ export class AbilityDetailComponent {
   protected source = this.store.source
   protected uiCategory = this.store.uiCategory
 
-  public formatValue = (value: any, key: keyof Ability): PropertyGridCell | PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof AbilityData): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {
       case 'TargetStatusEffectDurationList':
-        return statusEffectCells(value as Ability['TargetStatusEffectDurationList'])
+        return statusEffectCells(value as AbilityData['TargetStatusEffectDurationList'])
       case 'RemoveTargetStatusEffectsList':
-        return statusEffectCells(value as Ability['RemoveTargetStatusEffectsList'])
+        return statusEffectCells(value as AbilityData['RemoveTargetStatusEffectsList'])
       case 'StatusEffectsList':
-        return statusEffectCells(value as Ability['StatusEffectsList'])
+        return statusEffectCells(value as AbilityData['StatusEffectsList'])
       case 'SelfApplyStatusEffect':
-        return statusEffectCells(value as Ability['SelfApplyStatusEffect'])
+        return statusEffectCells(value as AbilityData['SelfApplyStatusEffect'])
       case 'DamageTableStatusEffectOverride':
       case 'DontHaveStatusEffect':
       case 'OnEquipStatusEffect':
@@ -89,19 +89,19 @@ export class AbilityDetailComponent {
         return abilitiesCells(value)
       }
       case 'AbilityList': {
-        return abilitiesCells(value as Ability['AbilityList'])
+        return abilitiesCells(value as AbilityData['AbilityList'])
       }
       case 'DamageTableRow':
       case 'DamageTableRowOverride':
       case 'RemoteDamageTableRow': {
-        return damageCells(value as Ability['DamageTableRow'])
+        return damageCells(value as AbilityData['DamageTableRow'])
       }
       case 'AttackType': {
-        return damageCells(value as Ability['AttackType'])
+        return damageCells(value as AbilityData['AttackType'])
       }
       case 'CooldownId': {
         return {
-          value: (value as Ability['CooldownId']),
+          value: (value as AbilityData['CooldownId']),
           template: this.tplCooldownInfo,
         }
       }
@@ -110,7 +110,7 @@ export class AbilityDetailComponent {
       case 'StatusEffectDurationCats':
       case 'TargetStatusEffectCategory':
       case 'TargetStatusEffectDurationCats': {
-        return (value as Ability['StatusEffectCategories']).map((it) => ({
+        return (value as AbilityData['StatusEffectCategories']).map((it) => ({
           value: String(it),
           template: this.tplCategory,
         }))

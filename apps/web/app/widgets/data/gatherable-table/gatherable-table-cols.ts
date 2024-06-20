@@ -1,9 +1,8 @@
 import { NumberFilter } from '@ag-grid-community/core'
-import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
-import { Gatherables, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
+import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
 import { TableGridUtils } from '~/ui/data/table-grid'
-import { getGatherableIcon } from '../gatherable-detail/utils'
 import { GatherableRecord, getGatherableSpawnCount } from '../gatherable'
+import { getGatherableIcon } from '../gatherable-detail/utils'
 
 export type GatherableTableUtils = TableGridUtils<GatherableTableRecord>
 export type GatherableTableRecord = GatherableRecord

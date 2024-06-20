@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { GameEvent } from '@nw-data/generated'
+import { GameEventData } from '@nw-data/generated'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { GameEventDetailRewardsComponent } from './game-event-detail-rewards.component'
 import { GameEventDetailStore } from './game-event-detail.store'
@@ -31,7 +31,7 @@ export class GameEventDetailComponent {
     this.store.patchState({ eventId: value })
   }
 
-  public formatValue = (value: any, key: keyof GameEvent): PropertyGridCell | PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof GameEventData): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {
       case 'EventID': {
         return [

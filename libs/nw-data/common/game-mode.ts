@@ -1,10 +1,10 @@
 import { uniq } from 'lodash'
-import { Elementalmutationperks, Gamemodes, Mutationdifficulty } from '../generated/types'
+import { GameModeData, MutationDifficultyStaticData, MutationPerksStaticData } from '../generated/types'
 
 export function getGameModeLootTags(
-  gameMode: Gamemodes,
-  mutation?: Mutationdifficulty,
-  element?: Elementalmutationperks,
+  gameMode: GameModeData,
+  mutation?: MutationDifficultyStaticData,
+  element?: MutationPerksStaticData,
 ): string[] {
   if (!gameMode) {
     return []

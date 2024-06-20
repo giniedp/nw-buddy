@@ -1,8 +1,8 @@
-import { GameEvent } from '@nw-data/generated'
+import { GameEventData } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type GameEventTableUtils = TableGridUtils<GameEventTableRecord>
-export type GameEventTableRecord = GameEvent
+export type GameEventTableRecord = GameEventData
 
 export function gameEventColID(util: GameEventTableUtils) {
   return util.colDef<string>({

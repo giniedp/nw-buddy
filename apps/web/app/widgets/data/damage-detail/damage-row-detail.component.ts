@@ -1,6 +1,6 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
-import { Affixstats, Damagetable } from '@nw-data/generated'
+import { AffixStatData, DamageData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
@@ -50,13 +50,13 @@ export class DamageRowDetailComponent {
   protected affixProperties = toSignal(this.store.affixProps$)
   public effectIds = toSignal(this.store.statusEffectIds$)
 
-  public formatValue = (value: any, key: keyof Damagetable): PropertyGridCell | PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof DamageData): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {
       case 'DamageID': {
-        return damageCells(value as Damagetable['DamageID'])
+        return damageCells(value as DamageData['DamageID'])
       }
       case 'StatusEffect': {
-        return statusEffectCells(value as Damagetable['StatusEffect'])
+        return statusEffectCells(value as DamageData['StatusEffect'])
       }
       default: {
         if (Array.isArray(value)) {
@@ -85,7 +85,7 @@ export class DamageRowDetailComponent {
     }
   }
 
-  public formatAffixValue = (value: any, key: keyof Affixstats): PropertyGridCell[] => {
+  public formatAffixValue = (value: any, key: keyof AffixStatData): PropertyGridCell[] => {
     switch (key) {
       default: {
         if (typeof value === 'number') {

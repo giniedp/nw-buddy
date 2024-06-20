@@ -2,7 +2,7 @@ import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, forwardRef } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { parseScalingPerGearScore } from '@nw-data/common'
-import { Affixstats, Perks } from '@nw-data/generated'
+import { AffixStatData, PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
 import { GsInputComponent } from '~/ui/gs-input'
@@ -64,7 +64,7 @@ export class PerkDetailComponent extends PerkDetailStore {
     })
   }
 
-  public formatValue = (value: any, key: keyof Perks): PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof PerkData): PropertyGridCell[] => {
     switch (key) {
 
       case 'PerkID': {
@@ -86,16 +86,16 @@ export class PerkDetailComponent extends PerkDetailStore {
         ]
       }
       case 'ItemClass': {
-        return createTags(value as Perks['ItemClass'])
+        return createTags(value as PerkData['ItemClass'])
       }
       case 'ExcludeItemClass': {
-        return createTags(value as Perks['ExcludeItemClass'])
+        return createTags(value as PerkData['ExcludeItemClass'])
       }
       case 'ExclusiveLabels': {
-        return createTags(value as Perks['ExclusiveLabels'])
+        return createTags(value as PerkData['ExclusiveLabels'])
       }
       case 'EquipAbility': {
-        return (value as Perks['EquipAbility']).map((it) => {
+        return (value as PerkData['EquipAbility']).map((it) => {
           return {
             value: it,
             accent: true,
@@ -140,7 +140,7 @@ export class PerkDetailComponent extends PerkDetailStore {
     }
   }
 
-  public formatAffixValue = (value: any, key: keyof Affixstats): PropertyGridCell[] => {
+  public formatAffixValue = (value: any, key: keyof AffixStatData): PropertyGridCell[] => {
     switch (key) {
       case 'StatusEffect': {
         return statusEffectCells(value)

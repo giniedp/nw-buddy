@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getItemId } from '@nw-data/common'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TableGridAdapter } from '~/ui/data/table-grid'
 
@@ -52,6 +52,6 @@ export class RecipesTableAdapter implements TableGridAdapter<MusicRecord>, DataV
   })
 }
 
-function isMusicSheet(item: ItemDefinitionMaster) {
+function isMusicSheet(item: MasterItemDefinitions) {
   return item.TradingFamily === 'MusicSheets'
 }

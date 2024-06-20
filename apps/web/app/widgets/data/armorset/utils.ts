@@ -1,13 +1,13 @@
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { TranslateService } from '~/i18n'
 import { getItemRarity, getItemSetFamilyName } from '@nw-data/common'
 import { Armorset, ArmorsetGroup } from './types'
 
 export function findSets(
-  items: ItemDefinitionMaster[],
+  items: MasterItemDefinitions[],
   source: string,
-  perksMap: Map<string, Perks>,
+  perksMap: Map<string, PerkData>,
   i18n: TranslateService
 ): ArmorsetGroup[] {
   const groups1 = groupBy(items, (item) => {
@@ -100,19 +100,19 @@ const FAMILY_OGNORE_TOKENS = new RegExp(
   'gi'
 )
 
-export function getGearsetFamilyName(item: ItemDefinitionMaster) {
+export function getGearsetFamilyName(item: MasterItemDefinitions) {
   return item.ItemID.replace(FAMILY_OGNORE_TOKENS, '')
 }
 
-export function getItemClass(item: ItemDefinitionMaster) {
+export function getItemClass(item: MasterItemDefinitions) {
   return item.ItemClass?.find((token) => token === 'Medium' || token === 'Light' || token === 'Heavy')
 }
 
-export function getPerkIds(item: ItemDefinitionMaster) {
+export function getPerkIds(item: MasterItemDefinitions) {
   return [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5].filter((it) => !!it)
 }
 
-export function getPerkInfos(items: ItemDefinitionMaster[]) {
+export function getPerkInfos(items: MasterItemDefinitions[]) {
   const perks0 = getPerkIds(items[0])
   const armorPerk = perks0.find((it) => it.startsWith('PerkID_Armor_')) || ''
   const samePerks = perks0.filter((perk) => {
@@ -126,7 +126,7 @@ export function getPerkInfos(items: ItemDefinitionMaster[]) {
   }
 }
 
-export function buildSetName(items: ItemDefinitionMaster[], i18n: TranslateService) {
+export function buildSetName(items: MasterItemDefinitions[], i18n: TranslateService) {
   const names = items.map((it) => i18n.get(it.Name))
   const i0 = commonPrefixLength(names)
   const i1 = commonPrefixLength(names.map((it) => it.split('').reverse().join('')))

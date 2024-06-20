@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input } from '@angular/core'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { MasterItemDefinitions } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
@@ -33,8 +33,8 @@ import { ItemTableRecord } from './item-table-cols'
     '[tabindex]': '0',
   },
 })
-export class ItemCellComponent implements VirtualGridCellComponent<ItemDefinitionMaster> {
-  public static buildGridOptions(): VirtualGridOptions<ItemDefinitionMaster> {
+export class ItemCellComponent implements VirtualGridCellComponent<MasterItemDefinitions> {
+  public static buildGridOptions(): VirtualGridOptions<MasterItemDefinitions> {
     return {
       height: 90,
       width: 320,
@@ -47,7 +47,7 @@ export class ItemCellComponent implements VirtualGridCellComponent<ItemDefinitio
   }
 
   @Input()
-  public data: ItemDefinitionMaster
+  public data: MasterItemDefinitions
 
   @Input()
   public selected: boolean

@@ -12,7 +12,7 @@ import { humanize, selectSignal } from '~/utils'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 import { StackedValueControlComponent } from './stacked-value-control.component'
 import { PrecisionInputComponent } from './precision-input.component'
-import { AttackType, Damagetable } from '@nw-data/generated'
+import { AttackType, DamageData } from '@nw-data/generated'
 
 @Component({
   standalone: true,

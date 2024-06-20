@@ -1,14 +1,14 @@
-import * as c from 'ansi-colors'
+import { bgCyan, bgGreen, bgRed, bgYellow, default as c } from 'ansi-colors'
 export type COLOR = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white'
 
 let isEnabled = true
 
 const tags = {
-  info: c.bgGreen.black('[INFO]'),
-  success: c.bgGreen.black('[SUCCESS]'),
-  debug: c.bgCyan.black('[DEBUG]'),
-  warn: c.bgYellow.black('[WARN]'),
-  error: c.bgRed.black('[ERROR]'),
+  info: bgGreen.black('[INFO]'),
+  success: bgGreen.black('[SUCCESS]'),
+  debug: bgCyan.black('[DEBUG]'),
+  warn: bgYellow.black('[WARN]'),
+  error: bgRed.black('[ERROR]'),
 }
 let redirect: typeof console.log
 

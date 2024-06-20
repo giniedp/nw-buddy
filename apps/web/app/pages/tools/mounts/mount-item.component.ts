@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { Mounts } from '@nw-data/generated'
+import { MountData } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { LayoutModule } from '~/ui/layout'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
@@ -24,7 +24,7 @@ export class MountItemComponent {
     //
   }
 
-  protected onEntity(entity: Mounts) {
+  protected onEntity(entity: MountData) {
     if (!entity) {
       return
     }

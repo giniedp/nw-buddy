@@ -12,7 +12,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core'
-import { Itemappearancedefinitions, Mounts } from '@nw-data/generated'
+import { ArmorAppearanceDefinitions, MountData } from '@nw-data/generated'
 import { Subject, catchError, firstValueFrom, from, of, switchMap, takeUntil, tap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
@@ -37,7 +37,7 @@ export interface ModelViewerState {
   isLoaded?: boolean
   isModal?: boolean
   viewer?: DefaultViewer
-  appearance: Itemappearancedefinitions
+  appearance: ArmorAppearanceDefinitions
 }
 
 @Component({
@@ -271,7 +271,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
       })
       return
     }
-    const itemType = (appearance as Mounts).MountId ? 'MountDye' : 'Dye'
+    const itemType = (appearance as MountData).MountId ? 'MountDye' : 'Dye'
     const items = await firstValueFrom(this.db.itemsByItemTypeMap)
       .then((it) => it.get(itemType))
       .then((it) => it || [])

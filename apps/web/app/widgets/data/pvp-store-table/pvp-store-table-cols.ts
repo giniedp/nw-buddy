@@ -9,15 +9,15 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { GameEvent, Housingitems, ItemDefinitionMaster, PvpRewards } from '@nw-data/generated'
+import { GameEventData, HouseItems, MasterItemDefinitions, RewardTrackItemData } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { selectGameEventRewards } from '../game-event-detail/selectors'
 
 export type PvpStoreTableUtils = TableGridUtils<PvpStoreTableRecord>
 export type PvpStoreTableRecord = PvpStoreRow & {
-  $item: ItemDefinitionMaster | Housingitems
-  $reward: PvpRewards
-  $gameEvent: GameEvent
+  $item: MasterItemDefinitions | HouseItems
+  $reward: RewardTrackItemData
+  $gameEvent: GameEventData
 }
 
 export function pvpStoreColIcon(util: PvpStoreTableUtils) {
@@ -75,7 +75,7 @@ export function pvpStoreColName(util: PvpStoreTableUtils) {
     field: 'Bucket',
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -88,7 +88,7 @@ export function pvpStoreColColumn(util: PvpStoreTableUtils) {
     width: 130,
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -145,7 +145,7 @@ export function pvpStoreColExcludeType(util: PvpStoreTableUtils) {
     width: 130,
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function pvpStoreColGameEvent(util: PvpStoreTableUtils) {

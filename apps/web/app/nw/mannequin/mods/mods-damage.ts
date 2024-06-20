@@ -1,12 +1,12 @@
 import { getDamageTypesOfCategory, hasAffixDamageConversion, isItemOfAnyClass } from '@nw-data/common'
-import { Damagetable, ItemClass, PvpbalanceArena } from '@nw-data/generated'
+import { DamageData, ItemClass, ArenaBalanceData } from '@nw-data/generated'
 
 import { humanize } from '~/utils'
 import { eachModifier, modifierAdd, ModifierKey, modifierResult } from '../modifier'
 import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
 import { byDamageType } from './by-damage-type'
 
-export function selectModBaseDamage(mods: ActiveMods, attack: Damagetable, weapon: ActiveWeapon) {
+export function selectModBaseDamage(mods: ActiveMods, attack: DamageData, weapon: ActiveWeapon) {
   return {
     Base: byDamageType((type) => sumCategory('BaseDamage', mods, type)),
     Reduction: byDamageType((type) => sumCategory('BaseDamageReduction', mods, type)),
@@ -55,7 +55,7 @@ function sumCategory(key: ModifierKey<number>, mods: ActiveMods, type: string) {
 }
 
 export function selectPvpBalance(db: DbSlice, state: MannequinState, { item }: ActiveWeapon) {
-  let balance: Array<Pick<PvpbalanceArena, 'BalanceCategory' | 'BalanceTarget' | 'WeaponBaseDamageAdjustment'>> = []
+  let balance: Array<Pick<ArenaBalanceData, 'BalanceCategory' | 'BalanceTarget' | 'WeaponBaseDamageAdjustment'>> = []
   let source: string
   if (state.combatMode === 'pvpArena') {
     balance = db.pvpBalanceArena
@@ -88,7 +88,7 @@ export function selectPvpBalance(db: DbSlice, state: MannequinState, { item }: A
   })
 }
 
-export function selectDamageCoef(attack: Damagetable) {
+export function selectDamageCoef(attack: DamageData) {
   const result = modifierResult()
   if (attack) {
     modifierAdd(result, {

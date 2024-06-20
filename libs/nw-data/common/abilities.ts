@@ -1,5 +1,5 @@
-import { AttackType, Statuseffect } from '@nw-data/generated'
-import { Ability, Affixstats, Damagetable, Damagetypes } from '@nw-data/generated'
+import { AttackType, StatusEffectData } from '@nw-data/generated'
+import { AbilityData, AffixStatData, DamageData, DamageTypeData } from '@nw-data/generated'
 import { KeysWithPrefix } from './utils/ts-types'
 
 const WEAPON_TAG_NAME = {
@@ -19,7 +19,7 @@ const WEAPON_TAG_NAME = {
   VoidGauntlet: 'ui_voidmagic',
 }
 
-export function getAbilityCategoryTag(ability: Ability) {
+export function getAbilityCategoryTag(ability: AbilityData) {
   return (
     (ability?.UICategory?.match(/(heal|melee|debuff|buff|range|magic|passive)/i)?.[0]?.toLowerCase() as any) || 'none'
   )
@@ -29,7 +29,7 @@ export function getWeaponTagLabel(value: string) {
   return WEAPON_TAG_NAME[value]
 }
 
-export function stripAbilityProperties(item: Ability): Partial<Ability> {
+export function stripAbilityProperties(item: AbilityData): Partial<AbilityData> {
   return Object.entries(item || {})
     .filter(([key, value]) => key !== 'AbilityID' && key !== '$source' && !!value)
     .reduce((it, [key, value]) => {
@@ -39,10 +39,10 @@ export function stripAbilityProperties(item: Ability): Partial<Ability> {
 }
 
 export function doesAbilityTriggerDamage(
-  ability: Ability,
-  damageRow: Damagetable,
-  damageTypes: Map<string, Damagetypes>,
-  gemDamageType: Affixstats
+  ability: AbilityData,
+  damageRow: DamageData,
+  damageTypes: Map<string, DamageTypeData>,
+  gemDamageType: AffixStatData
 ) {
   if (ability.DamageIsRanged && !damageRow.IsRanged) {
     return false
@@ -82,9 +82,9 @@ export function doesAbilityTriggerDamage(
 }
 
 export function doesAbilityTriggerStatusEffect(
-  ability: Ability,
-  statusEffect: Statuseffect,
-  damageTypes: Map<string, Damagetypes>,
+  ability: AbilityData,
+  statusEffect: StatusEffectData,
+  damageTypes: Map<string, DamageTypeData>,
   target?: boolean
 ) {
   if (ability.RequireReaction) {
@@ -116,9 +116,9 @@ export function doesAbilityTriggerStatusEffect(
   return true
 }
 
-export type AbilityActionKey = KeysWithPrefix<Ability, 'On'>
+export type AbilityActionKey = KeysWithPrefix<AbilityData, 'On'>
 
-export function getAbilityActionKeys(ability: Ability) {
+export function getAbilityActionKeys(ability: AbilityData) {
   const result: AbilityActionKey[]  = []
   for (const key in ability) {
     if (ability[key] && key.startsWith('On')) {

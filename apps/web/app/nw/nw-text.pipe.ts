@@ -1,9 +1,8 @@
-import { ChangeDetectorRef, NgZone, OnDestroy, Pipe, PipeTransform } from '@angular/core'
-import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
+import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core'
 import { isEqual } from 'lodash'
-import { Observable, Subject, combineLatest, distinctUntilChanged, of, switchMap, takeUntil } from 'rxjs'
+import { Observable, Subject, combineLatest, distinctUntilChanged, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwExpressionContext, NwTextContextService, NwExpressionService } from './expression'
+import { NwExpressionContext, NwExpressionService, NwTextContextService } from './expression'
 
 export type NwTextPipeOptions = Partial<NwExpressionContext> &
   Record<string, string | number | boolean | Observable<string | number | boolean>>
@@ -23,7 +22,7 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
     private i18n: TranslateService,
     private expr: NwExpressionService,
     private ctx: NwTextContextService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {}
 
   public transform(key: string | string[], options: NwTextPipeOptions = null) {
@@ -50,10 +49,10 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
           this.expr.solve({
             ...(context as any),
             text: text,
-          })
+          }),
         ),
         distinctUntilChanged(),
-        takeUntil(this.dispose$)
+        takeUntil(this.dispose$),
       )
       .subscribe((value) => {
         this.value = value

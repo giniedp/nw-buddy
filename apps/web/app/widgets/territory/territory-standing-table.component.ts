@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { defer, map } from 'rxjs'
-import { NwModule } from '~/nw'
+import { map } from 'rxjs'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 
 export interface StandingRow {
   Level: number
@@ -32,19 +32,21 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   },
 })
 export class TerritoryStandingTableComponent {
-  public data = defer(() => this.db.data.territoryStanding()).pipe(
-    map((data) => {
-      return data.map((node, i): StandingRow => {
-        return {
-          Level: node.Rank,
-          XPToLevel: node.InfluenceCost,
-          XPTotal: accumulate(data, 0, i, 'InfluenceCost'),
-          Title: node.DisplayName,
-          XPReward: node.XpReward,
-        }
-      })
-    })
-  )
+  public data = this.db
+    .useTable((it) => it.CategoricalProgressionRankData.Territory_Standing)
+    .pipe(
+      map((data) => {
+        return data.map((node, i): StandingRow => {
+          return {
+            Level: node.Rank,
+            XPToLevel: node.InfluenceCost,
+            XPTotal: accumulate(data, 0, i, 'InfluenceCost'),
+            Title: node.DisplayName,
+            XPReward: node.XpReward,
+          }
+        })
+      }),
+    )
 
   public constructor(private db: NwDataService) {
     //

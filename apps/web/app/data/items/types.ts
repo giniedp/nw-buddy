@@ -1,5 +1,5 @@
 import { ItemRarity, PerkBucket } from "@nw-data/common"
-import { Affixstats, ItemDefinitionMaster, Perks } from "@nw-data/generated"
+import { AffixStatData, MasterItemDefinitions, PerkData } from "@nw-data/generated"
 
 export interface ItemInstance {
   /**
@@ -35,11 +35,11 @@ export interface ItemInstanceRow {
   /**
    * The game item referenced by the record
    */
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   /**
    * The game perks referenced by the record
    */
-  perks?: Array<{ key: string; perk?: Perks; affix?: Affixstats; bucket?: PerkBucket }>
+  perks?: Array<{ key: string; perk?: PerkData; affix?: AffixStatData; bucket?: PerkBucket }>
   /**
    * The items current rarity
    */

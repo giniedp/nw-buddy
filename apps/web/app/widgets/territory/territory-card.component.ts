@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { territoryHasFort } from '@nw-data/common'
-import { Territorydefinitions } from '@nw-data/generated'
+import { TerritoryDefinition } from '@nw-data/generated'
 import { BehaviorSubject, combineLatest, defer, map, startWith } from 'rxjs'
 import { NwModule } from '~/nw'
 import { TerritoriesService } from '~/nw/territories'
@@ -21,7 +21,7 @@ import { TerritoryStandingComponent } from './territory-standing.component'
 })
 export class TerritoryCardCoponent {
   @Input()
-  public set territory(value: Territorydefinitions) {
+  public set territory(value: TerritoryDefinition) {
     this.territoryId = value?.TerritoryID
   }
 
@@ -50,9 +50,9 @@ export class TerritoryCardCoponent {
             return [it.RecommendedLevel, it.MaximumLevel].join(' - ')
           }
           return null
-        })
+        }),
       ),
-    })
+    }),
   ).pipe(startWith(null))
 
   protected territoryId$ = new BehaviorSubject<number>(null)

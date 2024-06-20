@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { DataViewModule, provideDataView } from '~/ui/data/data-view'
@@ -8,13 +8,13 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { DbFaultsTableAdapter } from './db-faults-adapter'
 
 export interface FaultRow {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   gemFault: boolean
   inherentFault: boolean
   generatedFault: boolean
   perks: Array<{
     ok: boolean
-    perk: Perks
+    perk: PerkData
   }>
 }
 

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
-import { Ability } from '@nw-data/generated'
+import { AbilityData } from '@nw-data/generated'
 import { firstValueFrom, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -57,7 +57,7 @@ export class AbilitiesDetailPageComponent {
     //
   }
 
-  protected async onEntity(entity: Ability) {
+  protected async onEntity(entity: AbilityData) {
     if (!entity) {
       return
     }

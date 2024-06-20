@@ -1,15 +1,7 @@
 import { Component, ElementRef, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { getZoneInfo, getZoneName, getZoneType } from '@nw-data/common'
-import {
-  Areadefinitions,
-  LvlSpanws,
-  PoiDefinition,
-  TerritoriesMetadata,
-  Territorydefinitions,
-  Vitals,
-  VitalsMetadata,
-} from '@nw-data/generated'
+import { LvlSpanws, TerritoriesMetadata, TerritoryDefinition, VitalsData, VitalsMetadata } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -18,9 +10,8 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
-import { MapPointMarker, MapZoneMarker, MapViewBounds } from '~/widgets/world-map'
+import { MapPointMarker, MapViewBounds, MapZoneMarker, WorldMapComponent } from '~/widgets/world-map'
 import { VitalDetailStore } from './vital-detail.store'
-import { WorldMapComponent } from '~/widgets/world-map'
 
 export interface VitalPointData {
   vitalId?: string
@@ -50,8 +41,8 @@ export class VitalDetailMapComponent {
     {
       vital: this.store.vital$,
       meta: this.store.metadata$,
-      poisMap: this.db.poisMap,
-      areasMap: this.db.areasMap,
+      // poisMap: this.db.poisMap,
+      // areasMap: this.db.areasMap,
       territoriesMap: this.db.territoriesMap,
       territoriesMetadataMap: this.db.territoriesMetadataMap,
     },
@@ -169,16 +160,16 @@ function selectData(
   {
     vital,
     meta,
-    poisMap,
-    areasMap,
+    // poisMap,
+    // areasMap,
     territoriesMap,
     territoriesMetadataMap,
   }: {
-    vital: Vitals
+    vital: VitalsData
     meta: VitalsMetadata
-    poisMap: Map<number, PoiDefinition>
-    areasMap: Map<number, Areadefinitions>
-    territoriesMap: Map<number, Territorydefinitions>
+    // poisMap: Map<number, PoiDefinition>
+    // areasMap: Map<number, Areadefinitions>
+    territoriesMap: Map<number, TerritoryDefinition>
     territoriesMetadataMap: Map<string, TerritoriesMetadata>
   },
   tl8: TranslateService,
@@ -194,16 +185,17 @@ function selectData(
   }
 
   const territories = sortBy(meta.territories, (id) => {
-    if (territoriesMap.has(id)) {
-      return 1
+    const t = territoriesMap.get(id)
+    if (!t) {
+      return 1000
     }
-    if (areasMap.has(id)) {
+    if (t.IsArea) {
       return 10
     }
-    if (poisMap.has(id)) {
+    if (t.IsPOI) {
       return 100
     }
-    return 0
+    return 1
   })
   for (const territoryId of territories) {
     const metadata = territoriesMetadataMap.get(String(territoryId).padStart(2, '0'))
@@ -212,7 +204,7 @@ function selectData(
       continue
     }
 
-    const zone = poisMap.get(territoryId) || areasMap.get(territoryId) || territoriesMap.get(territoryId)
+    const zone = territoriesMap.get(territoryId)
     const name = getZoneName(zone)
     const info = getZoneInfo(zone)
     const mapId = 'newworld_vitaeeterna'

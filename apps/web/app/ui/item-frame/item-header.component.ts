@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular/core'
 import { ItemRarity, getItemRarity, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 @Component({
   standalone: true,
@@ -49,7 +49,7 @@ export class ItemHeaderComponent {
   }
 
   @Input()
-  public set item(value: ItemDefinitionMaster | Housingitems) {
+  public set item(value: MasterItemDefinitions | HouseItems) {
     this.rarity = getItemRarity(value)
     this.isNamed = isMasterItem(value) && isItemNamed(value)
   }

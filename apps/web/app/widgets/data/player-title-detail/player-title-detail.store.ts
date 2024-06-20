@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Playertitles } from '@nw-data/generated'
+import { PlayerTitleData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { rejectKeys, selectStream } from '~/utils'
 
@@ -23,7 +23,7 @@ export class PlayerTitleDetailStore extends ComponentStore<{ titleId: string }> 
     super({ titleId: null })
   }
 
-  public load(idOrItem: string | Playertitles) {
+  public load(idOrItem: string | PlayerTitleData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ titleId: idOrItem })
     } else {
@@ -32,7 +32,7 @@ export class PlayerTitleDetailStore extends ComponentStore<{ titleId: string }> 
   }
 }
 
-function selectProperties(item: Playertitles) {
-  const reject: Array<keyof Playertitles> = ['TitleMale', 'TitleFemale', 'TitleNeutral', 'Description', 'TitleType']
+function selectProperties(item: PlayerTitleData) {
+  const reject: Array<keyof PlayerTitleData> = ['TitleMale', 'TitleFemale', 'TitleNeutral', 'Description', 'TitleType']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

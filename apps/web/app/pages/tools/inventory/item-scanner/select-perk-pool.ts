@@ -1,5 +1,5 @@
 import { NW_MAX_GEAR_SCORE, explainPerkMods, isPerkInherent } from '@nw-data/common'
-import { Affixstats, Perks } from '@nw-data/generated'
+import { AffixStatData, PerkData } from '@nw-data/generated'
 import { PoolPerk, TranslateFn } from './types'
 
 export function selectPerkPool({
@@ -7,8 +7,8 @@ export function selectPerkPool({
   affixMap,
   tl8,
 }: {
-  perksMap: Map<string, Perks>
-  affixMap: Map<string, Affixstats>
+  perksMap: Map<string, PerkData>
+  affixMap: Map<string, AffixStatData>
   tl8: TranslateFn
 }) {
   const perkList = Array.from(perksMap.values()).map((it) => getPerkData(it, affixMap, tl8))
@@ -20,7 +20,7 @@ export function selectPerkPool({
   }
 }
 
-function getPerkData(perk: Perks, affixMap: Map<string, Affixstats>, tl8: TranslateFn): PoolPerk {
+function getPerkData(perk: PerkData, affixMap: Map<string, AffixStatData>, tl8: TranslateFn): PoolPerk {
   return {
     name: tl8(perk.DisplayName),
     prefix: perk.AppliedPrefix ? tl8(perk.AppliedPrefix) : null, // Arboreal ...

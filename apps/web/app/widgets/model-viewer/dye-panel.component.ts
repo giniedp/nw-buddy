@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core'
-import { Dyecolors } from '@nw-data/generated'
+import { DyeColorData } from '@nw-data/generated'
 import { filter } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ModalService } from '~/ui/layout'
@@ -19,27 +19,27 @@ import { DyePickerComponent } from './dye-picker.component'
 })
 export class DyePanelComponent {
   @Input()
-  public dyeColors: Dyecolors[]
+  public dyeColors: DyeColorData[]
 
   @Input()
-  public dyeR: Dyecolors
+  public dyeR: DyeColorData
   @Input()
-  public dyeG: Dyecolors
+  public dyeG: DyeColorData
   @Input()
-  public dyeB: Dyecolors
+  public dyeB: DyeColorData
   @Input()
-  public dyeA: Dyecolors
+  public dyeA: DyeColorData
   @Input()
   public debug: boolean
 
   @Output()
-  public dyeRChange = new EventEmitter<Dyecolors>()
+  public dyeRChange = new EventEmitter<DyeColorData>()
   @Output()
-  public dyeGChange = new EventEmitter<Dyecolors>()
+  public dyeGChange = new EventEmitter<DyeColorData>()
   @Output()
-  public dyeBChange = new EventEmitter<Dyecolors>()
+  public dyeBChange = new EventEmitter<DyeColorData>()
   @Output()
-  public dyeAChange = new EventEmitter<Dyecolors>()
+  public dyeAChange = new EventEmitter<DyeColorData>()
   @Output()
   public debugChange = new EventEmitter<boolean>()
 

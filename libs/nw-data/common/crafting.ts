@@ -1,8 +1,8 @@
-import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NW_MAX_TRADESKILL_LEVEL } from './constants'
 
 export type CraftingIngredients = Pick<
-  Crafting,
+  CraftingRecipeData,
   | 'Qty1'
   | 'Qty2'
   | 'Qty3'
@@ -106,7 +106,7 @@ export function getCraftingIngredients(recipe: CraftingIngredients) {
     })
 }
 
-export function getCraftingXP(recipe: CraftingIngredients, event: GameEvent) {
+export function getCraftingXP(recipe: CraftingIngredients, event: GameEventData) {
   if (!event?.CategoricalProgressionReward || !recipe) {
     return 0
   }
@@ -120,9 +120,9 @@ export function calculateBonusItemChance({
   skill,
   customChance,
 }: {
-  item: ItemDefinitionMaster | Housingitems
-  ingredients: Array<ItemDefinitionMaster | Housingitems>
-  recipe: Crafting
+  item: MasterItemDefinitions | HouseItems
+  ingredients: Array<MasterItemDefinitions | HouseItems>
+  recipe: CraftingRecipeData
   skill?: number
   customChance?: number
 }) {

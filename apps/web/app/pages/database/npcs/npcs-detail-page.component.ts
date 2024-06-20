@@ -162,7 +162,7 @@ export class NpcDetailPageComponent {
   //   //
   // }
 
-  // protected onEntity(entity: ItemDefinitionMaster) {
+  // protected onEntity(entity: MasterItemDefinitions) {
   //   if (!entity) {
   //     return
   //   }

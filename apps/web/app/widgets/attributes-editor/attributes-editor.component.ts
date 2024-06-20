@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit, Output, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
-import { Attributeconstitution } from '@nw-data/generated'
+import { AttributeDefinition } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, skip, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -255,7 +255,7 @@ export class AttributesEditorComponent implements OnInit {
       case 'dex':
         return this.db.attrDex
       default:
-        return of<Attributeconstitution[]>([])
+        return of<AttributeDefinition[]>([])
     }
   }
 

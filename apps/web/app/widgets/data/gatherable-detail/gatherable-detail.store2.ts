@@ -1,7 +1,7 @@
 import { computed, inject } from '@angular/core'
 import { signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
 import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
-import { Gatherables, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
+import { GatherableData, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
 import { sortBy, uniq } from 'lodash'
 import { withNwData } from '~/data/with-nw-data'
 import { eqCaseInsensitive } from '~/utils'
@@ -17,7 +17,7 @@ export interface GatherableDetailState {
 export interface GatherableSibling {
   size: NodeSize
   gatherableId: string
-  gatherable: Gatherables
+  gatherable: GatherableData
   gatherableMeta: GatherablesMetadata
   variations: Array<{
     variation: GatherableVariation

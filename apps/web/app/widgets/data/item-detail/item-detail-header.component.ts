@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@an
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { getItemId, isHousingItem, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../../item-tracker'
@@ -47,7 +47,7 @@ export class ItemDetailHeaderComponent {
   public disableContent: boolean
 
   @Input()
-  public iconOverride: ItemDefinitionMaster | Housingitems
+  public iconOverride: MasterItemDefinitions | HouseItems
 
   @Input()
   public size: 'xs' | 'sm' | 'md' | 'lg' = 'md'

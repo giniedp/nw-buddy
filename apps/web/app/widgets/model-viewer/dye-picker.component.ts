@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { Dyecolors } from '@nw-data/generated'
+import { DyeColorData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 
 export interface DyePickerDialogData {
-  colors: Dyecolors[]
-  color: Dyecolors
+  colors: DyeColorData[]
+  color: DyeColorData
 }
 
 @Component({
@@ -24,16 +24,16 @@ export class DyePickerComponent {
   public static open(modal: ModalService, options: ModalOpenOptions<DyePickerComponent>) {
     options.size ??= ['y-auto', 'x-sm']
     options.content = DyePickerComponent
-    return modal.open<DyePickerComponent, Dyecolors>(options)
+    return modal.open<DyePickerComponent, DyeColorData>(options)
   }
 
   @Input()
-  public colors: Dyecolors[]
+  public colors: DyeColorData[]
 
   @Input()
-  public color: Dyecolors
+  public color: DyeColorData
 
-  public constructor(private modalRef: ModalRef<Dyecolors>) {
+  public constructor(private modalRef: ModalRef<DyeColorData>) {
     //
   }
 

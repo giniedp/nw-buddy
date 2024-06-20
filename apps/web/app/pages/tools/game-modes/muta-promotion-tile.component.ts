@@ -13,7 +13,7 @@ import {
   inject,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { Elementalmutations, Promotionmutations } from '@nw-data/generated'
+import { ElementalMutationStaticData, PromotionMutationStaticData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { GameModeDetailStore } from './game-mode-detail.store'
 import { MutaPromotionDetailModule } from '~/widgets/data/muta-promotion-detail'
@@ -36,13 +36,13 @@ export class MutaPromotionTileComponent {
   protected tip = inject(TooltipDirective)
 
   @Input({ required: true })
-  public mutaPromotion: Promotionmutations
+  public mutaPromotion: PromotionMutationStaticData
 
   @Input({ required: true })
-  public mutaElement: Elementalmutations
+  public mutaElement: ElementalMutationStaticData
 
   @Input()
-  public options: Array<{ label: string; value: string; icon: string; object: Promotionmutations }>
+  public options: Array<{ label: string; value: string; icon: string; object: PromotionMutationStaticData }>
 
   @HostBinding('style.background-color')
   protected get backgroundColor() {
@@ -61,7 +61,7 @@ export class MutaPromotionTileComponent {
   }
 
   @Output()
-  public mutaPromotionChanged = new EventEmitter<Promotionmutations>()
+  public mutaPromotionChanged = new EventEmitter<PromotionMutationStaticData>()
 
   protected isMenuOpen = false
 
@@ -70,7 +70,7 @@ export class MutaPromotionTileComponent {
     this.isMenuOpen = this.options?.length > 0
   }
 
-  protected select(value: Promotionmutations) {
+  protected select(value: PromotionMutationStaticData) {
     this.isMenuOpen = false
     this.mutaPromotionChanged.emit(value)
   }

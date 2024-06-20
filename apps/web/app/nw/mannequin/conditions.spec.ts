@@ -1,8 +1,8 @@
-import { Ability } from '@nw-data/generated'
+import { AbilityData } from '@nw-data/generated'
 import { checkAbilityCooldownCondition, checkAmmoCountCondition, checkHealthCondition, checkManaCondition, checkTargetEffectCondition } from './conditions'
 
 describe('Mannequin / Conditions', () => {
-  const empty: Ability = {} as Ability
+  const empty: AbilityData = {} as AbilityData
   it('checkHealthCondition', () => {
     expect(checkHealthCondition({}, null)).toBe(false)
     expect(checkHealthCondition({}, empty)).toBe(true)

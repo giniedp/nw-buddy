@@ -5,11 +5,11 @@ import {
   ItemRarity,
   getItemRarity,
   getItemRarityLabel,
-  isItemArtifact,
+  getItemSourceShort,
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 @Component({
   standalone: true,
@@ -47,11 +47,11 @@ export class ItemHeaderContentComponent {
   public text3: string
 
   @Input()
-  public set item(value: ItemDefinitionMaster | Housingitems) {
+  public set item(value: MasterItemDefinitions | HouseItems) {
     this.title = value?.Name
     this.text1 = getItemRarityLabel(value)
     this.text2 = value?.ItemType
-    this.text3 = value?.['$source']
+    this.text3 = getItemSourceShort(value)
     this.rarity = getItemRarity(value)
     this.isNamed = isMasterItem(value) && isItemNamed(value)
   }

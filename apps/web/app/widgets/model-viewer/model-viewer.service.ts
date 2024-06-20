@@ -1,11 +1,5 @@
 import { Injectable, inject } from '@angular/core'
-import {
-  Housingitems,
-  Itemappearancedefinitions,
-  ItemdefinitionsInstrumentsappearances,
-  ItemdefinitionsWeaponappearances,
-  ItemdefinitionsWeaponappearancesMountattachments,
-} from '@nw-data/generated'
+import { ArmorAppearanceDefinitions, HouseItems, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { environment } from '~/../environments'
 import { NwDataService } from '~/data'
@@ -20,14 +14,6 @@ export interface ItemModelInfo {
   url: string
   appearance: any
 }
-
-// export interface StatRow {
-//   itemId: string
-//   itemType: string
-//   model: string
-//   size: number
-//   tags: string[]
-// }
 
 @Injectable({ providedIn: 'root' })
 export class ModelsService {
@@ -106,7 +92,7 @@ export class ModelsService {
         }
         return {
           name: item.Name,
-          itemClass: [item['HousingTag1 Placed']].filter((it) => !!it),
+          itemClass: item['HousingTag1 Placed'].filter((it) => !!it),
           itemId: item.HouseItemID,
           label: item.Name,
           url: `${this.cdnHost || ''}/${item.PrefabPath}.glb`.toString().toLowerCase(),
@@ -230,7 +216,7 @@ export class ModelsService {
     // )
   }
 
-  private selectItemModels(item: Itemappearancedefinitions): ItemModelInfo[] {
+  private selectItemModels(item: ArmorAppearanceDefinitions): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (item?.Skin1) {
       result.push({
@@ -256,7 +242,7 @@ export class ModelsService {
   }
 
   private selectWeaponModels(
-    item: ItemdefinitionsWeaponappearances | ItemdefinitionsWeaponappearancesMountattachments,
+    item: WeaponAppearanceDefinitions, // | ItemdefinitionsWeaponappearancesMountattachments,
   ): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item?.MeshOverride) {
@@ -273,7 +259,7 @@ export class ModelsService {
     return result
   }
 
-  private selectInstrumentModels(item: ItemdefinitionsInstrumentsappearances): ItemModelInfo[] {
+  private selectInstrumentModels(item: WeaponAppearanceDefinitions): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item?.MeshOverride) {
       return result
@@ -289,7 +275,7 @@ export class ModelsService {
     return result
   }
 
-  private selectMountAttachmentsModels(item: ItemdefinitionsWeaponappearancesMountattachments): ItemModelInfo[] {
+  private selectMountAttachmentsModels(item: WeaponAppearanceDefinitions): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item) {
       return result
@@ -306,6 +292,6 @@ export class ModelsService {
   }
 }
 
-function housingItemModelPath(item: Housingitems) {
+function housingItemModelPath(item: HouseItems) {
   return `${item.PrefabPath}.dynamicslice.glb`.toLowerCase()
 }

@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data/common'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter } from '~/ui/data/table-grid'
@@ -67,7 +67,7 @@ export class SchematicsTableAdapter implements TableGridAdapter<SchematicRecord>
   )
 }
 
-function isSchematic(item: ItemDefinitionMaster) {
+function isSchematic(item: MasterItemDefinitions) {
   return item.ItemClass?.includes('WeaponSchematic') || item.ItemClass?.includes('FurnitureSchematic')
 }
 
@@ -77,10 +77,10 @@ function selectSchematics({
   itemsBySalvage,
   housingItems,
 }: {
-  recipes: Crafting[]
-  items: Map<string, ItemDefinitionMaster>
-  itemsBySalvage: Map<string, ItemDefinitionMaster[]>
-  housingItems: Map<string, Housingitems>
+  recipes: CraftingRecipeData[]
+  items: Map<string, MasterItemDefinitions>
+  itemsBySalvage: Map<string, MasterItemDefinitions[]>
+  housingItems: Map<string, HouseItems>
 }) {
   return recipes
     .map((recipe): SchematicRecord => {

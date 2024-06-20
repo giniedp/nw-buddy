@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_PVPRANK } from '@nw-data/generated'
+import { COLS_PVPRANKDATA } from '@nw-data/generated'
 import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
@@ -56,7 +56,7 @@ function buildOptions(util: TableGridUtils<PvpRankTableRecord>) {
     columnDefs: [pvpRankColLevel(util), pvpRankColName(util), pvpRankColDescription(util), pvpRankColGameEvent(util)],
   }
   addGenericColumns(result, {
-    props: COLS_PVPRANK,
+    props: COLS_PVPRANKDATA,
     defaults: {
       hide: false
     }

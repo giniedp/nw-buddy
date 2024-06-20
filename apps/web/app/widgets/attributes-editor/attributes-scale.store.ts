@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL, getDamageForTooltip, getDamageScalingForWeapon } from '@nw-data/common'
-import { Affixstats, Attributedexterity, ItemdefinitionsWeapons } from '@nw-data/generated'
+import { AffixStatData, AttributeDefinition, WeaponItemDefinitions } from '@nw-data/generated'
 import { ChartConfiguration } from 'chart.js'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -115,7 +115,7 @@ export interface WeaponDamageStats {
   scale: Record<AttributeRef, number>
 }
 
-export type ModifierTable = Array<Pick<Attributedexterity, 'ModifierValue' | 'ModifierValueSum' | 'Level'>>
+export type ModifierTable = Array<Pick<AttributeDefinition, 'ModifierValue' | 'ModifierValueSum' | 'Level'>>
 
 function selectWeaponDamage({
   tables,
@@ -127,8 +127,8 @@ function selectWeaponDamage({
 }: {
   tables: Record<AttributeRef, ModifierTable>
   stats: Record<AttributeRef, number>
-  weapon: ItemdefinitionsWeapons
-  affix: Affixstats
+  weapon: WeaponItemDefinitions
+  affix: AffixStatData
   gearScore: number
   playerLevel: number
 }): WeaponDamageStats {
@@ -206,7 +206,7 @@ function selectChartConfig({
   showTotal,
 }: {
   levels: number[]
-  tables: Record<AttributeRef, Array<Pick<Attributedexterity, 'ModifierValue' | 'ModifierValueSum'>>>
+  tables: Record<AttributeRef, Array<Pick<AttributeDefinition, 'ModifierValue' | 'ModifierValueSum'>>>
   damageStats: WeaponDamageStats
   stats: Record<AttributeRef, number>
   showTotal: boolean

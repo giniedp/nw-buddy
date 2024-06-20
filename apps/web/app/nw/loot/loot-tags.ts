@@ -1,4 +1,4 @@
-import { Gamemodes, Mutationdifficulty, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
+import { GameModeData, MutationDifficultyStaticData, PoiDefinition, TerritoryDefinition } from '@nw-data/generated'
 import { Observable, map, of } from 'rxjs'
 import { mapFilter } from '~/utils'
 
@@ -9,11 +9,11 @@ export interface LootTagOption<T = unknown> {
   tags: string[]
 }
 
-export function territoriesTags(source$: Observable<Territorydefinitions[]>) {
+export function territoriesTags(source$: Observable<TerritoryDefinition[]>) {
   return source$.pipe(mapFilter((it) => !!it.LootTags?.length && !!it.NameLocalizationKey)).pipe(
     map((list) => {
       return [
-        ...list.map((it): LootTagOption<Territorydefinitions> => {
+        ...list.map((it): LootTagOption<TerritoryDefinition> => {
           return {
             target: it,
             targetId: String(it.TerritoryID),
@@ -43,11 +43,11 @@ export function poiTags(source$: Observable<PoiDefinition[]>) {
   )
 }
 
-export function gameModesTags(source$: Observable<Gamemodes[]>, mutated?: boolean) {
+export function gameModesTags(source$: Observable<GameModeData[]>, mutated?: boolean) {
   return source$.pipe(mapFilter((it) => !!it.LootTags && !!it.DisplayName)).pipe(
     map((list) => {
       return [
-        ...list.map((it): LootTagOption<Gamemodes> => {
+        ...list.map((it): LootTagOption<GameModeData> => {
           return {
             target: it,
             targetId: String(it.GameModeId),
@@ -60,11 +60,11 @@ export function gameModesTags(source$: Observable<Gamemodes[]>, mutated?: boolea
   )
 }
 
-export function mutaDifficultyTags(source$: Observable<Mutationdifficulty[]>) {
+export function mutaDifficultyTags(source$: Observable<MutationDifficultyStaticData[]>) {
   return source$.pipe(
     map((list) => {
       return [
-        ...list.map((it): LootTagOption<Mutationdifficulty> => {
+        ...list.map((it): LootTagOption<MutationDifficultyStaticData> => {
           return {
             target: it,
             targetId: String(it.MutationDifficulty),

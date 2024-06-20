@@ -1,4 +1,5 @@
-import { spawn } from '../utils'
+import { logger } from '../utils/logger'
+import { spawn } from '../utils/spawn'
 
 export interface TexconvArgs {
   exe?: string
@@ -71,6 +72,6 @@ export async function texconv({
   args.push(input)
 
   await spawn(tool, args, {
-    stdio: 'inherit',
+    stdio: logger.isVerbose ? 'inherit' : null,
   })
 }

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core'
-import { Npc } from '@nw-data/generated'
+import { NPCData } from '@nw-data/generated'
 import { groupBy } from 'lodash'
 import { NwDataService } from '~/data'
 import { tableGroupBy, tableIndexBy, tableLookup } from '~/data/nw-data/dsl'
@@ -8,10 +8,10 @@ import { selectStream } from '~/utils'
 
 export interface NpcGroup {
   id: string
-  name: string,
+  name: string
   title: string
   groupId: string
-  npcs: Npc[]
+  npcs: NPCData[]
 }
 
 @Injectable({ providedIn: 'root' })
@@ -29,15 +29,18 @@ export class NpcService {
   )
   public groupsMap$ = tableIndexBy(() => this.groups$, 'id')
   public group$ = tableLookup(() => this.groupsMap$)
-  public groupByNpcIdMap$ = tableGroupBy(() => this.groups$,  (group) => group.npcs.map((npc) => npc.NPCId))
+  public groupByNpcIdMap$ = tableGroupBy(
+    () => this.groups$,
+    (group) => group.npcs.map((npc) => npc.NPCId),
+  )
   public groupByNpcId$ = tableLookup(() => this.groupByNpcIdMap$)
 
-  public npcGroupName(npc: Npc) {
+  public npcGroupName(npc: NPCData) {
     return npcGroupName(npc, this.tl8)
   }
 }
 
-function selectNpcs(items: Npc[], tl8: TranslateService): NpcGroup[] {
+function selectNpcs(items: NPCData[], tl8: TranslateService): NpcGroup[] {
   const groups = groupBy(items, (it) => npcGroupName(it, tl8))
   return Object.entries(groups).map(([groupId, npcs]) => {
     const npc = npcs[0]
@@ -51,7 +54,7 @@ function selectNpcs(items: Npc[], tl8: TranslateService): NpcGroup[] {
   })
 }
 
-function npcGroupName(npc: Npc, tl8: TranslateService) {
+function npcGroupName(npc: NPCData, tl8: TranslateService) {
   if (!npc) {
     return null
   }

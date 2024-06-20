@@ -1,5 +1,5 @@
 import { AttributeRef } from "@nw-data/common"
-import { Ability } from "@nw-data/generated"
+import { AbilityData } from "@nw-data/generated"
 
 export interface SkillSet {
   /**
@@ -51,5 +51,5 @@ export interface SkillBuildRow {
   /**
    * The abilities of the player
    */
-  abilities: Ability[]
+  abilities: AbilityData[]
 }

@@ -9,7 +9,7 @@ import {
   getItemPerkIds,
   getWeightLabel,
 } from '@nw-data/common'
-import { ItemClass, ItemDefinitionMaster } from '@nw-data/generated'
+import { ItemClass, MasterItemDefinitions } from '@nw-data/generated'
 import { sumBy } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -63,7 +63,7 @@ export interface ArmorWeightsState {
 }
 
 export interface SlotItem {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   slot: EquipSlot
   weight: number
   rating: number

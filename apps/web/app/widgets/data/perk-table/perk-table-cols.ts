@@ -1,5 +1,5 @@
 import { NW_FALLBACK_ICON, explainPerkMods, getItemIconPath, getItemId, getItemRarity, getPerkItemClassGSBonus, getPerkItemClassGsBonus, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
-import { Ability, Affixstats, COLS_ABILITY, COLS_AFFIXSTATS, COLS_PERKS, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { AbilityData, AffixStatData, COLS_ABILITYDATA, COLS_AFFIXSTATDATA, COLS_PERKDATA, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
@@ -7,10 +7,10 @@ import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type PerkTableUtils = TableGridUtils<PerkTableRecord>
-export type PerkTableRecord = Perks & {
-  $ability?: Ability
-  $affix?: Affixstats
-  $items?: ItemDefinitionMaster[]
+export type PerkTableRecord = PerkData & {
+  $ability?: AbilityData
+  $affix?: AffixStatData
+  $items?: MasterItemDefinitions[]
 }
 
 export function perkColIcon(util: PerkTableUtils) {
@@ -21,10 +21,10 @@ export function perkColIcon(util: PerkTableUtils) {
     sortable: false,
     filter: ExpressionFilter,
     filterParams: ExpressionFilter.params({
-      fields: Object.keys(COLS_PERKS),
+      fields: Object.keys(COLS_PERKDATA),
       fieldPaths: [
-        ...Object.keys(COLS_AFFIXSTATS).map((it) => `$affix.${it}`),
-        ...Object.keys(COLS_ABILITY).map((it) => `$ability.${it}`),
+        ...Object.keys(COLS_AFFIXSTATDATA).map((it) => `$affix.${it}`),
+        ...Object.keys(COLS_ABILITYDATA).map((it) => `$ability.${it}`),
       ],
     }),
     pinned: true,

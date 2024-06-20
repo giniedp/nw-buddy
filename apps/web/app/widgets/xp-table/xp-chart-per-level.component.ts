@@ -13,8 +13,8 @@ import { ChartComponent } from '~/ui/chart'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, ChartComponent],
   host: {
-    class: 'block'
-  }
+    class: 'block',
+  },
 })
 export class XpChartPerLevelComponent {
   private level = toSignal(inject(CharacterStore).level$, {

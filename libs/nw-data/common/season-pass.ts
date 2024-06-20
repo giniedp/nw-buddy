@@ -1,5 +1,5 @@
-import { SeasonPassData } from '../generated/types'
+import { SeasonPassRankData } from '../generated/types'
 
-export function getSeasonPassDataId(item: SeasonPassData) {
+export function getSeasonPassDataId(item: SeasonPassRankData) {
   return [item['$source'], item.Level].join('-').toLowerCase()
 }

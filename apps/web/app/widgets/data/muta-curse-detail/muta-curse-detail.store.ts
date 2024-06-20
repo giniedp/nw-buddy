@@ -1,9 +1,8 @@
-import { Injectable, Output, inject } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Cursemutations, Mounts } from '@nw-data/generated'
+import { CurseMutationStaticData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { ModelsService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class MutaCurseDetailStore extends ComponentStore<{ curseId: string; wildcard: string }> {
@@ -14,23 +13,23 @@ export class MutaCurseDetailStore extends ComponentStore<{ curseId: string; wild
   public readonly icon$ = this.select(this.curse$, (it) => it?.IconPath || NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.curse$, (it) => it?.Name)
   public readonly cursoMinorId$ = this.select(this.curse$, this.wildcard$, (it, wc) =>
-    it?.CurseMinor?.replace('_Wildcard_', `_${wc}_`)
+    it?.CurseMinor?.replace('_Wildcard_', `_${wc}_`),
   )
   public readonly curseMajorId$ = this.select(this.curse$, this.wildcard$, (it, wc) =>
-    it?.CurseMajor?.replace('_Wildcard_', `_${wc}_`)
+    it?.CurseMajor?.replace('_Wildcard_', `_${wc}_`),
   )
 
   public readonly curses$ = this.select(
     this.db.statusEffect(this.cursoMinorId$),
     this.db.statusEffect(this.curseMajorId$),
-    (minor, major) => [minor, major].filter((it) => !!it)
+    (minor, major) => [minor, major].filter((it) => !!it),
   )
 
   public constructor(private db: NwDataService) {
     super({ curseId: null, wildcard: null })
   }
 
-  public load(idOrItem: string | Cursemutations) {
+  public load(idOrItem: string | CurseMutationStaticData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ curseId: idOrItem })
     } else {

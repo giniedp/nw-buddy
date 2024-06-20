@@ -3,7 +3,7 @@ import { SAMPLES, sampleUrl } from './samples'
 
 import { HttpClient } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { AppTestingModule } from '~/test'
@@ -14,9 +14,9 @@ describe('item-scanner / recognize', async () => {
   let translate: TranslateService
   let http: HttpClient
 
-  let items: ItemDefinitionMaster[]
-  let affixMap: Map<string, Affixstats>
-  let perksMap: Map<string, Perks>
+  let items: MasterItemDefinitions[]
+  let affixMap: Map<string, AffixStatData>
+  let perksMap: Map<string, PerkData>
 
   describe('en-us', () => {
     beforeAll(async () => {

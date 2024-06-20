@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { getQuestTypeIcon } from '@nw-data/common'
-import { Objectivetasks, PoiDefinition } from '@nw-data/generated'
+import { ObjectiveTasks, TerritoryDefinition } from '@nw-data/generated'
 import { combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -54,14 +54,14 @@ export class ItemDetailPerkTasksComponent {
     //
   }
 
-  protected textContext(task: Objectivetasks) {
+  protected textContext(task: ObjectiveTasks) {
     return {
       targetName: task.TargetQty,
       POITags: task.POITag,
     }
   }
 
-  private selectTask(task: Objectivetasks): PerkTask {
+  private selectTask(task: ObjectiveTasks): PerkTask {
     return {
       icon: task.Type === 'SimpleTaskContainer' ? null : getQuestTypeIcon(task.Type),
       description: task.TP_DescriptionTag,
@@ -76,7 +76,7 @@ export class ItemDetailPerkTasksComponent {
     }
   }
 
-  private resolveTargetName(task: Objectivetasks) {
+  private resolveTargetName(task: ObjectiveTasks) {
     return combineLatest({
       category: this.db.vitalsCategory(task.KillEnemyType),
       vital: this.db.vital(task.KillEnemyType),
@@ -96,18 +96,15 @@ export class ItemDetailPerkTasksComponent {
         )
       }),
       map((text) => {
-        return task.TargetQty > 1 ? `${task.TargetQty} ${text} ` : text
+        return Number(task.TargetQty) > 1 ? `${task.TargetQty} ${text} ` : text
       }),
     )
   }
 
-  private resolvePOITags(task: Objectivetasks) {
-    return combineLatest({
-      poiByTag: this.db.poiByPoiTag,
-      areaByTag: this.db.areaByPoiTag,
-    })
-      .pipe(map(({ poiByTag, areaByTag }) => poiByTag.get(task.POITag) || areaByTag.get(task.POITag)))
-      .pipe(map((it): PoiDefinition => (it?.[0] || null) as PoiDefinition))
+  private resolvePOITags(task: ObjectiveTasks) {
+    return this.db.territoriesByPoiTag
+      .pipe(map((data) => data.get(task.POITag)))
+      .pipe(map((it) => it?.[0] || null))
       .pipe(
         switchMap((poi) => {
           if (!poi) {
@@ -123,8 +120,8 @@ export class ItemDetailPerkTasksComponent {
       )
   }
 
-  private resolveTerritoryID(task: Objectivetasks) {
-    return this.db.territoriesMap.pipe(map((it) => it.get(task.TerritoryID))).pipe(
+  private resolveTerritoryID(task: ObjectiveTasks) {
+    return this.db.territoriesMap.pipe(map((it) => it.get(Number(task.TerritoryID)))).pipe(
       switchMap((it) => {
         if (!it) {
           return of(task.TerritoryID)

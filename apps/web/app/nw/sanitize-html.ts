@@ -5,9 +5,9 @@ addHook('afterSanitizeAttributes', (node) => {
   if (node.tagName === 'IMG') {
     node.classList.add('inline')
     let src = node.getAttribute('src') || ''
-    if (src.match(/lyshineui\/images/i)) {
-      src = src.replace(/lyshineui\/images/i, environment.nwDataUrl)
-      src = src.replace(/\.(png|jpg)$/i, '')
+    if (src.match(/lyshineui[\\/]images/i)) {
+      src = environment.nwDataUrl + '/' + src
+      src = src.replace(/\.(png|jpg|jpeg|dds|tga)$/i, '')
       src = src + '.webp'
       src = src.toLowerCase()
       node.classList.add('nw-icon')

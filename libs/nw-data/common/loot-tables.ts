@@ -1,9 +1,9 @@
-import { Loottable } from '@nw-data/generated'
+import { LootTablesData } from '@nw-data/generated'
 import { parseLootRef } from './loot'
 import { OmitByPrefix } from './utils/ts-types'
 import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 
-export type LootTableBase = OmitByPrefix<Loottable, 'Item' | 'GearScoreRange'>
+export type LootTableBase = OmitByPrefix<LootTablesData, 'Item' | 'GearScoreRange'>
 export interface LootTable extends LootTableBase {
   Items: LootTableRow[]
 }
@@ -18,10 +18,10 @@ export interface LootTableRow {
   GearScoreRange?: string
 }
 
-export function convertLoottables(data: Loottable[]): LootTable[] {
+export function convertLoottables(data: LootTablesData[]): LootTable[] {
   const result = data
     .filter((it) => !it.LootTableID.endsWith('_Qty') && !it.LootTableID.endsWith('_Probs'))
-    .map((it): Loottable => JSON.parse(JSON.stringify(it)))
+    .map((it): LootTablesData => JSON.parse(JSON.stringify(it)))
     .map((it): LootTable => {
       const qty = findById(data, `${it.LootTableID}_Qty`)
       const probs = findById(data, `${it.LootTableID}_Probs`)
@@ -56,10 +56,10 @@ export function convertLoottables(data: Loottable[]): LootTable[] {
   return result
 }
 
-function findById(items: Loottable[], id: string) {
+function findById(items: LootTablesData[], id: string) {
   return items.find((qty) => eqCaseInsensitive(qty.LootTableID, id))
 }
 
-function extractItemKeys(item: Loottable) {
+function extractItemKeys(item: LootTablesData) {
   return Object.keys(item || {}).filter((it) => it.match(/^Item\d+$/i))
 }

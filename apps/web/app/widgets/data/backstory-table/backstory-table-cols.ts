@@ -1,12 +1,12 @@
 import { NW_FALLBACK_ICON, getItemIconPath, getItemId } from '@nw-data/common'
-import { Backstorydata, Territorydefinitions } from '@nw-data/generated'
+import { BackstoryDefinition, TerritoryDefinition } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 import { InventoryItem } from '../backstory-detail/types'
 
 export type BackstoryTableUtils = TableGridUtils<BackstoryTableRecord>
-export type BackstoryTableRecord = Backstorydata & {
-  $respawnTerritories: Territorydefinitions[]
+export type BackstoryTableRecord = BackstoryDefinition & {
+  $respawnTerritories: TerritoryDefinition[]
   $inventoryItems: InventoryItem[]
 }
 

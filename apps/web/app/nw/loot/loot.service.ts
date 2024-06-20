@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { LootTable } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
 import { LootContext } from './loot-context'
 import { buildLootGraph, collectLootIds, updateLootGraph } from './loot-graph'
@@ -30,7 +30,7 @@ export class NwLootService {
   public resolveLootItems(
     table: LootTable,
     context: LootContext
-  ): Observable<Array<ItemDefinitionMaster | Housingitems>> {
+  ): Observable<Array<MasterItemDefinitions | HouseItems>> {
     return combineLatest({
       graph: this.buildGraph(table),
       items: this.db.itemsMap,

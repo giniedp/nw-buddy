@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import {
   convertBuffBuckets,
   convertGatherableVariations,
@@ -12,29 +12,66 @@ import {
   getQuestRequiredAchuevmentIds,
   getSeasonPassDataId,
 } from '@nw-data/common'
-import { Housingitems, Vitals } from '@nw-data/generated'
-import { sortBy } from 'lodash'
-import { Observable, combineLatest, map, shareReplay } from 'rxjs'
+import {
+  DATASHEETS,
+  DataSheetUri,
+  GatherablesMetadata,
+  LoreMetadata,
+  SpellsMetadata,
+  TerritoriesMetadata,
+  VariationDataGatherable,
+  VariationsMetadata,
+  VitalsData,
+  VitalsMetadata,
+  VitalsModelsMetadata,
+} from '@nw-data/generated'
+import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataLoaderService } from './nw-data-loader.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './views'
 
 import { annotate, table, tableGroupBy, tableIndexBy, tableLookup } from './dsl'
-import { apiMethods, apiMethodsByPrefix } from './utils'
+
+type DatasheetIndex = typeof DATASHEETS
 
 @Injectable({ providedIn: 'root' })
 export class NwDataService {
-  public items = table(() => {
-    const backsort = ['Ai', 'Playtest', 'Omega']
-    const methods = sortBy(
-      [
-        ...apiMethodsByPrefix<'itemdefinitionsMasterCommon'>(this.data, 'itemdefinitionsMaster'),
-        ...apiMethodsByPrefix<'itemdefinitionsMasterCommon'>(this.data, 'mtxItemdefinitionsMtx'),
-      ],
-      (it) => (backsort.includes(it.suffix) ? `x${it.suffix}` : it.suffix),
-    )
-    return methods.map((it) => it.load().pipe(annotate('$source', it.suffix || '_')))
-  })
+  public readonly data = inject(NwDataLoaderService)
+  private readonly sheets: DatasheetIndex = DATASHEETS
 
+  private load<T>(uri: DataSheetUri<T>) {
+    return this.data.load<T[]>(uri.uri)
+  }
+  private loadEntries<T>(tables: Record<string, DataSheetUri<T>>, keys?: string[]) {
+    keys = keys || Object.keys(tables)
+    return keys.map((type) => {
+      const uri = tables[type]
+      return this.load(uri).pipe(annotate('$source', type))
+    })
+  }
+
+  public loadSheets(name: keyof typeof DATASHEETS) {
+    return this.loadEntries(this.sheets[name])
+  }
+
+  public useTable<T>(accessor: (sheets: DatasheetIndex) => DataSheetUri<T>) {
+    return this.load(accessor(this.sheets))
+  }
+
+  public useSheets<T>(accessor: (sheets: DatasheetIndex) => Record<string, DataSheetUri<T>>) {
+    return this.loadEntries(accessor(this.sheets))
+  }
+
+  public items = table(() => {
+    const source = DATASHEETS.MasterItemDefinitions
+    const keys = Object.keys(source)
+    keys.sort((a, b) => {
+      if (b === 'MasterItemDefinitions_AI') {
+        return -1
+      }
+      return a.localeCompare(b)
+    })
+    return this.loadEntries(source, keys)
+  })
   public itemsMap = tableIndexBy(() => this.items, 'ItemID')
   public item = tableLookup(() => this.itemsMap)
   public itemsBySalvageAchievement = tableGroupBy(() => this.items, 'SalvageAchievement')
@@ -52,8 +89,8 @@ export class NwDataService {
   public itemSet = tableLookup(() => this.itemsBySetFamilyName)
 
   public housingItems = table(() => [
-    this.data.housingitems(),
-    this.data.mtxHousingitemsMtx() as any as Observable<Housingitems[]>,
+    this.load(DATASHEETS.VariationData.HouseItems),
+    this.load(DATASHEETS.VariationData.HouseItemsMTX),
   ])
   public housingItemsMap = tableIndexBy(() => this.housingItems, 'HouseItemID')
   public housingItem = tableLookup(() => this.housingItemsMap)
@@ -66,17 +103,13 @@ export class NwDataService {
       housing: this.housingItem(id),
     }).pipe(map(({ item, housing }) => item || housing))
 
-  public itemTransforms = table(() => this.data.itemtransformdata())
+  public itemTransforms = table(() => this.loadEntries(DATASHEETS.ItemTransform))
   public itemTransformsMap = tableIndexBy(() => this.itemTransforms, 'FromItemId')
   public itemTransform = tableLookup(() => this.itemTransformsMap)
   public itemTransformsByToItemIdMap = tableGroupBy(() => this.itemTransforms, 'ToItemId')
   public itemTransformsByToItemId = tableLookup(() => this.itemTransformsByToItemIdMap)
 
-  public abilities = table(() =>
-    apiMethodsByPrefix<'weaponabilitiesAbilityAi'>(this.data, 'weaponabilitiesAbility').map((it) => {
-      return it.load().pipe(annotate('$source', it.suffix || '_'))
-    }),
-  )
+  public abilities = table(() => this.loadEntries(DATASHEETS.AbilityData))
   public abilitiesMap = tableIndexBy(() => this.abilities, 'AbilityID')
   public ability = tableLookup(() => this.abilitiesMap)
   public abilitiesByStatusEffectMap = tableGroupBy(() => this.abilities, 'StatusEffect')
@@ -86,19 +119,15 @@ export class NwDataService {
   public abilitiesByOtherApplyStatusEffectMap = tableGroupBy(() => this.abilities, 'OtherApplyStatusEffect')
   public abilitiesByOtherApplyStatusEffect = tableLookup(() => this.abilitiesByOtherApplyStatusEffectMap)
 
-  public statusEffects = table(() =>
-    apiMethodsByPrefix<'statuseffectsAi'>(this.data, 'statuseffects').map((it) => {
-      return it.load().pipe(annotate('$source', it.suffix || '_'))
-    }),
-  )
+  public statusEffects = table(() => this.loadEntries(DATASHEETS.StatusEffectData))
   public statusEffectsMap = tableIndexBy(() => this.statusEffects, 'StatusID')
   public statusEffect = tableLookup(() => this.statusEffectsMap)
 
-  public statusEffectCategories = table(() => this.data.statuseffectcategories())
+  public statusEffectCategories = table(() => this.loadEntries(DATASHEETS.StatusEffectCategoryData))
   public statusEffectCategoriesMap = tableIndexBy(() => this.statusEffectCategories, 'StatusEffectCategoryID')
   public statusEffectCategory = tableLookup(() => this.statusEffectCategoriesMap)
 
-  public perks = table(() => [this.data.perks()])
+  public perks = table(() => this.loadEntries(DATASHEETS.PerkData))
   public perksMap = tableIndexBy(() => this.perks, 'PerkID')
   public perk = tableLookup(() => this.perksMap)
   public perksByEquipAbilityMap = tableGroupBy(() => this.perks, 'EquipAbility')
@@ -106,7 +135,7 @@ export class NwDataService {
   public perksByAffixMap = tableGroupBy(() => this.perks, 'Affix')
   public perksByAffix = tableLookup(() => this.perksByAffixMap)
 
-  public perkBuckets = table(() => [this.data.perkbuckets().pipe(map(convertPerkBuckets))])
+  public perkBuckets = table(() => this.loadEntries(DATASHEETS.PerkBucketData), convertPerkBuckets)
   public perkBucketsMap = tableIndexBy(() => this.perkBuckets, 'PerkBucketID')
   public perkBucket = tableLookup(() => this.perkBucketsMap)
   public perkBucketsByPerkIdMap = tableGroupBy(
@@ -117,72 +146,84 @@ export class NwDataService {
   )
   public perkBucketsByPerkId = tableLookup(() => this.perkBucketsByPerkIdMap)
 
-  public affixStats = table(() => [this.data.affixstats()])
+  public affixStats = table(() => this.loadEntries(DATASHEETS.AffixStatData))
   public affixStatsMap = tableIndexBy(() => this.affixStats, 'StatusID')
   public affixStat = tableLookup(() => this.affixStatsMap)
   public affixByStatusEffectMap = tableGroupBy(() => this.affixStats, 'StatusEffect')
   public affixByStatusEffect = tableLookup(() => this.affixByStatusEffectMap)
 
-  public cooldowns = table(() => [this.data.cooldownsPlayer()])
+  public cooldowns = table(() => this.loadEntries(DATASHEETS.CooldownData))
   public cooldownsMap = tableIndexBy(() => this.cooldowns, 'ID')
   public cooldown = tableLookup(() => this.cooldownsMap)
   public cooldownsByAbilityIdMap = tableGroupBy(() => this.cooldowns, 'AbilityID')
 
-  public damageTables0 = table(() => [this.data.damagetable()])
+  public damageTables0 = table(() => this.load(DATASHEETS.DamageData.DamageTable))
   public damageTables0Map = tableIndexBy(() => this.damageTables0, 'DamageID')
   public damageTable0 = tableLookup(() => this.damageTables0Map)
 
-  public damageTables = table(() => {
-    const matcher = [/^charactertables.*damagetable/i, /^damagetable/i]
-    return apiMethods<'damagetable'>(this.data, (it) => matcher.some((reg) => reg.test(it))).map((it) => {
-      const reg = matcher.find((reg) => reg.test(it.name))
-      const source = it.name.replace(reg, () => '') || '_'
-      return it.load().pipe(annotate('$source', source))
-    })
-  })
+  public damageTables = table(() => this.loadEntries(DATASHEETS.DamageData))
   public damageTableMap = tableIndexBy(() => this.damageTables, 'DamageID')
   public damageTable = tableLookup(() => this.damageTableMap)
   public damageTablesByStatusEffectMap = tableGroupBy(() => this.damageTables, 'StatusEffect')
   public damageTablesByStatusEffect = tableLookup(() => this.damageTablesByStatusEffectMap)
 
-  public dmgTableEliteAffix = table(() => [this.data.charactertablesEliteaffixDatatablesDamagetableEliteAffix()])
-  public dmgTableEliteAffixMap = tableIndexBy(() => this.dmgTableEliteAffix, 'DamageID')
-
-  public gatherables = table(() => [this.data.gatherables()])
+  public gatherables = table(() => this.loadEntries(DATASHEETS.GatherableData))
   public gatherablesMap = tableIndexBy(() => this.gatherables, 'GatherableID')
   public gatherable = tableLookup(() => this.gatherablesMap)
 
-  public gatherablesMetadata = table(() => [this.data.generatedGatherablesMetadata()])
+  public gatherablesMetadata = table(() =>
+    this.load<GatherablesMetadata>({ uri: 'nw-data/generated/gatherables_metadata.json' }),
+  )
   public gatherablesMetadataMap = tableIndexBy(() => this.gatherablesMetadata, 'gatherableID')
   public gatherablesMeta = tableLookup(() => this.gatherablesMetadataMap)
 
-  public gatherableVariations = table(() => {
-    return apiMethodsByPrefix<'variationsGatherablesAlchemy'>(this.data, 'variationsGatherables').map((it) => {
-      return it.load().pipe(annotate('$source', it.suffix || '_'))
-    })
-  }, convertGatherableVariations)
+  public gatherableVariations = table(
+    () =>
+      this.loadEntries<VariationDataGatherable>({
+        Gatherable_Darkness: DATASHEETS.VariationData.Gatherable_Darkness,
+        Gatherable_Alchemy: DATASHEETS.VariationData.Gatherable_Alchemy,
+        Gatherable_Bushes: DATASHEETS.VariationData.Gatherable_Bushes,
+        Gatherable_Cinematic: DATASHEETS.VariationData.Gatherable_Cinematic,
+        Gatherable_Cyclic: DATASHEETS.VariationData.Gatherable_Cyclic,
+        Gatherable_Essences: DATASHEETS.VariationData.Gatherable_Essences,
+        Gatherable_Holiday: DATASHEETS.VariationData.Gatherable_Holiday,
+        Gatherable_Holiday_Proximity: DATASHEETS.VariationData.Gatherable_Holiday_Proximity,
+        Gatherable_Items: DATASHEETS.VariationData.Gatherable_Items,
+        Gatherable_LockedGates: DATASHEETS.VariationData.Gatherable_LockedGates,
+        Gatherable_Logs: DATASHEETS.VariationData.Gatherable_Logs,
+        Gatherable_LootContainers: DATASHEETS.VariationData.Gatherable_LootContainers,
+        Gatherable_Minerals: DATASHEETS.VariationData.Gatherable_Minerals,
+        Gatherables_NPCRescue_01: DATASHEETS.VariationData.Gatherables_NPCRescue_01,
+        Gatherable_Plants: DATASHEETS.VariationData.Gatherable_Plants,
+        Gatherable_POIObjects: DATASHEETS.VariationData.Gatherable_POIObjects,
+        Gatherable_Quest: DATASHEETS.VariationData.Gatherable_Quest,
+        Gatherable_Quest_AncientGlyph: DATASHEETS.VariationData.Gatherable_Quest_AncientGlyph,
+        Gatherable_Quest_Damageable: DATASHEETS.VariationData.Gatherable_Quest_Damageable,
+        Gatherable_Quest_Proximity: DATASHEETS.VariationData.Gatherable_Quest_Proximity,
+        Gatherable_Stones: DATASHEETS.VariationData.Gatherable_Stones,
+        Gatherable_Trees: DATASHEETS.VariationData.Gatherable_Trees,
+      }),
+    convertGatherableVariations,
+  )
+
   public gatherableVariationsMap = tableIndexBy(() => this.gatherableVariations, 'VariantID')
   public gatherableVariation = tableLookup(() => this.gatherableVariationsMap)
   public gatherableVariationsByGatherableIdMap = tableGroupBy(() => this.gatherableVariations, 'GatherableID')
   public gatherableVariationsByGatherableId = tableLookup(() => this.gatherableVariationsByGatherableIdMap)
 
-  public npcs = table(() =>
-    apiMethods<'quests01Starterbeach01Npcs'>(this.data, (it) => {
-      return it.endsWith('Npcs') && !it.includes('variations')
-    }).map((it) => {
-      return it.load().pipe(annotate('$source', it.name))
-    }),
-  )
+  public npcs = table(() => this.loadEntries(DATASHEETS.NPCData))
   public npcsMap = tableIndexBy(() => this.npcs, 'NPCId')
   public npc = tableLookup(() => this.npcsMap)
 
-  public npcsVariations = table(() => this.data.variationsNpcs())
+  public npcsVariations = table(() => this.load(DATASHEETS.VariationData.NPC))
   public npcsVariationsMap = tableIndexBy(() => this.npcsVariations, 'VariantID')
   public npcsVariation = tableLookup(() => this.npcsVariationsMap)
   public npcsVariationsByNpcIdMap = tableGroupBy(() => this.npcsVariations, 'NPCId')
   public npcsVariationsByNpcId = tableLookup(() => this.npcsVariationsByNpcIdMap)
 
-  public variationsMetadata = table(() => [this.data.generatedVariationsMetadata()])
+  public variationsMetadata = table(() =>
+    this.load<VariationsMetadata>({ uri: 'nw-data/generated/variations_metadata.json' }),
+  )
   public variationsMetadataMap = tableIndexBy(() => this.variationsMetadata, 'variantID')
   public variationsMeta = tableLookup(() => this.variationsMetadataMap)
   public variationsChunk(id: number) {
@@ -198,63 +239,55 @@ export class NwDataService {
     )
   }
 
-  public mounts = table(() => [this.data.mountsMounts()])
+  public mounts = table(() => this.loadEntries(DATASHEETS.MountData))
   public mountsMap = tableIndexBy(() => this.mounts, 'MountId')
   public mount = tableLookup(() => this.mountsMap)
 
-  public armors = table(() => [this.data.itemdefinitionsArmor()])
+  public armors = table(() => this.loadEntries(DATASHEETS.ArmorItemDefinitions))
   public armorsMap = tableIndexBy(() => this.armors, 'WeaponID')
   public armor = tableLookup(() => this.armorsMap)
 
-  public weapons = table(() => [this.data.itemdefinitionsWeapons()])
+  public weapons = table(() => this.loadEntries(DATASHEETS.WeaponItemDefinitions))
   public weaponsMap = tableIndexBy(() => this.weapons, 'WeaponID')
   public weapon = tableLookup(() => this.weaponsMap)
 
-  public ammos = table(() => [this.data.itemdefinitionsAmmo()])
+  public ammos = table(() => this.loadEntries(DATASHEETS.AmmoItemDefinitions))
   public ammosMap = tableIndexBy(() => this.ammos, 'AmmoID')
   public ammo = tableLookup(() => this.ammosMap)
 
-  public consumables = table(() => [this.data.itemdefinitionsConsumables()])
+  public consumables = table(() => this.loadEntries(DATASHEETS.ConsumableItemDefinitions))
   public consumablesMap = tableIndexBy(() => this.consumables, 'ConsumableID')
   public consumable = tableLookup(() => this.consumablesMap)
   public consumablesByAddStatusEffectsMap = tableGroupBy(() => this.consumables, 'AddStatusEffects')
   public consumablesByAddStatusEffects = tableLookup(() => this.consumablesByAddStatusEffectsMap)
 
-  public runes = table(() => [this.data.itemdefinitionsRunes()])
+  public runes = table(() => this.load(DATASHEETS.WeaponItemDefinitions.RuneItemDefinitions))
   public runesMap = tableIndexBy(() => this.runes, 'WeaponID')
   public rune = tableLookup(() => this.runesMap)
 
-  public spells = table(() =>
-    apiMethodsByPrefix<'spelltable'>(this.data, 'spelltable').map((it) => {
-      return it.load().pipe(annotate('$source', it.suffix || '_'))
-    }),
-  )
+  public spells = table(() => this.loadEntries(DATASHEETS.SpellData))
   public spellsMap = tableIndexBy(() => this.spells, 'SpellID')
   public spell = tableLookup(() => this.spellsMap)
   public spellsByDamageTable = tableGroupBy(() => this.spells, 'DamageTable')
 
-  public spellsMetadata = table(() => [this.data.generatedSpellsMetadata()])
+  public spellsMetadata = table(() => this.load<SpellsMetadata>({ uri: 'nw-data/generated/spells_metadata.json' }))
   public spellsMetadataMap = tableIndexBy(() => this.spellsMetadata, 'PrefabPath')
   public spellsMeta = tableLookup(() => this.spellsMetadataMap)
 
-  public gameModes = table(() => [this.data.gamemodes()])
+  public gameModes = table(() => this.loadEntries(DATASHEETS.GameModeData))
   public gameModesMap = tableIndexBy(() => this.gameModes, 'GameModeId')
   public gameMode = tableLookup(() => this.gameModesMap)
 
-  public loreItems = table(() => [this.data.loreitems()])
+  public loreItems = table(() => this.loadEntries(DATASHEETS.LoreData))
   public loreItemsMap = tableIndexBy(() => this.loreItems, 'LoreID')
   public loreItem = tableLookup(() => this.loreItemsMap)
   public loreItemsByParentIdMap = tableGroupBy(() => this.loreItems, 'ParentID')
   public loreItemsByParentId = tableLookup(() => this.loreItemsByParentIdMap)
 
-  public loreItemsMeta = table(() => [this.data.generatedLoreMetadata()])
+  public loreItemsMeta = table(() => this.load<LoreMetadata>({ uri: 'nw-data/generated/lore_metadata.json' }))
   public loreItemsMetaMap = tableIndexBy(() => this.loreItemsMeta, 'loreID')
 
-  public quests = table(() =>
-    apiMethodsByPrefix<'quests01Starterbeach01Objectives'>(this.data, 'quests').map((it) => {
-      return it.load().pipe(annotate('$source', it.suffix || '_'))
-    }),
-  )
+  public quests = table(() => this.loadEntries(DATASHEETS.Objectives))
   public questsMap = tableIndexBy(() => this.quests, 'ObjectiveID')
   public quest = tableLookup(() => this.questsMap)
   public questsByAchievementIdMap = tableGroupBy(() => this.quests, 'AchievementId')
@@ -265,11 +298,7 @@ export class NwDataService {
   public questsByNpcIdMap = tableGroupBy(() => this.quests, 'NpcDestinationId')
   public questsByNpcId = tableLookup(() => this.questsByNpcIdMap)
 
-  public recipes = table(() =>
-    apiMethodsByPrefix<'crafting'>(this.data, 'crafting').map((it) => {
-      return it.load().pipe(annotate('$source', it.suffix || '_'))
-    }),
-  )
+  public recipes = table(() => this.loadEntries(DATASHEETS.CraftingRecipeData))
   public recipesMap = tableIndexBy(() => this.recipes, 'RecipeID')
   public recipesMapByItemId = tableGroupBy(
     () => this.recipes,
@@ -288,82 +317,69 @@ export class NwDataService {
   public recipesByIngredientId = tableLookup(() => this.recipesMapByIngredients)
   public recipesByItemId = tableLookup(() => this.recipesMapByItemId)
 
-  public recipeCategories = table(() => [this.data.craftingcategories()])
+  public recipeCategories = table(() => this.loadEntries(DATASHEETS.CraftingCategoryData))
   public recipeCategoriesMap = tableIndexBy(() => this.recipeCategories, 'CategoryID')
   public recipeCategory = tableLookup(() => this.recipeCategoriesMap)
 
-  public resources = table(() => [this.data.itemdefinitionsResources()])
+  public resources = table(() => this.loadEntries(DATASHEETS.ResourceItemDefinitions))
   public resourcesMap = tableIndexBy(() => this.resources, 'ResourceID')
   public resource = tableLookup(() => this.resourcesMap)
   public resourcesByPerkBucketIdMap = tableGroupBy(() => this.resources, 'PerkBucket')
   public resourcesByPerkBucketId = tableLookup(() => this.resourcesByPerkBucketIdMap)
 
-  public affixDefinitions = table(() => [this.data.affixdefinitions()])
+  public affixDefinitions = table(() => this.loadEntries(DATASHEETS.AffixData))
   public affixDefinitionsMap = tableIndexBy(() => this.affixDefinitions, 'AffixID')
   public affixDefinition = tableLookup(() => this.affixDefinitionsMap)
 
-  public afflictions = table(() => [this.data.afflictions()])
+  public afflictions = table(() => this.loadEntries(DATASHEETS.AfflictionData))
   public afflictionsMap = tableIndexBy(() => this.afflictions, 'AfflictionID')
   public affliction = tableLookup(() => this.afflictionsMap)
 
-  public costumes = table(() => [this.data.costumechangesCostumechanges()])
+  public costumes = table(() => this.loadEntries(DATASHEETS.CostumeChangeData))
   public costumesMap = tableIndexBy(() => this.costumes, 'CostumeChangeId')
   public costume = tableLookup(() => this.costumesMap)
 
-  public manacosts = table(() => [this.data.manacostsPlayer()])
+  public manacosts = table(() => this.loadEntries(DATASHEETS.ManaData))
   public manacostsMap = tableIndexBy(() => this.manacosts, 'CostID')
 
-  public staminacostsPlayer = table(() => [this.data.staminacostsPlayer()])
+  public staminacostsPlayer = table(() => this.loadEntries(DATASHEETS.StaminaData))
   public staminacostsPlayerMap = tableIndexBy(() => this.staminacostsPlayer, 'CostID')
 
-  public itemsConsumables = table(() => [this.data.itemdefinitionsConsumables()])
+  public itemsConsumables = table(() => this.loadEntries(DATASHEETS.ConsumableItemDefinitions))
   public itemsConsumablesMap = tableIndexBy(() => this.itemsConsumables, 'ConsumableID')
 
-  public gameEvents = table(() => {
-    return [
-      this.data.gameevents(),
-      apiMethodsByPrefix<'gameevents'>(this.data, 'questgameevents').map((it) => {
-        return it.load().pipe(annotate('$source', it.suffix || '_'))
-      }),
-    ].flat()
-  })
+  public gameEvents = table(() => this.loadEntries(DATASHEETS.GameEventData))
   public gameEventsMap = tableIndexBy(() => this.gameEvents, 'EventID')
   public gameEvent = tableLookup(() => this.gameEventsMap)
   public gameEventsByLootLimitIdMap = tableGroupBy(() => this.gameEvents, 'LootLimitId')
   public gameEventsByLootLimitId = tableLookup(() => this.gameEventsByLootLimitIdMap)
 
-  public categoriesProgression = table(() => [this.data.categoricalprogression()])
+  public categoriesProgression = table(() => this.loadEntries(DATASHEETS.CategoricalProgressionData))
   public categoriesProgressionMap = tableIndexBy(() => this.categoriesProgression, 'CategoricalProgressionId')
 
-  public achievements = table(() => [this.data.achievements()])
+  public achievements = table(() => this.loadEntries(DATASHEETS.AchievementData))
   public achievementsMap = tableIndexBy(() => this.achievements, 'AchievementID')
   public achievement = tableLookup(() => this.achievementsMap)
 
-  public metaAchievements = table(() => [this.data.metaachievements()])
+  public metaAchievements = table(() => this.loadEntries(DATASHEETS.MetaAchievementData))
   public metaAchievementsMap = tableIndexBy(() => this.metaAchievements, 'MetaAchievementId')
   public metaAchievement = tableLookup(() => this.metaAchievementsMap)
 
-  public tradeskillPostcap = table(() => [this.data.tradeskillpostcap()])
+  public tradeskillPostcap = table(() => this.loadEntries(DATASHEETS.TradeSkillPostCapData))
 
-  public vitalsMetadata = table(() => [this.data.generatedVitalsMetadata()])
+  public vitalsMetadata = table(() => this.load<VitalsMetadata>({ uri: 'nw-data/generated/vitals_metadata.json' }))
   public vitalsMetadataMap = tableIndexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = tableLookup(() => this.vitalsMetadataMap)
 
-  public vitalsModelsMetadata = table(() => [this.data.generatedVitalsModelsMetadata()])
+  public vitalsModelsMetadata = table(() =>
+    this.load<VitalsModelsMetadata>({ uri: 'nw-data/generated/vitals_models_metadata.json' }),
+  )
   public vitalsModelsMetadataMap = tableIndexBy(() => this.vitalsModelsMetadata, 'id')
   public vitalsModelMeta = tableLookup(() => this.vitalsModelsMetadataMap)
 
-  public vitals = table(() => [
-    this.data.vitals(),
-    this.data.vitalstablesVitalsFirstlight() as unknown as Observable<Vitals[]>,
-    this.data.vitalsPlayer() as unknown as Observable<Vitals[]>,
-  ])
+  public vitals = table(() => this.loadEntries(DATASHEETS.VitalsData))
   public vitalsMap = tableIndexBy(() => this.vitals, 'VitalsID')
   public vital = tableLookup(() => this.vitalsMap)
-
-  public vitalsPlayer = table(() => [this.data.vitalsPlayer()])
-  public vitalsPlayerMap = tableIndexBy(() => this.vitals, 'VitalsID')
-  public vitalPlayer = tableLookup(() => this.vitalsPlayerMap)
 
   public vitalsByFamily = tableGroupBy(() => this.vitals, 'Family')
   public vitalsOfFamily = tableLookup(() => this.vitalsByFamily)
@@ -372,110 +388,79 @@ export class NwDataService {
   public vitalsOfCreatureType = tableLookup(() => this.vitalsByCreatureType)
 
   public vitalsFamilies = table(() =>
-    this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<Vitals['Family']>)),
+    this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<VitalsData['Family']>)),
   )
 
-  public vitalsCategories = table(() => [this.data.vitalscategories()])
+  public vitalsCategories = table(() => this.loadEntries(DATASHEETS.VitalsCategoryData))
   public vitalsCategoriesMap = tableIndexBy(() => this.vitalsCategories, 'VitalsCategoryID')
   public vitalsCategory = tableLookup(() => this.vitalsCategoriesMap)
   public vitalsCategoriesMapByGroup = tableGroupBy(() => this.vitalsCategories, 'GroupVitalsCategoryId')
 
-  public vitalsModifiers = table(() => [this.data.vitalsmodifierdata()])
+  public vitalsModifiers = table(() => this.loadEntries(DATASHEETS.VitalsModifierData))
   public vitalsModifiersMap = tableIndexBy(() => this.vitalsModifiers, 'CategoryId')
   public vitalsModifier = tableLookup(() => this.vitalsModifiersMap)
 
-  public vitalsLevels = table(() => [this.data.vitalsleveldata()])
+  public vitalsLevels = table(() => this.loadEntries(DATASHEETS.VitalsLevelData))
   public vitalsLevelsMap = tableIndexBy(() => this.vitalsLevels, 'Level')
   public vitalsLevel = tableLookup(() => this.vitalsLevelsMap)
 
-  public damagetypes = table(() => this.data.damagetypes())
+  public damagetypes = table(() => this.loadEntries(DATASHEETS.DamageTypeData))
   public damagetypesMap = tableIndexBy(() => this.damagetypes, 'TypeID')
   public damagetype = tableLookup(() => this.damagetypesMap)
 
-  public territoriesMetadata = table(() => this.data.generatedTerritoriesMetadata())
+  public territoriesMetadata = table(() =>
+    this.load<TerritoriesMetadata>({ uri: 'nw-data/generated/territories_metadata.json' }),
+  )
   public territoriesMetadataMap = tableIndexBy(() => this.territoriesMetadata, 'territoryID')
   public territoryMetadata = tableLookup(() => this.territoriesMetadataMap)
 
-  public territories = table(() => this.data.territorydefinitions())
+  public territories = table(() => this.loadEntries(DATASHEETS.TerritoryDefinition))
   public territoriesMap = tableIndexBy(() => this.territories, 'TerritoryID')
   public territory = tableLookup(() => this.territoriesMap)
 
-  public areas = table(() => this.data.areadefinitions())
-  public areasMap = tableIndexBy(() => this.areas, 'TerritoryID')
-  public area = tableLookup(() => this.areasMap)
-  public areaByPoiTag = tableGroupBy(
-    () => this.areas,
+  public territoriesByPoiTag = tableGroupBy(
+    () => this.territories,
     (it) => it.POITag,
   )
 
-  public pois = table(() =>
-    apiMethodsByPrefix<'pointofinterestdefinitionsPoidefinitions0202'>(this.data, 'pointofinterestdefinitions').map(
-      (it) => {
-        return it.load().pipe(annotate('$source', it.suffix || '_'))
-      },
-    ),
-  )
-  public poisMap = tableIndexBy(() => this.pois, 'TerritoryID')
-  public poi = tableLookup(() => this.poisMap)
-  public poiByPoiTag = tableGroupBy(
-    () => this.pois,
-    (it) => it.POITag,
-  )
-
-  public arenas = table(() => [this.data.arenasArenadefinitions()])
-  public arenasMap = tableIndexBy(() => this.arenas, 'TerritoryID')
-  public arena = tableLookup(() => this.arenasMap)
-
-  public darknesses = table(() => [this.data.darknessdefinitions()])
-  public darknessesMap = tableIndexBy(() => this.darknesses, 'TerritoryID')
-  public darkness = tableLookup(() => this.darknessesMap)
-
-  public pvpRanks = table(() => this.data.pvpRank())
+  public pvpRanks = table(() => this.loadEntries(DATASHEETS.PvPRankData))
   public pvpRanksMap = tableIndexBy(() => this.pvpRanks, 'Level')
   public pvpRank = tableLookup(() => this.pvpRanksMap)
 
-  public pvpStoreBuckets = table(() => this.data.pvpRewardstrackPvpStoreV2().pipe(map(convertPvoStore)))
+  public pvpStoreBuckets = table(() => this.loadEntries(DATASHEETS.PvPStoreData), convertPvoStore)
   public pvpStoreBucketsMap = tableGroupBy(() => this.pvpStoreBuckets, 'Bucket')
   public pvpStoreBucket = tableLookup(() => this.pvpStoreBucketsMap)
 
-  public pvpRewards = table(() => this.data.pvpRewardstrackPvpRewardsV2())
+  public pvpRewards = table(() => this.loadEntries(DATASHEETS.RewardTrackItemData))
   public pvpRewardsMap = tableIndexBy(() => this.pvpRewards, 'RewardId')
   public pvpReward = tableLookup(() => this.pvpRewardsMap)
 
-  public milestoneRewards = table(() => this.data.milestonerewards())
+  public milestoneRewards = table(() => this.loadEntries(DATASHEETS.RewardMilestoneData))
 
-  public mutatorDifficulties = table(() => this.data.gamemodemutatorsMutationdifficulty())
+  public mutatorDifficulties = table(() => this.loadEntries(DATASHEETS.MutationDifficultyStaticData))
   public mutatorDifficultiesMap = tableIndexBy(() => this.mutatorDifficulties, 'MutationDifficulty')
   public mutatorDifficulty = tableLookup(() => this.mutatorDifficultiesMap)
 
-  public mutatorElements = table(() => this.data.gamemodemutatorsElementalmutations())
+  public mutatorElements = table(() => this.loadEntries(DATASHEETS.ElementalMutationStaticData))
   public mutatorElementsMap = tableIndexBy(() => this.mutatorElements, 'ElementalMutationId')
   public mutatorElement = tableLookup(() => this.mutatorElementsMap)
 
-  public mutatorElementsPerks = table(() => this.data.gamemodemutatorsElementalmutationperks())
+  public mutatorElementsPerks = table(() => this.loadEntries(DATASHEETS.MutationPerksStaticData))
   public mutatorElementsPerksMap = tableIndexBy(() => this.mutatorElementsPerks, 'ElementalMutationTypeId')
   public mutatorElementPerk = tableLookup(() => this.mutatorElementsPerksMap)
 
-  public mutatorPromotions = table(() => this.data.gamemodemutatorsPromotionmutations())
+  public mutatorPromotions = table(() => this.loadEntries(DATASHEETS.PromotionMutationStaticData))
   public mutatorPromotionsMap = tableIndexBy(() => this.mutatorPromotions, 'PromotionMutationId')
   public mutatorPromotion = tableLookup(() => this.mutatorPromotionsMap)
 
-  public mutatorCurses = table(() => this.data.gamemodemutatorsCursemutations())
+  public mutatorCurses = table(() => this.loadEntries(DATASHEETS.CurseMutationStaticData))
   public mutatorCursesMap = tableIndexBy(() => this.mutatorCurses, 'CurseMutationId')
   public mutatorCurse = tableLookup(() => this.mutatorCursesMap)
 
   public viewGemPerksWithAffix = table(() => queryGemPerksWithAffix(this))
   public viewMutatorDifficultiesWithRewards = table(() => queryMutatorDifficultiesWithRewards(this))
 
-  public lootTables = table(() =>
-    apiMethods<'loottables'>(this.data, (it) => {
-      return it.split(/([A-Z][a-z]+)/g).some((token) => {
-        return token.toLowerCase() === 'loottables'
-      })
-    }).map((it) => {
-      return it.load().pipe(map(convertLoottables)).pipe(annotate('$source', it.name))
-    }),
-  )
+  public lootTables = table(() => this.loadEntries(DATASHEETS.LootTablesData), convertLoottables)
   public lootTablesMap = tableIndexBy(() => this.lootTables, 'LootTableID')
   public lootTable = tableLookup(() => this.lootTablesMap)
   public lootTablesByLootBucketIdMap = tableGroupBy(
@@ -496,11 +481,7 @@ export class NwDataService {
   )
   public lootTablesByLootItemId = tableLookup(() => this.lootTablesByLootItemIdMap)
 
-  public lootBuckets = table(() => [
-    this.data.lootbuckets().pipe(map(convertLootbuckets)),
-    this.data.lootbucketsPvp().pipe(map(convertLootbuckets)),
-    this.data.fishingLootbucketsFishing().pipe(map(convertLootbuckets))
-  ])
+  public lootBuckets = table(() => this.loadEntries(DATASHEETS.LootBucketData), convertLootbuckets)
   public lootBucketsMap = tableGroupBy(() => this.lootBuckets, 'LootBucket')
   public lootBucket = tableLookup(() => this.lootBucketsMap)
   public lootBucketsByItemIdMap = tableGroupBy(
@@ -509,23 +490,23 @@ export class NwDataService {
   )
   public lootBucketsByItemId = tableLookup(() => this.lootBucketsByItemIdMap)
 
-  public lootLimits = table(() => [this.data.lootlimits()])
+  public lootLimits = table(() => this.loadEntries(DATASHEETS.LootLimitData))
   public lootLimitsMap = tableIndexBy(() => this.lootLimits, 'LootLimitID')
   public lootLimit = tableLookup(() => this.lootLimitsMap)
 
-  public buffBuckets = table(() => this.data.buffbuckets().pipe(map(convertBuffBuckets)))
+  public buffBuckets = table(() => this.loadEntries(DATASHEETS.BuffBucketData), convertBuffBuckets)
   public buffBucketsMap = tableIndexBy(() => this.buffBuckets, 'BuffBucketId')
   public buffBucket = tableLookup(() => this.buffBucketsMap)
 
-  public xpAmounts = this.data.xpamountsbylevel().pipe(shareReplay(1))
-  public mileStoneRewards = table(() => this.data.milestonerewards())
-  public weaponMastery = this.data.weaponmastery().pipe(shareReplay(1))
+  public xpAmounts = table(() => this.load(DATASHEETS.ExperienceData.XPLevels))
+  public mileStoneRewards = table(() => this.loadEntries(DATASHEETS.RewardMilestoneData))
+  public weaponMastery = table(() => this.load(DATASHEETS.CategoricalProgressionRankData.WeaponMastery))
 
-  public attrCon = table(() => this.data.attributeconstitution())
-  public attrStr = table(() => this.data.attributestrength())
-  public attrDex = table(() => this.data.attributedexterity())
-  public attrFoc = table(() => this.data.attributefocus())
-  public attrInt = table(() => this.data.attributeintelligence())
+  public attrCon = table(() => this.load(DATASHEETS.AttributeDefinition.Constitution))
+  public attrStr = table(() => this.load(DATASHEETS.AttributeDefinition.Strength))
+  public attrDex = table(() => this.load(DATASHEETS.AttributeDefinition.Dexterity))
+  public attrFoc = table(() => this.load(DATASHEETS.AttributeDefinition.Focus))
+  public attrInt = table(() => this.load(DATASHEETS.AttributeDefinition.Intelligence))
 
   public attrConByLevel = tableIndexBy(() => this.attrCon, 'Level')
   public attrStrByLevel = tableIndexBy(() => this.attrStr, 'Level')
@@ -533,89 +514,65 @@ export class NwDataService {
   public attrFocByLevel = tableIndexBy(() => this.attrFoc, 'Level')
   public attrIntByLevel = tableIndexBy(() => this.attrInt, 'Level')
 
-  public itemAppearances = table(() => this.data.itemappearancedefinitions())
+  public itemAppearances = table(() => this.loadEntries(DATASHEETS.ArmorAppearanceDefinitions))
   public itemAppearancesMap = tableIndexBy(() => this.itemAppearances, 'ItemID')
   public itemAppearance = tableLookup(() => this.itemAppearancesMap)
   public itemAppearancesByNameMap = tableGroupBy(() => this.itemAppearances, 'AppearanceName')
   public itemAppearancesByName = tableLookup(() => this.itemAppearancesByNameMap)
 
-  public weaponAppearances = table(() => this.data.itemdefinitionsWeaponappearances())
+  public weaponAppearances = table(() => this.load(DATASHEETS.WeaponAppearanceDefinitions.WeaponAppearanceDefinitions))
   public weaponAppearancesMap = tableIndexBy(() => this.weaponAppearances, 'WeaponAppearanceID')
   public weaponAppearance = tableLookup(() => this.weaponAppearancesMap)
 
-  public instrumentAppearances = table(() => this.data.itemdefinitionsInstrumentsappearances())
+  public instrumentAppearances = table(() =>
+    this.load(DATASHEETS.WeaponAppearanceDefinitions.InstrumentsAppearanceDefinitions),
+  )
   public instrumentAppearancesMap = tableIndexBy(() => this.instrumentAppearances, 'WeaponAppearanceID')
   public instrumentAppearance = tableLookup(() => this.instrumentAppearancesMap)
 
-  public mountAttachmentsAppearances = table(() => this.data.itemdefinitionsWeaponappearancesMountattachments())
+  public mountAttachmentsAppearances = table(() =>
+    this.load(DATASHEETS.WeaponAppearanceDefinitions.WeaponAppearanceDefinitions_MountAttachments),
+  )
   public mountAttachmentsAppearancesMap = tableIndexBy(() => this.mountAttachmentsAppearances, 'WeaponAppearanceID')
   public mountAttachmentsAppearance = tableLookup(() => this.mountAttachmentsAppearancesMap)
 
-  public dyeColors = table(() => this.data.dyecolors())
+  public dyeColors = table(() => this.loadEntries(DATASHEETS.DyeColorData))
   public dyeColorsMap = tableIndexBy(() => this.dyeColors, 'Index')
   public dyeColor = tableLookup(() => this.dyeColorsMap)
 
-  public objectives = table(() => [this.data.objectives()])
+  public objectives = table(() => this.loadEntries(DATASHEETS.Objectives))
   public objectivesMap = tableIndexBy(() => this.objectives, 'ObjectiveID')
   public objective = tableLookup(() => this.objectivesMap)
 
-  public objectiveTasks = table(() => [this.data.objectivetasks()])
+  public objectiveTasks = table(() => this.loadEntries(DATASHEETS.ObjectiveTasks))
   public objectiveTasksMap = tableIndexBy(() => this.objectiveTasks, 'TaskID')
   public objectiveTask = tableLookup(() => this.objectiveTasksMap)
 
-  public cooldownsPlayer = table(() => this.data.cooldownsPlayer())
-  public cooldownsPlayerMap = tableIndexBy(() => this.cooldownsPlayer, 'AbilityID')
-  public cooldownPlayer = tableLookup(() => this.cooldownsPlayerMap)
-
-  public emotes = table(() => this.data.emotedefinitions())
+  public emotes = table(() => this.loadEntries(DATASHEETS.EmoteData))
   public emotesMap = tableIndexBy(() => this.emotes, 'UniqueTagID')
   public emote = tableLookup(() => this.emotesMap)
 
-  public playerTitles = table(() => this.data.playertitles())
+  public playerTitles = table(() => this.loadEntries(DATASHEETS.PlayerTitleData))
   public playerTitlesMap = tableIndexBy(() => this.playerTitles, 'TitleID')
   public playerTitle = tableLookup(() => this.playerTitlesMap)
 
-  public entitlements = table(() => this.data.entitlements())
+  public entitlements = table(() => this.loadEntries(DATASHEETS.EntitlementData))
   public entitlementsMap = tableIndexBy(() => this.entitlements, 'UniqueTagID')
   public entitlement = tableLookup(() => this.entitlementsMap)
 
-  public backstories = table(() => this.data.backstorydata())
+  public backstories = table(() => this.loadEntries(DATASHEETS.BackstoryDefinition))
   public backstoriesMap = tableIndexBy(() => this.backstories, 'BackstoryID')
   public backstory = tableLookup(() => this.backstoriesMap)
 
-  public seasonPassData = table(() =>
-    apiMethods<'seasonsrewardsSeason1SeasonpassdataSeason1'>(this.data, (it) => {
-      return !!it.match(/seasonsrewardsSeason\d+SeasonpassdataSeason\d+/i)
-    }).map((it) => {
-      return it.load().pipe(annotate('$source', it.name.match(/Season\d+/i)?.[0]))
-    }),
-  )
+  public seasonPassData = table(() => this.loadEntries(DATASHEETS.SeasonPassRankData))
   public seasonPassDataMap = tableIndexBy(() => this.seasonPassData, getSeasonPassDataId)
   public seasonPassRow = tableLookup(() => this.seasonPassDataMap)
 
-  public seasonPassRewards = table(() =>
-    apiMethods<'seasonsrewardsSeason1RewarddataSeason1'>(this.data, (it) => {
-      return !!it.match(/seasonsrewardsSeason\d+RewarddataSeason\d+/i)
-    }).map((it) => {
-      return it.load().pipe(annotate('$source', it.name.match(/Season\d+/i)?.[0]))
-    }),
-  )
+  public seasonPassRewards = table(() => this.loadEntries(DATASHEETS.SeasonsRewardData))
   public seasonPassRewardsMap = tableIndexBy(() => this.seasonPassRewards, 'RewardId')
   public seasonPassReward = tableLookup(() => this.seasonPassRewardsMap)
   public seasonPassRewardsByDisplayItemIdMap = tableGroupBy(() => this.seasonPassRewards, 'DisplayItemId')
   public seasonPassRewardsByDisplayItemId = tableLookup(() => this.seasonPassRewardsByDisplayItemIdMap)
   public seasonPassRewardsByItemIdMap = tableGroupBy(() => this.seasonPassRewards, 'ItemId')
   public seasonPassRewardsByItemId = tableLookup(() => this.seasonPassRewardsByItemIdMap)
-
-  public pvpBalance = table(() => {
-    return [
-      apiMethodsByPrefix<'pvpbalancetablesPvpbalanceArena'>(this.data, 'pvpbalancetablesPvpbalance').map((it) => {
-        return it.load().pipe(annotate('$source', it.suffix || '_'))
-      }),
-    ].flat()
-  })
-
-  public constructor(public readonly data: NwDataLoaderService) {
-    //
-  }
 }

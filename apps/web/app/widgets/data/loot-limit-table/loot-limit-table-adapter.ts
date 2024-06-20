@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_LOOTLIMITS } from '@nw-data/generated'
+import { COLS_LOOTLIMITDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
@@ -71,7 +71,7 @@ function buildOptions(util: TableGridUtils<LootLimitTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_LOOTLIMITS,
+    props: COLS_LOOTLIMITDATA,
   })
   return result
 }

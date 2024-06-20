@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, computed, inject } from '@angular/core'
 import { patchState } from '@ngrx/signals'
 import { EquipSlot, getEquipSlotForId } from '@nw-data/common'
-import { Dyecolors } from '@nw-data/generated'
+import { DyeColorData } from '@nw-data/generated'
 import { filter, firstValueFrom, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
@@ -160,7 +160,7 @@ export class TransmogEditorPanelComponent {
       })
   }
 
-  protected async pickSlotDye(slot: EquipSlot, channel: 'r' | 'g' | 'b' | 'a', selection: Dyecolors) {
+  protected async pickSlotDye(slot: EquipSlot, channel: 'r' | 'g' | 'b' | 'a', selection: DyeColorData) {
     DyePickerComponent.open(this.modal, {
       inputs: {
         colors: await firstValueFrom(this.db.dyeColors) ,

@@ -1,4 +1,4 @@
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 export interface NwmpServerOption {
   name: string
@@ -8,7 +8,7 @@ export interface NwmpServerOption {
 export interface NwmpPriceItem {
   id: string
   price: number
-  item: ItemDefinitionMaster | Housingitems
+  item: MasterItemDefinitions | HouseItems
   availability: number
   updatedAt: Date
 }

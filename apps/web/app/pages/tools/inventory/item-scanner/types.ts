@@ -1,18 +1,18 @@
 import { ItemPerkSlot } from "@nw-data/common"
-import { ItemClass, ItemDefinitionMaster, Perks } from "@nw-data/generated"
+import { ItemClass, MasterItemDefinitions, PerkData } from "@nw-data/generated"
 import { ItemInstance } from "~/data"
 
 export type TranslateFn = (key: string) => string
 
 export interface PoolItem {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   name: string
   slots: ItemPerkSlot[]
 }
 
 export interface PoolPerk {
   name: string
-  perk: Perks
+  perk: PerkData
   suffix?: string
   prefix?: string
   mods?: Array<{ label: string; value: string }>

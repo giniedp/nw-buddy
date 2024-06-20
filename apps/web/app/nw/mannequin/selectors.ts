@@ -14,7 +14,7 @@ import {
   getWeaponTagFromWeapon,
   solveAttributePlacingMods,
 } from '@nw-data/common'
-import { Ability, Damagetable, EquipLoadCategory, ItemdefinitionsAmmo, Statuseffect } from '@nw-data/generated'
+import { AbilityData, DamageData, EquipLoadCategory, AmmoItemDefinitions, StatusEffectData } from '@nw-data/generated'
 import { minBy, sum } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
 
@@ -56,7 +56,7 @@ export function selectActiveWeapon(
   const weaponTag = getWeaponTagFromWeapon(weapon)
   const ammoType = getAmmoTypeFromWeaponTag(weaponTag)
 
-  let ammo: ItemdefinitionsAmmo
+  let ammo: AmmoItemDefinitions
   if (weapon?.AmmoType === 'Arrow') {
     ammo = ammos.get(equippedItems.find((it) => it.slot === 'arrow')?.itemId)
   }
@@ -91,7 +91,7 @@ export function selectWeaponAttacks(db: DbSlice, weapon: ActiveWeapon) {
   }
   //const abilities = selectWeaponAbilities(db, weapon, state).filter((it) => it.IsActiveAbility)
   const tablePrefix = weaponSpec?.DamageTablePrefix || 'Unarmed_'
-  const result: Damagetable[] = []
+  const result: DamageData[] = []
   for (const row of db.damagaTable) {
     if (!row.DmgCoef) {
       continue
@@ -104,7 +104,7 @@ export function selectWeaponAttacks(db: DbSlice, weapon: ActiveWeapon) {
   return result
 }
 
-export function selectDamageTableRow(rows: Damagetable[], state: MannequinState) {
+export function selectDamageTableRow(rows: DamageData[], state: MannequinState) {
   return rows?.find((it) => it.DamageID === state.selectedAttack) || rows?.[0]
 }
 
@@ -190,7 +190,7 @@ export function selectActivePerks(db: DbSlice, state: MannequinState, weapon: Ac
 }
 
 export function selectAttributeAbilities({ abilities }: DbSlice, attributes: ActiveAttributes) {
-  const result: Ability[] = []
+  const result: AbilityData[] = []
   for (const attr of Object.values(attributes)) {
     for (const abilityId of attr.abilities) {
       const ability = abilities.get(abilityId)
@@ -243,7 +243,7 @@ export function selectActiveAbilities(
   state: MannequinState,
   attributes: ActiveAttributes,
   weapon: ActiveWeapon,
-  attack: Damagetable,
+  attack: DamageData,
   perks: ActivePerk[],
   equipLoadCategory: EquipLoadCategory,
 ) {
@@ -276,7 +276,7 @@ export function selectAllAbilities(
         selfEffects: getStatusEffectList(it?.SelfApplyStatusEffect, db.effects),
         weapon: weapon,
         scale: getAbilityScale(it, state),
-        cooldown: db.cooldowns.get(it?.AbilityID),
+        cooldown: db.cooldowns.get(it?.AbilityID)?.[0],
       }
     }),
     //
@@ -576,7 +576,7 @@ export function selectGearScore(items: EquippedItem[], level: number) {
   )
 }
 
-const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
+const REJECT_ABILITIES_WITH_PROPS: Array<keyof AbilityData> = [
   // unsupported trigger
   'OnAttachedSpellTargetDied',
   // 'AttachedTargetSpellIds',
@@ -670,8 +670,8 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
 ]
 
 function isActiveAbility(
-  ability: Ability,
-  attack: Damagetable,
+  ability: AbilityData,
+  attack: DamageData,
   equipLoadCategory: EquipLoadCategory,
   state: MannequinState,
 ) {
@@ -732,7 +732,7 @@ function isActiveAbility(
   return true
 }
 
-function getAbilityScale(ability: Ability, state: MannequinState) {
+function getAbilityScale(ability: AbilityData, state: MannequinState) {
   let scale = 1
   if (!ability) {
     return scale
@@ -746,8 +746,8 @@ function getAbilityScale(ability: Ability, state: MannequinState) {
   return scale
 }
 
-function getStatusEffectList(ids: string[], effects: Map<string, Statuseffect>) {
-  const result: Statuseffect[] = []
+function getStatusEffectList(ids: string[], effects: Map<string, StatusEffectData>) {
+  const result: StatusEffectData[] = []
   for (const id of ids || []) {
     const effect = effects.get(id)
     if (effect) {

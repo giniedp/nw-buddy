@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getSeasonPassDataId } from '@nw-data/common'
-import { COLS_SEASONPASSDATA } from '@nw-data/generated'
+import { COLS_SEASONPASSRANKDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -96,7 +96,7 @@ function buildOptions(util: TableGridUtils<SeasonPassTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_SEASONPASSDATA,
+    props: COLS_SEASONPASSRANKDATA,
   })
   return result
 }

@@ -1,7 +1,7 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Mounts } from '@nw-data/generated'
+import { MountData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { ModelsService } from '~/widgets/model-viewer'
 
@@ -25,7 +25,7 @@ export class MountDetailStore extends ComponentStore<{ mountId: string }> {
     super({ mountId: null })
   }
 
-  public load(idOrItem: string | Mounts) {
+  public load(idOrItem: string | MountData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ mountId: idOrItem })
     } else {

@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_LOOTTABLE } from '@nw-data/generated'
+import { COLS_LOOTTABLESDATA } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
@@ -96,7 +96,7 @@ function buildOptions(util: TableGridUtils<LootTableGridRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_LOOTTABLE,
+    props: COLS_LOOTTABLESDATA,
   })
   return result
 }

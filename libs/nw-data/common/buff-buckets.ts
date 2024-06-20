@@ -1,8 +1,7 @@
-import { BuffType, Buffbuckets } from '@nw-data/generated'
-import { OmitByPrefix } from './utils/ts-types'
+import { BuffBucketData, BuffType } from '@nw-data/generated'
 import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 
-export type BuffBucketBase = Pick<Buffbuckets, 'BuffBucketId' | 'TableType' | 'MaxRoll'>
+export type BuffBucketBase = Pick<BuffBucketData, 'BuffBucketId' | 'TableType' | 'MaxRoll'>
 export interface BuffBucket extends BuffBucketBase {
   Buffs: BuffBucketRow[]
 }
@@ -15,10 +14,10 @@ export interface BuffBucketRow {
   BuffProbPotency?: number
 }
 
-export function convertBuffBuckets(data: Buffbuckets[]): BuffBucket[] {
+export function convertBuffBuckets(data: BuffBucketData[]): BuffBucket[] {
   const result = data
     .filter((it) => !it.BuffBucketId.endsWith('_Probs'))
-    .map((it): Buffbuckets => JSON.parse(JSON.stringify(it)))
+    .map((it): BuffBucketData => JSON.parse(JSON.stringify(it)))
     .map((it): BuffBucket => {
       const probs = findById(data, `${it.BuffBucketId}_Probs`)
       return {
@@ -40,10 +39,10 @@ export function convertBuffBuckets(data: Buffbuckets[]): BuffBucket[] {
   return result
 }
 
-function findById(items: Buffbuckets[], id: string) {
+function findById(items: BuffBucketData[], id: string) {
   return items.find((it) => eqCaseInsensitive(it.BuffBucketId, id))
 }
 
-function extractItemKeys(item: Buffbuckets) {
+function extractItemKeys(item: BuffBucketData) {
   return Object.keys(item || {}).filter((it) => it.match(/^Buff\d+$/i))
 }

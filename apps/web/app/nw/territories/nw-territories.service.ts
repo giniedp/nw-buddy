@@ -40,7 +40,7 @@ export class TerritoriesService {
   public getStandingTitle(id: number | Observable<number>) {
     return combineLatest({
       level: this.getStanding(id),
-      table: this.db.data.territoryStanding(),
+      table: this.db.useTable((it) => it.CategoricalProgressionRankData.Territory_Standing),
     })
       .pipe(
         map(({ level, table }) => {

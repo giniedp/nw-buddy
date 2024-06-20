@@ -1,11 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import {
-  Itemappearancedefinitions,
-  ItemdefinitionsInstrumentsappearances,
-  ItemdefinitionsWeaponappearances,
-} from '@nw-data/generated'
+import { ArmorAppearanceDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { LayoutModule } from '~/ui/layout'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
@@ -24,13 +20,14 @@ import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 export class TransmogDetailPageComponent {
   protected appearanceId$ = observeRouteParam(inject(ActivatedRoute), 'id')
 
-  public constructor(private head: HtmlHeadService, private i18n: TranslateService) {
+  public constructor(
+    private head: HtmlHeadService,
+    private i18n: TranslateService,
+  ) {
     //
   }
 
-  protected onEntity(
-    entity: Itemappearancedefinitions | ItemdefinitionsInstrumentsappearances | ItemdefinitionsWeaponappearances
-  ) {
+  protected onEntity(entity: ArmorAppearanceDefinitions | WeaponAppearanceDefinitions) {
     if (!entity) {
       return
     }

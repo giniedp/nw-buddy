@@ -1,6 +1,6 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Spelltable } from '@nw-data/generated'
+import { SpellData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { rejectKeys } from '~/utils'
 
@@ -22,7 +22,7 @@ export class SpellDetailStore extends ComponentStore<{ spellId: string }> {
   }
 }
 
-function selectProperties(item: Spelltable) {
+function selectProperties(item: SpellData) {
   const reject = ['$source', 'SpellPrefabPath']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key as any))
 }

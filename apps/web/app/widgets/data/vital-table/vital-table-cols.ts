@@ -1,7 +1,6 @@
-import { ICellRendererParams, IRowNode } from '@ag-grid-community/core'
+import { ICellRendererParams } from '@ag-grid-community/core'
 import {
   VitalFamilyInfo,
-  ZoneDefinition,
   getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
   getVitalTypeMarker,
@@ -12,20 +11,27 @@ import {
   isZonePoi,
   isZoneTerritory,
 } from '@nw-data/common'
-import { Gamemodes, Vitals, VitalsCategory, VitalsMetadata, Vitalscategories } from '@nw-data/generated'
+import {
+  GameModeData,
+  TerritoryDefinition,
+  VitalsCategory,
+  VitalsCategoryData,
+  VitalsData,
+  VitalsMetadata,
+} from '@nw-data/generated'
 import { uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize, stringToColor } from '~/utils'
 
 export type VitalTableUtils = TableGridUtils<VitalTableRecord>
-export type VitalTableRecord = Vitals & {
-  $dungeons: Gamemodes[]
-  $categories: Vitalscategories[]
+export type VitalTableRecord = VitalsData & {
+  $dungeons: GameModeData[]
+  $categories: VitalsCategoryData[]
   $familyInfo: VitalFamilyInfo
   $combatInfo: VitalFamilyInfo[] | null
   $metadata: VitalsMetadata
-  $zones: ZoneDefinition[]
+  $zones: TerritoryDefinition[]
 }
 
 const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) => {

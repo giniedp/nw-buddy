@@ -5,11 +5,6 @@
  */
 export class BinaryReader {
   /**
-   * The underlying data to read
-   */
-  public readonly data: ArrayBuffer
-
-  /**
    * The data view allowing to access the data
    */
   public readonly view: DataView
@@ -29,17 +24,21 @@ export class BinaryReader {
    *
    * @param data - The data to read
    */
-  constructor(data: ArrayBuffer) {
-    this.data = data
-    this.view = new DataView(this.data)
-    this.position = 0
+  constructor(data: Buffer | ArrayBufferLike) {
+    if (data instanceof Buffer) {
+      this.view = new DataView(data.buffer, data.byteOffset, data.byteLength)
+      this.position = 0
+    } else {
+      this.view = new DataView(data)
+      this.position = 0
+    }
   }
 
   /**
    * Checks whether the readers position has not reached the end of the buffer
    */
   public get canRead() {
-    return this.position < this.data.byteLength
+    return this.position < this.view.byteLength
   }
 
   public get byte() {
@@ -47,12 +46,13 @@ export class BinaryReader {
   }
 
   public get length() {
-    return this.data.byteLength
+    return this.view.byteLength
   }
 
   public get remaining() {
-    return this.data.byteLength - this.position
+    return this.view.byteLength - this.position
   }
+
   /**
    * Reads a specified number of bytes
    *
@@ -164,6 +164,12 @@ export class BinaryReader {
     return this.readArray(length, () => this.readUInt32())
   }
 
+  public readUInt64() {
+    let result = this.view.getBigUint64(this.position, this.littleEndian)
+    this.position += 8
+    return result
+  }
+
   /**
    * Reads a single int32 value
    */
@@ -250,6 +256,13 @@ export class BinaryReader {
     this.position += position
   }
 
+  public withRestore<T>(fn: (r: BinaryReader) => T) {
+    const restore = this.position
+    const result = fn(this)
+    this.seekAbsolute(restore)
+    return result
+  }
+
   /**
    * Reads a string
    *
@@ -298,15 +311,17 @@ export class BinaryReader {
    *
    * @param length - The length to slice
    */
-  public slice(length: number): ArrayBuffer {
+  public slice(length: number): ArrayBuffer | SharedArrayBuffer {
+    const start = this.view.byteOffset + this.position
+    const end = start + length
     this.position += length
-    return this.data.slice(this.position - length, this.position)
+    return this.view.buffer.slice(start, end)
   }
 
-  public readArray<T>(size: number, read: (r: BinaryReader) => T): T[] {
+  public readArray<T>(size: number, read: (r: BinaryReader, i: number) => T): T[] {
     let result = []
     for (let i = 0; i < size; i++) {
-      result.push(read(this))
+      result.push(read(this, i))
     }
     return result
   }

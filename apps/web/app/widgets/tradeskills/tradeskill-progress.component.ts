@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { BehaviorSubject, ReplaySubject, combineLatest, of, switchMap, takeUntil } from 'rxjs'
+import { BehaviorSubject, ReplaySubject, combineLatest, of, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwTradeskillService } from '~/nw/tradeskill'
 
@@ -43,7 +43,7 @@ export class NwTradeskillCircleComponent implements OnChanges {
   public constructor(
     private skills: NwTradeskillService,
     private char: CharacterStore,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {
     //
     combineLatest({
@@ -56,7 +56,7 @@ export class NwTradeskillCircleComponent implements OnChanges {
             return of(value)
           }
           return this.skillName$.pipe(switchMap((name) => this.char.selectTradeSkillLevel(name)))
-        })
+        }),
       ),
     })
       .pipe(takeUntilDestroyed())

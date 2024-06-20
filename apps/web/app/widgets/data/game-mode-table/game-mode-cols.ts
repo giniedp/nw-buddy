@@ -1,11 +1,11 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { COLS_PERKS, Gamemodes } from '@nw-data/generated'
+import { COLS_PERKDATA, GameModeData } from '@nw-data/generated'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type GameModeUtils = TableGridUtils<GameModeRecord>
-export type GameModeRecord = Gamemodes
+export type GameModeRecord = GameModeData
 
 export function gameModeColIcon(util: GameModeUtils) {
   return util.colDef({
@@ -16,7 +16,7 @@ export function gameModeColIcon(util: GameModeUtils) {
     sortable: false,
     filter: ExpressionFilter,
     filterParams: ExpressionFilter.params({
-      fields: Object.keys(COLS_PERKS),
+      fields: Object.keys(COLS_PERKDATA),
     }),
     pinned: true,
     width: 62,

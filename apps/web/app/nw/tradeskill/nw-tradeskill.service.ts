@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
-import { Tradeskillpostcap } from '@nw-data/generated'
+import { TradeSkillPostCapData, TradeskillRankData } from '@nw-data/generated'
 import { uniq } from 'lodash'
-import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
+import { Observable, combineLatest, defer, isObservable, map, of, shareReplay, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { tableIndexBy } from '~/data/nw-data/dsl'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
@@ -13,7 +13,7 @@ export interface NwTradeskillInfo {
   Name: string
   MaxLevel: number
   Icon: string
-  Postcap: Tradeskillpostcap
+  Postcap: TradeSkillPostCapData
 }
 
 export interface NwTradeskillLevel {
@@ -91,14 +91,11 @@ export class NwTradeskillService {
   public skillTableByName(name: Observable<string> | string) {
     const name$ = isObservable(name) ? name : of(name)
     return name$.pipe(
-      switchMap((it) => {
-        const name = it.toLocaleLowerCase()
-        const fnName = `tradeskill${name}`
-        if (!(fnName in this.db.data)) {
-          console.warn(`data function not found`, fnName)
-          return of<NwTradeskillLevel[]>([])
-        }
-        return this.db.data[fnName]() as Observable<NwTradeskillLevel[]>
+      switchMap((skillName) => {
+        return this.db.useTable<TradeskillRankData>((it) => {
+          const key = Object.keys(it.TradeskillRankData).find((key) => eqCaseInsensitive(key, skillName))
+          return it.TradeskillRankData[key]
+        })
       }),
     )
   }

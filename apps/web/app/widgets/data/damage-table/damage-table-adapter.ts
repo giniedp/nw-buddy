@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_DAMAGETABLE, Damagetable } from '@nw-data/generated'
+import { COLS_DAMAGEDATA, DamageData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -48,7 +48,7 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord>, T
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<Damagetable> {
+  public virtualOptions(): VirtualGridOptions<DamageData> {
     return null
   }
 
@@ -83,7 +83,7 @@ function buildOptions(util: TableGridUtils<DamageTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_DAMAGETABLE,
+    props: COLS_DAMAGEDATA,
   })
   return result
 }

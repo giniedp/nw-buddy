@@ -1,7 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, inject } from '@angular/core'
 import { patchState } from '@ngrx/signals'
-import { Territorydefinitions, Vitals } from '@nw-data/generated'
+import { TerritoryDefinition, VitalsData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
@@ -44,21 +44,19 @@ export class ZoneDetailComponent {
   public readonly type = this.store.type
   public readonly subtitle = computed(() => {
     const territory = this.store.territory()
-    const area = this.store.area()
-    const poi = this.store.poi()
+    if (territory.IsArea) {
+      return `AI Level: ${territory.AIVariantLevelOverride}`
+    }
     if (territory) {
       return [territory.RecommendedLevel, territory.MaximumLevel]
         .filter((it) => !!it)
         .map((it) => (it > 65 ? `${65}+` : it))
         .join(' - ')
     }
-    if (area) {
-      return `AI Level: ${area.AIVariantLevelOverride}`
-    }
     return ''
   })
 
-  public markVital(vital: Vitals) {
+  public markVital(vital: VitalsData) {
     patchState(this.store, { markedVitalId: vital?.VitalsID || null })
   }
 
@@ -70,7 +68,7 @@ export class ZoneDetailComponent {
     this.zoneClicked.emit(zoneId)
   }
 
-  public formatValue = (value: any, key: keyof Territorydefinitions): PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof TerritoryDefinition): PropertyGridCell[] => {
     switch (key) {
       case 'TerritoryID': {
         return [
@@ -82,7 +80,7 @@ export class ZoneDetailComponent {
         ]
       }
       case 'LootTags': {
-        return (value as Territorydefinitions['LootTags']).map((it) => {
+        return (value as TerritoryDefinition['LootTags']).map((it) => {
           return {
             value: it,
             secondary: true,

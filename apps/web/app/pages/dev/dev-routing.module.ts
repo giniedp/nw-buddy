@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { DbFaultsComponent } from './db-faults'
 import { DevComponent } from './dev.component'
-import { ExprFaultsComponent } from './expr-faults'
 import { DevLootComponent } from './loottables'
 import { DevTesseractComponent } from './tesseract'
 import { DevThemeComponent } from './theme/dev-theme.component'
@@ -25,10 +24,6 @@ const routes: Routes = [
       {
         path: 'db-faults',
         component: DbFaultsComponent,
-      },
-      {
-        path: 'expr-faults',
-        component: ExprFaultsComponent,
       },
       {
         path: 'theme',

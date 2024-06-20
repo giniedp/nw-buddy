@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_GAMEMODES } from '@nw-data/generated'
+import { COLS_GAMEMODEDATA } from '@nw-data/generated'
 import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 
@@ -74,7 +74,7 @@ export function buildGameModeTableOptions(util: TableGridUtils<TerritoryRecord>,
     ],
   }
   addGenericColumns(result, {
-    props: COLS_GAMEMODES,
+    props: COLS_GAMEMODEDATA,
   })
   return result
 }

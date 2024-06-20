@@ -1,11 +1,11 @@
 import { getItemPerkSlots, isItemOfAnyClass } from '@nw-data/common'
-import { ItemClass, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { ItemClass, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { PoolItem, TranslateFn } from './types'
 
 export function selectItemPool(options: {
-  items: ItemDefinitionMaster[]
+  items: MasterItemDefinitions[]
   itemClass: ItemClass[]
-  perksMap: Map<string, Perks>
+  perksMap: Map<string, PerkData>
   tl8: TranslateFn
 }): PoolItem[] {
   const result: PoolItem[] = []

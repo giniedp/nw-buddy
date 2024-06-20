@@ -1,6 +1,6 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Affixstats, Damagetable } from '@nw-data/generated'
+import { AffixStatData, DamageData } from '@nw-data/generated'
 import { switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { combineLatestOrEmpty, rejectKeys } from '~/utils'
@@ -32,12 +32,12 @@ export class DamageRowDetailStore extends ComponentStore<{ rowId: string }> {
   }
 }
 
-function selectProperties(item: Damagetable) {
+function selectProperties(item: DamageData) {
   const reject = ['$source']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }
 
-function selectAffixProperties(item: Affixstats) {
+function selectAffixProperties(item: AffixStatData) {
   const reject = ['$source']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

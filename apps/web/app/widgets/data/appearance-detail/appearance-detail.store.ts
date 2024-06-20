@@ -10,12 +10,7 @@ import {
   isItemWeapon,
   isMasterItem,
 } from '@nw-data/common'
-import {
-  ItemDefinitionMaster,
-  Itemappearancedefinitions,
-  ItemdefinitionsInstrumentsappearances,
-  ItemdefinitionsWeaponappearances,
-} from '@nw-data/generated'
+import { ArmorAppearanceDefinitions, MasterItemDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
@@ -50,13 +45,13 @@ export class AppearanceDetailStore extends ComponentStore<{
     ({ appearance, byName, variant }) => {
       const found = byName?.find((it) => isAppearanceOfGender(it, variant))
       return found || appearance || byName?.[0]
-    }
+    },
   )
   public readonly appearance$ = this.select(
     this.itemAppearance$,
     this.weaponAppearance$,
     this.instrumentAppearance$,
-    (a, b, c): TransmogAppearance => a || b || c
+    (a, b, c): TransmogAppearance => a || b || c,
   )
   public readonly appearanceId$ = this.select(this.appearance$, getAppearanceId)
   public readonly category$ = this.select(this.appearance$, getAppearanceCategory)
@@ -73,20 +68,17 @@ export class AppearanceDetailStore extends ComponentStore<{
       transmog: this.transmog$,
       parentId: this.parentItemId$,
     }),
-    selectItems
+    selectItems,
   )
 
-  public constructor(protected db: NwDataService, private service: TransmogService) {
+  public constructor(
+    protected db: NwDataService,
+    private service: TransmogService,
+  ) {
     super({ appearanceId: null, parentItemId: null, vairant: null })
   }
 
-  public load(
-    idOrItem:
-      | string
-      | Itemappearancedefinitions
-      | ItemdefinitionsInstrumentsappearances
-      | ItemdefinitionsWeaponappearances
-  ) {
+  public load(idOrItem: string | ArmorAppearanceDefinitions | WeaponAppearanceDefinitions) {
     if (typeof idOrItem === 'string') {
       this.patchState({ appearanceId: idOrItem })
     } else {
@@ -109,7 +101,7 @@ function selectItems({ transmog, parentId }: { transmog: TransmogItem; parentId:
   return items.sort(itemsComparator)
 }
 
-function itemsComparator(nodeA: ItemDefinitionMaster, nodeB: ItemDefinitionMaster) {
+function itemsComparator(nodeA: MasterItemDefinitions, nodeB: MasterItemDefinitions) {
   const a = nodeA
   const b = nodeB
   const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemJewelery(a) || isItemWeapon(a))

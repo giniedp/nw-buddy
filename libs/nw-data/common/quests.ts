@@ -1,4 +1,4 @@
-import { Objective } from '@nw-data/generated'
+import { Objectives } from '@nw-data/generated'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 
 const QUEST_TYPE_ICONS = new CaseInsensitiveMap<string, string>(
@@ -22,7 +22,7 @@ export function getQuestTypeIcon(type: string) {
   return QUEST_TYPE_ICONS.get(type) ?? QUEST_TYPE_ICONS.get('default')
 }
 
-export function getQuestRequiredAchuevmentIds(quest: Objective) {
+export function getQuestRequiredAchuevmentIds(quest: Objectives) {
   if (!quest.RequiredAchievementId) {
     return []
   }

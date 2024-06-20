@@ -1,13 +1,13 @@
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 export interface RecipeRecord {
-  recipe: Crafting
-  recipeItem: ItemDefinitionMaster
+  recipe: CraftingRecipeData
+  recipeItem: MasterItemDefinitions
   itemId: string
-  item: ItemDefinitionMaster | Housingitems
+  item: MasterItemDefinitions | HouseItems
   ingredients: Array<{
     quantity: number
-    item: ItemDefinitionMaster | Housingitems
+    item: MasterItemDefinitions | HouseItems
     itemId: string
   }>
 }

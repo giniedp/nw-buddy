@@ -28,17 +28,20 @@ export class TradeskillInputComponent {
     combineLatest({
       skills: this.service.skillsMap,
       id: this.id$,
-    })
+    }),
   )
     .pipe(map(({ skills, id }) => skills.get(id)))
     .pipe(shareReplayRefCount(1))
   protected level$ = this.tradeskill$.pipe(
     switchMap((it) => {
       return this.char.selectTradeSkillLevel(it.ID)
-    })
+    }),
   )
 
-  constructor(private service: NwTradeskillService, private char: CharacterStore) {
+  constructor(
+    private service: NwTradeskillService,
+    private char: CharacterStore,
+  ) {
     //
   }
 

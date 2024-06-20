@@ -8,7 +8,7 @@ import {
   isPerkGenerated,
   isPerkInherent,
 } from '@nw-data/common'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { Observable, combineLatest, defer, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -17,13 +17,13 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { humanize } from '~/utils'
 
 export interface FaultRow {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   gemFault: boolean
   inherentFault: boolean
   generatedFault: boolean
   perks: Array<{
     ok: boolean
-    perk: Perks
+    perk: PerkData
   }>
 }
 

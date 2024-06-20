@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Ability } from '@nw-data/generated'
+import { AbilityData } from '@nw-data/generated'
 import { combineLatest, distinctUntilChanged, filter, map, tap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { CaseInsensitiveSet, eqCaseInsensitive, mapDistinct } from '~/utils'
@@ -9,7 +9,7 @@ import { buildGrid, getGridSelection, SkillTreeGrid, updateGrid } from './skill-
 export interface SkillTreeEditorState {
   isLoaded?: boolean
   points: number
-  abilities: Ability[]
+  abilities: AbilityData[]
   selection: string[]
   numCols: number
   numRows: number
@@ -57,7 +57,7 @@ export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
   /**
    * Loads abilities into state
    */
-  public readonly loadAbilities = this.updater((state, abilities: Ability[]) => {
+  public readonly loadAbilities = this.updater((state, abilities: AbilityData[]) => {
     return {
       ...state,
       ...createState(state.points, abilities, state.selection),
@@ -130,7 +130,7 @@ export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
   })
 }
 
-function createState(points: number, abilities: Ability[], selection: string[]): SkillTreeEditorState {
+function createState(points: number, abilities: AbilityData[], selection: string[]): SkillTreeEditorState {
   const rows = buildGrid(abilities)
   updateGrid(rows, points, selection)
   const result: SkillTreeEditorState = {

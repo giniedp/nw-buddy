@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalDungeons } from '@nw-data/common'
-import { CreatureType, Mutationdifficulty, Vitals } from '@nw-data/generated'
+import { CreatureType, MutationDifficultyStaticData, VitalsData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -223,7 +223,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly enemyLevelOverride$ = this.select(this.mutaDifficulty$, (diff) => (diff ? 70 : null))
 
   public readonly difficulties$ = this.isMutable$.pipe(
-    switchMap((mutable) => (mutable ? this.db.mutatorDifficulties : of<Mutationdifficulty[]>([])))
+    switchMap((mutable) => (mutable ? this.db.mutatorDifficulties : of<MutationDifficultyStaticData[]>([])))
   )
 
   public readonly possibleItemDropIds$ = this.select(this.gameMode$, (it) => {
@@ -249,7 +249,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       vitals: this.db.vitals,
       vitalsMeta: this.db.vitalsMetadataMap,
     },
-    ({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): Vitals[] => {
+    ({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): VitalsData[] => {
       const result = vitals.filter((it) => {
         if (
           difficulty != null &&
@@ -280,8 +280,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       vitals: this.db.vitalsByCreatureType,
       vitalsMeta: this.db.vitalsMetadataMap,
     },
-    ({ vitals, vitalsMeta, dungeons, dungeonId }): Vitals[] => {
-      const result: Vitals[] = []
+    ({ vitals, vitalsMeta, dungeons, dungeonId }): VitalsData[] => {
+      const result: VitalsData[] = []
       for (const type of TAB_BOSSES_CREATURES) {
         const list = vitals.get(type) || []
         for (const item of list) {
@@ -304,8 +304,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       vitals: this.db.vitalsByCreatureType,
       vitalsMeta: this.db.vitalsMetadataMap,
     },
-    ({ vitals, vitalsMeta, dungeons, dungeonId }): Vitals[] => {
-      const result: Vitals[] = []
+    ({ vitals, vitalsMeta, dungeons, dungeonId }): VitalsData[] => {
+      const result: VitalsData[] = []
       for (const type of TAB_NAMED_CREATURES) {
         const list = vitals.get(type) || []
         for (const item of list) {

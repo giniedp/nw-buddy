@@ -56,8 +56,6 @@ export const LootContextEditorStore = signalStore(
     return {
       territories: data.territories,
       territoriesMap: data.territoriesMap,
-      pois: data.pois,
-      poisMap: data.poisMap,
       gameModes: data.gameModes,
       gameModesMap: data.gameModesMap,
       mutaDifficulties: data.mutatorDifficulties,
@@ -69,10 +67,9 @@ export const LootContextEditorStore = signalStore(
     }
   }),
   withComputed(({ nwData, vitalId, territoryId, poiId, gameModeId, mutaDifficultyId, mutaElementTypeId }) => {
-
     return {
       vital: computed(() => nwData()?.vitalsMap?.get(vitalId())),
-      poi: computed(() => nwData()?.pois?.find((it) => it.TerritoryID === poiId())),
+      poi: computed(() => nwData()?.territoriesMap?.get(poiId())),
       territory: computed(() => nwData()?.territoriesMap?.get(territoryId())),
       gameMode: computed(() => nwData()?.gameModesMap?.get(gameModeId())),
       mutaDifficulty: computed(() => nwData()?.mutaDifficultiesMap?.get(mutaDifficultyId())),
@@ -131,15 +128,7 @@ export const LootContextEditorStore = signalStore(
     }
   }),
   withComputed(
-    ({
-      playerLevel,
-      enemyLevel,
-      contLevel,
-      poiLevel,
-      salvageItemGearScore,
-      salvageItemRarity,
-      salvageItemTier,
-    }) => {
+    ({ playerLevel, enemyLevel, contLevel, poiLevel, salvageItemGearScore, salvageItemRarity, salvageItemTier }) => {
       return {
         contextValues: computed(() => {
           const values: Record<string, string | number> = {
@@ -179,7 +168,7 @@ export const LootContextEditorStore = signalStore(
       },
       restore: (data: Partial<LootContextEditorState>) => {
         patchState(state, data)
-      }
+      },
     }
   }),
 )

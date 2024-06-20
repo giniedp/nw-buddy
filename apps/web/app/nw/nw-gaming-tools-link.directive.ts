@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Directive, HostBinding, Input } from '@angular/core'
-import { Crafting } from '@nw-data/generated'
+import { CraftingRecipeData } from '@nw-data/generated'
 
 @Directive({
   standalone: true,
@@ -7,12 +7,12 @@ import { Crafting } from '@nw-data/generated'
 })
 export class GamingtoolsLinkDirective {
   @Input()
-  public set nwGamingToolsLink(value: Crafting) {
+  public set nwGamingToolsLink(value: CraftingRecipeData) {
     this.item = value
     this.update()
   }
 
-  private item: Crafting
+  private item: CraftingRecipeData
 
   @HostBinding('attr.href')
   public href: string

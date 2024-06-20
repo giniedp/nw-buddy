@@ -13,7 +13,7 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -21,10 +21,10 @@ import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 
 export type CraftingTableUtils = TableGridUtils<CraftingTableRecord>
-export type CraftingTableRecord = Crafting & {
-  $item: ItemDefinitionMaster | Housingitems
-  $ingredients: Array<ItemDefinitionMaster | Housingitems>
-  $gameEvent: GameEvent
+export type CraftingTableRecord = CraftingRecipeData & {
+  $item: MasterItemDefinitions | HouseItems
+  $ingredients: Array<MasterItemDefinitions | HouseItems>
+  $gameEvent: GameEventData
 }
 
 export function craftingColIcon(util: CraftingTableUtils) {

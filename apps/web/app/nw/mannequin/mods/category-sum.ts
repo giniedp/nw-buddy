@@ -1,4 +1,4 @@
-import { Statuseffectcategories } from '@nw-data/generated'
+import { StatusEffectCategoryData } from '@nw-data/generated'
 import { eachModifier, ModifierKey, ModifierResult, ModifierValue } from '../modifier'
 import { ActiveMods } from '../types'
 import { cappedValue } from './capped-value'
@@ -9,7 +9,7 @@ export function categorySum({
   mods,
   base,
 }: {
-  categories: Map<string, Statuseffectcategories>
+  categories: Map<string, StatusEffectCategoryData>
   key: ModifierKey<number>
   mods: ActiveMods
   base: number
@@ -73,7 +73,7 @@ export function categorySumFromList({
   }
 }
 
-export function getCategoryLimit(key: string, categoryIds: string[], categories: Map<string, Statuseffectcategories>) {
+export function getCategoryLimit(key: string, categoryIds: string[], categories: Map<string, StatusEffectCategoryData>) {
   if (!categoryIds?.length) {
     return null
   }

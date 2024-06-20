@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_BACKSTORYDATA } from '@nw-data/generated'
+import { COLS_BACKSTORYDEFINITION } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -104,7 +104,7 @@ function buildOptions(util: TableGridUtils<BackstoryTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_BACKSTORYDATA,
+    props: COLS_BACKSTORYDEFINITION,
   })
   return result
 }

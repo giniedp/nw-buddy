@@ -1,4 +1,4 @@
-import { ItemdefinitionsWeapons, WeaponTag } from '@nw-data/generated'
+import { WeaponItemDefinitions, WeaponTag } from '@nw-data/generated'
 import type { AttributeRef } from './attributes'
 import {
   NW_ARMOR_SET_RATING_EXPONENT,
@@ -47,7 +47,7 @@ export function getDamageFactorForGearScore(gearScore: number) {
 }
 
 export function getDamageScalingForWeapon(
-  weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>,
+  weapon: Pick<WeaponItemDefinitions, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>,
 ): Record<AttributeRef, number> {
   return {
     str: weapon?.ScalingStrength || 0,
@@ -91,7 +91,7 @@ export function getDamageForTooltip({
 }: {
   playerLevel: number
   gearScore: number
-  weapon: ItemdefinitionsWeapons
+  weapon: WeaponItemDefinitions
   weaponScale?: Record<AttributeRef, number>
   attrSums: Record<AttributeRef, number>
 }) {
@@ -465,14 +465,12 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     },
     trace.indent(),
   )
-  const weaponCritPostMitigation = getDamageForWeapon(
-    {
-      ...inputs,
-      weaponScale: weaponScaling,
-      damageCoef: attacker.damageCoef * weaponPercent,
-      mitigation: weaponMitigationPercent,
-    }
-  )
+  const weaponCritPostMitigation = getDamageForWeapon({
+    ...inputs,
+    weaponScale: weaponScaling,
+    damageCoef: attacker.damageCoef * weaponPercent,
+    mitigation: weaponMitigationPercent,
+  })
   const weaponCritMitigated = weaponCritPostMitigation - weaponCritPreMitigation
   trace.log(`critPostMitigation = ${weaponCritPostMitigation}`)
   trace.log(`critMitigated = ${weaponCritPostMitigation} - ${weaponCritPreMitigation} = ${weaponCritMitigated}`)
@@ -506,20 +504,18 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     },
     trace.indent(),
   )
-  const affixStdPostMitigation = getDamageForWeapon(
-    {
-      ...inputs,
-      weaponScale: affixScaling,
-      damageCoef: attacker.damageCoef * convertPercent,
-      reductionBase: defender.reductionBaseAffix,
-      modCrit: 0,
-      modBase: attacker.modBaseAffix,
-      modDMG: attacker.modDMGAffix,
-      modABS: defender.modABSAffix,
-      modWKN: defender.modWKNAffix,
-      mitigation: affixMitigationPercent,
-    }
-  )
+  const affixStdPostMitigation = getDamageForWeapon({
+    ...inputs,
+    weaponScale: affixScaling,
+    damageCoef: attacker.damageCoef * convertPercent,
+    reductionBase: defender.reductionBaseAffix,
+    modCrit: 0,
+    modBase: attacker.modBaseAffix,
+    modDMG: attacker.modDMGAffix,
+    modABS: defender.modABSAffix,
+    modWKN: defender.modWKNAffix,
+    mitigation: affixMitigationPercent,
+  })
   const affixStdMitigated = affixStdPostMitigation - affixStdPreMitigation
   trace.log(`damagePostMitigation = ${affixStdPostMitigation}`)
   trace.log(`damageMitigated = ${affixStdPostMitigation} - ${affixStdPreMitigation} = ${affixStdMitigated}`)
@@ -540,19 +536,17 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     },
     trace.indent(),
   )
-  const affixCritPostMitigation = getDamageForWeapon(
-    {
-      ...inputs,
-      weaponScale: affixScaling,
-      damageCoef: attacker.damageCoef * convertPercent,
-      reductionBase: defender.reductionBaseAffix,
-      modBase: attacker.modBaseAffix,
-      modDMG: attacker.modDMGAffix,
-      modABS: defender.modABSAffix,
-      modWKN: defender.modWKNAffix,
-      mitigation: affixMitigationPercent,
-    }
-  )
+  const affixCritPostMitigation = getDamageForWeapon({
+    ...inputs,
+    weaponScale: affixScaling,
+    damageCoef: attacker.damageCoef * convertPercent,
+    reductionBase: defender.reductionBaseAffix,
+    modBase: attacker.modBaseAffix,
+    modDMG: attacker.modDMGAffix,
+    modABS: defender.modABSAffix,
+    modWKN: defender.modWKNAffix,
+    mitigation: affixMitigationPercent,
+  })
   const affixCritMitigated = affixCritPostMitigation - affixCritPreMitigation
   trace.log(`damagePostMitigation = ${affixCritPostMitigation}`)
   trace.log(`damageMitigated = ${affixCritPostMitigation} - ${affixCritPreMitigation} = ${affixCritMitigated}`)
@@ -630,7 +624,7 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     affix,
     total,
     dot,
-    trace: trace.text()
+    trace: trace.text(),
   }
 }
 
@@ -658,7 +652,7 @@ const WEAPON_EFFECT_TO_TAG: Record<string, WeaponTag> = {
   Flail: 'Flail',
 }
 
-export function getWeaponTagFromWeapon(item: ItemdefinitionsWeapons | null): WeaponTag | null {
+export function getWeaponTagFromWeapon(item: WeaponItemDefinitions | null): WeaponTag | null {
   return WEAPON_EFFECT_TO_TAG[item?.WeaponEffectId]
 }
 

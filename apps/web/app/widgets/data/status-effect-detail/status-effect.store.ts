@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
-import { Affixstats, Statuseffect } from '@nw-data/generated'
+import { AffixStatData, StatusEffectData } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -75,7 +75,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
     super({ effectId: null })
   }
 
-  public load(idOrItem: string | Statuseffect) {
+  public load(idOrItem: string | StatusEffectData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ effectId: idOrItem })
     } else {
@@ -84,17 +84,17 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   }
 }
 
-function selectProperties(item: Statuseffect) {
+function selectProperties(item: StatusEffectData) {
   const reject = ['$source', 'PlaceholderIcon']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }
 
-function selectAffixProperties(item: Affixstats) {
+function selectAffixProperties(item: AffixStatData) {
   const reject = ['$source']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }
 
-function selectStatusEffectReferences(item: Statuseffect) {
+function selectStatusEffectReferences(item: StatusEffectData) {
   return uniq(
     flatten([
       item?.OnDeathStatusEffect,

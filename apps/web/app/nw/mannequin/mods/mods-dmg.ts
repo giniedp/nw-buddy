@@ -1,4 +1,4 @@
-import { Statuseffectcategories } from '@nw-data/generated'
+import { StatusEffectCategoryData } from '@nw-data/generated'
 import { ModifierKey, ModifierResult, eachModifier, modifierAdd, modifierResult } from '../modifier'
 import { ActiveMods, DbSlice } from '../types'
 import { categorySum } from './category-sum'
@@ -14,7 +14,7 @@ export function selectModsDMG({ effectCategories }: DbSlice, mods: ActiveMods) {
 function sumCategory(
   key: ModifierKey<number>,
   mods: ActiveMods,
-  categories: Map<string, Statuseffectcategories>
+  categories: Map<string, StatusEffectCategoryData>
 ): ModifierResult {
   return categorySum({
     key: key,

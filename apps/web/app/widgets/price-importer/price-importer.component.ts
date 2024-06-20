@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { getItemId } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
@@ -25,7 +25,7 @@ type ImporterType = 'json' | 'nwmp'
 })
 export class PriceImporterComponent extends ComponentStore<{
   importer: ImporterType
-  data: Array<{ item: ItemDefinitionMaster | Housingitems; price: number }>
+  data: Array<{ item: MasterItemDefinitions | HouseItems; price: number }>
   importing: boolean
 }> {
   protected iconClose = svgXmark

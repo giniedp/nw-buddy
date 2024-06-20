@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Loreitems } from '@nw-data/generated'
+import { LoreData } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
@@ -68,7 +68,7 @@ export class LoreItemDetailStore extends ComponentStore<{ recordId: string }> {
     super({ recordId: null })
   }
 
-  public load = this.effect<string | Loreitems>((input$) => {
+  public load = this.effect<string | LoreData>((input$) => {
     return input$.pipe(map((idOrItem) => {
       if (typeof idOrItem === 'string') {
         this.patchState({ recordId: idOrItem })

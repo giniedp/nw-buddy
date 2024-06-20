@@ -1,14 +1,14 @@
 import { S3, _Object } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
-import * as AdmZip from 'adm-zip'
+import AdmZip from 'adm-zip'
 import { MultiBar, Presets } from 'cli-progress'
 import { program } from 'commander'
 import { createHash } from 'crypto'
-import * as fs from 'fs'
-import * as http from 'https'
+import fs from 'fs'
+import http from 'node:https'
 import { groupBy } from 'lodash'
-import * as mime from 'mime-types'
-import * as path from 'path'
+import mime from 'mime-types'
+import path from 'node:path'
 import z from 'zod'
 import {
   CDN_UPLOAD_ENDPOINT,
@@ -164,7 +164,7 @@ program
     const client = createClient()
 
     const glbObjects = await Promise.resolve(options)
-      .then((it) => it.force ? [] : listObjects(client))
+      .then((it) => (it.force ? [] : listObjects(client)))
       .then((list) => list.filter((it) => it.Key.endsWith('.glb')))
       .then((list) => list.map((it) => normalizeKey(it.Key)))
       .then((list) => new Set(list))

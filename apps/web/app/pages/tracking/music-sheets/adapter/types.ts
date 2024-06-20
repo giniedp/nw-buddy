@@ -1,3 +1,3 @@
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
-export type MusicRecord = ItemDefinitionMaster
+export type MusicRecord = MasterItemDefinitions

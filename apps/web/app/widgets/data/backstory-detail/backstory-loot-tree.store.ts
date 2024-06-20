@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { LootTable, getBackstoryItems, isItemOfAnyClass, isMasterItem } from '@nw-data/common'
-import { Backstorydata, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { BackstoryDefinition, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, debounceTime, map, startWith } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
@@ -64,7 +64,7 @@ export class BackstoryLootTreeStore extends ComponentStore<BackstoryLootTreeStat
     this.updateNode(node, (it) => ({ ...it, expand: !it.expand }))
   }
 
-  public readonly load = this.effect<Backstorydata>((bs$) => {
+  public readonly load = this.effect<BackstoryDefinition>((bs$) => {
     return combineLatest({
       data: bs$,
       itemsMap: this.db.itemsMap,
@@ -103,9 +103,9 @@ function selectState({
   housingMap,
   lootTableMap,
 }: {
-  data: Backstorydata
-  itemsMap: Map<string, ItemDefinitionMaster>
-  housingMap: Map<string, Housingitems>
+  data: BackstoryDefinition
+  itemsMap: Map<string, MasterItemDefinitions>
+  housingMap: Map<string, HouseItems>
   lootTableMap: Map<string, LootTable>
 }) {
   const lootItems = getBackstoryItems(data)
@@ -126,9 +126,9 @@ function selectLootNode({
   housingMap,
   lootTableMap,
 }: {
-  item: ItemDefinitionMaster | Housingitems
-  itemsMap: Map<string, ItemDefinitionMaster>
-  housingMap: Map<string, Housingitems>
+  item: MasterItemDefinitions | HouseItems
+  itemsMap: Map<string, MasterItemDefinitions>
+  housingMap: Map<string, HouseItems>
   lootTableMap: Map<string, LootTable>
 }): BackstoryTreeNode {
   if (!item) {
@@ -161,9 +161,9 @@ function selectLootChildren({
   itemsMap,
   housingMap,
 }: {
-  containerItem: ItemDefinitionMaster
-  itemsMap: Map<string, ItemDefinitionMaster>
-  housingMap: Map<string, Housingitems>
+  containerItem: MasterItemDefinitions
+  itemsMap: Map<string, MasterItemDefinitions>
+  housingMap: Map<string, HouseItems>
   lootTableMap: Map<string, LootTable>
 }): BackstoryTreeNode[] {
   const recipe = containerItem?.RepairRecipe

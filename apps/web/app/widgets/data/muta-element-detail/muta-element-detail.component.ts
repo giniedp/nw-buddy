@@ -5,7 +5,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MutaElementDetailStore } from './muta-element-detail.store'
-import { Statuseffect } from '@nw-data/generated'
+import { StatusEffectData } from '@nw-data/generated'
 
 @Component({
   standalone: true,
@@ -30,7 +30,7 @@ export class MutaElementDetailComponent extends MutaElementDetailStore {
     this.patchState({ elementId: value })
   }
 
-  protected description(item: Statuseffect) {
+  protected description(item: StatusEffectData) {
     return item.Description || `${item.StatusID}_Tooltip`
   }
 }

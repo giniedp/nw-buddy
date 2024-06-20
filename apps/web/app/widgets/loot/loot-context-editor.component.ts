@@ -352,7 +352,7 @@ export class LootContextEditorComponent {
       .pipe(
         filter((it) => it !== undefined),
         map((it) => Number(it?.[0])),
-        map((id) => this.store.nwData().poisMap.get(id)),
+        map((id) => this.store.nwData().territoriesMap.get(id)),
       )
       .subscribe((poi) => {
         this.poiId = poi?.TerritoryID

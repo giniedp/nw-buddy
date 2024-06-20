@@ -1,11 +1,11 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { COLS_PERKS, Territorydefinitions } from '@nw-data/generated'
+import { COLS_PERKDATA, TerritoryDefinition } from '@nw-data/generated'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type TerritoryUtils = TableGridUtils<TerritoryRecord>
-export type TerritoryRecord = Territorydefinitions
+export type TerritoryRecord = TerritoryDefinition
 
 export function territoryColIcon(util: TerritoryUtils) {
   return util.colDef({
@@ -15,7 +15,7 @@ export function territoryColIcon(util: TerritoryUtils) {
     sortable: false,
     filter: ExpressionFilter,
     filterParams: ExpressionFilter.params({
-      fields: Object.keys(COLS_PERKS),
+      fields: Object.keys(COLS_PERKDATA),
     }),
     pinned: true,
     width: 62,

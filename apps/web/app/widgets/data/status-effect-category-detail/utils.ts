@@ -1,4 +1,4 @@
-import { Statuseffectcategories } from '@nw-data/generated'
+import { StatusEffectCategoryData } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 
 const baseValues = {
@@ -17,7 +17,7 @@ const baseValues = {
 }
 
 export type ValueLimits = Record<string, number>
-export function selectLimitsTable(category: Statuseffectcategories, categories: Statuseffectcategories[]) {
+export function selectLimitsTable(category: StatusEffectCategoryData, categories: StatusEffectCategoryData[]) {
   if (!category) {
     return null
   }

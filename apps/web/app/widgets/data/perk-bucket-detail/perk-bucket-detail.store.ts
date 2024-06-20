@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { PerkBucket, resolvePerkBucketPerksForItem } from '@nw-data/common'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { shareReplayRefCount } from '~/utils'
@@ -57,9 +57,9 @@ function selectBucket({
   bucket,
   perks,
 }: {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   bucket: PerkBucket
-  perks: Map<string, Perks>
+  perks: Map<string, PerkData>
 }) {
   if (!bucket) {
     return null

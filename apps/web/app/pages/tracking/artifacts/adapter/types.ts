@@ -1,3 +1,3 @@
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { MasterItemDefinitions } from '@nw-data/generated'
 
-export type ArtifactRecord = ItemDefinitionMaster
+export type ArtifactRecord = MasterItemDefinitions

@@ -1,90 +1,88 @@
-import { Areadefinitions, Arenadefinitions, Darknessdefinitions, PoiDefinition, TerritoriesMetadata, Territorydefinitions, Zone } from '../generated/types'
+import { Zone } from '../generated/meta-types'
+import { TerritoryDefinition } from '../generated/types'
 import { NW_FALLBACK_ICON } from './constants'
 
-export type ZoneDefinition = Territorydefinitions | Areadefinitions | PoiDefinition | Arenadefinitions | Darknessdefinitions
 export type ZoneType = 'Territory' | 'Area' | 'POI'
 
-export function isZoneTerritory(zone: ZoneDefinition): zone is Territorydefinitions {
+export function isZoneTerritory(zone: TerritoryDefinition): zone is TerritoryDefinition {
   return getZoneType(zone) === 'Territory'
 }
 
-export function isZoneArea(zone: ZoneDefinition): zone is Areadefinitions {
+export function isZoneArea(zone: TerritoryDefinition): boolean {
   return getZoneType(zone) === 'Area'
 }
 
-export function isZonePoi(zone: ZoneDefinition): zone is PoiDefinition {
+export function isZonePoi(zone: TerritoryDefinition): boolean {
   return getZoneType(zone) === 'POI'
 }
 
-export function getZoneType(zone: ZoneDefinition) {
+export function getZoneType(zone: TerritoryDefinition) {
   if (!zone) {
     return null
   }
   if (!zone.IsPOI) {
     return 'Territory'
   }
-  if ((zone as Areadefinitions).IsArea) {
+  if (zone.IsArea) {
     return 'Area'
   }
   return 'POI'
 }
 
-export function getZoneMaxLevel(zone: ZoneDefinition) {
-  return (zone as Territorydefinitions)?.MaximumLevel
+export function getZoneMaxLevel(zone: TerritoryDefinition) {
+  return zone?.MaximumLevel
 }
 
-export function getZoneRecommendedLevel(zone: ZoneDefinition) {
-  return (zone as Territorydefinitions)?.RecommendedLevel
+export function getZoneRecommendedLevel(zone: TerritoryDefinition) {
+  return zone?.RecommendedLevel
 }
 
-export function getZoneName(zone: ZoneDefinition) {
+export function getZoneName(zone: TerritoryDefinition) {
   if (!zone) {
     return null
   }
   return zone.NameLocalizationKey
 }
 
-export function getZoneDevName(zone: ZoneDefinition) {
+export function getZoneDevName(zone: TerritoryDefinition) {
   if (isZonePoi(zone)) {
     return zone.DevName
   }
   return null
 }
 
-
-export function getZoneDescription(zone: ZoneDefinition) {
+export function getZoneDescription(zone: TerritoryDefinition) {
   if (isZonePoi(zone) && zone.NameLocalizationKey) {
     return `${zone.NameLocalizationKey}_description`
   }
   return null
 }
 
-export function getZoneInfo(zone: ZoneDefinition) {
+export function getZoneInfo(zone: TerritoryDefinition) {
   if (isZoneArea(zone)) {
     return `AI Level: ${zone.AIVariantLevelOverride}`
   }
   if (isZoneTerritory(zone)) {
     return [zone.RecommendedLevel, zone.MaximumLevel]
       .filter((it) => !!it)
-      .map((it) => it > 65 ? `${65}+` : it)
+      .map((it) => (it > 65 ? `${65}+` : it))
       .join(' - ')
   }
   return ''
 }
 
-export function getZoneBackground(zone: ZoneDefinition) {
-  return (zone as PoiDefinition)?.TooltipBackground
+export function getZoneBackground(zone: TerritoryDefinition) {
+  return zone?.TooltipBackground
 }
 
-export function getZoneIcon(zone: ZoneDefinition, fallback = NW_FALLBACK_ICON) {
+export function getZoneIcon(zone: TerritoryDefinition, fallback = NW_FALLBACK_ICON) {
   if (!zone) {
     return null
   }
-  const poi = zone as PoiDefinition
-  return poi.MapIcon || poi.CompassIcon || fallback
+  return zone.MapIcon || zone.CompassIcon || fallback
 }
 
-export function getZoneMetaId(zone: ZoneDefinition) {
+export function getZoneMetaId(zone: TerritoryDefinition) {
   const id = zone?.TerritoryID
   if (!id) {
     return null

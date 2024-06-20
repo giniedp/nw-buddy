@@ -1,13 +1,13 @@
 import { PerkBucket, getItemPerkInfos, getItemRarity, getPerkTypeWeight } from '@nw-data/common'
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { ItemInstanceRecord, ItemInstanceRow } from './types'
 import { sortBy } from 'lodash'
 
 export function buildItemInstanceRows(records: ItemInstanceRecord[], data: {
-  items: Map<string, ItemDefinitionMaster>
-  perks: Map<string, Perks>
+  items: Map<string, MasterItemDefinitions>
+  perks: Map<string, PerkData>
   buckets: Map<string, PerkBucket>
-  affixes: Map<string, Affixstats>
+  affixes: Map<string, AffixStatData>
 }): ItemInstanceRow[] {
   if (!records || !data) {
     return null
@@ -18,10 +18,10 @@ export function buildItemInstanceRows(records: ItemInstanceRecord[], data: {
 export function buildItemInstanceRow(
   record: ItemInstanceRecord,
   data: {
-    items: Map<string, ItemDefinitionMaster>
-    perks: Map<string, Perks>
+    items: Map<string, MasterItemDefinitions>
+    perks: Map<string, PerkData>
     buckets: Map<string, PerkBucket>
-    affixes: Map<string, Affixstats>
+    affixes: Map<string, AffixStatData>
   },
 ): ItemInstanceRow {
   if (!record || !data) {

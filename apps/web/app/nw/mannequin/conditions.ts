@@ -1,7 +1,7 @@
-import { Ability, ComparisonType, EquipLoadCategory } from '@nw-data/generated'
+import { AbilityData, ComparisonType, EquipLoadCategory } from '@nw-data/generated'
 import { MannequinState } from './types'
 
-export function checkAllConditions(ability: Ability, equipLoadCategory: EquipLoadCategory, state: MannequinState) {
+export function checkAllConditions(ability: AbilityData, equipLoadCategory: EquipLoadCategory, state: MannequinState) {
   return (
     checkHealthCondition(state, ability) &&
     checkManaCondition(state, ability) &&
@@ -18,36 +18,36 @@ export function checkAllConditions(ability: Ability, equipLoadCategory: EquipLoa
   )
 }
 
-export function checkHealthCondition(state: MannequinState, ability: Ability) {
+export function checkHealthCondition(state: MannequinState, ability: AbilityData) {
   return !!ability && checkCondition(state.myHealthPercent, ability.MyHealthPercent / 100, ability.MyComparisonType)
 }
-export function checkManaCondition(state: MannequinState, ability: Ability) {
+export function checkManaCondition(state: MannequinState, ability: AbilityData) {
   return !!ability && checkCondition(state.myManaPercent, ability.MyManaPercent / 100, ability.MyManaComparisonType)
 }
-export function checkStaminaCondition(state: MannequinState, ability: Ability) {
+export function checkStaminaCondition(state: MannequinState, ability: AbilityData) {
   return (
     !!ability && checkCondition(state.myStaminaPercent, ability.MyStaminaPercent / 100, ability.MyStaminaComparisonType)
   )
 }
-export function checkAmmoCountCondition(state: MannequinState, ability: Ability) {
+export function checkAmmoCountCondition(state: MannequinState, ability: AbilityData) {
   return !!ability // && checkCondition(0, ability.LoadedAmmoCount, ability.LoadedAmmoCountComparisonType)
 }
-export function checkAbilityCooldownCondition(state: MannequinState, ability: Ability) {
+export function checkAbilityCooldownCondition(state: MannequinState, ability: AbilityData) {
   return !!ability // && checkCondition(0, 0, ability.AbilityCooldownComparisonType)
 }
-export function checkNumberOfHitsCondition(state: MannequinState, ability: Ability) {
+export function checkNumberOfHitsCondition(state: MannequinState, ability: AbilityData) {
   return !!ability && checkCondition(state.numHits, ability.NumberOfTrackedHits, ability.NumberOfHitsComparisonType)
 }
-export function checkNumAroundMeCondition(state: MannequinState, ability: Ability) {
+export function checkNumAroundMeCondition(state: MannequinState, ability: AbilityData) {
   return !!ability && checkCondition(state.numAroundMe, ability.NumAroundMe, ability.NumAroundComparisonType)
 }
-export function checkTargetHealthCondition(state: MannequinState, ability: Ability) {
+export function checkTargetHealthCondition(state: MannequinState, ability: AbilityData) {
   return !!ability && checkCondition(1, ability.TargetHealthPercent / 100, ability.TargetComparisonType)
 }
-export function checkDistanceCondition(state: MannequinState, ability: Ability) {
+export function checkDistanceCondition(state: MannequinState, ability: AbilityData) {
   return !!ability && checkCondition(1, ability.DistFromDefender, ability.DistComparisonType)
 }
-export function checkTargetEffectCondition(state: MannequinState, ability: Ability) {
+export function checkTargetEffectCondition(state: MannequinState, ability: AbilityData) {
   if (!ability) {
     return false
   }
@@ -63,7 +63,7 @@ export function checkTargetEffectCondition(state: MannequinState, ability: Abili
   }
   return true
 }
-export function checkNumConsecutiveHits(state: MannequinState, ability: Ability) {
+export function checkNumConsecutiveHits(state: MannequinState, ability: AbilityData) {
   if (!ability) {
     return false
   }
@@ -74,7 +74,7 @@ export function checkNumConsecutiveHits(state: MannequinState, ability: Ability)
   const limit = ability.NumConsecutiveHits
   return actual >= limit
 }
-export function checkEquipLoadCategory(ability: Ability, equipLoadCategory: EquipLoadCategory) {
+export function checkEquipLoadCategory(ability: AbilityData, equipLoadCategory: EquipLoadCategory) {
   if (!ability) {
     return false
   }

@@ -1,8 +1,8 @@
-import { Loreitems } from '@nw-data/generated'
+import { LoreData } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type LoreItemTableUtils = TableGridUtils<LoreItemTableRecord>
-export type LoreItemTableRecord = Loreitems & {
+export type LoreItemTableRecord = LoreData & {
   $numChildren: number
 }
 

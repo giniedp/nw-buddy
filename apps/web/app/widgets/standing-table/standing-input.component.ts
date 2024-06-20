@@ -27,7 +27,7 @@ export class StandingInputComponent {
     combineLatest({
       id: this.territoryId$,
       territories: this.db.territoriesMap,
-    })
+    }),
   )
     .pipe(map(({ id, territories }) => territories.get(id)))
     .pipe(shareReplayRefCount(1))
@@ -43,13 +43,13 @@ export class StandingInputComponent {
   public standingTitle$ = defer(() =>
     combineLatest({
       level: this.standingLevel$,
-      table: this.db.data.territoryStanding(),
-    })
+      table: this.db.useTable((it) => it.CategoricalProgressionRankData.Territory_Standing),
+    }),
   )
     .pipe(
       map(({ level, table }) => {
         return table.filter((it) => !!it.DisplayName && it.Rank <= level).reverse()[0]?.DisplayName
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
 
@@ -66,7 +66,10 @@ export class StandingInputComponent {
 
   private territoryId$ = new BehaviorSubject<number>(null)
 
-  public constructor(private db: NwDataService, private pref: TerritoriesPreferencesService) {
+  public constructor(
+    private db: NwDataService,
+    private pref: TerritoriesPreferencesService,
+  ) {
     //
   }
 }

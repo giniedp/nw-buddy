@@ -1,28 +1,23 @@
 import { AttributeRef, EquipSlotId } from '@nw-data/common'
 import {
-  Ability,
-  Affixstats,
-  Attributeconstitution,
-  Attributedexterity,
-  Attributefocus,
-  Attributeintelligence,
-  Attributestrength,
-  CooldownsPlayer,
-  Damagetable,
-  Housingitems,
-  ItemDefinitionMaster,
-  ItemdefinitionsAmmo,
-  ItemdefinitionsArmor,
-  ItemdefinitionsConsumables,
-  ItemdefinitionsRunes,
-  ItemdefinitionsWeapons,
-  Perks,
-  PvpbalanceArena,
-  PvpbalanceOpenworld,
-  PvpbalanceOutpostrush,
-  PvpbalanceWar,
-  Statuseffect,
-  Statuseffectcategories,
+  AbilityData,
+  AffixStatData,
+  AmmoItemDefinitions,
+  ArenaBalanceData,
+  ArmorItemDefinitions,
+  AttributeDefinition,
+  ConsumableItemDefinitions,
+  CooldownData,
+  DamageData,
+  HouseItems,
+  MasterItemDefinitions,
+  OpenWorldBalanceData,
+  OutpostRushBalanceData,
+  PerkData,
+  StatusEffectCategoryData,
+  StatusEffectData,
+  WarBalanceData,
+  WeaponItemDefinitions,
   WeaponTag,
 } from '@nw-data/generated'
 import { Observable } from 'rxjs'
@@ -94,29 +89,29 @@ export interface MannequinState {
 }
 
 export interface DbSlice {
-  items: Map<string, ItemDefinitionMaster>
-  housings: Map<string, Housingitems>
-  weapons: Map<string, ItemdefinitionsWeapons>
-  runes: Map<string, ItemdefinitionsRunes>
-  armors: Map<string, ItemdefinitionsArmor>
-  ammos: Map<string, ItemdefinitionsAmmo>
-  consumables: Map<string, ItemdefinitionsConsumables>
-  damagaTable: Damagetable[]
-  perks: Map<string, Perks>
-  effects: Map<string, Statuseffect>
-  effectCategories: Map<string, Statuseffectcategories>
-  abilities: Map<string, Ability>
-  affixes: Map<string, Affixstats>
-  attrStr: Attributestrength[]
-  attrDex: Attributedexterity[]
-  attrInt: Attributeintelligence[]
-  attrFoc: Attributefocus[]
-  attrCon: Attributeconstitution[]
-  cooldowns: Map<string, CooldownsPlayer>
-  pvpBalanceArena: Array<PvpbalanceArena>
-  pvpBalanceOpenworld: Array<PvpbalanceOpenworld>
-  pvpBalanceWar: Array<PvpbalanceWar>
-  pvpBalanceOutpostrush: Array<PvpbalanceOutpostrush>
+  items: Map<string, MasterItemDefinitions>
+  housings: Map<string, HouseItems>
+  weapons: Map<string, WeaponItemDefinitions>
+  runes: Map<string, WeaponItemDefinitions>
+  armors: Map<string, ArmorItemDefinitions>
+  ammos: Map<string, AmmoItemDefinitions>
+  consumables: Map<string, ConsumableItemDefinitions>
+  damagaTable: DamageData[]
+  perks: Map<string, PerkData>
+  effects: Map<string, StatusEffectData>
+  effectCategories: Map<string, StatusEffectCategoryData>
+  abilities: Map<string, AbilityData>
+  affixes: Map<string, AffixStatData>
+  attrStr: AttributeDefinition[]
+  attrDex: AttributeDefinition[]
+  attrInt: AttributeDefinition[]
+  attrFoc: AttributeDefinition[]
+  attrCon: AttributeDefinition[]
+  cooldowns: Map<string, CooldownData[]>
+  pvpBalanceArena: Array<ArenaBalanceData>
+  pvpBalanceOpenworld: Array<OpenWorldBalanceData>
+  pvpBalanceWar: Array<WarBalanceData>
+  pvpBalanceOutpostrush: Array<OutpostRushBalanceData>
 }
 
 export interface EquippedItem {
@@ -134,17 +129,17 @@ export interface EquppedSkills {
 
 export interface ActiveWeapon {
   slot: EquipSlotId
-  item: ItemDefinitionMaster
-  weapon: ItemdefinitionsWeapons
+  item: MasterItemDefinitions
+  weapon: WeaponItemDefinitions
   weaponTag: WeaponTag
-  ammo: ItemdefinitionsAmmo
+  ammo: AmmoItemDefinitions
   gearScore: number
   unsheathed: boolean
 }
 
 export interface ActiveAmmo {
-  item: ItemDefinitionMaster
-  ammo: ItemdefinitionsAmmo
+  item: MasterItemDefinitions
+  ammo: AmmoItemDefinitions
 }
 
 export type ActiveAttributes = Record<AttributeRef, ActiveAttribute>
@@ -169,27 +164,27 @@ export interface ActiveBonus {
 
 export interface ActiveAbility {
   scale: number
-  ability: Ability
-  selfEffects: Statuseffect[]
+  ability: AbilityData
+  selfEffects: StatusEffectData[]
   weapon?: ActiveWeapon
   perk?: ActivePerk
   attribute?: boolean
-  cooldown?: CooldownsPlayer
+  cooldown?: CooldownData
 }
 
 export interface ActivePerk {
   slot: EquipSlotId
-  item: ItemDefinitionMaster
-  perk: Perks
+  item: MasterItemDefinitions
+  perk: PerkData
   gearScore: number
-  weapon: ItemdefinitionsWeapons | null
-  armor: ItemdefinitionsArmor | null
-  rune: ItemdefinitionsRunes | null
-  affix: Affixstats | null
+  weapon: WeaponItemDefinitions | null
+  armor: ArmorItemDefinitions | null
+  rune: WeaponItemDefinitions | null
+  affix: AffixStatData | null
 }
 export interface ActiveConsumable {
-  item: ItemDefinitionMaster
-  consumable: ItemdefinitionsConsumables
+  item: MasterItemDefinitions
+  consumable: ConsumableItemDefinitions
 }
 
 export interface ActiveMods {
@@ -205,15 +200,15 @@ export interface ActiveEffect {
   /**
    * The status effect
    */
-  effect: Statuseffect
+  effect: StatusEffectData
   /**
    * Item from which the status effect has been activated
    */
-  item?: ItemDefinitionMaster | Housingitems
+  item?: MasterItemDefinitions | HouseItems
   /**
    * Consumable from which the status effect has been activated
    */
-  consumable?: ItemdefinitionsConsumables
+  consumable?: ConsumableItemDefinitions
   /**
    * Perk from which the status effect has been activated
    */
@@ -221,7 +216,7 @@ export interface ActiveEffect {
   /**
    * Ability from which the status effect has been activated
    */
-  ability?: Ability
+  ability?: AbilityData
 }
 
 export interface AttributeModsSource {

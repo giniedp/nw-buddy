@@ -1,4 +1,4 @@
-import { Ability, Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { getAffixMODs } from './affix'
 
 const PERK_SORT_WEIGHT = {
@@ -7,19 +7,19 @@ const PERK_SORT_WEIGHT = {
   Generated: 2,
 }
 
-export function isPerkInherent(perk: Pick<Perks, 'PerkType'>) {
+export function isPerkInherent(perk: Pick<PerkData, 'PerkType'>) {
   return perk?.PerkType === 'Inherent'
 }
 
-export function isPerkGem(perk: Pick<Perks, 'PerkType'>) {
+export function isPerkGem(perk: Pick<PerkData, 'PerkType'>) {
   return perk?.PerkType === 'Gem'
 }
 
-export function isPerkEmptyGemSlot(perk: Perks) {
+export function isPerkEmptyGemSlot(perk: PerkData) {
   return eqIgnoreCase(perk?.PerkID, 'PerkID_Gem_EmptyGemSlot')
 }
 
-export function isPerkGenerated(perk: Pick<Perks, 'PerkType'>) {
+export function isPerkGenerated(perk: Pick<PerkData, 'PerkType'>) {
   return perk?.PerkType === 'Generated'
 }
 
@@ -27,14 +27,14 @@ export function getPerkTypeWeight(type: string) {
   return PERK_SORT_WEIGHT[type] ?? 3
 }
 
-export function isPerkApplicableToItem(perk: Pick<Perks, 'ItemClass'>, item: Pick<ItemDefinitionMaster, 'ItemClass'>) {
+export function isPerkApplicableToItem(perk: Pick<PerkData, 'ItemClass'>, item: Pick<MasterItemDefinitions, 'ItemClass'>) {
   if (!perk || !item || !perk.ItemClass || !item.ItemClass) {
     return false
   }
   return doListsIntersect(perk.ItemClass, item.ItemClass, eqIgnoreCase)
 }
 
-export function isPerkExcludedFromItem(perk: Pick<Perks, 'ExcludeItemClass' | 'PerkType'>, item: Pick<ItemDefinitionMaster, 'ItemClass'>) {
+export function isPerkExcludedFromItem(perk: Pick<PerkData, 'ExcludeItemClass' | 'PerkType'>, item: Pick<MasterItemDefinitions, 'ItemClass'>) {
   if (!perk || !item) {
     return false
   }
@@ -47,7 +47,7 @@ export function isPerkExcludedFromItem(perk: Pick<Perks, 'ExcludeItemClass' | 'P
   return false
 }
 
-export function hasPerkInherentAffix(perk: Perks): boolean {
+export function hasPerkInherentAffix(perk: PerkData): boolean {
   return isPerkInherent(perk) && !!perk?.Affix
 }
 
@@ -56,7 +56,7 @@ export interface ItemClassGSBonus {
   value: number
 }
 
-export function getPerkItemClassGSBonus(perk: Pick<Perks, 'ItemClassGSBonus'>): ItemClassGSBonus {
+export function getPerkItemClassGSBonus(perk: Pick<PerkData, 'ItemClassGSBonus'>): ItemClassGSBonus {
   if (!perk?.ItemClassGSBonus) {
     return null
   }
@@ -82,9 +82,9 @@ export interface PerkExplanation {
 }
 
 export function explainPerk(options: {
-  perk: Perks
-  affix: Affixstats
-  abilities?: Ability[]
+  perk: PerkData
+  affix: AffixStatData
+  abilities?: AbilityData[]
   gearScore: number
   forceDescription?: boolean
 }): PerkExplanation[] {
@@ -122,7 +122,7 @@ export function explainPerk(options: {
   return result
 }
 
-export function explainPerkMods(options: { perk: Perks; affix: Affixstats; gearScore: number }): PerkExplanation[] {
+export function explainPerkMods(options: { perk: PerkData; affix: AffixStatData; gearScore: number }): PerkExplanation[] {
   const { perk, affix, gearScore } = options
   const result: PerkExplanation[] = []
   if (!isPerkInherent(perk) || !affix) {
@@ -171,11 +171,11 @@ export function explainPerkMods(options: { perk: Perks; affix: Affixstats; gearS
   return result
 }
 
-export function getPerksInherentMODs(perk: Pick<Perks, 'ScalingPerGearScore'>, affix: Affixstats, gearScore: number) {
+export function getPerksInherentMODs(perk: Pick<PerkData, 'ScalingPerGearScore'>, affix: AffixStatData, gearScore: number) {
   return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
 }
 
-export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gearScore: number) {
+export function getPerkMultiplier(perk: Pick<PerkData, 'ScalingPerGearScore'>, gearScore: number) {
   if (!perk.ScalingPerGearScore) {
     return 1
   }
@@ -212,7 +212,7 @@ export function parseScalingPerGearScore(value: string) {
   })
 }
 
-export function getPerkItemClassGsBonus(perk: Perks) {
+export function getPerkItemClassGsBonus(perk: PerkData) {
   if (!perk || !perk.ItemClassGSBonus?.length) {
     return []
   }
@@ -221,7 +221,7 @@ export function getPerkItemClassGsBonus(perk: Perks) {
     return { itemClass, bonus: Number(bonus) }
   })
 }
-export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
+export function getItemGsBonus(perk: PerkData, item: MasterItemDefinitions) {
   if (!item || !item.ItemClass) {
     return 0
   }

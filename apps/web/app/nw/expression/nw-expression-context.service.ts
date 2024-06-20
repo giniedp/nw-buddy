@@ -1,7 +1,7 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE, getPerkMultiplier } from '@nw-data/common'
-import { Perks } from '@nw-data/generated'
+import { PerkData } from '@nw-data/generated'
 import { Observable, map } from 'rxjs'
 import { ExpressionVariable } from './types'
 
@@ -34,7 +34,7 @@ export class NwTextContextService extends ComponentStore<NwExpressionContext> {
     })
   }
 
-  public forPerk(perk: Perks): NwExpressionContext {
+  public forPerk(perk: PerkData): NwExpressionContext {
     return this.get((state) => {
       return {
         ...state,

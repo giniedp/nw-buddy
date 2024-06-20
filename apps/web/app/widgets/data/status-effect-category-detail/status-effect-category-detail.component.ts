@@ -1,7 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { patchState } from '@ngrx/signals'
-import { Statuseffectcategories } from '@nw-data/generated'
+import { StatusEffectCategoryData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -30,7 +30,7 @@ export class StatusEffectCategoryDetailComponent {
     patchState(this.store, { categoryId: value })
   }
 
-  public formatValue = (value: any, key: keyof Statuseffectcategories): PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof StatusEffectCategoryData): PropertyGridCell[] => {
     switch (key) {
       case 'StatusEffectCategoryID': {
         return statusEffectCells(value)

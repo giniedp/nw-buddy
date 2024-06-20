@@ -2,11 +2,11 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { CDN_URL, COMMIT_HASH, NW_WORKSPACE, NW_WATERMARK, PACKAGE_VERSION, IS_CI, environment, NW_BADGE } from '../env'
-import { glob, readJSONFile, writeUTF8File } from './utils/file-utils'
 import type { EnvVars } from '../apps/web/environments/env'
-import { tsFromSliceFiles } from './code-gen/generate-slice-types'
-import { useProgressBar, withProgressBar } from './utils'
+import { CDN_URL, COMMIT_HASH, IS_CI, NW_BADGE, NW_WATERMARK, NW_WORKSPACE, PACKAGE_VERSION, environment } from '../env'
+import { tsFromSliceFiles } from './file-formats/slices/generate-slice-types'
+import { useProgressBar } from './utils'
+import { glob, readJSONFile, writeUTF8File } from './utils/file-utils'
 
 program
   .command('icons')
@@ -38,9 +38,7 @@ program
 
 program
   .command('slice-types')
-  .description(
-    "Generates typescript types from dynamicslice.json files.",
-  )
+  .description('Generates typescript types from dynamicslice.json files.')
   .action(async () => {
     const rootDir = environment.nwConvertDir('live')
     const files = await glob(path.join(rootDir, '**', '*.dynamicslice.json'))

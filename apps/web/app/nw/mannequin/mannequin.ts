@@ -80,12 +80,12 @@ export class Mannequin {
       attrInt: this.db.attrInt,
       attrFoc: this.db.attrFoc,
       attrCon: this.db.attrCon,
-      cooldowns: this.db.cooldownsPlayerMap,
+      cooldowns: this.db.cooldownsByAbilityIdMap,
       damagaTable: this.db.damageTables0,
-      pvpBalanceArena: this.db.data.pvpbalancetablesPvpbalanceArena(),
-      pvpBalanceOpenworld: this.db.data.pvpbalancetablesPvpbalanceOpenworld(),
-      pvpBalanceOutpostrush: this.db.data.pvpbalancetablesPvpbalanceOutpostrush(),
-      pvpBalanceWar: this.db.data.pvpbalancetablesPvpbalanceWar(),
+      pvpBalanceArena: this.db.useTable((it) => it.ArenaBalanceData.ArenaPvpBalanceTable),
+      pvpBalanceOpenworld: this.db.useTable((it) => it.OpenWorldBalanceData.OpenWorldPvpBalanceTable),
+      pvpBalanceOutpostrush: this.db.useTable((it) => it.OutpostRushBalanceData.OutpostRushPvpBalanceTable),
+      pvpBalanceWar: this.db.useTable((it) => it.WarBalanceData.WarPvpBalanceTable),
     },
     (it) => {
       return {

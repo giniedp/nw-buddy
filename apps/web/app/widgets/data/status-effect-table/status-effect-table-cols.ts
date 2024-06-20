@@ -1,12 +1,12 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
+import { COLS_STATUSEFFECTDATA, StatusEffectData } from '@nw-data/generated'
 import { sanitizeHtml } from '~/nw'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils, colDefPrecision } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type StatusEffectTableUtils = TableGridUtils<StatusEffectTableRecord>
-export type StatusEffectTableRecord = Statuseffect
+export type StatusEffectTableRecord = StatusEffectData
 
 export function statusEffectColIcon(util: StatusEffectTableUtils) {
   return util.colDef({
@@ -16,7 +16,7 @@ export function statusEffectColIcon(util: StatusEffectTableUtils) {
     sortable: false,
     filter: ExpressionFilter,
     filterParams: ExpressionFilter.params({
-      fields: Object.keys(COLS_STATUSEFFECT),
+      fields: Object.keys(COLS_STATUSEFFECTDATA),
     }),
     pinned: true,
     width: 62,

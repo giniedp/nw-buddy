@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
 import { ItemRarity, NW_FALLBACK_ICON, getItemIconPath, getItemRarity } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { assetUrl } from '~/utils'
 
 @Component({
@@ -24,7 +24,7 @@ import { assetUrl } from '~/utils'
 })
 export class NwIconComponent {
   @Input()
-  public set nwIcon(value: string | ItemDefinitionMaster | Housingitems) {
+  public set nwIcon(value: string | MasterItemDefinitions | HouseItems) {
     if (!value) {
       this.rarity = null
       this.updateSrc(null)
@@ -90,7 +90,7 @@ const transparentPixel =
 })
 export class NwImageComponent {
   @Input()
-  public set nwImage(value: string | ItemDefinitionMaster | Housingitems) {
+  public set nwImage(value: string | MasterItemDefinitions | HouseItems) {
     if (!value) {
       this.updateSrc(transparentPixel)
     } else if (typeof value === 'string') {

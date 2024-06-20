@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemIdFromRecipe, getItemTierAsRoman } from '@nw-data/common'
-import { Crafting, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TableGridAdapter } from '~/ui/data/table-grid'
 
@@ -60,11 +60,11 @@ export class RecipesTableAdapter implements TableGridAdapter<RecipeRecord>, Data
   )
 }
 
-function isRecipe(item: ItemDefinitionMaster) {
+function isRecipe(item: MasterItemDefinitions) {
   return item.TradingGroup === 'Recipes'
 }
 
-function selectRecords({ items, recipes }: { items: Map<string, ItemDefinitionMaster>; recipes: Crafting[] }) {
+function selectRecords({ items, recipes }: { items: Map<string, MasterItemDefinitions>; recipes: CraftingRecipeData[] }) {
   return recipes
     .map((recipe): RecipeRecord => {
       const itemId = getItemIdFromRecipe(recipe)

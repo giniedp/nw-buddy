@@ -15,7 +15,7 @@ import {
   isPerkGem,
   isPerkInherent,
 } from '@nw-data/common'
-import { ItemClass, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
+import { ItemClass, MasterItemDefinitions, PerkData, StatusEffectData } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { Observable, combineLatest, filter, from, map, switchMap, take } from 'rxjs'
 import { ItemInstance, NwDataService } from '~/data'
@@ -118,7 +118,7 @@ export class InventoryPickerService {
     )
   }
 
-  public pickAttributeForItems({ items }: { items: ItemDefinitionMaster[] }) {
+  public pickAttributeForItems({ items }: { items: MasterItemDefinitions[] }) {
     return (
       combineLatest({
         data: this.db.perksMap,
@@ -151,7 +151,7 @@ export class InventoryPickerService {
     )
   }
 
-  public pickPerkForItem(record: ItemInstance, slotKey: string): Observable<Perks> {
+  public pickPerkForItem(record: ItemInstance, slotKey: string): Observable<PerkData> {
     return combineLatest({
       items: this.db.itemsMap,
       perks: this.db.perksMap,
@@ -196,7 +196,7 @@ export class InventoryPickerService {
     title?: string
     selection?: string[]
     multiple?: boolean
-    predicate?: (item: Statuseffect) => boolean
+    predicate?: (item: StatusEffectData) => boolean
   }) {
     return (
       combineLatest({
@@ -255,7 +255,7 @@ export class InventoryPickerService {
   }
 
   private openPerksPicker(
-    item: ItemDefinitionMaster,
+    item: MasterItemDefinitions,
     options: {
       selectedPerkid: string
       slotKey: string
@@ -317,7 +317,7 @@ export class InventoryPickerService {
     )
   }
 
-  private openAttributePickerForItems(items: ItemDefinitionMaster[]) {
+  private openAttributePickerForItems(items: MasterItemDefinitions[]) {
     return from(
       DataViewPicker.open({
         injector: this.injector,
@@ -347,7 +347,7 @@ export class InventoryPickerService {
   }
 
   public getAplicablePerksSource(
-    item: ItemDefinitionMaster,
+    item: MasterItemDefinitions,
     {
       slotKey,
       exclusiveLabels,

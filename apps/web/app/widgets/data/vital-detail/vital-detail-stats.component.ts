@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { getVitalDamageEffectiveness } from '@nw-data/common'
-import { Vitals } from '@nw-data/generated'
+import { VitalsData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { NwModule } from '~/nw'
 import { damageTypeIcon, getWeaponTypes } from '~/nw/weapon-types'
@@ -47,7 +47,7 @@ export class VitalDetailStatsComponent {
   protected infoIcon = svgInfo
 }
 
-function selectEffectiveness(vital: Vitals): DamageEffectiveness[] {
+function selectEffectiveness(vital: VitalsData): DamageEffectiveness[] {
   if (!vital) {
     return []
   }

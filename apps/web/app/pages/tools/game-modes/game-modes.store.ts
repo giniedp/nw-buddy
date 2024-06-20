@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Gamemodes } from '@nw-data/generated'
+import { GameModeData } from '@nw-data/generated'
 
 export interface GameModesState {
-  all: Gamemodes[]
-  selected: Gamemodes[]
+  all: GameModeData[]
+  selected: GameModeData[]
 }
 
 @Injectable()

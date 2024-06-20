@@ -1,7 +1,7 @@
 import { inject } from '@angular/core'
 import { signalStoreFeature, type, withMethods } from '@ngrx/signals'
 import { EquipSlotId } from '@nw-data/common'
-import { Perks } from '@nw-data/generated'
+import { PerkData } from '@nw-data/generated'
 import { ImagesDB } from '../images'
 import { ItemInstance, ItemInstancesDB } from '../items'
 import { SkillSet } from '../skillbuilds/types'
@@ -113,7 +113,7 @@ export function withGearsetMethods() {
         updateSlotGearScore: async (slot: EquipSlotId, gearScore: number) => {
           return patchSlot(slot, { gearScore })
         },
-        updateSlotPerk: async (slot: EquipSlotId, perkKey: string, perk: Perks) => {
+        updateSlotPerk: async (slot: EquipSlotId, perkKey: string, perk: PerkData) => {
           const { instance } = await resolveSlot(gearset(), slot, itemDB)
           const perks = makeCopy(instance?.perks || {})
           if (perk) {

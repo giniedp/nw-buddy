@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { getVitalFamilyInfo } from '@nw-data/common'
-import { Vitals } from '@nw-data/generated'
+import { VitalsData } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
@@ -95,7 +95,7 @@ export class VitalDetailComponent {
     })
   }
 
-  protected async onEntity(entity: Vitals) {
+  protected async onEntity(entity: VitalsData) {
     if (!entity) {
       return
     }

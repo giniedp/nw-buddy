@@ -133,6 +133,7 @@ describe('attributes #solveAttributePlacingMods', () => {
             key: it.key,
             value: it.input,
           })),
+          placement: null
         })
       ).toEqual(
         data.map((it) => ({

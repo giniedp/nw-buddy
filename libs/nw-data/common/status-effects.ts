@@ -1,4 +1,4 @@
-import { StatusEffectCategory, Statuseffect } from '@nw-data/generated'
+import { StatusEffectCategory, StatusEffectData } from '@nw-data/generated'
 
 const TOWN_BUFF_IDS = [
   'ArcaneBlessingLSB',
@@ -23,23 +23,23 @@ export function getStatusEffectTownBuffIds() {
   return [...TOWN_BUFF_IDS]
 }
 
-export function statusEffectHasCategory(effect: Statuseffect, category: StatusEffectCategory) {
+export function statusEffectHasCategory(effect: StatusEffectData, category: StatusEffectCategory) {
   return effect?.EffectCategories?.includes(category)
 }
 
-export function statusEffectHasEmpowerCap(effect: Statuseffect) {
+export function statusEffectHasEmpowerCap(effect: StatusEffectData) {
   return statusEffectHasCategory(effect, 'Empower') || statusEffectHasCategory(effect, 'Weaken')
 }
 
-export function statusEffectHasFortifyCap(effect: Statuseffect) {
+export function statusEffectHasFortifyCap(effect: StatusEffectData) {
   return statusEffectHasCategory(effect, 'Fortify') || statusEffectHasCategory(effect, 'Rend')
 }
 
-export function statusEffectHasArmorFortifyCap(effect: Statuseffect) {
+export function statusEffectHasArmorFortifyCap(effect: StatusEffectData) {
   return statusEffectHasCategory(effect, 'ArmorFortify') || statusEffectHasCategory(effect, 'ArmorRend')
 }
 
-export function getStatusEffectDMGs(affix: Partial<Statuseffect>, scale: number) {
+export function getStatusEffectDMGs(affix: Partial<StatusEffectData>, scale: number) {
   return getStatusEffectProperties(affix)
     .filter((it) => it.key.startsWith('DMG'))
     .map(({ key, value }) => {
@@ -59,9 +59,9 @@ export function getStatusEffectDMGs(affix: Partial<Statuseffect>, scale: number)
     })
 }
 export function getStatusEffectProperties(
-  affix: Partial<Statuseffect>
+  affix: Partial<StatusEffectData>
 ): Array<{ key: string; value: number | string }> {
-  return Object.entries((affix || {}) as Statuseffect)
+  return Object.entries((affix || {}) as StatusEffectData)
     .filter(([key]) => key !== 'StatusID')
     .map(([key, value]) => {
       if (typeof value === 'string') {
@@ -79,7 +79,7 @@ export function getStatusEffectProperties(
     .filter((it) => !!it.value)
 }
 
-export function stripStatusEffectProperties(item: Statuseffect): Partial<Statuseffect> {
+export function stripStatusEffectProperties(item: StatusEffectData): Partial<StatusEffectData> {
   return Object.entries(item || {})
     .filter(([key, value]) => key !== 'StatusID' && key !== '$source' && !!value)
     .reduce((it, [key, value]) => {

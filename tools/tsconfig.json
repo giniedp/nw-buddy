@@ -4,25 +4,19 @@
     "rootDir": "../",
     "baseUrl": "../",
     "moduleResolution": "node",
-    "module": "CommonJS",
-    "target": "ES6",
-    "allowSyntheticDefaultImports": true,
-    "allowJs": true,
     "importHelpers": true,
-    "skipLibCheck": true
+    "module": "CommonJS",
+    "target": "ESNext",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "declaration": false,
+    "skipLibCheck": true,
+    "allowJs": true
   },
   "buildOptions": {
     "incremental": true,
   },
   "include": [
     "**/*.ts"
-  ],
+  ]
 }
-
-
-
-
-
-
-
-

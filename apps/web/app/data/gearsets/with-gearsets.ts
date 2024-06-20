@@ -8,7 +8,7 @@ import {
   getItemPerkInfos,
   getItemRarity,
 } from '@nw-data/common'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { MasterItemDefinitions } from '@nw-data/generated'
 import { ItemInstance } from '../items'
 import { ItemInstancesDB } from '../items/items.db'
 import { tableIndexBy } from '../nw-data/dsl'
@@ -22,7 +22,7 @@ import { GearsetRecord } from './types'
 export interface GearsetRowSlot {
   slot: EquipSlot
   instance: ItemInstance
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   rarity: ItemRarity
 }
 
@@ -80,7 +80,7 @@ export function withGearsetsRows() {
 
 function selectRow(
   record: GearsetRecord,
-  items: Map<string, ItemDefinitionMaster>,
+  items: Map<string, MasterItemDefinitions>,
   instances: Map<string, ItemInstance>,
 ): GearsetRow {
   if (!record) {

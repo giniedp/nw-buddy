@@ -7,7 +7,7 @@ export async function readLocalizationFile(file: string): Promise<LocDict> {
   return parseLocalizationFile(data)
 }
 
-export function parseLocalizationFile(data: string): LocDict {
+export function parseLocalizationFile(data: string | Buffer): LocDict {
   const parser = new XMLParser({
     preserveOrder: false,
     allowBooleanAttributes: true,

@@ -137,7 +137,7 @@ export function updateNwMaterial({
         // otherwise breaks the 2hGreatswordCondemedSacrariumT5 weapon appearance
       } else {
         pbr.emissiveColor.set(emCol.r, emCol.g, emCol.b)
-        pbr.emissiveIntensity = Math.log(1 + appearance.EmissiveIntensity ?? 0)
+        pbr.emissiveIntensity = Math.log(1 + (appearance.EmissiveIntensity ?? 0))
       }
     }
   }

@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
+import { COLS_STATUSEFFECTDATA, StatusEffectData } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { map } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -30,11 +30,11 @@ export class StatusEffectTableAdapter
   private utils: TableGridUtils<StatusEffectTableRecord> = inject(TableGridUtils)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
-  public entityID(item: Statuseffect): string {
+  public entityID(item: StatusEffectData): string {
     return item.StatusID
   }
 
-  public entityCategories(item: Statuseffect): DataTableCategory[] {
+  public entityCategories(item: StatusEffectData): DataTableCategory[] {
     return [
       {
         id: item['$source'],
@@ -43,7 +43,7 @@ export class StatusEffectTableAdapter
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<Statuseffect> {
+  public virtualOptions(): VirtualGridOptions<StatusEffectData> {
     if (this.config?.virtualOptions) {
       return this.config.virtualOptions()
     }
@@ -88,7 +88,7 @@ function buildStatusEffectTableOptions(util: TableGridUtils<StatusEffectTableRec
     ],
   }
   addGenericColumns(result, {
-    props: COLS_STATUSEFFECT,
+    props: COLS_STATUSEFFECTDATA,
   })
   return result
 }

@@ -12,7 +12,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core'
-import { Elementalmutations } from '@nw-data/generated'
+import { ElementalMutationStaticData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 import { MutaElementDetailModule } from '~/widgets/data/muta-element-detail'
@@ -33,10 +33,10 @@ export class MutaElementTileComponent {
   protected tip = inject(TooltipDirective)
 
   @Input({ required: true })
-  public mutaElement: Elementalmutations
+  public mutaElement: ElementalMutationStaticData
 
   @Input()
-  public options: Array<{ label: string; value: string; icon: string; object: Elementalmutations }>
+  public options: Array<{ label: string; value: string; icon: string; object: ElementalMutationStaticData }>
 
   @HostBinding('style.background-color')
   protected get backgroundColor() {
@@ -55,7 +55,7 @@ export class MutaElementTileComponent {
   }
 
   @Output()
-  public mutaElementChanged = new EventEmitter<Elementalmutations>()
+  public mutaElementChanged = new EventEmitter<ElementalMutationStaticData>()
 
   protected isMenuOpen = false
 
@@ -64,7 +64,7 @@ export class MutaElementTileComponent {
     this.isMenuOpen = this.options?.length > 0
   }
 
-  protected select(value: Elementalmutations) {
+  protected select(value: ElementalMutationStaticData) {
     this.isMenuOpen = false
     this.mutaElementChanged.emit(value)
   }

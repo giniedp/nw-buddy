@@ -16,7 +16,7 @@ import {
   isPerkGem,
   isPerkInherent,
 } from '@nw-data/common'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { MasterItemDefinitions } from '@nw-data/generated'
 import { filter, firstValueFrom, map, switchMap } from 'rxjs'
 import {
   GearsetRecord,
@@ -536,7 +536,7 @@ function canResetPerk(info: ResolvedItemPerkInfo) {
   return false
 }
 
-function canReplaceGem(info: ResolvedItemPerkInfo, item: ItemDefinitionMaster) {
+function canReplaceGem(info: ResolvedItemPerkInfo, item: MasterItemDefinitions) {
   if (isPerkGem(info.bucket)) {
     return true
   }
@@ -549,7 +549,7 @@ function canReplaceGem(info: ResolvedItemPerkInfo, item: ItemDefinitionMaster) {
   return false
 }
 
-function canPlaceMod(info: ResolvedItemPerkInfo, item: ItemDefinitionMaster) {
+function canPlaceMod(info: ResolvedItemPerkInfo, item: MasterItemDefinitions) {
   if (isPerkInherent(info.bucket)) {
     return true
   }

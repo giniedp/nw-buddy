@@ -1,12 +1,11 @@
 import {
-  Crafting,
-  Housingitems,
+  ArmorItemDefinitions,
+  CraftingRecipeData,
+  HouseItems,
   ItemClass,
-  ItemDefinitionMaster,
-  ItemdefinitionsArmor,
-  ItemdefinitionsRunes,
-  ItemdefinitionsWeapons,
-  Perks,
+  MasterItemDefinitions,
+  PerkData,
+  WeaponItemDefinitions,
 } from '@nw-data/generated'
 import { flatten, groupBy } from 'lodash'
 import type { AttributeRef } from './attributes'
@@ -25,67 +24,67 @@ import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { PickByPrefix } from './utils/ts-types'
 
-export function isMasterItem(item: unknown): item is ItemDefinitionMaster {
+export function isMasterItem(item: unknown): item is MasterItemDefinitions {
   return item != null && typeof item === 'object' && 'ItemID' in item
 }
 
-export function isHousingItem(item: unknown): item is Housingitems {
+export function isHousingItem(item: unknown): item is HouseItems {
   return item != null && typeof item === 'object' && 'HouseItemID' in item
 }
 
-export function isItemArmor(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemArmor(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Armor')
 }
 
-export function isItemJewelery(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemJewelery(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Jewelry')
 }
 
-export function isItemWeapon(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemWeapon(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Weapon')
 }
 
-export function isItemShield(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemShield(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('EquippableOffHand')
 }
 
-export function isItemTool(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemTool(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('EquippableTool')
 }
 
-export function isItemConsumable(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemConsumable(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Consumable')
 }
 
-export function isItemNamed(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemNamed(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Named')
 }
 
-export function isItemArtifact(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemArtifact(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Artifact')
 }
 
-export function isItemSwordOrShield(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemSwordOrShield(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Sword') || item?.ItemClass?.includes('Shield')
 }
 
-export function isItemHeartGem(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemHeartGem(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('HeartGem')
 }
 
-export function isPerkItemIngredient(item: ItemDefinitionMaster | null) {
+export function isPerkItemIngredient(item: MasterItemDefinitions | null) {
   return hasItemIngredientCategory(item, 'Perkitem')
 }
 
-export function isItemOfAnyClass(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null, classes: ItemClass[]) {
+export function isItemOfAnyClass(item: Pick<MasterItemDefinitions, 'ItemClass'> | null, classes: ItemClass[]) {
   return classes.some((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
 }
 
-export function getFirstItemClassOf(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null, classes: ItemClass[]) {
+export function getFirstItemClassOf(item: Pick<MasterItemDefinitions, 'ItemClass'> | null, classes: ItemClass[]) {
   return classes.find((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
 }
 
-export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId: string) {
+export function hasItemIngredientCategory(item: MasterItemDefinitions, categoryId: string) {
   return item?.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())
 }
 
@@ -99,7 +98,7 @@ const ITEM_RARITY_LABELS: Record<ItemRarity, string> = {
   legendary: `RarityLevel4_DisplayName`,
   artifact: `ui_artifact`,
 }
-export function getItemRarityWeight(item: ItemDefinitionMaster | Housingitems | ItemRarity) {
+export function getItemRarityWeight(item: MasterItemDefinitions | HouseItems | ItemRarity) {
   let rarity: ItemRarity
   if (typeof item !== 'string') {
     rarity = getItemRarity(item)
@@ -108,7 +107,7 @@ export function getItemRarityWeight(item: ItemDefinitionMaster | Housingitems | 
   }
   return ITEM_RARITIES.indexOf(rarity?.toLowerCase() as any) ?? ITEM_RARITIES.length
 }
-export function getItemRarityNumeric(item: ItemDefinitionMaster | Housingitems | ItemRarity) {
+export function getItemRarityNumeric(item: MasterItemDefinitions | HouseItems | ItemRarity) {
   let rarity: ItemRarity
   if (typeof item !== 'string') {
     rarity = getItemRarity(item)
@@ -117,7 +116,12 @@ export function getItemRarityNumeric(item: ItemDefinitionMaster | Housingitems |
   }
   return ITEM_RARITIES.indexOf(rarity) ?? 0
 }
-export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPerkIds?: string[]): ItemRarity {
+
+export function getItemSourceShort(item: MasterItemDefinitions | HouseItems) {
+  return item?.['$source']?.replace('MasterItemDefinitions_', '')
+}
+
+export function getItemRarity(item: MasterItemDefinitions | HouseItems, itemPerkIds?: string[]): ItemRarity {
   if (!item) {
     return ITEM_RARITIES[0]
   }
@@ -151,7 +155,7 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   return ITEM_RARITIES[rarity]
 }
 
-function isItemUpgradable(item: ItemDefinitionMaster) {
+function isItemUpgradable(item: MasterItemDefinitions) {
   if (item.Tier < NW_ROLL_PERK_ON_UPGRADE_TIER) {
     return false
   }
@@ -161,14 +165,14 @@ function isItemUpgradable(item: ItemDefinitionMaster) {
   return true
 }
 
-export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | ItemRarity): string {
+export function getItemRarityLabel(item: MasterItemDefinitions | HouseItems | ItemRarity): string {
   if (typeof item === 'string') {
     return ITEM_RARITY_LABELS[item]
   }
   return ITEM_RARITY_LABELS[getItemRarity(item)]
 }
 
-export function getItemPerkIdsWithOverride(item: ItemDefinitionMaster, overrides: Record<string, string>) {
+export function getItemPerkIdsWithOverride(item: MasterItemDefinitions, overrides: Record<string, string>) {
   const perks = (getItemPerkKeys(item) || []).map((key) => overrides[key] || (item[key] as string))
   const randoms = (getItemPerkBucketKeys(item) || []).map((key) => overrides[key])
   return [...perks, ...randoms].filter((it) => !!it)
@@ -180,7 +184,7 @@ export interface ItemPerkInfo {
   bucketId?: string
 }
 
-export function getItemPerkInfos(item: ItemDefinitionMaster, overrides?: Record<string, string>): ItemPerkInfo[] {
+export function getItemPerkInfos(item: MasterItemDefinitions, overrides?: Record<string, string>): ItemPerkInfo[] {
   const result: ItemPerkInfo[] = []
   for (const key of getItemPerkKeys(item)) {
     result.push({
@@ -200,8 +204,14 @@ export function getItemPerkInfos(item: ItemDefinitionMaster, overrides?: Record<
   return result
 }
 
-const PERK_KEYS: Array<keyof PickByPrefix<ItemDefinitionMaster, 'Perk'>> = ['Perk1', 'Perk2', 'Perk3', 'Perk4', 'Perk5']
-const PERK_BUCKET_KEYS: Array<keyof PickByPrefix<ItemDefinitionMaster, 'PerkBucket'>> = [
+const PERK_KEYS: Array<keyof PickByPrefix<MasterItemDefinitions, 'Perk'>> = [
+  'Perk1',
+  'Perk2',
+  'Perk3',
+  'Perk4',
+  'Perk5',
+]
+const PERK_BUCKET_KEYS: Array<keyof PickByPrefix<MasterItemDefinitions, 'PerkBucket'>> = [
   'PerkBucket1',
   'PerkBucket2',
   'PerkBucket3',
@@ -209,8 +219,8 @@ const PERK_BUCKET_KEYS: Array<keyof PickByPrefix<ItemDefinitionMaster, 'PerkBuck
   'PerkBucket5',
 ]
 
-export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>): Perks[] {
-  const result: Perks[] = []
+export function getItemPerks(item: MasterItemDefinitions, perks: Map<string, PerkData>): PerkData[] {
+  const result: PerkData[] = []
   for (const id of getItemPerkIds(item)) {
     const perk = perks.get(id)
     if (perk) {
@@ -219,7 +229,7 @@ export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perk
   }
   return result
 }
-export function getItemPerkKeys(item: ItemDefinitionMaster): string[] {
+export function getItemPerkKeys(item: MasterItemDefinitions): string[] {
   const result: string[] = []
   for (const key of PERK_KEYS) {
     if (item && key in item) {
@@ -228,7 +238,7 @@ export function getItemPerkKeys(item: ItemDefinitionMaster): string[] {
   }
   return result
 }
-export function getItemPerkIds(item: ItemDefinitionMaster): string[] {
+export function getItemPerkIds(item: MasterItemDefinitions): string[] {
   const result: string[] = []
   for (const key of PERK_KEYS) {
     if (item && item[key]) {
@@ -238,7 +248,7 @@ export function getItemPerkIds(item: ItemDefinitionMaster): string[] {
   return result
 }
 
-export function getItemPerkBucketKeys(item: ItemDefinitionMaster): string[] {
+export function getItemPerkBucketKeys(item: MasterItemDefinitions): string[] {
   const result: string[] = []
   for (const key of PERK_BUCKET_KEYS) {
     if (item && key in item) {
@@ -247,7 +257,7 @@ export function getItemPerkBucketKeys(item: ItemDefinitionMaster): string[] {
   }
   return result
 }
-export function getItemPerkBucketIds(item: ItemDefinitionMaster) {
+export function getItemPerkBucketIds(item: MasterItemDefinitions) {
   const result = []
   for (const key of PERK_BUCKET_KEYS) {
     if (item && item[key]) {
@@ -264,7 +274,7 @@ export interface ItemPerkSlot {
   bucketId?: string
 }
 
-export function getItemPerkSlots(item: ItemDefinitionMaster): ItemPerkSlot[] {
+export function getItemPerkSlots(item: MasterItemDefinitions): ItemPerkSlot[] {
   const result: ItemPerkSlot[] = []
   for (const key of getItemPerkKeys(item)) {
     result.push({
@@ -285,13 +295,13 @@ export function getItemPerkSlots(item: ItemDefinitionMaster): ItemPerkSlot[] {
   return result
 }
 
-export function getItemMaxGearScore(item: ItemDefinitionMaster, fallback = true) {
+export function getItemMaxGearScore(item: MasterItemDefinitions, fallback = true) {
   return item?.GearScoreOverride || item?.MaxGearScore || (fallback ? NW_MAX_GEAR_SCORE : null)
 }
-export function getItemMinGearScore(item: ItemDefinitionMaster, fallback = true) {
+export function getItemMinGearScore(item: MasterItemDefinitions, fallback = true) {
   return item?.GearScoreOverride || item?.MinGearScore || (fallback ? NW_MIN_GEAR_SCORE : null)
 }
-export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
+export function getItemGearScoreLabel(item: MasterItemDefinitions) {
   if (!item) {
     return ''
   }
@@ -304,7 +314,7 @@ export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
   return String(item.MaxGearScore || item.MinGearScore || '')
 }
 
-export function hasItemGearScore(item: ItemDefinitionMaster) {
+export function hasItemGearScore(item: MasterItemDefinitions) {
   return item && (item.GearScoreOverride || item.MinGearScore || item.MaxGearScore)
 }
 
@@ -326,7 +336,7 @@ export function getItemTypeLabel(type: string) {
   return ITEM_TYPE_LABELS[type] || null
 }
 
-export function getItemTypeName(item: ItemDefinitionMaster | Housingitems) {
+export function getItemTypeName(item: MasterItemDefinitions | HouseItems) {
   if (isMasterItem(item)) {
     return item.ItemTypeDisplayName
   }
@@ -336,7 +346,7 @@ export function getItemTypeName(item: ItemDefinitionMaster | Housingitems) {
   return null
 }
 
-export function getItemId(item: ItemDefinitionMaster | Housingitems) {
+export function getItemId(item: MasterItemDefinitions | HouseItems) {
   if (isMasterItem(item)) {
     return item.ItemID
   }
@@ -346,7 +356,7 @@ export function getItemId(item: ItemDefinitionMaster | Housingitems) {
   return null
 }
 
-export function getItemIdFromRecipe(item: Crafting): string {
+export function getItemIdFromRecipe(item: CraftingRecipeData): string {
   if (!item) {
     return null
   }
@@ -367,7 +377,7 @@ export function getItemIdFromRecipe(item: Crafting): string {
   // )
 }
 
-export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Map<string, Crafting[]>) {
+export function getRecipeForItem(item: MasterItemDefinitions | HouseItems, recipes: Map<string, CraftingRecipeData[]>) {
   const id = getItemId(item)
   if (!id) {
     return null
@@ -390,21 +400,21 @@ export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, reci
   // })
 }
 
-export function getItemIconPath(item: ItemDefinitionMaster | Housingitems, female: boolean = false) {
+export function getItemIconPath(item: MasterItemDefinitions | HouseItems, female: boolean = false) {
   if (!item) {
     return null
   }
   return item.IconPath
 }
 
-export function getArmorRatingElemental(item: ItemdefinitionsArmor | ItemdefinitionsWeapons, gearScore: number) {
+export function getArmorRatingElemental(item: ArmorItemDefinitions | WeaponItemDefinitions, gearScore: number) {
   if (!item?.ElementalArmorSetScaleFactor) {
     return 0
   }
   return getArmorSetRating(gearScore) * item.ElementalArmorSetScaleFactor * item.ArmorRatingScaleFactor
 }
 
-export function getArmorRatingPhysical(item: ItemdefinitionsArmor | ItemdefinitionsWeapons, gearScore: number) {
+export function getArmorRatingPhysical(item: ArmorItemDefinitions | WeaponItemDefinitions, gearScore: number) {
   if (!item?.PhysicalArmorSetScaleFactor) {
     return 0
   }
@@ -438,7 +448,7 @@ export function getUIHousingCategoryLabel(value: string) {
 }
 
 export interface ItemStat {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   label: string
   value: string | number
 }
@@ -450,8 +460,8 @@ export function getItemStatsWeapon({
   playerLevel,
   attrValueSums,
 }: {
-  item: ItemDefinitionMaster
-  stats: ItemdefinitionsWeapons | ItemdefinitionsRunes
+  item: MasterItemDefinitions
+  stats: WeaponItemDefinitions | WeaponItemDefinitions
   gearScore: number
   playerLevel: number
   attrValueSums?: Record<AttributeRef, number>
@@ -473,7 +483,7 @@ export function getItemStatsWeapon({
         playerLevel,
         attrSums: attrValueSums,
         gearScore: gearScore,
-        weapon: stats as ItemdefinitionsWeapons,
+        weapon: stats as WeaponItemDefinitions,
       }),
     })
   }
@@ -534,7 +544,7 @@ export function getItemStatsWeapon({
   return result
 }
 
-export function getItemStatsArmor(item: ItemDefinitionMaster, stats: ItemdefinitionsArmor, score: number) {
+export function getItemStatsArmor(item: MasterItemDefinitions, stats: ArmorItemDefinitions, score: number) {
   const result: ItemStat[] = []
   if (stats?.ElementalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
     result.push({
@@ -571,7 +581,7 @@ const ATTRIBUTION_ICONS = new CaseInsensitiveMap(
   }),
 )
 
-export function getItemAttribution(item: ItemDefinitionMaster | Housingitems) {
+export function getItemAttribution(item: MasterItemDefinitions | HouseItems) {
   if (!item?.AttributionId) {
     return null
   }
@@ -643,7 +653,7 @@ export function getAppearanceGearsetId(appearanceID: string) {
   return appearanceID.replace(new RegExp(APPEARANCE_ID_SUFFIXES_PATTERN, 'i'), '')
 }
 
-export function getItemCostumeId(item: ItemDefinitionMaster) {
+export function getItemCostumeId(item: MasterItemDefinitions) {
   if (item?.ItemID?.startsWith('NG_')) {
     return item.ItemID.replace('NG_', '')
   }
@@ -734,7 +744,7 @@ export function tokenizeItemID(itemID: string): string[] {
   )
 }
 
-export function checkItemSet(items: ItemDefinitionMaster[]) {
+export function checkItemSet(items: MasterItemDefinitions[]) {
   items = items.filter((it) => it.ItemType === 'Weapon')
   const tokens = flatten(items.map((it) => tokenizeItemID(it.ItemID)))
   const data = Array.from(Object.entries(groupBy(tokens, (it) => it)))
@@ -742,7 +752,7 @@ export function checkItemSet(items: ItemDefinitionMaster[]) {
     .sort((a, b) => b[1] - a[1])
   console.log(data)
 }
-export function getItemSetFamilyName(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
+export function getItemSetFamilyName(item: Pick<MasterItemDefinitions, 'ItemID'>) {
   const tokens = tokenizeItemID(item?.ItemID) || []
   const familyTokens = tokens.filter(
     (token) => !ITEM_ID_TOKEN_TOKENS.includes(token) && !token.match(/^\d\d\d$/) && !token.match(/^t\d+$/),
@@ -750,7 +760,7 @@ export function getItemSetFamilyName(item: Pick<ItemDefinitionMaster, 'ItemID'>)
   return familyTokens.join(' ')
 }
 
-export function getItemVersionString(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
+export function getItemVersionString(item: Pick<MasterItemDefinitions, 'ItemID'>) {
   const tokens = tokenizeItemID(item?.ItemID) || []
   const version = tokens.filter((token) => ITEM_ID_TOKEN_VERSION.includes(token)).join(' ')
   const tierVersion = tokens.filter((token) => ITEM_ID_TOKEN_TIER.includes(token)).find((it) => it.match(/^t\d\d+$/))

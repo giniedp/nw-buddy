@@ -5,7 +5,7 @@ import {
   getAbilityCategoryTag,
   getWeaponTagLabel,
 } from '@nw-data/common'
-import { Ability, COLS_ABILITY, Statuseffect } from '@nw-data/generated'
+import { AbilityData, COLS_ABILITYDATA, StatusEffectData } from '@nw-data/generated'
 import { map, switchMap } from 'rxjs'
 import { sanitizeHtml } from '~/nw'
 import { NwWeaponType } from '~/nw/weapon-types'
@@ -14,10 +14,10 @@ import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type AbilityTableUtils = TableGridUtils<AbilityTableRecord>
-export type AbilityTableRecord = Ability & {
+export type AbilityTableRecord = AbilityData & {
   $weaponType: NwWeaponType
-  $selfApplyStatusEffect: Statuseffect[]
-  $otherApplyStatusEffect: Statuseffect[]
+  $selfApplyStatusEffect: StatusEffectData[]
+  $otherApplyStatusEffect: StatusEffectData[]
 }
 
 export function abilityColIcon(util: AbilityTableUtils) {
@@ -30,7 +30,7 @@ export function abilityColIcon(util: AbilityTableUtils) {
     pinned: true,
     filter: ExpressionFilter,
     filterParams: ExpressionFilter.params({
-      fields: Object.keys(COLS_ABILITY),
+      fields: Object.keys(COLS_ABILITYDATA),
     }),
     width: 62,
     cellClass: ['overflow-visible'],

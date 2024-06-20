@@ -1,7 +1,7 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, explainPerkMods, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
-import { Affixstats, Perks } from '@nw-data/generated'
+import { AffixStatData, PerkData } from '@nw-data/generated'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
@@ -141,7 +141,7 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
     super({ perkId: null })
   }
 
-  public load(idOrItem: string | Perks) {
+  public load(idOrItem: string | PerkData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ perkId: idOrItem })
     } else {
@@ -150,12 +150,12 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
   }
 }
 
-function selectProperties(item: Perks) {
+function selectProperties(item: PerkData) {
   const reject = ['$source', 'IconPath', 'DisplayName', 'Description']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }
 
-function selectAffixProperties(item: Affixstats) {
+function selectAffixProperties(item: AffixStatData) {
   const reject = ['$source']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

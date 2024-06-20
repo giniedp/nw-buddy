@@ -1,16 +1,16 @@
 import { EquipSlotId, getItemGsBonus, getItemIconPath, getPerkMultiplier } from '@nw-data/common'
-import { Ability, Affixstats, Housingitems, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
+import { AbilityData, AffixStatData, HouseItems, MasterItemDefinitions, PerkData, StatusEffectData } from '@nw-data/generated'
 import { humanize } from '~/utils'
 import type { ActiveBonus, ActiveMods } from './types'
 
 export interface ModifierSource {
   label?: string
   icon?: string
-  perk?: Perks
-  ability?: Ability
-  item?: ItemDefinitionMaster | Housingitems
+  perk?: PerkData
+  ability?: AbilityData
+  item?: MasterItemDefinitions | HouseItems
   slot?: EquipSlotId
-  effect?: Statuseffect
+  effect?: StatusEffectData
 }
 
 export interface ModifierValue<T extends string | number> {
@@ -33,8 +33,8 @@ export interface ModifierResult {
 
 export type ObjectKey<O, T> = { [K in keyof O]: O[K] extends T ? K : never }[keyof O & string]
 
-export type Modifier = Ability | Statuseffect | Affixstats
-export type ModifierKey<T> = ObjectKey<Ability, T> | ObjectKey<Statuseffect, T> | ObjectKey<Affixstats, T>
+export type Modifier = AbilityData | StatusEffectData | AffixStatData
+export type ModifierKey<T> = ObjectKey<AbilityData, T> | ObjectKey<StatusEffectData, T> | ObjectKey<AffixStatData, T>
 
 export interface ModifierSum {
   key: ModifierKey<number>
@@ -83,7 +83,7 @@ export function* eachBonus({ bonuses }: ActiveMods) {
 }
 
 function modifierMatcher<T>(key: ModifierKey<T>): ModifierMatcherFn<T> {
-  return (mod: ActiveBonus | Statuseffect | Affixstats | Ability): T => {
+  return (mod: ActiveBonus | StatusEffectData | AffixStatData | AbilityData): T => {
     if (!mod) {
       return null
     }
@@ -97,7 +97,7 @@ function modifierMatcher<T>(key: ModifierKey<T>): ModifierMatcherFn<T> {
   }
 }
 
-export type ModifierMatcherFn<T> = (mod: ActiveBonus | Statuseffect | Affixstats | Ability) => T
+export type ModifierMatcherFn<T> = (mod: ActiveBonus | StatusEffectData | AffixStatData | AbilityData) => T
 export function eachModifier<T extends number | string>(
   key: ModifierKey<T>,
   mods: ActiveMods,

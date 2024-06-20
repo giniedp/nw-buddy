@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo } from '@nw-data/common'
-import { COLS_VITALS } from '@nw-data/generated'
+import { COLS_VITALSDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -82,19 +82,13 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Tab
         dungeons: this.db.gameModes,
         categories: this.db.vitalsCategoriesMap,
         territoriesMap: this.db.territoriesMap,
-        areasMap: this.db.areasMap,
-        poisMap: this.db.poisMap,
       }).pipe(
-        map(({ vitals, vitalsMeta, dungeons, categories, territoriesMap, areasMap, poisMap }) => {
+        map(({ vitals, vitalsMeta, dungeons, categories, territoriesMap }) => {
           return vitals.map((vital): VitalTableRecord => {
             const familyInfo = getVitalFamilyInfo(vital)
             const combatInfo = getVitalCategoryInfo(vital)
             const metadata = vitalsMeta.get(vital.VitalsID)
-            const zones = metadata?.territories
-              ?.map((id) => {
-                return territoriesMap.get(id) || areasMap.get(id) || poisMap.get(id)
-              })
-              .filter((it) => !!it)
+            const zones = metadata?.territories?.map((id) => territoriesMap.get(id)).filter((it) => !!it)
             return {
               ...vital,
               $dungeons: getVitalDungeons(vital, dungeons, vitalsMeta),
@@ -141,7 +135,7 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_VITALS,
+    props: COLS_VITALSDATA,
   })
   return result
 }

@@ -1,7 +1,7 @@
 import { computed, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { Dyecolors, Itemappearancedefinitions } from '@nw-data/generated'
+import { DyeColorData, ArmorAppearanceDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TransmogItem, TransmogService } from '~/widgets/data/transmog'
 import { ModelsService } from '~/widgets/model-viewer'
@@ -76,9 +76,9 @@ export const TransmogEditorStore = signalStore(
     const db = inject(NwDataService)
     const service = inject(TransmogService)
     return {
-      dyeColorsMap: toSignal(db.dyeColorsMap, { initialValue: new Map<number, Dyecolors>() }),
+      dyeColorsMap: toSignal(db.dyeColorsMap, { initialValue: new Map<number, DyeColorData>() }),
       itemAppearancesMap: toSignal(db.itemAppearancesMap, {
-        initialValue: new Map<string, Itemappearancedefinitions>(),
+        initialValue: new Map<string, ArmorAppearanceDefinitions>(),
       }),
       transmogMap: toSignal(service.transmogItemsMap$, { initialValue: new Map<string, TransmogItem>() }),
     }
@@ -94,7 +94,7 @@ export const TransmogEditorStore = signalStore(
     function getDye(id: number) {
       return dyeColorsMap().get(id)
     }
-    function getDyeSettings(ts: TransmogSlotState, appearance: Itemappearancedefinitions) {
+    function getDyeSettings(ts: TransmogSlotState, appearance: ArmorAppearanceDefinitions) {
       const rDisabled = 1 === Number(appearance?.RDyeSlotDisabled)
       const gDisabled = 1 === Number(appearance?.GDyeSlotDisabled)
       const bDisabled = 1 === Number(appearance?.BDyeSlotDisabled)

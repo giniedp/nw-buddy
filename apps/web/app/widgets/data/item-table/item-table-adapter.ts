@@ -1,9 +1,9 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
-import { COLS_ITEMDEFINITIONMASTER, ItemDefinitionMaster } from '@nw-data/generated'
-import { TranslateService } from '~/i18n'
+import { COLS_MASTERITEMDEFINITIONS, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
+import { TranslateService } from '~/i18n'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -92,7 +92,7 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
         if (!id) {
           return null
         }
-        return itemsMap.get(id) || housingMap.get(id) || { ItemID: id } as ItemDefinitionMaster
+        return itemsMap.get(id) || housingMap.get(id) || ({ ItemID: id } as MasterItemDefinitions)
       }
       items = items.map((it): ItemTableRecord => {
         const perks = getItemPerks(it, perksMap)
@@ -148,7 +148,7 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
     ],
   }
   addGenericColumns(result, {
-    props: COLS_ITEMDEFINITIONMASTER,
+    props: COLS_MASTERITEMDEFINITIONS,
   })
   return result
 }
@@ -174,7 +174,7 @@ export function buildPickerItemGridOptions(util: TableGridUtils<ItemTableRecord>
     ],
   }
   addGenericColumns(result, {
-    props: COLS_ITEMDEFINITIONMASTER,
+    props: COLS_MASTERITEMDEFINITIONS,
   })
   return result
 }

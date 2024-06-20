@@ -1,6 +1,6 @@
 import { Directive, Input } from '@angular/core'
 import { territoryImage } from '@nw-data/common'
-import { Territorydefinitions } from '@nw-data/generated'
+import { TerritoryDefinition } from '@nw-data/generated'
 import { defer } from 'lodash'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 
@@ -10,7 +10,7 @@ import { TerritoriesPreferencesService } from '~/preferences/territories-prefere
 })
 export class TerritoryDirective {
   @Input()
-  public nwbTerritory: Territorydefinitions
+  public nwbTerritory: TerritoryDefinition
 
   public get image() {
     return territoryImage(this.nwbTerritory, 'territory')

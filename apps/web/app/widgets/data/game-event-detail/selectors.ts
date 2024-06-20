@@ -1,5 +1,5 @@
 import { ItemRarity, getItemIconPath, getItemRarity, isHousingItem } from '@nw-data/common'
-import { GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 export interface GameEventReward {
   label: string
@@ -9,7 +9,7 @@ export interface GameEventReward {
   rarity?: ItemRarity
 }
 
-export function selectGameEventItemReward(event: GameEvent) {
+export function selectGameEventItemReward(event: GameEventData) {
   const itemReward = event?.ItemReward
   if (!itemReward) {
     return null
@@ -29,7 +29,7 @@ export function selectGameEventItemReward(event: GameEvent) {
   }
 }
 
-export function selectGameEventRewards(event: GameEvent, item: ItemDefinitionMaster | Housingitems) {
+export function selectGameEventRewards(event: GameEventData, item: MasterItemDefinitions | HouseItems) {
   const result: GameEventReward[] = []
   if (!event) {
     return null

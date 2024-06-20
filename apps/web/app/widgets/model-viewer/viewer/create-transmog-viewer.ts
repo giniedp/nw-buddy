@@ -1,4 +1,4 @@
-import { Dyecolors } from '@nw-data/generated'
+import { DyeColorData } from '@nw-data/generated'
 import 'babylonjs'
 import { BABYLON } from 'babylonjs-viewer'
 import { NwMaterialExtension } from './nw-material-extension'
@@ -29,10 +29,10 @@ export function createTransmogViewer(canvas: HTMLCanvasElement) {
   function useAppearance(
     tag: string,
     options: {
-      dyeR: Dyecolors | null
-      dyeG: Dyecolors | null
-      dyeB: Dyecolors | null
-      dyeA: Dyecolors | null
+      dyeR: DyeColorData | null
+      dyeG: DyeColorData | null
+      dyeB: DyeColorData | null
+      dyeA: DyeColorData | null
       debugMask: boolean
       dyeEnabled: boolean
       appearance: any
@@ -450,10 +450,10 @@ function updateAppearance(
   scene: BABYLON.Scene,
   tag: string,
   options: {
-    dyeR: Dyecolors | null
-    dyeG: Dyecolors | null
-    dyeB: Dyecolors | null
-    dyeA: Dyecolors | null
+    dyeR: DyeColorData | null
+    dyeG: DyeColorData | null
+    dyeB: DyeColorData | null
+    dyeA: DyeColorData | null
     debugMask: boolean
     dyeEnabled: boolean
     appearance: any

@@ -1,9 +1,8 @@
-import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Emotedefinitions, Playertitles } from '@nw-data/generated'
+import { PlayerTitleData } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type PlayertitlesTableUtils = TableGridUtils<PlayertitlesTableRecord>
-export type PlayertitlesTableRecord = Playertitles
+export type PlayertitlesTableRecord = PlayerTitleData
 
 export function playerTitleColID(util: PlayertitlesTableUtils) {
   return util.colDef<string>({

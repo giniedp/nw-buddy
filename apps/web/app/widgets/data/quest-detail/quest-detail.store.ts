@@ -1,7 +1,7 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { getItemIconPath, getItemId, getItemRarity, getQuestRequiredAchuevmentIds, getQuestTypeIcon, isHousingItem } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster, Objective } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions, Objectives } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { FollowUpQuest } from './types'
 import { humanize } from '~/utils'
@@ -63,8 +63,8 @@ export class QuestDetailStore extends ComponentStore<{ questId: string }> {
 }
 
 function selectFollowupQuests(
-  quest: Objective,
-  questsByRequiredAchievementId: Map<string, Objective[]>
+  quest: Objectives,
+  questsByRequiredAchievementId: Map<string, Objectives[]>
 ): FollowUpQuest[] {
   if (!quest.AchievementId) {
     return null
@@ -82,12 +82,12 @@ function selectFollowupQuests(
   })
 }
 
-function selectPreviousQuests(quest: Objective, questsByAchievementId: Map<string, Objective[]>): Objective[] {
+function selectPreviousQuests(quest: Objectives, questsByAchievementId: Map<string, Objectives[]>): Objectives[] {
   const quests = getQuestRequiredAchuevmentIds(quest).map((id) => questsByAchievementId.get(id) || [])
   return flatten(quests)
 }
 
-function selectReward(item: ItemDefinitionMaster | Housingitems, qty: number): GameEventReward {
+function selectReward(item: MasterItemDefinitions | HouseItems, qty: number): GameEventReward {
   if (!item) {
     return null
   }

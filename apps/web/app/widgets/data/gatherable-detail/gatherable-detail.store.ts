@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
-import { Gatherables } from '@nw-data/generated'
+import { GatherableData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -53,7 +53,7 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
       if (!size) {
         return [gatherablesMap.get(gatherableId)]
       }
-      const result: Gatherables[] = []
+      const result: GatherableData[] = []
       for (const siblingSize of getGatherableNodeSizes()) {
         const siblingId = gatherableId.replace(size, siblingSize)
         const sibling = gatherablesMap.get(siblingId)
@@ -125,7 +125,7 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
     super({ recordId: null })
   }
 
-  public load(idOrItem: string | Gatherables) {
+  public load(idOrItem: string | GatherableData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ recordId: idOrItem })
     } else {

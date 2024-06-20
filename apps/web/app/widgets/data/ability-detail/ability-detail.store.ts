@@ -1,7 +1,7 @@
 import { computed } from '@angular/core'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Ability } from '@nw-data/generated'
+import { AbilityData } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { withNwData } from '~/data/with-nw-data'
 import { humanize, rejectKeys } from '~/utils'
@@ -20,7 +20,7 @@ export const AbilityDetailStore = signalStore(
   }),
   withMethods((state) => {
     return {
-      load(idOrItem: string | Ability) {
+      load(idOrItem: string | AbilityData) {
         if (typeof idOrItem === 'string') {
           patchState(state, { abilityId: idOrItem })
         } else {
@@ -90,7 +90,7 @@ export const AbilityDetailStore = signalStore(
   }),
 )
 
-function selectProperties(item: Ability) {
+function selectProperties(item: AbilityData) {
   const reject = ['$source', 'Icon', 'DisplayName', 'Description', 'Sound']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

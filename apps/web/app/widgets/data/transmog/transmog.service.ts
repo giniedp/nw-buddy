@@ -1,13 +1,9 @@
 import { Injectable, inject } from '@angular/core'
-import {
-  ItemDefinitionMaster,
-  Itemappearancedefinitions,
-  ItemdefinitionsInstrumentsappearances,
-  ItemdefinitionsWeaponappearances,
-} from '@nw-data/generated'
+import { getAppearanceGearsetId } from '@nw-data/common'
+import { ArmorAppearanceDefinitions, MasterItemDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { Observable, combineLatest, map, of } from 'rxjs'
-import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
+import { TranslateService } from '~/i18n'
 import { CaseInsensitiveMap, selectStream } from '~/utils'
 import { TRANSMOG_CATEGORIES, TransmogCategory, categorizeAppearance } from './transmog-categories'
 import {
@@ -18,7 +14,6 @@ import {
   getAppearanceIdName,
   haveAppearancesSameModelFile,
 } from './transmog-item'
-import { getAppearanceGearsetId } from '@nw-data/common'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogService {
@@ -34,7 +29,7 @@ export class TransmogService {
       weaponAppearances: this.db.weaponAppearances,
       instrumentAppearances: this.db.instrumentAppearances,
     },
-    (data) => selectAppearances(data)
+    (data) => selectAppearances(data),
   )
   public readonly transmogItemsMap$ = selectStream(this.transmogItems$, (appearances) => {
     return new CaseInsensitiveMap<string, TransmogItem>(appearances.map((it) => [it.id, it]))
@@ -62,7 +57,7 @@ export class TransmogService {
           }
           return true
         })
-      })
+      }),
     )
   }
 }
@@ -74,10 +69,10 @@ function selectAppearances({
   instrumentAppearances,
   categories,
 }: {
-  itemsMap: Map<string, ItemDefinitionMaster[]>
-  itemAppearances: Itemappearancedefinitions[]
-  weaponAppearances: ItemdefinitionsWeaponappearances[]
-  instrumentAppearances: ItemdefinitionsInstrumentsappearances[]
+  itemsMap: Map<string, MasterItemDefinitions[]>
+  itemAppearances: ArmorAppearanceDefinitions[]
+  weaponAppearances: WeaponAppearanceDefinitions[]
+  instrumentAppearances: WeaponAppearanceDefinitions[]
   categories: TransmogCategory[]
 }): TransmogItem[] {
   const appearances = [...itemAppearances, ...weaponAppearances, ...instrumentAppearances]
@@ -99,7 +94,7 @@ function selectAppearances({
       subcategory: subcategory,
       items: sources,
     }
-    const appearanceName = (appearance as Itemappearancedefinitions).AppearanceName
+    const appearanceName = (appearance as ArmorAppearanceDefinitions).AppearanceName
     if (!appearanceName || !gender) {
       transmogMap.set(transmog.id, transmog)
       continue

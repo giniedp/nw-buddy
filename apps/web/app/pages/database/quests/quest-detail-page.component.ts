@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { getQuestTypeIcon } from '@nw-data/common'
-import { Objective } from '@nw-data/generated'
+import { Objectives } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -45,7 +45,7 @@ export class QuestDetailPageComponent {
     //
   }
 
-  protected onEntity(entity: Objective) {
+  protected onEntity(entity: Objectives) {
     if (!entity) {
       return
     }

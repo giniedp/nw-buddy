@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Mounts } from '@nw-data/generated'
+import { MountData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 
 @Component({
@@ -23,12 +23,12 @@ import { NwModule } from '~/nw'
 })
 export class MountTileComponent {
   @Input()
-  public set nwbMountTile(value: Mounts) {
+  public set nwbMountTile(value: MountData) {
     this.item = value
   }
 
   @Input()
-  public set item(value: Mounts) {
+  public set item(value: MountData) {
     this.icon = value?.HiResIconPath || NW_FALLBACK_ICON
     this.title = value?.DisplayName
   }

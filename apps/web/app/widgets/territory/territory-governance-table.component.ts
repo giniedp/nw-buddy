@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { combineLatest, defer, map } from 'rxjs'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { shareReplayRefCount } from '~/utils'
 
 export interface StandingRow {
@@ -33,12 +33,12 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   },
 })
 export class TerritoryGovernanceTableComponent {
-  protected data$ = defer(() => this.db.data.territorygovernance()).pipe(shareReplayRefCount(1))
+  protected data$ = this.db.useTable((it) => it.TerritoryUpkeepDefinition.TerritoryUpkeep).pipe(shareReplayRefCount(1))
   protected territries$ = defer(() =>
     combineLatest({
       data: this.data$,
       territories: this.db.territoriesMap,
-    })
+    }),
   ).pipe(
     map(({ data, territories }) => {
       return Object.keys(data[0])
@@ -47,7 +47,7 @@ export class TerritoryGovernanceTableComponent {
           const id = Number(it.replace('EarningsDistributionTID', ''))
           return territories.get(id)
         })
-    })
+    }),
   )
 
   public constructor(private db: NwDataService) {

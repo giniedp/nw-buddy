@@ -8,13 +8,13 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { ParsedLootTag } from 'libs/nw-data/common/loot'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type LootBucketTableUtils = TableGridUtils<LootBucketTableRecord>
 export type LootBucketTableRecord = LootBucketRow & {
-  $item: ItemDefinitionMaster | Housingitems
+  $item: MasterItemDefinitions | HouseItems
 }
 
 export function lootBucketColIcon(util: LootBucketTableUtils) {

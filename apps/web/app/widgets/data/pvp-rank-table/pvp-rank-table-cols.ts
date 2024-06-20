@@ -1,8 +1,8 @@
-import { PvpRank } from '@nw-data/generated'
+import { PvPRankData } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type PvpRankTableUtils = TableGridUtils<PvpRankTableRecord>
-export type PvpRankTableRecord = PvpRank
+export type PvpRankTableRecord = PvPRankData
 
 export function pvpRankColLevel(util: PvpRankTableUtils) {
   return util.colDef<number>({
@@ -26,10 +26,9 @@ export function pvpRankColGameEvent(util: PvpRankTableUtils) {
     colId: 'gameEventId',
     headerValueGetter: () => 'Game Event',
     width: 250,
-    field: 'GameEventId'
+    field: 'GameEventId',
   })
 }
-
 
 export function pvpRankColDescription(util: PvpRankTableUtils) {
   return util.colDef<string>({

@@ -32,20 +32,6 @@ import { StackedValueControlComponent } from './stacked-value-control.component'
 export class OffenderModsControlComponent {
   protected store = inject(DamageCalculatorStore)
   private data = inject(NwDataService)
-  protected balanceMods = selectSignal(this.data.pvpBalance, (rows) => {
-    if (!rows?.length) {
-      return []
-    }
-    return rows
-      .filter((it) => it.WeaponBaseDamageAdjustment)
-      .map((it) => {
-        return {
-          mode: it.$source,
-          weapon: it.BalanceTarget,
-          value: it.WeaponBaseDamageAdjustment,
-        }
-      })
-  })
 
   protected modPvP = offenderAccessor(this.store, 'modPvP')
   protected modAmmo = offenderAccessor(this.store, 'modAmmo')

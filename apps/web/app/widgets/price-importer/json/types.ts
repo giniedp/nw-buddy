@@ -1,8 +1,8 @@
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 export interface JsonPriceItem {
   id: string
-  item: ItemDefinitionMaster | Housingitems
+  item: MasterItemDefinitions | HouseItems
   price: number
   data: any
   keys: string[]

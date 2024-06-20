@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
-import { COLS_OBJECTIVE, Objective } from '@nw-data/generated'
+import { COLS_OBJECTIVES, Objectives } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -32,11 +32,11 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Tab
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<QuestTableRecord> = inject(TableGridUtils)
 
-  public entityID(item: Objective): string | number {
+  public entityID(item: Objectives): string | number {
     return item.ObjectiveID
   }
 
-  public entityCategories(item: Objective): DataTableCategory[] {
+  public entityCategories(item: Objectives): DataTableCategory[] {
     if (!item.Type) {
       return null
     }
@@ -48,7 +48,7 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Tab
       },
     ]
   }
-  public virtualOptions(): VirtualGridOptions<Objective> {
+  public virtualOptions(): VirtualGridOptions<Objectives> {
     return null
   }
   public gridOptions(): GridOptions<QuestTableRecord> {
@@ -81,7 +81,7 @@ function buildOptions(util: TableGridUtils<QuestTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_OBJECTIVE,
+    props: COLS_OBJECTIVES,
   })
   return result
 }

@@ -6,7 +6,7 @@ import { shareReplayRefCount } from '~/utils'
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { getCraftingXP, getItemId } from '@nw-data/common'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { groupBy, sumBy } from 'lodash'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { NW_TRADESKILLS_INFOS_MAP } from '~/nw/tradeskill'
@@ -93,7 +93,7 @@ function aggregate(step: CraftingStepWithAmount): SummaryRow[] {
 }
 
 function aggregateSkills(
-  rows: Array<{ recipe: Crafting; item: ItemDefinitionMaster | Housingitems; xp: number; count: number }>
+  rows: Array<{ recipe: CraftingRecipeData; item: MasterItemDefinitions | HouseItems; xp: number; count: number }>
 ) {
   const result = new Map<string, SkillRow>()
 

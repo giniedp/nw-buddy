@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { getItemIconPath, getItemIdFromRecipe } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -44,7 +44,7 @@ export class CraftingDetailPageComponent {
     //
   }
 
-  protected onEntity(entity: ItemDefinitionMaster | Housingitems) {
+  protected onEntity(entity: MasterItemDefinitions | HouseItems) {
     if (!entity) {
       return
     }

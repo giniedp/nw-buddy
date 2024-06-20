@@ -2,7 +2,7 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { EquipSlotId, ItemPerkInfo, NW_MAX_CHARACTER_LEVEL, PerkBucket, getItemPerkInfos } from '@nw-data/common'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
@@ -94,12 +94,12 @@ export function resolveGearsetSlotInstances(record: GearsetRecord, itemDB: ItemI
 export interface ResolvedGersetSlotItem {
   slot: EquipSlotId
   instance: ItemInstance
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   perks: ResolvedItemPerkInfo[]
 }
 export interface ResolvedItemPerkInfo extends ItemPerkInfo {
   bucket: PerkBucket
-  perk: Perks
+  perk: PerkData
 }
 export function resolveGearsetSlotItems(record: GearsetRecord, itemDB: ItemInstancesDB, db: NwDataService) {
   return combineLatest({

@@ -11,6 +11,7 @@ import {
   getItemRarity,
   getItemRarityLabel,
   getItemRarityWeight,
+  getItemSourceShort,
   getItemTierAsRoman,
   getItemTradingFamilyLabel,
   getItemTradingGroupLabel,
@@ -20,7 +21,7 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Affixstats, Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { AffixStatData, HouseItems, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -28,12 +29,13 @@ import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 
 export type ItemTableUtils = TableGridUtils<ItemTableRecord>
-export type ItemTableRecord = ItemDefinitionMaster & {
-  $perks?: Perks[]
-  $affixes?: Affixstats[]
+export type ItemTableRecord = MasterItemDefinitions & {
+  $source?: string
+  $perks?: PerkData[]
+  $affixes?: AffixStatData[]
   $perkBuckets?: string[]
-  $transformTo?: ItemDefinitionMaster | Housingitems
-  $transformFrom?: Array<ItemDefinitionMaster | Housingitems>
+  $transformTo?: MasterItemDefinitions | HouseItems
+  $transformFrom?: Array<MasterItemDefinitions | HouseItems>
 }
 
 export function itemColIcon(util: ItemTableUtils) {
@@ -196,7 +198,7 @@ export function itemColTransformFrom(util: ItemTableUtils) {
 }
 
 export function itemColPerks(
-  util: TableGridUtils<ItemDefinitionMaster & { $perks?: Perks[]; $perkBuckets?: string[] }>,
+  util: TableGridUtils<MasterItemDefinitions & { $perks?: PerkData[]; $perkBuckets?: string[] }>,
 ) {
   return util.colDef<string[]>({
     colId: 'perks',
@@ -239,7 +241,7 @@ export function itemColPerks(
       search: true,
       order: 'asc',
       getOptions: ({ data }) => {
-        const perks: Perks[] = data.$perks || []
+        const perks: PerkData[] = data.$perks || []
         return perks.map((perk) => {
           const text = util.i18n.get(
             perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedSuffix || perk.AppliedPrefix,
@@ -327,7 +329,7 @@ export function itemColTier(util: ItemTableUtils) {
   })
 }
 
-export function itemColBookmark(util: TableGridUtils<ItemDefinitionMaster>) {
+export function itemColBookmark(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userBookmark',
     headerValueGetter: () => 'Bookmark',
@@ -338,13 +340,13 @@ export function itemColBookmark(util: TableGridUtils<ItemDefinitionMaster>) {
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.mark || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
-      getId: (value: ItemDefinitionMaster) => getItemId(value),
+      getId: (value: MasterItemDefinitions) => getItemId(value),
       pref: util.itemPref,
     }),
   })
 }
 
-export function itemColStockCount(util: TableGridUtils<ItemDefinitionMaster>) {
+export function itemColStockCount(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userStockCount',
     headerValueGetter: () => 'In Stock',
@@ -354,7 +356,7 @@ export function itemColStockCount(util: TableGridUtils<ItemDefinitionMaster>) {
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.stock,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
-      getId: (value: ItemDefinitionMaster) => getItemId(value),
+      getId: (value: MasterItemDefinitions) => getItemId(value),
       pref: util.itemPref,
       mode: 'stock',
       class: 'text-right',
@@ -363,7 +365,7 @@ export function itemColStockCount(util: TableGridUtils<ItemDefinitionMaster>) {
   })
 }
 
-export function itemColOwnedWithGS(util: TableGridUtils<ItemDefinitionMaster>) {
+export function itemColOwnedWithGS(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userOwnedWithGS',
     headerValueGetter: () => 'Owned GS',
@@ -372,14 +374,14 @@ export function itemColOwnedWithGS(util: TableGridUtils<ItemDefinitionMaster>) {
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.gs,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
-      getId: (value: ItemDefinitionMaster) => getItemId(value),
+      getId: (value: MasterItemDefinitions) => getItemId(value),
       pref: util.itemPref,
       mode: 'gs',
     }),
     width: 100,
   })
 }
-export function itemColPrice(util: TableGridUtils<ItemDefinitionMaster>) {
+export function itemColPrice(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userPrice',
     headerValueGetter: () => 'Price',
@@ -389,7 +391,7 @@ export function itemColPrice(util: TableGridUtils<ItemDefinitionMaster>) {
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.price,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
-      getId: (value: ItemDefinitionMaster) => getItemId(value),
+      getId: (value: MasterItemDefinitions) => getItemId(value),
       pref: util.itemPref,
       mode: 'price',
       // TODO:
@@ -431,7 +433,7 @@ export function itemColSource(util: ItemTableUtils) {
   return util.colDef<string>({
     colId: 'source',
     headerValueGetter: () => 'Source',
-    valueGetter: ({ data }) => data['$source'],
+    valueGetter: ({ data }) => getItemSourceShort(data),
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
     width: 125,

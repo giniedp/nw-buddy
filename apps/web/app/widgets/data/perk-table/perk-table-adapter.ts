@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { PerkBucketEntry, isPerkGenerated, isPerkInherent } from '@nw-data/common'
-import { COLS_AFFIXSTATS, COLS_PERKS, Perks } from '@nw-data/generated'
+import { COLS_AFFIXSTATDATA, COLS_PERKDATA, PerkData } from '@nw-data/generated'
 import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 
@@ -117,10 +117,10 @@ export function buildPerkTableOptions(util: TableGridUtils<PerkTableRecord>, ctx
     ],
   }
   addGenericColumns(result, {
-    props: COLS_PERKS,
+    props: COLS_PERKDATA,
   })
   addGenericColumns(result, {
-    props: COLS_AFFIXSTATS,
+    props: COLS_AFFIXSTATDATA,
     scope: '$affix',
   })
   return result
@@ -140,13 +140,13 @@ export function buildPerkTablePickerOptions(util: TableGridUtils<PerkTableRecord
     ],
   }
   addGenericColumns(result, {
-    props: COLS_PERKS,
+    props: COLS_PERKDATA,
   })
   addGenericColumns(result, {
-    props: COLS_AFFIXSTATS,
+    props: COLS_AFFIXSTATDATA,
     scope: '$affix',
   })
   return result
 }
 
-function findResourceItem(perk: Perks, buckets: PerkBucketEntry[]) {}
+function findResourceItem(perk: PerkData, buckets: PerkBucketEntry[]) {}

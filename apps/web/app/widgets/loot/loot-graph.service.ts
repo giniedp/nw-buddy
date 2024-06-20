@@ -1,7 +1,7 @@
-import { EventEmitter, Injectable, inject } from "@angular/core";
-import { LootGraphStore } from "./loot-graph.store";
-import { patchState } from "@ngrx/signals";
-import { testLootContextTag } from "@nw-data/common";
+import { EventEmitter, Injectable, inject } from '@angular/core'
+import { LootGraphStore } from './loot-graph.store'
+import { patchState } from '@ngrx/signals'
+import { testLootContextTag } from '@nw-data/common'
 
 @Injectable()
 export class LootGraphService {
@@ -31,7 +31,7 @@ export class LootGraphService {
       contextTags: context.tags,
       contextValues: context.values,
       tag: tag,
-      tagValue: value
+      tagValue: value,
     })
   }
 }

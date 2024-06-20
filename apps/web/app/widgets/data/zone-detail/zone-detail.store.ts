@@ -1,7 +1,6 @@
 import { computed } from '@angular/core'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 import {
-  ZoneDefinition,
   getZoneBackground,
   getZoneDescription,
   getZoneIcon,
@@ -10,7 +9,13 @@ import {
   getZoneType,
   isPointInZone,
 } from '@nw-data/common'
-import { PoiDefinition, TerritoriesMetadata, Vitals, VitalsMetadata, Vitalscategories } from '@nw-data/generated'
+import {
+  TerritoriesMetadata,
+  TerritoryDefinition,
+  VitalsCategoryData,
+  VitalsData,
+  VitalsMetadata,
+} from '@nw-data/generated'
 import { groupBy } from 'lodash'
 import { withNwData } from '~/data/with-nw-data'
 import { rejectKeys } from '~/utils'
@@ -30,14 +35,6 @@ export const ZoneDetailStore = signalStore(
       territoriesMetadata: db.territoriesMetadataMap,
       territories: db.territories,
       territoriesMap: db.territoriesMap,
-      areas: db.areas,
-      areasMap: db.areasMap,
-      pois: db.pois,
-      poisMap: db.poisMap,
-      arenas: db.arenas,
-      arenasMap: db.arenasMap,
-      darknesses: db.darknesses,
-      darknessesMap: db.darknessesMap,
     }
   }),
   withHooks({
@@ -48,31 +45,15 @@ export const ZoneDetailStore = signalStore(
   withComputed(({ zoneId, nwData }) => {
     const recordId = computed(() => (zoneId() == null ? null : Number(zoneId())))
     const territory = computed(() => nwData().territoriesMap?.get(recordId()))
-    const poi = computed(() => nwData().poisMap?.get(recordId()))
-    const area = computed(() => nwData().areasMap?.get(recordId()))
-    const arena = computed(() => nwData().arenasMap?.get(recordId()))
-    const darkness = computed(() => nwData().darknessesMap?.get(recordId()))
-    const record = computed(() => territory() || area() || poi() || arena() || darkness())
+    const record = computed(() => territory())
     const metaId = computed(() => getZoneMetaId(record()))
     const metadata = computed(() => nwData().territoriesMetadata?.get(metaId()))
     return {
       territory,
-      poi,
-      area,
-      arena,
-      darkness,
       recordId,
       record,
       metadata,
-      allZones: computed(() => {
-        return [
-          ...(nwData().territories || []),
-          ...(nwData().areas || []),
-          ...(nwData().pois || []),
-          ...(nwData().arenas || []),
-          ...(nwData().darknesses || []),
-        ]
-      }),
+      allZones: computed(() => nwData().territories || []),
 
       icon: computed(() => getZoneIcon(record())),
       image: computed(() => getZoneBackground(record())),
@@ -98,7 +79,7 @@ export const ZoneDetailStore = signalStore(
   }),
   withMethods((state) => {
     return {
-      load(id: string | number | PoiDefinition) {
+      load(id: string | number | TerritoryDefinition) {
         if (typeof id === 'string' || typeof id === 'number') {
           patchState(state, { zoneId: id })
         } else {
@@ -115,7 +96,7 @@ function selectZoneSpawns({
   vitalsMetaMap,
 }: {
   zoneMeta: TerritoriesMetadata
-  vitals: Vitals[]
+  vitals: VitalsData[]
   vitalsMetaMap: Map<string, VitalsMetadata>
 }) {
   if (!zoneMeta?.zones?.length || !vitals || !vitalsMetaMap) {
@@ -123,7 +104,7 @@ function selectZoneSpawns({
   }
 
   const result: Array<{
-    vital: Vitals
+    vital: VitalsData
     point: number[]
     levels: number[]
     categories: string[]
@@ -155,12 +136,12 @@ function selectSpawnVitals({
   vitalCategories,
 }: {
   vitalSpawns: ReturnType<typeof selectZoneSpawns>
-  vitalCategories: Map<string, Vitalscategories>
-}): Vitals[] {
+  vitalCategories: Map<string, VitalsCategoryData>
+}): VitalsData[] {
   if (!vitalSpawns) {
     return null
   }
-  const result: Vitals[] = []
+  const result: VitalsData[] = []
   const groups = groupBy(vitalSpawns, (it) => it.vital.VitalsID.toLowerCase())
   for (const group of Object.values(groups)) {
     const spawn = group[0]
@@ -176,7 +157,7 @@ function selectSpawnVitals({
   return result
 }
 
-function selectProperties(item: ZoneDefinition) {
+function selectProperties(item: TerritoryDefinition) {
   const reject = ['$source', 'NameLocalizationKey', 'MapIcon', 'Description', 'IconPath', 'TooltipBackground']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

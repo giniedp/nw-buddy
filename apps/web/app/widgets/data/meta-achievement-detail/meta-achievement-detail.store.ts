@@ -1,7 +1,7 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Metaachievements } from '@nw-data/generated'
+import { MetaAchievementData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { humanize, rejectKeys, selectStream, tapDebug } from '~/utils'
 
@@ -22,7 +22,7 @@ export class MetaAchievementDetailStore extends ComponentStore<{ achievementId: 
     super({ achievementId: null })
   }
 
-  public load(idOrItem: string | Metaachievements) {
+  public load(idOrItem: string | MetaAchievementData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ achievementId: idOrItem })
     } else {
@@ -31,7 +31,7 @@ export class MetaAchievementDetailStore extends ComponentStore<{ achievementId: 
   }
 }
 
-function selectProperties(item: Metaachievements) {
-  const reject: Array<keyof Metaachievements> = ['Title', 'Description', 'Icon', 'UIDisplayCategory', 'Tier']
+function selectProperties(item: MetaAchievementData) {
+  const reject: Array<keyof MetaAchievementData> = ['Title', 'Description', 'Icon', 'UIDisplayCategory', 'Tier']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

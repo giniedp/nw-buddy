@@ -1,13 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { inject, Injectable } from '@angular/core'
-import {
-  Areadefinitions,
-  COLS_AREADEFINITIONS,
-  COLS_POIDEFINITION,
-  COLS_TERRITORYDEFINITIONS,
-  PoiDefinition,
-} from '@nw-data/generated'
-import { combineLatest, map } from 'rxjs'
+import { COLS_TERRITORYDEFINITION } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
@@ -40,7 +33,7 @@ export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord>, Table
   }
 
   public entityCategories(item: ZoneTableRecord): DataTableCategory[] {
-    if ((item as Areadefinitions).IsArea) {
+    if (item.IsArea) {
       return [
         {
           id: 'area',
@@ -75,12 +68,7 @@ export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord>, Table
   }
 
   public connect() {
-    return (
-      this.config?.source ||
-      combineLatest([this.db.pois, this.db.areas, this.db.territories, this.db.arenas, this.db.darknesses]).pipe(
-        map((list) => list.flat()),
-      )
-    )
+    return this.config?.source || this.db.territories
   }
 }
 
@@ -96,13 +84,7 @@ function buildPoiTableOptions(util: TableGridUtils<ZoneTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_POIDEFINITION,
-  })
-  addGenericColumns(result, {
-    props: COLS_TERRITORYDEFINITIONS,
-  })
-  addGenericColumns(result, {
-    props: COLS_AREADEFINITIONS,
+    props: COLS_TERRITORYDEFINITION,
   })
   return result
 }

@@ -1,13 +1,13 @@
 import {
   DamageType,
-  Damagetable,
-  Gamemodes,
-  Mutationdifficulty,
-  Vitals,
+  DamageData,
+  GameModeData,
+  MutationDifficultyStaticData,
+  VitalsData,
   VitalsMetadata,
-  Vitalscategories,
-  Vitalsleveldata,
-  Vitalsmodifierdata,
+  VitalsCategoryData,
+  VitalsLevelData,
+  VitalsModifierData,
 } from '@nw-data/generated'
 import { getArmorRating } from './damage'
 
@@ -131,21 +131,21 @@ const ICON_WEAK_ATTACK = 'assets/icons/weakattack.png'
 
 export type VitalDamageType = DamageType
 
-export function getVitalTypeMarker(vitalOrcreatureType: string | Vitals): string {
+export function getVitalTypeMarker(vitalOrcreatureType: string | VitalsData): string {
   if (typeof vitalOrcreatureType !== 'string') {
     vitalOrcreatureType = vitalOrcreatureType?.CreatureType
   }
   return CREATURE_TYPE_MARKER[vitalOrcreatureType] || CREATURE_TYPE_MARKER['Critter']
 }
 
-export function getVitalAliasName(categories: Vitalscategories[]) {
+export function getVitalAliasName(categories: VitalsCategoryData[]) {
   if (categories.find((it) => it.IsNamed && it.VitalsCategoryID === 'Named')) {
     return categories.find((it) => it.IsNamed && it.VitalsCategoryID !== 'Named')?.DisplayName
   }
   return null
 }
 
-export function getVitalsCategories(vital: Vitals, categories: Map<string, Vitalscategories>) {
+export function getVitalsCategories(vital: VitalsData, categories: Map<string, VitalsCategoryData>) {
   if (!vital?.VitalsCategories?.length) {
     return []
   }
@@ -158,15 +158,15 @@ export function getVitalsCategories(vital: Vitals, categories: Map<string, Vital
   }).filter((it) => !!it)
 }
 
-export function isVitalNamed(vital: Vitals) {
+export function isVitalNamed(vital: VitalsData) {
   return NAMED_FAIMILY_TYPES.includes(vital.CreatureType)
 }
 
-export function getVitalFamilyInfo(vital: Vitals): VitalFamilyInfo {
+export function getVitalFamilyInfo(vital: VitalsData): VitalFamilyInfo {
   return VITAL_FAMILIES[vital?.Family?.toLowerCase()] || VITAL_FAMILIES.unknown
 }
 
-export function getVitalCategoryInfo(vital: Vitals): VitalFamilyInfo[] {
+export function getVitalCategoryInfo(vital: VitalsData): VitalFamilyInfo[] {
   const keys = vital?.VitalsCategories || []
   const categories = keys.map((key) => VITAL_CATEGORIES[key.toLowerCase()]).filter((it) => !!it)
   if (!categories.length) {
@@ -180,23 +180,23 @@ export function isVitalCombatCategory(value: string) {
   return VITAL_CATEGORIES_KEYS.some((it) => it === value)
 }
 
-export function getVitalWKN(vital: Vitals, damageType: VitalDamageType): number {
+export function getVitalWKN(vital: VitalsData, damageType: VitalDamageType): number {
   return vital[`WKN${damageType}`] || 0
 }
 
-export function getVitalABS(vital: Vitals, damageType: VitalDamageType): number {
+export function getVitalABS(vital: VitalsData, damageType: VitalDamageType): number {
   return vital[`ABS${damageType}`] || 0
 }
 
-export function getVitalDamageEffectiveness(vital: Vitals, damageType: VitalDamageType) {
+export function getVitalDamageEffectiveness(vital: VitalsData, damageType: VitalDamageType) {
   return vital[`WKN${damageType}`] - vital[`ABS${damageType}`] || 0
 }
 
-export function getVitalDamageEffectivenessPercent(vital: Vitals, damageType: VitalDamageType) {
+export function getVitalDamageEffectivenessPercent(vital: VitalsData, damageType: VitalDamageType) {
   return Math.round(getVitalDamageEffectiveness(vital, damageType) * 100)
 }
 
-export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: VitalDamageType) {
+export function getVitalDamageEffectivenessIcon(vital: VitalsData, damageType: VitalDamageType) {
   const dmg = getVitalDamageEffectiveness(vital, damageType)
   if (dmg < 0) {
     return ICON_WEAK_ATTACK
@@ -257,10 +257,10 @@ export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: Vital
 // }
 
 export function getVitalDungeons(
-  vital: Vitals,
-  dungeons: Gamemodes[],
+  vital: VitalsData,
+  dungeons: GameModeData[],
   vitalsMeta: Map<string, VitalsMetadata>,
-): Gamemodes[] {
+): GameModeData[] {
   if (!vital || !dungeons?.length) {
     return []
   }
@@ -287,7 +287,7 @@ export function getVitalDungeons(
   })
 }
 
-export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[], vitalsMeta: Map<string, VitalsMetadata>) {
+export function getVitalDungeon(vital: VitalsData, dungeons: GameModeData[], vitalsMeta: Map<string, VitalsMetadata>) {
   return getVitalDungeons(vital, dungeons, vitalsMeta)?.[0]
 }
 
@@ -301,10 +301,10 @@ export function getVitalHealth({
   modifier,
   difficulty,
 }: {
-  vital: Vitals
-  level: Vitalsleveldata
-  modifier: Vitalsmodifierdata
-  difficulty?: Mutationdifficulty
+  vital: VitalsData
+  level: VitalsLevelData
+  modifier: VitalsModifierData
+  difficulty?: MutationDifficultyStaticData
 }) {
   if (!vital || !level) {
     return 0
@@ -328,7 +328,7 @@ export function getVitalGearScoreFromLevel(level: number) {
   return (level || 0) * 10
 }
 
-export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
+export function getVitalArmor(vital: VitalsData, level: VitalsLevelData) {
   if (!vital || !level) {
     return null
   }
@@ -346,7 +346,7 @@ export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
   }
 }
 
-export function getVitalArmorFromGS(vital: Vitals, gearScore: number) {
+export function getVitalArmorFromGS(vital: VitalsData, gearScore: number) {
   if (!vital) {
     return null
   }
@@ -371,11 +371,11 @@ export function getVitalDamage({
   damageTable,
   difficulty,
 }: {
-  vital: Vitals
-  level: Vitalsleveldata
-  damageTable: Pick<Damagetable, 'DmgCoef' | 'AddDmg'>
-  modifier?: Vitalsmodifierdata
-  difficulty?: Mutationdifficulty
+  vital: VitalsData
+  level: VitalsLevelData
+  damageTable: Pick<DamageData, 'DmgCoef' | 'AddDmg'>
+  modifier?: VitalsModifierData
+  difficulty?: MutationDifficultyStaticData
 }) {
   //
   const baseDamage = level?.BaseDamage || 0

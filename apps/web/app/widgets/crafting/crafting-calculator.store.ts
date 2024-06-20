@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Crafting } from '@nw-data/generated'
+import { CraftingRecipeData } from '@nw-data/generated'
 import { EMPTY, map, switchMap, take, tap } from 'rxjs'
 import { PreferencesService, StorageScopeNode } from '~/preferences'
 import { CraftingCalculatorService } from './crafting-calculator.service'
@@ -73,7 +73,7 @@ export class CraftingCalculatorStore extends ComponentStore<CraftingCalculatorSt
     )
   }
 
-  private initializeState(recipe: Crafting) {
+  private initializeState(recipe: CraftingRecipeData) {
     const cache = this.cache?.get<CraftingCalculatorState>(recipe?.RecipeID)
     if (cache) {
       this.patchState(cache)

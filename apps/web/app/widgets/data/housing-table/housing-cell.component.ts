@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
@@ -32,12 +32,12 @@ import { HousingTableRecord } from './housing-table-cols'
     '[class.outline-primary]': 'selected',
   },
 })
-export class HousingCellComponent implements VirtualGridCellComponent<Housingitems> {
+export class HousingCellComponent implements VirtualGridCellComponent<HouseItems> {
   public static provideGridOptions() {
     return provideVirtualGridOptions(this.buildGridOptions())
   }
 
-  public static buildGridOptions(): VirtualGridOptions<Housingitems> {
+  public static buildGridOptions(): VirtualGridOptions<HouseItems> {
     return {
       height: 90,
       width: 320,
@@ -47,7 +47,7 @@ export class HousingCellComponent implements VirtualGridCellComponent<Housingite
   }
 
   @Input()
-  public data: Housingitems
+  public data: HouseItems
 
   @Input()
   public selected: boolean

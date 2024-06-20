@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Territorydefinitions } from '@nw-data/generated'
+import { TerritoryDefinition } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
@@ -30,7 +30,7 @@ export class TerritoriesListComponent {
     .pipe(shareReplayRefCount(1))
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
-  protected trackById: TrackByFunction<Territorydefinitions> = (i, it) => it?.TerritoryID
+  protected trackById: TrackByFunction<TerritoryDefinition> = (i, it) => it?.TerritoryID
 
   public constructor(
     private db: NwDataService,
@@ -47,7 +47,7 @@ export class TerritoriesListComponent {
       .pipe(map((list) => sortBy(list, (it) => it.NameLocalizationKey)))
   }
 
-  private territoryWithinfo(it: Territorydefinitions) {
+  private territoryWithinfo(it: TerritoryDefinition) {
     return combineLatest({
       search: this.search.query$,
       pref: this.service.getPreferences(it.TerritoryID)

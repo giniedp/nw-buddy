@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
-import { Perks } from '@nw-data/generated'
+import { PerkData } from '@nw-data/generated'
 import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -49,7 +49,7 @@ export class PerksDetailPageComponent {
     //
   }
 
-  protected async onEntity(entity: Perks) {
+  protected async onEntity(entity: PerkData) {
     if (!entity) {
       return
     }

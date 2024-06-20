@@ -7,9 +7,9 @@ import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize, selectSignal } from '~/utils'
-import { ModifierTipComponent } from './ui/modifier-tip.component'
 import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
+import { ModifierTipComponent } from './ui/modifier-tip.component'
 
 export interface CooldownRow {
   label: string
@@ -41,7 +41,7 @@ export class GearCellModsCooldownComponent {
 
   protected abilities = selectSignal(
     {
-      cooldowns: this.db.cooldownsPlayerMap,
+      cooldowns: this.db.cooldownsByAbilityIdMap,
       abilities: this.mannequin.activeWeaponAbilities,
       stats: this.mannequin.modCooldownReduction,
     },
@@ -52,7 +52,7 @@ export class GearCellModsCooldownComponent {
       return abilities
         .map((ability) => {
           return {
-            cooldown: cooldowns.get(ability.AbilityID),
+            cooldown: cooldowns.get(ability.AbilityID)?.[0],
             ability: ability,
           }
         })

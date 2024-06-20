@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, Subject, combineLatest, defer, distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -30,7 +30,7 @@ export class TradeskillChartComponent {
       skills: this.skillInfo$,
       tables: this.skillTable$,
       levels: this.skillLevel$,
-    })
+    }),
   ).pipe(
     map(({ skills, tables, levels }): ChartConfiguration => {
       return {
@@ -65,7 +65,7 @@ export class TradeskillChartComponent {
           }),
         },
       }
-    })
+    }),
   )
 
   private category$ = new BehaviorSubject<string>(null)
@@ -82,18 +82,18 @@ export class TradeskillChartComponent {
                   ...it,
                   Name: name,
                 }
-              })
+              }),
             )
-          })
+          }),
         )
-      })
+      }),
     )
     .pipe(distinctUntilChanged<NwTradeskillInfo[]>(isEqual))
     .pipe(
       shareReplay({
         refCount: true,
         bufferSize: 1,
-      })
+      }),
     )
 
   private skillTable$ = defer(() => this.skillInfo$).pipe(
@@ -101,9 +101,9 @@ export class TradeskillChartComponent {
       return combineLatest(
         skills.map((skill) => {
           return this.service.skillTableByName(skill.ID).pipe(map((it) => it.filter((i) => i.Level <= skill.MaxLevel)))
-        })
+        }),
       )
-    })
+    }),
   )
 
   private skillLevel$ = defer(() => this.skillInfo$).pipe(
@@ -111,15 +111,15 @@ export class TradeskillChartComponent {
       return combineLatest(
         skills.map((skill) => {
           return this.char.selectTradeSkillLevel(skill.ID)
-        })
+        }),
       )
-    })
+    }),
   )
 
   public constructor(
     private service: NwTradeskillService,
     private char: CharacterStore,
-    private i18n: TranslateService
+    private i18n: TranslateService,
   ) {
     //
   }

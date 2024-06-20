@@ -2,11 +2,19 @@ import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core'
 import { ActivatedRoute, RouterModule, RouterOutlet } from '@angular/router'
-import { Cursemutations, Elementalmutations, Gamemodes, PoiDefinition, Promotionmutations } from '@nw-data/generated'
-import { NwModule } from '~/nw'
+import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
+import {
+  CurseMutationStaticData,
+  ElementalMutationStaticData,
+  GameModeData,
+  PromotionMutationStaticData,
+  TerritoryDefinition,
+} from '@nw-data/generated'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { eqCaseInsensitive, injectChildRouteParam, selectStream } from '~/utils'
 import { injectCurrentMutation } from './current-mutation.service'
@@ -14,16 +22,14 @@ import { GameModesStore } from './game-modes.store'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
-import { IonContent, IonHeader, IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
-import { LayoutModule } from '~/ui/layout'
 
 type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
 
 export interface CurrentMutation {
   expedition: string
-  element: Elementalmutations
-  promotion: Promotionmutations
-  curse: Cursemutations
+  element: ElementalMutationStaticData
+  promotion: PromotionMutationStaticData
+  curse: CurseMutationStaticData
 }
 
 @Component({
@@ -58,12 +64,12 @@ export interface CurrentMutation {
 })
 export class GameModesPageComponent {
   protected gameModeId$ = injectChildRouteParam(':id')
-  protected groups$ = selectStream(this.db.data.gamemodes(), groupByCategory)
+  protected groups$ = selectStream(this.db.gameModes, groupByCategory)
   protected categories$ = selectStream(this.groups$, (it) => Object.keys(it).sort())
   protected categoryId$ = selectStream(this.route.paramMap, (it) => it.get('category'))
   protected modes$ = selectStream(
     {
-      pois: this.db.pois,
+      pois: this.db.territories,
       categories: this.groups$,
       category: this.categoryId$,
       mutations: injectCurrentMutation(),
@@ -100,8 +106,8 @@ export class GameModesPageComponent {
   }
 }
 
-function groupByCategory(modes: Gamemodes[]) {
-  const groups: Record<string, Gamemodes[]> = {}
+function groupByCategory(modes: GameModeData[]) {
+  const groups: Record<string, GameModeData[]> = {}
   for (const mode of modes) {
     const category = detectCategory(mode)
     if (!category) {
@@ -114,13 +120,13 @@ function groupByCategory(modes: Gamemodes[]) {
 }
 
 function selectCategory(
-  pois: PoiDefinition[],
-  categories: Record<string, Gamemodes[]>,
+  pois: TerritoryDefinition[],
+  categories: Record<string, GameModeData[]>,
   category: string,
   mutations: Array<CurrentMutation>,
 ) {
   pois = pois.filter((it) => !!it.GameMode)
-  let modes: Gamemodes[] = []
+  let modes: GameModeData[] = []
   if (category === 'all') {
     modes = Object.entries(categories)
       .map(([_, value]) => value)
@@ -147,7 +153,7 @@ function selectCategory(
     })
 }
 
-function detectCategory(mode?: Gamemodes): GameModeCategories {
+function detectCategory(mode?: GameModeData): GameModeCategories {
   if (!mode) {
     return null
   }

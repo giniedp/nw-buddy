@@ -2,7 +2,7 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStoreFeature, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
-import { Affixstats, Perks } from '@nw-data/generated'
+import { AffixStatData, PerkData } from '@nw-data/generated'
 import { map, pipe, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { withNwData } from '~/data/with-nw-data'
@@ -10,7 +10,7 @@ import { rejectKeys } from '~/utils'
 
 export interface PerkDetailState {
   perkId: string
-  perk: Perks
+  perk: PerkData
 }
 
 export function withPerkDetail() {
@@ -71,12 +71,12 @@ export function withPerkDetail() {
   )
 }
 
-function selectProperties(item: Perks) {
+function selectProperties(item: PerkData) {
   const reject = ['$source', 'IconPath', 'DisplayName', 'Description']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }
 
-function selectAffixProperties(item: Affixstats) {
+function selectAffixProperties(item: AffixStatData) {
   const reject = ['$source']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

@@ -1,7 +1,7 @@
 import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
@@ -12,16 +12,16 @@ import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
-function isGemItem(item: Crafting) {
+function isGemItem(item: CraftingRecipeData) {
   return item.CraftingCategory === 'CutGems'
 }
 
-type RecipeWithItem = Crafting & {
-  $item: ItemDefinitionMaster | Housingitems
+type RecipeWithItem = CraftingRecipeData & {
+  $item: MasterItemDefinitions | HouseItems
   $itemId: string
   $ingredients: Array<{
     quantity: number
-    item: ItemDefinitionMaster | Housingitems
+    item: MasterItemDefinitions | HouseItems
   }>
 }
 

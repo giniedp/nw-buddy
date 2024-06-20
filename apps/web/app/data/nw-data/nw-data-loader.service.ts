@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
-import { NwDataLoader } from '@nw-data/generated'
 import { Observable, of, shareReplay, switchMap } from 'rxjs'
 
 export type LocaleData = Record<string, { value: string }>
 
 @Injectable({ providedIn: 'root' })
-export class NwDataLoaderService extends NwDataLoader {
+export class NwDataLoaderService {
   private http = inject(HttpClient)
   private cache = new Map<string, Observable<any>>()
 
@@ -15,10 +14,10 @@ export class NwDataLoaderService extends NwDataLoader {
   public load(path: string, responseType: 'arrayBuffer'): Observable<ArrayBuffer>
   public load(path: string, responseType: 'blob'): Observable<Blob>
   public load(path: string, responseType: any = 'json'): Observable<unknown> {
+    path = path.toLocaleLowerCase()
     if (!this.cache.has(path)) {
-      const url = `datatables/${path}`.toLocaleLowerCase()
       const src$ = this.http
-        .request('GET', url, {
+        .request('GET', path, {
           responseType: responseType === 'json' ? 'json' : 'blob',
         })
         .pipe(
@@ -36,7 +35,6 @@ export class NwDataLoaderService extends NwDataLoader {
   }
 
   public loadTranslations(locale: string) {
-    const url = `localization/${locale}.json`.toLocaleLowerCase()
-    return this.http.get<Record<string, string>>(url)
+    return this.load<Record<string, string>>(`localization/${locale}.json`)
   }
 }

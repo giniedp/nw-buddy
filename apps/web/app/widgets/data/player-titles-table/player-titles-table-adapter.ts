@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_PLAYERTITLES, Playertitles } from '@nw-data/generated'
+import { COLS_PLAYERTITLEDATA, PlayerTitleData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
@@ -50,7 +50,7 @@ export class PlayerTitlesTableAdapter
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<Playertitles> {
+  public virtualOptions(): VirtualGridOptions<PlayerTitleData> {
     return null
   }
 
@@ -81,7 +81,7 @@ function buildOptions(util: TableGridUtils<PlayertitlesTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_PLAYERTITLES,
+    props: COLS_PLAYERTITLEDATA,
   })
   return result
 }

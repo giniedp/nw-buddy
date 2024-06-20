@@ -1,24 +1,4 @@
-// alchemy1_compass.png
-// aloe_compass.png
-// bear_statue_compass.png
-// humanoid_statue_compass.png
-// empyreanfurnace_compass.png
-// wolf_statue_compass.png
-
-// fruit_compass.png
-// fungi_compass.png
-// grain_compass.png
-
-// spirit_boid_compass.png
-// spirit_plant_compass.png
-// spirit_stone_compass.png
-
-
-// vegetable_compass.png
-
-
-
-import { Gatherables } from '@nw-data/generated'
+import { GatherableData } from '@nw-data/generated'
 import { NW_TRADESKILLS_INFOS } from '~/nw/tradeskill'
 
 const LOOT_TABLE_ICONS = {
@@ -130,7 +110,7 @@ const LOOT_TABLE_ICONS = {
   Beasts_SporePod: 'sporeplant_compass.png',
 }
 
-export function getGatherableIcon(gatherable: Gatherables) {
+export function getGatherableIcon(gatherable: GatherableData) {
   if (!gatherable) {
     return null
   }

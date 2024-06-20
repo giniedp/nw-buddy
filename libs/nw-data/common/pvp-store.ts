@@ -1,8 +1,8 @@
-import { Lootbuckets, PvpStore } from '@nw-data/generated'
+import { PvPStoreData } from '@nw-data/generated'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { flatten } from 'lodash'
 
-export function convertPvoStore(data: PvpStore[]): PvpStoreRow[] {
+export function convertPvoStore(data: PvPStoreData[]): PvpStoreRow[] {
   const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
   const result = data.map((row, i) => convertRow(row, firstRow, i))
   return flatten(result)
@@ -31,7 +31,7 @@ export type PvpStoreTag = {
   Value?: null | [number] | [number, number]
 }
 
-function convertRow(data: PvpStore, firstRow: PvpStore, rowId: number): PvpStoreRow[] {
+function convertRow(data: PvPStoreData, firstRow: PvPStoreData, rowId: number): PvpStoreRow[] {
   const keys = new Set<string>()
   const ids = new Set<number>()
   for (const key of Object.keys(data)) {

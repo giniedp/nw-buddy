@@ -1,4 +1,4 @@
-import { VariationsGatherables } from '../generated/types'
+import { VariationDataGatherable } from '../generated/types'
 
 export interface GatherableVariation {
   VariantID: string
@@ -7,19 +7,16 @@ export interface GatherableVariation {
   GatherableID: string
   LootTable?: string
 }
-export function convertGatherableVariations(data: VariationsGatherables[]) {
+export function convertGatherableVariations(data: VariationDataGatherable[]) {
   const result = new Map<string, GatherableVariation>()
   for (const row of data) {
     const variant = result.get(row.VariantID) || {
       VariantID: row.VariantID,
-      GatherableID: row.GatherableEntryID || row.GatherableEntryId,
+      GatherableID: row.GatherableEntryID,
       Name: row.Name || row.MapTooltipTitleLocTag,
       Icon: row.MapIcon,
     }
     result.set(row.VariantID, variant)
-    if (!variant.GatherableID) {
-      variant.GatherableID = row.GatherableEntryId
-    }
     if (row.GatherableEntryID && variant.GatherableID !== row.GatherableEntryID) {
       console.warn(`GatherableVariation: GatherableID mismatch: ${variant.GatherableID} !== ${row.GatherableEntryID}`)
     }

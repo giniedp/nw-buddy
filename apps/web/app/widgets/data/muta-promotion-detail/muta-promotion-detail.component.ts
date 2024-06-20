@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
-import { Statuseffect } from '@nw-data/generated'
+import { StatusEffectData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
@@ -34,7 +34,7 @@ export class MutaPromotionDetailComponent extends MutaPromotionDetailStore {
     this.patchState({ elementId: value })
   }
 
-  protected description(item: Statuseffect) {
+  protected description(item: StatusEffectData) {
     return item.Description || `${item.StatusID}_Tooltip`
   }
 }

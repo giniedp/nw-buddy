@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getRecipeForItem } from '@nw-data/common'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TableGridAdapter } from '~/ui/data/table-grid'
 
@@ -51,7 +51,7 @@ export class TrophiesTableAdapter implements TableGridAdapter<TrophiesRecord>, D
   )
 }
 
-function isTrophyItem(item: Housingitems) {
+function isTrophyItem(item: HouseItems) {
   return item.HousingTags?.includes('IsTrophyBuff')
 }
 
@@ -61,10 +61,10 @@ function selectRecords({
   itemsMap,
   housingMap,
 }: {
-  recipes: Map<string, Crafting[]>
-  trophies: Housingitems[]
-  itemsMap: Map<string, ItemDefinitionMaster>
-  housingMap: Map<string, Housingitems>
+  recipes: Map<string, CraftingRecipeData[]>
+  trophies: HouseItems[]
+  itemsMap: Map<string, MasterItemDefinitions>
+  housingMap: Map<string, HouseItems>
 }) {
   const records = trophies.map((housing): TrophiesRecord => {
     const recipe = getRecipeForItem(housing, recipes)

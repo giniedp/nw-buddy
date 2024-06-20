@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { BuffBucket, NW_FALLBACK_ICON } from '@nw-data/common'
-import { Elementalmutations, Statuseffect } from '@nw-data/generated'
+import { ElementalMutationStaticData, StatusEffectData } from '@nw-data/generated'
 import { groupBy } from 'lodash'
 import { combineLatest } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -31,7 +31,7 @@ export class MutaElementDetailStore extends ComponentStore<{ elementId: string }
     super({ elementId: null })
   }
 
-  public load(idOrItem: string | Elementalmutations) {
+  public load(idOrItem: string | ElementalMutationStaticData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ elementId: idOrItem })
     } else {
@@ -41,12 +41,12 @@ export class MutaElementDetailStore extends ComponentStore<{ elementId: string }
 }
 
 function selectStatusEffects(
-  element: Elementalmutations,
+  element: ElementalMutationStaticData,
   buffMap: Map<string, BuffBucket>,
-  effectMap: Map<string, Statuseffect>
+  effectMap: Map<string, StatusEffectData>
 ) {
   const tagged: Array<{ tag: string; effect: string }> = []
-  const tags: Array<keyof Elementalmutations> = ['Dungeon-', 'Dungeon', 'Dungeon+', 'DungeonBoss', 'DungeonMiniBoss']
+  const tags: Array<keyof ElementalMutationStaticData> = ['Dungeon-', 'Dungeon', 'Dungeon+', 'DungeonBoss', 'DungeonMiniBoss']
   for (const tag of tags) {
     tagged.push(
       ...collectStatusEffects(buffMap.get(element[tag] as string), buffMap).map((effect) => {

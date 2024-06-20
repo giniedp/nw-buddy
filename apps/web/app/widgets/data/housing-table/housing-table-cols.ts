@@ -9,14 +9,14 @@ import {
   getItemTierAsRoman,
   getUIHousingCategoryLabel
 } from '@nw-data/common'
-import { Housingitems } from '@nw-data/generated'
+import { HouseItems } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 
 export type HousingTableUtils = TableGridUtils<HousingTableRecord>
-export type HousingTableRecord = Housingitems
+export type HousingTableRecord = HouseItems
 
 export function housingColIcon(util: HousingTableUtils) {
   return util.colDef({
@@ -114,7 +114,7 @@ export function housingColUserBookmark(util: HousingTableUtils) {
     valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID)?.mark || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
-      getId: (value: Housingitems) => getItemId(value),
+      getId: (value: HouseItems) => getItemId(value),
       pref: util.itemPref,
     }),
   })
@@ -129,7 +129,7 @@ export function housingColUserStockValue(util: HousingTableUtils) {
     valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID)?.stock,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
-      getId: (value: Housingitems) => getItemId(value),
+      getId: (value: HouseItems) => getItemId(value),
       pref: util.itemPref,
       mode: 'stock',
       class: 'text-right',
@@ -148,7 +148,7 @@ export function housingColUserPrice(util: HousingTableUtils) {
     valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID)?.price,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
-      getId: (value: Housingitems) => getItemId(value),
+      getId: (value: HouseItems) => getItemId(value),
       pref: util.itemPref,
       mode: 'price',
       // formatter: util.moneyFormatter, TODO:
@@ -158,7 +158,7 @@ export function housingColUserPrice(util: HousingTableUtils) {
 }
 
 export function housingColHousingTag1Placed(util: HousingTableUtils) {
-  return util.colDef<string>({
+  return util.colDef<string[]>({
     colId: 'housingTag1Placed',
     headerValueGetter: () => 'Placement',
     headerName: 'Placement',

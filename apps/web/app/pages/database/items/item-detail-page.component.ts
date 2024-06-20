@@ -11,7 +11,7 @@ import {
   getItemVersionString,
   isItemNamed,
 } from '@nw-data/common'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { MasterItemDefinitions } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -77,7 +77,7 @@ export class ItemDetailPageComponent {
     //
   }
 
-  protected onEntity(entity: ItemDefinitionMaster) {
+  protected onEntity(entity: MasterItemDefinitions) {
     if (!entity) {
       return
     }
@@ -89,19 +89,19 @@ export class ItemDetailPageComponent {
     })
   }
 
-  protected itemRarity(item: ItemDefinitionMaster) {
+  protected itemRarity(item: MasterItemDefinitions) {
     return getItemRarity(item)
   }
-  protected itemRarityLabel(item: ItemDefinitionMaster) {
+  protected itemRarityLabel(item: MasterItemDefinitions) {
     return getItemRarityLabel(getItemRarity(item))
   }
-  protected itemNamed(item: ItemDefinitionMaster) {
+  protected itemNamed(item: MasterItemDefinitions) {
     return isItemNamed(item)
   }
-  protected itemVersion(item: ItemDefinitionMaster) {
+  protected itemVersion(item: MasterItemDefinitions) {
     return getItemVersionString(item)
   }
-  protected itemTier(item: ItemDefinitionMaster) {
+  protected itemTier(item: MasterItemDefinitions) {
     if (!item?.Tier) {
       return null
     }

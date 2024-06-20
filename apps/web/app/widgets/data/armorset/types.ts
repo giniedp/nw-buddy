@@ -1,8 +1,8 @@
-import { ItemDefinitionMaster, Perks } from "@nw-data/generated"
+import { MasterItemDefinitions, PerkData } from "@nw-data/generated"
 
 export interface ArmorsetGroup {
   key: string
-  perks: Perks[]
+  perks: PerkData[]
   sets: Armorset[]
 }
 
@@ -12,7 +12,7 @@ export interface Armorset {
   source: string
   tier: number
   weight: string
-  perks: Perks[]
-  items: ItemDefinitionMaster[]
+  perks: PerkData[]
+  items: MasterItemDefinitions[]
   itemNames: string[]
 }

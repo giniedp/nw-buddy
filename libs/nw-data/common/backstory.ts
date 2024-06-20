@@ -1,4 +1,9 @@
-import { Backstorydata, Housingitems, ItemDefinitionMaster, Perkbuckets, Perks } from '../generated/types'
+import {
+  BackstoryDefinition,
+  HouseItems,
+  MasterItemDefinitions,
+  PerkData,
+} from '../generated/types'
 import { getItemMaxGearScore, getItemPerkBucketKeys, getItemPerkKeys, isMasterItem } from './item'
 import { PerkBucket } from './perk-buckets'
 import { isPerkInherent } from './perks'
@@ -18,7 +23,7 @@ export interface BackstoryItemInstance {
   perks: Record<string, string>
 }
 
-export function getBackstoryItems(record: Backstorydata) {
+export function getBackstoryItems(record: BackstoryDefinition) {
   const result: BackstoryItem[] = []
   for (const token of record.InventoryItem || []) {
     const item = decodeBackstoryItem(token)
@@ -51,28 +56,33 @@ export function decodeBackstoryItem(encodedItem: string) {
   return result
 }
 
-export function buildBackstoryItemInstance(bsItem: BackstoryItem, {
-  itemsMap,
-  housingMap,
-  perksMap,
-  bucketsMap,
-}:  {
-  itemsMap: Map<string, ItemDefinitionMaster>,
-  housingMap: Map<string, Housingitems>,
-  perksMap: Map<string, Perks>
-  bucketsMap: Map<string, PerkBucket>
-}): BackstoryItemInstance {
+export function buildBackstoryItemInstance(
+  bsItem: BackstoryItem,
+  {
+    itemsMap,
+    housingMap,
+    perksMap,
+    bucketsMap,
+  }: {
+    itemsMap: Map<string, MasterItemDefinitions>
+    housingMap: Map<string, HouseItems>
+    perksMap: Map<string, PerkData>
+    bucketsMap: Map<string, PerkBucket>
+  },
+): BackstoryItemInstance {
   const item = itemsMap.get(bsItem.itemId) || housingMap.get(bsItem.itemId)
   return {
     itemId: bsItem.itemId,
     quantity: bsItem.quantity,
     gearScore: bsItem.gearScore || (isMasterItem(item) ? getItemMaxGearScore(item) : null),
-    perks: isMasterItem(item) ? buildBackstoryItemPerkOverrides({
-      item,
-      perkIds: bsItem.perks || [],
-      perksMap,
-      bucketsMap,
-    }): null
+    perks: isMasterItem(item)
+      ? buildBackstoryItemPerkOverrides({
+          item,
+          perkIds: bsItem.perks || [],
+          perksMap,
+          bucketsMap,
+        })
+      : null,
   }
 }
 
@@ -82,9 +92,9 @@ export function buildBackstoryItemPerkOverrides({
   perksMap,
   bucketsMap,
 }: {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   perkIds: string[]
-  perksMap: Map<string, Perks>
+  perksMap: Map<string, PerkData>
   bucketsMap: Map<string, PerkBucket>
 }) {
   const perkKeys = getItemPerkKeys(item)
@@ -144,6 +154,4 @@ export function buildBackstoryItemPerkOverrides({
   return result
 }
 
-function isBucketStat(bucketId: string) {
-
-}
+function isBucketStat(bucketId: string) {}

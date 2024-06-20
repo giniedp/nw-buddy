@@ -9,7 +9,7 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Backstorydata, Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { BackstoryDefinition, HouseItems, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { NW_TRADESKILLS_INFOS } from '~/nw/tradeskill'
 import { InventoryItem } from './types'
 
@@ -20,7 +20,7 @@ const BACKGROUND_IMAGES = {
   Default: 'url(assets/backstories/backstory_image_level.png)',
 }
 
-export function selectBackstoryTradeSkills(backstory: Backstorydata) {
+export function selectBackstoryTradeSkills(backstory: BackstoryDefinition) {
   return NW_TRADESKILLS_INFOS.map((it) => {
     return {
       ...it,
@@ -30,7 +30,7 @@ export function selectBackstoryTradeSkills(backstory: Backstorydata) {
   })
 }
 
-export function selectBackstoryProps(backstory: Backstorydata) {
+export function selectBackstoryProps(backstory: BackstoryDefinition) {
   if (!backstory) {
     return null
   }
@@ -73,11 +73,11 @@ export function selectBackstoryProps(backstory: Backstorydata) {
 }
 
 export function selectBackstoryItems(
-  backstory: Backstorydata,
+  backstory: BackstoryDefinition,
   options: {
-    itemsMap: Map<string, ItemDefinitionMaster>
-    housingMap: Map<string, Housingitems>
-    perksMap: Map<string, Perks>
+    itemsMap: Map<string, MasterItemDefinitions>
+    housingMap: Map<string, HouseItems>
+    perksMap: Map<string, PerkData>
     bucketsMap: Map<string, PerkBucket>
   },
 ) {
@@ -105,6 +105,6 @@ export function selectBackstoryItems(
   })
 }
 
-export function selectBackgroundImage(data: Backstorydata) {
+export function selectBackgroundImage(data: BackstoryDefinition) {
   return BACKGROUND_IMAGES[data?.FactionOverride] || BACKGROUND_IMAGES.Default
 }

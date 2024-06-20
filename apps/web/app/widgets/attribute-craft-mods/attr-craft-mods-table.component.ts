@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { AttributeType, NW_ATTRIBUTE_TYPES, PerkBucket, PerkBucketEntry, getItemIconPath, getPerkBucketPerks } from '@nw-data/common'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { of, startWith } from 'rxjs'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
@@ -9,7 +9,7 @@ import { selectStream } from '~/utils'
 import { ItemDetailModule } from '../data/item-detail'
 
 export interface AttributeCraftMod {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   isPure: boolean
   primaryAttribute: string
   secondaryAttribute: string
@@ -44,13 +44,13 @@ export class AttributeCraftModsComponent {
   }
 }
 
-function selectItems(items: ItemDefinitionMaster[]) {
+function selectItems(items: MasterItemDefinitions[]) {
   return items
     .filter((it) => it.IngredientCategories?.length > 1)
     .filter((it) => it.IngredientCategories.includes('PerkItem'))
 }
 
-function selectPerks(perks: Perks[]) {
+function selectPerks(perks: PerkData[]) {
   return perks
     .filter((it) => it.ExclusiveLabels?.includes('Attribute'))
     .filter((it) => !!it.DisplayName)
@@ -64,9 +64,9 @@ function selectMods({
   perks,
 }: {
   attributes: AttributeType[]
-  items: ItemDefinitionMaster[]
+  items: MasterItemDefinitions[]
   buckets: Map<string, PerkBucket<PerkBucketEntry>>
-  perks: Map<string, Perks>
+  perks: Map<string, PerkData>
 }) {
   return attributes.map((secondary) => {
     return attributes.map((primary): AttributeCraftMod => {

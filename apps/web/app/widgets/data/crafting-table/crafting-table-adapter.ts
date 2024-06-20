@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, Signal, inject } from '@angular/core'
 import { getCraftingIngredients, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
-import { COLS_ABILITY, COLS_CRAFTING } from '@nw-data/generated'
+import { COLS_CRAFTINGRECIPEDATA } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import {
@@ -121,7 +121,7 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>, skills: Signal<
     ],
   }
   addGenericColumns(result, {
-    props: COLS_CRAFTING,
+    props: COLS_CRAFTINGRECIPEDATA,
   })
   return result
 }

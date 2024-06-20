@@ -1,9 +1,9 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
-import { COLS_LOREITEMS } from '@nw-data/generated'
+import { COLS_LOREDATA, LoreData } from '@nw-data/generated'
 import { sortBy } from 'lodash'
-import { map } from 'rxjs'
+import { Observable, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
@@ -15,7 +15,7 @@ import {
   addGenericColumns,
 } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { eqCaseInsensitive, humanize, mapFilter } from '~/utils'
+import { eqCaseInsensitive, humanize } from '~/utils'
 import { LoreItemCellComponent } from './lore-item-cell.component'
 import {
   LoreItemTableRecord,
@@ -62,7 +62,8 @@ export class LoreItemTableAdapter
     return buildOptions(this.utils)
   }
   public connect() {
-    return (this.config?.source || this.db.loreItems).pipe(
+    const source: Observable<LoreData[]> = this.config?.source || this.db.loreItems
+    return source.pipe(
       map((list) => {
         return list.map((item): LoreItemTableRecord => {
           return {
@@ -73,7 +74,7 @@ export class LoreItemTableAdapter
       }),
       map((list) => {
         return sortBy(list, (item) => buildKey(list, item))
-      })
+      }),
     )
   }
 }
@@ -110,7 +111,7 @@ function buildOptions(util: TableGridUtils<LoreItemTableRecord>) {
     columnDefs: [loreColID(util), loreColTitle(util), loreColBody(util), loreColType(util), loreColOrder(util)],
   }
   addGenericColumns(result, {
-    props: COLS_LOREITEMS,
+    props: COLS_LOREDATA,
   })
   return result
 }

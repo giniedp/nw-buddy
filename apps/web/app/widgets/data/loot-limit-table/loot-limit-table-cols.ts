@@ -7,13 +7,13 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions, LootLimitData } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type LootLimitTableUtils = TableGridUtils<LootLimitTableRecord>
-export type LootLimitTableRecord = Lootlimits & {
-  $item: ItemDefinitionMaster | Housingitems
+export type LootLimitTableRecord = LootLimitData & {
+  $item: MasterItemDefinitions | HouseItems
 }
 
 export function lootLimitColIcon(util: LootLimitTableUtils) {

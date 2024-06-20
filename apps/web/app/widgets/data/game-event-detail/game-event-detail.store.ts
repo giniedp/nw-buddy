@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { GameEvent } from '@nw-data/generated'
+import { GameEventData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { rejectKeys, selectStream } from '~/utils'
 import { selectGameEventItemReward, selectGameEventRewards } from './selectors'
@@ -36,8 +36,8 @@ export class GameEventDetailStore extends ComponentStore<{ eventId: string }> {
   }
 }
 
-function selectProperties(item: GameEvent) {
-  const reject: Array<keyof GameEvent> = [
+function selectProperties(item: GameEventData) {
+  const reject: Array<keyof GameEventData> = [
     '$source' as any,
     'AzothReward',
     'AzothSalt',

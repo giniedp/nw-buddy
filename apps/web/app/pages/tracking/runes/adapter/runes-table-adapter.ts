@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data/common'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter } from '~/ui/data/table-grid'
@@ -61,7 +61,7 @@ export class RunesTableAdapter implements TableGridAdapter<RunesRecord>, DataVie
   )
 }
 
-function isRunestone(it: Crafting) {
+function isRunestone(it: CraftingRecipeData) {
   return (
     it.Tradeskill === 'Stonecutting' &&
     (it.CraftingGroup === 'Rune' || it.CraftingGroup?.startsWith('UniqueDungeonReps'))
@@ -73,9 +73,9 @@ function selectSchematics({
   items,
   housing,
 }: {
-  recipes: Crafting[]
-  items: Map<string, ItemDefinitionMaster>
-  housing: Map<string, Housingitems>
+  recipes: CraftingRecipeData[]
+  items: Map<string, MasterItemDefinitions>
+  housing: Map<string, HouseItems>
 }) {
   const runes = recipes
     .map((recipe): RunesRecord => {

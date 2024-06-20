@@ -1,10 +1,10 @@
-import type { Affixstats } from '@nw-data/generated'
+import type { AffixStatData } from '@nw-data/generated'
 
-export function isAffixSplitDamage(affix: Affixstats): boolean {
+export function isAffixSplitDamage(affix: AffixStatData): boolean {
   return !!affix?.DamagePercentage && !!affix?.DamageType
 }
 
-export function getAffixMODs(affix: Partial<Affixstats>, scale: number = 1) {
+export function getAffixMODs(affix: Partial<AffixStatData>, scale: number = 1) {
   return getAffixProperties(affix)
     .filter((it) => it.key.startsWith('MOD'))
     .map(({ key, value }) => ({ key, value: Number(value) }))
@@ -20,7 +20,7 @@ export function getAffixMODs(affix: Partial<Affixstats>, scale: number = 1) {
     })
 }
 
-export function getAffixABSs(affix: Partial<Affixstats>, scale: number) {
+export function getAffixABSs(affix: Partial<AffixStatData>, scale: number) {
   return getAffixProperties(affix)
     .filter((it) => it.key.startsWith('ABS'))
     .map(({ key, value }) => {
@@ -44,7 +44,7 @@ export function getAffixABSs(affix: Partial<Affixstats>, scale: number) {
     })
 }
 
-export function getAffixDMGs(affix: Partial<Affixstats>, scale: number) {
+export function getAffixDMGs(affix: Partial<AffixStatData>, scale: number) {
   return getAffixProperties(affix)
     .filter((it) => it.key.startsWith('DMG'))
     .map(({ key, value }) => {
@@ -63,8 +63,8 @@ export function getAffixDMGs(affix: Partial<Affixstats>, scale: number) {
       }
     })
 }
-export function getAffixProperties(affix: Partial<Affixstats>): Array<{ key: string; value: number | string }> {
-  return Object.entries((affix || {}) as Affixstats)
+export function getAffixProperties(affix: Partial<AffixStatData>): Array<{ key: string; value: number | string }> {
+  return Object.entries((affix || {}) as AffixStatData)
     .filter(([key]) => key !== 'StatusID')
     .map(([key, value]) => {
       if (typeof value === 'string') {
@@ -82,7 +82,7 @@ export function getAffixProperties(affix: Partial<Affixstats>): Array<{ key: str
     .filter((it) => !!it.value)
 }
 
-export function stripAffixProperties(item: Affixstats): Partial<Affixstats> {
+export function stripAffixProperties(item: AffixStatData): Partial<AffixStatData> {
   return Object.entries(item || {})
     .filter(([key, value]) => key !== 'StatusID' && key !== '$source' && !!value)
     .reduce((it, [key, value]) => {
@@ -91,6 +91,6 @@ export function stripAffixProperties(item: Affixstats): Partial<Affixstats> {
     }, {})
 }
 
-export function hasAffixDamageConversion(item: Affixstats) {
+export function hasAffixDamageConversion(item: AffixStatData) {
   return !!item?.DamagePercentage || !!item?.PreferHigherScaling
 }

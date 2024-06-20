@@ -8,14 +8,14 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster, SeasonPassData } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions, SeasonPassRankData } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type SeasonPassTableUtils = TableGridUtils<SeasonPassTableRecord>
-export type SeasonPassTableRecord = SeasonPassData & {
+export type SeasonPassTableRecord = SeasonPassRankData & {
   $source: string
-  $freeItem: ItemDefinitionMaster | Housingitems
-  $premiumItem: ItemDefinitionMaster | Housingitems
+  $freeItem: MasterItemDefinitions | HouseItems
+  $premiumItem: MasterItemDefinitions | HouseItems
 }
 
 export function seasonPassColID(util: SeasonPassTableUtils) {

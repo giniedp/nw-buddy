@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { getQuestTypeIcon } from '@nw-data/common'
-import { Objective } from '@nw-data/generated'
+import { Objectives } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { humanize } from '~/utils'
 import { FollowUpQuest } from './types'
@@ -23,7 +23,7 @@ export class QuestDetailFollowUpComponent {
   @Input()
   public data: FollowUpQuest
 
-  public get quest(): Objective {
+  public get quest(): Objectives {
     return this.data.quest
   }
 

@@ -2,11 +2,11 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { BinaryReader } from '../../utils/binary-reader'
 
-export async function readDistributionFile(file: string){
+export async function readDistributionFile(file: string) {
   const tokens = path.basename(path.dirname(file)).split('_')
   const region = [Number(tokens[1]), Number(tokens[2])]
   const data = await fs.promises.readFile(file)
-  const reader = new BinaryReader(data.buffer as any)
+  const reader = new BinaryReader(data)
 
   let count = reader.readUInt16()
   const slices: string[] = readStringArray(reader, count)

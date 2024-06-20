@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { Router, RouterModule } from '@angular/router'
-import { Vitals } from '@nw-data/generated'
+import { VitalsData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { DataGridModule, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridComponent } from '~/ui/data/virtual-grid'
@@ -57,9 +57,9 @@ export class ZoneDetailPageComponent {
 
   protected virtualGridOptions = VitalGridCellComponent.buildGridOptions()
 
-  protected vitalIdFn = (it: Vitals) => it?.VitalsID
+  protected vitalIdFn = (it: VitalsData) => it?.VitalsID
 
-  protected onVitalClicked(vital: Vitals | string | number) {
+  protected onVitalClicked(vital: VitalsData | string | number) {
     if (typeof vital === 'number') {
       vital = vital.toString()
     }

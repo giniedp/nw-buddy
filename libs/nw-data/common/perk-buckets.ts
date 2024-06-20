@@ -1,4 +1,4 @@
-import { ItemDefinitionMaster, PerkType, Perkbuckets, Perks } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkBucketData, PerkData, PerkType } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { isPerkApplicableToItem } from './perks'
 
@@ -20,8 +20,8 @@ export interface BucketEntry extends PerkBucket {
   Weight: number
 }
 
-export function convertPerkBuckets(buckets: Perkbuckets[]) {
-  const bucketsMap = new Map<string, Perkbuckets>()
+export function convertPerkBuckets(buckets: PerkBucketData[]) {
+  const bucketsMap = new Map<string, PerkBucketData>()
   for (const it of buckets) {
     bucketsMap.set(it.PerkBucketID, it)
   }
@@ -38,8 +38,8 @@ function convertBucket({
   bucket,
   bucketsMap,
 }: {
-  bucket: Perkbuckets
-  bucketsMap: Map<string, Perkbuckets>
+  bucket: PerkBucketData
+  bucketsMap: Map<string, PerkBucketData>
 }): PerkBucket {
   const weights = bucketsMap.get(`${bucket.PerkBucketID}_Weights`)
   const keys = Object.keys(bucket || {}).filter((key) => key.match(/Perk\d+/))
@@ -92,14 +92,14 @@ export function getPerkBucketPerkIDs(bucket: PerkBucket, result: string[] = []):
   return uniq(result)
 }
 
-export function getPerkBucketPerks(bucket: PerkBucket, perks: Map<string, Perks>) {
+export function getPerkBucketPerks(bucket: PerkBucket, perks: Map<string, PerkData>) {
   return uniq(getPerkBucketPerkIDs(bucket)).map((it) => perks.get(it))
 }
 
 export function resolvePerkBucketPerksForItem(
   bucket: PerkBucket,
-  perks: Map<string, Perks>,
-  item: ItemDefinitionMaster
+  perks: Map<string, PerkData>,
+  item: MasterItemDefinitions,
 ) {
   return getPerkBucketPerks(bucket, perks).filter((it) => isPerkApplicableToItem(it, item))
 }

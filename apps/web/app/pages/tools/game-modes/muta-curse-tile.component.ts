@@ -12,7 +12,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core'
-import { Cursemutations, Elementalmutations } from '@nw-data/generated'
+import { CurseMutationStaticData, ElementalMutationStaticData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 import { MutaCurseDetailModule } from '~/widgets/data/muta-curse-detail'
@@ -33,13 +33,13 @@ export class MutaCurseTileComponent {
   protected tip = inject(TooltipDirective)
 
   @Input({ required: true })
-  public mutaCurse: Cursemutations
+  public mutaCurse: CurseMutationStaticData
 
   @Input({ required: true })
-  public mutaElement: Elementalmutations
+  public mutaElement: ElementalMutationStaticData
 
   @Input()
-  public options: Array<{ label: string; value: string; icon: string; object: Cursemutations }>
+  public options: Array<{ label: string; value: string; icon: string; object: CurseMutationStaticData }>
 
 
   @HostBinding('style.background-color')
@@ -59,7 +59,7 @@ export class MutaCurseTileComponent {
   }
 
   @Output()
-  public mutaCurseChanged = new EventEmitter<Cursemutations>()
+  public mutaCurseChanged = new EventEmitter<CurseMutationStaticData>()
 
   protected isMenuOpen = false
 
@@ -68,7 +68,7 @@ export class MutaCurseTileComponent {
     this.isMenuOpen = this.options?.length > 0
   }
 
-  protected select(value: Cursemutations) {
+  protected select(value: CurseMutationStaticData) {
     this.isMenuOpen = false
     this.mutaCurseChanged.emit(value)
   }

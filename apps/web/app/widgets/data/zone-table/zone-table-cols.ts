@@ -1,18 +1,11 @@
-import {
-  ZoneDefinition,
-  getZoneDescription,
-  getZoneDevName,
-  getZoneIcon,
-  getZoneName,
-  isZonePoi,
-  isZoneTerritory,
-} from '@nw-data/common'
+import { getZoneDescription, getZoneDevName, getZoneIcon, getZoneName } from '@nw-data/common'
+import { TerritoryDefinition } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type ZoneTableUtils = TableGridUtils<ZoneTableRecord>
-export type ZoneTableRecord = ZoneDefinition
+export type ZoneTableRecord = TerritoryDefinition
 
 export function zoneColIcon(util: ZoneTableUtils) {
   return util.colDef({

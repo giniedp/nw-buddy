@@ -3,14 +3,14 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { NW_FALLBACK_ICON, getVitalDamage } from '@nw-data/common'
 import {
-  Affixstats,
-  Damagetable,
-  Mutationdifficulty,
+  AffixStatData,
+  DamageData,
+  MutationDifficultyStaticData,
   SpellsMetadata,
-  Statuseffect,
-  Vitals,
-  Vitalsleveldata,
-  Vitalsmodifierdata,
+  StatusEffectData,
+  VitalsData,
+  VitalsLevelData,
+  VitalsModifierData,
 } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
@@ -87,14 +87,14 @@ function selectDamageInfo({
   effectMap,
   metadata,
 }: {
-  vital: Vitals
-  level: Vitalsleveldata
-  modifier: Vitalsmodifierdata
-  damageTable: Damagetable
+  vital: VitalsData
+  level: VitalsLevelData
+  modifier: VitalsModifierData
+  damageTable: DamageData
   metadata: SpellsMetadata
-  difficulty: Mutationdifficulty
-  affixMap: Map<string, Affixstats>
-  effectMap: Map<string, Statuseffect>
+  difficulty: MutationDifficultyStaticData
+  affixMap: Map<string, AffixStatData>
+  effectMap: Map<string, StatusEffectData>
 }) {
   const damage = getVitalDamage({
     vital,

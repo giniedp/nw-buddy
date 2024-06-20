@@ -1,15 +1,13 @@
 import {
-  ItemDefinitionMaster,
-  Itemappearancedefinitions,
-  ItemdefinitionsInstrumentsappearances,
-  ItemdefinitionsWeaponappearances,
+  MasterItemDefinitions,
+  ArmorAppearanceDefinitions,
+  WeaponAppearanceDefinitions,
 } from '@nw-data/generated'
 import { eqCaseInsensitive } from '~/utils'
 
 export type TransmogAppearance =
-  | Itemappearancedefinitions
-  | ItemdefinitionsInstrumentsappearances
-  | ItemdefinitionsWeaponappearances
+  | ArmorAppearanceDefinitions
+  | WeaponAppearanceDefinitions
 
 export type TransmogGender = 'male' | 'female'
 
@@ -32,7 +30,7 @@ export interface TransmogItem {
   male: TransmogItem
   female: TransmogItem
   set: TransmogItem[]
-  items: ItemDefinitionMaster[]
+  items: MasterItemDefinitions[]
 }
 
 export function getAppearanceId(item: TransmogAppearance) {
@@ -86,12 +84,11 @@ export function getAppearanceModelFile(it: TransmogAppearance) {
     return ''
   }
   return String(
-    (it as Itemappearancedefinitions).Skin1 ||
-      (it as Itemappearancedefinitions).Skin2 ||
-      (it as ItemdefinitionsWeaponappearances).SkinOverride1 ||
-      (it as ItemdefinitionsWeaponappearances).SkinOverride2 ||
-      (it as ItemdefinitionsWeaponappearances).MeshOverride ||
-      (it as ItemdefinitionsInstrumentsappearances).MeshOverride ||
+    (it as ArmorAppearanceDefinitions).Skin1 ||
+      (it as ArmorAppearanceDefinitions).Skin2 ||
+      (it as WeaponAppearanceDefinitions).SkinOverride1 ||
+      (it as WeaponAppearanceDefinitions).SkinOverride2 ||
+      (it as WeaponAppearanceDefinitions).MeshOverride ||
       ''
   )
 }
@@ -101,12 +98,12 @@ export function isAppearanceOfGender(item: TransmogAppearance, gender: TransmogG
 }
 
 export function getAppearanceGender(item: TransmogAppearance): TransmogGender
-export function getAppearanceGender(item: Itemappearancedefinitions): TransmogGender {
+export function getAppearanceGender(item: ArmorAppearanceDefinitions): TransmogGender {
   return item?.Gender ? (item.Gender.toLowerCase() as TransmogGender) : null
 }
 
 export function getAppearanceDyeChannels(item: TransmogAppearance): DyeSlot[]
-export function getAppearanceDyeChannels(item: Itemappearancedefinitions): DyeSlot[] {
+export function getAppearanceDyeChannels(item: ArmorAppearanceDefinitions): DyeSlot[] {
   if (!item) {
     return null
   }

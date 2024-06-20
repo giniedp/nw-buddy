@@ -1,9 +1,9 @@
-import { Lootbuckets } from '@nw-data/generated'
+import { LootBucketData } from '@nw-data/generated'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { flatten } from 'lodash'
 import { ParsedLootTag, parseLootTag } from './loot'
 
-export function convertLootbuckets(data: Lootbuckets[]): LootBucketRow[] {
+export function convertLootbuckets(data: LootBucketData[]): LootBucketRow[] {
   const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
   const result = data.map((row, i) => convertRow(row, firstRow, i))
   return flatten(result).filter((it) => !!it.Item)
@@ -19,7 +19,7 @@ export type LootBucketRow = {
   Tags: Map<string, ParsedLootTag>
 }
 
-function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId: number): LootBucketRow[] {
+function convertRow(data: LootBucketData, firstRow: LootBucketData, rowId: number): LootBucketRow[] {
   const keys = new Set<string>()
   const ids = new Set<number>()
   for (const key of Object.keys(data)) {

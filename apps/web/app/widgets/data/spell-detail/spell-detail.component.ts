@@ -1,6 +1,6 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
-import { Spelltable } from '@nw-data/generated'
+import { SpellData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -35,7 +35,7 @@ export class SpellDetailComponent extends SpellDetailStore {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof Spelltable): PropertyGridCell | PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof SpellData): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {
       default: {
         if (Array.isArray(value)) {

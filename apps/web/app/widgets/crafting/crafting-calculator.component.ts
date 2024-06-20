@@ -2,7 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Crafting } from '@nw-data/generated'
+import { CraftingRecipeData } from '@nw-data/generated'
 import { combineLatest } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -53,7 +53,7 @@ export class CraftingCalculatorComponent implements OnInit {
   }
 
   @Input()
-  public set recipe(value: Crafting) {
+  public set recipe(value: CraftingRecipeData) {
     this.store.patchState({
       recipeId: value?.RecipeID,
     })

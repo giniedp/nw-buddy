@@ -1,7 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { Statuseffect } from '@nw-data/generated'
+import { StatusEffectData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
@@ -63,7 +63,7 @@ export class StatusEffectDetailComponent {
   protected affixProperties = toSignal(this.store.affixProps$)
   protected costumeModels = toSignal(this.store.costumeModel$)
 
-  public formatValue = (value: any, key: keyof Statuseffect): PropertyGridCell[] => {
+  public formatValue = (value: any, key: keyof StatusEffectData): PropertyGridCell[] => {
     switch (key) {
       case 'StatusID':
       case 'OnDeathStatusEffect':

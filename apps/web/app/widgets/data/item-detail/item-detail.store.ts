@@ -14,6 +14,7 @@ import {
   getItemRarity,
   getItemRarityLabel,
   getItemSetFamilyName,
+  getItemSourceShort,
   getItemStatsArmor,
   getItemStatsWeapon,
   getItemTierAsRoman,
@@ -24,7 +25,7 @@ import {
   isItemNamed,
   isPerkGem,
 } from '@nw-data/common'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { MasterItemDefinitions } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -194,7 +195,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly name$ = this.select(this.entity$, (it) => it?.Name)
   public readonly namePrefix$ = this.select(this.item$, this.perkSlots$, selectNamePerfix)
   public readonly nameSuffix$ = this.select(this.item$, this.perkSlots$, selectNameSuffix)
-  public readonly source$ = this.select(this.entity$, (it) => it?.['$source'] as string)
+  public readonly source$ = this.select(this.entity$, (it) => getItemSourceShort(it) as string)
   public readonly sourceLabel$ = this.select(this.source$, humanize)
   public readonly description$ = this.select(this.entity$, selectDescription)
   public readonly icon$ = this.select(this.entity$, (it) => getItemIconPath(it) || NW_FALLBACK_ICON)
@@ -322,7 +323,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   }
 }
 
-function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDataService) {
+function collectArtifactTasks(item: MasterItemDefinitions, db: NwDataService) {
   return db.objectiveTasksMap.pipe(
     map((tasks) => {
       const task = tasks.get(`Task_ContainerPerks_${item.ItemID}`)
@@ -340,12 +341,12 @@ function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDataService) {
   )
 }
 export interface ItemCollections {
-  items?: ItemDefinitionMaster[]
-  tiers?: ItemDefinitionMaster[]
-  variants?: ItemDefinitionMaster[]
+  items?: MasterItemDefinitions[]
+  tiers?: MasterItemDefinitions[]
+  variants?: MasterItemDefinitions[]
 }
 
-function selectItemSet(item: ItemDefinitionMaster, itemsSet: ItemDefinitionMaster[]): ItemCollections {
+function selectItemSet(item: MasterItemDefinitions, itemsSet: MasterItemDefinitions[]): ItemCollections {
   if (!item || !itemsSet) {
     return null
   }
@@ -356,9 +357,7 @@ function selectItemSet(item: ItemDefinitionMaster, itemsSet: ItemDefinitionMaste
   // })
 
   const meta = getItemMeta(item)
-  const items = itemsSet
-    .map(getItemMeta)
-    .filter((it) => !!it)
+  const items = itemsSet.map(getItemMeta).filter((it) => !!it)
 
   // console.log({ items })
   if (!meta?.mainCategory) {
@@ -402,7 +401,7 @@ function selectItemSet(item: ItemDefinitionMaster, itemsSet: ItemDefinitionMaste
   }
 }
 
-function getItemMeta(item: ItemDefinitionMaster) {
+function getItemMeta(item: MasterItemDefinitions) {
   const armorClass = getFirstItemClassOf(item, [
     'EquippableChest',
     'EquippableFeet',

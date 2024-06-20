@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
-import { Perks } from '@nw-data/generated'
+import { PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'

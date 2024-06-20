@@ -1,5 +1,5 @@
 import { getAbilityCategoryTag } from '@nw-data/common'
-import { Ability } from '@nw-data/generated'
+import { AbilityData } from '@nw-data/generated'
 import { NwExpressionContext, NwTextContextService } from '~/nw/expression'
 import { CaseInsensitiveSet } from '~/utils'
 
@@ -40,7 +40,7 @@ export interface SkillTreeCell {
   /**
    * The ability
    */
-  ability?: Ability
+  ability?: AbilityData
   /**
    * Display as square
    */
@@ -84,7 +84,7 @@ export interface SkillTreeCell {
   parentLabel: string
 }
 
-export function buildGrid(abilities: Ability[]) {
+export function buildGrid(abilities: AbilityData[]) {
   const maxCol = 1 + Math.max(0, ...abilities.map((it) => it.TreeColumnPosition || 0))
   const maxRow = 1 + Math.max(0, ...abilities.map((it) => it.TreeRowPosition || 0))
   const grid = new Array(maxRow).fill(0).map((_, row) => {
@@ -189,11 +189,11 @@ function compare(a: string, b: string) {
   return a?.toUpperCase() === b?.toUpperCase()
 }
 
-function isAbilityForCell(ability: Ability, row: number, col: number) {
+function isAbilityForCell(ability: AbilityData, row: number, col: number) {
   return !ability.EquipWhenUnsheathed && ability.TreeColumnPosition === col && ability.TreeRowPosition === row
 }
 
-function getAbilityParent(ability: Ability, abilities: Ability[]) {
+function getAbilityParent(ability: AbilityData, abilities: AbilityData[]) {
   if (!ability) {
     return null
   }

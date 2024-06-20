@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
 import { NW_FALLBACK_ICON, getAffixMODs } from '@nw-data/common'
-import { Perks } from '@nw-data/generated'
+import { PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
@@ -106,7 +106,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
     this.exclusiveLabels = resolveExclusiveLabels(value)
   }
 
-  protected perk: Perks
+  protected perk: PerkData
   protected perkId: string
   protected name: string
   protected icon: string
@@ -123,7 +123,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
   protected tplTip: TemplateRef<any>
 
   public constructor(
-    protected grid: VirtualGridComponent<Perks>,
+    protected grid: VirtualGridComponent<PerkData>,
     protected context: NwTextContextService,
     protected store: PerkDetailStore,
     protected db: NwDataService,
@@ -145,7 +145,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
   }
 }
 
-function resolveExclusiveLabels(perks: Perks) {
+function resolveExclusiveLabels(perks: PerkData) {
   const labels = perks?.ExclusiveLabels || []
   const errorLabels = extractExclusionError(perks) || []
   return labels.map((it) => {
@@ -153,7 +153,7 @@ function resolveExclusiveLabels(perks: Perks) {
     return { label: it, isError }
   })
 }
-function extractExclusionError(perks: Perks): string[] {
+function extractExclusionError(perks: PerkData): string[] {
   if ('$excludeError' in perks && Array.isArray(perks.$excludeError) && perks.$excludeError.length > 0) {
     return perks.$excludeError
   }

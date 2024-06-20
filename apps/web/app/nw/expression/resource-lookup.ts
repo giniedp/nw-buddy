@@ -16,9 +16,9 @@ export function resourceLookup(
     case 'DamageTable': {
       return db.damageTableMap
     }
-    case 'Type_DamageData': {
-      return db.dmgTableEliteAffixMap
-    }
+    // case 'Type_DamageData': {
+    //   return db.dmgTableEliteAffixMap
+    // }
     case 'ConsumableItemDefinitions': {
       return db.itemsConsumablesMap
     }

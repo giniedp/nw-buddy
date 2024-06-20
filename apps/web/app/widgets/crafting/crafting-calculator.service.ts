@@ -5,7 +5,7 @@ import {
   getItemIdFromRecipe,
   getRecipeForItem,
 } from '@nw-data/common'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwDataService } from '~/data'
@@ -18,7 +18,7 @@ export class CraftingCalculatorService {
     //
   }
 
-  public solveRecipe(recipe: Crafting) {
+  public solveRecipe(recipe: CraftingRecipeData) {
     if (!recipe) {
       return of(null)
     }
@@ -134,7 +134,7 @@ export class CraftingCalculatorService {
     return this.db.recipeCategory(categoryId)
   }
 
-  public fetchRecipeForItem(item: ItemDefinitionMaster | Housingitems) {
+  public fetchRecipeForItem(item: MasterItemDefinitions | HouseItems) {
     return this.db.recipesMapByItemId.pipe(map((recipes) => getRecipeForItem(item, recipes)))
   }
 
@@ -184,7 +184,7 @@ export class CraftingCalculatorService {
     )
   }
 
-  public findItemsOrSelectedItems(steps: CraftingStep[]): Observable<Array<ItemDefinitionMaster | Housingitems>> {
+  public findItemsOrSelectedItems(steps: CraftingStep[]): Observable<Array<MasterItemDefinitions | HouseItems>> {
     const ids = steps
       .map((it) => {
         switch (it.ingredient?.type) {
@@ -204,7 +204,7 @@ export class CraftingCalculatorService {
     return combineLatest(ids.map((it) => this.fetchItem(it)))
   }
 
-  public fetchGameEventForRecipe(recipe: Crafting) {
+  public fetchGameEventForRecipe(recipe: CraftingRecipeData) {
     return this.db.gameEvent(recipe?.GameEventID)
   }
 

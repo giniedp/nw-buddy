@@ -12,13 +12,13 @@ import {
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import {
-  Cursemutations,
-  Elementalmutations,
-  Gamemodes,
-  Housingitems,
-  ItemDefinitionMaster,
-  Mutationdifficulty,
-  Promotionmutations,
+  CurseMutationStaticData,
+  ElementalMutationStaticData,
+  GameModeData,
+  HouseItems,
+  MasterItemDefinitions,
+  MutationDifficultyStaticData,
+  PromotionMutationStaticData,
 } from '@nw-data/generated'
 import {
   BehaviorSubject,
@@ -146,7 +146,7 @@ export interface Tab {
   ],
 })
 export class GameModeDetailComponent implements OnInit {
-  public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => getItemId(item)
+  public trackById: TrackByFunction<MasterItemDefinitions | HouseItems> = (i, item) => getItemId(item)
   public trackByIndex = (i: number) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
@@ -209,7 +209,7 @@ export class GameModeDetailComponent implements OnInit {
   public dungeonDifficultyLootTags$ = this.store.lootTagsDifficulty$
 
   public expeditionItems$ = this.store.possibleItemDrops$
-  public explainItem$ = new ReplaySubject<ItemDefinitionMaster | Housingitems>(1)
+  public explainItem$ = new ReplaySubject<MasterItemDefinitions | HouseItems>(1)
   public explainMode$ = new ReplaySubject<'normal' | 'mutated' | 'difficulty'>(1)
   public explainVm$ = combineLatest({
     item: this.explainItem$,
@@ -338,8 +338,8 @@ export class GameModeDetailComponent implements OnInit {
   @ViewChild('tplExplain', { static: true })
   public tplExplain: TemplateRef<unknown>
 
-  public dungeon: Gamemodes
-  public difficulty: Mutationdifficulty
+  public dungeon: GameModeData
+  public difficulty: MutationDifficultyStaticData
   public tab: string = ''
   public mapEmbed: SafeResourceUrl
 
@@ -494,22 +494,22 @@ export class GameModeDetailComponent implements OnInit {
     })
   }
 
-  public itemId(item: ItemDefinitionMaster | Housingitems) {
+  public itemId(item: MasterItemDefinitions | HouseItems) {
     return getItemId(item)
   }
 
-  public difficultyTier(item: Mutationdifficulty) {
+  public difficultyTier(item: MutationDifficultyStaticData) {
     return DIFFICULTY_TIER_NAME[item.DifficultyTier] ?? `${item.DifficultyTier}`
   }
 
-  public difficultyRank(dungeon: Gamemodes, difficulty: Mutationdifficulty) {
+  public difficultyRank(dungeon: GameModeData, difficulty: MutationDifficultyStaticData) {
     if (!dungeon || !difficulty) {
       return of(null)
     }
     return this.preferences.observeRank(dungeon.GameModeId, difficulty.MutationDifficulty)
   }
 
-  public difficultyRankIcon(dungeon: Gamemodes, difficulty: Mutationdifficulty) {
+  public difficultyRankIcon(dungeon: GameModeData, difficulty: MutationDifficultyStaticData) {
     if (!dungeon || !difficulty) {
       return of(null)
     }
@@ -557,12 +557,12 @@ export class GameModeDetailComponent implements OnInit {
     }
   }
 
-  public explainItemDrop(item: ItemDefinitionMaster | Housingitems, mode: 'normal' | 'mutated' | 'difficulty') {
+  public explainItemDrop(item: MasterItemDefinitions | HouseItems, mode: 'normal' | 'mutated' | 'difficulty') {
     this.explainItem$.next(item)
     this.explainMode$.next(mode)
   }
 
-  private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
+  private filterAndSort(items: Array<MasterItemDefinitions | HouseItems>) {
     return uniqBy(items, (it) => getItemId(it))
       .filter((it) => getItemRarity(it) != 'common')
       .sort((nodeA, nodeB) => {
@@ -587,7 +587,7 @@ export class GameModeDetailComponent implements OnInit {
       })
   }
 
-  protected onMutaElementSelected(value: Elementalmutations) {
+  protected onMutaElementSelected(value: ElementalMutationStaticData) {
     this.router.navigate(['.'], {
       relativeTo: this.route,
       queryParams: {
@@ -597,7 +597,7 @@ export class GameModeDetailComponent implements OnInit {
     })
   }
 
-  protected onMutaPromotionSelected(value: Promotionmutations) {
+  protected onMutaPromotionSelected(value: PromotionMutationStaticData) {
     this.router.navigate(['.'], {
       relativeTo: this.route,
       queryParams: {
@@ -607,7 +607,7 @@ export class GameModeDetailComponent implements OnInit {
     })
   }
 
-  protected onMutaCurseSelected(value: Cursemutations) {
+  protected onMutaCurseSelected(value: CurseMutationStaticData) {
     this.router.navigate(['.'], {
       relativeTo: this.route,
       queryParams: {

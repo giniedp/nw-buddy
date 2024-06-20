@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { getItemIconPath } from '@nw-data/common'
-import { Housingitems } from '@nw-data/generated'
+import { HouseItems } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -51,7 +51,7 @@ export class HousingDetailPageComponent {
     //
   }
 
-  protected onEntity(entity: Housingitems) {
+  protected onEntity(entity: HouseItems) {
     if (!entity) {
       return
     }

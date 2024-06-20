@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, Output, Type } from '@angular/core'
 import { AttributeRef, getItemId, getWeaponTagFromWeapon } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -50,7 +50,7 @@ export class ItemCardComponent extends ItemDetailStore {
   }
 
   @Input()
-  public set entity(value: ItemDefinitionMaster | Housingitems) {
+  public set entity(value: MasterItemDefinitions | HouseItems) {
     this.patchState({ recordId: getItemId(value) })
   }
 

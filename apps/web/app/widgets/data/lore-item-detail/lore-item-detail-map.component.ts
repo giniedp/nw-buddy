@@ -2,7 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { DecimalPipe } from '@angular/common'
 import { Component, ElementRef, computed, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { LoreMetadata, LoreSpawns, Loreitems } from '@nw-data/generated'
+import { LoreMetadata, LoreSpawns, LoreData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -139,7 +139,7 @@ export class LoreItemDetailMapComponent {
   }
 }
 
-function selectLoreData(lore: Loreitems, loreItems: Loreitems[], metaMap: Map<string, LoreMetadata>) {
+function selectLoreData(lore: LoreData, loreItems: LoreData[], metaMap: Map<string, LoreMetadata>) {
   const root = selectRoot(lore, loreItems)
   const tree = selectTree(root, loreItems)
   const list = selectTreeList(tree)
@@ -174,18 +174,18 @@ function selectLoreData(lore: Loreitems, loreItems: Loreitems[], metaMap: Map<st
 }
 
 interface LoreTree {
-  lore: Loreitems
+  lore: LoreData
   children: LoreTree[]
 }
 
-function selectRoot(lore: Loreitems, loreItems: Loreitems[]) {
+function selectRoot(lore: LoreData, loreItems: LoreData[]) {
   while (lore?.ParentID) {
     lore = loreItems.find((it) => eqCaseInsensitive(it.LoreID, lore.ParentID))
   }
   return lore
 }
 
-function selectTree(lore: Loreitems, loreItems: Loreitems[]): LoreTree {
+function selectTree(lore: LoreData, loreItems: LoreData[]): LoreTree {
   return {
     lore: lore,
     children: loreItems
@@ -194,7 +194,7 @@ function selectTree(lore: Loreitems, loreItems: Loreitems[]): LoreTree {
   }
 }
 
-function selectTreeList(tree: LoreTree, result: Loreitems[] = []) {
+function selectTreeList(tree: LoreTree, result: LoreData[] = []) {
   result.push(tree.lore)
   for (const child of tree.children) {
     selectTreeList(child, result)

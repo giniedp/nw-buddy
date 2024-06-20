@@ -1,6 +1,6 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Emotedefinitions } from '@nw-data/generated'
+import { EmoteData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { rejectKeys } from '~/utils'
 
@@ -27,7 +27,7 @@ export class EmotesDetailStore extends ComponentStore<{ emoteId: string }> {
   }
 }
 
-function selectProperties(item: Emotedefinitions) {
-  const reject: Array<keyof Emotedefinitions> = ['DisplayName', 'DisplayGroup', 'UiImage', 'DisplayDescription']
+function selectProperties(item: EmoteData) {
+  const reject: Array<keyof EmoteData> = ['DisplayName', 'DisplayGroup', 'UiImage', 'DisplayDescription']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

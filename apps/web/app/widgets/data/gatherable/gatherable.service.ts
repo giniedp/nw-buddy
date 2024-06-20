@@ -1,13 +1,13 @@
 import { Injectable, inject } from '@angular/core'
 import { GatherableVariation } from '@nw-data/common'
-import { Gatherables, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
+import { GatherableData, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { tableIndexBy, tableLookup } from '~/data/nw-data/dsl'
 import { combineLatestOrEmpty, eqCaseInsensitive, selectStream } from '~/utils'
 
-export interface GatherableRecord extends Gatherables {
+export interface GatherableRecord extends GatherableData {
   $meta: GatherablesMetadata
   $variations: GatherableVariationRecord[]
   $lootTables: string[]

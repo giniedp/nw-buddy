@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_GAMEEVENT, GameEvent } from '@nw-data/generated'
+import { COLS_GAMEEVENTDATA, GameEventData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { humanize } from '~/utils'
 
@@ -65,7 +65,7 @@ export class GameEventTableAdapter
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<GameEvent> {
+  public virtualOptions(): VirtualGridOptions<GameEventData> {
     return null
   }
 
@@ -114,7 +114,7 @@ function buildOptions(utils: TableGridUtils<GameEventTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_GAMEEVENT,
+    props: COLS_GAMEEVENTDATA,
   })
   return result
 }

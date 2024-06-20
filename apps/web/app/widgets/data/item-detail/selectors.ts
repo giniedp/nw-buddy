@@ -16,24 +16,23 @@ import {
   isMasterItem,
   isPerkApplicableToItem,
   isPerkGem,
-  isPerkInherent,
   isPerkItemIngredient,
 } from '@nw-data/common'
 import {
-  Ability,
-  Affixstats,
-  Craftingcategories,
-  Housingitems,
-  ItemDefinitionMaster,
-  ItemdefinitionsConsumables,
-  ItemdefinitionsResources,
-  Perks,
+  AbilityData,
+  AffixStatData,
+  ConsumableItemDefinitions,
+  CraftingCategoryData,
+  HouseItems,
+  MasterItemDefinitions,
+  PerkData,
+  ResourceItemDefinitions,
 } from '@nw-data/generated'
 
 export interface PerkSlot {
   key: string
   perkId?: string
-  perk?: Perks
+  perk?: PerkData
   bucketId?: string
   bucket?: PerkBucket
   editable?: boolean
@@ -43,10 +42,10 @@ export interface PerkSlot {
   violatesExclusivity: boolean
 }
 
-export function selectItemGearscore(item: ItemDefinitionMaster, gsOverride?: number) {
+export function selectItemGearscore(item: MasterItemDefinitions, gsOverride?: number) {
   return hasItemGearScore(item) ? gsOverride || getItemMaxGearScore(item, false) : null
 }
-export function selectItemGearscoreLabel(item: ItemDefinitionMaster, gsOverride?: number) {
+export function selectItemGearscoreLabel(item: MasterItemDefinitions, gsOverride?: number) {
   return hasItemGearScore(item) ? gsOverride || getItemGearScoreLabel(item) : null
 }
 
@@ -55,7 +54,7 @@ export function selectFinalRarity({
   perkDetails,
   perkOverride,
 }: {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   perkDetails: PerkSlot[]
   perkOverride: Record<string, string>
 }) {
@@ -69,7 +68,7 @@ export function selectFinalRarity({
   return getItemRarity(item, perkIds)
 }
 
-export function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems, playerLevel: number) {
+export function selectSalvageInfo(item: MasterItemDefinitions | HouseItems, playerLevel: number) {
   if (!item || (isMasterItem(item) && !item.IsSalvageable)) {
     return null
   }
@@ -79,13 +78,10 @@ export function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems, pla
   }
   return {
     tableId: recipe.replace('[LTID]', ''),
-    tags: [
-      'GlobalMod',
-      ...((item as ItemDefinitionMaster)?.SalvageLootTags || [])
-    ],
+    tags: ['GlobalMod', ...((item as MasterItemDefinitions)?.SalvageLootTags || [])],
     tagValues: {
       Level: playerLevel - 1,
-      MinContLevel: (item as ItemDefinitionMaster)?.ContainerLevel,
+      MinContLevel: (item as MasterItemDefinitions)?.ContainerLevel,
       SalvageItemRarity: getItemRarityNumeric(item),
       SalvageItemTier: item.Tier,
     },
@@ -101,12 +97,12 @@ export function selectPerkSlots({
   abilities,
   perkOverride,
 }: {
-  item: ItemDefinitionMaster
+  item: MasterItemDefinitions
   itemGS: number
-  perks: Map<string, Perks>
+  perks: Map<string, PerkData>
   buckets: Map<string, PerkBucket>
-  affixes: Map<string, Affixstats>
-  abilities: Map<string, Ability>
+  affixes: Map<string, AffixStatData>
+  abilities: Map<string, AbilityData>
   perkOverride: Record<string, string>
 }): PerkSlot[] {
   if (isPerkItemIngredient(item)) {
@@ -187,23 +183,23 @@ export function selectPerkSlots({
   return result
 }
 
-export function selectNamePerfix(item: ItemDefinitionMaster, perks: PerkSlot[]) {
+export function selectNamePerfix(item: MasterItemDefinitions, perks: PerkSlot[]) {
   return !item?.IgnoreNameChanges ? perks?.find((it) => it?.perk?.AppliedPrefix)?.perk?.AppliedPrefix : null
 }
 
-export function selectNameSuffix(item: ItemDefinitionMaster, perks: PerkSlot[]) {
+export function selectNameSuffix(item: MasterItemDefinitions, perks: PerkSlot[]) {
   return !item?.IgnoreNameChanges ? perks?.find((it) => it?.perk?.AppliedSuffix)?.perk?.AppliedSuffix : null
 }
 
-export function selectDescription(entity: ItemDefinitionMaster | Housingitems) {
+export function selectDescription(entity: MasterItemDefinitions | HouseItems) {
   return {
-    image: (entity as ItemDefinitionMaster)?.HeartgemTooltipBackgroundImage,
-    title: (entity as ItemDefinitionMaster)?.HeartgemRuneTooltipTitle,
+    image: (entity as MasterItemDefinitions)?.HeartgemTooltipBackgroundImage,
+    title: (entity as MasterItemDefinitions)?.HeartgemRuneTooltipTitle,
     description: entity?.Description,
   }
 }
 
-export function selectCraftingCategories(categories: Map<string, Craftingcategories>, item: ItemDefinitionMaster) {
+export function selectCraftingCategories(categories: Map<string, CraftingCategoryData>, item: MasterItemDefinitions) {
   return item?.IngredientCategories?.map((it) => {
     return (
       categories.get(it) || {
@@ -214,11 +210,11 @@ export function selectCraftingCategories(categories: Map<string, Craftingcategor
   })
 }
 
-export function selectStatusEffectIds(consumable: ItemdefinitionsConsumables, housing: Housingitems) {
+export function selectStatusEffectIds(consumable: ConsumableItemDefinitions, housing: HouseItems) {
   return [...(consumable?.AddStatusEffects || []), housing?.HousingStatusEffect].filter((it) => !!it)
 }
 
-export function selectResourcePerkIds(buckets: Map<string, PerkBucket>, resource: ItemdefinitionsResources) {
+export function selectResourcePerkIds(buckets: Map<string, PerkBucket>, resource: ResourceItemDefinitions) {
   if (!resource) {
     return null
   }

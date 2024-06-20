@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { calculateDamage, getDamageScalingForWeapon, getDamageTypes } from '@nw-data/common'
-import { Damagetable } from '@nw-data/generated'
+import { DamageData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { CombatMode, Mannequin } from '~/nw/mannequin'
 import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
@@ -184,7 +184,7 @@ export class GearCellWeaponComponent {
     })
   }
 
-  protected async commitAttack(row: Damagetable) {
+  protected async commitAttack(row: DamageData) {
     patchState(this.mannequin.state, {
       selectedAttack: row?.DamageID,
     })
@@ -208,7 +208,7 @@ export class GearCellWeaponComponent {
     })
   }
 
-  protected labelForAttack(attack: Damagetable, weaponTag: string) {
+  protected labelForAttack(attack: DamageData, weaponTag: string) {
     const prefix = NW_WEAPON_TYPES.find((it) => it.WeaponTag === weaponTag)?.DamageTablePrefix
     return attack.DamageID.replace(prefix || '', '')
   }

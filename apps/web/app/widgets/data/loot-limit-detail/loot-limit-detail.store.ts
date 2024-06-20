@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { getItemId } from '@nw-data/common'
-import { Lootlimits } from '@nw-data/generated'
+import { LootLimitData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { map } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -71,7 +71,7 @@ export class LootLimitDetailStore extends ComponentStore<{ limitId: string }> {
     super({ limitId: null })
   }
 
-  public load(idOrItem: string | Lootlimits) {
+  public load(idOrItem: string | LootLimitData) {
     if (typeof idOrItem === 'string') {
       this.patchState({ limitId: idOrItem })
     } else {
@@ -80,7 +80,7 @@ export class LootLimitDetailStore extends ComponentStore<{ limitId: string }> {
   }
 }
 
-function selectProperties(item: Lootlimits) {
+function selectProperties(item: LootLimitData) {
   const reject = ['$source']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

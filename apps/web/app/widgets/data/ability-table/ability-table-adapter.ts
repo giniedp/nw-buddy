@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getWeaponTagLabel } from '@nw-data/common'
-import { COLS_ABILITY } from '@nw-data/generated'
+import { COLS_ABILITYDATA } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -115,7 +115,7 @@ function buildOptions(util: TableGridUtils<AbilityTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_ABILITY,
+    props: COLS_ABILITYDATA,
   })
   return result
 }

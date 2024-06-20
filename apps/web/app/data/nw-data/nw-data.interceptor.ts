@@ -1,16 +1,16 @@
 import {
+  HTTP_INTERCEPTORS,
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
-  HTTP_INTERCEPTORS,
 } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { CanActivateFn } from '@angular/router'
-import { getNwDataPath } from 'apps/web/environments/utils'
 import { environment } from 'apps/web/environments/environment'
-import { map, Observable } from 'rxjs'
+import { getNwDataPath } from 'apps/web/environments/utils'
+import { Observable, map } from 'rxjs'
 
 export function activateVersionGuard(param: string): CanActivateFn {
   return (snapshot) => {
@@ -48,12 +48,12 @@ export class NwDataInterceptor implements HttpInterceptor {
   }
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (req.url.startsWith('localization/')) {
+    if (req.url.startsWith('localization/') || req.url.startsWith('generated/')) {
       // just prepend the CDN url, no transformation
       return next.handle(this.prependPath(req))
     }
     if (req.url.startsWith('datatables/')) {
-      // prepend the CDN url and transform image URLs
+      // prepend the CDN url and transform image URLs + locale strings
       return next.handle(this.prependPath(req)).pipe(map((res) => this.transformDatasheetResponse(res)))
     }
     return next.handle(req)
@@ -79,13 +79,20 @@ export class NwDataInterceptor implements HttpInterceptor {
     if (!Array.isArray(data)) {
       return data
     }
-    return data.map((item) => {
-      Object.entries(item).forEach(([key, value]) => {
-        if (typeof value === 'string' && value.startsWith('nw-data/')) {
-          item[key] = value.replace(/nw-data\/((live|ptr)\/)?/, this.nwDataUrl + '/')
+    for (const item of data) {
+      for (const key in item) {
+        const value = item[key]
+        if (typeof value !== 'string') {
+          continue
         }
-      })
-      return item
-    })
+        if (value.startsWith('lyshineui')) {
+          item[key] = this.nwDataUrl + '/' + value
+        }
+        if (value.startsWith('@')) {
+          item[key] = value.substring(1)
+        }
+      }
+    }
+    return data
   }
 }

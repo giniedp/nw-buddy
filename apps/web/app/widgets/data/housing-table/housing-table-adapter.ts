@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getUIHousingCategoryLabel } from '@nw-data/common'
-import { COLS_HOUSINGITEMS, Housingitems } from '@nw-data/generated'
+import { COLS_HOUSEITEMS, HouseItems } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
@@ -55,7 +55,7 @@ export class HousingTableAdapter implements TableGridAdapter<HousingTableRecord>
       },
     ]
   }
-  public virtualOptions(): VirtualGridOptions<Housingitems> {
+  public virtualOptions(): VirtualGridOptions<HouseItems> {
     return HousingCellComponent.buildGridOptions()
   }
 
@@ -107,7 +107,7 @@ export function buildCommonHousingGridOptions(util: TableGridUtils<HousingTableR
     ],
   }
   addGenericColumns(result, {
-    props: COLS_HOUSINGITEMS,
+    props: COLS_HOUSEITEMS,
   })
   return result
 }
@@ -124,7 +124,7 @@ export function buildPickerHousingGridOptions(utils: TableGridUtils<HousingTable
     ],
   }
   addGenericColumns(result, {
-    props: COLS_HOUSINGITEMS,
+    props: COLS_HOUSEITEMS,
   })
   return result
 }

@@ -1,6 +1,6 @@
-import * as fastGlob from 'fast-glob'
-import * as fs from 'fs'
-import * as path from 'path'
+import fastGlob from 'fast-glob'
+import fs from 'node:fs'
+import path from 'node:path'
 import { ZodSchema } from 'zod'
 
 export async function mkdir(dirPath: string, options?: fs.MakeDirectoryOptions) {
@@ -23,6 +23,23 @@ export async function readJSONFile<T>(input: string, schema?: ZodSchema<T>) {
   return json as T
 }
 
+export async function writeFile(
+  data: string | Buffer,
+  options: {
+    target: string
+    createDir: boolean
+    encoding: BufferEncoding
+  },
+) {
+  const outFile = options.target
+  if (options?.createDir) {
+    await mkdir(path.dirname(outFile), { recursive: true })
+  }
+  return fs.promises.writeFile(outFile, data, {
+    encoding: options.encoding,
+  })
+}
+
 export async function writeJSONFile<T extends Object>(
   data: T,
   options: {
@@ -31,20 +48,16 @@ export async function writeJSONFile<T extends Object>(
     createDir?: boolean
   },
 ) {
-  const output = options.target
-  if (options?.createDir) {
-    await mkdir(path.dirname(output), { recursive: true })
-  }
   const dataOut = await Promise.resolve(options.serialize ? options.serialize(data) : JSON.stringify(data, null, 1))
-  return fs.promises.writeFile(output, dataOut, 'utf-8')
+  return writeFile(dataOut, {
+    encoding: 'utf-8',
+    target: options.target,
+    createDir: options.createDir,
+  })
 }
 
 export async function writeUTF8File(data: string | Buffer, options: { target: string; createDir: boolean }) {
-  const outFile = options.target
-  if (options?.createDir) {
-    await mkdir(path.dirname(outFile), { recursive: true })
-  }
-  return fs.promises.writeFile(outFile, data, 'utf-8')
+  return writeFile(data, { ...options, encoding: 'utf-8' })
 }
 
 export function replaceExtname(file: string, extname: string) {
@@ -66,4 +79,8 @@ export async function glob(pattern: string | string[], options?: fastGlob.Option
   }
   const exclude = new Set(await fastGlob(negative, options))
   return result.filter((it) => !exclude.has(it))
+}
+
+export function normalizePath(value: string) {
+  return path.normalize(value).toLowerCase().split(path.sep).join('/')
 }

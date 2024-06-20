@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { Subject, combineLatest, map, takeUntil } from 'rxjs'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NwDataService } from '~/data'
 import { selectSignal } from '~/utils'
 
@@ -33,7 +31,6 @@ export interface LevelingRow {
   },
 })
 export class XpTableComponent {
-
   protected data = selectSignal(inject(NwDataService).xpAmounts, (data) => {
     return (data || []).map((row, i): LevelingRow => {
       return {
@@ -46,5 +43,4 @@ export class XpTableComponent {
       }
     })
   })
-
 }
