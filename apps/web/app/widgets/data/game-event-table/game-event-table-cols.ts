@@ -139,6 +139,10 @@ export function gameEventColCreatureType(util: GameEventTableUtils) {
     colId: 'CreatureType',
     headerValueGetter: () => 'Creature Type',
     field: 'CreatureType',
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
   })
 }
 
