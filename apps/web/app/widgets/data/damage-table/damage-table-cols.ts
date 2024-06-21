@@ -48,6 +48,7 @@ export function damageSource(util: DamageTableUtils) {
     getQuickFilterText: ({ value }) => humanize(value),
     ...util.selectFilter({
       order: 'asc',
+      search: true
     })
   })
 }
@@ -59,6 +60,7 @@ export function damageColDamageType(util: DamageTableUtils) {
     width: 200,
     ...util.selectFilter({
       order: 'asc',
+      search: true,
     })
   })
 }
@@ -71,6 +73,7 @@ export function damageColAttackType(util: DamageTableUtils) {
     width: 200,
     ...util.selectFilter({
       order: 'asc',
+      search: true,
     })
   })
 }
@@ -137,6 +140,7 @@ export function damageColAffixes(util: DamageTableUtils) {
     width: 200,
     ...util.selectFilter({
       order: 'asc',
+      search: true,
     })
   })
 }
@@ -149,6 +153,7 @@ export function damageColAffliction(util: DamageTableUtils) {
     width: 200,
     ...util.selectFilter({
       order: 'asc',
+      search: true,
     }),
   })
 }
