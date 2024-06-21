@@ -24,6 +24,7 @@ export function generateTableIndex(
   code.push(`export const DATASHEETS = {`)
   for (const sheetType of Object.keys(groups).sort()) {
     code.push(`  ${escapedName(sheetType)}: {`)
+    groups[sheetType].sort((a, b) => a.sheetName.localeCompare(b.sheetName))
     for (const { sheetName, type, file } of groups[sheetType]) {
       const url = file.replace(/\\/g, '/')
       code.push(`    ${escapedName(sheetName)}: <DataSheetUri<${type}>>{ uri: '${url}' },`)

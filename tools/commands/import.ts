@@ -23,6 +23,7 @@ enum ResourceType {
   types = 'types',
   search = 'search',
   code = 'code',
+  stats = 'stats',
 }
 
 const OptionsSchema = z.object({
@@ -94,6 +95,9 @@ program
         outputDir: importDir,
       })
     }
+    if (!type || type === ResourceType.stats) {
+      await printStats({ outputDir: importDir })
+    }
   })
 
 async function importSlices({
@@ -157,8 +161,9 @@ async function importSlices({
       }),
       ...data.variations.chunks.map(async (chunk, index) => {
         const file = path.join(jsonOutDir, `variations_metadata.${index}.chunk`)
+        logger.info('Writing chunk', index, `(${chunk.length} entries)`)
         await mkdir(path.dirname(file), { recursive: true })
-        await fs.promises.writeFile(file, chunk)
+        await fs.promises.writeFile(file, chunk, { encoding: 'binary' })
       }),
     ])
   })
@@ -173,6 +178,7 @@ async function importLocale({ inputDir, outputDir }: { inputDir: string; outputD
     await writeJSONFile(dict, {
       target: outPath,
       createDir: true,
+      serialize: (it) => JSON.stringify(it, null, '\t'),
     })
   })
 }
@@ -188,6 +194,7 @@ async function importTables({ inputDir, outputDir }: { inputDir: string; outputD
     await writeJSONFile(sheet.rows, {
       target: outPath,
       createDir: true,
+      serialize: (it) => JSON.stringify(it, null, '\t'),
     })
   })
 
@@ -306,4 +313,63 @@ async function importSearch({ inputDir, outputDir }: { inputDir: string; outputD
       })
     },
   })
+}
+
+async function printStats({ outputDir }: { outputDir: string }) {
+  const localeFiles = await glob(path.join(outputDir, 'localization', '**', '*.json'))
+  const searchFiles = await glob(path.join(outputDir, 'search', '**', '*.json'))
+  const generatedFiles = await glob(path.join(outputDir, 'generated', '**', '*.*'))
+  const tableFiles = await glob(path.join(outputDir, 'datatables', '**', '*.json'))
+  const imageFiles = await glob(path.join(outputDir, 'lyshineui', '**', '*.*'))
+
+  function getStat(file: string) {
+    return {
+      size: fs.statSync(file).size,
+      file: path.relative(outputDir, file).replace(/\\/gi, '/'),
+    }
+  }
+
+  const localeStats = localeFiles.map(getStat).sort((a, b) => b.size - a.size)
+  const localeSize = localeStats.reduce((sum, it) => sum + it.size, 0)
+  logger.info('Locales:', localeStats.length, 'files', humanizeByteSize(localeSize))
+  for (const stat of localeStats) {
+    logger.info(humanizeByteSize(stat.size, 15), stat.file)
+  }
+
+  const searchStats = searchFiles.map(getStat).sort((a, b) => b.size - a.size)
+  const searchSize = searchStats.reduce((sum, it) => sum + it.size, 0)
+  logger.info('Search:', searchStats.length, 'files', humanizeByteSize(searchSize))
+  for (const stat of searchStats) {
+    logger.info(humanizeByteSize(stat.size, 15), stat.file)
+  }
+
+  const generatedStats = generatedFiles.map(getStat).sort((a, b) => b.size - a.size)
+  const generatedSize = generatedStats.reduce((sum, it) => sum + it.size, 0)
+  logger.info('Generated:', generatedStats.length, 'files', humanizeByteSize(generatedSize))
+  for (const stat of generatedStats) {
+    logger.info(humanizeByteSize(stat.size, 15), stat.file)
+  }
+
+  const tableStats = tableFiles.map(getStat).sort((a, b) => b.size - a.size)
+  const tableSize = tableStats.reduce((sum, it) => sum + it.size, 0)
+  logger.info('Tables:', tableStats.length, 'files', humanizeByteSize(tableSize))
+  tableStats.length = 10
+  for (const stat of tableStats) {
+    logger.info(humanizeByteSize(stat.size, 15), stat.file)
+  }
+
+  const imageSize = imageFiles.map(getStat).sort((a, b) => b.size - a.size)
+  const imageStats = imageSize.reduce((sum, it) => sum + it.size, 0)
+  logger.info('Images:', imageSize.length, 'files', humanizeByteSize(imageStats))
+}
+
+function humanizeByteSize(sizeInBytes: number, padStart = 0): string {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  let i = 0
+  let size = sizeInBytes
+  while (size >= 1024 && i < units.length) {
+    size /= 1024
+    i++
+  }
+  return `${size.toFixed(2)} ${units[i]}`.padStart(padStart, ' ')
 }

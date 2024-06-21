@@ -4641,7 +4641,7 @@ export const COLS_OBJECTIVETASKS = {
   GameModeID: "string",
   GridLayout: "string",
   GuranteedDropAttempts: "number",
-  HideDiegeticGatherablePins: "string",
+  HideDiegeticGatherablePins: "boolean",
   InteractTag: "string",
   IsHidden: "string",
   ItemDropProbability: "number",
