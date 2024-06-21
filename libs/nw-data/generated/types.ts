@@ -2466,8 +2466,6 @@ export interface LootBucketData {
   Item171: string;
   Item172: string;
   Item173: string;
-  Item174: string;
-  Item175: string;
   Item176: string;
   Item177: string;
   Item18: string;
@@ -2487,7 +2485,6 @@ export interface LootBucketData {
   Item205: string;
   Item206: string;
   Item207: string;
-  Item208: string;
   Item209: string;
   Item21: string;
   Item210: string;
@@ -2597,7 +2594,6 @@ export interface LootBucketData {
   Item305: string;
   Item306: string;
   Item307: string;
-  Item308: string;
   Item309: string;
   Item31: string;
   Item310: string;
@@ -3391,8 +3387,6 @@ export interface LootBucketData {
   Quantity171: number;
   Quantity172: number;
   Quantity173: number;
-  Quantity174: number;
-  Quantity175: number;
   Quantity176: number;
   Quantity177: number;
   Quantity18: number | string;
@@ -3412,7 +3406,6 @@ export interface LootBucketData {
   Quantity205: number;
   Quantity206: number;
   Quantity207: number;
-  Quantity208: number;
   Quantity209: number;
   Quantity21: number | string;
   Quantity210: number;
@@ -3522,7 +3515,6 @@ export interface LootBucketData {
   Quantity305: number;
   Quantity306: number;
   Quantity307: number;
-  Quantity308: number;
   Quantity309: number;
   Quantity31: number;
   Quantity310: number;
@@ -3802,8 +3794,6 @@ export interface LootBucketData {
   Tags170: string[];
   Tags172: string[];
   Tags173: string[];
-  Tags174: string[];
-  Tags175: string[];
   Tags176: string[];
   Tags177: string[];
   Tags18: string[];
@@ -3823,7 +3813,6 @@ export interface LootBucketData {
   Tags205: string[];
   Tags206: string[];
   Tags207: string[];
-  Tags208: string[];
   Tags209: string[];
   Tags21: string[];
   Tags210: string[];
@@ -3895,7 +3884,6 @@ export interface LootBucketData {
   Tags3: string[];
   Tags30: string[];
   Tags303: string[];
-  Tags308: string[];
   Tags31: string[];
   Tags310: string[];
   Tags314: string[];
@@ -7711,7 +7699,6 @@ export type LootTag =
   | "Protector"
   | "Putris"
   | "Qebui"
-  | "RabbitSeason"
   | "Rafik"
   | "RainbowChameleon"
   | "RainbowDragon"
