@@ -227,8 +227,8 @@ export class NwDataService {
   public variationsMetadataMap = tableIndexBy(() => this.variationsMetadata, 'variantID')
   public variationsMeta = tableLookup(() => this.variationsMetadataMap)
   public variationsChunk(id: number) {
-    return this.data.load(`generated_variations_metadata.${id}.chunk`, 'arrayBuffer').pipe(
-      map((data) => new Float32Array(data)),
+    return this.data.load(`nw-data/generated/variations_metadata.${id}.chunk`, 'arrayBuffer').pipe(
+      map((data, i) => new Float32Array(data)),
       map((data) => {
         const points: [number, number][] = []
         for (let i = 0; i < data.length; i += 2) {

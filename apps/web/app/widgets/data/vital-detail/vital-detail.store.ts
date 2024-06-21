@@ -14,8 +14,8 @@ import {
   DamageData,
   ElementalMutationStaticData,
   StatusEffectData,
-  VitalsData,
   VitalsCategoryData,
+  VitalsData,
   VitalsMetadata,
 } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
@@ -45,12 +45,15 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
   readonly creatureType$ = this.select(this.vital$, (it) => it?.CreatureType)
   readonly displayName$ = selectStream(this.vital$, (it) => it?.DisplayName)
   readonly metadata$ = selectStream(this.db.vitalsMeta(this.vitalId$))
-  readonly aliasNames$ = selectStream({
-    metadata: this.metadata$,
-    categories: this.db.vitalsCategoriesMap,
-  }, ({ metadata, categories }) => {
-    return metadata?.catIDs?.map((id) => categories.get(id)?.DisplayName)?.filter((it) => it)
-  })
+  readonly aliasNames$ = selectStream(
+    {
+      metadata: this.metadata$,
+      categories: this.db.vitalsCategoriesMap,
+    },
+    ({ metadata, categories }) => {
+      return metadata?.catIDs?.map((id) => categories.get(id)?.DisplayName)?.filter((it) => it)
+    },
+  )
 
   readonly modifier$ = selectStream(this.db.vitalsModifier(this.creatureType$))
   readonly level$ = selectStream(
@@ -170,7 +173,7 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
     }
     return combineLatest(
       files.map((file) => {
-        return this.db.data.load<DamageData[]>(file.replace(/\.xml$/, '.json')).pipe(
+        return this.db.data.load<DamageData[]>('datatables/' + file.replace(/\.xml$/, '.json')).pipe(
           map((rows): DamageTableFile => {
             return {
               file: file,
