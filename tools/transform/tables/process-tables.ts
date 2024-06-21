@@ -15,14 +15,12 @@ const schema = z.object({
 })
 
 export async function processTables({ inputDir, files }: { inputDir: string; files: string[] }) {
-  const tables: Record<string, DatasheetFile<any>> = Object.fromEntries(
-    await Promise.all(
-      files.map(async (file) => {
-        const table = await readJSONFile(file, schema)
-        return [file, table]
-      }),
-    ),
-  )
+  const tables: Record<string, DatasheetFile<any>> = {}
+
+  await withProgressBar({ label: 'Reading Tables', tasks: files }, async (file) => {
+    const table = await readJSONFile(file, schema)
+    tables[file] = table as any
+  })
   await withProgressBar({ label: 'Processing Tables', tasks: files }, async (file) => {
     const table = tables[file]
     for (const rule of TRANSFORM_RULES) {

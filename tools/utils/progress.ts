@@ -68,10 +68,12 @@ export async function withProgressBar<T>(
     bar.start(tasks.length, 0, { log: '' })
     function log(log: string) {
       bar.update({ log })
+      bar.render()
     }
     for (let i = 0; i < tasks.length; i++) {
       await task(tasks[i], i, log).catch(logger.error)
       bar.update(i + 1)
+      bar.render()
     }
     log('')
   })
