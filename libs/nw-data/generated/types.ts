@@ -6302,6 +6302,12 @@ export interface ThrowableItemDefinitions {
   WarningTime: number;
 }
 
+export interface TimelineRegistryEntryData {
+  AssetDependencyPath: string;
+  TimelineAssetPath: string;
+  TimelineEntryName: string;
+}
+
 export interface TradeSkillPostCapData {
   Level01GameEvent: string;
   Level01GameEvent1: string;

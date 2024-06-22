@@ -1,5 +1,6 @@
 import micromatch from 'micromatch'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { Entry } from 'yauzl'
 import { decompressEntry } from '../file-formats/pak/decompress'
@@ -55,7 +56,9 @@ export async function pakFileSystem({ gameDir, files, oodleDir }: PakFileSystemO
     const result: Array<string[]> = []
     for (const pak of pakFiles) {
       const list = Array.from(pak.entries.keys())
-      const matches = micromatch(list, pattern)
+      const matches = micromatch(list, pattern, {
+        nocase: true,
+      })
       result.push(matches)
     }
     return result.flat()
@@ -98,6 +101,7 @@ async function createIndex(gameDir: string, files: string[]) {
   await runTasks({
     label: 'Pak Init',
     taskName: 'readPakIndex',
+    threads: os.cpus().length,
     tasks: files.map((file) => {
       return {
         gameDir,

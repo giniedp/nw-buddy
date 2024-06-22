@@ -27,25 +27,44 @@ enum AssetType {
   catalog = 'catalog',
   shapes = 'shapes',
   locales = 'locales',
-  datasheets = 'datasheets',
+  tables = 'tables',
   shaders = 'shaders',
   objectstreams = 'objectstreams',
   images = 'images',
 }
 
+function parseType(value: string): AssetType[] {
+  if (!value) {
+    return null
+  }
+  return value
+    .split(',')
+    .map((it) => it.trim())
+    .map((it) => {
+      if (it in AssetType) {
+        return AssetType[it as keyof typeof AssetType]
+      }
+      throw new Error(`Invalid asset type: ${it}`)
+    })
+}
+
+function typeEnabled(types: AssetType[], type: AssetType) {
+  return !types || types.includes(type)
+}
 program
   .command('convert')
   .description('Converts unpacked game files to a convenient format to work with (JSON, png, etc.)')
-  .option('-u, --update', 'Force update')
+  .option('-u, --update', 'Force update images')
   .option('-t, --threads <threads>', 'Number of threads', Number)
   .option('-ws, --workspace <name>', 'workspace (live or ptr)', NW_WORKSPACE)
   .argument('[assetType]', 'The asset type to convert. If not specified, all assets will be converted.')
-  .action(async (assetType: AssetType, args) => {
+  .action(async (type: string, args) => {
     const options = OptionsSchema.parse(args)
     options.update = !!options.update
     options.threads = options.threads || cpus().length
     const unpackDir = environment.nwUnpackDir(options.workspace)!
     const convertDir = environment.nwConvertDir(options.workspace)!
+    const modules = type ? parseType(type) : null
 
     logger.info('[CONVERT]', unpackDir)
     logger.info('      to:', convertDir)
@@ -53,37 +72,38 @@ program
     logger.info(' threads:', options.threads)
     logger.verbose(options.threads <= 1)
 
-    if (!assetType || assetType === AssetType.files) {
+    if (typeEnabled(modules, AssetType.files)) {
       await copyCommonFiles(unpackDir, convertDir)
     }
-    if (!assetType || assetType === AssetType.catalog) {
+    if (typeEnabled(modules, AssetType.catalog)) {
       await convertAssetCatalog(unpackDir, convertDir)
     }
-    if (!assetType || assetType === AssetType.shapes) {
+    if (typeEnabled(modules, AssetType.shapes)) {
       await convertRegionData(unpackDir, convertDir)
       await convertVshapec(unpackDir, convertDir)
     }
-    if (!assetType || assetType === AssetType.locales) {
+    if (typeEnabled(modules, AssetType.locales)) {
       await convertLocales(unpackDir, convertDir)
     }
-    if (!assetType || assetType === AssetType.datasheets) {
+    if (typeEnabled(modules, AssetType.tables)) {
       await convertDatasheets(unpackDir, convertDir)
     }
-    if (!assetType || assetType === AssetType.shaders) {
+    if (typeEnabled(modules, AssetType.shaders)) {
       await convertShaders(unpackDir, convertDir)
     }
-    if (!assetType || assetType === AssetType.objectstreams) {
+    if (typeEnabled(modules, AssetType.objectstreams)) {
       await convertObjectStreams({
         inputDir: unpackDir,
         outputDir: convertDir,
         threads: options.threads,
       })
     }
-    if (!assetType || assetType === AssetType.images) {
+    if (typeEnabled(modules, AssetType.images)) {
       await convertImages({
         inputDir: unpackDir,
         outputDir: convertDir,
         threads: options.threads,
+
       })
     }
   })
@@ -238,6 +258,7 @@ async function convertImages({
         file,
         inputDir,
         outputDir,
+        update: true,
         exe: 'tools/bin/texconv.exe',
       }
     }),

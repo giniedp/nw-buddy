@@ -5,17 +5,14 @@ export async function spawn(cmd: string, args?: string[], options?: cp.SpawnOpti
   logger.activity('spawn', cmd, ...args)
 
   return new Promise<void>((resolve, reject) => {
-    const captureOut = options?.stdio === 'inherit'
-    if (captureOut) {
-      options.stdio = 'ignore'
-    }
     const p = cp.spawn(cmd, args, options)
-    if (captureOut) {
-      p.on('data', (data) => {
-        logger.log(data)
+    if (p.stdout) {
+      console.log('listening')
+      p.stdout.on('data', (data) => {
+        logger.log(`${data}`.replace(/\n$/, ''))
       })
-      p.on('message', (data) => {
-
+      p.stderr.on('data', (data) => {
+        logger.log(`${data}`.replace(/\n$/, ''))
       })
     }
     p.on('close', (code) => {

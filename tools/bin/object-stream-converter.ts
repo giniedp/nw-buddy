@@ -18,8 +18,5 @@ export async function objectStreamConverter({ exe, input, output, threads, prett
   if (pretty) {
     args.push(`-with-indents`)
   }
-  await spawn(tool, args, {
-    stdio: 'inherit',
-    ...(options || {})
-  })
+  await spawn(tool, args, options)
 }

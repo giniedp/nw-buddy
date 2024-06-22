@@ -26,6 +26,25 @@ enum ResourceType {
   stats = 'stats',
 }
 
+function parseModule(value: string): ResourceType[] {
+  if (!value) {
+    return null
+  }
+  return value
+    .split(',')
+    .map((it) => it.trim())
+    .map((it) => {
+      if (it in ResourceType) {
+        return ResourceType[it as keyof typeof ResourceType]
+      }
+      throw new Error(`Invalid asset type: ${it}`)
+    })
+}
+
+function isEnabled(types: ResourceType[], type: ResourceType) {
+  return !types || types.includes(type)
+}
+
 const OptionsSchema = z.object({
   workspace: z.string(),
   update: z.boolean().optional(),
@@ -49,15 +68,15 @@ program
   .option('-t, --threads <threads>', 'Number of threads', Number)
   .option('-ws, --workspace <name>', 'workspace (live or ptr)', NW_WORKSPACE)
   .argument('[type]', 'The resource type to (re)import. If not specified, all resources will be (re)imported.')
-  .action(async (type: ResourceType, args) => {
+  .action(async (type: string, args) => {
     const options = OptionsSchema.parse(args)
     options.update = !!options.update
     options.threads = options.threads || cpus().length
     const unpackDir = environment.nwUnpackDir(options.workspace)
     const convertDir = environment.nwConvertDir(options.workspace)
     const importDir = environment.nwDataDir(options.workspace)
-
     const outputTypesDir = environment.libsDir('nw-data', 'generated')
+    const modules = type ? parseModule(type) : null
 
     logger.info('[IMPORT]', convertDir)
     logger.info('      to:', importDir)
@@ -65,23 +84,23 @@ program
     logger.info(' threads:', options.threads)
     // logger.verbose(options.threads <= 1)
 
-    if (!type || type === ResourceType.slices) {
+    if (isEnabled(modules, ResourceType.slices)) {
       await importSlices({
         inputDir: convertDir,
         outputDir: importDir,
         threads: options.threads,
       })
     }
-    if (!type || type === ResourceType.locale) {
+    if (isEnabled(modules, ResourceType.locale)) {
       await importLocale({ inputDir: convertDir, outputDir: importDir })
     }
-    if (!type || type === ResourceType.tables) {
+    if (isEnabled(modules, ResourceType.tables)) {
       await importTables({ inputDir: convertDir, outputDir: importDir })
     }
-    if (!type || type === ResourceType.code) {
+    if (isEnabled(modules, ResourceType.code)) {
       await generateCode({ inputDir: convertDir, outputDir: importDir, codeDir: outputTypesDir })
     }
-    if (!type || type === ResourceType.images) {
+    if (isEnabled(modules, ResourceType.images)) {
       await importImages({
         inputDir: convertDir,
         outputDir: importDir,
@@ -200,7 +219,7 @@ async function importTables({ inputDir, outputDir }: { inputDir: string; outputD
 
   const jsonOutDir = generatedDir(outputDir)
   await processSpells({ inputDir }).then((data) => {
-    writeJSONFile(data, {
+    return writeJSONFile(data, {
       target: path.join(jsonOutDir, 'spells_metadata.json'),
       createDir: true,
       serialize: jsonStringifyFormatted,

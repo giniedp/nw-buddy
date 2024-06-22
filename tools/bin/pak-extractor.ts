@@ -1,3 +1,4 @@
+import { SpawnOptions } from "node:child_process"
 import { spawn } from "../utils"
 
 export interface PakExtrakterArgs {
@@ -21,7 +22,7 @@ export async function pakExtractor({
   threads,
   exclude,
   include,
-}: PakExtrakterArgs) {
+}: PakExtrakterArgs, spawnOptions?: SpawnOptions) {
   // https://github.com/new-world-tools/new-world-tools
   const tool = exe || 'pak-extracter.exe'
   const args = [`-input`, input, `-output`, output]
@@ -44,6 +45,7 @@ export async function pakExtractor({
     args.push(`-threads`, String(threads))
   }
   await spawn(tool, args, {
-    stdio: 'inherit',
+    stdio: 'pipe',
+    ...(spawnOptions || {})
   })
 }

@@ -1,36 +1,47 @@
 import { program } from 'commander'
+import path from 'node:path'
 import { z } from 'zod'
 import { NW_WORKSPACE, environment } from '../../env'
-import { pakFileSystem } from '../file-system/pak-fs'
-import { withProgressBar } from '../utils'
-import { isAzcsBuffer } from '../utils/azcs'
+import { pakExtractor } from '../bin/pak-extractor'
 import { logger } from '../utils/logger'
 
 const OptionsSchema = z.object({
-  workSpace: z.string(),
-  outDir: z.string(),
+  threads: z.number().optional(),
+  workspace: z.string(),
+  executable: z.string(),
 })
 
 program
   .command('unpack')
-  .description('Extracts Files')
-  .option('-ws, --work-space <workSpace>', 'Name of the workspace', NW_WORKSPACE)
-  .option('-o, --out-dir <outDir>', 'Output directory', environment.tmpDir('wip'))
-  .argument('[pattern]', 'files to extract', '**/*.*')
-  .action(async (pattern, options) => {
-    const { workSpace, outDir } = OptionsSchema.parse(options)
+  .description('Unpacks files with pak-extracter.exe')
+  .option('-t, --threads <threads>', 'Number of threads', Number)
+  .option('-ws, --workspace <workspace>', 'Name of the workspace', NW_WORKSPACE)
+  .option('-exe, --executable <path>', 'path to the unpacker executable', './tools/bin/pak-extracter.exe')
+  .action(async (args) => {
+    const options = OptionsSchema.parse(args)
+    options.threads = options.threads ? options.threads : 10
 
-    const gameDir = environment.nwGameDir(workSpace)
-    const nwfs = await pakFileSystem({ gameDir })
-    const files = await nwfs.glob(pattern)
-    await withProgressBar({ label: 'Unpack', tasks: files }, async (file) => {
-      const data = await nwfs.readFile(file).catch()
-      if (!data) {
-        logger.error(`Failed to read ${file}`)
-        return
-      }
-      if (isAzcsBuffer(data)) {
-        logger.debug(`Unpacking ${file}`)
-      }
+    const inputDir = environment.nwGameDir(options.workspace)
+    const outputDir = environment.nwUnpackDir(options.workspace)
+    logger.info('[UNPACK]', inputDir)
+    logger.info('     to:', outputDir)
+    logger.debug(options)
+    logger.verbose(true)
+
+    await pakExtractor({
+      exe: options.executable,
+      input: path.join(inputDir, 'assets'),
+      output: outputDir,
+      fixLua: true,
+      decompressAzcs: true,
+      threads: options.threads,
+      // prettier-ignore
+      exclude: [
+        '(pregame|server|timelines)[/\\\\]',
+        'lyshineui[/\\\\].*\\.dynamicslice$',
+        '\\.dynamicuicanvas$'
+      ],
+    }, {
+      stdio: 'pipe',
     })
   })

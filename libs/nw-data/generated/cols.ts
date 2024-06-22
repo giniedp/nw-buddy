@@ -6109,6 +6109,11 @@ export const COLS_THROWABLEITEMDEFINITIONS = {
   ThrowableId: "string",
   WarningTime: "number",
 };
+export const COLS_TIMELINEREGISTRYENTRYDATA = {
+  AssetDependencyPath: "string",
+  TimelineAssetPath: "string",
+  TimelineEntryName: "string",
+};
 export const COLS_TRADESKILLPOSTCAPDATA = {
   Level01GameEvent: "string",
   Level01GameEvent1: "string",
