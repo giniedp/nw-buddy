@@ -28,7 +28,7 @@ import { IconsModule } from './ui/icons'
 import { svgChevronLeft, svgDiscord, svgGithub, svgMap } from './ui/icons/svg'
 import { LayoutModule, LayoutService } from './ui/layout'
 import { TooltipModule } from './ui/tooltip'
-import { mapProp } from './utils'
+import { mapProp, selectSignal } from './utils'
 import { injectCurrentUrl } from './utils/injection/current-url'
 import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
@@ -157,7 +157,9 @@ export class AppComponent {
   protected langLoaded = signal(false)
   protected document = inject(DOCUMENT)
   protected location = inject(Location)
-  protected currentUrl = toSignal(injectCurrentUrl())
+  protected currentUrl = selectSignal(injectCurrentUrl(), (url) => {
+    return getRelativeUrl(url)
+  })
   protected canGoBack = computed(() => {
     this.currentUrl()
     if (this.isElectron || this.isOverwolf) {
@@ -220,4 +222,29 @@ export class AppComponent {
     }
   }
 
+  protected goToUrl(event: Event) {
+    let url = (event.target as HTMLInputElement).value
+    this.router.navigateByUrl(buildAbsoluteUrl(this.router, url))
+  }
+}
+
+const ELECTRON_URL = 'dist/web-electron/browser'
+function getRelativeUrl(url: string) {
+  if (!url) {
+    return url
+  }
+  if (url.includes(ELECTRON_URL)) {
+    return url.split(ELECTRON_URL)[1]
+  }
+  return url
+}
+
+function buildAbsoluteUrl(router: Router, url: string) {
+  if (!url || !router.url) {
+    return url
+  }
+  if (router.url.includes(ELECTRON_URL)) {
+    return router.url.split(ELECTRON_URL)[0] + ELECTRON_URL + url
+  }
+  return url
 }
