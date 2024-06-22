@@ -68,12 +68,12 @@
       <div class="w-full flex flex-row items-center justify-center lg:justify-start">
         @if (canGoBack()) {
           @defer (on timer(1s)) {
-            <button class="btn btn-ghost btn-square" (click)="onBackClicked()" [tooltip]="'Back'" @backButton>
+            <button class="btn btn-ghost btn-square no-drag" (click)="onBackClicked()" [tooltip]="'Back'" @backButton>
               <nwb-icon [icon]="iconBack" class="w-4 h-4" />
             </button>
           }
         }
-        <a [routerLink]="'/'" class="flex flex-row items-center">
+        <a [routerLink]="'/'" class="flex flex-row items-center no-drag">
           <img
             [nwImage]="'assets/icons/favicon.png'"
             class="w-12 aspect-square"
