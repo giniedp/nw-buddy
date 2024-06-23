@@ -661,7 +661,7 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof AbilityData> = [
   'StatusEffectDamageTableRowOverride',
 
   'SetHealthOnFatalDamageTaken',
-  'ResetTrackedOnSuccess',
+  // 'ResetTrackedOnSuccess',
   'RemoteDamageTableRow',
   'MaxTrackedHitCounts',
   'DisableApplyPerStatusEffectStack',

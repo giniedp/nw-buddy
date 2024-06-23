@@ -12,13 +12,11 @@ import {
 import {
   AbilityData,
   DamageData,
-  ElementalMutationStaticData,
   StatusEffectData,
   VitalsCategoryData,
   VitalsData,
   VitalsMetadata,
 } from '@nw-data/generated'
-import { uniqBy } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { selectStream, shareReplayRefCount } from '~/utils'
@@ -89,8 +87,36 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
       abilitiesMap: this.db.abilitiesMap,
       creatureType: this.creatureType$,
     }),
-    (data) => selectBuffs(data),
+    (data) => {
+      return collectBuffs({
+        bucketIds: [data.element?.[data.creatureType]],
+        buffMap: data.buffMap,
+        effectMap: data.effectMap,
+        abilitiesMap: data.abilitiesMap,
+      })
+    },
   )
+
+  readonly vitalBuffs$ = this.select(
+    combineLatest({
+      vital: this.vital$,
+      buffMap: this.db.buffBucketsMap,
+      effectMap: this.db.statusEffectsMap,
+      abilitiesMap: this.db.abilitiesMap,
+    }),
+    (data) => {
+      return collectBuffs({
+        bucketIds: (data.vital.BuffBuckets || '').split(','),
+        buffMap: data.buffMap,
+        effectMap: data.effectMap,
+        abilitiesMap: data.abilitiesMap,
+      })
+    },
+  )
+
+  readonly buffs$ = this.select(this.mutaBuffs$, this.vitalBuffs$, (muta, vital) => {
+    return [...(muta || []), ...(vital || [])]
+  })
 
   readonly combatCategories$ = this.select(this.vital$, getVitalCategoryInfo)
   readonly categories$ = this.select(this.vital$, this.db.vitalsCategoriesMap, selectCategories)
@@ -173,7 +199,7 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
     }
     return combineLatest(
       files.map((file) => {
-        return this.db.data.load<DamageData[]>('datatables/' + file.replace(/\.xml$/, '.json')).pipe(
+        return this.db.data.load<DamageData[]>(file.replace(/\.xml$/, '.json')).pipe(
           map((rows): DamageTableFile => {
             return {
               file: file,
@@ -202,52 +228,107 @@ function selectDamageTableNames(id: string, meta: VitalsMetadata) {
   return tables
 }
 
-function selectBuffs({
-  element,
-  buffMap,
-  effectMap,
-  abilitiesMap,
-  creatureType,
-}: {
-  element: ElementalMutationStaticData
-  buffMap: Map<string, BuffBucket>
-  effectMap: Map<string, StatusEffectData>
-  abilitiesMap: Map<string, AbilityData>
-  creatureType: string
-}) {
-  const statusEffects: Array<StatusEffectData> = []
-  const abilities: Array<AbilityData> = []
-
-  function collect(bucket: BuffBucket) {
-    if (!bucket) {
-      return
+function collectBuffs(
+  data: {
+    bucketIds: string[]
+    buffMap: Map<string, BuffBucket>
+    effectMap: Map<string, StatusEffectData>
+    abilitiesMap: Map<string, AbilityData>
+    chance?: number
+    odd?: boolean
+  },
+  result: Buff[] = [],
+) {
+  let odd = data.odd ?? true
+  for (const bucketId of data.bucketIds || []) {
+    const bucket = data.buffMap.get(bucketId)
+    if (!bucket?.Buffs?.length) {
+      continue
     }
-    for (const buff of bucket.Buffs) {
-      if (buff.BuffType === 'StatusEffect') {
-        statusEffects.push(effectMap.get(buff.Buff))
+    if (data.odd == null && bucket.TableType === 'OR') {
+      odd = !odd
+    }
+    for (let i = 0; i < bucket.Buffs.length; i++) {
+      const chance = getBuffChance(bucket, i) * (data.chance ?? 1)
+      const row = bucket.Buffs[i]
+
+      if (row.BuffType === 'StatusEffect') {
+        appendBuff(result, {
+          chance,
+          effect: data.effectMap.get(row.Buff),
+          odd,
+        })
         continue
       }
-      if (buff.BuffType === 'BuffBucket') {
-        collect(buffMap.get(buff.Buff))
+      if (row.BuffType === 'BuffBucket' && row.Buff) {
+        collectBuffs(
+          {
+            ...data,
+            bucketIds: [row.Buff],
+            chance,
+            odd,
+          },
+          result,
+        )
         continue
       }
-      if (buff.BuffType === 'Ability') {
-        abilities.push(abilitiesMap.get(buff.Buff))
+      if (row.BuffType === 'Ability') {
+        appendBuff(result, {
+          chance,
+          ability: data.abilitiesMap.get(row.Buff),
+          odd,
+        })
         continue
       }
-      if (buff.BuffType === 'Promotion') {
+      if (row.BuffType === 'Promotion') {
         continue
       }
     }
   }
-  collect(buffMap.get(element?.[creatureType]))
 
-  if (!statusEffects.length && !abilities.length) {
-    return null
+  return result
+}
+interface Buff {
+  chance: number
+  effect?: StatusEffectData
+  ability?: AbilityData
+  odd: boolean
+}
+
+function appendBuff(buffs: Buff[], buff: Buff) {
+  const existing = buffs.find((it) => {
+    if (buff.effect) {
+      return it.effect?.StatusID === buff.effect.StatusID
+    }
+    if (buff.ability) {
+      return it.ability?.AbilityID === buff.ability.AbilityID
+    }
+    return false
+  })
+  if (existing) {
+    existing.chance = Math.max(existing.chance, buff.chance)
+  } else {
+    buffs.push(buff)
+  }
+}
+
+function getBuffChance(bucket: BuffBucket, row: number) {
+  if (bucket.TableType === 'AND') {
+    if (bucket.MaxRoll > 0) {
+      console.warn('AND table with MaxRoll > 0')
+    }
+    return 1
   }
 
-  return {
-    effects: uniqBy(statusEffects, 'StatusID'),
-    abilities: uniqBy(abilities, 'AbilityID'),
+  if (!bucket.MaxRoll) {
+    console.warn('OR table with MaxRoll = 0')
+    return 1
   }
+
+  const prob = Number(bucket.Buffs[row].BuffProb)
+  let ceiling = bucket.MaxRoll
+  if (row < bucket.Buffs.length - 1) {
+    ceiling = Number(bucket.Buffs[row + 1].BuffProb)
+  }
+  return (ceiling - prob) / bucket.MaxRoll
 }

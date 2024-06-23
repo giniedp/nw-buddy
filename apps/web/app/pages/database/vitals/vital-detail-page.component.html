@@ -1,7 +1,4 @@
-<div
-  class="overflow-clip relative"
-  [nwbScreenshotFrame]="vital()?.DisplayName | nwText"
->
+<div class="overflow-clip relative" [nwbScreenshotFrame]="vital()?.DisplayName | nwText">
   <nwb-vital-detail-header class="bg-base-300" [editableLevel]="true" />
   @if (store.isVitalFromDungeon$ | async) {
     <div class="absolute top-0 right-0 p-2 flex flex-row">
@@ -34,16 +31,11 @@
 
   <div class="flex tabs tabs-bordered flex-none justify-center bg-base-300">
     <a class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')"> Stats </a>
-    <a
-      class="tab flex-1"
-      [class.tab-active]="tab() === 'damage-table'"
-      (click)="selectTab('damage-table')"
-    >
+    <a class="tab flex-1" [class.tab-active]="tab() === 'damage-table'" (click)="selectTab('damage-table')">
       Attacks
     </a>
-    <a class="tab flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')">
-      3D
-    </a>
+    <a class="tab flex-1" [class.tab-active]="tab() === 'buffs'" (click)="selectTab('buffs')"> Buffs </a>
+    <a class="tab flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')"> 3D </a>
   </div>
   <div class="p-4 bg-base-300 space-y-4">
     @if (tab() === 'stats') {
@@ -62,6 +54,9 @@
     }
     @if (tab() === 'damage-table') {
       <nwb-vital-detail-attacks />
+    }
+    @if (tab() === 'buffs') {
+      <nwb-vital-detail-buffs />
     }
     @if (tab() === '3d-model') {
       <nwb-vital-detail-models class="-m-4" />
