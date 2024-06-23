@@ -85,7 +85,9 @@
           </span>
         </a>
         <span class="flex-1 text-center px-16">
-          <input class="input input-sm input-bordered w-full no-drag" [value]="currentUrl()" (change)="goToUrl($event)"/>
+          @if(isOverwolf || isElectron) {
+            <input class="input input-sm input-bordered w-full no-drag" [value]="currentUrl()" (change)="goToUrl($event)"/>
+          }
         </span>
       </div>
       <ion-buttons slot="end">

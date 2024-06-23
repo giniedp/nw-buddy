@@ -75,7 +75,7 @@ export class PlatformService {
    * Whether the current platform is Electron
    */
   public get isElectron() {
-    return this.electron.isElectron
+    return this.electron.isElectron || this.doc.defaultView.navigator.userAgent.includes('Electron')
   }
 
   /**
