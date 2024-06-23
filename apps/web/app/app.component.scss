@@ -15,12 +15,5 @@
     pointer-events: none;
     opacity: 0.05;
   }
-  ion-toolbar {
-    -webkit-app-region: drag;
-  }
-
-  ion-buttons, .no-drag {
-    -webkit-app-region: no-drag;
-  }
 
 }

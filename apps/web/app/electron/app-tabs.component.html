@@ -1,0 +1,30 @@
+<ion-header>
+  <div role="tablist" class="tabs tabs-bordered tabs-md flex px-1 bg-black">
+    @for (tab of tabs(); track tab.id) {
+      <a
+        role="tab"
+        class="tab px-2 inline-flex flex-row flex-nowrap"
+        [class.tab-active]="tab.active"
+        (click)="activateTab(tab)"
+      >
+        <span class="max-w-40 text-ellipsis text-nowrap overflow-hidden">
+          {{ tab.title }}
+        </span>
+        <nwb-icon [icon]="iconPlus" class="ml-2 w-4 h-4 transform rotate-45 hover:text-error" (click)="closeTab(tab)" />
+      </a>
+    }
+    <a role="tab" class="tab px-1 hover:text-primary" style="--tw-border-opacity: 0" (click)="createTab()">
+      <nwb-icon [icon]="iconPlus" class="w-4 h-4" />
+    </a>
+  </div>
+</ion-header>
+<ion-content>
+  @for (tab of tabs(); track tab.id) {
+    <webview
+      [src]="tab.src"
+      class="ion-page"
+      [class.hidden]="!tab.active"
+      (page-title-updated)="syncTitle($event, tab)"
+    ></webview>
+  }
+</ion-content>

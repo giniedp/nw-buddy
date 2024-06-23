@@ -26,8 +26,12 @@ export class ElectronService {
     }
   }
 
-  get isElectron(): boolean {
+  public get isElectron(): boolean {
     return !!(this.window && this.window.process && this.window.process.type)
+  }
+
+  public get ipc() {
+    return this.ipcRenderer
   }
 
   public sendWindowClose() {
@@ -44,6 +48,10 @@ export class ElectronService {
   }
   public isWindowMaximized(): Promise<boolean> {
     return this.ipcRenderer?.invoke('is-window-maximized')
+  }
+
+  public tabs(): Promise<boolean> {
+    return this.ipcRenderer?.invoke('window-tabs')
   }
 
   protected onDeeplinkReceived(link: string) {

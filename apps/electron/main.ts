@@ -1,8 +1,10 @@
-import { app, BrowserWindow, screen, shell, ipcMain, Menu, MenuItem } from 'electron'
+import { BrowserWindow, Menu, MenuItem, WebContents, WebContentsView, app, ipcMain, shell } from 'electron'
 import * as path from 'path'
 import * as url from 'url'
 import { loadConfig, writeConfig } from './config'
 import { windowState } from './window-state'
+import { appTabs } from './modules/app-tabs'
+import { prepareWebContents } from './prepare-web-contents'
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -38,8 +40,7 @@ if (!app.requestSingleInstanceLock()) {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
-    // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
-    app.on('ready', () => setTimeout(createWindow, 400))
+    app.on('ready', createWindow)
 
     // Quit when all windows are closed.
     app.on('window-all-closed', () => {
@@ -76,7 +77,7 @@ menu.append(
         },
       },
     ],
-  })
+  }),
 )
 
 Menu.setApplicationMenu(menu)
@@ -106,47 +107,32 @@ function createWindow(): BrowserWindow {
       nodeIntegration: true,
       allowRunningInsecureContent: serve ? true : false,
       contextIsolation: false,
+      webviewTag: true,
     },
     frame: false,
   })
-
-  // disable CORS
-  mainWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-    callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } })
-  })
-  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        'access-control-allow-origin': ['*'],
-      },
-    })
-  })
-
   app.whenReady().then(() => {
     winState.manage(mainWindow)
   })
 
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url)
-    return {
-      action: 'deny'
-    }
+  prepareWebContents(mainWindow.webContents, mainWindow)
+  mainWindow.webContents.on('did-attach-webview', (e, contents) => {
+    prepareWebContents(contents, mainWindow)
   })
 
   if (serve) {
     require('electron-reload')(__dirname, {
       electron: require(path.join(__dirname, '/../../node_modules/electron')),
     })
-    mainWindow.loadURL('http://localhost:4200')
+    mainWindow.webContents.openDevTools()
+    mainWindow.loadURL('http://localhost:4200/electron')
   } else {
-    // win.webContents.openDevTools()
     mainWindow.loadURL(
       url.format({
         pathname: path.join(__dirname, '../web-electron/browser/index.html'),
         protocol: 'file:',
         slashes: true,
-      })
+      }),
     )
   }
 

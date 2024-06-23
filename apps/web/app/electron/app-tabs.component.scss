@@ -1,0 +1,7 @@
+ion-header {
+  -webkit-app-region: drag;
+}
+
+.no-drag, a, button, span {
+  -webkit-app-region: no-drag;
+}

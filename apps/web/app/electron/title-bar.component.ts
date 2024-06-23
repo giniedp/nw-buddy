@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { startWith, switchMap } from 'rxjs'
-import { ElectronService } from './electron'
+import { of, startWith, switchMap } from 'rxjs'
+import { ElectronService } from './electron.service'
 import { CommonModule } from '@angular/common'
 
 @Component({
@@ -13,19 +13,16 @@ import { CommonModule } from '@angular/common'
   imports: [CommonModule],
 })
 export class TitleBarComponent {
-  public isMaximized: boolean
+  public isMaximized = signal(false)
 
-  public constructor(private electron: ElectronService, private zone: NgZone, private cdRef: ChangeDetectorRef) {
+  public constructor(private electron: ElectronService) {
     //
     this.electron.windowChange
       .pipe(startWith(null))
-      .pipe(switchMap(() => this.electron.isWindowMaximized()))
+      .pipe(switchMap(async () => this.electron.isWindowMaximized()))
       .pipe(takeUntilDestroyed())
       .subscribe((value) => {
-        this.zone.run(() => {
-          this.isMaximized = value
-          this.cdRef.markForCheck()
-        })
+        this.isMaximized.set(value)
       })
   }
 

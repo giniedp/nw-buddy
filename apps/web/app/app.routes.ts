@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router'
+import { ElectronComponent } from './electron'
 import { landingRedirect } from './landing-redirect'
 import { LandingComponent } from './landing.component'
 import { PrivacyComponent } from './privacy.component'
+import { AppComponent } from './app.component'
 
-const routes: Routes = [
+const PAGE_ROUTES: Routes = [
   { path: 'ipfs', loadChildren: () => import('./pages/share').then((m) => m.ShareModule) },
 
   { path: 'abilities', loadChildren: () => import('./pages/database/abilities').then((m) => m.AbilitiesPageModule) },
@@ -82,7 +84,10 @@ const routes: Routes = [
   { path: 'about', loadChildren: () => import('./pages/misc/about').then((m) => m.AboutModule) },
   { path: 'preferences', loadChildren: () => import('./pages/misc/preferences').then((m) => m.PreferencesModule) },
 
-  { path: 'damage-calculator', loadChildren: () => import('./pages/tools/damage-calculator').then((m) => m.DamageCalculatorModule) },
+  {
+    path: 'damage-calculator',
+    loadChildren: () => import('./pages/tools/damage-calculator').then((m) => m.DamageCalculatorModule),
+  },
 
   {
     path: 'tracking',
@@ -115,41 +120,51 @@ const routes: Routes = [
   },
 ]
 
-export const ROUTES: Routes = [
+export const APP_ROUTES: Routes = [
+  {
+    path: 'electron',
+    pathMatch: 'full',
+    component: ElectronComponent,
+  },
   {
     path: '',
-    pathMatch: 'full',
-    component: LandingComponent,
-    canActivate: [landingRedirect],
-  },
-  {
-    path: 'privacy',
-    pathMatch: 'full',
-    component: PrivacyComponent,
-  },
+    component: AppComponent,
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: LandingComponent,
+        canActivate: [landingRedirect],
+      },
+      {
+        path: 'privacy',
+        pathMatch: 'full',
+        component: PrivacyComponent,
+      },
+      {
+        path: '',
+        children: PAGE_ROUTES,
+      },
+      // {
+      //   path: 'archive',
+      //   component: ArchiveComponent,
+      //   children: [
+      //     {
+      //       path: '',
+      //       outlet: 'v',
+      //       component: LayoutColComponent,
+      //       children: [
+      //         {
+      //           path: ':version',
+      //           canActivate: [NwDataInterceptor.activateVersionGuard('version')],
+      //           children: routes,
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
 
-  {
-    path: '',
-    children: routes,
+      { path: '**', loadChildren: () => import('./pages/misc/not-found').then((m) => m.NotFoundModule) },
+    ],
   },
-  // {
-  //   path: 'archive',
-  //   component: ArchiveComponent,
-  //   children: [
-  //     {
-  //       path: '',
-  //       outlet: 'v',
-  //       component: LayoutColComponent,
-  //       children: [
-  //         {
-  //           path: ':version',
-  //           canActivate: [NwDataInterceptor.activateVersionGuard('version')],
-  //           children: routes,
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-
-  { path: '**', loadChildren: () => import('./pages/misc/not-found').then((m) => m.NotFoundModule) },
 ]

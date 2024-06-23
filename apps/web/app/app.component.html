@@ -1,7 +1,4 @@
 <ion-app>
-  @if (isElectron) {
-    <nwb-title-bar />
-  }
   @if (unfoldMenu$ | async) {
     <ng-container *ngTemplateOutlet="tplHeader" />
   }

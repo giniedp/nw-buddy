@@ -23,7 +23,6 @@ import { LANG_OPTIONS } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
-import { TitleBarComponent } from './title-bar.component'
 import { IconsModule } from './ui/icons'
 import { svgChevronLeft, svgDiscord, svgGithub, svgMap } from './ui/icons/svg'
 import { LayoutModule, LayoutService } from './ui/layout'
@@ -50,7 +49,6 @@ console.debug('environment', environment)
     LayoutModule,
     NwModule,
     RouterModule,
-    TitleBarComponent,
     TooltipModule,
     UpdateAlertModule,
     IonApp,
@@ -233,9 +231,9 @@ function getRelativeUrl(url: string) {
   if (!url) {
     return url
   }
-  if (url.includes(ELECTRON_URL)) {
-    return url.split(ELECTRON_URL)[1]
-  }
+  // if (url.includes(ELECTRON_URL)) {
+  //   return url.split(ELECTRON_URL)[1]
+  // }
   return url
 }
 
@@ -243,8 +241,8 @@ function buildAbsoluteUrl(router: Router, url: string) {
   if (!url || !router.url) {
     return url
   }
-  if (router.url.includes(ELECTRON_URL)) {
-    return router.url.split(ELECTRON_URL)[0] + ELECTRON_URL + url
-  }
+  // if (router.url.includes(ELECTRON_URL)) {
+  //   return router.url.split(ELECTRON_URL)[0] + ELECTRON_URL + url
+  // }
   return url
 }

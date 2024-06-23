@@ -7,13 +7,13 @@ import { provideRouter } from '@angular/router'
 import { provideIonicAngular } from '@ionic/angular/standalone'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
-import { ROUTES } from './app.routes'
+import { APP_ROUTES } from './app.routes'
 import { NwDataInterceptor } from './data'
 import { TranslateModule } from './i18n'
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(ROUTES),
+    provideRouter(APP_ROUTES),
     provideIonicAngular({
       rippleEffect: false,
       mode: 'md',
