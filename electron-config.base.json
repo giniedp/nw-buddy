@@ -25,7 +25,8 @@
     "target": ["portable"]
   },
   "portable": {
-    "splashImage": "dist/web-electron/browser/assets/icons/electron.bmp"
+    "splashImage": "dist/web-electron/browser/assets/icons/electron.bmp",
+    "useZip": true
   },
   "mac": {
     "icon": "dist/web-electron/browser/assets/icons",

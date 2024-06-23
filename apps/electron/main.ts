@@ -1,10 +1,9 @@
-import { BrowserWindow, Menu, MenuItem, WebContents, WebContentsView, app, ipcMain, shell } from 'electron'
+import { BrowserWindow, Menu, MenuItem, app, ipcMain } from 'electron'
 import * as path from 'path'
-import * as url from 'url'
 import { loadConfig, writeConfig } from './config'
-import { windowState } from './window-state'
-import { appTabs } from './modules/app-tabs'
+import { createSpa } from './modules/create-spa'
 import { prepareWebContents } from './prepare-web-contents'
+import { windowState } from './window-state'
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -94,6 +93,10 @@ const winState = windowState({
     writeConfig(config)
   },
 })
+const loadUrl = createSpa({
+  directory: path.join(__dirname, '../web-electron/browser'),
+  file: 'index.html',
+})
 
 function createWindow(): BrowserWindow {
   mainWindow = new BrowserWindow({
@@ -124,16 +127,12 @@ function createWindow(): BrowserWindow {
     require('electron-reload')(__dirname, {
       electron: require(path.join(__dirname, '/../../node_modules/electron')),
     })
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
     mainWindow.loadURL('http://localhost:4200/electron')
   } else {
-    mainWindow.loadURL(
-      url.format({
-        pathname: path.join(__dirname, '../web-electron/browser/index.html'),
-        protocol: 'file:',
-        slashes: true,
-      }),
-    )
+    loadUrl(mainWindow, {
+      path: '/electron',
+    })
   }
 
   // Emitted when the window is closed.
