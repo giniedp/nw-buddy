@@ -5,6 +5,7 @@ import { toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { GatherableNodeSize, getGatherableNodeSize } from '@nw-data/common'
 import { Spawns } from '@nw-data/generated'
+import { isEqual } from 'lodash'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -12,10 +13,9 @@ import { IconsModule } from '~/ui/icons'
 import { svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize, selectSignal, selectStream } from '~/utils'
+import { eqCaseInsensitive, humanize, selectSignal, selectStream } from '~/utils'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
-import { GatherableService } from '../gatherable/gatherable.service'
-import { isEqual } from 'lodash'
+import { GatherableService, isLootTableEmpty } from '../gatherable/gatherable.service'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
   Tiny: '#f28c18',
@@ -116,13 +116,21 @@ export class GatherableDetailMapComponent {
           const name = this.tl8.get(variation.Name || gatherable.DisplayName) || gatherable.GatherableID
           const size = getGatherableNodeSize(gatherable.GatherableID) || ('Nodes' as GatherableNodeSize)
           const tags: string[] = []
-          const lootTable = variation.LootTable || gatherable.FinalLootTable
+          const found = variation.Gatherables.find((it) => eqCaseInsensitive(it.GatherableID, gatherable.GatherableID))
+
+          const lootTables: string[] = []
+          if (found?.LootTable?.length) {
+            lootTables.push(...found.LootTable)
+          }
+          if (!isLootTableEmpty(gatherable.FinalLootTable)) {
+            lootTables.push(gatherable.FinalLootTable)
+          }
           if (variation.VariantID) {
             tags.push(variation.VariantID.toLowerCase())
           }
 
-          if (lootTable) {
-            tags.push(lootTable.toLowerCase())
+          if (lootTables.length) {
+            tags.push(...lootTables)
           }
           if (size) {
             tags.push(size.toLowerCase())
@@ -139,8 +147,10 @@ export class GatherableDetailMapComponent {
                 ${name}<br>
                 <span class="ml-4">coord: [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]</span>
               `
-              if (lootTable) {
-                title += `<br><span class="ml-4">loot: ${humanize(lootTable)}</span>`
+              for (const lootTable of lootTables) {
+                if (lootTable) {
+                  title += `<br><span class="ml-4">loot: ${humanize(lootTable)}</span>`
+                }
               }
               result[mapId] ??= {}
               result[mapId][size] ??= []

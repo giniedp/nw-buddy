@@ -80,7 +80,13 @@ export const GatherableDetailStore2 = signalStore(
           result.push(gatherable().FinalLootTable)
         }
         for (const variation of gatherable().$variations || []) {
-          result.push(variation.LootTable)
+          for (const gatherable of variation.Gatherables || []) {
+            for (const lootTable of gatherable.LootTable || []) {
+              if (lootTable && !eqCaseInsensitive(lootTable, 'Empty')) {
+                result.push(lootTable)
+              }
+            }
+          }
         }
         return uniq(result).filter((it) => !!it && !eqCaseInsensitive(it, 'Empty'))
       }),

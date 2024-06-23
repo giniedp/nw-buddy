@@ -208,7 +208,7 @@ export class NwDataService {
 
   public gatherableVariationsMap = tableIndexBy(() => this.gatherableVariations, 'VariantID')
   public gatherableVariation = tableLookup(() => this.gatherableVariationsMap)
-  public gatherableVariationsByGatherableIdMap = tableGroupBy(() => this.gatherableVariations, 'GatherableID')
+  public gatherableVariationsByGatherableIdMap = tableGroupBy(() => this.gatherableVariations,  (it) => it.Gatherables.map((it) => it.GatherableID))
   public gatherableVariationsByGatherableId = tableLookup(() => this.gatherableVariationsByGatherableIdMap)
 
   public npcs = table(() => this.loadEntries(DATASHEETS.NPCData))

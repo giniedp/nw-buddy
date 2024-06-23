@@ -5,7 +5,7 @@ import { GatherableData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { combineLatestOrEmpty, mapList, mapProp, selectStream, switchMapCombineLatest } from '~/utils'
+import { combineLatestOrEmpty, eqCaseInsensitive, mapList, selectStream, switchMapCombineLatest } from '~/utils'
 import { getGatherableIcon } from './utils'
 
 @Injectable()
@@ -18,11 +18,14 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
   public readonly gatherable$ = selectStream(
     {
       byId: this.db.gatherable(this.recordId$),
-      byVariation: this.db.gatherable(this.variation$.pipe(mapProp('GatherableID'))),
+      byVariation: this.db.gatherable(this.variation$.pipe(map((it) => it?.Gatherables?.[0]?.GatherableID))),
     },
     ({ byVariation, byId }) => byId ?? byVariation,
   )
-  public readonly variations$ = selectStream(this.db.gatherableVariationsByGatherableId(this.recordId$), (it) => it || [])
+  public readonly variations$ = selectStream(
+    this.db.gatherableVariationsByGatherableId(this.recordId$),
+    (it) => it || [],
+  )
 
   public readonly gatherableId$ = selectStream(this.gatherable$, (it) => it?.GatherableID)
   public readonly gatherableMeta$ = selectStream(this.db.gatherablesMeta(this.gatherableId$))
@@ -35,7 +38,11 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
     const result = []
     result.push(gatherable?.FinalLootTable)
     for (const variation of variations || []) {
-      result.push(variation.LootTable)
+      for (const entry of variation.Gatherables || []) {
+        if (eqCaseInsensitive(entry.GatherableID, gatherable?.GatherableID)) {
+          result.push(...(entry.LootTable || []))
+        }
+      }
     }
     return uniq(result.filter((it) => !!it && it !== 'Empty'))
   })

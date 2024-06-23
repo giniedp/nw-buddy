@@ -44,8 +44,12 @@ export class GatherableService {
           $lootTables: lootTables,
           $variations: variations.map((variation) => {
             const meta = variationsMetaMap.get(variation.VariantID)
-            if (!isLootTableEmpty(variation.LootTable)) {
-              appendToArray(lootTables, variation.LootTable)
+            for (const it of variation.Gatherables || []){
+              for (const table of (it.LootTable || [])){
+                if (!isLootTableEmpty(table)) {
+                  appendToArray(lootTables, table)
+                }
+              }
             }
             return {
               ...variation,
@@ -97,7 +101,7 @@ export class GatherableService {
   }
 }
 
-function isLootTableEmpty(lootTable: string): boolean {
+export function isLootTableEmpty(lootTable: string): boolean {
   return !lootTable || eqCaseInsensitive(lootTable, 'Empty')
 }
 
