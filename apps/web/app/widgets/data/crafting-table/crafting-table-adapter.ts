@@ -29,6 +29,7 @@ import {
   craftingColName,
   craftingColPrice,
   craftingColRecipeLevel,
+  craftingColSource,
   craftingColTradeskill,
 } from './crafting-table-cols'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -81,7 +82,7 @@ export class CraftingTableAdapter
       events: this.db.gameEventsMap,
     }).pipe(
       map(({ items, housing, recipes, events }) => {
-        recipes = recipes.filter((it) => !!it.Tradeskill)
+        recipes = recipes.filter((it) => !!it.ItemID)
         return recipes.map<CraftingTableRecord>((it) => {
           const itemId = getItemIdFromRecipe(it)
           return {
@@ -105,6 +106,7 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>, skills: Signal<
       craftingColName(util),
       craftingColID(util),
       craftingColIngredients(util),
+      craftingColSource(util),
       craftingColBookmark(util),
       craftingColInStock(util),
       craftingColPrice(util),

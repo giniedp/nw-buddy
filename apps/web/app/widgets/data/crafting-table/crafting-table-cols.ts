@@ -17,6 +17,7 @@ import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } 
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { humanize } from '~/utils'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 
@@ -69,6 +70,20 @@ export function craftingColName(util: CraftingTableUtils) {
     headerName: 'Name',
     valueGetter: ({ data }) => util.i18n.get(data.RecipeNameOverride || data.$item?.Name),
     getQuickFilterText: ({ value }) => value,
+  })
+}
+export function craftingColSource(util: CraftingTableUtils) {
+  return util.colDef<string>({
+    colId: 'source',
+    headerValueGetter: () => 'Source',
+    valueGetter: ({ data }) => data['$source'],
+    valueFormatter: ({ value }) => humanize(value),
+    getQuickFilterText: ({ value }) => humanize(value),
+    width: 125,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
   })
 }
 
