@@ -23,7 +23,7 @@ import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
 
-type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
+type GameModeCategories = 'expeditions' | 'trials' | 'raids' | 'activities'
 
 export interface CurrentMutation {
   expedition: string
@@ -143,7 +143,7 @@ function selectCategory(
       return {
         id: mode.GameModeId,
         icon: mode.IconPath,
-        backgroundImage: mode.BackgroundImagePath,
+        backgroundImage: mode.BackgroundImagePath || mode.SimpleImagePath,
         title: poi?.NameLocalizationKey || mode.DisplayName,
         description: poi ? `${poi.NameLocalizationKey}_description` : mode.Description,
         isMutable: mode.IsMutable,
@@ -157,18 +157,17 @@ function detectCategory(mode?: GameModeData): GameModeCategories {
   if (!mode) {
     return null
   }
-  if (mode.GameModeId.startsWith('Dungeon') && mode.IsDungeon) {
-    return 'expeditions'
-  }
-  if (mode.GameModeId.startsWith('Trial') || mode.GameModeId.startsWith('Quest')) {
+  if (mode.IsSoloTrial || mode.IsSeasonTrial) {
     return 'trials'
   }
-  if (
-    //mode.GameModeId.startsWith('Duel') ||
-    mode.GameModeId.startsWith('Arena3v3') ||
-    mode.GameModeId.startsWith('OutpostRush')
-  ) {
-    return 'pvp'
+  if (mode.IsRaidTrial) {
+    return 'raids'
+  }
+  if (mode.IsDungeon) {
+    return 'expeditions'
+  }
+  if (mode.ActivityType) {
+    return 'activities'
   }
   return null
 }
