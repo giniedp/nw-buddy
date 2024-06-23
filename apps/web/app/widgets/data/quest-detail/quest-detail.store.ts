@@ -29,6 +29,8 @@ export class QuestDetailStore extends ComponentStore<{ questId: string }> {
   public readonly previous$ = this.select(this.quest$, this.db.questsByAchievementIdMap, selectPreviousQuests)
   public readonly eventId$ = this.select(this.quest$, (it) => it?.SuccessGameEventId)
   public readonly event$ = this.select(this.db.gameEvent(this.eventId$), (it) => it)
+  public readonly eventStatusEffectId$ = this.select(this.event$, (it) => it?.StatusEffectId)
+  public readonly eventStatusEffect$ = this.select(this.db.statusEffect(this.eventStatusEffectId$), (it) => it)
   public readonly eventItemRewardId$ = this.select(this.event$, (it) => it?.ItemReward)
   public readonly eventItemReward$ = this.select(this.db.itemOrHousingItem(this.eventItemRewardId$), (it) => it)
   public readonly eventRewards$ = this.select(this.event$, this.eventItemReward$, selectGameEventRewards)

@@ -40,7 +40,14 @@
       <nwb-game-event-detail-rewards [rewards]="rewards" />
     </div>
   }
-
+  @if (eventStatusEffect$ | async; as effect) {
+    <div class="flex flex-col gap-1">
+      <h3 class="font-bold">Rewards Effect</h3>
+      <a class="flex-1 link-hover pl-2" [routerLink]="['/status-effects/table', effect.StatusID]">
+        <span>{{ (effect.DisplayName || (effect.StatusID | nwHumanize))| nwText }}</span>
+      </a>
+    </div>
+  }
   @if (previousQuests$ | async; as prev) {
     <div class="flex flex-col gap-1">
       <h3 class="font-bold">Previous Quests</h3>

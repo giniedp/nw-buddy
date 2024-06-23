@@ -1,9 +1,11 @@
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
-import { Objectives } from '@nw-data/generated'
+import { GameEventData, Objectives } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type QuestTableUtils = TableGridUtils<QuestTableRecord>
-export type QuestTableRecord = Objectives
+export type QuestTableRecord = Objectives & {
+  $gameEvent: GameEventData
+}
 
 export function questColIcon(util: QuestTableUtils) {
   return util.colDef({
@@ -25,8 +27,8 @@ export function questColIcon(util: QuestTableUtils) {
           },
           util.elImg({
             src: getQuestTypeIcon(data.Type) || NW_FALLBACK_ICON,
-          })
-        )
+          }),
+        ),
       )
     }),
   })

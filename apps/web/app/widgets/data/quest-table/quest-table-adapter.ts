@@ -1,14 +1,14 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
-import { COLS_OBJECTIVES, Objectives } from '@nw-data/generated'
+import { COLS_GAMEEVENTDATA, COLS_OBJECTIVES, Objectives } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { addGenericColumns } from '~/ui/data/table-grid'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { humanize } from '~/utils'
+import { humanize, selectStream } from '~/utils'
 import {
   QuestTableRecord,
   questColAchievementId,
@@ -32,11 +32,11 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Tab
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<QuestTableRecord> = inject(TableGridUtils)
 
-  public entityID(item: Objectives): string | number {
+  public entityID(item: QuestTableRecord): string | number {
     return item.ObjectiveID
   }
 
-  public entityCategories(item: Objectives): DataTableCategory[] {
+  public entityCategories(item: QuestTableRecord): DataTableCategory[] {
     if (!item.Type) {
       return null
     }
@@ -48,7 +48,7 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Tab
       },
     ]
   }
-  public virtualOptions(): VirtualGridOptions<Objectives> {
+  public virtualOptions(): VirtualGridOptions<QuestTableRecord> {
     return null
   }
   public gridOptions(): GridOptions<QuestTableRecord> {
@@ -58,7 +58,20 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Tab
     return buildOptions(this.utils)
   }
   public connect() {
-    return this.config?.source || this.db.quests
+    return selectStream(
+      {
+        items: this.config?.source || this.db.quests,
+        events: this.db.gameEventsMap,
+      },
+      ({ items, events }) => {
+        return items.map((it: Objectives): QuestTableRecord => {
+          return {
+            ...it,
+            $gameEvent: events.get(it.SuccessGameEventId),
+          }
+        })
+      },
+    )
   }
 }
 
@@ -82,6 +95,10 @@ function buildOptions(util: TableGridUtils<QuestTableRecord>) {
   }
   addGenericColumns(result, {
     props: COLS_OBJECTIVES,
+  })
+  addGenericColumns(result, {
+    props: COLS_GAMEEVENTDATA,
+    scope: '$gameEvent',
   })
   return result
 }
