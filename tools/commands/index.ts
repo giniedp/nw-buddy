@@ -1,7 +1,6 @@
 import './clean'
+import './convert'
 import './env'
 import './extract'
-import './convert'
 import './import'
 import './unpack'
-import './cdn'
