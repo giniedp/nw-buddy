@@ -49,7 +49,7 @@ jobs:
           command: pnpm i --frozen-lockfile
       - run:
           name: Download nw-data
-          command: pnpm nw-buddy download
+          command: pnpm nw-cdn download
       # - run:
       #     name: Build Storybook
       #     command: pnpm build:storybook
@@ -90,7 +90,7 @@ jobs:
           command: pnpm i --frozen-lockfile
       - run:
           name: Download nw-data
-          command: pnpm nw-buddy download
+          command: pnpm nw-cdn download
       - run:
           name: Build Website
           command: pnpm build:web
@@ -119,7 +119,7 @@ jobs:
           command: pnpm i --frozen-lockfile
       - run:
           name: Download nw-data
-          command: pnpm nw-buddy download -ws ptr
+          command: pnpm nw-cdn download -ws ptr
       - run:
           name: Build Website
           command: pnpm build:web
