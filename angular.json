@@ -129,7 +129,7 @@
               "outputPath": "dist/web-electron",
               "optimization": true,
               "outputHashing": "all",
-              "baseHref": "./",
+              "baseHref": "/",
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,
