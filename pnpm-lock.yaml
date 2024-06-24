@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    optionalDependencies:
+      ffi-napi:
+        specifier: 4.0.3
+        version: 4.0.3
+      ref-napi:
+        specifier: 3.0.3
+        version: 3.0.3
     devDependencies:
       '@ag-grid-community/client-side-row-model':
         specifier: 31.2.0
@@ -359,9 +366,6 @@ importers:
       fast-xml-parser:
         specifier: 4.3.6
         version: 4.3.6
-      ffi-napi:
-        specifier: 4.0.3
-        version: 4.0.3
       file-saver:
         specifier: 2.0.5
         version: 2.0.5
@@ -467,9 +471,6 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
-      ref-napi:
-        specifier: 3.0.3
-        version: 3.0.3
       resize-observer-polyfill:
         specifier: 1.5.1
         version: 1.5.1
@@ -22487,6 +22488,7 @@ snapshots:
       ref-struct-di: 1.1.1
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   figgy-pudding@3.5.2: {}
 
@@ -22888,11 +22890,13 @@ snapshots:
       call-bind: 1.0.5
       get-intrinsic: 1.2.2
 
-  get-symbol-from-current-process-h@1.0.2: {}
+  get-symbol-from-current-process-h@1.0.2:
+    optional: true
 
   get-uv-event-loop-napi-h@1.0.6:
     dependencies:
       get-symbol-from-current-process-h: 1.0.2
+    optional: true
 
   get-value@2.0.6: {}
 
@@ -25666,7 +25670,8 @@ snapshots:
   node-addon-api@1.7.2:
     optional: true
 
-  node-addon-api@3.2.1: {}
+  node-addon-api@3.2.1:
+    optional: true
 
   node-addon-api@6.1.0: {}
 
@@ -25693,7 +25698,8 @@ snapshots:
       detect-libc: 2.0.3
     optional: true
 
-  node-gyp-build@4.8.0: {}
+  node-gyp-build@4.8.0:
+    optional: true
 
   node-gyp-build@4.8.1:
     optional: true
@@ -26965,12 +26971,14 @@ snapshots:
       node-gyp-build: 4.8.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   ref-struct-di@1.1.1:
     dependencies:
       debug: 3.2.7
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   reflect-metadata@0.2.2: {}
 
