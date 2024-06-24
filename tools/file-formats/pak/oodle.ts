@@ -1,7 +1,5 @@
-import { Library } from 'ffi-napi'
 import path from 'node:path'
 import { platform } from 'process'
-import { refType, types } from 'ref-napi'
 
 function oodlePathWin(libDir?: string) {
   const LIB_NAME = 'oo2core_8_win64.dll'
@@ -32,6 +30,8 @@ function oodlePath(libDir?: string) {
 }
 
 export function oodleLibrary(libDir?: string): { OodleLZ_Decompress: Function } {
+  const { Library } = require('ffi-napi')
+  const { refType, types } = require('ref-napi')
   return Library(oodlePath(libDir), {
     OodleLZ_Decompress: [
       'void',
