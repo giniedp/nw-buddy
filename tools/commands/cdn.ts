@@ -5,9 +5,9 @@ import { MultiBar, Presets } from 'cli-progress'
 import { program } from 'commander'
 import { createHash } from 'crypto'
 import fs from 'fs'
-import http from 'node:https'
 import { groupBy } from 'lodash'
 import mime from 'mime-types'
+import http from 'node:https'
 import path from 'node:path'
 import z from 'zod'
 import {
@@ -18,9 +18,11 @@ import {
   CDN_URL,
   NW_WORKSPACE,
   environment,
-} from '../env'
-import { glob, writeJSONFile } from './utils/file-utils'
-import { logger } from './utils/logger'
+  BRANCH_NAME
+} from '../../env'
+import { glob, writeJSONFile } from '../utils/file-utils'
+import { logger } from '../utils/logger'
+import { useProgressBar } from '../utils/progress'
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,
@@ -32,57 +34,43 @@ const config = {
 program
   .command('download')
   .description('Downloads files from CDN to local workspace')
-  .option('-ws, --workspace <name>', 'ptr or live workspace into which to download data', NW_WORKSPACE)
-  .option('-v, --version <version>', 'Version name to download', path.basename(environment.nwDataDir(NW_WORKSPACE)))
+  .option('-v, --version <version>', 'Version name to download (default is the branch name)', BRANCH_NAME)
   .action(async (data) => {
     const options = z
       .object({
         version: z.string(),
-        workspace: z.string(),
       })
       .parse(data)
 
     const zipUrl = `${CDN_URL}/nw-data/${options.version}.zip?cache=${Date.now()}`
-    const zipFile = environment.nwDataDir(options.workspace) + '.zip'
+    const zipFile = environment.nwDataDir(options.version) + '.zip'
     const zipDir = path.dirname(zipFile)
-    console.log(options)
-    console.log('[DOWNLOAD]', zipUrl)
+    logger.log(options)
+    logger.log('[DOWNLOAD]', zipUrl)
 
     if (!fs.existsSync(zipDir)) {
-      console.log('Create dir', zipDir)
+      logger.log('Create dir', zipDir)
       fs.mkdirSync(zipDir, { recursive: true })
     }
     if (fs.existsSync(zipFile)) {
-      console.log('Remove existing file', zipFile)
+      logger.log('Remove existing file', zipFile)
       fs.unlinkSync(zipFile)
     }
-    console.log('Downloading...')
-    const multibar = new MultiBar(
-      {
-        clearOnComplete: false,
-        hideCursor: true,
-        format: ' {bar} | {name} | {percentage}%',
-      },
-      Presets.shades_grey,
-    )
-    const b1 = multibar.create(100, 0)
 
-    await download(zipUrl, zipFile, (downloaded, total) => {
-      b1.setTotal(total)
-      b1.update(downloaded, { name: zipFile })
+    await useProgressBar({ label: 'Downloading' }, async (bar) => {
+      await download(zipUrl, zipFile, (downloaded, total) => {
+        bar.setTotal(total)
+        bar.update(downloaded, { name: zipFile })
+      })
     })
-    multibar.stop()
 
-    console.log('Unzipping to', zipDir)
+    logger.log('Unzipping to', zipDir)
     await unzip(zipFile, zipDir)
-    fs.unlinkSync(zipFile)
+    // fs.unlinkSync(zipFile)
 
     const trash = path.join(zipDir, '__MACOSX')
     if (fs.existsSync(trash)) {
       fs.rmSync(trash, { recursive: true })
-    }
-    if (fs.existsSync(zipFile)) {
-      fs.rmSync(zipFile)
     }
   })
 
@@ -92,8 +80,8 @@ program
   .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_WORKSPACE)
   .option(
     '-v, --version <version>',
-    'Version name to use for upload',
-    path.basename(environment.nwDataDir(NW_WORKSPACE)),
+    'Version name to use for upload (default is the branch name)',
+    BRANCH_NAME,
   )
   .option('-u, --update', 'Whether to update the zip file before upload', false)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)
@@ -233,8 +221,6 @@ program.command('upload-tiles').action(async () => {
     files: toUpload,
   })
 })
-
-program.parse(process.argv)
 
 async function download(url: string, target: string, onProgress?: (downloaded: number, total: number) => void) {
   const file = fs.createWriteStream(target)

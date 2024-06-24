@@ -40,7 +40,8 @@ export class NwDataInterceptor implements HttpInterceptor {
 
   public static readonly activateVersionGuard = activateVersionGuard
 
-  public nwDataUrl: string = environment.nwDataUrl.replace(/\/+$/, '')
+  public nwDataUrl: string = environment.nwDataUrl // for datasheets and locales
+  public cdnDataUrl: string = environment.cdnDataUrl // for images
 
   public setVersion(version: string) {
     this.nwDataUrl = new URL(getNwDataPath(version), environment.cdnUrl).toString()
@@ -86,7 +87,7 @@ export class NwDataInterceptor implements HttpInterceptor {
           continue
         }
         if (value.startsWith('lyshineui')) {
-          item[key] = this.nwDataUrl + '/' + value
+          item[key] = this.cdnDataUrl + '/' + value
         }
         if (value.startsWith('@')) {
           item[key] = value.substring(1)

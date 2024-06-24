@@ -1,12 +1,5 @@
 import { env } from './env'
-import {
-  Environment,
-  getModelsUrlHiRes,
-  getModelsUrlLowRes,
-  getModelsUrlMidRes,
-  getNwDataDeployUrl,
-  getWorldTilesUrl,
-} from './utils'
+import { Environment, getModelsUrlHiRes, getModelsUrlLowRes, getModelsUrlMidRes, getNwDataDeployUrl } from './utils'
 
 export const environment: Environment = {
   ...env,
@@ -17,5 +10,5 @@ export const environment: Environment = {
   modelsUrlMid: getModelsUrlMidRes(env),
   modelsUrlHigh: getModelsUrlHiRes(env),
   nwDataUrl: getNwDataDeployUrl(env),
-  worldTilesUrl: getWorldTilesUrl(env),
+  cdnDataUrl: getNwDataDeployUrl(env),
 }

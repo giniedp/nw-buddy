@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
 import type { EnvVars } from '../apps/web/environments/env'
-import { CDN_URL, COMMIT_HASH, IS_CI, NW_BADGE, NW_WATERMARK, NW_WORKSPACE, PACKAGE_VERSION, environment } from '../env'
+import { BRANCH_NAME, CDN_URL, COMMIT_HASH, IS_CI, NW_BADGE, NW_WATERMARK, NW_WORKSPACE, PACKAGE_VERSION, environment } from '../env'
 import { tsFromSliceFiles } from './file-formats/slices/generate-slice-types'
 import { useProgressBar } from './utils'
 import { glob, readJSONFile, writeUTF8File } from './utils/file-utils'
@@ -88,6 +88,7 @@ program
       isPTR: workspace.toLowerCase() === 'ptr',
       badge: NW_BADGE,
       workspace: workspace.toLowerCase(),
+      branchname: BRANCH_NAME,
       cdnUrl: CDN_URL,
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
       disableTooltips: !['live', 'ptr'].includes(workspace.toLowerCase()),

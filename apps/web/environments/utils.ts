@@ -13,7 +13,7 @@ export interface Environment extends EnvVars {
   modelsUrlMid: string
   modelsUrlHigh: string
   nwDataUrl: string
-  worldTilesUrl: string
+  cdnDataUrl: string
 }
 
 export function getModelsUrlLowRes(env: EnvVars) {
@@ -27,17 +27,17 @@ export function getModelsUrlHiRes(env: EnvVars) {
 }
 
 export function getNwDataPath(version: string = null) {
-  return `nw-data/${version || ''}`.replace(/\/$/, '')
+  return normalizePath(`nw-data/${version || ''}`)
 }
 
 export function getNwDataDeployUrl(env: EnvVars) {
-  return env.deployUrl + getNwDataPath()
+  return normalizePath(`${env.deployUrl}/${getNwDataPath()}`)
 }
 
-export function getWorldTilesCdnUrl(env: EnvVars) {
-  return new URL('worldtiles', env.cdnUrl) + '/'
+export function getNwDataCdnUrl(env: EnvVars) {
+  return normalizePath(`${env.cdnUrl}/${getNwDataPath(env.branchname)}`)
 }
 
-export function getWorldTilesUrl(env: EnvVars) {
-  return env.deployUrl + 'nw-data/worldtiles' + '/'
+function normalizePath(path: string) {
+  return path.replace(/\\/gi, '/').replace(/\/+/gi, '/').replace(/\/$/, '')
 }

@@ -25,7 +25,7 @@ export class WorldMapDirective {
     const elRef = inject(ElementRef<HTMLElement>)
     const map = createMap({
       el: elRef.nativeElement,
-      tileBaseUrl: environment.worldTilesUrl,
+      tileBaseUrl: environment.cdnDataUrl + '/lyshineui/worldtiles',
     })
 
     effect(() => map.setMapId(this.map()))
@@ -40,6 +40,5 @@ export class WorldMapDirective {
         map.fitView(bounds.min, bounds.max)
       }
     })
-
   }
 }

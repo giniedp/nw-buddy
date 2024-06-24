@@ -92,7 +92,7 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
 
     tileSource.setTileUrlFunction((coord) => {
       const [level, addrX, addrY] = getTileAddress(coord)
-      return `${tileBaseUrl}${mapId}/map_l${level}_y${addrY}_x${addrX}.webp`
+      return `${tileBaseUrl}/${mapId}/map_l${level}_y${addrY}_x${addrX}.webp`
     })
     map.getLayers().insertAt(0, tileLayer)
   }

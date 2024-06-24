@@ -19,6 +19,10 @@ export const env = {
    */
   workspace: 'live',
   /**
+   * The branch name (used to determine cdn asset path)
+   */
+  branchname: 'live',
+  /**
    * The path where models are located
    */
   cdnUrl: 'https://cdn.nw-buddy.de',
