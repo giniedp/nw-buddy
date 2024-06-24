@@ -8,7 +8,7 @@ const ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'season5',
+    redirectTo: 'seasonpass_season5',
   },
   {
     path: ':category',

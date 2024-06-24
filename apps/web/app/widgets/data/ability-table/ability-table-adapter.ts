@@ -1,19 +1,21 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getWeaponTagLabel } from '@nw-data/common'
 import { COLS_ABILITYDATA } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import {
-  TABLE_GRID_ADAPTER_OPTIONS,
   DataTableCategory,
+  TABLE_GRID_ADAPTER_OPTIONS,
   TableGridAdapter,
   TableGridUtils,
   addGenericColumns,
 } from '~/ui/data/table-grid'
 
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   AbilityTableRecord,
   abilityColAfterAction,
@@ -33,8 +35,6 @@ import {
   abilityStatusEffectCategoriesList,
   abilityTargetStatusEffectCategory,
 } from './ability-table-cols'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 @Injectable()
 export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>, TableGridAdapter<AbilityTableRecord> {
@@ -48,13 +48,10 @@ export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>,
   }
 
   public entityCategories(item: AbilityTableRecord): DataTableCategory[] {
-    if (!item.WeaponTag) {
-      return null
-    }
     return [
       {
-        id: item.WeaponTag,
-        label: getWeaponTagLabel(item.WeaponTag),
+        id: item['$source'],
+        label: humanize(item['$source']),
         icon: item.$weaponType?.IconPathSmall,
       },
     ]
@@ -83,11 +80,11 @@ export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>,
               ...it,
               $weaponType: weaponTypes.get(it.WeaponTag),
               $selfApplyStatusEffect: it.SelfApplyStatusEffect?.map((id) => effects.get(id)),
-              $otherApplyStatusEffect: it.OtherApplyStatusEffect?.map((it) => effects.get(it)) ,
+              $otherApplyStatusEffect: it.OtherApplyStatusEffect?.map((it) => effects.get(it)),
             }
           })
           return result
-        })
+        }),
       )
       .pipe(map((list) => sortBy(list, (it) => (!!it.WeaponTag && !!it.DisplayName && !!it.Description ? -1 : 1))))
   }

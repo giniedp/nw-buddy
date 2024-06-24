@@ -5,7 +5,7 @@ import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type ZoneTableUtils = TableGridUtils<ZoneTableRecord>
-export type ZoneTableRecord = TerritoryDefinition
+export type ZoneTableRecord = TerritoryDefinition & { $source?: string }
 
 export function zoneColIcon(util: ZoneTableUtils) {
   return util.colDef({

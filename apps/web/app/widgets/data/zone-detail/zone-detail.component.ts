@@ -44,7 +44,7 @@ export class ZoneDetailComponent {
   public readonly type = this.store.type
   public readonly subtitle = computed(() => {
     const territory = this.store.territory()
-    if (territory.IsArea) {
+    if (territory?.IsArea) {
       return `AI Level: ${territory.AIVariantLevelOverride}`
     }
     if (territory) {

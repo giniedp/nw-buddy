@@ -21,6 +21,7 @@ import {
   zoneColVitalsCategory,
   ZoneTableRecord,
 } from './zone-table-cols'
+import { humanize } from '~/utils'
 
 @Injectable()
 export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord>, TableGridAdapter<ZoneTableRecord> {
@@ -33,26 +34,20 @@ export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord>, Table
   }
 
   public entityCategories(item: ZoneTableRecord): DataTableCategory[] {
-    if (item.IsArea) {
-      return [
-        {
-          id: 'area',
-          label: 'Area',
-        },
-      ]
+    let source = item.$source
+    if (!source) {
+      return []
     }
-    if (item.IsPOI) {
-      return [
-        {
-          id: 'poi',
-          label: 'POI',
-        },
-      ]
+    if (source.startsWith('PointsOfInterest')) {
+      source = 'PointsOfInterest'
+    }
+    if (source.endsWith('Definitions')) {
+      source = source.replace('Definitions', '')
     }
     return [
       {
-        id: 'territory',
-        label: 'Territory',
+        id: source,
+        label: humanize(source),
       },
     ]
   }

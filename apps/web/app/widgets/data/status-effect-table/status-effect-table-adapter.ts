@@ -20,7 +20,7 @@ import {
   statusEffectColStatusID,
 } from './status-effect-table-cols'
 import { StatusEffectCellComponent } from './status-effect-cell.component'
-import { selectStream } from '~/utils'
+import { humanize, selectStream } from '~/utils'
 
 @Injectable()
 export class StatusEffectTableAdapter
@@ -38,7 +38,7 @@ export class StatusEffectTableAdapter
     return [
       {
         id: item['$source'],
-        label: item['$source'],
+        label: humanize(item['$source']),
       },
     ]
   }
