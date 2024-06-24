@@ -10,6 +10,7 @@ export function convertLootbuckets(data: LootBucketData[]): LootBucketRow[] {
 }
 
 export type LootBucketRow = {
+  $source?: string
   Row: number
   Column: number
   Item: string
@@ -22,6 +23,7 @@ export type LootBucketRow = {
 function convertRow(data: LootBucketData, firstRow: LootBucketData, rowId: number): LootBucketRow[] {
   const keys = new Set<string>()
   const ids = new Set<number>()
+  const source = data['$source']
   for (const key of Object.keys(data)) {
     const match = key.match(/([^0-9]+)(\d+)$/)
     if (match) {
@@ -35,6 +37,7 @@ function convertRow(data: LootBucketData, firstRow: LootBucketData, rowId: numbe
     .map((id): LootBucketRow => {
       const bucketNameKey = `LootBucket${id}`
       return {
+        $source: source,
         Column: id,
         Row: rowId,
         Item: null as string,

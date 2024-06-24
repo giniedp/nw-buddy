@@ -15,6 +15,7 @@ import {
   lootBucketColQuantity,
   lootBucketColTags,
 } from './loot-bucket-table-cols'
+import { humanize } from '~/utils'
 
 @Injectable()
 export class LootBucketTableAdapter
@@ -29,8 +30,17 @@ export class LootBucketTableAdapter
   }
 
   public entityCategories(item: LootBucketTableRecord): DataTableCategory[] {
-    return null
+    if (!item.$source) {
+      return null
+    }
+    return [
+      {
+        id: item.$source,
+        label: humanize(item.$source),
+      },
+    ]
   }
+
   public virtualOptions(): VirtualGridOptions<LootBucketTableRecord> {
     return null
   }
@@ -48,13 +58,15 @@ export class LootBucketTableAdapter
       rows: this.db.lootBuckets,
     }).pipe(
       map(({ items, housing, rows }) => {
-        return rows.map((it): LootBucketTableRecord => {
-          return {
-            ...it,
-            $item: items.get(it.Item) || housing.get(it.Item),
-          }
-        }).sort((a, b) => this.entityID(a).localeCompare(this.entityID(b)))
-      })
+        return rows
+          .map((it): LootBucketTableRecord => {
+            return {
+              ...it,
+              $item: items.get(it.Item) || housing.get(it.Item),
+            }
+          })
+          .sort((a, b) => this.entityID(a).localeCompare(this.entityID(b)))
+      }),
     )
   }
 }

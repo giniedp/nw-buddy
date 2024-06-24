@@ -33,10 +33,11 @@ export function lootTableColSource(util: LootTableGridUtils) {
     valueGetter: ({ data }) => {
       return data['$source']
     },
+    valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => value,
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function lootTableColConditions(util: LootTableGridUtils) {
@@ -49,7 +50,7 @@ export function lootTableColConditions(util: LootTableGridUtils) {
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function lootTableColMaxRoll(util: LootTableGridUtils) {

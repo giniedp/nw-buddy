@@ -135,7 +135,9 @@ export class NwDataService {
   public perksByAffixMap = tableGroupBy(() => this.perks, 'Affix')
   public perksByAffix = tableLookup(() => this.perksByAffixMap)
 
-  public perkBuckets = table(() => this.loadEntries(DATASHEETS.PerkBucketData), convertPerkBuckets)
+  public perkBuckets = table(() => {
+    return this.loadEntries(DATASHEETS.PerkBucketData).map((it) => it.pipe(map(convertPerkBuckets)))
+  })
   public perkBucketsMap = tableIndexBy(() => this.perkBuckets, 'PerkBucketID')
   public perkBucket = tableLookup(() => this.perkBucketsMap)
   public perkBucketsByPerkIdMap = tableGroupBy(
@@ -208,7 +210,10 @@ export class NwDataService {
 
   public gatherableVariationsMap = tableIndexBy(() => this.gatherableVariations, 'VariantID')
   public gatherableVariation = tableLookup(() => this.gatherableVariationsMap)
-  public gatherableVariationsByGatherableIdMap = tableGroupBy(() => this.gatherableVariations,  (it) => it.Gatherables.map((it) => it.GatherableID))
+  public gatherableVariationsByGatherableIdMap = tableGroupBy(
+    () => this.gatherableVariations,
+    (it) => it.Gatherables.map((it) => it.GatherableID),
+  )
   public gatherableVariationsByGatherableId = tableLookup(() => this.gatherableVariationsByGatherableIdMap)
 
   public npcs = table(() => this.loadEntries(DATASHEETS.NPCData))
@@ -427,7 +432,9 @@ export class NwDataService {
   public pvpRanksMap = tableIndexBy(() => this.pvpRanks, 'Level')
   public pvpRank = tableLookup(() => this.pvpRanksMap)
 
-  public pvpStoreBuckets = table(() => this.loadEntries(DATASHEETS.PvPStoreData), convertPvoStore)
+  public pvpStoreBuckets = table(() => {
+    return this.loadEntries(DATASHEETS.PvPStoreData).map((it) => it.pipe(map(convertPvoStore)))
+  })
   public pvpStoreBucketsMap = tableGroupBy(() => this.pvpStoreBuckets, 'Bucket')
   public pvpStoreBucket = tableLookup(() => this.pvpStoreBucketsMap)
 
@@ -460,7 +467,9 @@ export class NwDataService {
   public viewGemPerksWithAffix = table(() => queryGemPerksWithAffix(this))
   public viewMutatorDifficultiesWithRewards = table(() => queryMutatorDifficultiesWithRewards(this))
 
-  public lootTables = table(() => this.loadEntries(DATASHEETS.LootTablesData), convertLoottables)
+  public lootTables = table(() => {
+    return this.loadEntries(DATASHEETS.LootTablesData).map((it) => it.pipe(map(convertLoottables)))
+  })
   public lootTablesMap = tableIndexBy(() => this.lootTables, 'LootTableID')
   public lootTable = tableLookup(() => this.lootTablesMap)
   public lootTablesByLootBucketIdMap = tableGroupBy(
@@ -481,7 +490,9 @@ export class NwDataService {
   )
   public lootTablesByLootItemId = tableLookup(() => this.lootTablesByLootItemIdMap)
 
-  public lootBuckets = table(() => this.loadEntries(DATASHEETS.LootBucketData), convertLootbuckets)
+  public lootBuckets = table(() => {
+    return this.loadEntries(DATASHEETS.LootBucketData).map((it) => it.pipe(map(convertLootbuckets)))
+  })
   public lootBucketsMap = tableGroupBy(() => this.lootBuckets, 'LootBucket')
   public lootBucket = tableLookup(() => this.lootBucketsMap)
   public lootBucketsByItemIdMap = tableGroupBy(
@@ -494,7 +505,9 @@ export class NwDataService {
   public lootLimitsMap = tableIndexBy(() => this.lootLimits, 'LootLimitID')
   public lootLimit = tableLookup(() => this.lootLimitsMap)
 
-  public buffBuckets = table(() => this.loadEntries(DATASHEETS.BuffBucketData), convertBuffBuckets)
+  public buffBuckets = table(() => {
+    return this.loadEntries(DATASHEETS.BuffBucketData).map((it) => it.pipe(map(convertBuffBuckets)))
+  })
   public buffBucketsMap = tableIndexBy(() => this.buffBuckets, 'BuffBucketId')
   public buffBucket = tableLookup(() => this.buffBucketsMap)
 

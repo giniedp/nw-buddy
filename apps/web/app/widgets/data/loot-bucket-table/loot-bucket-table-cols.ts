@@ -57,6 +57,15 @@ export function lootBucketColName(util: LootBucketTableUtils) {
   })
 }
 
+export function lootBucketColSource(util: LootBucketTableUtils) {
+  return util.colDef<string>({
+    colId: 'source',
+    headerValueGetter: () => 'Source',
+    width: 250,
+    field: '$source',
+  })
+}
+
 export function lootBucketColColumn(util: LootBucketTableUtils) {
   return util.colDef<number>({
     colId: 'clumn',

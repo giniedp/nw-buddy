@@ -3,9 +3,15 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_LOOTTABLESDATA } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
-import { DataTableCategory } from '~/ui/data/table-grid'
-import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import {
+  DataTableCategory,
+  TABLE_GRID_ADAPTER_OPTIONS,
+  TableGridAdapter,
+  TableGridUtils,
+  addGenericColumns,
+} from '~/ui/data/table-grid'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   LootTableGridRecord,
   lootTableColConditions,
@@ -15,8 +21,7 @@ import {
   lootTableColParents,
   lootTableColSource,
 } from './loot-table-cols'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 
 @Injectable()
 export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord>, TableGridAdapter<LootTableGridRecord> {
@@ -29,20 +34,13 @@ export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord>, T
   }
 
   public entityCategories(item: LootTableGridRecord): DataTableCategory[] {
-    if (!item.$parents?.length) {
-      return [
-        {
-          icon: null,
-          label: 'Roots',
-          id: 'roots',
-        },
-      ]
+    if (!item.$source) {
+      return null
     }
     return [
       {
-        icon: null,
-        label: 'Children',
-        id: 'children',
+        id: item.$source,
+        label: humanize(item.$source),
       },
     ]
   }
