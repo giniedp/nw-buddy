@@ -52,7 +52,7 @@ export class GridSelectFilter<T> implements IFilterAngularComp {
   public doesFilterPass(params: IDoesFilterPassParams<T>) {
     const nodeValue = this.params.getValue(params.node)
     const values = (Array.isArray(nodeValue) ? nodeValue : [nodeValue]).map(valueToId)
-    return this.store.doesFilterPass(values as any)
+    return this.store.doesFilterPass(values as any, this.params.valueMatcher)
   }
 
   public isFilterActive(): boolean {

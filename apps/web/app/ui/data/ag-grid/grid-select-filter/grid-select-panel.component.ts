@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { IconsModule } from '~/ui/icons'
 import { svgEquals, svgExclamation, svgNotEqual, svgRestartAlt, svgTrashCan } from '~/ui/icons/svg'
@@ -61,6 +62,31 @@ import { GridSelectFilterOption } from './types'
             }
             {{ item.label }}
           </span>
+          @if (item.mode === 'range') {
+            <input
+              class="join-item input input-bordered input-sm w-14 px-1"
+              placeholder="Min"
+              type="number"
+              [ngModel]="item.data?.min"
+              (ngModelChange)="setValueData(item, $event, 'min')"
+            />
+            <input
+              class="join-item input input-bordered input-sm w-14 px-1"
+              placeholder="Max"
+              type="number"
+              [ngModel]="item.data?.max"
+              (ngModelChange)="setValueData(item, $event, 'max')"
+            />
+          }
+          @if (item.mode === 'value') {
+            <input
+              class="join-item input input-bordered input-sm w-16 px-1"
+              placeholder="Value"
+              type="number"
+              [ngModel]="item.data?.value"
+              (ngModelChange)="setValueData(item, $event, 'value')"
+            />
+          }
           <button class="join-item btn btn-sm btn-square" (click)="removeOption(item)">
             <nwb-icon [icon]="iconTrash" class="w-4 h-4" />
           </button>
@@ -75,7 +101,7 @@ import { GridSelectFilterOption } from './types'
     <nwb-grid-select-options />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IconsModule, GridSelectSearchComponent, GridSelectOptionsComponent],
+  imports: [CommonModule, FormsModule, IconsModule, GridSelectSearchComponent, GridSelectOptionsComponent],
   host: {
     class: 'flex flex-col gap-2',
   },
@@ -164,5 +190,10 @@ export class GridSelectPanelComponent {
 
   protected removeOption(item: GridSelectFilterOption) {
     this.store.toggleSelection(item)
+  }
+
+  protected setValueData(item: GridSelectFilterOption & { data: any }, value: number, key: string) {
+    const data = item['data'] || {}
+    this.store.updateValueData(item, { ...data, [key]: value })
   }
 }

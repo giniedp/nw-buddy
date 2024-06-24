@@ -12,6 +12,7 @@ export interface SelectFilterGroup<T> extends SelectFilterNode<T> {
 export interface SelectFilterValue<T> extends SelectFilterNode<T> {
   type: 'value'
   value: T
+  data?: any
 }
 
 export function isGroup<T>(it: SelectFilterNode<T>): it is SelectFilterGroup<T> {
@@ -36,9 +37,13 @@ export function groupNode<T>(children: Array<SelectFilterNode<T>>): SelectFilter
   }
 }
 
-export function evaluateFilter<T>(model: SelectFilterNode<T>, values: T[]) {
+export type valueMatcher = <T>(value: SelectFilterValue<T>, values: T[]) => boolean
+function defaultMatcher<T>(value: SelectFilterValue<T>, values: T[]) {
+  return values.includes(value.value)
+}
+export function evaluateFilter<T>(model: SelectFilterNode<T>, values: T[], valueMatcher?: valueMatcher) {
   if (isValue(model)) {
-    let result = values.includes(model.value)
+    let result = (valueMatcher || defaultMatcher)(model, values)
     if (model.negate) {
       result = !result
     }
@@ -48,9 +53,9 @@ export function evaluateFilter<T>(model: SelectFilterNode<T>, values: T[]) {
   if (isGroup(model)) {
     let result = false
     if (model.and) {
-      result = model.children.every((child) => evaluateFilter(child, values))
+      result = model.children.every((child) => evaluateFilter(child, values, valueMatcher))
     } else {
-      result = model.children.some((child) => evaluateFilter(child, values))
+      result = model.children.some((child) => evaluateFilter(child, values, valueMatcher))
     }
     if (model.negate) {
       result = !result
@@ -76,6 +81,25 @@ export function toggleValue<T>(state: SelectFilterGroup<T>, value: T): SelectFil
   return {
     ...state,
     children: [...(children || []), valueNode(value)],
+  }
+}
+
+export function setValueData<T>(state: SelectFilterGroup<T>, value: T, data: any): SelectFilterGroup<T> {
+  if (!isGroup(state)) {
+    return state
+  }
+  const group = { ...state }
+  return {
+    ...state,
+    children: group.children.map((child) => {
+      if (isValue(child) && child.value === value) {
+        return {
+          ...child,
+          data
+        }
+      }
+      return child
+    }),
   }
 }
 

@@ -10,6 +10,7 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { GameEventData, HouseItems, MasterItemDefinitions, RewardTrackItemData } from '@nw-data/generated'
+import { GridSelectFilterOption } from '~/ui/data/ag-grid/grid-select-filter/types'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { selectGameEventRewards } from '../game-event-detail/selectors'
 
@@ -217,17 +218,37 @@ export function pvpStoreColTags(util: PvpStoreTableUtils) {
       },
     }),
     width: 300,
-    filter: false,
-    // filter: SelectFilter,
-    // filterParams: SelectFilter.params({
-    //   optionsGetter: ({ data }) => {
-    //     return Array.from((data as PvpStoreRow).Tags.values()).flat().map((it) => {
-    //       return {
-    //         id: `${it.Name}: ${it.Value}`,
-    //         label: `${it.Name}: ${it.Value}`,
-    //       }
-    //     })
-    //   }
-    // }),
+    ...util.selectFilter({
+      getOptions: ({ data }) => {
+        return Array.from(data.Tags.values())
+          .flat()
+          .map((it): GridSelectFilterOption => {
+            return {
+              id: it.Name,
+              label: it.Name,
+              mode: 'value',
+            }
+          })
+      },
+      valueMatcher: (filter, values) => {
+        const id = filter.value
+        const input: number = filter.data?.value
+        return values.some((it) => {
+          const tag = it as PvpStoreTag
+          if (tag.Name !== id) {
+            return false
+          }
+          if (!tag.Value) {
+            return true
+          }
+          if (tag.Value.length === 1) {
+            return input == null || input >= tag.Value[0]
+          }
+          const matchMin = input == null || input >= tag.Value[0]
+          const matchMax = input == null || input <= tag.Value[1]
+          return matchMin && matchMax
+        })
+      },
+    }),
   })
 }

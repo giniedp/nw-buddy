@@ -1,6 +1,6 @@
 import { computed } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { SelectFilterGroup, SelectFilterValue, evaluateFilter, isValue, toggleValue, toggleValueNegation } from './filter'
+import { SelectFilterGroup, SelectFilterValue, evaluateFilter, isValue, setValueData, toggleValue, toggleValueNegation, valueMatcher } from './filter'
 import { GridSelectFilterOption } from './types'
 
 export interface GridSelectFilterState {
@@ -29,6 +29,7 @@ export const GridSelectFilterStore = signalStore(
           return {
             ...it,
             active: !!found,
+            data: found?.data,
           }
         })
       }),
@@ -91,12 +92,12 @@ export const GridSelectFilterStore = signalStore(
           })
         }
       },
-      doesFilterPass: (values: (string | number)[]) => {
+      doesFilterPass: (values: (string | number)[], valueMatcher: valueMatcher) => {
         const model = state.model()
         if (!model) {
           return false
         }
-        return evaluateFilter(model, values)
+        return evaluateFilter(model, values, valueMatcher)
       },
       toggleSelection: (option: GridSelectFilterOption) => {
         patchState(state, ({ model }) => {
@@ -105,7 +106,20 @@ export const GridSelectFilterStore = signalStore(
           }
         })
       },
-
+      updateValueData: (option: GridSelectFilterOption, data: any) => {
+        patchState(state, ({ model }) => {
+          return {
+            model: setValueData(model, option.id, data),
+          }
+        })
+      },
+      updateValueMax: (option: GridSelectFilterOption, maxValue: string) => {
+        patchState(state, ({ model }) => {
+          return {
+            model: toggleValue(model, option.id),
+          }
+        })
+      },
       toggleOptionNegation: (option: GridSelectFilterOption) => {
         patchState(state, ({ model }) => {
           return {
