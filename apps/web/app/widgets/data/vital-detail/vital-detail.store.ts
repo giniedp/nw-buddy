@@ -199,7 +199,7 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
     }
     return combineLatest(
       files.map((file) => {
-        return this.db.data.load<DamageData[]>(file.replace(/\.xml$/, '.json')).pipe(
+        return this.db.data.load<DamageData[]>('datatables/' + file.replace(/\.xml$/, '.json')).pipe(
           map((rows): DamageTableFile => {
             return {
               file: file,
