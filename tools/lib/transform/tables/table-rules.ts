@@ -501,6 +501,9 @@ export const TRANSFORM_RULES = [
     },
     (table, { tables, inputDir }) => {
       for (const row of table as MasterItemFile['rows']) {
+        if ('HiResIconPath' in row) {
+          row.HiResIconPath = row['IconPath'] || null
+        }
         for (const iconKey of ['IconPath', 'HiResIconPath']) {
           const candidates = [
             getAppearanceIcon(row.ArmorAppearanceM as string, tables, iconKey),
