@@ -120,6 +120,7 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
     vitalsModels: Object.values(vitalsModels)
       .map((it) => {
         it.tags.sort()
+        it.vitalIds.sort()
         return it
       })
       .sort((a, b) => compareStrings(a.id, b.id)),
@@ -176,10 +177,12 @@ function collectVitalsRows(
     }
     let modelId: string = ''
     if (row.modelFile) {
-      const model = buildModelMetadata(row)
+      let model = buildModelMetadata(row)
       modelId = model.id
       if (!(modelId in models)) {
         models[modelId] = model
+      } else {
+        model = models[modelId]
       }
       arrayAppend(bucket.models, modelId)
       arrayAppend(model.vitalIds, vitalID)
