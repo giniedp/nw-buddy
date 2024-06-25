@@ -17,7 +17,6 @@ workflows:
           filters:
             branches:
               only:
-                - main
                 - stage
                 - dev
       - build_ptr:
@@ -96,7 +95,7 @@ jobs:
           command: pnpm build:web
       - run:
           name: Deliver Website
-          command: pnpm wrangler pages deploy dist/web/browser --project-name=nw-buddy --branch=main
+          command: pnpm wrangler pages deploy dist/web/browser --project-name=nw-buddy --branch=${CIRCLE_BRANCH}
 
   build_ptr:
     machine:
