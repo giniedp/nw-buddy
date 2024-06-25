@@ -7,7 +7,7 @@ import {
   CDN_URL,
   NW_WORKSPACE,
   environment,
-} from '../../env'
+} from '../../../env'
 
 program
   .command('env')

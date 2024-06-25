@@ -1,7 +1,7 @@
 import { program } from 'commander'
 import fs from 'node:fs'
 import { z } from 'zod'
-import { NW_WORKSPACE, environment } from '../../env'
+import { NW_WORKSPACE, environment } from '../../../env'
 import { logger } from '../utils/logger'
 
 const OptionsSchema = z.object({

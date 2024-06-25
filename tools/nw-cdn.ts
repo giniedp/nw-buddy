@@ -20,9 +20,9 @@ import {
   environment,
   BRANCH_NAME
 } from '../env'
-import { glob, writeJSONFile } from './utils/file-utils'
-import { logger } from './utils/logger'
-import { useProgressBar } from './utils/progress'
+import { glob, writeJSONFile } from './lib/utils/file-utils'
+import { logger } from './lib/utils/logger'
+import { useProgressBar } from './lib/utils/progress'
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,

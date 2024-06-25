@@ -1,0 +1,49 @@
+{
+  "name": "@nw-buddy/tools",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc -p ./tsconfig.json",
+    "test": "globstar -- node --import tsx --test \"./**/*.spec.ts\""
+  },
+  "devDependencies": {
+    "@types/micromatch": "4.0.7",
+    "@types/mime-types": "2.1.4",
+    "@types/minimatch": "5.1.2",
+    "@types/papaparse": "5.3.14",
+    "@types/unzipper": "0.10.9",
+    "@types/workerpool": "6.4.7",
+    "@types/yauzl": "2.10.3",
+    "adm-zip": "0.5.10",
+    "ansi-colors": "4.1.3",
+    "ascii-table3": "0.9.0",
+    "cli-progress": "3.12.0",
+    "compression": "1.7.4",
+    "concat-stream": "2.0.0",
+    "fast-glob": "3.3.2",
+    "fast-xml-parser": "4.3.6",
+    "gzipper": "7.2.0",
+    "mime-types": "2.1.35",
+    "minimatch": "9.0.3",
+    "quicktype": "23.0.107",
+    "quicktype-core": "23.0.105",
+    "s3": "4.4.0",
+    "sharp": "0.33.4",
+    "shelljs": "0.8.5",
+    "unzipper": "0.12.1",
+    "workerpool": "9.1.2"
+  },
+  "optionalDependencies": {
+    "ffi-napi": "4.0.3",
+    "ref-napi": "3.0.3"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist"
+        ]
+      }
+    }
+  }
+}

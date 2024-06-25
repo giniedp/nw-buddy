@@ -1,7 +1,7 @@
 import { program } from 'commander'
 import path from 'node:path'
 import { z } from 'zod'
-import { NW_WORKSPACE, environment } from '../../env'
+import { NW_WORKSPACE, environment } from '../../../env'
 import { parseDatasheet } from '../file-formats/datasheet'
 import { DatasheetFile, datasheetHeader, datasheetRows } from '../file-formats/datasheet/converter'
 import { parseLocalizationFile } from '../file-formats/loc/reader'

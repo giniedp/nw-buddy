@@ -1,5 +1,5 @@
 import 'colors'
 import { program } from 'commander'
 program.name('nw-buddy')
-import './commands'
+import './lib/commands'
 program.parse(process.argv)

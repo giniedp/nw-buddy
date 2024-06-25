@@ -4,9 +4,9 @@ import * as path from 'path'
 import { z } from 'zod'
 import type { EnvVars } from '../apps/web/environments/env'
 import { BRANCH_NAME, CDN_URL, COMMIT_HASH, IS_CI, NW_BADGE, NW_WATERMARK, NW_WORKSPACE, PACKAGE_VERSION, environment } from '../env'
-import { tsFromSliceFiles } from './file-formats/slices/generate-slice-types'
-import { useProgressBar } from './utils'
-import { glob, readJSONFile, writeUTF8File } from './utils/file-utils'
+import { tsFromSliceFiles } from './lib/file-formats/slices/generate-slice-types'
+import { useProgressBar } from './lib/utils'
+import { glob, readJSONFile, writeUTF8File } from './lib/utils/file-utils'
 
 program
   .command('icons')

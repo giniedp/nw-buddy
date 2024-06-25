@@ -1,7 +1,7 @@
 import { program } from 'commander'
 import path from 'node:path'
 import { z } from 'zod'
-import { NW_WORKSPACE, environment } from '../../env'
+import { NW_WORKSPACE, environment } from '../../../env'
 import { pakExtractor } from '../bin/pak-extractor'
 import { logger } from '../utils/logger'
 

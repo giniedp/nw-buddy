@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "../dist",
+    "outDir": "./dist",
     "rootDir": "../",
     "baseUrl": "../",
     "moduleResolution": "node",
@@ -16,7 +16,5 @@
   "buildOptions": {
     "incremental": true,
   },
-  "include": [
-    "**/*.ts"
-  ]
+  "exclude": ["dist"]
 }

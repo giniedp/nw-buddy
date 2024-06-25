@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { glob, readJSONFile, replaceExtname } from '../../../tools/utils'
+import { glob, readJSONFile, replaceExtname } from '../../utils'
 import { logger } from '../../utils/logger'
 import { isAliasAsset } from './types/aliasasset'
 import {

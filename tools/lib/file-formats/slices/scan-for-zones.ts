@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { readJSONFile } from '../../../tools/utils'
+import { readJSONFile } from '../../utils'
 import {
   Asset,
   AssetId,
