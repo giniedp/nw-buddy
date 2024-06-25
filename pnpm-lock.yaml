@@ -501,9 +501,6 @@ importers:
       cli-progress:
         specifier: 3.12.0
         version: 3.12.0
-      commander:
-        specifier: 11.1.0
-        version: 11.1.0
       compression:
         specifier: 1.7.4
         version: 1.7.4
