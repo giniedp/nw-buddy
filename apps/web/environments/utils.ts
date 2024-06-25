@@ -31,11 +31,11 @@ export function getNwDataPath(version: string = null) {
 }
 
 export function getNwDataDeployUrl(env: EnvVars) {
-  return normalizePath(`${env.deployUrl}/${getNwDataPath()}`)
+  return `${env.deployUrl}/${getNwDataPath()}`
 }
 
 export function getNwDataCdnUrl(env: EnvVars) {
-  return normalizePath(`${env.cdnUrl}/${getNwDataPath(env.branchname)}`)
+  return `${env.cdnUrl}/${normalizePath(getNwDataPath(env.branchname))}`
 }
 
 function normalizePath(path: string) {
