@@ -513,7 +513,7 @@ export const TRANSFORM_RULES = [
             return !!icon && fs.existsSync(path.join(inputDir, replaceExtname(icon, '.png')))
           })
           if (icon) {
-            row[iconKey] = replaceExtname(icon, '.webp').toLowerCase()
+            row[iconKey] = replaceExtname(icon, '.webp').toLowerCase().replace(/\\/g, '/')
           } else {
             row[iconKey] = null
           }

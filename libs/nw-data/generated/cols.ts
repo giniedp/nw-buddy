@@ -1197,7 +1197,7 @@ export const COLS_DAMAGEDATA = {
   ImpactDistanceX: "number",
   ImpactDistanceY: "number",
   ImpactDistanceZ: "number",
-  ImpactRating: "number",
+  ImpactRating: "string",
   IsAbility: "boolean",
   IsEmote: "boolean",
   IsRanged: "number",
