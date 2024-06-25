@@ -31,13 +31,16 @@ export function getNwDataPath(version: string = null) {
 }
 
 export function getNwDataDeployUrl(env: EnvVars) {
-  return `${env.deployUrl}/${getNwDataPath()}`
+  return normalizePath(`${env.deployUrl}/${getNwDataPath()}`)
 }
 
 export function getNwDataCdnUrl(env: EnvVars) {
-  return `${env.cdnUrl}/${normalizePath(getNwDataPath(env.branchname))}`
+  return normalizePath(`${env.cdnUrl}/${getNwDataPath(env.branchname)}`)
 }
 
 function normalizePath(path: string) {
-  return path.replace(/\\/gi, '/').replace(/\/+/gi, '/').replace(/\/$/, '')
+  path = path.replace(/\\/gi, '/')
+  // replace multiple slashes with a single one but keep the double slashes in the protocol
+  path = path.replace(/([^:]\/)\/+/gi, '/')
+  return path.replace(/\/$/, '')
 }
