@@ -1648,6 +1648,7 @@ export interface FishingCatchablesData {
   FishingXp: number;
   Id: string;
   LineTensionGainPerSecondMultiplier: number;
+  RewardGameEventId: string;
   ZoomCameraOnSuccess: boolean;
 }
 
@@ -1900,6 +1901,7 @@ export interface GatherableData {
   IsLootContainer: boolean;
   ItemRestrictionId: string;
   ItemRestrictionQuantity: number | string;
+  LandmarkIconPath: string;
   MaxRespawnRate: number;
   MinRespawnRate: number;
   MountGatherers: string;
@@ -1913,7 +1915,9 @@ export interface GatherableData {
   ResetGatherTimeOnEndInteraction: boolean;
   Restriction: string;
   SongRewardId: string;
+  TooltipImage: string;
   Tradeskill: string;
+  UsableEmoteTags: string;
   WaitForImpact: boolean;
 }
 

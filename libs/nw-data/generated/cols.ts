@@ -1197,7 +1197,7 @@ export const COLS_DAMAGEDATA = {
   ImpactDistanceX: "number",
   ImpactDistanceY: "number",
   ImpactDistanceZ: "number",
-  ImpactRating: "string",
+  ImpactRating: "number",
   IsAbility: "boolean",
   IsEmote: "boolean",
   IsRanged: "number",
@@ -1582,6 +1582,7 @@ export const COLS_FISHINGCATCHABLESDATA = {
   FishingXp: "number",
   Id: "string",
   LineTensionGainPerSecondMultiplier: "number",
+  RewardGameEventId: "string",
   ZoomCameraOnSuccess: "boolean",
 };
 export const COLS_FISHINGHOTSPOTSDATA = {
@@ -1827,6 +1828,7 @@ export const COLS_GATHERABLEDATA = {
   IsLootContainer: "boolean",
   ItemRestrictionId: "string",
   ItemRestrictionQuantity: "number",
+  LandmarkIconPath: "string",
   MaxRespawnRate: "number",
   MinRespawnRate: "number",
   MountGatherers: "string",
@@ -1840,7 +1842,9 @@ export const COLS_GATHERABLEDATA = {
   ResetGatherTimeOnEndInteraction: "boolean",
   Restriction: "string",
   SongRewardId: "string",
+  TooltipImage: "string",
   Tradeskill: "string",
+  UsableEmoteTags: "string",
   WaitForImpact: "boolean",
 };
 export const COLS_GENERATORRECIPES = {
@@ -4649,7 +4653,7 @@ export const COLS_OBJECTIVETASKS = {
   ResetOnCondition: "number",
   SS_StatePreset: "string",
   SS_VariantName: "string",
-  ShouldCheckPoints: "string",
+  ShouldCheckPoints: "boolean",
   ShowDiegeticTaskPin: "boolean",
   StayActive: "number",
   SubTask1: "string",
