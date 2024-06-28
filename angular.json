@@ -92,6 +92,7 @@
             },
             "web": {
               "outputPath": "dist/web",
+              "optimization": true,
               "outputHashing": "all",
               "baseHref": "/",
               "fileReplacements": [

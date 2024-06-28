@@ -1,20 +1,23 @@
-import { DOCUMENT } from '@angular/common'
-import { Injectable, NgZone, inject } from '@angular/core'
+import { Injectable, NgZone } from '@angular/core'
 import { Router } from '@angular/router'
 
 import type { ipcRenderer } from 'electron'
 import { Subject } from 'rxjs'
+import { injectWindow } from '~/utils/injection/window'
 
 @Injectable({
   providedIn: 'root',
 })
 export class ElectronService {
   private ipcRenderer: typeof ipcRenderer
-  private window = inject(DOCUMENT).defaultView
+  private window = injectWindow()
 
   public windowChange = new Subject()
 
-  public constructor(private router: Router, private zone: NgZone) {
+  public constructor(
+    private router: Router,
+    private zone: NgZone,
+  ) {
     if (this.isElectron) {
       this.ipcRenderer = this.window.require('electron').ipcRenderer
       this.ipcRenderer.addListener('window-change', () => {

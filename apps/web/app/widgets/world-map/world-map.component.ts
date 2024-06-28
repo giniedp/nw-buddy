@@ -4,6 +4,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgExpand } from '~/ui/icons/svg'
 import { MapMarker, MapPointMarker, MapView, MapViewBounds, MapZoneMarker, MarkerEventData } from './types'
 import { WorldMapDirective } from './world-map.directive'
+import { injectDocument } from '~/utils/injection/document'
 
 @Component({
   standalone: true,
@@ -75,10 +76,11 @@ export class WorldMapComponent {
 
   protected iconExpand = svgExpand
   private elRef = inject(ElementRef<HTMLElement>)
+  private document = injectDocument()
 
   public toggleFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
+    if (this.document.fullscreenElement) {
+      this.document.exitFullscreen()
     } else {
       this.elRef.nativeElement.requestFullscreen()
     }

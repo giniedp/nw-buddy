@@ -29,7 +29,7 @@ export class TreeNodeToggleComponent implements ControlValueAccessor {
 
   @Input()
   @HostBinding('class.v-last')
-  protected isLast: boolean
+  public isLast: boolean
 
   public writeValue(value: any): void {
     this.value = value

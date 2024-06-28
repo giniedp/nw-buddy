@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { PlatformService } from '~/utils/services/platform.service'
 import { VersionService } from './version.service'
+import { injectWindow } from '~/utils/injection/window'
 
 @Component({
   standalone: true,
@@ -21,11 +22,12 @@ export class UpdateAlertButtonComponent {
   protected hasNewVersion = toSignal(this.service.versionChanged$, { initialValue: false })
 
   protected isStandalone = inject(PlatformService).env.standalone
+  private win = injectWindow()
 
   @HostListener('click')
   public show() {
     if (this.isStandalone) {
-      window.open('https://github.com/giniedp/nw-buddy/releases/latest', '_blank')
+      this.win.open('https://github.com/giniedp/nw-buddy/releases/latest', '_blank')
     } else {
       location.reload()
     }

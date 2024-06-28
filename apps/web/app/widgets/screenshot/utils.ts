@@ -1,7 +1,7 @@
 import { toBlob, toCanvas } from "html-to-image"
 import { createEl } from "~/utils"
 
-export function getScreenshotOverlay(document: Document = window.document) {
+export function getScreenshotOverlay(document: Document) {
   const id = 'nwb-screenshot-root'
   let root = document.querySelector<HTMLElement>(`#${id}`)
   if (!root) {

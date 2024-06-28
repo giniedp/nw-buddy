@@ -8,6 +8,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { imageFileFromPaste } from '~/utils/image-file-from-paste'
+import { injectWindow } from '~/utils/injection/window'
 
 export interface AvatarDialogOptions {
   imageId?: string
@@ -44,6 +45,7 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
     this.patchState({ imageId: id })
   }
 
+  private window = injectWindow()
   protected iconDelete = svgTrashCan
   private maxFileSizeInMb$ = of(1.2)
   private imageId$ = this.select(({ imageId }) => imageId)
@@ -141,7 +143,7 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
     }
     const buffer = await file.arrayBuffer()
     const blob = new Blob([buffer], { type: file.type })
-    const urlCreator = window.URL || window.webkitURL
+    const urlCreator = this.window.URL || this.window.webkitURL
     const url = urlCreator.createObjectURL(blob)
     return this.sanitizer.bypassSecurityTrustUrl(url)
   }

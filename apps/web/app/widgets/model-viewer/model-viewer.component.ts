@@ -25,6 +25,7 @@ import { ItemModelInfo } from './model-viewer.service'
 import { animate, style, transition, trigger } from '@angular/animations'
 import { ViewerModel } from 'babylonjs-viewer'
 import { ModalRef } from '~/ui/layout'
+import { injectDocument } from '~/utils/injection/document'
 import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
@@ -103,6 +104,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
 
   private viewer: DefaultViewer
   private model: ViewerModel
+  private document = injectDocument()
   protected trackByIndex = (i: number) => i
 
   public constructor(
@@ -159,16 +161,16 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   }
 
   protected toggleFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
+    if (this.document.fullscreenElement) {
+      this.document.exitFullscreen()
     } else {
       this.elRef.nativeElement.requestFullscreen()
     }
   }
 
   protected exitFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
+    if (this.document.fullscreenElement) {
+      this.document.exitFullscreen()
     }
   }
 
@@ -263,7 +265,8 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
 
   private async detectDyeFeature(model: ViewerModel, appearance: any) {
     const { NwMaterialExtension } = await import('./viewer')
-    appearance = appearance || model.meshes.map((mesh) => NwMaterialExtension.getAppearance(mesh.material)).find((it) => !!it)
+    appearance =
+      appearance || model.meshes.map((mesh) => NwMaterialExtension.getAppearance(mesh.material)).find((it) => !!it)
     if (!appearance) {
       this.store.patchState({
         appearance: null,
@@ -301,10 +304,12 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     const appearance = this.store.appearance$()
     updateNwMaterial({
       meshes: model.meshes,
-      appearance: appearance ? {
-        ...appearance,
-        MaskAGloss: Number(appearance.MaskAGloss) || 0
-      } : null,
+      appearance: appearance
+        ? {
+            ...appearance,
+            MaskAGloss: Number(appearance.MaskAGloss) || 0,
+          }
+        : null,
       dyeR: dyeR?.ColorAmount,
       dyeROverride: dyeR?.ColorOverride,
       dyeRColor: dyeR?.Color,

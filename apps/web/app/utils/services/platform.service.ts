@@ -1,13 +1,18 @@
 import { Platform as AngularPlatform } from '@angular/cdk/platform'
-import { DOCUMENT } from '@angular/common'
-import { Inject, Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { Platform as IonicPlatform } from '@ionic/angular/standalone'
 import { ElectronService } from '~/electron'
 import { NW_BUDDY_LIVE, environment } from '../../../environments'
+import { injectWindow } from '../injection/window'
 
 @Injectable({ providedIn: 'root' })
 export class PlatformService {
   public readonly env = environment
+
+  private angularPlatform = inject(AngularPlatform)
+  private ionicPlatform = inject(IonicPlatform)
+  private electron = inject(ElectronService)
+  private window = injectWindow()
 
   /**
    * Whether the Angular application is being rendered in the browser.
@@ -68,25 +73,29 @@ export class PlatformService {
    * Whether the current platform is Overwolf
    */
   public get isOverwolf() {
-    return !!this.doc.defaultView['___overwolf___']
+    return !!this.window['___overwolf___']
   }
 
   /**
    * Whether the current platform is Electron
    */
   public get isElectron() {
-    return this.electron.isElectron || this.doc.defaultView.navigator.userAgent.includes('Electron')
+    return this.electron.isElectron || this.userAgent.includes('Electron')
   }
 
   /**
    * Whether the website is embedded in an iframe
    */
   public get isIframe() {
-    return this.doc.defaultView.self !== this.doc.defaultView.top
+    return this.window.self !== this.window.top
   }
 
   public get isDesktop() {
     return this.ionicPlatform.is('desktop')
+  }
+
+  public get userAgent() {
+    return this.window.navigator.userAgent
   }
 
   protected get isStandalone() {
@@ -98,15 +107,5 @@ export class PlatformService {
       return NW_BUDDY_LIVE
     }
     return location.origin
-  }
-
-  public constructor(
-    private angularPlatform: AngularPlatform,
-    private ionicPlatform: IonicPlatform,
-    private electron: ElectronService,
-    @Inject(DOCUMENT)
-    private doc: Document
-  ) {
-    //
   }
 }

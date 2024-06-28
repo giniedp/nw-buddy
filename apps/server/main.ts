@@ -1,8 +1,7 @@
-import 'zone.js/node'
-
 import { program } from 'commander'
-import { isAbsolute, join, resolve } from 'node:path'
+import { dirname, isAbsolute, join, resolve } from 'node:path'
 import { server as appServer } from './server'
+import { fileURLToPath } from 'node:url'
 
 program
   .version('0.0.0')
@@ -19,7 +18,7 @@ const options =
     port: string
   }>()
 
-const serverDistFolder = __dirname
+const serverDistFolder = dirname(fileURLToPath(import.meta.url))
 const publicDir = isAbsolute(options.dir) ? options.dir : resolve(serverDistFolder, options.dir)
 const host = options.host
 const port = options.port

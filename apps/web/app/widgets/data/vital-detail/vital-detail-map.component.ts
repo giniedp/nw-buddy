@@ -10,6 +10,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
+import { injectDocument } from '~/utils/injection/document'
 import { MapPointMarker, MapViewBounds, MapZoneMarker, WorldMapComponent } from '~/widgets/world-map'
 import { VitalDetailStore } from './vital-detail.store'
 
@@ -111,10 +112,10 @@ export class VitalDetailMapComponent {
   protected iconExpand = svgExpand
   protected iconCompress = svgCompress
   protected elRef = inject(ElementRef<HTMLElement>)
-
+  private document = injectDocument()
   protected toggleFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
+    if (this.document.fullscreenElement) {
+      this.document.exitFullscreen()
     } else {
       this.elRef.nativeElement.requestFullscreen()
     }

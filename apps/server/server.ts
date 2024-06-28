@@ -1,9 +1,8 @@
-import 'zone.js/node'
+import compression from 'compression'
+import express from 'express'
 
 import { APP_BASE_HREF } from '@angular/common'
 import { CommonEngine } from '@angular/ssr'
-import compression from 'compression'
-import express from 'express'
 import { join } from 'node:path'
 import { LRUCache } from 'lru-cache'
 import bootstrap from '../web/main.server'

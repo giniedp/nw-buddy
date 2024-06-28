@@ -16,6 +16,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, humanize, selectSignal, selectStream } from '~/utils'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { GatherableService, isLootTableEmpty } from '../gatherable/gatherable.service'
+import { injectDocument } from '~/utils/injection/document'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
   Tiny: '#f28c18',
@@ -265,10 +266,11 @@ export class GatherableDetailMapComponent {
 
   protected iconExpand = svgExpand
   protected elRef = inject(ElementRef<HTMLElement>)
+  private document = injectDocument()
 
   protected toggleFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
+    if (this.document.fullscreenElement) {
+      this.document.exitFullscreen()
     } else {
       this.elRef.nativeElement.requestFullscreen()
     }

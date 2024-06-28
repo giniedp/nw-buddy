@@ -1,5 +1,6 @@
 import { Directive, ElementRef, OnInit, inject } from '@angular/core'
-import { Platform } from '@ionic/angular/standalone'
+import { injectDocument } from '~/utils/injection/document'
+import { PlatformService } from '~/utils/services/platform.service'
 
 @Directive({
   standalone: true,
@@ -7,9 +8,10 @@ import { Platform } from '@ionic/angular/standalone'
 })
 export class IonContentDirective implements OnInit {
   private elRef = inject(ElementRef)
-  private platform = inject(Platform)
+  private platform = inject(PlatformService)
+  private document = injectDocument()
   public ngOnInit() {
-    if (this.platform.is('desktop')) {
+    if (this.platform.isDesktop && this.platform.isBrowser) {
       this.installScrollbarPatch()
     }
   }
@@ -36,7 +38,7 @@ export class IonContentDirective implements OnInit {
         background: transparent;
       }
     `
-    const styles = document.createElement('style')
+    const styles = this.document.createElement('style')
     styles.textContent = scrollbarStyle
     this.elRef.nativeElement.shadowRoot.appendChild(styles)
   }

@@ -1,4 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {}
+  "compilerOptions": {},
+  "files": [
+    "main.ts",
+    "main.server.ts",
+    "polyfills.ts",
+    "../server/main.ts"
+
+  ]
 }

@@ -6,9 +6,11 @@ import { injectAppDB } from '../db'
 import { DBTable } from '../db-table'
 import { DBT_IMAGES } from './constants'
 import { ImageRecord } from './types'
+import { injectWindow } from '~/utils/injection/window'
 
 @Injectable({ providedIn: 'root' })
 export class ImagesDB extends DBTable<ImageRecord> {
+  private window = injectWindow()
   public readonly db = injectAppDB()
   public readonly table = this.db.table<ImageRecord>(DBT_IMAGES)
 
@@ -26,7 +28,7 @@ export class ImagesDB extends DBTable<ImageRecord> {
             return null
           }
           const blob = new Blob([it.data], { type: it.type })
-          const urlCreator = window.URL || window.webkitURL
+          const urlCreator = this.window.URL || this.window.webkitURL
           const url = urlCreator.createObjectURL(blob)
           return this.sanitizer.bypassSecurityTrustUrl(url)
         }),

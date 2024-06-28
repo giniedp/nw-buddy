@@ -144,6 +144,7 @@
     "chromatic": "10.6.1",
     "comlink": "4.4.1",
     "commander": "11.1.0",
+    "compression": "1.7.4",
     "concurrently": "8.2.2",
     "crc-32": "1.2.2",
     "daisyui": "4.7.3",

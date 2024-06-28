@@ -8,6 +8,7 @@ import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
 import { ImageRecord, ImagesDB } from '../images'
 import { CharacterRecord } from './types'
 import { CharactersDB } from './characters.db'
+import { injectWindow } from '~/utils/injection/window'
 
 export interface CharacterStoreState {
   current: CharacterRecord
@@ -15,6 +16,7 @@ export interface CharacterStoreState {
 
 @Injectable({ providedIn: 'root' })
 export class CharacterStore extends ComponentStore<CharacterStoreState> {
+  private window = injectWindow()
   public readonly current$ = this.select(({ current }) => current)
   public readonly name$ = this.select(({ current }) => current?.name)
   public readonly serverName$ = this.select(({ current }) => current?.serverName)
@@ -189,7 +191,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
       return null
     }
     const blob = new Blob([record.data], { type: record.type })
-    const urlCreator = window.URL || window.webkitURL
+    const urlCreator = this.window.URL || this.window.webkitURL
     const url = urlCreator.createObjectURL(blob)
     return this.sanitizer.bypassSecurityTrustUrl(url)
   }

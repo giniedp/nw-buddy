@@ -33,6 +33,7 @@ import { gridStateToQueryParams } from '../table-grid-persistence.service'
 import { ExportDialogComponent } from './export-dialog.component'
 import { LoadStateDialogComponent } from './load-state-dialog.component'
 import { SaveStateDialogComponent } from './save-state-dialog.component'
+import { injectWindow } from '~/utils/injection/window'
 
 @Component({
   standalone: true,
@@ -62,6 +63,7 @@ export class TableGridPanelComponent extends ComponentStore<{
   @Output()
   public close = new EventEmitter()
 
+  private window = injectWindow()
   private grid$ = this.select(({ grid }) => grid)
   private persistKey$ = this.select(({ persistKey }) => persistKey)
   protected sigGrid = toSignal(this.grid$)
@@ -226,7 +228,7 @@ export class TableGridPanelComponent extends ComponentStore<{
     this.close.emit()
     const grid = this.sigGrid()
     const params = gridStateToQueryParams(grid.api)
-    const url = new URL(window.location.href)
+    const url = new URL(this.window.location.href)
     for (const key in params) {
       url.searchParams.set(key, params[key])
     }

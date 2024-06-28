@@ -13,6 +13,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { LoreItemDetailStore } from './lore-item-detail.store'
+import { injectDocument } from '~/utils/injection/document'
 
 const SIZE_COLORS = {
   Emphasis: '#2563EB',
@@ -129,10 +130,11 @@ export class LoreItemDetailMapComponent {
   protected iconCompress = svgCompress
   protected iconWarning = svgCircleExclamation
   protected elRef = inject(ElementRef<HTMLElement>)
+  private document = injectDocument()
 
   protected toggleFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
+    if (this.document.fullscreenElement) {
+      this.document.exitFullscreen()
     } else {
       this.elRef.nativeElement.requestFullscreen()
     }

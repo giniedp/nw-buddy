@@ -5,6 +5,8 @@ import { BehaviorSubject } from 'rxjs'
 import { ModalService } from '~/ui/layout'
 import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.component'
 import { cloneElement, getScreenshotOverlay, renderScreenshot } from './utils'
+import { injectDocument } from '~/utils/injection/document'
+import { injectWindow } from '~/utils/injection/window'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
@@ -26,7 +28,8 @@ export class ScreenshotService {
     return !!this.window['ClipboardItem']
   }
 
-  private window = inject(DOCUMENT).defaultView
+  private document = injectDocument()
+  private window = injectWindow()
   private frames$ = new BehaviorSubject<ScreenshotFrame[]>([])
 
   public constructor(private modal: ModalService) {
@@ -51,7 +54,7 @@ export class ScreenshotService {
   }
 
   public async makeScreenshot(frame: ScreenshotFrame): Promise<Blob> {
-    const overlay = getScreenshotOverlay()
+    const overlay = getScreenshotOverlay(this.document)
     const elOriginal = frame.elementRef.nativeElement
     const el = frame.mode === 'detached' ? detachFrame(elOriginal, overlay) : elOriginal
     el.classList.add('screenshot-capture')

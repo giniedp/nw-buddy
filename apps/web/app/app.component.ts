@@ -33,6 +33,8 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
+import { injectWindow } from './utils/injection/window'
+import { injectDocument } from './utils/injection/document'
 console.debug('environment', environment)
 @Component({
   standalone: true,
@@ -133,7 +135,7 @@ export class AppComponent {
   }
   public get isEmbed() {
     // TODO: pass in from router
-    return location.href.split('/').some((it) => it === 'embed')
+    return this.window.location.href.split('/').some((it) => it === 'embed')
   }
 
   protected langOptions = LANG_OPTIONS
@@ -153,7 +155,8 @@ export class AppComponent {
 
   protected versionChanged = toSignal(this.version.versionChanged$)
   protected langLoaded = signal(false)
-  protected document = inject(DOCUMENT)
+  protected window = injectWindow()
+  protected document = injectDocument()
   protected location = inject(Location)
   protected currentUrl = selectSignal(injectCurrentUrl(), (url) => {
     return getRelativeUrl(url)
