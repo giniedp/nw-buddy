@@ -103,7 +103,7 @@ program
         inputDir: unpackDir,
         outputDir: convertDir,
         threads: options.threads,
-
+        update: options.update
       })
     }
   })
@@ -240,10 +240,12 @@ async function convertImages({
   inputDir,
   outputDir,
   threads,
+  update
 }: {
   inputDir: string
   outputDir: string
   threads: number
+  update: boolean
 }) {
   const pattern = ['**/images/**/*.dds', '**/images/**/*.png', '**/worldtiles/**/*.dds'].map((it) =>
     path.join(inputDir, it),
@@ -258,7 +260,7 @@ async function convertImages({
         file,
         inputDir,
         outputDir,
-        update: true,
+        update: update ?? true,
         exe: 'tools/bin/texconv.exe',
       }
     }),

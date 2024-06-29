@@ -7,12 +7,13 @@ export async function spawn(cmd: string, args?: string[], options?: cp.SpawnOpti
   return new Promise<void>((resolve, reject) => {
     const p = cp.spawn(cmd, args, options)
     if (p.stdout) {
-      console.log('listening')
       p.stdout.on('data', (data) => {
-        logger.log(`${data}`.replace(/\n$/, ''))
+        logger.log(`${data}`.trimEnd())
       })
+    }
+    if (p.stderr) {
       p.stderr.on('data', (data) => {
-        logger.log(`${data}`.replace(/\n$/, ''))
+        logger.log(`${data}`.trimEnd())
       })
     }
     p.on('close', (code) => {

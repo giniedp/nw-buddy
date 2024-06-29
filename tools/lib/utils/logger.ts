@@ -1,7 +1,10 @@
 import { bgCyan, bgGreen, bgRed, bgYellow, default as c } from 'ansi-colors'
 export type COLOR = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white'
 
-let isEnabled = true
+let isVerbose = true
+if (process.env.NW_VERBOSE === 'false') {
+  isVerbose = false
+}
 
 const tags = {
   info: bgGreen.black('[INFO]'),
@@ -13,7 +16,7 @@ const tags = {
 let redirect: typeof console.log
 
 function log(...msg: any[]) {
-  if (!isEnabled) {
+  if (!isVerbose) {
     return
   }
   if (redirect) {
@@ -37,10 +40,11 @@ export const logger = {
     redirect = log
   },
   verbose: (enabled: boolean) => {
-    isEnabled = enabled
+    isVerbose = enabled
+    process.env.NW_VERBOSE = enabled ? 'true' : 'false'
   },
 
   get isVerbose() {
-    return isEnabled
+    return isVerbose
   },
 }
