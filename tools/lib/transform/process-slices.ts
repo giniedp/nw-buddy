@@ -1,11 +1,12 @@
 import { chain, groupBy, sortBy, sumBy, uniq } from 'lodash'
 import * as path from 'path'
-import { arrayAppend, glob, readJSONFile } from '../utils'
+import { arrayAppend, glob, readJSONFile, withProgressBar } from '../utils'
 
 import { createHash } from 'node:crypto'
 import { z } from 'zod'
 import { logger } from '../utils/logger'
 
+import { DatasheetFile } from '../file-formats/datasheet/converter'
 import { VariationScanRow } from '../file-formats/slices/scan-for-variants'
 import { VitalScanRow } from '../file-formats/slices/scan-for-vitals'
 import { TerritoryScanRow } from '../file-formats/slices/scan-for-zones'
@@ -79,6 +80,20 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   const territories: Record<string, TerritoryMetadata> = {}
   const loreItems: Record<string, LoreMetadata> = {}
 
+  const tablesDir = path.join(inputDir, 'sharedassets/springboardentitites')
+  const tablesFiles = await glob(path.join(tablesDir, 'datatables', '**', '*.json'))
+  const tables: Array<DatasheetFile<any>> = []
+  await withProgressBar({ label: 'Read Tables', tasks: tablesFiles }, async (file) => {
+    const data = await readJSONFile(
+      file,
+      z.object({
+        header: z.any(),
+        rows: z.array(z.any()),
+      }),
+    )
+    tables.push(data as any)
+  })
+
   const files = await glob([
     // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_script/dungeon_script.capitals.json`,
     // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_spawners/dungeon_spawners.capitals.json`,
@@ -112,8 +127,8 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
     },
   })
 
-  await applyTerritoryToVital(inputDir, vitals, territories)
-  await applyDefaultLevel(inputDir, vitals)
+  await applyTerritoryToVital(inputDir, vitals, territories, tables)
+  await applyDefaultLevel(inputDir, vitals, tables)
 
   return {
     vitals: toSortedVitals(vitals),
@@ -298,17 +313,22 @@ function collectTerritoriesRows(rows: TerritoryScanRow[], data: Record<string, T
   }
 }
 
-async function applyDefaultLevel(rootDir: string, vitals: Record<string, VitalMetadata>) {
-  const dataFiles = await glob([
-    path.join(rootDir, 'sharedassets/springboardentitites/datatables/javelindata_vitals.json'),
-    path.join(rootDir, 'sharedassets/springboardentitites/datatables/**/javelindata_vitals_*.json'),
-  ])
-  const schema = z.object({
-    rows: z.array(z.object({ VitalsID: z.string(), Level: z.number().optional() })),
+async function applyDefaultLevel(rootDir: string, vitals: Record<string, VitalMetadata>, tables: Array<DatasheetFile>) {
+  tables = tables.filter((it) => it.header.type === 'VitalsData')
+  if (!tables.length) {
+    throw new Error('Missing VitalsData table')
+  }
+  const vitalSchema = z.object({
+    VitalsID: z.string(),
+    Level: z.number().optional(),
   })
-  const levelMap = await Promise.all(dataFiles.map((file) => readJSONFile(file, schema)))
-    .then((list) => list.map((it) => it.rows).flat())
-    .then((list) => new Map(list.map((it) => [it.VitalsID.toLowerCase(), it.Level])))
+  const levelMap = new Map<string, number>()
+  for (const table of tables) {
+    for (const row of table.rows) {
+      const vital = vitalSchema.parse(row)
+      levelMap.set(vital.VitalsID.toLowerCase(), vital.Level)
+    }
+  }
 
   for (const [vitalId, vital] of Object.entries(vitals)) {
     for (const spawn of vital.spawns) {
@@ -330,33 +350,31 @@ async function applyTerritoryToVital(
   rootDir: string,
   vitals: Record<string, VitalMetadata>,
   territories: Record<string, TerritoryMetadata>,
+  tables: Array<DatasheetFile>,
 ) {
+  tables = tables.filter((it) => it.header.type === 'TerritoryDefinition')
+  if (!tables.length) {
+    throw new Error('Missing TerritoryDefinition table')
+  }
+
   const schema = z.object({
     rows: z.array(z.object({ TerritoryID: z.number(), AIVariantLevelOverride: z.number().optional() })),
   })
-  const pois = await glob([
-    path.join(rootDir, 'sharedassets/springboardentitites/datatables/javelindata_areadefinitions.json'),
-    path.join(rootDir, 'sharedassets/springboardentitites/datatables/javelindata_territorydefinitions.json'),
-    path.join(rootDir, 'sharedassets/springboardentitites/datatables/pointofinterestdefinitions/*.json'),
-  ])
-    .then(async (files) => {
-      return Promise.all(files.map((file) => readJSONFile(file, schema)))
+  const pois = tables
+    .map((table) => schema.parse(table).rows)
+    .flat()
+    .map((it) => {
+      const territory = territories[it.TerritoryID] || territories[String(it.TerritoryID).padStart(2, '0')]
+      if (!territory?.zones?.length) {
+        return null
+      }
+      return {
+        level: it.AIVariantLevelOverride,
+        territoryID: it.TerritoryID,
+        ...territory,
+      }
     })
-    .then((list) => list.map((it) => it.rows).flat())
-    .then((list) => {
-      return list.map((it) => {
-        const territory = territories[it.TerritoryID] || territories[String(it.TerritoryID).padStart(2, '0')]
-        if (!territory?.zones?.length) {
-          return null
-        }
-        return {
-          level: it.AIVariantLevelOverride,
-          territoryID: it.TerritoryID,
-          ...territory,
-        }
-      })
-    })
-    .then((list) => list.filter((it) => !!it))
+    .filter((it) => !!it)
 
   for (const vital of Object.values(vitals)) {
     for (const poi of pois) {
