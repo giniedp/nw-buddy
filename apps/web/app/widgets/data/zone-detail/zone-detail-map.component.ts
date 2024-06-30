@@ -144,7 +144,7 @@ export class ZoneDetailMapComponent {
       }
       title = this.tl8.get(title)
 
-      const levels = spawn.levels.length ? spawn.levels : [spawn.vital.Level]
+      const levels = spawn.levels
       const hasMark = !!vitalId
       const isMarked = eqCaseInsensitive(vitalId, spawn.vital.VitalsID)
       result.push({
