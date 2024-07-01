@@ -1,10 +1,11 @@
 import { DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, inject, signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { GameEventData } from '@nw-data/generated'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { GameEventDetailRewardsComponent } from './game-event-detail-rewards.component'
 import { GameEventDetailStore } from './game-event-detail.store'
+import { patchState } from '@ngrx/signals'
 
 @Component({
   standalone: true,
@@ -15,20 +16,23 @@ import { GameEventDetailStore } from './game-event-detail.store'
   imports: [PropertyGridModule, DecimalPipe, GameEventDetailRewardsComponent],
   providers: [DecimalPipe, GameEventDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip bg-black p-3 border border-base-100',
+    class: 'flex flex-col gap-2 text-sm',
   },
 })
 export class GameEventDetailComponent {
   public readonly store = inject(GameEventDetailStore)
   protected decimals = inject(DecimalPipe)
 
-  public readonly props = toSignal(this.store.properties$)
-  public readonly rewards = toSignal(this.store.rewards$)
-  public readonly lootTableId = toSignal(this.store.lootTableId$)
+  public readonly props = this.store.properties
+  public readonly rewards = this.store.rewards
+  public readonly lootTableId = this.store.lootTableId
+
+  public readonly showProps = signal(true)
+  public readonly showRewards = signal(true)
 
   @Input()
   public set eventId(value: string) {
-    this.store.patchState({ eventId: value })
+    patchState(this.store, { eventId: value })
   }
 
   public formatValue = (value: any, key: keyof GameEventData): PropertyGridCell | PropertyGridCell[] => {

@@ -1,25 +1,17 @@
-import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDataService } from '~/data'
+import { Directive, inject, Input } from '@angular/core'
+import { patchState } from '@ngrx/signals'
 import { GameEventDetailStore } from './game-event-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbGameEventDetail]',
   exportAs: 'eventDetail',
-  providers: [
-    {
-      provide: GameEventDetailStore,
-      useExisting: forwardRef(() => GameEventDetailDirective),
-    },
-  ],
+  providers: [GameEventDetailStore],
 })
-export class GameEventDetailDirective extends GameEventDetailStore {
+export class GameEventDetailDirective {
+  public readonly store = inject(GameEventDetailStore)
   @Input()
   public set nwbGameEventDetail(value: string) {
-    this.patchState({ eventId: value })
-  }
-
-  public constructor(db: NwDataService) {
-    super(db)
+    patchState(this.store, { eventId: value })
   }
 }

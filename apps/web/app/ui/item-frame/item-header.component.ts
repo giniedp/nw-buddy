@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular/core'
-import { ItemRarity, getItemRarity, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
+import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core'
+import { ItemRarity, getItemRarity, isItemNamed, isMasterItem } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 @Component({
@@ -8,8 +8,10 @@ import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
   selector: 'nwb-item-header',
   template: `
     <div class="nw-item-header-bg"></div>
-    <div class="nw-item-header-fg" *ngIf="isNamed"></div>
-    <ng-content></ng-content>
+    @if (isNamed) {
+      <div class="nw-item-header-fg"></div>
+    }
+    <ng-content />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
@@ -52,9 +54,5 @@ export class ItemHeaderComponent {
   public set item(value: MasterItemDefinitions | HouseItems) {
     this.rarity = getItemRarity(value)
     this.isNamed = isMasterItem(value) && isItemNamed(value)
-  }
-
-  public constructor() {
-    //
   }
 }

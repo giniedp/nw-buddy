@@ -1,6 +1,6 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject, input, viewChild } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { patchState } from '@ngrx/signals'
 import saveAs from 'file-saver'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -9,24 +9,21 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { GatherableDetailMapComponent } from './gatherable-detail-map.component'
 import { GatherableDetailStore } from './gatherable-detail.store'
-import { GatherableDetailStore2 } from './gatherable-detail.store2'
-import { patchState } from '@ngrx/signals'
 
 @Component({
   standalone: true,
   selector: 'nwb-gatherable-detail',
-  templateUrl: './gatherable-detail.component.html',
+  template: '<ng-content/>',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, GatherableDetailMapComponent, IconsModule, TooltipModule],
-  providers: [DecimalPipe, GatherableDetailStore, GatherableDetailStore2],
+  imports: [CommonModule, NwModule, GatherableDetailMapComponent, IconsModule, TooltipModule],
+  providers: [DecimalPipe, GatherableDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip',
+    class: 'block',
   },
 })
 export class GatherableDetailComponent {
-
-  protected store = inject(GatherableDetailStore2)
+  protected store = inject(GatherableDetailStore)
   protected map = viewChild(GatherableDetailMapComponent)
 
   public showMap = input(false)
@@ -37,19 +34,7 @@ export class GatherableDetailComponent {
     patchState(this.store, { gatherableId: value })
   }
 
-  public get recordId() {
-    return this.store.gatherableId()
-  }
 
-  public get icon() {
-    return this.store.icon()
-  }
-  public get name() {
-    return this.store.name()
-  }
-  public get size() {
-    return this.store.size()
-  }
   public get tradeSkill() {
     return this.store.tradeSkill()
   }
@@ -74,7 +59,6 @@ export class GatherableDetailComponent {
   protected iconDownload = svgDownload
 
   protected downloadPositions() {
-
     // const data = this.map().spawns()
     // const fileName = `${this.gatherableId}.json`
     // const object = {

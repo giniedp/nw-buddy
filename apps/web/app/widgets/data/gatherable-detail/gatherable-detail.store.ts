@@ -1,145 +1,117 @@
-import { Injectable, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
-import { GatherableData } from '@nw-data/generated'
-import { uniq } from 'lodash'
-import { combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
-import { combineLatestOrEmpty, eqCaseInsensitive, mapList, selectStream, switchMapCombineLatest } from '~/utils'
+import { computed, inject } from '@angular/core'
+import { signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
+import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
+import { GatherableData, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
+import { sortBy, uniq } from 'lodash'
+import { withNwData } from '~/data/with-nw-data'
+import { eqCaseInsensitive } from '~/utils'
+import { NodeSize } from '~/widgets/world-map/constants'
+import { GatherableRecord, GatherableService, getGatherableSpawnCount } from '../gatherable/gatherable.service'
 import { getGatherableIcon } from './utils'
 
-@Injectable()
-export class GatherableDetailStore extends ComponentStore<{ recordId: string }> {
-  protected db = inject(NwDataService)
+export interface GatherableDetailState {
+  gatherableId: string
+  variantId: string
+}
 
-  public readonly recordId$ = this.select(({ recordId }) => recordId)
+export interface GatherableSibling {
+  size: NodeSize
+  gatherableId: string
+  gatherable: GatherableData
+  gatherableMeta: GatherablesMetadata
+  variations: Array<{
+    variation: GatherableVariation
+    variationMeta: VariationsMetadata
+  }>
+}
 
-  public readonly variation$ = selectStream(this.db.gatherableVariation(this.recordId$))
-  public readonly gatherable$ = selectStream(
-    {
-      byId: this.db.gatherable(this.recordId$),
-      byVariation: this.db.gatherable(this.variation$.pipe(map((it) => it?.Gatherables?.[0]?.GatherableID))),
-    },
-    ({ byVariation, byId }) => byId ?? byVariation,
-  )
-  public readonly variations$ = selectStream(
-    this.db.gatherableVariationsByGatherableId(this.recordId$),
-    (it) => it || [],
-  )
-
-  public readonly gatherableId$ = selectStream(this.gatherable$, (it) => it?.GatherableID)
-  public readonly gatherableMeta$ = selectStream(this.db.gatherablesMeta(this.gatherableId$))
-
-  public readonly icon$ = this.select(this.gatherable$, (it) => getGatherableIcon(it) || NW_FALLBACK_ICON)
-  public readonly name$ = this.select(this.gatherable$, (it) => it?.DisplayName)
-  public readonly size$ = this.select(this.gatherableId$, (id) => (id ? getGatherableNodeSize(id) : null))
-  public readonly tradeSkill$ = this.select(this.gatherable$, (it) => it?.Tradeskill)
-  public readonly lootTableIds$ = this.select(this.gatherable$, this.variations$, (gatherable, variations) => {
-    const result = []
-    result.push(gatherable?.FinalLootTable)
-    for (const variation of variations || []) {
-      for (const entry of variation.Gatherables || []) {
-        if (eqCaseInsensitive(entry.GatherableID, gatherable?.GatherableID)) {
-          result.push(...(entry.LootTable || []))
-        }
-      }
+export const GatherableDetailStore = signalStore(
+  withState<GatherableDetailState>({ gatherableId: null, variantId: null }),
+  withNwData((db, service = inject(GatherableService)) => {
+    return {
+      gatherablesMap: service.gatherablesMap$,
     }
-    return uniq(result.filter((it) => !!it && it !== 'Empty'))
-  })
-
-  public readonly siblings$ = selectStream(
-    {
-      size: this.size$,
-      gatherableId: this.gatherableId$,
-      gatherablesMap: this.db.gatherablesMap,
-    },
-    ({ size, gatherableId, gatherablesMap }) => {
-      if (!gatherableId) {
-        return null
+  }),
+  withHooks({
+    onInit: (state) => state.loadNwData(),
+  }),
+  withComputed(({ gatherableId, variantId, nwData }) => {
+    const gatherable = computed(() => nwData().gatherablesMap?.get(gatherableId()))
+    const size = computed(() => getGatherableNodeSize(gatherableId()))
+    const sizeSiblings = computed(() => {
+      const result: Array<{ size: NodeSize; item: GatherableRecord }> = []
+      if (!size()) {
+        return result
       }
-      if (!size) {
-        return [gatherablesMap.get(gatherableId)]
-      }
-      const result: GatherableData[] = []
       for (const siblingSize of getGatherableNodeSizes()) {
-        const siblingId = gatherableId.replace(size, siblingSize)
-        const sibling = gatherablesMap.get(siblingId)
+        const siblingId = gatherableId().replace(size(), siblingSize)
+
+        const sibling = nwData().gatherablesMap?.get(siblingId)
         if (sibling) {
-          result.push(sibling)
+          result.push({
+            size: siblingSize,
+            item: sibling,
+          })
         }
       }
       if (!result.length) {
         return null
       }
       return result
-    },
-  )
-
-  public readonly siblingsVariations$ = selectStream(
-    this.siblings$.pipe(
-      switchMapCombineLatest((it) => this.db.gatherableVariationsByGatherableId(it.GatherableID)),
-      mapList((it) => Array.from(it || [])),
-      map((list) => list.flat()),
-      map((list) => list.filter((it) => !!it)),
-    ),
-  )
-
-  public readonly variationsMetadata$ = selectStream(
-    this.siblingsVariations$.pipe(
-      mapList((it) => it.VariantID),
-      map(uniq),
-      switchMapCombineLatest((it) => this.db.variationsMeta(it)),
-      map((list) => list.filter((it) => !!it)),
-    ),
-  )
-
-  public readonly variationsMetaChunks$ = selectStream(
-    this.variationsMetadata$.pipe(
-      map((list) => list.filter((it) => it?.variantPositions?.length)),
-      switchMap((list) => {
-        const chunkIds = uniq(list.map((it) => it.variantPositions.map((chunk) => chunk.chunk)).flat())
-        const chunks = combineLatestOrEmpty(
-          chunkIds.map((it) => {
-            return combineLatest({
-              chunk: of(it),
-              data: this.db.variationsChunk(it),
-            })
-          }),
-        )
-        return chunks
+    })
+    return {
+      gatherable,
+      icon: computed(() => getGatherableIcon(gatherable()) || NW_FALLBACK_ICON),
+      name: computed(() => gatherable()?.DisplayName),
+      size,
+      sizeSiblings,
+      tradeSkill: computed(() => gatherable()?.Tradeskill),
+      lootTable: computed(() => gatherable()?.FinalLootTable),
+      baseGatherTime: computed(() => secondsToDuration(gatherable()?.BaseGatherTime)),
+      minRespawnRate: computed(() => secondsToDuration(gatherable()?.MinRespawnRate)),
+      maxRespawnRate: computed(() => secondsToDuration(gatherable()?.MaxRespawnRate)),
+      gameEvent: computed(() => gatherable()?.GameEventID),
+      variations: computed(() => sortBy(gatherable()?.$variations || [], (it) => it.Name || it.VariantID)),
+      lootTables: computed(() => {
+        const result: string[] = []
+        if (!gatherable()) {
+          return result
+        }
+        if (gatherable().FinalLootTable) {
+          result.push(gatherable().FinalLootTable)
+        }
+        for (const variation of gatherable().$variations || []) {
+          for (const gatherable of variation.Gatherables || []) {
+            for (const lootTable of gatherable.LootTable || []) {
+              if (lootTable && !eqCaseInsensitive(lootTable, 'Empty')) {
+                result.push(lootTable)
+              }
+            }
+          }
+        }
+        return uniq(result).filter((it) => !!it && !eqCaseInsensitive(it, 'Empty'))
       }),
-    ),
-  )
-
-  public readonly props$ = this.select(this.gatherable$, (it) => {
-    const result: Array<{ label: string; value: string }> = []
-    if (it?.BaseGatherTime) {
-      result.push({ label: 'Gather Time', value: secondsToDuration(it.BaseGatherTime) })
+      idsForMap: computed(() => {
+        const result: string[] = [gatherableId()]
+        const siblings = sizeSiblings() || []
+        for (const sibling of siblings) {
+          if (getGatherableSpawnCount(sibling.item) >= 10000){
+            return result
+          }
+        }
+        for (const sibling of sizeSiblings() || []) {
+          result.push(sibling.item.GatherableID)
+        }
+        return uniq(result)
+          .filter((it) => !!it)
+          .sort()
+      }),
     }
-    if (it?.MinRespawnRate) {
-      result.push({ label: 'Min Respawn Time', value: secondsToDuration(it.MinRespawnRate) })
-    }
-    if (it?.MaxRespawnRate) {
-      result.push({ label: 'Max Respawn Time', value: secondsToDuration(it.MaxRespawnRate) })
-    }
-    if (it?.Tradeskill) {
-      result.push({ label: 'Tradeskill', value: it.Tradeskill })
-    }
-    return result
-  })
-
-  public constructor() {
-    super({ recordId: null })
-  }
-
-  public load(idOrItem: string | GatherableData) {
-    if (typeof idOrItem === 'string') {
-      this.patchState({ recordId: idOrItem })
-    } else {
-      this.patchState({ recordId: idOrItem?.GatherableID })
-    }
-  }
-}
+  }),
+  withComputed(({ size, gatherableId, nwData }) => {
+    return {}
+  }),
+)
 
 function secondsToDuration(value: number) {
   const milliseconds = Math.floor(value * 1000) % 1000

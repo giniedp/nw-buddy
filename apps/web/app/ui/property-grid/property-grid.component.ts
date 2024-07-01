@@ -1,10 +1,10 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, computed, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { map, ReplaySubject } from 'rxjs'
+import { ReplaySubject, map } from 'rxjs'
 import { humanize } from '~/utils'
-import { PropertyGridCell, PropertyGridCellContext, PropertyGridCellDirective } from './property-grid-cell.directive'
 import { TooltipModule } from '../tooltip'
+import { PropertyGridCell, PropertyGridCellContext, PropertyGridCellDirective } from './property-grid-cell.directive'
 import { PropertyGridValueDirective } from './property-grid-value.directive'
 
 export interface PropertyGridEntry {
@@ -26,10 +26,9 @@ export interface PropertyGridEntry {
   },
 })
 export class PropertyGridComponent<T = any> {
-  @Input()
-  public set item(value: T) {
-    this.item$.next(value)
-  }
+
+  public readonly item = input<T>(null)
+  public readonly entries = computed(() => this.extractEntries(this.item()))
 
   @Input()
   public humanizeNames: boolean
@@ -38,21 +37,13 @@ export class PropertyGridComponent<T = any> {
   public entriesExtractor: (value: T) => PropertyGridEntry[]
 
   @Input()
-  public valueFormatter: (
-    value: any,
-    key?: keyof T,
-    type?: PropertyGridEntry['valueType']
-  ) => string | PropertyGridCell | PropertyGridCell[]
+  public valueFormatter: PropertyGridValueFormatterFn<T>
 
   @Input()
   public keyFormatter: (key: keyof T) => string | PropertyGridCell
 
   @Input()
   public numberFormat: string = '0.0-7'
-
-  protected item$ = new ReplaySubject<any>(1)
-  protected entries$ = this.item$.pipe(map((item) => this.extractEntries(item)))
-  protected trackBy = (i: number) => i
 
   public constructor(private decimals: DecimalPipe) {
     //
@@ -74,7 +65,7 @@ export class PropertyGridComponent<T = any> {
     })
   }
 
-  protected formatValue({ key, value, valueType }: PropertyGridEntry): PropertyGridCellContext {
+  protected formatValue({ key, value, valueType }: PropertyGridEntry): PropertyGridCell[] {
     let cell: string | PropertyGridCell | PropertyGridCell[]
     if (this.valueFormatter) {
       cell = this.valueFormatter(value, key as keyof T, valueType)
@@ -93,15 +84,15 @@ export class PropertyGridComponent<T = any> {
     }
 
     if (typeof cell === 'string') {
-      return this.toContext([{ value: cell }])
+      return [{ value: cell }]
     }
     if (Array.isArray(cell)) {
-      return this.toContext(cell)
+      return cell
     }
-    return this.toContext([cell])
+    return [cell]
   }
 
-  protected formatKey({ key }: PropertyGridEntry): PropertyGridCellContext {
+  protected formatKey({ key }: PropertyGridEntry): PropertyGridCell[] {
     let cell: string | PropertyGridCell | PropertyGridCell[]
     if (this.keyFormatter) {
       cell = this.keyFormatter(key as keyof T)
@@ -112,17 +103,17 @@ export class PropertyGridComponent<T = any> {
     }
 
     if (typeof cell === 'string') {
-      return this.toContext([{ value: cell }])
+      return [{ value: cell }]
     }
     if (Array.isArray(cell)) {
-      return this.toContext(cell)
+      return cell
     }
-    return this.toContext([cell])
-  }
-
-  protected toContext(cells: PropertyGridCell[]): PropertyGridCellContext {
-    return {
-      $implicit: cells,
-    }
+    return [cell]
   }
 }
+
+export type PropertyGridValueFormatterFn<T> = (
+  value: any,
+  key?: keyof T,
+  type?: PropertyGridEntry['valueType'],
+) => string | PropertyGridCell | PropertyGridCell[]

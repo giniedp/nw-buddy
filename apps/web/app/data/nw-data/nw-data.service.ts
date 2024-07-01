@@ -588,4 +588,8 @@ export class NwDataService {
   public seasonPassRewardsByDisplayItemId = tableLookup(() => this.seasonPassRewardsByDisplayItemIdMap)
   public seasonPassRewardsByItemIdMap = tableGroupBy(() => this.seasonPassRewards, 'ItemId')
   public seasonPassRewardsByItemId = tableLookup(() => this.seasonPassRewardsByItemIdMap)
+
+  public expansions = table(() => this.loadEntries(DATASHEETS.ExpansionData))
+  public expansionsMap = tableIndexBy(() => this.expansions, 'ExpansionId')
+  public expansion = tableLookup(() => this.expansionsMap)
 }

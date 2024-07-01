@@ -1,62 +1,58 @@
-<ng-container *ngFor="let entry of entries$ | async; trackBy: trackBy">
+@for (entry of entries(); track $index) {
   <span>
-    <ng-container [ngTemplateOutlet]="tplCells" [ngTemplateOutletContext]="formatKey(entry)"></ng-container>
+    @for (cell of formatKey(entry); track $index) {
+      <ng-container [ngTemplateOutlet]="cell.template || tplValue" [ngTemplateOutletContext]="{ $implicit: cell }" />
+    }
   </span>
   <span>
-    <ng-container [ngTemplateOutlet]="tplCells" [ngTemplateOutletContext]="formatValue(entry)"></ng-container>
+    @for (cell of formatValue(entry); track $index) {
+      <ng-container [ngTemplateOutlet]="cell.template || tplValue" [ngTemplateOutletContext]="{ $implicit: cell }" />
+    }
   </span>
-</ng-container>
-
-<ng-template [nwbGridCell] let-cells #tplCells>
-  <ng-container *ngFor="let cell of cells; trackBy: trackBy">
-    <ng-container
-      [ngTemplateOutlet]="cell.template || tplValue"
-      [ngTemplateOutletContext]="{ $implicit: cell }"
-    ></ng-container>
-  </ng-container>
-</ng-template>
+}
 
 <ng-template [nwbGridValue] let-cell #tplValue>
-  <a
-    *ngIf="cell.externLink"
-    [href]="cell.externLink"
-    target="_blank"
-    class="link link-primary"
-    [tooltip]="cell.tooltip"
-    [tooltipContext]="{ $implicit: cell }"
-    [class.font-bold]="cell.bold"
-    [class.italic]="cell.italic"
-    [class.block]="cell.block"
-  >
-    {{ cell.value }}
-  </a>
-  <a
-    *ngIf="cell.routerLink"
-    [routerLink]="cell.routerLink"
-    [queryParams]="cell.queryParams"
-    class="link link-primary"
-    [tooltip]="cell.tooltip"
-    [tooltipContext]="{ $implicit: cell }"
-    [class.font-bold]="cell.bold"
-    [class.italic]="cell.italic"
-    [class.block]="cell.block"
-  >
-    {{ cell.value }}
-  </a>
-  <span
-    *ngIf="!cell.routerLink && !cell.externLink"
-    [class.text-primary]="cell.primary"
-    [class.text-secondary]="cell.secondary"
-    [class.text-info]="cell.info"
-    [class.text-accent]="cell.accent"
-    [tooltip]="cell.tooltip"
-    [tooltipContext]="{ $implicit: cell }"
-    [class.font-bold]="cell.bold"
-    [class.italic]="cell.italic"
-    [class.block]="cell.block"
-  >
-    {{ cell.value }}
-  </span>
+  @if (cell.externLink) {
+    <a
+      [href]="cell.externLink"
+      target="_blank"
+      class="link link-primary"
+      [tooltip]="cell.tooltip"
+      [tooltipContext]="{ $implicit: cell }"
+      [class.font-bold]="cell.bold"
+      [class.italic]="cell.italic"
+      [class.block]="cell.block"
+    >
+      {{ cell.value }}
+    </a>
+  } @else if (cell.routerLink) {
+    <a
+      [routerLink]="cell.routerLink"
+      [queryParams]="cell.queryParams"
+      class="link link-primary"
+      [tooltip]="cell.tooltip"
+      [tooltipContext]="{ $implicit: cell }"
+      [class.font-bold]="cell.bold"
+      [class.italic]="cell.italic"
+      [class.block]="cell.block"
+    >
+      {{ cell.value }}
+    </a>
+  } @else {
+    <span
+      [class.text-primary]="cell.primary"
+      [class.text-secondary]="cell.secondary"
+      [class.text-info]="cell.info"
+      [class.text-accent]="cell.accent"
+      [tooltip]="cell.tooltip"
+      [tooltipContext]="{ $implicit: cell }"
+      [class.font-bold]="cell.bold"
+      [class.italic]="cell.italic"
+      [class.block]="cell.block"
+    >
+      {{ cell.value }}
+    </span>
+  }
 </ng-template>
 
-<ng-content></ng-content>
+<ng-content/>

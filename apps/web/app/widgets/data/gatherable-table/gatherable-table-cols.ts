@@ -3,6 +3,7 @@ import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-d
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { GatherableRecord, getGatherableSpawnCount } from '../gatherable'
 import { getGatherableIcon } from '../gatherable-detail/utils'
+import { humanize } from '~/utils'
 
 export type GatherableTableUtils = TableGridUtils<GatherableTableRecord>
 export type GatherableTableRecord = GatherableRecord
@@ -82,6 +83,7 @@ export function gatherableColLootTable(util: GatherableTableUtils) {
   return util.colDef<string>({
     colId: 'finalLootTable',
     headerValueGetter: () => 'Loot Table',
+    valueFormatter: ({ value }) => humanize(value),
     width: 120,
     field: 'FinalLootTable',
     ...util.selectFilter({

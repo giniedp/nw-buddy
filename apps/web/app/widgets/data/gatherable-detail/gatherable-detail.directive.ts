@@ -1,16 +1,16 @@
 import { Directive, inject, Input, Output } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState } from '@ngrx/signals'
-import { GatherableDetailStore2 } from './gatherable-detail.store2'
+import { GatherableDetailStore } from './gatherable-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbGatherableDetail]',
   exportAs: 'gatherableDetail',
-  providers: [GatherableDetailStore2],
+  providers: [GatherableDetailStore],
 })
 export class GatherableDetailDirective {
-  public store = inject(GatherableDetailStore2)
+  public store = inject(GatherableDetailStore)
 
   @Input()
   public set nwbGatherableDetail(value: string) {

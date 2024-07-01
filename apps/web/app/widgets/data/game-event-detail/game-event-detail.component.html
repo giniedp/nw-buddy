@@ -1,10 +1,14 @@
-<nwb-property-grid
-  class="w-full gap-x-2 font-mono text-sm leading-tight overflow-auto"
-  [item]="props()"
-  [valueFormatter]="formatValue"
-/>
-@if(rewards(); as rewards) {
-  <h3 class="mt-3">Rewards</h3>
-  <nwb-game-event-detail-rewards [rewards]="rewards" />
+@if (showProps()) {
+  <nwb-property-grid
+    class="w-full gap-x-2 font-mono leading-tight overflow-auto"
+    [item]="props()"
+    [valueFormatter]="formatValue"
+  />
 }
-<ng-content></ng-content>
+@if (showRewards() && rewards()?.length) {
+  <div>
+    <h3>Rewards</h3>
+    <nwb-game-event-detail-rewards [rewards]="rewards()" />
+  </div>
+}
+<ng-content />
