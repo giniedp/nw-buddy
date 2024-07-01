@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_VARIATIONDATAGATHERABLE } from '@nw-data/generated'
+import { COLS_GATHERABLEDATA } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import {
   TABLE_GRID_ADAPTER_OPTIONS,
@@ -112,7 +112,7 @@ export function buildCommonGatherableGridOptions(util: TableGridUtils<Gatherable
     ],
   }
   addGenericColumns(result, {
-    props: COLS_VARIATIONDATAGATHERABLE,
+    props: COLS_GATHERABLEDATA,
   })
   return result
 }

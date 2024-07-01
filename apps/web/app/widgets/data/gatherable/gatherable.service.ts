@@ -44,8 +44,8 @@ export class GatherableService {
           $lootTables: lootTables,
           $variations: variations.map((variation) => {
             const meta = variationsMetaMap.get(variation.VariantID)
-            for (const it of variation.Gatherables || []){
-              for (const table of (it.LootTable || [])){
+            for (const it of variation.Gatherables || []) {
+              for (const table of it.LootTable || []) {
                 if (!isLootTableEmpty(table)) {
                   appendToArray(lootTables, table)
                 }
@@ -116,10 +116,10 @@ export function getGatherableSpawnCount(gatherable: GatherableRecord) {
   let sum = 0
   if (gatherable?.$meta?.spawns) {
     for (const key in gatherable.$meta.spawns) {
-      sum += gatherable.$meta[key]?.length || 0
+      sum += gatherable.$meta.spawns[key]?.length || 0
     }
   }
-  if (gatherable?.$variations){
+  if (gatherable?.$variations) {
     for (const variation of gatherable?.$variations) {
       for (const entry of variation.$meta?.variantPositions || []) {
         sum += entry.elementCount
