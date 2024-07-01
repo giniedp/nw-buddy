@@ -9,6 +9,7 @@ import { svgLink, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectQueryParam, observeRouteParam } from '~/utils'
+import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 import { LootModule } from '~/widgets/loot'
 
@@ -25,6 +26,7 @@ import { LootModule } from '~/widgets/loot'
     IconsModule,
     TooltipModule,
     GatherableDetailModule,
+    GameEventDetailModule,
     LayoutModule,
   ],
   providers: [],

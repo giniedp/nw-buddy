@@ -70,6 +70,7 @@ export const GatherableDetailStore2 = signalStore(
       baseGatherTime: computed(() => secondsToDuration(gatherable()?.BaseGatherTime)),
       minRespawnRate: computed(() => secondsToDuration(gatherable()?.MinRespawnRate)),
       maxRespawnRate: computed(() => secondsToDuration(gatherable()?.MaxRespawnRate)),
+      gameEvent: computed(() => gatherable()?.GameEventID),
       variations: computed(() => sortBy(gatherable()?.$variations || [], (it) => it.Name || it.VariantID)),
       lootTables: computed(() => {
         const result: string[] = []

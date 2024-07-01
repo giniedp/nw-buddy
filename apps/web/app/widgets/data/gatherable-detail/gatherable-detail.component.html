@@ -11,15 +11,15 @@
 <div class="flex flex-col p-4">
   <div class="flex flex-row gap-1">
     <span class="opacity-50">Gather time: </span>
-    <span>{{ store2.baseGatherTime() }}</span>
+    <span>{{ store.baseGatherTime() }}</span>
   </div>
   <div class="flex flex-row gap-1">
     <span class="opacity-50">Min respawn rate: </span>
-    <span>{{ store2.minRespawnRate() }}</span>
+    <span>{{ store.minRespawnRate() }}</span>
   </div>
   <div class="flex flex-row gap-1">
     <span class="opacity-50">Max respawn rate: </span>
-    <span>{{ store2.maxRespawnRate() }}</span>
+    <span>{{ store.maxRespawnRate() }}</span>
   </div>
   <ng-content select="'[properties]'"/>
   <!-- <nwb-gatherable-detail-map #map />

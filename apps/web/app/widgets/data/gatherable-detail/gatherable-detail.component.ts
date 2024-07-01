@@ -25,8 +25,8 @@ import { patchState } from '@ngrx/signals'
   },
 })
 export class GatherableDetailComponent {
- protected store = inject(GatherableDetailStore)
-  protected store2 = inject(GatherableDetailStore2)
+
+  protected store = inject(GatherableDetailStore2)
   protected map = viewChild(GatherableDetailMapComponent)
 
   public showMap = input(false)
@@ -34,42 +34,43 @@ export class GatherableDetailComponent {
 
   @Input()
   public set gatherableId(value: string) {
-    patchState(this.store2, { gatherableId: value })
-    this.store.patchState({ recordId: value })
+    patchState(this.store, { gatherableId: value })
   }
 
   public get recordId() {
-    return this.store2.gatherableId()
+    return this.store.gatherableId()
   }
 
   public get icon() {
-    return this.store2.icon()
+    return this.store.icon()
   }
   public get name() {
-    return this.store2.name()
+    return this.store.name()
   }
   public get size() {
-    return this.store2.size()
+    return this.store.size()
   }
   public get tradeSkill() {
-    return this.store2.tradeSkill()
+    return this.store.tradeSkill()
   }
   public get sizeSiblings() {
-    return this.store2.sizeSiblings()
+    return this.store.sizeSiblings()
   }
   public get variations() {
-    return this.store2.variations()
+    return this.store.variations()
   }
   public get lootTable() {
-    return this.store2.lootTable()
+    return this.store.lootTable()
   }
   public get lootTables() {
-    return this.store2.lootTables()
+    return this.store.lootTables()
   }
   public get gatherableIds() {
-    return this.store2.idsForMap()
+    return this.store.idsForMap()
   }
-
+  public get gameEvent() {
+    return this.store.gameEvent()
+  }
   protected iconDownload = svgDownload
 
   protected downloadPositions() {

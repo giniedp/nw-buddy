@@ -22,6 +22,9 @@
       </div>
     }
   </div>
+  @if(detail.gameEvent) {
+    <nwb-game-event-detail [eventId]="detail.gameEvent" class="border-none px-4 pt-0" />
+  }
   <nwb-gatherable-detail-map [gatherableIds]="detail.gatherableIds" [tag]="tag()" />
 </nwb-gatherable-detail>
 
