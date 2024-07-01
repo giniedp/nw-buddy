@@ -261,8 +261,8 @@ importers:
         specifier: 1.2.2
         version: 1.2.2
       daisyui:
-        specifier: 4.12.10
-        version: 4.12.10(postcss@8.4.39)
+        specifier: 4.7.3
+        version: 4.7.3(postcss@8.4.39)
       date-fns:
         specifier: 3.6.0
         version: 3.6.0
@@ -5396,8 +5396,8 @@ packages:
   custom-event@1.0.1:
     resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==}
 
-  daisyui@4.12.10:
-    resolution: {integrity: sha512-jp1RAuzbHhGdXmn957Z2XsTZStXGHzFfF0FgIOZj3Wv9sH7OZgLfXTRZNfKVYxltGUOBsG1kbWAdF5SrqjebvA==}
+  daisyui@4.7.3:
+    resolution: {integrity: sha512-R8jUpBMAUm4rSyxzGa9QqFdJTkzREtb1QahXdDoOfElGiF4VbSuu5bfqQoOro1kkSagPy+aTKu5WtSSXmH3u3g==}
     engines: {node: '>=16.9.0'}
 
   dashdash@1.14.1:
@@ -17534,7 +17534,7 @@ snapshots:
 
   custom-event@1.0.1: {}
 
-  daisyui@4.12.10(postcss@8.4.39):
+  daisyui@4.7.3(postcss@8.4.39):
     dependencies:
       css-selector-tokenizer: 0.8.0
       culori: 3.3.0

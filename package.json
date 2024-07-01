@@ -147,7 +147,7 @@
     "compression": "1.7.4",
     "concurrently": "8.2.2",
     "crc-32": "1.2.2",
-    "daisyui": "4.12.10",
+    "daisyui": "4.7.3",
     "date-fns": "3.6.0",
     "dexie": "3.2.7",
     "dexie-export-import": "4.1.1",
