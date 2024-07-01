@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "jsx": "react"
   },
   "extends": "../../tsconfig.json",
   "exclude": ["../web/test.ts", "../web/**/*.spec.ts"],

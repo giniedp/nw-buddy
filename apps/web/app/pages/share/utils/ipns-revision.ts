@@ -14,7 +14,7 @@ export async function createIpnsRevision(
   if (!privateKeyAsBase64) {
     const name = await w3name.create()
     return {
-      key: await bufferToBase64(name.key.bytes.buffer),
+      key: await bufferToBase64(name.key.bytes.buffer as ArrayBuffer),
       name: name,
       revision: null,
     }

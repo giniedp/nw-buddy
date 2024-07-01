@@ -30,7 +30,7 @@ export function storyExample<T, TArgs = ArgsOf<T>>(fn: (arg: TArgs) => ArgsOf<T>
   return {
     render: (arg) => {
       return {
-        props: fn(arg),
+        props: fn(arg as any),
       }
     },
   }

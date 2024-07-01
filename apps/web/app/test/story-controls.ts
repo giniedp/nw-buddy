@@ -13,10 +13,12 @@ export interface NumberArgType<T> extends ArgType {
   step?: number
 }
 
-export interface EnumArgType<T> extends ArgType {
-  defaultValue?: T
-  options: Array<T> | Array<{ label: string; value: T }> | Record<string, T>
-}
+export type EnumArgType<T> =
+  | ArgType
+  | {
+      defaultValue?: T
+      options: Array<T> | Array<{ label: string; value: T }> | Record<string, T>
+    }
 
 function convertOptions<T>(
   options: Array<T> | Array<{ label: string; value: T }> | Record<string, T>
@@ -141,22 +143,22 @@ export class StoryControlsBuilder<TArgs> {
     })
   }
   public radio<K extends keyof TArgs>(key: K, options: EnumArgType<TArgs[K]>) {
-    return this.add(key, buildSelectType(key as string, 'radio', options))
+    return this.add(key, buildSelectType(key as string, 'radio', options) as any)
   }
   public radioInline = <K extends keyof TArgs>(key: K, options: EnumArgType<TArgs[K]>) => {
-    return this.add(key, buildSelectType(key as string, 'inline-radio', options))
+    return this.add(key, buildSelectType(key as string, 'inline-radio', options) as any)
   }
   public check = <K extends keyof TArgs>(key: K, options: EnumArgType<TArgs[K]>) => {
-    return this.add(key, buildSelectType(key as string, 'check', options))
+    return this.add(key, buildSelectType(key as string, 'check', options) as any)
   }
   public checkInline = <K extends keyof TArgs>(key: K, options: EnumArgType<TArgs[K]>) => {
-    return this.add(key, buildSelectType(key as string, 'inline-check', options))
+    return this.add(key, buildSelectType(key as string, 'inline-check', options) as any)
   }
   public select = <K extends keyof TArgs>(key: K, options: EnumArgType<TArgs[K]>) => {
-    return this.add(key, buildSelectType(key as string, 'select', options))
+    return this.add(key, buildSelectType(key as string, 'select', options) as any)
   }
   public selectMulti = <K extends keyof TArgs>(key: K, options: EnumArgType<TArgs[K]>) => {
-    return this.add(key, buildSelectType(key as string, 'multi-select', options))
+    return this.add(key, buildSelectType(key as string, 'multi-select', options) as any)
   }
   public append = (fn: (b: StoryControlsBuilder<TArgs>) => void) => {
     fn(this)

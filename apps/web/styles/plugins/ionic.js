@@ -79,7 +79,7 @@ module.exports = ({ addUtilities, theme, matchUtilities, variants }) => {
     [`.ion-modal-y-sm`]: {
       '--height': '400px',
     },
-    [`.ion-modal-x-md`]: {
+    [`.ion-modal-y-md`]: {
       '--height': '600px',
     },
     [`.ion-modal-y-lg`]: {

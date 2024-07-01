@@ -100,7 +100,7 @@ async function encodeBuffer(it: ArrayBuffer | ArrayBufferView): Promise<EncodedB
   for (const [typeName, type] of Object.entries(TYPED_ARRAYS)) {
     if (it instanceof type) {
       const buffer = it.buffer.slice(it.byteOffset, it.byteOffset + it.byteLength)
-      const data = await bufferToBase64(buffer)
+      const data = await bufferToBase64(buffer as ArrayBuffer)
       return {
         _type: typeName as any,
         _data: data

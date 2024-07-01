@@ -13,7 +13,14 @@ class IgnoreNotFoundExportPlugin {
 
 module.exports = async ({ config, mode }) => {
   config.plugins.push(new IgnoreNotFoundExportPlugin())
+  // patchSvgLoader(config)
+  // coverageInstrument(config)
   return config
+}
+
+function patchSvgLoader(config) {
+  const rule = config.module.rules.find(({ test, type }) => type === 'asset/resource' && test.test('.svg'))
+  rule.test = /\.(ico|jpg|jpeg|png|apng|gif|eot|otf|webp|ttf|woff|woff2|cur|ani|pdf)(\?.*)?$/
 }
 
 function coverageInstrument(config) {

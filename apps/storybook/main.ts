@@ -8,12 +8,8 @@ const config: StorybookConfig = {
       to: '/assets',
     },
     {
-      from: '../../dist/nw-data/live',
-      to: '/nw-data/live',
-    },
-    {
-      from: '../../dist/nw-data/ptr',
-      to: '/nw-data/ptr',
+      from: '../../dist/nw-data/.current',
+      to: '/nw-data',
     },
   ],
   framework: {
@@ -26,7 +22,7 @@ const config: StorybookConfig = {
     '@storybook/addon-controls',
     '@storybook/addon-a11y',
     '@storybook/addon-interactions',
-    '@storybook/addon-backgrounds',
+    '@storybook/addon-themes',
     '@storybook/addon-docs',
     '@storybook/addon-outline',
     '@storybook/addon-toolbars',
