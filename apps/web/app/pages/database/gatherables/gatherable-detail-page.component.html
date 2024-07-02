@@ -1,97 +1,101 @@
-<nwb-gatherable-detail [gatherableId]="itemId()" [showMap]="true" [showProps]="true" #detail>
-  <nwb-gatherable-detail-header />
-  <div class="flex flex-col gap-4">
-    <nwb-gatherable-detail-map [gatherableIds]="detail.gatherableIds" [tag]="tag()" class="rounded-b-md overflow-clip" />
-    <nwb-gatherable-detail-stats class="text-sm px-4">
-      @if (detail.sizeSiblings?.length > 1) {
-        <div class="flex flex-row items-center gap-1">
-          <span class="opacity-50">Sizes: </span>
-          @for (item of detail.sizeSiblings; track $index) {
-            <a
-              class="link-hover badge rounded-md"
-              [routerLink]="['..', item.item.GatherableID]"
-              routerLinkActive
-              #rla="routerLinkActive"
-              [class.badge-outline]="!rla.isActive"
-              [class.badge-primary]="item.size === 'Tiny'"
-              [class.badge-accent]="item.size === 'Small'"
-              [class.badge-info]="item.size === 'Medium'"
-              [class.badge-error]="item.size === 'Large'"
-              [class.badge-secondary]="item.size === 'Huge'"
-            >
-              {{ item.size }}
-            </a>
-          }
-        </div>
-      }
-    </nwb-gatherable-detail-stats>
-    @if (detail.gameEvent) {
-      <nwb-game-event-detail [eventId]="detail.gameEvent" class="text-sm px-4" />
-    }
-
-    <div>
-      <div class="tabs tabs-bordered">
-        <a
-          class="tab"
-          [class.tab-active]="!tabId()"
-          [routerLink]="'.'"
-          [queryParams]="{ tab: null }"
-          [queryParamsHandling]="'merge'"
-        >
-          Variations ({{ detail.variations?.length ?? 0 }})
-        </a>
-        <a
-          class="tab"
-          [class.tab-active]="tabId() === 'loot'"
-          [routerLink]="'.'"
-          [queryParams]="{ tab: 'loot' }"
-          [queryParamsHandling]="'merge'"
-        >
-          Loot Tables ({{ detail.lootTables?.length ?? 0 }})
-        </a>
+<nwb-gatherable-detail-header />
+<nwb-gatherable-detail-map
+  [gatherableIds]="store.idsForMap()"
+  [tag]="tag()"
+  class="rounded-b-md overflow-clip"
+  #map
+  [style.height.px]="map.hasMap() ? null : 0"
+/>
+<div class="flex flex-col gap-4 py-4">
+  <nwb-gatherable-detail-stats class="text-sm px-4">
+    @if (store.sizeSiblings()?.length > 1) {
+      <div class="flex flex-row items-center gap-1">
+        <span class="opacity-50">Sizes: </span>
+        @for (item of store.sizeSiblings(); track $index) {
+          <a
+            class="link-hover badge rounded-md"
+            [routerLink]="['..', item.item.GatherableID]"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [class.badge-outline]="!rla.isActive"
+            [class.badge-primary]="item.size === 'Tiny'"
+            [class.badge-accent]="item.size === 'Small'"
+            [class.badge-info]="item.size === 'Medium'"
+            [class.badge-error]="item.size === 'Large'"
+            [class.badge-secondary]="item.size === 'Huge'"
+          >
+            {{ item.size }}
+          </a>
+        }
       </div>
-      @if (!tabId()) {
-        <div class="flex flex-col p-2">
-          @for (item of detail.variations; track $index) {
-            <a
-              class="link-hover"
-              [routerLink]="'.'"
-              [routerLinkActive]="'text-primary'"
-              [queryParams]="{ tag: item.VariantID }"
-              [queryParamsHandling]="'merge'"
-            >
-              @if (item.Name) {
-                {{ item.Name | nwText }}
-              } @else {
-                {{ item.VariantID | nwHumanize }}
-              }
-            </a>
-          }
-        </div>
-      } @else if (tabId() === 'loot') {
-        <div class="flex flex-col gap-1 mt-2">
-          @if (detail.lootTables?.length === 1) {
-            <nwb-loot-graph [tableId]="detail.lootTables[0]" [showLocked]="true" [expand]="true" />
-          } @else {
-            @for (item of detail.lootTables; track $index) {
-              <div class="flex flex-row items-center gap-2">
-                <a class="btn btn-sm btn-square btn-ghost flex-none" [routerLink]="['/loot/table', item]">
-                  <nwb-icon [icon]="iconLink" class="w-4 h-4" />
-                </a>
-                <a
-                  class="link-hover flex-1"
-                  [routerLink]="'.'"
-                  [routerLinkActive]="'text-primary'"
-                  [queryParams]="{ tag: item }"
-                  [queryParamsHandling]="'merge'"
-                >
-                  {{ item | nwHumanize }}
-                </a>
-              </div>
-            }
-          }
-        </div>
-      }
+    }
+  </nwb-gatherable-detail-stats>
+  @if (store.gameEvent(); as event) {
+    <nwb-game-event-detail [eventId]="event" class="text-sm px-4" />
+  }
+
+  <div>
+    <div class="tabs tabs-bordered">
+      <a
+        class="tab"
+        [class.tab-active]="!tabId()"
+        [routerLink]="'.'"
+        [queryParams]="{ tab: null }"
+        [queryParamsHandling]="'merge'"
+      >
+        Variations ({{ store.variations()?.length ?? 0 }})
+      </a>
+      <a
+        class="tab"
+        [class.tab-active]="tabId() === 'loot'"
+        [routerLink]="'.'"
+        [queryParams]="{ tab: 'loot' }"
+        [queryParamsHandling]="'merge'"
+      >
+        Loot Tables ({{ store.lootTables()?.length ?? 0 }})
+      </a>
     </div>
+    @if (!tabId()) {
+      <div class="flex flex-col p-2">
+        @for (item of store.variations(); track $index) {
+          <a
+            class="link-hover"
+            [routerLink]="'.'"
+            [routerLinkActive]="'text-primary'"
+            [queryParams]="{ tag: item.VariantID }"
+            [queryParamsHandling]="'merge'"
+          >
+            @if (item.Name) {
+              {{ item.Name | nwText }}
+            } @else {
+              {{ item.VariantID | nwHumanize }}
+            }
+          </a>
+        }
+      </div>
+    } @else if (tabId() === 'loot') {
+      <div class="flex flex-col gap-1 mt-2">
+        @if (store.lootTables()?.length === 1) {
+          <nwb-loot-graph [tableId]="store.lootTables()[0]" [showLocked]="true" [expand]="true" />
+        } @else {
+          @for (item of store.lootTables(); track $index) {
+            <div class="flex flex-row items-center gap-2">
+              <a class="btn btn-sm btn-square btn-ghost flex-none" [routerLink]="['/loot/table', item]">
+                <nwb-icon [icon]="iconLink" class="w-4 h-4" />
+              </a>
+              <a
+                class="link-hover flex-1"
+                [routerLink]="'.'"
+                [routerLinkActive]="'text-primary'"
+                [queryParams]="{ tag: item }"
+                [queryParamsHandling]="'merge'"
+              >
+                {{ item | nwHumanize }}
+              </a>
+            </div>
+          }
+        }
+      </div>
+    }
   </div>
-</nwb-gatherable-detail>
+</div>

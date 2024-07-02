@@ -25,12 +25,17 @@ const LOOT_TABLE_ICONS = {
   Fire_Plant: 'fire_plant_compass.png',
   Fire_Stone: 'fire_stone_compass.png',
   Fire_Boid: 'fire_boid_compass.png',
-
+  // aloe_compass.png
+  Aloe: 'aloe_compass.png',
+  // brimstone_compass.png
+  Brimstone: 'brimstone_compass.png',
   // starmetal_compass.png
+  Starmetal: 'starmetal_compass.png',
   StarmetalOreVeinFinishSmall: 'starmetal_compass.png',
   StarmetalOreVeinFinishMedium: 'starmetal_compass.png',
   StarmetalOreVeinFinishLarge: 'starmetal_compass.png',
   // gold_compass.png
+  Gold: 'gold_compass.png',
   Gold_Small: 'gold_compass.png',
   Gold_Medium: 'gold_compass.png',
   Gold_Large: 'gold_compass.png',
@@ -39,38 +44,46 @@ const LOOT_TABLE_ICONS = {
   OreVeinFinishMedium: 'iron_compass.png',
   OreVeinFinishLarge: 'iron_compass.png',
   // mythril_compass.png
+  Mythril: 'mythril_compass.png',
   MythrilOreVeinFinishSmall: 'mythril_compass.png',
   MythrilOreVeinFinishMedium: 'mythril_compass.png',
   MythrilOreVeinFinishLarge: 'mythril_compass.png',
   // orichalcum_compass.png
+  Orichalcum: 'orichalcum_compass.png',
   OrichalcumOreVeinFinishSmall: 'orichalcum_compass.png',
   OrichalcumOreVeinFinishMedium: 'orichalcum_compass.png',
   OrichalcumOreVeinFinishLarge: 'orichalcum_compass.png',
   // platinum_compass.png
+  Platinum: 'platinum_compass.png',
   Platinum_Small: 'platinum_compass.png',
   Platinum_Medium: 'platinum_compass.png',
   Platinum_Large: 'platinum_compass.png',
   // silver_compass.png
+  Silver: 'silver_compass.png',
   Silver_Small: 'silver_compass.png',
   Silver_Medium: 'silver_compass.png',
   Silver_Large: 'silver_compass.png',
   // wyrdwood_compass.png
+  Wyrdwood: 'wyrdwood_compass.png',
   WyrdwoodTreeSmall: 'wyrdwood_compass.png',
   WyrdwoodTreeMedium: 'wyrdwood_compass.png',
   WyrdwoodTreeLarge: 'wyrdwood_compass.png',
   // ironwood_compass.png
+  Ironwood: 'ironwood_compass.png',
   IronwoodTreeTiny: 'ironwood_compass.png',
   IronwoodTreeSmall: 'ironwood_compass.png',
   IronwoodTreeMedium: 'ironwood_compass.png',
   IronwoodTreeLarge: 'ironwood_compass.png',
   IronwoodTreeHuge: 'ironwood_compass.png',
   // runewood_compass.png
+  Runewood: 'runewood_compass.png',
   RunewoodTreeTiny: 'runewood_compass.png',
   RunewoodTreeSmall: 'runewood_compass.png',
   RunewoodTreeMedium: 'runewood_compass.png',
   RunewoodTreeLarge: 'runewood_compass.png',
   RunewoodTreeHuge: 'runewood_compass.png',
   // oil_compass.png
+  Oil: 'oil_compass.png',
   SeepingStoneSmall: 'oil_compass.png',
   SeepingStoneMedium: 'oil_compass.png',
   SeepingStoneLarge: 'oil_compass.png',
@@ -95,10 +108,12 @@ const LOOT_TABLE_ICONS = {
   Herb_Medium: 'herb_compass.png',
   Herb_Large: 'herb_compass.png',
   // lodestone_compass.png
+  Lodestone: 'lodestone_compass.png',
   LodestoneFinishSmall: 'lodestone_compass.png',
   LodestoneFinishMedium: 'lodestone_compass.png',
   LodestoneFinishLarge: 'lodestone_compass.png',
   // sandstone_compass.png
+  Sandstone: 'sandstone_compass.png',
   SandstoneFinishSmall: 'sandstone_compass.png',
   SandstoneFinishMedium: 'sandstone_compass.png',
   SandstoneFinishLarge: 'sandstone_compass.png',
@@ -114,7 +129,8 @@ export function getGatherableIcon(gatherable: GatherableData) {
   if (!gatherable) {
     return null
   }
-  let result = LOOT_TABLE_ICONS[gatherable.FinalLootTable]
+
+  let result = LOOT_TABLE_ICONS[gatherable.IconTypeUnlock] || LOOT_TABLE_ICONS[gatherable.FinalLootTable]
   if (result) {
     return `assets/icons/gatherables/${result}`
   }

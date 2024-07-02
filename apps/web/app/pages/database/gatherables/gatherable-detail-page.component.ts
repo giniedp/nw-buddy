@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgLink, svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { svgLink } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectQueryParam, observeRouteParam } from '~/utils'
 import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
+import { GatherableDetailStore } from '~/widgets/data/gatherable-detail/gatherable-detail.store'
 import { LootModule } from '~/widgets/loot'
 
 @Component({
@@ -29,12 +30,14 @@ import { LootModule } from '~/widgets/loot'
     GameEventDetailModule,
     LayoutModule,
   ],
-  providers: [],
+  providers: [GatherableDetailStore],
   host: {
     class: 'block',
   },
 })
 export class ItemDetailPageComponent {
+  protected store = inject(GatherableDetailStore)
+
   protected itemId = toSignal(observeRouteParam(this.route, 'id'))
   protected tabId = toSignal(injectQueryParam('tab'))
   protected tag = toSignal(injectQueryParam('tag'))
@@ -46,18 +49,16 @@ export class ItemDetailPageComponent {
     private head: HtmlHeadService,
     private i18n: TranslateService,
   ) {
-    //
+    effect(() => this.store.load(this.itemId()), { allowSignalWrites: true })
+    effect(() => this.updateMeta())
   }
 
-  // protected onEntity(entity: MasterItemDefinitions) {
-  //   if (!entity) {
-  //     return
-  //   }
-  //   this.head.updateMetadata({
-  //     title: this.i18n.get(entity.Name),
-  //     description: this.i18n.get(entity.Description),
-  //     url: this.head.currentUrl,
-  //     image: `${this.head.origin}/${getItemIconPath(entity)}`,
-  //   })
-  // }
+  private updateMeta() {
+    this.head.updateMetadata({
+      title: this.i18n.get(this.store.name()),
+      description: '',
+      url: this.head.currentUrl,
+      image: `${this.head.origin}/${this.store.icon()}`,
+    })
+  }
 }

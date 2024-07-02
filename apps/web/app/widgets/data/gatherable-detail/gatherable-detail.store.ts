@@ -1,5 +1,5 @@
 import { computed, inject } from '@angular/core'
-import { signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
 import { GatherableData, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
 import { sortBy, uniq } from 'lodash'
@@ -34,6 +34,13 @@ export const GatherableDetailStore = signalStore(
   }),
   withHooks({
     onInit: (state) => state.loadNwData(),
+  }),
+  withMethods((state) => {
+    return {
+      load(gatherableId: string) {
+        patchState(state, { gatherableId })
+      }
+    }
   }),
   withComputed(({ gatherableId, variantId, nwData }) => {
     const gatherable = computed(() => nwData().gatherablesMap?.get(gatherableId()))
@@ -70,6 +77,9 @@ export const GatherableDetailStore = signalStore(
       baseGatherTime: computed(() => secondsToDuration(gatherable()?.BaseGatherTime)),
       minRespawnRate: computed(() => secondsToDuration(gatherable()?.MinRespawnRate)),
       maxRespawnRate: computed(() => secondsToDuration(gatherable()?.MaxRespawnRate)),
+      restriction: computed(() => gatherable()?.Restriction),
+      requiredSkillLevel: computed(() => gatherable()?.RequiredTradeskillLevel),
+      requiredStatusEffect: computed(() => gatherable()?.RequiredStatusEffect),
       gameEvent: computed(() => gatherable()?.GameEventID),
       variations: computed(() => sortBy(gatherable()?.$variations || [], (it) => it.Name || it.VariantID)),
       lootTables: computed(() => {

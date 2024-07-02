@@ -1,10 +1,22 @@
 import { Component, inject } from '@angular/core'
 import { GatherableDetailStore } from './gatherable-detail.store'
+import { NwModule } from '~/nw'
 
 @Component({
   standalone: true,
   selector: 'nwb-gatherable-detail-stats',
   template: `
+    @if (store.restriction(); as text) {
+      <div class="flex flex-row gap-1">
+        <span class="opacity-50">{{ text | nwHumanize }} </span>
+      </div>
+    }
+    @if (store.requiredSkillLevel(); as level) {
+      <div class="flex flex-row gap-1">
+        <span class="opacity-50">Required skill level: </span>
+        <span>{{ level }} {{ store.tradeSkill() }}</span>
+      </div>
+    }
     <div class="flex flex-row gap-1">
       <span class="opacity-50">Gather time: </span>
       <span>{{ store.baseGatherTime() }}</span>
@@ -17,6 +29,7 @@ import { GatherableDetailStore } from './gatherable-detail.store'
       <span class="opacity-50">Max respawn rate: </span>
       <span>{{ store.maxRespawnRate() }}</span>
     </div>
+
     <ng-content />
     <!--
       @if (props() || map?.spawns()?.points?.length) {
@@ -41,6 +54,7 @@ import { GatherableDetailStore } from './gatherable-detail.store'
   host: {
     class: 'flex flex-col',
   },
+  imports: [NwModule],
 })
 export class GatherableDetailStatsComponent {
   public readonly store = inject(GatherableDetailStore)

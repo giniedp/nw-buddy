@@ -17,6 +17,7 @@ import { eqCaseInsensitive, humanize, selectSignal, selectStream } from '~/utils
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { GatherableService, isLootTableEmpty } from '../gatherable/gatherable.service'
 import { injectDocument } from '~/utils/injection/document'
+import saveAs from 'file-saver'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
   Tiny: '#f28c18',
@@ -245,22 +246,6 @@ export class GatherableDetailMapComponent {
     },
   )
 
-  // public spawns = computed(() => {
-  //   const data = this.data()
-  //   const size = this.gatherableSize()
-  //   const mapId = this.mapId()
-  //   const gatherable = this.gatherable()
-  //   if (!data || !mapId || !data[mapId] || !gatherable) {
-  //     return null
-  //   }
-  //   const points = data[mapId]?.[size]?.map((it: MapPointMarker) => it.point)
-  //   return {
-  //     gatherableID: gatherable.GatherableID,
-  //     mapID: mapId,
-  //     size: size,
-  //     points: points,
-  //   }
-  // })
 
   public hasMap = selectSignal(this.mapIds, (it) => !!it?.length)
 
@@ -284,6 +269,35 @@ export class GatherableDetailMapComponent {
       this.disabledSizes.set([...disabledSizes, size])
     }
   }
+
+  // public spawns = computed(() => {
+  //   const data = this.data()
+  //   const size = this.gatherableSize()
+  //   const mapId = this.mapId()
+  //   const gatherable = this.gatherable()
+  //   if (!data || !mapId || !data[mapId] || !gatherable) {
+  //     return null
+  //   }
+  //   const points = data[mapId]?.[size]?.map((it: MapPointMarker) => it.point)
+  //   return {
+  //     gatherableID: gatherable.GatherableID,
+  //     mapID: mapId,
+  //     size: size,
+  //     points: points,
+  //   }
+  // })
+  // protected downloadPositions() {
+  //   const data = this.spawns()
+  //   const fileName = `${this.gatherableId}.json`
+  //   const object = {
+  //     gatherableID: this.gatherableId,
+  //     points: data.points,
+  //   }
+  //   const blob = new Blob([JSON.stringify(object, null, 2)], {
+  //     type: 'application/json',
+  //   })
+  //   saveBlobToFile(blob, fileName)
+  // }
 }
 
 function getBounds(marks: MapPointMarker[]) {
@@ -302,4 +316,40 @@ function getBounds(marks: MapPointMarker[]) {
     return { min, max }
   }
   return null
+}
+
+async function saveBlobToFile(blob: Blob, filename: string) {
+  const showSaveFilePicker = window['showSaveFilePicker'] as any
+  if (!showSaveFilePicker) {
+    return saveAs(blob, filename)
+  }
+
+  const handle = await showSaveFilePicker({
+    suggestedName: filename,
+  })
+  if (await verifyPermission(handle)) {
+    await writeFile(handle, blob)
+  }
+}
+
+async function writeFile(fileHandle, contents: Blob) {
+  const writable = await fileHandle.createWritable()
+  await writable.write(contents)
+  await writable.close()
+}
+
+async function verifyPermission(fileHandle) {
+  const options = {
+    mode: 'readwrite',
+  }
+  // Check if permission was already granted. If so, return true.
+  if ((await fileHandle.queryPermission(options)) === 'granted') {
+    return true
+  }
+  // Request permission. If the user grants permission, return true.
+  if ((await fileHandle.requestPermission(options)) === 'granted') {
+    return true
+  }
+  // The user didn't grant permission, so return false.
+  return false
 }
