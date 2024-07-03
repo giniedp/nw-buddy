@@ -100,6 +100,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
                 mapID: mapId,
                 vitalsID: entry.vitalsID,
                 categoryID: entry.categoryID,
+                gatherableID: entry.gatherableID,
                 level: entry.level,
                 damageTable: entry.damageTable,
                 modelFile: entry.modelFile,

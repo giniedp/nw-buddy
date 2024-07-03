@@ -4,6 +4,7 @@ import { readDynamicSliceFile, resolveDynamicSliceFile } from './utils'
 export interface VitalScanRow {
   vitalsID: string
   categoryID: string
+  gatherableID: string
   level: number
   territoryLevel?: boolean
   damageTable: string
@@ -36,6 +37,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
       level: item.level,
       vitalsID: item.vitalsID,
       categoryID: item.categoryID,
+      gatherableID: item.gatherableID,
       damageTable: item.damageTable,
       modelFile: item.modelFile,
       mtlFile: item.mtlFile,

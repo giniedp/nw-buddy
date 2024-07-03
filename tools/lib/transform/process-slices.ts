@@ -19,6 +19,7 @@ interface VitalMetadata {
   models: string[]
   mapIDs: string[]
   catIDs: string[]
+  gthIDs: string[]
   levels: number[]
   spawns: Array<{
     level: number
@@ -26,6 +27,7 @@ interface VitalMetadata {
     territories: number[]
     mapId: string
     category: string
+    gatherable: string
     position: number[]
     damagetable: string
     model: string
@@ -178,6 +180,7 @@ function collectVitalsRows(
         models: [],
         mapIDs: [],
         catIDs: [],
+        gthIDs: [],
         levels: [],
         spawns: [],
       }
@@ -208,6 +211,9 @@ function collectVitalsRows(
     if (row.categoryID) {
       arrayAppend(bucket.catIDs, row.categoryID.toLowerCase())
     }
+    if (row.gatherableID) {
+      arrayAppend(bucket.gthIDs, row.gatherableID.toLowerCase())
+    }
     if (row.position) {
       bucket.spawns.push({
         level: row.level,
@@ -215,6 +221,7 @@ function collectVitalsRows(
         position: [Number(row.position[0].toFixed(3)), Number(row.position[1].toFixed(3))],
         mapId: row.mapID?.toLowerCase(),
         category: row.categoryID?.toLowerCase(),
+        gatherable: row.gatherableID?.toLocaleLowerCase(),
         damagetable: damagetable,
         territories: [],
         model: modelId,
@@ -406,13 +413,14 @@ async function applyTerritoryToVital(
 function toSortedVitals(data: Record<string, VitalMetadata>) {
   return Array.from(Object.entries(data))
     .sort((a, b) => compareStrings(a[0], b[0]))
-    .map(([id, { tables, spawns, mapIDs, catIDs, levels, models }]) => {
+    .map(([id, { tables, spawns, mapIDs, catIDs, levels, models, gthIDs }]) => {
       const result = {
         vitalsID: id,
         tables: Array.from(tables).sort(),
         mapIDs: Array.from(mapIDs).sort(),
         models: Array.from(models).sort(),
         catIDs: Array.from(catIDs).sort(),
+        gthIDs: Array.from(gthIDs).sort(),
         levels: [],
         territories: [],
         lvlSpanws: {} as Record<
@@ -421,6 +429,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
             p: number[]
             l: Array<number | string>[]
             c: string[]
+            g: string[]
             t: number[]
             m: string[]
           }>
@@ -437,6 +446,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
         result.lvlSpanws[mapId].push({
           l: levels,
           c: spawn.category ? [spawn.category] : [],
+          g: spawn.gatherable ? [spawn.gatherable] : [],
           p: spawn.position,
           t: spawn.territories,
           m: spawn.model ? [spawn.model] : [],
@@ -451,6 +461,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
               p: it[0].p,
               l: uniq(it.map((it) => it.l).flat()).sort(),
               c: uniq(it.map((it) => it.c).flat()).sort(),
+              g: uniq(it.map((it) => it.g).flat()).sort(),
               t: uniq(it[0].t).sort(),
               m: uniq(it.map((it) => it.m).flat()).sort(),
             }

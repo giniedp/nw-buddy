@@ -264,7 +264,7 @@ export function getVitalDungeons(
   if (!vital || !dungeons?.length) {
     return []
   }
-  const meta = vitalsMeta.get(vital.VitalsID)
+  const meta = vitalsMeta?.get(vital.VitalsID)
   if (!meta) {
     return []
   }

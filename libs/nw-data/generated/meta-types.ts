@@ -78,6 +78,7 @@ export interface VariantPosition {
 }
 export interface VitalsMetadata {
   catIDs: string[];
+  gthIDs: string[];
   levels: number[];
   lvlSpanws: LvlSpanws;
   mapIDs: string[];
@@ -114,6 +115,7 @@ export interface LvlSpanws {
 
 export interface Climaxftue02 {
   c: string[];
+  g: string[];
   l: number[];
   m: string[];
   p: number[];
