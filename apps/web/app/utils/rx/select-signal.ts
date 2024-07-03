@@ -1,18 +1,6 @@
-import { Signal, isSignal, untracked } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import {
-  Observable,
-  ObservableInput,
-  ObservableInputTuple,
-  OperatorFunction,
-  combineLatest,
-  distinctUntilChanged,
-  from,
-  isObservable,
-  map,
-  of,
-  take,
-} from 'rxjs'
+import { Signal, computed, isSignal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { Observable, ObservableInput, isObservable } from 'rxjs'
 
 export type ObservableSignalInput<T> = ObservableInput<T> | Signal<T>
 
@@ -39,35 +27,25 @@ export function selectSignal<T, Output = T>(
 ): Signal<Output>
 
 export function selectSignal(sources: any, project?: (input: any) => any): Signal<any> {
-  if (isSignal(sources) || isObservable(sources)) {
-    sources = [sources]
-    const proj = project
-    project = (it) => proj ? proj(it[0]) : it[0]
+  if (isObservable(sources)) {
+    sources = toSignal(sources)
   }
-
-  const normalizedSources: Array<any> | Record<string, any>  = Array.isArray(sources) ? [] : {}
-  const initialValues: Array<any> | Record<string, any> = Array.isArray(sources) ? [] : {}
+  if (isSignal(sources)) {
+    return computed(() => (project ? project(sources()) : sources()))
+  }
 
   for (const key in sources) {
     const source = sources[key]
-    if (isSignal(source)) {
-      normalizedSources[key] = toObservable(source)
-      initialValues[key] = untracked(source)
-    } else if (isObservable(source)) {
-      normalizedSources[key] = source.pipe(distinctUntilChanged())
-      initialValues[key] = null
-    } else {
-      normalizedSources[key] = from(source as any).pipe(distinctUntilChanged())
-      initialValues[key] = null
+    if (!isSignal(source)) {
+      sources[key] = toSignal(source)
     }
   }
 
-  let source$ = combineLatest(normalizedSources as any)
-  let values = initialValues
-  if (project) {
-    source$ = source$.pipe(map(project))
-    values = project(values)
-  }
-
-  return toSignal(source$, { initialValue: values })
+  return computed(() => {
+    const result = Array.isArray(sources) ? [] : {}
+    for (const key in sources) {
+      result[key] = sources[key]()
+    }
+    return project ? project(result) : result
+  })
 }
