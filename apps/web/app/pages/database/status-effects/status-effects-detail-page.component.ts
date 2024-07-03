@@ -40,7 +40,7 @@ import { DamageRowDetailModule } from '~/widgets/data/damage-detail'
   },
 })
 export class StatusEffectsDetailPageComponent {
-  public itemId = observeRouteParam(this.route, 'id')
+  public recordId = observeRouteParam(this.route, 'id')
 
   public constructor(
     private route: ActivatedRoute,

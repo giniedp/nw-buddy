@@ -1,3 +1,5 @@
+import { Signal, isSignal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { uniq } from 'lodash'
 import { Observable, defer, isObservable, map, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap, combineLatestOrEmpty, selectStream } from '~/utils'
@@ -16,7 +18,7 @@ function createIndex(list: any[], id: string | ((it: any) => string)) {
 function createIndexGroup<T, K extends keyof T>(list: T[], id: K): Map<string, T[]>
 function createIndexGroup<T>(list: T[], fn: (it: T) => string | string[]): Map<string, T[]>
 function createIndexGroup<T>(list: T[], id: string | ((it: T) => string | string[])): Map<string, T[]> {
-  const fn = typeof id === 'string' ? (item: any) => item?.[id]  : id
+  const fn = typeof id === 'string' ? (item: any) => item?.[id] : id
   const result = new CaseInsensitiveMap<string, Array<T>>()
   for (const item of list) {
     const keys = uniq(makeArray(fn(item) || []))
@@ -59,11 +61,11 @@ export function table(source: () => Observable<any[]> | Array<Observable<any[]>>
 }
 
 export function tableLookup<K, T>(source: () => Observable<Map<K, T>>) {
-  return (id: K | Observable<K>) => {
+  return (id: K | Observable<K> | Signal<K>) => {
     return selectStream(
       {
         data: defer(source),
-        id: isObservable(id) ? id : of(id),
+        id: isObservable(id) ? id : isSignal(id) ? toObservable(id) : of(id),
       },
       ({ data, id }) => {
         return id != null ? data.get(id) : null

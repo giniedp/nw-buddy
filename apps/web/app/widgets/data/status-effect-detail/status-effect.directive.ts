@@ -1,5 +1,6 @@
 import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDataService } from '~/data'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { filter } from 'rxjs'
 import { StatusEffectDetailStore } from './status-effect.store'
 
 @Directive({
@@ -16,10 +17,9 @@ import { StatusEffectDetailStore } from './status-effect.store'
 export class StatusEffectDetailDirective extends StatusEffectDetailStore {
   @Input()
   public set nwbStatusEffectDetail(value: string) {
-    this.patchState({ effectId: value })
+    this.load(value)
   }
 
   @Output()
-  public nwbStatusEffectChange = this.effect$
-
+  public nwbStatusEffectChange = toObservable(this.effect)
 }

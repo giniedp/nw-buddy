@@ -1,6 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { StatusEffectData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -36,7 +35,7 @@ import { StatusEffectDetailStore } from './status-effect.store'
 export class StatusEffectDetailComponent {
   @Input()
   public set effectId(value: string) {
-    this.store.patchState({ effectId: value })
+    this.store.load(value)
   }
 
   @Input()
@@ -53,15 +52,15 @@ export class StatusEffectDetailComponent {
   protected viewerActive = false
   protected iconInfo = svgInfoCircle
 
-  protected icon = toSignal(this.store.icon$)
-  protected recordId = toSignal(this.store.effectId$)
-  protected isNegative = toSignal(this.store.isNegative$)
-  protected displayName = toSignal(this.store.nameForDisplay$)
-  protected source = toSignal(this.store.source$)
-  protected description = toSignal(this.store.description$)
-  protected properties = toSignal(this.store.properties$)
-  protected affixProperties = toSignal(this.store.affixProps$)
-  protected costumeModels = toSignal(this.store.costumeModel$)
+  protected icon = this.store.icon
+  protected recordId = this.store.effectId
+  protected isNegative = this.store.isNegative
+  protected displayName = this.store.nameForDisplay
+  protected source = this.store.source
+  protected description = this.store.description
+  protected properties = this.store.properties
+  protected affixProperties = this.store.affixProps
+  protected costumeModels = this.store.costumeModels
 
   public formatValue = (value: any, key: keyof StatusEffectData): PropertyGridCell[] => {
     switch (key) {
