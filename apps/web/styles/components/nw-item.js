@@ -40,6 +40,21 @@ module.exports = ({ addComponents }) => {
         maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
       },
     },
+    '.nw-item-section:not(.hidden):not(:empty) ~ .nw-item-section': {
+      marginTop: '8px',
+      paddingTop: '8px',
+      '&::before': {
+        position: 'relative',
+        top: '-8px',
+        content: '""',
+        display: 'block',
+        height: '2px',
+        backgroundImage: `url('assets/icons/item/frame-divider.png')`,
+        backgroundSize: '100% 100%',
+        opacity: 0.5,
+        borderWidth: 0,
+      },
+    },
     '.nw-item-header': {
       position: 'relative',
       '> *': {
