@@ -24,14 +24,20 @@ import { NwModule } from '~/nw'
       [routerLink]="linkPerkId ? ['/perks', 'table', linkPerkId] : null"
       [class.link-hover]="!!linkPerkId"
     >
-      <div *ngIf="explanation; let part">
-        <b *ngIf="part.label; let text"> {{ text | nwText }}{{ part.colon ? ':' : '' }} </b>
-        <span *ngIf="part.description; let text" [innerHTML]="text | nwText : part.context | nwTextBreak"> </span>
-        <!-- <span *ngIf="row.suffix; let text">
-          {{ text }}
-        </span> -->
-      </div>
-      <ng-content></ng-content>
+      @if (explanation; as part) {
+        <div>
+          @if (part.label) {
+            <b> {{ part.label | nwText }}{{ part.colon ? ':' : '' }} </b>
+          }
+          @if (part.description) {
+            <span [innerHTML]="part.description | nwText: part.context | nwTextBreak"> </span>
+          }
+          <!-- <span *ngIf="row.suffix; let text">
+            {{ text }}
+          </span> -->
+        </div>
+      }
+      <ng-content />
     </a>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,10 +58,4 @@ export class ItemPerkComponent {
 
   @Input()
   public explanation: PerkExplanation
-
-  protected trackByIndex = (i: number) => i
-
-  public constructor() {
-    //
-  }
 }

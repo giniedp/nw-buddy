@@ -1,15 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { FormsModule } from '@angular/forms'
-import { NwModule } from '~/nw'
-import { GsInputComponent } from '~/ui/gs-input'
-import { IconsModule } from '~/ui/icons'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridModule } from '~/ui/property-grid'
-import { TooltipModule } from '~/ui/tooltip'
-import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
-import { VitalDetailStore } from './vital-detail.store'
+import { patchState } from '@ngrx/signals'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
+import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
   standalone: true,
@@ -31,21 +24,21 @@ export class VitalDetailComponent {
 
   @Input({ required: true })
   public set vitalId(value: string) {
-    this.store.patchState({ vitalId: value })
+    patchState(this.store, { vitalId: value })
   }
 
   @Input()
   public set level(value: number) {
-    this.store.patchState({ level: value })
+    patchState(this.store, { levelOverride: value })
   }
 
   @Input()
   public set mutaElement(value: string) {
-    this.store.patchState({ mutaElementId: value })
+    patchState(this.store, { mutaElementId: value })
   }
 
   @Input()
   public set mutaDifficulty(value: number) {
-    this.store.patchState({ mutaDifficulty: value })
+    patchState(this.store, { mutaDifficultyId: value })
   }
 }

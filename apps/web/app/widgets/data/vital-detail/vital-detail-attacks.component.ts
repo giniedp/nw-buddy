@@ -16,7 +16,7 @@ import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive, humanize, selectStream } from '~/utils'
+import { eqCaseInsensitive, humanize, selectSignal, selectStream } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { StatusEffectDetailModule } from '../status-effect-detail'
 import { VitalDetailStore } from './vital-detail.store'
@@ -35,19 +35,22 @@ export class VitalDetailAttacksComponent {
   private store = inject(VitalDetailStore)
   private db = inject(NwDataService)
 
-  protected tables$ = selectStream(
+  protected tables = selectSignal(
     {
-      vital: this.store.vital$,
-      level: this.store.levelData$,
-      modifier: this.store.modifier$,
-      difficulty: this.store.mutaDifficulty$,
-      tables: this.store.damageTables$,
+      vital: this.store.vital,
+      level: this.store.levelData,
+      modifier: this.store.modifier,
+      difficulty: this.store.mutaDifficulty,
+      tables: this.store.damageTables,
       affixMap: this.db.affixStatsMap,
       effectMap: this.db.statusEffectsMap,
       spellsByDamageMap: this.db.spellsByDamageTable,
       spellsMetaMap: this.db.spellsMetadataMap,
     },
     ({ vital, modifier, level, difficulty, tables, affixMap, effectMap, spellsByDamageMap, spellsMetaMap }) => {
+      if (!vital || !tables || !affixMap || !effectMap || !spellsByDamageMap || !spellsMetaMap) {
+        return []
+      }
       return tables.map((table) => {
         const name = table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, '')
         const tableName = humanize(`${name}_damagetable`).replaceAll(' ', '')

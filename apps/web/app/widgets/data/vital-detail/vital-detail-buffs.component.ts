@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize } from '~/utils'
+import { humanize, selectSignal } from '~/utils'
 import { AbilityDetailModule } from '../ability-detail'
 import { StatusEffectDetailModule } from '../status-effect-detail'
 import { VitalDetailStore } from './vital-detail.store'
@@ -23,10 +23,10 @@ import { VitalDetailStore } from './vital-detail.store'
 export class VitalDetailBuffsComponent {
   private store = inject(VitalDetailStore)
 
-  protected buffs = toSignal(this.store.buffs$)
-  protected effects = computed(() => {
-    return this.buffs()
-      ?.filter((it) => it.effect)
+  protected buffs = this.store.buffs
+  protected effects = selectSignal(this.buffs, (list) => {
+    return (list || [])
+      .filter((it) => it.effect)
       .map(({ effect, chance, odd }) => {
         return {
           id: effect.StatusID,
@@ -39,9 +39,9 @@ export class VitalDetailBuffsComponent {
       })
   })
 
-  protected abilities = computed(() => {
-    return this.buffs()
-      ?.filter((it) => it.ability)
+  protected abilities = selectSignal(this.buffs, (list) => {
+    return (list || [])
+      .filter((it) => it.ability)
       .map(({ ability, chance, odd }) => {
         return {
           id: ability.AbilityID,

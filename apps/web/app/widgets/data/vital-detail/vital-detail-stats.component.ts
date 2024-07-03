@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { getVitalDamageEffectiveness } from '@nw-data/common'
 import { VitalsData } from '@nw-data/generated'
@@ -35,14 +35,14 @@ export interface DamageEffectiveness {
 export class VitalDetailStatsComponent {
   protected store = inject(VitalDetailStore)
 
-  protected vital = toSignal(this.store.vital$)
-  protected aliasNames = toSignal(this.store.aliasNames$)
-  protected combatCategories = toSignal(this.store.combatCategories$)
-  protected effectiveness = computed(() => selectEffectiveness(this.vital()))
-  protected armor = toSignal(this.store.armor$)
-  protected gearScore = toSignal(this.store.gearScore$)
-  protected damage = toSignal(this.store.damage$)
-  protected spawnLevels = selectSignal(this.store.metadata$, (it) => it?.levels?.join(', '))
+  protected vital = this.store.vital
+  protected aliasNames = this.store.aliasNames
+  protected combatCategories = this.store.combatCategories
+  protected effectiveness = selectSignal(this.vital, selectEffectiveness)
+  protected armor = this.store.armor
+  protected gearScore = this.store.gearScore
+  protected damage = this.store.damage
+  protected spawnLevels = selectSignal(this.store.metadata, (it) => it?.levels?.join(', '))
 
   protected infoIcon = svgInfo
 }

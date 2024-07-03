@@ -1,6 +1,6 @@
 <div class="overflow-clip relative" [nwbScreenshotFrame]="vital()?.DisplayName | nwText">
   <nwb-vital-detail-header class="bg-base-300" [editableLevel]="true" />
-  @if (store.isVitalFromDungeon$ | async) {
+  @if (store.isVitalFromDungeon()) {
     <div class="absolute top-0 right-0 p-2 flex flex-row">
       <button
         class="btn btn-xs btn-square btn-ghost"
@@ -42,14 +42,27 @@
       <nwb-vital-detail-stats />
       <nwb-vital-detail-map (vitalClicked)="onPointClicked($event)" />
       @if (lootTableId(); as tableId) {
-        <nwb-loot-context-editor [vitalId]="vitalId()" [vitalLevel]="vitalLevel()" [contLevel]="vitalLevel()" #editor />
-        <nwb-loot-graph
-          [tagsEditable]="true"
-          (addTagClicked)="editor.addTag($event)"
-          [tags]="editor.contextTags | async"
-          [tagValues]="editor.contextTagValues | async"
-          [tableId]="tableId"
-        />
+        <div class="space-y-1">
+          <h3 class="text-nw-description">Loot drop</h3>
+          <nwb-loot-context-editor [vitalId]="vitalId()" [vitalLevel]="vitalLevel()" [contLevel]="vitalLevel()" #editor />
+          <nwb-loot-graph
+            [tagsEditable]="true"
+            (addTagClicked)="editor.addTag($event)"
+            [tags]="editor.contextTags | async"
+            [tagValues]="editor.contextTagValues | async"
+            [tableId]="tableId"
+          />
+        </div>
+      }
+      @if (gatherableIds()?.length) {
+        <div>
+          <h3 class="text-nw-description">Gatherable</h3>
+          @for(item of gatherableIds(); track $index) {
+            <nwb-gatherable-detail [gatherableId]="item" >
+              <nwb-gatherable-detail-header/>
+            </nwb-gatherable-detail>
+          }
+        </div>
       }
     }
     @if (tab() === 'damage-table') {

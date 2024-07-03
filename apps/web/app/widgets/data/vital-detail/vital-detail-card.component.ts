@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, Type, computed, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, Type, inject, signal } from '@angular/core'
+import { patchState } from '@ngrx/signals'
 import { NwModule } from '~/nw'
+import { selectSignal } from '~/utils'
 import { VitalDetailAttacksComponent } from './vital-detail-attacks.component'
 import { VitalDetailBuffsComponent } from './vital-detail-buffs.component'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
@@ -32,7 +34,7 @@ export interface VitalDetailTab {
   host: {
     class: 'block rounded-md overflow-hidden border border-base-100',
     '[class.bg-base-200]': '!hasDarkBg()',
-    '[class.bg-black]': 'hasDarkBg()'
+    '[class.bg-black]': 'hasDarkBg()',
   },
 })
 export class VitalDetailCardComponent {
@@ -40,22 +42,22 @@ export class VitalDetailCardComponent {
 
   @Input({ required: true })
   public set vitalId(value: string) {
-    this.store.patchState({ vitalId: value })
+    patchState(this.store, { vitalId: value })
   }
 
   @Input()
   public set level(value: number) {
-    this.store.patchState({ level: value })
+    patchState(this.store, { levelOverride: value })
   }
 
   @Input()
   public set mutaElement(value: string) {
-    this.store.patchState({ mutaElementId: value })
+    patchState(this.store, { mutaElementId: value })
   }
 
   @Input()
   public set mutaDifficulty(value: number) {
-    this.store.patchState({ mutaDifficulty: value })
+    patchState(this.store, { mutaDifficultyId: value })
   }
 
   @Input()
@@ -64,9 +66,8 @@ export class VitalDetailCardComponent {
   }
 
   protected currentTab = signal<string>(null)
-  protected hasDarkBg = computed(() => this.currentTab() === 'models')
-  protected tabs = computed(() => {
-    const tab = this.currentTab()
+  protected hasDarkBg = selectSignal(this.currentTab, (it) => it === 'models')
+  protected tabs = selectSignal(this.currentTab, (tab) => {
     return [
       {
         id: 'stats',

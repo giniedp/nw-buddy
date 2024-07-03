@@ -20,7 +20,7 @@ import { ItemFrameModule } from './item-frame.module'
         </div>
       </nwb-item-header>
       <div class="p-3 text-lg leading-snug">
-        <div class="flex flex-row text-6xl leading-none">
+        <!-- <div class="flex flex-row text-6xl leading-none">
           <nwb-item-gs [value]="605" [actual]="602"></nwb-item-gs>
         </div>
         <div>
@@ -30,11 +30,15 @@ import { ItemFrameModule } from './item-frame.module'
           <nwb-item-stat label="42.0">Block Stamina Damage</nwb-item-stat>
           <nwb-item-stat label="19%">Blocking Stability</nwb-item-stat>
         </div>
-        <nwb-item-divider class="my-2"></nwb-item-divider>
+        <nwb-item-divider class="my-2"/>
         <div>
           <nwb-item-stat label="187">Slash Damage</nwb-item-stat>
-        </div>
-        <nwb-item-divider class="my-2"></nwb-item-divider>
+        </div> -->
+        <div class="nw-item-section">Foo</div>
+        <div class="nw-item-section hidden">Bar</div>
+        <div class="nw-item-section">Baz</div>
+
+        <!-- <nwb-item-divider class="my-2"/> -->
       </div>
     </nwb-item-frame>
   `,

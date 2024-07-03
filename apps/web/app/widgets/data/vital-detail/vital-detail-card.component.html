@@ -12,7 +12,7 @@
   @for (tab of tabs(); track tab.id) {
     @if (tab.active) {
       <div [class.-m-4]="tab.id === 'models'">
-        <ng-container [ngComponentOutlet]="tab.component"></ng-container>
+        <ng-container [ngComponentOutlet]="tab.component"/>
       </div>
     }
   }

@@ -20,6 +20,7 @@ import { LootModule } from '~/widgets/loot'
 import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.component'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
+import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 
 export type DetailTabId = 'stats' | 'buffs' | 'loot-items' | 'loot-table' | 'damage-table' | '3d-model' | 'map'
 
@@ -38,6 +39,7 @@ export type DetailTabId = 'stats' | 'buffs' | 'loot-items' | 'loot-table' | 'dam
     ModelViewerModule,
     TooltipModule,
     IconsModule,
+    GatherableDetailModule
   ],
   providers: [VitalDetailStore],
   host: {
@@ -47,19 +49,20 @@ export type DetailTabId = 'stats' | 'buffs' | 'loot-items' | 'loot-table' | 'dam
 export class VitalDetailComponent {
   protected store = inject(VitalDetailStore)
 
-  protected vital = toSignal(this.store.vital$)
-  protected vitalId = toSignal(this.store.vitalId$)
-  protected vitalLevel = toSignal(this.store.level$)
+  protected vital = this.store.vital
+  protected vitalId = this.store.vitalId
+  protected vitalLevel = this.store.level
 
   protected tabId$ = observeQueryParam(this.route, 'tab').pipe(map((it: DetailTabId): DetailTabId => it || 'stats'))
   protected tab = toSignal(this.tabId$)
 
   protected difficulty$ = observeQueryParam(this.route, 'difficulty').pipe(map((it) => Number(it) || null))
-  protected difficulty = toSignal(this.store.mutaDifficultyId$)
+  protected difficulty = this.store.mutaDifficultyId
 
   protected iconEdit = svgPen
 
-  protected lootTableId = selectSignal(this.store.vital$, (it) => it?.LootTableId)
+  protected lootTableId = selectSignal(this.store.vital, (it) => it?.LootTableId)
+  protected gatherableIds = selectSignal(this.store.metadata, (it) => it?.gthIDs || [])
 
   @ViewChild(LootContextEditorComponent, { static: false })
   protected editor: LootContextEditorComponent

@@ -40,8 +40,8 @@ export class VitalDetailMapComponent {
 
   protected data = selectSignal(
     {
-      vital: this.store.vital$,
-      meta: this.store.metadata$,
+      vital: this.store.vital,
+      meta: this.store.metadata,
       // poisMap: this.db.poisMap,
       // areasMap: this.db.areasMap,
       territoriesMap: this.db.territoriesMap,
@@ -100,7 +100,7 @@ export class VitalDetailMapComponent {
   public readonly bounds = selectSignal(
     {
       mapId: this.mapId,
-      meta: this.store.metadata$,
+      meta: this.store.metadata,
     },
     ({ mapId, meta }) => {
       return selectBounds(meta)[mapId]
@@ -178,7 +178,7 @@ function selectData(
   const points: Record<string, MapPointMarker<VitalPointData>[]> = {}
   const zones: Record<string, MapZoneMarker<VitalPointData>[]> = {}
 
-  if (!meta) {
+  if (!meta || !territoriesMap || !territoriesMetadataMap || !vital) {
     return {
       points,
       zones,
