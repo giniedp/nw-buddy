@@ -32,7 +32,7 @@
             "browser": "apps/web/main.ts",
             "tsConfig": "apps/web/tsconfig.app.json",
             "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
-            "polyfills": ["apps/web/polyfills.ts", "zone.js"],
+            "polyfills": ["apps/web/polyfills.ts"],
             "assets": [
               "apps/web/_routes.json",
               "apps/web/favicon.ico",
