@@ -1,10 +1,10 @@
-import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
-import { distinctUntilChanged, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core'
+import { ReplaySubject, Subject, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
-import { NwExpressionService } from './expression'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
-import { sanitizeHtml } from './sanitize-html'
+import { NwExpressionService } from './expression'
+import { NwHtmlService } from './nw-html.service'
 
 interface TextContext {
   text: string
@@ -35,11 +35,12 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
 
   private destroy$ = new Subject()
   private change$ = new ReplaySubject<TextContext>(1)
+  private html = inject(NwHtmlService)
 
   public constructor(
     private elRef: ElementRef<HTMLElement>,
     private i18n: TranslateService,
-    private expr: NwExpressionService
+    private expr: NwExpressionService,
   ) {
     //
   }
@@ -55,9 +56,9 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
                 ...context,
                 text,
               }
-            })
+            }),
           )
-        })
+        }),
       )
       .pipe(switchMap((context) => this.expr.solve(context)))
       .pipe(map((res) => String(res).replace(/\\n/g, ' ')))
@@ -66,7 +67,7 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
         if (this.nwTextAttr) {
           this.elRef.nativeElement.setAttribute(this.nwTextAttr, res)
         } else {
-          this.elRef.nativeElement.innerHTML = sanitizeHtml(res)
+          this.elRef.nativeElement.innerHTML = this.html.sanitize(res)
         }
       })
   }

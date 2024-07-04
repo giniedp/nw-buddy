@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Input, inject } from '@angular/core'
-import { sanitizeHtml } from './sanitize-html'
+import { NwHtmlService } from './nw-html.service'
 
 @Directive({
   standalone: true,
@@ -7,9 +7,10 @@ import { sanitizeHtml } from './sanitize-html'
 })
 export class NwHtmlDirective {
   private elRef = inject(ElementRef<HTMLElement>)
+  private html = inject(NwHtmlService)
 
   @Input()
   public set nwHtml(value: string) {
-    this.elRef.nativeElement.innerHTML = sanitizeHtml(value)
+    this.elRef.nativeElement.innerHTML = this.html.sanitize(value)
   }
 }

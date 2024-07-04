@@ -24,6 +24,7 @@ import { ItemRarity } from '@nw-data/common'
 import { NwDataService } from '~/data'
 import { GridSelectFilterParams } from '../ag-grid/grid-select-filter/types'
 import { GridSelectFilter } from '../ag-grid/grid-select-filter'
+import { NwHtmlService } from '~/nw/nw-html.service'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
@@ -36,6 +37,7 @@ export class TableGridUtils<T = any> {
   public readonly router = inject(Router)
   public readonly sanitizer = inject(DomSanitizer)
   public readonly zone = inject(NgZone)
+  public readonly nwHtml = inject(NwHtmlService)
 
   public readonly precision = {
     ...colDefPrecision,

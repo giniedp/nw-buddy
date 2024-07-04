@@ -7,7 +7,6 @@ import {
 } from '@nw-data/common'
 import { AbilityData, COLS_ABILITYDATA, StatusEffectData } from '@nw-data/generated'
 import { map, switchMap } from 'rxjs'
-import { sanitizeHtml } from '~/nw'
 import { NwWeaponType } from '~/nw/weapon-types'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -54,7 +53,7 @@ export function abilityColIcon(util: AbilityTableUtils) {
             data?.IsActiveAbility ? 'rounded-sm' : 'rounded-full',
             data?.WeaponTag ? 'border' : null,
           ],
-        })
+        }),
       )
     }),
   })
@@ -101,7 +100,7 @@ export function abilityColDescription(util: AbilityTableUtils) {
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({
       update: (el, text) => {
-        el.innerHTML = sanitizeHtml(text)
+        el.innerHTML = util.nwHtml.sanitize(text)
       },
       source: ({ data, value }) => {
         return util.i18n
@@ -114,7 +113,7 @@ export function abilityColDescription(util: AbilityTableUtils) {
                 itemId: data.AbilityID,
                 gearScore: NW_MAX_GEAR_SCORE_BASE,
               })
-            })
+            }),
           )
           .pipe(map((it) => util.lineBreaksToHtml(it)))
       },
@@ -129,7 +128,7 @@ export function abilityColUiCategory(util: AbilityTableUtils) {
     field: 'UICategory',
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -141,7 +140,7 @@ export function abilityColWeaponTag(util: AbilityTableUtils) {
     valueFormatter: ({ value }) => util.i18n.get(getWeaponTagLabel(value)),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -247,7 +246,7 @@ export function abilityStatusEffectCategories(util: AbilityTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -262,7 +261,7 @@ export function abilityStatusEffectCategoriesList(util: AbilityTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 export function abilityStatusEffectDurationCats(util: AbilityTableUtils) {
@@ -276,7 +275,7 @@ export function abilityStatusEffectDurationCats(util: AbilityTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -291,7 +290,7 @@ export function abilityTargetStatusEffectCategory(util: AbilityTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 

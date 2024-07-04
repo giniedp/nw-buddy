@@ -1,6 +1,5 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { COLS_STATUSEFFECTDATA, StatusEffectData } from '@nw-data/generated'
-import { sanitizeHtml } from '~/nw'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils, colDefPrecision } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -38,8 +37,8 @@ export function statusEffectColIcon(util: StatusEffectTableUtils) {
           },
           util.elImg({
             src: data.PlaceholderIcon || data['IconPath'] || NW_FALLBACK_ICON,
-          })
-        )
+          }),
+        ),
       )
     }),
   })
@@ -61,7 +60,7 @@ export function statusEffectColSource(util: StatusEffectTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 export function statusEffectColName(util: StatusEffectTableUtils) {
@@ -121,7 +120,7 @@ export function statusEffectColDescription(util: StatusEffectTableUtils) {
           gearScore: 600,
         }),
       update: (el, text) => {
-        el.innerHTML = sanitizeHtml(util.lineBreaksToHtml(text))
+        el.innerHTML = util.nwHtml.sanitize(util.lineBreaksToHtml(text))
       },
     }),
   })

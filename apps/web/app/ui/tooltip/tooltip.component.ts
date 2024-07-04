@@ -1,8 +1,8 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule, NgClass } from '@angular/common'
-import { Component, ElementRef, HostBinding, Injector, Input, TemplateRef, Type } from '@angular/core'
+import { Component, ElementRef, HostBinding, Injector, Input, TemplateRef, Type, inject } from '@angular/core'
 import { twMerge } from 'tailwind-merge'
-import { sanitizeHtml } from '~/nw'
+import { NwHtmlService } from '~/nw/nw-html.service'
 
 const DEFAULT_CLASS = [
   'block',
@@ -40,6 +40,7 @@ const DEFAULT_CLASS = [
   ],
 })
 export class TooltipComponent {
+  private html = inject(NwHtmlService)
   @HostBinding('@animate')
   protected animate: void
 
@@ -58,7 +59,7 @@ export class TooltipComponent {
     this.tpl = null
     this.component = null
     if (typeof value === 'string') {
-      this.elRef.nativeElement.innerHTML = sanitizeHtml(value)
+      this.elRef.nativeElement.innerHTML = this.html.sanitize(value)
       this.hostClass.ngClass = twMerge(DEFAULT_CLASS, ['px-2', 'py-1'], this.ngClass)
     } else if (value instanceof TemplateRef) {
       this.tpl = value
