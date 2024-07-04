@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { NW_FALLBACK_ICON, getVitalDamage } from '@nw-data/common'
+import { DATASHEETS } from '@nw-data/generated'
 import {
   AffixStatData,
   DamageData,
@@ -52,11 +53,10 @@ export class VitalDetailAttacksComponent {
         return []
       }
       return tables.map((table) => {
-        const name = table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, '')
-        const tableName = humanize(`${name}_damagetable`).replaceAll(' ', '')
-        const spells = spellsByDamageMap.get(tableName) || []
+        const spells = spellsByDamageMap.get(table.name) || []
         return {
-          name: name,
+          id: table.name.toLowerCase(),
+          name: table.name.replace(/DamageTable$/, ''),
           rows: table.rows
             ?.map((row) => {
               const spell = spells.find((it) => eqCaseInsensitive(it.DamageTableRow, row.DamageID))

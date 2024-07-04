@@ -17,7 +17,6 @@
       <h3 class="font-bold">No damage tables found</h3>
       <div class="text-xs">This creature either has no damage tables or is not in game.</div>
     </div>
-
   </div>
 }
 @if (tables()?.length > 1) {
@@ -43,28 +42,34 @@
 }
 @for (table of tables(); track $index) {
   <div class="flex flex-col gap-1 mb-2">
-    <div class="text-center text-primary capitalize font-bold text-xl">
+    <a
+      class="text-center capitalize font-bold link-hover text-nw-description text-lg"
+      [routerLink]="['/damage', table.id]"
+    >
       {{ table.name | nwHumanize }}
-    </div>
+    </a>
     @for (row of table.rows; track $index) {
       <div class="flex flex-col gap-1 mb-2">
         <div class="leading-tight font-bold">
-          <a class="link-hover" [routerLink]="['/damage/table']" [queryParams]="{ search: row.DamageID}">
+          <a class="link-hover" [routerLink]="['/damage/table']" [queryParams]="{ search: row.DamageID }">
             {{ row.AttackName }}
           </a>
         </div>
         <div class="flex flex-row flex-wrap gap-1">
-          <span
-            class="badge badge-sm bg-opacity-50"
-            *ngIf="row.AttackType; let text"
-            [class.badge-error]="text === 'Heavy'"
-            [class.badge-success]="text === 'Light'"
-            [class.badge-secondary]="text === 'Magic'"
-          >
-            {{ text }}</span
-          >
-          <span class="badge badge-sm badge-info" *ngIf="row.IsRanged">Ranged</span>
-          <ng-container *ngIf="!row.Secondary && row.Damage">
+          @if (row.AttackType; as text) {
+            <span
+              class="badge badge-sm bg-opacity-50"
+              [class.badge-error]="text === 'Heavy'"
+              [class.badge-success]="text === 'Light'"
+              [class.badge-secondary]="text === 'Magic'"
+            >
+              {{ text }}</span
+            >
+          }
+          @if (row.IsRanged) {
+            <span class="badge badge-sm badge-info">Ranged</span>
+          }
+          @if (!row.Secondary && row.Damage) {
             <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tipDamage" [tooltipClass]="'p-2'">
               <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1 filter brightness-0" />
               {{ row.Damage | number: '0.0-0' }}
@@ -72,12 +77,13 @@
                 {{ row.Primary.Type | nwText }}
               </ng-template>
             </span>
-          </ng-container>
-
-          <ng-container *ngIf="row.Secondary">
-            <span class="badge badge-sm badge-primary" *ngIf="row.Damage">
-              {{ row.Damage | number: '0.0-0' }}
-            </span>
+          }
+          @if (row.Secondary) {
+            @if (row.Damage) {
+              <span class="badge badge-sm badge-primary">
+                {{ row.Damage | number: '0.0-0' }}
+              </span>
+            }
 
             <span class="badge badge-sm cursor-help" [tooltip]="tipPrimary" [tooltipClass]="'p-2'">
               <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
@@ -94,9 +100,8 @@
                 {{ row.Secondary.Percent | percent }} as {{ row.Secondary.Type | nwText }}
               </ng-template>
             </span>
-          </ng-container>
-
-          <ng-container *ngFor="let item of row.AoeEffects">
+          }
+          @for (item of row.AoeEffects; track $index) {
             <a
               class="badge badge-sm link-hover"
               [tooltip]="tipEffect"
@@ -106,10 +111,10 @@
               <img [nwImage]="item.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
               {{ item.Label | nwText }}
               <ng-template #tipEffect>
-                <nwb-status-effect-detail [effectId]="item.StatusID"></nwb-status-effect-detail>
+                <nwb-status-effect-detail [effectId]="item.StatusID" />
               </ng-template>
             </a>
-          </ng-container>
+          }
         </div>
       </div>
     }

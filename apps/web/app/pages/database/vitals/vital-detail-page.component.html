@@ -28,23 +28,31 @@
       </button>
     </div>
   }
-
+  <nwb-vital-detail-map (vitalClicked)="onPointClicked($event)" class="mb-2" />
   <div class="flex tabs tabs-bordered flex-none justify-center bg-base-300">
-    <a class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')"> Stats </a>
-    <a class="tab flex-1" [class.tab-active]="tab() === 'damage-table'" (click)="selectTab('damage-table')">
+    <button class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')">Stats</button>
+    <button class="tab flex-1" [class.tab-active]="tab() === 'loot'" (click)="selectTab('loot')">Loot</button>
+    <button class="tab flex-1" [class.tab-active]="tab() === 'damage-table'" (click)="selectTab('damage-table')">
       Attacks
-    </a>
-    <a class="tab flex-1" [class.tab-active]="tab() === 'buffs'" (click)="selectTab('buffs')"> Buffs </a>
-    <a class="tab flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')"> 3D </a>
+    </button>
+    <button class="tab flex-1" [class.tab-active]="tab() === 'buffs'" (click)="selectTab('buffs')">Buffs</button>
+    <button class="tab flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')">3D</button>
   </div>
-  <div class="p-4 bg-base-300 space-y-4">
+  <div class="bg-base-300">
     @if (tab() === 'stats') {
-      <nwb-vital-detail-stats />
-      <nwb-vital-detail-map (vitalClicked)="onPointClicked($event)" />
-      @if (lootTableId(); as tableId) {
-        <div class="space-y-1">
-          <h3 class="text-nw-description">Loot drop</h3>
-          <nwb-loot-context-editor [vitalId]="vitalId()" [vitalLevel]="vitalLevel()" [contLevel]="vitalLevel()" #editor />
+      <div class="p-4">
+        <nwb-vital-detail-stats />
+      </div>
+    }
+    @if (tab() === 'loot') {
+      <div class="pt-2 space-y-4">
+        @if (lootTableId(); as tableId) {
+          <nwb-loot-context-editor
+            [vitalId]="vitalId()"
+            [vitalLevel]="vitalLevel()"
+            [contLevel]="vitalLevel()"
+            #editor
+          />
           <nwb-loot-graph
             [tagsEditable]="true"
             (addTagClicked)="editor.addTag($event)"
@@ -52,27 +60,27 @@
             [tagValues]="editor.contextTagValues | async"
             [tableId]="tableId"
           />
-        </div>
-      }
-      @if (gatherableIds()?.length) {
-        <div>
-          <h3 class="text-nw-description">Gatherable</h3>
-          @for(item of gatherableIds(); track $index) {
-            <nwb-gatherable-detail [gatherableId]="item" >
-              <nwb-gatherable-detail-header/>
-            </nwb-gatherable-detail>
-          }
-        </div>
-      }
+        }
+        @if (gatherableIds()?.length) {
+          <div>
+            <h3 class="text-nw-description">Gatherable</h3>
+            @for (item of gatherableIds(); track $index) {
+              <nwb-gatherable-detail [gatherableId]="item">
+                <nwb-gatherable-detail-header />
+              </nwb-gatherable-detail>
+            }
+          </div>
+        }
+      </div>
     }
     @if (tab() === 'damage-table') {
-      <nwb-vital-detail-attacks />
+      <nwb-vital-detail-attacks class="py-2 px-4" />
     }
     @if (tab() === 'buffs') {
       <nwb-vital-detail-buffs />
     }
     @if (tab() === '3d-model') {
-      <nwb-vital-detail-models class="-m-4" />
+      <nwb-vital-detail-models />
     }
   </div>
 </div>

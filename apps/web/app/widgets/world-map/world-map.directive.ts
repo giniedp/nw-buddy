@@ -37,7 +37,7 @@ export class WorldMapDirective {
     effect(() => {
       const bounds = this.bounds()
       if (bounds?.min && bounds?.max) {
-        map.fitView(bounds.min, bounds.max)
+        setTimeout(() => map.fitView(bounds.min, bounds.max))
       }
     })
   }

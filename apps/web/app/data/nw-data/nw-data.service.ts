@@ -38,7 +38,7 @@ export class NwDataService {
   public readonly data = inject(NwDataLoaderService)
   private readonly sheets: DatasheetIndex = DATASHEETS
 
-  private load<T>(uri: DataSheetUri<T>) {
+  public load<T>(uri: DataSheetUri<T>) {
     return this.data.load<T[]>(uri.uri)
   }
   private loadEntries<T>(tables: Record<string, DataSheetUri<T>>, keys?: string[]) {

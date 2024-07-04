@@ -22,7 +22,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 
-export type DetailTabId = 'stats' | 'buffs' | 'loot-items' | 'loot-table' | 'damage-table' | '3d-model' | 'map'
+export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loot'
 
 @Component({
   standalone: true,

@@ -3,7 +3,7 @@ export function humanize(value: any) {
     return ''
   }
   return String(value)
-    .replace(/((PvP)|([A-Z]+))/g, (it) => ` ${it}`)
+    .replace(/((1H)|(2H)|(PvP)|([A-Z]+))/g, (it) => ` ${it}`)
     .replace(/[\\\/\-+]+/g, (it) => ` ${it} `)
     .replace(/[_]/g, ' ')
     .replace(/\s+/, '')

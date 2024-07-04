@@ -102,7 +102,6 @@ export const StatusEffectDetailStore = signalStore(
   withMethods((state) => {
     return {
       load(idOrItem: string | StatusEffectData) {
-        console.log('load', idOrItem)
         if (typeof idOrItem === 'string') {
           patchState(state, { effectId: idOrItem })
         } else {
