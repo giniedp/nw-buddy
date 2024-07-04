@@ -158,6 +158,7 @@ export class NwDataService {
   public cooldownsMap = tableIndexBy(() => this.cooldowns, 'ID')
   public cooldown = tableLookup(() => this.cooldownsMap)
   public cooldownsByAbilityIdMap = tableGroupBy(() => this.cooldowns, 'AbilityID')
+  public cooldownsByAbilityId = tableLookup(() => this.cooldownsByAbilityIdMap)
 
   public damageTables0 = table(() => this.load(DATASHEETS.DamageData.DamageTable))
   public damageTables0Map = tableIndexBy(() => this.damageTables0, 'DamageID')

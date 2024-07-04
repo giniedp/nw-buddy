@@ -1,10 +1,10 @@
-import { computed } from '@angular/core'
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
+import { computed, inject } from '@angular/core'
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { AbilityData } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
-import { withNwData } from '~/data/with-nw-data'
-import { humanize, rejectKeys } from '~/utils'
+import { NwDataService } from '~/data'
+import { humanize, rejectKeys, selectSignal } from '~/utils'
 
 export interface AbilityDetailState {
   abilityId: string
@@ -12,12 +12,6 @@ export interface AbilityDetailState {
 
 export const AbilityDetailStore = signalStore(
   withState<AbilityDetailState>({ abilityId: null }),
-  withNwData((db) => {
-    return {
-      abilitiesMap: db.abilitiesMap,
-      cooldownsMap: db.cooldownsByAbilityIdMap,
-    }
-  }),
   withMethods((state) => {
     return {
       load(idOrItem: string | AbilityData) {
@@ -29,14 +23,13 @@ export const AbilityDetailStore = signalStore(
       },
     }
   }),
-  withHooks({
-    onInit: (state) => {
-      state.loadNwData()
-    },
-  }),
-  withComputed(({ abilityId, nwData }) => {
-    const ability = computed(() => nwData().abilitiesMap?.get(abilityId()))
-    const cooldown = computed(() => nwData().cooldownsMap?.get(ability()?.CooldownId)?.[0])
+  withComputed(({ abilityId }) => {
+    const db = inject(NwDataService)
+
+    const ability = selectSignal(db.ability(abilityId))
+    const cooldownId = selectSignal(ability, (it) => it?.CooldownId)
+    const cooldown = selectSignal(db.cooldownsByAbilityId(cooldownId), (list) => list?.[0])
+    //
     return {
       ability,
       icon: computed(() => ability()?.Icon || NW_FALLBACK_ICON),
