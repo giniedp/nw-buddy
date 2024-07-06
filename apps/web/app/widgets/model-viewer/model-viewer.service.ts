@@ -223,7 +223,7 @@ export class ModelsService {
         name: item.Name,
         itemId: item.ItemID,
         url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-Skin1.glb`.toLowerCase(),
-        label: 'Model',
+        label: 'Skin1',
         itemClass: [...(item.ItemClass || [])],
         appearance: item,
       })
@@ -233,7 +233,7 @@ export class ModelsService {
         name: item.Name,
         itemId: item.ItemID,
         url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-ShortsleeveChestSkin.glb`.toLowerCase(),
-        label: 'Model Shot Sleeve',
+        label: 'Shortsleeve Chest Skin',
         itemClass: [...(item.ItemClass || [])],
         appearance: item,
       })
