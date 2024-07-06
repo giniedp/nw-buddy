@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
@@ -18,6 +18,7 @@ import {
   injectUrlParams,
   selectSignal,
 } from '~/utils'
+import { PlatformService } from '~/utils/services/platform.service'
 import { HousingTableAdapter } from '~/widgets/data/housing-table'
 import { ItemTableRecord } from '~/widgets/data/item-table'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
@@ -64,9 +65,10 @@ export class HousingPageComponent {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
+  protected platform = inject(PlatformService)
   protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
   protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
-  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showSidebar = computed(() => !this.platform.isBrowser || this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 
   public constructor(

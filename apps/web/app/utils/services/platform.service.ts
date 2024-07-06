@@ -9,8 +9,8 @@ import { injectWindow } from '../injection/window'
 export class PlatformService {
   public readonly env = environment
 
-  private angularPlatform = inject(AngularPlatform)
-  private ionicPlatform = inject(IonicPlatform)
+  private ngPlatform = inject(AngularPlatform)
+  private ionPlatform = inject(IonicPlatform)
   private electron = inject(ElectronService)
   private window = injectWindow()
 
@@ -18,55 +18,55 @@ export class PlatformService {
    * Whether the Angular application is being rendered in the browser.
    */
   public get isBrowser() {
-    return this.angularPlatform.isBrowser
+    return this.ngPlatform.isBrowser
   }
   /**
    * Whether the current browser is Microsoft Edge.
    */
   public get isEdge() {
-    return this.angularPlatform.EDGE
+    return this.ngPlatform.EDGE
   }
   /**
    * Whether the current rendering engine is Microsoft Trident.
    */
   public get isTrident() {
-    return this.angularPlatform.TRIDENT
+    return this.ngPlatform.TRIDENT
   }
   /**
    * Whether the current rendering engine is Blink.
    */
   public get isBlink() {
-    return this.angularPlatform.BLINK
+    return this.ngPlatform.BLINK
   }
   /**
    * Whether the current rendering engine is WebKit.
    */
   public get isWebkit() {
-    return this.angularPlatform.WEBKIT
+    return this.ngPlatform.WEBKIT
   }
   /**
    * Whether the current platform is Apple iOS.
    */
   public get isIos() {
-    return this.angularPlatform.IOS
+    return this.ngPlatform.IOS
   }
   /**
    * Whether the current browser is Firefox.
    */
   public get isFirefox() {
-    return this.angularPlatform.FIREFOX
+    return this.ngPlatform.FIREFOX
   }
   /**
    * Whether the current platform is Android.
    */
   public get isAndroid() {
-    return this.angularPlatform.ANDROID
+    return this.ngPlatform.ANDROID
   }
   /**
    * Whether the current browser is Safari.
    */
   public get isSafari() {
-    return this.angularPlatform.SAFARI
+    return this.ngPlatform.SAFARI
   }
 
   /**
@@ -91,7 +91,7 @@ export class PlatformService {
   }
 
   public get isDesktop() {
-    return this.ionicPlatform.is('desktop')
+    return this.ionPlatform.is('desktop')
   }
 
   public get userAgent() {

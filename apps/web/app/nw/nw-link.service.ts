@@ -5,6 +5,7 @@ import { env } from 'apps/web/environments/env'
 import { environment } from 'apps/web/environments/environment'
 import { LocaleService } from '~/i18n'
 import { AppPreferencesService } from '~/preferences/app-preferences.service'
+import { injectIsBrowser } from '~/utils/injection/platform'
 import { NwLinkOptions, NwLinkResource, buddyLinkUrl, nwdbLinkUrl } from './nw-link'
 
 export type NwLinkProvider = 'nwdb' | 'buddy'
@@ -12,7 +13,7 @@ export type NwLinkProvider = 'nwdb' | 'buddy'
 @Injectable({ providedIn: 'root' })
 export class NwLinkService {
   private provider: NwLinkProvider = 'buddy'
-  private isEnaled = !env.disableTooltips
+  private isEnaled = !env.disableTooltips && injectIsBrowser()
 
   public constructor(
     private locale: LocaleService,

@@ -1,8 +1,10 @@
 import { FrameworkOverridesIncomingSource, VanillaFrameworkOverrides } from '@ag-grid-community/core'
 import { Injectable, NgZone } from '@angular/core'
+import { injectWindow } from '~/utils/injection/window'
 
 @Injectable()
 export class AngularFrameworkOverrides extends VanillaFrameworkOverrides {
+  private window = injectWindow()
   // Flag used to control Zone behaviour when running tests as many test features rely on Zone.
   private isRunningWithinTestZone: boolean = false
 
@@ -11,7 +13,7 @@ export class AngularFrameworkOverrides extends VanillaFrameworkOverrides {
   constructor(private _ngZone: NgZone) {
     super('angular')
 
-    this.isRunningWithinTestZone = (window as any)?.AG_GRID_UNDER_TEST ?? !!(window as any)?.Zone?.AsyncTestZoneSpec
+    this.isRunningWithinTestZone = (this.window as any)?.AG_GRID_UNDER_TEST ?? !!(this.window as any)?.Zone?.AsyncTestZoneSpec
 
     if (!this._ngZone) {
       this.runOutside = (callback) => callback()

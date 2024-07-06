@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, contentChild, TemplateRef, input, inject, effect, Input, OnDestroy, signal } from '@angular/core'
 import { ModalController } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
+import { injectIsBrowser } from '~/utils/injection/platform'
 
 @Component({
   standalone: true,
@@ -25,15 +26,18 @@ export class DetailContentComponent implements OnDestroy {
 
   private ctrl = inject(ModalController)
   private modal: HTMLIonModalElement
+  private isBrowser = injectIsBrowser()
 
   public constructor() {
-    effect(() => {
-      if(this.isOpen()) {
-        this.openModal()
-      } else {
-        this.closeModal()
-      }
-    })
+    if (this.isBrowser) {
+      effect(() => {
+        if(this.isOpen()) {
+          this.openModal()
+        } else {
+          this.closeModal()
+        }
+      })
+    }
   }
 
   public ngOnDestroy() {

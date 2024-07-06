@@ -29,6 +29,7 @@ import { AngularFrameworkComponentWrapper } from './component-wrapper/angular-fr
 import { AngularFrameworkOverrides } from './component-wrapper/angular-framework-overrides'
 import { fromGridEvent } from './from-grid-event'
 import { AgGridEvents } from './types'
+import { injectIsBrowser } from '~/utils/injection/platform'
 
 @Directive({
   standalone: true,
@@ -65,12 +66,16 @@ export class AgGridDirective<T = any> implements AfterViewInit, OnDestroy {
   private viewRef = inject(ViewContainerRef)
   private elRef = inject(ElementRef)
   private zone = inject(NgZone)
+  private isBrowser = injectIsBrowser()
 
   public ngOnDestroy(): void {
     this.onDestroy.next()
   }
 
   public ngAfterViewInit(): void {
+    if (!this.isBrowser) {
+      return
+    }
     this.angularFrameworkOverrides.runOutsideAngular(() => {
       this.frameworkComponentWrapper.setViewContainerRef(this.viewRef, this.angularFrameworkOverrides)
     })

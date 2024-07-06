@@ -30,7 +30,7 @@ import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { supportsWebGL } from './utils/webgl-support'
-import { viewerUpdateMode, type DefaultViewer } from './viewer'
+import type { DefaultViewer } from './viewer'
 
 export interface ModelViewerState {
   models: ItemModelInfo[]
@@ -256,9 +256,10 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     this.screenshots.saveBlobWithDialog(blob, name)
   }
 
-  protected toggleMode() {
+  protected async toggleMode() {
     this.store.patchState({ mode: this.mode$() === 'dark' ? 'light' : 'dark' })
     if (this.viewer) {
+      const { viewerUpdateMode } = await import('./viewer')
       viewerUpdateMode(this.viewer, this.mode$())
     }
   }

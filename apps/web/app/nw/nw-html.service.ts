@@ -1,7 +1,7 @@
-import { DOCUMENT } from "@angular/common"
-import { Injectable, SecurityContext, inject } from "@angular/core"
-import { DomSanitizer } from "@angular/platform-browser"
-import { environment } from "apps/web/environments"
+import { DOCUMENT } from '@angular/common'
+import { Injectable, SecurityContext, inject } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
+import { environment } from 'apps/web/environments'
 
 @Injectable({ providedIn: 'root' })
 export class NwHtmlService {
@@ -17,7 +17,9 @@ export class NwHtmlService {
 }
 
 function updateNwHtml(el: HTMLElement) {
-  el.querySelectorAll('img').forEach((img) => {
+  const images = el.querySelectorAll('img')
+  for (let i = 0; i < images.length; i++) {
+    const img = images.item(i)
     img.classList.add('inline')
     let src = img.getAttribute('src') || ''
     if (src.match(/lyshineui[\\/]images/i)) {
@@ -28,8 +30,10 @@ function updateNwHtml(el: HTMLElement) {
       img.classList.add('nw-icon')
       img.setAttribute('src', src)
     }
-  })
-  el.querySelectorAll('font').forEach((font) => {
+  }
+  const fonts = el.querySelectorAll('font')
+  for (let i = 0; i < fonts.length; i++) {
+    const font = fonts.item(i)
     const face = font.getAttribute('face') || ''
     font.removeAttribute('face')
     if (face.match(/caslonant/i)) {
@@ -56,5 +60,5 @@ function updateNwHtml(el: HTMLElement) {
     if (face.match(/_italic/i)) {
       font.classList.add('italic')
     }
-  })
+  }
 }

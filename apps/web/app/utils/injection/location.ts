@@ -5,6 +5,6 @@ export const LOCATION = new InjectionToken<Location>('An abstraction over window
   factory: () => injectWindow().location,
 })
 
-export function injectNavigator(): Location {
+export function injectLocation(): Location {
   return inject(LOCATION)
 }

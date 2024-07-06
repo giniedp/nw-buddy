@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { Meta, MetaDefinition, Title } from '@angular/platform-browser'
 import { LinkDefinition, LinkTagService } from './link-tag.service'
+import { injectLocation } from '../injection/location'
 
 export interface PageMetadata {
   title?: string
@@ -20,6 +21,11 @@ export interface CommonMetadata {
 
 @Injectable({ providedIn: 'root' })
 export class HtmlHeadService {
+  private titleService = inject(Title)
+  private metaService = inject(Meta)
+  private linkService = inject(LinkTagService)
+  private location = injectLocation()
+
   public metaName = 'New World Buddy'
   public metaType = 'website'
   public metaUrl = this.origin
@@ -27,15 +33,11 @@ export class HtmlHeadService {
   public metaImage = `${this.origin}/assets/nw-buddy.png`
 
   public get origin() {
-    return location.origin
+    return this.location.origin
   }
 
   public get currentUrl() {
-    return location.href
-  }
-
-  public constructor(private titleService: Title, private metaService: Meta, private linkService: LinkTagService) {
-    //
+    return this.location.href
   }
 
   public updateMetadata(update: CommonMetadata) {
@@ -56,7 +58,7 @@ export class HtmlHeadService {
         { property: 'og:url', content: url },
         { property: 'og:image', content: image },
 
-        { property: 'twitter:domain', content: location.hostname },
+        { property: 'twitter:domain', content: this.location.hostname },
         { property: 'twitter:title', content: title },
         { property: 'twitter:description', content: description },
         { property: 'twitter:url', content: url },

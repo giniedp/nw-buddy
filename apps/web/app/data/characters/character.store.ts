@@ -9,6 +9,7 @@ import { ImageRecord, ImagesDB } from '../images'
 import { CharacterRecord } from './types'
 import { CharactersDB } from './characters.db'
 import { injectWindow } from '~/utils/injection/window'
+import { injectIsBrowser } from '~/utils/injection/platform'
 
 export interface CharacterStoreState {
   current: CharacterRecord
@@ -71,13 +72,15 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
       })
     )
   }
-
+  private isBrowser = injectIsBrowser()
   public constructor(private db: CharactersDB, private images: ImagesDB, private sanitizer: DomSanitizer) {
     super({
       current: null,
     })
-    const src$ = from(migrate(db)).pipe(switchMap(() => this.db.observeCurrent()))
-    this.loadCurrent(src$)
+    if (this.isBrowser){
+      const src$ = from(migrate(db)).pipe(switchMap(() => this.db.observeCurrent()))
+      this.loadCurrent(src$)
+    }
   }
 
   public readonly loadCurrent = this.updater((state, current: CharacterRecord) => {
