@@ -1,11 +1,11 @@
 @if (familyIcon(); as icon) {
-  <a class="absolute left-1" [nwLink]="id()" [nwLinkResource]="'vitals'" target="_blank">
+  <a class="absolute left-1" [nwLinkTooltip]="['vitals', id()]" target="_blank">
     <img [nwImage]="icon" class="w-12 h-12" />
   </a>
 }
 <a
   class="flex flex-row uppercase text-sm font-serif items-center gap-1 hover:underline leading-none"
-  [routerLink]="['/vitals/table', id()]"
+  [routerLink]="['vitals', id()] | nwLink"
 >
   <span>{{ name() | nwText }}</span>
 </a>
@@ -34,7 +34,7 @@
       [cdkConnectedOverlayPositions]="[
         { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
         { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
-        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 }
+        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 },
       ]"
       [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
       (overlayOutsideClick)="levelEditorOpen = false"

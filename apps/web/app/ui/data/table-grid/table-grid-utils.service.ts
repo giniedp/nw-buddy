@@ -218,7 +218,7 @@ export class TableGridUtils<T = any> {
   }
 
   public tipLink(type: NwLinkResource, id: string) {
-    return this.nwLink.link(type, id)
+    return this.nwLink.tooltipLink(type, id)
   }
 
   public selectFilter(params: GridSelectFilterParams<T>) {

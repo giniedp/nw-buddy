@@ -1,12 +1,12 @@
-import { Injectable, Output } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { getItemIconPath, getItemId, getItemRarity, getQuestRequiredAchuevmentIds, getQuestTypeIcon, isHousingItem } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions, Objectives } from '@nw-data/generated'
-import { NwDataService } from '~/data'
-import { FollowUpQuest } from './types'
-import { humanize } from '~/utils'
 import { flatten } from 'lodash'
+import { NwDataService } from '~/data'
+import { humanize } from '~/utils'
 import { GameEventReward, selectGameEventRewards } from '../game-event-detail/selectors'
+import { FollowUpQuest } from './types'
 
 @Injectable()
 export class QuestDetailStore extends ComponentStore<{ questId: string }> {
@@ -99,8 +99,7 @@ function selectReward(item: MasterItemDefinitions | HouseItems, qty: number): Ga
     label: item.Name,
     quantity: qty,
     link: [
-      isHousingItem(item) ? '/housing' : '/items',
-      'table',
+      isHousingItem(item) ? 'housing' : 'item',
       getItemId(item)
     ]
   }

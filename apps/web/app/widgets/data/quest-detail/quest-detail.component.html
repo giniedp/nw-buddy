@@ -1,6 +1,5 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLink]="questId$ | async" [nwLinkResource]="'quest'" class="w-[76px] h-[76px]">
-  </a>
+  <a [nwbItemIcon]="icon$ | async" [nwLinkTooltip]="['quest', questId$ | async]" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
     [title]="title$ | async | nwText | nwTextBreak: ' - '"
@@ -43,8 +42,8 @@
   @if (eventStatusEffect$ | async; as effect) {
     <div class="flex flex-col gap-1">
       <h3 class="font-bold">Rewards Effect</h3>
-      <a class="flex-1 link-hover pl-2" [routerLink]="['/status-effects/table', effect.StatusID]">
-        <span>{{ (effect.DisplayName || (effect.StatusID | nwHumanize))| nwText }}</span>
+      <a class="flex-1 link-hover pl-2" [routerLink]="['status-effect', effect.StatusID] | nwLink">
+        <span>{{ effect.DisplayName || (effect.StatusID | nwHumanize) | nwText }}</span>
       </a>
     </div>
   }
@@ -53,10 +52,10 @@
       <h3 class="font-bold">Previous Quests</h3>
       @for (quest of prev; track $index) {
         <div class="flex flex-row items-center gap-1">
-          <a [nwLink]="quest.id" [nwLinkResource]="'quest'" class="flex-none">
+          <a [nwLinkTooltip]="['quest', quest.id]" class="flex-none">
             <img [nwImage]="quest.icon" class="w-5 h-5" />
           </a>
-          <a class="flex-1 link-hover" [routerLink]="['/quests/table', quest.id]">
+          <a class="flex-1 link-hover" [routerLink]="['quest', quest.id] | nwLink">
             <span>{{ quest.title | nwText }}</span>
           </a>
         </div>
@@ -74,10 +73,10 @@
   @if (npcDestination$ | async; as npc) {
     <h3 class="font-bold">Npc Destination</h3>
     <div class="flex flex-row items-center gap-1">
-      <a [nwLink]="npc.NPCId" [nwLinkResource]="'npc'" class="flex-none">
+      <a [nwLinkTooltip]="['npc', npc.NPCId]" class="flex-none">
         <img [nwImage]="defaultIcon" class="w-5 h-5" />
       </a>
-      <a class="flex-1 link-hover" [routerLink]="['/npcs/table', npc.NPCId]">
+      <a class="flex-1 link-hover" [routerLink]="['npc', npc.NPCId] | nwLink">
         <span>{{ npc.GenericName | nwText }}</span>
       </a>
     </div>

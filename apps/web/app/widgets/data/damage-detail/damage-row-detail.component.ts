@@ -119,7 +119,7 @@ function damageCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: true,
-      routerLink: ['/damage/table'],
+      routerLink: ['damage'],
       queryParams: { search: it },
     }
   })
@@ -132,7 +132,7 @@ function statusEffectCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: isLink,
-      routerLink: isLink ? ['/status-effects/table', it] : null,
+      routerLink: isLink ? ['status-effect', it] : null,
     }
   })
 }

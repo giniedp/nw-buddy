@@ -6,6 +6,7 @@ import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 import { ItemDetailStore } from './item-detail.store'
+import { NwModule } from '~/nw'
 
 @Component({
   standalone: true,
@@ -20,7 +21,7 @@ import { ItemDetailStore } from './item-detail.store'
       </button>
       <a
         class="btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
-        [routerLink]="['/loot/table', salvage()?.tableId]"
+        [routerLink]="['loot', salvage()?.tableId] | nwLink"
       >
         <nwb-icon [icon]="iconLink" class="w-4 h-4" />
       </a>
@@ -46,7 +47,7 @@ import { ItemDetailStore } from './item-detail.store'
       </ng-template>
     }
   `,
-  imports: [RouterModule, IconsModule, LootGraphComponent, LayoutModule],
+  imports: [NwModule, RouterModule, IconsModule, LootGraphComponent, LayoutModule],
   host: {
     '[class.hidden]': '!salvage()',
   },

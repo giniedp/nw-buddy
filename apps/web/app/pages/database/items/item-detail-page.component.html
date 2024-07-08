@@ -24,7 +24,7 @@
       </button>
       <a
         class="join-item btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
-        [routerLink]="['/loot/table', salvage.tableId]"
+        [routerLink]="['loot', salvage.tableId] | nwLink"
       >
         <nwb-icon [icon]="iconLink" class="w-4 h-4" />
       </a>
@@ -74,7 +74,7 @@
               [rarity]="itemRarity(item)"
               [isNamed]="itemNamed(item)"
               [solid]="true"
-              [routerLink]="['/items/table', item.ItemID]"
+              [routerLink]="['item', item.ItemID] | nwLink"
               [routerLinkActive]="['outline']"
               [queryParamsHandling]="'preserve'"
               class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
@@ -97,7 +97,7 @@
               [rarity]="itemRarity(item)"
               [isNamed]="itemNamed(item)"
               [solid]="true"
-              [routerLink]="['/items/table', item.ItemID]"
+              [routerLink]="['item', item.ItemID] | nwLink"
               [routerLinkActive]="['outline']"
               [queryParamsHandling]="'preserve'"
               class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
@@ -120,7 +120,7 @@
               [rarity]="itemRarity(item)"
               [isNamed]="itemNamed(item)"
               [solid]="true"
-              [routerLink]="['/items/table', item.ItemID]"
+              [routerLink]="['item', item.ItemID] | nwLink"
               [routerLinkActive]="['outline']"
               [queryParamsHandling]="'preserve'"
               class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
@@ -143,7 +143,7 @@
           [rarity]="itemDetail.finalRarity$ | async"
           [isNamed]="itemDetail.isNamed$ | async"
           [solid]="true"
-          [routerLink]="['/items/table', itemId]"
+          [routerLink]="['item', itemId] | nwLink"
           class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
         >
         </a>
@@ -163,7 +163,7 @@
             [rarity]="itemDetail.finalRarity$ | async"
             [isNamed]="itemDetail.isNamed$ | async"
             [solid]="true"
-            [routerLink]="['/items/table', itemId]"
+            [routerLink]="['item', itemId] | nwLink"
             class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
           >
           </a>

@@ -1,7 +1,7 @@
 @for (item of effects(); track $index) {
   <a
     class="flex flex-row gap-2 link-hover text-sky-600"
-    [routerLink]="['/status-effects/table', item.id]"
+    [routerLink]="['status-effect', item.id] | nwLink"
     [tooltip]="tplEffectTip"
     [tooltipClass]="'p-0 w-full max-w-sm'"
   >
@@ -20,7 +20,7 @@
 @for (item of abilities(); track $index) {
   <a
     class="flex flex-row gap-2 link-hover text-sky-600"
-    [routerLink]="['/abilities/table', item.id]"
+    [routerLink]="['ability', item.id] | nwLink"
     [tooltip]="tplAbilityTip"
     [tooltipClass]="'p-0 w-full max-w-sm'"
   >

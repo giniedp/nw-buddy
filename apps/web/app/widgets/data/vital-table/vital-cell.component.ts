@@ -19,13 +19,13 @@ import { VitalTableRecord } from './vital-table-cols'
   selector: 'nwb-vital-grid-cell',
   template: `
     @if (familyIcon; as icon) {
-      <a class="absolute left-1" [nwLink]="vitalId" [nwLinkResource]="'vitals'" target="_blank">
+      <a class="absolute left-1" [nwLinkTooltip]="['vitals', vitalId]">
         <img [nwImage]="icon" class="w-12 h-12" />
       </a>
     }
     <a
       class="flex flex-row uppercase text-sm font-serif items-center gap-1 hover:underline leading-none"
-      [routerLink]="['/vitals/table', vitalId]"
+      [routerLink]="['vitals', vitalId] | nwLink"
     >
       <span>{{ vitalName | nwText }}</span>
     </a>

@@ -12,17 +12,15 @@
         class="embed-hidden"
         nwbMenu
       >
-
-        <app-menu class="bg-base-300" >
+        <app-menu class="bg-base-300">
           @defer (on timer(2s)) {
             @if (versionChanged()) {
-              <nwb-update-alert-button @versionAlert class="w-full rounded-none bg-base-300"/>
+              <nwb-update-alert-button @versionAlert class="w-full rounded-none bg-base-300" />
             }
           }
         </app-menu>
       </ion-menu>
       <div id="main-content" class="ion-page">
-
         @if (!(unfoldMenu$ | async)) {
           <ng-container *ngTemplateOutlet="tplHeader" />
         }
@@ -35,7 +33,6 @@
           }
         </ion-content>
       </div>
-
     </ion-split-pane>
   </ion-content>
 </ion-app>
@@ -85,8 +82,12 @@
           </span>
         </a>
         <span class="flex-1 text-center px-16">
-          @if(isOverwolf || isElectron) {
-            <input class="input input-sm input-bordered w-full no-drag" [value]="currentUrl()" (change)="goToUrl($event)"/>
+          @if (isOverwolf || isElectron) {
+            <input
+              class="input input-sm input-bordered w-full no-drag"
+              [value]="currentUrl()"
+              (change)="goToUrl($event)"
+            />
           }
         </span>
       </div>
@@ -117,7 +118,7 @@
           [tooltip]="'Switch language'"
           [tooltipPlacement]="'bottom'"
         >
-          {{ lang }}
+          {{ langLabel() }}
         </button>
       </ion-buttons>
     </ion-toolbar>
@@ -128,9 +129,14 @@
   <ul class="menu menu-compact bg-base-300 border border-base-200 rounded-md w-40 shadow-md" cdkMenu>
     @for (option of langOptions; track $index) {
       <li>
-        <button (click)="language = option.value" cdkMenuItem>
+        <a
+          [class.active]="option === langSelection()"
+          [class.text-primary]="option === langSelection()"
+          [routerLink]="getLangUrl(option)"
+          cdkMenuItem
+        >
           {{ option.label }}
-        </button>
+        </a>
       </li>
     }
   </ul>

@@ -38,6 +38,6 @@ export const appConfig: ApplicationConfig = {
       StoreModule.forRoot({}),
       EffectsModule.forRoot(),
     ),
-    provideExperimentalZonelessChangeDetection()
+    provideExperimentalZonelessChangeDetection(),
   ],
 }

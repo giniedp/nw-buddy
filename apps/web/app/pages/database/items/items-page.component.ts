@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
@@ -14,8 +14,8 @@ import {
   HtmlHeadService,
   eqCaseInsensitive,
   injectBreakpoint,
+  injectChildRouteParam,
   injectRouteParam,
-  injectUrlParams,
   selectSignal,
 } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
@@ -65,9 +65,9 @@ export class ItemsPageComponent {
   })
 
   protected platform = inject(PlatformService)
-  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
-  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
-  protected showSidebar = computed(() => !this.platform.isBrowser || (this.isLargeContent() && this.isChildActive()))
+  protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
+  protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
   protected showModal$ = toObservable(this.showModal)
 

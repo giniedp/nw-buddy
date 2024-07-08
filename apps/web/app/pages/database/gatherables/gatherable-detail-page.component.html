@@ -80,7 +80,7 @@
         } @else {
           @for (item of store.lootTables(); track $index) {
             <div class="flex flex-row items-center gap-2">
-              <a class="btn btn-sm btn-square btn-ghost flex-none" [routerLink]="['/loot/table', item]">
+              <a class="btn btn-sm btn-square btn-ghost flex-none" [routerLink]="['loot', item] | nwLink">
                 <nwb-icon [icon]="iconLink" class="w-4 h-4" />
               </a>
               <a

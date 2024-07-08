@@ -72,7 +72,7 @@ export class PerkDetailComponent extends PerkDetailStore {
           {
             value: String(value),
             accent: true,
-            routerLink: ['/perks/table', value],
+            routerLink: ['perk', value],
           },
         ]
       }
@@ -99,7 +99,7 @@ export class PerkDetailComponent extends PerkDetailStore {
           return {
             value: it,
             accent: true,
-            routerLink: ['/abilities/table', it],
+            routerLink: ['ability', it],
           }
         })
       }
@@ -187,7 +187,7 @@ function statusEffectCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: isLink,
-      routerLink: isLink ? ['/status-effects/table', it] : null,
+      routerLink: isLink ? ['status-effect', it] : null,
     }
   })
 }

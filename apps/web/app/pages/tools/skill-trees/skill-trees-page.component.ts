@@ -16,7 +16,8 @@ import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectBreakpoint, injectRouteParam, injectUrlParams, selectSignal } from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
+import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
@@ -76,8 +77,9 @@ export class SkillBuildsComponent {
     return it ? it : null
   })
 
-  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
-  protected isChildActive = toSignal(injectUrlParams('/:resource/:id', (it) => !!it?.['id']))
+  protected platform = inject(PlatformService)
+  protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
+  protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 

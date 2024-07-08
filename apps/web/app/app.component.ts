@@ -1,5 +1,5 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
-import { CommonModule, DOCUMENT, Location } from '@angular/common'
+import { CommonModule, Location } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -10,16 +10,16 @@ import {
   inject,
   signal,
 } from '@angular/core'
-import { Router, RouterModule } from '@angular/router'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { map, of, switchMap } from 'rxjs'
 
 import { TranslateService } from './i18n'
 
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { IonApp, IonButton, IonButtons, IonContent, IonRouterOutlet, IonSplitPane } from '@ionic/angular/standalone'
 import { environment } from '../environments'
-import { LANG_OPTIONS } from './app-menu'
+import { LANG_OPTIONS, LanguageOption } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
@@ -27,14 +27,14 @@ import { IconsModule } from './ui/icons'
 import { svgChevronLeft, svgDiscord, svgGithub, svgMap } from './ui/icons/svg'
 import { LayoutModule, LayoutService } from './ui/layout'
 import { TooltipModule } from './ui/tooltip'
-import { mapProp, selectSignal } from './utils'
+import { injectRouteParam, mapProp, selectSignal } from './utils'
 import { injectCurrentUrl } from './utils/injection/current-url'
+import { injectDocument } from './utils/injection/document'
+import { injectWindow } from './utils/injection/window'
 import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
-import { injectWindow } from './utils/injection/window'
-import { injectDocument } from './utils/injection/document'
 console.debug('environment', environment)
 @Component({
   standalone: true,
@@ -124,21 +124,16 @@ export class AppComponent {
     return this.platform.isOverwolf
   }
 
-  public get language() {
-    return this.preferences.language.get()
-  }
-  public set language(value: string) {
-    this.preferences.language.set(value)
-  }
-  public get lang() {
-    return LANG_OPTIONS.find((it) => it.value === this.language)?.label
-  }
   public get isEmbed() {
     // TODO: pass in from router
     return this.window.location.href.split('/').some((it) => it === 'embed')
   }
 
   protected langOptions = LANG_OPTIONS
+  protected langSelection = selectSignal(injectRouteParam('locale'), (it) => {
+    return LANG_OPTIONS.find((lang) => lang.value === it) || LANG_OPTIONS.find((lang) => lang.isDefault)
+  })
+  protected langLabel = computed(() => this.langSelection().value.split('-')[0].toUpperCase())
 
   protected unfoldMenuWhen$ = this.preferences.collapseMenuMode
     .observe()
@@ -158,9 +153,7 @@ export class AppComponent {
   protected window = injectWindow()
   protected document = injectDocument()
   protected location = inject(Location)
-  protected currentUrl = selectSignal(injectCurrentUrl(), (url) => {
-    return getRelativeUrl(url)
-  })
+  protected currentUrl = selectSignal(injectCurrentUrl())
   protected canGoBack = computed(() => {
     this.currentUrl()
     if (this.isElectron || this.isOverwolf) {
@@ -179,23 +172,15 @@ export class AppComponent {
   constructor(
     private preferences: AppPreferencesService,
     private platform: PlatformService,
-    translate: TranslateService,
+    private translate: TranslateService,
     private layout: LayoutService,
     private version: VersionService,
     private router: Router,
     private elRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
   ) {
-    this.preferences.language
-      .observe()
-      .pipe(switchMap((locale) => translate.use(locale)))
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.langLoaded.set(true)
-        this.removeLoader()
-      })
-
-    this.installWatermark()
+    this.bindLanguage()
+    this.bindWatermark()
   }
 
   private removeLoader() {
@@ -212,7 +197,19 @@ export class AppComponent {
     this.location.back()
   }
 
-  private installWatermark() {
+  private bindLanguage() {
+    toObservable(this.langSelection)
+      .pipe(switchMap((it) => this.translate.use(it.value)))
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.langLoaded.set(true)
+        if (this.platform.isBrowser) {
+          this.removeLoader()
+        }
+      })
+  }
+
+  private bindWatermark() {
     if (environment.watermarkImageUrl) {
       this.renderer.setStyle(
         this.elRef.nativeElement,
@@ -225,27 +222,20 @@ export class AppComponent {
 
   protected goToUrl(event: Event) {
     let url = (event.target as HTMLInputElement).value
-    this.router.navigateByUrl(buildAbsoluteUrl(this.router, url))
+    this.router.navigateByUrl(url)
   }
-}
 
-const ELECTRON_URL = 'dist/web-electron/browser'
-function getRelativeUrl(url: string) {
-  if (!url) {
-    return url
+  protected getLangUrl(selection: LanguageOption) {
+    const result: string[] = this.router.url.split('/').filter((it) => !!it)
+    if (!this.langSelection().isDefault) {
+      result.shift()
+    }
+    if (!selection.isDefault) {
+      result.unshift(selection.value)
+    }
+    if (!this.langSelection().isDefault) {
+      result.unshift('..')
+    }
+    return result
   }
-  // if (url.includes(ELECTRON_URL)) {
-  //   return url.split(ELECTRON_URL)[1]
-  // }
-  return url
-}
-
-function buildAbsoluteUrl(router: Router, url: string) {
-  if (!url || !router.url) {
-    return url
-  }
-  // if (router.url.includes(ELECTRON_URL)) {
-  //   return router.url.split(ELECTRON_URL)[0] + ELECTRON_URL + url
-  // }
-  return url
 }

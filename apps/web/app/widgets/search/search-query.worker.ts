@@ -6,7 +6,7 @@ export interface SearchRecord {
   id: string
   text: string
   type: string
-  icons: string
+  icon: string
   tier: number
   rarity: ItemRarity
 }

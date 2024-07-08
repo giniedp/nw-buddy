@@ -26,14 +26,7 @@ import { LootTagComponent } from './loot-tag.component'
       class="h-full"
     >
       <div class="flex-1 flex flex-row gap-1 p-1">
-        <a
-          [nwLink]="itemId()"
-          [nwLinkResource]="'item'"
-          [nwbItemIcon]="entity()"
-          [isNamed]="isNamed()"
-          class="w-14 h-14"
-        >
-        </a>
+        <a [nwLinkTooltip]="['item', itemId()]" [nwbItemIcon]="entity()" [isNamed]="isNamed()" class="w-14 h-14"> </a>
         <nwb-item-header-content
           [rarity]="rarity()"
           [isNamed]="isNamed()"

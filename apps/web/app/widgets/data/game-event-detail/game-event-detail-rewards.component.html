@@ -2,7 +2,7 @@
   <div class="flex flex-row gap-1 items-center font-bold">
     <picture [nwIcon]="item.icon" [nwRarity]="item.rarity" class="w-8 h-8"></picture>
     @if (!item.link) {
-      <a [routerLink]="item.link" class="link-hover">
+      <a [routerLink]="item.link | nwLink" class="link-hover">
         <span> {{ item.quantity ? (item.quantity | number) : '' }} {{ item.label | nwText }} </span>
       </a>
     } @else {

@@ -88,7 +88,7 @@ export class ItemDetailPerkTasksComponent {
         return this.tl8.observe(category.DisplayName).pipe(
           map((it) => {
             if (vital) {
-              const link = this.nwdb.link('vitals', String(vital.VitalsID))
+              const link = this.nwdb.tooltipLink('vitals', String(vital.VitalsID))
               return `<a href="${link}" target="_blank" class="link">${it}</a>`
             }
             return it
@@ -112,7 +112,7 @@ export class ItemDetailPerkTasksComponent {
           }
           return this.tl8.observe(poi.NameLocalizationKey).pipe(
             map((it) => {
-              const link = this.nwdb.link('poi', String(poi.TerritoryID))
+              const link = this.nwdb.tooltipLink('poi', String(poi.TerritoryID))
               return `<a href="${link}" target="_blank" class="link">${it}</a>`
             }),
           )
@@ -128,7 +128,7 @@ export class ItemDetailPerkTasksComponent {
         }
         return this.tl8.observe(it.NameLocalizationKey).pipe(
           map((it) => {
-            const link = this.nwdb.link('poi', String(task.TerritoryID))
+            const link = this.nwdb.tooltipLink('poi', String(task.TerritoryID))
             return `<a href="${link}" target="_blank" class="link">${it}</a>`
           }),
         )

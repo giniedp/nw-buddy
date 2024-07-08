@@ -19,8 +19,7 @@
         <div class="flex flex-col gap-1">
           <a
             *ngFor="let ingr of item.ingredients"
-            [nwLink]="ingr.itemId"
-            [nwLinkResource]="'item'"
+            [nwLinkTooltip]="['item', ingr.itemId]"
             class="flex flex-row gap-1 justify-start items-center"
           >
             <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
@@ -43,6 +42,6 @@
     class="flip-card-btn btn btn-ghost btn-circle absolute bottom-1 right-1 opacity-50 scale-100 transition-all hover:opacity-75 hover:scale-110"
     (click)="showBackside = !showBackside"
   >
-    <nwb-icon [icon]="iconFlip" class="w-4 h-4"/>
+    <nwb-icon [icon]="iconFlip" class="w-4 h-4" />
   </button>
 </div>

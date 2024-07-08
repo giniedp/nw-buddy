@@ -1,15 +1,12 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLink]="perkId$ | async" [nwLinkResource]="'perk'" class="w-[76px] h-[76px]"> </a>
+  <a [nwbItemIcon]="icon$ | async" [nwLinkTooltip]="['perk', perkId$ | async]" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
     [title]="name$ | async | nwText | nwTextBreak: ' - '"
     [text1]="'perk'"
     [text2]="type$ | async"
   >
-    <div
-      *ngIf="scalesWithGearScore$ | async"
-      class="absolute right-1 bottom-1 flex flex-colr gap-1 items-center"
-    >
+    <div *ngIf="scalesWithGearScore$ | async" class="absolute right-1 bottom-1 flex flex-colr gap-1 items-center">
       <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-6 h-6" [tooltip]="'Selected Gear Score'" />
       <nwb-gs-input
         [size]="'xs'"

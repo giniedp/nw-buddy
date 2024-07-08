@@ -6,7 +6,7 @@
   <div class="font-nimbus grid grid-cols-max-2 grid-item-min-w-60 grid-gap-4">
     @for (info of rows(); track $index) {
       <div class="flex flex-row gap-x-2">
-        <a [nwLink]="info.id" [nwLinkResource]="'perk'" class="flex-none">
+        <a [nwLinkTooltip]="['perk', info.id]" class="flex-none">
           <img [nwImage]="info.icon" class="w-8 h-8" />
         </a>
         <div class="text-sky-600 flex-1">

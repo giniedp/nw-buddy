@@ -98,7 +98,7 @@
   <h3 class="prose mt-2">Full Set</h3>
   <nwb-item-header class="grid grid-cols-fill-5xs flex-wrap gap-1 rounded-md overflow-clip">
     <div *ngFor="let item of others">
-      <a [routerLink]="['/transmog/table', item.id]" class="relative w-fill aspect-square block rounded-sm">
+      <a [routerLink]="['transmog', item.id] | nwLink" class="relative w-fill aspect-square block rounded-sm">
         <nwb-item-icon [solid]="false" [nwbItemIcon]="item.appearance.IconPath" class="w-fill"> </nwb-item-icon>
         <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1" />
       </a>
@@ -152,13 +152,13 @@
     <h3 class="prose mt-2">Similar appearances ({{ siblings.length }})</h3>
     <div *ngIf="siblings?.length" class="flex flex-col gap-2">
       <nwb-item-header class="gap-2 rounded-md overflow-clip" *ngFor="let sibling of siblings; trackBy: trackByIndex">
-        <a [routerLink]="['/transmog/table', sibling.id]" class="relative">
+        <a [routerLink]="['transmog', sibling.id] | nwLink" class="relative">
           <nwb-item-icon [solid]="false" [nwbItemIcon]="sibling.appearance.IconPath" class="w-20"> </nwb-item-icon>
           <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1" />
         </a>
         <nwb-item-header-content
           [title]="sibling.appearance.Name | nwText"
-          [titleLink]="['/transmog/table', sibling.id]"
+          [titleLink]="['transmog', sibling.id] | nwLink"
           [text1]="'Common'"
           [text3]="categoryName(sibling.category) | nwText"
         >

@@ -12,6 +12,6 @@ import { TranslateModule, TranslateService } from '~/i18n'
 })
 export class AppTestingModule {
   public constructor(i18n: TranslateService) {
-    i18n.use(i18n.locale.value).subscribe()
+    i18n.use(i18n.locale.value()).subscribe()
   }
 }

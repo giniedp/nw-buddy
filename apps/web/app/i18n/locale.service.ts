@@ -1,9 +1,9 @@
-import { Inject, Injectable, LOCALE_ID, StaticProvider } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
+import { Inject, Injectable, LOCALE_ID, StaticProvider, computed, signal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { normalizeLocale } from './utils'
 
 @Injectable({ providedIn: 'root' })
-export class LocaleService extends ComponentStore<{ locale: string }> {
+export class LocaleService {
   public static withLocale(value: string): StaticProvider[] {
     return [
       {
@@ -16,20 +16,20 @@ export class LocaleService extends ComponentStore<{ locale: string }> {
     ]
   }
 
-  public get value(): string {
-    return this.get(({ locale }) => locale)
-  }
+  public value = signal<string>(null)
+  public defaultvalue = signal<string>(null)
 
-  public readonly value$ = this.select(({ locale }) => locale)
+  public readonly value$ = toObservable(this.value)
 
   public constructor(
     @Inject(LOCALE_ID)
-    defaultLocale: string
+    defaultLocale: string,
   ) {
-    super({ locale: normalizeLocale(defaultLocale) })
+    this.defaultvalue.set(defaultLocale)
+    this.use(defaultLocale)
   }
 
-  public use(language: string) {
-    this.patchState({ locale: normalizeLocale(language) })
+  public use(value: string) {
+    this.value.set(normalizeLocale(value))
   }
 }

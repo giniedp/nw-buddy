@@ -2,7 +2,7 @@
   <h3>Parent Tables</h3>
   <div class="flex flex-wrap gap-2 mb-4">
     @for (parent of parents(); track $index) {
-      <a [routerLink]="['/loot/table', parent.LootTableID]" class="btn btn-xs btn-secondary normal-case">
+      <a [routerLink]="['loot', parent.LootTableID] | nwLink" class="btn btn-xs btn-secondary normal-case">
         {{ parent.LootTableID | nwHumanize }}
       </a>
     }

@@ -27,7 +27,7 @@
       class="relative font-nimbus gap-2 w-full shadow-sm rounded whitespace-nowrap overflow-hidden overflow-ellipsis"
     >
       <nwb-item-icon
-        [nwbItemIcon]="item.icon || defaultIcon"
+        [nwbItemIcon]="getIcon(item)"
         [solid]="false"
         [rarity]="item.rarity"
         class="z-10 w-10 h-10"

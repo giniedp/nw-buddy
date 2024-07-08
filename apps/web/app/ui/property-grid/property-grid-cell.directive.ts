@@ -1,10 +1,11 @@
 import { Directive, TemplateRef } from '@angular/core'
+import { NwLinkResource } from '~/nw'
 
 export interface PropertyGridCell {
   value: string
   template?: TemplateRef<PropertyGridCell>
   tooltip?: TemplateRef<PropertyGridCell>
-  routerLink?: string | any[]
+  routerLink?: [NwLinkResource, string] | [NwLinkResource]
   queryParams?: Record<string, any>
   externLink?: string
   primary?: boolean

@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common'
-import { DestroyRef, Inject, Injectable } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Injectable, effect, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { env } from 'apps/web/environments/env'
 import { environment } from 'apps/web/environments/environment'
 import { LocaleService } from '~/i18n'
@@ -12,53 +12,57 @@ export type NwLinkProvider = 'nwdb' | 'buddy'
 
 @Injectable({ providedIn: 'root' })
 export class NwLinkService {
-  private provider: NwLinkProvider = 'buddy'
-  private isEnaled = !env.disableTooltips && injectIsBrowser()
+  private locale = inject(LocaleService)
+  private document = inject(DOCUMENT)
+  private preferences = inject(AppPreferencesService)
+  private tooltipProvider = toSignal<NwLinkProvider>(this.preferences.tooltipProvider.observe())
+  private tooltipEnabled = !env.disableTooltips && injectIsBrowser()
 
-  public constructor(
-    private locale: LocaleService,
-    private pref: AppPreferencesService,
-    private dRef: DestroyRef,
-    @Inject(DOCUMENT)
-    private document: Document,
-  ) {
-    this.watchSetting()
+  public constructor() {
+    effect(() => {
+      if (this.tooltipEnabled && this.tooltipProvider() === 'nwdb') {
+        installNwdb(this.document)
+      }
+    })
   }
 
-  public link(type: NwLinkResource, id: string) {
+  public withLocale(uri: string) {
+    if (!uri || !uri.startsWith('/')) {
+      return uri
+    }
+    if (this.locale.value() && this.locale.value() !== 'en-us') {
+      uri = `/${this.locale.value()}${uri}`
+    }
+    return uri
+  }
+
+  public resourceLink({ type, category, id }: { type: NwLinkResource, category?: string, id: string }) {
+    return buddyLinkUrl({
+      id: id,
+      type: type,
+      category: category,
+      lang: this.locale.value(),
+      ptr: environment.isPTR,
+    })
+  }
+
+  public tooltipLink(type: NwLinkResource, id: string) {
     if (!id || !type) {
       return null
     }
     const options: NwLinkOptions = {
       id: id,
       type: type,
-      lang: this.locale.value,
+      lang: this.locale.value(),
       ptr: environment.isPTR,
     }
-    if (this.provider === 'nwdb') {
+    if (this.tooltipProvider() === 'nwdb') {
       return nwdbLinkUrl(options)
     }
-    if (this.provider === 'buddy') {
+    if (this.tooltipProvider() === 'buddy') {
       return buddyLinkUrl(options)
     }
     return ''
-  }
-
-  private watchSetting() {
-    if (!this.isEnaled) {
-      return
-    }
-    this.pref.tooltipProvider
-      .observe()
-      .pipe(takeUntilDestroyed(this.dRef))
-      .subscribe((value) => {
-        // nwgide has been temporarily removed
-        // may be enabled when they update their site
-        this.provider = this.isEnaled ? 'nwdb' : 'buddy'
-        if (this.provider === 'nwdb') {
-          installNwdb(this.document)
-        }
-      })
   }
 }
 
@@ -71,5 +75,5 @@ function installNwdb(document: Document) {
   const el = document.createElement('script')
   el.async = true
   el.src = script
-  document.head.append(el)
+  document.head.appendChild(el)
 }

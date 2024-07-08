@@ -21,6 +21,12 @@ export class PlatformService {
     return this.ngPlatform.isBrowser
   }
   /**
+   * Whether the Angular application is being rendered in server.
+   */
+  public get isServer() {
+    return !this.ngPlatform.isBrowser
+  }
+  /**
    * Whether the current browser is Microsoft Edge.
    */
   public get isEdge() {

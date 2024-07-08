@@ -2,13 +2,14 @@ import { ItemRarity, NW_FALLBACK_ICON, getItemIconPath, getItemId, getItemRarity
 import { EntitlementData } from '@nw-data/generated'
 import { Observable, map, of } from 'rxjs'
 import { NwDataService } from '~/data'
+import { NwLinkResource } from '~/nw'
 import { combineLatestOrEmpty, humanize } from '~/utils'
 
 export interface EntitlementReward {
   label: string
   icon: string
   tip?: string
-  link?: string | any[]
+  link?: [NwLinkResource, string]
   rarity?: ItemRarity
 }
 
@@ -35,7 +36,7 @@ export function selectEntitlementRewards(
             return {
               label: item.Name,
               icon: getItemIconPath(item) || NW_FALLBACK_ICON,
-              link: [isHousingItem(item) ? '/housing' : '/items', 'table', getItemId(item)],
+              link: [isHousingItem(item) ? 'housing' : 'item', getItemId(item)],
               rarity: getItemRarity(item),
             }
           })
@@ -49,7 +50,7 @@ export function selectEntitlementRewards(
             return {
               label: item.DisplayName,
               icon: item.UiImage || NW_FALLBACK_ICON,
-              link: ['/emotes', 'table', item.UniqueTagID],
+              link: ['emote', item.UniqueTagID],
             }
           })
         }),
@@ -62,7 +63,7 @@ export function selectEntitlementRewards(
             return {
               label: item.DisplayName,
               icon: item.IconPath || NW_FALLBACK_ICON,
-              link: ['/mounts', 'table', item.MountId],
+              link: ['mount', item.MountId],
             }
           })
         }),
@@ -75,7 +76,7 @@ export function selectEntitlementRewards(
             return {
               label: item.TitleMale,
               icon: NW_FALLBACK_ICON,
-              link: ['/player-titles', 'table', item.TitleID],
+              link: ['player-title', item.TitleID],
             }
           })
         }),
@@ -88,7 +89,7 @@ export function selectEntitlementRewards(
             return {
               label: item.DisplayName,
               icon: item.PlaceholderIcon || NW_FALLBACK_ICON,
-              link: ['/status-effects', 'table', item.StatusID],
+              link: ['status-effect', item.StatusID],
             }
           })
         }),

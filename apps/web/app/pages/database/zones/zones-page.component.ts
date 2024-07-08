@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ViewChild, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
@@ -11,7 +10,16 @@ import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, selectSignal } from '~/utils'
+import {
+  HtmlHeadService,
+  eqCaseInsensitive,
+  injectBreakpoint,
+  injectChildRouteParam,
+  injectRouteParam,
+  injectUrlParams,
+  selectSignal,
+} from '~/utils'
+import { PlatformService } from '~/utils/services/platform.service'
 import { ItemTableRecord } from '~/widgets/data/item-table'
 import { ZoneDetailModule } from '~/widgets/data/zone-detail'
 import { ZoneTableAdapter } from '~/widgets/data/zone-table'
@@ -38,7 +46,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ZoneDetailModule,
   ],
   host: {
-    class: 'ion-page'
+    class: 'ion-page',
   },
   providers: [
     provideDataView({
@@ -62,8 +70,9 @@ export class ZonePageComponent {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
-  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected platform = inject(PlatformService)
+  protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
+  protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 

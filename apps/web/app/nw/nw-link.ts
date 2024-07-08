@@ -1,15 +1,24 @@
 export type NwLinkResource =
-  | 'item'
-  | 'recipe'
   | 'ability'
+  | 'damage'
+  | 'emote'
+  | 'game-event'
+  | 'gatherable'
+  | 'housing'
+  | 'item'
+  | 'loot-limit'
+  | 'loot'
+  | 'lore'
+  | 'mount'
+  | 'npc'
   | 'perk'
-  | 'vitals'
-  | 'status-effect'
+  | 'player-title'
   | 'poi'
   | 'quest'
-  | 'mount'
-  | 'gatherable'
-  | 'npc'
+  | 'recipe'
+  | 'status-effect'
+  | 'transmog'
+  | 'vitals'
 
 export interface NwLinkOptions {
   ptr: boolean
@@ -18,36 +27,49 @@ export interface NwLinkOptions {
   id: string
 }
 
-
-const BUDDY_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
-  item: 'items/table',
-  recipe: 'crafting/table',
-  ability: 'abilities/table',
-  perk: 'perks/table',
-  vitals: 'vitals/table',
-  'status-effect': 'status-effects/table',
-  poi: 'poi/table',
-  quest: 'quests/table',
-  mount: 'mounts/table',
-  gatherable: 'gatherables/table',
-  npc: 'npcs/table',
+const BUDDY_TYPE_MAP: Record<NwLinkResource, string> = {
+  item: 'items',
+  housing: 'housing',
+  recipe: 'crafting',
+  ability: 'abilities',
+  perk: 'perks',
+  vitals: 'vitals',
+  'status-effect': 'status-effects',
+  poi: 'zones',
+  quest: 'quests',
+  mount: 'mounts',
+  gatherable: 'gatherables',
+  npc: 'npcs',
+  loot: 'loot',
+  transmog: 'transmog',
+  damage: 'damage',
+  lore: 'lore',
+  'player-title': 'player-titles',
+  emote: 'emotes',
+  'loot-limit': 'loot-limits',
+  'game-event': 'game-events',
 }
 
-export function buddyLinkUrl(options: NwLinkOptions) {
-  if (!options.type || !options.id) {
-    return ''
-  }
+export function buddyLinkUrl(options: NwLinkOptions & { category?: string }) {
   const type = BUDDY_TYPE_MAP[options.type]
   if (!type) {
-    return null
+    return ''
   }
-
-  return `${type}/${encodeURIComponent(options.id.trim())}`
+  const result: string[] = []
+  if (options.lang && options.lang !== 'en-us') {
+    result.push(options.lang)
+  }
+  result.push(type)
+  result.push(options.category || 'table')
+  if (options.id) {
+    result.push(encodeURIComponent(options.id.trim().toLowerCase()))
+  }
+  return '/' + result.join('/')
 }
-
 
 const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
   item: 'item',
+  housing: 'item',
   recipe: 'recipe',
   ability: 'ability',
   perk: 'perk',

@@ -27,7 +27,7 @@
     </a>
   } @else if (cell.routerLink) {
     <a
-      [routerLink]="cell.routerLink"
+      [routerLink]="cell.routerLink | nwLink"
       [queryParams]="cell.queryParams"
       class="link link-primary"
       [tooltip]="cell.tooltip"

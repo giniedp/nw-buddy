@@ -18,18 +18,14 @@ import { PerkTableRecord } from './perk-table-cols'
   selector: 'nwb-perk-grid-cell',
   template: `
     <nwb-item-header class="gap-2">
-      <a [nwbItemIcon]="icon" [nwLink]="perkId" [nwLinkResource]="'perk'" class="w-[76px] h-[76px]"> </a>
-      <nwb-item-header-content class="z-10" [title]="name | nwText | nwTextBreak : ' - '">
+      <a [nwbItemIcon]="icon" [nwLinkTooltip]="['perk', perkId]" class="w-[76px] h-[76px]"> </a>
+      <nwb-item-header-content class="z-10" [title]="name | nwText | nwTextBreak: ' - '">
         <div class="flex flex-col">
           <span class="text-xs">perk</span>
           <div class="flex flex-row justify-between items-center">
             <span>{{ type }}</span>
             <div class="flex flex-row items-center gap-1">
-              <span
-                *ngFor="let item of exclusiveLabels"
-                class="badge badge-sm"
-                [class.badge-error]="item.isError"
-              >
+              <span *ngFor="let item of exclusiveLabels" class="badge badge-sm" [class.badge-error]="item.isError">
                 {{ item.label }}</span
               >
               <span>{{ mods | nwText }}</span>
@@ -51,14 +47,14 @@ import { PerkTableRecord } from './perk-table-cols'
 
         <ng-container *ngIf="store.description$ | async; let description">
           <div
-            [nwHtml]="description | nwText : (store.textContext$ | async) | nwTextBreak"
+            [nwHtml]="description | nwText: (store.textContext$ | async) | nwTextBreak"
             class="text-nw-description italic"
           ></div>
 
           <div *ngIf="store.itemClassGsBonus$ | async; let bonus">
             On {{ bonus.itemClass }}:
             <div
-              [nwHtml]="description | nwText : (store.textContextClass$ | async) | nwTextBreak"
+              [nwHtml]="description | nwText: (store.textContextClass$ | async) | nwTextBreak"
               class="text-nw-description italic"
             ></div>
           </div>
@@ -127,7 +123,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
     protected context: NwTextContextService,
     protected store: PerkDetailStore,
     protected db: NwDataService,
-    protected tip: TooltipDirective
+    protected tip: TooltipDirective,
   ) {
     //
   }

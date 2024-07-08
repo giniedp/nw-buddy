@@ -42,7 +42,7 @@ export class GameEventDetailComponent {
           {
             value: String(value),
             accent: true,
-            routerLink: ['/game-events/table', value],
+            routerLink: ['game-event', value],
           },
         ]
       }
@@ -52,7 +52,7 @@ export class GameEventDetailComponent {
           {
             value: String(value),
             accent: true,
-            routerLink: ['/loot-limits/table', value],
+            routerLink: ['loot-limit', value],
           },
         ]
       }
@@ -63,7 +63,7 @@ export class GameEventDetailComponent {
             {
               value: value,
               accent: true,
-              routerLink: ['/loot/table', id.replace('[LTID]', '')],
+              routerLink: ['loot', id.replace('[LTID]', '')],
             },
           ]
         }
@@ -72,7 +72,7 @@ export class GameEventDetailComponent {
             {
               value: value,
               accent: true,
-              routerLink: ['/housing/table', value],
+              routerLink: ['housing', value],
             },
           ]
         }
@@ -80,7 +80,7 @@ export class GameEventDetailComponent {
           {
             value: value,
             accent: true,
-            routerLink: ['/items/table', value],
+            routerLink: ['item', value],
           },
         ]
       }

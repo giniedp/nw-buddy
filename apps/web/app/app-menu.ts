@@ -99,12 +99,18 @@ export const APP_MENU: AppMenuGroup[] = [
 
 ]
 
-export const LANG_OPTIONS = [
-  { value: 'de-de', label: 'DE' },
-  { value: 'en-us', label: 'EN' },
-  { value: 'es-es', label: 'ES' },
-  { value: 'fr-fr', label: 'FR' },
-  { value: 'it-it', label: 'IT' },
-  { value: 'pl-pl', label: 'PL' },
-  { value: 'pt-br', label: 'BR' },
+export interface LanguageOption {
+  value: string
+  label: string
+  isDefault: boolean
+}
+
+export const LANG_OPTIONS: LanguageOption[] = [
+  { value: 'de-de', label: 'DE', isDefault: false },
+  { value: 'en-us', label: 'EN', isDefault: true },
+  { value: 'es-es', label: 'ES', isDefault: false },
+  { value: 'fr-fr', label: 'FR', isDefault: false },
+  { value: 'it-it', label: 'IT', isDefault: false },
+  { value: 'pl-pl', label: 'PL', isDefault: false },
+  { value: 'pt-br', label: 'BR', isDefault: false },
 ]

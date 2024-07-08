@@ -1,6 +1,5 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLink]="mountId$ | async" [nwLinkResource]="'mount'" class="w-[76px] h-[76px]">
-  </a>
+  <a [nwbItemIcon]="icon$ | async" [nwLinkTooltip]="['mount', mountId$ | async]" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
     [title]="name$ | async | nwText | nwTextBreak: ' - '"

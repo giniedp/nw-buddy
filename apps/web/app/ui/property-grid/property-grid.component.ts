@@ -6,6 +6,7 @@ import { humanize } from '~/utils'
 import { TooltipModule } from '../tooltip'
 import { PropertyGridCell, PropertyGridCellContext, PropertyGridCellDirective } from './property-grid-cell.directive'
 import { PropertyGridValueDirective } from './property-grid-value.directive'
+import { NwModule } from '~/nw'
 
 export interface PropertyGridEntry {
   key: string
@@ -18,7 +19,7 @@ export interface PropertyGridEntry {
   selector: 'nwb-property-grid',
   templateUrl: './property-grid.component.html',
   styleUrls: ['./property-grid.component.scss'],
-  imports: [CommonModule, RouterModule, TooltipModule, PropertyGridCellDirective, PropertyGridValueDirective],
+  imports: [NwModule, CommonModule, RouterModule, TooltipModule, PropertyGridCellDirective, PropertyGridValueDirective],
   providers: [DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

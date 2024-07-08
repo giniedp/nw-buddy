@@ -16,7 +16,7 @@
       ></nwb-tradeskill-progress>
     </div>
     <div class="flex flex-row gap-2 items-center" *ngFor="let step of row.steps; trackBy: trackByIndex">
-      <a [nwLink]="step.itemId" [nwLinkResource]="'item'">
+      <a [nwLinkTooltip]="['item', step.itemId]">
         <picture [nwIcon]="step.item" class="w-10 h-10"> </picture>
       </a>
       <div class="flex-1 flex flex-row items-center gap-1 leading-tight whitespace-nowrap overflow-hidden">

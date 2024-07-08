@@ -1,9 +1,10 @@
-import { Routes } from '@angular/router'
+import { Routes, UrlMatcher } from '@angular/router'
+import { LANG_OPTIONS } from './app-menu'
+import { AppComponent } from './app.component'
 import { ElectronComponent } from './electron'
 import { landingRedirect } from './landing-redirect'
 import { LandingComponent } from './landing.component'
 import { PrivacyComponent } from './privacy.component'
-import { AppComponent } from './app.component'
 
 const PAGE_ROUTES: Routes = [
   { path: 'ipfs', loadChildren: () => import('./pages/share').then((m) => m.ShareModule) },
@@ -127,7 +128,7 @@ export const APP_ROUTES: Routes = [
     component: ElectronComponent,
   },
   {
-    path: '',
+    matcher: localeRouteMatcher(LANG_OPTIONS.map((it) => it.value)),
     component: AppComponent,
     children: [
       {
@@ -145,26 +146,25 @@ export const APP_ROUTES: Routes = [
         path: '',
         children: PAGE_ROUTES,
       },
-      // {
-      //   path: 'archive',
-      //   component: ArchiveComponent,
-      //   children: [
-      //     {
-      //       path: '',
-      //       outlet: 'v',
-      //       component: LayoutColComponent,
-      //       children: [
-      //         {
-      //           path: ':version',
-      //           canActivate: [NwDataInterceptor.activateVersionGuard('version')],
-      //           children: routes,
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
-
       { path: '**', loadChildren: () => import('./pages/misc/not-found').then((m) => m.NotFoundModule) },
     ],
   },
 ]
+
+export function localeRouteMatcher(knownLocales: string[]): UrlMatcher {
+  return (url) => {
+    const token = url[0]?.path?.toLowerCase()
+    if (!knownLocales.includes(token)) {
+      return {
+        consumed: [],
+        posParams: {},
+      }
+    }
+    return {
+      consumed: [url[0]],
+      posParams: {
+        locale: url[0],
+      },
+    }
+  }
+}

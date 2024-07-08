@@ -1,8 +1,8 @@
 <div class="flex flex-row items-center gap-1">
-  <a [nwLink]="quest.ObjectiveID" [nwLinkResource]="'quest'" class="flex-none">
+  <a [nwLinkTooltip]="['quest', quest.ObjectiveID]" class="flex-none">
     <img [nwImage]="icon" class="w-5 h-5" />
   </a>
-  <a class="flex-1 link-hover" [routerLink]="['/quests/table', questId]">
+  <a class="flex-1 link-hover" [routerLink]="['quest', questId] | nwLink">
     <span>{{ title | nwText }}</span>
   </a>
   <button *ngIf="hasFollowUp" class="btn btn-sm btn-square btn-ghost flex-none" (click)="expand = !expand">

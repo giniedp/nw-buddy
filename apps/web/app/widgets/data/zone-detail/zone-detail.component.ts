@@ -75,7 +75,7 @@ export class ZoneDetailComponent {
           {
             value: String(value),
             primary: true,
-            routerLink: ['/zones/table', value],
+            routerLink: ['poi', value],
           },
         ]
       }

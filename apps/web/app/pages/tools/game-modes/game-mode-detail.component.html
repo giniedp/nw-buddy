@@ -132,14 +132,11 @@
           <ng-container *ngIf="expeditionItems$ | async; let items">
             <div *ngIf="items?.length" class="w-full max-w-md">
               <div class="flex flex-row gap-2">
-                <a
-                  [nwLink]="itemId(item)"
-                  [nwLinkResource]="'item'"
-                  *ngFor="let item of items"
-                  class="block w-full max-w-[60px] aspect-square"
-                >
-                  <picture [nwIcon]="item" class="block w-full h-full my-0"></picture>
-                </a>
+                @for (item of items; track $index) {
+                  <a [nwLinkTooltip]="['item', itemId(item)]" class="block w-full max-w-[60px] aspect-square">
+                    <picture [nwIcon]="item" class="block w-full h-full my-0"></picture>
+                  </a>
+                }
               </div>
             </div>
           </ng-container>

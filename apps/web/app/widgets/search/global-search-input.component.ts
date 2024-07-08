@@ -115,7 +115,7 @@ export class GlobalSearchInputComponent
     if (!value) {
       return []
     }
-    return this.api.search({ text: value, lang: this.locale.value, nwDataUrl: environment.nwDataUrl })
+    return this.api.search({ text: value, lang: this.locale.value(), nwDataUrl: environment.nwDataUrl })
   }
 
   protected closePanel() {

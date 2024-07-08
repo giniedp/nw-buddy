@@ -6,8 +6,7 @@
   <a
     [nwbItemIcon]="iconOverride || icon()"
     [cover]="true"
-    [nwLink]="enableInfoLink ? recordId() : null"
-    [nwLinkResource]="'item'"
+    [nwLinkTooltip]="enableInfoLink ? ['item', recordId()] : null"
     [rarity]="rarity()"
     class="aspect-square inline-block"
     [class.w-12]="size === 'xs'"
@@ -26,10 +25,10 @@
     <nwb-item-header-content
       class="z-10"
       nwbItemHeaderContent
-      [title]="isMissing() ? recordId() : name() | nwText | nwTextBreak: ' - '"
+      [title]="isMissing() ? recordId() : (name() | nwText | nwTextBreak: ' - ')"
       [titleLink]="enableLink ? recordLink() : null"
       [text1]="rarityName() | nwText"
-      [text2]="isMissing() ? 'Missing Item' : typeName() | nwText"
+      [text2]="isMissing() ? 'Missing Item' : (typeName() | nwText)"
       [text3]="size === 'sm' ? null : sourceLabel()"
       [rarity]="rarity()"
       [isNamed]="isNamed()"
@@ -39,7 +38,11 @@
         <div class="header flex flex-col justify-end">
           <nwb-item-marker [itemId]="recordId()" class="text-right" />
           @if (enableGsTracker()) {
-            <nwb-gs-tracker [itemId]="recordId()" class="text-right mt-1 tooltip-left" [emptyTip]="'Track Gear Score'" />
+            <nwb-gs-tracker
+              [itemId]="recordId()"
+              class="text-right mt-1 tooltip-left"
+              [emptyTip]="'Track Gear Score'"
+            />
           }
         </div>
       }

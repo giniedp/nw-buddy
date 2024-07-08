@@ -8,12 +8,13 @@ import { patchState, signalState } from '@ngrx/signals'
 import { map } from 'rxjs'
 import { NW_BUDDY_LIVE, NW_BUDDY_PTR, environment } from '../environments'
 import { APP_MENU } from './app-menu'
-import { NwModule } from './nw'
+import { NwLinkService, NwModule } from './nw'
 import { IconsModule } from './ui/icons'
 import { svgChevronLeft } from './ui/icons/svg'
 import { LayoutModule } from './ui/layout'
 import { MenuCloseDirective } from './ui/layout/menu.directive'
 import { injectCurrentUrl } from './utils/injection/current-url'
+import { LocaleService } from './i18n'
 
 @Component({
   standalone: true,
@@ -35,7 +36,9 @@ import { injectCurrentUrl } from './utils/injection/current-url'
   },
 })
 export class AppMenuComponent {
+  protected link = inject(NwLinkService)
   private sanitizer = inject(DomSanitizer)
+  private localeService = inject(LocaleService)
 
   protected get showPtrSwitch() {
     return (this.isLive || this.isPTR) && !environment.standalone
@@ -71,6 +74,10 @@ export class AppMenuComponent {
 
   protected get active() {
     return this.state.active()
+  }
+
+  protected get locale() {
+    return this.localeService.value()
   }
 
   protected readonly chevronIcon = svgChevronLeft

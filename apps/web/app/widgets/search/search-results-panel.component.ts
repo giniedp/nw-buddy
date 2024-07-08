@@ -1,12 +1,13 @@
 import { ScrollingModule } from '@angular/cdk/scrolling'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { NwModule } from '~/nw'
+import { NwLinkService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import type { SearchRecord } from './search-query.worker'
 import { animate, style, transition, trigger } from '@angular/animations'
+import { environment } from 'apps/web/environments'
 
 @Component({
   standalone: true,
@@ -26,6 +27,8 @@ import { animate, style, transition, trigger } from '@angular/animations'
   ],
 })
 export class SearchResultsPanelComponent {
+  protected link = inject(NwLinkService)
+
   @Input()
   public isLoading: boolean = false
 
@@ -40,39 +43,47 @@ export class SearchResultsPanelComponent {
     //
   }
 
+  protected getIcon(item: SearchRecord) {
+    console.log('item', item)
+    if (!item.icon) {
+      return NW_FALLBACK_ICON
+    }
+    return environment.cdnDataUrl + '/' + item.icon.replace(/\.png$/,'.webp').toLowerCase()
+  }
+
   protected getRoute(item: SearchRecord) {
     if (item.type === 'item') {
-      return ['/items/table', item.id]
+      return this.link.resourceLink({ type: 'item', id: item.id})
     }
     if (item.type === 'housing') {
-      return ['/housing/table', item.id]
+      return this.link.resourceLink({ type: 'housing', id: item.id})
     }
     if (item.type === 'crafting') {
-      return ['/crafting/table', item.id]
+      return this.link.resourceLink({ type: 'recipe', id: item.id})
     }
     if (item.type === 'perk') {
-      return ['/perks/table', item.id]
+      return this.link.resourceLink({ type: 'perk', id: item.id})
     }
     if (item.type === 'ability') {
-      return ['/abilities/table', item.id]
+      return this.link.resourceLink({ type: 'ability', id: item.id})
     }
     if (item.type === 'statuseffect') {
-      return ['/status-effects/table', item.id]
+      return this.link.resourceLink({ type: 'status-effect', id: item.id})
     }
     if (item.type === 'zone') {
-      return ['/zones/table', item.id]
+      return this.link.resourceLink({ type: 'poi', id: item.id})
     }
     if (item.type === 'quest') {
-      return ['/quests/table', item.id]
+      return this.link.resourceLink({ type: 'quest', id: item.id})
     }
     if (item.type === 'vital') {
-      return ['/vitals/table', item.id]
+      return this.link.resourceLink({ type: 'vitals', id: item.id})
     }
     if (item.type === 'appearance' || item.type === 'transmog') {
-      return ['/transmog/table', item.id]
+      return this.link.resourceLink({ type: 'transmog', id: item.id})
     }
     if (item.type === 'mount') {
-      return ['/mounts/table', item.id]
+      return this.link.resourceLink({ type: 'mount', id: item.id})
     }
     console.warn('Unknown item type', item)
     return null

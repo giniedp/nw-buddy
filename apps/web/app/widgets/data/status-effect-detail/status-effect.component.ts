@@ -79,7 +79,7 @@ export class StatusEffectDetailComponent {
           {
             value: String(value),
             accent: true,
-            routerLink: ['/abilities/table', value],
+            routerLink: ['ability', value],
           },
         ]
       }
@@ -129,7 +129,7 @@ function statusEffectCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: isLink,
-      routerLink: isLink ? ['/status-effects/table', it] : null,
+      routerLink: isLink ? ['status-effect', it] : null,
     }
   })
 }

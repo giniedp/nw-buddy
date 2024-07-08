@@ -1,5 +1,5 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon()" [nwLink]="recordId()" [nwLinkResource]="'ability'" class="w-[76px] h-[76px]"> </a>
+  <a [nwbItemIcon]="icon()" [nwLinkTooltip]="['ability', recordId()]" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
     [title]="displayName() | nwText | nwTextBreak: ' - '"

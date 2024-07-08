@@ -11,7 +11,7 @@
   <div class="flex flex-row flex-wrap gap-2 max-h-96 overflow-auto">
     @for (row of rows(); track $index) {
       <a
-        [routerLink]="['/items/table', row.Item]"
+        [routerLink]="['item', row.Item] | nwLink"
         [nwbItemDetail]="row.Item"
         #detail="itemDetail"
         [nwbItemIcon]="detail.item$ | async"

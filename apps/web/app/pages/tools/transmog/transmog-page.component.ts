@@ -1,7 +1,6 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { NwModule } from '~/nw'
@@ -14,7 +13,15 @@ import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, selectSignal } from '~/utils'
+import {
+  HtmlHeadService,
+  eqCaseInsensitive,
+  injectBreakpoint,
+  injectChildRouteParam,
+  injectRouteParam,
+  selectSignal,
+} from '~/utils'
+import { PlatformService } from '~/utils/services/platform.service'
 import { TransmogItem } from '~/widgets/data/transmog'
 import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from '~/widgets/data/transmog-table'
 
@@ -77,8 +84,9 @@ export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogI
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
-  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected platform = inject(PlatformService)
+  protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
+  protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 

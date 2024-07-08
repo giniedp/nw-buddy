@@ -79,7 +79,7 @@ function statusEffectCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: isLink,
-      routerLink: isLink ? ['/status-effect-categories/table', it] : null,
+      routerLink: isLink ? ['status-effect', it] : null,
     }
   })
 }

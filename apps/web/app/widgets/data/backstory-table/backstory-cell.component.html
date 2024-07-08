@@ -49,7 +49,7 @@
     <div class="grid grid-cols-6 gap-2">
       @defer (on viewport(refBottom)) {
         @for (cell of data.$inventoryItems; track $index) {
-          <a [routerLink]="['/items/table', cell.itemId]">
+          <a [routerLink]="['item', cell.itemId] | nwLink">
             <nwb-item-icon
               [nwbItemIcon]="cell.item"
               [solid]="true"
