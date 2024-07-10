@@ -11,6 +11,9 @@ import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
   templateUrl: './data-view-toggle.component.html',
   imports: [CommonModule, IconsModule, OverlayModule],
   hostDirectives: [CdkOverlayOrigin],
+  host: {
+    '[data-testid]': 'nwbDataViewToggle',
+  }
 })
 export class DataViewToggleComponent {
   @Input()

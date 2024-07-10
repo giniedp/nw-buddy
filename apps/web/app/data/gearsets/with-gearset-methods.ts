@@ -127,7 +127,7 @@ export function withGearsetMethods() {
           const buffer = await file.arrayBuffer()
           const gearset = this.get().gearset
           const oldId = gearset.imageId
-          const result = await imagesDb.db.transaction('rw', imagesDb.table, async () => {
+          const result = await imagesDb.tx(async () => {
             if (oldId) {
               await imagesDb.destroy(oldId)
             }

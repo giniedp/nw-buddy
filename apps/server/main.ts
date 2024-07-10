@@ -1,22 +1,25 @@
 import { program } from 'commander'
 import { dirname, isAbsolute, join, resolve } from 'node:path'
-import { server as appServer } from './server'
+import { app as appServer } from './app'
 import { fileURLToPath } from 'node:url'
+import { z } from 'zod'
+
+const optionsSchema = z.object({
+  dir: z.string(),
+  host: z.string(),
+  port: z.string(),
+  ssr: z.boolean(),
+})
 
 program
   .version('0.0.0')
   .option('--host [host]', 'The listening hostname', '0.0.0.0')
   .option('--port [port]', 'The listening port', process.env['PORT'] || '4200')
   .option('--dir [dir]', 'The public directory with angular app', join('..', 'browser'))
+  .option('--ssr', 'Enables server side rendering (SEO tags only)', false)
   .parse(process.argv)
 
-const options =
-  program.opts<{
-    dir: string
-    storybook: string
-    host: string
-    port: string
-  }>()
+const options = optionsSchema.parse(program.opts())
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url))
 const publicDir = isAbsolute(options.dir) ? options.dir : resolve(serverDistFolder, options.dir)
@@ -25,9 +28,8 @@ const port = options.port
 
 function run() {
   let server = appServer({
-    host: host,
-    port: port,
     publicDir: publicDir,
+    indexHtml: join(publicDir, 'index.server.html')
   })
     .listen(Number(port), host, () => {
       console.log(`Server listening on http://${host}:${port} serving ${publicDir}`)

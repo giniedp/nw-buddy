@@ -85,7 +85,7 @@ function resolveSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
 
 function resolveItemInstance(db: ItemInstancesDB, idOrInstance: string | ItemInstance) {
   if (typeof idOrInstance === 'string') {
-    return db.live((t) => t.get(idOrInstance))
+    return db.observeByid(idOrInstance)// live((t) => t.get(idOrInstance))
   }
   return of(idOrInstance)
 }

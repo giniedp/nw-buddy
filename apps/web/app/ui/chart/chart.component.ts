@@ -11,6 +11,7 @@ import {
 import { ComponentStore } from '@ngrx/component-store'
 import { Chart, ChartConfiguration, registerables } from 'chart.js'
 import { Observable, map, takeUntil, tap } from 'rxjs'
+import { injectIsBrowser } from '~/utils/injection/platform'
 
 Chart.register(...registerables)
 
@@ -39,6 +40,7 @@ export class ChartComponent extends ComponentStore<{ config: ChartConfiguration}
   public canvas: ElementRef<HTMLCanvasElement>
 
   private chart: Chart
+  private isBrowser = injectIsBrowser()
 
   public constructor(
     @Optional()
@@ -73,7 +75,9 @@ export class ChartComponent extends ComponentStore<{ config: ChartConfiguration}
   }
 
   private createChart(config: ChartConfiguration) {
-    this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), config)
-    this.chart.update()
+    if (this.isBrowser) {
+      this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), config)
+      this.chart.update()
+    }
   }
 }

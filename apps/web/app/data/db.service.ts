@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 import { Table } from 'dexie'
+import { AppDbDexie } from './app-db.dexie'
 import { injectAppDB } from './db'
 import { GearsetsDB } from './gearsets'
 import { ItemInstancesDB } from './items'
@@ -9,7 +10,10 @@ export type ExportedTable = { name: string; rows: Object[] }
 
 @Injectable({ providedIn: 'root' })
 export class DbService {
-  public readonly db = injectAppDB()
+  private appDb = injectAppDB()
+  public get db() {
+    return (this.appDb as AppDbDexie)?.dexie
+  }
   public readonly items = inject(ItemInstancesDB)
   public readonly gearsets = inject(GearsetsDB)
 

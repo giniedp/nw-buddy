@@ -76,7 +76,7 @@ export function resolveSlotItemInstance(
   itemDB: ItemInstancesDB,
 ): Observable<ItemInstance> {
   const { instance, instanceId } = decodeSlot(slot)
-  return instanceId ? itemDB.live((t) => t.get(instanceId)) : of(instance)
+  return instanceId ? itemDB.observeByid(instanceId) : of(instance)
 }
 
 export function resolveGearsetSlotInstances(record: GearsetRecord, itemDB: ItemInstancesDB) {

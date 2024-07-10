@@ -171,7 +171,7 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
 
   protected async saveImageFile(file: File, oldId: string) {
     const buffer = await file.arrayBuffer()
-    const result = await this.imagesDb.db.transaction('rw', this.imagesDb.table, async () => {
+    const result = await this.imagesDb.tx(async () => {
       if (oldId) {
         await this.imagesDb.destroy(oldId).catch(() => null)
       }

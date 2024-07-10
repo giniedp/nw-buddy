@@ -1,73 +1,50 @@
-import Dexie, { liveQuery, PromiseExtended, Table } from 'dexie'
-import { customAlphabet } from 'nanoid/non-secure'
-import { defer, isObservable, of, Observable as RxObservable, switchMap } from 'rxjs'
+import { Observable } from 'rxjs'
+import { AppDbRecord, AppDbTable } from './app-db'
 
-// https://github.com/ai/nanoid
-// https://zelark.github.io/nano-id-cc/
-const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
+export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
+  public abstract readonly table: AppDbTable<T>
 
-export abstract class DBTable<T extends { id: string }> {
-  public readonly abstract db: Dexie
-  public readonly abstract table: Table<T>
-
-  public async resetDB() {
-    await this.db.open()
-    await this.db.delete()
-    await this.db.open()
+  public tx<R>(fn: () => Promise<R>): Promise<R> {
+    return this.table.tx(fn)
   }
 
-  public async all() {
-    return this.table.toArray()
+  public async count() {
+    return this.table.count()
+  }
+
+  public async keys() {
+    return this.table.keys()
+  }
+
+  public async list() {
+    return this.table.list()
   }
 
   public async create(record: Partial<T>) {
-    record = {
-      ...record,
-      id: record.id || createId(),
-    }
-    const id = await this.table.add(record as T, record.id)
-    return this.read(id as any)
+    return this.table.create(record)
   }
 
   public async read(id: string) {
-    return this.table.get(id)
+    return this.table.read(id)
   }
 
   public async update(id: string, record: Partial<T>) {
-    await this.table.update(id, record)
-    return this.read(id)
+    return this.table.update(id, record)
   }
 
   public async destroy(id: string | string[]) {
-    return this.table.delete(id)
+    return this.table.destroy(id)
   }
 
   public async createOrUpdate(record: T) {
-    if (record.id) {
-      await this.table.put(record, record.id)
-      return this.read(record.id)
-    }
-    return this.create(record)
-  }
-
-  public live<R>(fn: (tbale: Table<T>) => PromiseExtended<R>) {
-    return defer(
-      () =>
-        new RxObservable<R>((sub) => {
-          return liveQuery<R>(() => fn(this.table)).subscribe(sub)
-        })
-    )
+    return this.table.createOrUpdate(record)
   }
 
   public observeAll() {
-    return this.live((t) => t.toArray())
+    return this.table.observeAll()
   }
 
-  public observeByid(id: string | RxObservable<string>) {
-    return (isObservable(id) ? id : of(id)).pipe(
-      switchMap((id) => {
-        return id ? this.live((t) => t.get(id)) : of(null)
-      })
-    )
+  public observeByid(id: string | Observable<string>) {
+    return this.table.observeByid(id)
   }
 }

@@ -31,7 +31,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly weapons$ = this.select(({ current }) => current?.weaponLevels)
   public readonly imageId$ = this.select(({ current }) => current?.imageId)
   public readonly imageRecord$ = this.imageId$.pipe(
-    switchMap((id) => this.images.live((it) => it.get(id).catch(() => null as ImageRecord)))
+    switchMap((id) => this.images.observeByid(id))
   )
   public readonly imageUrl$ = this.select(this.imageRecord$, (record) => this.selectImageUrl(record))
 

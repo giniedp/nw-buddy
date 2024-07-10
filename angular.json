@@ -30,6 +30,10 @@
             "externalDependencies": ["assets/*"],
             "index": "apps/web/index.html",
             "browser": "apps/web/main.ts",
+            "server": "apps/web/main.server.ts",
+            "ssr": {
+              "entry": "apps/ssr/main.ts"
+            },
             "tsConfig": "apps/web/tsconfig.app.json",
             "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
             "polyfills": ["apps/web/polyfills.ts"],
@@ -79,6 +83,7 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "ssr": false,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
@@ -95,6 +100,7 @@
               "optimization": true,
               "outputHashing": "all",
               "baseHref": "/",
+              "ssr": false,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
@@ -113,6 +119,7 @@
               "baseHref": "./",
               "sourceMap": false,
               "namedChunks": false,
+              "ssr": false,
               "aot": true,
               "extractLicenses": true,
               "fileReplacements": [
@@ -133,6 +140,7 @@
               "baseHref": "/",
               "sourceMap": false,
               "namedChunks": false,
+              "ssr": false,
               "aot": true,
               "extractLicenses": true,
               "fileReplacements": [
