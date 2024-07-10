@@ -5,7 +5,7 @@ export const environment: Environment = {
   ...env,
   production: true,
   standalone: true,
-  environment: 'ELECTRON',
+  environment: 'STANDALONE',
   modelsUrlLow: getModelsUrlLowRes(env),
   modelsUrlMid: getModelsUrlMidRes(env),
   modelsUrlHigh: getModelsUrlHiRes(env),

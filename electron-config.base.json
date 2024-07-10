@@ -6,7 +6,7 @@
   "compression": "maximum",
   "files": [
     "dist/electron/**/*",
-    "dist/web-electron/browser/**/*",
+    "dist/web-standalone/browser/**/*",
     "!dist/nw-data",
     "!dist/server",
     "!dist/web",
@@ -21,19 +21,19 @@
   ],
   "extraResources": [],
   "win": {
-    "icon": "dist/web-electron/browser/assets/icons",
+    "icon": "dist/web-standalone/browser/assets/icons",
     "target": ["portable"]
   },
   "portable": {
-    "splashImage": "dist/web-electron/browser/assets/icons/electron.bmp",
+    "splashImage": "dist/web-standalone/browser/assets/icons/electron.bmp",
     "useZip": true
   },
   "mac": {
-    "icon": "dist/web-electron/browser/assets/icons",
+    "icon": "dist/web-standalone/browser/assets/icons",
     "target": ["dmg"]
   },
   "linux": {
-    "icon": "dist/web-electron/browser/assets/icons",
+    "icon": "dist/web-standalone/browser/assets/icons",
     "target": ["AppImage"]
   }
 }

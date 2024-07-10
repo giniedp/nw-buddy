@@ -32,7 +32,7 @@
             "browser": "apps/web/main.ts",
             "server": "apps/web/main.server.ts",
             "ssr": {
-              "entry": "apps/ssr/main.ts"
+              "entry": "apps/server/main.ts"
             },
             "tsConfig": "apps/web/tsconfig.app.json",
             "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
@@ -49,7 +49,9 @@
                 "glob": "**/*",
                 "ignore": [
                   "*.gz",
-                  "*.zip"
+                  "*.zip",
+                  "**/worldtiles/**",
+                  "**/items_hires/**"
                 ],
                 "input": "dist/nw-data/.current",
                 "output": "/nw-data/",
@@ -83,7 +85,6 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
-              "ssr": false,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
@@ -133,8 +134,8 @@
                 }
               ]
             },
-            "electron": {
-              "outputPath": "dist/web-electron",
+            "standalone": {
+              "outputPath": "dist/web-standalone",
               "optimization": true,
               "outputHashing": "all",
               "baseHref": "/",
@@ -146,7 +147,7 @@
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
-                  "with": "apps/web/environments/environment.electron.ts"
+                  "with": "apps/web/environments/environment.standalone.ts"
                 },
                 {
                   "replace": "apps/web/environments/env.ts",

@@ -94,7 +94,7 @@ const winState = windowState({
   },
 })
 const loadUrl = createSpa({
-  directory: path.join(__dirname, '../web-electron/browser'),
+  directory: path.join(__dirname, '../web-standalone/browser'),
   file: 'index.html',
 })
 
