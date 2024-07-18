@@ -1,74 +1,145 @@
-import { Injectable } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { getItemIconPath, getItemId, getItemRarity, getQuestRequiredAchuevmentIds, getQuestTypeIcon, isHousingItem } from '@nw-data/common'
+import { computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
+import {
+  getItemIconPath,
+  getItemId,
+  getItemRarity,
+  getQuestRequiredAchievmentIds,
+  getQuestTypeIcon,
+  isHousingItem,
+} from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions, Objectives } from '@nw-data/generated'
-import { flatten } from 'lodash'
+import { flatten, uniq, uniqBy } from 'lodash'
 import { NwDataService } from '~/data'
-import { humanize } from '~/utils'
+import { combineLatestOrEmpty, humanize, mapList, selectSignal } from '~/utils'
 import { GameEventReward, selectGameEventRewards } from '../game-event-detail/selectors'
 import { FollowUpQuest } from './types'
+import { map, switchMap } from 'rxjs'
 
-@Injectable()
-export class QuestDetailStore extends ComponentStore<{ questId: string }> {
-  public readonly questId$ = this.select(({ questId }) => questId)
-
-  public readonly quest$ = this.select(this.db.quest(this.questId$), (it) => it)
-  public readonly title$ = this.select(this.quest$, (it) => it?.Title || humanize(it?.ObjectiveID))
-  public readonly type$ = this.select(this.quest$, (it) => it?.Type)
-  public readonly schedule$ = this.select(this.quest$, (it) => it?.ScheduleId)
-  public readonly npcDestinationId$ = this.select(this.quest$, (it) => it?.NpcDestinationId)
-  public readonly npcDestination$ = this.select(this.db.npc(this.npcDestinationId$), (it) => it)
-  public readonly description$ = this.select(this.quest$, (it) => it?.Description)
-  public readonly level$ = this.select(this.quest$, (it) => it?.DifficultyLevel)
-  public readonly levelLabel$ = this.select(this.level$, (lvl) => (lvl ? `lvl. ${lvl}` : ''))
-  public readonly prompt$ = this.select(this.quest$, (it) => it?.PlayerPrompt)
-  public readonly response$ = this.select(this.quest$, (it) => it?.ObjectiveProposalResponse)
-  public readonly inProgressResponse$ = this.select(this.quest$, (it) => it?.InProgressResponse)
-  public readonly icon$ = this.select(this.quest$, (it) => getQuestTypeIcon(it?.Type))
-  public readonly followup$ = this.select(this.quest$, this.db.questsByRequiredAchievementIdMap, selectFollowupQuests)
-  public readonly previous$ = this.select(this.quest$, this.db.questsByAchievementIdMap, selectPreviousQuests)
-  public readonly eventId$ = this.select(this.quest$, (it) => it?.SuccessGameEventId)
-  public readonly event$ = this.select(this.db.gameEvent(this.eventId$), (it) => it)
-  public readonly eventStatusEffectId$ = this.select(this.event$, (it) => it?.StatusEffectId)
-  public readonly eventStatusEffect$ = this.select(this.db.statusEffect(this.eventStatusEffectId$), (it) => it)
-  public readonly eventItemRewardId$ = this.select(this.event$, (it) => it?.ItemReward)
-  public readonly eventItemReward$ = this.select(this.db.itemOrHousingItem(this.eventItemRewardId$), (it) => it)
-  public readonly eventRewards$ = this.select(this.event$, this.eventItemReward$, selectGameEventRewards)
-  public readonly rewardItemId$ = this.select(this.quest$, (it) => it?.ItemRewardName)
-  public readonly rewardItem$ = this.select(this.db.itemOrHousingItem(this.rewardItemId$), (it) => it)
-  public readonly rewardItemQty$ = this.select(this.quest$, (it) => it?.ItemRewardQty)
-  public readonly reward$ = this.select(this.rewardItem$, this.rewardItemQty$, selectReward)
-  public readonly rewards$ = this.select(this.eventRewards$, this.reward$, selectRewards)
-
-
-  public readonly previousQuests$ = this.select(this.previous$, (list) => {
-    if (!list?.length) {
-      return null
-    }
-    return list?.map((it) => {
-      return {
-        quest: it,
-        id: it?.ObjectiveID,
-        icon: getQuestTypeIcon(it?.Type),
-        title: it?.Title || humanize(it?.ObjectiveID),
-      }
-    })
-  })
-
-  public constructor(protected db: NwDataService) {
-    super({ questId: null })
-  }
-
-  public update(questId: string) {
-    this.patchState({ questId: questId })
-  }
+export interface QuestDetailState {
+  questId: string
 }
+
+export const QuestDetailStore = signalStore(
+  withState<QuestDetailState>({
+    questId: null,
+  }),
+  withComputed(({ questId }) => {
+    const db = inject(NwDataService)
+    const quest = selectSignal(db.objective(questId))
+    return {
+      quest,
+      title: selectSignal(quest, (it) => it?.Title || humanize(it?.ObjectiveID)),
+      type: selectSignal(quest, (it) => it?.Type),
+      taskId: selectSignal(quest, (it) => it?.Task),
+      schedule: selectSignal(quest, (it) => it?.ScheduleId),
+      description: selectSignal(quest, (it) => it?.Description),
+      level: selectSignal(quest, (it) => it?.DifficultyLevel),
+      prompt: selectSignal(quest, (it) => it?.PlayerPrompt),
+      response: selectSignal(quest, (it) => it?.ObjectiveProposalResponse),
+      inProgressResponse: selectSignal(quest, (it) => it?.InProgressResponse),
+      icon: selectSignal(quest, (it) => getQuestTypeIcon(it?.Type)),
+    }
+  }),
+  withComputed(({ questId, quest, level }) => {
+    const db = inject(NwDataService)
+    const npcDestinationId = selectSignal(quest, (it) => it?.NpcDestinationId)
+    const npcDestination = toSignal(db.npc(npcDestinationId))
+    const levelLabel = selectSignal(level, (lvl) => (lvl ? `lvl. ${lvl}` : ''))
+    // const conversationStates$ = db.conversationStatesByObjectiveId(questId)
+    // const npcs$ = conversationStates$.pipe(
+    //   map((list) => list || []),
+    //   mapList((it) => it.ConversationStateId),
+    //   switchMap((list) => combineLatestOrEmpty(list.map((id) => db.npcsByConversationStateId(id)))),
+    //   map((list) =>
+    //     uniqBy(
+    //       list.flat().filter((it) => !!it),
+    //       (it) => it.NPCId,
+    //     ),
+    //   ),
+    // )
+
+    return {
+      npcDestination,
+      levelLabel,
+      conversations: toSignal(db.conversationStatesByObjectiveId(questId)),
+      // npcs: toSignal(npcs$),
+    }
+  }),
+
+  withComputed(({ quest }) => {
+    const db = inject(NwDataService)
+
+    const eventId = selectSignal(quest, (it) => it?.SuccessGameEventId)
+    const event = toSignal(db.gameEvent(eventId))
+    const eventStatusEffectId = selectSignal(event, (it) => it?.StatusEffectId)
+    const eventStatusEffect = selectSignal(db.statusEffect(eventStatusEffectId))
+    const eventItemRewardId = selectSignal(event, (it) => it?.ItemReward)
+    const eventItemReward = toSignal(db.itemOrHousingItem(eventItemRewardId))
+    const eventRewards = computed(() => selectGameEventRewards(event(), eventItemReward()))
+
+    const rewardItemId = selectSignal(quest, (it) => it?.ItemRewardName)
+    const rewardItem = selectSignal(db.itemOrHousingItem(rewardItemId))
+    const rewardItemQty = selectSignal(quest, (it) => it?.ItemRewardQty)
+    const reward = computed(() => selectReward(rewardItem(), rewardItemQty()))
+    const rewards = computed(() => selectRewards(eventRewards(), reward()))
+    return {
+      event,
+      eventStatusEffect,
+      eventItemReward,
+      eventRewards,
+      reward,
+      rewards,
+    }
+  }),
+  withComputed((state) => {
+    const db = inject(NwDataService)
+    return {
+      followup: selectSignal(
+        {
+          quest: state.quest,
+          objectives: db.objectivesByRequiredAchievementIdMap,
+        },
+        ({ quest, objectives }) => {
+          return selectFollowupQuests(quest, objectives)
+        },
+      ),
+      previous: selectSignal(
+        {
+          quest: state.quest,
+          objectives: db.objectivesByAchievementIdMap,
+        },
+        ({ quest, objectives }) => {
+          return selectPreviousQuests(quest, objectives)
+        },
+      ),
+    }
+  }),
+  withComputed(({ previous }) => {
+    return {
+      previousQuests: computed(() => {
+        if (!previous()?.length) {
+          return null
+        }
+        return previous()?.map((it) => {
+          return {
+            quest: it,
+            id: it?.ObjectiveID,
+            icon: getQuestTypeIcon(it?.Type),
+            title: it?.Title || humanize(it?.ObjectiveID),
+          }
+        })
+      }),
+    }
+  }),
+)
 
 function selectFollowupQuests(
   quest: Objectives,
-  questsByRequiredAchievementId: Map<string, Objectives[]>
+  questsByRequiredAchievementId: Map<string, Objectives[]>,
 ): FollowUpQuest[] {
-  if (!quest.AchievementId) {
+  if (!quest?.AchievementId) {
     return null
   }
   const quests = questsByRequiredAchievementId.get(quest.AchievementId)
@@ -85,7 +156,7 @@ function selectFollowupQuests(
 }
 
 function selectPreviousQuests(quest: Objectives, questsByAchievementId: Map<string, Objectives[]>): Objectives[] {
-  const quests = getQuestRequiredAchuevmentIds(quest).map((id) => questsByAchievementId.get(id) || [])
+  const quests = getQuestRequiredAchievmentIds(quest).map((id) => questsByAchievementId.get(id) || [])
   return flatten(quests)
 }
 
@@ -98,10 +169,7 @@ function selectReward(item: MasterItemDefinitions | HouseItems, qty: number): Ga
     rarity: getItemRarity(item),
     label: item.Name,
     quantity: qty,
-    link: [
-      isHousingItem(item) ? 'housing' : 'item',
-      getItemId(item)
-    ]
+    link: [isHousingItem(item) ? 'housing' : 'item', getItemId(item)],
   }
 }
 function selectRewards(event: GameEventReward[], reward: GameEventReward): GameEventReward[] {

@@ -33,7 +33,7 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Tab
   private utils: TableGridUtils<QuestTableRecord> = inject(TableGridUtils)
 
   public entityID(item: QuestTableRecord): string | number {
-    return item.ObjectiveID
+    return item.ObjectiveID.toLowerCase()
   }
 
   public entityCategories(item: QuestTableRecord): DataTableCategory[] {
@@ -60,7 +60,7 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Tab
   public connect() {
     return selectStream(
       {
-        items: this.config?.source || this.db.quests,
+        items: this.config?.source || this.db.objectives,
         events: this.db.gameEventsMap,
       },
       ({ items, events }) => {

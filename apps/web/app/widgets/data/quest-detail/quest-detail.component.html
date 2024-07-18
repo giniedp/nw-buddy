@@ -1,84 +1,93 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLinkTooltip]="['quest', questId$ | async]" class="w-[76px] h-[76px]"> </a>
+  <a [nwbItemIcon]="detail.icon()" [solid]="true" [nwLinkTooltip]="['quest', questId]" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="title$ | async | nwText | nwTextBreak: ' - '"
-    [text1]="type$ | async | nwHumanize"
+    [title]="detail.title() | nwText | nwTextBreak: ' - '"
+    [text1]="detail.type() | nwHumanize"
     [text2]="'quest'"
-    [text3]="levelLabel$ | async"
+    [text3]="detail.levelLabel()"
   />
 </nwb-item-header>
-<div class="p-4 flex flex-col gap-2">
-  @if (description$ | async; as text) {
-    <div class="text-nw-description italic" [nwHtml]="text | nwText | nwTextBreak"></div>
-  }
-  @if (prompt$ | async; as text) {
-    <div class="chat chat-start">
-      <div class="chat-bubble" [nwText]="text"></div>
-    </div>
-  }
-  @if (response$ | async; as text) {
-    <div class="chat chat-end">
-      <div class="chat-bubble" [nwText]="text"></div>
-    </div>
-  }
-  @if (inProgressResponse$ | async; as text) {
-    <div class="chat chat-end">
-      <div class="chat-bubble" [nwText]="text"></div>
-    </div>
-  }
-  @if (schedule$ | async; as text) {
-    <div class="flex flex-col gap-1">
-      <h3 class="font-bold">Schedule</h3>
-      <div class="px-2">{{ text | nwHumanize }}</div>
-    </div>
-  }
-  @if (rewards$ | async; as rewards) {
-    <div class="flex flex-col gap-1">
-      <h3 class="font-bold">Rewards</h3>
-      <nwb-game-event-detail-rewards [rewards]="rewards" />
-    </div>
-  }
-  @if (eventStatusEffect$ | async; as effect) {
-    <div class="flex flex-col gap-1">
-      <h3 class="font-bold">Rewards Effect</h3>
-      <a class="flex-1 link-hover pl-2" [routerLink]="['status-effect', effect.StatusID] | nwLink">
-        <span>{{ effect.DisplayName || (effect.StatusID | nwHumanize) | nwText }}</span>
+<div class="p-4 flex flex-col gap-4">
+  <nwb-quest-detail-description />
+
+  <div role="tablist" class="tabs tabs-bordered">
+    @for (tab of tabs; track $index) {
+      <a
+        role="tab"
+        class="tab"
+        [routerLink]="'.'"
+        [queryParams]="{ tab: tab.id }"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [routerLinkActive]="'tab-active'"
+      >
+        {{ tab.label }}
       </a>
-    </div>
-  }
-  @if (previousQuests$ | async; as prev) {
-    <div class="flex flex-col gap-1">
-      <h3 class="font-bold">Previous Quests</h3>
-      @for (quest of prev; track $index) {
-        <div class="flex flex-row items-center gap-1">
-          <a [nwLinkTooltip]="['quest', quest.id]" class="flex-none">
-            <img [nwImage]="quest.icon" class="w-5 h-5" />
-          </a>
-          <a class="flex-1 link-hover" [routerLink]="['quest', quest.id] | nwLink">
-            <span>{{ quest.title | nwText }}</span>
+    }
+  </div>
+
+  @switch (tab()) {
+    @case ('npcs') {
+      <nwb-quest-detail-conversation-list />
+      <nwb-quest-detail-destination />
+    }
+    @case ('tree') {
+      <div class="flex flex-col gap-1">
+        <h3 class="font-bold" [routerLink]="">Quest Tree</h3>
+        <nwb-quest-tree [questId]="questId" />
+      </div>
+    }
+    @default {
+      @if (detail.taskId()) {
+        <div class="flex flex-col gap-1">
+          <h3 class="font-bold">Tasks</h3>
+          <nwb-quest-task-detail [taskId]="detail.taskId()" />
+        </div>
+      }
+
+      @if (detail.schedule(); as text) {
+        <div class="flex flex-col gap-1">
+          <h3 class="font-bold">Schedule</h3>
+          <div class="px-2">{{ text | nwHumanize }}</div>
+        </div>
+      }
+      @if (detail.rewards(); as rewards) {
+        <div class="flex flex-col gap-1">
+          <h3 class="font-bold">Rewards</h3>
+          <nwb-game-event-detail-rewards [rewards]="rewards" />
+        </div>
+      }
+      @if (detail.eventStatusEffect(); as effect) {
+        <div class="flex flex-col gap-1">
+          <h3 class="font-bold">Rewards Effect</h3>
+          <a class="flex-1 link-hover pl-2" [routerLink]="['status-effect', effect.StatusID] | nwLink">
+            <span>{{ effect.DisplayName || (effect.StatusID | nwHumanize) | nwText }}</span>
           </a>
         </div>
       }
-    </div>
-  }
-  @if (followup$ | async; as followup) {
-    <div class="flex flex-col gap-1">
-      <h3 class="font-bold">Follow Up Quests</h3>
-      @for (row of followup; track $index) {
-        <nwb-quest-detail-follow-up [data]="row" />
+      @if (detail.previousQuests(); as prev) {
+        <div class="flex flex-col gap-1">
+          <h3 class="font-bold">Previous Quests</h3>
+          @for (quest of prev; track $index) {
+            <div class="flex flex-row items-center gap-1">
+              <a [nwLinkTooltip]="['quest', quest.id]" class="flex-none">
+                <img [nwImage]="quest.icon" class="w-5 h-5" />
+              </a>
+              <a class="flex-1 link-hover" [routerLink]="['quest', quest.id] | nwLink">
+                <span>{{ quest.title | nwText }}</span>
+              </a>
+            </div>
+          }
+        </div>
       }
-    </div>
-  }
-  @if (npcDestination$ | async; as npc) {
-    <h3 class="font-bold">Npc Destination</h3>
-    <div class="flex flex-row items-center gap-1">
-      <a [nwLinkTooltip]="['npc', npc.NPCId]" class="flex-none">
-        <img [nwImage]="defaultIcon" class="w-5 h-5" />
-      </a>
-      <a class="flex-1 link-hover" [routerLink]="['npc', npc.NPCId] | nwLink">
-        <span>{{ npc.GenericName | nwText }}</span>
-      </a>
-    </div>
+      @if (detail.followup(); as followup) {
+        <div class="flex flex-col gap-1">
+          <h3 class="font-bold">Follow Up Quests</h3>
+          @for (row of followup; track $index) {
+            <nwb-quest-detail-follow-up [data]="row" />
+          }
+        </div>
+      }
+    }
   }
 </div>

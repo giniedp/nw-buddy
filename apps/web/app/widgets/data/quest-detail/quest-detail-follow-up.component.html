@@ -5,15 +5,21 @@
   <a class="flex-1 link-hover" [routerLink]="['quest', questId] | nwLink">
     <span>{{ title | nwText }}</span>
   </a>
-  <button *ngIf="hasFollowUp" class="btn btn-sm btn-square btn-ghost flex-none" (click)="expand = !expand">
-    <nwb-icon
-      [icon]="iconArrow"
-      class="w-4 h-4 transition-transform"
-      [class.rotate-90]="expand"
-      [class.-rotate-90]="!expand"
-    />
-  </button>
+  @if(hasFollowUp) {
+    <button class="btn btn-sm btn-square btn-ghost flex-none" (click)="expand = !expand">
+      <nwb-icon
+        [icon]="iconArrow"
+        class="w-4 h-4 transition-transform"
+        [class.rotate-90]="expand"
+        [class.-rotate-90]="!expand"
+      />
+    </button>
+  }
 </div>
-<div *ngIf="hasFollowUp && expand" class="flex flex-col gap-1 pl-3">
-  <nwb-quest-detail-follow-up *ngFor="let row of next" [data]="row"></nwb-quest-detail-follow-up>
-</div>
+@if (hasFollowUp && expand) {
+  <div class="flex flex-col gap-1 pl-3" [class.pl-3]="next?.length > 1">
+    @for(row of next; track $index){
+      <nwb-quest-detail-follow-up [data]="row"/>
+    }
+  </div>
+}

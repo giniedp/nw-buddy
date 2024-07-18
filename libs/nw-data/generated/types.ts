@@ -4726,6 +4726,26 @@ export interface MutatorRankData {
 
 export interface NPCData {
   Comments: string;
+  ConversationStateId1: string;
+  ConversationStateId10: string;
+  ConversationStateId11: string;
+  ConversationStateId12: string;
+  ConversationStateId13: string;
+  ConversationStateId14: string;
+  ConversationStateId15: string;
+  ConversationStateId16: string;
+  ConversationStateId17: string;
+  ConversationStateId18: string;
+  ConversationStateId19: string;
+  ConversationStateId2: string;
+  ConversationStateId20: string;
+  ConversationStateId3: string;
+  ConversationStateId4: string;
+  ConversationStateId5: string;
+  ConversationStateId6: string;
+  ConversationStateId7: string;
+  ConversationStateId8: string;
+  ConversationStateId9: string;
   GenericName: string;
   InteractOptionDisplayNameOverride: string;
   Location1: string;

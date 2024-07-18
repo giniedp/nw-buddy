@@ -49,6 +49,24 @@ export interface LoreSpawns {
   nw_dungeon_shattermtn_00?: Array<number[]>;
   nw_dungeon_windsward_00?: Array<number[]>;
 }
+export interface NpcsMetadata {
+  mapIDs: string[];
+  npcId: string;
+  spawns: Spawns;
+}
+
+export interface Spawns {
+  climaxftue_02?: Array<number[]>;
+  newworld_vitaeeterna?: Array<number[]>;
+  nw_dungeon_cutlasskeys_00?: Array<number[]>;
+  nw_dungeon_edengrove_00?: Array<number[]>;
+  nw_dungeon_everfall_00?: Array<number[]>;
+  nw_dungeon_reekwater_00?: Array<number[]>;
+  nw_dungeon_restlessshores_01?: Array<number[]>;
+  nw_dungeon_shattermtn_00?: Array<number[]>;
+  nw_ori_fl_questadiana?: Array<number[]>;
+  nw_trial_season_04_daichidojo?: Array<number[]>;
+}
 export interface SpellsMetadata {
   AreaStatusEffects: string[];
   PrefabPath: string;

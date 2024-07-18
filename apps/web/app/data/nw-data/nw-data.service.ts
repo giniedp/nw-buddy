@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core'
+import { Injectable, Signal, inject } from '@angular/core'
 import {
   convertBuffBuckets,
   convertGatherableVariations,
@@ -9,7 +9,7 @@ import {
   getCraftingIngredients,
   getItemIdFromRecipe,
   getItemSetFamilyName,
-  getQuestRequiredAchuevmentIds,
+  getQuestRequiredAchievmentIds,
   getSeasonPassDataId,
 } from '@nw-data/common'
 import {
@@ -17,6 +17,7 @@ import {
   DataSheetUri,
   GatherablesMetadata,
   LoreMetadata,
+  NpcsMetadata,
   SpellsMetadata,
   TerritoriesMetadata,
   VariationDataGatherable,
@@ -97,7 +98,7 @@ export class NwDataService {
   public housingItemsByStatusEffectMap = tableGroupBy(() => this.housingItems, 'HousingStatusEffect')
   public housingItemsByStatusEffect = tableLookup(() => this.housingItemsByStatusEffectMap)
 
-  public itemOrHousingItem = (id: string | Observable<string>) =>
+  public itemOrHousingItem = (id: string | Observable<string> | Signal<string>) =>
     combineLatest({
       item: this.item(id),
       housing: this.housingItem(id),
@@ -220,12 +221,28 @@ export class NwDataService {
   public npcs = table(() => this.loadEntries(DATASHEETS.NPCData))
   public npcsMap = tableIndexBy(() => this.npcs, 'NPCId')
   public npc = tableLookup(() => this.npcsMap)
+  public npcsByConversationStateIdMap = tableGroupBy(() => this.npcs, (it) => {
+    const index: string[] = []
+    for (const key in it) {
+      if (key.startsWith('ConversationStateId')) {
+        index.push(it[key])
+      }
+    }
+    return index
+  })
+  public npcsByConversationStateId = tableLookup(() => this.npcsByConversationStateIdMap)
 
   public npcsVariations = table(() => this.load(DATASHEETS.VariationData.NPC))
   public npcsVariationsMap = tableIndexBy(() => this.npcsVariations, 'VariantID')
   public npcsVariation = tableLookup(() => this.npcsVariationsMap)
   public npcsVariationsByNpcIdMap = tableGroupBy(() => this.npcsVariations, 'NPCId')
   public npcsVariationsByNpcId = tableLookup(() => this.npcsVariationsByNpcIdMap)
+
+  public npcsMetadata = table(() =>
+    this.load<NpcsMetadata>({ uri: 'nw-data/generated/npcs_metadata.json' }),
+  )
+  public npcsMetadataMap = tableIndexBy(() => this.npcsMetadata, 'npcId')
+  public npcsMeta = tableLookup(() => this.npcsMetadataMap)
 
   public variationsMetadata = table(() =>
     this.load<VariationsMetadata>({ uri: 'nw-data/generated/variations_metadata.json' }),
@@ -292,17 +309,6 @@ export class NwDataService {
 
   public loreItemsMeta = table(() => this.load<LoreMetadata>({ uri: 'nw-data/generated/lore_metadata.json' }))
   public loreItemsMetaMap = tableIndexBy(() => this.loreItemsMeta, 'loreID')
-
-  public quests = table(() => this.loadEntries(DATASHEETS.Objectives))
-  public questsMap = tableIndexBy(() => this.quests, 'ObjectiveID')
-  public quest = tableLookup(() => this.questsMap)
-  public questsByAchievementIdMap = tableGroupBy(() => this.quests, 'AchievementId')
-  public questsByRequiredAchievementIdMap = tableGroupBy(
-    () => this.quests,
-    (it) => getQuestRequiredAchuevmentIds(it),
-  )
-  public questsByNpcIdMap = tableGroupBy(() => this.quests, 'NpcDestinationId')
-  public questsByNpcId = tableLookup(() => this.questsByNpcIdMap)
 
   public recipes = table(() => this.loadEntries(DATASHEETS.CraftingRecipeData))
   public recipesMap = tableIndexBy(() => this.recipes, 'RecipeID')
@@ -554,9 +560,28 @@ export class NwDataService {
   public dyeColorsMap = tableIndexBy(() => this.dyeColors, 'Index')
   public dyeColor = tableLookup(() => this.dyeColorsMap)
 
+  public conversationStates = table(() => this.loadEntries(DATASHEETS.ConversationStateData))
+  public conversationStatesMap = tableIndexBy(() => this.conversationStates, 'ConversationStateId')
+  public conversationState = tableLookup(() => this.conversationStatesMap)
+  public conversationStatesByObjectiveIdMap = tableGroupBy(() => this.conversationStates, (it) => {
+    return [
+      it.LinearObjectiveId1,
+      it.LinearObjectiveId2,
+      it.LinearObjectiveId3,
+    ].filter((it) => !!it)
+  })
+  public conversationStatesByObjectiveId = tableLookup(() => this.conversationStatesByObjectiveIdMap)
+
   public objectives = table(() => this.loadEntries(DATASHEETS.Objectives))
   public objectivesMap = tableIndexBy(() => this.objectives, 'ObjectiveID')
   public objective = tableLookup(() => this.objectivesMap)
+  public objectivesByAchievementIdMap = tableGroupBy(() => this.objectives, 'AchievementId')
+  public objectivesByRequiredAchievementIdMap = tableGroupBy(
+    () => this.objectives,
+    (it) => getQuestRequiredAchievmentIds(it),
+  )
+  public objectivesByNpcDestinationIdMap = tableGroupBy(() => this.objectives, 'NpcDestinationId')
+  public objectivesByNpcDestinationId = tableLookup(() => this.objectivesByNpcDestinationIdMap)
 
   public objectiveTasks = table(() => this.loadEntries(DATASHEETS.ObjectiveTasks))
   public objectiveTasksMap = tableIndexBy(() => this.objectiveTasks, 'TaskID')

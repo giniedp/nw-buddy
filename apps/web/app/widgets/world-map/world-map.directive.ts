@@ -2,6 +2,7 @@ import { Directive, ElementRef, effect, inject, input, output } from '@angular/c
 import { environment } from 'apps/web/environments'
 import { createMap } from './create-map'
 import { MapMarker, MapPointMarker, MapView, MapViewBounds, MapZoneMarker, MarkerEventData } from './types'
+import { injectIsBrowser } from '~/utils/injection/platform'
 
 @Directive({
   standalone: true,
@@ -22,6 +23,12 @@ export class WorldMapDirective {
   public markerClicked = output<MarkerEventData>()
 
   public constructor() {
+    if (injectIsBrowser()) {
+      this.bindMap()
+    }
+  }
+
+  private bindMap() {
     const elRef = inject(ElementRef<HTMLElement>)
     const map = createMap({
       el: elRef.nativeElement,
@@ -40,5 +47,6 @@ export class WorldMapDirective {
         setTimeout(() => map.fitView(bounds.min, bounds.max))
       }
     })
+
   }
 }

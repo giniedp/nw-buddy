@@ -13,6 +13,7 @@ import {
   isGameTransformComponent,
   isGatherableControllerComponent,
   isMeshComponent,
+  isNpcComponent,
   isPointSpawnerComponent,
   isPrefabSpawnerComponent,
   isProjectileSpawnerComponent,
@@ -222,6 +223,7 @@ export interface ScannedData {
   entity?: AZ__Entity
 
   vitalsID?: string
+  npcID?: string
   categoryID?: string
   level?: number
   territoryLevel?: boolean
@@ -242,6 +244,9 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
   for (const entity of sliceComponent?.entities || []) {
     const node: ScannedData = {}
     for (const component of entity.components || []) {
+      if (isNpcComponent(component) && component.m_npckey) {
+        node.npcID = node.npcID || component.m_npckey
+      }
       if (isVitalsComponent(component) && component.m_rowreference) {
         node.vitalsID = node.vitalsID || component.m_rowreference
       }

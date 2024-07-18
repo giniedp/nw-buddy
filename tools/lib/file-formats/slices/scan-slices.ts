@@ -8,12 +8,17 @@ import { Capital } from './types/capitals'
 
 export interface ScanResult {
   vitals?: VitalScanRow[]
+  npcs?: NpcScanRow[]
   gatherables?: GatherableScanRow[]
   variations?: VariationScanRow[]
   territories?: TerritoryScanRow[]
   loreItems?: LoreScanRow[]
 }
-
+export interface NpcScanRow {
+  npcID: string
+  position: [number, number, number]
+  mapID: string
+}
 export interface GatherableScanRow {
   gatherableID: string
   position: [number, number, number]
@@ -55,6 +60,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
     const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
     const data = await readJSONFile<Capital>(file)
     const vitalsRows: VitalScanRow[] = []
+    const npcRows: NpcScanRow[] = []
     const variationsRows: VariationScanRow[] = []
     const loreRows: LoreScanRow[] = []
     const gatherableRows: GatherableScanRow[] = []
@@ -101,12 +107,20 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
                 vitalsID: entry.vitalsID,
                 categoryID: entry.categoryID,
                 gatherableID: entry.gatherableID,
+                npcID: entry.npcID,
                 level: entry.level,
                 damageTable: entry.damageTable,
                 modelFile: entry.modelFile,
                 adbFile: entry.adbFile,
                 mtlFile: entry.mtlFile,
                 territoryLevel: entry.territoryLevel,
+                position: [position[0], position[1], position[2]],
+              })
+            }
+            if (entry.npcID) {
+              npcRows.push({
+                mapID: mapId,
+                npcID: entry.npcID,
                 position: [position[0], position[1], position[2]],
               })
             }
@@ -125,6 +139,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
     }
     return {
       vitals: vitalsRows,
+      npcs: npcRows,
       variations: variationsRows,
       loreItems: loreRows,
       gatherables: gatherableRows,

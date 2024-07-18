@@ -20,7 +20,7 @@ export function npcColIcon(util: NpcTableUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.tipLink('npc', data.id),
+            href: util.tipLink('npc', data.npcs[0].id),
             target: '_blank',
           },
         },
@@ -46,7 +46,7 @@ export function npcColName(util: NpcTableUtils) {
   return util.colDef<string>({
     colId: 'genericName',
     headerValueGetter: () => 'Name',
-    valueGetter: ({ data }) => util.tl8(data.npcs[0].GenericName),
+    valueGetter: ({ data }) => util.tl8(data.name),
   })
 }
 
@@ -54,6 +54,6 @@ export function npcColTitle(util: NpcTableUtils) {
   return util.colDef<string>({
     colId: 'title',
     headerValueGetter: () => 'Title',
-    valueGetter: ({ data }) => util.tl8(data.npcs[0].Title),
+    valueGetter: ({ data }) => util.tl8(data.title),
   })
 }

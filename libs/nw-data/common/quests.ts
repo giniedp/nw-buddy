@@ -18,15 +18,15 @@ const QUEST_TYPE_ICONS = new CaseInsensitiveMap<string, string>(
   })
 )
 
-export function getQuestTypeIcon(type: string) {
-  return QUEST_TYPE_ICONS.get(type) ?? QUEST_TYPE_ICONS.get('default')
+export function getQuestTypeIcon(type: string, fallback = QUEST_TYPE_ICONS.get('default')) {
+  return QUEST_TYPE_ICONS.get(type) ?? fallback
 }
 
-export function getQuestRequiredAchuevmentIds(quest: Objectives) {
-  if (!quest.RequiredAchievementId) {
+export function getQuestRequiredAchievmentIds(quest: Objectives) {
+  if (!quest?.RequiredAchievementId) {
     return []
   }
   return quest.RequiredAchievementId.split(/[\|\&\(\)]/i)
     .map((it) => it.trim())
-    .filter((it) => it)
+    .filter((it) => it && !it.startsWith('!'))
 }

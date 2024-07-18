@@ -1,0 +1,11 @@
+@if (description(); as text) {
+  <div class="flex flex-row gap-1 mb-1">
+    <picture class="flex-none mt-1">
+      <img [nwImage]="icon()" class="w-5 h-5 " />
+    </picture>
+    <div [nwHtml]="text | nwText: textContext() | nwTextBreak"></div>
+  </div>
+}
+@for (child of children(); track $index) {
+  <nwb-quest-task-tree [task]="child.task" [children]="child.children" [class.ml-4]="!!description()" />
+}

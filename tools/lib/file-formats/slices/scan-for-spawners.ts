@@ -16,6 +16,7 @@ export type SpawnerScanResult = {
   loreIDs?: string[]
 
   vitalsID?: string
+  npcID?: string
   categoryID?: string
   level?: number
   territoryLevel?: boolean
@@ -202,6 +203,16 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     if (item.loreIDs?.length) {
       yield {
         loreIDs: item.loreIDs,
+        positions: [[0, 0, 0]],
+        damageTable: null,
+        modelFile: null,
+        mtlFile: null,
+        adbFile: null,
+      }
+    }
+    if (item.npcID?.length) {
+      yield {
+        npcID: item.npcID,
         positions: [[0, 0, 0]],
         damageTable: null,
         modelFile: null,

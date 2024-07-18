@@ -1,15 +1,14 @@
 import { Component, inject, signal } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
-import { uniq } from 'lodash'
-import { combineLatest, map, of, switchMap } from 'rxjs'
+import { FormsModule } from '@angular/forms'
+import { NpcsMetadata } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { combineLatestOrEmpty, eqCaseInsensitive, mapList, selectSignal, selectStream, switchMapCombineLatest } from '~/utils'
+import { TranslateService } from '~/i18n'
+import { IconsModule } from '~/ui/icons'
+import { svgExpand } from '~/ui/icons/svg'
+import { selectSignal } from '~/utils'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { NpcDetailStore } from './npc-detail.store'
-import { IconsModule } from '~/ui/icons'
-import { FormsModule } from '@angular/forms'
-import { svgExpand } from '~/ui/icons/svg'
-import { TranslateService } from '~/i18n'
+import { NpcService } from './npc.service'
 
 const SIZE_COLORS = {
   Emphasis: '#2563EB',
@@ -19,7 +18,10 @@ const SIZE_OUTLINE = {
   Emphasis: '#092564',
   Common: '#590e0e',
 }
-
+const SIZE = {
+  Selected: 6,
+  Common: 5
+}
 @Component({
   standalone: true,
   selector: 'nwb-npc-detail-map',
@@ -32,75 +34,81 @@ const SIZE_OUTLINE = {
 export class NpcDetailMapComponent {
   private db = inject(NwDataService)
   private store = inject(NpcDetailStore)
+  private service = inject(NpcService)
   protected tl8 = inject(TranslateService)
   protected iconExpand = svgExpand
 
-  private variationsMetadata$ = toObservable(this.store.variations).pipe(
-    mapList((it) => it.VariantID),
-    map(uniq),
-    switchMapCombineLatest((it) => this.db.variationsMeta(it)),
-    map((list) => list.filter((it) => !!it)),
-  )
-  private variationsMetaChunks$ = selectStream(
-    this.variationsMetadata$.pipe(
-      map((list) => list.filter((it) => it?.variantPositions?.length)),
-      switchMap((list) => {
-        const chunkIds = uniq(list.map((it) => it.variantPositions.map((chunk) => chunk.chunk)).flat())
-        const chunks = combineLatestOrEmpty(
-          chunkIds.map((it) => {
-            return combineLatest({
-              chunk: of(it),
-              data: this.db.variationsChunk(it),
-            })
-          }),
-        )
-        return chunks
-      }),
-    ),
-  )
 
   protected data = selectSignal(
     {
+      npcs: this.store.siblings,
       npc: this.store.npc,
-      variation: this.store.variation,
-      variationsMeta: this.variationsMetadata$,
-      chunks: this.variationsMetaChunks$,
+      chunksMap: this.service.npcsVariantChunksMap$,
     },
-    ({ npc, variation, variationsMeta, chunks }) => {
-      if (!variationsMeta?.length) {
+    ({ npcs, npc, chunksMap }) => {
+      if (!npcs || !chunksMap) {
         return null
       }
       const result: Record<string, MapPointMarker[]> = {}
+      function add({
+        mapId,
+        name,
+        position,
+        isSelected,
+      }: {
+        name: string
+        position: number[]
+        isSelected: boolean
+        mapId: string
+      }) {
+        result[mapId] ??= []
+        result[mapId].push({
+          title: `${name} [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]`,
+          color: isSelected ? SIZE_COLORS.Emphasis : SIZE_COLORS.Common,
+          outlineColor: isSelected ? SIZE_OUTLINE.Emphasis : SIZE_OUTLINE.Common,
+          point: position,
+          radius: isSelected ? SIZE.Selected : SIZE.Common,
+        })
+      }
 
-      for (const meta of variationsMeta) {
-        const isSelected = variation?.some((it) => eqCaseInsensitive(it.VariantID, meta.variantID) )
+      for (const { id, data, meta, variations } of npcs) {
+        const name = data?.GenericName ? this.tl8.get(data?.GenericName) : id
+        let isSelected = npc.id === id
+        for (const mapId in meta?.spawns || {}) {
 
-        for (const entry of meta.variantPositions || []) {
-          if (!entry?.elementCount) {
-            continue
-          }
-          const chunk = chunks.find((it) => it.chunk === entry.chunk)
-          if (!chunk) {
-            continue
-          }
-          const name = npc ? this.tl8.get(npc.GenericName) : ''
-          const positions = chunk.data.slice(entry.elementOffset, entry.elementOffset + entry.elementCount)
-          const mapId = entry.mapId
-          for (const position of positions || []) {
+          const spawns = meta.spawns[mapId as keyof NpcsMetadata['spawns']]
+          for (const position of spawns) {
             if (!position) {
               continue
             }
-            result[mapId] ??= []
-            result[mapId].push({
-              title: `${name} [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]`,
-              color: isSelected ? SIZE_COLORS.Emphasis : SIZE_COLORS.Common,
-              outlineColor: isSelected ? SIZE_OUTLINE.Emphasis : SIZE_OUTLINE.Common,
-              point: position,
-              radius: isSelected ? 6 : 5,
+            add({
+              mapId,
+              name,
+              position,
+              isSelected,
             })
           }
         }
+
+        for (const variation of variations || []) {
+          for (const entry of variation.meta?.variantPositions || []) {
+            const chunk = chunksMap.get(entry.chunk)
+            if (!chunk) {
+              continue
+            }
+            const positions = chunk.data.slice(entry.elementOffset, entry.elementOffset + entry.elementCount)
+            for (const position of positions) {
+              add({
+                mapId: entry.mapId,
+                name,
+                position,
+                isSelected,
+              })
+            }
+          }
+        }
       }
+
       return result
     },
   )
@@ -135,7 +143,7 @@ export class NpcDetailMapComponent {
       const landmarks = data[mapId] || []
       const total = landmarks.length
       return {
-        landmarks: landmarks, //.slice(0, limit),
+        landmarks: landmarks,
         isLimited: true,
         total,
         bounds: getBounds(landmarks),
@@ -145,9 +153,20 @@ export class NpcDetailMapComponent {
 }
 
 function getBounds(marks: MapPointMarker[]) {
+  let minSelected: number[] = null
+  let maxSelected: number[] = null
   let min: number[] = null
   let max: number[] = null
   for (const mark of marks) {
+    if (mark.radius === SIZE.Selected) {
+      if (!minSelected) {
+        minSelected = mark.point
+        maxSelected = mark.point
+      } else {
+        minSelected = [Math.min(minSelected[0], mark.point[0]), Math.min(minSelected[1], mark.point[1])]
+        maxSelected = [Math.max(maxSelected[0], mark.point[0]), Math.max(maxSelected[1], mark.point[1])]
+      }
+    }
     if (!min) {
       min = mark.point
       max = mark.point
@@ -155,6 +174,9 @@ function getBounds(marks: MapPointMarker[]) {
       min = [Math.min(min[0], mark.point[0]), Math.min(min[1], mark.point[1])]
       max = [Math.max(max[0], mark.point[0]), Math.max(max[1], mark.point[1])]
     }
+  }
+  if (minSelected && maxSelected) {
+    return { min: minSelected, max: maxSelected }
   }
   if (min && max) {
     return { min, max }

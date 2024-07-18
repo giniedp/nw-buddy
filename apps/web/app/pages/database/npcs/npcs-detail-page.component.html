@@ -4,9 +4,9 @@
       <div class="flex flex-col p-2">
         <h3 class="font-bold mb-1">NPC Variants</h3>
         @for (item of detail.siblings; track $index) {
-          <a [routerLink]="['npc', item.NPCId] | nwLink" [routerLinkActive]="'link-primary'" class="link link-hover">
+          <a [routerLink]="['npc', item.id] | nwLink" [routerLinkActive]="'link-primary'" class="link link-hover">
             <span class="font-mono">
-              {{ item.NPCId }}
+              {{ item.id }}
             </span>
           </a>
         }

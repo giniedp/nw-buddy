@@ -131,6 +131,7 @@ async function importSlices({
   const jsonOutDir = generatedDir(outputDir)
 
   await processSlices({ inputDir, threads: threads }).then((data) => {
+    console.log('  ', data.npcs.length, 'npcs')
     console.log('  ', data.vitals.length, 'vitals')
     console.log('  ', data.vitalsModels.length, 'vitals models')
     console.log('  ', data.gatherables.length, 'gatherables')
@@ -165,6 +166,11 @@ async function importSlices({
       }),
       writeJSONFile(data.gatherables, {
         target: path.join(jsonOutDir, 'gatherables_metadata.json'),
+        createDir: true,
+        serialize: jsonStringifyFormatted,
+      }),
+      writeJSONFile(data.npcs, {
+        target: path.join(jsonOutDir, 'npcs_metadata.json'),
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),

@@ -7,11 +7,12 @@ import {
   Renderer2,
   RendererStyleFlags2,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { map, of, switchMap } from 'rxjs'
+import { asyncScheduler, delay, map, of, subscribeOn, switchMap } from 'rxjs'
 
 import { TranslateService } from './i18n'
 
@@ -27,7 +28,7 @@ import { IconsModule } from './ui/icons'
 import { svgChevronLeft, svgDiscord, svgGithub, svgMap } from './ui/icons/svg'
 import { LayoutModule, LayoutService } from './ui/layout'
 import { TooltipModule } from './ui/tooltip'
-import { injectRouteParam, mapProp, selectSignal } from './utils'
+import { injectRouteParam, mapProp, selectSignal, tapDebug } from './utils'
 import { injectCurrentUrl } from './utils/injection/current-url'
 import { injectDocument } from './utils/injection/document'
 import { injectWindow } from './utils/injection/window'

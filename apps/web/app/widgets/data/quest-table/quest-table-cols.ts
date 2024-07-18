@@ -1,6 +1,7 @@
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { GameEventData, Objectives } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { humanize } from '~/utils'
 
 export type QuestTableUtils = TableGridUtils<QuestTableRecord>
 export type QuestTableRecord = Objectives & {
@@ -46,7 +47,16 @@ export function questColTitle(util: QuestTableUtils) {
     colId: 'title',
     headerValueGetter: () => 'Title',
     width: 250,
-    valueGetter: ({ data }) => util.i18n.get(data.Title),
+    valueGetter: ({ data }) => {
+      return data.Title ? util.i18n.get(data.Title) : humanize(data.ObjectiveID)
+    },
+    cellClass: ({ data }) => {
+      const css: string[] = []
+      if (!data.Title) {
+        css.push('text-gray-400')
+      }
+      return css
+    }
   })
 }
 export function questColDescription(util: QuestTableUtils) {

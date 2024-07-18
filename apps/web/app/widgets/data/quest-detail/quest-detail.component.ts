@@ -1,14 +1,27 @@
 import { CommonModule } from '@angular/common'
-import { Component, forwardRef, Input, Output } from '@angular/core'
-import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { QuestDetailStore } from './quest-detail.store'
-import { QuestDetailFollowUpComponent } from './quest-detail-follow-up.component'
+import { Component, inject, Input, Output, signal } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
-import { GameEventDetailDirective } from '../game-event-detail/game-event-detail.directive'
-import { GameEventDetailRewardsComponent } from '../game-event-detail/game-event-detail-rewards.component'
+import { patchState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
+import { NwModule } from '~/nw'
+import { ItemFrameModule } from '~/ui/item-frame'
+import { GameEventDetailRewardsComponent } from '../game-event-detail/game-event-detail-rewards.component'
+import { GameEventDetailDirective } from '../game-event-detail/game-event-detail.directive'
+import { QuestDetailConversationListComponent } from './quest-detail-conversation-list.component'
+import { QuestDetailDescriptionComponent } from './quest-detail-description.component'
+import { QuestDetailFollowUpComponent } from './quest-detail-follow-up.component'
+import { QuestDetailStore } from './quest-detail.store'
+import { QuestTaskDetailComponent } from './quest-task-detail.component'
+import { QuestTreeComponent } from './quest-tree.component'
+import { QuestDetailDestinationComponent } from './quest-detail-destination.component'
+import { injectQueryParam, selectSignal } from '~/utils'
+
+export type QuestDetailTabId = 'details' | 'npcs' | 'tree'
+export interface QuestDetailTab {
+  id: QuestDetailTabId
+  label: string
+}
 
 @Component({
   standalone: true,
@@ -23,28 +36,47 @@ import { NW_FALLBACK_ICON } from '@nw-data/common'
     QuestDetailFollowUpComponent,
     GameEventDetailDirective,
     GameEventDetailRewardsComponent,
+    QuestDetailConversationListComponent,
+    QuestDetailDestinationComponent,
+    QuestTaskDetailComponent,
+    QuestTreeComponent,
+    QuestDetailDescriptionComponent,
   ],
-  providers: [
-    {
-      provide: QuestDetailStore,
-      useExisting: forwardRef(() => QuestDetailComponent),
-    },
-  ],
+  providers: [QuestDetailStore],
   host: {
     class: 'block bg-black rounded-md overflow-clip font-nimbus',
   },
 })
-export class QuestDetailComponent extends QuestDetailStore {
+export class QuestDetailComponent {
+  protected detail = inject(QuestDetailStore)
+
   @Input()
   public set questId(value: string) {
-    this.patchState({ questId: value })
+    patchState(this.detail, { questId: value })
+  }
+  public get questId() {
+    return this.detail.questId()
   }
 
   @Output()
-  public questChange = this.quest$
+  public questChange = toObservable(this.detail.quest)
 
   protected defaultIcon = NW_FALLBACK_ICON
-  public constructor(db: NwDataService) {
-    super(db)
-  }
+
+  protected tab = selectSignal(injectQueryParam('tab'), (it) => it as QuestDetailTabId)
+  protected tabs: QuestDetailTab[] = [
+    {
+      id: null,
+      label: 'Details',
+    },
+    {
+      id: 'npcs',
+      label: 'NPCs',
+    },
+    {
+      id: 'tree',
+      label: 'Quest Tree',
+    }
+  ]
+
 }

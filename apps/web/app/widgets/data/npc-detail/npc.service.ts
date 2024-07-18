@@ -1,17 +1,27 @@
 import { Injectable, inject } from '@angular/core'
-import { NPCData } from '@nw-data/generated'
-import { groupBy } from 'lodash'
+import { NPCData, NpcsMetadata, VariationData, VariationsMetadata } from '@nw-data/generated'
+import { groupBy, uniq } from 'lodash'
+import { firstValueFrom, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { tableGroupBy, tableIndexBy, tableLookup } from '~/data/nw-data/dsl'
+import { table, tableGroupBy, tableIndexBy, tableLookup } from '~/data/nw-data/dsl'
 import { LocaleService, TranslateService } from '~/i18n'
-import { selectStream } from '~/utils'
+import { humanize, selectStream } from '~/utils'
 
+export interface NpcInfo {
+  id: string
+
+  data: NPCData
+  meta: NpcsMetadata
+  variations: Array<{
+    data: VariationData
+    meta: VariationsMetadata
+  }>
+}
 export interface NpcGroup {
   id: string
-  name: string
   title: string
-  groupId: string
-  npcs: NPCData[]
+  name: string
+  npcs: NpcInfo[]
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,46 +30,113 @@ export class NpcService {
   private tl8 = inject(TranslateService)
   private locale = inject(LocaleService)
 
+  public npc$ = tableLookup(() => this.npcsMap$)
+  public npcsMap$ = tableIndexBy(() => this.npcs$, 'id')
+  public npcs$ = selectStream(
+    {
+      npcsMap: this.db.npcsMap,
+      npcMetaMap: this.db.npcsMetadataMap,
+      npcsVariationsMap: this.db.npcsVariationsByNpcIdMap,
+      variationMetaMap: this.db.variationsMetadataMap,
+    },
+    (data) => {
+      if (!data.npcsMap || !data.npcMetaMap || !data.npcsVariationsMap || !data.variationMetaMap) {
+        return []
+      }
+      const npcIds = uniq([
+        ...data.npcsMap.keys(),
+        //...data.npcsVariationsMap.keys(),
+      ])
+      return npcIds.map((id): NpcInfo => {
+        const npc = data.npcsMap.get(id)
+        const meta = data.npcMetaMap.get(id)
+
+        const variations = data.npcsVariationsMap.get(id)?.map((variation) => {
+          return {
+            data: variation,
+            meta: data.variationMetaMap.get(variation.VariantID),
+          }
+        }) || []
+        return {
+          id: id,
+          data: npc,
+          meta: meta,
+          variations: variations,
+        }
+      })
+    },
+  )
+
+  public npcsVariantChunksMap$ = tableIndexBy(() => this.npcsVariantChunks$, 'id')
+  public npcsVariantChunks$ = table(() => {
+    return this.npcs$.pipe(
+      switchMap(async (list) => {
+        const ids: number[] = []
+        for (const npc of list) {
+          for (const variation of npc.variations) {
+            if (!variation?.meta?.variantPositions?.length) {
+              continue
+            }
+            for (const entry of variation.meta.variantPositions) {
+              if (!ids.includes(entry.chunk)) {
+                ids.push(entry.chunk)
+              }
+            }
+          }
+        }
+        return Promise.all(
+          ids.map(async (id) => {
+            return {
+              id,
+              data: await firstValueFrom(this.db.variationsChunk(id)),
+            }
+          }),
+        )
+      }),
+    )
+  })
+
   public groups$ = selectStream(
     {
-      npcs: this.db.npcs,
+      npcs: this.npcs$,
       locale: this.locale.value$,
     },
     ({ npcs }) => selectNpcs(npcs, this.tl8),
   )
+
   public groupsMap$ = tableIndexBy(() => this.groups$, 'id')
   public group$ = tableLookup(() => this.groupsMap$)
-  public groupByNpcIdMap$ = tableGroupBy(
+  public groupsByNpcIdMap$ = tableGroupBy(
     () => this.groups$,
-    (group) => group.npcs.map((npc) => npc.NPCId),
+    (group) => group.npcs.map((it) => it.id),
   )
-  public groupByNpcId$ = tableLookup(() => this.groupByNpcIdMap$)
-
-  public npcGroupName(npc: NPCData) {
-    return npcGroupName(npc, this.tl8)
-  }
+  public groupsByNpcId$ = tableLookup(() => this.groupsByNpcIdMap$)
 }
 
-function selectNpcs(items: NPCData[], tl8: TranslateService): NpcGroup[] {
+function selectNpcs(items: NpcInfo[], tl8: TranslateService): NpcGroup[] {
   const groups = groupBy(items, (it) => npcGroupName(it, tl8))
   return Object.entries(groups).map(([groupId, npcs]) => {
-    const npc = npcs[0]
+    const npc = npcs[0].data
     return {
-      id: npc.NPCId,
-      name: npc.GenericName,
-      title: npc.Title,
-      groupId,
-      npcs,
+      id: groupId,
+      name: npc ? npc.GenericName : humanize(groupId),
+      title: npc?.Title,
+      npcs: npcs,
     }
   })
 }
 
-function npcGroupName(npc: NPCData, tl8: TranslateService) {
+function npcGroupName(npc: NpcInfo, tl8: TranslateService) {
   if (!npc) {
     return null
   }
-  if (!npc.GenericName && !npc.Title) {
-    return npc.NPCId
+  const data = npc.data
+  if (data?.GenericName) {
+    return tl8.get(data.GenericName)
   }
-  return tl8.get(npc.GenericName)
+  const names = uniq((npc.variations || []).map((it) => tl8.get(it.data.Name)).filter((it) => !!it))
+  if (names.length === 1) {
+    return names[0]
+  }
+  return npc.id
 }

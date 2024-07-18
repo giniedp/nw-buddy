@@ -10,7 +10,7 @@ import { DatasheetFile } from '../file-formats/datasheet/converter'
 import { VariationScanRow } from '../file-formats/slices/scan-for-variants'
 import { VitalScanRow } from '../file-formats/slices/scan-for-vitals'
 import { TerritoryScanRow } from '../file-formats/slices/scan-for-zones'
-import { GatherableScanRow, LoreScanRow } from '../file-formats/slices/scan-slices'
+import { GatherableScanRow, LoreScanRow, NpcScanRow } from '../file-formats/slices/scan-slices'
 import { isPointInAABB, isPointInPolygon } from '../file-formats/slices/utils'
 import { runTasks } from '../worker/runner'
 
@@ -20,6 +20,7 @@ interface VitalMetadata {
   mapIDs: string[]
   catIDs: string[]
   gthIDs: string[]
+  npcIDs: string[]
   levels: number[]
   spawns: Array<{
     level: number
@@ -43,6 +44,13 @@ interface VitalModelMetadata {
   vitalIds: string[]
 }
 
+interface NpcMetadata {
+  mapIDs: string[]
+  spawns: Array<{
+    position: number[]
+    mapId: string
+  }>
+}
 interface GatherableMetadata {
   mapIDs: string[]
   spawns: Array<{
@@ -75,6 +83,7 @@ interface LoreMetadata {
 }
 
 export async function processSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
+  const npcs: Record<string, NpcMetadata> = {}
   const vitals: Record<string, VitalMetadata> = {}
   const vitalsModels: Record<string, VitalModelMetadata> = {}
   const gatherables: Record<string, GatherableMetadata> = {}
@@ -121,6 +130,7 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
       }
     }),
     onTaskFinish: async (result) => {
+      collectNpcRows(result.npcs || [], npcs)
       collectVitalsRows(result.vitals || [], vitals, vitalsModels)
       collectGatherablesRows(result.gatherables || [], gatherables)
       collectVariationsRows(result.variations || [], variations)
@@ -145,6 +155,7 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
     variations: toSortedVariations(variations),
     territories: toSortedTerritories(territories),
     loreItems: toSortedLoreItems(loreItems),
+    npcs: toSortedNpcs(npcs),
   }
 }
 
@@ -167,6 +178,28 @@ function collectLoreRows(rows: LoreScanRow[], data: Record<string, LoreMetadata>
   }
 }
 
+function collectNpcRows(rows: NpcScanRow[], data: Record<string, NpcMetadata>) {
+  for (const row of rows || []) {
+    const npcID = row.npcID.toLowerCase()
+    if (!(npcID in data)) {
+      data[npcID] = {
+        mapIDs: [],
+        spawns: [],
+      }
+    }
+    const bucket = data[npcID]
+    if (row.mapID) {
+      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
+    }
+    if (row.position) {
+      bucket.spawns.push({
+        position: row.position.map((it) => Number(it.toFixed(3))),
+        mapId: row.mapID?.toLowerCase(),
+      })
+    }
+  }
+}
+
 function collectVitalsRows(
   rows: VitalScanRow[],
   data: Record<string, VitalMetadata>,
@@ -180,6 +213,7 @@ function collectVitalsRows(
         models: [],
         mapIDs: [],
         catIDs: [],
+        npcIDs: [],
         gthIDs: [],
         levels: [],
         spawns: [],
@@ -494,6 +528,32 @@ function toSortedGatherables(data: Record<string, GatherableMetadata>) {
       const maps = Array.from(mapIDs.values()).sort()
       const result = {
         gatherableID: id,
+        mapIDs: maps,
+        spawns: {} as Record<string, number[][]>,
+      }
+      spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
+      for (const spawn of spawns) {
+        const mapId = spawn.mapId || '_'
+        result.spawns[mapId] = result.spawns[mapId] || []
+        result.spawns[mapId].push(spawn.position)
+      }
+      for (const key in result.spawns) {
+        result.spawns[key] = chain(result.spawns[key])
+          .uniqBy((it) => it.join(','))
+          .sortBy((it) => it.join(','))
+          .value()
+      }
+      return result
+    })
+}
+
+function toSortedNpcs(data: Record<string, NpcMetadata>) {
+  return Array.from(Object.entries(data))
+    .sort((a, b) => compareStrings(a[0], b[0]))
+    .map(([id, { spawns, mapIDs }]) => {
+      const maps = Array.from(mapIDs.values()).sort()
+      const result = {
+        npcId: id,
         mapIDs: maps,
         spawns: {} as Record<string, number[][]>,
       }

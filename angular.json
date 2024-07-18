@@ -85,6 +85,7 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "ssr": false,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",

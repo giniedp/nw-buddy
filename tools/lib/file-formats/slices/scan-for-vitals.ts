@@ -3,6 +3,7 @@ import { readDynamicSliceFile, resolveDynamicSliceFile } from './utils'
 
 export interface VitalScanRow {
   vitalsID: string
+  npcID: string
   categoryID: string
   gatherableID: string
   level: number
@@ -36,6 +37,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
     result.push({
       level: item.level,
       vitalsID: item.vitalsID,
+      npcID: item.npcID,
       categoryID: item.categoryID,
       gatherableID: item.gatherableID,
       damageTable: item.damageTable,

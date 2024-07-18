@@ -1,5 +1,6 @@
 import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDataService } from '~/data'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { patchState } from '@ngrx/signals'
 import { QuestDetailStore } from './quest-detail.store'
 
 @Directive({
@@ -16,13 +17,9 @@ import { QuestDetailStore } from './quest-detail.store'
 export class QuestDetailDirective extends QuestDetailStore {
   @Input()
   public set nwbQuestDetail(value: string) {
-    this.patchState({ questId: value })
+    patchState(this, { questId: value })
   }
 
   @Output()
-  public nwbQuestChange = this.quest$
-
-  public constructor(db: NwDataService) {
-    super(db)
-  }
+  public nwbQuestChange = toObservable(this.quest)
 }

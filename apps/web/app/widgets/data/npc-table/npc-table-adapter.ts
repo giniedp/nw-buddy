@@ -28,7 +28,7 @@ export class NpcsTableAdapter implements TableGridAdapter<NpcTableRecord>, DataV
   private service = inject(NpcService)
 
   public entityID(item: NpcTableRecord): string {
-    return item.id
+    return item.npcs[0].id
   }
 
   public entityCategories(item: NpcTableRecord): DataTableCategory[] {
@@ -44,7 +44,6 @@ export class NpcsTableAdapter implements TableGridAdapter<NpcTableRecord>, DataV
       return this.config.gridOptions(this.utils)
     }
     const result = buildCommonGatherableGridOptions(this.utils)
-    console.log(result)
     return result
   }
 
@@ -65,7 +64,7 @@ export class NpcsTableAdapter implements TableGridAdapter<NpcTableRecord>, DataV
       if (sort) {
         items = [...items].sort(sort)
       } else {
-        items = sortBy(items, (it) => it.groupId)
+        items = sortBy(items, (it) => it.id)
       }
       return items
     },

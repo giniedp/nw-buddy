@@ -405,12 +405,6 @@ export const TRANSFORM_RULES = [
   ),
   transformRule(
     {
-      type: 'NPCData',
-    },
-    [deleteProp([/ConversationStateId/])],
-  ),
-  transformRule(
-    {
       type: 'VariationData',
     },
     [
