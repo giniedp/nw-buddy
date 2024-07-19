@@ -112,6 +112,9 @@ function getTableTypeName(header: DatasheetHeader, file: string) {
 }
 
 const ENUMS = {
+  AchievementData: {
+    Category: 'AchievementCategory',
+  },
   VitalsData: {
     Family: 'VitalsFamily',
     VitalsCategories: 'VitalsCategory',

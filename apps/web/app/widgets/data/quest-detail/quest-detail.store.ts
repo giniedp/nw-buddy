@@ -40,6 +40,11 @@ export const QuestDetailStore = signalStore(
       response: selectSignal(quest, (it) => it?.ObjectiveProposalResponse),
       inProgressResponse: selectSignal(quest, (it) => it?.InProgressResponse),
       icon: selectSignal(quest, (it) => getQuestTypeIcon(it?.Type)),
+      requiredAchievementId: selectSignal(quest, (it) => it?.RequiredAchievementId),
+      requiredLevel: selectSignal(quest, (it) => it?.RequiredLevel),
+      requiredFaction: selectSignal(quest, (it) => it?.RequiredFaction),
+      requiredProgression: selectSignal(quest, (it) => it?.RequiredProgression),
+
     }
   }),
   withComputed(({ questId, quest, level }) => {
@@ -47,24 +52,11 @@ export const QuestDetailStore = signalStore(
     const npcDestinationId = selectSignal(quest, (it) => it?.NpcDestinationId)
     const npcDestination = toSignal(db.npc(npcDestinationId))
     const levelLabel = selectSignal(level, (lvl) => (lvl ? `lvl. ${lvl}` : ''))
-    // const conversationStates$ = db.conversationStatesByObjectiveId(questId)
-    // const npcs$ = conversationStates$.pipe(
-    //   map((list) => list || []),
-    //   mapList((it) => it.ConversationStateId),
-    //   switchMap((list) => combineLatestOrEmpty(list.map((id) => db.npcsByConversationStateId(id)))),
-    //   map((list) =>
-    //     uniqBy(
-    //       list.flat().filter((it) => !!it),
-    //       (it) => it.NPCId,
-    //     ),
-    //   ),
-    // )
 
     return {
       npcDestination,
       levelLabel,
       conversations: toSignal(db.conversationStatesByObjectiveId(questId)),
-      // npcs: toSignal(npcs$),
     }
   }),
 
@@ -105,32 +97,6 @@ export const QuestDetailStore = signalStore(
           return selectFollowupQuests(quest, objectives)
         },
       ),
-      previous: selectSignal(
-        {
-          quest: state.quest,
-          objectives: db.objectivesByAchievementIdMap,
-        },
-        ({ quest, objectives }) => {
-          return selectPreviousQuests(quest, objectives)
-        },
-      ),
-    }
-  }),
-  withComputed(({ previous }) => {
-    return {
-      previousQuests: computed(() => {
-        if (!previous()?.length) {
-          return null
-        }
-        return previous()?.map((it) => {
-          return {
-            quest: it,
-            id: it?.ObjectiveID,
-            icon: getQuestTypeIcon(it?.Type),
-            title: it?.Title || humanize(it?.ObjectiveID),
-          }
-        })
-      }),
     }
   }),
 )

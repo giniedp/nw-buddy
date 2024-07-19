@@ -70,6 +70,18 @@ export function questColDescription(util: QuestTableUtils) {
     autoHeight: true,
   })
 }
+export function questColType(util: QuestTableUtils) {
+  return util.colDef<string>({
+    colId: 'type',
+    headerValueGetter: () => 'Type',
+    valueFormatter: ({ value }) => humanize(value),
+    field: 'Type',
+    width: 350,
+    ...util.selectFilter({
+      search: true,
+    })
+  })
+}
 export function questColPlayerPrompt(util: QuestTableUtils) {
   return util.colDef<string>({
     colId: 'playerPrompt',

@@ -8,34 +8,29 @@
     [text3]="detail.levelLabel()"
   />
 </nwb-item-header>
+<nwb-quest-detail-description class="p-4" />
+<div role="tablist" class="tabs tabs-bordered">
+  @for (tab of tabs; track $index) {
+    <a
+      role="tab"
+      class="tab"
+      [routerLink]="'.'"
+      [queryParams]="{ tab: tab.id }"
+      [routerLinkActiveOptions]="{ exact: true }"
+      [routerLinkActive]="'tab-active'"
+    >
+      {{ tab.label }}
+    </a>
+  }
+</div>
 <div class="p-4 flex flex-col gap-4">
-  <nwb-quest-detail-description />
-
-  <div role="tablist" class="tabs tabs-bordered">
-    @for (tab of tabs; track $index) {
-      <a
-        role="tab"
-        class="tab"
-        [routerLink]="'.'"
-        [queryParams]="{ tab: tab.id }"
-        [routerLinkActiveOptions]="{ exact: true }"
-        [routerLinkActive]="'tab-active'"
-      >
-        {{ tab.label }}
-      </a>
-    }
-  </div>
-
   @switch (tab()) {
     @case ('npcs') {
       <nwb-quest-detail-conversation-list />
       <nwb-quest-detail-destination />
     }
     @case ('tree') {
-      <div class="flex flex-col gap-1">
-        <h3 class="font-bold" [routerLink]="">Quest Tree</h3>
-        <nwb-quest-tree [questId]="questId" />
-      </div>
+      <nwb-quest-tree [questId]="questId" />
     }
     @default {
       @if (detail.taskId()) {
@@ -65,19 +60,22 @@
           </a>
         </div>
       }
-      @if (detail.previousQuests(); as prev) {
+      @if (detail.requiredAchievementId(); as value) {
         <div class="flex flex-col gap-1">
-          <h3 class="font-bold">Previous Quests</h3>
-          @for (quest of prev; track $index) {
-            <div class="flex flex-row items-center gap-1">
-              <a [nwLinkTooltip]="['quest', quest.id]" class="flex-none">
-                <img [nwImage]="quest.icon" class="w-5 h-5" />
-              </a>
-              <a class="flex-1 link-hover" [routerLink]="['quest', quest.id] | nwLink">
-                <span>{{ quest.title | nwText }}</span>
-              </a>
-            </div>
-          }
+          <h3 class="font-bold">Required Achievement</h3>
+          <nwb-required-achievement [achievementId]="value" />
+        </div>
+      }
+      @if (detail.requiredFaction(); as value) {
+        <h3 class="font-bold">Required Faction: {{ value }}</h3>
+      }
+      @if (detail.requiredLevel(); as value) {
+        <h3 class="font-bold">Required Level: {{ value }}</h3>
+      }
+      @if (detail.requiredProgression(); as value) {
+        <div>
+          <h3 class="font-bold">Required Progression</h3>
+          <code class="ml-4 text-xs">{{ value }}</code>
         </div>
       }
       @if (detail.followup(); as followup) {

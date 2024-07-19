@@ -1,0 +1,26 @@
+@switch (token()?.type) {
+  @case ('OR') {
+    <span class="badge badge-sm badge-info"> OR </span>
+  }
+  @case ('AND') {
+    <span class="badge badge-sm badge-info"> AND </span>
+  }
+  @case ('NOT') {
+    <span>NOT</span>
+  }
+  @case ('expression') {
+    @for (token of token().expression; track $index) {
+      <nwb-required-achievement-token [token]="token" />
+    }
+  }
+  @case ('value') {
+    @for (row of resource(); track $index) {
+      <a [routerLink]="row.routerLink" class="flex flex-row gap-1 link-hover">
+        <img [nwImage]="row.icon" class="w-5 h-5">
+        <span>{{ row.label | nwText }}</span>
+      </a>
+    } @empty {
+      <span class="font-mono text-secondary">{{ token().value }}</span>
+    }
+  }
+}

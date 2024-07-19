@@ -235,7 +235,7 @@ export interface AbilityData {
 export interface AchievementData {
   AchievementID: string;
   AchievementIndex: number;
-  Category: string;
+  Category: AchievementCategory;
   GameEventId: string;
   "Is Deprecated": string;
 }
@@ -6975,6 +6975,25 @@ export interface WorldEventRuleData {
 }
 
 export type AbilityOnCooldownOptions = "ActiveWeapon";
+export type AchievementCategory =
+  | "CampSkin"
+  | "Dye"
+  | "Expansion2023"
+  | "FirstCraft"
+  | "Journal"
+  | "LootLimit"
+  | "Map"
+  | "Mount"
+  | "MusicalPerformances"
+  | "MusicalPerformancesEasy"
+  | "MusicalPerformancesHard"
+  | "MusicalPerformancesMedium"
+  | "Objective"
+  | "OneTimePersistenceValidation"
+  | "Recipe"
+  | "Store"
+  | "Title"
+  | "Whisper";
 export type AttackType = "Ability" | "Heavy" | "Light" | "Magic";
 export type BuffTableType = "AND" | "OR";
 export type BuffType = "Ability" | "BuffBucket" | "Promotion" | "StatusEffect";

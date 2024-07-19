@@ -329,6 +329,12 @@ export class NwDataService {
   public recipesByIngredientId = tableLookup(() => this.recipesMapByIngredients)
   public recipesByItemId = tableLookup(() => this.recipesMapByItemId)
 
+  public recipesByFirstCraftAchievementIdMap = tableGroupBy(() => this.recipes, 'FirstCraftAchievementId')
+  public recipesByFirstCraftAchievementId = tableLookup(() => this.recipesByFirstCraftAchievementIdMap)
+
+  public recipesUnlockedAchievementBlocksRecraftingMap = tableGroupBy(() => this.recipes, 'UnlockedAchievementBlocksRecrafting')
+  public recipesUnlockedAchievementBlocksRecrafting = tableLookup(() => this.recipesByFirstCraftAchievementIdMap)
+
   public recipeCategories = table(() => this.loadEntries(DATASHEETS.CraftingCategoryData))
   public recipeCategoriesMap = tableIndexBy(() => this.recipeCategories, 'CategoryID')
   public recipeCategory = tableLookup(() => this.recipeCategoriesMap)
@@ -430,6 +436,8 @@ export class NwDataService {
   public territoriesMap = tableIndexBy(() => this.territories, 'TerritoryID')
   public territory = tableLookup(() => this.territoriesMap)
 
+  public territoriesByDiscoveredAchievementMap = tableGroupBy(() => this.territories, 'DiscoveredAchievement')
+  public territoriesByDiscoveredAchievement = tableLookup(() => this.territoriesByDiscoveredAchievementMap)
   public territoriesByPoiTag = tableGroupBy(
     () => this.territories,
     (it) => it.POITag,
@@ -576,6 +584,7 @@ export class NwDataService {
   public objectivesMap = tableIndexBy(() => this.objectives, 'ObjectiveID')
   public objective = tableLookup(() => this.objectivesMap)
   public objectivesByAchievementIdMap = tableGroupBy(() => this.objectives, 'AchievementId')
+  public objectivesByAchievementId = tableLookup(() => this.objectivesByAchievementIdMap)
   public objectivesByRequiredAchievementIdMap = tableGroupBy(
     () => this.objectives,
     (it) => getQuestRequiredAchievmentIds(it),

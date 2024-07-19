@@ -16,6 +16,7 @@ import { QuestTaskDetailComponent } from './quest-task-detail.component'
 import { QuestTreeComponent } from './quest-tree.component'
 import { QuestDetailDestinationComponent } from './quest-detail-destination.component'
 import { injectQueryParam, selectSignal } from '~/utils'
+import { RequiredAchievementComponent } from './required-achievement.component'
 
 export type QuestDetailTabId = 'details' | 'npcs' | 'tree'
 export interface QuestDetailTab {
@@ -41,6 +42,7 @@ export interface QuestDetailTab {
     QuestTaskDetailComponent,
     QuestTreeComponent,
     QuestDetailDescriptionComponent,
+    RequiredAchievementComponent
   ],
   providers: [QuestDetailStore],
   host: {

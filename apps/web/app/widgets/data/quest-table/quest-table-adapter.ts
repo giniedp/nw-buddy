@@ -24,6 +24,7 @@ import {
   questColRequiredAchievementId,
   questColRequiredLevel,
   questColTitle,
+  questColType,
 } from './quest-table-cols'
 
 @Injectable()
@@ -82,6 +83,7 @@ function buildOptions(util: TableGridUtils<QuestTableRecord>) {
       questColObjectiveID(util),
       questColTitle(util),
       questColDescription(util),
+      questColType(util),
       questColPlayerPrompt(util),
       questColObjectiveProposalResponse(util),
       questColInProgressResponse(util),

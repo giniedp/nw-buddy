@@ -6,6 +6,7 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
+import { RequiredAchievementComponent } from './required-achievement.component'
 
 export interface Chat {
   isPlayer: boolean
@@ -16,7 +17,7 @@ export interface Chat {
   standalone: true,
   selector: 'nwb-quest-detail-conversation',
   templateUrl: './quest-detail-conversation.component.html',
-  imports: [NwModule, RouterModule, IconsModule, TooltipModule],
+  imports: [NwModule, RouterModule, IconsModule, TooltipModule, RequiredAchievementComponent],
   host: {
     class: 'flex flex-col gap-1',
   },
