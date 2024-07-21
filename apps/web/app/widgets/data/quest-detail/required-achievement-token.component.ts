@@ -90,7 +90,7 @@ export class RequiredAchievementTokenComponent {
       // crafting by FirstCraftAchievementId
       // db.recipes.pipe(map((list) => list.find((it) => eqCaseInsensitive(it.FirstCraftAchievementId, achievementId))))
       return this.db.recipesByFirstCraftAchievementId(achievementId).pipe(
-        switchMap((list) => {
+        switchMap((list = []) => {
           return combineLatestOrEmpty(list.map((it) => this.db.itemOrHousingItem(getItemIdFromRecipe(it))))
         }),
         map((list) => {
@@ -115,7 +115,7 @@ export class RequiredAchievementTokenComponent {
     if (category === 'Map') {
       // db.territories.pipe(map((list) => list.find((it) => eqCaseInsensitive(it.DiscoveredAchievement, achievementId))))
       return this.db.territoriesByDiscoveredAchievement(achievementId).pipe(
-        map((list) => {
+        map((list = []) => {
           return list.map((it): AchievementResource => {
             return {
               icon: NW_FALLBACK_ICON,
@@ -137,7 +137,7 @@ export class RequiredAchievementTokenComponent {
     }
     if (category === 'Objective') {
       return this.db.objectivesByAchievementId(achievementId).pipe(
-        map((list) => {
+        map((list = []) => {
           return list.map((it): AchievementResource => {
             return {
               icon: getQuestTypeIcon(it.Type),
