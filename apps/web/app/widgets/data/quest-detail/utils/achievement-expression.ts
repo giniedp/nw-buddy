@@ -17,7 +17,7 @@ export function parseAchievementExpression(chars: string): AchievementExpression
     if (end > cursor) {
       result.push({
         type: 'value',
-        value: chars.slice(cursor, end)
+        value: chars.slice(cursor, end).trim()
       })
       cursor = end
     }
