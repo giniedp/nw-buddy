@@ -56,16 +56,6 @@
                 "input": "dist/nw-data/.current",
                 "output": "/nw-data/",
                 "followSymlinks": true
-              },
-              {
-                "glob": "**/*",
-                "input": "docs/media",
-                "output": "/media/"
-              },
-              {
-                "glob": "**/*",
-                "input": "docs/pages",
-                "output": "/pages/"
               }
             ],
             "stylePreprocessorOptions": {
@@ -85,7 +75,6 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
-              "ssr": false,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
@@ -102,7 +91,6 @@
               "optimization": true,
               "outputHashing": "all",
               "baseHref": "/",
-              "ssr": false,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",

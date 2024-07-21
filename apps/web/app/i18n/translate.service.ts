@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { patchState, signalState } from '@ngrx/signals'
 import { TranslateService as NgxService } from '@ngx-translate/core'
+import { uniq } from 'lodash'
 import {
-  BehaviorSubject,
   Observable,
   combineLatest,
   distinctUntilChanged,
@@ -13,16 +14,33 @@ import {
   of,
   switchMap,
 } from 'rxjs'
+import { selectStream } from '~/utils'
 import { LocaleService } from './locale.service'
 import { normalizeLookupKey } from './utils'
 
 @Injectable({ providedIn: 'root' })
 export class TranslateService {
-  private localeReady$ = new BehaviorSubject<string[]>([])
+  private state = signalState({
+    isLoaded: false,
+    languages: [] as string[],
+  })
+  private localeReady$ = toObservable(this.state.languages)
 
-  public constructor(public readonly locale: LocaleService, public readonly service: NgxService) {
+  public constructor(
+    public readonly locale: LocaleService,
+    public readonly service: NgxService,
+  ) {
     service.onLangChange.pipe(takeUntilDestroyed()).subscribe((event) => {
-      this.localeReady$.next([...this.localeReady$.value, event.lang])
+      this.onLanguageLoaded(event.lang)
+    })
+  }
+
+  private onLanguageLoaded(value: string) {
+    patchState(this.state, ({ languages }) => {
+      return {
+        isLoaded: true,
+        languages: uniq([...languages, value]),
+      }
     })
   }
 
@@ -40,7 +58,7 @@ export class TranslateService {
             return combineLatest(key.map((it) => this.getWatched(it))).pipe(map((it) => it.join(' ')))
           }
           return this.getWatched(key)
-        })
+        }),
       )
       .pipe(distinctUntilChanged())
   }
@@ -93,12 +111,12 @@ export class TranslateService {
           return key
         }
         return result
-      })
+      }),
     )
   }
 
   public isLocaleReady(lang: string) {
-    return this.localeReady$.pipe(map((it) => it.includes(lang)))
+    return selectStream(this.localeReady$, (list) => list.includes(lang))
   }
 
   public whenLocaleReady(lang: string) {
@@ -109,8 +127,9 @@ export class TranslateService {
     return this.service.use(locale).pipe(
       switchMap(() => {
         this.locale.use(locale)
+        this.onLanguageLoaded(locale)
         return this.whenLocaleReady(locale)
-      })
+      }),
     )
   }
 }

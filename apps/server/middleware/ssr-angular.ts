@@ -7,14 +7,17 @@ export const ssrAngular = (options: CommonEngineRenderOptions): RequestHandler =
 
   return (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req
-
+    console.log("SSR Angular")
     commonEngine
       .render({
         ...options,
         url: options.url || `${protocol}://${headers.host}${originalUrl}`,
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then((html) => res.send(html))
+      .then((html) => {
+        console.log("send HTML")
+        return res.send(html)
+      })
       .catch((err) => next(err))
   }
 }

@@ -17,6 +17,7 @@ import { ItemDetailStore } from './item-detail.store'
 import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component'
 import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
 import { selectSignal, selectStream } from '~/utils'
+import { outputFromObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -75,11 +76,9 @@ export class ItemCardComponent extends ItemDetailStore {
   @Output()
   public gsEdit = this.gsEdit$
 
-  @Output()
-  public itemChange = this.item$
+  public itemChange = outputFromObservable(this.item$)
 
-  @Output()
-  public entityChange = this.entity$
+  public entityChange = outputFromObservable(this.entity$)
 
   @Output()
   public housingItemChange = this.housingItem$

@@ -19,16 +19,18 @@ export function app({ publicDir, indexHtml }: AppOptions) {
   server.get(
     '*',
     express.static(publicDir, {
-      cacheControl: false,
       etag: true,
+      index: false,
+      cacheControl: false,
+      setHeaders: (res, path) => {
+        res.setHeader('Cache-Control', 'no-cache')
+      },
     }),
   )
 
   server.get(
     '*',
-    ssrCache({
-      transform: (body) => mergeResponse(indexHtml, body),
-    }),
+    ssrCache(),
     ssrAngular({
       bootstrap,
       documentFilePath: indexHtml,

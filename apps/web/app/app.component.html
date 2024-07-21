@@ -25,9 +25,7 @@
           <ng-container *ngTemplateOutlet="tplHeader" />
         }
         <ion-content [scrollY]="false" class="bg-base-200">
-          @if (langLoaded()) {
-            <router-outlet />
-          }
+          <router-outlet />
           @if (!isOverwolf) {
             <nwb-aeternum-map-integration class="embed-hidden" />
           }

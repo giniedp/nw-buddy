@@ -20,16 +20,18 @@ program
   .parse(process.argv)
 
 const options = optionsSchema.parse(program.opts())
+console.log(options)
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url))
 const publicDir = isAbsolute(options.dir) ? options.dir : resolve(serverDistFolder, options.dir)
+const indexHtml = join(serverDistFolder, 'index.server.html')
 const host = options.host
 const port = options.port
 
 function run() {
   let server = appServer({
     publicDir: publicDir,
-    indexHtml: join(publicDir, 'index.server.html')
+    indexHtml: indexHtml,
   })
     .listen(Number(port), host, () => {
       console.log(`Server listening on http://${host}:${port} serving ${publicDir}`)

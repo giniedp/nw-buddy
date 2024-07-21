@@ -7,4 +7,4 @@ WORKDIR /home/node
 
 COPY --chown=node:node ./dist/web ./app
 
-CMD ["node", "app/server/main.js"]
+CMD ["node", "app/server/server.mjs", "--host", "0.0.0.0", "--port", "4200", "--ssr"]

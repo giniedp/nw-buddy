@@ -1,4 +1,7 @@
-import { Routes, UrlMatcher } from '@angular/router'
+import { inject } from '@angular/core'
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Routes, UrlMatcher } from '@angular/router'
+import { TranslateService } from '@ngx-translate/core'
+import { catchError, map, of } from 'rxjs'
 import { LANG_OPTIONS } from './app-menu'
 import { AppComponent } from './app.component'
 import { ElectronComponent } from './electron'
@@ -129,6 +132,7 @@ export const APP_ROUTES: Routes = [
   },
   {
     matcher: localeRouteMatcher(LANG_OPTIONS.map((it) => it.value)),
+    canActivate: [loadLocaleFn],
     component: AppComponent,
     children: [
       {
@@ -167,4 +171,14 @@ export function localeRouteMatcher(knownLocales: string[]): UrlMatcher {
       },
     }
   }
+}
+
+export function loadLocaleFn(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  const locale = route.params['locale'] || 'en-us'
+  return inject(TranslateService)
+    .use(locale)
+    .pipe(
+      catchError(() => of(true)),
+      map(() => true),
+    )
 }

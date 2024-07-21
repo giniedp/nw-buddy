@@ -2,7 +2,7 @@ import type { Request, Response, RequestHandler } from 'express'
 import { LRUCache } from 'lru-cache'
 
 export interface SsrCacheOptions {
-  cache?: LRUCache<string, string>
+  cache?: LRUCache<string, any>
   cacheKey?: (req: Request) => string
   transform?: (body: string) => string
 }
@@ -25,14 +25,16 @@ export const ssrCache = (options?: SsrCacheOptions): RequestHandler => {
     }
     const key = cacheKey(req)
     if (cache.has(key)) {
+      const { status, body } = decodeResult(cache.get(key))
       res.set('X-SSR-CACHE', 'HIT')
+      res.status(status)
       res.setHeader('Cache-Control', 'no-cache')
-      res.send(cache.get(key))
+      res.send(body)
     } else {
       res.set('X-SSR-CACHE', 'MISS')
       res.setHeader('Cache-Control', 'no-cache')
       captureSend(res, (body) => {
-        cache.set(key, transform(body))
+        cache.set(key, encodeResult(res.statusCode, transform(body)))
       })
       next()
     }
@@ -44,6 +46,20 @@ function captureSend(res: Response, fn: (body: any) => void) {
   res.send = (body) => {
     fn(body)
     return send.call(res, body)
+  }
+}
+
+function encodeResult(statusCode: number, html: string) {
+  return {
+    status: statusCode,
+    body: html,
+  }
+}
+
+function decodeResult(result: any) {
+  return {
+    status: result.status,
+    body: result.body,
   }
 }
 
