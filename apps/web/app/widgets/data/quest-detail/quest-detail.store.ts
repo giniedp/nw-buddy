@@ -10,12 +10,11 @@ import {
   isHousingItem,
 } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions, Objectives } from '@nw-data/generated'
-import { flatten, uniq, uniqBy } from 'lodash'
+import { flatten } from 'lodash'
 import { NwDataService } from '~/data'
-import { combineLatestOrEmpty, humanize, mapList, selectSignal } from '~/utils'
+import { humanize, selectSignal } from '~/utils'
 import { GameEventReward, selectGameEventRewards } from '../game-event-detail/selectors'
 import { FollowUpQuest } from './types'
-import { map, switchMap } from 'rxjs'
 
 export interface QuestDetailState {
   questId: string
@@ -44,7 +43,6 @@ export const QuestDetailStore = signalStore(
       requiredLevel: selectSignal(quest, (it) => it?.RequiredLevel),
       requiredFaction: selectSignal(quest, (it) => it?.RequiredFaction),
       requiredProgression: selectSignal(quest, (it) => it?.RequiredProgression),
-
     }
   }),
   withComputed(({ questId, quest, level }) => {

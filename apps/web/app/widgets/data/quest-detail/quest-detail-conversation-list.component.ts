@@ -5,7 +5,11 @@ import { QuestDetailStore } from './quest-detail.store'
 @Component({
   standalone: true,
   selector: 'nwb-quest-detail-conversation-list',
-  templateUrl: './quest-detail-conversation-list.component.html',
+  template: `
+    @for (item of conversations(); track $index) {
+      <nwb-quest-detail-conversation [conversationId]="item.ConversationStateId" />
+    }
+  `,
   host: {
     class: 'flex flex-col gap-2',
     '[class.hidden]': '!conversations()?.length',

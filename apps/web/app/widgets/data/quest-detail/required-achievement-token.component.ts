@@ -26,11 +26,38 @@ export interface AchievementResource {
 @Component({
   standalone: true,
   selector: 'nwb-required-achievement-token',
-  templateUrl: './required-achievement-token.component.html',
+  template: `
+    @switch (token()?.type) {
+      @case ('OR') {
+        <span class="badge badge-sm badge-info"> OR </span>
+      }
+      @case ('AND') {
+        <span class="badge badge-sm badge-info"> AND </span>
+      }
+      @case ('NOT') {
+        <span>NOT</span>
+      }
+      @case ('expression') {
+        @for (token of token().expression; track $index) {
+          <nwb-required-achievement-token [token]="token" />
+        }
+      }
+      @case ('value') {
+        @for (row of resource(); track $index) {
+          <a [routerLink]="row.routerLink" class="flex flex-row gap-1 link-hover">
+            <img [nwImage]="row.icon" class="w-5 h-5" />
+            <span>{{ row.label | nwText }}</span>
+          </a>
+        } @empty {
+          <span class="font-mono text-secondary">{{ token().value }}</span>
+        }
+      }
+    }
+  `,
   host: {
     class: 'block',
   },
-  imports: [NwModule, RouterModule, IconsModule]
+  imports: [NwModule, RouterModule, IconsModule],
 })
 export class RequiredAchievementTokenComponent {
   private db = inject(NwDataService)
@@ -110,7 +137,6 @@ export class RequiredAchievementTokenComponent {
     }
     if (category === 'Objective') {
       return this.db.objectivesByAchievementId(achievementId).pipe(
-        tapDebug('objectivesByAchievementId'),
         map((list) => {
           return list.map((it): AchievementResource => {
             return {

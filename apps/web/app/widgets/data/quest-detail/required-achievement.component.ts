@@ -6,7 +6,11 @@ import { parseAchievementExpression } from './utils/achievement-expression'
 @Component({
   standalone: true,
   selector: 'nwb-required-achievement',
-  templateUrl: './required-achievement.component.html',
+  template: `
+    @if (expression()) {
+      <nwb-required-achievement-token [token]="expression()" />
+    }
+  `,
   imports: [CommonModule, RequiredAchievementTokenComponent],
 })
 export class RequiredAchievementComponent {
