@@ -1648,7 +1648,6 @@ export interface FishingCatchablesData {
   FishingXp: number;
   Id: string;
   LineTensionGainPerSecondMultiplier: number;
-  RewardGameEventId: string;
   ZoomCameraOnSuccess: boolean;
 }
 
@@ -1901,7 +1900,6 @@ export interface GatherableData {
   IsLootContainer: boolean;
   ItemRestrictionId: string;
   ItemRestrictionQuantity: number | string;
-  LandmarkIconPath: string;
   MaxRespawnRate: number;
   MinRespawnRate: number;
   MountGatherers: string;
@@ -1915,9 +1913,7 @@ export interface GatherableData {
   ResetGatherTimeOnEndInteraction: boolean;
   Restriction: string;
   SongRewardId: string;
-  TooltipImage: string;
   Tradeskill: string;
-  UsableEmoteTags: string;
   WaitForImpact: boolean;
 }
 
@@ -2736,6 +2732,9 @@ export interface LootBucketData {
   Item437: string;
   Item438: string;
   Item44: string;
+  Item444: string;
+  Item445: string;
+  Item446: string;
   Item45: string;
   Item46: string;
   Item47: string;
@@ -3155,6 +3154,9 @@ export interface LootBucketData {
   LootBucket437: string;
   LootBucket438: string;
   LootBucket44: string;
+  LootBucket444: string;
+  LootBucket445: string;
+  LootBucket446: string;
   LootBucket45: string;
   LootBucket46: string;
   LootBucket47: string;
@@ -3657,6 +3659,9 @@ export interface LootBucketData {
   Quantity437: number;
   Quantity438: number;
   Quantity44: string;
+  Quantity444: number;
+  Quantity445: number;
+  Quantity446: number;
   Quantity45: number;
   Quantity46: number;
   Quantity47: number;
@@ -7013,6 +7018,7 @@ export type CreatureType =
   | "Critter"
   | "Dungeon"
   | "Dungeon+"
+  | "Dungeon+_NoCurrency"
   | "Dungeon-"
   | "DungeonBoss"
   | "DungeonMiniBoss"
@@ -13414,6 +13420,11 @@ export type VitalsCategory =
   | "Scarab"
   | "Scorpion"
   | "Season_01_Aidyn"
+  | "Season_01_Event"
+  | "Season_01_Event_Dryad_Archer"
+  | "Season_01_Event_Dryad_Prowler"
+  | "Season_01_Event_Dryad_Shaman"
+  | "Season_01_Event_Dryad_Soldier"
   | "Season_02_BabySandworm"
   | "Season_02_Flamekeeper_Boss_Q12"
   | "Season_02_LtHerikai"
@@ -13795,6 +13806,7 @@ export type VitalsCategory =
   | "Spriggan_Corrupted_Named_DG_ShatterMtn_00"
   | "Spriggan_Forest"
   | "Spriggan_Heal_Shield"
+  | "Spriggan_Season_1_Event"
   | "Starved_Bandit_1H_Club_60"
   | "Starved_Bandit_1H_Club_61"
   | "Starved_Bandit_1H_Club_62"
