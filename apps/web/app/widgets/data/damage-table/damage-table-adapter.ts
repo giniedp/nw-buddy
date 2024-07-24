@@ -32,7 +32,7 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord>, T
   private utils: TableGridUtils<DamageTableRecord> = inject(TableGridUtils)
 
   public entityID(item: DamageTableRecord): string {
-    return item.DamageID
+    return item.DamageID.toLowerCase()
   }
 
   public entityCategories(item: DamageTableRecord): DataTableCategory[] {

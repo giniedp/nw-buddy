@@ -9,8 +9,8 @@ import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { StatusEffectDetailModule } from '../status-effect-detail'
-import { DamageRowDetailStore } from './damage-row-detail.store'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { DamageRowDetailHeaderComponent } from './damage-row-detail-header.component'
+import { DamageDetailStore } from './damage-row-detail.store'
 
 @Component({
   standalone: true,
@@ -28,27 +28,31 @@ import { toSignal } from '@angular/core/rxjs-interop'
     StatusEffectDetailModule,
     TooltipModule,
     IconsModule,
+    DamageRowDetailHeaderComponent,
   ],
-  providers: [DecimalPipe, DamageRowDetailStore],
+  providers: [DecimalPipe, DamageDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
 export class DamageRowDetailComponent {
+  private store = inject(DamageDetailStore)
+
   @Input()
   public set rowId(value: string) {
-    this.store.patchState({ rowId: value })
+    this.store.load({ rowId: value })
   }
+
   protected iconInfo = svgInfoCircle
   protected trackByIndex = (i: number) => i
   @ViewChild('tplCategoryInfo', { static: true })
   protected tplCategoryInfo: TemplateRef<any>
 
   protected decimals = inject(DecimalPipe)
-  protected store = inject(DamageRowDetailStore)
-  protected properties = toSignal(this.store.properties$)
-  protected affixProperties = toSignal(this.store.affixProps$)
-  public effectIds = toSignal(this.store.statusEffectIds$)
+
+  protected properties = this.store.properties
+  protected affixProperties = this.store.affixProps
+  public effectIds = this.store.effectIds
 
   public formatValue = (value: any, key: keyof DamageData): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {

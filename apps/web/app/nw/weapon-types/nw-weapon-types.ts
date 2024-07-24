@@ -303,8 +303,8 @@ export const NW_WARD_TYPE_ICONS = new CaseInsensitiveMap(
   }),
 )
 
-export function damageTypeIcon(type: string) {
-  return NW_DAMAGE_TYPE_ICONS.get(type) || NW_DAMAGE_TYPE_ICONS.get('unknown')
+export function damageTypeIcon(type: string, fallback?: string) {
+  return NW_DAMAGE_TYPE_ICONS.get(type) || fallback || NW_DAMAGE_TYPE_ICONS.get('unknown')
 }
 
 export const NW_SE_CATEGORY_ICONS = new CaseInsensitiveMap(

@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common'
-import { Component, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
+import { Component, HostListener, Input, OnInit, TemplateRef, ViewChild, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getAffixMODs } from '@nw-data/common'
 import { PerkData } from '@nw-data/generated'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 import { EmptyComponent } from '~/widgets/empty'
+import { PerkDetailDescriptionComponent } from '../perk-detail/perk-detail-description.component'
 import { PerkDetailStore } from '../perk-detail/perk-detail.store'
 import { PerkTableRecord } from './perk-table-cols'
 
@@ -35,34 +36,10 @@ import { PerkTableRecord } from './perk-table-cols'
       </nwb-item-header-content>
     </nwb-item-header>
     <ng-template #tplTip>
-      <div class="flex flex-col gap-1 px-2 py-1">
-        <ng-container *ngIf="store.mods$ | async; let parts">
-          <div>
-            <ng-container *ngFor="let part of parts; trackBy: trackByIndex">
-              <nwb-item-perk [icon]="part.icon" [explanation]="part" class="text-sky-600" />
-            </ng-container>
-          </div>
-          <nwb-item-divider />
-        </ng-container>
-
-        <ng-container *ngIf="store.description$ | async; let description">
-          <div
-            [nwHtml]="description | nwText: (store.textContext$ | async) | nwTextBreak"
-            class="text-nw-description italic"
-          ></div>
-
-          <div *ngIf="store.itemClassGsBonus$ | async; let bonus">
-            On {{ bonus.itemClass }}:
-            <div
-              [nwHtml]="description | nwText: (store.textContextClass$ | async) | nwTextBreak"
-              class="text-nw-description italic"
-            ></div>
-          </div>
-        </ng-container>
-      </div>
+      <nwb-perk-detail-description />
     </ng-template>
   `,
-  imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule],
+  imports: [CommonModule, ItemFrameModule, PerkDetailDescriptionComponent, NwModule, TooltipModule],
   hostDirectives: [TooltipDirective],
   providers: [PerkDetailStore],
   host: {
@@ -87,12 +64,14 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
     }
   }
 
+  protected store = inject(PerkDetailStore)
+
   @Input()
   public selected: boolean
 
   @Input()
   public set data(value: PerkTableRecord) {
-    this.store.patchState({ perkId: value?.PerkID })
+    this.store.load({ perkId: value?.PerkID })
     this.name = value?.DisplayName || value?.SecondaryEffectDisplayName
     this.icon = value?.IconPath || NW_FALLBACK_ICON
     this.description = value?.Description
@@ -121,7 +100,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
   public constructor(
     protected grid: VirtualGridComponent<PerkData>,
     protected context: NwTextContextService,
-    protected store: PerkDetailStore,
+
     protected db: NwDataService,
     protected tip: TooltipDirective,
   ) {

@@ -23,6 +23,9 @@ importers:
       '@ag-grid-community/styles':
         specifier: 31.3.2
         version: 31.3.2
+      '@angular-architects/ngrx-toolkit':
+        specifier: 18.0.0-rc.2.0
+        version: 18.0.0-rc.2.0(@ngrx/signals@18.0.0-rc.2(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))
       '@angular-devkit/architect':
         specifier: 0.1801.1
         version: 0.1801.1(chokidar@3.6.0)
@@ -111,8 +114,8 @@ importers:
         specifier: 18.0.1
         version: 18.0.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(@ngrx/store@18.0.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))(rxjs@7.8.1)
       '@ngrx/signals':
-        specifier: 17.2.0
-        version: 17.2.0(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1)
+        specifier: 18.0.0-rc.2
+        version: 18.0.0-rc.2(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1)
       '@ngrx/store':
         specifier: 18.0.1
         version: 18.0.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1)
@@ -581,6 +584,11 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
+
+  '@angular-architects/ngrx-toolkit@18.0.0-rc.2.0':
+    resolution: {integrity: sha512-TFKDrl7RIAOq4S7GonRgKKvo2RKnnhEVEjca3HA8HE2uVbYUI+mrkbi9aqkdWyG+lt5oOKhmsTBm9VhTqbjFfA==}
+    peerDependencies:
+      '@ngrx/signals': 18.0.0-rc.2
 
   '@angular-devkit/architect@0.1801.1':
     resolution: {integrity: sha512-7dIQ++D5PTzLgs4sEvi7pMpG4nY4CTnzLKbqKDI++fJKa7FEpVjje1tsr1r8ap8xD0QXr6sIxmQ4hdLeWwPhDQ==}
@@ -2575,10 +2583,10 @@ packages:
     peerDependencies:
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@ngrx/signals@17.2.0':
-    resolution: {integrity: sha512-tkkxifeOVPOhpTqbHyK1WOx4qz49HLR/h0vhaa/MRGRIZoOR/6gR4KB3hbC8FD3FdnuNqOgOZ2lGsTfWPB/6BQ==}
+  '@ngrx/signals@18.0.0-rc.2':
+    resolution: {integrity: sha512-KFj0I5seMVVqqXaoBqeQiR/+dKho4n+Ry/RmaAfa3f0rgYhfaxNTo7U39B7udIYjJf8Z+eYPmBFJEU3HGQU0mA==}
     peerDependencies:
-      '@angular/core': ^17.0.0
+      '@angular/core': ^18.0.0
       rxjs: ^6.5.3 || ^7.4.0
     peerDependenciesMeta:
       rxjs:
@@ -11038,6 +11046,11 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
 
+  '@angular-architects/ngrx-toolkit@18.0.0-rc.2.0(@ngrx/signals@18.0.0-rc.2(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))':
+    dependencies:
+      '@ngrx/signals': 18.0.0-rc.2(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1)
+      tslib: 2.6.3
+
   '@angular-devkit/architect@0.1801.1(chokidar@3.6.0)':
     dependencies:
       '@angular-devkit/core': 18.1.1(chokidar@3.6.0)
@@ -13496,7 +13509,7 @@ snapshots:
       debug: 4.3.5
       dir-compare: 4.2.0
       fs-extra: 11.2.0
-      minimatch: 9.0.5
+      minimatch: 9.0.3
       plist: 3.1.0
     transitivePeerDependencies:
       - supports-color
@@ -14421,7 +14434,7 @@ snapshots:
       rxjs: 7.8.1
       tslib: 2.6.3
 
-  '@ngrx/signals@17.2.0(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1)':
+  '@ngrx/signals@18.0.0-rc.2(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1)':
     dependencies:
       '@angular/core': 18.1.1(rxjs@7.8.1)(zone.js@0.14.7)
       tslib: 2.6.3

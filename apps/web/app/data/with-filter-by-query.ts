@@ -9,7 +9,7 @@ export interface WithFilterByQueryState {
 export function withFilterByQuery<T>(predicate: (record: T, filter: string) => boolean) {
   return signalStoreFeature(
     {
-      signals: type<{
+      computed: type<{
         filteredRecords: Signal<T[]>
       }>(),
     },

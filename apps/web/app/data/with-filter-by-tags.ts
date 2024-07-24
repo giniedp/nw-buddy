@@ -16,7 +16,7 @@ export function withFilterByTags<T extends TaggedRecord>() {
       state: type<{
         records: T[]
       }>(),
-      signals: type<{
+      computed: type<{
         filteredRecords: Signal<T[]>
       }>(),
     },

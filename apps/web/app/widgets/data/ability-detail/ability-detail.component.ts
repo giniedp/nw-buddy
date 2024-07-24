@@ -1,33 +1,37 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
-import { AbilityData } from '@nw-data/generated'
-import { NwModule } from '~/nw'
-import { IconsModule } from '~/ui/icons'
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridModule } from '~/ui/property-grid'
-import { PropertyGridCell } from '~/ui/property-grid/property-grid-cell.directive'
-import { TooltipModule } from '~/ui/tooltip'
-import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
+import { AbilityDetailDescriptionComponent } from './ability-detail-description.component'
+import { AbilityDetailHeaderComponent } from './ability-detail-header.component'
+import { AbilityDetailPropertiesComponent } from './ability-detail-properties.component'
 import { AbilityDetailStore } from './ability-detail.store'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
   selector: 'nwb-ability-detail',
-  templateUrl: './ability-detail.component.html',
-  exportAs: 'detail',
+  template: `
+    <nwb-ability-detail-header />
+    <ng-content>
+      <div class="p-4">
+        <nwb-ability-detail-description class="nw-item-section" />
+        @if (!disableProperties) {
+          <nwb-ability-detail-properties class="nw-item-section" />
+        }
+      </div>
+    </ng-content>
+  `,
+  exportAs: 'abilityDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
-    NwModule,
     ItemFrameModule,
-    PropertyGridModule,
-    DecimalPipe,
-    TooltipModule,
-    IconsModule,
-    StatusEffectCategoryDetailModule,
+
+    AbilityDetailHeaderComponent,
+    AbilityDetailDescriptionComponent,
+    AbilityDetailPropertiesComponent,
   ],
-  providers: [DecimalPipe, AbilityDetailStore],
+  providers: [CommonModule, DecimalPipe, AbilityDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
@@ -35,145 +39,15 @@ import { AbilityDetailStore } from './ability-detail.store'
 export class AbilityDetailComponent {
   protected decimals = inject(DecimalPipe)
   protected iconInfo = svgInfoCircle
-  protected store = inject(AbilityDetailStore)
+  public readonly store = inject(AbilityDetailStore)
 
   @Input()
   public set abilityId(value: string) {
-    this.store.load(value)
+    this.store.load({ abilityId: value })
   }
 
   @Input()
   public disableProperties: boolean
 
-  @ViewChild('tplCategory', { static: true })
-  protected tplCategory: TemplateRef<any>
-
-  @ViewChild('tplCategoryInfo', { static: true })
-  protected tplCategoryInfo: TemplateRef<any>
-
-  @ViewChild('tplCooldownInfo', { static: true })
-  protected tplCooldownInfo: TemplateRef<any>
-
-  protected icon = this.store.icon
-  protected recordId = this.store.abilityId
-  protected displayName = this.store.nameForDisplay
-  protected description = this.store.description
-  protected properties = this.store.properties
-  protected cooldown = this.store.cooldown
-  protected weapon = this.store.weapon
-  protected source = this.store.source
-  protected uiCategory = this.store.uiCategory
-
-  public formatValue = (value: any, key: keyof AbilityData): PropertyGridCell | PropertyGridCell[] => {
-    switch (key) {
-      case 'TargetStatusEffectDurationList':
-        return statusEffectCells(value as AbilityData['TargetStatusEffectDurationList'])
-      case 'RemoveTargetStatusEffectsList':
-        return statusEffectCells(value as AbilityData['RemoveTargetStatusEffectsList'])
-      case 'StatusEffectsList':
-        return statusEffectCells(value as AbilityData['StatusEffectsList'])
-      case 'SelfApplyStatusEffect':
-        return statusEffectCells(value as AbilityData['SelfApplyStatusEffect'])
-      case 'DamageTableStatusEffectOverride':
-      case 'DontHaveStatusEffect':
-      case 'OnEquipStatusEffect':
-      case 'OtherApplyStatusEffect':
-      case 'StatusEffect':
-      case 'StatusEffectBeingApplied':
-      case 'TargetStatusEffect': {
-        return statusEffectCells(value)
-      }
-      case 'AbilityID':
-      case 'RequiredEquippedAbilityId':
-      case 'RequiredAbilityId': {
-        return abilitiesCells(value)
-      }
-      case 'AbilityList': {
-        return abilitiesCells(value as AbilityData['AbilityList'])
-      }
-      case 'DamageTableRow':
-      case 'DamageTableRowOverride':
-      case 'RemoteDamageTableRow': {
-        return damageCells(value as AbilityData['DamageTableRow'])
-      }
-      case 'AttackType': {
-        return damageCells(value as AbilityData['AttackType'])
-      }
-      case 'CooldownId': {
-        return {
-          value: (value as AbilityData['CooldownId']),
-          template: this.tplCooldownInfo,
-        }
-      }
-      case 'StatusEffectCategories':
-      case 'StatusEffectCategoriesList':
-      case 'StatusEffectDurationCats':
-      case 'TargetStatusEffectCategory':
-      case 'TargetStatusEffectDurationCats': {
-        return (value as AbilityData['StatusEffectCategories']).map((it) => ({
-          value: String(it),
-          template: this.tplCategory,
-        }))
-      }
-      default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            secondary: true,
-          }))
-        }
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
-}
-
-function statusEffectCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['status-effect', it] : null,
-    }
-  })
-}
-
-function abilitiesCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    return {
-      value: String(it),
-      accent: true,
-      routerLink: ['ability', it],
-    }
-  })
-}
-
-function damageCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    return {
-      value: String(it),
-      accent: true,
-      routerLink: ['damage'],
-      queryParams: { search: it },
-    }
-  })
+  public abilityChange = outputFromObservable(toObservable(this.store.ability) )
 }

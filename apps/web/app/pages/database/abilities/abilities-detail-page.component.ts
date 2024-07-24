@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { AbilityData } from '@nw-data/generated'
@@ -40,7 +41,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class AbilitiesDetailPageComponent {
-  public itemId = observeRouteParam(this.route, 'id')
+  public itemId = toSignal(observeRouteParam(this.route, 'id'))
 
   protected perkIds$ = this.db
     .perksByEquipAbility(this.itemId)

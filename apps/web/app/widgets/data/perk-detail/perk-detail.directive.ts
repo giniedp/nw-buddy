@@ -1,5 +1,5 @@
-import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDataService } from '~/data'
+import { Directive, forwardRef, Input } from '@angular/core'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Directive({
@@ -16,13 +16,8 @@ import { PerkDetailStore } from './perk-detail.store'
 export class PerkDetailDirective extends PerkDetailStore {
   @Input()
   public set nwbPerkDetail(value: string) {
-    this.patchState({ perkId: value })
+    this.load({ perkId: value })
   }
 
-  @Output()
-  public nwbPerkChange = this.perk$
-
-  public constructor(db: NwDataService) {
-    super(db)
-  }
+  public nwbPerkChange = outputFromObservable(toObservable(this.perk))
 }

@@ -15,7 +15,7 @@ import { MountDetailStore } from './mount-detail.store'
 })
 export class MountDetailDirective extends MountDetailStore {
   @Input()
-  public set nwbPerkDetail(value: string) {
+  public set nwbMountDetail(value: string) {
     this.patchState({ mountId: value })
   }
 

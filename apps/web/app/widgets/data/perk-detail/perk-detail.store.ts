@@ -1,106 +1,144 @@
-import { Injectable, Output, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON, explainPerkMods, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
-import { AffixStatData, PerkData } from '@nw-data/generated'
-import { combineLatest, defer, map } from 'rxjs'
+import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
+import { computed, inject } from '@angular/core'
+import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
+import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
+import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
+import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
-import { rejectKeys, selectStream } from '~/utils'
+import { combineLatestOrEmpty, rejectKeys, selectSignal, selectStream } from '~/utils'
 
-@Injectable()
-export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
-  protected readonly context = inject(NwTextContextService)
+export interface PerkDetailStoreState {
+  perkId: string
+  perk: PerkData
+  affix: AffixStatData
+  abilities: AbilityData[]
+  refAbilities: string[]
+  refEffects: string[]
+  resourceItems: MasterItemDefinitions[]
+  isLoaded: boolean
+}
 
-  public readonly perkId$ = this.select(({ perkId }) => perkId)
-
-  @Output()
-  public readonly perk$ = this.select(this.db.perk(this.perkId$), (it) => it)
-
-  public readonly textContext$ = selectStream(
-    {
-      perk: this.perk$,
-      context: this.context.state$,
+export type PerkDetailStore = InstanceType<typeof PerkDetailStore>
+export const PerkDetailStore = signalStore(
+  withState<PerkDetailStoreState>({
+    perkId: null,
+    perk: null,
+    affix: null,
+    abilities: [],
+    refAbilities: [],
+    refEffects: [],
+    resourceItems: [],
+    isLoaded: false,
+  }),
+  withRedux({
+    actions: {
+      public: {
+        load: payload<{ perkId: string }>(),
+      },
+      private: {
+        loaded: payload<Omit<PerkDetailStoreState, 'isLoaded'>>(),
+      },
     },
-    ({ perk, context }) => {
-      const result = {
-        itemId: perk?.PerkID,
-        gearScore: context.gearScore,
-        charLevel: context.charLevel,
+    reducer(actions, on) {
+      on(actions.load, (state) => {
+        patchState(state, {
+          isLoaded: false,
+        })
+      })
+      on(actions.loaded, (state, data) => {
+        patchState(state, {
+          ...data,
+          isLoaded: true,
+        })
+      })
+    },
+    effects(actions, create) {
+      const db = inject(NwDataService)
+      return {
+        load$: create(actions.load).pipe(
+          switchMap(({ perkId }) => loadState(db, perkId)),
+          map((data) => actions.loaded(data)),
+          catchError((error) => {
+            console.error(error)
+            return EMPTY
+          }),
+        ),
       }
-      if (context.gearScoreBonus) {
+    },
+  }),
+  withComputed(({ perk, affix }) => {
+    return {
+      icon: computed(() => perk()?.IconPath || NW_FALLBACK_ICON),
+      type: computed(() => perk()?.PerkType),
+      name: computed(() => perk()?.DisplayName || perk()?.SecondaryEffectDisplayName),
+      description: computed(() => perk()?.Description),
+      properties: computed(() => selectProperties(perk())),
+      modsInfo: computed(() => getAffixMODs(affix())),
+      affixProps: computed(() => selectAffixProperties(affix())),
+
+      scalesWithGearScore: computed(() => !!perk()?.ScalingPerGearScore),
+      itemClassGsBonus: computed(() => getPerkItemClassGSBonus(perk())),
+    }
+  }),
+  withComputed(({ perk }) => {
+    const context = inject(NwTextContextService)
+    const textContext = selectSignal(
+      {
+        perk: perk,
+        context: context.state$,
+      },
+      ({ perk, context }) => {
+        const result = {
+          itemId: perk?.PerkID,
+          gearScore: context.gearScore,
+          charLevel: context.charLevel,
+        }
+        if (context.gearScoreBonus) {
+          const gsBonus = getPerkItemClassGSBonus(perk)
+          result.gearScore += gsBonus?.value || 0
+        }
+        return result
+      },
+    )
+
+    const textContextClass = selectSignal(
+      {
+        perk: perk,
+        context: context.state$,
+      },
+      ({ perk, context }) => {
+        const result = {
+          itemId: perk?.PerkID,
+          gearScore: context.gearScore,
+          charLevel: context.charLevel,
+        }
         const gsBonus = getPerkItemClassGSBonus(perk)
         result.gearScore += gsBonus?.value || 0
-      }
-      return result
+        return result
+      },
+    )
+
+    return {
+      textContext,
+      textContextClass,
     }
-  )
+  }),
+)
 
-  public readonly textContextClass$ = selectStream(
+function loadState(db: NwDataService, perkId: string) {
+  const perk$ = db.perk(perkId)
+  const affix$ = perk$.pipe(
+    map((it) => it?.Affix),
+    switchMap((it) => db.affixStat(it)),
+  )
+  const refAbilities$ = perk$.pipe(map((it) => it?.EquipAbility || []))
+  const abilities$ = refAbilities$.pipe(switchMap((it) => combineLatestOrEmpty(it?.map((id) => db.ability(id)))))
+
+  const refEffects$ = selectStream(
     {
-      perk: this.perk$,
-      context: this.context.state$,
-    },
-    ({ perk, context }) => {
-      const result = {
-        itemId: perk?.PerkID,
-        gearScore: context.gearScore,
-        charLevel: context.charLevel,
-      }
-      const gsBonus = getPerkItemClassGSBonus(perk)
-      result.gearScore += gsBonus?.value || 0
-      return result
-    }
-  )
-
-  public readonly scalesWithGearScore$ = this.select(this.perk$, (it) => !!it.ScalingPerGearScore)
-  public readonly itemClassGsBonus$ = this.select(this.perk$, (it) => getPerkItemClassGSBonus(it))
-
-  public readonly icon$ = this.select(this.perk$, (it) => it?.IconPath || NW_FALLBACK_ICON)
-  public readonly type$ = this.select(this.perk$, (it) => it?.PerkType)
-  public readonly name$ = this.select(this.perk$, (it) => it?.DisplayName || it?.SecondaryEffectDisplayName)
-  public readonly description$ = this.select(this.perk$, (it) => it?.Description)
-  public readonly properties$ = this.select(this.perk$, selectProperties)
-  public readonly modsInfo$ = this.select(
-    defer(() => this.affix$),
-    (it) => getAffixMODs(it)
-  )
-
-  public readonly affixId$ = this.select(this.perk$, (it) => it?.Affix)
-  public readonly affix$ = this.select(this.db.affixStat(this.affixId$), (it) => it)
-  public readonly affixProps$ = this.select(this.affix$, selectAffixProperties)
-
-  public readonly mods$ = this.select(
-    combineLatest({
-      perk: this.perk$,
-      affix: this.affix$,
-      abilities: this.db.abilitiesMap,
-      context: this.textContext$,
-    }),
-    ({ perk, affix, abilities, context }) => {
-      const mods = explainPerkMods({ perk, affix, gearScore: context.gearScore })
-      if (!mods?.length) {
-        return null
-      }
-      return mods
-    }
-  )
-
-  public readonly refAbilities$ = this.perk$.pipe(map((it) => (it?.EquipAbility?.length ? it?.EquipAbility : null)))
-  public readonly abilities$ = selectStream(
-    {
-      ref: this.refAbilities$,
-      map: this.db.abilitiesMap,
-    },
-    ({ ref, map }) => {
-      return ref?.map((id) => map.get(id)).filter((it) => !!it)
-    },
-    { debounce: true }
-  )
-
-  public readonly refEffects$ = selectStream(
-    {
-      affix: this.affix$,
-      abilities: this.abilities$,
+      affix: affix$,
+      abilities: abilities$,
     },
     ({ affix, abilities }) => {
       const result: string[] = []
@@ -117,37 +155,34 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
         it.StatusEffect
       })
       return result.length ? result : null
-    }
+    },
   )
 
-  public readonly resourceItems$ = selectStream(
+  const resourceItems$ = selectStream(
     {
-      perkId: this.perkId$,
-      perkBuckets: this.db.perkBucketsByPerkIdMap,
-      resources: this.db.resourcesByPerkBucketIdMap,
-      items: this.db.itemsMap,
+      perkBuckets: db.perkBucketsByPerkIdMap,
+      resources: db.resourcesByPerkBucketIdMap,
+      items: db.itemsMap,
     },
-    ({ perkId, perkBuckets, resources, items }) => {
+    ({ perkBuckets, resources, items }) => {
       const buckets = perkBuckets.get(perkId)
       const resourcesList = buckets
         ?.map((it) => resources.get(it.PerkBucketID))
         .flat()
         .filter((it) => !!it)
       return resourcesList?.map((it) => items.get(it.ResourceID)).filter((it) => !!it)
-    }
+    },
   )
 
-  public constructor(private db: NwDataService) {
-    super({ perkId: null })
-  }
-
-  public load(idOrItem: string | PerkData) {
-    if (typeof idOrItem === 'string') {
-      this.patchState({ perkId: idOrItem })
-    } else {
-      this.patchState({ perkId: idOrItem?.PerkID })
-    }
-  }
+  return combineLatest({
+    perkId: of(perkId),
+    perk: perk$,
+    affix: affix$,
+    abilities: abilities$,
+    refAbilities: refAbilities$,
+    refEffects: refEffects$,
+    resourceItems: resourceItems$,
+  })
 }
 
 function selectProperties(item: PerkData) {

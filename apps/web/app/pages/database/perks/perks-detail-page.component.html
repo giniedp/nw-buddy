@@ -1,13 +1,10 @@
 <div
   class="flex flex-col gap-2"
-  [nwbScreenshotFrame]="itemId | async"
-  [nwbPerkDetail]="itemId | async"
-  (nwbPerkChange)="onEntity($event)"
-  #detail="perkDetail"
+  [nwbScreenshotFrame]="itemId()"
 >
-  <nwb-perk-detail [perkId]="itemId | async" class="bg-black" />
+  <nwb-perk-detail [perkId]="itemId()" (perkChange)="onEntity($event)" class="bg-black" #detail="perkDetail" />
 
-  @for (item of detail.resourceItems$ | async; track $index; let isFirst = $first) {
+  @for (item of detail.store.resourceItems(); track $index; let isFirst = $first) {
     @if (isFirst) {
       <h3 class="prose mt-2">Craft Mods:</h3>
     }
@@ -21,14 +18,14 @@
     />
   }
 
-  @for (abilityId of detail.refAbilities$ | async; track $index; let isFirst = $first) {
+  @for (abilityId of detail.store.refAbilities(); track $index; let isFirst = $first) {
     @if (isFirst) {
       <h3 class="prose mt-2">Referenced Abilities:</h3>
     }
     <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
   }
 
-  @for (effectId of detail.refEffects$ | async; track $index; let isFirst = $first) {
+  @for (effectId of detail.store.refEffects(); track $index; let isFirst = $first) {
     @if (isFirst) {
       <h3 class="prose mt-2">Referenced Status Effects:</h3>
     }

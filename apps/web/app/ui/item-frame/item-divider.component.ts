@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
   template: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'block nw-item-divider opacity-50',
+    class: 'block nw-item-divider',
   },
 })
 export class ItemDividerComponent {}

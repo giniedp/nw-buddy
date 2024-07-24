@@ -1,193 +1,49 @@
-import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, forwardRef } from '@angular/core'
-import { FormsModule } from '@angular/forms'
-import { parseScalingPerGearScore } from '@nw-data/common'
-import { AffixStatData, PerkData } from '@nw-data/generated'
-import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
-import { GsInputComponent } from '~/ui/gs-input'
-import { IconsModule } from '~/ui/icons'
-import { svgInfoCircle } from '~/ui/icons/svg'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
-import { TooltipModule } from '~/ui/tooltip'
-import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
+import { DecimalPipe } from '@angular/common'
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
+import { PerkDetailDescriptionComponent } from './perk-detail-description.component'
+import { PerkDetailHeaderComponent } from './perk-detail-header.component'
+import { PerkDetailModsComponent } from './perk-detail-mods.component'
+import { PerkDetailPropertiesComponent } from './perk-detail-properties.component'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Component({
   standalone: true,
   selector: 'nwb-perk-detail',
-  templateUrl: './perk-detail.component.html',
+  template: `
+    <nwb-perk-detail-header />
+    <div class="p-4">
+      <nwb-perk-detail-mods class="nw-item-section" />
+      <nwb-perk-detail-description class="nw-item-section" />
+      @if (!disableProperties) {
+        <nwb-perk-detail-properties class="nw-item-section" />
+      }
+      <ng-content />
+    </div>
+  `,
   exportAs: 'perkDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
-    NwModule,
-    ItemFrameModule,
-    PropertyGridModule,
-    GsInputComponent,
-    FormsModule,
-    TooltipModule,
-    StatusEffectCategoryDetailModule,
-    IconsModule,
+    PerkDetailDescriptionComponent,
+    PerkDetailHeaderComponent,
+    PerkDetailModsComponent,
+    PerkDetailPropertiesComponent,
   ],
-  providers: [
-    DecimalPipe,
-    {
-      provide: PerkDetailStore,
-      useExisting: forwardRef(() => PerkDetailComponent),
-    },
-  ],
+  providers: [DecimalPipe, PerkDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip',
+    class: 'block rounded-md overflow-clip font-nimbus',
   },
 })
-export class PerkDetailComponent extends PerkDetailStore {
+export class PerkDetailComponent {
+  public readonly store = inject(PerkDetailStore)
+
   @Input()
   public set perkId(value: string) {
-    this.patchState({ perkId: value })
+    this.store.load({ perkId: value })
   }
 
   @Input()
-  public disableProperties: boolean
-  protected iconInfo = svgInfoCircle
-  protected trackByIndex = (i: number) => i
-  @ViewChild('tplCategoryInfo', { static: true })
-  protected tplCategoryInfo: TemplateRef<any>
-  public constructor(db: NwDataService, protected decimals: DecimalPipe) {
-    super(db)
-  }
+  public disableProperties = false
 
-  protected setGearScore(value: number) {
-    this.context.patchState({
-      gearScore: value,
-    })
-  }
-
-  public formatValue = (value: any, key: keyof PerkData): PropertyGridCell[] => {
-    switch (key) {
-
-      case 'PerkID': {
-        return [
-          {
-            value: String(value),
-            accent: true,
-            routerLink: ['perk', value],
-          },
-        ]
-      }
-      case 'Affix': {
-        return [
-          {
-            value: String(value),
-            primary: true,
-            italic: true,
-          },
-        ]
-      }
-      case 'ItemClass': {
-        return createTags(value as PerkData['ItemClass'])
-      }
-      case 'ExcludeItemClass': {
-        return createTags(value as PerkData['ExcludeItemClass'])
-      }
-      case 'ExclusiveLabels': {
-        return createTags(value as PerkData['ExclusiveLabels'])
-      }
-      case 'EquipAbility': {
-        return (value as PerkData['EquipAbility']).map((it) => {
-          return {
-            value: it,
-            accent: true,
-            routerLink: ['ability', it],
-          }
-        })
-      }
-      case 'ScalingPerGearScore': {
-        return [
-          {
-            accent: true,
-            value: parseScalingPerGearScore(value)
-              .map(({ score, scaling }, i) => {
-                if (i === 0) {
-                  return this.decimals.transform(scaling, '0.0-7')
-                }
-                return [this.decimals.transform(score, '0.0-7'), this.decimals.transform(scaling, '0.0-7')].join(':')
-              })
-              .join(', '),
-          },
-        ]
-        return value
-      }
-      default: {
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
-
-  public formatAffixValue = (value: any, key: keyof AffixStatData): PropertyGridCell[] => {
-    switch (key) {
-      case 'StatusEffect': {
-        return statusEffectCells(value)
-      }
-      default: {
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-            {
-              template: this.tplCategoryInfo,
-              value: key,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
-}
-
-function createTags(value: string[]): PropertyGridCell[] {
-  return value.map((it) => {
-    return {
-      value: it,
-      secondary: true,
-    }
-  })
-}
-
-function statusEffectCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['status-effect', it] : null,
-    }
-  })
+  public perkChange = outputFromObservable(toObservable(this.store.perk))
 }

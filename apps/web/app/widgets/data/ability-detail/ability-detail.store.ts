@@ -1,35 +1,65 @@
+import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { AbilityData } from '@nw-data/generated'
+import { AbilityData, CooldownData } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
+import { EMPTY, catchError, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { humanize, rejectKeys, selectSignal } from '~/utils'
 
 export interface AbilityDetailState {
   abilityId: string
+  ability: AbilityData & { $source?: string}
+  cooldown: CooldownData
+  isLoaded: boolean
 }
 
+export type AbilityDetailStore = InstanceType<typeof AbilityDetailStore>
 export const AbilityDetailStore = signalStore(
-  withState<AbilityDetailState>({ abilityId: null }),
-  withMethods((state) => {
-    return {
-      load(idOrItem: string | AbilityData) {
-        if (typeof idOrItem === 'string') {
-          patchState(state, { abilityId: idOrItem })
-        } else {
-          patchState(state, { abilityId: idOrItem?.AbilityID })
-        }
-      },
-    }
+  withState<AbilityDetailState>({
+    abilityId: null,
+    ability: null,
+    cooldown: null,
+    isLoaded: false,
   }),
-  withComputed(({ abilityId }) => {
-    const db = inject(NwDataService)
-
-    const ability = selectSignal(db.ability(abilityId))
-    const cooldownId = selectSignal(ability, (it) => it?.CooldownId)
-    const cooldown = selectSignal(db.cooldownsByAbilityId(cooldownId), (list) => list?.[0])
-    //
+  withRedux({
+    actions: {
+      public: {
+        load: payload<{ abilityId: string }>(),
+      },
+      private: {
+        loaded: payload<Omit<AbilityDetailState, 'isLoaded'>>(),
+      },
+    },
+    reducer(actions, on) {
+      on(actions.load, (state) => {
+        patchState(state, {
+          isLoaded: false,
+        })
+      })
+      on(actions.loaded, (state, data) => {
+        patchState(state, {
+          ...data,
+          isLoaded: true,
+        })
+      })
+    },
+    effects(actions, create) {
+      const db = inject(NwDataService)
+      return {
+        load$: create(actions.load).pipe(
+          switchMap(({ abilityId }) => loadState(db, abilityId)),
+          map((data) => actions.loaded(data)),
+          catchError((error) => {
+            console.error(error)
+            return EMPTY
+          }),
+        ),
+      }
+    },
+  }),
+  withComputed(({ ability, cooldown }) => {
     return {
       ability,
       icon: computed(() => ability()?.Icon || NW_FALLBACK_ICON),
@@ -82,6 +112,21 @@ export const AbilityDetailStore = signalStore(
     }
   }),
 )
+
+function loadState(db: NwDataService, abilityId: string) {
+  return db.ability(abilityId).pipe(
+    switchMap((ability) => {
+      const cooldownId = ability?.CooldownId
+      return db.cooldownsByAbilityId(cooldownId).pipe(
+        map((cooldowns) => ({
+          abilityId,
+          ability,
+          cooldown: cooldowns?.[0],
+        })),
+      )
+    }),
+  )
+}
 
 function selectProperties(item: AbilityData) {
   const reject = ['$source', 'Icon', 'DisplayName', 'Description', 'Sound']

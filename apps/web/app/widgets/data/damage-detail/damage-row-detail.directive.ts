@@ -1,6 +1,5 @@
 import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDataService } from '~/data'
-import { DamageRowDetailStore } from './damage-row-detail.store'
+import { DamageDetailStore } from './damage-row-detail.store'
 
 @Directive({
   standalone: true,
@@ -8,18 +7,14 @@ import { DamageRowDetailStore } from './damage-row-detail.store'
   exportAs: 'damageRowDetail',
   providers: [
     {
-      provide: DamageRowDetailStore,
-      useExisting: forwardRef(() => DamageRowDetailDirective),
+      provide: DamageDetailStore,
+      useExisting: forwardRef(() => DamageDetailStore),
     },
   ],
 })
-export class DamageRowDetailDirective extends DamageRowDetailStore {
+export class DamageRowDetailDirective extends DamageDetailStore {
   @Input()
   public set nwbDamageRowDetail(value: string) {
-    this.patchState({ rowId: value })
-  }
-
-  public constructor(db: NwDataService) {
-    super(db)
+    this.load({ rowId: value })
   }
 }
