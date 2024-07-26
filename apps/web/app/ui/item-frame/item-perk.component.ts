@@ -8,7 +8,10 @@ import { NwModule } from '~/nw'
   standalone: true,
   selector: 'nwb-item-perk',
   template: `
-    <a class="w-6 h-6 flex items-center justify-center relative flex-none" [nwLinkTooltip]="['perk', linkPerkId]">
+    <a
+      class="w-6 h-6 flex items-center justify-center relative flex-none"
+      [nwLinkTooltip]="linkPerkId ? ['perk', linkPerkId] : null"
+    >
       <img
         [nwImage]="icon"
         class="w-6 h-6 object-contain absolute top-0 left-0 transition-transform scale-100 hover:scale-125"
@@ -17,7 +20,7 @@ import { NwModule } from '~/nw'
     </a>
     <a
       class="self-center text-sky-600"
-      [routerLink]="['perk', linkPerkId] | nwLink"
+      [routerLink]="linkPerkId ? (['perk', linkPerkId] | nwLink) : null"
       [class.link-hover]="!!linkPerkId"
     >
       @if (explanation; as part) {
