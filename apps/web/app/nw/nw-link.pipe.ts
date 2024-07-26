@@ -50,11 +50,11 @@ export class NwLinkPipe implements PipeTransform {
       this.category$.next(null)
       this.resource$.next(null)
       this.resourceId$.next(null)
-    } else {
-      this.category$.next(category || null)
-      this.resource$.next(input[0])
-      this.resourceId$.next(String(input[1] || ''))
+      return null
     }
+    this.category$.next(category || null)
+    this.resource$.next(input[0])
+    this.resourceId$.next(String(input[1] || ''))
     return this.value
   }
 }

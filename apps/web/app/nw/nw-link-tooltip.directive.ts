@@ -19,12 +19,12 @@ export class NwLinkTooltipDirective {
 
   @Input()
   public set nwLinkTooltip(value: NwLinkInput) {
-    if (!value) {
+    if (!value || (value.length === 2 && !value[1])) {
       this.resource.set(null)
       this.resourceId.set(null)
     } else {
       this.resource.set(value[0])
-      this.resourceId.set(String(value[1]))
+      this.resourceId.set(String(value[1] || ''))
     }
   }
 

@@ -10,7 +10,7 @@ import { NwModule } from '~/nw'
   template: `
     <a
       class="w-6 h-6 flex items-center justify-center relative flex-none"
-      [nwLinkTooltip]="linkPerkId ? ['perk', linkPerkId] : null"
+      [nwLinkTooltip]="['perk', linkPerkId]"
     >
       <img
         [nwImage]="icon"
@@ -20,7 +20,7 @@ import { NwModule } from '~/nw'
     </a>
     <a
       class="self-center text-sky-600"
-      [routerLink]="linkPerkId ? (['perk', linkPerkId] | nwLink) : null"
+      [routerLink]="['perk', linkPerkId] | nwLink"
       [class.link-hover]="!!linkPerkId"
     >
       @if (explanation; as part) {
