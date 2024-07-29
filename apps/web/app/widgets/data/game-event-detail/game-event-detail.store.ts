@@ -10,6 +10,7 @@ export interface GameEventDetailState {
 }
 
 export const GameEventDetailStore = signalStore(
+  { protectedState: false },
   withState<GameEventDetailState>({ eventId: null }),
   withNwData((db) => {
     return {

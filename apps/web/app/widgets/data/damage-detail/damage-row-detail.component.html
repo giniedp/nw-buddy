@@ -3,7 +3,7 @@
   <nwb-property-grid
     class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
     [item]="properties()"
-    [valueFormatter]="formatValue"
+    [descriptor]="damageDescriptor"
   />
 
   @if (affixProperties(); as affix) {
@@ -11,15 +11,15 @@
     <nwb-property-grid
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
       [item]="affix"
-      [valueFormatter]="formatAffixValue"
+      [descriptor]="affixDescriptor"
     />
   }
 
   <ng-content></ng-content>
 </div>
 
-<ng-template [nwbGridValue] let-cell #tplCategoryInfo>
-  <ng-container [nwbStatusEffectCategoryDetailByProp]="cell.value" #detail="detail">
+<ng-template [nwbGridCell] let-value #tplCategoryInfo>
+  <ng-container [nwbStatusEffectCategoryDetailByProp]="value" #detail="detail">
     <span
       *ngIf="detail.hasLimits()"
       [tooltip]="tplCategoryTip"
@@ -29,7 +29,7 @@
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help" />
     </span>
     <ng-template #tplCategoryTip>
-      <nwb-status-effect-limits-table [property]="cell.value">
+      <nwb-status-effect-limits-table [property]="value">
         <div class="text-center p-2">
           Limits only apply if the according category is present in <code>EffectCategories</code>
         </div>

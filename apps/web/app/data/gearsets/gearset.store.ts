@@ -25,6 +25,7 @@ export interface GearsetStoreState {
 
 export type GearsetStore = InstanceType<typeof GearsetStore>
 export const GearsetStore = signalStore(
+  { protectedState: false },
   withState<GearsetStoreState>({
     level: NW_MAX_CHARACTER_LEVEL,
     gearset: null,

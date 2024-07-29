@@ -9,6 +9,7 @@ export interface StatusEffectCategoryDetailState {
 }
 
 export const StatusEffectCategoryDetailStore = signalStore(
+  { protectedState: false },
   withState<StatusEffectCategoryDetailState>({ categoryId: null }),
   withNwData((db) => {
     return {

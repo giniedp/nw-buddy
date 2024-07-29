@@ -1,23 +1,25 @@
-import { Directive, inject, Input } from '@angular/core'
-import { patchState } from '@ngrx/signals'
+import { Directive, forwardRef, Input } from '@angular/core'
 import { ZoneDetailStore } from './zone-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbZoneDetail]',
   exportAs: 'zoneDetail',
-  providers: [ZoneDetailStore],
+  providers: [
+    {
+      provide: ZoneDetailStore,
+      useExisting: forwardRef(() => ZoneDetailDirective),
+    },
+  ],
 })
-export class ZoneDetailDirective {
-  public readonly store = inject(ZoneDetailStore)
-
+export class ZoneDetailDirective extends ZoneDetailStore {
   @Input()
   public set nwbZoneDetail(value: string | number) {
-    this.store.load(value)
+    this.load({ zoneId: value })
   }
 
   @Input()
   public set markVital(value: string) {
-    patchState(this.store, { markedVitalId: value })
+    this.mark({ vitalId: value })
   }
 }

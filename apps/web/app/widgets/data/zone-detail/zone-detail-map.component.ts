@@ -56,6 +56,13 @@ export class ZoneDetailMapComponent {
   @Output()
   public vitalClicked = new EventEmitter<string>()
 
+  private territoriesMetadataMap = selectSignal(this.db.territoriesMetadataMap)
+  private vitalsCategoriesMap = selectSignal(this.db.vitalsCategoriesMap)
+  private allTerritories = selectSignal(this.db.territories)
+  private isLoaded = computed(() => {
+    return this.store.isLoaded() && !!this.territoriesMetadataMap() && !!this.allTerritories() && !!this.vitalsCategoriesMap()
+  })
+
   protected bounds = computed(() => {
     const meta = this.store.metadata()
     if (!meta?.zones?.length) {
@@ -68,13 +75,13 @@ export class ZoneDetailMapComponent {
 
   protected zoneMarkers = computed(() => {
     const result: MapZoneMarker[] = []
-    if (!this.store.nwDataIsLoaded()) {
+    if (!this.store.isLoaded()) {
       return result
     }
 
     const zoneId = this.store.recordId()
-    const zones = this.store.allZones()
-    const zonesMetaMap = this.store.nwData().territoriesMetadata
+    const zones = this.allTerritories()
+    const zonesMetaMap = this.territoriesMetadataMap()
 
     for (const zone of zones || []) {
       const metaId = getZoneMetaId(zone)
@@ -126,12 +133,12 @@ export class ZoneDetailMapComponent {
 
   protected pointMarkers = computed(() => {
     const result: MapPointMarker[] = []
-    if (!this.store.nwDataIsLoaded()) {
+    if (!this.store.isLoaded()) {
       return result
     }
 
     const spawns = this.store.spawns()
-    const categories = this.store.nwData().vitalsCategoriesMap
+    const categories = this.vitalsCategoriesMap()
     const vitalId = this.store.markedVitalId()
 
     for (const spawn of spawns || []) {

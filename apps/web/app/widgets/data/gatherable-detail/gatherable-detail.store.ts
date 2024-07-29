@@ -26,6 +26,7 @@ export interface GatherableSibling {
 }
 
 export const GatherableDetailStore = signalStore(
+  { protectedState: false },
   withState<GatherableDetailState>({ gatherableId: null, variantId: null }),
   withNwData((db, service = inject(GatherableService)) => {
     return {

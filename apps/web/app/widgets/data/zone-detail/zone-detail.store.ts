@@ -1,5 +1,6 @@
-import { computed } from '@angular/core'
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
+import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
+import { computed, inject } from '@angular/core'
+import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
 import {
   getZoneBackground,
   getZoneDescription,
@@ -17,44 +18,81 @@ import {
   VitalsMetadata,
 } from '@nw-data/generated'
 import { groupBy } from 'lodash'
-import { withNwData } from '~/data/with-nw-data'
-import { rejectKeys } from '~/utils'
+import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
+import { NwDataService } from '~/data'
+import { rejectKeys, selectStream } from '~/utils'
 
+export interface ZoneSpawn {
+  vital: VitalsData
+  point: number[]
+  levels: number[]
+  categories: string[]
+}
 export interface ZoneDetailState {
-  zoneId: string | number
+  recordId: number
+  record: TerritoryDefinition
   markedVitalId?: string
+  isLoaded: boolean
+  vitals: VitalsData[]
+  spawns: ZoneSpawn[]
+  metadata: TerritoriesMetadata
 }
 
 export const ZoneDetailStore = signalStore(
-  withState<ZoneDetailState>({ zoneId: null, markedVitalId: null }),
-  withNwData((db) => {
-    return {
-      vitals: db.vitals,
-      vitalsMetadataMap: db.vitalsMetadataMap,
-      vitalsCategoriesMap: db.vitalsCategoriesMap,
-      territoriesMetadata: db.territoriesMetadataMap,
-      territories: db.territories,
-      territoriesMap: db.territoriesMap,
-    }
+  withState<ZoneDetailState>({
+    recordId: null,
+    record: null,
+    markedVitalId: null,
+    metadata: null,
+    vitals: [],
+    spawns: [],
+    isLoaded: false,
   }),
-  withHooks({
-    onInit(state) {
-      state.loadNwData()
+  withRedux({
+    actions: {
+      public: {
+        load: payload<{ zoneId: string | number }>(),
+        mark: payload<{ vitalId: string }>(),
+      },
+      private: {
+        loaded: payload<Omit<ZoneDetailState, 'isLoaded'>>(),
+      },
+    },
+    reducer(actions, on) {
+      on(actions.load, (state) => {
+        patchState(state, {
+          isLoaded: false,
+        })
+      })
+      on(actions.mark, (state, { vitalId }) => {
+        patchState(state, {
+          markedVitalId: vitalId,
+        })
+      })
+      on(actions.loaded, (state, data) => {
+        patchState(state, {
+          ...data,
+          isLoaded: true,
+        })
+      })
+    },
+    effects(actions, create) {
+      const db = inject(NwDataService)
+      return {
+        load$: create(actions.load).pipe(
+          switchMap(({ zoneId }) => loadState(db, zoneId)),
+          map((data) => actions.loaded(data)),
+          catchError((error) => {
+            console.error(error)
+            return EMPTY
+          }),
+        ),
+      }
     },
   }),
-  withComputed(({ zoneId, nwData }) => {
-    const recordId = computed(() => (zoneId() == null ? null : Number(zoneId())))
-    const territory = computed(() => nwData().territoriesMap?.get(recordId()))
-    const record = computed(() => territory())
-    const metaId = computed(() => getZoneMetaId(record()))
-    const metadata = computed(() => nwData().territoriesMetadata?.get(metaId()))
-    return {
-      territory,
-      recordId,
-      record,
-      metadata,
-      allZones: computed(() => nwData().territories || []),
 
+  withComputed(({ record }) => {
+    return {
       icon: computed(() => getZoneIcon(record())),
       image: computed(() => getZoneBackground(record())),
       name: computed(() => getZoneName(record())),
@@ -63,32 +101,38 @@ export const ZoneDetailStore = signalStore(
       type: computed(() => getZoneType(record())),
     }
   }),
-
-  withComputed(({ metadata, nwData }) => {
-    const spawns = computed(() => {
-      return selectZoneSpawns({
-        zoneMeta: metadata(),
-        vitals: nwData().vitals,
-        vitalsMetaMap: nwData().vitalsMetadataMap,
-      })
-    })
-    const vitals = computed(() => {
-      return selectSpawnVitals({ vitalSpawns: spawns(), vitalCategories: nwData().vitalsCategoriesMap })
-    })
-    return { spawns, vitals }
-  }),
-  withMethods((state) => {
-    return {
-      load(id: string | number | TerritoryDefinition) {
-        if (typeof id === 'string' || typeof id === 'number') {
-          patchState(state, { zoneId: id })
-        } else {
-          patchState(state, { zoneId: id?.TerritoryID })
-        }
-      },
-    }
-  }),
 )
+
+function loadState(db: NwDataService, zoneId: string | number) {
+  const recordId = zoneId == null ? null : Number(zoneId)
+  const record$ = db.territory(recordId)
+  const metaId$ = record$.pipe(map(getZoneMetaId))
+  const metadata$ = db.territoryMetadata(metaId$)
+  const spawns$ = selectStream(
+    {
+      zoneMeta: metadata$,
+      vitals: db.vitals,
+      vitalsMetaMap: db.vitalsMetadataMap,
+    },
+    selectZoneSpawns,
+  )
+  const vitals$ = selectStream(
+    {
+      vitalSpawns: spawns$,
+      vitalCategories: db.vitalsCategoriesMap,
+    },
+    selectSpawnVitals,
+  )
+
+  return combineLatest({
+    recordId: of(recordId),
+    record: record$,
+    metaId: metaId$,
+    metadata: metadata$,
+    spawns: spawns$,
+    vitals: vitals$,
+  })
+}
 
 function selectZoneSpawns({
   zoneMeta,

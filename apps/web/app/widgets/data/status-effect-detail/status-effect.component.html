@@ -15,7 +15,7 @@
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
   @if (description() | nwText | nwTextBreak; as description) {
-    <div [innerHTML]="description" class="text-nw-description italic"></div>
+    <div [innerHTML]="description" class="text-nw-description italic font-nimbus leading-tight"></div>
     <nwb-item-divider />
   }
 
@@ -23,7 +23,7 @@
     <nwb-property-grid
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
       [item]="properties()"
-      [valueFormatter]="formatValue"
+      [descriptor]="descriptor"
     />
   }
   @if (!disableProperties && affixProperties()) {
@@ -51,28 +51,28 @@
   <ng-content />
 </div>
 
-<ng-template [nwbGridValue] let-cell #tplCategory>
+<ng-template [nwbGridCell] let-value #tplCategory>
   <span
     [class.text-secondary]="!detail.hasLimits()"
     [class.text-error]="detail.hasLimits()"
-    [nwbStatusEffectCategoryDetail]="cell.value"
+    [nwbStatusEffectCategoryDetail]="value"
     #detail="detail"
     class="inline-flex flex-row gap-1 items-center mr-1"
   >
     <span>
-      {{ cell.value }}
+      {{ value }}
     </span>
     <span *ngIf="detail.hasLimits()" [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'">
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help" />
     </span>
     <ng-template #tplCategoryTip>
-      <nwb-status-effect-limits-table [categoryId]="cell.value" />
+      <nwb-status-effect-limits-table [categoryId]="value" />
     </ng-template>
   </span>
 </ng-template>
 
-<ng-template [nwbGridValue] let-cell #tplCategoryInfo>
-  <ng-container [nwbStatusEffectCategoryDetailByProp]="cell.value" #detail="detail">
+<ng-template [nwbGridCell] let-value #tplCategoryInfo>
+  <ng-container [nwbStatusEffectCategoryDetailByProp]="value" #detail="detail">
     <span
       *ngIf="detail.hasLimits()"
       [tooltip]="tplCategoryTip"
@@ -82,7 +82,7 @@
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help" />
     </span>
     <ng-template #tplCategoryTip>
-      <nwb-status-effect-limits-table [property]="cell.value">
+      <nwb-status-effect-limits-table [property]="value">
         <div class="text-center p-2">
           Limits only apply if the according category is present in <code>EffectCategories</code>
         </div>

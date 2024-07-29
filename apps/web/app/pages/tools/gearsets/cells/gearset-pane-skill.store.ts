@@ -13,6 +13,7 @@ export interface GearsetPaneSkillState {
   disabled: boolean
 }
 export const GearsetPaneSkillStore = signalStore(
+  { protectedState: false },
   withState<GearsetPaneSkillState>({
     slot: null,
     gearset: null,

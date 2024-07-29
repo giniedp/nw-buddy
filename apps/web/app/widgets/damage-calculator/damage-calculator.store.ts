@@ -200,6 +200,7 @@ const DEFAULT_STATE: DamageCalculatorState = {
 
 export type DamageCalculatorStore = InstanceType<typeof DamageCalculatorStore>
 export const DamageCalculatorStore = signalStore(
+  { protectedState: false },
   withState<DamageCalculatorState>(DEFAULT_STATE),
   withComputed(({ offender, defender }) => {
     const attackContext = computed(() => {

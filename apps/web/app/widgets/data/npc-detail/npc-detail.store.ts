@@ -11,6 +11,7 @@ export interface NpcDetailState {
 }
 
 export const NpcDetailStore = signalStore(
+  { protectedState: false },
   withState<NpcDetailState>({
     recordId: null,
   }),

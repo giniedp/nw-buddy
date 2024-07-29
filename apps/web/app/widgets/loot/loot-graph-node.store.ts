@@ -13,6 +13,7 @@ export interface LootGraphNodeState<T = LootNode> {
   showLink: boolean
 }
 export const LootGraphNodeStore = signalStore(
+  { protectedState: false },
   withState<LootGraphNodeState>({
     node: null,
     expand: false,

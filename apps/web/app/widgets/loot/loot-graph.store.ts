@@ -17,6 +17,7 @@ export interface LootGraphState {
 
 export type LootGraphStore = typeof LootGraphStore
 export const LootGraphStore = signalStore(
+  { protectedState: false },
   withState<LootGraphState>({
     tableIds: null,
     tags: [],

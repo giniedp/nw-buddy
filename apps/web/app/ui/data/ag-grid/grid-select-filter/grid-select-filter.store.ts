@@ -11,6 +11,7 @@ export interface GridSelectFilterState {
 }
 export type GridSelectFilterStore = typeof GridSelectFilterStore
 export const GridSelectFilterStore = signalStore(
+  { protectedState: false },
   withState<GridSelectFilterState>({
     search: '',
     searchEnabled: false,

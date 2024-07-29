@@ -1,25 +1,19 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, TemplateRef, computed, inject, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { ReplaySubject, map } from 'rxjs'
-import { humanize } from '~/utils'
-import { TooltipModule } from '../tooltip'
-import { PropertyGridCell, PropertyGridCellContext, PropertyGridCellDirective } from './property-grid-cell.directive'
-import { PropertyGridValueDirective } from './property-grid-value.directive'
 import { NwModule } from '~/nw'
-
-export interface PropertyGridEntry {
-  key: string
-  value: any
-  valueType: 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function'
-}
+import { TooltipModule } from '../tooltip'
+import { valueCell } from './cells'
+import { PropertyGridCell, PropertyGridCellContext, PropertyGridCellDirective } from './property-grid-cell.directive'
+import { PropertyGridDescriptorFn } from './property-grid-descriptor'
+import { PropertyGridEntry } from './property-grid-entry'
 
 @Component({
   standalone: true,
   selector: 'nwb-property-grid',
   templateUrl: './property-grid.component.html',
   styleUrls: ['./property-grid.component.scss'],
-  imports: [NwModule, CommonModule, RouterModule, TooltipModule, PropertyGridCellDirective, PropertyGridValueDirective],
+  imports: [NwModule, CommonModule, RouterModule, TooltipModule, PropertyGridCellDirective],
   providers: [DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -27,78 +21,37 @@ export interface PropertyGridEntry {
   },
 })
 export class PropertyGridComponent<T = any> {
+  protected injector = inject(Injector)
 
-  public readonly item = input<T>(null)
-  public readonly entries = computed(() => this.extractEntries(this.item()))
+  public readonly item = input.required<T>()
+  public readonly descriptor = input<PropertyGridDescriptorFn<T>>(null)
+  public readonly templates = input<Partial<Record<keyof T, TemplateRef<PropertyGridCellContext>>>>(null)
+  public readonly keyFormatter = input<(key: keyof T) => string | PropertyGridCell>(null)
 
-  @Input()
-  public humanizeNames: boolean
+  protected entries = computed(() => getEntries(this.item()))
 
-  @Input()
-  public entriesExtractor: (value: T) => PropertyGridEntry[]
-
-  @Input()
-  public valueFormatter: PropertyGridValueFormatterFn<T>
-
-  @Input()
-  public keyFormatter: (key: keyof T) => string | PropertyGridCell
-
-  @Input()
-  public numberFormat: string = '0.0-7'
-
-  public constructor(private decimals: DecimalPipe) {
-    //
-  }
-
-  protected extractEntries(value: T): PropertyGridEntry[] {
-    if (this.entriesExtractor) {
-      return this.entriesExtractor(value)
-    }
-    if (!value) {
-      return []
-    }
-    return Object.entries(value).map(([key, value]) => {
-      return {
-        key,
-        value,
-        valueType: typeof value,
-      }
-    })
-  }
-
-  protected formatValue({ key, value, valueType }: PropertyGridEntry): PropertyGridCell[] {
-    let cell: string | PropertyGridCell | PropertyGridCell[]
-    if (this.valueFormatter) {
-      cell = this.valueFormatter(value, key as keyof T, valueType)
-    } else if (this.numberFormat && typeof value === 'number') {
+  protected describeValue({ key, value, valueType }: PropertyGridEntry): PropertyGridCell[] {
+    const templates = this.templates()
+    const descriptor = this.descriptor()
+    let cell: PropertyGridCell | PropertyGridCell[]
+    if (templates && key in templates) {
       cell = {
-        value: this.decimals.transform(value, this.numberFormat),
-        accent: true,
-      }
-    } else {
-      cell = {
+        template: templates[key],
         value: String(value),
-        accent: valueType === 'bigint' || valueType === 'number',
-        info: valueType === 'boolean',
-        bold: valueType === 'boolean',
       }
+    } else if (descriptor) {
+      cell = descriptor(value, key as keyof T, valueType)
+    } else {
+      cell = valueCell({ value })
     }
-
-    if (typeof cell === 'string') {
-      return [{ value: cell }]
-    }
-    if (Array.isArray(cell)) {
-      return cell
-    }
-    return [cell]
+    return Array.isArray(cell) ? cell : [cell]
   }
 
   protected formatKey({ key }: PropertyGridEntry): PropertyGridCell[] {
+    const keyFormatter = this.keyFormatter()
     let cell: string | PropertyGridCell | PropertyGridCell[]
-    if (this.keyFormatter) {
-      cell = this.keyFormatter(key as keyof T)
-    } else if (this.humanizeNames) {
-      cell = humanize(key)
+    if (keyFormatter) {
+      cell = keyFormatter(key as keyof T)
     } else {
       cell = String(key)
     }
@@ -113,8 +66,15 @@ export class PropertyGridComponent<T = any> {
   }
 }
 
-export type PropertyGridValueFormatterFn<T> = (
-  value: any,
-  key?: keyof T,
-  type?: PropertyGridEntry['valueType'],
-) => string | PropertyGridCell | PropertyGridCell[]
+function getEntries(item: unknown) {
+  if (!item) {
+    return []
+  }
+  return Object.entries(item).map(([key, value]) => {
+    return {
+      key,
+      value,
+      valueType: typeof value,
+    }
+  })
+}

@@ -1,10 +1,11 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, forwardRef } from '@angular/core'
 import { SpellData } from '@nw-data/generated'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridModule, PropertyGridCell } from '~/ui/property-grid'
+import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
+import { valueCell } from '~/ui/property-grid/cells'
 import { SpellDetailStore } from './spell-detail.store'
 
 @Component({
@@ -31,38 +32,14 @@ export class SpellDetailComponent extends SpellDetailStore {
     this.patchState({ spellId: value })
   }
 
-  public constructor(db: NwDataService, private decimals: DecimalPipe) {
+  public constructor(
+    db: NwDataService,
+    private decimals: DecimalPipe,
+  ) {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof SpellData): PropertyGridCell | PropertyGridCell[] => {
-    switch (key) {
-      default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            secondary: true,
-          }))
-        }
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
+  public descriptor = gridDescriptor<SpellData>({}, (value) => valueCell({ value }))
 }
 
 function statusEffectCells(list: string | string[]): PropertyGridCell[] {

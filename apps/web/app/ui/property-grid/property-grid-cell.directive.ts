@@ -1,34 +1,32 @@
-import { Directive, TemplateRef } from '@angular/core'
+import { Directive, Injector, InputSignal, ModelSignal, TemplateRef, Type } from '@angular/core'
 import { NwLinkResource } from '~/nw'
 
-export interface PropertyGridCell {
+export type ComponentInputs<C> = Partial<{
+  [P in keyof C]: C[P] extends InputSignal<infer T> ? T : C[P] extends ModelSignal<infer T> ? T : never
+}>
+
+export interface PropertyGridCell<C = unknown> {
   value: string
-  template?: TemplateRef<PropertyGridCell>
-  tooltip?: TemplateRef<PropertyGridCell>
-  routerLink?: [NwLinkResource, string] | [NwLinkResource]
-  queryParams?: Record<string, any>
-  externLink?: string
-  primary?: boolean
-  secondary?: boolean
-  info?: boolean
-  accent?: boolean
-  bold?: boolean
-  italic?: boolean
-  block?: boolean
+  injector?: Injector
+  component?: Type<C>
+  componentInputs?: ComponentInputs<C>
+  template?: TemplateRef<PropertyGridCellContext>
 }
 
 export interface PropertyGridCellContext {
-  $implicit: PropertyGridCell[]
+  $implicit: string
 }
 
 @Directive({
   standalone: true,
   selector: '[nwbGridCell]',
-  exportAs: 'gridCell'
+  exportAs: 'gridCell',
 })
 export class PropertyGridCellDirective {
-
-  public static ngTemplateContextGuard<T>(dir: PropertyGridCellDirective, ctx: unknown): ctx is PropertyGridCellContext {
+  public static ngTemplateContextGuard<T>(
+    dir: PropertyGridCellDirective,
+    ctx: unknown,
+  ): ctx is PropertyGridCellContext {
     return true
   }
 

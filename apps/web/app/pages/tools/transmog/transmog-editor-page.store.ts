@@ -28,6 +28,7 @@ export interface TransmogEditorState extends Record<TransmogSlotName, TransmogSl
 }
 
 export const TransmogEditorStore = signalStore(
+  { protectedState: false },
   withState<TransmogEditorState>({
     debug: false,
     gender: 'male',

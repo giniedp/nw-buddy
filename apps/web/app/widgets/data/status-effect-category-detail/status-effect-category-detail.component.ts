@@ -5,8 +5,9 @@ import { StatusEffectCategoryData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
+import { valueCell } from '~/ui/property-grid/cells'
 
 @Component({
   standalone: true,
@@ -30,46 +31,17 @@ export class StatusEffectCategoryDetailComponent {
     patchState(this.store, { categoryId: value })
   }
 
-  public formatValue = (value: any, key: keyof StatusEffectCategoryData): PropertyGridCell[] => {
-    switch (key) {
-      case 'StatusEffectCategoryID': {
-        return statusEffectCells(value)
+  public descriptor = gridDescriptor<StatusEffectCategoryData>(
+    {
+      StatusEffectCategoryID: statusEffectCells,
+    },
+    (value) => {
+      if (!Array.isArray(value) && typeof value === 'object') {
+        return Object.keys(value).map((key) => valueCell({ value: `${key}: ${String(value[key])}` }))
       }
-      default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            secondary: true,
-          }))
-        }
-
-        if (typeof value === 'object') {
-          return Object.keys(value).map((key): PropertyGridCell => {
-            return {
-              value: `${key}: ${String(value[key])}`,
-              block: true,
-            }
-          })
-        }
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
+      return valueCell({ value })
+    },
+  )
 }
 
 function statusEffectCells(list: string | string[]): PropertyGridCell[] {

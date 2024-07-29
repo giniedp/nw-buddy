@@ -14,6 +14,7 @@ export interface TaskTree {
 }
 
 export const QuestTaskDetailStore = signalStore(
+  { protectedState: false },
   withState<QuestTaskDetailState>({ taskId: '' }),
   withComputed(({ taskId }) => {
     const db = inject(NwDataService)

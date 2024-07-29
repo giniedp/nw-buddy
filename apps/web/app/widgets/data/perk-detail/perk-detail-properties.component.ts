@@ -4,7 +4,8 @@ import { parseScalingPerGearScore } from '@nw-data/common'
 import { AffixStatData, PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
+import { linkCell, tagsCell, localizedCell, valueCell, textCell } from '~/ui/property-grid/cells'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Component({
@@ -14,21 +15,21 @@ import { PerkDetailStore } from './perk-detail.store'
     <nwb-property-grid
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
       [item]="properties()"
-      [valueFormatter]="formatValue"
+      [descriptor]="perkDescriptor"
     />
     @if (affixProps(); as affix) {
       <nwb-item-divider />
       <nwb-property-grid
         class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
         [item]="affix"
-        [valueFormatter]="formatAffixValue"
+        [descriptor]="affixDescriptor"
       />
     }
   `,
   imports: [NwModule, PropertyGridModule, ItemFrameModule],
   host: {
     class: 'flex flex-col gap-2',
-  }
+  },
 })
 export class PerkDetailPropertiesComponent {
   protected store = inject(PerkDetailStore)
@@ -37,129 +38,48 @@ export class PerkDetailPropertiesComponent {
   protected tplCategoryInfo = viewChild<TemplateRef<any>>('tplCategoryInfo')
   protected decimals = inject(DecimalPipe)
 
-  public formatValue = (value: any, key: keyof PerkData): PropertyGridCell[] => {
-    switch (key) {
-      case 'PerkID': {
-        return [
-          {
-            value: String(value),
-            accent: true,
-            routerLink: ['perk', value],
-          },
-        ]
-      }
-      case 'Affix': {
-        return [
-          {
-            value: String(value),
-            primary: true,
-            italic: true,
-          },
-        ]
-      }
-      case 'ItemClass': {
-        return createTags(value as PerkData['ItemClass'])
-      }
-      case 'ExcludeItemClass': {
-        return createTags(value as PerkData['ExcludeItemClass'])
-      }
-      case 'ExclusiveLabels': {
-        return createTags(value as PerkData['ExclusiveLabels'])
-      }
-      case 'EquipAbility': {
-        return (value as PerkData['EquipAbility']).map((it) => {
-          return {
-            value: it,
-            accent: true,
-            routerLink: ['ability', it],
-          }
-        })
-      }
-      case 'ScalingPerGearScore': {
-        return [
-          {
-            accent: true,
-            value: parseScalingPerGearScore(value)
-              .map(({ score, scaling }, i) => {
-                if (i === 0) {
-                  return this.decimals.transform(scaling, '0.0-7')
-                }
-                return [this.decimals.transform(score, '0.0-7'), this.decimals.transform(scaling, '0.0-7')].join(':')
-              })
-              .join(', '),
-          },
-        ]
-        return value
-      }
-      default: {
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
+  public perkDescriptor = gridDescriptor<PerkData>(
+    {
+      PerkID: (value) => linkCell({ value: String(value), routerLink: ['perk', value] }),
+      Affix: (value) => textCell({ value: String(value), textPrimary: true, fontItalic: true }) ,
+      ItemClass: (value) => tagsCell({ value }),
+      ExcludeItemClass: (value) => tagsCell({ value }),
+      ExclusiveLabels: (value) => tagsCell({ value }),
+      EquipAbility: (value) => value?.map((it) => linkCell({ value: it, routerLink: ['ability', it] })),
+      ConditionEvent: (value) => tagsCell({ value }),
+      StatDisplayText: (value) => localizedCell({ value }),
+      SecondaryEffectDisplayName: (value) => localizedCell({ value }),
+      AppliedSuffix: (value) => localizedCell({ value }),
+      AppliedPrefix: (value) => localizedCell({ value }),
+      ItemPerkConflictsLocText: (value) => localizedCell({ value }),
+      ScalingPerGearScore: (value) => textCell({
+        textAccent: true,
+        value: parseScalingPerGearScore(value)
+          .map(({ score, scaling }, i) => {
+            if (i === 0) {
+              return this.decimals.transform(scaling, '0.0-7')
+            }
+            return [this.decimals.transform(score, '0.0-7'), this.decimals.transform(scaling, '0.0-7')].join(':')
+          })
+          .join(', '),
+      }),
+    },
+    (value) => valueCell({ value }),
+  )
 
-  public formatAffixValue = (value: any, key: keyof AffixStatData): PropertyGridCell[] => {
-    switch (key) {
-      case 'StatusEffect': {
-        return statusEffectCells(value)
-      }
-      default: {
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-            {
-              template: this.tplCategoryInfo(),
-              value: key,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
-}
-
-function createTags(value: string[]): PropertyGridCell[] {
-  return value.map((it) => {
-    return {
-      value: it,
-      secondary: true,
-    }
-  })
+  public affixDescriptor = gridDescriptor<AffixStatData>(
+    {
+      StatusID: (value) => textCell({ value, textPrimary: true, fontItalic: true }),
+      StatusEffect: (value) => statusEffectCells(value),
+    },
+    (value) => valueCell({ value }),
+  )
 }
 
 function statusEffectCells(list: string | string[]): PropertyGridCell[] {
   list = typeof list === 'string' ? [list] : list
   return list?.map((it) => {
     const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['status-effect', it] : null,
-    }
+    return linkCell({ value: it, routerLink: isLink ? ['status-effect', it] : null })
   })
 }

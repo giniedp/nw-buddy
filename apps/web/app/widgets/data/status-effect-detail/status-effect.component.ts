@@ -5,7 +5,8 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
+import { linkCell, localizedCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
@@ -62,74 +63,28 @@ export class StatusEffectDetailComponent {
   protected affixProperties = this.store.affixProps
   protected costumeModels = this.store.costumeModels
 
-  public formatValue = (value: any, key: keyof StatusEffectData): PropertyGridCell[] => {
-    switch (key) {
-      case 'StatusID':
-      case 'OnDeathStatusEffect':
-      case 'OnEndStatusEffect':
-      case 'OnStackStatusEffect':
-      case 'OnTickStatusEffect': {
-        return statusEffectCells(value)
-      }
-      case 'RemoveStatusEffects': {
-        return statusEffectCells(value)
-      }
-      case 'EquipAbility': {
-        return [
-          {
-            value: String(value),
-            accent: true,
-            routerLink: ['ability', value],
-          },
-        ]
-      }
-      case 'EffectCategories':
-      case 'RemoveStatusEffectCategories': {
-        return value.map((it) => ({
-          value: String(it),
-          template: this.tplCategory,
-        }))
-      }
-      default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            secondary: true,
-          }))
-        }
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-            {
-              template: this.tplCategoryInfo,
-              value: key,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
+  public descriptor = gridDescriptor<StatusEffectData>(
+    {
+      DisplayName: (value) => localizedCell({ value }),
+      Description: (value) => localizedCell({ value }),
+      StatusID: statusEffectCells,
+      OnDeathStatusEffect: statusEffectCells,
+      OnEndStatusEffect: statusEffectCells,
+      OnStackStatusEffect: statusEffectCells,
+      OnTickStatusEffect: statusEffectCells,
+      RemoveStatusEffects: statusEffectCells,
+      EquipAbility: (value) => linkCell({ value, routerLink: ['ability', value] }),
+      EffectCategories: (value) => value?.map((it) => ({ value: it, template: this.tplCategory })),
+      RemoveStatusEffectCategories: (value) => value?.map((it) => ({ value: it, template: this.tplCategory })),
+    },
+    (value) => valueCell({ value }),
+  )
 }
 
 function statusEffectCells(list: string | string[]): PropertyGridCell[] {
   list = typeof list === 'string' ? [list] : list
   return list?.map((it) => {
     const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['status-effect', it] : null,
-    }
+    return linkCell({ value: it, routerLink: isLink ? ['status-effect', it] : null })
   })
 }

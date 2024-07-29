@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core'
-import { EntriesPipe } from './entries.pipe'
+import { PropertyGridCellDirective } from './property-grid-cell.directive'
 import { PropertyGridComponent } from './property-grid.component'
-import { PropertyGridValueDirective } from './property-grid-value.directive'
 
 @NgModule({
-  imports: [PropertyGridComponent, PropertyGridValueDirective, EntriesPipe],
-  exports: [PropertyGridComponent, PropertyGridValueDirective, EntriesPipe],
+  imports: [PropertyGridComponent, PropertyGridCellDirective],
+  exports: [PropertyGridComponent, PropertyGridCellDirective],
 })
 export class PropertyGridModule {}

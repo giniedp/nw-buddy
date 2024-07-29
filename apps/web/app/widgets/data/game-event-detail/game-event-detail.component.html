@@ -2,7 +2,7 @@
   <nwb-property-grid
     class="w-full gap-x-2 font-mono leading-tight overflow-auto"
     [item]="props()"
-    [valueFormatter]="formatValue"
+    [descriptor]="descriptor"
   />
 }
 @if (showRewards() && rewards()?.length) {

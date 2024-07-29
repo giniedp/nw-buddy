@@ -1,58 +1,42 @@
 @for (entry of entries(); track $index) {
-  <span>
+  <span class="truncate" [title]="entry.key">
     @for (cell of formatKey(entry); track $index) {
-      <ng-container [ngTemplateOutlet]="cell.template || tplValue" [ngTemplateOutletContext]="{ $implicit: cell }" />
+      @if (cell.component) {
+        <ng-container
+          [ngComponentOutlet]="cell.component"
+          [ngComponentOutletInputs]="cell.componentInputs"
+          [ngComponentOutletInjector]="cell.injector || injector"
+        />
+      } @else if (cell.template) {
+        <ng-container
+          [ngTemplateOutlet]="cell.template"
+          [ngTemplateOutletContext]="{ $implicit: cell.value }"
+          [ngTemplateOutletInjector]="cell.injector || injector"
+        />
+      } @else {
+        {{ cell.value }}
+      }
     }
   </span>
-  <span>
-    @for (cell of formatValue(entry); track $index) {
-      <ng-container [ngTemplateOutlet]="cell.template || tplValue" [ngTemplateOutletContext]="{ $implicit: cell }" />
+  <span class="overflow-hidden">
+    @for (cell of describeValue(entry); track $index) {
+      @if (cell.component) {
+        <ng-container
+          [ngComponentOutlet]="cell.component"
+          [ngComponentOutletInputs]="cell.componentInputs"
+          [ngComponentOutletInjector]="cell.injector || injector"
+        />
+      } @else if (cell.template) {
+        <ng-container
+          [ngTemplateOutlet]="cell.template"
+          [ngTemplateOutletContext]="{ $implicit: cell.value }"
+          [ngTemplateOutletInjector]="cell.injector || injector"
+        />
+      } @else {
+        {{ cell.value }}
+      }
     }
   </span>
 }
 
-<ng-template [nwbGridValue] let-cell #tplValue>
-  @if (cell.externLink) {
-    <a
-      [href]="cell.externLink"
-      target="_blank"
-      class="link link-primary"
-      [tooltip]="cell.tooltip"
-      [tooltipContext]="{ $implicit: cell }"
-      [class.font-bold]="cell.bold"
-      [class.italic]="cell.italic"
-      [class.block]="cell.block"
-    >
-      {{ cell.value }}
-    </a>
-  } @else if (cell.routerLink) {
-    <a
-      [routerLink]="cell.routerLink | nwLink"
-      [queryParams]="cell.queryParams"
-      class="link link-primary"
-      [tooltip]="cell.tooltip"
-      [tooltipContext]="{ $implicit: cell }"
-      [class.font-bold]="cell.bold"
-      [class.italic]="cell.italic"
-      [class.block]="cell.block"
-    >
-      {{ cell.value }}
-    </a>
-  } @else {
-    <span
-      [class.text-primary]="cell.primary"
-      [class.text-secondary]="cell.secondary"
-      [class.text-info]="cell.info"
-      [class.text-accent]="cell.accent"
-      [tooltip]="cell.tooltip"
-      [tooltipContext]="{ $implicit: cell }"
-      [class.font-bold]="cell.bold"
-      [class.italic]="cell.italic"
-      [class.block]="cell.block"
-    >
-      {{ cell.value }}
-    </span>
-  }
-</ng-template>
-
-<ng-content/>
+<ng-content />

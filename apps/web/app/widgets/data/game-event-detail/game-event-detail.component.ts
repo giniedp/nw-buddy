@@ -1,11 +1,11 @@
 import { DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject, signal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { patchState } from '@ngrx/signals'
 import { GameEventData } from '@nw-data/generated'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
+import { linkCell, valueCell } from '~/ui/property-grid/cells'
 import { GameEventDetailRewardsComponent } from './game-event-detail-rewards.component'
 import { GameEventDetailStore } from './game-event-detail.store'
-import { patchState } from '@ngrx/signals'
 
 @Component({
   standalone: true,
@@ -35,79 +35,22 @@ export class GameEventDetailComponent {
     patchState(this.store, { eventId: value })
   }
 
-  public formatValue = (value: any, key: keyof GameEventData): PropertyGridCell | PropertyGridCell[] => {
-    switch (key) {
-      case 'EventID': {
-        return [
-          {
-            value: String(value),
-            accent: true,
-            routerLink: ['game-event', value],
-          },
-        ]
-      }
-      case 'LootLimitReachedGameEventId':
-      case 'LootLimitId': {
-        return [
-          {
-            value: String(value),
-            accent: true,
-            routerLink: ['loot-limit', value],
-          },
-        ]
-      }
-      case 'ItemReward': {
+  public descriptor = gridDescriptor<GameEventData>(
+    {
+      EventID: (value) => linkCell({ value: String(value), routerLink: ['game-event', value] }),
+      LootLimitReachedGameEventId: (value) => linkCell({ value: String(value), routerLink: ['game-event', value] }),
+      LootLimitId: (value) => linkCell({ value: String(value), routerLink: ['loot-limit', value] }),
+      ItemReward: (value) => {
         const id = String(value)
         if (id.startsWith('[LTID]')) {
-          return [
-            {
-              value: value,
-              accent: true,
-              routerLink: ['loot', id.replace('[LTID]', '')],
-            },
-          ]
+          return linkCell({ value, routerLink: ['loot', id.replace('[LTID]', '')] })
         }
         if (id.includes('HousingItem')) {
-          return [
-            {
-              value: value,
-              accent: true,
-              routerLink: ['housing', value],
-            },
-          ]
+          return linkCell({ value, routerLink: ['housing', value] })
         }
-        return [
-          {
-            value: value,
-            accent: true,
-            routerLink: ['item', value],
-          },
-        ]
-      }
-      default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            secondary: true,
-          }))
-        }
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
+        return linkCell({ value, routerLink: ['item', value] })
+      },
+    },
+    (value) => valueCell({ value }),
+  )
 }

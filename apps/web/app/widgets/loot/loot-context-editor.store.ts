@@ -51,6 +51,7 @@ const DEFAULT_STATE: LootContextEditorState = {
 
 export type LootContextEditorStore = typeof LootContextEditorStore
 export const LootContextEditorStore = signalStore(
+  { protectedState: false },
   withState<LootContextEditorState>(DEFAULT_STATE),
   withNwData((data) => {
     return {

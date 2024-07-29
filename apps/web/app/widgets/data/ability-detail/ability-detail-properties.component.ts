@@ -3,7 +3,8 @@ import { Component, TemplateRef, inject, viewChild } from '@angular/core'
 import { AbilityData } from '@nw-data/generated'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
+import { linkCell, localizedCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { AbilityDetailStore } from './ability-detail.store'
@@ -15,19 +16,19 @@ import { AbilityDetailStore } from './ability-detail.store'
     <nwb-property-grid
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
       [item]="store.properties()"
-      [valueFormatter]="formatValue"
+      [descriptor]="descriptor"
     />
 
-    <ng-template [nwbGridValue] let-cell #tplCategory>
+    <ng-template [nwbGridCell] let-value #tplCategory>
       <span
         [class.text-secondary]="!detail.hasLimits()"
         [class.text-error]="detail.hasLimits()"
-        [nwbStatusEffectCategoryDetail]="cell.value"
+        [nwbStatusEffectCategoryDetail]="value"
         #detail="detail"
         class="inline-flex flex-row gap-1 items-center mr-1"
       >
         <span>
-          {{ cell.value }}
+          {{ value }}
         </span>
         @if (detail.hasLimits()) {
           <span [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'">
@@ -35,7 +36,7 @@ import { AbilityDetailStore } from './ability-detail.store'
           </span>
         }
         <ng-template #tplCategoryTip>
-          <nwb-status-effect-limits-table [categoryId]="cell.value" />
+          <nwb-status-effect-limits-table [categoryId]="value" />
         </ng-template>
       </span>
     </ng-template>
@@ -87,116 +88,64 @@ export class AbilityDetailPropertiesComponent {
   protected tplCategoryInfo = viewChild<TemplateRef<any>>('tplCategoryInfo')
   protected tplCooldownInfo = viewChild<TemplateRef<any>>('tplCooldownInfo')
 
-  public formatValue = (value: any, key: keyof AbilityData): PropertyGridCell | PropertyGridCell[] => {
-    switch (key) {
-      case 'TargetStatusEffectDurationList':
-        return statusEffectCells(value as AbilityData['TargetStatusEffectDurationList'])
-      case 'RemoveTargetStatusEffectsList':
-        return statusEffectCells(value as AbilityData['RemoveTargetStatusEffectsList'])
-      case 'StatusEffectsList':
-        return statusEffectCells(value as AbilityData['StatusEffectsList'])
-      case 'SelfApplyStatusEffect':
-        return statusEffectCells(value as AbilityData['SelfApplyStatusEffect'])
-      case 'DamageTableStatusEffectOverride':
-      case 'DontHaveStatusEffect':
-      case 'OnEquipStatusEffect':
-      case 'OtherApplyStatusEffect':
-      case 'StatusEffect':
-      case 'StatusEffectBeingApplied':
-      case 'TargetStatusEffect': {
-        return statusEffectCells(value)
-      }
-      case 'AbilityID':
-      case 'RequiredEquippedAbilityId':
-      case 'RequiredAbilityId': {
-        return abilitiesCells(value)
-      }
-      case 'AbilityList': {
-        return abilitiesCells(value as AbilityData['AbilityList'])
-      }
-      case 'DamageTableRow':
-      case 'DamageTableRowOverride':
-      case 'RemoteDamageTableRow': {
-        return damageCells(value as AbilityData['DamageTableRow'])
-      }
-      case 'AttackType': {
-        return damageCells(value as AbilityData['AttackType'])
-      }
-      case 'CooldownId': {
-        return {
-          value: value as AbilityData['CooldownId'],
-          template: this.tplCooldownInfo(),
-        }
-      }
-      case 'StatusEffectCategories':
-      case 'StatusEffectCategoriesList':
-      case 'StatusEffectDurationCats':
-      case 'TargetStatusEffectCategory':
-      case 'TargetStatusEffectDurationCats': {
-        return (value as AbilityData['StatusEffectCategories']).map((it) => ({
-          value: String(it),
-          template: this.tplCategory(),
-        }))
-      }
-      default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            secondary: true,
-          }))
-        }
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
+  public descriptor = gridDescriptor<AbilityData>(
+    {
+      DisplayName: (value) => localizedCell({ value }),
+      Description: (value) => localizedCell({ value }),
+      // status effects
+      TargetStatusEffectDurationList: (value) => statusEffectCells(value),
+      RemoveTargetStatusEffectsList: (value) => statusEffectCells(value),
+      StatusEffectsList: (value) => statusEffectCells(value),
+      SelfApplyStatusEffect: (value) => statusEffectCells(value),
+      DamageTableStatusEffectOverride: (value) => statusEffectCells(value),
+      DontHaveStatusEffect: (value) => statusEffectCells(value),
+      OnEquipStatusEffect: (value) => statusEffectCells(value),
+      OtherApplyStatusEffect: (value) => statusEffectCells(value),
+      StatusEffect: (value) => statusEffectCells(value),
+      StatusEffectBeingApplied: (value) => statusEffectCells(value),
+      TargetStatusEffect: (value) => statusEffectCells(value),
+      // abilities
+      AbilityID: (value) => abilitiesCells(value),
+      RequiredEquippedAbilityId: (value) => abilitiesCells(value),
+      RequiredAbilityId: (value) => abilitiesCells(value),
+      AbilityList: (value) => abilitiesCells(value),
+      // damage rows
+      DamageTableRow: (value) => damageCells(value),
+      DamageTableRowOverride: (value) => damageCells(value),
+      RemoteDamageTableRow: (value) => damageCells(value),
+      AttackType: (value) => damageCells(value),
+      // cooldown
+      CooldownId: (value) => ({
+        value: value,
+        template: this.tplCooldownInfo(),
+      }),
+      // status effect categories
+      StatusEffectCategories: (value) => value.map((it) => ({ value: it, template: this.tplCategory() })),
+      StatusEffectCategoriesList: (value) => value.map((it) => ({ value: it, template: this.tplCategory() })),
+      StatusEffectDurationCats: (value) => value.map((it) => ({ value: it, template: this.tplCategory() })),
+      TargetStatusEffectCategory: (value) => value.map((it) => ({ value: it, template: this.tplCategory() })),
+      TargetStatusEffectDurationCats: (value) => value.map((it) => ({ value: it, template: this.tplCategory() })),
+    },
+    (value) => valueCell({ value }),
+  )
 }
 
 function statusEffectCells(list: string | string[]): PropertyGridCell[] {
   list = typeof list === 'string' ? [list] : list
   return list?.map((it) => {
     const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['status-effect', it] : null,
-    }
+    return linkCell({ value: it, routerLink: isLink ? ['status-effect', it] : null })
   })
 }
 
 function abilitiesCells(list: string | string[]): PropertyGridCell[] {
   list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    return {
-      value: String(it),
-      accent: true,
-      routerLink: ['ability', it],
-    }
-  })
+  return list?.map((it) => linkCell({ value: it, routerLink: ['ability', it] }))
 }
 
 function damageCells(list: string | string[]): PropertyGridCell[] {
   list = typeof list === 'string' ? [list] : list
   return list?.map((it) => {
-    return {
-      value: String(it),
-      accent: true,
-      routerLink: ['damage'],
-      queryParams: { search: it },
-    }
+    return linkCell({ value: it, routerLink: ['damage', it], queryParams: { search: it } })
   })
 }

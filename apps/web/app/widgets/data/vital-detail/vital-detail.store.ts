@@ -39,6 +39,7 @@ export interface DamageTableFile {
 }
 
 export const VitalDetailStore = signalStore(
+  { protectedState: false },
   withState<VitalDetailState>({
     vitalId: null,
     levelOverride: null,

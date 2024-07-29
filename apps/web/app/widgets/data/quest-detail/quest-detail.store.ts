@@ -21,6 +21,7 @@ export interface QuestDetailState {
 }
 
 export const QuestDetailStore = signalStore(
+  { protectedState: false },
   withState<QuestDetailState>({
     questId: null,
   }),

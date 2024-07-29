@@ -5,7 +5,8 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
+import { linkCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { StatusEffectDetailModule } from '../status-effect-detail'
@@ -54,89 +55,24 @@ export class DamageRowDetailComponent {
   protected affixProperties = this.store.affixProps
   public effectIds = this.store.effectIds
 
-  public formatValue = (value: any, key: keyof DamageData): PropertyGridCell | PropertyGridCell[] => {
-    switch (key) {
-      case 'DamageID': {
-        return damageCells(value as DamageData['DamageID'])
-      }
-      case 'StatusEffect': {
-        return statusEffectCells(value as DamageData['StatusEffect'])
-      }
-      default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            secondary: true,
-          }))
-        }
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
+  public damageDescriptor = gridDescriptor<DamageData>(
+    {
+      DamageID: (value) => {
+        return linkCell({ value, routerLink: ['damage', value] })
+      },
+      StatusEffect: (value) => {
+        return value?.map((it) => {
+          if (it === 'All') {
+            return valueCell({ value: it })
+          }
+          return linkCell({ value: it, routerLink: ['status-effect', it] })
+        })
+      },
+    },
+    (value) => valueCell({ value: value }),
+  )
 
-  public formatAffixValue = (value: any, key: keyof AffixStatData): PropertyGridCell[] => {
-    switch (key) {
-      default: {
-        if (typeof value === 'number') {
-          return [
-            {
-              value: this.decimals.transform(value, '0.0-7'),
-              accent: true,
-            },
-            {
-              template: this.tplCategoryInfo,
-              value: key,
-            },
-          ]
-        }
-        return [
-          {
-            value: String(value),
-            accent: typeof value === 'number',
-            info: typeof value === 'boolean',
-            bold: typeof value === 'boolean',
-          },
-        ]
-      }
-    }
-  }
-}
-
-function damageCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    return {
-      value: String(it),
-      accent: true,
-      routerLink: ['damage'],
-      queryParams: { search: it },
-    }
-  })
-}
-
-function statusEffectCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['status-effect', it] : null,
-    }
+  public affixDescriptor = gridDescriptor<AffixStatData>({}, (value) => {
+    return valueCell({ value: value })
   })
 }
