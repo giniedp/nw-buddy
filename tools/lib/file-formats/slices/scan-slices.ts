@@ -1,10 +1,11 @@
 import * as path from 'path'
 import { readJSONFile } from '../../utils'
-import { scanForSpawners } from './scan-for-spawners'
+import { SpawnerScanResult, scanForSpawners } from './scan-for-spawners'
 import { VariationScanRow, scanForVariantDistributions } from './scan-for-variants'
 import { VitalScanRow, scanForVitals } from './scan-for-vitals'
 import { TerritoryScanRow, scanForZones } from './scan-for-zones'
 import { Capital } from './types/capitals'
+import { RegionSliceDataLookup } from './types/slicedata'
 
 export interface ScanResult {
   vitals?: VitalScanRow[]
@@ -56,14 +57,88 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       }
     }
   }
-  if (file.endsWith('.capitals.json')) {
+  const vitalsRows: VitalScanRow[] = []
+  const npcRows: NpcScanRow[] = []
+  const variationsRows: VariationScanRow[] = []
+  const loreRows: LoreScanRow[] = []
+  const gatherableRows: GatherableScanRow[] = []
+  function pushEntry({
+    entry,
+    mapId,
+    mapPosition,
+  }: {
+    entry: SpawnerScanResult
+    mapId: string
+    mapPosition: (position: number[]) => number[]
+  }) {
+    for (let position of entry.positions) {
+      position = mapPosition([...position])
+      if (entry.gatherableID) {
+        gatherableRows.push({
+          mapID: mapId,
+          gatherableID: entry.gatherableID,
+          position: [position[0], position[1], position[2]],
+        })
+      }
+      if (entry.variantID) {
+        variationsRows.push({
+          mapID: mapId,
+          variantID: entry.variantID,
+          position: [position[0], position[1], position[2]],
+        })
+      }
+      if (entry.vitalsID) {
+        vitalsRows.push({
+          mapID: mapId,
+          vitalsID: entry.vitalsID,
+          categoryID: entry.categoryID,
+          gatherableID: entry.gatherableID,
+          npcID: entry.npcID,
+          level: entry.level,
+          damageTable: entry.damageTable,
+          modelFile: entry.modelFile,
+          adbFile: entry.adbFile,
+          mtlFile: entry.mtlFile,
+          territoryLevel: entry.territoryLevel,
+          position: [position[0], position[1], position[2]],
+        })
+      }
+      if (entry.npcID) {
+        npcRows.push({
+          mapID: mapId,
+          npcID: entry.npcID,
+          position: [position[0], position[1], position[2]],
+        })
+      }
+      if (entry.loreIDs?.length) {
+        for (const loreId of entry.loreIDs) {
+          loreRows.push({
+            mapID: mapId,
+            loreID: loreId,
+            position: [position[0], position[1], position[2]],
+          })
+        }
+      }
+    }
+  }
+
+  if (file.endsWith('.slicedata.json')) {
+    const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
+    const data = await readJSONFile<RegionSliceDataLookup>(file)
+    for (const it of data.slicemetadatamap) {
+      const spawners = await scanForSpawners(inputDir, it.value1.slicename, null)
+      for (const entry of spawners || []) {
+        pushEntry({
+          entry,
+          mapId,
+          mapPosition: (position) => position,
+        })
+      }
+    }
+  } else if (file.endsWith('.capitals.json')) {
     const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
     const data = await readJSONFile<Capital>(file)
-    const vitalsRows: VitalScanRow[] = []
-    const npcRows: NpcScanRow[] = []
-    const variationsRows: VariationScanRow[] = []
-    const loreRows: LoreScanRow[] = []
-    const gatherableRows: GatherableScanRow[] = []
+
     for (const capital of data?.Capitals || []) {
       if (capital.variantName) {
         variationsRows.push({
@@ -77,66 +152,26 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       if (capital.sliceName) {
         const spawners = await scanForSpawners(inputDir, capital.sliceName, capital.sliceAssetId)
         for (const entry of spawners || []) {
-          for (let position of entry.positions) {
-            position = [...position]
-            if (capital.rotation) {
-              position = rotatePointWithQuat(capital.rotation, position)
-            }
-            if (capital.worldPosition) {
-              position[0] += capital.worldPosition.x
-              position[1] += capital.worldPosition.y
-              position[2] += capital.worldPosition.z
-            }
-            if (entry.gatherableID) {
-              gatherableRows.push({
-                mapID: mapId,
-                gatherableID: entry.gatherableID,
-                position: [position[0], position[1], position[2]],
-              })
-            }
-            if (entry.variantID) {
-              variationsRows.push({
-                mapID: mapId,
-                variantID: entry.variantID,
-                position: [position[0], position[1], position[2]],
-              })
-            }
-            if (entry.vitalsID) {
-              vitalsRows.push({
-                mapID: mapId,
-                vitalsID: entry.vitalsID,
-                categoryID: entry.categoryID,
-                gatherableID: entry.gatherableID,
-                npcID: entry.npcID,
-                level: entry.level,
-                damageTable: entry.damageTable,
-                modelFile: entry.modelFile,
-                adbFile: entry.adbFile,
-                mtlFile: entry.mtlFile,
-                territoryLevel: entry.territoryLevel,
-                position: [position[0], position[1], position[2]],
-              })
-            }
-            if (entry.npcID) {
-              npcRows.push({
-                mapID: mapId,
-                npcID: entry.npcID,
-                position: [position[0], position[1], position[2]],
-              })
-            }
-            if (entry.loreIDs?.length) {
-              for (const loreId of entry.loreIDs) {
-                loreRows.push({
-                  mapID: mapId,
-                  loreID: loreId,
-                  position: [position[0], position[1], position[2]],
-                })
+          pushEntry({
+            entry,
+            mapId,
+            mapPosition: (position) => {
+              position = [...position]
+              if (capital.rotation) {
+                position = rotatePointWithQuat(capital.rotation, position)
               }
-            }
-          }
+              if (capital.worldPosition) {
+                position[0] += capital.worldPosition.x
+                position[1] += capital.worldPosition.y
+                position[2] += capital.worldPosition.z
+              }
+              return position
+            },
+          })
         }
       }
     }
+
     return {
       vitals: vitalsRows,
       npcs: npcRows,

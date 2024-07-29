@@ -126,6 +126,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       const result = mergeData(
         {
           ...item,
+          variantID: spawn.variantID || item.variantID ,
           positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
         },
         consume(spawn.entity),

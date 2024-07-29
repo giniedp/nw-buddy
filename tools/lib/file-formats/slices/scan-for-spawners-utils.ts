@@ -188,17 +188,20 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
       slice: string
       translation: number[]
       rotation: number[][]
+      variantID: string
     }> = []
     for (const entity of sliceComponent.entities || []) {
       const sliceFiles: string[] = []
       let translation: number[]
       let rotation: number[][]
+      let variantID: string
       for (const component of entity.components || []) {
         if (isGameTransformComponent(component)) {
           translation = translation || getTranslation(component)
           rotation = rotation || getRotation(component)
         }
         if (isPrefabSpawnerComponent(component)) {
+          variantID = component.m_slicevariant
           await appendSlices(sliceFiles, rootDir, component.m_sliceasset)
           await appendSlices(sliceFiles, rootDir, component.m_aliasasset)
         }
@@ -212,6 +215,7 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
           translation,
           entity,
           rotation,
+          variantID
         })
       }
     }
