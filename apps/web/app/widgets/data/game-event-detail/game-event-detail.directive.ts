@@ -12,6 +12,6 @@ export class GameEventDetailDirective {
   public readonly store = inject(GameEventDetailStore)
   @Input()
   public set nwbGameEventDetail(value: string) {
-    patchState(this.store, { eventId: value })
+    this.store.load({ eventId: value })
   }
 }

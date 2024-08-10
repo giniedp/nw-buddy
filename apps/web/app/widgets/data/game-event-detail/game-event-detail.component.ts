@@ -1,6 +1,5 @@
 import { DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject, signal } from '@angular/core'
-import { patchState } from '@ngrx/signals'
 import { GameEventData } from '@nw-data/generated'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, valueCell } from '~/ui/property-grid/cells'
@@ -32,7 +31,7 @@ export class GameEventDetailComponent {
 
   @Input()
   public set eventId(value: string) {
-    patchState(this.store, { eventId: value })
+    this.store.load({ eventId: value })
   }
 
   public descriptor = gridDescriptor<GameEventData>(

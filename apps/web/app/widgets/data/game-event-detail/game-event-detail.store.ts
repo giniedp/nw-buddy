@@ -1,78 +1,86 @@
-import { computed } from '@angular/core'
-import { signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
-import { GameEventData } from '@nw-data/generated'
+import { computed, inject } from '@angular/core'
+import { patchState, signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
+import { GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { withNwData } from '~/data/with-nw-data'
 import { rejectKeys } from '~/utils'
 import { selectGameEventItemReward, selectGameEventRewards } from './selectors'
+import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
+import { NwDataService } from '~/data'
+import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
 
 export interface GameEventDetailState {
   eventId: string
+  gameEvent: GameEventData
+  itemReward: MasterItemDefinitions | HouseItems
+  isLoaded: boolean
 }
 
 export const GameEventDetailStore = signalStore(
   { protectedState: false },
-  withState<GameEventDetailState>({ eventId: null }),
-  withNwData((db) => {
-    return {
-      itemsMap: db.itemsMap,
-      housingMap: db.housingItemsMap,
-      eventsMap: db.gameEventsMap,
-    }
+  withState<GameEventDetailState>({
+    eventId: null,
+    gameEvent: null,
+    isLoaded: false,
+    itemReward: null,
   }),
-  withHooks({
-    onInit: (state) => state.loadNwData(),
+  withRedux({
+    actions: {
+      public: {
+        load: payload<{ eventId: string }>(),
+      },
+      private: {
+        loaded: payload<Omit<GameEventDetailState, 'isLoaded'>>(),
+      },
+    },
+    reducer(actions, on) {
+      on(actions.load, (state) => {
+        patchState(state, {
+          isLoaded: false,
+        })
+      })
+      on(actions.loaded, (state, data) => {
+        patchState(state, {
+          ...data,
+          isLoaded: true,
+        })
+      })
+    },
+    effects(actions, create) {
+      const db = inject(NwDataService)
+      return {
+        load$: create(actions.load).pipe(
+          switchMap(({ eventId }) => loadState(db, eventId)),
+          map((data) => actions.loaded(data)),
+          catchError((error) => {
+            console.error(error)
+            return EMPTY
+          }),
+        ),
+      }
+    },
   }),
-  withComputed(({ eventId, nwData }) => {
-    const gameEvent = computed(() => nwData().eventsMap?.get(eventId()))
+  withComputed(({ gameEvent, itemReward }) => {
     const reward = computed(() => selectGameEventItemReward(gameEvent()))
-    const itemReward = computed(() => {
-      const it = reward()
-      const item = nwData().itemsMap?.get(it?.itemId)
-      const houstinItem = nwData().housingMap?.get(it?.housingItemId)
-      return item || houstinItem
-    })
     const lootTableId = computed(() => reward()?.lootTableId)
     const rewards = computed(() => selectGameEventRewards(gameEvent(), itemReward()))
     const properties = computed(() => selectProperties(gameEvent()))
     return {
-      gameEvent,
-      itemReward,
       lootTableId,
       properties,
       rewards,
     }
   }),
 )
-
-// extends ComponentStore<{ eventId: string }> {
-//   public readonly eventId$ = this.select(({ eventId }) => eventId)
-
-//   public readonly gameEvent$ = this.select(this.db.gameEvent(this.eventId$), (it) => it)
-
-//   public readonly properties$ = this.select(this.gameEvent$, selectProperties)
-//   public readonly lootTableId$ = this.select(this.gameEvent$, (it) => selectGameEventItemReward(it)?.lootTableId)
-//   public readonly itemId$ = this.select(this.gameEvent$, (it) => {
-//     const reward = selectGameEventItemReward(it)
-//     return reward?.itemId || reward?.housingItemId
-//   })
-
-//   public readonly itemReward$ = selectStream(this.db.itemOrHousingItem(this.itemId$))
-//   public readonly rewards$ = selectStream(
-//     {
-//       gameEvent: this.gameEvent$,
-//       itemReward: this.itemReward$,
-//     },
-//     ({ gameEvent, itemReward }) => selectGameEventRewards(gameEvent, itemReward),
-//   )
-
-//   public constructor(protected db: NwDataService) {
-//     super({ eventId: null })
-//   }
-
-//   public update(eventId: string) {
-//     this.patchState({ eventId: eventId })
-//   }
-// }
+function loadState(db: NwDataService, eventId: string) {
+  const gameEvent$ = db.gameEvent(eventId)
+  const reward$ = gameEvent$.pipe(map((it) => selectGameEventItemReward(it)))
+  const itemReward$ = db.itemOrHousingItem(reward$.pipe(map((it) => it?.itemId)))
+  return combineLatest({
+    eventId: of(eventId),
+    gameEvent: gameEvent$,
+    itemReward: itemReward$,
+  })
+}
 
 function selectProperties(item: GameEventData) {
   const reject: Array<keyof GameEventData> = [
