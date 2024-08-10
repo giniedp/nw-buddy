@@ -183,7 +183,7 @@ function selectSpawnVitals({
   vitalCategories: Map<string, VitalsCategoryData>
 }): VitalsData[] {
   if (!vitalSpawns) {
-    return null
+    return []
   }
   const result: VitalsData[] = []
   const groups = groupBy(vitalSpawns, (it) => it.vital.VitalsID.toLowerCase())

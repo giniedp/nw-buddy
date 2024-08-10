@@ -1,70 +1,55 @@
-<ion-header class="bg-base-300">
-  <div class="flex flex-col-reverse md:flex-row">
-    <div class="flex flex-row flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
-      <button
-        [nwbDataCateogryMenu]
-        [category]="category()"
-        [showCounter]="true"
-        [defaultRoute]="defaultRoute"
-        [defaultTitle]="title"
-        [routePrefix]="'..'"
-        class="btn btn-ghost normal-case text-left"
-      ></button>
-
-      <span class="flex-1"></span>
-      <div class="join">
-        @if(service.canToggleMode()) {
-          <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
-        }
-        <button
-          class="join-item btn btn-square btn-ghost"
-          [nwbDataViewOptionsMenu]
-          [persistKey]="persistKey"
-          [disabled]="!service.isTableActive()"
-        ></button>
-      </div>
-    </div>
-    <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
-    </div>
-  </div>
-</ion-header>
 <ion-content [scrollY]="false">
-  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
-    <div class="ion-page order-2 flex flex-row" id="main">
-      @if (service.isGridActive()) {
-        <nwb-virtual-grid
-          [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
-          [options]="service.virtualOptions"
-          [identifyBy]="service.entityIdGetter"
-          [selectionRouteParam]="selectionParam"
-        />
-      } @else if (service.isTableActive()) {
-        <nwb-table-grid
-          (ready$)="service.onTableReady($event)"
-          [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
-          [options]="service.tableGridOptions"
-          [identifyBy]="service.entityIdGetter"
-          [persistKey]="persistKey"
-          [filterQueryParam]="filterParam"
-          [selectionRouteParam]="selectionParam"
-        />
-      }
-      <nwb-zone-detail-map
-        class="hidden 3xl:flex flex-1"
-        [nwbZoneDetail]="zoneIdParam()"
-        [markVital]="vitalIdParam()"
-        (zoneClicked)="onZoneClicked($event)"
-        (vitalClicked)="onVitalClicked($event)"
-      />
-    </div>
-    <ion-menu contentId="main" class="order-2">
+  <ion-split-pane
+    [when]="showSidebar()"
+    contentId="detailContent"
+    style="--side-min-width: 320px; --side-max-width: 420px"
+  >
+    <ion-menu contentId="detailContent" class="order-2">
       @if (showSidebar()) {
         <ng-container [ngTemplateOutlet]="tplDetail" />
       }
     </ion-menu>
+    <div class="ion-page flex flex-row" id="detailContent">
+      <ion-split-pane contentId="detailMap" [when]="showTable()" style="--side-min-width: 320px; --side-max-width: 1600px; --side-width: 35%; ">
+        <ion-menu contentId="detailMap" #tableMenu style="--width: 100%">
+          <ng-container [ngTemplateOutlet]="tplTableHeader" />
+          @if (service.isGridActive()) {
+            <nwb-virtual-grid
+              [enableQuickfilter]="true"
+              [data]="service.categoryItems$ | async"
+              [options]="service.virtualOptions"
+              [identifyBy]="service.entityIdGetter"
+              [selectionRouteParam]="selectionParam"
+            />
+          } @else if (service.isTableActive()) {
+            <nwb-table-grid
+              (ready$)="service.onTableReady($event)"
+              [enableQuickfilter]="true"
+              [data]="service.categoryItems$ | async"
+              [options]="service.tableGridOptions"
+              [identifyBy]="service.entityIdGetter"
+              [persistKey]="persistKey"
+              [filterQueryParam]="filterParam"
+              [selectionRouteParam]="selectionParam"
+            />
+          }
+        </ion-menu>
+        <div class="ion-page" id="detailMap">
+          @if (!showTable()) {
+            <button (click)="tableMenu.toggle()" class="btn btn-ghost absolute top-2 left-2 z-50">
+              <nwb-icon [icon]="menuIcon" class="w-5 h-5" />
+            </button>
+          }
+          <nwb-zone-detail-map
+            class="flex-1 z-40"
+            [nwbZoneDetail]="zoneIdParam()"
+            [markVital]="vitalIdParam()"
+            (zoneClicked)="onZoneClicked($event)"
+            (vitalClicked)="onVitalClicked($event)"
+          />
+        </div>
+      </ion-split-pane>
+    </div>
   </ion-split-pane>
   <nwb-detail-content
     [isOpen]="showModal()"
@@ -77,11 +62,46 @@
 </ion-content>
 
 <ng-template #tplDetail>
-  <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
-    [class.bg-base-300]="true"
-  >
+  <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
     <router-outlet />
   </ion-content>
+</ng-template>
+
+<ng-template #tplTableHeader>
+  <ion-header class="bg-base-300">
+    <div class="flex flex-col-reverse md:flex-row">
+      <div class="flex flex-row flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
+        @if (!showTable()) {
+          <button (click)="tableMenu.toggle()" class="btn btn-ghost">
+            <nwb-icon [icon]="menuIcon" class="w-5 h-5" />
+          </button>
+        }
+        <button
+          [nwbDataCateogryMenu]
+          [category]="category()"
+          [showCounter]="true"
+          [defaultRoute]="defaultRoute"
+          [defaultTitle]="title"
+          [routePrefix]="'..'"
+          class="btn btn-ghost normal-case text-left"
+        ></button>
+
+        <span class="flex-1"></span>
+        <div class="join">
+          @if (service.canToggleMode()) {
+            <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
+          }
+          <button
+            class="join-item btn btn-square btn-ghost"
+            [nwbDataViewOptionsMenu]
+            [persistKey]="persistKey"
+            [disabled]="!service.isTableActive()"
+          ></button>
+        </div>
+      </div>
+      <div class="flex-none p-2 w-full md:max-w-[256px]">
+        <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
+      </div>
+    </div>
+  </ion-header>
 </ng-template>

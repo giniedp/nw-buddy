@@ -7,6 +7,7 @@ import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
+import { svgBars } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -71,13 +72,16 @@ export class ZonePageComponent {
   })
 
   protected platform = inject(PlatformService)
+
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
   protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+  protected showTable = selectSignal(injectBreakpoint('(min-width: 1920px)'), (ok) => ok || this.platform.isServer)
 
   protected router = inject(Router)
   protected route = inject(ActivatedRoute)
+  protected menuIcon = svgBars
 
   @ViewChild(RouterOutlet, { static: true })
   protected outlet: RouterOutlet
