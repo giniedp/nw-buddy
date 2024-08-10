@@ -119,9 +119,6 @@ export const GatherableDetailStore = signalStore(
       }),
     }
   }),
-  withComputed(({ size, gatherableId, nwData }) => {
-    return {}
-  }),
 )
 
 function secondsToDuration(value: number) {

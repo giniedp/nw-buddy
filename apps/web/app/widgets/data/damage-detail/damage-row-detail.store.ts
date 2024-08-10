@@ -37,7 +37,6 @@ export const DamageDetailStore = signalStore(
     },
     reducer(actions, on) {
       on(actions.load, (state, { rowId }) => {
-        console.log('load', state, rowId)
         patchState(state, {
           isLoaded: false,
         })
