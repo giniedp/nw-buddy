@@ -16,7 +16,7 @@ export function isZonePoi(zone: TerritoryDefinition): boolean {
   return getZoneType(zone) === 'POI'
 }
 
-export function getZoneType(zone: TerritoryDefinition) {
+export function getZoneType(zone: TerritoryDefinition): ZoneType {
   if (!zone) {
     return null
   }

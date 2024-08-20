@@ -18,13 +18,17 @@ const LOOT_TABLE_ICONS = {
   Water_Stone: 'water_stone_compass.png',
   Water_Boid: 'water_boid_compass.png',
 
-  Wind_Plant: 'wind_plant_compass.png',
-  Wind_Stone: 'wind_stone_compass.png',
-  Wind_Boid: 'wind_boid_compass.png',
+  Air_Plant: 'wind_plant_compass.png',
+  Air_Stone: 'wind_stone_compass.png',
+  Air_Boid: 'wind_boid_compass.png',
 
   Fire_Plant: 'fire_plant_compass.png',
   Fire_Stone: 'fire_stone_compass.png',
   Fire_Boid: 'fire_boid_compass.png',
+
+  Soul_Plant: 'spirit_plant_compass.png',
+  Soul_Stone: 'spirit_stone_compass.png',
+  Soul_Boid: 'spirit_boid_compass.png',
   // aloe_compass.png
   Aloe: 'aloe_compass.png',
   // brimstone_compass.png
@@ -34,6 +38,16 @@ const LOOT_TABLE_ICONS = {
   StarmetalOreVeinFinishSmall: 'starmetal_compass.png',
   StarmetalOreVeinFinishMedium: 'starmetal_compass.png',
   StarmetalOreVeinFinishLarge: 'starmetal_compass.png',
+  OutpostRush_OreVeinSmall: 'starmetal_compass.png',
+  OutpostRush_OreVeinMedium: 'starmetal_compass.png',
+  OutpostRush_OreVeinLarge: 'starmetal_compass.png',
+  // flintt1.png
+  Flint: 'flintt1.png',
+  Flint_Small: 'flintt1.png',
+  Flint_Medium: 'flintt1.png',
+  Flint_Large: 'flintt1.png',
+
+  Single_Stone: 'flintt1.png',
   // gold_compass.png
   Gold: 'gold_compass.png',
   Gold_Small: 'gold_compass.png',
@@ -82,6 +96,11 @@ const LOOT_TABLE_ICONS = {
   RunewoodTreeMedium: 'runewood_compass.png',
   RunewoodTreeLarge: 'runewood_compass.png',
   RunewoodTreeHuge: 'runewood_compass.png',
+  OutpostRush_TreeTiny: 'runewood_compass.png',
+  OutpostRush_TreeSmall: 'runewood_compass.png',
+  OutpostRush_TreeMedium: 'runewood_compass.png',
+  OutpostRush_TreeLarge: 'runewood_compass.png',
+  OutpostRush_TreeHuge: 'runewood_compass.png',
   // oil_compass.png
   Oil: 'oil_compass.png',
   SeepingStoneSmall: 'oil_compass.png',
@@ -123,6 +142,30 @@ const LOOT_TABLE_ICONS = {
   AngryEarth_SporePod: 'sporeplant_compass.png',
   BeastElite_SporePod: 'sporeplant_compass.png',
   Beasts_SporePod: 'sporeplant_compass.png',
+
+  ArmadilloSkinning: 'armadillo_compass.png',
+  //
+  AlligatorSkinning: 'alligator_compass.png',
+  AlligatorYoungSkinning: 'alligator_compass.png',
+  //
+  BearCorruptedSkinning: 'bear_compass.png',
+  BearSkinning: 'bear_compass.png',
+
+  //
+  RabbitSkinning: 'hare_compass.png',
+  BisonSkinning: 'bison_compass.png',
+  BoarSkinning: 'boar_compass.png',
+  Sheep: 'sheep_compass.png',
+  //
+  WolfCorruptedSkinning: 'wolf_compass.png',
+  WolfSkinning: 'wolf_compass.png',
+  //
+  ScorpionLargeSkinning: 'scorpion_compass.png',
+  ScorpionMediumSkinning: 'scorpion_compass.png',
+  ScorpionSmallSkinning: 'scorpion_compass.png',
+
+  //
+  Nut_Small: 'nutt1.png',
 }
 
 export function getGatherableIcon(gatherable: GatherableData) {
@@ -134,9 +177,13 @@ export function getGatherableIcon(gatherable: GatherableData) {
   if (result) {
     return `assets/icons/gatherables/${result}`
   }
-  result = NW_TRADESKILLS_INFOS.find((it) => it.ID === gatherable.Tradeskill)?.Icon
-  if (result) {
-    return result
-  }
+  // result = NW_TRADESKILLS_INFOS.find((it) => it.ID === gatherable.Tradeskill)?.Icon
+  // if (result) {
+  //   return result
+  // }
   return null
+}
+
+export function getTradeskillIcon(tradeskill: string) {
+  return NW_TRADESKILLS_INFOS.find((it) => it.ID === tradeskill)?.Icon
 }

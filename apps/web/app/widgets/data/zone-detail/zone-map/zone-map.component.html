@@ -1,0 +1,22 @@
+<nwb-map [territories]="store.territories()" [areas]="store.areas()" [pois]="store.pois()">
+  <ul
+    class="menu menu-vertical flex-nowrap p-4 absolute left-0 top-0 bottom-0 w-full max-w-md overflow-scroll bg-opacity-85 bg-base-200"
+  >
+    <!-- <li>
+      <details>
+        <summary>Maps</summary>
+        <ul>
+          @for (mapId of store.mapIds(); track $index) {
+            <li>
+              <a>{{ mapId }}</a>
+            </li>
+          }
+        </ul>
+      </details>
+    </li> -->
+
+    @for (section of sections(); track section) {
+      <nwb-map-filter-section [section]="section"/>
+    }
+  </ul>
+</nwb-map>

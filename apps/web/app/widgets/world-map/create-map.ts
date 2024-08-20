@@ -97,7 +97,7 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     map.getLayers().insertAt(0, tileLayer)
   }
   const tileLayer = new TileLayer({
-    source: tileSource,
+    source: tileSource as any,
   })
   map.addLayer(tileLayer)
 
@@ -235,6 +235,7 @@ export function hexToRgb(hex: string) {
 function createColoredPointsLayer(items: MapPointMarker[], zIndex = 1000) {
   const exprC1 = ['color', ['get', 'c1r'], ['get', 'c1g'], ['get', 'c1b'], ['get', 'opacity']]
   const exprC2 = ['color', ['get', 'c2r'], ['get', 'c2g'], ['get', 'c2b']]
+
   return new WebGLPointsLayer({
     zIndex,
     source: new VectorSource({
@@ -244,6 +245,7 @@ function createColoredPointsLayer(items: MapPointMarker[], zIndex = 1000) {
         const tags = item.tags || []
         return new Feature({
           geometry: new Point(item.point),
+
           item: item,
           payload: item.payload,
           c1r: c1.r,
