@@ -4,12 +4,12 @@ import tinycolor from 'tinycolor2'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgInfo } from '~/ui/icons/svg'
+import { PropertyGridModule } from '~/ui/property-grid'
+import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
-import { ZoneMapStore } from './zone-map.store'
-import { TooltipModule } from '~/ui/tooltip'
 import { LootModule } from '~/widgets/loot'
-import { PropertyGridModule } from '~/ui/property-grid'
+import { ZoneMapStore } from './zone-map.store'
 
 @Pipe({
   standalone: true,
@@ -31,7 +31,7 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
   imports: [NwModule, IconsModule, GameMapLayerDirective, TooltipModule, LootModule, PropertyGridModule, ToLCHPipe],
   host: {
     class: 'block',
-    '[class.text-neutral-500]': '!hasPoints()'
+    '[class.text-neutral-500]': '!hasPoints()',
   },
 })
 export class MapFilterCategoryComponent {
@@ -42,14 +42,15 @@ export class MapFilterCategoryComponent {
   protected iconInfo = svgInfo
   protected layers = viewChildren(GameMapLayerDirective)
 
-  public section = input<string>(null)
-  public category = input<string>(null)
+  public tab = input.required<string>()
+  public section = input.required<string>()
+  public category = input.required<string>()
 
   protected hasChevron = computed(() => this.items().length > 1)
   protected pointsTotal = computed(() => {
     let count = 0
     for (const item of this.items()) {
-      count += (item.data[this.mapId()]?.count || 0)
+      count += item.data[this.mapId()]?.count || 0
     }
     return count
   })
@@ -57,7 +58,7 @@ export class MapFilterCategoryComponent {
 
   protected items = computed(() => {
     return this.store.gatherables().filter((it) => {
-      return it.section === this.section() && it.category === this.category()
+      return it.tab === this.tab() && it.section === this.section() && it.category === this.category()
     })
   })
 

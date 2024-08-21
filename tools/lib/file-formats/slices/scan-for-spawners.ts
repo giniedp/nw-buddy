@@ -1,5 +1,6 @@
 import {
   ScannedData,
+  isEntityRandomEncounter,
   readDynamicSliceFileCached,
   scanForAreaSpawners,
   scanForData,
@@ -14,6 +15,7 @@ export type SpawnerScanResult = {
   variantID?: string
   gatherableID?: string
   loreIDs?: string[]
+  isRandomEncounter: boolean
 
   vitalsID?: string
   npcID?: string
@@ -111,6 +113,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       const result = mergeData(
         {
           ...item,
+          isRandomEncounter: isEntityRandomEncounter(spawn.entity),
           positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
         },
         consume(spawn.entity),
@@ -126,6 +129,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       const result = mergeData(
         {
           ...item,
+          isRandomEncounter: isEntityRandomEncounter(spawn.entity),
           variantID: spawn.variantID || item.variantID ,
           positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
         },
@@ -144,6 +148,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         const result = mergeData(
           {
             ...item,
+            isRandomEncounter: isEntityRandomEncounter(spawn.entity),
             positions: translatePoints(rotatePoints(item.positions, location.rotation), location.translation),
           },
           consume(spawn.entity),
@@ -164,6 +169,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         const result = mergeData(
           {
             ...item,
+            isRandomEncounter: isEntityRandomEncounter(spawn.entity),
             positions: translatePoints(rotatePoints(item.positions, location.rotation), location.translation),
           },
           consume(spawn.entity),
@@ -177,6 +183,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
   for (const item of unconsumed) {
     if (item.vitalsID) {
       const result: SpawnerScanResult = {
+        isRandomEncounter: isEntityRandomEncounter(item.entity),
         vitalsID: item.vitalsID,
         categoryID: item.categoryID,
         level: item.level,
@@ -192,6 +199,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
     if (item.gatherableID || item.variantID) {
       yield {
+        isRandomEncounter: isEntityRandomEncounter(item.entity),
         gatherableID: item.gatherableID,
         variantID: item.variantID,
         positions: [[0, 0, 0]],
@@ -203,6 +211,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
     if (item.loreIDs?.length) {
       yield {
+        isRandomEncounter: isEntityRandomEncounter(item.entity),
         loreIDs: item.loreIDs,
         positions: [[0, 0, 0]],
         damageTable: null,
@@ -213,6 +222,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
     if (item.npcID?.length) {
       yield {
+        isRandomEncounter: isEntityRandomEncounter(item.entity),
         npcID: item.npcID,
         positions: [[0, 0, 0]],
         damageTable: null,

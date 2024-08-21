@@ -114,9 +114,9 @@ function appendToArray(array: string[], value: string): string[] {
 
 export function getGatherableSpawnCount(gatherable: GatherableRecord) {
   let sum = 0
-  if (gatherable?.$meta?.spawns) {
-    for (const key in gatherable.$meta.spawns) {
-      sum += gatherable.$meta.spawns[key]?.length || 0
+  if (gatherable?.$meta?.regularSpawns) {
+    for (const key in gatherable.$meta.regularSpawns) {
+      sum += gatherable.$meta.regularSpawns[key]?.length || 0
     }
   }
   if (gatherable?.$variations) {

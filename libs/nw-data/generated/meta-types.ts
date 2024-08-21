@@ -1,10 +1,15 @@
 export interface GatherablesMetadata {
   gatherableID: string;
   mapIDs: string[];
-  spawns: Spawns;
+  randomSpawns: RandomSpawns;
+  regularSpawns: RegularSpawns;
 }
 
-export interface Spawns {
+export interface RandomSpawns {
+  newworld_vitaeeterna?: Array<number[]>;
+}
+
+export interface RegularSpawns {
   climaxftue_02?: Array<number[]>;
   newworld_vitaeeterna?: Array<number[]>;
   nw_arena01?: Array<number[]>;
@@ -83,11 +88,12 @@ export interface Zone {
 }
 export interface VariationsMetadata {
   mapIDs: string[];
+  randomPositions: Position[];
   variantID: string;
-  variantPositions: VariantPosition[];
+  variantPositions: Position[];
 }
 
-export interface VariantPosition {
+export interface Position {
   chunk: number;
   elementCount: number;
   elementOffset: number;
@@ -137,6 +143,7 @@ export interface Climaxftue02 {
   l: number[];
   m: string[];
   p: number[];
+  r: boolean;
   t: number[];
 }
 export interface VitalsModelsMetadata {

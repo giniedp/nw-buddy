@@ -243,10 +243,12 @@ export interface ScannedData {
   loreIDs?: string[]
 }
 
+const RANDOM_ENCOUNTER_REGEX = /RandomEncounter/i
 export async function scanForData(sliceComponent: SliceComponent, rootDir: string, file: string) {
   const result: ScannedData[] = []
   for (const entity of sliceComponent?.entities || []) {
     const node: ScannedData = {}
+
     for (const component of entity.components || []) {
       if (isNpcComponent(component) && component.m_npckey) {
         node.npcID = node.npcID || component.m_npckey
@@ -304,6 +306,10 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
     }
   }
   return result
+}
+
+export function isEntityRandomEncounter(entity: AZ__Entity) {
+  return !!entity?.name && RANDOM_ENCOUNTER_REGEX.test(entity.name)
 }
 
 const AMMO_ID_TO_VARIANT_ID = {

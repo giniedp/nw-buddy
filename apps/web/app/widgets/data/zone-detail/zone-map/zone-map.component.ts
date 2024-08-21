@@ -1,18 +1,19 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Output, computed, inject, input, output } from '@angular/core'
+import { Component, computed, inject, input, output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { IonButton, IonButtons, IonMenuButton } from '@ionic/angular/standalone'
+import { uniq } from 'lodash'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
+import { svgFilter } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { GameMapComponent, GameMapProxyService } from '~/widgets/game-map'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
 import { WorldMapComponent } from '~/widgets/world-map'
-import { ZoneMapStore } from './zone-map.store'
-import { uniq } from 'lodash'
 import { MapFilterSectionComponent } from './filter-section.component'
-import { IonButton, IonButtons, IonMenu, IonMenuButton } from '@ionic/angular/standalone'
-import { LayoutModule } from '~/ui/layout'
-import { svgFilter } from '~/ui/icons/svg'
+import { MapFilterTabComponent } from './filter-tab.component'
+import { ZoneMapStore } from './zone-map.store'
 
 @Component({
   standalone: true,
@@ -20,18 +21,19 @@ import { svgFilter } from '~/ui/icons/svg'
   templateUrl: './zone-map.component.html',
   imports: [
     CommonModule,
-    NwModule,
-    WorldMapComponent,
+    FormsModule,
     GameMapComponent,
     GameMapLayerDirective,
-    TooltipModule,
-    FormsModule,
     IconsModule,
-    MapFilterSectionComponent,
-    LayoutModule,
     IonButton,
     IonButtons,
     IonMenuButton,
+    LayoutModule,
+    MapFilterSectionComponent,
+    MapFilterTabComponent,
+    NwModule,
+    TooltipModule,
+    WorldMapComponent,
   ],
   providers: [ZoneMapStore, GameMapProxyService],
   host: {
@@ -40,8 +42,8 @@ import { svgFilter } from '~/ui/icons/svg'
 })
 export class ZoneDetailMapComponent {
   protected store = inject(ZoneMapStore)
-  protected sections = computed(() => {
-    return uniq(this.store.gatherables().map((it) => it.section)).sort()
+  protected tabs = computed(() => {
+    return uniq(this.store.gatherables().map((it) => it.tab)).sort()
   })
 
   public pinMenu = input(false)

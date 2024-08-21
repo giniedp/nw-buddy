@@ -23,6 +23,7 @@ interface VitalMetadata {
   npcIDs: string[]
   levels: number[]
   spawns: Array<{
+    random: boolean
     level: number
     territoryLevel: boolean
     territories: number[]
@@ -54,6 +55,7 @@ interface NpcMetadata {
 interface GatherableMetadata {
   mapIDs: string[]
   spawns: Array<{
+    random: boolean
     position: number[]
     mapId: string
   }>
@@ -62,6 +64,7 @@ interface GatherableMetadata {
 interface VariationMetadata {
   mapIDs: string[]
   spawns: Array<{
+    random: boolean
     position: number[]
     mapId: string
   }>
@@ -112,11 +115,11 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
     // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+03_+02/capitals/**/*.capitals.json`,
     //
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
+    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
+    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.slicedata.json`,
     `${inputDir}/**/region.distribution.json`,
     `${inputDir}/**/*.dynamicslice.json`,
     `!${inputDir}/lyshineui/**/*`,
-    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
-    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.slicedata.json`,
   ])
 
   await runTasks({
@@ -250,6 +253,7 @@ function collectVitalsRows(
     }
     if (row.position) {
       bucket.spawns.push({
+        random: row.random,
         level: row.level,
         territoryLevel: row.territoryLevel,
         position: [Number(row.position[0].toFixed(3)), Number(row.position[1].toFixed(3))],
@@ -292,6 +296,7 @@ function collectGatherablesRows(rows: GatherableScanRow[], data: Record<string, 
     }
     if (row.position) {
       bucket.spawns.push({
+        random: row.random,
         position: row.position.map((it) => Number(it.toFixed(3))),
         mapId: row.mapID?.toLowerCase(),
       })
@@ -311,6 +316,7 @@ function collectVariationsRows(rows: VariationScanRow[], data: Record<string, Va
     }
     if (row.position) {
       bucket.spawns.push({
+        random: row.random,
         mapId: row.mapID?.toLowerCase(),
         position: row.position.map((it) => Number(it.toFixed(3))),
       })
@@ -466,6 +472,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
             g: string[]
             t: number[]
             m: string[]
+            r: boolean
           }>
         >,
       }
@@ -484,6 +491,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
           p: spawn.position,
           t: spawn.territories,
           m: spawn.model ? [spawn.model] : [],
+          r: !!spawn.random,
         })
       }
       for (const key in result.lvlSpanws) {
@@ -493,6 +501,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
           .map((it) => {
             return {
               p: it[0].p,
+              r: it[0].r,
               l: uniq(it.map((it) => it.l).flat()).sort(),
               c: uniq(it.map((it) => it.c).flat()).sort(),
               g: uniq(it.map((it) => it.g).flat()).sort(),
@@ -525,20 +534,27 @@ function toSortedGatherables(data: Record<string, GatherableMetadata>) {
   return Array.from(Object.entries(data))
     .sort((a, b) => compareStrings(a[0], b[0]))
     .map(([id, { spawns, mapIDs }]) => {
-      const maps = Array.from(mapIDs.values()).sort()
       const result = {
         gatherableID: id,
-        mapIDs: maps,
-        spawns: {} as Record<string, number[][]>,
+        mapIDs: Array.from(mapIDs.values()).sort(),
+        regularSpawns: {} as Record<string, number[][]>,
+        randomSpawns: {} as Record<string, number[][]>,
       }
       spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
       for (const spawn of spawns) {
         const mapId = spawn.mapId || '_'
-        result.spawns[mapId] = result.spawns[mapId] || []
-        result.spawns[mapId].push(spawn.position)
+        const bucket: keyof typeof result = spawn.random ? 'randomSpawns' : 'regularSpawns'
+        result[bucket][mapId] = result[bucket][mapId] || []
+        result[bucket][mapId].push(spawn.position)
       }
-      for (const key in result.spawns) {
-        result.spawns[key] = chain(result.spawns[key])
+      for (const key in result.regularSpawns) {
+        result.regularSpawns[key] = chain(result.regularSpawns[key])
+          .uniqBy((it) => it.join(','))
+          .sortBy((it) => it.join(','))
+          .value()
+      }
+      for (const key in result.randomSpawns) {
+        result.randomSpawns[key] = chain(result.randomSpawns[key])
           .uniqBy((it) => it.join(','))
           .sortBy((it) => it.join(','))
           .value()
@@ -579,6 +595,7 @@ function toSortedVariations(data: Record<string, VariationMetadata>) {
     chunk: number
     variantID: string
     mapId: string
+    random: boolean
     elementSize: 2
     elementOffset: number
     elementCount: number
@@ -591,7 +608,7 @@ function toSortedVariations(data: Record<string, VariationMetadata>) {
   let currentData: ChunkData
   let currentChunk: ChunkRows
   let currentChunkIndex: number
-  function add(variantId: string, mapId: string, positions: number[][]) {
+  function add(variantId: string, mapId: string, positions: number[][], random: boolean) {
     variationIds.add(variantId.toLowerCase())
     if (!currentData || currentData.length + positions.length > 1000000) {
       currentChunkIndex = chunksData.length
@@ -604,6 +621,7 @@ function toSortedVariations(data: Record<string, VariationMetadata>) {
       chunk: currentChunkIndex,
       variantID: variantId,
       mapId: mapId,
+      random: random,
       elementSize: 2,
       elementOffset: currentData.length / 2,
       elementCount: positions.length,
@@ -619,8 +637,16 @@ function toSortedVariations(data: Record<string, VariationMetadata>) {
       Array.from(Object.entries(groupBy(spawns, (it) => it.mapId)))
         .sort((a, b) => compareStrings(a[0], b[0]))
         .forEach(([mapId, group]) => {
-          const positions = sortBy(group, (it) => it.position.join(',')).map((it) => it.position)
-          add(variantId, mapId, positions)
+          const randomGroup = group.filter((it) => it.random)
+          const regularGroup = group.filter((it) => !it.random)
+          for (const subGroup of [randomGroup, regularGroup]) {
+            if (!subGroup.length) {
+              continue
+            }
+            const positions = sortBy(subGroup, (it) => it.position.join(',')).map((it) => it.position)
+            const isRandom = subGroup[0].random
+            add(variantId, mapId, positions, isRandom)
+          }
         })
     })
 
@@ -636,28 +662,41 @@ function toSortedVariations(data: Record<string, VariationMetadata>) {
         elementOffset: number
         elementCount: number
       }>
+      randomPositions: Array<{
+        chunk: number
+        mapId: string
+        elementSize: 2
+        elementOffset: number
+        elementCount: number
+      }>
     }
   > = {}
 
-  for (const chunk of chunksRecords) {
-    for (const entry of chunk) {
-      if (!result[entry.variantID]) {
-        result[entry.variantID] = {
-          variantID: entry.variantID,
+  for (const row of chunksRecords) {
+    for (const chunkEntry of row) {
+      if (!result[chunkEntry.variantID]) {
+        result[chunkEntry.variantID] = {
+          variantID: chunkEntry.variantID,
           mapIDs: [],
           variantPositions: [],
+          randomPositions: [],
         }
       }
-      if (!result[entry.variantID].mapIDs.includes(entry.mapId)) {
-        result[entry.variantID].mapIDs.push(entry.mapId)
+      if (!result[chunkEntry.variantID].mapIDs.includes(chunkEntry.mapId)) {
+        result[chunkEntry.variantID].mapIDs.push(chunkEntry.mapId)
       }
-      result[entry.variantID].variantPositions.push({
-        chunk: entry.chunk,
-        mapId: entry.mapId,
-        elementSize: entry.elementSize,
-        elementOffset: entry.elementOffset,
-        elementCount: entry.elementCount,
-      })
+      const entry = {
+        chunk: chunkEntry.chunk,
+        mapId: chunkEntry.mapId,
+        elementSize: chunkEntry.elementSize,
+        elementOffset: chunkEntry.elementOffset,
+        elementCount: chunkEntry.elementCount,
+      }
+      if (chunkEntry.random) {
+        result[chunkEntry.variantID].randomPositions.push(entry)
+      } else {
+        result[chunkEntry.variantID].variantPositions.push(entry)
+      }
     }
   }
 

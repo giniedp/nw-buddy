@@ -39,8 +39,8 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="bg-base-200 bg-opacity-80">
-      @for (section of sections(); track section) {
-        <nwb-map-filter-section [section]="section" />
+      @for (tab of tabs(); track tab) {
+        <nwb-map-filter-tab [tab]="tab" />
       }
     </ion-content>
   </ion-menu>

@@ -98,8 +98,8 @@ export class GatherableDetailMapComponent {
         if (size) {
           tags.push(size.toLowerCase())
         }
-        for (const mapId in meta?.spawns || {}) {
-          const positions = meta.spawns[mapId as keyof Spawns]
+        for (const mapId in meta?.regularSpawns || {}) {
+          const positions = meta.regularSpawns[mapId as keyof Spawns]
           for (const position of positions || []) {
             result[mapId] ??= {}
             result[mapId][size] ??= []
