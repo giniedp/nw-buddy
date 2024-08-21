@@ -15,6 +15,7 @@ import { GeoJSON } from 'geojson'
 import { FilterSpecification, GeoJSONSource } from 'maplibre-gl'
 import { GameMapComponent } from './game-map.component'
 import tinycolor from 'tinycolor2'
+import { GameMapProxyService } from './game-map.proxy'
 
 @Directive({
   standalone: true,
@@ -22,9 +23,10 @@ import tinycolor from 'tinycolor2'
   exportAs: 'mapLayer',
 })
 export class GameMapLayerDirective implements OnInit, OnDestroy {
-  private parent = inject(GameMapComponent)
+  private proxy = inject(GameMapProxyService, { optional: true })
+  private parent = inject(GameMapComponent, { optional: true })
   protected get map() {
-    return this.parent.map
+    return (this.parent || this.proxy)?.map
   }
 
   public layerId = input.required<string>({ alias: 'nwbMapLayer' })

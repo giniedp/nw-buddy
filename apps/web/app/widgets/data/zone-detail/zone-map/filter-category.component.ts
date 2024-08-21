@@ -3,10 +3,13 @@ import { sortBy, uniq } from 'lodash'
 import tinycolor from 'tinycolor2'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgAngleLeft } from '~/ui/icons/svg'
+import { svgAngleLeft, svgInfo } from '~/ui/icons/svg'
 import { humanize } from '~/utils'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
 import { ZoneMapStore } from './zone-map.store'
+import { TooltipModule } from '~/ui/tooltip'
+import { LootModule } from '~/widgets/loot'
+import { PropertyGridModule } from '~/ui/property-grid'
 
 @Pipe({
   standalone: true,
@@ -24,102 +27,11 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
 @Component({
   standalone: true,
   selector: 'nwb-map-filter-category',
-  template: `
-    @for (layer of items(); track layer.id) {
-      @let data = layer.data[store.mapId()];
-      <ng-container
-        #mapLayer="mapLayer"
-        [nwbMapLayer]="layer.id"
-        [disalbed]="true"
-        [heatmap]="true || !!layer.variants.length && !layer.variants[0].icon"
-        [color]="layer.color"
-        [data]="data?.geometry"
-      />
-    }
-
-    <div class="flex flex-row gap-1" [class.pr-8]="!hasChevron()">
-      <div class="join w-full">
-        <button
-          class="join-item flex-1 btn btn-sm btn-ghost justify-start items-center gap-2 text-left"
-          (click)="toggleAll()"
-          [class.text-primary]="isAnyEnabled()"
-        >
-        <span class="flex-1">
-          {{ label() | nwText }}
-        </span>
-
-          @if (icon(); as icon) {
-            <img [nwImage]="icon" class="w-6 flex-none" />
-          }
-        </button>
-
-
-        @for (variant of variants(); track variant.id) {
-          @let isActive = isVariantActive(variant.id);
-          <button
-            class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
-            [class.btn-ghost]="!isActive"
-            [style.--btn-color]="isActive ? (variant.color | toLCH) : null"
-            (click)="toggleVariant(variant.id)"
-          >
-            @if (variant.icon; as icon) {
-              <img [nwImage]="icon" class="w-6" />
-            } @else {
-              {{ variant.label }}
-            }
-          </button>
-        } @empty {
-          @if (isAnyEnabled() && items().length === 1) {
-            <button
-              class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
-              [class.btn-ghost]="!isAnyEnabled()"
-              [style.--btn-color]="isAnyEnabled() ? (color() | toLCH) : null"
-              (click)="toggleAll()"
-            ></button>
-          }
-        }
-
-      </div>
-
-      @if (hasChevron()) {
-        <button class="flex-none btn btn-sm btn-square btn-ghost" (click)="isOpen.set(!isOpen())">
-          <nwb-icon
-            [icon]="iconArrowLeft"
-            class="w-3 transition-transform"
-            [class.-rotate-180]="!isOpen()"
-            [class.-rotate-90]="isOpen()"
-          />
-        </button>
-      }
-    </div>
-
-    @if (isOpen()) {
-      <div class="grid grid-cols-2 gap-1 pl-8 mt-1">
-        @for (item of items(); track $index) {
-          @let isActive = isLayerActive(item.id);
-          <div class="join">
-            <button
-              class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left"
-              (click)="toggleLayer(item.id)"
-            >
-              {{ (item.subcategoryLabel || item.subcategory) | nwText }}
-            </button>
-            @if (isActive) {
-              <button
-                class="join-item flex-none btn btn-sm btn-square"
-                [class.btn-ghost]="!isActive"
-                [style.--btn-color]="isActive ? (item.color | toLCH) : null"
-                (click)="toggleLayer(item.id)"
-              ></button>
-            }
-          </div>
-        }
-      </div>
-    }
-  `,
-  imports: [NwModule, IconsModule, GameMapLayerDirective, ToLCHPipe],
+  templateUrl: './filter-category.component.html',
+  imports: [NwModule, IconsModule, GameMapLayerDirective, TooltipModule, LootModule, PropertyGridModule, ToLCHPipe],
   host: {
     class: 'block',
+    '[class.text-neutral-500]': '!hasPoints()'
   },
 })
 export class MapFilterCategoryComponent {
@@ -127,12 +39,22 @@ export class MapFilterCategoryComponent {
   protected mapId = this.store.mapId
   protected isOpen = signal(false)
   protected iconArrowLeft = svgAngleLeft
+  protected iconInfo = svgInfo
   protected layers = viewChildren(GameMapLayerDirective)
 
   public section = input<string>(null)
   public category = input<string>(null)
 
   protected hasChevron = computed(() => this.items().length > 1)
+  protected pointsTotal = computed(() => {
+    let count = 0
+    for (const item of this.items()) {
+      count += (item.data[this.mapId()]?.count || 0)
+    }
+    return count
+  })
+  protected hasPoints = computed(() => this.pointsTotal() > 0)
+
   protected items = computed(() => {
     return this.store.gatherables().filter((it) => {
       return it.section === this.section() && it.category === this.category()
@@ -159,7 +81,6 @@ export class MapFilterCategoryComponent {
   protected icon = computed(() => this.data().icon)
   protected color = computed(() => this.data().color)
   protected variants = computed(() => this.data().variants)
-
 
   public isAnyEnabled = computed(() => {
     return this.layers().some((it) => !it.disalbed())

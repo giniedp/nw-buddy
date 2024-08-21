@@ -28,10 +28,12 @@ import { ZoneMapStore } from './zone-map.store'
   imports: [NwModule, MapFilterCategoryComponent],
   host: {
     class: 'block',
+    '[class.text-neutral-500]': '!hasPoints()'
   },
 })
 export class MapFilterSectionComponent {
   protected store = inject(ZoneMapStore)
+  protected mapId = this.store.mapId
   public section = input<string>(null)
   protected children = viewChildren(MapFilterCategoryComponent)
 
@@ -47,7 +49,15 @@ export class MapFilterSectionComponent {
       icon: first?.sectionIcon,
     }
   })
+  protected pointsTotal = computed(() => {
+    let count = 0
+    for (const item of this.items()) {
+      count += (item.data[this.mapId()]?.count || 0)
+    }
+    return count
+  })
 
+  protected hasPoints = computed(() => this.pointsTotal() > 0)
   protected items = computed(() => this.data().items)
   protected categories = computed(() => this.data().categories)
   protected label = computed(() => this.data().label)

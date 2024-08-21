@@ -1,5 +1,17 @@
-import { Map, MapGeoJSONFeature, RasterSourceSpecification } from 'maplibre-gl'
-import { NW_TILES } from './constants'
+import { LngLatBounds, Map, MapGeoJSONFeature, RasterSourceSpecification } from 'maplibre-gl'
+import { NW_MAP_LEVELS, NW_MAP_TILE_SIZE } from './constants'
+import {
+  latFromMercatorY,
+  lngFromMercatorX,
+  mercatorXfromLng,
+  mercatorYfromLat,
+  nwXFromMercator,
+  nwXToMercator,
+  nwYFromMercator,
+  nwYToMercator,
+} from './projection'
+import { Geometry, Position } from 'geojson'
+
 export type TileAddress = {
   mapId: string
   x: number
@@ -36,7 +48,7 @@ export function rasterTileSource(newWorldMapId: string): RasterSourceSpecificati
   return {
     type: 'raster',
     tiles: [encodedTileUrl(newWorldMapId)],
-    tileSize: NW_TILES.tileSize,
+    tileSize: NW_MAP_TILE_SIZE,
     bounds: [0, 0, 90, 90],
   }
 }
@@ -50,17 +62,9 @@ export function decodeTileUrl(encodedUrl: string): TileAddress {
   return { mapId, x, y, z }
 }
 
-export function convertTileUrl({
-  encodedUrl,
-  baseUrl,
-  levels,
-}: {
-  encodedUrl: string
-  baseUrl: string
-  levels: number
-}) {
+export function convertTileUrl({ encodedUrl, baseUrl }: { encodedUrl: string; baseUrl: string }) {
   const tile = decodeTileUrl(encodedUrl)
-  const address = getTileAddress(tile, levels)
+  const address = getTileAddress(tile)
   const file = `map_l${address.l}_y${address.y}_x${address.x}.webp`
   //return renderDebugTile({ text: `${tile.x}/${tile.y}/${tile.z} => (${address.x},${address.y},${address.l})`, tileSize: NW_TILES.tileSize })
   return `${baseUrl}/lyshineui/worldtiles/${tile.mapId}/${file}`
@@ -92,9 +96,8 @@ export function renderDebugTile({ text, tileSize }: { text: string; tileSize: nu
   return canvas.toDataURL()
 }
 
-export function getTileAddress({ x, y, z }: TileAddress, maxLevel: number) {
-
-  const level = (maxLevel - z + 1)
+export function getTileAddress({ x, y, z }: TileAddress) {
+  const level = NW_MAP_LEVELS - z + 1
   const step = Math.pow(2, level - 1)
   const shift = Math.pow(2, z - 1)
   x -= shift
@@ -109,32 +112,18 @@ export function getTileAddress({ x, y, z }: TileAddress, maxLevel: number) {
   }
 }
 
-const worldWidth = NW_TILES.worldWidth
-const worldHeight = NW_TILES.worldHeight
-function xToMercator(value: number) {
-  return 0.5 * (1 + value / worldWidth)
-}
-function yToMercator(value: number) {
-  return 0.5 * (1 - value / worldHeight)
-}
-function xFromMercator(value: number) {
-  return (value - 0.5) * worldWidth
-}
-function yFromMercator(value: number) {
-  return (1 - value) * worldHeight
-}
 export function xToLng(x: number) {
-  return lngFromMercatorX(xToMercator(x))
+  return lngFromMercatorX(nwXToMercator(x))
 }
 export function yToLat(y: number) {
-  return latFromMercatorY(yToMercator(y))
+  return latFromMercatorY(nwYToMercator(y))
 }
 
 export function xFromLng(lng: number) {
-  return xFromMercator(mercatorXfromLng(lng))
+  return nwXFromMercator(mercatorXfromLng(lng))
 }
 export function yFromLat(lat: number) {
-  return yFromMercator(mercatorYfromLat(lat))
+  return nwYFromMercator(mercatorYfromLat(lat))
 }
 
 export function xyFromLngLat([lng, lat]: [number, number]) {
@@ -143,23 +132,6 @@ export function xyFromLngLat([lng, lat]: [number, number]) {
 
 export function xyToLngLat([x, y]: [number, number]) {
   return [xToLng(x), yToLat(y)]
-}
-
-export function mercatorXfromLng(lng: number) {
-  return (180 + lng) / 360
-}
-
-export function mercatorYfromLat(lat: number) {
-  return (180 - (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360))) / 360
-}
-
-export function lngFromMercatorX(x: number) {
-  return x * 360 - 180
-}
-
-export function latFromMercatorY(y: number) {
-  const y2 = 180 - y * 360
-  return (360 / Math.PI) * Math.atan(Math.exp((y2 * Math.PI) / 180)) - 90
 }
 
 export function attachLayerHover({
@@ -189,4 +161,66 @@ export function attachLayerHover({
     }
     hoverId = null
   })
+}
+
+export function* eachGeometryPoint(geometry: Geometry): Generator<Position> {
+  switch (geometry.type) {
+    case 'Point': {
+      yield geometry.coordinates
+      break
+    }
+    case 'Polygon':
+    case 'MultiLineString': {
+      for (const item of geometry.coordinates) {
+        for (const point of item) {
+          yield point
+        }
+      }
+      break
+    }
+    case 'GeometryCollection': {
+      for (const item of geometry.geometries) {
+        yield* eachGeometryPoint(item)
+      }
+      break
+    }
+    case 'LineString':
+    case 'MultiPoint': {
+      for (const point of geometry.coordinates) {
+        yield point
+      }
+      break
+    }
+    case 'MultiPolygon': {
+      for (const item of geometry.coordinates) {
+        for (const item2 of item) {
+          for (const point of item2) {
+            yield point
+          }
+        }
+      }
+    }
+  }
+}
+
+export function getGeometryBounds(geometry: Geometry): [number, number, number, number] {
+  let min: Position
+  let max: Position
+  for (const [x, y] of eachGeometryPoint(geometry)) {
+    if (!min) {
+      min = [x, y]
+      max = [x, y]
+    } else {
+      min[0] = Math.min(min[0], x)
+      min[1] = Math.min(min[1], y)
+      max[0] = Math.max(max[0], x)
+      max[1] = Math.max(max[1], y)
+    }
+  }
+  return [min[0], min[1], max[0], max[1]]
+}
+
+export function getGeometryCenter(geometry: Geometry): [number, number] {
+  const [minX, minY, maxX, maxY] = getGeometryBounds(geometry)
+  return [(minX + maxX) / 2, (minY + maxY) / 2]
 }

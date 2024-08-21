@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ViewChild, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ViewChild, computed, inject, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
@@ -77,7 +77,8 @@ export class ZonePageComponent {
   protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
-  protected showTable = selectSignal(injectBreakpoint('(min-width: 1920px)'), (ok) => ok || this.platform.isServer)
+  protected showTable = signal(false)
+  protected pinMenu = selectSignal(injectBreakpoint('(min-width: 1920px)'), (ok) => ok || this.platform.isServer)
 
   protected router = inject(Router)
   protected route = inject(ActivatedRoute)

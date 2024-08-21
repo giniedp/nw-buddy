@@ -1,52 +1,14 @@
-export type NodeSize = 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge'
-export const SIZE_COLORS: Record<NodeSize, string> = {
-  Tiny: '#f28c18',
-  Small: '#51A800',
-  Medium: '#2563EB',
-  Large: '#DC2626',
-  Huge: '#6D3A9C',
-}
-export const SIZE_OUTLINE: Record<NodeSize, string> = {
-  Tiny: '#653806',
-  Small: '#204300',
-  Medium: '#092564',
-  Large: '#590e0e',
-  Huge: '#2c173e',
-}
-export const SIZE_LABELS: Record<NodeSize, string> = {
-  Tiny: 'XS',
-  Small: 'S',
-  Medium: 'M',
-  Large: 'L',
-  Huge: 'XL',
-}
-export const SIZE_RADIUS: Record<NodeSize, number> = {
-  Tiny: 6,
-  Small: 7,
-  Medium: 8,
-  Large: 9,
-  Huge: 10,
-}
-export const SIZE_ORDER = ['Tiny', 'Small', 'Medium', 'Large', 'Huge']
-
-const tileSize = 1024
-const regionSize = 2048
-const regionsX = 16
-const regionsY = 16
-const levels = 8
-export const NW_TILES = {
-  tileSize,
-  regionSize,
-  regionsX,
-  regionsY,
-  levels: levels,
-  worldWidth: regionsX * regionSize,
-  worldHeight: regionsY * regionSize,
-}
+export const NW_MAP_TILE_SIZE = 1024
+export const NW_MAP_TILES_X = 32
+export const NW_MAP_TILES_Y = 32
+export const NW_MAP_LEVELS = 8
+export const NW_MAP_WORLD_WIDTH = NW_MAP_TILES_X * NW_MAP_TILE_SIZE
+export const NW_MAP_WORLD_HEIGHT = NW_MAP_TILES_Y * NW_MAP_TILE_SIZE
 
 export const NW_MAPS = [
   {
     id: 'newworld_vitaeeterna',
+    name: 'Vitae Eterna',
     bounds: {
       left: 4416,
       top: 10496,
@@ -58,6 +20,7 @@ export const NW_MAPS = [
   },
   {
     id: 'outpostrush',
+    name: 'Outpost Rush',
     bounds: {
       left: 921,
       top: 11588,
@@ -71,6 +34,7 @@ export const NW_MAPS = [
   },
   {
     id: 'devworld',
+    name: 'Dev World',
     bounds: {
       left: 0,
       top: 2048,
@@ -82,6 +46,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_windsward_00',
+    name: 'dungeon_amrine_title',
     bounds: {
       left: 616,
       top: 1064,
@@ -94,6 +59,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_edengrove_00',
+    name: 'dungeon_edengrove00_title',
     bounds: {
       left: 336,
       top: 1616,
@@ -106,6 +72,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_everfall_00',
+    name: 'dungeon_everfall_title',
     bounds: {
       left: 324,
       top: 1080,
@@ -118,6 +85,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_restlessshores_00',
+    name: 'Dungeon Restless Shores 00',
     bounds: {
       left: 176,
       top: 600,
@@ -130,6 +98,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_restlessshores_01',
+    name: 'dungeon_restlessshores01_title',
     bounds: {
       left: 680,
       top: 1380,
@@ -142,6 +111,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_reekwater_00',
+    name: 'dungeon_reekwater_title',
     bounds: {
       left: 640,
       top: 980,
@@ -154,6 +124,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_shattermtn_00',
+    name: 'dungeon_shattermtn00_title',
     bounds: {
       left: 350,
       top: 1920,
@@ -166,6 +137,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_brimstonesands_00',
+    name: 'dungeon_brimstonesands00_title',
     bounds: {
       left: 700,
       top: 1480,
@@ -178,6 +150,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_cutlasskeys_00',
+    name: 'dungeon_cutlasskeys00_title',
     bounds: {
       left: 250,
       top: 1230,
@@ -190,6 +163,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_greatcleave_01',
+    name: 'dungeon_greatcleave01_title',
     bounds: {
       left: 480,
       top: 700,
@@ -202,6 +176,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_firstlight_01',
+    name: 'dungeon_firstlight01_title',
     bounds: {
       left: 380,
       top: 1280,
@@ -214,6 +189,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_trial_season_02',
+    name: 'Trial_Season_01_title',
     bounds: {
       left: 700,
       top: 1230,
@@ -226,6 +202,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_trial_season_02_q13',
+    name: 'Trial Season 2 Q13',
     bounds: {
       left: 800,
       top: 1200,
@@ -238,6 +215,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_ori_eg_questmotherwell',
+    name: 'Quest_Motherwell_title',
     bounds: {
       left: 1200,
       top: 1100,
@@ -250,6 +228,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_ori_fl_questadiana',
+    name: 'Quest_Adiana_title',
     bounds: {
       left: 800,
       top: 1200,
@@ -262,6 +241,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_ori_gc_questnihilo',
+    name: 'Quest_Nihilo_title',
     bounds: {
       left: 800,
       top: 800,
@@ -274,6 +254,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_trial_season_04_daichidojo',
+    name: 'trial_season_04_q02_title',
     bounds: {
       left: 290,
       top: 420,
@@ -286,6 +267,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_trial_season_04_deviceroom',
+    name: 'trial_season_04_q06_title',
     bounds: {
       left: 140,
       top: 310,
@@ -298,6 +280,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_dungeon_greatcleave_00',
+    name: 'dungeon_greatcleave00_title',
     bounds: {
       left: 800,
       top: 1000,
@@ -310,6 +293,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_trial_season_04',
+    name: 'Trial_Season_04_title',
     bounds: {
       left: 200,
       top: 1000,
@@ -322,6 +306,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_arena01',
+    name: 'Arean 1',
     bounds: {
       left: 700,
       top: 1480,
@@ -334,6 +319,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_arena02',
+    name: 'Arean 2',
     bounds: {
       left: 700,
       top: 1480,

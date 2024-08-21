@@ -5,6 +5,7 @@ import { FeatureCollection } from 'geojson'
 import { groupBy, uniq } from 'lodash'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
+import { TranslateService } from '~/i18n'
 import { xyToLngLat } from '~/widgets/game-map/utils'
 import { GatherableDataSet, loadGatherables } from './data/gatherables'
 import { loadTerritories } from './data/territories'
@@ -46,11 +47,12 @@ export const ZoneMapStore = signalStore(
     },
     effects(actions, create) {
       const db = inject(NwDataService)
+      const tl8 = inject(TranslateService)
       return {
         load$: create(actions.load).pipe(
           switchMap(() => {
             return combineLatest({
-              territories: loadTerritories(db, xyToLngLat),
+              territories: loadTerritories(db, tl8, xyToLngLat),
               gatherables: loadGatherables(db, xyToLngLat),
             })
           }),

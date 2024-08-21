@@ -1,22 +1,51 @@
-<nwb-map [territories]="store.territories()" [areas]="store.areas()" [pois]="store.pois()">
-  <ul
-    class="menu menu-vertical flex-nowrap p-4 absolute left-0 top-0 bottom-0 w-full max-w-md overflow-scroll bg-opacity-85 bg-base-200"
-  >
-    <!-- <li>
-      <details>
-        <summary>Maps</summary>
-        <ul>
-          @for (mapId of store.mapIds(); track $index) {
-            <li>
-              <a>{{ mapId }}</a>
-            </li>
+<ion-split-pane [when]="pinMenu()" contentId="zone-map-content">
+  <div class="ion-page" id="zone-map-content">
+    <ion-header>
+      <ion-toolbar class="bg-base-300">
+        <div slot="start">
+          <ion-buttons slot="start">
+            @if (!pinMenu()) {
+              <ng-container [ngTemplateOutlet]="tplMenuStart" />
+              <button (click)="menu.toggle()" class="btn btn-square btn-ghost">
+                <nwb-icon [icon]="filterIcon" class="w-5 h-5" />
+              </button>
+            }
+          </ion-buttons>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <nwb-map
+        class="ion-page"
+        [territories]="store.territories()"
+        [areas]="store.areas()"
+        [pois]="store.pois()"
+        (zoneClick)="zoneClicked.emit($event)"
+      />
+    </ion-content>
+  </div>
+  <ion-menu contentId="zone-map-content" [menuId]="'zone-map-filter'" #menu>
+    <ion-header>
+      <ion-toolbar class="bg-base-300">
+        <ion-buttons slot="start">
+          @if (!pinMenu()) {
+            <button (click)="menu.toggle()" class="btn btn-square btn-ghost">
+              <nwb-icon [icon]="filterIcon" class="w-5 h-5" />
+            </button>
+          } @else {
+            <ng-container [ngTemplateOutlet]="tplMenuStart" />
           }
-        </ul>
-      </details>
-    </li> -->
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="bg-base-200 bg-opacity-80">
+      @for (section of sections(); track section) {
+        <nwb-map-filter-section [section]="section" />
+      }
+    </ion-content>
+  </ion-menu>
+</ion-split-pane>
 
-    @for (section of sections(); track section) {
-      <nwb-map-filter-section [section]="section"/>
-    }
-  </ul>
-</nwb-map>
+<ng-template #tplMenuStart>
+  <ng-content [selector]="'[menu-start]'" />
+</ng-template>

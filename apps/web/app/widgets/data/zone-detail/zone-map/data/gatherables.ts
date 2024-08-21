@@ -20,6 +20,7 @@ export interface GatherableDataSet extends GatherableGroup {
 export interface GatherableGroup {
   icon: string
   color: string
+  lootTable: string
 
   section: string
   sectionLabel?: string

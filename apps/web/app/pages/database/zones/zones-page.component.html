@@ -10,7 +10,11 @@
       }
     </ion-menu>
     <div class="ion-page flex flex-row" id="detailContent">
-      <ion-split-pane contentId="detailMap" [when]="showTable()" style="--side-min-width: 320px; --side-max-width: 1600px; --side-width: 35%; ">
+      <ion-split-pane
+        contentId="detailMap"
+        [when]="showTable()"
+        style="--side-min-width: 320px; --side-max-width: 1600px; --side-width: 30%"
+      >
         <ion-menu contentId="detailMap" #tableMenu style="--width: 100%">
           <ng-container [ngTemplateOutlet]="tplTableHeader" />
           @if (service.isGridActive()) {
@@ -34,20 +38,23 @@
             />
           }
         </ion-menu>
-        <div class="ion-page" id="detailMap">
-          @if (!showTable()) {
-            <button (click)="tableMenu.toggle()" class="btn btn-ghost absolute top-2 left-2 z-50">
-              <nwb-icon [icon]="menuIcon" class="w-5 h-5" />
-            </button>
-          }
-          <nwb-zone-map
-            class="flex-1 z-40"
-            [nwbZoneDetail]="zoneIdParam()"
-            [markVital]="vitalIdParam()"
-            (zoneClicked)="onZoneClicked($event)"
-            (vitalClicked)="onVitalClicked($event)"
-          />
-        </div>
+        <nwb-zone-map
+          id="detailMap"
+          class="ion-page z-40"
+          [pinMenu]="pinMenu()"
+          [nwbZoneDetail]="zoneIdParam()"
+          [markVital]="vitalIdParam()"
+          (zoneClicked)="onZoneClicked($event)"
+          (vitalClicked)="onVitalClicked($event)"
+        >
+          <span menu-start>
+            @if (!showTable()) {
+              <button (click)="tableMenu.toggle()" class="btn btn-ghost btn-square">
+                <nwb-icon [icon]="menuIcon" class="w-5 h-5" />
+              </button>
+            }
+          </span>
+        </nwb-zone-map>
       </ion-split-pane>
     </div>
   </ion-split-pane>

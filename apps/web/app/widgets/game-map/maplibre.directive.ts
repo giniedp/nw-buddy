@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Input, inject, input, output } from '@angular/core'
-import { Map, MapLibreEvent, MapLibreZoomEvent, MapMouseEvent, RequestTransformFunction, StyleSpecification } from 'maplibre-gl'
+import { Map, MapLibreEvent, MapMouseEvent, RequestTransformFunction, StyleSpecification } from 'maplibre-gl'
 import { missingImageHandler } from './missing-image-hander'
 
 @Directive({
@@ -45,6 +45,11 @@ export class MaplibreDirective {
   }
   public get zoom() {
     return this.map.getZoom()
+  }
+
+  @Input()
+  public set center(value: [number, number]) {
+    this.map.setCenter(value)
   }
 
   @Input()

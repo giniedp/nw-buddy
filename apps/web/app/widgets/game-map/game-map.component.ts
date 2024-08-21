@@ -1,20 +1,21 @@
-import { Component, Injector, effect, inject, input, signal, untracked, viewChild } from '@angular/core'
+import { Component, Injector, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core'
 import { environment } from 'apps/web/environments'
-import { FeatureCollection } from 'geojson'
+import { FeatureCollection, Geometry } from 'geojson'
 import {
   AJAXError,
   FillLayerSpecification,
   GeoJSONSource,
   LineLayerSpecification,
+  MapGeoJSONFeature,
   MapMouseEvent,
   RequestTransformFunction,
   StyleSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl'
-import { NW_TILES } from './constants'
+import { GameMapProxyService } from './game-map.proxy'
 import { MaplibreDirective } from './maplibre.directive'
-import { attachLayerHover, convertTileUrl, rasterTileSource, xyFromLngLat } from './utils'
-
+import { attachLayerHover, convertTileUrl, getGeometryCenter, rasterTileSource, xyFromLngLat } from './utils'
+import { Position } from 'geojson'
 @Component({
   standalone: true,
   selector: 'nwb-map',
@@ -24,18 +25,23 @@ import { attachLayerHover, convertTileUrl, rasterTileSource, xyFromLngLat } from
       [nwbMaplibre]
       [renderWorldCopies]="false"
       [styleSpec]="styleSpec"
+      [minZoom]="minZoom()"
+      [maxZoom]="maxZoom()"
+      [zoom]="4"
+      [center]="[180 / 4, 90 / 4]"
       [transformRequest]="transformRequest"
       (mapLoad)="handleMapLoad()"
       (mapError)="handleMapError($event)"
       (mapMouseMove)="handleMapMouseMove($event)"
       (mapZoom)="handleMapZoom()"
       class="w-full h-full"
+      id="game-map-element"
     ></div>
     <div class="absolute top-2 left-2">{{ zoom() }} | {{ info() || '' }}</div>
     <ng-content />
   `,
   host: {
-    class: 'block relative w-full h-full overflow-hidden bg-[#859594]',
+    class: 'block overflow-hidden bg-[#859594]',
   },
   imports: [MaplibreDirective],
 })
@@ -46,10 +52,10 @@ export class GameMapComponent {
   }
   protected info = signal<string>(null)
   protected zoom = signal<number>(null)
+  protected minZoom = signal<number>(1)
+  protected maxZoom = signal<number>(8)
   protected styleSpec: StyleSpecification = {
     version: 8,
-    center: [180/4, 90/4],
-    zoom: 4,
     sources: {
       newworld_vitaeeterna: rasterTileSource('newworld_vitaeeterna'),
       outpostrush: rasterTileSource('outpostrush'),
@@ -65,7 +71,6 @@ export class GameMapComponent {
         type: 'raster',
         source: 'outpostrush',
       },
-
     ],
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
   }
@@ -75,7 +80,6 @@ export class GameMapComponent {
       url = convertTileUrl({
         baseUrl: environment.cdnDataUrl,
         encodedUrl: url,
-        levels: NW_TILES.levels,
       })
     }
     return {
@@ -86,8 +90,13 @@ export class GameMapComponent {
   public territories = input<FeatureCollection>()
   public areas = input<FeatureCollection>()
   public pois = input<FeatureCollection>()
+  public zoneClick = output<string>()
 
   private injector = inject(Injector)
+
+  public constructor() {
+    inject(GameMapProxyService, { optional: true })?.provide(() => this.map)
+  }
 
   protected handleMapLoad() {
     this.map.resize()
@@ -166,6 +175,17 @@ export class GameMapComponent {
         layerId: layerFillId,
         getId: (feature) => feature.id as string | number,
       })
+      this.map.on('click', layerFillId, (e) => {
+        const feature = e.features[0]
+        this.zoneClick.emit(String(feature.id))
+        const geometry = feature.geometry
+        const center = getGeometryCenter(geometry)
+        this.map.flyTo({
+          center: center,
+          zoom: 4.9,
+          essential: true,
+        })
+      })
     }
     const source = this.map.getSource(sourceId) as GeoJSONSource
     source.setData(features || { type: 'FeatureCollection', features: [] })
@@ -210,6 +230,17 @@ export class GameMapComponent {
         layerId: layerFillId,
         getId: (feature) => feature.id as string | number,
       })
+      this.map.on('click', layerFillId, (e) => {
+        const feature = e.features[0]
+        this.zoneClick.emit(String(feature.id))
+        const geometry = feature.geometry
+        const center = getGeometryCenter(geometry)
+        this.map.flyTo({
+          center: center,
+          zoom: 5.9,
+          essential: true,
+        })
+      })
     }
     const source = this.map.getSource(sourceId) as GeoJSONSource
     source.setData(features || { type: 'FeatureCollection', features: [] })
@@ -251,6 +282,17 @@ export class GameMapComponent {
         sourceId,
         layerId: layerFillId,
         getId: (feature) => feature.id as string | number,
+      })
+      this.map.on('click', layerFillId, (e) => {
+        const feature = e.features[0]
+        this.zoneClick.emit(String(feature.id))
+        const geometry = feature.geometry
+        const center = getGeometryCenter(geometry)
+        this.map.flyTo({
+          center: center,
+          zoom: 7,
+          essential: true,
+        })
       })
     }
     const source = this.map.getSource(sourceId) as GeoJSONSource
@@ -345,7 +387,7 @@ const poisOutlineLayout: LineLayerSpecification = {
     'line-join': 'round',
   },
   paint: {
-    'line-color': '#FFFFFF',
+    'line-color': '#ceba75',
     'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 2, 1],
     'line-dasharray': [4, 2],
   },

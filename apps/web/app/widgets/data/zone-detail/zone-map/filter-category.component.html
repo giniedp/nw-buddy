@@ -1,0 +1,97 @@
+@for (layer of items(); track layer.id) {
+  @let data = layer.data[store.mapId()];
+  <ng-container
+    #mapLayer="mapLayer"
+    [nwbMapLayer]="layer.id"
+    [disalbed]="true"
+    [heatmap]="true || (!!layer.variants.length && !layer.variants[0].icon)"
+    [color]="layer.color"
+    [data]="data?.geometry"
+  />
+}
+
+<div class="flex flex-row gap-1" [class.pr-8]="!hasChevron()">
+  <div class="join w-full">
+    <button
+      class="join-item flex-1 btn btn-sm btn-ghost justify-start items-center gap-2 text-left"
+      (click)="toggleAll()"
+      [class.text-primary]="isAnyEnabled()"
+    >
+      <span class="flex-1">
+        {{ label() | nwText }}
+      </span>
+
+      @if (icon(); as icon) {
+        <img [nwImage]="icon" class="w-6 flex-none" />
+      }
+    </button>
+
+    @for (variant of variants(); track variant.id) {
+      @let isActive = isVariantActive(variant.id);
+      <button
+        class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
+        [class.btn-ghost]="!isActive"
+        [style.--btn-color]="isActive ? (variant.color | toLCH) : null"
+        (click)="toggleVariant(variant.id)"
+      >
+        @if (variant.icon; as icon) {
+          <img [nwImage]="icon" class="w-6" />
+        } @else {
+          {{ variant.label }}
+        }
+      </button>
+    } @empty {
+      @if (isAnyEnabled() && items().length === 1) {
+        <button
+          class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
+          [class.btn-ghost]="!isAnyEnabled()"
+          [style.--btn-color]="isAnyEnabled() ? (color() | toLCH) : null"
+          (click)="toggleAll()"
+        ></button>
+      }
+    }
+  </div>
+
+  @if (hasChevron()) {
+    <button class="flex-none btn btn-sm btn-square btn-ghost" (click)="isOpen.set(!isOpen())">
+      <nwb-icon
+        [icon]="iconArrowLeft"
+        class="w-3 transition-transform"
+        [class.-rotate-180]="!isOpen()"
+        [class.-rotate-90]="isOpen()"
+      />
+    </button>
+  }
+</div>
+
+@if (isOpen()) {
+  <div class="grid grid-cols-2 gap-1 pl-8 mt-1">
+    @for (item of items(); track $index) {
+      @let isActive = isLayerActive(item.id);
+      <div class="join">
+        <button class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left" (click)="toggleLayer(item.id)">
+          {{ item.subcategoryLabel || item.subcategory | nwText }}
+        </button>
+        <button
+          class="join-item flex-none btn btn-sm btn-square"
+          [class.btn-ghost]="!isActive"
+          [style.--btn-color]="isActive ? (item.color | toLCH) : null"
+          (click)="toggleLayer(item.id)"
+          [tooltip]="tplTip"
+        >
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+        </button>
+        <ng-template #tplTip>
+          <nwb-property-grid
+            class="p-2"
+            [item]="{
+              count: item.count,
+              variant: item.subcategory,
+              lootTable: item.lootTable,
+            }"
+          />
+        </ng-template>
+      </div>
+    }
+  </div>
+}
