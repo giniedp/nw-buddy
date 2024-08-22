@@ -29,7 +29,8 @@
     "paths": {
       "~/*": ["apps/web/app/*"],
       "@nw-data/generated": ["libs/nw-data/generated"],
-      "@nw-data/common": ["libs/nw-data/common"]
+      "@nw-data/common": ["libs/nw-data/common"],
+      "@nw-data/scanner": ["libs/nw-data/scanner"]
     }
   },
   "angularCompilerOptions": {

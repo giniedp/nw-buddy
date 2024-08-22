@@ -1,7 +1,8 @@
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
-import { GatherableData, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
+import { GatherableData } from '@nw-data/generated'
+import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
 import { sortBy, uniq } from 'lodash'
 import { withNwData } from '~/data/with-nw-data'
 import { eqCaseInsensitive } from '~/utils'
@@ -18,10 +19,10 @@ export interface GatherableSibling {
   size: NodeSize
   gatherableId: string
   gatherable: GatherableData
-  gatherableMeta: GatherablesMetadata
+  gatherableMeta: ScannedGatherable
   variations: Array<{
     variation: GatherableVariation
-    variationMeta: VariationsMetadata
+    variationMeta: ScannedVariation
   }>
 }
 
@@ -40,7 +41,7 @@ export const GatherableDetailStore = signalStore(
     return {
       load(gatherableId: string) {
         patchState(state, { gatherableId })
-      }
+      },
     }
   }),
   withComputed(({ gatherableId, variantId, nwData }) => {
@@ -106,7 +107,7 @@ export const GatherableDetailStore = signalStore(
         const result: string[] = [gatherableId()]
         const siblings = sizeSiblings() || []
         for (const sibling of siblings) {
-          if (getGatherableSpawnCount(sibling.item) >= 10000){
+          if (getGatherableSpawnCount(sibling.item) >= 10000) {
             return result
           }
         }

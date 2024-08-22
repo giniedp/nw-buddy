@@ -7,12 +7,13 @@ import {
   AffixStatData,
   DamageData,
   MutationDifficultyStaticData,
-  SpellsMetadata,
+
   StatusEffectData,
   VitalsData,
   VitalsLevelData,
   VitalsModifierData,
 } from '@nw-data/generated'
+import { ScannedSpell } from '@nw-data/scanner'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'
@@ -94,7 +95,7 @@ function selectDamageInfo({
   level: VitalsLevelData
   modifier: VitalsModifierData
   damageTable: DamageData
-  metadata: SpellsMetadata
+  metadata: ScannedSpell
   difficulty: MutationDifficultyStaticData
   affixMap: Map<string, AffixStatData>
   effectMap: Map<string, StatusEffectData>

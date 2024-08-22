@@ -2,7 +2,8 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { DecimalPipe } from '@angular/common'
 import { Component, ElementRef, computed, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { LoreMetadata, LoreSpawns, LoreData } from '@nw-data/generated'
+import { LoreData } from '@nw-data/generated'
+import { ScannedLore } from '@nw-data/scanner'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -11,9 +12,9 @@ import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
+import { injectDocument } from '~/utils/injection/document'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { LoreItemDetailStore } from './lore-item-detail.store'
-import { injectDocument } from '~/utils/injection/document'
 
 const SIZE_COLORS = {
   Emphasis: '#2563EB',
@@ -141,7 +142,7 @@ export class LoreItemDetailMapComponent {
   }
 }
 
-function selectLoreData(lore: LoreData, loreItems: LoreData[], metaMap: Map<string, LoreMetadata>) {
+function selectLoreData(lore: LoreData, loreItems: LoreData[], metaMap: Map<string, ScannedLore>) {
   const root = selectRoot(lore, loreItems)
   const tree = selectTree(root, loreItems)
   const list = selectTreeList(tree)
@@ -152,13 +153,13 @@ function selectLoreData(lore: LoreData, loreItems: LoreData[], metaMap: Map<stri
       continue
     }
     const emphasis = lore.Type === 'Topic' || lore.LoreID === entry.LoreID || lore.LoreID === entry.ParentID
-    for (const mapId in meta.loreSpawns || {}) {
-      const spawns = meta.loreSpawns[mapId as keyof LoreSpawns]
-      for (const spawn of spawns || []) {
-        result[mapId] ??= []
+    for (const spawn of meta.spawns || []) {
+      const mapId = spawn.mapID
+      result[mapId] ??= []
+      for (const point of spawn.positions) {
         result[mapId].push({
           title: entry.Title,
-          point: spawn,
+          point: point,
           color: emphasis ? SIZE_COLORS.Emphasis : SIZE_COLORS.Common,
           outlineColor: emphasis ? SIZE_OUTLINE.Emphasis : SIZE_OUTLINE.Common,
           opacity: emphasis ? 1 : 0.5,

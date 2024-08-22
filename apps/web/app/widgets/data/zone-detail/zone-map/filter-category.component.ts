@@ -42,7 +42,6 @@ export class MapFilterCategoryComponent {
   protected iconInfo = svgInfo
   protected layers = viewChildren(GameMapLayerDirective)
 
-  public tab = input.required<string>()
   public section = input.required<string>()
   public category = input.required<string>()
 
@@ -58,7 +57,7 @@ export class MapFilterCategoryComponent {
 
   protected items = computed(() => {
     return this.store.gatherables().filter((it) => {
-      return it.tab === this.tab() && it.section === this.section() && it.category === this.category()
+      return it.section === this.section() && it.category === this.category()
     })
   })
 

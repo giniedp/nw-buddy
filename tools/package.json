@@ -31,7 +31,8 @@
     "sharp": "0.33.4",
     "shelljs": "0.8.5",
     "unzipper": "0.12.1",
-    "workerpool": "9.1.2"
+    "workerpool": "9.1.2",
+    "typescript": "~5.4.5"
   },
   "optionalDependencies": {
     "ffi-napi": "4.0.3",

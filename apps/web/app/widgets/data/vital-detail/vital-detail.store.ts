@@ -18,8 +18,8 @@ import {
   StatusEffectData,
   VitalsCategoryData,
   VitalsData,
-  VitalsMetadata,
 } from '@nw-data/generated'
+import { ScannedVital } from '@nw-data/scanner'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -279,7 +279,7 @@ function selectCategories(vital: VitalsData, categories: Map<string, VitalsCateg
   return vital.VitalsCategories?.map((id) => categories.get(id))
 }
 
-function selectDamageTableNames(id: string, meta: VitalsMetadata) {
+function selectDamageTableNames(id: string, meta: ScannedVital) {
   let tables = meta?.tables || []
   // TODO: fix this in the pipeline
   if (id === 'Isabella_DG_ShatterMtn_Phase2_00') {

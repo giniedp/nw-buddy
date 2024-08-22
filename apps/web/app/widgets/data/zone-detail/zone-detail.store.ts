@@ -11,12 +11,11 @@ import {
   isPointInZone,
 } from '@nw-data/common'
 import {
-  TerritoriesMetadata,
   TerritoryDefinition,
   VitalsCategoryData,
   VitalsData,
-  VitalsMetadata,
 } from '@nw-data/generated'
+import { ScannedTerritory, ScannedVital } from '@nw-data/scanner'
 import { groupBy } from 'lodash'
 import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -35,7 +34,7 @@ export interface ZoneDetailState {
   isLoaded: boolean
   vitals: VitalsData[]
   spawns: ZoneSpawn[]
-  metadata: TerritoriesMetadata
+  metadata: ScannedTerritory
 }
 
 export const ZoneDetailStore = signalStore(
@@ -139,11 +138,11 @@ function selectZoneSpawns({
   vitals,
   vitalsMetaMap,
 }: {
-  zoneMeta: TerritoriesMetadata
+  zoneMeta: ScannedTerritory
   vitals: VitalsData[]
-  vitalsMetaMap: Map<string, VitalsMetadata>
+  vitalsMetaMap: Map<string, ScannedVital>
 }) {
-  if (!zoneMeta?.zones?.length || !vitals || !vitalsMetaMap) {
+  if (!zoneMeta?.geometry?.length || !vitals || !vitalsMetaMap) {
     return null
   }
 
@@ -153,15 +152,14 @@ function selectZoneSpawns({
     levels: number[]
     categories: string[]
   }> = []
-  const zone = zoneMeta.zones[0]
   for (const vital of vitals) {
     const vMeta = vitalsMetaMap.get(vital.VitalsID)
-    const spawns = vMeta?.lvlSpanws?.newworld_vitaeeterna
+    const spawns = vMeta?.spawns['newworld_vitaeeterna']
     if (!spawns?.length) {
       continue
     }
     for (const spawn of spawns) {
-      if (!isPointInZone(spawn.p, zone)) {
+      if (!isPointInZone(spawn.p, zoneMeta)) {
         continue
       }
       result.push({

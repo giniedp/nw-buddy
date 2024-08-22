@@ -18,9 +18,9 @@ import { ZoneMapStore } from './zone-map.store'
           {{ label() | nwText }}
         </span>
       </summary>
-      <div class="pl-8 space-y-1">
+      <div class="px-4 space-y-1">
         @for (category of categories(); track category) {
-          <nwb-map-filter-category [tab]="tab()" [section]="section()" [category]="category" />
+          <nwb-map-filter-category [section]="section()" [category]="category" />
         }
       </div>
     </details>
@@ -34,7 +34,6 @@ import { ZoneMapStore } from './zone-map.store'
 export class MapFilterSectionComponent {
   protected store = inject(ZoneMapStore)
   protected mapId = this.store.mapId
-  public tab = input.required<string>()
   public section = input.required<string>()
   protected children = viewChildren(MapFilterCategoryComponent)
 

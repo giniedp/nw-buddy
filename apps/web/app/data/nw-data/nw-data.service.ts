@@ -15,17 +15,27 @@ import {
 import {
   DATASHEETS,
   DataSheetUri,
-  GatherablesMetadata,
-  LoreMetadata,
-  NpcsMetadata,
-  SpellsMetadata,
-  TerritoriesMetadata,
+  //GatherablesMetadata,
+  //LoreMetadata,
+  //NpcsMetadata,
+  //SpellsMetadata,
+  //TerritoriesMetadata,
   VariationDataGatherable,
-  VariationsMetadata,
+  //VariationsMetadata,
   VitalsData,
-  VitalsMetadata,
-  VitalsModelsMetadata,
+  //VitalsMetadata,
+  //VitalsModelsMetadata,
 } from '@nw-data/generated'
+import {
+  ScannedGatherable,
+  ScannedLore,
+  ScannedNpc,
+  ScannedSpell,
+  ScannedTerritory,
+  ScannedVariation,
+  ScannedVital,
+  ScannedVitalModel
+} from '@nw-data/scanner'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataLoaderService } from './nw-data-loader.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './views'
@@ -176,7 +186,7 @@ export class NwDataService {
   public gatherable = tableLookup(() => this.gatherablesMap)
 
   public gatherablesMetadata = table(() =>
-    this.load<GatherablesMetadata>({ uri: 'nw-data/generated/gatherables_metadata.json' }),
+    this.load<ScannedGatherable>({ uri: 'nw-data/generated/gatherables_metadata.json' }),
   )
   public gatherablesMetadataMap = tableIndexBy(() => this.gatherablesMetadata, 'gatherableID')
   public gatherablesMeta = tableLookup(() => this.gatherablesMetadataMap)
@@ -239,13 +249,13 @@ export class NwDataService {
   public npcsVariationsByNpcId = tableLookup(() => this.npcsVariationsByNpcIdMap)
 
   public npcsMetadata = table(() =>
-    this.load<NpcsMetadata>({ uri: 'nw-data/generated/npcs_metadata.json' }),
+    this.load<ScannedNpc>({ uri: 'nw-data/generated/npcs_metadata.json' }),
   )
-  public npcsMetadataMap = tableIndexBy(() => this.npcsMetadata, 'npcId')
+  public npcsMetadataMap = tableIndexBy(() => this.npcsMetadata, 'npcID')
   public npcsMeta = tableLookup(() => this.npcsMetadataMap)
 
   public variationsMetadata = table(() =>
-    this.load<VariationsMetadata>({ uri: 'nw-data/generated/variations_metadata.json' }),
+    this.load<ScannedVariation>({ uri: 'nw-data/generated/variations_metadata.json' }),
   )
   public variationsMetadataMap = tableIndexBy(() => this.variationsMetadata, 'variantID')
   public variationsMeta = tableLookup(() => this.variationsMetadataMap)
@@ -293,7 +303,7 @@ export class NwDataService {
   public spell = tableLookup(() => this.spellsMap)
   public spellsByDamageTable = tableGroupBy(() => this.spells, 'DamageTable')
 
-  public spellsMetadata = table(() => this.load<SpellsMetadata>({ uri: 'nw-data/generated/spells_metadata.json' }))
+  public spellsMetadata = table(() => this.load<ScannedSpell>({ uri: 'nw-data/generated/spells_metadata.json' }))
   public spellsMetadataMap = tableIndexBy(() => this.spellsMetadata, 'PrefabPath')
   public spellsMeta = tableLookup(() => this.spellsMetadataMap)
 
@@ -307,7 +317,7 @@ export class NwDataService {
   public loreItemsByParentIdMap = tableGroupBy(() => this.loreItems, 'ParentID')
   public loreItemsByParentId = tableLookup(() => this.loreItemsByParentIdMap)
 
-  public loreItemsMeta = table(() => this.load<LoreMetadata>({ uri: 'nw-data/generated/lore_metadata.json' }))
+  public loreItemsMeta = table(() => this.load<ScannedLore>({ uri: 'nw-data/generated/lore_metadata.json' }))
   public loreItemsMetaMap = tableIndexBy(() => this.loreItemsMeta, 'loreID')
 
   public recipes = table(() => this.loadEntries(DATASHEETS.CraftingRecipeData))
@@ -385,12 +395,12 @@ export class NwDataService {
 
   public tradeskillPostcap = table(() => this.loadEntries(DATASHEETS.TradeSkillPostCapData))
 
-  public vitalsMetadata = table(() => this.load<VitalsMetadata>({ uri: 'nw-data/generated/vitals_metadata.json' }))
+  public vitalsMetadata = table(() => this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata.json' }))
   public vitalsMetadataMap = tableIndexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = tableLookup(() => this.vitalsMetadataMap)
 
   public vitalsModelsMetadata = table(() =>
-    this.load<VitalsModelsMetadata>({ uri: 'nw-data/generated/vitals_models_metadata.json' }),
+    this.load<ScannedVitalModel>({ uri: 'nw-data/generated/vitals_models_metadata.json' }),
   )
   public vitalsModelsMetadataMap = tableIndexBy(() => this.vitalsModelsMetadata, 'id')
   public vitalsModelMeta = tableLookup(() => this.vitalsModelsMetadataMap)
@@ -427,7 +437,7 @@ export class NwDataService {
   public damagetype = tableLookup(() => this.damagetypesMap)
 
   public territoriesMetadata = table(() =>
-    this.load<TerritoriesMetadata>({ uri: 'nw-data/generated/territories_metadata.json' }),
+    this.load<ScannedTerritory>({ uri: 'nw-data/generated/territories_metadata.json' }),
   )
   public territoriesMetadataMap = tableIndexBy(() => this.territoriesMetadata, 'territoryID')
   public territoryMetadata = tableLookup(() => this.territoriesMetadataMap)

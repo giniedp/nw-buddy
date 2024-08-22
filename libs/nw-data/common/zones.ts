@@ -1,5 +1,5 @@
-import { Zone } from '../generated/meta-types'
 import { TerritoryDefinition } from '../generated/types'
+import { ScannedTerritory } from '../scanner/types'
 import { NW_FALLBACK_ICON } from './constants'
 
 export type ZoneType = 'Territory' | 'Area' | 'POI'
@@ -90,23 +90,24 @@ export function getZoneMetaId(zone: TerritoryDefinition) {
   return id < 10 ? `0${id}` : String(id || '')
 }
 
-export function isPointInZone(point: number[], zone: Zone) {
-  if (!zone || !point?.length) {
+export function isPointInZone(point: number[], zone: ScannedTerritory) {
+  if (!zone?.geometry?.length || !point?.length) {
     return false
   }
-  if (!isPointInAABB(point, zone.min, zone.max)) {
+  const geometry = zone.geometry[0]
+  if (!isPointInAABB(point, geometry.bbox)) {
     return false
   }
-  if (!isPointInPolygon(point, zone.shape)) {
+  if (!isPointInPolygon(point, geometry.coordinates[0])) {
     return false
   }
   return true
 }
 
-function isPointInAABB(point: number[], min: number[], max: number[]) {
+function isPointInAABB(point: number[], aabb: number[]) {
   const x = point[0]
   const y = point[1]
-  if (x < min[0] || x > max[0] || y < min[1] || y > max[1]) {
+  if (x < aabb[0] || x > aabb[2] || y < aabb[1] || y > aabb[3]) {
     return false
   }
   return true

@@ -1,5 +1,6 @@
 import { getZoneIcon, getZoneMetaId, getZoneName, getZoneType } from '@nw-data/common'
-import { TerritoriesMetadata, TerritoryDefinition } from '@nw-data/generated'
+import { TerritoryDefinition } from '@nw-data/generated'
+import { ScannedTerritory } from '@nw-data/scanner'
 import { Feature, FeatureCollection } from 'geojson'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -28,24 +29,24 @@ export function loadTerritories(db: NwDataService, tl8: TranslateService, mapCoo
       return {
         territories: territoriesToFeatureCollection(
           territories.filter((it) => {
-            return getZoneType(it.territory) === 'Territory' && !!it.meta?.zones?.length
+            return getZoneType(it.territory) === 'Territory' && !!it.meta?.geometry?.length
           }),
           mapCoord,
-          mapName
+          mapName,
         ),
         areas: territoriesToFeatureCollection(
           territories.filter((it) => {
-            return getZoneType(it.territory) === 'Area' && !!it.meta?.zones?.length
+            return getZoneType(it.territory) === 'Area' && !!it.meta?.geometry?.length
           }),
           mapCoord,
-          mapName
+          mapName,
         ),
         pois: territoriesToFeatureCollection(
           territories.filter((it) => {
-            return getZoneType(it.territory) === 'POI' && !!it.meta?.zones?.length
+            return getZoneType(it.territory) === 'POI' && !!it.meta?.geometry?.length
           }),
           mapCoord,
-          mapName
+          mapName,
         ),
       }
     }),
@@ -53,7 +54,7 @@ export function loadTerritories(db: NwDataService, tl8: TranslateService, mapCoo
 }
 
 function territoriesToFeatureCollection(
-  territories: Array<{ territory: TerritoryDefinition; meta: TerritoriesMetadata }>,
+  territories: Array<{ territory: TerritoryDefinition; meta: ScannedTerritory }>,
   mapCoord: MapCoord,
   mapName: MapName,
 ): FeatureCollection {
@@ -63,8 +64,13 @@ function territoriesToFeatureCollection(
   }
 }
 
-function territoryToFeature(territory: TerritoryDefinition, meta: TerritoriesMetadata, mapCoord: MapCoord, mapName: MapName): Feature {
-  const coords = meta.zones[0].shape.map(mapCoord)
+function territoryToFeature(
+  territory: TerritoryDefinition,
+  meta: ScannedTerritory,
+  mapCoord: MapCoord,
+  mapName: MapName,
+): Feature {
+  const coords = meta.geometry[0].coordinates[0].map(mapCoord)
   coords.push(coords[0])
   return {
     type: 'Feature',

@@ -71,6 +71,9 @@
       <div class="join">
         <button class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left" (click)="toggleLayer(item.id)">
           {{ item.subcategoryLabel || item.subcategory | nwText }}
+          @if (item.isRandom) {
+            <span class="badge badge-sm badge-secondary">RE</span>
+          }
         </button>
         <button
           class="join-item flex-none btn btn-sm btn-square"
@@ -84,11 +87,7 @@
         <ng-template #tplTip>
           <nwb-property-grid
             class="p-2"
-            [item]="{
-              count: item.count,
-              variant: item.subcategory,
-              lootTable: item.lootTable,
-            }"
+            [item]="item"
           />
         </ng-template>
       </div>

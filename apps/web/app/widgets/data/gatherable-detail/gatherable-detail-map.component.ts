@@ -4,7 +4,7 @@ import { Component, ElementRef, inject, input, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { GatherableNodeSize, getGatherableNodeSize } from '@nw-data/common'
-import { Spawns } from '@nw-data/generated'
+import saveAs from 'file-saver'
 import { isEqual } from 'lodash'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -13,11 +13,10 @@ import { IconsModule } from '~/ui/icons'
 import { svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive, humanize, selectSignal, selectStream } from '~/utils'
+import { eqCaseInsensitive, selectSignal, selectStream } from '~/utils'
+import { injectDocument } from '~/utils/injection/document'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { GatherableService, isLootTableEmpty } from '../gatherable/gatherable.service'
-import { injectDocument } from '~/utils/injection/document'
-import saveAs from 'file-saver'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
   Tiny: '#f28c18',
@@ -98,12 +97,12 @@ export class GatherableDetailMapComponent {
         if (size) {
           tags.push(size.toLowerCase())
         }
-        for (const mapId in meta?.regularSpawns || {}) {
-          const positions = meta.regularSpawns[mapId as keyof Spawns]
-          for (const position of positions || []) {
-            result[mapId] ??= {}
-            result[mapId][size] ??= []
-            result[mapId][size].push({
+
+        for (const spawn of meta.spawns || []) {
+          for (const position of spawn.positions || []) {
+            result[spawn.mapID] ??= {}
+            result[spawn.mapID][size] ??= []
+            result[spawn.mapID][size].push({
               title: `${name} [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]`,
               color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
               outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
@@ -137,36 +136,36 @@ export class GatherableDetailMapComponent {
           if (size) {
             tags.push(size.toLowerCase())
           }
-          for (const meta of variation.$meta?.variantPositions || []) {
-            const mapId = meta.mapId
-            const chunk = positionChunks.find((it) => it.chunk === meta.chunk)
-            if (!chunk) {
-              continue
-            }
-            const positions = chunk.data.slice(meta.elementOffset, meta.elementOffset + meta.elementCount)
-            for (const position of positions || []) {
-              let title = `
-                ${name}<br>
-                <span class="ml-4">coord: [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]</span>
-              `
-              for (const lootTable of lootTables) {
-                if (lootTable) {
-                  title += `<br><span class="ml-4">loot: ${humanize(lootTable)}</span>`
-                }
-              }
-              result[mapId] ??= {}
-              result[mapId][size] ??= []
-              result[mapId][size].push({
-                title: `<div class="font-mono">${title}</div>`,
-                color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
-                outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
-                point: position,
-                radius: SIZE_RADIUS[size] || SIZE_RADIUS.Medium,
-                layer: size,
-                tags: tags,
-              })
-            }
-          }
+          // for (const meta of variation.$meta?. || []) {
+          //   const mapId = meta.mapId
+          //   const chunk = positionChunks.find((it) => it.chunk === meta.chunk)
+          //   if (!chunk) {
+          //     continue
+          //   }
+          //   const positions = chunk.data.slice(meta.elementOffset, meta.elementOffset + meta.elementCount)
+          //   for (const position of positions || []) {
+          //     let title = `
+          //       ${name}<br>
+          //       <span class="ml-4">coord: [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]</span>
+          //     `
+          //     for (const lootTable of lootTables) {
+          //       if (lootTable) {
+          //         title += `<br><span class="ml-4">loot: ${humanize(lootTable)}</span>`
+          //       }
+          //     }
+          //     result[mapId] ??= {}
+          //     result[mapId][size] ??= []
+          //     result[mapId][size].push({
+          //       title: `<div class="font-mono">${title}</div>`,
+          //       color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
+          //       outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
+          //       point: position,
+          //       radius: SIZE_RADIUS[size] || SIZE_RADIUS.Medium,
+          //       layer: size,
+          //       tags: tags,
+          //     })
+          //   }
+          // }
         }
       }
 
@@ -245,7 +244,6 @@ export class GatherableDetailMapComponent {
       }
     },
   )
-
 
   public hasMap = selectSignal(this.mapIds, (it) => !!it?.length)
 

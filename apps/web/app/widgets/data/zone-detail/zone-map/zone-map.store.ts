@@ -1,8 +1,8 @@
 import { noPayload, payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
-import { patchState, signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 import { FeatureCollection } from 'geojson'
-import { groupBy, uniq } from 'lodash'
+import { uniq } from 'lodash'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -17,6 +17,10 @@ export interface ZoneMapState {
   areas: FeatureCollection
   pois: FeatureCollection
   mapId: string
+  showHeatmap?: boolean
+  showLabels?: boolean
+  showPOI?: boolean
+  showEncounter?: boolean
 }
 
 export const ZoneMapStore = signalStore(
@@ -27,6 +31,10 @@ export const ZoneMapStore = signalStore(
     pois: null,
     gatherables: [],
     mapId: 'newworld_vitaeeterna',
+    showHeatmap: true,
+    showLabels: true,
+    showPOI: true,
+    showEncounter: false,
   }),
   withRedux({
     actions: {
@@ -67,6 +75,22 @@ export const ZoneMapStore = signalStore(
       }
     },
   }),
+  withMethods((state) => {
+    return {
+      setHeatmap(showHeatmap: boolean) {
+        patchState(state, { showHeatmap })
+      },
+      setLabels(showLabels: boolean) {
+        patchState(state, { showLabels })
+      },
+      setPOI(showPOI: boolean) {
+        patchState(state, { showPOI })
+      },
+      setEncounter(showEncounter: boolean) {
+        patchState(state, { showEncounter })
+      },
+    }
+  }),
   withHooks({
     onInit(store) {
       store.load()
@@ -74,31 +98,6 @@ export const ZoneMapStore = signalStore(
   }),
   withComputed(({ territories, areas, pois, gatherables }) => {
     return {
-      filters: computed(() => {
-        return Object.entries(groupBy(gatherables(), (it) => it.section))
-          .map(([key, value]) => {
-            const first = value[0]
-            return {
-              name: first.sectionLabel || key,
-              icon: first.sectionIcon,
-              items: Object.entries(groupBy(value, (it) => it.category))
-                .map(([key, value]) => {
-                  const first = value[0]
-                  const variants = first.variants.length ? first.variants : null
-
-                  return {
-                    name: first.categoryLabel || key,
-                    variants,
-                    icon: first.categoryIcon,
-                    count: first.count,
-                    items: value.sort((a, b) => a.subcategory.localeCompare(b.subcategory)),
-                  }
-                })
-                .sort((a, b) => a.name.localeCompare(b.name)),
-            }
-          })
-          .sort((a, b) => a.name.localeCompare(b.name))
-      }),
       mapIds: computed(() => {
         return uniq(
           gatherables()

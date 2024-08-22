@@ -7,12 +7,10 @@ import { generateTableIndex } from './generate-table-index'
 import { generateTableTypes } from './generate-table-types'
 
 export async function generateTableCode({
-  metaFiles,
   tableFiles,
   getHeader,
   getRows,
 }: {
-  metaFiles: string[]
   tableFiles: string[]
   getHeader: (file: string) => Promise<DatasheetHeader>
   getRows: (file: string) => Promise<any[]>
@@ -60,14 +58,12 @@ export async function generateTableCode({
     const tsTableIndex = generateTableIndex(apiFiles)
     bar.increment()
 
-    const tsMetaTypes = await generateMetaTypes(metaFiles)
     bar.increment()
     bar.stop()
     return [
       { name: 'types.ts', content: tsTableTypes },
       { name: 'datatables.ts', content: tsTableIndex },
       { name: 'cols.ts', content: tsColumns },
-      { name: 'meta-types.ts', content: tsMetaTypes },
     ]
   })
 }

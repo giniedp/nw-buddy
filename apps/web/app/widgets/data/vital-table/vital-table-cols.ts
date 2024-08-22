@@ -11,14 +11,8 @@ import {
   isZonePoi,
   isZoneTerritory,
 } from '@nw-data/common'
-import {
-  GameModeData,
-  TerritoryDefinition,
-  VitalsCategory,
-  VitalsCategoryData,
-  VitalsData,
-  VitalsMetadata,
-} from '@nw-data/generated'
+import { GameModeData, TerritoryDefinition, VitalsCategory, VitalsCategoryData, VitalsData } from '@nw-data/generated'
+import { ScannedVital } from '@nw-data/scanner'
 import { uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -30,7 +24,7 @@ export type VitalTableRecord = VitalsData & {
   $categories: VitalsCategoryData[]
   $familyInfo: VitalFamilyInfo
   $combatInfo: VitalFamilyInfo[] | null
-  $metadata: VitalsMetadata
+  $metadata: ScannedVital
   $zones: TerritoryDefinition[]
 }
 
@@ -375,9 +369,9 @@ export function vitalColSpawnCount(util: VitalTableUtils) {
     filter: 'agNumberColumnFilter',
     valueGetter: ({ data }) => {
       let count = 0
-      if (data.$metadata?.lvlSpanws) {
-        for (const key in data.$metadata.lvlSpanws) {
-          count += data.$metadata.lvlSpanws[key]?.length || 0
+      if (data.$metadata?.spawns) {
+        for (const key in data.$metadata.spawns) {
+          count += data.$metadata.spawns[key]?.length || 0
         }
       }
       return count

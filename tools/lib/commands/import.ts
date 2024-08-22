@@ -137,11 +137,11 @@ async function importSlices({
     console.log('  ', data.gatherables.length, 'gatherables')
     console.log(
       '  ',
-      data.variations.variationCount,
+      data.variations.variationsIDs.length,
       'variations',
       data.variations.chunks.length,
       'chunks',
-      data.variations.entryCount,
+      data.variations.data.length,
       'entries',
     )
     console.log('  ', data.territories.length, 'territories')
@@ -179,7 +179,7 @@ async function importSlices({
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),
-      writeJSONFile(data.variations.records, {
+      writeJSONFile(data.variations.data, {
         target: path.join(jsonOutDir, 'variations_metadata.json'),
         createDir: true,
         serialize: jsonStringifyFormatted,
@@ -244,7 +244,6 @@ async function generateCode({
 }) {
   const tablesDir = path.join(inputDir, 'sharedassets/springboardentitites')
   await generateTableCode({
-    metaFiles: await glob(path.join(outputDir, 'generated', '*.json')),
     tableFiles: await glob(path.join(tablesDir, 'datatables', '**', '*.json')).then((files) => {
       return files.map((file) => path.relative(tablesDir, file))
     }),

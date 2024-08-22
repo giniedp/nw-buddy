@@ -1,5 +1,6 @@
 import { GatherableVariation, NW_FALLBACK_ICON } from '@nw-data/common'
-import { GatherableData, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
+import { GatherableData } from '@nw-data/generated'
+import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
 import { FeatureCollection, MultiPoint } from 'geojson'
 import { combineLatest, map, switchMap } from 'rxjs'
 import tinycolor from 'tinycolor2'
@@ -10,22 +11,20 @@ import { getGatherableIcon, getTradeskillIcon } from '../../../gatherable-detail
 export interface GatherableDataSet extends GatherableGroup {
   id: string
   count: number
-  data: Record<string, {
-    count: number,
-    geometry: FeatureCollection<MultiPoint, GatherableProperties>
-  }>
+  data: Record<
+    string,
+    {
+      count: number
+      geometry: FeatureCollection<MultiPoint, GatherableProperties>
+    }
+  >
   variants: GatherableVariant[]
 }
 
 export interface GatherableGroup {
-
   icon: string
   color: string
   lootTable: string
-
-  tab?: string
-  tabLabel?: string
-  tabIcon?: string
 
   section: string
   sectionLabel?: string
@@ -38,6 +37,8 @@ export interface GatherableGroup {
   subcategory: string
   subcategoryLabel?: string
   subcategoryIcon?: string
+
+  isRandom?: boolean
 }
 
 export interface GatherableVariant {
@@ -84,9 +85,9 @@ function loadAllChunks(db: NwDataService) {
     switchMap((list) => {
       const chunkIds: number[] = []
       for (const item of list) {
-        for (const pos of item.variantPositions) {
-          if (!chunkIds.includes(pos.chunk)) {
-            chunkIds.push(pos.chunk)
+        for (const spawn of item.spawns) {
+          if (!chunkIds.includes(spawn.positions.chunkID)) {
+            chunkIds.push(spawn.positions.chunkID)
           }
         }
       }
@@ -96,9 +97,9 @@ function loadAllChunks(db: NwDataService) {
 }
 function collectGatherableDatasets(data: {
   gatherables: GatherableData[]
-  gatherablesMeta: Map<string, GatherablesMetadata>
+  gatherablesMeta: Map<string, ScannedGatherable>
   variationsByGatherableId: Map<string, GatherableVariation[]>
-  variationsMeta: Map<string, VariationsMetadata>
+  variationsMeta: Map<string, ScannedVariation>
   chunks: Array<number[][]>
   mapCoord: MapCoord
 }): GatherableDataSet[] {
@@ -106,16 +107,14 @@ function collectGatherableDatasets(data: {
   for (const gatherable of data.gatherables) {
     const meta = data.gatherablesMeta.get(gatherable.GatherableID)
     const variations = data.variationsByGatherableId.get(gatherable.GatherableID)
-    if (meta && Object.keys(meta?.regularSpawns).length) {
-      for (const random of [false, true]) {
+
+    if (meta?.spawns?.length) {
+      for (const spawn of meta.spawns) {
         const properties = describeGatherable(gatherable, gatherable.FinalLootTable)
-        const id = generateId(properties) + `&r=${random}`
-        properties.color = properties.color || stringToColor(id)
-        if (random) {
-          properties.tab = 'Random'
-        } else {
-          properties.tab = 'Regular'
-        }
+        const groupId = generateId(properties)
+        const id = `${groupId}&r=${!!spawn.randomEncounter}`
+        properties.color = properties.color || stringToColor(groupId)
+        properties.isRandom = spawn.randomEncounter
         if (properties.variant) {
           properties.variant.color = sizeColor(properties.variant.id, properties.color)
         }
@@ -128,39 +127,37 @@ function collectGatherableDatasets(data: {
         })
 
         appendVariant(layer, properties.variant)
-        const source = random ? meta.randomSpawns : meta.regularSpawns
-        for (const mapId in source) {
-          const points = source[mapId as keyof typeof source].map(data.mapCoord)
-          const mapData = (layer.data[mapId] = layer.data[mapId] || {
-            count: 0,
-            geometry: {
-              type: 'FeatureCollection',
-              features: [],
-            }
-          })
-          layer.count += points.length
-          mapData.count += points.length
-          mapData.geometry.features.push({
-            type: 'Feature',
-            properties: {
-              ...properties,
-              variant: properties.variant?.id,
-              color: properties.variant?.color || properties.color,
-            },
-            geometry: {
-              type: 'MultiPoint',
-              coordinates: points,
-            },
-          })
-        }
+
+        const mapId = spawn.mapID
+        const points = spawn.positions.map(data.mapCoord)
+        const mapData = (layer.data[mapId] = layer.data[mapId] || {
+          count: 0,
+          geometry: {
+            type: 'FeatureCollection',
+            features: [],
+          },
+        })
+        layer.count += points.length
+        mapData.count += points.length
+        mapData.geometry.features.push({
+          type: 'Feature',
+          properties: {
+            ...properties,
+            variant: properties.variant?.id,
+            color: properties.variant?.color || properties.color,
+          },
+          geometry: {
+            type: 'MultiPoint',
+            coordinates: points,
+          },
+        })
       }
     }
 
     if (variations) {
       for (const variant of variations) {
         const meta = data.variationsMeta.get(variant.VariantID)
-
-        if (!meta?.variantPositions.length || !variant.Gatherables?.length) {
+        if (!meta?.spawns?.length || !variant.Gatherables?.length) {
           continue
         }
         const found = variant.Gatherables.find((it) => eqCaseInsensitive(it.GatherableID, gatherable.GatherableID))
@@ -169,15 +166,12 @@ function collectGatherableDatasets(data: {
           lootTables = [gatherable.FinalLootTable]
         }
         for (const lootTable of lootTables) {
-          for (const random of [false, true]) {
+          for (const spawn of meta.spawns) {
             const properties = describeGatherable(gatherable, lootTable, variant)
-            const id = generateId(properties) + `&r=${random}`
-            properties.color = properties.color || stringToColor(id)
-            if (random) {
-              properties.tab = 'Random'
-            } else {
-              properties.tab = 'Regular'
-            }
+            const groupId = generateId(properties)
+            const id = `${groupId}&r=${!!spawn.randomEncounter}`
+            properties.color = properties.color || stringToColor(groupId)
+            properties.isRandom = spawn.randomEncounter
             if (properties.variant) {
               properties.variant.color = sizeColor(properties.variant.id, properties.color)
             }
@@ -190,35 +184,34 @@ function collectGatherableDatasets(data: {
             })
             appendVariant(layer, properties.variant)
 
-            for (const entry of (random ? meta.randomPositions : meta.variantPositions)) {
-              const mapId = entry.mapId
-              const mapData = (layer.data[mapId] = layer.data[mapId] || {
-                count: 0,
-                geometry: {
-                  type: 'FeatureCollection',
-                  features: [],
-                }
-              })
-              const points = data.chunks[entry.chunk]
-                .slice(entry.elementOffset, entry.elementOffset + entry.elementCount)
-                .map(data.mapCoord)
-              layer.count += points.length
-              mapData.count += points.length
-              mapData.geometry.features.push({
-                type: 'Feature',
-                properties: {
-                  ...properties,
-                  variant: properties.variant?.id,
-                  color: properties.variant?.color || properties.color,
-                },
-                geometry: {
-                  type: 'MultiPoint',
-                  coordinates: points,
-                },
-              })
-            }
+            const mapId = spawn.mapID
+            const mapData = (layer.data[mapId] = layer.data[mapId] || {
+              count: 0,
+              geometry: {
+                type: 'FeatureCollection',
+                features: [],
+              },
+            })
+            const chunk = spawn.positions
+            const points = data.chunks[chunk.chunkID]
+              .slice(chunk.elementOffset, chunk.elementOffset + chunk.elementCount)
+              .map(data.mapCoord)
+            layer.count += points.length
+            mapData.count += points.length
+            mapData.geometry.features.push({
+              type: 'Feature',
+              properties: {
+                ...properties,
+                variant: properties.variant?.id,
+                color: properties.variant?.color || properties.color,
+              },
+              geometry: {
+                type: 'MultiPoint',
+                coordinates: points,
+              },
+            })
           }
-          }
+        }
       }
     }
   }
@@ -255,7 +248,6 @@ function describeGatherable(
     color: null,
     lootTable: lootTable.original,
 
-    tab: null,
     section: gatherable.Tradeskill,
     sectionIcon: getTradeskillIcon(gatherable.Tradeskill) || NW_FALLBACK_ICON,
     category: lootTableId,
@@ -360,7 +352,6 @@ function describeGatherable(
       return props
     }
   }
-
 
   return props
 }

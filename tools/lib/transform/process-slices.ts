@@ -1,4 +1,4 @@
-import { chain, groupBy, sortBy, sumBy, uniq } from 'lodash'
+import { chain, uniq } from 'lodash'
 import * as path from 'path'
 import { arrayAppend, glob, readJSONFile, withProgressBar } from '../utils'
 
@@ -7,12 +7,11 @@ import { z } from 'zod'
 import { logger } from '../utils/logger'
 
 import { DatasheetFile } from '../file-formats/datasheet/converter'
-import { VariationScanRow } from '../file-formats/slices/scan-for-variants'
 import { VitalScanRow } from '../file-formats/slices/scan-for-vitals'
-import { TerritoryScanRow } from '../file-formats/slices/scan-for-zones'
-import { GatherableScanRow, LoreScanRow, NpcScanRow } from '../file-formats/slices/scan-slices'
 import { isPointInAABB, isPointInPolygon } from '../file-formats/slices/utils'
 import { runTasks } from '../worker/runner'
+import { TerritoryIndex, gatherableIndex, loreIndex, npcIndex, territoryIndex } from './slice-results'
+import { variationIndex } from './slice-results/variation'
 
 interface VitalMetadata {
   tables: string[]
@@ -45,54 +44,14 @@ interface VitalModelMetadata {
   vitalIds: string[]
 }
 
-interface NpcMetadata {
-  mapIDs: string[]
-  spawns: Array<{
-    position: number[]
-    mapId: string
-  }>
-}
-interface GatherableMetadata {
-  mapIDs: string[]
-  spawns: Array<{
-    random: boolean
-    position: number[]
-    mapId: string
-  }>
-}
-
-interface VariationMetadata {
-  mapIDs: string[]
-  spawns: Array<{
-    random: boolean
-    position: number[]
-    mapId: string
-  }>
-}
-
-interface TerritoryMetadata {
-  zones: Array<{
-    shape: number[][]
-    min: number[]
-    max: number[]
-  }>
-}
-interface LoreMetadata {
-  mapIDs: string[]
-  spawns: Array<{
-    position: number[]
-    mapId: string
-  }>
-}
-
 export async function processSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
-  const npcs: Record<string, NpcMetadata> = {}
+  const npcs = npcIndex()
   const vitals: Record<string, VitalMetadata> = {}
   const vitalsModels: Record<string, VitalModelMetadata> = {}
-  const gatherables: Record<string, GatherableMetadata> = {}
-  const variations: Record<string, VariationMetadata> = {}
-  const territories: Record<string, TerritoryMetadata> = {}
-  const loreItems: Record<string, LoreMetadata> = {}
+  const gatherables = gatherableIndex()
+  const variations = variationIndex()
+  const territories = territoryIndex()
+  const loreItems = loreIndex()
 
   const tablesDir = path.join(inputDir, 'sharedassets/springboardentitites')
   const tablesFiles = await glob(path.join(tablesDir, 'datatables', '**', '*.json'))
@@ -109,11 +68,6 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   })
 
   const files = await glob([
-    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_script/dungeon_script.capitals.json`,
-    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_spawners/dungeon_spawners.capitals.json`,
-    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/**/*.capitals.json`,
-    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+03_+02/capitals/**/*.capitals.json`,
-    //
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.slicedata.json`,
@@ -133,12 +87,12 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
       }
     }),
     onTaskFinish: async (result) => {
-      collectNpcRows(result.npcs || [], npcs)
+      npcs.push(result.npcs)
       collectVitalsRows(result.vitals || [], vitals, vitalsModels)
-      collectGatherablesRows(result.gatherables || [], gatherables)
-      collectVariationsRows(result.variations || [], variations)
-      collectTerritoriesRows(result.territories || [], territories)
-      collectLoreRows(result.loreItems || [], loreItems)
+      gatherables.push(result.gatherables)
+      variations.push(result.variations)
+      territories.push(result.territories)
+      loreItems.push(result.loreItems)
     },
   })
 
@@ -154,52 +108,11 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
         return it
       })
       .sort((a, b) => compareStrings(a.id, b.id)),
-    gatherables: toSortedGatherables(gatherables),
-    variations: toSortedVariations(variations),
-    territories: toSortedTerritories(territories),
-    loreItems: toSortedLoreItems(loreItems),
-    npcs: toSortedNpcs(npcs),
-  }
-}
-
-function collectLoreRows(rows: LoreScanRow[], data: Record<string, LoreMetadata>) {
-  for (const row of rows || []) {
-    const loreID = row.loreID.toLowerCase()
-    if (!(loreID in data)) {
-      data[loreID] = { mapIDs: [], spawns: [] }
-    }
-    const bucket = data[loreID]
-    if (row.mapID) {
-      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
-    }
-    if (row.position) {
-      bucket.spawns.push({
-        mapId: row.mapID?.toLowerCase(),
-        position: row.position.map((it) => Number(it.toFixed(3))),
-      })
-    }
-  }
-}
-
-function collectNpcRows(rows: NpcScanRow[], data: Record<string, NpcMetadata>) {
-  for (const row of rows || []) {
-    const npcID = row.npcID.toLowerCase()
-    if (!(npcID in data)) {
-      data[npcID] = {
-        mapIDs: [],
-        spawns: [],
-      }
-    }
-    const bucket = data[npcID]
-    if (row.mapID) {
-      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
-    }
-    if (row.position) {
-      bucket.spawns.push({
-        position: row.position.map((it) => Number(it.toFixed(3))),
-        mapId: row.mapID?.toLowerCase(),
-      })
-    }
+    gatherables: gatherables.result(),
+    variations: variations.result(),
+    territories: territories.result(),
+    loreItems: loreItems.result(),
+    npcs: npcs.result(),
   }
 }
 
@@ -281,85 +194,6 @@ function buildModelMetadata(vital: VitalScanRow): VitalModelMetadata {
   return result
 }
 
-function collectGatherablesRows(rows: GatherableScanRow[], data: Record<string, GatherableMetadata>) {
-  for (const row of rows || []) {
-    const gatherableID = row.gatherableID.toLowerCase()
-    if (!(gatherableID in data)) {
-      data[gatherableID] = {
-        mapIDs: [],
-        spawns: [],
-      }
-    }
-    const bucket = data[gatherableID]
-    if (row.mapID) {
-      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
-    }
-    if (row.position) {
-      bucket.spawns.push({
-        random: row.random,
-        position: row.position.map((it) => Number(it.toFixed(3))),
-        mapId: row.mapID?.toLowerCase(),
-      })
-    }
-  }
-}
-
-function collectVariationsRows(rows: VariationScanRow[], data: Record<string, VariationMetadata>) {
-  for (const row of rows || []) {
-    const variantID = row.variantID.toLowerCase()
-    if (!(variantID in data)) {
-      data[variantID] = { mapIDs: [], spawns: [] }
-    }
-    const bucket = data[variantID]
-    if (row.mapID) {
-      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
-    }
-    if (row.position) {
-      bucket.spawns.push({
-        random: row.random,
-        mapId: row.mapID?.toLowerCase(),
-        position: row.position.map((it) => Number(it.toFixed(3))),
-      })
-    }
-  }
-}
-
-function collectTerritoriesRows(rows: TerritoryScanRow[], data: Record<string, TerritoryMetadata>) {
-  for (const row of rows || []) {
-    const territoryID = row.territoryID.toLowerCase()
-    if (!(territoryID in data)) {
-      data[territoryID] = { zones: [] }
-    }
-    const bucket = data[territoryID]
-    if (row.position && row.shape.length > 0) {
-      const positions = row.shape.map(([x, y]) => {
-        return [x + (row.position[0] || 0), y + (row.position[1] || 0)]
-      })
-      const min = [null, null]
-      const max = [null, null]
-      for (const [x, y] of positions) {
-        if (min[0] === null || x < min[0]) {
-          min[0] = x
-        }
-        if (min[1] === null || y < min[1]) {
-          min[1] = y
-        }
-        if (max[0] === null || x > max[0]) {
-          max[0] = x
-        }
-        if (max[1] === null || y > max[1]) {
-          max[1] = y
-        }
-      }
-      bucket.zones.push({
-        shape: positions,
-        min: min,
-        max: max,
-      })
-    }
-  }
-}
-
 async function applyDefaultLevel(rootDir: string, vitals: Record<string, VitalMetadata>, tables: Array<DatasheetFile>) {
   tables = tables.filter((it) => it.header.type === 'VitalsData')
   if (!tables.length) {
@@ -396,7 +230,7 @@ async function applyDefaultLevel(rootDir: string, vitals: Record<string, VitalMe
 async function applyTerritoryToVital(
   rootDir: string,
   vitals: Record<string, VitalMetadata>,
-  territories: Record<string, TerritoryMetadata>,
+  territories: TerritoryIndex,
   tables: Array<DatasheetFile>,
 ) {
   tables = tables.filter((it) => it.header.type === 'TerritoryDefinition')
@@ -411,8 +245,8 @@ async function applyTerritoryToVital(
     .map((table) => schema.parse(table).rows)
     .flat()
     .map((it) => {
-      const territory = territories[it.TerritoryID] || territories[String(it.TerritoryID).padStart(2, '0')]
-      if (!territory?.zones?.length) {
+      const territory = territories.get(it.TerritoryID) || territories.get(String(it.TerritoryID).padStart(2, '0'))
+      if (!territory?.geometry?.length) {
         return null
       }
       return {
@@ -425,24 +259,26 @@ async function applyTerritoryToVital(
 
   for (const vital of Object.values(vitals)) {
     for (const poi of pois) {
-      if (!poi.zones?.length) {
+      if (!poi.geometry?.length) {
         continue
       }
       for (const spawn of vital.spawns) {
         if (spawn.mapId !== 'newworld_vitaeeterna') {
           continue
         }
-        if (!isPointInAABB(spawn.position, poi.zones[0].min, poi.zones[0].max)) {
+        const min = poi.geometry[0].bbox.slice(0, 2)
+        const max = poi.geometry[0].bbox.slice(2)
+        if (!isPointInAABB(spawn.position, min, max)) {
           continue
         }
-        if (!isPointInPolygon(spawn.position, poi.zones[0].shape)) {
+        if (!isPointInPolygon(spawn.position, poi.geometry[0].coordinates[0])) {
           continue
         }
         if (spawn.territoryLevel) {
           spawn.level = poi.level
         }
         spawn.territories = spawn.territories || []
-        arrayAppend(spawn.territories, poi.territoryID)
+        arrayAppend(spawn.territories, Number(poi.territoryID))
       }
     }
   }
@@ -526,226 +362,6 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
       )
         .sort()
         .filter((it) => !!it)
-      return result
-    })
-}
-
-function toSortedGatherables(data: Record<string, GatherableMetadata>) {
-  return Array.from(Object.entries(data))
-    .sort((a, b) => compareStrings(a[0], b[0]))
-    .map(([id, { spawns, mapIDs }]) => {
-      const result = {
-        gatherableID: id,
-        mapIDs: Array.from(mapIDs.values()).sort(),
-        regularSpawns: {} as Record<string, number[][]>,
-        randomSpawns: {} as Record<string, number[][]>,
-      }
-      spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
-      for (const spawn of spawns) {
-        const mapId = spawn.mapId || '_'
-        const bucket: keyof typeof result = spawn.random ? 'randomSpawns' : 'regularSpawns'
-        result[bucket][mapId] = result[bucket][mapId] || []
-        result[bucket][mapId].push(spawn.position)
-      }
-      for (const key in result.regularSpawns) {
-        result.regularSpawns[key] = chain(result.regularSpawns[key])
-          .uniqBy((it) => it.join(','))
-          .sortBy((it) => it.join(','))
-          .value()
-      }
-      for (const key in result.randomSpawns) {
-        result.randomSpawns[key] = chain(result.randomSpawns[key])
-          .uniqBy((it) => it.join(','))
-          .sortBy((it) => it.join(','))
-          .value()
-      }
-      return result
-    })
-}
-
-function toSortedNpcs(data: Record<string, NpcMetadata>) {
-  return Array.from(Object.entries(data))
-    .sort((a, b) => compareStrings(a[0], b[0]))
-    .map(([id, { spawns, mapIDs }]) => {
-      const maps = Array.from(mapIDs.values()).sort()
-      const result = {
-        npcId: id,
-        mapIDs: maps,
-        spawns: {} as Record<string, number[][]>,
-      }
-      spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
-      for (const spawn of spawns) {
-        const mapId = spawn.mapId || '_'
-        result.spawns[mapId] = result.spawns[mapId] || []
-        result.spawns[mapId].push(spawn.position)
-      }
-      for (const key in result.spawns) {
-        result.spawns[key] = chain(result.spawns[key])
-          .uniqBy((it) => it.join(','))
-          .sortBy((it) => it.join(','))
-          .value()
-      }
-      return result
-    })
-}
-
-function toSortedVariations(data: Record<string, VariationMetadata>) {
-  type ChunkData = number[]
-  type ChunkRows = Array<{
-    chunk: number
-    variantID: string
-    mapId: string
-    random: boolean
-    elementSize: 2
-    elementOffset: number
-    elementCount: number
-  }>
-
-  const chunksData: ChunkData[] = []
-  const chunksRecords: ChunkRows[] = []
-  const variationIds = new Set<string>()
-
-  let currentData: ChunkData
-  let currentChunk: ChunkRows
-  let currentChunkIndex: number
-  function add(variantId: string, mapId: string, positions: number[][], random: boolean) {
-    variationIds.add(variantId.toLowerCase())
-    if (!currentData || currentData.length + positions.length > 1000000) {
-      currentChunkIndex = chunksData.length
-      currentData = []
-      currentChunk = []
-      chunksData.push(currentData)
-      chunksRecords.push(currentChunk)
-    }
-    currentChunk.push({
-      chunk: currentChunkIndex,
-      variantID: variantId,
-      mapId: mapId,
-      random: random,
-      elementSize: 2,
-      elementOffset: currentData.length / 2,
-      elementCount: positions.length,
-    })
-    for (const [x, y] of positions) {
-      currentData.push(x, y)
-    }
-  }
-
-  Array.from(Object.entries(data))
-    .sort((a, b) => compareStrings(a[0], b[0]))
-    .forEach(([variantId, { spawns }]) => {
-      Array.from(Object.entries(groupBy(spawns, (it) => it.mapId)))
-        .sort((a, b) => compareStrings(a[0], b[0]))
-        .forEach(([mapId, group]) => {
-          const randomGroup = group.filter((it) => it.random)
-          const regularGroup = group.filter((it) => !it.random)
-          for (const subGroup of [randomGroup, regularGroup]) {
-            if (!subGroup.length) {
-              continue
-            }
-            const positions = sortBy(subGroup, (it) => it.position.join(',')).map((it) => it.position)
-            const isRandom = subGroup[0].random
-            add(variantId, mapId, positions, isRandom)
-          }
-        })
-    })
-
-  const result: Record<
-    string,
-    {
-      variantID: string
-      mapIDs: string[]
-      variantPositions: Array<{
-        chunk: number
-        mapId: string
-        elementSize: 2
-        elementOffset: number
-        elementCount: number
-      }>
-      randomPositions: Array<{
-        chunk: number
-        mapId: string
-        elementSize: 2
-        elementOffset: number
-        elementCount: number
-      }>
-    }
-  > = {}
-
-  for (const row of chunksRecords) {
-    for (const chunkEntry of row) {
-      if (!result[chunkEntry.variantID]) {
-        result[chunkEntry.variantID] = {
-          variantID: chunkEntry.variantID,
-          mapIDs: [],
-          variantPositions: [],
-          randomPositions: [],
-        }
-      }
-      if (!result[chunkEntry.variantID].mapIDs.includes(chunkEntry.mapId)) {
-        result[chunkEntry.variantID].mapIDs.push(chunkEntry.mapId)
-      }
-      const entry = {
-        chunk: chunkEntry.chunk,
-        mapId: chunkEntry.mapId,
-        elementSize: chunkEntry.elementSize,
-        elementOffset: chunkEntry.elementOffset,
-        elementCount: chunkEntry.elementCount,
-      }
-      if (chunkEntry.random) {
-        result[chunkEntry.variantID].randomPositions.push(entry)
-      } else {
-        result[chunkEntry.variantID].variantPositions.push(entry)
-      }
-    }
-  }
-
-  const resultList = Object.values(result).sort((a, b) => {
-    return compareStrings(a.variantID, b.variantID)
-  })
-  return {
-    variationCount: variationIds.size,
-    entryCount: sumBy(resultList, (record) => sumBy(record.variantPositions, (it) => it.elementCount)),
-    records: resultList,
-    chunks: chunksData.map((it) => new Float32Array(it)),
-  }
-}
-
-function toSortedTerritories(data: Record<string, TerritoryMetadata>) {
-  return Array.from(Object.entries(data))
-    .sort((a, b) => compareStrings(a[0], b[0]))
-    .map(([id, { zones }]) => {
-      const result = {
-        territoryID: id,
-        zones: zones,
-      }
-      return result
-    })
-}
-
-function toSortedLoreItems(data: Record<string, LoreMetadata>) {
-  return Array.from(Object.entries(data))
-    .sort((a, b) => compareStrings(a[0], b[0]))
-    .map(([id, { mapIDs, spawns }]) => {
-      const result = {
-        loreID: id,
-        mapIDs: Array.from(mapIDs).sort(),
-        loreSpawns: {} as Record<string, Array<number[]>>,
-      }
-      spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
-      for (const spawn of spawns) {
-        const mapId = spawn.mapId || '_'
-        result.loreSpawns[mapId] = result.loreSpawns[mapId] || []
-        result.loreSpawns[mapId].push(spawn.position)
-      }
-      for (const key in result.loreSpawns) {
-        result.loreSpawns[key] = chain(result.loreSpawns[key])
-          .groupBy((it) => it.join(','))
-          .values()
-          .map((it) => it[0])
-          .sortBy((it) => it.join(','))
-          .value()
-      }
       return result
     })
 }

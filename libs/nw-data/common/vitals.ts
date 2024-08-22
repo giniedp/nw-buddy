@@ -1,14 +1,14 @@
 import {
-  DamageType,
   DamageData,
+  DamageType,
   GameModeData,
   MutationDifficultyStaticData,
-  VitalsData,
-  VitalsMetadata,
   VitalsCategoryData,
+  VitalsData,
   VitalsLevelData,
   VitalsModifierData,
 } from '@nw-data/generated'
+import { ScannedVital } from '../scanner/types'
 import { getArmorRating } from './damage'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
@@ -259,7 +259,7 @@ export function getVitalDamageEffectivenessIcon(vital: VitalsData, damageType: V
 export function getVitalDungeons(
   vital: VitalsData,
   dungeons: GameModeData[],
-  vitalsMeta: Map<string, VitalsMetadata>,
+  vitalsMeta: Map<string, ScannedVital>,
 ): GameModeData[] {
   if (!vital || !dungeons?.length) {
     return []
@@ -275,7 +275,7 @@ export function getVitalDungeons(
       // all mobs have mapId set to 'newworld_vitaeeterna'
       // we check for bounds
       const [x, y, w, h] = (it.WorldBounds?.split(',') || []).map(Number)
-      const spawns = meta.lvlSpanws?.newworld_vitaeeterna || []
+      const spawns = meta.spawns?.['newworld_vitaeeterna'] || []
       return spawns.some(({ p }) => {
         if (!p.length) {
           return false
@@ -287,7 +287,7 @@ export function getVitalDungeons(
   })
 }
 
-export function getVitalDungeon(vital: VitalsData, dungeons: GameModeData[], vitalsMeta: Map<string, VitalsMetadata>) {
+export function getVitalDungeon(vital: VitalsData, dungeons: GameModeData[], vitalsMeta: Map<string, ScannedVital>) {
   return getVitalDungeons(vital, dungeons, vitalsMeta)?.[0]
 }
 

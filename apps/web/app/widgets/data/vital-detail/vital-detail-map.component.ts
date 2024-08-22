@@ -1,7 +1,8 @@
 import { Component, ElementRef, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { getZoneInfo, getZoneName, getZoneType } from '@nw-data/common'
-import { LvlSpanws, TerritoriesMetadata, TerritoryDefinition, VitalsData, VitalsMetadata } from '@nw-data/generated'
+import { TerritoryDefinition, VitalsData } from '@nw-data/generated'
+import { ScannedTerritory, ScannedVital } from '@nw-data/scanner'
 import { sortBy } from 'lodash'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -129,13 +130,13 @@ export class VitalDetailMapComponent {
   }
 }
 
-function selectBounds(meta: VitalsMetadata) {
+function selectBounds(meta: ScannedVital) {
   const result: Record<string, MapViewBounds> = {}
   if (!meta) {
     return result
   }
   for (const mapId of meta?.mapIDs || []) {
-    for (const spawn of meta.lvlSpanws[mapId as keyof LvlSpanws] || []) {
+    for (const spawn of meta.spawns[mapId] || []) {
       if (!result[mapId]) {
         result[mapId] = {
           min: [...spawn.p],
@@ -167,11 +168,11 @@ function selectData(
     territoriesMetadataMap,
   }: {
     vital: VitalsData
-    meta: VitalsMetadata
+    meta: ScannedVital
     // poisMap: Map<number, PoiDefinition>
     // areasMap: Map<number, Areadefinitions>
     territoriesMap: Map<number, TerritoryDefinition>
-    territoriesMetadataMap: Map<string, TerritoriesMetadata>
+    territoriesMetadataMap: Map<string, ScannedTerritory>
   },
   tl8: TranslateService,
 ) {
@@ -200,7 +201,7 @@ function selectData(
   })
   for (const territoryId of territories) {
     const metadata = territoriesMetadataMap.get(String(territoryId).padStart(2, '0'))
-    const shape = metadata?.zones?.[0]?.shape
+    const shape = metadata?.geometry?.[0]?.coordinates?.[0]
     if (!shape) {
       continue
     }
@@ -226,7 +227,7 @@ function selectData(
   let id = 0
   const name = tl8.get(vital?.DisplayName) || vital?.VitalsID || meta?.vitalsID
   for (const mapId of meta?.mapIDs || []) {
-    for (const spawn of meta.lvlSpanws[mapId as keyof LvlSpanws] || []) {
+    for (const spawn of meta.spawns[mapId] || []) {
       id++
       const levels = spawn.l.length ? spawn.l : vital?.Level ? [vital.Level] : []
       points[mapId] ??= []

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core'
-import { NPCData, NpcsMetadata, VariationData, VariationsMetadata } from '@nw-data/generated'
+import { NPCData, VariationData } from '@nw-data/generated'
+import { ScannedNpc, ScannedVariation } from '@nw-data/scanner'
 import { groupBy, uniq } from 'lodash'
 import { firstValueFrom, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -11,10 +12,10 @@ export interface NpcInfo {
   id: string
 
   data: NPCData
-  meta: NpcsMetadata
+  meta: ScannedNpc
   variations: Array<{
     data: VariationData
-    meta: VariationsMetadata
+    meta: ScannedVariation
   }>
 }
 export interface NpcGroup {
@@ -51,12 +52,13 @@ export class NpcService {
         const npc = data.npcsMap.get(id)
         const meta = data.npcMetaMap.get(id)
 
-        const variations = data.npcsVariationsMap.get(id)?.map((variation) => {
-          return {
-            data: variation,
-            meta: data.variationMetaMap.get(variation.VariantID),
-          }
-        }) || []
+        const variations =
+          data.npcsVariationsMap.get(id)?.map((variation) => {
+            return {
+              data: variation,
+              meta: data.variationMetaMap.get(variation.VariantID),
+            }
+          }) || []
         return {
           id: id,
           data: npc,
@@ -74,12 +76,12 @@ export class NpcService {
         const ids: number[] = []
         for (const npc of list) {
           for (const variation of npc.variations) {
-            if (!variation?.meta?.variantPositions?.length) {
+            if (!variation?.meta?.spawns?.length) {
               continue
             }
-            for (const entry of variation.meta.variantPositions) {
-              if (!ids.includes(entry.chunk)) {
-                ids.push(entry.chunk)
+            for (const spawn of variation.meta.spawns || []) {
+              if (!ids.includes(spawn.positions.chunkID)) {
+                ids.push(spawn.positions.chunkID)
               }
             }
           }

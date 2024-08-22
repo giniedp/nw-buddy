@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NpcsMetadata } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { IconsModule } from '~/ui/icons'
@@ -20,7 +19,7 @@ const SIZE_OUTLINE = {
 }
 const SIZE = {
   Selected: 6,
-  Common: 5
+  Common: 5,
 }
 @Component({
   standalone: true,
@@ -37,7 +36,6 @@ export class NpcDetailMapComponent {
   private service = inject(NpcService)
   protected tl8 = inject(TranslateService)
   protected iconExpand = svgExpand
-
 
   protected data = selectSignal(
     {
@@ -74,15 +72,13 @@ export class NpcDetailMapComponent {
       for (const { id, data, meta, variations } of npcs) {
         const name = data?.GenericName ? this.tl8.get(data?.GenericName) : id
         let isSelected = npc.id === id
-        for (const mapId in meta?.spawns || {}) {
-
-          const spawns = meta.spawns[mapId as keyof NpcsMetadata['spawns']]
-          for (const position of spawns) {
+        for (const spawn of meta.spawns) {
+          for (const position of spawn.positions) {
             if (!position) {
               continue
             }
             add({
-              mapId,
+              mapId: spawn.mapID,
               name,
               position,
               isSelected,
@@ -91,15 +87,19 @@ export class NpcDetailMapComponent {
         }
 
         for (const variation of variations || []) {
-          for (const entry of variation.meta?.variantPositions || []) {
-            const chunk = chunksMap.get(entry.chunk)
+          for (const spawns of variation.meta?.spawns || []) {
+            const chunkInfo = spawns.positions
+            const chunk = chunksMap.get(chunkInfo.chunkID)
             if (!chunk) {
               continue
             }
-            const positions = chunk.data.slice(entry.elementOffset, entry.elementOffset + entry.elementCount)
+            const positions = chunk.data.slice(
+              chunkInfo.elementOffset,
+              chunkInfo.elementOffset + chunkInfo.elementCount,
+            )
             for (const position of positions) {
               add({
-                mapId: entry.mapId,
+                mapId: spawns.mapID,
                 name,
                 position,
                 isSelected,

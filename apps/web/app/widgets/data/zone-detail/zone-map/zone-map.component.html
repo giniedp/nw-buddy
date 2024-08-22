@@ -19,7 +19,7 @@
         class="ion-page"
         [territories]="store.territories()"
         [areas]="store.areas()"
-        [pois]="store.pois()"
+        [pois]="store.showPOI() ? store.pois() : null"
         (zoneClick)="zoneClicked.emit($event)"
       />
     </ion-content>
@@ -36,11 +36,45 @@
             <ng-container [ngTemplateOutlet]="tplMenuStart" />
           }
         </ion-buttons>
+        <div class="join" slot="end">
+          <!-- <button
+            (click)="store.setEncounter(!store.showEncounter())"
+            class="join-item btn btn-square btn-ghost"
+            [class.text-secondary]="store.showEncounter()"
+            tooltip="Toggle random encounter nodes"
+          >
+            RE
+          </button>
+          <button
+            (click)="store.setHeatmap(!store.showHeatmap())"
+            class="join-item btn btn-square btn-ghost"
+            [class.text-secondary]="store.showHeatmap()"
+            tooltip="Toggle heatmaps"
+          >
+            HM
+          </button>
+          <button
+            (click)="store.setPOI(!store.showPOI())"
+            class="join-item btn btn-square btn-ghost"
+            [class.text-secondary]="store.showPOI()"
+            tooltip="Toggle POI layer"
+          >
+            POI
+          </button> -->
+          <!-- <button
+            (click)="store.setLabels(!store.showLabels())"
+            class="join-item btn btn-ghost"
+            [class.text-secondary]="store.showLabels()"
+            tooltip="Toggle name labels"
+          >
+            Labels
+          </button> -->
+        </div>
       </ion-toolbar>
     </ion-header>
     <ion-content class="bg-base-200 bg-opacity-80">
-      @for (tab of tabs(); track tab) {
-        <nwb-map-filter-tab [tab]="tab" />
+      @for (section of sections(); track section) {
+        <nwb-map-filter-section [section]="section" />
       }
     </ion-content>
   </ion-menu>

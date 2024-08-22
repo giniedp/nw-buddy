@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { GatherableVariation } from '@nw-data/common'
-import { GatherableData, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
+import { GatherableData } from '@nw-data/generated'
+import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -8,13 +9,13 @@ import { tableIndexBy, tableLookup } from '~/data/nw-data/dsl'
 import { combineLatestOrEmpty, eqCaseInsensitive, selectStream } from '~/utils'
 
 export interface GatherableRecord extends GatherableData {
-  $meta: GatherablesMetadata
+  $meta: ScannedGatherable
   $variations: GatherableVariationRecord[]
   $lootTables: string[]
 }
 
 export interface GatherableVariationRecord extends GatherableVariation {
-  $meta: VariationsMetadata
+  $meta: ScannedVariation
 }
 
 @Injectable({ providedIn: 'root' })
@@ -84,8 +85,8 @@ export class GatherableService {
       switchMap((list) => combineLatestOrEmpty((list || []).map((it) => this.gatherable$(of(it))))),
       map((gatherables) => {
         const variations = gatherables.map((it) => it.$variations || []).flat()
-        const positionInfos = variations.map((it) => it.$meta?.variantPositions || []).flat()
-        return uniq(positionInfos.map((it) => it.chunk))
+        const positionInfos = variations.map((it) => it.$meta?.spawns || []).flat()
+        return uniq(positionInfos.map((it) => it.positions.chunkID))
       }),
       switchMap((chunkIds) => {
         return combineLatestOrEmpty(
@@ -114,15 +115,15 @@ function appendToArray(array: string[], value: string): string[] {
 
 export function getGatherableSpawnCount(gatherable: GatherableRecord) {
   let sum = 0
-  if (gatherable?.$meta?.regularSpawns) {
-    for (const key in gatherable.$meta.regularSpawns) {
-      sum += gatherable.$meta.regularSpawns[key]?.length || 0
+  if (gatherable?.$meta?.spawns?.length) {
+    for (const spawn of gatherable.$meta.spawns) {
+      sum += spawn.positions.length
     }
   }
-  if (gatherable?.$variations) {
+  if (gatherable?.$variations?.length) {
     for (const variation of gatherable?.$variations) {
-      for (const entry of variation.$meta?.variantPositions || []) {
-        sum += entry.elementCount
+      for (const entry of variation.$meta?.spawns || []) {
+        sum += entry.positions.elementCount
       }
     }
   }

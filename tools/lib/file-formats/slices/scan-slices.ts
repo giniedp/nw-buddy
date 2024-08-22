@@ -72,7 +72,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
     mapId: string
     mapPosition: (position: number[]) => number[]
   }) {
-    for (let position of entry.positions) {
+    for (let position of entry.positions || []) {
       position = mapPosition([...position])
       if (entry.gatherableID) {
         gatherableRows.push({
@@ -153,8 +153,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
             ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
             : null,
         })
-      }
-      if (capital.sliceName) {
+      } else if (capital.sliceName) {
         const spawners = await scanForSpawners(inputDir, capital.sliceName, capital.sliceAssetId)
         for (const entry of spawners || []) {
           pushEntry({
