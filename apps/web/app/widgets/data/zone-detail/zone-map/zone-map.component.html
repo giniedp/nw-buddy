@@ -1,4 +1,4 @@
-<ion-split-pane [when]="pinMenu()" contentId="zone-map-content">
+<ion-split-pane [when]="pinMenu()" contentId="zone-map-content" style="--side-max-width: 500px">
   <div class="ion-page" id="zone-map-content">
     <ion-header>
       <ion-toolbar class="bg-base-300">
@@ -24,7 +24,7 @@
       />
     </ion-content>
   </div>
-  <ion-menu contentId="zone-map-content" [menuId]="'zone-map-filter'" #menu>
+  <ion-menu contentId="zone-map-content" [menuId]="'zone-map-filter'" #menu style="--width: calc(max(100vw, 400px)); --max-width: 500px">
     <ion-header>
       <ion-toolbar class="bg-base-300">
         <ion-buttons slot="start">

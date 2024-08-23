@@ -671,7 +671,7 @@ function describeHarvesting(
     props.category = 'Dye'
     props.categoryLabel = 'Dye & Pigment'
     props.subcategory = lootTable.original //
-    props.subcategoryLabel = lootTable.tokenized.filter((it) => it !== 'Plant').join(' ')
+    props.subcategoryLabel = variant?.Name || gatherable.DisplayName || lootTable.tokenized.filter((it) => it !== 'Plant').join(' ')
     props.variant = null
     const colorName = lootTable.tokenized.filter((it) => it !== 'Plant' && it !== 'Dye' && it !== 'Pigment').join('')
     const colors = {
@@ -700,6 +700,9 @@ function describeHarvesting(
     }
   }
 
+  if (lootTable.tokenized.includes('Hemp') || lootTable.tokenized.includes('Herb') || lootTable.tokenized.includes('Plant')) {
+    props.categoryLabel = variant?.Name || gatherable.DisplayName
+  }
   return props
 }
 
