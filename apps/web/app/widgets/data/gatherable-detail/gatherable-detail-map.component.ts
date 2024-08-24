@@ -196,9 +196,9 @@ export class GatherableDetailMapComponent {
     {
       data: this.data,
       mapId: this.mapId,
-      disalbedSizes: this.disabledSizes,
+      disabledSizes: this.disabledSizes,
     },
-    ({ data, mapId, disalbedSizes }) => {
+    ({ data, mapId, disabledSizes }) => {
       if (!data || !mapId || !data[mapId]) {
         return []
       }
@@ -210,7 +210,7 @@ export class GatherableDetailMapComponent {
             value: size,
             color: SIZE_COLORS[size],
             count: data[mapId][size].length,
-            disabled: disalbedSizes.includes(size),
+            disabled: disabledSizes.includes(size),
           }
         })
     },

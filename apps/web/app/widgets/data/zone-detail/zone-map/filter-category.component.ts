@@ -10,6 +10,8 @@ import { humanize } from '~/utils'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
 import { LootModule } from '~/widgets/loot'
 import { ZoneMapStore } from './zone-map.store'
+import { FilterPopoverComponent } from './filter-popover.component'
+import { FilterDataSet } from './data/types'
 
 @Pipe({
   standalone: true,
@@ -28,51 +30,36 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
   standalone: true,
   selector: 'nwb-map-filter-category',
   templateUrl: './filter-category.component.html',
-  imports: [NwModule, IconsModule, GameMapLayerDirective, TooltipModule, LootModule, PropertyGridModule, ToLCHPipe],
+  imports: [NwModule, IconsModule, GameMapLayerDirective, TooltipModule, FilterPopoverComponent, ToLCHPipe],
   host: {
     class: 'block',
-    '[class.text-neutral-500]': '!hasPoints()',
   },
 })
 export class MapFilterCategoryComponent {
-  protected store = inject(ZoneMapStore)
-  protected mapId = this.store.mapId
+  public source = input.required<FilterDataSet[]>()
+  protected mapId = inject(ZoneMapStore).mapId
   protected isOpen = signal(false)
   protected iconArrowLeft = svgAngleLeft
   protected iconInfo = svgInfo
   protected layers = viewChildren(GameMapLayerDirective)
 
-  public section = input.required<string>()
-  public category = input.required<string>()
-
   protected hasChevron = computed(() => this.items().length > 1)
-  protected pointsTotal = computed(() => {
-    let count = 0
-    for (const item of this.items()) {
-      count += item.data[this.mapId()]?.count || 0
-    }
-    return count
-  })
-  protected hasPoints = computed(() => this.pointsTotal() > 0)
 
-  protected items = computed(() => {
-    return this.store.gatherables().filter((it) => {
-      return it.section === this.section() && it.category === this.category()
-    })
-  })
+  protected items = this.source
 
   protected data = computed(() => {
     const items = this.items()
     const subcategories = uniq(items.map((it) => it.subcategory))
     const first = items[0]
-
+    const variants = sortBy(first?.variants || [], (it) => SIZE_ORDER.indexOf(it.label))
     return {
       items,
       subcategories,
       label: first?.categoryLabel || humanize(first?.category),
       icon: first?.categoryIcon,
       color: first?.color,
-      variants: sortBy(first?.variants || [], (it) => SIZE_ORDER.indexOf(it.label)),
+      lootTable: first?.lootTable,
+      variants: variants,
     }
   })
 
@@ -81,12 +68,13 @@ export class MapFilterCategoryComponent {
   protected icon = computed(() => this.data().icon)
   protected color = computed(() => this.data().color)
   protected variants = computed(() => this.data().variants)
+  protected lootTable = computed(() => this.data().lootTable)
 
   public isAnyEnabled = computed(() => {
-    return this.layers().some((it) => !it.disalbed())
+    return this.layers().some((it) => !it.disabled())
   })
   public isAllEnabled = computed(() => {
-    return this.layers().some((it) => !it.disalbed())
+    return this.layers().some((it) => !it.disabled())
   })
   protected activeVariants = computed(() => {
     return uniq(
@@ -98,7 +86,7 @@ export class MapFilterCategoryComponent {
 
   protected isVariantActive(variant: string) {
     const layer = this.layers()[0]
-    if (layer.disalbed()) {
+    if (layer.disabled()) {
       return false
     }
     const variants = layer.variants()
@@ -108,7 +96,7 @@ export class MapFilterCategoryComponent {
   protected isLayerActive(id: string) {
     for (const layer of this.layers()) {
       if (layer.layerId() === id) {
-        return !layer.disalbed()
+        return !layer.disabled()
       }
     }
     return false
@@ -117,7 +105,7 @@ export class MapFilterCategoryComponent {
   protected toggleAll() {
     const isDisabled = !this.isAllEnabled()
     this.layers().forEach((layer) => {
-      layer.disalbed.set(!isDisabled)
+      layer.disabled.set(!isDisabled)
     })
   }
 

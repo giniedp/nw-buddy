@@ -12,11 +12,19 @@
             }
           </ion-buttons>
         </div>
+        <div slot="end">
+          <select [ngModel]="store.mapId()" (ngModelChange)="store.setMap($event)" class="select select-ghost">
+            @for(option of mapsOptions(); track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <nwb-map
         class="ion-page"
+        [mapId]="store.mapId()"
         [territories]="store.territories()"
         [areas]="store.areas()"
         [pois]="store.showPOI() ? store.pois() : null"
@@ -24,7 +32,12 @@
       />
     </ion-content>
   </div>
-  <ion-menu contentId="zone-map-content" [menuId]="'zone-map-filter'" #menu style="--width: calc(max(100vw, 400px)); --max-width: 500px">
+  <ion-menu
+    contentId="zone-map-content"
+    [menuId]="'zone-map-filter'"
+    #menu
+    style="--width: calc(max(100vw, 400px)); --max-width: 500px"
+  >
     <ion-header>
       <ion-toolbar class="bg-base-300">
         <ion-buttons slot="start">
@@ -36,45 +49,21 @@
             <ng-container [ngTemplateOutlet]="tplMenuStart" />
           }
         </ion-buttons>
-        <div class="join" slot="end">
-          <!-- <button
-            (click)="store.setEncounter(!store.showEncounter())"
-            class="join-item btn btn-square btn-ghost"
-            [class.text-secondary]="store.showEncounter()"
-            tooltip="Toggle random encounter nodes"
-          >
-            RE
-          </button>
-          <button
-            (click)="store.setHeatmap(!store.showHeatmap())"
-            class="join-item btn btn-square btn-ghost"
-            [class.text-secondary]="store.showHeatmap()"
-            tooltip="Toggle heatmaps"
-          >
-            HM
-          </button>
-          <button
-            (click)="store.setPOI(!store.showPOI())"
-            class="join-item btn btn-square btn-ghost"
-            [class.text-secondary]="store.showPOI()"
-            tooltip="Toggle POI layer"
-          >
-            POI
-          </button> -->
-          <!-- <button
-            (click)="store.setLabels(!store.showLabels())"
-            class="join-item btn btn-ghost"
-            [class.text-secondary]="store.showLabels()"
-            tooltip="Toggle name labels"
-          >
-            Labels
-          </button> -->
-        </div>
+        <ion-segment>
+          @for (segment of segments(); track $index) {
+            <ion-segment-button (click)="selectSegment(segment.id)">{{ segment.label }}</ion-segment-button>
+          }
+        </ion-segment>
       </ion-toolbar>
     </ion-header>
     <ion-content class="bg-base-200 bg-opacity-80">
-      @for (section of sections(); track section) {
-        <nwb-map-filter-section [section]="section" />
+      @if (activeSegment(); as segment) {
+        @if (segment.source) {
+          <nwb-map-filter-segment [source]="segment.source" />
+        }
+        @if (segment.vitals) {
+          <nwb-map-filter-vitals [data]="segment.vitals" />
+        }
       }
     </ion-content>
   </ion-menu>

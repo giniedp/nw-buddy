@@ -30,11 +30,12 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
   }
 
   public layerId = input.required<string>({ alias: 'nwbMapLayer' })
-  public disalbed = model(false)
+  public disabled = model(false)
   public data = model<GeoJSON>()
   public icons = input<boolean>()
   public color = input<string>()
   public heatmap = input<boolean>()
+  public filter = input<FilterSpecification>()
   private injector = inject(Injector)
   private sourceId = computed(() => this.layerId())
   private iconLayerId = computed(() => `icon-${this.layerId()}`)
@@ -56,7 +57,7 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
   }
 
   public toggle() {
-    this.disalbed.set(!this.disalbed())
+    this.disabled.set(!this.disabled())
   }
 
   public toggleVariant(id: string) {
@@ -70,16 +71,16 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
       variants = null
     }
     this.variants.set(variants)
-    this.disalbed.set(!variants)
+    this.disabled.set(!variants)
   }
 
   private bind() {
     this.effect(() => {
-      if (this.disalbed()) {
+      if (this.disabled()) {
         this.dispose()
       } else {
         this.getSource().setData(this.data() || { type: 'FeatureCollection', features: [] })
-        this.updateFilter(this.variants())
+        this.updateFilter(this.variants(), this.filter())
         this.updateColor(this.color())
       }
     })
@@ -228,11 +229,12 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
     return this.map.getSource(sourceId) as GeoJSONSource
   }
 
-  private updateFilter(variants: string[]) {
-    let filter: FilterSpecification = null
-    if (variants) {
+  private updateFilter(variants: string[], customFilter: FilterSpecification) {
+    let filter: FilterSpecification = customFilter
+    if (!customFilter && variants) {
       filter = ['in', 'variant', ...variants]
     }
+    console.log({ filter })
     if (this.map.getLayer(this.iconLayerId())) {
       this.map.setFilter(this.iconLayerId(), filter)
     }

@@ -66,6 +66,7 @@ export interface ScannedVital {
   gthIDs: string[]
   levels: number[]
   spawns: Record<string, ScannedVitalSpawn[]>
+  lvlSpanws: Record<string, ScannedVitalSpawn[]>
   mapIDs: string[]
   models: string[]
   tables: string[]

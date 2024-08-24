@@ -154,7 +154,7 @@ function selectZoneSpawns({
   }> = []
   for (const vital of vitals) {
     const vMeta = vitalsMetaMap.get(vital.VitalsID)
-    const spawns = vMeta?.spawns['newworld_vitaeeterna']
+    const spawns = vMeta?.spawns?.['newworld_vitaeeterna']
     if (!spawns?.length) {
       continue
     }

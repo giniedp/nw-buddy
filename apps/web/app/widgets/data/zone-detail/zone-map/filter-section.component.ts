@@ -1,9 +1,9 @@
-import { Component, computed, inject, input, viewChildren } from '@angular/core'
-import { uniq } from 'lodash'
+import { Component, computed, input, viewChildren } from '@angular/core'
+import { groupBy, sortBy } from 'lodash'
 import { NwModule } from '~/nw'
 import { humanize } from '~/utils'
+import { FilterDataSet } from './data/types'
 import { MapFilterCategoryComponent } from './filter-category.component'
-import { ZoneMapStore } from './zone-map.store'
 
 @Component({
   standalone: true,
@@ -19,8 +19,8 @@ import { ZoneMapStore } from './zone-map.store'
         </span>
       </summary>
       <div class="px-4 space-y-1">
-        @for (category of categories(); track category) {
-          <nwb-map-filter-category [section]="section()" [category]="category" />
+        @for (row of rows(); track row.key) {
+          <nwb-map-filter-category [source]="row.items" />
         }
       </div>
     </details>
@@ -28,38 +28,34 @@ import { ZoneMapStore } from './zone-map.store'
   imports: [NwModule, MapFilterCategoryComponent],
   host: {
     class: 'block',
-    '[class.text-neutral-500]': '!hasPoints()'
   },
 })
 export class MapFilterSectionComponent {
-  protected store = inject(ZoneMapStore)
-  protected mapId = this.store.mapId
-  public section = input.required<string>()
+  public source = input.required<FilterDataSet[]>()
   protected children = viewChildren(MapFilterCategoryComponent)
 
   protected data = computed(() => {
-    const items = this.store.gatherables().filter((it) => it.section === this.section())
-    const categories = uniq(items.map((it) => it.category)).sort()
+    const items = this.source()
+    const entries = Object.entries(groupBy(items, (it) => it.category)).map(([category, items]) => {
+      return {
+        key: category,
+        items,
+      }
+    })
+
+    const rows = sortBy(entries, ({ key }) => key)
     const first = items[0]
 
     return {
       items,
-      categories,
+      rows,
       label: first?.sectionLabel || humanize(first?.section),
       icon: first?.sectionIcon,
     }
   })
-  protected pointsTotal = computed(() => {
-    let count = 0
-    for (const item of this.items()) {
-      count += (item.data[this.mapId()]?.count || 0)
-    }
-    return count
-  })
 
-  protected hasPoints = computed(() => this.pointsTotal() > 0)
   protected items = computed(() => this.data().items)
-  protected categories = computed(() => this.data().categories)
+  protected rows = computed(() => this.data().rows)
   protected label = computed(() => this.data().label)
   protected icon = computed(() => this.data().icon)
   protected isActive = computed(() => {

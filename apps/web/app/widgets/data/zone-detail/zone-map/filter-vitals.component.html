@@ -1,0 +1,179 @@
+<ng-container
+  #mapLayer="mapLayer"
+  [nwbMapLayer]="'vitals'"
+  [disabled]="false"
+  [heatmap]="true"
+  [filter]="store.filterSpec()"
+  [data]="layerData()"
+/>
+
+<div class="flex flex-col gap-4">
+  <div class="join w-full">
+    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level MIN:</span>
+    <input
+      class="join-item input input-sm flex-1"
+      type="number"
+      [ngModel]="store.minLevel()"
+      (ngModelChange)="store.setMinLevel($event)"
+    />
+  </div>
+  <div class="join w-full">
+    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level MAX:</span>
+    <input
+      class="join-item input input-sm flex-1"
+      type="number"
+      [ngModel]="store.maxLevel()"
+      (ngModelChange)="store.setMaxLevel($event)"
+    />
+  </div>
+
+  <div>
+    @if (!store.typeFilters().length) {
+      <button class="btn btn-sm w-full btn-primary" (click)="store.addTypeFilter()">Add Type Filter</button>
+    } @else {
+      <div class="flex flex-row justify-between">
+        <div class="join">
+          @for (operator of store.joinOperators(); track operator) {
+            <button
+              class="join-item btn btn-sm"
+              [class.btn-primary]="store.typeOperator() === operator.value"
+              (click)="store.setTypeOperator(operator.value)"
+            >
+              {{ operator.label }}
+            </button>
+          }
+        </div>
+        <div>
+          <button class="btn btn-sm text-accent" (click)="store.addTypeFilter()">+</button>
+        </div>
+      </div>
+      <div class="pl-4">
+        @for (item of store.typeFilters(); track $index; let index = $index; let last = $last) {
+          <div class="flex flex-row">
+            <nwb-tree-node-toggle class="flex-none w-5 h-10" [ngModel]="false" [disabled]="true" [isLast]="last" />
+            <div class="join w-full">
+              <span class="join-item btn btn-sm btn-ghost flex-none">Creature Type</span>
+              <select
+                class="join-item input input-sm w-20 flex-none"
+                [ngModel]="item.operator"
+                (ngModelChange)="store.updateTypeFilter(index, { operator: $event })"
+              >
+                @for (op of store.typeOperators(); track op.value) {
+                  <option [label]="op.label" [value]="op.value"></option>
+                }
+              </select>
+              <select
+                class="join-item input input-sm flex-1"
+                [ngModel]="item.value"
+                (ngModelChange)="store.updateTypeFilter(index, { value: $event })"
+              >
+                @for (type of creatureTypes(); track type) {
+                  <option [label]="type.label" [value]="type.value"></option>
+                }
+              </select>
+              <button class="join-item btn btn-sm btn-ghost btn-square" (click)="store.removeTypeFilter(index)">
+                x
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div>
+    @if (!store.categoryFilters().length) {
+      <button class="btn btn-sm w-full btn-primary" (click)="store.addCategoryFilter()">Add Category Filter</button>
+    } @else {
+      <div class="flex flex-row justify-between">
+        <div class="join">
+          @for (operator of store.joinOperators(); track operator) {
+            <button
+              class="join-item btn btn-sm"
+              [class.btn-primary]="store.categoryOperator() === operator.value"
+              (click)="store.setCategoryOperator(operator.value)"
+            >
+              {{ operator.label }}
+            </button>
+          }
+        </div>
+        <div>
+          <button class="btn btn-sm text-accent" (click)="store.addCategoryFilter()">+</button>
+        </div>
+      </div>
+      <div class="pl-4">
+        @for (item of store.categoryFilters(); track $index; let index = $index; let last = $last) {
+          <div class="flex flex-row">
+            <nwb-tree-node-toggle class="flex-none w-5 h-10" [ngModel]="false" [disabled]="true" [isLast]="last" />
+            <div class="join w-full">
+              <span class="join-item btn btn-sm btn-ghost flex-none">Categories</span>
+              <select
+                class="join-item input input-sm w-20 flex-none"
+                [ngModel]="item.operator"
+                (ngModelChange)="store.updateCategoryFilter(index, { operator: $event })"
+              >
+                @for (op of store.categoryOperators(); track op.value) {
+                  <option [label]="op.label" [value]="op.value"></option>
+                }
+              </select>
+              <button class="join-item btn btn-sm flex-1" (click)="pickCategory(index, item.value)">
+                {{ item.value }}
+              </button>
+              <button class="join-item btn btn-sm btn-ghost btn-square" (click)="store.removeCategoryFilter(index)">
+                x
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div>
+    @if (!store.lootFilters().length) {
+      <button class="btn btn-sm w-full btn-primary" (click)="store.addLootFilter()">Add Loot Filter</button>
+    } @else {
+      <div class="flex flex-row justify-between">
+        <div class="join">
+          @for (operator of store.joinOperators(); track operator) {
+            <button
+              class="join-item btn btn-sm"
+              [class.btn-primary]="store.lootOperator() === operator.value"
+              (click)="store.setLootOperator(operator.value)"
+            >
+              {{ operator.label }}
+            </button>
+          }
+        </div>
+        <div>
+          <button class="btn btn-sm text-accent" (click)="store.addLootFilter()">+</button>
+        </div>
+      </div>
+      <div class="pl-4">
+        @for (item of store.lootFilters(); track $index; let index = $index; let last = $last) {
+          <div class="flex flex-row">
+            <nwb-tree-node-toggle class="flex-none w-5 h-10" [ngModel]="false" [disabled]="true" [isLast]="last" />
+            <div class="join w-full">
+              <span class="join-item btn btn-sm btn-ghost flex-none">Loot Tags</span>
+              <select
+                class="join-item input input-sm w-20 flex-none"
+                [ngModel]="item.operator"
+                (ngModelChange)="store.updateLootFilter(index, { operator: $event })"
+              >
+                @for (op of store.lootOperators(); track op.value) {
+                  <option [label]="op.label" [value]="op.value"></option>
+                }
+              </select>
+              <button class="join-item btn btn-sm flex-1" (click)="pickLootTag(index, item.value)">
+                {{ item.value }}
+              </button>
+              <button class="join-item btn btn-sm btn-ghost btn-square" (click)="store.removeLootFilter(index)">
+                x
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

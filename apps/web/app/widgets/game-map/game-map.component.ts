@@ -1,21 +1,27 @@
 import { Component, Injector, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core'
 import { environment } from 'apps/web/environments'
-import { FeatureCollection, Geometry } from 'geojson'
+import { FeatureCollection } from 'geojson'
 import {
   AJAXError,
   FillLayerSpecification,
   GeoJSONSource,
   LineLayerSpecification,
-  MapGeoJSONFeature,
   MapMouseEvent,
   RequestTransformFunction,
   StyleSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl'
+import { NW_MAP_TILE_SIZE } from './constants'
 import { GameMapProxyService } from './game-map.proxy'
 import { MaplibreDirective } from './maplibre.directive'
-import { attachLayerHover, convertTileUrl, getGeometryCenter, rasterTileSource, xyFromLngLat } from './utils'
-import { Position } from 'geojson'
+import {
+  attachLayerHover,
+  convertTileUrl,
+  getGeometryCenter,
+  rasterTileSource,
+  xyFromLngLat,
+  xyToLngLat,
+} from './utils'
 @Component({
   standalone: true,
   selector: 'nwb-map',
@@ -62,12 +68,12 @@ export class GameMapComponent {
     },
     layers: [
       {
-        id: 'newworld_vitaeeterna',
+        id: 'tiles0',
         type: 'raster',
         source: 'newworld_vitaeeterna',
       },
       {
-        id: 'outpostrush',
+        id: 'tiles1',
         type: 'raster',
         source: 'outpostrush',
       },
@@ -87,6 +93,7 @@ export class GameMapComponent {
     }
   }
 
+  public mapId = input<string>('newworld_vitaeeterna')
   public territories = input<FeatureCollection>()
   public areas = input<FeatureCollection>()
   public pois = input<FeatureCollection>()
@@ -100,7 +107,6 @@ export class GameMapComponent {
 
   protected handleMapLoad() {
     this.map.resize()
-    //this.map.getLayer('outpostrush').visibility = 'visible'
     this.attachSignals()
   }
 
@@ -122,15 +128,24 @@ export class GameMapComponent {
 
   private attachSignals() {
     this.effect(() => {
-      const data = this.territories()
+      const mapId = this.mapId()
+      untracked(() => this.updateTiles(mapId))
+      const bounds = mapMaxBounds(mapId)
+      this.map.setMaxBounds(bounds)
+    })
+    this.effect(() => {
+      const isOpenWorld = isMapOpenWorld(this.mapId())
+      const data = isOpenWorld ? this.territories() : null
       untracked(() => this.updateTerritories(data))
     })
     this.effect(() => {
-      const data = this.areas()
+      const isOpenWorld = isMapOpenWorld(this.mapId())
+      const data = isOpenWorld ? this.areas() : null
       untracked(() => this.updateAreas(data))
     })
     this.effect(() => {
-      const data = this.pois()
+      const isOpenWorld = isMapOpenWorld(this.mapId())
+      const data = isOpenWorld ? this.pois() : null
       untracked(() => this.updatePois(data))
     })
   }
@@ -298,6 +313,27 @@ export class GameMapComponent {
     const source = this.map.getSource(sourceId) as GeoJSONSource
     source.setData(features || { type: 'FeatureCollection', features: [] })
   }
+
+  private updateTiles(mapId: string) {
+    const tiles = [this.map.getLayer('tiles0'), this.map.getLayer('tiles1')]
+    for (const tile of tiles) {
+      if (tile.type === 'raster') {
+        tile.visibility = 'none'
+      }
+    }
+    mapSourceIds(mapId).forEach((id, index) => {
+      const source = this.map.getSource(id)
+
+      if (!source) {
+        this.map.addSource(id, rasterTileSource(id))
+      }
+      const tile = tiles[index]
+      if (tile?.type === 'raster') {
+        tile.source = id
+        tile.visibility = 'visible'
+      }
+    })
+  }
 }
 
 const territoryFillLayout: FillLayerSpecification = {
@@ -402,4 +438,31 @@ const poisIconLayout: SymbolLayerSpecification = {
     'icon-size': 1,
     'icon-allow-overlap': true,
   },
+}
+
+const OPEN_WORLD_MAPS = ['newworld_vitaeeterna', 'outpostrush']
+function mapSourceIds(mapId: string) {
+  if (isMapOpenWorld(mapId)) {
+    return [...OPEN_WORLD_MAPS]
+  }
+  if (!mapId) {
+    return []
+  }
+  return [mapId]
+}
+
+function isMapOpenWorld(mapId: string) {
+  return OPEN_WORLD_MAPS.includes(mapId)
+}
+
+function mapMaxBounds(mapId: string): [number, number, number, number] {
+  const tileSize = NW_MAP_TILE_SIZE
+  if (isMapOpenWorld(mapId)) {
+    const [l, b] = xyToLngLat([0 * tileSize, -1 * tileSize])
+    const [r, t] = xyToLngLat([16 * tileSize, 12 * tileSize])
+    return [l, b, r, t]
+  }
+  const [l, b] = xyToLngLat([0, 0])
+  const [r, t] = xyToLngLat([2 * tileSize, 2 * tileSize])
+  return [l, b, r, t]
 }

@@ -1,16 +1,16 @@
 @for (layer of items(); track layer.id) {
-  @let data = layer.data[store.mapId()];
+  @let data = layer.data[mapId()];
   <ng-container
     #mapLayer="mapLayer"
     [nwbMapLayer]="layer.id"
-    [disalbed]="true"
+    [disabled]="true"
     [heatmap]="true || (!!layer.variants.length && !layer.variants[0].icon)"
     [color]="layer.color"
     [data]="data?.geometry"
   />
 }
 
-<div class="flex flex-row gap-1" [class.pr-8]="!hasChevron()">
+<div class="flex flex-row gap-1">
   <div class="join w-full">
     <button
       class="join-item flex-1 btn btn-sm btn-ghost justify-start items-center gap-2 text-left"
@@ -61,6 +61,15 @@
         [class.-rotate-90]="isOpen()"
       />
     </button>
+  } @else {
+    <button class="join-item flex-none btn btn-sm btn-square btn-ghost" [popover]="tplTip">
+      <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+    </button>
+    <ng-template #tplTip>
+      <div class="bg-base-300 w-96">
+        <nwb-map-filter-popover [data]="items()" />
+      </div>
+    </ng-template>
   }
 </div>
 
@@ -70,7 +79,13 @@
       @let isActive = isLayerActive(item.id);
       <div class="join">
         <button class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left" (click)="toggleLayer(item.id)">
-          {{ item.subcategoryLabel || item.subcategory | nwText }}
+          @if (item.subcategoryLabel) {
+            {{ item.subcategoryLabel | nwText }}
+          } @else if (item.subcategory) {
+            {{ item.subcategory }}
+          } @else {
+            {{ item.lootTable | nwHumanize }}
+          }
           @if (item.isRandom) {
             <span class="badge badge-sm badge-secondary">RE</span>
           }
@@ -79,16 +94,14 @@
           class="join-item flex-none btn btn-sm btn-square"
           [class.btn-ghost]="!isActive"
           [style.--btn-color]="isActive ? (item.color | toLCH) : null"
-          (click)="toggleLayer(item.id)"
-          [tooltip]="tplTip"
+          [popover]="tplTip"
         >
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
         <ng-template #tplTip>
-          <nwb-property-grid
-            class="p-2"
-            [item]="item"
-          />
+          <div class="bg-base-300 w-96">
+            <nwb-map-filter-popover [data]="[item]" />
+          </div>
         </ng-template>
       </div>
     }
