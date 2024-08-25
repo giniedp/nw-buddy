@@ -7,6 +7,7 @@ import {
   GeoJSONSource,
   LineLayerSpecification,
   MapMouseEvent,
+  Popup,
   RequestTransformFunction,
   StyleSpecification,
   SymbolLayerSpecification,
@@ -458,8 +459,8 @@ function isMapOpenWorld(mapId: string) {
 function mapMaxBounds(mapId: string): [number, number, number, number] {
   const tileSize = NW_MAP_TILE_SIZE
   if (isMapOpenWorld(mapId)) {
-    const [l, b] = xyToLngLat([0 * tileSize, -1 * tileSize])
-    const [r, t] = xyToLngLat([16 * tileSize, 12 * tileSize])
+    const [l, b] = xyToLngLat([-12 * tileSize, -4 * tileSize])
+    const [r, t] = xyToLngLat([30 * tileSize, 16 * tileSize])
     return [l, b, r, t]
   }
   const [l, b] = xyToLngLat([0, 0])

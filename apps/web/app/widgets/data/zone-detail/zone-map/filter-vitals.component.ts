@@ -1,5 +1,5 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Component, Injector, computed, inject, input, signal } from '@angular/core'
+import { Component, Injector, computed, inject, input, output, signal } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
@@ -13,9 +13,10 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ExpressionTreeModule } from '~/ui/expression-tree'
 import { TreeNodeComponent, TreeNodeToggleComponent } from '~/ui/tree'
 import { GameMapLayerDirective } from '~/widgets/game-map'
-import { VitalDataSet } from './data/types'
+import { VitalDataProperties, VitalDataSet } from './data/types'
 import { FilterVitalsStore } from './filter-vitals.store'
 import { ZoneMapStore } from './zone-map.store'
+import { MapGeoJSONFeature } from 'maplibre-gl'
 
 @Component({
   standalone: true,
@@ -38,6 +39,8 @@ export class MapFilterVitalsComponent {
   private mapStore = inject(ZoneMapStore)
   protected store = inject(FilterVitalsStore)
   public data = input.required<VitalDataSet>()
+  public featureHover = output<VitalDataProperties[]>()
+
   protected lvlMin = signal(1)
   protected lvlMax = signal(NW_MAX_ENEMY_LEVEL)
   protected lvlMinDebounced = toSignal(toObservable(this.lvlMin).pipe(debounceTime(500)))
@@ -94,6 +97,20 @@ export class MapFilterVitalsComponent {
       .then((value) => {
         this.store.updateLootFilter(index, { value })
       })
+  }
+
+  protected handleMouseEnter(features: MapGeoJSONFeature[]){
+    const items = features.map((it) => it.properties as VitalDataProperties)
+    this.featureHover.emit(items)
+  }
+
+  protected handleMouseMove(features: MapGeoJSONFeature[]){
+    const items = features.map((it) => it.properties as VitalDataProperties)
+    this.featureHover.emit(items)
+  }
+
+  protected handleMouseLeave(features: MapGeoJSONFeature[]){
+    this.featureHover.emit(null)
   }
 }
 

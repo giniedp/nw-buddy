@@ -1,4 +1,4 @@
-import { Component, Pipe, PipeTransform, computed, inject, input, signal, viewChildren } from '@angular/core'
+import { Component, Pipe, PipeTransform, computed, inject, input, output, signal, viewChildren } from '@angular/core'
 import { sortBy, uniq } from 'lodash'
 import tinycolor from 'tinycolor2'
 import { NwModule } from '~/nw'
@@ -11,7 +11,8 @@ import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.compone
 import { LootModule } from '~/widgets/loot'
 import { ZoneMapStore } from './zone-map.store'
 import { FilterPopoverComponent } from './filter-popover.component'
-import { FilterDataSet } from './data/types'
+import { FilterDataProperties, FilterDataSet } from './data/types'
+import { MapGeoJSONFeature } from 'maplibre-gl'
 
 @Pipe({
   standalone: true,
@@ -42,7 +43,7 @@ export class MapFilterCategoryComponent {
   protected iconArrowLeft = svgAngleLeft
   protected iconInfo = svgInfo
   protected layers = viewChildren(GameMapLayerDirective)
-
+  public featureHover = output<FilterDataProperties[]>()
   protected hasChevron = computed(() => this.items().length > 1)
 
   protected items = this.source
@@ -121,5 +122,19 @@ export class MapFilterCategoryComponent {
         layer.toggle()
       }
     }
+  }
+
+  protected handleMouseEnter(features: MapGeoJSONFeature[]) {
+    const items = features.map((it) => it.properties as FilterDataProperties)
+    this.featureHover.emit(items)
+  }
+
+  protected handleMouseMove(features: MapGeoJSONFeature[]) {
+    const items = features.map((it) => it.properties as FilterDataProperties)
+    this.featureHover.emit(items)
+  }
+
+  protected handleMouseLeave(features: MapGeoJSONFeature[]) {
+    this.featureHover.emit(null)
   }
 }

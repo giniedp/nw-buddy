@@ -9,10 +9,11 @@ import {
   inject,
   input,
   model,
+  output,
   signal,
 } from '@angular/core'
 import { GeoJSON } from 'geojson'
-import { FilterSpecification, GeoJSONSource } from 'maplibre-gl'
+import { FilterSpecification, GeoJSONSource, MapGeoJSONFeature, MapLayerEventType, Popup } from 'maplibre-gl'
 import { GameMapComponent } from './game-map.component'
 import tinycolor from 'tinycolor2'
 import { GameMapProxyService } from './game-map.proxy'
@@ -42,6 +43,11 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
   private circleLayerId = computed(() => `circle-${this.layerId()}`)
   private heatmapLayerId = computed(() => `heatmap-${this.layerId()}`)
   public variants = signal<string[]>(null)
+
+  public featureClick = output<MapGeoJSONFeature[]>()
+  public featureMouseEnter = output<MapGeoJSONFeature[]>()
+  public featureMouseLeave = output<MapGeoJSONFeature[]>()
+  public featureMouseMove = output<MapGeoJSONFeature[]>()
 
   public ngOnInit() {
     this.bind()
@@ -130,6 +136,10 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
           //'icon-color': '#FF0000',
         },
       })
+      this.map.on('click', circleLayerId, this.handleClick)
+      this.map.on('mouseenter', circleLayerId, this.handleMouseEnter)
+      this.map.on('mouseleave', circleLayerId, this.handleMouseLeave)
+      this.map.on('mousemove', circleLayerId, this.handleMouseMove)
     }
     if (!this.icons() && !this.map.getLayer(circleLayerId)) {
       this.removeLayer(iconLayerId)
@@ -163,6 +173,10 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
           ],
         },
       })
+      this.map.on('click', circleLayerId, this.handleClick)
+      this.map.on('mouseenter', circleLayerId, this.handleMouseEnter)
+      this.map.on('mouseleave', circleLayerId, this.handleMouseLeave)
+      this.map.on('mousemove', circleLayerId, this.handleMouseMove)
     }
     if (this.heatmap()) {
       if (!this.map.getLayer(this.heatmapLayerId())) {
@@ -234,7 +248,6 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
     if (!customFilter && variants) {
       filter = ['in', 'variant', ...variants]
     }
-    console.log({ filter })
     if (this.map.getLayer(this.iconLayerId())) {
       this.map.setFilter(this.iconLayerId(), filter)
     }
@@ -289,6 +302,10 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
 
   private removeLayer(id: string) {
     if (this.map.getLayer(id)) {
+      this.map.off('click', id, this.handleClick)
+      this.map.off('mouseenter', id, this.handleMouseEnter)
+      this.map.off('mouseleave', id, this.handleMouseLeave)
+      this.map.off('mousemove', id, this.handleMouseMove)
       this.map.removeLayer(id)
     }
   }
@@ -297,5 +314,21 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
     if (this.map.getSource(id)) {
       this.map.removeSource(id)
     }
+  }
+
+  private handleMouseEnter = (e: MapLayerEventType['mouseenter']) => {
+    this.featureMouseEnter.emit(e.features)
+  }
+
+  private handleMouseLeave = (e: MapLayerEventType['mouseleave']) => {
+    this.featureMouseLeave.emit(e.features)
+  }
+
+  private handleMouseMove = (e: MapLayerEventType['mousemove']) => {
+    this.featureMouseMove.emit(e.features)
+  }
+
+  private handleClick = (e: MapLayerEventType['click']) => {
+    this.featureClick.emit(e.features)
   }
 }

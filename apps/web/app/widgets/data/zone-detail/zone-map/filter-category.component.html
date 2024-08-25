@@ -7,6 +7,9 @@
     [heatmap]="true || (!!layer.variants.length && !layer.variants[0].icon)"
     [color]="layer.color"
     [data]="data?.geometry"
+    (featureMouseEnter)="handleMouseEnter($event)"
+    (featureMouseLeave)="handleMouseLeave($event)"
+    (featureMouseMove)="handleMouseMove($event)"
   />
 }
 

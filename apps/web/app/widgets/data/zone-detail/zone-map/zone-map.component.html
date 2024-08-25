@@ -14,7 +14,7 @@
         </div>
         <div slot="end">
           <select [ngModel]="store.mapId()" (ngModelChange)="store.setMap($event)" class="select select-ghost">
-            @for(option of mapsOptions(); track option.value) {
+            @for (option of mapsOptions(); track option.value) {
               <option [value]="option.value">{{ option.label }}</option>
             }
           </select>
@@ -29,7 +29,20 @@
         [areas]="store.areas()"
         [pois]="store.showPOI() ? store.pois() : null"
         (zoneClick)="zoneClicked.emit($event)"
-      />
+      >
+        <div class="absolute top-2 right-2 flex flex-col gap-1">
+          @for (item of hoverVitals(); track $index) {
+            <nwb-vital-detail [vitalId]="item.id" [level]="item.level" class="w-80 bg-base-300 bg-opacity-75 text-sm">
+              <nwb-vital-detail-stats class="p-2"/>
+            </nwb-vital-detail>
+          }
+          @for (item of hoverFilters(); track $index) {
+            @if (item.lootTable) {
+              <nwb-loot-graph [tableId]="item.lootTable" [showLocked]="true" />
+            }
+          }
+        </div>
+      </nwb-map>
     </ion-content>
   </div>
   <ion-menu
@@ -59,10 +72,10 @@
     <ion-content class="bg-base-200 bg-opacity-80">
       @if (activeSegment(); as segment) {
         @if (segment.source) {
-          <nwb-map-filter-segment [source]="segment.source" />
+          <nwb-map-filter-segment [source]="segment.source" (featureHover)="hoverFilters.set($event)" />
         }
         @if (segment.vitals) {
-          <nwb-map-filter-vitals [data]="segment.vitals" />
+          <nwb-map-filter-vitals [data]="segment.vitals" (featureHover)="hoverVitals.set($event)" />
         }
       }
     </ion-content>

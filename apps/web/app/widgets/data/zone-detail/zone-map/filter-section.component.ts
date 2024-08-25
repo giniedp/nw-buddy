@@ -1,8 +1,8 @@
-import { Component, computed, input, viewChildren } from '@angular/core'
+import { Component, computed, input, output, viewChildren } from '@angular/core'
 import { groupBy, sortBy } from 'lodash'
 import { NwModule } from '~/nw'
 import { humanize } from '~/utils'
-import { FilterDataSet } from './data/types'
+import { FilterDataProperties, FilterDataSet } from './data/types'
 import { MapFilterCategoryComponent } from './filter-category.component'
 
 @Component({
@@ -20,7 +20,7 @@ import { MapFilterCategoryComponent } from './filter-category.component'
       </summary>
       <div class="px-4 space-y-1">
         @for (row of rows(); track row.key) {
-          <nwb-map-filter-category [source]="row.items" />
+          <nwb-map-filter-category [source]="row.items" (featureHover)="featureHover.emit($event)" />
         }
       </div>
     </details>
@@ -33,6 +33,7 @@ import { MapFilterCategoryComponent } from './filter-category.component'
 export class MapFilterSectionComponent {
   public source = input.required<FilterDataSet[]>()
   protected children = viewChildren(MapFilterCategoryComponent)
+  public featureHover = output<FilterDataProperties[]>()
 
   protected data = computed(() => {
     const items = this.source()
