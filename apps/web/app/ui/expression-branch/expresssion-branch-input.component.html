@@ -1,0 +1,58 @@
+<div class="flex flex-row justify-between">
+  <div class="join">
+    @for (item of outerOperators(); track item.value) {
+      <button
+        class="join-item btn btn-sm"
+        [class.btn-ghost]="expression().join !== item.value"
+        [class.btn-primary]="expression().join === item.value"
+        (click)="updateJoinOperator(item.value)"
+      >
+        {{ item.label }}
+      </button>
+    }
+  </div>
+  <button class="btn btn-sm btn-square btn-ghost text-accent" (click)="addRow()">
+    <nwb-icon [icon]="plusIcon()" class="w-4 h-4" />
+  </button>
+</div>
+<div class="pl-4">
+  @for (item of expression().rows; track $index; let index = $index; let last = $last) {
+    <div class="flex flex-row">
+      <nwb-tree-node-toggle class="flex-none w-5 h-10" [ngModel]="false" [disabled]="true" [isLast]="last" />
+      <div class="join w-full">
+        @if (customKey(); as tpl) {
+          <ng-container
+            [ngTemplateOutlet]="tpl"
+            [ngTemplateOutletContext]="{ $implicit: item.left, index, value: item.left }"
+          />
+        } @else {
+          <span class="join-item btn btn-sm btn-ghost flex-none">{{ item.left }}</span>
+        }
+        <select
+          class="join-item input input-sm w-20 flex-none"
+          [ngModel]="item.operator"
+          (ngModelChange)="updateRow(index, { operator: $event })"
+        >
+          @for (op of innerOperators(); track op.value) {
+            <option [label]="op.label" [value]="op.value"></option>
+          }
+        </select>
+        @if (customValue(); as tpl) {
+          <ng-container
+            [ngTemplateOutlet]="tpl"
+            [ngTemplateOutletContext]="{ $implicit: item.right, index, value: item.right }"
+          />
+        } @else {
+          <input
+            class="join-item input input-sm flex-1"
+            [ngModel]="item.right"
+            (ngModelChange)="updateRow(index, { right: $event })"
+          />
+        }
+        <button class="join-item btn btn-sm btn-square btn-ghost" (click)="removeRow(index)">
+          <nwb-icon [icon]="deleteIcon()" class="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  }
+</div>

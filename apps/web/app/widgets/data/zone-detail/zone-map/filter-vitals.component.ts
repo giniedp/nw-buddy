@@ -4,7 +4,9 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
 import { VitalsCategoryData } from '@nw-data/generated'
+import { Point } from 'geojson'
 import { sortBy, uniq } from 'lodash'
+import { MapGeoJSONFeature } from 'maplibre-gl'
 import { Observable, debounceTime, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter, DataViewCategory, DataViewPicker } from '~/ui/data/data-view'
@@ -12,34 +14,49 @@ import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ExpressionTreeModule } from '~/ui/expression-tree'
 import { TreeNodeComponent, TreeNodeToggleComponent } from '~/ui/tree'
-import { GameMapLayerDirective } from '~/widgets/game-map'
+import { GameMapLayerDirective, GameMapPopupComponent } from '~/widgets/game-map'
+import { VitalDetailModule } from '../../vital-detail'
 import { VitalDataProperties, VitalDataSet } from './data/types'
 import { FilterVitalsStore } from './filter-vitals.store'
 import { ZoneMapStore } from './zone-map.store'
-import { MapGeoJSONFeature } from 'maplibre-gl'
+import { ExpressionBranchKeyDirective, ExpressionBranchValueDirective, ExpresssionBranchEditorComponent } from "../../../../ui/expression-branch/expresssion-branch-input.component";
+import { NwModule } from '~/nw'
 
 @Component({
   standalone: true,
   selector: 'nwb-map-filter-vitals',
   templateUrl: './filter-vitals.component.html',
   host: {
-    class: 'block p-4',
+    class: 'h-full flex flex-col',
   },
   providers: [FilterVitalsStore],
-  imports: [GameMapLayerDirective, FormsModule, ExpressionTreeModule, TreeNodeComponent, TreeNodeToggleComponent],
+  imports: [
+    ExpressionBranchKeyDirective,
+    ExpressionBranchValueDirective,
+    ExpressionTreeModule,
+    ExpresssionBranchEditorComponent,
+    FormsModule,
+    GameMapLayerDirective,
+    GameMapPopupComponent,
+    NwModule,
+    TreeNodeComponent,
+    TreeNodeToggleComponent,
+    VitalDetailModule,
+],
 })
 export class MapFilterVitalsComponent {
-  protected knownFields = [
-    { id: 'level', isPath: false, label: 'Level' },
-    { id: 'type', isPath: false, label: 'Type' },
-    { id: 'category', isPath: false, label: 'Category' },
-  ]
-
   private injector = inject(Injector)
   private mapStore = inject(ZoneMapStore)
   protected store = inject(FilterVitalsStore)
   public data = input.required<VitalDataSet>()
   public featureHover = output<VitalDataProperties[]>()
+  protected popupPosition = signal<[number, number]>(null)
+  protected hoverItems = signal<
+    Array<{
+      position: [number, number]
+      data: VitalDataProperties
+    }>
+  >(null)
 
   protected lvlMin = signal(1)
   protected lvlMax = signal(NW_MAX_ENEMY_LEVEL)
@@ -80,7 +97,7 @@ export class MapFilterVitalsComponent {
     })
       .then((it) => it?.[0] as string)
       .then((value) => {
-        this.store.updateCategoryFilter(index, { value })
+        //this.store.updateCategoryFilter(index, { value })
       })
   }
 
@@ -95,22 +112,39 @@ export class MapFilterVitalsComponent {
     })
       .then((it) => it?.[0] as string)
       .then((value) => {
-        this.store.updateLootFilter(index, { value })
+        //this.store.updateLootFilter(index, { value })
       })
   }
 
-  protected handleMouseEnter(features: MapGeoJSONFeature[]){
+  protected handleMouseEnter(features: MapGeoJSONFeature[]) {
     const items = features.map((it) => it.properties as VitalDataProperties)
     this.featureHover.emit(items)
+
+    this.hoverItems.set(
+      features.map((it) => {
+        const point = (it.geometry as any as Point)?.coordinates
+        const props = it.properties as VitalDataProperties
+        return { position: [point[0], point[1]], data: props }
+      }),
+    )
   }
 
-  protected handleMouseMove(features: MapGeoJSONFeature[]){
+  protected handleMouseMove(features: MapGeoJSONFeature[]) {
     const items = features.map((it) => it.properties as VitalDataProperties)
     this.featureHover.emit(items)
+
+    this.hoverItems.set(
+      features.map((it) => {
+        const point = (it.geometry as any as Point)?.coordinates
+        const props = it.properties as VitalDataProperties
+        return { position: [point[0], point[1]], data: props }
+      }),
+    )
   }
 
-  protected handleMouseLeave(features: MapGeoJSONFeature[]){
+  protected handleMouseLeave(features: MapGeoJSONFeature[]) {
     this.featureHover.emit(null)
+    this.hoverItems.set(null)
   }
 }
 

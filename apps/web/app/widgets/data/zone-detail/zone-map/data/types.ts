@@ -77,6 +77,7 @@ export interface VitalDataProperties {
   type: string
   categories: string[]
   lootTags: string[]
+  poiTags: string[]
   color: string
   random: boolean
 }

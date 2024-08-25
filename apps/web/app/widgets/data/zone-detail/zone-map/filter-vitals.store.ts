@@ -1,24 +1,56 @@
-import { computed } from '@angular/core'
+import { computed, effect, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
-import { FilterSpecification, LegacyFilterSpecification } from 'maplibre-gl'
+import { FilterSpecification } from 'maplibre-gl'
+import { combineLatest, map } from 'rxjs'
+import { NwDataService } from '~/data'
+import { BranchExpression } from '~/ui/expression-branch'
 
 export interface FilterVitalsState {
-  minLevel: number
-  maxLevel: number
-  joinOperators: JoinOperator[]
+  levelMin: number
+  levelMax: number
 
+  outerOperators: JoinOperator[]
+
+  idKey: string
+  idOperators: JoinOperator[]
+  idExpression: BranchExpression
+
+  typeKey: string
   typeOperators: JoinOperator[]
-  typeOperator: string
-  typeFilters: StringFilter[]
+  typeExpression: BranchExpression
 
-  categoryOperators: JoinOperator[]
-  categoryOperator: string
-  categoryFilters: StringFilter[]
+  categoriesKey: string
+  categoriesOperators: JoinOperator[]
+  categoriesExpression: BranchExpression
 
-  lootOperators: JoinOperator[]
-  lootOperator: string
-  lootFilters: StringFilter[]
+  lootTagsKey: string
+  lootTagsOperators: JoinOperator[]
+  lootTagsExpression: BranchExpression
+
+  poiTagsKey: string
+  poiTagsOperators: JoinOperator[]
+  poiTagsExpression: BranchExpression
+}
+
+export interface PresetRecord {
+  name: string
+  description: string
+  context: {
+    maxCount: number
+    level: number
+  }
+  data: Preset
+}
+export interface Preset {
+  id?: BranchExpression
+  type?: BranchExpression
+  categories?: BranchExpression
+  lootTags?: BranchExpression
+  poiTags?: BranchExpression
+  minLevel?: number
+  maxLevel?: number
 }
 
 export interface JoinOperator {
@@ -34,9 +66,10 @@ export interface StringFilter {
 
 export const FilterVitalsStore = signalStore(
   withState<FilterVitalsState>({
-    minLevel: 1,
-    maxLevel: NW_MAX_ENEMY_LEVEL,
-    joinOperators: [
+    levelMin: 1,
+    levelMax: NW_MAX_ENEMY_LEVEL,
+
+    outerOperators: [
       {
         value: 'all',
         label: 'AND',
@@ -46,6 +79,22 @@ export const FilterVitalsStore = signalStore(
         label: 'OR',
       },
     ],
+
+    idKey: 'id',
+    idExpression: { join: 'any', rows: [] },
+    idOperators: [
+      {
+        value: '==',
+        label: '==',
+      },
+      {
+        value: '!=',
+        label: '!=',
+      },
+    ],
+
+    typeKey: 'type',
+    typeExpression: { join: 'any', rows: [] },
     typeOperators: [
       {
         value: '==',
@@ -56,10 +105,10 @@ export const FilterVitalsStore = signalStore(
         label: '!=',
       },
     ],
-    typeOperator: 'any',
-    typeFilters: [],
 
-    categoryOperators: [
+    categoriesKey: 'categories',
+    categoriesExpression: { join: 'all', rows: [] },
+    categoriesOperators: [
       {
         value: 'in',
         label: 'has',
@@ -69,10 +118,10 @@ export const FilterVitalsStore = signalStore(
         label: '!has',
       },
     ],
-    categoryOperator: 'all',
-    categoryFilters: [],
 
-    lootOperators: [
+    lootTagsKey: 'lootTags',
+    lootTagsExpression: { join: 'all', rows: [] },
+    lootTagsOperators: [
       {
         value: 'in',
         label: 'has',
@@ -82,192 +131,201 @@ export const FilterVitalsStore = signalStore(
         label: '!has',
       },
     ],
-    lootOperator: 'all',
-    lootFilters: [],
+
+    poiTagsKey: 'poiTags',
+    poiTagsExpression: { join: 'all', rows: [] },
+    poiTagsOperators: [
+      {
+        value: 'in',
+        label: 'has',
+      },
+      {
+        value: '!in',
+        label: '!has',
+      },
+    ],
   }),
   withMethods((state) => {
     return {
       setMinLevel(level: number) {
         patchState(state, {
-          minLevel: level,
+          levelMin: level,
         })
       },
       setMaxLevel(level: number) {
         patchState(state, {
-          maxLevel: level,
+          levelMax: level,
         })
       },
-      setTypeOperator(operator: string) {
+      setTypeExpression(expression: BranchExpression) {
         patchState(state, {
-          typeOperator: operator,
+          typeExpression: expression,
         })
       },
-      removeTypeFilter(index: number) {
-        patchState(state, ({ typeFilters }) => {
-          typeFilters = [...typeFilters]
-          typeFilters.splice(index, 1)
-          return {
-            typeFilters,
-          }
-        })
-      },
-      updateTypeFilter(index: number, data: Partial<StringFilter>) {
-        patchState(state, ({ typeFilters }) => {
-          typeFilters = [...typeFilters]
-          typeFilters[index] = {
-            ...typeFilters[index],
-            ...data,
-          }
-          return {
-            typeFilters,
-          }
-        })
-      },
-      addTypeFilter(data?: StringFilter) {
-        patchState(state, ({ typeFilters }) => {
-          typeFilters = [...typeFilters]
-          if (!data) {
-            data = {
-              ...(typeFilters[typeFilters.length - 1] || {
-                key: 'type',
-                operator: '==',
-                value: '',
-                label: '',
-              }),
-            }
-          }
-          typeFilters.push(data)
-          return {
-            typeFilters,
-          }
-        })
-      },
-
-      setCategoryOperator(operator: string) {
+      setIdExpression(expression: BranchExpression) {
         patchState(state, {
-          categoryOperator: operator,
+          idExpression: expression,
         })
       },
-      removeCategoryFilter(index: number) {
-        patchState(state, ({ categoryFilters }) => {
-          categoryFilters = [...categoryFilters]
-          categoryFilters.splice(index, 1)
-          return {
-            categoryFilters,
-          }
-        })
-      },
-      updateCategoryFilter(index: number, data: Partial<StringFilter>) {
-        patchState(state, ({ categoryFilters }) => {
-          categoryFilters = [...categoryFilters]
-          categoryFilters[index] = {
-            ...categoryFilters[index],
-            ...data,
-          }
-          console.log('categoryFilters', categoryFilters)
-          return {
-            categoryFilters,
-          }
-        })
-      },
-      addCategoryFilter(data?: StringFilter) {
-        patchState(state, ({ categoryFilters }) => {
-          categoryFilters = [...categoryFilters]
-          if (!data) {
-            data = {
-              ...(categoryFilters[categoryFilters.length - 1] || {
-                key: 'categories',
-                operator: 'in',
-                value: '',
-                label: '',
-              }),
-            }
-          }
-          categoryFilters.push(data)
-          return {
-            categoryFilters,
-          }
-        })
-      },
-
-      setLootOperator(operator: string) {
+      setCategoriesExpression(expression: BranchExpression) {
         patchState(state, {
-          lootOperator: operator,
+          categoriesExpression: expression,
         })
       },
-      removeLootFilter(index: number) {
-        patchState(state, ({ lootFilters }) => {
-          lootFilters = [...lootFilters]
-          lootFilters.splice(index, 1)
-          return {
-            lootFilters,
-          }
+      setLootTagsExpression(expression: BranchExpression) {
+        patchState(state, {
+          lootTagsExpression: expression,
         })
       },
-      updateLootFilter(index: number, data: Partial<StringFilter>) {
-        patchState(state, ({ lootFilters }) => {
-          lootFilters = [...lootFilters]
-          lootFilters[index] = {
-            ...lootFilters[index],
-            ...data,
-          }
-          return {
-            lootFilters,
-          }
+      setPoiTagsExpression(expression: BranchExpression) {
+        patchState(state, {
+          poiTagsExpression: expression,
         })
       },
-      addLootFilter(data?: StringFilter) {
-        patchState(state, ({ lootFilters }) => {
-          lootFilters = [...lootFilters]
-          if (!data) {
-            data = {
-              ...(lootFilters[lootFilters.length - 1] || {
-                key: 'lootTags',
-                operator: 'in',
-                value: '',
-                label: '',
-              }),
-            }
-          }
-          lootFilters.push(data)
-          return {
-            lootFilters,
-          }
+      applyPreset(preset: Preset) {
+        patchState(state, {
+          levelMin: preset.minLevel ?? 1,
+          levelMax: preset.maxLevel ?? NW_MAX_ENEMY_LEVEL,
+          idExpression: preset.id ?? { join: 'any', rows: [] },
+          typeExpression: preset.type ?? { join: 'any', rows: [] },
+          categoriesExpression: preset.categories ?? { join: 'all', rows: [] },
+          lootTagsExpression: preset.lootTags ?? { join: 'all', rows: [] },
+          poiTagsExpression: preset.poiTags ?? { join: 'all', rows: [] },
         })
-      },
+      }
     }
   }),
-  withComputed(({ minLevel, maxLevel, typeFilters, typeOperator, categoryFilters, categoryOperator, lootFilters, lootOperator }) => {
+  withComputed(
+    ({
+      levelMin,
+      levelMax,
+      idExpression,
+      typeExpression,
+      poiTagsExpression,
+      lootTagsExpression,
+      categoriesExpression,
+    }) => {
+      return {
+        layerFilter: computed(() => {
+          const result: FilterSpecification = [
+            'all',
+            ['>=', ['get', 'level'], levelMin()],
+            ['<=', ['get', 'level'], levelMax()],
+          ]
+          const expressions = [
+            idExpression(),
+            typeExpression(),
+            poiTagsExpression(),
+            lootTagsExpression(),
+            categoriesExpression(),
+          ]
+          for (const expression of expressions) {
+            if (!expression?.rows.length) {
+              continue
+            }
+            const filters = expression.rows.map(({ left, operator, right }) => {
+              if (operator === '==' || operator === '!=') {
+                return [operator as '==', ['get', left], right]
+              }
+              return [operator as 'has', right, ['get', left]]
+            })
+            result.push([expression.join, ...filters] as any)
+          }
+          return result
+        }),
+      }
+    },
+  ),
+  withComputed(() => {
+    const db = inject(NwDataService)
+    const presets = toSignal(loadPresets(db), { initialValue: [] })
     return {
-      filterSpec: computed(() => {
-        const result: FilterSpecification = [
-          'all',
-          ['>=', ['get', 'level'], minLevel()],
-          ['<=', ['get', 'level'], maxLevel()],
-        ]
-        if (typeFilters().length) {
-          const filters = typeFilters().map((it): LegacyFilterSpecification => {
-            return [it.operator as 'has', ['get', it.key], it.value] as any
-          })
-          const filter = [typeOperator(), ...filters]
-          result.push(filter as any)
-        }
-        if (categoryFilters().length) {
-          const filters = categoryFilters().map((it) => {
-            return [it.operator as 'has', it.value, ['get', it.key]] as any
-          })
-          const filter = [categoryOperator(), ...filters]
-          result.push(filter as any)
-        }
-        if (lootFilters().length) {
-          const filters = lootFilters().map((it) => {
-            return [it.operator as 'has', it.value, ['get', it.key]] as any
-          })
-          const filter = [lootOperator(), ...filters]
-          result.push(filter as any)
-        }
-        return result
-      }),
+      presets,
     }
   }),
+  withComputed(({ layerFilter }) => {
+    effect(() => {
+      console.log('layerFilter', layerFilter())
+    })
+    return {}
+  })
 )
+
+function loadPresets(db: NwDataService) {
+  return combineLatest({
+    tasks: db.seasonsRewardsTasks,
+    stats: db.seasonsRewardsStatsKillMap,
+  }).pipe(
+    map(({ tasks, stats }) => {
+      const presets: PresetRecord[] = []
+      for (const task of tasks) {
+        const stat = stats.get(task.SeasonsTrackedStatID)
+        const preset: Preset = {}
+        if (!stat) {
+          continue
+        }
+        if (stat.VitalsCategories === 'Player') {
+          continue
+        }
+        if (stat.Level) {
+          preset.minLevel = stat.Level
+          preset.maxLevel = NW_MAX_ENEMY_LEVEL
+        }
+        if (stat.TargetID) {
+          const values = stat.TargetID.split(',').map((it) => it.toLowerCase())
+          preset.id = {
+            join: 'any',
+            rows: values.map((value) => {
+              return { left: 'id', operator: '==', right: value }
+            }),
+          }
+        }
+        if (stat.VitalsCategories) {
+          const values = stat.VitalsCategories.split(',').map((it) => it.toLowerCase())
+          preset.categories = {
+            join: 'all',
+            rows: values.map((value) => {
+              return { left: 'categories', operator: 'in', right: value }
+            }),
+          }
+        }
+        if (stat.POITags) {
+          const values = stat.POITags.split(',').map((it) => it.toLowerCase())
+          preset.poiTags = {
+            join: 'any',
+            rows: values.map((value) => {
+              return { left: 'poiTags', operator: 'in', right: value }
+            }),
+          }
+        }
+        if (stat.LootTags) {
+          const values = stat.LootTags.split(',').map((it) => it.toLowerCase())
+          preset.lootTags = {
+            join: 'all',
+            rows: values.map((value) => {
+              return { left: 'lootTags', operator: 'in', right: value }
+            }),
+          }
+        }
+        if (Object.keys(preset).length) {
+          let name = task.Name
+          let description = task.Description
+          // if (name.includes('placeholder')) {
+          //   name = `seasonsactivities_${stat.StatType}${task.TaskMaxValue}${stat.VitalsCategories}`
+          //   description = null
+          // }
+          presets.push({
+            name,
+            description,
+            data: preset,
+            context: {
+              maxCount: task.TaskMaxValue,
+              level: stat.Level,
+            }
+          })
+        }
+      }
+      return presets
+    }),
+  )
+}

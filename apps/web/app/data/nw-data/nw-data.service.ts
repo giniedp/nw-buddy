@@ -12,20 +12,7 @@ import {
   getQuestRequiredAchievmentIds,
   getSeasonPassDataId,
 } from '@nw-data/common'
-import {
-  DATASHEETS,
-  DataSheetUri,
-  //GatherablesMetadata,
-  //LoreMetadata,
-  //NpcsMetadata,
-  //SpellsMetadata,
-  //TerritoriesMetadata,
-  VariationDataGatherable,
-  //VariationsMetadata,
-  VitalsData,
-  //VitalsMetadata,
-  //VitalsModelsMetadata,
-} from '@nw-data/generated'
+import { DATASHEETS, DataSheetUri, VariationDataGatherable, VitalsData } from '@nw-data/generated'
 import {
   ScannedGatherable,
   ScannedLore,
@@ -34,7 +21,7 @@ import {
   ScannedTerritory,
   ScannedVariation,
   ScannedVital,
-  ScannedVitalModel
+  ScannedVitalModel,
 } from '@nw-data/scanner'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataLoaderService } from './nw-data-loader.service'
@@ -231,15 +218,18 @@ export class NwDataService {
   public npcs = table(() => this.loadEntries(DATASHEETS.NPCData))
   public npcsMap = tableIndexBy(() => this.npcs, 'NPCId')
   public npc = tableLookup(() => this.npcsMap)
-  public npcsByConversationStateIdMap = tableGroupBy(() => this.npcs, (it) => {
-    const index: string[] = []
-    for (const key in it) {
-      if (key.startsWith('ConversationStateId')) {
-        index.push(it[key])
+  public npcsByConversationStateIdMap = tableGroupBy(
+    () => this.npcs,
+    (it) => {
+      const index: string[] = []
+      for (const key in it) {
+        if (key.startsWith('ConversationStateId')) {
+          index.push(it[key])
+        }
       }
-    }
-    return index
-  })
+      return index
+    },
+  )
   public npcsByConversationStateId = tableLookup(() => this.npcsByConversationStateIdMap)
 
   public npcsVariations = table(() => this.load(DATASHEETS.VariationData.NPC))
@@ -248,9 +238,7 @@ export class NwDataService {
   public npcsVariationsByNpcIdMap = tableGroupBy(() => this.npcsVariations, 'NPCId')
   public npcsVariationsByNpcId = tableLookup(() => this.npcsVariationsByNpcIdMap)
 
-  public npcsMetadata = table(() =>
-    this.load<ScannedNpc>({ uri: 'nw-data/generated/npcs_metadata.json' }),
-  )
+  public npcsMetadata = table(() => this.load<ScannedNpc>({ uri: 'nw-data/generated/npcs_metadata.json' }))
   public npcsMetadataMap = tableIndexBy(() => this.npcsMetadata, 'npcID')
   public npcsMeta = tableLookup(() => this.npcsMetadataMap)
 
@@ -342,7 +330,10 @@ export class NwDataService {
   public recipesByFirstCraftAchievementIdMap = tableGroupBy(() => this.recipes, 'FirstCraftAchievementId')
   public recipesByFirstCraftAchievementId = tableLookup(() => this.recipesByFirstCraftAchievementIdMap)
 
-  public recipesUnlockedAchievementBlocksRecraftingMap = tableGroupBy(() => this.recipes, 'UnlockedAchievementBlocksRecrafting')
+  public recipesUnlockedAchievementBlocksRecraftingMap = tableGroupBy(
+    () => this.recipes,
+    'UnlockedAchievementBlocksRecrafting',
+  )
   public recipesUnlockedAchievementBlocksRecrafting = tableLookup(() => this.recipesByFirstCraftAchievementIdMap)
 
   public recipeCategories = table(() => this.loadEntries(DATASHEETS.CraftingCategoryData))
@@ -581,13 +572,12 @@ export class NwDataService {
   public conversationStates = table(() => this.loadEntries(DATASHEETS.ConversationStateData))
   public conversationStatesMap = tableIndexBy(() => this.conversationStates, 'ConversationStateId')
   public conversationState = tableLookup(() => this.conversationStatesMap)
-  public conversationStatesByObjectiveIdMap = tableGroupBy(() => this.conversationStates, (it) => {
-    return [
-      it.LinearObjectiveId1,
-      it.LinearObjectiveId2,
-      it.LinearObjectiveId3,
-    ].filter((it) => !!it)
-  })
+  public conversationStatesByObjectiveIdMap = tableGroupBy(
+    () => this.conversationStates,
+    (it) => {
+      return [it.LinearObjectiveId1, it.LinearObjectiveId2, it.LinearObjectiveId3].filter((it) => !!it)
+    },
+  )
   public conversationStatesByObjectiveId = tableLookup(() => this.conversationStatesByObjectiveIdMap)
 
   public objectives = table(() => this.loadEntries(DATASHEETS.Objectives))
@@ -633,6 +623,14 @@ export class NwDataService {
   public seasonPassRewardsByDisplayItemId = tableLookup(() => this.seasonPassRewardsByDisplayItemIdMap)
   public seasonPassRewardsByItemIdMap = tableGroupBy(() => this.seasonPassRewards, 'ItemId')
   public seasonPassRewardsByItemId = tableLookup(() => this.seasonPassRewardsByItemIdMap)
+
+  public seasonsRewardsTasks = table(() => this.loadEntries(DATASHEETS.SeasonsRewardsTasks))
+  public seasonsRewardsTasksMap = tableIndexBy(() => this.seasonsRewardsTasks, 'SeasonsTaskID')
+  public seasonsRewardsTask = tableLookup(() => this.seasonsRewardsTasksMap)
+
+  public seasonsRewardsStatsKill = table(() => this.load(DATASHEETS.SeasonsRewardsStats.SeasonsRewardsStats_Kill))
+  public seasonsRewardsStatsKillMap = tableIndexBy(() => this.seasonsRewardsStatsKill, 'TrackedStatID')
+  public seasonsRewardsStatKill = tableLookup(() => this.seasonsRewardsStatsKillMap)
 
   public expansions = table(() => this.loadEntries(DATASHEETS.ExpansionData))
   public expansionsMap = tableIndexBy(() => this.expansions, 'ExpansionId')

@@ -3,20 +3,46 @@
   [nwbMapLayer]="'vitals'"
   [disabled]="false"
   [heatmap]="true"
-  [filter]="store.filterSpec()"
+  [filter]="store.layerFilter()"
   [data]="layerData()"
   (featureMouseEnter)="handleMouseEnter($event)"
   (featureMouseLeave)="handleMouseLeave($event)"
   (featureMouseMove)="handleMouseMove($event)"
 />
 
-<div class="flex flex-col gap-4">
+<!-- @for (item of hoverItems(); track $index) {
+  <nwb-game-map-popup [position]="item.position" class="w-80">
+    <nwb-vital-detail [vitalId]="item.data.id" [level]="item.data.level">
+      <nwb-vital-detail-header />
+    </nwb-vital-detail>
+  </nwb-game-map-popup>
+} -->
+<ul class="flex-1 overflow-auto flex-nowrap menu">
+  @for (preset of store.presets(); track $index) {
+    <li>
+      <a (click)="store.applyPreset(preset.data)">
+        <div>
+          <div>
+            <b>{{ preset.name | nwText: preset.context }}</b>
+          </div>
+          @if (preset.description) {
+            <div class="text-nw-description">
+              {{ preset.description | nwText: preset.context }}
+            </div>
+          }
+        </div>
+      </a>
+    </li>
+  }
+</ul>
+
+<div class="h-[300px] flex-none overflow-auto flex flex-col gap-1 p-4">
   <div class="join w-full">
     <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level MIN:</span>
     <input
       class="join-item input input-sm flex-1"
       type="number"
-      [ngModel]="store.minLevel()"
+      [ngModel]="store.levelMin()"
       (ngModelChange)="store.setMinLevel($event)"
     />
   </div>
@@ -25,158 +51,119 @@
     <input
       class="join-item input input-sm flex-1"
       type="number"
-      [ngModel]="store.maxLevel()"
+      [ngModel]="store.levelMax()"
       (ngModelChange)="store.setMaxLevel($event)"
     />
   </div>
 
   <div>
-    @if (!store.typeFilters().length) {
-      <button class="btn btn-sm w-full btn-primary" (click)="store.addTypeFilter()">Add Type Filter</button>
-    } @else {
-      <div class="flex flex-row justify-between">
-        <div class="join">
-          @for (operator of store.joinOperators(); track operator) {
-            <button
-              class="join-item btn btn-sm"
-              [class.btn-primary]="store.typeOperator() === operator.value"
-              (click)="store.setTypeOperator(operator.value)"
-            >
-              {{ operator.label }}
-            </button>
-          }
-        </div>
-        <div>
-          <button class="btn btn-sm text-accent" (click)="store.addTypeFilter()">+</button>
-        </div>
-      </div>
-      <div class="pl-4">
-        @for (item of store.typeFilters(); track $index; let index = $index; let last = $last) {
-          <div class="flex flex-row">
-            <nwb-tree-node-toggle class="flex-none w-5 h-10" [ngModel]="false" [disabled]="true" [isLast]="last" />
-            <div class="join w-full">
-              <span class="join-item btn btn-sm btn-ghost flex-none">Creature Type</span>
-              <select
-                class="join-item input input-sm w-20 flex-none"
-                [ngModel]="item.operator"
-                (ngModelChange)="store.updateTypeFilter(index, { operator: $event })"
-              >
-                @for (op of store.typeOperators(); track op.value) {
-                  <option [label]="op.label" [value]="op.value"></option>
-                }
-              </select>
-              <select
-                class="join-item input input-sm flex-1"
-                [ngModel]="item.value"
-                (ngModelChange)="store.updateTypeFilter(index, { value: $event })"
-              >
-                @for (type of creatureTypes(); track type) {
-                  <option [label]="type.label" [value]="type.value"></option>
-                }
-              </select>
-              <button class="join-item btn btn-sm btn-ghost btn-square" (click)="store.removeTypeFilter(index)">
-                x
-              </button>
-            </div>
-          </div>
-        }
-      </div>
+    @let idExpression = store.idExpression();
+    <nwb-expresssion-branch-input
+      #idExpressionInput
+      [class.hidden]="!idExpression.rows.length"
+      [defaultLeftValue]="store.idKey()"
+      [outerOperators]="store.outerOperators()"
+      [innerOperators]="store.idOperators()"
+      [ngModel]="idExpression"
+      (ngModelChange)="store.setIdExpression($event)"
+    >
+      <span *nwbExpressionKey class="join-item btn btn-sm btn-ghost w-20"> ID </span>
+      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm btn-ghost w-20">
+        {{ value }}
+      </button>
+    </nwb-expresssion-branch-input>
+    @if (!idExpression.rows.length) {
+      <button class="btn btn-sm btn-block btn-primary" (click)="idExpressionInput.addRow()">Add ID Filter</button>
     }
   </div>
 
   <div>
-    @if (!store.categoryFilters().length) {
-      <button class="btn btn-sm w-full btn-primary" (click)="store.addCategoryFilter()">Add Category Filter</button>
-    } @else {
-      <div class="flex flex-row justify-between">
-        <div class="join">
-          @for (operator of store.joinOperators(); track operator) {
-            <button
-              class="join-item btn btn-sm"
-              [class.btn-primary]="store.categoryOperator() === operator.value"
-              (click)="store.setCategoryOperator(operator.value)"
-            >
-              {{ operator.label }}
-            </button>
-          }
-        </div>
-        <div>
-          <button class="btn btn-sm text-accent" (click)="store.addCategoryFilter()">+</button>
-        </div>
-      </div>
-      <div class="pl-4">
-        @for (item of store.categoryFilters(); track $index; let index = $index; let last = $last) {
-          <div class="flex flex-row">
-            <nwb-tree-node-toggle class="flex-none w-5 h-10" [ngModel]="false" [disabled]="true" [isLast]="last" />
-            <div class="join w-full">
-              <span class="join-item btn btn-sm btn-ghost flex-none">Categories</span>
-              <select
-                class="join-item input input-sm w-20 flex-none"
-                [ngModel]="item.operator"
-                (ngModelChange)="store.updateCategoryFilter(index, { operator: $event })"
-              >
-                @for (op of store.categoryOperators(); track op.value) {
-                  <option [label]="op.label" [value]="op.value"></option>
-                }
-              </select>
-              <button class="join-item btn btn-sm flex-1" (click)="pickCategory(index, item.value)">
-                {{ item.value }}
-              </button>
-              <button class="join-item btn btn-sm btn-ghost btn-square" (click)="store.removeCategoryFilter(index)">
-                x
-              </button>
-            </div>
-          </div>
-        }
-      </div>
+    @let typeExpression = store.typeExpression();
+    <nwb-expresssion-branch-input
+      #typeExpressionInput
+      [class.hidden]="!typeExpression.rows.length"
+      [defaultLeftValue]="store.typeKey()"
+      [outerOperators]="store.outerOperators()"
+      [innerOperators]="store.typeOperators()"
+      [ngModel]="typeExpression"
+      (ngModelChange)="store.setTypeExpression($event)"
+    >
+      <span *nwbExpressionKey class="join-item btn btn-sm btn-ghost w-20"> Type </span>
+      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm btn-ghost w-20">
+        {{ value }}
+      </button>
+    </nwb-expresssion-branch-input>
+    @if (!typeExpression.rows.length) {
+      <button class="btn btn-sm btn-block btn-primary" (click)="typeExpressionInput.addRow()">Add Type Filter</button>
     }
   </div>
 
   <div>
-    @if (!store.lootFilters().length) {
-      <button class="btn btn-sm w-full btn-primary" (click)="store.addLootFilter()">Add Loot Filter</button>
-    } @else {
-      <div class="flex flex-row justify-between">
-        <div class="join">
-          @for (operator of store.joinOperators(); track operator) {
-            <button
-              class="join-item btn btn-sm"
-              [class.btn-primary]="store.lootOperator() === operator.value"
-              (click)="store.setLootOperator(operator.value)"
-            >
-              {{ operator.label }}
-            </button>
-          }
-        </div>
-        <div>
-          <button class="btn btn-sm text-accent" (click)="store.addLootFilter()">+</button>
-        </div>
-      </div>
-      <div class="pl-4">
-        @for (item of store.lootFilters(); track $index; let index = $index; let last = $last) {
-          <div class="flex flex-row">
-            <nwb-tree-node-toggle class="flex-none w-5 h-10" [ngModel]="false" [disabled]="true" [isLast]="last" />
-            <div class="join w-full">
-              <span class="join-item btn btn-sm btn-ghost flex-none">Loot Tags</span>
-              <select
-                class="join-item input input-sm w-20 flex-none"
-                [ngModel]="item.operator"
-                (ngModelChange)="store.updateLootFilter(index, { operator: $event })"
-              >
-                @for (op of store.lootOperators(); track op.value) {
-                  <option [label]="op.label" [value]="op.value"></option>
-                }
-              </select>
-              <button class="join-item btn btn-sm flex-1" (click)="pickLootTag(index, item.value)">
-                {{ item.value }}
-              </button>
-              <button class="join-item btn btn-sm btn-ghost btn-square" (click)="store.removeLootFilter(index)">
-                x
-              </button>
-            </div>
-          </div>
-        }
-      </div>
+    @let categoriesExpression = store.categoriesExpression();
+    <nwb-expresssion-branch-input
+      #categoriesExpressionInput
+      [class.hidden]="!categoriesExpression.rows.length"
+      [defaultLeftValue]="store.categoriesKey()"
+      [outerOperators]="store.outerOperators()"
+      [innerOperators]="store.categoriesOperators()"
+      [ngModel]="categoriesExpression"
+      (ngModelChange)="store.setCategoriesExpression($event)"
+    >
+      <span *nwbExpressionKey class="join-item btn btn-sm w-20"> Categories </span>
+      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm w-20">
+        {{ value }}
+      </button>
+    </nwb-expresssion-branch-input>
+    @if (!categoriesExpression.rows.length) {
+      <button class="btn btn-sm btn-block btn-primary" (click)="categoriesExpressionInput.addRow()">
+        Add Category Filter
+      </button>
+    }
+  </div>
+
+  <div>
+    @let lootTagsExpression = store.lootTagsExpression();
+    <nwb-expresssion-branch-input
+      #lootTagsExpressionInput
+      [class.hidden]="!lootTagsExpression.rows.length"
+      [defaultLeftValue]="store.lootTagsKey()"
+      [outerOperators]="store.outerOperators()"
+      [innerOperators]="store.lootTagsOperators()"
+      [ngModel]="lootTagsExpression"
+      (ngModelChange)="store.setLootTagsExpression($event)"
+    >
+      <span *nwbExpressionKey class="join-item btn btn-sm w-20"> Loot Tags </span>
+      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm w-20">
+        {{ value }}
+      </button>
+    </nwb-expresssion-branch-input>
+    @if (!lootTagsExpression.rows.length) {
+      <button class="btn btn-sm btn-block btn-primary" (click)="lootTagsExpressionInput.addRow()">
+        Add Loot Tag Filter
+      </button>
+    }
+  </div>
+
+  <div>
+    @let poiTagsExpression = store.poiTagsExpression();
+    <nwb-expresssion-branch-input
+      #poiTagsExpressionInput
+      [class.hidden]="!poiTagsExpression.rows.length"
+      [defaultLeftValue]="store.poiTagsKey()"
+      [outerOperators]="store.outerOperators()"
+      [innerOperators]="store.poiTagsOperators()"
+      [ngModel]="poiTagsExpression"
+      (ngModelChange)="store.setPoiTagsExpression($event)"
+    >
+      <span *nwbExpressionKey class="join-item btn btn-sm w-20"> POI Tags </span>
+      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm w-20">
+        {{ value }}
+      </button>
+    </nwb-expresssion-branch-input>
+    @if (!poiTagsExpression.rows.length) {
+      <button class="btn btn-sm btn-block btn-primary" (click)="poiTagsExpressionInput.addRow()">
+        Add POI Tag Filter
+      </button>
     }
   </div>
 </div>

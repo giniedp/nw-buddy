@@ -23,6 +23,7 @@ import {
   xyFromLngLat,
   xyToLngLat,
 } from './utils'
+import { DomPortalOutlet } from '@angular/cdk/portal'
 @Component({
   standalone: true,
   selector: 'nwb-map',

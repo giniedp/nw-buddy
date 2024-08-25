@@ -1,4 +1,4 @@
-import { VitalsData } from '@nw-data/generated'
+import { TerritoryDefinition, VitalsData } from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -11,6 +11,7 @@ export function loadVitals(db: NwDataService, mapCoord: MapCoord) {
   return combineLatest({
     vitals: db.vitals,
     vitalsMetaMap: db.vitalsMetadataMap,
+    territoriesMap: db.territoriesMap,
   }).pipe(
     map((data) => {
       return collectVitalsDataset({
@@ -24,6 +25,7 @@ export function loadVitals(db: NwDataService, mapCoord: MapCoord) {
 function collectVitalsDataset(data: {
   vitals: VitalsData[]
   vitalsMetaMap: Map<string, ScannedVital>
+  territoriesMap: Map<number, TerritoryDefinition>
   mapCoord: MapCoord
 }): VitalDataSet {
   const result: VitalDataSet = {
@@ -37,6 +39,7 @@ function collectVitalsDataset(data: {
     if (!lvlSpawns) {
       continue
     }
+    const lootTags = (item.LootTags || []).map((it) => (it || '').toLowerCase())
     for (const mapId in lvlSpawns) {
       const spawns = lvlSpawns[mapId]
       const layer = (result.data[mapId] = result.data[mapId] || {
@@ -51,7 +54,7 @@ function collectVitalsDataset(data: {
         const levels = spawn.l
         const position = spawn.p
         const isRandom = spawn.r
-
+        const poiTags = spawn.t.map((it) => data.territoriesMap.get(it)?.POITag || []).flat().map((it) => it.toLowerCase())
         for (const level of levels) {
           result.count++
           layer.count++
@@ -62,11 +65,12 @@ function collectVitalsDataset(data: {
               coordinates: data.mapCoord(position),
             },
             properties: {
-              id: item.VitalsID,
+              id: item.VitalsID.toLowerCase(),
               level: level,
               color: stringToColor(item.VitalsID),
               categories: uniq([...(item.VitalsCategories || []), ...(spawn.c || [])].map((it) => (it || '').toLowerCase())),
-              lootTags: (item.LootTags || []).map((it) => (it || '').toLowerCase()),
+              lootTags: lootTags,
+              poiTags: poiTags,
               type: (item.CreatureType || '').toLowerCase(),
               random: isRandom,
             },
