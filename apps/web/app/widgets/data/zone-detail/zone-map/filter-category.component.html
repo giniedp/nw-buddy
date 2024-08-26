@@ -4,7 +4,8 @@
     #mapLayer="mapLayer"
     [nwbMapLayer]="layer.id"
     [disabled]="true"
-    [heatmap]="true || (!!layer.variants.length && !layer.variants[0].icon)"
+    [heatmap]="showHeatmap()"
+    [filter]="filter()"
     [color]="layer.color"
     [data]="data?.geometry"
     (featureMouseEnter)="handleMouseEnter($event)"
@@ -81,7 +82,11 @@
     @for (item of items(); track $index) {
       @let isActive = isLayerActive(item.id);
       <div class="join">
-        <button class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left" (click)="toggleLayer(item.id)">
+        <button
+          class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left"
+          (click)="toggleLayer(item.id)"
+          [disabled]="item.isRandom && !mapStore.showEncounter()"
+        >
           @if (item.subcategoryLabel) {
             {{ item.subcategoryLabel | nwText }}
           } @else if (item.subcategory) {
@@ -90,7 +95,7 @@
             {{ item.lootTable | nwHumanize }}
           }
           @if (item.isRandom) {
-            <span class="badge badge-sm badge-secondary">RE</span>
+            <nwb-icon [icon]="diceIcon" class="w-4 h-4" tooltip="Random Encounter" />
           }
         </button>
         <button

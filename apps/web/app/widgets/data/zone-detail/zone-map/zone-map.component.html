@@ -6,14 +6,44 @@
           <ion-buttons slot="start">
             @if (!pinMenu()) {
               <ng-container [ngTemplateOutlet]="tplMenuStart" />
-              <button (click)="menu.toggle()" class="btn btn-square btn-ghost">
+              <button class="btn btn-square btn-ghost" (click)="menu.toggle()">
                 <nwb-icon [icon]="filterIcon" class="w-5 h-5" />
               </button>
             }
           </ion-buttons>
         </div>
         <div slot="end">
-          <select [ngModel]="store.mapId()" (ngModelChange)="store.setMap($event)" class="select select-ghost">
+          <div class="join">
+            <button
+            class="join-item btn btn-square btn-ghost"
+            [class.text-primary]="store.showLabels()"
+            (click)="store.setLabels(!store.showLabels())"
+            [tooltip]="'Toggle labels'"
+          >
+            <nwb-icon [icon]="fontIcon" class="w-5 h-5" />
+          </button>
+            <button
+              class="join-item btn btn-square btn-ghost"
+              [class.text-primary]="store.showHeatmap()"
+              (click)="store.setHeatmap(!store.showHeatmap())"
+              [tooltip]="'Toggle heatmap'"
+            >
+              <nwb-icon [icon]="fireIcon" class="w-5 h-5" />
+            </button>
+            <button
+              class="join-item btn btn-square btn-ghost"
+              [class.text-primary]="store.showEncounter()"
+              (click)="store.setEncounter(!store.showEncounter())"
+              [tooltip]="'Show or hide random encounter'"
+            >
+              <nwb-icon [icon]="diceIcon" class="w-5 h-5" />
+            </button>
+          </div>
+          <select
+            [ngModel]="store.mapId()"
+            (ngModelChange)="store.setMap($event)"
+            class="select select-sm select-ghost"
+          >
             @for (option of mapsOptions(); track option.value) {
               <option [value]="option.value">{{ option.label }}</option>
             }
@@ -28,12 +58,13 @@
         [territories]="store.territories()"
         [areas]="store.areas()"
         [pois]="store.showPOI() ? store.pois() : null"
+        [labels]="store.showLabels()"
         (zoneClick)="zoneClicked.emit($event)"
       >
         <div class="absolute top-2 right-2 flex flex-col gap-1">
           @for (item of hoverVitals(); track $index) {
             <nwb-vital-detail [vitalId]="item.id" [level]="item.level" class="w-80 bg-base-300 bg-opacity-75 text-sm">
-              <nwb-vital-detail-stats class="p-2"/>
+              <nwb-vital-detail-stats class="p-2" />
             </nwb-vital-detail>
           }
           @for (item of hoverFilters(); track $index) {

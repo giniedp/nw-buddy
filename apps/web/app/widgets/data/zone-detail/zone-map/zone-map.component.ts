@@ -5,7 +5,7 @@ import { IonButton, IonButtons, IonMenuButton, IonSegment, IonSegmentButton } fr
 import { sortBy } from 'lodash'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgFilter, svgTags } from '~/ui/icons/svg'
+import { svgDice, svgFilter, svgFire, svgFont, svgTags } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
@@ -70,6 +70,10 @@ export class ZoneDetailMapComponent {
 
   protected filterIcon = svgFilter
   protected labelsIcon = svgTags
+  protected diceIcon = svgDice
+  protected fireIcon = svgFire
+  protected fontIcon = svgFont
+
   public zoneClicked = output<string>()
   public vitalClicked = output<string>()
 

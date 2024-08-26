@@ -13,7 +13,14 @@ import {
   signal,
 } from '@angular/core'
 import { GeoJSON } from 'geojson'
-import { FilterSpecification, GeoJSONSource, MapGeoJSONFeature, MapLayerEventType, Popup } from 'maplibre-gl'
+import {
+  AddLayerObject,
+  FilterSpecification,
+  GeoJSONSource,
+  MapGeoJSONFeature,
+  MapLayerEventType,
+  Popup,
+} from 'maplibre-gl'
 import { GameMapComponent } from './game-map.component'
 import tinycolor from 'tinycolor2'
 import { GameMapProxyService } from './game-map.proxy'
@@ -112,6 +119,12 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
         },
       })
     }
+
+    if (!this.heatmap() && this.map.getLayer(this.heatmapLayerId())) {
+      this.removeLayer(circleLayerId)
+      this.removeLayer(iconLayerId)
+    }
+
     if (this.icons() && !this.map.getLayer(iconLayerId)) {
       this.removeLayer(circleLayerId)
       this.map.addLayer({
@@ -141,6 +154,7 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
       this.map.on('mouseleave', circleLayerId, this.handleMouseLeave)
       this.map.on('mousemove', circleLayerId, this.handleMouseMove)
     }
+
     if (!this.icons() && !this.map.getLayer(circleLayerId)) {
       this.removeLayer(iconLayerId)
       this.map.addLayer({
@@ -178,66 +192,69 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
       this.map.on('mouseleave', circleLayerId, this.handleMouseLeave)
       this.map.on('mousemove', circleLayerId, this.handleMouseMove)
     }
-    if (this.heatmap()) {
-      if (!this.map.getLayer(this.heatmapLayerId())) {
-        this.map.addLayer({
-          id: this.heatmapLayerId(),
-          source: sourceId,
-          type: 'heatmap',
-          maxzoom: 9,
-          paint: {
-            // Increase the heatmap weight based on frequency and property magnitude
-            'heatmap-weight': [
-              'interpolate',
-              ['linear'],
-              ['coalesce', ['number', ['get', 'size'], 1], ['number', 1]],
-              0,
-              0.25,
-              1,
-              1,
-            ],
-            // Increase the heatmap color weight weight by zoom level
-            // heatmap-intensity is a multiplier on top of heatmap-weight
-            //'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 3],
-            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-            // Begin color ramp at 0-stop with a 0-transparency color
-            // to create a blur-like effect.
-            'heatmap-color': [
-              'interpolate',
-              ['linear'],
-              ['heatmap-density'],
-              0,
-              'rgba(33,102,172,0)',
-              0.2,
-              'rgb(103,169,207)',
-              0.4,
-              'rgb(209,229,240)',
-              0.6,
-              'rgb(253,219,199)',
-              0.8,
-              'rgb(239,138,98)',
-              1,
-              'rgb(178,24,43)',
-            ],
-            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 15, 6, 25],
-            'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 7, 0],
-          },
-        })
-      }
-      let layer = this.map.getLayer(this.iconLayerId())
-      if (layer) {
-        layer.minzoom = 5
-        layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 6, 1])
-        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 6, 0.5])
-      }
-      layer = this.map.getLayer(this.circleLayerId())
-      if (layer) {
-        layer.minzoom = 5
-        layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 6, 1])
-        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 6, 0.5])
-      }
-    } else {
+
+    if (this.heatmap() && !this.map.getLayer(this.heatmapLayerId())) {
+      this.map.addLayer({
+        id: this.heatmapLayerId(),
+        source: sourceId,
+        type: 'heatmap',
+        maxzoom: 9,
+        paint: {
+          // Increase the heatmap weight based on frequency and property magnitude
+          'heatmap-weight': [
+            'interpolate',
+            ['linear'],
+            ['coalesce', ['number', ['get', 'size'], 1], ['number', 1]],
+            0,
+            0.25,
+            1,
+            1,
+          ],
+          // Increase the heatmap color weight weight by zoom level
+          // heatmap-intensity is a multiplier on top of heatmap-weight
+          //'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 3],
+          // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+          // Begin color ramp at 0-stop with a 0-transparency color
+          // to create a blur-like effect.
+          'heatmap-color': [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0,
+            'rgba(33,102,172,0)',
+            0.2,
+            'rgb(103,169,207)',
+            0.4,
+            'rgb(209,229,240)',
+            0.6,
+            'rgb(253,219,199)',
+            0.8,
+            'rgb(239,138,98)',
+            1,
+            'rgb(178,24,43)',
+          ],
+          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 15, 6, 25],
+          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 5.5, 0],
+        },
+      })
+    }
+    if (!this.heatmap()) {
       this.removeLayer(this.heatmapLayerId())
+    }
+
+    if (this.heatmap()) {
+      let layer = this.map.getLayer(iconLayerId)
+      if (layer) {
+        layer.minzoom = 5
+        layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
+        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
+      }
+      layer = this.map.getLayer(circleLayerId)
+      if (layer) {
+        layer.minzoom = 5
+        layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
+        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
+      }
     }
 
     return this.map.getSource(sourceId) as GeoJSONSource
@@ -245,8 +262,14 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
 
   private updateFilter(variants: string[], customFilter: FilterSpecification) {
     let filter: FilterSpecification = customFilter
-    if (!customFilter && variants) {
-      filter = ['in', 'variant', ...variants]
+    let variantFilter: FilterSpecification
+    if (variants) {
+      variantFilter = ['in', 'variant', ...variants]
+    }
+    if (customFilter && variants) {
+      filter = ['all', customFilter, variantFilter] as any
+    } else {
+      filter = customFilter || variantFilter
     }
     if (this.map.getLayer(this.iconLayerId())) {
       this.map.setFilter(this.iconLayerId(), filter)

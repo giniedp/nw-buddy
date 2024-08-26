@@ -2,6 +2,7 @@ import { computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
+import { uniqBy } from 'lodash'
 import { FilterSpecification } from 'maplibre-gl'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -10,6 +11,8 @@ import { BranchExpression } from '~/ui/expression-branch'
 export interface FilterVitalsState {
   levelMin: number
   levelMax: number
+
+  hideRandomEncounters: boolean
 
   outerOperators: JoinOperator[]
 
@@ -68,7 +71,7 @@ export const FilterVitalsStore = signalStore(
   withState<FilterVitalsState>({
     levelMin: 1,
     levelMax: NW_MAX_ENEMY_LEVEL,
-
+    hideRandomEncounters: false,
     outerOperators: [
       {
         value: 'all',
@@ -147,6 +150,11 @@ export const FilterVitalsStore = signalStore(
   }),
   withMethods((state) => {
     return {
+      setHideRandomEncounters(hide: boolean) {
+        patchState(state, {
+          hideRandomEncounters: hide,
+        })
+      },
       setMinLevel(level: number) {
         patchState(state, {
           levelMin: level,
@@ -204,6 +212,7 @@ export const FilterVitalsStore = signalStore(
       poiTagsExpression,
       lootTagsExpression,
       categoriesExpression,
+      hideRandomEncounters
     }) => {
       return {
         layerFilter: computed(() => {
@@ -212,6 +221,9 @@ export const FilterVitalsStore = signalStore(
             ['>=', ['get', 'level'], levelMin()],
             ['<=', ['get', 'level'], levelMax()],
           ]
+          if (hideRandomEncounters()) {
+            result.push(['!=', ['get', 'random'], true])
+          }
           const expressions = [
             idExpression(),
             typeExpression(),
@@ -307,13 +319,15 @@ function loadPresets(db: NwDataService) {
             }),
           }
         }
-        if (Object.keys(preset).length) {
+
+        if (Object.keys(preset).length && !task.Name.includes('placeholder')) {
           let name = task.Name
           let description = task.Description
           // if (name.includes('placeholder')) {
           //   name = `seasonsactivities_${stat.StatType}${task.TaskMaxValue}${stat.VitalsCategories}`
           //   description = null
           // }
+
           presets.push({
             name,
             description,

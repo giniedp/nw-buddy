@@ -2,7 +2,7 @@
   #mapLayer="mapLayer"
   [nwbMapLayer]="'vitals'"
   [disabled]="false"
-  [heatmap]="true"
+  [heatmap]="mapStore.showHeatmap()"
   [filter]="store.layerFilter()"
   [data]="layerData()"
   (featureMouseEnter)="handleMouseEnter($event)"
@@ -38,24 +38,21 @@
 
 <div class="h-[300px] flex-none overflow-auto flex flex-col gap-1 p-4">
   <div class="join w-full">
-    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level MIN:</span>
+    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level min:</span>
     <input
-      class="join-item input input-sm flex-1"
+      class="join-item input input-sm min-w-0 flex-1"
       type="number"
       [ngModel]="store.levelMin()"
       (ngModelChange)="store.setMinLevel($event)"
     />
-  </div>
-  <div class="join w-full">
-    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level MAX:</span>
+    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level max:</span>
     <input
-      class="join-item input input-sm flex-1"
+      class="join-item input input-sm min-w-0 flex-1"
       type="number"
       [ngModel]="store.levelMax()"
       (ngModelChange)="store.setMaxLevel($event)"
     />
   </div>
-
   <div>
     @let idExpression = store.idExpression();
     <nwb-expresssion-branch-input
@@ -68,8 +65,14 @@
       (ngModelChange)="store.setIdExpression($event)"
     >
       <span *nwbExpressionKey class="join-item btn btn-sm btn-ghost w-20"> ID </span>
-      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm btn-ghost w-20">
-        {{ value }}
+      <button
+        *nwbExpressionValue="let value; let index = index"
+        class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left truncate"
+        (click)="pickVitalId(idExpressionInput, index, value)"
+      >
+        <span [nwbVitalDetail]="value" #detail="vitalDetail">
+          {{ detail.displayName() | nwText }}
+        </span>
       </button>
     </nwb-expresssion-branch-input>
     @if (!idExpression.rows.length) {
@@ -89,7 +92,11 @@
       (ngModelChange)="store.setTypeExpression($event)"
     >
       <span *nwbExpressionKey class="join-item btn btn-sm btn-ghost w-20"> Type </span>
-      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm btn-ghost w-20">
+      <button
+        *nwbExpressionValue="let value; let index = index"
+        class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left truncate"
+        (click)="pickVitalType(typeExpressionInput, index, value)"
+      >
         {{ value }}
       </button>
     </nwb-expresssion-branch-input>
@@ -110,7 +117,11 @@
       (ngModelChange)="store.setCategoriesExpression($event)"
     >
       <span *nwbExpressionKey class="join-item btn btn-sm w-20"> Categories </span>
-      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm w-20">
+      <button
+        *nwbExpressionValue="let value; let index = index"
+        class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left truncate"
+        (click)="pickVitalCategory(categoriesExpressionInput, index, value)"
+      >
         {{ value }}
       </button>
     </nwb-expresssion-branch-input>
@@ -133,7 +144,11 @@
       (ngModelChange)="store.setLootTagsExpression($event)"
     >
       <span *nwbExpressionKey class="join-item btn btn-sm w-20"> Loot Tags </span>
-      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm w-20">
+      <button
+        *nwbExpressionValue="let value; let index = index"
+        class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left truncate"
+        (click)="pickVitalLootTag(lootTagsExpressionInput, index, value)"
+      >
         {{ value }}
       </button>
     </nwb-expresssion-branch-input>
@@ -156,7 +171,11 @@
       (ngModelChange)="store.setPoiTagsExpression($event)"
     >
       <span *nwbExpressionKey class="join-item btn btn-sm w-20"> POI Tags </span>
-      <button *nwbExpressionValue="let value; let index = index" class="join-item flex-1 btn btn-sm w-20">
+      <button
+        *nwbExpressionValue="let value; let index = index"
+        class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left truncate"
+        (click)="pickVitalPoiTag(poiTagsExpressionInput, index, value)"
+      >
         {{ value }}
       </button>
     </nwb-expresssion-branch-input>

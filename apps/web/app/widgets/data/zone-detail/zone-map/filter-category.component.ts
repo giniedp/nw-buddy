@@ -3,7 +3,7 @@ import { sortBy, uniq } from 'lodash'
 import tinycolor from 'tinycolor2'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgAngleLeft, svgInfo } from '~/ui/icons/svg'
+import { svgAngleLeft, svgDice, svgInfo } from '~/ui/icons/svg'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
@@ -12,7 +12,7 @@ import { LootModule } from '~/widgets/loot'
 import { ZoneMapStore } from './zone-map.store'
 import { FilterPopoverComponent } from './filter-popover.component'
 import { FilterDataProperties, FilterDataSet } from './data/types'
-import { MapGeoJSONFeature } from 'maplibre-gl'
+import { FilterSpecification, MapGeoJSONFeature } from 'maplibre-gl'
 
 @Pipe({
   standalone: true,
@@ -38,7 +38,9 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
 })
 export class MapFilterCategoryComponent {
   public source = input.required<FilterDataSet[]>()
-  protected mapId = inject(ZoneMapStore).mapId
+  protected mapStore = inject(ZoneMapStore)
+  protected mapId = this.mapStore.mapId
+  protected showHeatmap = this.mapStore.showHeatmap
   protected isOpen = signal(false)
   protected iconArrowLeft = svgAngleLeft
   protected iconInfo = svgInfo
@@ -47,6 +49,7 @@ export class MapFilterCategoryComponent {
   protected hasChevron = computed(() => this.items().length > 1)
 
   protected items = this.source
+  protected diceIcon = svgDice
 
   protected data = computed(() => {
     const items = this.items()
@@ -70,6 +73,12 @@ export class MapFilterCategoryComponent {
   protected color = computed(() => this.data().color)
   protected variants = computed(() => this.data().variants)
   protected lootTable = computed(() => this.data().lootTable)
+  protected filter = computed((): FilterSpecification => {
+    if (this.mapStore.showEncounter()) {
+      return null
+    }
+    return ['!=', ['get', 'isRandom'], true]
+  })
 
   public isAnyEnabled = computed(() => {
     return this.layers().some((it) => !it.disabled())

@@ -7,7 +7,6 @@ import {
   GeoJSONSource,
   LineLayerSpecification,
   MapMouseEvent,
-  Popup,
   RequestTransformFunction,
   StyleSpecification,
   SymbolLayerSpecification,
@@ -23,7 +22,6 @@ import {
   xyFromLngLat,
   xyToLngLat,
 } from './utils'
-import { DomPortalOutlet } from '@angular/cdk/portal'
 @Component({
   standalone: true,
   selector: 'nwb-map',
@@ -45,7 +43,7 @@ import { DomPortalOutlet } from '@angular/cdk/portal'
       class="w-full h-full"
       id="game-map-element"
     ></div>
-    <div class="absolute top-2 left-2">{{ zoom() }} | {{ info() || '' }}</div>
+    <!-- <div class="absolute top-2 left-2">{{ zoom() }} | {{ info() || '' }}</div> -->
     <ng-content />
   `,
   host: {
@@ -99,6 +97,7 @@ export class GameMapComponent {
   public territories = input<FeatureCollection>()
   public areas = input<FeatureCollection>()
   public pois = input<FeatureCollection>()
+  public labels = input<boolean>(true)
   public zoneClick = output<string>()
 
   private injector = inject(Injector)
@@ -138,12 +137,14 @@ export class GameMapComponent {
     this.effect(() => {
       const isOpenWorld = isMapOpenWorld(this.mapId())
       const data = isOpenWorld ? this.territories() : null
-      untracked(() => this.updateTerritories(data))
+      const showLabels = this.labels()
+      untracked(() => this.updateTerritories(data, showLabels))
     })
     this.effect(() => {
       const isOpenWorld = isMapOpenWorld(this.mapId())
       const data = isOpenWorld ? this.areas() : null
-      untracked(() => this.updateAreas(data))
+      const showLabels = this.labels()
+      untracked(() => this.updateAreas(data, showLabels))
     })
     this.effect(() => {
       const isOpenWorld = isMapOpenWorld(this.mapId())
@@ -156,7 +157,7 @@ export class GameMapComponent {
     effect(fn, { injector: this.injector })
   }
 
-  private updateTerritories(features: FeatureCollection) {
+  private updateTerritories(features: FeatureCollection, showLabels: boolean) {
     const sourceId = 'territories'
     const layerFillId = 'territoriesFill'
     const layerOutlineId = 'territoriesOutline'
@@ -204,11 +205,12 @@ export class GameMapComponent {
         })
       })
     }
+    this.map.getLayer(layerSymbolId).visibility = showLabels ? 'visible' : 'none'
     const source = this.map.getSource(sourceId) as GeoJSONSource
     source.setData(features || { type: 'FeatureCollection', features: [] })
   }
 
-  private updateAreas(features: FeatureCollection) {
+  private updateAreas(features: FeatureCollection, showLabels: boolean) {
     const sourceId = 'areas'
     const layerFillId = 'areasFill'
     const layerOutlineId = 'areasOutline'
@@ -259,6 +261,7 @@ export class GameMapComponent {
         })
       })
     }
+    this.map.getLayer(layerSymbolId).visibility = showLabels ? 'visible' : 'none'
     const source = this.map.getSource(sourceId) as GeoJSONSource
     source.setData(features || { type: 'FeatureCollection', features: [] })
   }
@@ -370,6 +373,7 @@ const territorySymbolLayout: SymbolLayerSpecification = {
     'text-color': '#FFFFFF',
     'text-halo-color': '#000000',
     'text-halo-width': 2,
+    'text-halo-blur': 2,
   },
 }
 const areaFillLayout: FillLayerSpecification = {
@@ -400,12 +404,14 @@ const areaSymbolLayout: SymbolLayerSpecification = {
   type: 'symbol',
   layout: {
     'text-field': ['get', 'name'],
-    'text-size': 16,
+    'text-size': 20,
   },
   paint: {
     'text-color': '#FFFFFF',
     'text-halo-color': '#000000',
-    'text-halo-width': 1,
+    'text-halo-width': 2,
+    'text-halo-blur': 2,
+
   },
 }
 const poisFillLayout: FillLayerSpecification = {

@@ -70,7 +70,7 @@ export interface VitalDataSet {
   >
 }
 
-export type VitalDataGeometry = FeatureCollection<Point, VitalDataProperties>
+export type VitalDataGeometry = FeatureCollection<MultiPoint, VitalDataProperties>
 export interface VitalDataProperties {
   id: string
   level: number
