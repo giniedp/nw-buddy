@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getRecipeForItem } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { selectStream } from '~/utils'
@@ -17,7 +16,7 @@ import { TrophiesCellComponent } from './trophies-cell.component'
 import { TrophiesRecord } from './types'
 
 @Injectable()
-export class TrophiesTableAdapter implements TableGridAdapter<TrophiesRecord>, DataViewAdapter<TrophiesRecord> {
+export class TrophiesTableAdapter implements DataViewAdapter<TrophiesRecord> {
   private db = inject(NwDataService)
 
   public entityID(item: TrophiesRecord): string {
@@ -47,7 +46,7 @@ export class TrophiesTableAdapter implements TableGridAdapter<TrophiesRecord>, D
       itemsMap: this.db.itemsMap,
       housingMap: this.db.housingItemsMap,
     }),
-    selectRecords
+    selectRecords,
   )
 }
 
@@ -87,8 +86,8 @@ function selectRecords({
   return Object.values(
     groupBy(
       sortBy(records, (it) => it.itemId),
-      (it) => it.itemId.replace(/_T\d$/, '')
-    )
+      (it) => it.itemId.replace(/_T\d$/, ''),
+    ),
   )
     .sort((a, b) => b.length - a.length)
     .flat()

@@ -2,9 +2,10 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   LootBucketTableRecord,
   lootBucketColColumn,
@@ -15,14 +16,11 @@ import {
   lootBucketColQuantity,
   lootBucketColTags,
 } from './loot-bucket-table-cols'
-import { humanize } from '~/utils'
 
 @Injectable()
-export class LootBucketTableAdapter
-  implements DataViewAdapter<LootBucketTableRecord>, TableGridAdapter<LootBucketTableRecord>
-{
+export class LootBucketTableAdapter implements DataViewAdapter<LootBucketTableRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<LootBucketTableRecord>({ optional: true })
   private utils: TableGridUtils<LootBucketTableRecord> = inject(TableGridUtils)
 
   public entityID(item: LootBucketTableRecord): string {

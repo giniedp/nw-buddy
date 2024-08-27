@@ -4,8 +4,8 @@ import { getItemRarityWeight } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
-import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataViewAdapter, DataViewCategory, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
 import { Armorset } from '../types'
@@ -21,10 +21,10 @@ import {
 } from './armorset-grid-cols'
 
 @Injectable()
-export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord>, TableGridAdapter<ArmorsetGridRecord> {
+export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord> {
   private db = inject(NwDataService)
   private utils: TableGridUtils<ArmorsetGridRecord> = inject(TableGridUtils)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<ArmorsetGridRecord>({ optional: true })
 
   public entityID(item: ArmorsetGridRecord): string {
     return item.key

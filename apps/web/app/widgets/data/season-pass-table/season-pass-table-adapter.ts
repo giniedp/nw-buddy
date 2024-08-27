@@ -4,31 +4,23 @@ import { getSeasonPassDataId } from '@nw-data/common'
 import { COLS_SEASONPASSRANKDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   SeasonPassTableRecord,
+  seasonPassColFreeItem,
   seasonPassColID,
   seasonPassColLevel,
-  seasonPassColFreeItem,
   seasonPassColPremiumItem,
   seasonPassColSeason,
 } from './season-pass-table-cols'
-import { humanize } from '~/utils'
 
 @Injectable()
-export class SeasonPassTableAdapter
-  implements DataViewAdapter<SeasonPassTableRecord>, TableGridAdapter<SeasonPassTableRecord>
-{
+export class SeasonPassTableAdapter implements DataViewAdapter<SeasonPassTableRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<SeasonPassTableRecord>({ optional: true })
   private utils: TableGridUtils<SeasonPassTableRecord> = inject(TableGridUtils)
 
   public entityID(item: SeasonPassTableRecord): string {

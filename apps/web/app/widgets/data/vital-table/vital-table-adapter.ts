@@ -4,14 +4,8 @@ import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo } from '@nw-
 import { COLS_VITALSDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { VitalGridCellComponent } from './vital-cell.component'
 import {
@@ -43,10 +37,10 @@ import {
 } from './vital-table-cols'
 
 @Injectable()
-export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, TableGridAdapter<VitalTableRecord> {
+export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
   private db = inject(NwDataService)
   private utils: TableGridUtils<VitalTableRecord> = inject(TableGridUtils)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<VitalTableRecord>({ optional: true })
 
   public entityID(item: VitalTableRecord): string {
     return item.VitalsID

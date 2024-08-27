@@ -5,15 +5,8 @@ import { COLS_LOREDATA, LoreData } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { Observable, map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { eqCaseInsensitive, humanize } from '~/utils'
 import { LoreItemCellComponent } from './lore-item-cell.component'
@@ -27,11 +20,9 @@ import {
 } from './lore-item-table-cols'
 
 @Injectable()
-export class LoreItemTableAdapter
-  implements DataViewAdapter<LoreItemTableRecord>, TableGridAdapter<LoreItemTableRecord>
-{
+export class LoreItemTableAdapter implements DataViewAdapter<LoreItemTableRecord> {
   private db = inject(NwDataService)
-  private config = inject<TableGridAdapterOptions<LoreItemTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<LoreItemTableRecord>({ optional: true })
   private utils: TableGridUtils<LoreItemTableRecord> = inject(TableGridUtils)
 
   public entityID(item: LoreItemTableRecord): string | number {

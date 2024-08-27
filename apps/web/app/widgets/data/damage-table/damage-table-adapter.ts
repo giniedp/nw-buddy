@@ -2,9 +2,10 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_DAMAGEDATA, DamageData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
-import { DataTableCategory } from '~/ui/data/table-grid'
-import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   DamageTableRecord,
   damageColAffixes,
@@ -21,14 +22,11 @@ import {
   damageColIcon,
   damageSource,
 } from './damage-table-cols'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { humanize } from '~/utils'
 
 @Injectable()
-export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord>, TableGridAdapter<DamageTableRecord> {
+export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<DamageTableRecord>({ optional: true })
   private utils: TableGridUtils<DamageTableRecord> = inject(TableGridUtils)
 
   public entityID(item: DamageTableRecord): string {

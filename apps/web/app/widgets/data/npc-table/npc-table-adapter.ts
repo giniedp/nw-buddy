@@ -2,16 +2,11 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
-import {
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-} from '~/ui/data/table-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 
 import { sortBy } from 'lodash'
 import { Observable } from 'rxjs'
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
@@ -20,10 +15,10 @@ import { NpcGridCellComponent } from './npc-cell.component'
 import { NpcTableRecord, npcColIcon, npcColId, npcColName, npcColTitle } from './npc-table-cols'
 
 @Injectable()
-export class NpcsTableAdapter implements TableGridAdapter<NpcTableRecord>, DataViewAdapter<NpcTableRecord> {
+export class NpcsTableAdapter implements DataViewAdapter<NpcTableRecord> {
   private db = inject(NwDataService)
   private i18n = inject(TranslateService)
-  private config = inject<TableGridAdapterOptions<NpcTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<NpcTableRecord>({ optional: true })
   private utils: TableGridUtils<NpcTableRecord> = inject(TableGridUtils)
   private service = inject(NpcService)
 

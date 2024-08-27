@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
-import { DataGridModule, provideTableGrid } from '~/ui/data/table-grid'
+import { provideDataView } from '~/ui/data/data-view'
+import { DataGridModule } from '~/ui/data/table-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { QuestTableAdapter } from './quest-table-adapter'
 
@@ -25,8 +26,8 @@ import { QuestTableAdapter } from './quest-table-adapter'
   `,
   imports: [CommonModule, DataGridModule, QuicksearchModule],
   providers: [
-    provideTableGrid({
-      type: QuestTableAdapter,
+    provideDataView({
+      adapter: QuestTableAdapter,
     }),
   ],
 })

@@ -3,15 +3,10 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_LOOTTABLESDATA } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   LootTableGridRecord,
   lootTableColConditions,
@@ -21,12 +16,11 @@ import {
   lootTableColParents,
   lootTableColSource,
 } from './loot-table-cols'
-import { humanize } from '~/utils'
 
 @Injectable()
-export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord>, TableGridAdapter<LootTableGridRecord> {
+export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<LootTableGridRecord>({ optional: true })
   private utils: TableGridUtils<LootTableGridRecord> = inject(TableGridUtils)
 
   public entityID(item: LootTableGridRecord): string {

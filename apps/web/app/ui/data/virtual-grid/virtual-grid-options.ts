@@ -1,7 +1,6 @@
-import { InjectionToken, StaticProvider, TemplateRef, Type } from '@angular/core'
+import { InjectionToken, StaticProvider, Type } from '@angular/core'
 import { VirtualGridCellComponent } from './virtual-grid-cell.component'
 import { VirtualGridSectionComponent } from './virtual-grid-section.component'
-import { VirtualGridSection } from './types'
 
 export const VIRTUAL_GRID_OPTIONS = new InjectionToken<VirtualGridOptions<any>>('VIRTUAL_GRID_OPTIONS')
 

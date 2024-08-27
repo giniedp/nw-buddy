@@ -5,15 +5,8 @@ import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
 
@@ -26,11 +19,11 @@ import {
 } from './territory-cols'
 
 @Injectable()
-export class TerritoryTableAdapter implements TableGridAdapter<TerritoryRecord>, DataViewAdapter<TerritoryRecord> {
+export class TerritoryTableAdapter implements DataViewAdapter<TerritoryRecord> {
   private db = inject(NwDataService)
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<TerritoryRecord> = inject(TableGridUtils)
-  private config: TableGridAdapterOptions<TerritoryRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<TerritoryRecord>({ optional: true })
   private source$: Observable<TerritoryRecord[]> = selectStream(this.config?.source || this.db.territories, (modes) => {
     if (this.config?.filter) {
       modes = modes.filter(this.config.filter)

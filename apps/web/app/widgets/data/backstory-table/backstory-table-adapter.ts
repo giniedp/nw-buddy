@@ -3,16 +3,9 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_BACKSTORYDEFINITION } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { tapDebug } from '~/utils'
 import { selectBackstoryItems } from '../backstory-detail/selectors'
 import { BackstoryCellComponent } from './backstory-cell.component'
 import {
@@ -26,11 +19,9 @@ import {
 } from './backstory-table-cols'
 
 @Injectable()
-export class BackstoryTableAdapter
-  implements DataViewAdapter<BackstoryTableRecord>, TableGridAdapter<BackstoryTableRecord>
-{
+export class BackstoryTableAdapter implements DataViewAdapter<BackstoryTableRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<BackstoryTableRecord>({ optional: true })
   private utils: TableGridUtils<BackstoryTableRecord> = inject(TableGridUtils)
 
   public entityID(item: BackstoryTableRecord): string {

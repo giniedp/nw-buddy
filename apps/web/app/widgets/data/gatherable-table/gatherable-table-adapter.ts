@@ -2,15 +2,10 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_GATHERABLEDATA } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import {
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-} from '~/ui/data/table-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 
 import { Observable } from 'rxjs'
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
@@ -33,14 +28,10 @@ import {
 } from './gatherable-table-cols'
 
 @Injectable()
-export class GatherableTableAdapter
-  implements TableGridAdapter<GatherableTableRecord>, DataViewAdapter<GatherableTableRecord>
-{
+export class GatherableTableAdapter implements DataViewAdapter<GatherableTableRecord> {
   private service = inject(GatherableService)
   private i18n = inject(TranslateService)
-  private config = inject<TableGridAdapterOptions<GatherableTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, {
-    optional: true,
-  })
+  private config = injectDataViewAdapterOptions<GatherableTableRecord>({ optional: true })
   private utils: TableGridUtils<GatherableTableRecord> = inject(TableGridUtils)
 
   public entityID(item: GatherableTableRecord): string {

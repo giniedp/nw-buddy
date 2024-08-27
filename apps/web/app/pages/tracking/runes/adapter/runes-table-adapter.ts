@@ -2,9 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { mapFilter, selectStream } from '~/utils'
@@ -12,13 +10,13 @@ import { mapFilter, selectStream } from '~/utils'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
+import { groupBy } from 'lodash'
 import { combineLatest } from 'rxjs'
 import { RunesCellComponent } from './runes-cell.component'
 import { RunesRecord } from './types'
-import { groupBy } from 'lodash'
 
 @Injectable()
-export class RunesTableAdapter implements TableGridAdapter<RunesRecord>, DataViewAdapter<RunesRecord> {
+export class RunesTableAdapter implements DataViewAdapter<RunesRecord> {
   private db = inject(NwDataService)
 
   public entityID(item: RunesRecord): string {
@@ -57,7 +55,7 @@ export class RunesTableAdapter implements TableGridAdapter<RunesRecord>, DataVie
       housing: this.db.housingItemsMap,
       recipes: this.db.recipes.pipe(mapFilter(isRunestone)),
     }),
-    selectSchematics
+    selectSchematics,
   )
 }
 

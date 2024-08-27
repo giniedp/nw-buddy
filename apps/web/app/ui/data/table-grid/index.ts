@@ -1,5 +1,4 @@
 export * from './components'
-export * from './table-grid-adapter'
 export * from './table-grid-utils.service'
 export * from './table-grid.component'
 export * from './table-grid.module'

@@ -4,10 +4,8 @@ import { COLS_GAMEEVENTDATA, GameEventData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { humanize } from '~/utils'
 
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
-import { DataTableCategory } from '~/ui/data/table-grid'
-import { addGenericColumns } from '~/ui/data/table-grid'
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   GameEventTableRecord,
@@ -41,11 +39,9 @@ import {
 } from './game-event-table-cols'
 
 @Injectable()
-export class GameEventTableAdapter
-  implements DataViewAdapter<GameEventTableRecord>, TableGridAdapter<GameEventTableRecord>
-{
+export class GameEventTableAdapter implements DataViewAdapter<GameEventTableRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<GameEventTableRecord>({ optional: true })
   private utils: TableGridUtils<GameEventTableRecord> = inject(TableGridUtils)
 
   public entityID(item: GameEventTableRecord): string {

@@ -2,35 +2,27 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_PLAYERTITLEDATA, PlayerTitleData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   PlayertitlesTableRecord,
-  playerTitleColID,
   playerTitleColDescription,
+  playerTitleColID,
   playerTitleColNameFemale,
   playerTitleColNameMale,
   playerTitleColNameNeutral,
   playerTitleColRequiredLevel,
-  playerTitleColType,
   playerTitleColTradeSkill,
   playerTitleColTradeSkillLevel,
+  playerTitleColType,
 } from './player-titles-table-cols'
-import { humanize } from '~/utils'
 
 @Injectable()
-export class PlayerTitlesTableAdapter
-  implements DataViewAdapter<PlayertitlesTableRecord>, TableGridAdapter<PlayertitlesTableRecord>
-{
+export class PlayerTitlesTableAdapter implements DataViewAdapter<PlayertitlesTableRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<PlayertitlesTableRecord>({ optional: true })
   private utils: TableGridUtils<PlayertitlesTableRecord> = inject(TableGridUtils)
 
   public entityID(item: PlayertitlesTableRecord): string {

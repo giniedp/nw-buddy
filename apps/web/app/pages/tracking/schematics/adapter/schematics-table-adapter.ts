@@ -4,24 +4,23 @@ import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { selectStream } from '~/utils'
 
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
+import { sortBy } from 'lodash'
 import { combineLatest } from 'rxjs'
 import { SchematicCellComponent } from './schematic-cell.component'
 import { SchematicRecord } from './types'
-import { sortBy } from 'lodash'
 
 @Injectable()
-export class SchematicsTableAdapter implements TableGridAdapter<SchematicRecord>, DataViewAdapter<SchematicRecord> {
+export class SchematicsTableAdapter implements DataViewAdapter<SchematicRecord> {
   private db = inject(NwDataService)
   private tl8 = inject(TranslateService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<SchematicRecord>({ optional: true })
 
   public entityID(item: SchematicRecord): string {
     return item.itemId

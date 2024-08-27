@@ -1,5 +1,5 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { InjectionToken } from '@angular/core'
+import { InjectionToken, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { TableGridUtils } from '../table-grid'
 import { VirtualGridOptions } from '../virtual-grid/virtual-grid-options'
@@ -34,7 +34,20 @@ export interface DataViewAdapterOptions<T> {
    * Builder ag-grid configuration
    */
   gridOptions?: (util: TableGridUtils) => GridOptions<T>
+  /**
+   * Builder virtual grid configuration
+   */
+  virtualOptions?: (util: TableGridUtils) => VirtualGridOptions<T>
+  /**
+   * Optional function to retrieve the entity ID
+   */
+  entityIdD?: (item: T) => string | number
+  /**
+   * Optional function to retrieve the entity categories
+   */
+  entityCategoriesD?: (item: T) => DataViewCategory[]
 }
+
 export abstract class DataViewAdapter<T> {
   public abstract entityID(item: T): string | number
   public abstract entityCategories(item: T): DataViewCategory[]
@@ -42,5 +55,26 @@ export abstract class DataViewAdapter<T> {
   public abstract connect(): Observable<T[]>
   public abstract gridOptions(): GridOptions<T>
   public abstract virtualOptions(): VirtualGridOptions<T>
+}
 
+export class DataViewDefaultAdapter<T> implements DataViewAdapter<T> {
+  private config = inject(DATA_VIEW_ADAPTER_OPTIONS)
+  private utils = inject(TableGridUtils)
+
+  public entityID(item: T): string | number {
+    return this.config.entityIdD(item)
+  }
+  public entityCategories(item: T): DataViewCategory[] {
+    return this.config.entityCategoriesD(item)
+  }
+  public getCategories?: () => DataViewCategory[]
+  public connect(): Observable<T[]> {
+    return this.config.source
+  }
+  public gridOptions(): GridOptions<T> {
+    return this.config.gridOptions?.(this.utils)
+  }
+  public virtualOptions(): VirtualGridOptions<T> {
+    return this.config.virtualOptions?.(this.utils)
+  }
 }

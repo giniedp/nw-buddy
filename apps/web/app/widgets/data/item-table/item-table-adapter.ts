@@ -4,9 +4,9 @@ import { getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/c
 import { COLS_MASTERITEMDEFINITIONS, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
@@ -39,10 +39,10 @@ import {
 } from './item-table-cols'
 
 @Injectable()
-export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, DataViewAdapter<ItemTableRecord> {
+export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
   private db = inject(NwDataService)
   private i18n = inject(TranslateService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<ItemTableRecord>({ optional: true })
   private utils: TableGridUtils<ItemTableRecord> = inject(TableGridUtils)
 
   public entityID(item: ItemTableRecord): string {

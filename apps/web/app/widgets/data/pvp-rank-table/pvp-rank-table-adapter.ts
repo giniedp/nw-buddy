@@ -4,15 +4,9 @@ import { COLS_PVPRANKDATA } from '@nw-data/generated'
 import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   PvpRankTableRecord,
@@ -23,11 +17,11 @@ import {
 } from './pvp-rank-table-cols'
 
 @Injectable()
-export class PvpRankTableAdapter implements DataViewAdapter<PvpRankTableRecord>, TableGridAdapter<PvpRankTableRecord> {
+export class PvpRankTableAdapter implements DataViewAdapter<PvpRankTableRecord> {
   private db = inject(NwDataService)
   private utils: TableGridUtils<PvpRankTableRecord> = inject(TableGridUtils)
   private weaponTypes: NwWeaponTypesService = inject(NwWeaponTypesService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<PvpRankTableRecord>({ optional: true })
 
   public entityID(item: PvpRankTableRecord): string {
     return String(item.Level)
@@ -58,8 +52,8 @@ function buildOptions(util: TableGridUtils<PvpRankTableRecord>) {
   addGenericColumns(result, {
     props: COLS_PVPRANKDATA,
     defaults: {
-      hide: false
-    }
+      hide: false,
+    },
   })
   return result
 }

@@ -2,14 +2,8 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_EMOTEDATA, EmoteData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   EmoteTableRecord,
@@ -25,9 +19,9 @@ import {
 } from './emote-table-cols'
 
 @Injectable()
-export class EmoteTableAdapter implements DataViewAdapter<EmoteTableRecord>, TableGridAdapter<EmoteTableRecord> {
+export class EmoteTableAdapter implements DataViewAdapter<EmoteTableRecord> {
   private db = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<EmoteTableRecord>({ optional: true })
   private utils: TableGridUtils<EmoteTableRecord> = inject(TableGridUtils)
 
   public entityID(item: EmoteTableRecord): string {

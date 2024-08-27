@@ -2,18 +2,13 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getUIHousingCategoryLabel } from '@nw-data/common'
 import { COLS_HOUSEITEMS, HouseItems } from '@nw-data/generated'
-import { map } from 'rxjs'
-import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
-import {
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  DataTableCategory,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { TranslateService } from '~/i18n'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { selectStream } from '~/utils'
+import { HousingCellComponent } from './housing-cell.component'
 import {
   HousingTableRecord,
   housingColHousingTag1Placed,
@@ -29,14 +24,12 @@ import {
   housingColUserPrice,
   housingColUserStockValue,
 } from './housing-table-cols'
-import { HousingCellComponent } from './housing-cell.component'
-import { selectStream } from '~/utils'
 
 @Injectable()
-export class HousingTableAdapter implements TableGridAdapter<HousingTableRecord>, DataViewAdapter<HousingTableRecord> {
+export class HousingTableAdapter implements DataViewAdapter<HousingTableRecord> {
   private db = inject(NwDataService)
   private i18n = inject(TranslateService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<HousingTableRecord>({ optional: true })
   private utils: TableGridUtils<HousingTableRecord> = inject(TableGridUtils)
 
   public entityID(item: HousingTableRecord): string {

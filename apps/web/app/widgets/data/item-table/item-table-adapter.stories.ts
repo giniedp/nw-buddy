@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
+import { provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
-import { provideTableGrid } from '~/ui/data/table-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { ItemTableAdapter } from './item-table-adapter'
 
@@ -26,8 +26,8 @@ import { ItemTableAdapter } from './item-table-adapter'
   `,
   imports: [CommonModule, DataGridModule, QuicksearchModule],
   providers: [
-    provideTableGrid({
-      type: ItemTableAdapter,
+    provideDataView({
+      adapter: ItemTableAdapter,
     }),
   ],
 })

@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core'
 import { getItemId } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { selectStream } from '~/utils'
@@ -17,7 +16,7 @@ import { MusicCellComponent } from './music-cell.component'
 import { MusicRecord } from './types'
 
 @Injectable()
-export class RecipesTableAdapter implements TableGridAdapter<MusicRecord>, DataViewAdapter<MusicRecord> {
+export class RecipesTableAdapter implements DataViewAdapter<MusicRecord> {
   private db = inject(NwDataService)
   private tl8 = inject(TranslateService)
 

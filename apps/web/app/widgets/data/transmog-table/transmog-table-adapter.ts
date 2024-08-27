@@ -1,32 +1,27 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NwDataService } from '~/data'
-import {
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-} from '~/ui/data/table-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
+import { withRepeat } from '~/utils'
 import { TRANSMOG_CATEGORIES, isAppearanceInTransmogCategory } from '../transmog/transmog-categories'
 import { TransmogService } from '../transmog/transmog.service'
 import { TransmogCellComponent } from './transmog-cell.component'
 import { TransmogRecord } from './types'
-import { withRepeat } from '~/utils'
 
 @Injectable()
-export class TransmogTableAdapter implements TableGridAdapter<TransmogRecord>, DataViewAdapter<TransmogRecord> {
+export class TransmogTableAdapter implements DataViewAdapter<TransmogRecord> {
   private db = inject(NwDataService)
   private service = inject(TransmogService)
   private i18n = inject(TranslateService)
-  private config: TableGridAdapterOptions<TransmogRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<TransmogRecord>({ optional: true })
   private utils: TableGridUtils<TransmogRecord> = inject(TableGridUtils)
 
   public entityID(item: TransmogRecord): string {
@@ -53,7 +48,7 @@ export class TransmogTableAdapter implements TableGridAdapter<TransmogRecord>, D
 
   public virtualOptions(): VirtualGridOptions<TransmogRecord> {
     if (this.config.virtualOptions) {
-      return this.config.virtualOptions()
+      return this.config.virtualOptions(this.utils)
     }
     return TransmogCellComponent.buildGridOptions()
   }
@@ -95,6 +90,6 @@ export class TransmogTableAdapter implements TableGridAdapter<TransmogRecord>, D
         })
       }
       return list
-    })
+    }),
   )
 }

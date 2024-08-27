@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemIdFromRecipe, getItemTierAsRoman } from '@nw-data/common'
 import { CraftingRecipeData, MasterItemDefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { selectStream } from '~/utils'
@@ -11,14 +10,14 @@ import { selectStream } from '~/utils'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
+import { sortBy } from 'lodash'
 import { combineLatest } from 'rxjs'
+import { TranslateService } from '~/i18n'
 import { RecipeCellComponent } from './recipes-cell.component'
 import { RecipeRecord } from './types'
-import { TranslateService } from '~/i18n'
-import { sortBy } from 'lodash'
 
 @Injectable()
-export class RecipesTableAdapter implements TableGridAdapter<RecipeRecord>, DataViewAdapter<RecipeRecord> {
+export class RecipesTableAdapter implements DataViewAdapter<RecipeRecord> {
   private db = inject(NwDataService)
   private tl8 = inject(TranslateService)
 
@@ -56,7 +55,7 @@ export class RecipesTableAdapter implements TableGridAdapter<RecipeRecord>, Data
     }),
     (data) => {
       return sortBy(selectRecords(data), (it) => this.tl8.get(it.item.Name))
-    }
+    },
   )
 }
 
@@ -64,7 +63,13 @@ function isRecipe(item: MasterItemDefinitions) {
   return item.TradingGroup === 'Recipes'
 }
 
-function selectRecords({ items, recipes }: { items: Map<string, MasterItemDefinitions>; recipes: CraftingRecipeData[] }) {
+function selectRecords({
+  items,
+  recipes,
+}: {
+  items: Map<string, MasterItemDefinitions>
+  recipes: CraftingRecipeData[]
+}) {
   return recipes
     .map((recipe): RecipeRecord => {
       const itemId = getItemIdFromRecipe(recipe)

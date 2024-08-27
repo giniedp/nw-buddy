@@ -1,10 +1,12 @@
+import { GridOptions } from '@ag-grid-community/core'
+import { CommonModule } from '@angular/common'
 import { Component, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
-import { AppTestingModule } from '~/test'
-import { TableGridComponent } from './table-grid.component'
 import { of } from 'rxjs'
-import { CommonModule } from '@angular/common'
-import { TableGridAdapter } from './table-grid-adapter'
+import { AppTestingModule } from '~/test'
+import { DataViewAdapter, DataViewCategory } from '../data-view'
+import { VirtualGridOptions } from '../virtual-grid'
+import { TableGridComponent } from './table-grid.component'
 
 @Component({
   standalone: true,
@@ -16,8 +18,12 @@ import { TableGridAdapter } from './table-grid-adapter'
   `,
   imports: [CommonModule, TableGridComponent],
 })
-export class StoryComponent implements TableGridAdapter<{ id: string; name: string }> {
-  public entityID(it) {
+export class StoryComponent implements DataViewAdapter<{ id: string; name: string }> {
+  public getCategories?: () => DataViewCategory[]
+  public virtualOptions(): VirtualGridOptions<{ id: string; name: string }> {
+    return null
+  }
+  public entityID(it: any) {
     return it.id
   }
   public entityCategories() {
@@ -30,11 +36,11 @@ export class StoryComponent implements TableGridAdapter<{ id: string; name: stri
           id: String(Math.random()),
           name: Math.random().toString(36).substring(7),
         }
-      })
+      }),
     )
   }
 
-  public gridOptions() {
+  public gridOptions(): GridOptions {
     return {
       columnDefs: [{ field: 'id' }, { field: 'name' }],
     }

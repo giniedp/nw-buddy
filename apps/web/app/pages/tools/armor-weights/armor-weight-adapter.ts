@@ -1,10 +1,11 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
-import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 
-import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
+import { DataViewAdapter, DataViewCategory, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   ArmorWeightTableRecord,
   armorWeightColChest,
@@ -16,19 +17,15 @@ import {
   armorWeightColShield,
   armorWeightColWeight,
 } from './armor-weight-cols'
-import { ArmorWeightSet, ArmorWeightsStore } from './armor-weights.store'
-import { humanize } from '~/utils'
+import { ArmorWeightsStore } from './armor-weights.store'
 
 @Injectable()
-export class ArmorWeightTableAdapter
-  implements DataViewAdapter<ArmorWeightTableRecord>, TableGridAdapter<ArmorWeightTableRecord>
-{
+export class ArmorWeightTableAdapter implements DataViewAdapter<ArmorWeightTableRecord> {
   public getCategories?: () => DataViewCategory[]
-
 
   private store = inject(ArmorWeightsStore)
   private utils: TableGridUtils<ArmorWeightTableRecord> = inject(TableGridUtils)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<ArmorWeightTableRecord>({ optional: true })
 
   public entityID(item: ArmorWeightTableRecord): string {
     return item.id
@@ -37,8 +34,8 @@ export class ArmorWeightTableAdapter
   public entityCategories(item: ArmorWeightTableRecord): DataTableCategory[] {
     return [
       {
-        id: humanize(item.weightClass) ,
-        label: humanize(item.weightClass) ,
+        id: humanize(item.weightClass),
+        label: humanize(item.weightClass),
         icon: null,
       },
     ]

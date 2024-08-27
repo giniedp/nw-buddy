@@ -5,15 +5,9 @@ import { sortBy } from 'lodash'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { humanize } from '~/utils'
 import {
@@ -37,11 +31,11 @@ import {
 } from './ability-table-cols'
 
 @Injectable()
-export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>, TableGridAdapter<AbilityTableRecord> {
+export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord> {
   private db = inject(NwDataService)
   private utils: TableGridUtils<AbilityTableRecord> = inject(TableGridUtils)
   private weaponTypes: NwWeaponTypesService = inject(NwWeaponTypesService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<AbilityTableRecord>({ optional: true })
 
   public entityID(item: AbilityTableRecord): string {
     return item.AbilityID

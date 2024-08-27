@@ -2,13 +2,12 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_STATUSEFFECTDATA, StatusEffectData } from '@nw-data/generated'
 import { sortBy } from 'lodash'
-import { map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
-import { DataTableCategory } from '~/ui/data/table-grid'
-import { addGenericColumns } from '~/ui/data/table-grid'
-import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize, selectStream } from '~/utils'
+import { StatusEffectCellComponent } from './status-effect-cell.component'
 import {
   StatusEffectTableRecord,
   statusEffectColBaseDuration,
@@ -19,16 +18,12 @@ import {
   statusEffectColSource,
   statusEffectColStatusID,
 } from './status-effect-table-cols'
-import { StatusEffectCellComponent } from './status-effect-cell.component'
-import { humanize, selectStream } from '~/utils'
 
 @Injectable()
-export class StatusEffectTableAdapter
-  implements DataViewAdapter<StatusEffectTableRecord>, TableGridAdapter<StatusEffectTableRecord>
-{
+export class StatusEffectTableAdapter implements DataViewAdapter<StatusEffectTableRecord> {
   private db = inject(NwDataService)
   private utils: TableGridUtils<StatusEffectTableRecord> = inject(TableGridUtils)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<StatusEffectTableRecord>({ optional: true })
 
   public entityID(item: StatusEffectData): string {
     return item.StatusID
@@ -45,7 +40,7 @@ export class StatusEffectTableAdapter
 
   public virtualOptions(): VirtualGridOptions<StatusEffectData> {
     if (this.config?.virtualOptions) {
-      return this.config.virtualOptions()
+      return this.config.virtualOptions(this.utils)
     }
     return StatusEffectCellComponent.buildGridOptions()
   }

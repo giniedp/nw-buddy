@@ -2,16 +2,10 @@ import { GridOptions } from '@ag-grid-community/core'
 import { inject, Injectable } from '@angular/core'
 import { COLS_TERRITORYDEFINITION } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  addGenericColumns,
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { addGenericColumns, DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 import {
   zoneColDescription,
   zoneColIcon,
@@ -21,13 +15,12 @@ import {
   zoneColVitalsCategory,
   ZoneTableRecord,
 } from './zone-table-cols'
-import { humanize } from '~/utils'
 
 @Injectable()
-export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord>, TableGridAdapter<ZoneTableRecord> {
+export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord> {
   private db = inject(NwDataService)
   private utils: TableGridUtils<ZoneTableRecord> = inject(TableGridUtils)
-  private config = inject<TableGridAdapterOptions<ZoneTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<ZoneTableRecord>({ optional: true })
 
   public entityID(item: ZoneTableRecord): string | number {
     return String(item.TerritoryID)

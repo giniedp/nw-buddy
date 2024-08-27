@@ -1,17 +1,11 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getUIHousingCategoryLabel } from '@nw-data/common'
-import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
+import { TranslateService } from '~/i18n'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
 import { WeaponTypeCellComponent } from './weapon-type-cell.component'
@@ -23,14 +17,10 @@ import {
 } from './weapon-type-table-cols'
 
 @Injectable()
-export class WeaponTypeTableAdapter
-  implements TableGridAdapter<WeaponTypeTableRecord>, DataViewAdapter<WeaponTypeTableRecord>
-{
+export class WeaponTypeTableAdapter implements DataViewAdapter<WeaponTypeTableRecord> {
   private db = inject(NwDataService)
   private i18n = inject(TranslateService)
-  private config: TableGridAdapterOptions<WeaponTypeTableRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, {
-    optional: true,
-  })
+  private config = injectDataViewAdapterOptions<WeaponTypeTableRecord>({ optional: true })
   private utils: TableGridUtils<WeaponTypeTableRecord> = inject(TableGridUtils)
   private service = inject(NwWeaponTypesService)
 

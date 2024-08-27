@@ -41,6 +41,11 @@ export interface DataViewPickerOptions<T = unknown> {
    */
   dataView: DataViewProvideOptions<T>
 
+  /**
+   *
+   */
+  cssClassModal?: string
+
   injector: Injector
 }
 
@@ -91,7 +96,7 @@ export class DataViewPicker<T> {
         persistKey: options.persistKey,
         displayMode: options.displayMode,
       },
-      cssClass: 'ion-modal-full xl:ion-modal-lg',
+      cssClass: options.cssClassModal || 'ion-modal-full xl:ion-modal-lg',
     })
     modal.present()
     const { data, role } = await modal.onWillDismiss()

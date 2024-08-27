@@ -6,15 +6,8 @@ import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
 import { PerkGridCellComponent } from './perk-grid-cell.component'
@@ -33,11 +26,11 @@ import {
 } from './perk-table-cols'
 
 @Injectable()
-export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, DataViewAdapter<PerkTableRecord> {
+export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
   private db = inject(NwDataService)
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<PerkTableRecord> = inject(TableGridUtils)
-  private config: TableGridAdapterOptions<PerkTableRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<PerkTableRecord>({ optional: true })
   private source$: Observable<PerkTableRecord[]> = selectStream(
     {
       perks: this.config?.source || this.db.perks,

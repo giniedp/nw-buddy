@@ -1,16 +1,13 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, Signal, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { getCraftingIngredients, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
 import { COLS_CRAFTINGRECIPEDATA } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
-import {
-  TABLE_GRID_ADAPTER_OPTIONS,
-  DataTableCategory,
-  TableGridAdapter,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { CharacterStore, NwDataService } from '~/data'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   CraftingTableRecord,
   craftingColBookmark,
@@ -32,19 +29,13 @@ import {
   craftingColSource,
   craftingColTradeskill,
 } from './crafting-table-cols'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { CharacterStore } from '~/data'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 @Injectable()
-export class CraftingTableAdapter
-  implements DataViewAdapter<CraftingTableRecord>, TableGridAdapter<CraftingTableRecord>
-{
+export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord> {
   private db = inject(NwDataService)
   private character = inject(CharacterStore)
   private utils: TableGridUtils<CraftingTableRecord> = inject(TableGridUtils)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<CraftingTableRecord>({ optional: true })
   private skills = toSignal(this.character.tradeskills$, { initialValue: null })
 
   public entityID(item: CraftingTableRecord): string {
@@ -94,7 +85,7 @@ export class CraftingTableAdapter
               .filter((it) => !!it),
           }
         })
-      })
+      }),
     )
   }
 }

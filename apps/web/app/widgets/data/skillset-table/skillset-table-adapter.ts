@@ -3,8 +3,8 @@ import { Injectable, inject } from '@angular/core'
 import { defer } from 'rxjs'
 import { NwDataService, SkillBuildsDB, buildSkillSetRow } from '~/data'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridUtils } from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
 import { SkillsetCellComponent } from './skillset-cell.component'
@@ -14,7 +14,7 @@ import { SkillsetTableRecord, skillsetColName, skillsetColSkills, skillsetColWea
 export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord> {
   private db = inject(SkillBuildsDB)
   private data = inject(NwDataService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<SkillsetTableRecord>({ optional: true })
   private utils: TableGridUtils<SkillsetTableRecord> = inject(TableGridUtils)
   public entityID(item: SkillsetTableRecord): string {
     return item.record.id
@@ -33,7 +33,7 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
 
   public virtualOptions(): VirtualGridOptions<SkillsetTableRecord> {
     if (this.config?.virtualOptions) {
-      return this.config.virtualOptions()
+      return this.config.virtualOptions(this.utils)
     }
     return SkillsetCellComponent.buildGridOptions()
   }

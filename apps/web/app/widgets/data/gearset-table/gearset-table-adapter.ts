@@ -4,8 +4,8 @@ import { toObservable } from '@angular/core/rxjs-interop'
 import { Observable, filter } from 'rxjs'
 import { GearsetRow, GearsetsStore, NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { shareReplayRefCount } from '~/utils'
 import { GearsetLoadoutItemComponent } from './gearset-cell.component'
@@ -18,10 +18,10 @@ import {
 } from './gearset-table-cols'
 
 @Injectable()
-export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>, DataViewAdapter<GearsetTableRecord> {
+export class GearsetTableAdapter implements DataViewAdapter<GearsetTableRecord> {
   private db = inject(NwDataService)
   private i18n = inject(TranslateService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<GearsetTableRecord>({ optional: true })
   private utils: TableGridUtils<GearsetTableRecord> = inject(TableGridUtils)
   private store = inject(GearsetsStore)
 

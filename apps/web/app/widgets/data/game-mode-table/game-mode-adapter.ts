@@ -5,15 +5,8 @@ import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import {
-  DataTableCategory,
-  TABLE_GRID_ADAPTER_OPTIONS,
-  TableGridAdapter,
-  TableGridAdapterOptions,
-  TableGridUtils,
-  addGenericColumns,
-} from '~/ui/data/table-grid'
+import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
 
@@ -27,11 +20,11 @@ import {
 } from './game-mode-cols'
 
 @Injectable()
-export class GameModeTableAdapter implements TableGridAdapter<GameModeRecord>, DataViewAdapter<GameModeRecord> {
+export class GameModeTableAdapter implements DataViewAdapter<GameModeRecord> {
   private db = inject(NwDataService)
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<GameModeRecord> = inject(TableGridUtils)
-  private config: TableGridAdapterOptions<GameModeRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = injectDataViewAdapterOptions<GameModeRecord>({ optional: true })
   private source$: Observable<GameModeRecord[]> = selectStream(this.config?.source || this.db.gameModes, (modes) => {
     if (this.config?.filter) {
       modes = modes.filter(this.config.filter)

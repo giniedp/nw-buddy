@@ -5,8 +5,8 @@ import { EQUIP_SLOTS } from '@nw-data/common'
 import { uniqBy } from 'lodash'
 import { Observable, filter } from 'rxjs'
 import { InventoryItemsStore, ItemInstanceRow } from '~/data'
-import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
-import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataViewAdapter, DataViewCategory, injectDataViewAdapterOptions } from '~/ui/data/data-view'
+import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ConfirmDialogComponent, ModalService } from '~/ui/layout'
 import { DnDService } from '~/utils/services/dnd.service'
@@ -26,10 +26,8 @@ import {
 } from './inventory-table-cols'
 
 @Injectable()
-export class InventoryTableAdapter
-  implements TableGridAdapter<InventoryTableRecord>, DataViewAdapter<InventoryTableRecord>
-{
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+export class InventoryTableAdapter implements DataViewAdapter<InventoryTableRecord> {
+  private config = injectDataViewAdapterOptions<InventoryTableRecord>({ optional: true })
   private utils: TableGridUtils<InventoryTableRecord> = inject(TableGridUtils)
 
   public entityID(item: ItemInstanceRow): string {
