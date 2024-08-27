@@ -85,7 +85,11 @@
         <button
           class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left"
           (click)="toggleLayer(item.id)"
-          [disabled]="item.encounter === 'random' && !mapStore.showEncounter()"
+          [disabled]="
+            (item.encounter === 'random' && !mapStore.showRandomEncounter()) ||
+            (item.encounter === 'goblin' && !mapStore.showGoblinEncounter()) ||
+            (item.encounter === 'darkness' && !mapStore.showDarknessEncounter())
+          "
         >
           @if (item.subcategoryLabel) {
             {{ item.subcategoryLabel | nwText }}
@@ -98,7 +102,20 @@
             <nwb-icon [icon]="diceIcon" class="w-4 h-4" tooltip="Random Encounter" />
           }
           @if (item.encounter === 'darkness') {
-            <nwb-icon [icon]="diceIcon" class="w-4 h-4" tooltip="Darkness Encounter" />
+            <img
+              [nwImage]="'assets/icons/gatherables/damned_compass.png'"
+              class="w-5 h-5 filter"
+              [class.grayscale]="!mapStore.showDarknessEncounter()"
+              tooltip="Darkness Encounter"
+            />
+          }
+          @if (item.encounter === 'goblin') {
+            <img
+              [nwImage]="'assets/icons/gatherables/rafflebones.png'"
+              class="w-5 h-5 filter"
+              [class.grayscale]="!mapStore.showGoblinEncounter()"
+              tooltip="Rafflebones Encounter"
+            />
           }
         </button>
         <button

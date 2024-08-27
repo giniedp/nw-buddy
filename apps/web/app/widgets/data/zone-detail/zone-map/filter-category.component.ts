@@ -1,18 +1,16 @@
 import { Component, Pipe, PipeTransform, computed, inject, input, output, signal, viewChildren } from '@angular/core'
 import { sortBy, uniq } from 'lodash'
+import { FilterSpecification, MapGeoJSONFeature } from 'maplibre-gl'
 import tinycolor from 'tinycolor2'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgDice, svgInfo } from '~/ui/icons/svg'
-import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
-import { LootModule } from '~/widgets/loot'
-import { ZoneMapStore } from './zone-map.store'
-import { FilterPopoverComponent } from './filter-popover.component'
 import { FilterDataProperties, FilterDataSet } from './data/types'
-import { FilterSpecification, MapGeoJSONFeature } from 'maplibre-gl'
+import { FilterPopoverComponent } from './filter-popover.component'
+import { ZoneMapStore } from './zone-map.store'
 
 @Pipe({
   standalone: true,
@@ -74,10 +72,20 @@ export class MapFilterCategoryComponent {
   protected variants = computed(() => this.data().variants)
   protected lootTable = computed(() => this.data().lootTable)
   protected filter = computed((): FilterSpecification => {
-    if (this.mapStore.showEncounter()) {
+    const filter: FilterSpecification[] = []
+    if (!this.mapStore.showRandomEncounter()) {
+      filter.push(['!', ['in', 'random', ['get', 'encounter']]])
+    }
+    if (!this.mapStore.showGoblinEncounter()) {
+      filter.push(['!', ['in', 'goblin', ['get', 'encounter']]])
+    }
+    if (!this.mapStore.showDarknessEncounter()) {
+      filter.push(['!', ['in', 'darkness', ['get', 'encounter']]])
+    }
+    if (!filter.length) {
       return null
     }
-    return ['!=', ['get', 'encounter'], 'random']
+    return ['all', ...filter] as any
   })
 
   public isAnyEnabled = computed(() => {

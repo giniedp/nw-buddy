@@ -1,18 +1,12 @@
-import { GridOptions } from '@ag-grid-community/core'
 import { Component, Injector, computed, effect, inject, input, output, signal, untracked } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
-import { VitalsCategoryData } from '@nw-data/generated'
 import { Point } from 'geojson'
-import { sortBy, uniq } from 'lodash'
 import { MapGeoJSONFeature } from 'maplibre-gl'
-import { Observable, debounceTime, filter, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { debounceTime, filter, map } from 'rxjs'
 import { NwModule } from '~/nw'
-import { DataViewAdapter, DataViewCategory, DataViewPicker } from '~/ui/data/data-view'
-import { TableGridUtils } from '~/ui/data/table-grid'
-import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { DataViewPicker } from '~/ui/data/data-view'
 import { ExpressionTreeModule } from '~/ui/expression-tree'
 import { TreeNodeComponent, TreeNodeToggleComponent } from '~/ui/tree'
 import { GameMapLayerDirective, GameMapPopupComponent } from '~/widgets/game-map'
@@ -25,6 +19,10 @@ import { VitalDetailModule } from '../../vital-detail'
 import { VitalTableAdapter } from '../../vital-table'
 import { VitalDataProperties, VitalDataSet } from './data/types'
 import { FilterVitalsStore } from './filter-vitals.store'
+import { CreatureCategoryPickerAdapter } from './picker/creature-category-picker.adapter'
+import { CreatureTypePickerAdapter } from './picker/creature-type-picker.adapter'
+import { LootTagPickerAdapter } from './picker/loot-tag-picker.adapter'
+import { PoiTagPickerAdapter } from './picker/poi-tag-picker.adapter'
 import { ZoneMapStore } from './zone-map.store'
 
 @Component({
@@ -93,9 +91,13 @@ export class MapFilterVitalsComponent {
 
   public constructor() {
     effect(() => {
-      const hide = !this.mapStore.showEncounter()
+      const hideRandom = !this.mapStore.showRandomEncounter()
+      const hideDarkness = !this.mapStore.showDarknessEncounter()
+      const hideGoblin = !this.mapStore.showGoblinEncounter()
       untracked(() => {
-        this.store.setHideRandomEncounters(hide)
+        this.store.setHideRandomEncounters(hideRandom)
+        this.store.setHideDarknessEncounters(hideDarkness)
+        this.store.setHideGoblinEncounters(hideGoblin)
       })
     })
   }
@@ -121,13 +123,14 @@ export class MapFilterVitalsComponent {
   }
 
   protected pickVitalType(input: ExpresssionBranchEditorComponent, index: number, value: string) {
-    DataViewPicker.from<CreatureType>({
+    DataViewPicker.from({
       dataView: {
-        adapter: CreatureTypesAdapter,
+        adapter: CreatureTypePickerAdapter,
       },
       injector: this.injector,
-      title: 'Select Creature Type',
+      title: 'Select Type',
       selection: value ? [value] : null,
+      cssClassModal: 'ion-modal-full md:ion-modal-x-md',
     })
       .pipe(
         filter((it) => it !== undefined),
@@ -143,9 +146,9 @@ export class MapFilterVitalsComponent {
   }
 
   protected pickVitalCategory(input: ExpresssionBranchEditorComponent, index: number, value: string) {
-    DataViewPicker.from<VitalsCategoryData>({
+    DataViewPicker.from({
       dataView: {
-        adapter: CategoryAdapter,
+        adapter: CreatureCategoryPickerAdapter,
       },
       injector: this.injector,
       title: 'Select Category',
@@ -165,9 +168,9 @@ export class MapFilterVitalsComponent {
   }
 
   protected pickVitalLootTag(input: ExpresssionBranchEditorComponent, index: number, value: string) {
-    DataViewPicker.from<LootTag>({
+    DataViewPicker.from({
       dataView: {
-        adapter: LootTagsAdapter,
+        adapter: LootTagPickerAdapter,
       },
       injector: this.injector,
       title: 'Select Loot Tag',
@@ -187,9 +190,9 @@ export class MapFilterVitalsComponent {
   }
 
   protected pickVitalPoiTag(input: ExpresssionBranchEditorComponent, index: number, value: string) {
-    DataViewPicker.from<POITag>({
+    DataViewPicker.from({
       dataView: {
-        adapter: POITagsAdapter,
+        adapter: PoiTagPickerAdapter,
       },
       injector: this.injector,
       title: 'Select POI Tag',
@@ -237,139 +240,5 @@ export class MapFilterVitalsComponent {
   protected handleMouseLeave(features: MapGeoJSONFeature[]) {
     this.featureHover.emit(null)
     this.hoverItems.set(null)
-  }
-}
-
-export class CategoryAdapter implements DataViewAdapter<VitalsCategoryData> {
-  private db = inject(NwDataService)
-  private utils: TableGridUtils<VitalsCategoryData> = inject(TableGridUtils)
-
-  public entityID(item: VitalsCategoryData): string | number {
-    return item.VitalsCategoryID.toLowerCase()
-  }
-
-  public entityCategories(item: VitalsCategoryData): DataViewCategory[] {
-    return null
-  }
-
-  public connect(): Observable<VitalsCategoryData[]> {
-    return this.db.vitalsCategories.pipe(map((list) => sortBy(list, (it) => it.DisplayName)))
-  }
-
-  public gridOptions(): GridOptions<VitalsCategoryData> {
-    return {
-      columnDefs: [
-        { field: 'VitalsCategoryID', headerName: 'ID', width: 500 },
-        {
-          field: 'DisplayName',
-          headerName: 'Name',
-          width: 300,
-          valueFormatter: this.utils.valueFormatter(({ value }) => this.utils.tl8(value as string)),
-        },
-      ],
-    }
-  }
-  public virtualOptions(): VirtualGridOptions<VitalsCategoryData> {
-    return null
-  }
-}
-
-
-export interface CreatureType {
-  CreatureTypeID: string
-}
-export class CreatureTypesAdapter implements DataViewAdapter<CreatureType> {
-  private db = inject(NwDataService)
-  private utils: TableGridUtils<CreatureType> = inject(TableGridUtils)
-
-  public entityID(item: CreatureType): string | number {
-    return item.CreatureTypeID.toLowerCase()
-  }
-
-  public entityCategories(item: CreatureType): DataViewCategory[] {
-    return null
-  }
-
-  public connect(): Observable<CreatureType[]> {
-    return this.db.vitals.pipe(
-      map((list) => list.map((it) => it.CreatureType).flat()),
-      map((list) => uniq(list).sort()),
-      map((list) => list.map((it) => ({ CreatureTypeID: it }))),
-    )
-  }
-
-  public gridOptions(): GridOptions<CreatureType> {
-    return {
-      columnDefs: [{ field: 'CreatureTypeID', headerName: 'ID', width: 500 }],
-    }
-  }
-  public virtualOptions(): VirtualGridOptions<CreatureType> {
-    return null
-  }
-}
-
-export interface LootTag {
-  LootTagID: string
-}
-export class LootTagsAdapter implements DataViewAdapter<LootTag> {
-  private db = inject(NwDataService)
-  private utils: TableGridUtils<LootTag> = inject(TableGridUtils)
-
-  public entityID(item: LootTag): string | number {
-    return item.LootTagID.toLowerCase()
-  }
-
-  public entityCategories(item: LootTag): DataViewCategory[] {
-    return null
-  }
-
-  public connect(): Observable<LootTag[]> {
-    return this.db.vitals.pipe(
-      map((list) => list.map((it) => it.LootTags || []).flat()),
-      map((list) => uniq(list).sort()),
-      map((list) => list.map((it) => ({ LootTagID: it }))),
-    )
-  }
-
-  public gridOptions(): GridOptions<LootTag> {
-    return {
-      columnDefs: [{ field: 'LootTagID', headerName: 'ID', width: 500 }],
-    }
-  }
-  public virtualOptions(): VirtualGridOptions<LootTag> {
-    return null
-  }
-}
-
-export interface POITag {
-  POITagID: string
-}
-export class POITagsAdapter implements DataViewAdapter<POITag> {
-  private db = inject(NwDataService)
-  private utils: TableGridUtils<POITag> = inject(TableGridUtils)
-
-  public entityID(item: POITag): string | number {
-    return item.POITagID.toLowerCase()
-  }
-
-  public entityCategories(item: POITag): DataViewCategory[] {
-    return null
-  }
-
-  public connect(): Observable<POITag[]> {
-    return this.db.territories.pipe(
-      map((list) => list.filter((it) => it.POITag?.length)),
-      map((list) => uniq(list.map((it) => it.POITag).flat()).sort()),
-      map((list) => list.map((it) => ({ POITagID: it }))),
-    )
-  }
-
-  public gridOptions(): GridOptions<POITag> {
-    return {
-      columnDefs: [{ field: 'POITagID', headerName: 'ID', width: 500 }],
-    }
-  }
-  public virtualOptions(): VirtualGridOptions<POITag> {
-    return null
   }
 }

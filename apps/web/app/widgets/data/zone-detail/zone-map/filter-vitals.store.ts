@@ -2,7 +2,6 @@ import { computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
-import { uniqBy } from 'lodash'
 import { FilterSpecification } from 'maplibre-gl'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -14,7 +13,7 @@ export interface FilterVitalsState {
 
   hideRandomEncounters: boolean
   hideDarknessEncounters: boolean
-  hideRafflebonesEncounters: boolean
+  hideGoblinEncounters: boolean
 
   outerOperators: JoinOperator[]
 
@@ -75,7 +74,7 @@ export const FilterVitalsStore = signalStore(
     levelMax: NW_MAX_ENEMY_LEVEL,
     hideRandomEncounters: false,
     hideDarknessEncounters: false,
-    hideRafflebonesEncounters: false,
+    hideGoblinEncounters: false,
     outerOperators: [
       {
         value: 'all',
@@ -159,6 +158,16 @@ export const FilterVitalsStore = signalStore(
           hideRandomEncounters: hide,
         })
       },
+      setHideDarknessEncounters(hide: boolean) {
+        patchState(state, {
+          hideDarknessEncounters: hide,
+        })
+      },
+      setHideGoblinEncounters(hide: boolean) {
+        patchState(state, {
+          hideGoblinEncounters: hide,
+        })
+      },
       setMinLevel(level: number) {
         patchState(state, {
           levelMin: level,
@@ -204,7 +213,7 @@ export const FilterVitalsStore = signalStore(
           lootTagsExpression: preset.lootTags ?? { join: 'all', rows: [] },
           poiTagsExpression: preset.poiTags ?? { join: 'all', rows: [] },
         })
-      }
+      },
     }
   }),
   withComputed(
@@ -218,7 +227,7 @@ export const FilterVitalsStore = signalStore(
       categoriesExpression,
       hideRandomEncounters,
       hideDarknessEncounters,
-      hideRafflebonesEncounters,
+      hideGoblinEncounters,
     }) => {
       return {
         layerFilter: computed(() => {
@@ -233,7 +242,7 @@ export const FilterVitalsStore = signalStore(
           if (hideDarknessEncounters()) {
             result.push(['!', ['in', 'darkness', ['get', 'encounter']]])
           }
-          if (hideRafflebonesEncounters()) {
+          if (hideGoblinEncounters()) {
             result.push(['!', ['in', 'goblin', ['get', 'encounter']]])
           }
           const expressions = [
@@ -275,7 +284,7 @@ export const FilterVitalsStore = signalStore(
       console.log('layerFilter', layerFilter())
     })
     return {}
-  })
+  }),
 )
 
 function loadPresets(db: NwDataService) {
@@ -350,7 +359,7 @@ function loadPresets(db: NwDataService) {
             context: {
               maxCount: task.TaskMaxValue,
               level: stat.Level,
-            }
+            },
           })
         }
       }
