@@ -33,7 +33,7 @@ function collectVitalsDataset(data: {
 
   for (const item of data.vitals) {
     const meta = data.vitalsMetaMap.get(item.VitalsID)
-    const lvlSpawns = meta?.spawns || meta?.lvlSpanws
+    const lvlSpawns = meta?.spawns
     if (!lvlSpawns) {
       continue
     }
@@ -47,7 +47,7 @@ function collectVitalsDataset(data: {
       for (const spawn of spawns) {
         const levels = spawn.l
         const position = spawn.p
-        const random = spawn.r
+        const encounter = spawn.e
         const poiTags = spawn.t
           .map((it) => data.territoriesMap.get(it)?.POITag || [])
           .flat()
@@ -56,7 +56,7 @@ function collectVitalsDataset(data: {
           [...(item.VitalsCategories || []), ...(spawn.c || [])].map((it) => (it || '').toLowerCase()),
         )
         for (const level of levels) {
-          const key = [id, level, categories.join(), random].join(',')
+          const key = [id, level, categories.join(), encounter.join()].join()
           if (!mapData[key]) {
             mapData[key] = {
               type: 'Feature',
@@ -72,7 +72,7 @@ function collectVitalsDataset(data: {
                 lootTags,
                 poiTags,
                 type,
-                random,
+                encounter,
               },
             }
           }
@@ -101,7 +101,6 @@ function collectVitalsDataset(data: {
       }
       result.data[mapId].count++
       result.data[mapId].geometry.features.push(item)
-      const count = item.geometry.coordinates.length
     }
   }
   return result

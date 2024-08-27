@@ -7,7 +7,7 @@ export interface ScannedGatherable {
 }
 export interface ScannedGatherableSpawn {
   mapID: string
-  randomEncounter: boolean
+  encounter: string
   positions: Array<[number, number]>
 }
 
@@ -50,7 +50,7 @@ export interface ScannedVariation<T = PositionChunkRef> {
 }
 export interface ScannedVariationSpawn<T = PositionChunkRef> {
   mapID: string
-  randomEncounter: boolean
+  encounter: string
   positions: T
 }
 export interface PositionChunkRef {
@@ -66,7 +66,6 @@ export interface ScannedVital {
   gthIDs: string[]
   levels: number[]
   spawns: Record<string, ScannedVitalSpawn[]>
-  lvlSpanws: Record<string, ScannedVitalSpawn[]>
   mapIDs: string[]
   models: string[]
   tables: string[]
@@ -80,7 +79,7 @@ export interface ScannedVitalSpawn {
   l: number[]
   m: string[]
   p: number[]
-  r: boolean
+  e: string[]
   t: number[]
 }
 

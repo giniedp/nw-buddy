@@ -68,9 +68,9 @@ function collectGatherableDatasets(data: {
       for (const spawn of meta.spawns) {
         const properties = describeGatherable(gatherable, gatherable.FinalLootTable)
         const groupId = generateId(properties)
-        const id = `${groupId}&r=${!!spawn.randomEncounter}`
+        const id = `${groupId}&r=${spawn.encounter}`
         properties.color = properties.color || stringToColor(groupId)
-        properties.isRandom = spawn.randomEncounter
+        properties.encounter = spawn.encounter
         if (properties.variant) {
           properties.variant.color = getSizeColor(properties.variant.id, properties.color)
         }
@@ -125,9 +125,9 @@ function collectGatherableDatasets(data: {
           for (const spawn of meta.spawns) {
             const properties = describeGatherable(gatherable, lootTable, variant)
             const groupId = generateId(properties)
-            const id = `${groupId}&r=${!!spawn.randomEncounter}`
+            const id = `${groupId}&r=${spawn.encounter}`
             properties.color = properties.color || stringToColor(groupId)
-            properties.isRandom = spawn.randomEncounter
+            properties.encounter = spawn.encounter
             if (properties.variant) {
               properties.variant.color = getSizeColor(properties.variant.id, properties.color)
             }

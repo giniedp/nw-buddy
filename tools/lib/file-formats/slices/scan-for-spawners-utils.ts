@@ -50,7 +50,7 @@ export function readJsonFileCached<T>(file: string) {
   })
 }
 
-export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDir: string, file) {
+export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDir: string, file: string) {
   return cached(`scanForAreaSpawners ${file}`, async () => {
     const result: Array<{
       entity: AZ__Entity
@@ -243,7 +243,6 @@ export interface ScannedData {
   loreIDs?: string[]
 }
 
-const RANDOM_ENCOUNTER_REGEX = /RandomEncounter/i
 export async function scanForData(sliceComponent: SliceComponent, rootDir: string, file: string) {
   const result: ScannedData[] = []
   for (const entity of sliceComponent?.entities || []) {
@@ -308,8 +307,27 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
   return result
 }
 
+const RANDOM_ENCOUNTER_REGEX = /RandomEncounter/i
 export function isEntityRandomEncounter(entity: AZ__Entity) {
   return !!entity?.name && RANDOM_ENCOUNTER_REGEX.test(entity.name)
+}
+
+export function scanForEncounterType(sliceComponent: SliceComponent) {
+  for (const entity of sliceComponent.entities || []) {
+    if (!entity.name) {
+      continue
+    }
+    if (entity.name.includes('RandomEncounter')) {
+      return 'random'
+    }
+    if (entity.name.startsWith('Enc_Darkness')) {
+      return 'darkness'
+    }
+    if (entity.name.includes('LootGoblin')) {
+      return 'goblin'
+    }
+  }
+  return null
 }
 
 const AMMO_ID_TO_VARIANT_ID = {

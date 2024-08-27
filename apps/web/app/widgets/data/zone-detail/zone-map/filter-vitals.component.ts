@@ -103,7 +103,7 @@ export class MapFilterVitalsComponent {
   protected pickVitalId(input: ExpresssionBranchEditorComponent, index: number, value: string) {
     DataViewPicker.from({
       injector: this.injector,
-      title: 'Pick Vital',
+      title: 'Select Vital',
       dataView: { adapter: VitalTableAdapter },
       selection: value ? [value] : null,
     })

@@ -77,7 +77,7 @@ export class MapFilterCategoryComponent {
     if (this.mapStore.showEncounter()) {
       return null
     }
-    return ['!=', ['get', 'isRandom'], true]
+    return ['!=', ['get', 'encounter'], 'random']
   })
 
   public isAnyEnabled = computed(() => {

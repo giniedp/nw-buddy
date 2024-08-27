@@ -1,8 +1,8 @@
-import { isEntityRandomEncounter, scanForData } from './scan-for-spawners-utils'
+import { scanForData, scanForEncounterType } from './scan-for-spawners-utils'
 import { readDynamicSliceFile, resolveDynamicSliceFile } from './utils'
 
 export interface VitalScanRow {
-  random: boolean
+  encounter: string
   vitalsID: string
   npcID: string
   categoryID: string
@@ -36,7 +36,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
       continue
     }
     result.push({
-      random: isEntityRandomEncounter(item.entity),
+      encounter: scanForEncounterType(sliceComponent),
       level: item.level,
       vitalsID: item.vitalsID,
       npcID: item.npcID,

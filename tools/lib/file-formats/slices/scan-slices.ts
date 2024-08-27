@@ -22,7 +22,7 @@ export interface NpcScanRow {
 }
 export interface GatherableScanRow {
   gatherableID: string
-  random: boolean
+  encounter: string
   position: [number, number, number]
   mapID: string
 }
@@ -77,7 +77,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       if (entry.gatherableID) {
         gatherableRows.push({
           mapID: mapId,
-          random: entry.isRandomEncounter,
+          encounter: entry.encounter,
           gatherableID: entry.gatherableID,
           position: [position[0], position[1], position[2]],
         })
@@ -85,14 +85,14 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       if (entry.variantID) {
         variationsRows.push({
           mapID: mapId,
-          random: entry.isRandomEncounter,
+          encounter: entry.encounter,
           variantID: entry.variantID,
           position: [position[0], position[1], position[2]],
         })
       }
       if (entry.vitalsID) {
         vitalsRows.push({
-          random: entry.isRandomEncounter,
+          encounter: entry.encounter,
           mapID: mapId,
           vitalsID: entry.vitalsID,
           categoryID: entry.categoryID,
@@ -148,7 +148,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
         variationsRows.push({
           mapID: mapId,
           variantID: capital.variantName,
-          random: false,
+          encounter: null,
           position: capital.worldPosition
             ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
             : null,

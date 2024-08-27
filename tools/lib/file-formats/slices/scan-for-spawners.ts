@@ -1,12 +1,12 @@
 import {
   ScannedData,
-  isEntityRandomEncounter,
   readDynamicSliceFileCached,
   scanForAreaSpawners,
   scanForData,
   scanForEncounterSpawner,
+  scanForEncounterType,
   scanForPointSpawners,
-  scanForPrefabSpawner,
+  scanForPrefabSpawner
 } from './scan-for-spawners-utils'
 import { AZ__Entity } from './types/dynamicslice'
 import { resolveDynamicSliceFiles, rotatePoints, translatePoints } from './utils'
@@ -15,7 +15,7 @@ export type SpawnerScanResult = {
   variantID?: string
   gatherableID?: string
   loreIDs?: string[]
-  isRandomEncounter: boolean
+  encounter: string
 
   vitalsID?: string
   npcID?: string
@@ -75,6 +75,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     return
   }
 
+  const encounterType = scanForEncounterType(component)
   const data = await scanForData(component, rootDir, file)
   const unconsumed = [...data]
   function consume(entity: AZ__Entity) {
@@ -113,7 +114,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       const result = mergeData(
         {
           ...item,
-          isRandomEncounter: isEntityRandomEncounter(spawn.entity),
+          encounter: encounterType || item.encounter,
           positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
         },
         consume(spawn.entity),
@@ -129,7 +130,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       const result = mergeData(
         {
           ...item,
-          isRandomEncounter: isEntityRandomEncounter(spawn.entity),
+          encounter: encounterType || item.encounter,
           variantID: spawn.variantID || item.variantID ,
           positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
         },
@@ -148,7 +149,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         const result = mergeData(
           {
             ...item,
-            isRandomEncounter: isEntityRandomEncounter(spawn.entity),
+            encounter: encounterType || item.encounter,
             positions: translatePoints(rotatePoints(item.positions, location.rotation), location.translation),
           },
           consume(spawn.entity),
@@ -169,7 +170,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         const result = mergeData(
           {
             ...item,
-            isRandomEncounter: isEntityRandomEncounter(spawn.entity),
+            encounter: encounterType || item.encounter,
             positions: translatePoints(rotatePoints(item.positions, location.rotation), location.translation),
           },
           consume(spawn.entity),
@@ -183,7 +184,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
   for (const item of unconsumed) {
     if (item.vitalsID) {
       const result: SpawnerScanResult = {
-        isRandomEncounter: isEntityRandomEncounter(item.entity),
+        encounter: encounterType,
         vitalsID: item.vitalsID,
         categoryID: item.categoryID,
         level: item.level,
@@ -199,7 +200,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
     if (item.gatherableID || item.variantID) {
       yield {
-        isRandomEncounter: isEntityRandomEncounter(item.entity),
+        encounter: encounterType,
         gatherableID: item.gatherableID,
         variantID: item.variantID,
         positions: [[0, 0, 0]],
@@ -211,7 +212,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
     if (item.loreIDs?.length) {
       yield {
-        isRandomEncounter: isEntityRandomEncounter(item.entity),
+        encounter: encounterType,
         loreIDs: item.loreIDs,
         positions: [[0, 0, 0]],
         damageTable: null,
@@ -222,7 +223,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
     if (item.npcID?.length) {
       yield {
-        isRandomEncounter: isEntityRandomEncounter(item.entity),
+        encounter: encounterType,
         npcID: item.npcID,
         positions: [[0, 0, 0]],
         damageTable: null,

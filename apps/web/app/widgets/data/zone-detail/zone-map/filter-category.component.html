@@ -85,7 +85,7 @@
         <button
           class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left"
           (click)="toggleLayer(item.id)"
-          [disabled]="item.isRandom && !mapStore.showEncounter()"
+          [disabled]="item.encounter === 'random' && !mapStore.showEncounter()"
         >
           @if (item.subcategoryLabel) {
             {{ item.subcategoryLabel | nwText }}
@@ -94,8 +94,11 @@
           } @else {
             {{ item.lootTable | nwHumanize }}
           }
-          @if (item.isRandom) {
+          @if (item.encounter === 'random') {
             <nwb-icon [icon]="diceIcon" class="w-4 h-4" tooltip="Random Encounter" />
+          }
+          @if (item.encounter === 'darkness') {
+            <nwb-icon [icon]="diceIcon" class="w-4 h-4" tooltip="Darkness Encounter" />
           }
         </button>
         <button

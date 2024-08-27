@@ -2,7 +2,7 @@ import { readJSONFile } from '../../utils/file-utils'
 
 export interface VariationScanRow {
   variantID: string
-  random: boolean
+  encounter: string
   position: [number, number, number]
   mapID: string
 }
@@ -31,7 +31,7 @@ export async function scanForVariantDistributions(file: string) {
     const y = (data.region[1] + position[1] / maxValue) * areaSize
     result.push({
       variantID: variant,
-      random: false,
+      encounter: null,
       position: [x, y] as any,
       mapID: mapId,
     })

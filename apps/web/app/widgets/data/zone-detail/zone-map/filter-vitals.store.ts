@@ -13,6 +13,8 @@ export interface FilterVitalsState {
   levelMax: number
 
   hideRandomEncounters: boolean
+  hideDarknessEncounters: boolean
+  hideRafflebonesEncounters: boolean
 
   outerOperators: JoinOperator[]
 
@@ -72,6 +74,8 @@ export const FilterVitalsStore = signalStore(
     levelMin: 1,
     levelMax: NW_MAX_ENEMY_LEVEL,
     hideRandomEncounters: false,
+    hideDarknessEncounters: false,
+    hideRafflebonesEncounters: false,
     outerOperators: [
       {
         value: 'all',
@@ -212,7 +216,9 @@ export const FilterVitalsStore = signalStore(
       poiTagsExpression,
       lootTagsExpression,
       categoriesExpression,
-      hideRandomEncounters
+      hideRandomEncounters,
+      hideDarknessEncounters,
+      hideRafflebonesEncounters,
     }) => {
       return {
         layerFilter: computed(() => {
@@ -222,7 +228,13 @@ export const FilterVitalsStore = signalStore(
             ['<=', ['get', 'level'], levelMax()],
           ]
           if (hideRandomEncounters()) {
-            result.push(['!=', ['get', 'random'], true])
+            result.push(['!', ['in', 'random', ['get', 'encounter']]])
+          }
+          if (hideDarknessEncounters()) {
+            result.push(['!', ['in', 'darkness', ['get', 'encounter']]])
+          }
+          if (hideRafflebonesEncounters()) {
+            result.push(['!', ['in', 'goblin', ['get', 'encounter']]])
           }
           const expressions = [
             idExpression(),
@@ -235,11 +247,14 @@ export const FilterVitalsStore = signalStore(
             if (!expression?.rows.length) {
               continue
             }
-            const filters = expression.rows.map(({ left, operator, right }) => {
+            const filters = expression.rows.map(({ left, operator, right }): FilterSpecification => {
               if (operator === '==' || operator === '!=') {
                 return [operator as '==', ['get', left], right]
               }
-              return [operator as 'has', right, ['get', left]]
+              if (operator === '!in') {
+                return ['!', ['in', right, ['get', left]]]
+              }
+              return [operator as 'in', right, ['get', left]]
             })
             result.push([expression.join, ...filters] as any)
           }

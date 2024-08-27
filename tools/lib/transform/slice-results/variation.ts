@@ -30,11 +30,11 @@ export function variationIndex(): VariationIndex {
 
         const bucket1 = getBucket(index, recordID, () => ({}))
         const bucket2 = getBucket(bucket1, mapID, () => ({}))
-        const bucket3 = getBucket(bucket2, String(!!row.random), () => {
+        const bucket3 = getBucket(bucket2, row.encounter, () => {
           return {
             mapID,
             positions: [],
-            randomEncounter: !!row.random,
+            encounter: row.encounter,
           }
         })
         bucket3.positions.push(position)
@@ -49,7 +49,7 @@ export function variationIndex(): VariationIndex {
       let chunkIndex: number
       function add(
         variantID: string,
-        { mapID, randomEncounter, positions }: ScannedVariationSpawn<Array<[number, number]>>,
+        { mapID, encounter, positions }: ScannedVariationSpawn<Array<[number, number]>>,
       ) {
         variationIds.add(variantID)
         if (!chunkData || chunkData.length + positions.length > 1000000) {
@@ -70,7 +70,7 @@ export function variationIndex(): VariationIndex {
         }
         data[variantID].spawns.push({
           mapID,
-          randomEncounter,
+          encounter,
           positions: {
             chunkID: chunkIndex,
             elementSize: 2,

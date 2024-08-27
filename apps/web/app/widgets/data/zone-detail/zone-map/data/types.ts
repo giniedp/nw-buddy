@@ -30,7 +30,7 @@ export interface FilterDataGroup {
   subcategoryLabel?: string
   subcategoryIcon?: string
 
-  isRandom?: boolean
+  encounter?: string
   vitalId?: string
   vitalLevel?: number
 }
@@ -79,5 +79,5 @@ export interface VitalDataProperties {
   lootTags: string[]
   poiTags: string[]
   color: string
-  random: boolean
+  encounter: string[]
 }

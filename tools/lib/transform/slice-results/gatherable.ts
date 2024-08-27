@@ -24,11 +24,11 @@ export function gatherableIndex(): GatherableIndex {
 
         const bucket1 = getBucket(index, recordID, () => ({}))
         const bucket2 = getBucket(bucket1, mapID, () => ({}))
-        const bucket3 = getBucket(bucket2, String(!!row.random), () => {
+        const bucket3 = getBucket(bucket2, row.encounter, () => {
           return {
             mapID,
             positions: [],
-            randomEncounter: !!row.random,
+            encounter: row.encounter,
           }
         })
         bucket3.positions.push(position)
@@ -46,7 +46,7 @@ export function gatherableIndex(): GatherableIndex {
           for (const [_, entry] of sortedEntries(bucket2)) {
             record.spawns.push({
               mapID: entry.mapID,
-              randomEncounter: entry.randomEncounter,
+              encounter: entry.encounter,
               positions: chain(entry.positions)
                 .uniqBy((it) => it.join(','))
                 .sortBy((it) => it.join(','))
