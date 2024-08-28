@@ -1,7 +1,8 @@
-export type NodeSize = 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge'
+export type NodeSize = 'XSmall'| 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge'
 export const SIZE_COLORS: Record<NodeSize, string> = {
   Tiny: '#f28c18',
   Small: '#51A800',
+  XSmall: '#51A800',
   Medium: '#2563EB',
   Large: '#DC2626',
   Huge: '#6D3A9C',
@@ -9,6 +10,7 @@ export const SIZE_COLORS: Record<NodeSize, string> = {
 export const SIZE_OUTLINE: Record<NodeSize, string> = {
   Tiny: '#653806',
   Small: '#204300',
+  XSmall: '#204300',
   Medium: '#092564',
   Large: '#590e0e',
   Huge: '#2c173e',
@@ -16,11 +18,13 @@ export const SIZE_OUTLINE: Record<NodeSize, string> = {
 export const SIZE_LABELS: Record<NodeSize, string> = {
   Tiny: 'XS',
   Small: 'S',
+  XSmall: 'XXS',
   Medium: 'M',
   Large: 'L',
   Huge: 'XL',
 }
 export const SIZE_RADIUS: Record<NodeSize, number> = {
+  XSmall: 5,
   Tiny: 6,
   Small: 7,
   Medium: 8,

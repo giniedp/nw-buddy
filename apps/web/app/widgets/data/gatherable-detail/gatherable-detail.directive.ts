@@ -1,6 +1,5 @@
 import { Directive, inject, Input, Output } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { patchState } from '@ngrx/signals'
 import { GatherableDetailStore } from './gatherable-detail.store'
 
 @Directive({
@@ -14,7 +13,7 @@ export class GatherableDetailDirective {
 
   @Input()
   public set nwbGatherableDetail(value: string) {
-    patchState(this.store, { gatherableId: value })
+    this.store.load({ id: value })
   }
 
   @Output()

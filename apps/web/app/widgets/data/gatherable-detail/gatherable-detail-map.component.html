@@ -1,41 +1,59 @@
-<nwb-world-map
-  class="block aspect-square relative"
-  #map
-  [map]="mapId()"
-  [tag]="tag()"
-  [bounds]="vm()?.bounds"
-  [pointMarkers]="vm()?.landmarks"
-  [showCoords]="true"
-  [showTooltip]="true"
->
-  <div
-    class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
-  >
-    <select class="select select-sm max-w-[200px]" [ngModel]="mapId()" (ngModelChange)="selectedMapId.set($event)">
-      @for (value of mapIds(); track $index) {
-        <option [value]="value">{{ value }}</option>
-      }
-    </select>
-    <button class="btn btn-circle btn-ghost btn-sm" (click)="map.toggleFullscreen()">
-      <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
-    </button>
+<nwb-map class="block aspect-square relative" [mapId]="store.mapId()" [fitBounds]="store.bounds()" #map>
+  @if (store.mapData(); as data) {
+    <ng-container [nwbMapLayer]="'data'" [data]="data" [heatmap]="store.showHeatmap()" [filter]="store.filter()" />
+  }
+  <div class="flex flex-row w-full justify-between absolute top-0 left-0 z-50 pointer-events-none p-2">
+    <div class="text-sm font-mono">
+      <game-map-coords class="text-shadow-sm shadow-black leading-none flex flex-col" />
+    </div>
+    <div class="flex flex-row gap-1">
+      <select
+        class="join-item select select-sm max-w-[200px] rounded-full pointer-events-auto"
+        [ngModel]="store.mapId()"
+        (ngModelChange)="store.selectMap({ mapId: $event })"
+      >
+        @for (value of store.mapIds(); track $index) {
+          <option [value]="value" [label]="value | nwHumanize"></option>
+        }
+      </select>
+      <div class="flex flex-col gap-1 pointer-events-auto">
+        <button class="btn btn-sm btn-circle" (click)="map.toggleFullscreen()" [tooltip]="'Toggle fullscreen'">
+          <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
+        </button>
+        <button
+          class="btn btn-sm btn-circle"
+          [class.text-primary]="store.showHeatmap()"
+          (click)="store.toggleHeatmap()"
+          [tooltip]="'Toggle heatmap'"
+        >
+          <nwb-icon [icon]="iconFire" class="w-4 h-4" />
+        </button>
+        <button
+          class="btn btn-sm btn-circle"
+          [class.text-primary]="store.showRandomEncounter()"
+          (click)="store.toggleRandomEncounter()"
+          [tooltip]="'Toggle random encounter'"
+        >
+          <nwb-icon [icon]="iconDice" class="w-4 h-4" />
+        </button>
+      </div>
+    </div>
   </div>
 
-  @if (availableSizes()?.length) {
-    <div class="absolute bottom-0 w-full p-1 flex flex-row justify-center items-center gap-1 bg-opacity-50 bg-black">
-      @for (row of availableSizes(); track $index) {
-        <span
-          class="badge cursor-pointer"
-          [class.badge-outline]="row.disabled"
-          [class.line-through]="row.disabled"
-          [class.opacity-50]="row.disabled"
-          [style.background-color]="row.color"
-          [tooltip]="row.value"
-          (click)="toggleSize(row.value)"
-        >
-          {{ row.count }}
+  <div
+    class="flex flex-row gap-1 w-full justify-center absolute bottom-0 left-0 z-50 pointer-events-none bg-base-300 bg-opacity-75 p-1"
+  >
+    @for (item of store.countData(); track $index) {
+      <button
+        class="btn btn-xs pointer-events-auto"
+        [style.background-color]="item.active ? item.color : null"
+        [class.line-through]="!item.active"
+        (click)="store.toggleSize({ size: item.size })"
+      >
+        <span class="text-shadow-sm shadow-black">
+          {{ item.count }}
         </span>
-      }
-    </div>
-  }
-</nwb-world-map>
+      </button>
+    }
+  </div>
+</nwb-map>

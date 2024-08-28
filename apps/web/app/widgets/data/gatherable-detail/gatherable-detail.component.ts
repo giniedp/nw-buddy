@@ -1,11 +1,8 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject, input, viewChild } from '@angular/core'
-import { patchState } from '@ngrx/signals'
-import saveAs from 'file-saver'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgDownload } from '~/ui/icons/svg'
-import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { GatherableDetailMapComponent } from './gatherable-detail-map.component'
 import { GatherableDetailStore } from './gatherable-detail.store'
@@ -31,15 +28,14 @@ export class GatherableDetailComponent {
 
   @Input()
   public set gatherableId(value: string) {
-    patchState(this.store, { gatherableId: value })
+    this.store.load({ id: value })
   }
-
 
   public get tradeSkill() {
     return this.store.tradeSkill()
   }
   public get sizeSiblings() {
-    return this.store.sizeSiblings()
+    return this.store.siblings()
   }
   public get variations() {
     return this.store.variations()

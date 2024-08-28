@@ -1,9 +1,22 @@
-import { Component, Injector, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core'
+import {
+  Component,
+  ElementRef,
+  Injector,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core'
 import { environment } from 'apps/web/environments'
 import { FeatureCollection } from 'geojson'
 import {
   AJAXError,
   FillLayerSpecification,
+  FitBoundsOptions,
   GeoJSONSource,
   LineLayerSpecification,
   MapMouseEvent,
@@ -52,6 +65,7 @@ import {
   imports: [MaplibreDirective],
 })
 export class GameMapComponent {
+  protected elRef = inject<ElementRef<HTMLElement>>(ElementRef)
   protected mapDirective = viewChild(MaplibreDirective)
   public get map() {
     return this.mapDirective().map
@@ -94,6 +108,9 @@ export class GameMapComponent {
   }
 
   public mapId = input<string>('newworld_vitaeeterna')
+  public fitBounds = input<[number, number, number, number]>(null)
+  public fitBoundsOptions = input<FitBoundsOptions>(null)
+
   public territories = input<FeatureCollection>()
   public areas = input<FeatureCollection>()
   public pois = input<FeatureCollection>()
@@ -104,6 +121,14 @@ export class GameMapComponent {
 
   public constructor() {
     inject(GameMapProxyService, { optional: true })?.provide(() => this.map)
+  }
+
+  public toggleFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      this.elRef.nativeElement.requestFullscreen()
+    }
   }
 
   protected handleMapLoad() {
@@ -130,10 +155,15 @@ export class GameMapComponent {
   private attachSignals() {
     this.effect(() => {
       const mapId = this.mapId()
-      untracked(() => this.updateTiles(mapId))
-      const bounds = mapMaxBounds(mapId)
-      this.map.setMaxBounds(bounds)
+      const maxBounds = mapMaxBounds(mapId)
+      const fitBounds = this.fitBounds()
+      untracked(() => {
+        this.updateTiles(mapId)
+        this.map.setMaxBounds(maxBounds)
+        this.moveToBounds(fitBounds || maxBounds)
+      })
     })
+
     this.effect(() => {
       const isOpenWorld = isMapOpenWorld(this.mapId())
       const data = isOpenWorld ? this.territories() : null
@@ -339,6 +369,25 @@ export class GameMapComponent {
       }
     })
   }
+
+  private moveToBounds(bounds: [number, number, number, number]) {
+    if (!bounds) {
+      return
+    }
+    const options = this.fitBoundsOptions() || {
+      essential: true,
+      padding: 40,
+      duration: 500,
+    }
+    const center: [number, number] = [
+      bounds[0] + (bounds[2] - bounds[0]) / 2,
+      bounds[1] + (bounds[3] - bounds[1]) / 2,
+    ]
+    this.map.fitBounds(bounds, {
+      center,
+      ...options
+    })
+  }
 }
 
 const territoryFillLayout: FillLayerSpecification = {
@@ -411,7 +460,6 @@ const areaSymbolLayout: SymbolLayerSpecification = {
     'text-halo-color': '#000000',
     'text-halo-width': 2,
     'text-halo-blur': 2,
-
   },
 }
 const poisFillLayout: FillLayerSpecification = {
