@@ -1,26 +1,31 @@
 import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, effect, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
-import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
+import {
+  GatherableNodeSize,
+  GatherableVariation,
+  NW_FALLBACK_ICON,
+  getGatherableNodeSize,
+  getGatherableNodeSizes,
+} from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
 import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
 import { sortBy, uniq } from 'lodash'
 import { EMPTY, catchError, combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { NodeSize } from '~/widgets/world-map/constants'
 import { GatherableRecord, GatherableService, isLootTableEmpty } from '../gatherable/gatherable.service'
 import { getGatherableIcon } from './utils'
 
 export interface GatherableDetailState {
   gatherableId: string
   gatherable: GatherableRecord
-  siblings: Array<{ size: NodeSize; item: GatherableRecord }>
+  siblings: Array<{ size: GatherableNodeSize; item: GatherableRecord }>
   isLoaded: boolean
   hasError: boolean
 }
 
 export interface GatherableSibling {
-  size: NodeSize
+  size: GatherableNodeSize
   gatherableId: string
   gatherable: GatherableData
   gatherableMeta: ScannedGatherable
@@ -183,7 +188,7 @@ function secondsToDuration(value: number) {
 function selectSiblings(gatherable: GatherableRecord, dataSet: Map<string, GatherableRecord>) {
   const gatherableId = gatherable?.GatherableID
   const size = getGatherableNodeSize(gatherableId)
-  const result: Array<{ size: NodeSize; item: GatherableRecord }> = []
+  const result: Array<{ size: GatherableNodeSize; item: GatherableRecord }> = []
   if (!size) {
     return result
   }

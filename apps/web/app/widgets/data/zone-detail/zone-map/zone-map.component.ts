@@ -12,7 +12,6 @@ import { humanize } from '~/utils'
 import { GameMapComponent, GameMapProxyService } from '~/widgets/game-map'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
 import { LootModule } from '~/widgets/loot'
-import { WorldMapComponent } from '~/widgets/world-map'
 import { VitalDetailModule } from '../../vital-detail'
 import { FilterDataProperties, VitalDataProperties } from './data/types'
 import { MapFilterSectionComponent } from './filter-section.component'
@@ -42,7 +41,6 @@ import { ZoneMapStore } from './zone-map.store'
     MapFilterVitalsComponent,
     NwModule,
     TooltipModule,
-    WorldMapComponent,
     VitalDetailModule,
     LootModule,
   ],

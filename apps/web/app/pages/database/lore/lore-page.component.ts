@@ -20,7 +20,7 @@ import {
 } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemTableRecord } from '~/widgets/data/item-table'
-import { LoreItemTableAdapter } from '~/widgets/data/lore-item-table'
+import { LoreItemTableAdapter } from '~/widgets/data/lore-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({

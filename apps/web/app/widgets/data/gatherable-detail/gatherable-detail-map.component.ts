@@ -2,6 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { DecimalPipe } from '@angular/common'
 import { Component, computed, effect, inject, input, untracked, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { getGatherableNodeSizes } from '@nw-data/common'
 import saveAs from 'file-saver'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -9,9 +10,7 @@ import { svgDice, svgExpand, svgFire } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { GameMapComponent, GameMapCoordsComponent, GameMapLayerDirective } from '~/widgets/game-map'
-import { WorldMapComponent } from '~/widgets/world-map'
 import { GatherableDetailMapStore } from './gatherable-detail-map.store'
-import { getGatherableNodeSizes } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -24,7 +23,6 @@ import { getGatherableNodeSizes } from '@nw-data/common'
     FormsModule,
     OverlayModule,
     LayoutModule,
-    WorldMapComponent,
     IconsModule,
     GameMapComponent,
     GameMapLayerDirective,

@@ -57,12 +57,11 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
   public featureMouseMove = output<MapGeoJSONFeature[]>()
 
   public ngOnInit() {
-    this.bind()
-    // if (this.map.loaded()) {
-    //   this.bind()
-    // } else {
-    //   this.map.on('load', () => this.bind())
-    // }
+    if (this.map.loaded()) {
+      this.bind()
+    } else {
+      this.map.on('load', () => this.bind())
+    }
   }
 
   public ngOnDestroy() {

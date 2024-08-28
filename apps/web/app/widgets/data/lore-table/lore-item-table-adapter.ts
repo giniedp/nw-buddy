@@ -26,7 +26,7 @@ export class LoreItemTableAdapter implements DataViewAdapter<LoreItemTableRecord
   private utils: TableGridUtils<LoreItemTableRecord> = inject(TableGridUtils)
 
   public entityID(item: LoreItemTableRecord): string | number {
-    return item.LoreID
+    return item.LoreID.toLowerCase()
   }
 
   public entityCategories(item: LoreItemTableRecord): DataTableCategory[] {

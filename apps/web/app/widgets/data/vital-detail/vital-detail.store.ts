@@ -59,7 +59,7 @@ export const VitalDetailStore = signalStore(
           vital,
           level: levelOverride,
         },
-        ({ vital, level }) => level ?? vital?.Level,
+        ({ vital, level }): number => level ?? vital?.Level,
       ),
     }
   }),

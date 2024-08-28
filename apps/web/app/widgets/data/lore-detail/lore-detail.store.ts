@@ -6,7 +6,7 @@ import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 
 @Injectable()
-export class LoreItemDetailStore extends ComponentStore<{ recordId: string }> {
+export class LoreDetailStore extends ComponentStore<{ recordId: string }> {
   protected db = inject(NwDataService)
 
   public readonly recordId$ = this.select(({ recordId }) => recordId)

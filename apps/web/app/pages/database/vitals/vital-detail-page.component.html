@@ -28,7 +28,7 @@
       </button>
     </div>
   }
-  <nwb-vital-detail-map (vitalClicked)="onPointClicked($event)" class="mb-2" />
+  <nwb-vital-detail-map [vitalId]="vitalId()" (vitalClicked)="onPointClicked($event)" class="mb-2" />
   <div class="flex tabs tabs-bordered flex-none justify-center bg-base-300">
     <button class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')">Stats</button>
     <button class="tab flex-1" [class.tab-active]="tab() === 'loot'" (click)="selectTab('loot')">Loot</button>

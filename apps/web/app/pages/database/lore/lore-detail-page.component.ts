@@ -6,7 +6,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { injectRouteParam } from '~/utils'
-import { LoreItemDetailMapComponent, LoreItemDetailStore } from '~/widgets/data/lore-item-detail'
+import { LoreItemDetailMapComponent, LoreDetailStore } from '~/widgets/data/lore-detail'
 
 @Component({
   standalone: true,
@@ -14,15 +14,16 @@ import { LoreItemDetailMapComponent, LoreItemDetailStore } from '~/widgets/data/
   templateUrl: './lore-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NwModule, LayoutModule, RouterModule, IconsModule, LoreItemDetailMapComponent],
-  providers: [LoreItemDetailStore],
+  providers: [LoreDetailStore],
   host: {
     class: 'block',
   },
 })
 export class LoreDetailPageComponent {
-  private store = inject(LoreItemDetailStore)
+  private store = inject(LoreDetailStore)
 
   protected loreId$ = injectRouteParam('id')
+  protected loreId = toSignal(this.loreId$)
   protected title = toSignal(this.store.title$)
   protected subtitle = toSignal(this.store.subtitle$)
   protected body = toSignal(this.store.body$)

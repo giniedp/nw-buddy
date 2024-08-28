@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Signal, ViewChild, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { getVitalFamilyInfo } from '@nw-data/common'
 import { VitalsData } from '@nw-data/generated'
@@ -51,7 +51,7 @@ export class VitalDetailComponent {
 
   protected vital = this.store.vital
   protected vitalId = this.store.vitalId
-  protected vitalLevel = this.store.level
+  protected vitalLevel: Signal<number> = this.store.level
 
   protected tabId$ = observeQueryParam(this.route, 'tab').pipe(map((it: DetailTabId): DetailTabId => it || 'stats'))
   protected tab = toSignal(this.tabId$)

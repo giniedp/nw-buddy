@@ -11,7 +11,7 @@ import {
 } from '~/ui/data/virtual-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { EmptyComponent } from '~/widgets/empty'
-import { LoreItemDetailStore } from '../lore-item-detail'
+import { LoreDetailStore } from '../lore-detail'
 import { LoreItemTableRecord } from './lore-item-table-cols'
 
 @Component({
@@ -20,7 +20,7 @@ import { LoreItemTableRecord } from './lore-item-table-cols'
   templateUrl: './lore-item-cell.component.html',
   styleUrl: './lore-item-cell.component.scss',
   imports: [CommonModule, NwModule, TooltipModule, RouterModule],
-  providers: [LoreItemDetailStore],
+  providers: [LoreDetailStore],
   host: {
     class: `
       relative flex flex-col gap-4 m-1
@@ -31,7 +31,7 @@ import { LoreItemTableRecord } from './lore-item-table-cols'
   },
 })
 export class LoreItemCellComponent implements VirtualGridCellComponent<LoreItemTableRecord> {
-  protected store = inject(LoreItemDetailStore)
+  protected store = inject(LoreDetailStore)
 
   public static provideGridOptions() {
     return provideVirtualGridOptions(this.buildGridOptions())

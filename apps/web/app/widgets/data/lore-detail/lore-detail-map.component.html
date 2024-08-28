@@ -1,6 +1,6 @@
-<nwb-map class="block aspect-video relative" [mapId]="store.mapId()" [fitBounds]="store.bounds()" #map>
+<nwb-map class="block aspect-square relative" [mapId]="store.mapId()" [fitBounds]="store.bounds()" #map>
   @if (store.mapData(); as data) {
-    <ng-container [nwbMapLayer]="'data'" [data]="data" [heatmap]="store.showHeatmap()" [filter]="store.filter()" />
+    <ng-container [nwbMapLayer]="'data'" [data]="data" />
   }
   <div class="flex flex-row w-full justify-between absolute top-0 left-0 z-50 pointer-events-none p-2">
     <div class="text-sm font-mono">
@@ -20,24 +20,6 @@
         <button class="btn btn-sm btn-circle" (click)="map.toggleFullscreen()" [tooltip]="'Toggle fullscreen'">
           <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
         </button>
-        <button
-          class="btn btn-sm btn-circle"
-          [class.text-primary]="store.showHeatmap()"
-          (click)="store.toggleHeatmap()"
-          [tooltip]="'Toggle heatmap'"
-        >
-          <nwb-icon [icon]="iconFire" class="w-4 h-4" />
-        </button>
-        @if (store.hasRandomEncounter()) {
-          <button
-            class="btn btn-sm btn-circle"
-            [class.text-primary]="store.showRandomEncounter()"
-            (click)="store.toggleRandomEncounter()"
-            [tooltip]="'Toggle random encounter'"
-          >
-            <nwb-icon [icon]="iconDice" class="w-4 h-4" />
-          </button>
-        }
       </div>
     </div>
   </div>
