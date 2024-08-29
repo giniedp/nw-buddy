@@ -172,7 +172,7 @@ export const VitalDetailStore = signalStore(
         modifier: state.modifier,
         difficulty: mutaDifficulty,
       },
-      ({ vital, modifier, level, difficulty }) => {
+      ({ vital, modifier, level, difficulty }): number => {
         return getVitalDamage({
           vital,
           level,

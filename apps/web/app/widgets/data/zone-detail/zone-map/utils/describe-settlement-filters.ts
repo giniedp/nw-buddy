@@ -20,6 +20,7 @@ export function describeSettlementFilters(
     icon: null,
     variant: null,
     lootTable: lootTable.original,
+    loreID: null,
 
     section: 'Settlement',
     sectionLabel: 'Settlement goods',

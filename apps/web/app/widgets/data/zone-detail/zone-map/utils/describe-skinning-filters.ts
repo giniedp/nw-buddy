@@ -1,11 +1,11 @@
 import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
 
-import { eqCaseInsensitive, humanize } from '~/utils'
+import { eqCaseInsensitive } from '~/utils'
 import { getGatherableIcon, getTradeskillIcon } from '~/widgets/data/gatherable-detail/utils'
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from '../utils/parse-loottable'
-import { parseSizeVariant } from '../utils/parse-size-variant'
+import { CREATURES } from './creatures'
 
 export function describeSkinningFilters(
   lootTable: ParsedLootTable,
@@ -17,12 +17,14 @@ export function describeSkinningFilters(
   }
   const name = variant?.Name || gatherable.DisplayName || ''
   const icon = getGatherableIcon(gatherable)
+  const creature = CREATURES.find((it) => lootTable.tokenized.some((token) => eqCaseInsensitive(token, it)))
   const props: FilterDataPropertiesWithVariant = {
     name,
     color: null,
     icon: icon,
     variant: null,
     lootTable: lootTable.original,
+    loreID: null,
 
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
@@ -34,6 +36,11 @@ export function describeSkinningFilters(
 
     subcategory: '',
     subcategoryLabel: lootTable.tokenized.filter((it) => it !== 'Skinning' && it !== 'Farm').join(' '),
+  }
+  if (creature) {
+    props.category = creature
+    props.categoryLabel = creature
+    props.subcategory = lootTable.original
   }
 
   // const size = parseSizeVariant(lootTable)

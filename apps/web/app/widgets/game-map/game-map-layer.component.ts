@@ -1,45 +1,25 @@
-import {
-  Component,
-  Directive,
-  Injector,
-  OnDestroy,
-  OnInit,
-  computed,
-  effect,
-  inject,
-  input,
-  model,
-  output,
-  signal,
-} from '@angular/core'
-import { GeoJSON } from 'geojson'
-import {
-  AddLayerObject,
-  FilterSpecification,
-  GeoJSONSource,
-  MapGeoJSONFeature,
-  MapLayerEventType,
-  Popup,
-} from 'maplibre-gl'
-import { GameMapComponent } from './game-map.component'
+import { Directive, Injector, OnDestroy, computed, effect, inject, input, model, output, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Feature, FeatureCollection, Geometry } from 'geojson'
+import { FilterSpecification, GeoJSONSource, MapLayerEventType } from 'maplibre-gl'
 import tinycolor from 'tinycolor2'
-import { GameMapProxyService } from './game-map.proxy'
+import { GameMapHost } from './game-map-host'
+import { attachLayerHover } from './utils'
 
 @Directive({
   standalone: true,
   selector: '[nwbMapLayer]',
   exportAs: 'mapLayer',
 })
-export class GameMapLayerDirective implements OnInit, OnDestroy {
-  private proxy = inject(GameMapProxyService, { optional: true })
-  private parent = inject(GameMapComponent, { optional: true })
+export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
+  private host = inject(GameMapHost)
   protected get map() {
-    return (this.parent || this.proxy)?.map
+    return this.host.map
   }
 
   public layerId = input.required<string>({ alias: 'nwbMapLayer' })
   public disabled = model(false)
-  public data = model<GeoJSON>()
+  public data = model<FeatureCollection<G, P>>()
   public icons = input<boolean>()
   public color = input<string>()
   public heatmap = input<boolean>()
@@ -51,17 +31,15 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
   private heatmapLayerId = computed(() => `heatmap-${this.layerId()}`)
   public variants = signal<string[]>(null)
 
-  public featureClick = output<MapGeoJSONFeature[]>()
-  public featureMouseEnter = output<MapGeoJSONFeature[]>()
-  public featureMouseLeave = output<MapGeoJSONFeature[]>()
-  public featureMouseMove = output<MapGeoJSONFeature[]>()
+  public featureClick = output<Array<Feature<G, P>>>()
+  public featureMouseEnter = output<Array<Feature<G, P>>>()
+  public featureMouseLeave = output<Array<Feature<G, P>>>()
+  public featureMouseMove = output<Array<Feature<G, P>>>()
 
-  public ngOnInit() {
-    if (this.map.loaded()) {
+  public constructor() {
+    this.host.ready$.pipe(takeUntilDestroyed()).subscribe(() => {
       this.bind()
-    } else {
-      this.map.on('load', () => this.bind())
-    }
+    })
   }
 
   public ngOnDestroy() {
@@ -172,7 +150,7 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
           ],
           'circle-color': ['get', 'color'],
           'circle-stroke-color': '#000000',
-          'circle-stroke-width': 1,
+          'circle-stroke-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 1],
         },
         layout: {
           'circle-sort-key': [
@@ -190,6 +168,12 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
       this.map.on('mouseenter', circleLayerId, this.handleMouseEnter)
       this.map.on('mouseleave', circleLayerId, this.handleMouseLeave)
       this.map.on('mousemove', circleLayerId, this.handleMouseMove)
+      attachLayerHover({
+        map: this.map,
+        sourceId: sourceId,
+        layerId: circleLayerId,
+        getId: (feature) => feature.id,
+      })
     }
 
     if (this.heatmap() && !this.map.getLayer(this.heatmapLayerId())) {
@@ -339,18 +323,19 @@ export class GameMapLayerDirective implements OnInit, OnDestroy {
   }
 
   private handleMouseEnter = (e: MapLayerEventType['mouseenter']) => {
-    this.featureMouseEnter.emit(e.features)
+    this.featureMouseEnter.emit(e.features as any as Array<Feature<G, P>>)
   }
 
   private handleMouseLeave = (e: MapLayerEventType['mouseleave']) => {
-    this.featureMouseLeave.emit(e.features)
+    this.featureMouseLeave.emit(e.features as any as Array<Feature<G, P>>)
   }
 
   private handleMouseMove = (e: MapLayerEventType['mousemove']) => {
-    this.featureMouseMove.emit(e.features)
+    this.featureMouseMove.emit(e.features as any as Array<Feature<G, P>>)
   }
 
   private handleClick = (e: MapLayerEventType['click']) => {
-    this.featureClick.emit(e.features)
+    e.preventDefault()
+    this.featureClick.emit(e.features as any as Array<Feature<G, P>>)
   }
 }

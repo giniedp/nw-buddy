@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, output } from '@angular/core'
 import { groupBy, sortBy } from 'lodash'
-import { FilterDataProperties, FilterDataSet } from './data/types'
+import { FilterFeatureProperties, FilterDataSet } from './data/types'
 import { MapFilterSectionComponent } from './filter-section.component'
 import { ZoneMapStore } from './zone-map.store'
 
@@ -9,7 +9,7 @@ import { ZoneMapStore } from './zone-map.store'
   selector: 'nwb-map-filter-segment',
   template: `
     @for (row of rows(); track row.key) {
-      <nwb-map-filter-section [source]="row.items" (featureHover)="featureHover.emit($event)" />
+      <nwb-map-filter-section [source]="row.items" />
     }
   `,
   host: {
@@ -19,7 +19,7 @@ import { ZoneMapStore } from './zone-map.store'
 })
 export class MapFilterSegmentComponent {
   public source = input.required<FilterDataSet[]>()
-  public featureHover = output<FilterDataProperties[]>()
+  public featureHover = output<FilterFeatureProperties[]>()
   protected mapId = inject(ZoneMapStore).mapId
   protected rows = computed(() => {
     const items = this.source().filter((it) => !!it.data[this.mapId()]?.count)

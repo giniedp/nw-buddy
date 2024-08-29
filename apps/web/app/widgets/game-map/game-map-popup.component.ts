@@ -1,7 +1,6 @@
-import { Component, ElementRef, OnDestroy, OnInit, effect, inject, input, signal } from '@angular/core'
+import { Component, ElementRef, OnDestroy, OnInit, effect, inject, input } from '@angular/core'
 import { Popup } from 'maplibre-gl'
-import { GameMapComponent } from './game-map.component'
-import { GameMapProxyService } from './game-map.proxy'
+import { GameMapHost } from './game-map-host'
 
 @Component({
   standalone: true,
@@ -12,11 +11,10 @@ import { GameMapProxyService } from './game-map.proxy'
   },
 })
 export class GameMapPopupComponent implements OnInit, OnDestroy {
-  private proxy = inject(GameMapProxyService, { optional: true })
-  private parent = inject(GameMapComponent, { optional: true })
+  private host = inject(GameMapHost, { optional: true })
   public position = input<[number, number]>()
   protected get map() {
-    return (this.parent || this.proxy)?.map
+    return this.host.map
   }
 
   protected elRef = inject(ElementRef)

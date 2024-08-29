@@ -1,16 +1,6 @@
-import {
-  Component,
-  ElementRef,
-  Injector,
-  effect,
-  inject,
-  input,
-  model,
-  output,
-  signal,
-  untracked,
-  viewChild,
-} from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { Component, ElementRef, Injector, effect, inject, input, output, signal, untracked } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { environment } from 'apps/web/environments'
 import { FeatureCollection } from 'geojson'
 import {
@@ -19,13 +9,15 @@ import {
   FitBoundsOptions,
   GeoJSONSource,
   LineLayerSpecification,
+  MapLayerEventType,
   MapMouseEvent,
   RequestTransformFunction,
   StyleSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl'
 import { NW_MAP_TILE_SIZE } from './constants'
-import { GameMapProxyService } from './game-map.proxy'
+import { GameMapHost } from './game-map-host'
+import { GameMapMouseAnchorDirective } from './game-map-mouse-anchor.directive'
 import { MaplibreDirective } from './maplibre.directive'
 import {
   attachLayerHover,
@@ -49,31 +41,35 @@ import {
       [zoom]="4"
       [center]="[180 / 4, 90 / 4]"
       [transformRequest]="transformRequest"
-      (mapLoad)="handleMapLoad()"
       (mapError)="handleMapError($event)"
-      (mapMouseMove)="handleMapMouseMove($event)"
       (mapZoom)="handleMapZoom()"
       class="w-full h-full"
       id="game-map-element"
     ></div>
-    <!-- <div class="absolute top-2 left-2">{{ zoom() }} | {{ info() || '' }}</div> -->
     <ng-content />
+    <div nwbGameMapMouseAnchor>
+      @if (host.tooltips.length) {
+        @for (tooltip of host.tooltips; track $index) {
+          <ng-container [ngTemplateOutlet]="tooltip" />
+        }
+      }
+    </div>
   `,
   host: {
     class: 'block overflow-hidden bg-[#859594]',
   },
-  imports: [MaplibreDirective],
+  providers: [GameMapHost],
+  imports: [CommonModule, MaplibreDirective, GameMapMouseAnchorDirective],
 })
 export class GameMapComponent {
   protected elRef = inject<ElementRef<HTMLElement>>(ElementRef)
-  protected mapDirective = viewChild(MaplibreDirective)
+  protected host = inject(GameMapHost, { self: true })
   public get map() {
-    return this.mapDirective().map
+    return this.host.map
   }
-  protected info = signal<string>(null)
   protected zoom = signal<number>(null)
   protected minZoom = signal<number>(1)
-  protected maxZoom = signal<number>(8)
+  protected maxZoom = signal<number>(10)
   protected styleSpec: StyleSpecification = {
     version: 8,
     sources: {
@@ -85,11 +81,17 @@ export class GameMapComponent {
         id: 'tiles0',
         type: 'raster',
         source: 'newworld_vitaeeterna',
+        layout: {
+          visibility: 'none',
+        },
       },
       {
         id: 'tiles1',
         type: 'raster',
         source: 'outpostrush',
+        layout: {
+          visibility: 'none',
+        },
       },
     ],
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
@@ -120,7 +122,7 @@ export class GameMapComponent {
   private injector = inject(Injector)
 
   public constructor() {
-    inject(GameMapProxyService, { optional: true })?.provide(() => this.map)
+    this.host.ready$.pipe(takeUntilDestroyed()).subscribe(() => this.handleMapLoad())
   }
 
   public toggleFullscreen() {
@@ -132,7 +134,6 @@ export class GameMapComponent {
   }
 
   protected handleMapLoad() {
-    this.map.resize()
     this.attachSignals()
   }
 
@@ -143,11 +144,6 @@ export class GameMapComponent {
     }
   }
 
-  protected handleMapMouseMove(e: MapMouseEvent) {
-    const [x, y] = xyFromLngLat([e.lngLat.lng, e.lngLat.lat])
-
-    this.info.set(`x:${x.toFixed(2)} y:${y.toFixed(2)} | lng:${e.lngLat.lng} lat:${e.lngLat.lat}`)
-  }
   protected handleMapZoom() {
     this.zoom.set(this.map.getZoom())
   }
@@ -223,17 +219,7 @@ export class GameMapComponent {
         layerId: layerFillId,
         getId: (feature) => feature.id as string | number,
       })
-      this.map.on('click', layerFillId, (e) => {
-        const feature = e.features[0]
-        this.zoneClick.emit(String(feature.id))
-        const geometry = feature.geometry
-        const center = getGeometryCenter(geometry)
-        this.map.flyTo({
-          center: center,
-          zoom: 4.9,
-          essential: true,
-        })
-      })
+      this.map.on('click', layerFillId, (e) => this.handleClick(e, 4.9))
     }
     this.map.getLayer(layerSymbolId).visibility = showLabels ? 'visible' : 'none'
     const source = this.map.getSource(sourceId) as GeoJSONSource
@@ -279,17 +265,7 @@ export class GameMapComponent {
         layerId: layerFillId,
         getId: (feature) => feature.id as string | number,
       })
-      this.map.on('click', layerFillId, (e) => {
-        const feature = e.features[0]
-        this.zoneClick.emit(String(feature.id))
-        const geometry = feature.geometry
-        const center = getGeometryCenter(geometry)
-        this.map.flyTo({
-          center: center,
-          zoom: 5.9,
-          essential: true,
-        })
-      })
+      this.map.on('click', layerFillId, (e) => this.handleClick(e, 5.9))
     }
     this.map.getLayer(layerSymbolId).visibility = showLabels ? 'visible' : 'none'
     const source = this.map.getSource(sourceId) as GeoJSONSource
@@ -333,17 +309,7 @@ export class GameMapComponent {
         layerId: layerFillId,
         getId: (feature) => feature.id as string | number,
       })
-      this.map.on('click', layerFillId, (e) => {
-        const feature = e.features[0]
-        this.zoneClick.emit(String(feature.id))
-        const geometry = feature.geometry
-        const center = getGeometryCenter(geometry)
-        this.map.flyTo({
-          center: center,
-          zoom: 7,
-          essential: true,
-        })
-      })
+      this.map.on('click', layerFillId, (e) => this.handleClick(e, 7))
     }
     const source = this.map.getSource(sourceId) as GeoJSONSource
     source.setData(features || { type: 'FeatureCollection', features: [] })
@@ -379,13 +345,30 @@ export class GameMapComponent {
       padding: 40,
       duration: 500,
     }
-    const center: [number, number] = [
-      bounds[0] + (bounds[2] - bounds[0]) / 2,
-      bounds[1] + (bounds[3] - bounds[1]) / 2,
-    ]
+    const center: [number, number] = [bounds[0] + (bounds[2] - bounds[0]) / 2, bounds[1] + (bounds[3] - bounds[1]) / 2]
     this.map.fitBounds(bounds, {
       center,
-      ...options
+      ...options,
+    })
+  }
+
+  private handleClick(e: MapLayerEventType['click'], zoom: number) {
+    const feature = e.features?.[0]
+    if (!feature) {
+      return
+    }
+    setTimeout(() => {
+      if (e.defaultPrevented) {
+        return
+      }
+      this.zoneClick.emit(String(feature.id))
+      const geometry = feature.geometry
+      const center = getGeometryCenter(geometry)
+      this.map.flyTo({
+        center: center,
+        zoom: zoom,
+        essential: true,
+      })
     })
   }
 }
@@ -397,7 +380,7 @@ const territoryFillLayout: FillLayerSpecification = {
   layout: {},
   paint: {
     'fill-color': '#FFFFFF',
-    'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0, 0.1],
+    'fill-opacity': 0,
   },
 }
 const territoryOutlineLayout: LineLayerSpecification = {
@@ -407,7 +390,7 @@ const territoryOutlineLayout: LineLayerSpecification = {
   layout: {},
   paint: {
     'line-color': '#FFFFFF',
-    'line-width': 5,
+    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 8, 5],
   },
 }
 const territorySymbolLayout: SymbolLayerSpecification = {
@@ -432,7 +415,7 @@ const areaFillLayout: FillLayerSpecification = {
   layout: {},
   paint: {
     'fill-color': '#FFFFFF',
-    'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.1, 0],
+    'fill-opacity': 0,
   },
 }
 const areaOutlineLayout: LineLayerSpecification = {
@@ -444,7 +427,7 @@ const areaOutlineLayout: LineLayerSpecification = {
   },
   paint: {
     'line-color': '#FF0000',
-    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 1],
+    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 4, 1],
   },
 }
 const areaSymbolLayout: SymbolLayerSpecification = {
@@ -480,7 +463,7 @@ const poisOutlineLayout: LineLayerSpecification = {
   },
   paint: {
     'line-color': '#ceba75',
-    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 2, 1],
+    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 4, 1],
     'line-dasharray': [4, 2],
   },
 }

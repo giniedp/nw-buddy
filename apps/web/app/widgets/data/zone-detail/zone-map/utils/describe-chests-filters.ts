@@ -21,6 +21,7 @@ export function describeChestsFilters(
     icon: null,
     variant: null,
     lootTable: lootTable.original,
+    loreID: null,
 
     section: 'Chests',
     sectionLabel: 'Chests',

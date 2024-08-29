@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core'
+import { Component, computed, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { IonButton, IonButtons, IonMenuButton, IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { sortBy } from 'lodash'
@@ -9,11 +9,10 @@ import { svgDice, svgFilter, svgFire, svgFont, svgTags } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
-import { GameMapComponent, GameMapProxyService } from '~/widgets/game-map'
+import { GameMapComponent, GameMapHost } from '~/widgets/game-map'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
 import { LootModule } from '~/widgets/loot'
 import { VitalDetailModule } from '../../vital-detail'
-import { FilterDataProperties, VitalDataProperties } from './data/types'
 import { MapFilterSectionComponent } from './filter-section.component'
 import { MapFilterSegmentComponent } from './filter-segment.component'
 import { MapFilterVitalsComponent } from './filter-vitals.component'
@@ -44,7 +43,7 @@ import { ZoneMapStore } from './zone-map.store'
     VitalDetailModule,
     LootModule,
   ],
-  providers: [ZoneMapStore, GameMapProxyService],
+  providers: [ZoneMapStore, GameMapHost],
   host: {
     class: 'block',
   },
@@ -61,8 +60,6 @@ export class ZoneDetailMapComponent {
     ]
   })
   protected activeSegment = computed(() => this.segments().find((it) => it.id === this.segment()))
-  protected hoverVitals = signal<VitalDataProperties[]>(null)
-  protected hoverFilters = signal<FilterDataProperties[]>(null)
 
   public pinMenu = input(false)
 
@@ -88,10 +85,4 @@ export class ZoneDetailMapComponent {
     })
     return sortBy(result, (it) => it.label)
   })
-
-  public constructor() {
-    effect(() => {
-      console.log({ activeSegment: this.activeSegment() })
-    })
-  }
 }

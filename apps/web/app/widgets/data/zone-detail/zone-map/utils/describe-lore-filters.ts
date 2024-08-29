@@ -12,7 +12,8 @@ export function describeLoreFilters(
     color: null,
     icon: NW_FALLBACK_ICON,
     variant: null,
-    lootTable: '',
+    lootTable: null,
+    loreID: lore.LoreID,
 
     section: 'Lore',
     sectionLabel: 'Lore Notes',

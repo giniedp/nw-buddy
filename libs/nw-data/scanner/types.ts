@@ -43,6 +43,17 @@ export interface ScannedTerritory {
   geometry: Polygon[]
 }
 
+export type ScannedHouseTypeData = ScannedHouseType[]
+export interface ScannedHouseType {
+  houseTypeID: string
+  houses: ScannedHouse[]
+}
+export interface ScannedHouse {
+  mapID: string
+  territories: number[]
+  geometry: Polygon[]
+}
+
 export type ScannedVariationData = ScannedVariation[]
 export interface ScannedVariation<T = PositionChunkRef> {
   variantID: string

@@ -17,6 +17,7 @@ export function describeAlchemyFilters(
     sectionLabel: 'campalchemy_groupname',
     sectionIcon: NW_FALLBACK_ICON,
     lootTable: lootTable.original,
+    loreID: null,
   }
 
   {

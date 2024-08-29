@@ -138,28 +138,53 @@ export function attachLayerHover({
   map,
   sourceId,
   layerId,
-  getId,
+  //getId,
 }: {
   map: Map
   sourceId: string
   layerId: string
   getId: (feature: MapGeoJSONFeature) => string | number
 }) {
-  let hoverId: string | number
+  const hoverIds: Array<string | number> = []
+  const toAdd: Array<string | number> = []
+  const toRemove: Array<string | number> = []
   map.on('mousemove', layerId, (e) => {
-    if (e.features.length > 0) {
-      if (hoverId) {
-        map.setFeatureState({ source: sourceId, id: hoverId }, { hover: false })
+    if (!e.features?.length) {
+      return
+    }
+    toAdd.length = 0
+    toRemove.length = 0
+    for (const item of e.features) {
+      if (item.id == null) {
+        continue
       }
-      hoverId = getId(e.features[0])
-      map.setFeatureState({ source: sourceId, id: hoverId }, { hover: true })
+      if (!hoverIds.includes(item.id)) {
+        toAdd.push(item.id)
+      }
+    }
+    for (const id of hoverIds) {
+      if (e.features.every((it) => it.id !== id)) {
+        toRemove.push(id)
+      }
+    }
+
+    for (const id of toAdd) {
+      map.setFeatureState({ source: sourceId, id }, { hover: true })
+      hoverIds.push(id)
+    }
+    for (const id of toRemove) {
+      map.setFeatureState({ source: sourceId, id }, { hover: false })
+      const index = hoverIds.indexOf(id)
+      if (index >= 0) {
+        hoverIds.splice(index, 1)
+      }
     }
   })
   map.on('mouseleave', layerId, (e) => {
-    if (hoverId) {
-      map.setFeatureState({ source: sourceId, id: hoverId }, { hover: false })
+    for (const id of hoverIds) {
+      map.setFeatureState({ source: sourceId, id }, { hover: false })
     }
-    hoverId = null
+    hoverIds.length = 0
   })
 }
 

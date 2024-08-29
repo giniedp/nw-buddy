@@ -22,6 +22,7 @@ export function describeHarvestingFilters(
     icon: null,
     variant: null,
     lootTable: lootTable.original,
+    loreID: null,
 
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,

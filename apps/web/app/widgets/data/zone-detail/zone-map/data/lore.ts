@@ -4,7 +4,7 @@ import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { stringToColor } from '~/utils'
 import { describeLoreFilters } from '../utils/describe-lore-filters'
-import { FilterDataGroup, FilterDataSet, FilterVariant } from './types'
+import { FilterGroup, FilterDataSet, FilterVariant } from './types'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 export function loadLore(db: NwDataService, mapCoord: MapCoord) {
@@ -30,7 +30,7 @@ function collectLoreDatasets(data: {
   mapCoord: MapCoord
 }): FilterDataSet[] {
   const result: Record<string, FilterDataSet> = {}
-
+  let featureId = 0
   for (const item of data.loreItems) {
     const meta = data.loreItemsMetaMap.get(item.LoreID)
     if (!meta?.spawns?.length) {
@@ -79,6 +79,7 @@ function collectLoreDatasets(data: {
       layer.count += points.length
       mapData.count += points.length
       mapData.geometry.features.push({
+        id: featureId++,
         type: 'Feature',
         properties: {
           ...properties,
@@ -95,7 +96,7 @@ function collectLoreDatasets(data: {
   return Object.values(result)
 }
 
-function generateId(properties: FilterDataGroup) {
+function generateId(properties: FilterGroup) {
   return `s=${properties.section}&c=${properties.category}&s=${properties.subcategory}`
 }
 

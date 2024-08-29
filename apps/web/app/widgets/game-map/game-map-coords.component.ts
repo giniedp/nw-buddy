@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnDestroy, OnInit, inject, input, signal } from '@angular/core'
 import { MapEventType } from 'maplibre-gl'
+import { GameMapHost } from './game-map-host'
 import { GameMapService } from './game-map.service'
-import { injectGameMapHost } from './injection'
 
 @Component({
   standalone: true,
@@ -20,7 +20,7 @@ import { injectGameMapHost } from './injection'
 })
 export class GameMapCoordsComponent implements OnInit, OnDestroy {
   private service = inject(GameMapService)
-  private host = injectGameMapHost()
+  private host = inject(GameMapHost)
   private get map() {
     return this.host.map
   }

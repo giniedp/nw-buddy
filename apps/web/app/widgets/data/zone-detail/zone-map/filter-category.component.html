@@ -14,6 +14,21 @@
   />
 }
 
+@for (feature of hoverItems(); track $index) {
+  @if (feature.lootTable) {
+    <ng-template [nwbGameMapMouseTip]>
+      <nwb-loot-graph [tableId]="feature.lootTable" [showLocked]="true" class="w-80 mb-1 text-sm"/>
+    </ng-template>
+  }
+  @if (feature.loreID) {
+    <ng-template [nwbGameMapMouseTip]>
+      <div class="w-80 mb-1 p-4 bg-base-300 rounded-sm">
+        {{ feature.name | nwText }}
+      </div>
+    </ng-template>
+  }
+}
+
 <div class="flex flex-row gap-1">
   <div class="join w-full">
     <button

@@ -10,7 +10,7 @@ export interface PoiTagRecord {
 
 @Component({
   standalone: true,
-  selector: 'nwb-loot-tag-cell',
+  selector: 'nwb-poi-tag-cell',
   template: ` {{ data?.DisplayName }} `,
   host: {
     class: 'btn btn-block justify-start text-left rounded-none font-mono',

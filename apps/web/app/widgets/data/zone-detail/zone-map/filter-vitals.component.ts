@@ -1,15 +1,27 @@
-import { Component, Injector, computed, effect, inject, input, output, signal, untracked } from '@angular/core'
+import {
+  Component,
+  Injector,
+  TemplateRef,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
-import { Point } from 'geojson'
-import { MapGeoJSONFeature } from 'maplibre-gl'
+import { uniqBy } from 'lodash'
 import { debounceTime, filter, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { ExpressionTreeModule } from '~/ui/expression-tree'
+import { ModalService } from '~/ui/layout'
 import { TreeNodeComponent, TreeNodeToggleComponent } from '~/ui/tree'
-import { GameMapLayerDirective, GameMapPopupComponent } from '~/widgets/game-map'
+import { GameMapHost, GameMapLayerDirective, GameMapMouseTipDirective, GameMapPopupComponent } from '~/widgets/game-map'
 import {
   ExpressionBranchKeyDirective,
   ExpressionBranchValueDirective,
@@ -17,7 +29,7 @@ import {
 } from '../../../../ui/expression-branch/expresssion-branch-input.component'
 import { VitalDetailModule } from '../../vital-detail'
 import { VitalTableAdapter } from '../../vital-table'
-import { VitalDataProperties, VitalDataSet } from './data/types'
+import { VitalDataSet, VitalsFeature } from './data/types'
 import { FilterVitalsStore } from './filter-vitals.store'
 import { CreatureCategoryPickerAdapter } from './picker/creature-category-picker.adapter'
 import { CreatureTypePickerAdapter } from './picker/creature-type-picker.adapter'
@@ -41,25 +53,27 @@ import { ZoneMapStore } from './zone-map.store'
     FormsModule,
     GameMapLayerDirective,
     GameMapPopupComponent,
+    GameMapMouseTipDirective,
     NwModule,
     TreeNodeComponent,
     TreeNodeToggleComponent,
     VitalDetailModule,
+    RouterModule,
   ],
 })
 export class MapFilterVitalsComponent {
   private injector = inject(Injector)
+  private mapHost = inject(GameMapHost)
+  private modal = inject(ModalService)
+
   protected mapStore = inject(ZoneMapStore)
   protected store = inject(FilterVitalsStore)
   public data = input.required<VitalDataSet>()
-  public featureHover = output<VitalDataProperties[]>()
+
   protected popupPosition = signal<[number, number]>(null)
-  protected hoverItems = signal<
-    Array<{
-      position: [number, number]
-      data: VitalDataProperties
-    }>
-  >(null)
+  protected hoverItems = signal<Array<{ id: string; level: number }>>(null)
+  protected clickItems = signal<Array<{ id: string; level: number }>>(null)
+  protected clickModal = viewChild('clickModal', { read: TemplateRef })
 
   protected lvlMin = signal(1)
   protected lvlMax = signal(NW_MAX_ENEMY_LEVEL)
@@ -86,7 +100,7 @@ export class MapFilterVitalsComponent {
   protected mapId = this.mapStore.mapId
   protected layerData = computed(() => {
     const data = this.data()
-    return data.data[this.mapId()]?.geometry
+    return data.data[this.mapId()]?.data
   })
 
   public constructor() {
@@ -211,34 +225,52 @@ export class MapFilterVitalsComponent {
       })
   }
 
-  protected handleMouseEnter(features: MapGeoJSONFeature[]) {
-    const items = features.map((it) => it.properties as VitalDataProperties)
-    this.featureHover.emit(items)
-
-    this.hoverItems.set(
+  protected handleMouseClick(features: VitalsFeature[]) {
+    const items = uniqBy(
       features.map((it) => {
-        const point = (it.geometry as any as Point)?.coordinates
-        const props = it.properties as VitalDataProperties
-        return { position: [point[0], point[1]], data: props }
+        return {
+          id: it.properties.id,
+          level: it.properties.level,
+        }
       }),
+      (it) => `${it.id}-${it.level}`,
     )
+    this.clickItems.set(items)
+    this.modal.open({
+      content: this.clickModal(),
+      size: ['x-sm', 'y-auto'],
+    })
   }
 
-  protected handleMouseMove(features: MapGeoJSONFeature[]) {
-    const items = features.map((it) => it.properties as VitalDataProperties)
-    this.featureHover.emit(items)
-
-    this.hoverItems.set(
+  protected handleMouseEnter(features: VitalsFeature[]) {
+    this.mapHost.map.getCanvas().style.cursor = 'pointer'
+    const items = uniqBy(
       features.map((it) => {
-        const point = (it.geometry as any as Point)?.coordinates
-        const props = it.properties as VitalDataProperties
-        return { position: [point[0], point[1]], data: props }
+        return {
+          id: it.properties.id,
+          level: it.properties.level,
+        }
       }),
+      (it) => `${it.id}-${it.level}`,
     )
+    this.hoverItems.set(items)
   }
 
-  protected handleMouseLeave(features: MapGeoJSONFeature[]) {
-    this.featureHover.emit(null)
+  protected handleMouseMove(features: VitalsFeature[]) {
+    const items = uniqBy(
+      features.map((it) => {
+        return {
+          id: it.properties.id,
+          level: it.properties.level,
+        }
+      }),
+      (it) => `${it.id}-${it.level}`,
+    )
+    this.hoverItems.set(items)
+  }
+
+  protected handleMouseLeave(features: VitalsFeature[]) {
+    this.mapHost.map.getCanvas().style.cursor = ''
     this.hoverItems.set(null)
   }
 }

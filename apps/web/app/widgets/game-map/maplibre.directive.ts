@@ -1,12 +1,15 @@
 import { Directive, ElementRef, Input, inject, input, output } from '@angular/core'
 import { Map, MapLibreEvent, MapMouseEvent, RequestTransformFunction, StyleSpecification } from 'maplibre-gl'
+import { GameMapHost } from './game-map-host'
 import { missingImageHandler } from './missing-image-hander'
 
 @Directive({
   standalone: true,
   selector: '[nwbMaplibre]',
+  providers: [GameMapHost],
 })
 export class MaplibreDirective {
+  private mapHost = inject(GameMapHost, { self: true })
   public nwbMaplibre = input<void>()
 
   private elRef = inject<ElementRef<HTMLElement>>(ElementRef)
@@ -72,7 +75,12 @@ export class MaplibreDirective {
   public mapMouseMove = output<MapMouseEvent>()
   public mapZoom = output<MapLibreEvent>()
   public constructor() {
-    this.map.on('load', (e) => this.mapLoad.emit(e))
+    this.mapHost.setMap(this.map)
+    this.map.on('load', (e) => {
+      this.map.resize()
+      this.mapLoad.emit(e)
+      this.mapHost.setReady()
+    })
     this.map.on('error', (e) => this.mapError.emit(e))
     this.map.on('mousemove', (e) => this.mapMouseMove.emit(e))
     this.map.on('zoom', (e) => this.mapZoom.emit(e))

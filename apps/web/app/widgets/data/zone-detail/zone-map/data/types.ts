@@ -1,22 +1,25 @@
-import { FeatureCollection, MultiPoint, Point } from 'geojson'
+import { Feature, FeatureCollection, MultiPoint } from 'geojson'
 
-export interface FilterDataSet extends FilterDataGroup {
+export interface FilterDataSet extends FilterGroup {
   id: string
   count: number
   data: Record<
     string,
     {
       count: number
-      geometry: FeatureCollection<MultiPoint, FilterDataProperties>
+      geometry: FilterFeatureCollection
     }
   >
   variants: FilterVariant[]
 }
 
-export interface FilterDataGroup {
+export type FilterFeatureCollection = FeatureCollection<MultiPoint, FilterFeatureProperties>
+export type FilterFeature = Feature<MultiPoint, FilterFeatureProperties>
+export interface FilterGroup {
   icon: string
   color: string
   lootTable: string
+  loreID: string
 
   section: string
   sectionLabel?: string
@@ -45,7 +48,7 @@ export interface FilterVariant {
   lootTable: string
 }
 
-export interface FilterDataProperties extends FilterDataGroup {
+export interface FilterFeatureProperties extends FilterGroup {
   icon: string
   color: string
   name: string
@@ -55,9 +58,13 @@ export interface FilterDataProperties extends FilterDataGroup {
   lootTable: string
 }
 
-export interface FilterDataPropertiesWithVariant extends Omit<FilterDataProperties, 'variant'> {
+export interface FilterDataPropertiesWithVariant extends Omit<FilterFeatureProperties, 'variant'> {
   variant: FilterVariant
 }
+
+//
+// Vitals
+//
 
 export interface VitalDataSet {
   count: number
@@ -65,19 +72,20 @@ export interface VitalDataSet {
     string,
     {
       count: number
-      geometry: VitalDataGeometry
+      data: VitalsFeatureCollection
     }
   >
 }
 
-export type VitalDataGeometry = FeatureCollection<MultiPoint, VitalDataProperties>
-export interface VitalDataProperties {
+export type VitalsFeatureCollection = FeatureCollection<MultiPoint, VitalsFeatureProperties>
+export type VitalsFeature = Feature<MultiPoint, VitalsFeatureProperties>
+export interface VitalsFeatureProperties {
   id: string
   level: number
   type: string
   categories: string[]
+  encounter: string[]
   lootTags: string[]
   poiTags: string[]
   color: string
-  encounter: string[]
 }

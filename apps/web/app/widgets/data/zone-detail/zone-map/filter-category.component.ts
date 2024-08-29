@@ -1,14 +1,17 @@
 import { Component, Pipe, PipeTransform, computed, inject, input, output, signal, viewChildren } from '@angular/core'
+import { Feature } from 'geojson'
 import { sortBy, uniq } from 'lodash'
-import { FilterSpecification, MapGeoJSONFeature } from 'maplibre-gl'
+import { FilterSpecification } from 'maplibre-gl'
 import tinycolor from 'tinycolor2'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgDice, svgInfo } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
+import { GameMapMouseTipDirective } from '~/widgets/game-map'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
-import { FilterDataProperties, FilterDataSet } from './data/types'
+import { LootGraphComponent } from '../../../loot/loot-graph.component'
+import { FilterFeatureProperties, FilterDataSet } from './data/types'
 import { FilterPopoverComponent } from './filter-popover.component'
 import { ZoneMapStore } from './zone-map.store'
 
@@ -29,7 +32,17 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
   standalone: true,
   selector: 'nwb-map-filter-category',
   templateUrl: './filter-category.component.html',
-  imports: [NwModule, IconsModule, GameMapLayerDirective, TooltipModule, FilterPopoverComponent, ToLCHPipe],
+  imports: [
+    NwModule,
+    IconsModule,
+    GameMapLayerDirective,
+    GameMapMouseTipDirective,
+    TooltipModule,
+    FilterPopoverComponent,
+    ToLCHPipe,
+    LootGraphComponent,
+
+  ],
   host: {
     class: 'block',
   },
@@ -43,9 +56,8 @@ export class MapFilterCategoryComponent {
   protected iconArrowLeft = svgAngleLeft
   protected iconInfo = svgInfo
   protected layers = viewChildren(GameMapLayerDirective)
-  public featureHover = output<FilterDataProperties[]>()
   protected hasChevron = computed(() => this.items().length > 1)
-
+  protected hoverItems = signal<FilterFeatureProperties[]>(null)
   protected items = this.source
   protected diceIcon = svgDice
 
@@ -141,17 +153,17 @@ export class MapFilterCategoryComponent {
     }
   }
 
-  protected handleMouseEnter(features: MapGeoJSONFeature[]) {
-    const items = features.map((it) => it.properties as FilterDataProperties)
-    this.featureHover.emit(items)
+  protected handleMouseEnter(features: Array<Feature<any, FilterFeatureProperties>>) {
+    const items = features.map((it) => it.properties as FilterFeatureProperties)
+    this.hoverItems.set(items)
   }
 
-  protected handleMouseMove(features: MapGeoJSONFeature[]) {
-    const items = features.map((it) => it.properties as FilterDataProperties)
-    this.featureHover.emit(items)
+  protected handleMouseMove(features: Array<Feature<any, FilterFeatureProperties>>) {
+    const items = features.map((it) => it.properties as FilterFeatureProperties)
+    this.hoverItems.set(items)
   }
 
-  protected handleMouseLeave(features: MapGeoJSONFeature[]) {
-    this.featureHover.emit(null)
+  protected handleMouseLeave(features: Array<Feature<any, FilterFeatureProperties>>) {
+    this.hoverItems.set(null)
   }
 }

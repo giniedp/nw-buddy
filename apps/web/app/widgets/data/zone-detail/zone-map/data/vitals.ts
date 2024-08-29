@@ -5,7 +5,7 @@ import { uniq } from 'lodash'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { stringToColor } from '~/utils'
-import { VitalDataProperties, VitalDataSet } from './types'
+import { VitalsFeatureProperties, VitalDataSet } from './types'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 export function loadVitals(db: NwDataService, mapCoord: MapCoord) {
@@ -29,7 +29,9 @@ function collectVitalsDataset(data: {
   territoriesMap: Map<number, TerritoryDefinition>
   mapCoord: MapCoord
 }): VitalDataSet {
-  const groups: Record<string, Record<string, Feature<MultiPoint, VitalDataProperties>>> = {}
+  type MapID = string
+  let featureId = 0
+  const groups: Record<MapID, Record<string, Feature<MultiPoint, VitalsFeatureProperties>>> = {}
 
   for (const item of data.vitals) {
     const meta = data.vitalsMetaMap.get(item.VitalsID)
@@ -59,6 +61,7 @@ function collectVitalsDataset(data: {
           const key = [id, level, categories.join(), encounter.join()].join()
           if (!mapData[key]) {
             mapData[key] = {
+              id: featureId++,
               type: 'Feature',
               geometry: {
                 type: 'MultiPoint',
@@ -94,13 +97,13 @@ function collectVitalsDataset(data: {
       result.count++
       result.data[mapId] = result.data[mapId] || {
         count: 0,
-        geometry: {
+        data: {
           type: 'FeatureCollection',
           features: [],
         },
       }
       result.data[mapId].count++
-      result.data[mapId].geometry.features.push(item)
+      result.data[mapId].data.features.push(item)
     }
   }
   return result

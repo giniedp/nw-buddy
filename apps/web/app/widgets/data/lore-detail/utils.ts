@@ -1,9 +1,10 @@
 import { LoreData } from '@nw-data/generated'
 import { eqCaseInsensitive } from '~/utils'
 
-export interface LoreTree {
+export interface LoreTree<T = unknown> {
   lore: LoreData
-  children: LoreTree[]
+  meta?: T
+  children: LoreTree<T>[]
 }
 
 export function selectLoreRoot(lore: LoreData, loreItems: LoreData[]) {
@@ -13,12 +14,14 @@ export function selectLoreRoot(lore: LoreData, loreItems: LoreData[]) {
   return lore
 }
 
-export function selectLoreTree(lore: LoreData, loreItems: LoreData[]): LoreTree {
+export function selectLoreTree<T>(lore: LoreData, loreItems: LoreData[], meta?: (item: LoreData) => T): LoreTree {
   return {
     lore: lore,
+    meta: meta?.(lore),
     children: !lore ? [] : loreItems
       .filter((it) => eqCaseInsensitive(it.ParentID, lore.LoreID))
-      .map((it) => selectLoreTree(it, loreItems)),
+      .map((it) => selectLoreTree(it, loreItems, meta))
+      .sort((a, b) => a.lore.Order - b.lore.Order),
   }
 }
 

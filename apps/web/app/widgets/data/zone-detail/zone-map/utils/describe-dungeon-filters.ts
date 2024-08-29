@@ -25,6 +25,7 @@ export function describeDungeonFilters(
     icon: null,
     variant: null,
     lootTable: lootTable.original,
+    loreID: null,
 
     section: lootTable.tokenized[0],
     sectionLabel: lootTable.tokenized[0],

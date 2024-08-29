@@ -20,6 +20,7 @@ export function describeFishingFilters(
     icon: null,
     variant: null,
     lootTable: lootTable.original,
+    loreID: null,
 
     section: 'Fishing',
     sectionLabel: 'Fishing',

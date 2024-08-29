@@ -16,7 +16,7 @@ import { describeSettlementFilters } from '../utils/describe-settlement-filters'
 import { describeSkinningFilters } from '../utils/describe-skinning-filters'
 import { parseLootTableID } from '../utils/parse-loottable'
 import { getSizeColor, parseSizeVariant } from '../utils/parse-size-variant'
-import { FilterDataSet, FilterDataGroup, FilterDataPropertiesWithVariant, FilterVariant } from './types'
+import { FilterDataSet, FilterGroup, FilterDataPropertiesWithVariant, FilterVariant } from './types'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 export function loadGatherables(db: NwDataService, mapCoord: MapCoord) {
@@ -64,6 +64,7 @@ function collectGatherableDatasets(data: {
     const meta = data.gatherablesMeta.get(gatherable.GatherableID)
     const variations = data.variationsByGatherableId.get(gatherable.GatherableID)
 
+    let featureId = 0
     if (meta?.spawns?.length) {
       for (const spawn of meta.spawns) {
         const properties = describeGatherable(gatherable, gatherable.FinalLootTable)
@@ -95,7 +96,9 @@ function collectGatherableDatasets(data: {
         })
         layer.count += points.length
         mapData.count += points.length
+        featureId++
         mapData.geometry.features.push({
+          id: featureId,
           type: 'Feature',
           properties: {
             ...properties,
@@ -154,7 +157,9 @@ function collectGatherableDatasets(data: {
               .map(data.mapCoord)
             layer.count += points.length
             mapData.count += points.length
+            featureId++
             mapData.geometry.features.push({
+              id: featureId,
               type: 'Feature',
               properties: {
                 ...properties,
@@ -187,6 +192,7 @@ function describeGatherable(
     name: gatherable.DisplayName,
     color: null,
     lootTable: lootTable.original,
+    loreID: null,
 
     section: gatherable.Tradeskill,
     sectionIcon: getTradeskillIcon(gatherable.Tradeskill) || NW_FALLBACK_ICON,
@@ -302,7 +308,7 @@ function describeGatherable(
   return props
 }
 
-function generateId(properties: FilterDataGroup) {
+function generateId(properties: FilterGroup) {
   return `s=${properties.section}&c=${properties.category}&s=${properties.subcategory}`
 }
 
