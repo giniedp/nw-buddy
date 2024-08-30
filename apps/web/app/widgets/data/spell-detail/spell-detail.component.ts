@@ -5,7 +5,7 @@ import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
-import { valueCell } from '~/ui/property-grid/cells'
+import { linkCell, valueCell } from '~/ui/property-grid/cells'
 import { SpellDetailStore } from './spell-detail.store'
 
 @Component({
@@ -39,28 +39,37 @@ export class SpellDetailComponent extends SpellDetailStore {
     super(db)
   }
 
-  public descriptor = gridDescriptor<SpellData>({}, (value) => valueCell({ value }))
-}
-
-function statusEffectCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['status-effect', it] : null,
-    }
-  })
-}
-
-function abilitiesCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    return {
-      value: String(it),
-      accent: true,
-      routerLink: ['ability', it],
-    }
-  })
+  public descriptor = gridDescriptor<SpellData>(
+    {
+      // SpellID: (value) => {
+      //   return linkCell({
+      //     value,
+      //     routerLink: ['spells', value]
+      //   })
+      // },
+      StatusEffects: (value) => {
+        return value?.map((it) => {
+          return linkCell({
+            value: it,
+            routerLink: ['status-effect', it],
+          })
+        })
+      },
+      StatusEffectsOnTargetBlockingThisSpell: (value) => {
+        return value?.map((it) => {
+          return linkCell({
+            value: it,
+            routerLink: ['status-effect', it],
+          })
+        })
+      },
+      AbilityId: (value) => {
+        return linkCell({
+          value,
+          routerLink: ['ability', value],
+        })
+      },
+    },
+    (value) => valueCell({ value }),
+  )
 }

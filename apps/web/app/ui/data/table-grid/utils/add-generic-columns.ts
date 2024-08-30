@@ -8,10 +8,8 @@ export function addGenericColumns(
   opts: {
     props: Record<string, string>
     scope?: string
-    defaults?: {
-      hide: boolean
-    }
-  }
+    defaults?: Partial<ColDef>
+  },
 ) {
   const fields = Object.entries(opts.props)
   const scope = opts.scope
@@ -21,6 +19,7 @@ export function addGenericColumns(
       continue
     }
     const colDef: ColDef = {
+      ...(opts?.defaults || {}),
       colId: field,
       getQuickFilterText: () => '',
       headerValueGetter: () => humanize(field),
@@ -32,7 +31,6 @@ export function addGenericColumns(
         }
       },
       field: field,
-      hide: opts?.defaults?.hide ?? true,
     }
     colDef.filter = GridSelectFilter
     colDef.filterParams = {

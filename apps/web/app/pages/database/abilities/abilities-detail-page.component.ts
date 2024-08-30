@@ -48,6 +48,11 @@ export class AbilitiesDetailPageComponent {
     .pipe(map((list) => list || []))
     .pipe(map((list) => list.map((it) => it.PerkID)))
 
+  protected spellIds$ = this.db
+    .spellsByAbilityId(this.itemId)
+    .pipe(map((list) => list || []))
+    .pipe(map((list) => list.map((it) => it.SpellID)))
+
   public constructor(
     private route: ActivatedRoute,
     private i18n: TranslateService,

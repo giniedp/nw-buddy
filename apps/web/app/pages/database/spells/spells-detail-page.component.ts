@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { StatusEffectData } from '@nw-data/generated'
+import { SpellData, StatusEffectData } from '@nw-data/generated'
 import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -20,8 +20,8 @@ import { SpellDetailModule } from '~/widgets/data/spell-detail'
 
 @Component({
   standalone: true,
-  selector: 'nwb-status-effects-detail-page',
-  templateUrl: './status-effects-detail-page.component.html',
+  selector: 'nwb-spells-detail-page',
+  templateUrl: './spells-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AbilityDetailModule,
@@ -41,35 +41,26 @@ import { SpellDetailModule } from '~/widgets/data/spell-detail'
     class: 'block',
   },
 })
-export class StatusEffectsDetailPageComponent {
+export class SpellsDetailPageComponent {
   public recordId = observeRouteParam(this.route, 'id')
 
   public constructor(
     private route: ActivatedRoute,
     private i18n: TranslateService,
-    private expr: NwExpressionService,
     private head: HtmlHeadService
   ) {
     //
   }
 
-  protected async onEntity(entity: StatusEffectData) {
+  protected async onEntity(entity: SpellData) {
     if (!entity) {
       return
     }
-    const description = await firstValueFrom(
-      this.expr.solve({
-        charLevel: NW_MAX_CHARACTER_LEVEL,
-        gearScore: NW_MAX_GEAR_SCORE_BASE,
-        text: this.i18n.get(entity.Description),
-        itemId: entity.StatusID,
-      })
-    )
     this.head.updateMetadata({
-      title: [this.i18n.get(entity.DisplayName), 'Status Effect'].join(' - '),
-      description: description,
+      title: [this.i18n.get(entity.SpellID)].join(' - '),
+      description: '',
       url: this.head.currentUrl,
-      image: entity.PlaceholderIcon || entity['IconPath'],
+      image: '',
     })
   }
 }

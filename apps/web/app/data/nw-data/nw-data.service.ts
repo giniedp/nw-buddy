@@ -290,6 +290,10 @@ export class NwDataService {
   public spellsMap = tableIndexBy(() => this.spells, 'SpellID')
   public spell = tableLookup(() => this.spellsMap)
   public spellsByDamageTable = tableGroupBy(() => this.spells, 'DamageTable')
+  public spellsByAbilityIdMap = tableGroupBy(() => this.spells, 'AbilityId')
+  public spellsByAbilityId = tableLookup(() => this.spellsByAbilityIdMap)
+  public spellsByStatusEffectIdMap = tableGroupBy(() => this.spells, 'StatusEffects')
+  public spellsByStatusEffectId = tableLookup(() => this.spellsByStatusEffectIdMap)
 
   public spellsMetadata = table(() => this.load<ScannedSpell>({ uri: 'nw-data/generated/spells_metadata.json' }))
   public spellsMetadataMap = tableIndexBy(() => this.spellsMetadata, 'PrefabPath')

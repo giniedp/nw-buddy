@@ -84,12 +84,17 @@ export const StatusEffectDetailStore = signalStore(
       (list) => list.flat().filter((it) => !!it),
     )
 
+     const foreignSpells = selectSignal(
+      [db.spellsByStatusEffectId(effectId).pipe(map((it) => it || []))],
+      (list) => list.flat().filter((it) => !!it),
+    )
     return {
       foreignAbilities,
       foreignAffixStats,
       foreignPerks,
       foreignItems,
       foreignDamageTables,
+      foreignSpells,
     }
   }),
   withComputed(({ effect }) => {

@@ -5792,8 +5792,8 @@ export interface SpellData {
   SpellPrefabPath: string;
   SpellTypes: string;
   StatusEffectDurations: number | string;
-  StatusEffects: string;
-  StatusEffectsOnTargetBlockingThisSpell: string;
+  StatusEffects: string[];
+  StatusEffectsOnTargetBlockingThisSpell: string[];
   StickWhenAttached: boolean;
   StoreOffsetWhenStuckToGDE: boolean;
   TargetAbilityCondition: string;

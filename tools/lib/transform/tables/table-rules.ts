@@ -251,6 +251,18 @@ export const TRANSFORM_RULES = [
 
   transformRule(
     {
+      type: 'SpellData',
+    },
+    [
+      mapPropToArray({
+        keys: ['StatusEffects', 'StatusEffectsOnTargetBlockingThisSpell'],
+        separator: ',',
+      }),
+    ],
+  ),
+
+  transformRule(
+    {
       type: 'AbilityData',
     },
     [

@@ -13,6 +13,7 @@ const PAGE_ROUTES: Routes = [
   { path: 'ipfs', loadChildren: () => import('./pages/share').then((m) => m.ShareModule) },
 
   { path: 'abilities', loadChildren: () => import('./pages/database/abilities').then((m) => m.AbilitiesPageModule) },
+  { path: 'spells', loadChildren: () => import('./pages/database/spells').then((m) => m.SpellsPageModule) },
   {
     path: 'gatherables',
     loadChildren: () => import('./pages/database/gatherables').then((m) => m.GatherablesPageModule),
