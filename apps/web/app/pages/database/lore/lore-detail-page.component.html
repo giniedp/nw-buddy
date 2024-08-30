@@ -22,7 +22,11 @@
             {{ value }} / {{ store.pageCount() }}
           </span>
           <span class="flex-1"></span>
-          <a [routerLink]="['lore', rightId()] | nwLink" class="btn btn-circle btn-ghost" [class.opacity-0]="!rightId()">
+          <a
+            [routerLink]="['lore', rightId()] | nwLink"
+            class="btn btn-circle btn-ghost"
+            [class.opacity-0]="!rightId()"
+          >
             <nwb-icon [icon]="chevronLeft" class="w-4 h-4 rotate-180" />
           </a>
         </div>
@@ -67,23 +71,29 @@
       @if (store.children()?.length) {
         <div class="flex flex-col gap-1">
           @for (child of store.children(); track child.record.LoreID; let i = $index) {
-            <a
-              [routerLink]="['lore', child.record.LoreID] | nwLink"
-              class="cursor-pointer link-hover hover:text-primary pl-4 flex flex-row justify-between"
-            >
-              <span> {{ child.record.Order }} - {{ child.record.Title | nwText }} </span>
+            <div class="flex flex-row justify-between pl-4">
+              <a
+                [routerLink]="['lore', child.record.LoreID] | nwLink"
+                class="flex-1 cursor-pointer link-hover hover:text-primary"
+              >
+                <span> {{ child.record.Order }} - {{ child.record.Title | nwText }} </span>
+              </a>
               @if (child.record.Type === 'Default') {
                 @if (child.meta) {
-                  <nwb-icon [icon]="iconLocation" class="w-4 h-4 cursor-help" [tooltip]="'Map location available'" />
+                  <button class="btn btn-sm btn-square btn-ghost" [tooltip]="'Map location available. Clickt to toggle on map.'" (click)="map.toggleId(child.record.LoreID)">
+                    <nwb-icon [icon]="iconLocation" class="w-4 h-4" [class.text-neutral]="map.isIdDisabled(child.record.LoreID)" />
+                  </button>
                 } @else {
-                  <nwb-icon
-                    [icon]="iconNoLocation"
-                    class="w-4 h-4 cursor-help text-error"
-                    [tooltip]="'No map location available'"
-                  />
+                  <button class="btn btn-sm btn-square">
+                    <nwb-icon
+                      [icon]="iconNoLocation"
+                      class="w-4 h-4 cursor-help text-error"
+                      [tooltip]="'No map location available'"
+                    />
+                  </button>
                 }
               }
-            </a>
+            </div>
           }
         </div>
       }
@@ -95,6 +105,6 @@
     </div>
   </div>
   <div class="p-4 pt-0">
-    <nwb-lore-detail-map [loreId]="loreId()" class="rounded-md overflow-clip" />
+    <nwb-lore-detail-map [loreId]="loreId()" class="rounded-md overflow-clip" #map/>
   </div>
 </div>

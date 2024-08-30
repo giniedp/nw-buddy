@@ -55,7 +55,6 @@ export class ZoneDetailMapComponent {
   protected segments = computed(() => {
     return [
       { id: 'gathering', label: 'Gathering', source: this.store.gatherables() },
-      { id: 'lore', label: 'Lore', source: this.store.lore() },
       { id: 'vitals', label: 'Vitals', vitals: this.store.vitals() },
     ]
   })

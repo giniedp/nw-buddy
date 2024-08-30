@@ -65,4 +65,12 @@ export class LoreItemDetailMapComponent {
       })
     })
   }
+
+  public toggleId(id: string) {
+    this.store.toggleId({ id })
+  }
+
+  public isIdDisabled(id: string) {
+    return this.store.disabledIds().includes(id)
+  }
 }

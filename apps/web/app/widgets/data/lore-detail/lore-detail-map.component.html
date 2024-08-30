@@ -1,6 +1,14 @@
 <nwb-map class="block aspect-video relative" [mapId]="store.mapId()" [fitBounds]="store.bounds()" #map>
   @if (store.mapData(); as data) {
-    <ng-container [nwbMapLayer]="'data'" [data]="data" [labels]="showLabels()" [labelsMinZoom]="0" [heatmap]="false" #mapLayer="mapLayer" />
+    <ng-container
+      [nwbMapLayer]="'data'"
+      [data]="data"
+      [labels]="showLabels()"
+      [labelsMinZoom]="0"
+      [heatmap]="false"
+      [filter]="store.filter()"
+      #mapLayer="mapLayer"
+    />
     @if (showLabels() && mapLayer.featuresBelowCursor(); as hoverItems) {
       <div *nwbGameMapMouseTip class="p-2 bg-base-300 bg-opacity-75 text-sm leading-tight rounded-md">
         @for (item of hoverItems; track $index) {

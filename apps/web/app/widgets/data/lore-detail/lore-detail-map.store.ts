@@ -1,4 +1,4 @@
-import { noPayload, payload, withRedux } from '@angular-architects/ngrx-toolkit'
+import { Filter, noPayload, payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
 import { describeNodeSize } from '@nw-data/common'
@@ -11,11 +11,13 @@ import { NwDataService } from '~/data'
 import { eqCaseInsensitive } from '~/utils'
 import { GameMapService } from '~/widgets/game-map'
 import { selectLoreList, selectLoreRoot, selectLoreTree } from './utils'
+import { FilterSpecification } from 'maplibre-gl'
 
 export interface LoreDetailMapState {
   items: LoreData[]
   itemsMetaMap: Map<string, ScannedLore>
   selectedId: string
+  disabledIds: string[]
   mapId: string
   isLoaded: boolean
   isLoading: boolean
@@ -39,6 +41,7 @@ export const LoreDetailMapStore = signalStore(
     items: [],
     itemsMetaMap: new Map(),
     selectedId: null,
+    disabledIds: [],
     mapId: null,
     isLoaded: false,
     isLoading: false,
@@ -50,6 +53,7 @@ export const LoreDetailMapStore = signalStore(
         load: noPayload,
         select: payload<{ id: string }>(),
         selectMap: payload<{ mapId: string }>(),
+        toggleId: payload<{ id: string }>(),
       },
       private: {
         loaded: payload<Pick<LoreDetailMapState, 'items' | 'itemsMetaMap'>>(),
@@ -73,6 +77,7 @@ export const LoreDetailMapStore = signalStore(
       on(actions.loaded, (state, data) => {
         patchState(state, {
           ...data,
+          disabledIds: [],
           isLoaded: true,
           isLoading: false,
           hasError: false,
@@ -83,6 +88,20 @@ export const LoreDetailMapStore = signalStore(
           isLoaded: true,
           isLoading: false,
           hasError: true,
+        })
+      })
+      on(actions.toggleId, (state, { id }) => {
+        patchState(state, ({ disabledIds }) => {
+          disabledIds = [...disabledIds]
+          const index = disabledIds.indexOf(id)
+          if (index >= 0) {
+            disabledIds.splice(index, 1)
+          } else {
+            disabledIds.push(id)
+          }
+          return {
+            disabledIds
+          }
         })
       })
     },
@@ -160,6 +179,16 @@ export const LoreDetailMapStore = signalStore(
     return {
       mapData,
       bounds
+    }
+  }),
+  withComputed(({ disabledIds }) => {
+    return {
+      filter: computed((): FilterSpecification => {
+        if (!disabledIds().length) {
+          return null
+        }
+        return ['!', ['in', ['get', 'id'], ['literal', disabledIds()] ]] as any
+      })
     }
   })
 )
