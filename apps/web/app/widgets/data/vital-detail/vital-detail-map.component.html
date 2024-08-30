@@ -1,6 +1,13 @@
 <nwb-map class="block aspect-video relative" [mapId]="store.mapId()" [fitBounds]="store.bounds()" #map>
   @if (store.mapData(); as data) {
-    <ng-container [nwbMapLayer]="'data'" [data]="data" [heatmap]="store.showHeatmap()" [filter]="store.filter()" />
+    <ng-container
+      [nwbMapLayer]="'data'"
+      [data]="data"
+      [heatmap]="store.showHeatmap()"
+      [labels]="true"
+      [filter]="store.filter()"
+      (featureClick)="onFeatureClicked($event)"
+    />
   }
   <div class="flex flex-row w-full justify-between absolute top-0 left-0 z-50 pointer-events-none p-2">
     <div class="text-sm font-mono">

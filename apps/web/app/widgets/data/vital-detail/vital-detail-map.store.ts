@@ -9,7 +9,8 @@ import { NwDataService } from '~/data'
 import { GameMapService } from '~/widgets/game-map'
 
 export interface VitalDetailMapState {
-  data: Record<string, VitalFeatureCollection>
+  data: Record<string, VitalMapFeatureCollection>
+  lookup: Record<string | number, VitalMapFeature>
   mapId: string
   mapIds: string[]
   showHeatmap: boolean
@@ -21,19 +22,22 @@ export interface VitalDetailMapState {
   hasError: boolean
 }
 
-export type VitalFeatureCollection = FeatureCollection<MultiPoint, VitalProperties>
-export type VitalFeature = Feature<MultiPoint, VitalProperties>
-export interface VitalProperties {
+export type VitalMapFeatureCollection = FeatureCollection<MultiPoint, VitalMapFeatureProperties>
+export type VitalMapFeature = Feature<MultiPoint, VitalMapFeatureProperties>
+export interface VitalMapFeatureProperties {
   vitalId: string
   level: number
   color: string
   size: number
   encounter: string[]
+  territories: number[]
+  label: string
 }
 
 export const VitalDetailMapStore = signalStore(
   withState<VitalDetailMapState>({
     data: {},
+    lookup: {},
     mapId: null,
     mapIds: [],
     showHeatmap: true,
@@ -54,7 +58,7 @@ export const VitalDetailMapStore = signalStore(
         toggleRandomEncounter: noPayload,
       },
       private: {
-        loaded: payload<Pick<VitalDetailMapState, 'data' | 'hasRandomEncounter'>>(),
+        loaded: payload<Pick<VitalDetailMapState, 'data' | 'hasRandomEncounter' | 'lookup'>>(),
         loadError: payload<{ error: any }>(),
       },
     },
@@ -88,12 +92,11 @@ export const VitalDetailMapStore = signalStore(
       on(actions.selectMap, (state, { mapId }) => {
         patchState(state, { mapId })
       })
-      on(actions.loaded, (state, { data, hasRandomEncounter }) => {
-        data ||= {}
-        const mapIds = Object.keys(data)
+      on(actions.loaded, (state, data) => {
+
+        const mapIds = Object.keys(data.data)
         patchState(state, {
-          data,
-          hasRandomEncounter,
+          ...data,
           mapIds: mapIds,
           mapId: mapIds[0],
           isLoaded: true,
@@ -116,8 +119,8 @@ export const VitalDetailMapStore = signalStore(
       return {
         load$: create(actions.load).pipe(
           switchMap(({ id }) => loadVitalData({ gameMap, db, id })),
-          map(({ data, hasRandomEncounter }) => {
-            actions.loaded({ data, hasRandomEncounter })
+          map(({ data, lookup, hasRandomEncounter }) => {
+            actions.loaded({ data, lookup, hasRandomEncounter })
             return null
           }),
           catchError((error) => {
@@ -157,9 +160,11 @@ function loadVitalData({ db, gameMap, id }: { db: NwDataService; gameMap: GameMa
     meta: db.vitalsMeta(id),
   }).pipe(
     map(({ vital, meta }) => {
-      const index: Record<string, Record<number, VitalFeature>> = {}
+      const index: Record<string, Record<number, VitalMapFeature>> = {}
+      const lookup: Record<string | number, VitalMapFeature> = {}
       const color = describeNodeSize('Medium').color
       let hasRandomEncounter = false
+      let featureId = 0
       for (const [mapId, spawns] of Object.entries(meta?.spawns || {})) {
         index[mapId] ||= {}
         const mapData = index[mapId]
@@ -171,6 +176,7 @@ function loadVitalData({ db, gameMap, id }: { db: NwDataService; gameMap: GameMa
           for (const level of levels) {
             hasRandomEncounter ||= spawn.e.includes('random')
             mapData[level] ||= {
+              id: featureId++,
               type: 'Feature',
               geometry: {
                 type: 'MultiPoint',
@@ -182,14 +188,17 @@ function loadVitalData({ db, gameMap, id }: { db: NwDataService; gameMap: GameMa
                 color: color,
                 size: 1,
                 encounter: spawn.e,
+                territories: spawn.t || [],
+                label: String(level)
               },
             }
+            lookup[mapData[level].id] = mapData[level]
             mapData[level].geometry.coordinates.push(gameMap.xyToLngLat([spawn.p[0], spawn.p[1]]))
           }
         }
       }
 
-      const result: Record<string, VitalFeatureCollection> = {}
+      const result: Record<string, VitalMapFeatureCollection> = {}
       for (const [mapId, data] of Object.entries(index)) {
         result[mapId] = {
           type: 'FeatureCollection',
@@ -198,13 +207,14 @@ function loadVitalData({ db, gameMap, id }: { db: NwDataService; gameMap: GameMa
       }
       return {
         data: result,
+        lookup,
         hasRandomEncounter,
       }
     }),
   )
 }
 
-function selectBounds(data: VitalFeatureCollection): [number, number, number, number] {
+function selectBounds(data: VitalMapFeatureCollection): [number, number, number, number] {
   if (!data) {
     return null
   }

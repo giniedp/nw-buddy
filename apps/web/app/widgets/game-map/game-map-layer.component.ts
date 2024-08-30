@@ -23,12 +23,14 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public icons = input<boolean>()
   public color = input<string>()
   public heatmap = input<boolean>()
+  public labels = input<boolean>()
   public filter = input<FilterSpecification>()
   private injector = inject(Injector)
   private sourceId = computed(() => this.layerId())
   private iconLayerId = computed(() => `icon-${this.layerId()}`)
   private circleLayerId = computed(() => `circle-${this.layerId()}`)
   private heatmapLayerId = computed(() => `heatmap-${this.layerId()}`)
+  private labelLayerId = computed(() => `label-${this.layerId()}`)
   public variants = signal<string[]>(null)
 
   public featureClick = output<Array<Feature<G, P>>>()
@@ -86,6 +88,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     const sourceId = this.sourceId()
     const iconLayerId = this.iconLayerId()
     const circleLayerId = this.circleLayerId()
+    const labelLayerId = this.labelLayerId()
 
     if (!this.map.getSource(sourceId)) {
       this.map.addSource(sourceId, {
@@ -98,6 +101,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     }
 
     if (!this.heatmap() && this.map.getLayer(this.heatmapLayerId())) {
+      this.removeLayer(labelLayerId)
       this.removeLayer(circleLayerId)
       this.removeLayer(iconLayerId)
     }
@@ -176,6 +180,30 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       })
     }
 
+    if (this.labels() && !this.map.getLayer(labelLayerId)) {
+      this.map.addLayer({
+        id: labelLayerId,
+        source: sourceId,
+        minzoom: 6,
+        type: 'symbol',
+        layout: {
+          'text-field': ['get', 'label'],
+          'text-size': 12,
+          "text-overlap": 'cooperative'
+        },
+        paint: {
+          'text-color': '#FFFFFF',
+          'text-halo-color': '#000000',
+          'text-halo-width': 1,
+          'text-halo-blur': 1,
+        },
+      })
+    }
+
+    if (!this.labels() && this.map.getLayer(labelLayerId)) {
+      this.removeLayer(labelLayerId)
+    }
+
     if (this.heatmap() && !this.map.getLayer(this.heatmapLayerId())) {
       this.map.addLayer({
         id: this.heatmapLayerId(),
@@ -238,6 +266,11 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
         layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
       }
+      // layer = this.map.getLayer(labelLayerId)
+      // if (layer) {
+      //   layer.minzoom = 5
+      //   layer.setPaintProperty('text-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
+      // }
     }
 
     return this.map.getSource(sourceId) as GeoJSONSource
@@ -259,6 +292,9 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     }
     if (this.map.getLayer(this.circleLayerId())) {
       this.map.setFilter(this.circleLayerId(), filter)
+    }
+    if (this.map.getLayer(this.labelLayerId())) {
+      this.map.setFilter(this.labelLayerId(), filter)
     }
     if (this.map.getLayer(this.heatmapLayerId())) {
       this.map.setFilter(this.heatmapLayerId(), filter)

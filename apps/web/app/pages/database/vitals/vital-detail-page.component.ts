@@ -14,13 +14,12 @@ import { svgPen } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeQueryParam, observeRouteParam, selectSignal } from '~/utils'
-import { VitalDetailModule, VitalDetailStore } from '~/widgets/data/vital-detail'
-import { VitalPointData } from '~/widgets/data/vital-detail/vital-detail-map.component'
+import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
+import { VitalDetailModule, VitalDetailStore, VitalMapFeatureProperties } from '~/widgets/data/vital-detail'
 import { LootModule } from '~/widgets/loot'
 import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.component'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
-import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 
 export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loot'
 
@@ -39,7 +38,7 @@ export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loo
     ModelViewerModule,
     TooltipModule,
     IconsModule,
-    GatherableDetailModule
+    GatherableDetailModule,
   ],
   providers: [VitalDetailStore],
   host: {
@@ -111,7 +110,7 @@ export class VitalDetailComponent {
     })
   }
 
-  protected onPointClicked(payload: VitalPointData) {
+  protected onPointClicked(payload: VitalMapFeatureProperties) {
     if (!payload || !this.editor) {
       return
     }

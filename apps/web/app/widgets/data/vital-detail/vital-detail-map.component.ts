@@ -1,18 +1,11 @@
-import { Component, EventEmitter, Output, effect, inject, input, untracked, viewChild } from '@angular/core'
+import { Component, EventEmitter, Output, effect, inject, input, output, untracked, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgDice, svgExpand, svgFire } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { GameMapComponent, GameMapCoordsComponent, GameMapLayerDirective } from '~/widgets/game-map'
-import { VitalDetailMapStore } from './vital-detail-map.store'
-
-export interface VitalPointData {
-  vitalId?: string
-  level?: number
-  territories: number[]
-  point?: number[]
-}
+import { VitalDetailMapStore, VitalMapFeature, VitalMapFeatureProperties } from './vital-detail-map.store'
 
 @Component({
   standalone: true,
@@ -36,8 +29,7 @@ export interface VitalPointData {
 export class VitalDetailMapComponent {
   protected store = inject(VitalDetailMapStore)
 
-  @Output()
-  public vitalClicked = new EventEmitter<VitalPointData>()
+  public vitalClicked = output<VitalMapFeatureProperties>()
   protected iconExpand = svgExpand
   protected iconFire = svgFire
   protected iconDice = svgDice
@@ -53,5 +45,12 @@ export class VitalDetailMapComponent {
       const id = this.vitalId()
       untracked(() => this.store.load({ id }))
     })
+  }
+
+  protected onFeatureClicked(features: VitalMapFeature[]){
+    const lookup = this.store.lookup()
+    const feature = features?.[0]
+    const properties = lookup[feature?.id]?.properties
+    this.vitalClicked.emit(properties)
   }
 }
