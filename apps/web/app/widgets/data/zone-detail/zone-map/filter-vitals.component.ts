@@ -42,7 +42,7 @@ import { ZoneMapStore } from './zone-map.store'
   selector: 'nwb-map-filter-vitals',
   templateUrl: './filter-vitals.component.html',
   host: {
-    class: 'h-full flex flex-col',
+    class: 'block',
   },
   providers: [FilterVitalsStore],
   imports: [

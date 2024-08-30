@@ -29,26 +29,7 @@
   </div>
 </ng-template>
 
-<ul class="flex-1 overflow-auto flex-nowrap menu">
-  @for (preset of store.presets(); track $index) {
-    <li>
-      <a (click)="store.applyPreset(preset.data)">
-        <div>
-          <div>
-            <b>{{ preset.name | nwText: preset.context }}</b>
-          </div>
-          @if (preset.description) {
-            <div class="text-nw-description">
-              {{ preset.description | nwText: preset.context }}
-            </div>
-          }
-        </div>
-      </a>
-    </li>
-  }
-</ul>
-
-<div class="h-[300px] flex-none overflow-auto flex flex-col gap-1 p-4">
+<div class="flex flex-col gap-1 p-4">
   <div class="join w-full">
     <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level min:</span>
     <input
@@ -198,3 +179,22 @@
     }
   </div>
 </div>
+
+<ul class="flex-1 overflow-auto flex-nowrap menu">
+  @for (preset of store.presets(); track $index) {
+    <li>
+      <a (click)="store.applyPreset(preset.data)">
+        <div>
+          <div>
+            <b>{{ preset.name | nwText: preset.context }}</b>
+          </div>
+          @if (preset.description) {
+            <div class="text-nw-description">
+              {{ preset.description | nwText: preset.context }}
+            </div>
+          }
+        </div>
+      </a>
+    </li>
+  }
+</ul>

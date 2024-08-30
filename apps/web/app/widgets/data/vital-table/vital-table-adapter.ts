@@ -43,7 +43,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
   private config = injectDataViewAdapterOptions<VitalTableRecord>({ optional: true })
 
   public entityID(item: VitalTableRecord): string {
-    return item.VitalsID
+    return item.VitalsID.toLowerCase()
   }
 
   public entityCategories(item: VitalTableRecord): DataTableCategory[] {
