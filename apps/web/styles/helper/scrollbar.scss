@@ -1,5 +1,8 @@
 .plt-desktop {
   scrollbar-width: thin;
+  * {
+    scrollbar-color: auto !important;
+  }
   *::-webkit-scrollbar {
     width: 12px;
     height: 12px;
