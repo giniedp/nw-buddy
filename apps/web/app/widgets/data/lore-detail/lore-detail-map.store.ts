@@ -69,6 +69,7 @@ export const LoreDetailMapStore = signalStore(
       on(actions.select, (state, { id }) => {
         patchState(state, {
           selectedId: id,
+          disabledIds: [],
         })
       })
       on(actions.selectMap, (state, { mapId }) => {
