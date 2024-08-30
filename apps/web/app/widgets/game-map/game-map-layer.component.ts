@@ -24,7 +24,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public color = input<string>()
   public heatmap = input<boolean>()
   public labels = input<boolean>()
-  public labelsMinZoom = input<number>(6)
+  public labelsMinZoom = input<number>(5)
   public filter = input<FilterSpecification>()
   private injector = inject(Injector)
   private sourceId = computed(() => this.layerId())

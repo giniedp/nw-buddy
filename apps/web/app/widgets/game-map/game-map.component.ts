@@ -10,12 +10,12 @@ import {
   GeoJSONSource,
   LineLayerSpecification,
   MapLayerEventType,
-  MapMouseEvent,
+  RasterTileSource,
   RequestTransformFunction,
   StyleSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl'
-import { NW_MAP_TILE_SIZE } from './constants'
+import { NW_MAPS, NW_MAP_TILE_SIZE } from './constants'
 import { GameMapHost } from './game-map-host'
 import { GameMapMouseAnchorDirective } from './game-map-mouse-anchor.directive'
 import { MaplibreDirective } from './maplibre.directive'
@@ -24,8 +24,9 @@ import {
   convertTileUrl,
   getGeometryCenter,
   rasterTileSource,
-  xyFromLngLat,
+  xToLng,
   xyToLngLat,
+  yToLat,
 } from './utils'
 @Component({
   standalone: true,
@@ -324,7 +325,15 @@ export class GameMapComponent {
     }
     mapSourceIds(mapId).forEach((id, index) => {
       const source = this.map.getSource(id)
-
+      if (source instanceof RasterTileSource) {
+        source.tileBounds.bounds.setSouthWest([0, 0])
+        const bounds = NW_MAPS.find((it) => it.id === id)?.bounds
+        if (bounds) {
+          source.tileBounds.bounds.setNorthEast([xToLng(bounds.width + bounds.left), yToLat(bounds.top)])
+        } else {
+          source.tileBounds.bounds.setNorthEast([180, 90])
+        }
+      }
       if (!source) {
         this.map.addSource(id, rasterTileSource(id))
       }

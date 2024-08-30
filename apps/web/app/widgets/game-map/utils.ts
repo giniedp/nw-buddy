@@ -1,4 +1,5 @@
-import { LngLatBounds, Map, MapGeoJSONFeature, RasterSourceSpecification } from 'maplibre-gl'
+import { Geometry, Position } from 'geojson'
+import { Map, MapGeoJSONFeature, RasterSourceSpecification } from 'maplibre-gl'
 import { NW_MAP_LEVELS, NW_MAP_TILE_SIZE } from './constants'
 import {
   latFromMercatorY,
@@ -10,7 +11,6 @@ import {
   nwYFromMercator,
   nwYToMercator,
 } from './projection'
-import { Geometry, Position } from 'geojson'
 
 export type TileAddress = {
   mapId: string
@@ -89,16 +89,14 @@ export function renderDebugTile({ text, tileSize }: { text: string; tileSize: nu
   context.fillStyle = 'white'
   context.clearRect(0, 0, tileSize, tileSize)
   context.strokeRect(0, 0, tileSize, tileSize)
-  //context.rect(0, 0, tileSize, tileSize)
   context.font = '20px Arial'
-  //context.fillStyle = 'red'
   context.fillText(text, 50, 50)
   return canvas.toDataURL()
 }
 
 export function getTileAddress({ x, y, z }: TileAddress) {
   const level = NW_MAP_LEVELS - z + 1
-  const step = Math.pow(2, level - 1)
+  const step = Math.max(Math.pow(2, level - 1), 1)
   const shift = Math.pow(2, z - 1)
   x -= shift
   y += shift
