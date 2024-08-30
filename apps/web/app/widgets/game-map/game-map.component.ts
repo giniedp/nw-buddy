@@ -409,6 +409,7 @@ const territorySymbolLayout: SymbolLayerSpecification = {
   layout: {
     'text-field': ['get', 'name'],
     'text-size': 20,
+    'text-overlap': 'always',
   },
   paint: {
     'text-color': '#FFFFFF',
@@ -446,6 +447,7 @@ const areaSymbolLayout: SymbolLayerSpecification = {
   layout: {
     'text-field': ['get', 'name'],
     'text-size': 20,
+    'text-overlap': 'always'
   },
   paint: {
     'text-color': '#FFFFFF',
