@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, HostListener, Input, computed, inject, signal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Component, HostListener, Input, computed, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import {
@@ -13,21 +12,25 @@ import { TooltipModule } from '~/ui/tooltip'
 import { EmptyComponent } from '~/widgets/empty'
 import { LoreDetailStore } from '../lore-detail'
 import { LoreItemTableRecord } from './lore-item-table-cols'
+import { svgLocationDot, svgLocationDotSlash } from '~/ui/icons/svg'
+import { IconsModule } from '~/ui/icons'
 
 @Component({
   standalone: true,
   selector: 'nwb-lore-item-cell',
   templateUrl: './lore-item-cell.component.html',
   styleUrl: './lore-item-cell.component.scss',
-  imports: [CommonModule, NwModule, TooltipModule, RouterModule],
+  imports: [CommonModule, NwModule, IconsModule, TooltipModule, RouterModule],
   providers: [LoreDetailStore],
   host: {
     class: `
       relative flex flex-col gap-4 m-1
-      rounded-md overflow-clip bg-base-300 border border-base-100
+      rounded-md overflow-clip border border-base-100
     `,
     '[class.outline]': 'selected',
     '[class.outline-primary]': 'selected',
+    '[class.bg-base-300]': '!isChapter()',
+    '[class.bg-black]': 'isChapter()',
   },
 })
 export class LoreItemCellComponent implements VirtualGridCellComponent<LoreItemTableRecord> {
@@ -53,32 +56,34 @@ export class LoreItemCellComponent implements VirtualGridCellComponent<LoreItemT
 
   @Input()
   public set data(value: LoreItemTableRecord) {
-    this.store.load(value)
+    this.store.load({ id: value?.LoreID })
     this.record = value
   }
   public get data() {
     return this.record
   }
+  protected iconLocation = svgLocationDot
+  protected iconNoLocation = svgLocationDotSlash
 
-  protected parentId = toSignal(this.store.parentId$)
-  protected parentTitle = toSignal(this.store.parentTitle$)
+  protected parentId = computed(() => this.store.parent()?.LoreID)
+  protected parentTitle = computed(() => this.store.parent()?.Title)
 
-  protected grandParentId = toSignal(this.store.grandParentId$)
-  protected grandParentTitle = toSignal(this.store.grandParentTitle$)
+  protected grandParentId = computed(() => this.store.grandParent()?.LoreID)
+  protected grandParentTitle = computed(() => this.store.grandParent()?.Title)
 
-  protected title = toSignal(this.store.title$)
-  protected subtitle = toSignal(this.store.subtitle$)
-  protected body = toSignal(this.store.body$)
-  protected children = toSignal(this.store.children$)
-  protected pageNumber = toSignal(this.store.pageNumber$)
-  protected pageCount = toSignal(this.store.pageCount$)
-  protected orderNumber = toSignal(this.store.order$)
+  protected title = this.store.title
+  protected subtitle = this.store.subtitle
+  protected body = this.store.body
+  protected children = this.store.children
+  protected pageNumber = this.store.pageNumber
+  protected pageCount = this.store.pageCount
+  protected orderNumber = computed(() => this.store.record()?.Order)
 
-  protected isTopic = toSignal(this.store.isTopic$)
-  protected isChapter = toSignal(this.store.isChapter$)
-  protected isPage = toSignal(this.store.isPage$)
+  protected isTopic = this.store.isTopic
+  protected isChapter = this.store.isChapter
+  protected isPage = this.store.isPage
 
-  protected image = toSignal(this.store.image$)
+  protected image = this.store.image
 
   protected title1 = computed(() => {
     if (this.isTopic()) {

@@ -307,6 +307,7 @@ export class NwDataService {
 
   public loreItemsMeta = table(() => this.load<ScannedLore>({ uri: 'nw-data/generated/lore_metadata.json' }))
   public loreItemsMetaMap = tableIndexBy(() => this.loreItemsMeta, 'loreID')
+  public loreItemMeta = tableLookup(() => this.loreItemsMetaMap)
 
   public recipes = table(() => this.loadEntries(DATASHEETS.CraftingRecipeData))
   public recipesMap = tableIndexBy(() => this.recipes, 'RecipeID')

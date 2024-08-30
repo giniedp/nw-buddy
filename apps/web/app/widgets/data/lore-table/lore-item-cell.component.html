@@ -9,7 +9,7 @@
     </picture>
   }
 }
-<div class="z-0 p-4 flex flex-col flex-1 gap-2 overflow-hidden text-ellipsis font-nimbus shadow-black text-shadow-sm" >
+<div class="z-0 p-4 flex flex-col flex-1 gap-2 overflow-hidden text-ellipsis font-nimbus shadow-black text-shadow-sm">
   <div>
     @if (title1(); as text) {
       <h2 class="text-2xl uppercase font-serif text-nw-description flex-none text-center">
@@ -38,7 +38,20 @@
     @if (children()?.length) {
       <div class="flex flex-col gap-1">
         @for (child of children(); track i; let i = $index) {
-          <span class="pl-4"> {{ i + 1 }} - {{ child.Title | nwText }} </span>
+          <div class="flex flex-row justify-between pl-4">
+            <span> {{ child.record.Order }} - {{ child.record.Title | nwText }} </span>
+            @if (child.record.Type === 'Default') {
+              @if (child.meta) {
+                <nwb-icon [icon]="iconLocation" class="w-4 h-4 cursor-help" [tooltip]="'Map location available'" />
+              } @else {
+                <nwb-icon
+                  [icon]="iconNoLocation"
+                  class="w-4 h-4 cursor-help text-error"
+                  [tooltip]="'No map location available'"
+                />
+              }
+            }
+          </div>
         }
       </div>
     }

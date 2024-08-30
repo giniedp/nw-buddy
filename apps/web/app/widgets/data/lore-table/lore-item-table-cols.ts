@@ -34,7 +34,9 @@ export function loreColBody(util: LoreItemTableUtils) {
     cellClass: ['multiline-cell', 'py-2'],
     valueGetter: ({ data }) => util.i18n.get(data.Body),
     cellRenderer: util.cellRenderer(({ value }) => {
-      return util.lineBreaksToHtml(value, { sanitize: true })
+      return util.el('div.max-h-16.overflow-hidden', {
+        html: util.lineBreaksToHtml(value, { sanitize: true }),
+      })
     }),
   })
 }

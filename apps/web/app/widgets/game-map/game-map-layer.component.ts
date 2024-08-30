@@ -1,7 +1,7 @@
 import { Directive, Injector, OnDestroy, computed, effect, inject, input, model, output, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Feature, FeatureCollection, Geometry } from 'geojson'
-import { FilterSpecification, GeoJSONSource, MapLayerEventType } from 'maplibre-gl'
+import { FilterSpecification, GeoJSONSource, Map, MapLayerEventType } from 'maplibre-gl'
 import tinycolor from 'tinycolor2'
 import { GameMapHost } from './game-map-host'
 import { attachLayerHover } from './utils'
@@ -24,6 +24,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public color = input<string>()
   public heatmap = input<boolean>()
   public labels = input<boolean>()
+  public labelsMinZoom = input<number>(6)
   public filter = input<FilterSpecification>()
   private injector = inject(Injector)
   private sourceId = computed(() => this.layerId())
@@ -32,7 +33,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   private heatmapLayerId = computed(() => `heatmap-${this.layerId()}`)
   private labelLayerId = computed(() => `label-${this.layerId()}`)
   public variants = signal<string[]>(null)
-
+  public featuresBelowCursor = signal<Array<Feature<G, P>>>(null)
   public featureClick = output<Array<Feature<G, P>>>()
   public featureMouseEnter = output<Array<Feature<G, P>>>()
   public featureMouseLeave = output<Array<Feature<G, P>>>()
@@ -189,7 +190,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         layout: {
           'text-field': ['get', 'label'],
           'text-size': 12,
-          "text-overlap": 'cooperative'
+          'text-overlap': 'cooperative',
         },
         paint: {
           'text-color': '#FFFFFF',
@@ -254,24 +255,20 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     }
 
     if (this.heatmap()) {
-      let layer = this.map.getLayer(iconLayerId)
-      if (layer) {
+      this.withLayer(iconLayerId, (layer) => {
         layer.minzoom = 5
         layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
         layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
-      }
-      layer = this.map.getLayer(circleLayerId)
-      if (layer) {
+      })
+      this.withLayer(circleLayerId, (layer) => {
         layer.minzoom = 5
         layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
         layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
-      }
-      // layer = this.map.getLayer(labelLayerId)
-      // if (layer) {
-      //   layer.minzoom = 5
-      //   layer.setPaintProperty('text-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
-      // }
+      })
     }
+    this.withLayer(labelLayerId, (layer) => {
+      layer.minzoom = this.labelsMinZoom()
+    })
 
     return this.map.getSource(sourceId) as GeoJSONSource
   }
@@ -336,6 +333,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   }
 
   private dispose() {
+    this.removeLayer(this.labelLayerId())
     this.removeLayer(this.iconLayerId())
     this.removeLayer(this.circleLayerId())
     this.removeLayer(this.heatmapLayerId())
@@ -359,19 +357,33 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   }
 
   private handleMouseEnter = (e: MapLayerEventType['mouseenter']) => {
-    this.featureMouseEnter.emit(e.features as any as Array<Feature<G, P>>)
+    const features = e.features as any as Array<Feature<G, P>>
+    this.featuresBelowCursor.set(features)
+    this.featureMouseEnter.emit(features)
   }
 
   private handleMouseLeave = (e: MapLayerEventType['mouseleave']) => {
-    this.featureMouseLeave.emit(e.features as any as Array<Feature<G, P>>)
+    const features = e.features as any as Array<Feature<G, P>>
+    this.featuresBelowCursor.set(null)
+    this.featureMouseLeave.emit(features)
   }
 
   private handleMouseMove = (e: MapLayerEventType['mousemove']) => {
-    this.featureMouseMove.emit(e.features as any as Array<Feature<G, P>>)
+    const features = e.features as any as Array<Feature<G, P>>
+    this.featuresBelowCursor.set(features)
+    this.featureMouseMove.emit(features)
   }
 
   private handleClick = (e: MapLayerEventType['click']) => {
     e.preventDefault()
-    this.featureClick.emit(e.features as any as Array<Feature<G, P>>)
+    const features = e.features as any as Array<Feature<G, P>>
+    this.featureClick.emit(features)
+  }
+
+  private withLayer(layerId: string, fn: (layer: ReturnType<Map['getLayer']>) => void) {
+    const layer = this.map.getLayer(layerId)
+    if (layer) {
+      fn(layer)
+    }
   }
 }

@@ -1,10 +1,15 @@
-import { Component, effect, inject, input, untracked, viewChild } from '@angular/core'
+import { Component, computed, effect, inject, input, untracked, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { GameMapComponent, GameMapCoordsComponent, GameMapLayerDirective } from '~/widgets/game-map'
+import {
+  GameMapComponent,
+  GameMapCoordsComponent,
+  GameMapLayerDirective,
+  GameMapMouseTipDirective,
+} from '~/widgets/game-map'
 import { LoreDetailMapStore } from './lore-detail-map.store'
 
 @Component({
@@ -19,6 +24,7 @@ import { LoreDetailMapStore } from './lore-detail-map.store'
     GameMapComponent,
     GameMapLayerDirective,
     GameMapCoordsComponent,
+    GameMapMouseTipDirective,
   ],
   providers: [LoreDetailMapStore],
   host: {
@@ -32,6 +38,11 @@ export class LoreItemDetailMapComponent {
   public loreId = input.required<string>()
 
   protected mapComponent = viewChild(GameMapComponent)
+  protected showLabels = computed(() => {
+    const type = this.store.item()?.Type
+    return type === 'Default' || type === 'Chapter'
+  })
+
   protected get isVisible() {
     return !!this.store.mapId()
   }

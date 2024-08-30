@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, untracked } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgChevronLeft } from '~/ui/icons/svg'
+import { svgChevronLeft, svgLocationDot, svgLocationDotSlash } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
 import { injectRouteParam } from '~/utils'
 import { LoreItemDetailMapComponent, LoreDetailStore } from '~/widgets/data/lore-detail'
 
@@ -12,89 +13,85 @@ import { LoreItemDetailMapComponent, LoreDetailStore } from '~/widgets/data/lore
   standalone: true,
   selector: 'nwb-lore-detail-page',
   templateUrl: './lore-detail-page.component.html',
+  styleUrl: './lore-detail-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NwModule, LayoutModule, RouterModule, IconsModule, LoreItemDetailMapComponent],
+  imports: [NwModule, LayoutModule, RouterModule, IconsModule, LoreItemDetailMapComponent, TooltipModule],
   providers: [LoreDetailStore],
   host: {
-    class: 'block',
-  },
+    class: 'ion-page',
+  }
 })
 export class LoreDetailPageComponent {
-  private store = inject(LoreDetailStore)
+  protected store = inject(LoreDetailStore)
+  protected loreId = toSignal(injectRouteParam('id'))
+  protected iconLocation = svgLocationDot
+  protected iconNoLocation = svgLocationDotSlash
 
-  protected loreId$ = injectRouteParam('id')
-  protected loreId = toSignal(this.loreId$)
-  protected title = toSignal(this.store.title$)
-  protected subtitle = toSignal(this.store.subtitle$)
-  protected body = toSignal(this.store.body$)
-  protected children = toSignal(this.store.children$)
-  protected pageNumber = toSignal(this.store.pageNumber$)
-  protected pageCount = toSignal(this.store.pageCount$)
-  protected orderNumber = toSignal(this.store.order$)
-  protected parentTitle = toSignal(this.store.parentTitle$)
-  protected parentId = toSignal(this.store.parentId$)
-  protected grandParentTitle = toSignal(this.store.grandParentTitle$)
-  protected grandParentId = toSignal(this.store.grandParentId$)
-  protected isTopic = toSignal(this.store.isTopic$)
-  protected isChapter = toSignal(this.store.isChapter$)
-  protected isPage = toSignal(this.store.isPage$)
-  protected image = toSignal(this.store.image$)
-  protected nextId = toSignal(this.store.nextId$)
-  protected prevId = toSignal(this.store.prevId$)
   protected chevronLeft = svgChevronLeft
+  protected backgroundImage = computed(() => {
+    return this.store.isTopic() ? this.store.image() : null
+  })
+  protected chapterImage = computed(() => {
+    return this.store.isChapter() ? this.store.image() : null
+  })
+  protected leftId = computed(() => {
+    return this.store.prevId() || this.store.parent()?.LoreID
+  })
+  protected rightId = computed(() => {
+    return this.store.nextId()
+  })
 
   protected titleID1 = computed(() => {
-    if (this.isTopic()) {
+    if (this.store.isTopic()) {
       return null
     }
-    if (this.isChapter()) {
-      return this.parentId()
+    if (this.store.isChapter()) {
+      return this.store.parent()?.LoreID
     }
-    return this.grandParentId()
+    return this.store.grandParent()?.LoreID
   })
   protected titleID2 = computed(() => {
-    if (this.isTopic()) {
+    if (this.store.isTopic()) {
       return null
     }
-    if (this.isChapter()) {
+    if (this.store.isChapter()) {
       return null
     }
-    return this.parentId()
+    return this.store.parent()?.LoreID
   })
 
   protected title1 = computed(() => {
-    if (this.isTopic()) {
-      return this.title()
+    if (this.store.isTopic()) {
+      return this.store.title()
     }
-    if (this.isChapter()) {
-      return this.parentTitle()
+    if (this.store.isChapter()) {
+      return this.store.parent()?.Title
     }
-    return this.grandParentTitle()
+    return this.store.grandParent()?.Title
   })
   protected title2 = computed(() => {
-    if (this.isTopic()) {
+    if (this.store.isTopic()) {
       return null
     }
-    if (this.isChapter()) {
-      return this.title()
+    if (this.store.isChapter()) {
+      return this.store.record()?.Title
     }
-    return this.parentTitle()
+    return this.store.parent()?.Title
   })
   protected title3 = computed(() => {
-    if (this.isTopic() || this.isChapter()) {
+    if (this.store.isTopic() || this.store.isChapter()) {
       return null
     }
-    return this.title()
+    return this.store.record()?.Title
   })
   protected title4 = computed(() => {
-    return this.subtitle()
+    return this.store.record()?.Subtitle
   })
 
   public constructor() {
-    this.store.load(this.loreId$)
-  }
-
-  protected linkTo(id: string) {
-    return id ? ['/lore/table', id] : null
+    effect(() => {
+      const loreId = this.loreId()
+      untracked(() => this.store.load({ id: loreId }))
+    })
   }
 }

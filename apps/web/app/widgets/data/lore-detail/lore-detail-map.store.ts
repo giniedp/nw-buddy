@@ -27,6 +27,8 @@ export interface LoreFeatureProperties {
   root: string
   parent: string
   color: string
+  label: string
+  title: string
 }
 
 export type LoreFeature = Feature<MultiPoint, LoreFeatureProperties>
@@ -116,6 +118,7 @@ export const LoreDetailMapStore = signalStore(
     const data = computed(() => {
       const result: Record<string, LoreFeatureCollection> = {}
       const props = describeNodeSize('Medium')
+      let featureId = 0
       for (const item of list()) {
         const meta = itemsMetaMap().get(item.LoreID)
         for (const { mapID, positions } of meta?.spawns || []) {
@@ -124,6 +127,7 @@ export const LoreDetailMapStore = signalStore(
             features: [],
           }
           result[mapID].features.push({
+            id: featureId++,
             type: 'Feature',
             geometry: {
               type: 'MultiPoint',
@@ -134,6 +138,8 @@ export const LoreDetailMapStore = signalStore(
               root: root().LoreID,
               parent: item.ParentID,
               color: props.color,
+              label: String(item.Order),
+              title: item.Title
             },
           })
         }

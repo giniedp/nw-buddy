@@ -3,7 +3,17 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
 import type { EnvVars } from '../apps/web/environments/env'
-import { BRANCH_NAME, CDN_URL, COMMIT_HASH, IS_CI, NW_BADGE, NW_WATERMARK, NW_WORKSPACE, PACKAGE_VERSION, environment } from '../env'
+import {
+  BRANCH_NAME,
+  CDN_URL,
+  COMMIT_HASH,
+  IS_CI,
+  NW_BADGE,
+  NW_WATERMARK,
+  NW_WORKSPACE,
+  PACKAGE_VERSION,
+  environment,
+} from '../env'
 import { tsFromSliceFiles } from './lib/file-formats/slices/generate-slice-types'
 import { useProgressBar } from './lib/utils'
 import { glob, readJSONFile, writeUTF8File } from './lib/utils/file-utils'
@@ -26,7 +36,7 @@ program
           .map((it) => it[0].toUpperCase() + it.slice(1))
           .join('')
       const tsFile = path.join(path.dirname(file), `${baseName}.ts`)
-      const data = fs.readFileSync(file, { encoding: 'utf8' })
+      const data = fs.readFileSync(file, { encoding: 'utf8' }).replaceAll(/\s+/g, ' ')
       fs.writeFileSync(tsFile, `export const ${constName} = ${JSON.stringify(data)}`)
     }
     for (const [dirname, names] of Object.entries(indices)) {

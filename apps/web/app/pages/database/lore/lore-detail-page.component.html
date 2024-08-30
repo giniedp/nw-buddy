@@ -1,79 +1,100 @@
-<div class="relative bg-base-300 rounded-md border-base-100 overflow-clip p-4 min-h-[500px]">
-  @if (isTopic() && image()) {
+<div class="page-container h-full relative">
+  @if (backgroundImage(); as image) {
     <picture class="pointer-events-none w-full h-full absolute top-0 z-0 opacity-25 scale-110">
-      <img [nwImage]="image()" class="w-full h-full object-cover" />
+      <img [nwImage]="image" class="w-full h-full object-cover" />
     </picture>
   }
-
-  <div class="flex flex-col gap-2 font-nimbus shadow-black text-shadow-sm">
-    @if (pageNumber(); as value) {
-      <div class="flex flex-row items-center">
-        <a
-          [routerLink]="linkTo(prevId() || parentId())"
-          class="btn btn-circle btn-ghost"
-          [class.opacity-0]="!(prevId() || parentId())"
-        >
-          <nwb-icon [icon]="chevronLeft" class="w-4 h-4" />
-        </a>
-        <span class="flex-1"></span>
-        <span class="badge badge-lg bg-base-300 border-transparent">
-          @if (isPage()) {
-            Page
-          }
-          @if (isChapter()) {
-            Chapter
-          }
-          {{ value }} / {{ pageCount() }}
-        </span>
-        <span class="flex-1"></span>
-        <a [routerLink]="linkTo(nextId())" class="btn btn-circle btn-ghost" [class.opacity-0]="!nextId()">
-          <nwb-icon [icon]="chevronLeft" class="w-4 h-4 rotate-180" />
-        </a>
-      </div>
-    }
-    <div>
-      @if (title1(); as text) {
-        <h2 class="text-2xl uppercase font-serif text-nw-description flex-none text-center">
-          <a [routerLink]="linkTo(titleID1())" [class.link-hover]="titleID1()" [class.hover:text-primary]="titleID1()">
-            {{ text | nwText }}
+  <div class="relative overflow-auto overflow-x-clip p-4 pb-0">
+    <div class="flex flex-col gap-2 font-nimbus shadow-black text-shadow-sm">
+      @if (store.pageNumber(); as value) {
+        <div class="flex flex-row items-center">
+          <a [routerLink]="['lore', leftId()] | nwLink" class="btn btn-circle btn-ghost" [class.opacity-0]="!leftId()">
+            <nwb-icon [icon]="chevronLeft" class="w-4 h-4" />
           </a>
-        </h2>
-      }
-      @if (title2(); as text) {
-        <h2 class="text-xl uppercase font-serif text-nw-description flex-none text-center">
-          <a [routerLink]="linkTo(titleID2())" [class.link-hover]="titleID2()" [class.hover:text-primary]="titleID2()">
-            {{ text | nwText }}
+          <span class="flex-1"></span>
+          <span class="badge badge-lg bg-base-300 border-transparent">
+            @if (store.isPage()) {
+              Page
+            }
+            @if (store.isChapter()) {
+              Chapter
+            }
+            {{ value }} / {{ store.pageCount() }}
+          </span>
+          <span class="flex-1"></span>
+          <a [routerLink]="['lore', rightId()] | nwLink" class="btn btn-circle btn-ghost" [class.opacity-0]="!rightId()">
+            <nwb-icon [icon]="chevronLeft" class="w-4 h-4 rotate-180" />
           </a>
-        </h2>
+        </div>
       }
-      @if (title3(); as text) {
-        <h2 class="text-lg uppercase font-serif text-nw-description flex-none text-center">
-          {{ text | nwText }}
-        </h2>
-      }
-      @if (title4(); as text) {
-        <h4 class="text-lg font-bold flex-none text-center">{{ text | nwText }}</h4>
-      }
-      <div class="nw-item-divider"></div>
-    </div>
-
-    @if (body(); as text) {
-      <div [nwHtml]="text | nwText | nwTextBreak" class="text-justify"></div>
-    }
-    @if (children()?.length) {
-      <div class="flex flex-col gap-1">
-        @for (child of children(); track child.LoreID; let i = $index) {
-          <a [routerLink]="['lore', child.LoreID] | nwLink" class="cursor-pointer link-hover hover:text-primary pl-4">
-            {{ i + 1 }} - {{ child.Title | nwText }}
-          </a>
+      <div>
+        @if (title1(); as text) {
+          <h2 class="text-2xl uppercase font-serif text-nw-description flex-none text-center">
+            <a
+              [routerLink]="['lore', titleID1()] | nwLink"
+              [class.link-hover]="titleID1()"
+              [class.hover:text-primary]="titleID1()"
+            >
+              {{ text | nwText }}
+            </a>
+          </h2>
         }
+        @if (title2(); as text) {
+          <h2 class="text-xl uppercase font-serif text-nw-description flex-none text-center">
+            <a
+              [routerLink]="['lore', titleID2()]"
+              [class.link-hover]="titleID2()"
+              [class.hover:text-primary]="titleID2()"
+            >
+              {{ text | nwText }}
+            </a>
+          </h2>
+        }
+        @if (title3(); as text) {
+          <h2 class="text-lg uppercase font-serif text-nw-description flex-none text-center">
+            {{ text | nwText }}
+          </h2>
+        }
+        @if (title4(); as text) {
+          <h4 class="text-lg font-bold flex-none text-center">{{ text | nwText }}</h4>
+        }
+        <div class="nw-item-divider"></div>
       </div>
-    }
-    @if (isChapter() && image()) {
-      <picture class="pointer-events-none w-full">
-        <img [nwImage]="image()" class="w-full object-contain" />
-      </picture>
-    }
+
+      @if (store.body(); as text) {
+        <div [nwHtml]="text | nwText | nwTextBreak" class="text-justify"></div>
+      }
+      @if (store.children()?.length) {
+        <div class="flex flex-col gap-1">
+          @for (child of store.children(); track child.record.LoreID; let i = $index) {
+            <a
+              [routerLink]="['lore', child.record.LoreID] | nwLink"
+              class="cursor-pointer link-hover hover:text-primary pl-4 flex flex-row justify-between"
+            >
+              <span> {{ child.record.Order }} - {{ child.record.Title | nwText }} </span>
+              @if (child.record.Type === 'Default') {
+                @if (child.meta) {
+                  <nwb-icon [icon]="iconLocation" class="w-4 h-4 cursor-help" [tooltip]="'Map location available'" />
+                } @else {
+                  <nwb-icon
+                    [icon]="iconNoLocation"
+                    class="w-4 h-4 cursor-help text-error"
+                    [tooltip]="'No map location available'"
+                  />
+                }
+              }
+            </a>
+          }
+        </div>
+      }
+      @if (chapterImage(); as image) {
+        <picture class="pointer-events-none w-full">
+          <img [nwImage]="image" class="w-full object-contain" />
+        </picture>
+      }
+    </div>
+  </div>
+  <div class="p-4 pt-0">
+    <nwb-lore-detail-map [loreId]="loreId()" class="rounded-md overflow-clip" />
   </div>
 </div>
-<nwb-lore-detail-map [loreId]="loreId()" class="rounded-md overflow-clip mt-4" />

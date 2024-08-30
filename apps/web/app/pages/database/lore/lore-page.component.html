@@ -70,10 +70,11 @@
 </ion-content>
 
 <ng-template #tplDetail>
+  <!-- [class.ion-p-4]="showSidebar()"
+  [class.ion-p-2]="showModal()" -->
   <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
     [class.bg-base-300]="true"
+    [scrollY]="false"
   >
     <router-outlet />
   </ion-content>

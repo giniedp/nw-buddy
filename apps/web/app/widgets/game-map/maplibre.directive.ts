@@ -1,5 +1,12 @@
-import { Directive, ElementRef, Input, inject, input, output } from '@angular/core'
-import { Map, MapLibreEvent, MapMouseEvent, RequestTransformFunction, StyleSpecification } from 'maplibre-gl'
+import { Directive, ElementRef, Input, OnDestroy, inject, input, output } from '@angular/core'
+import {
+  Map,
+  MapEventType,
+  MapLibreEvent,
+  MapMouseEvent,
+  RequestTransformFunction,
+  StyleSpecification,
+} from 'maplibre-gl'
 import { GameMapHost } from './game-map-host'
 import { missingImageHandler } from './missing-image-hander'
 
@@ -8,7 +15,7 @@ import { missingImageHandler } from './missing-image-hander'
   selector: '[nwbMaplibre]',
   providers: [GameMapHost],
 })
-export class MaplibreDirective {
+export class MaplibreDirective implements OnDestroy {
   private mapHost = inject(GameMapHost, { self: true })
   public nwbMaplibre = input<void>()
 
@@ -74,16 +81,34 @@ export class MaplibreDirective {
   public mapError = output<ErrorEvent>()
   public mapMouseMove = output<MapMouseEvent>()
   public mapZoom = output<MapLibreEvent>()
+
+  private handleErrors = (e: MapEventType['error']) => this.mapError.emit(e)
+  private handleMouseMove = (e: MapEventType['mousemove']) => this.mapMouseMove.emit(e)
+  private handleZoom = (e: MapEventType['zoom']) => this.mapZoom.emit(e)
+  private handleLoad = (e: MapEventType['load']) => {
+    this.map.resize()
+    this.mapLoad.emit(e)
+    this.mapHost.setReady()
+  }
+  private handleStyleImageMissing = missingImageHandler({ iconSize: 64 })
+
   public constructor() {
     this.mapHost.setMap(this.map)
-    this.map.on('load', (e) => {
-      this.map.resize()
-      this.mapLoad.emit(e)
-      this.mapHost.setReady()
+    this.map.on('load', this.handleLoad)
+    this.map.on('error', this.handleErrors)
+    this.map.on('mousemove', this.handleMouseMove)
+    this.map.on('zoom', this.handleZoom)
+    this.map.on('styleimagemissing', this.handleStyleImageMissing)
+  }
+
+  public ngOnDestroy() {
+    this.map.off('load', this.handleLoad)
+    this.map.off('error', this.handleErrors)
+    this.map.off('mousemove', this.handleMouseMove)
+    this.map.off('zoom', this.handleZoom)
+    this.map.off('styleimagemissing', this.handleStyleImageMissing)
+    setTimeout(() => {
+      this.map.remove()
     })
-    this.map.on('error', (e) => this.mapError.emit(e))
-    this.map.on('mousemove', (e) => this.mapMouseMove.emit(e))
-    this.map.on('zoom', (e) => this.mapZoom.emit(e))
-    this.map.on('styleimagemissing', missingImageHandler({ iconSize: 64 }))
   }
 }

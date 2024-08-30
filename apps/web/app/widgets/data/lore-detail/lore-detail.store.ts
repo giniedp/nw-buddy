@@ -1,80 +1,161 @@
-import { Injectable, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
+import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
+import { computed, inject } from '@angular/core'
+import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
 import { LoreData } from '@nw-data/generated'
-import { map } from 'rxjs'
+import { ScannedLore } from '@nw-data/scanner'
+import { sortBy } from 'lodash'
+import { EMPTY, catchError, combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { eqCaseInsensitive, selectStream } from '~/utils'
+import { eqCaseInsensitive } from '~/utils'
 
-@Injectable()
-export class LoreDetailStore extends ComponentStore<{ recordId: string }> {
-  protected db = inject(NwDataService)
+export interface LoreDetailState {
+  grandParent: LoreData
+  parent: LoreData
+  record: LoreData
+  meta: ScannedLore
 
-  public readonly recordId$ = this.select(({ recordId }) => recordId)
-  public readonly record$ = selectStream(this.db.loreItem(this.recordId$))
+  siblings: Array<{
+    record: LoreData
+    meta: ScannedLore
+  }>
+  children: Array<{
+    record: LoreData
+    meta: ScannedLore
+  }>
+  isLoading: boolean
+  isLoaded: boolean
+  hasError: boolean
+}
 
-  public readonly parentId$ = this.select(this.record$, (it) => it?.ParentID)
-  public readonly parent$ = selectStream(this.db.loreItem(this.parentId$))
-  public readonly parentTitle$ = selectStream(this.parent$, (it) => it?.Title)
-
-  public readonly grandParentId$ = this.select(this.parent$, (it) => it?.ParentID)
-  public readonly grandParent$ = selectStream(this.db.loreItem(this.grandParentId$))
-  public readonly grandParentTitle$ = selectStream(this.grandParent$, (it) => it?.Title)
-
-  public readonly title$ = selectStream(this.record$, (it) => it?.Title)
-  public readonly subtitle$ = selectStream(this.record$, (it) => it?.Subtitle)
-  public readonly body$ = selectStream(this.record$, (it) => it?.Body)
-  public readonly type$ = selectStream(this.record$, (it) => it?.Type)
-  public readonly isTopic$ = selectStream(this.type$, (it) => eqCaseInsensitive(it, 'Topic'))
-  public readonly isChapter$ = selectStream(this.type$, (it) => eqCaseInsensitive(it, 'Chapter'))
-  public readonly isPage$ = selectStream(this.type$, (it) => eqCaseInsensitive(it, 'Default'))
-  public readonly order$ = selectStream(this.record$, (it) => it?.Order)
-
-  public readonly siblings$ = selectStream(this.db.loreItemsByParentId(this.parentId$), (it) => (it || []).sort((a, b) => a.Order - b.Order))
-  public readonly children$ = selectStream(this.db.loreItemsByParentId(this.recordId$), (it) => (it || []).sort((a, b) => a.Order - b.Order))
-  public readonly pageCount$ = selectStream(this.siblings$, (it) => it?.length)
-  public readonly pageNumber$ = selectStream({
-    siblings: this.siblings$,
-    record: this.record$,
-  }, ({ siblings, record }) => {
-    if (!siblings?.length || !record) {
-      return null
-    }
-    return siblings.findIndex((it) => eqCaseInsensitive(it.LoreID, record.LoreID)) + 1
-  })
-  public readonly nextId$ = selectStream({
-    siblings: this.siblings$,
-    record: this.record$,
-  }, ({ siblings, record }) => {
-    if (!siblings?.length || !record) {
-      return null
-    }
-    const index = siblings.findIndex((it) => eqCaseInsensitive(it.LoreID, record.LoreID))
-    return siblings[index + 1]?.LoreID
-  })
-  public readonly prevId$ = selectStream({
-    siblings: this.siblings$,
-    record: this.record$,
-  }, ({ siblings, record }) => {
-    if (!siblings?.length || !record) {
-      return null
-    }
-    const index = siblings.findIndex((it) => eqCaseInsensitive(it.LoreID, record.LoreID))
-    return siblings[index - 1]?.LoreID
-  })
-
-  public readonly image$ = selectStream(this.record$, (it) => it?.ImagePath)
-
-  public constructor() {
-    super({ recordId: null })
-  }
-
-  public load = this.effect<string | LoreData>((input$) => {
-    return input$.pipe(map((idOrItem) => {
-      if (typeof idOrItem === 'string') {
-        this.patchState({ recordId: idOrItem })
-      } else {
-        this.patchState({ recordId: idOrItem?.LoreID })
+export const LoreDetailStore = signalStore(
+  withState<LoreDetailState>({
+    grandParent: null,
+    parent: null,
+    record: null,
+    meta: null,
+    children: [],
+    siblings: [],
+    isLoading: false,
+    isLoaded: false,
+    hasError: false,
+  }),
+  withRedux({
+    actions: {
+      public: {
+        load: payload<{ id: string }>(),
+      },
+      private: {
+        loaded: payload<Pick<LoreDetailState, 'grandParent' | 'parent' | 'record' | 'meta' | 'children'>>(),
+        loadError: payload<{ error: any }>(),
+      },
+    },
+    reducer(actions, on) {
+      on(actions.load, (state) => {
+        patchState(state, {
+          isLoading: true,
+        })
+      })
+      on(actions.loaded, (state, data) => {
+        patchState(state, {
+          ...data,
+          isLoaded: true,
+          isLoading: false,
+          hasError: false,
+        })
+      })
+      on(actions.loadError, (state, { error }) => {
+        console.log(error)
+        patchState(state, {
+          isLoaded: true,
+          isLoading: false,
+          hasError: true,
+        })
+      })
+    },
+    effects(actions, create) {
+      const db = inject(NwDataService)
+      return {
+        load$: create(actions.load).pipe(
+          switchMap(({ id }) => loadData({ db, id })),
+          map((data) => {
+            actions.loaded(data)
+            return null
+          }),
+          catchError((error) => {
+            actions.loadError({ error })
+            return EMPTY
+          }),
+        ),
       }
-    }))
-  })
+    },
+  }),
+  withComputed(({ record, children, siblings }) => {
+    return {
+      title: computed(() => record()?.Title),
+      subtitle: computed(() => record()?.Subtitle),
+      body: computed(() => record()?.Body),
+      type: computed(() => record()?.Type),
+      image: computed(() => record()?.ImagePath),
+      isTopic: computed(() => eqCaseInsensitive(record()?.Type, 'Topic')),
+      isChapter: computed(() => eqCaseInsensitive(record()?.Type, 'Chapter')),
+      isPage: computed(() => eqCaseInsensitive(record()?.Type, 'Default')),
+      pageCount: computed(() => siblings().length),
+      pageNumber: computed(() => {
+        if (!siblings().length || !record()) {
+          return null
+        }
+        return siblings().findIndex((it) => eqCaseInsensitive(it.record.LoreID, record().LoreID)) + 1
+      }),
+      nextId: computed(() => {
+        if (!siblings().length || !record()) {
+          return null
+        }
+        const index = siblings().findIndex((it) => eqCaseInsensitive(it.record.LoreID, record().LoreID))
+        return siblings()[index + 1]?.record.LoreID
+      }),
+      prevId: computed(() => {
+        if (!siblings().length || !record()) {
+          return null
+        }
+        const index = siblings().findIndex((it) => eqCaseInsensitive(it.record.LoreID, record().LoreID))
+        return siblings()[index - 1]?.record?.LoreID
+      }),
+    }
+  }),
+)
+
+function loadData({ db, id }: { db: NwDataService; id: string }) {
+  const record = db.loreItem(id)
+  const parent = record.pipe(switchMap((it) => db.loreItem(it?.ParentID)))
+  const grandParent = parent.pipe(switchMap((it) => db.loreItem(it?.ParentID)))
+  const siblings = record.pipe(switchMap((it) => db.loreItemsByParentId(it?.ParentID)))
+  const children = record.pipe(switchMap((it) => db.loreItemsByParentId(it?.LoreID)))
+
+  return combineLatest({
+    record,
+    meta: db.loreItemMeta(id),
+    parent,
+    grandParent,
+    siblings,
+    children,
+    metaMap: db.loreItemsMetaMap,
+  }).pipe(
+    map((data) => {
+      return {
+        ...data,
+        siblings: sortBy(data.siblings || [], (it) => it.Order).map((it) => {
+          return {
+            record: it,
+            meta: data.metaMap.get(it.LoreID),
+          }
+        }),
+        children: sortBy(data.children || [], (it) => it.Order).map((it) => {
+          return {
+            record: it,
+            meta: data.metaMap.get(it.LoreID),
+          }
+        }),
+      }
+    }),
+  )
 }
