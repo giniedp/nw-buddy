@@ -46,7 +46,7 @@
         @if (title2(); as text) {
           <h2 class="text-xl uppercase font-serif text-nw-description flex-none text-center">
             <a
-              [routerLink]="['lore', titleID2()]"
+              [routerLink]="['lore', titleID2()] | nwLink"
               [class.link-hover]="titleID2()"
               [class.hover:text-primary]="titleID2()"
             >
