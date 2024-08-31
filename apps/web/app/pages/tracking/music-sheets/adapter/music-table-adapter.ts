@@ -21,13 +21,13 @@ export class RecipesTableAdapter implements DataViewAdapter<MusicRecord> {
   private tl8 = inject(TranslateService)
 
   public entityID(item: MusicRecord): string {
-    return getItemId(item)
+    return getItemId(item).toLowerCase()
   }
 
   public entityCategories(record: MusicRecord): DataTableCategory[] {
     return [
       {
-        id: record.TradingGroup || 'Music',
+        id: (record.TradingGroup || 'Music').toLowerCase(),
         label: record.TradingGroup,
         icon: '',
       },

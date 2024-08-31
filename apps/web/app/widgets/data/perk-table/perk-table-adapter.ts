@@ -65,7 +65,7 @@ export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
     },
   )
   public entityID(item: PerkTableRecord): string {
-    return item.PerkID
+    return item.PerkID.toLowerCase()
   }
 
   public entityCategories(item: PerkTableRecord): DataTableCategory[] {
@@ -73,7 +73,7 @@ export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
       {
         icon: null,
         label: isPerkInherent(item) ? 'Attributes' : isPerkGenerated(item) ? 'Perks' : item.PerkType,
-        id: item.PerkType,
+        id: item.PerkType.toLowerCase(),
       },
     ]
   }

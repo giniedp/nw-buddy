@@ -25,7 +25,7 @@ export class BackstoryTableAdapter implements DataViewAdapter<BackstoryTableReco
   private utils: TableGridUtils<BackstoryTableRecord> = inject(TableGridUtils)
 
   public entityID(item: BackstoryTableRecord): string {
-    return item.BackstoryID
+    return item.BackstoryID.toLowerCase()
   }
 
   public entityCategories(item: BackstoryTableRecord): DataTableCategory[] {
@@ -34,7 +34,7 @@ export class BackstoryTableAdapter implements DataViewAdapter<BackstoryTableReco
     }
     return [
       {
-        id: item.PlaytestType,
+        id: item.PlaytestType.toLowerCase(),
         label: item.PlaytestType,
         icon: '',
       },

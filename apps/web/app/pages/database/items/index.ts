@@ -1,1 +1,1 @@
-export * from './items-page.module'
+export * from './items.routes'

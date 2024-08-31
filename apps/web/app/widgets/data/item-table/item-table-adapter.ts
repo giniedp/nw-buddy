@@ -46,7 +46,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
   private utils: TableGridUtils<ItemTableRecord> = inject(TableGridUtils)
 
   public entityID(item: ItemTableRecord): string {
-    return item.ItemID
+    return item.ItemID.toLowerCase()
   }
 
   public entityCategories(item: ItemTableRecord): DataTableCategory[] {
@@ -55,7 +55,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
     }
     return [
       {
-        id: item.ItemType,
+        id: item.ItemType.toLowerCase(),
         label: this.i18n.get(getItemTypeLabel(item.ItemType)) || item.ItemType,
         icon: '',
       },

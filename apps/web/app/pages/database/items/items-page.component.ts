@@ -10,14 +10,7 @@ import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import {
-  HtmlHeadService,
-  eqCaseInsensitive,
-  injectBreakpoint,
-  injectChildRouteParam,
-  injectRouteParam,
-  selectSignal,
-} from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemTableAdapter, ItemTableRecord } from '~/widgets/data/item-table'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
@@ -56,13 +49,11 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 })
 export class ItemsPageComponent {
   protected title = 'Items'
-  protected defaultRoute = 'table'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'items-table'
-  protected category = selectSignal(injectRouteParam('category'), (it) => {
-    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
-  })
+  protected categoryParam = 'c'
+  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

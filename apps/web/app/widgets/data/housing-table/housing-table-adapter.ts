@@ -33,7 +33,7 @@ export class HousingTableAdapter implements DataViewAdapter<HousingTableRecord> 
   private utils: TableGridUtils<HousingTableRecord> = inject(TableGridUtils)
 
   public entityID(item: HousingTableRecord): string {
-    return item.HouseItemID
+    return item.HouseItemID.toLocaleLowerCase()
   }
 
   public entityCategories(item: HousingTableRecord): DataTableCategory[] {
@@ -42,7 +42,7 @@ export class HousingTableAdapter implements DataViewAdapter<HousingTableRecord> 
     }
     return [
       {
-        id: item.UIHousingCategory,
+        id: item.UIHousingCategory.toLocaleLowerCase(),
         label: this.i18n.get(getUIHousingCategoryLabel(item.UIHousingCategory)),
         icon: '',
       },

@@ -1,1 +1,1 @@
-export * from './music-page.module'
+export * from './music.routes'

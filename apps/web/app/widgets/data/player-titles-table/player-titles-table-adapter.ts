@@ -26,7 +26,7 @@ export class PlayerTitlesTableAdapter implements DataViewAdapter<PlayertitlesTab
   private utils: TableGridUtils<PlayertitlesTableRecord> = inject(TableGridUtils)
 
   public entityID(item: PlayertitlesTableRecord): string {
-    return item.TitleID
+    return item.TitleID.toLowerCase()
   }
 
   public entityCategories(item: PlayertitlesTableRecord): DataTableCategory[] {
@@ -35,7 +35,7 @@ export class PlayerTitlesTableAdapter implements DataViewAdapter<PlayertitlesTab
     }
     return [
       {
-        id: item.UIDisplayCategory,
+        id: item.UIDisplayCategory.toLowerCase(),
         label: humanize(item.UIDisplayCategory),
         icon: '',
       },

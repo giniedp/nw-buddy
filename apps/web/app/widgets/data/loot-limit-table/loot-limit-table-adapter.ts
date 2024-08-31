@@ -22,7 +22,7 @@ export class LootLimitTableAdapter implements DataViewAdapter<LootLimitTableReco
   private utils: TableGridUtils<LootLimitTableRecord> = inject(TableGridUtils)
 
   public entityID(item: LootLimitTableRecord): string {
-    return item.LootLimitID
+    return item.LootLimitID.toLowerCase()
   }
 
   public entityCategories(item: LootLimitTableRecord): DataTableCategory[] {

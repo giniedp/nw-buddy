@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { getItemId, isHousingItem, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { NwModule } from '~/nw'
+import { NwLinkService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../../item-tracker'
 import { ItemDetailStore } from './item-detail.store'
@@ -33,6 +33,7 @@ import { selectSignal } from '~/utils'
 })
 export class ItemDetailHeaderComponent {
   protected store = inject(ItemDetailStore)
+  private link = inject(NwLinkService)
 
   @Input()
   public enableInfoLink: boolean
@@ -72,7 +73,10 @@ export class ItemDetailHeaderComponent {
   protected recordLink = computed(() => {
     const record = this.record()
     if (record) {
-      return ['/', isHousingItem(record) ? 'housing' : 'items', 'table', getItemId(record)]
+      return this.link.resourceLink({
+        type: isHousingItem(record) ? 'housing' : 'item',
+        id: getItemId(record),
+      })
     }
     return null
   })

@@ -99,7 +99,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
       return {
         ...data,
         commonText,
-        link: ['/transmog/table', data.id],
+        link: ['/transmog', data.id],
         other: gender ? getAppearanceGender(other.appearance) : null,
       }
     },

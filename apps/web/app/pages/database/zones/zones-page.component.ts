@@ -58,18 +58,16 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     }),
   ],
 })
-export class ZonePageComponent {
+export class ZonesPageComponent {
   protected title = 'Zones'
-  protected defaultRoute = 'table'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'zone-table'
   private urlParams$ = injectUrlParams('/zones/:category/:id/:vitalId')
   protected zoneIdParam = selectSignal(this.urlParams$, (it) => it?.['id'])
   protected vitalIdParam = selectSignal(this.urlParams$, (it) => it?.['vitalId'])
-  protected category = selectSignal(injectRouteParam('category'), (it) => {
-    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
-  })
+  protected categoryParam = 'c'
+  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
   protected platform = inject(PlatformService)
 

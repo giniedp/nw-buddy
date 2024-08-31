@@ -26,14 +26,15 @@ export class StatusEffectTableAdapter implements DataViewAdapter<StatusEffectTab
   private config = injectDataViewAdapterOptions<StatusEffectTableRecord>({ optional: true })
 
   public entityID(item: StatusEffectData): string {
-    return item.StatusID
+    return item.StatusID.toLowerCase()
   }
 
   public entityCategories(item: StatusEffectData): DataTableCategory[] {
+    const source = (item['$source'] as string).replace('StatusEffects', '')
     return [
       {
-        id: item['$source'],
-        label: humanize(item['$source']),
+        id: source.toLowerCase(),
+        label: humanize(source),
       },
     ]
   }

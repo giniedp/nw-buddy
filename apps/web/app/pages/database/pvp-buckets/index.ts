@@ -1,1 +1,1 @@
-export * from './pvp-buckets-page.module'
+export * from './pvp-buckets.routes'

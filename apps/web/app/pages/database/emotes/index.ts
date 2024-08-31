@@ -1,2 +1,1 @@
-export * from './emotes-page.module'
-export * from './emotes-page.component'
+export * from './emotes.routes'

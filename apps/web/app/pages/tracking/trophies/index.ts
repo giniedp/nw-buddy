@@ -1,1 +1,1 @@
-export * from './trophies-page.module'
+export * from './trophies.routes'

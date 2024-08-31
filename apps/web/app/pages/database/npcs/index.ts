@@ -1,1 +1,1 @@
-export * from './npcs-page.module'
+export * from './npcs.routes'

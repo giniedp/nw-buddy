@@ -22,6 +22,7 @@ import {
   eqCaseInsensitive,
   injectBreakpoint,
   injectChildRouteParam,
+  injectQueryParam,
   injectRouteParam,
   selectSignal,
 } from '~/utils'
@@ -66,13 +67,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 })
 export class PerksPageComponent {
   protected title = 'Perks'
-  protected defaultRoute = 'table'
+  protected defaultRoute = ''
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'perks-table'
-  protected category = selectSignal(injectRouteParam('category'), (it) => {
-    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
-  })
+  protected categoryParam = 'c'
+  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

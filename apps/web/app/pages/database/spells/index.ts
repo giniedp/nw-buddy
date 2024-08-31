@@ -1,1 +1,1 @@
-export * from './spells-page.module'
+export * from './spells.routes'

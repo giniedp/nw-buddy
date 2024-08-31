@@ -1,1 +1,1 @@
-export * from './abilities-page.module'
+export * from './abilities.routes'

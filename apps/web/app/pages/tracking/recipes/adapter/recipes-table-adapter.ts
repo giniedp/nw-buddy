@@ -22,13 +22,13 @@ export class RecipesTableAdapter implements DataViewAdapter<RecipeRecord> {
   private tl8 = inject(TranslateService)
 
   public entityID(item: RecipeRecord): string {
-    return item.itemId
+    return item.itemId.toLowerCase()
   }
 
   public entityCategories(record: RecipeRecord): DataTableCategory[] {
     return [
       {
-        id: 'T' + String(record.recipeItem.Tier),
+        id: ('T' + String(record.recipeItem.Tier)).toLowerCase(),
         label: getItemTierAsRoman(record.recipeItem.Tier),
         icon: '',
       },

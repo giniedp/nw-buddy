@@ -3,19 +3,20 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostListener, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
+import { defer, map, of, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
-import { eqCaseInsensitive, selectStream, tapDebug } from '~/utils'
+import { eqCaseInsensitive, selectStream } from '~/utils'
+import { gridDisplayRowCount } from '../ag-grid/utils'
 import { DataViewCategory } from './data-view-category'
 import { DataViewService } from './data-view.service'
-import { defer, map, of, switchMap } from 'rxjs'
-import { gridDisplayRowCount } from '../ag-grid/utils'
 
 export interface DataViewCategoryMenuState {
   showCounter?: boolean
   routePrefix?: string
   queryParam?: string
+  routeParam?: string
   defaultTitle?: string
   defaultIcon?: string
   defaultRoute?: string
@@ -55,6 +56,13 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
     })
   }
 
+  @Input()
+  public set routeParam(value: string) {
+    this.patchState({
+      routeParam: value,
+    })
+  }
+
   @Input({ required: true })
   public set defaultTitle(value: string) {
     this.patchState({ defaultTitle: value })
@@ -86,7 +94,7 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
     },
     ({ totalCount, displayedCount, enabled }) => {
       return enabled ? { total: totalCount, displayed: displayedCount } : null
-    }
+    },
   )
 
   protected readonly categories$ = selectStream(
@@ -95,19 +103,23 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
       category: this.service.category$,
       routePrefix: this.select((it) => it.routePrefix),
       queryParam: this.select((it) => it.queryParam),
+      routeParam: this.select((it) => it.routeParam),
     },
-    collectCategories
+    collectCategories,
   )
 
   protected totalRowCount$ = this.service.categoryItems$.pipe(map((list) => list?.length || 0))
   protected displayedRowCount$ = this.service.agGrid$.pipe(
-    switchMap((grid) => (grid ? gridDisplayRowCount(of(grid)) : of(null)))
+    switchMap((grid) => (grid ? gridDisplayRowCount(of(grid)) : of(null))),
   )
   protected readonly hasCategories$ = this.select(this.categories$, (it) => it.length > 0)
   protected readonly activeCateogry$ = this.select(this.categories$, (it) => it.find((it) => it.active))
   protected readonly defaultCategory$ = this.select(selectDefaultCategory)
 
-  public constructor(protected cdkOrigin: CdkOverlayOrigin, private service: DataViewService<unknown>) {
+  public constructor(
+    protected cdkOrigin: CdkOverlayOrigin,
+    private service: DataViewService<unknown>,
+  ) {
     super({})
   }
 
@@ -121,39 +133,67 @@ function collectCategories({
   categories,
   category,
   routePrefix,
-  queryParam
+  queryParam,
+  routeParam,
 }: {
   categories: DataViewCategory[]
   category: string | number | null
   routePrefix: string
   queryParam: string
+  routeParam: string
 }) {
   categories = categories || []
-  return categories.filter((it) => it?.id).map((it) => {
-    if (queryParam) {
+  return categories
+    .filter((it) => it?.id)
+    .map((it) => {
+      if (queryParam) {
+        return {
+          ...it,
+          route: [routePrefix || './'],
+          query: { [queryParam]: it.id },
+          active: eqCaseInsensitive(String(it.id), String(category)),
+        }
+      }
+      if (routeParam) {
+        const param = it.id ? { [routeParam]: it.id } : {}
+        return {
+          ...it,
+          route: [routePrefix || './', param],
+          query: {},
+          active: eqCaseInsensitive(String(it.id), String(category)),
+        }
+      }
       return {
         ...it,
-        route: [routePrefix || './'],
-        query: { [queryParam]: it.id },
+        route: [routePrefix || './', it.id.toLowerCase()],
+        query: {},
         active: eqCaseInsensitive(String(it.id), String(category)),
       }
-    }
-    return {
-      ...it,
-      route: [routePrefix || './', it.id.toLowerCase()],
-      query: {},
-      active: eqCaseInsensitive(String(it.id), String(category)),
-    }
-  })
+    })
 }
 
-function selectDefaultCategory({ defaultTitle, defaultRoute, defaultIcon, routePrefix, queryParam }: DataViewCategoryMenuState) {
+function selectDefaultCategory({
+  defaultTitle,
+  defaultRoute,
+  defaultIcon,
+  routePrefix,
+  queryParam,
+  routeParam,
+}: DataViewCategoryMenuState) {
   defaultRoute = defaultRoute || ''
   if (queryParam) {
     return {
       id: defaultRoute,
       route: [routePrefix || './'],
       query: { [queryParam]: defaultRoute ? defaultRoute.toLowerCase() : undefined },
+      label: defaultTitle,
+      icon: defaultIcon,
+    }
+  }
+  if (routeParam) {
+    return {
+      id: defaultRoute,
+      route: [routePrefix || './', {}],
       label: defaultTitle,
       icon: defaultIcon,
     }

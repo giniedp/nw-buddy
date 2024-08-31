@@ -1,1 +1,1 @@
-export * from './preferences.module'
+export * from './preferences.routes'

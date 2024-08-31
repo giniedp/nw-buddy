@@ -15,6 +15,7 @@ import {
   eqCaseInsensitive,
   injectBreakpoint,
   injectChildRouteParam,
+  injectQueryParam,
   injectRouteParam,
   selectSignal,
 } from '~/utils'
@@ -58,13 +59,11 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 })
 export class CraftingPageComponent {
   protected title = 'Crafting'
-  protected defaultRoute = 'table'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'crafting-table'
-  protected category = selectSignal(injectRouteParam('category'), (it) => {
-    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
-  })
+  protected categoryParam = 'c'
+  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 1200px)'), (ok) => ok || this.platform.isServer)

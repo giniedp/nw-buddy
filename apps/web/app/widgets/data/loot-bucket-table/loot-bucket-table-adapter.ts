@@ -24,17 +24,18 @@ export class LootBucketTableAdapter implements DataViewAdapter<LootBucketTableRe
   private utils: TableGridUtils<LootBucketTableRecord> = inject(TableGridUtils)
 
   public entityID(item: LootBucketTableRecord): string {
-    return `${item.LootBucket}-${item.Row}`
+    return `${item.LootBucket}-${item.Row}`.toLowerCase()
   }
 
   public entityCategories(item: LootBucketTableRecord): DataTableCategory[] {
     if (!item.$source) {
       return null
     }
+    const source = item.$source.replace('LootBuckets', '') || 'Common'
     return [
       {
-        id: item.$source,
-        label: humanize(item.$source),
+        id: source.toLowerCase(),
+        label: humanize(source),
       },
     ]
   }

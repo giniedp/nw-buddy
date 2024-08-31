@@ -23,7 +23,7 @@ export class SchematicsTableAdapter implements DataViewAdapter<SchematicRecord> 
   private config = injectDataViewAdapterOptions<SchematicRecord>({ optional: true })
 
   public entityID(item: SchematicRecord): string {
-    return item.itemId
+    return item.itemId.toLowerCase()
   }
 
   public entityCategories(item: SchematicRecord): DataTableCategory[] {
@@ -33,7 +33,7 @@ export class SchematicsTableAdapter implements DataViewAdapter<SchematicRecord> 
     }
     return [
       {
-        id: tradeskill,
+        id: tradeskill.toLowerCase(),
         label: tradeskill,
         icon: '',
       },

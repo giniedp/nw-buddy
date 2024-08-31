@@ -1,2 +1,1 @@
-export * from './damage-page.module'
-export * from './damage-page.component'
+export * from './damage.routes'

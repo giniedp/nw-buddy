@@ -1,2 +1,1 @@
-export * from './player-titles-page.module'
-export * from './player-titles-page.component'
+export * from './player-titles.routes'

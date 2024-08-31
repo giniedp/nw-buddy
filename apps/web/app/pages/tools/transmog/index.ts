@@ -1,1 +1,1 @@
-export * from './transmog.module'
+export * from './transmog.routes'

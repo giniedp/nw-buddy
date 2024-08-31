@@ -4,11 +4,10 @@
       <li>
         <button
           [nwbDataCateogryMenu]
+          [routeParam]="categoryParam"
           [category]="category()"
           [showCounter]="true"
-          [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
-          [routePrefix]="'..'"
           class="btn btn-ghost normal-case text-left"
         ></button>
       </li>

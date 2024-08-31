@@ -42,7 +42,7 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord> {
     return [
       {
         label: humanize(item.Type),
-        id: item.Type,
+        id: item.Type.toLowerCase(),
         icon: getQuestTypeIcon(item.Type) || NW_FALLBACK_ICON,
       },
     ]

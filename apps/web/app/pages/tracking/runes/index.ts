@@ -1,1 +1,1 @@
-export * from './runes-page.module'
+export * from './runes.routes'

@@ -52,7 +52,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
     }
     return [
       {
-        id: item.Family,
+        id: item.Family.toLowerCase(),
         label: item.Family,
       },
     ]

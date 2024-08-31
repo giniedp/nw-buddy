@@ -24,17 +24,18 @@ export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord> {
   private utils: TableGridUtils<LootTableGridRecord> = inject(TableGridUtils)
 
   public entityID(item: LootTableGridRecord): string {
-    return item.LootTableID
+    return item.LootTableID.toLowerCase()
   }
 
   public entityCategories(item: LootTableGridRecord): DataTableCategory[] {
     if (!item.$source) {
       return null
     }
+    const source = item.$source.replace('LootTables', '') || 'Common'
     return [
       {
-        id: item.$source,
-        label: humanize(item.$source),
+        id: source.toLowerCase(),
+        label: humanize(source),
       },
     ]
   }

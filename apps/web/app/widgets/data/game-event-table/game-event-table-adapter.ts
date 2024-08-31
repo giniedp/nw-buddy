@@ -45,7 +45,7 @@ export class GameEventTableAdapter implements DataViewAdapter<GameEventTableReco
   private utils: TableGridUtils<GameEventTableRecord> = inject(TableGridUtils)
 
   public entityID(item: GameEventTableRecord): string {
-    return item.EventID
+    return item.EventID.toLowerCase()
   }
 
   public entityCategories(item: GameEventTableRecord): DataTableCategory[] {
@@ -54,7 +54,7 @@ export class GameEventTableAdapter implements DataViewAdapter<GameEventTableReco
     }
     return [
       {
-        id: item.GameEventType,
+        id: item.GameEventType.toLowerCase(),
         label: humanize(item.GameEventType),
         icon: '',
       },

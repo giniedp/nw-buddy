@@ -58,14 +58,14 @@ import { MountTileComponent } from './mount-tile.component'
 })
 export class MountComponent {
   private readonly mounts$ = inject(NwDataService).mounts.pipe(map((list) => list.filter((it) => !!it.DisplayName)))
-  private readonly categoryId$ = injectRouteParam('category')
+  private readonly categoryId$ = injectRouteParam('c')
   protected readonly data$ = selectStream(
     {
       mounts: this.mounts$,
       category: this.categoryId$,
     },
     ({ mounts, category }) => {
-      if (!category || eqCaseInsensitive(category, 'all')) {
+      if (!category) {
         return mounts
       }
       return mounts.filter((it) => eqCaseInsensitive(it.MountType, category))

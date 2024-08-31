@@ -1,1 +1,1 @@
-export * from './pvp-ranks-page.module'
+export * from './pvp-ranks.routes'

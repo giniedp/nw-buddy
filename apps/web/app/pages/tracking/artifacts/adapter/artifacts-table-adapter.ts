@@ -20,13 +20,13 @@ export class ArtifactsTableAdapter implements DataViewAdapter<ArtifactRecord> {
   private tl8 = inject(TranslateService)
 
   public entityID(item: ArtifactRecord): string {
-    return getItemId(item)
+    return getItemId(item).toLowerCase()
   }
 
   public entityCategories(record: ArtifactRecord): DataTableCategory[] {
     return [
       {
-        id: record.ItemType,
+        id: record.ItemType.toLowerCase(),
         label: record.ItemType,
         icon: '',
       },

@@ -35,8 +35,8 @@ export class LoreItemTableAdapter implements DataViewAdapter<LoreItemTableRecord
     }
     return [
       {
-        label: humanize(item.Type),
-        id: item.Type,
+        id: item.Type.toLowerCase(),
+        label: humanize(item.Type === 'Default' ? 'Page': item.Type),
         icon: getQuestTypeIcon(item.Type) || NW_FALLBACK_ICON,
       },
     ]

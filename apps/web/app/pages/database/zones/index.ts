@@ -1,1 +1,1 @@
-export * from './zones-page.module'
+export * from './zones.routes'

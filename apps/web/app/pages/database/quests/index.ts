@@ -1,1 +1,1 @@
-export * from './quests-page.module'
+export * from './quests.routes'

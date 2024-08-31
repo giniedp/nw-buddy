@@ -30,7 +30,7 @@ export class PvpStoreTableAdapter implements DataViewAdapter<PvpStoreTableRecord
   private utils: TableGridUtils<PvpStoreTableRecord> = inject(TableGridUtils)
 
   public entityID(item: PvpStoreTableRecord): string {
-    return `${item.Bucket}_${item.Row}`
+    return `${item.Bucket}_${item.Row}`//.toLowerCase()
   }
 
   public entityCategories(item: PvpStoreTableRecord): DataTableCategory[] {

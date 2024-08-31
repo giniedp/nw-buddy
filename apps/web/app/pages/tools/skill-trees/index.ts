@@ -1,2 +1,2 @@
-export * from './skill-trees.module'
+export * from './skill-trees.routes'
 

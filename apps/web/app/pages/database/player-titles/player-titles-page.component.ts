@@ -57,13 +57,11 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 })
 export class PlayerTitlesPageComponent {
   protected title = 'Player Titles'
-  protected defaultRoute = 'table'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'player-titles-table'
-  protected category = selectSignal(injectRouteParam('category'), (it) => {
-    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
-  })
+  protected categoryParam = 'c'
+  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

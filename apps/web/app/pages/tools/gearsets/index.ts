@@ -1,1 +1,1 @@
-export * from './gearsets.module'
+export * from './gearsets.routes'

@@ -1,1 +1,1 @@
-export * from './loot-limits-page.module'
+export * from './loot-limits.routes'

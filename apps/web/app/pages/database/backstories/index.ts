@@ -1,2 +1,1 @@
-export * from './backstories-page.module'
-export * from './backstories-page.component'
+export * from './backstories.routes'

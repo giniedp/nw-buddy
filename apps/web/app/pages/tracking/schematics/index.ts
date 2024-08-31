@@ -1,1 +1,1 @@
-export * from './schematics-page.module'
+export * from './schematics.routes'

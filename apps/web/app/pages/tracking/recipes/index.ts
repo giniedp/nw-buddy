@@ -1,1 +1,1 @@
-export * from './recipes-page.module'
+export * from './recipes.routes'

@@ -1,1 +1,1 @@
-export * from './perks-page.module'
+export * from './perks.routes'

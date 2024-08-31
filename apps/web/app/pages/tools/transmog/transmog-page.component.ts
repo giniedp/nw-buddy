@@ -76,13 +76,11 @@ import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from
 })
 export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogItem }> {
   protected title = 'Transmog'
-  protected defaultRoute = 'table'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'transmog-table'
-  protected category = selectSignal(injectRouteParam('category'), (it) => {
-    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
-  })
+  protected categoryParam = 'c'
+  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

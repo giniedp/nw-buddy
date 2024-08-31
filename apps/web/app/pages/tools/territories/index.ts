@@ -1,1 +1,1 @@
-export * from './territories.module'
+export * from './territories.routes'

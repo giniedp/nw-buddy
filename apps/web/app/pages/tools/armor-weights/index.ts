@@ -1,1 +1,1 @@
-export * from './armor-weights.module'
+export * from './armor-weights.routes'

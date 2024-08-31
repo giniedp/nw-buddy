@@ -3,11 +3,10 @@
     <div class="flex flex-row flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
       <button
         [nwbDataCateogryMenu]
+        [routeParam]="categoryParam"
         [category]="category()"
         [showCounter]="true"
-        [defaultRoute]="defaultRoute"
         [defaultTitle]="title"
-        [routePrefix]="'..'"
         class="btn btn-ghost normal-case text-left"
       ></button>
 

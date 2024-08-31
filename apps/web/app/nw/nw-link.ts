@@ -28,26 +28,26 @@ export interface NwLinkOptions {
 }
 
 const BUDDY_TYPE_MAP: Record<NwLinkResource, string> = {
-  item: 'items',
-  housing: 'housing',
-  recipe: 'crafting',
-  ability: 'abilities',
-  perk: 'perks',
-  vitals: 'vitals',
+  'game-event': 'game-events',
+  'loot-limit': 'loot-limits',
+  'player-title': 'player-titles',
   'status-effect': 'status-effects',
+  ability: 'abilities',
+  damage: 'damage',
+  emote: 'emotes',
+  gatherable: 'gatherables',
+  housing: 'housing',
+  item: 'items',
+  loot: 'loot',
+  lore: 'lore',
+  mount: 'mounts',
+  npc: 'npcs',
+  perk: 'perks',
   poi: 'zones',
   quest: 'quests',
-  mount: 'mounts',
-  gatherable: 'gatherables',
-  npc: 'npcs',
-  loot: 'loot',
+  recipe: 'crafting',
   transmog: 'transmog',
-  damage: 'damage',
-  lore: 'lore',
-  'player-title': 'player-titles',
-  emote: 'emotes',
-  'loot-limit': 'loot-limits',
-  'game-event': 'game-events',
+  vitals: 'vitals',
 }
 
 export function buddyLinkUrl(options: NwLinkOptions & { category?: string }) {
@@ -60,7 +60,9 @@ export function buddyLinkUrl(options: NwLinkOptions & { category?: string }) {
     result.push(options.lang)
   }
   result.push(type)
-  result.push(options.category || 'table')
+  if (options.category) {
+    result.push(';c=' + encodeURIComponent(options.category))
+  }
   if (options.id) {
     result.push(encodeURIComponent(options.id.trim().toLowerCase()))
   }

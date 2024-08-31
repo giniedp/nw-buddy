@@ -35,7 +35,7 @@ import { LootModule } from '~/widgets/loot'
     class: 'block',
   },
 })
-export class ItemDetailPageComponent {
+export class GatherableDetailPageComponent {
   protected store = inject(GatherableDetailStore)
 
   protected itemId = toSignal(injectRouteParam('id'))

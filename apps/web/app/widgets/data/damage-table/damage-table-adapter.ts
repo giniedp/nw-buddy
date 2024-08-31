@@ -37,10 +37,11 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord> {
     if (!item['$source']) {
       return null
     }
+    const source = (item['$source'] as string).replace('DamageTable', '')
     return [
       {
-        id: item['$source'],
-        label: humanize(item['$source']) || 'unnamed',
+        id: source.toLowerCase(),
+        label: humanize(source) || 'unnamed',
         icon: '',
       },
     ]

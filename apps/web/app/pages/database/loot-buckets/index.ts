@@ -1,1 +1,1 @@
-export * from './loot-buckets-page.module'
+export * from './loot-buckets.routes'

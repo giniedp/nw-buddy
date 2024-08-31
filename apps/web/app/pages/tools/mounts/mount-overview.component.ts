@@ -23,7 +23,7 @@ import { selectStream } from '~/utils'
 export class MountOverviewComponent {
   protected mounts$ = inject(NwDataService).mounts
   protected categories$ = selectStream(this.mounts$, (mounts) => {
-    return ['all', ...uniq(mounts.map((it) => it.MountType))]
+    return uniq(mounts.map((it) => it.MountType))
   })
 
   @ViewChild(RouterOutlet, { static: true })

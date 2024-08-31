@@ -25,6 +25,7 @@ export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loo
 
 @Component({
   standalone: true,
+  selector: 'nwb-vital-detail-page',
   templateUrl: './vital-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -45,7 +46,7 @@ export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loo
     class: 'block',
   },
 })
-export class VitalDetailComponent {
+export class VitalDetailPageComponent {
   protected store = inject(VitalDetailStore)
 
   protected vital = this.store.vital

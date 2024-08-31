@@ -28,13 +28,13 @@ export class SeasonPassTableAdapter implements DataViewAdapter<SeasonPassTableRe
   }
 
   public entityCategories(item: SeasonPassTableRecord): DataTableCategory[] {
-    const source = item['$source']
+    const source = item['$source']?.replace('SeasonPass_', '')
     if (!source) {
       return null
     }
     return [
       {
-        id: source,
+        id: source.toLowerCase(),
         label: humanize(source),
         icon: '',
       },

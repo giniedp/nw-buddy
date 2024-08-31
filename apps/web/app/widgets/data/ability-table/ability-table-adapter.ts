@@ -38,14 +38,16 @@ export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord> 
   private config = injectDataViewAdapterOptions<AbilityTableRecord>({ optional: true })
 
   public entityID(item: AbilityTableRecord): string {
-    return item.AbilityID
+    return item.AbilityID.toLowerCase()
   }
 
   public entityCategories(item: AbilityTableRecord): DataTableCategory[] {
+    const source = (item['$source'] as string).replace('AbilityTable', '')
+    const id = source.toLowerCase()
     return [
       {
-        id: item['$source'],
-        label: humanize(item['$source']),
+        id: id,
+        label: humanize(source),
         icon: item.$weaponType?.IconPathSmall,
       },
     ]

@@ -23,7 +23,7 @@ export class NpcsTableAdapter implements DataViewAdapter<NpcTableRecord> {
   private service = inject(NpcService)
 
   public entityID(item: NpcTableRecord): string {
-    return item.npcs[0].id
+    return item.npcs[0].id.toLowerCase()
   }
 
   public entityCategories(item: NpcTableRecord): DataTableCategory[] {

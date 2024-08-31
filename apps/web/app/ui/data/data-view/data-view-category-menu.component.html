@@ -8,7 +8,9 @@
   <span class="text-lg leading-none" *ngIf="defaultCategory$ | async; let cat">
     <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
     {{ cat.label }}
-    <ng-container *ngIf="activeCateogry$ | async; let cat"> • {{ cat.label | nwText }} </ng-container>
+    <ng-container *ngIf="activeCateogry$ | async; let cat">
+      <span class="text-primary">• {{ cat.label | nwText }}</span>
+    </ng-container>
   </span>
   <span *ngIf="counter$ | async; let counter" class="text-xs opacity-50 italic leading-none">
     Rows:

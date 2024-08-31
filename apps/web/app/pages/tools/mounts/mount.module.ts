@@ -7,18 +7,13 @@ import { NwDataService } from '~/data'
 import { firstValueFrom } from 'rxjs'
 import { eqCaseInsensitive } from '~/utils'
 
-const ROUTES: Routes = [
+export const ROUTES: Routes = [
   {
     path: '',
     component: MountOverviewComponent,
     children: [
       {
         path: '',
-        pathMatch: 'full',
-        redirectTo: 'all',
-      },
-      {
-        path: ':category',
         component: MountComponent,
         canActivate: [redirectToCategory],
         children: [
@@ -32,16 +27,11 @@ const ROUTES: Routes = [
   },
 ]
 
-@NgModule({
-  imports: [RouterModule.forChild(ROUTES)],
-})
-export class MountModule {}
-
 async function redirectToCategory(snap: ActivatedRouteSnapshot) {
   const db = inject(NwDataService)
   const router = inject(Router)
 
-  const category = snap.paramMap.get('category')
+  const category = snap.paramMap.get('c')
   const id = snap.firstChild?.paramMap.get('id')
   if (!id || !category) {
     return true
@@ -56,6 +46,6 @@ async function redirectToCategory(snap: ActivatedRouteSnapshot) {
     return true
   }
 
-  router.navigate(['mounts', item.MountType, item.MountId])
+  router.navigate(['mounts', item.MountId, { c: item.MountType }])
   return false
 }

@@ -35,7 +35,7 @@ export class GatherableTableAdapter implements DataViewAdapter<GatherableTableRe
   private utils: TableGridUtils<GatherableTableRecord> = inject(TableGridUtils)
 
   public entityID(item: GatherableTableRecord): string {
-    return item.GatherableID
+    return item.GatherableID.toLowerCase()
   }
 
   public entityCategories(item: GatherableTableRecord): DataTableCategory[] {
@@ -44,7 +44,7 @@ export class GatherableTableAdapter implements DataViewAdapter<GatherableTableRe
     }
     return [
       {
-        id: item.Tradeskill,
+        id: item.Tradeskill.toLowerCase(),
         label: item.Tradeskill,
       },
     ]

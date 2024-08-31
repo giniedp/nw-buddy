@@ -39,7 +39,7 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
   private skills = toSignal(this.character.tradeskills$, { initialValue: null })
 
   public entityID(item: CraftingTableRecord): string {
-    return item.RecipeID
+    return item.RecipeID.toLowerCase()
   }
 
   public entityCategories(item: CraftingTableRecord): DataTableCategory[] {
@@ -48,7 +48,7 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
     }
     return [
       {
-        id: item.Tradeskill,
+        id: item.Tradeskill.toLowerCase(),
         label: getTradeSkillLabel(item.Tradeskill),
         icon: '',
       },

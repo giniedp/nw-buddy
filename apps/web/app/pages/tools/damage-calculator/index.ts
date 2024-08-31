@@ -1,1 +1,1 @@
-export * from './damage-calculator.module'
+export * from './damage-calculator.routes'

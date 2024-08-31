@@ -1,1 +1,1 @@
-export * from './artifacts-page.module'
+export * from './artifacts.routes'

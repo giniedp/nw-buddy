@@ -1,1 +1,1 @@
-export * from './leveling.module'
+export * from './leveling.routes'

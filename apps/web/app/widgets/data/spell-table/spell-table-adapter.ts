@@ -34,10 +34,14 @@ export class SpellTableAdapter implements DataViewAdapter<SpellTableRecord> {
   }
 
   public entityCategories(item: SpellTableRecord): DataTableCategory[] {
+    const source = (item['$source'] as string)?.replace('SpellDataTable', '')
+    if (!source) {
+      return null
+    }
     return [
       {
-        id: item['$source'],
-        label: humanize(item['$source']),
+        id: source.toLowerCase(),
+        label: humanize(source),
       },
     ]
   }

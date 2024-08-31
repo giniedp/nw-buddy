@@ -1,1 +1,1 @@
-export * from './armorsets.module'
+export * from './armorsets.routes'

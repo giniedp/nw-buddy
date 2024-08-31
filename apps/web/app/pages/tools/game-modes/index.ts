@@ -1,1 +1,1 @@
-export * from './game-modes.module'
+export * from './game-modes.routes'

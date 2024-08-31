@@ -1,1 +1,1 @@
-export * from './gatherables-page.module'
+export * from './gatherables.routes'

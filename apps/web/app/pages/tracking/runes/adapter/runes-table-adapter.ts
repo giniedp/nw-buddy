@@ -20,7 +20,7 @@ export class RunesTableAdapter implements DataViewAdapter<RunesRecord> {
   private db = inject(NwDataService)
 
   public entityID(item: RunesRecord): string {
-    return item.itemId
+    return item.itemId.toLowerCase()
   }
 
   public entityCategories(item: RunesRecord): DataTableCategory[] {
@@ -30,7 +30,7 @@ export class RunesTableAdapter implements DataViewAdapter<RunesRecord> {
     }
     return [
       {
-        id: tradeskill,
+        id: tradeskill.toLowerCase(),
         label: tradeskill,
         icon: '',
       },

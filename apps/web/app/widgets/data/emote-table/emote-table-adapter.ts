@@ -25,7 +25,7 @@ export class EmoteTableAdapter implements DataViewAdapter<EmoteTableRecord> {
   private utils: TableGridUtils<EmoteTableRecord> = inject(TableGridUtils)
 
   public entityID(item: EmoteTableRecord): string {
-    return item.UniqueTagID
+    return item.UniqueTagID.toLowerCase()
   }
 
   public entityCategories(item: EmoteTableRecord): DataTableCategory[] {
@@ -34,7 +34,7 @@ export class EmoteTableAdapter implements DataViewAdapter<EmoteTableRecord> {
     }
     return [
       {
-        id: item.DisplayGroup,
+        id: item.DisplayGroup.toLowerCase(),
         label: item.DisplayGroup,
         icon: '',
       },
