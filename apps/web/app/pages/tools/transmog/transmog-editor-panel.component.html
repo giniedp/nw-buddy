@@ -11,7 +11,7 @@
       />
       <nwb-item-header-content
         [title]="item.appearance?.Name || item.slot.name | nwText"
-        [titleLink]="item.transmogId ? ['/transmog/table', item.transmogId] : null"
+        [titleLink]="item.transmogId ? ['/transmog', item.transmogId] : null"
       >
         <div class="flex flex-row gap-1">
           @if (item.dye; as colors) {

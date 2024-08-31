@@ -3,7 +3,6 @@ import { pageObjectModel, withQuickfilter, withTableGrid } from '../utils'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/items')
-  await page.waitForURL('**/items/table')
 })
 
 test('has table', async ({ page }) => {
@@ -13,6 +12,6 @@ test('has table', async ({ page }) => {
   await expect(pom.tableRows.nth(0)).toBeVisible()
   await expect(pom.column('name').first()).toBeVisible()
   await pom.column('name').first().click()
-  await page.waitForURL(/\/items\/table\/.+$/)
+  await page.waitForURL(/\/items\/.+$/)
   await page.waitForTimeout(500)
 })

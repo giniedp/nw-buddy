@@ -13,13 +13,13 @@ test('It Navigates', async ({ page }) => {
 
   const appMenu = page.getByTestId('app-menu')
   await appMenu.getByText('Items').click()
-  await page.waitForURL('**/items/table')
+  await page.waitForURL('**/items')
   await appMenu.getByText('Housing').click()
-  await page.waitForURL('**/housing/table')
+  await page.waitForURL('**/housing')
   await appMenu.getByText('Crafting').click()
-  await page.waitForURL('**/crafting/table')
+  await page.waitForURL('**/crafting')
   await appMenu.getByText('Perks').click()
-  await page.waitForURL('**/perks/table')
+  await page.waitForURL('**/perks')
   await appMenu.getByText('Abilities').click()
-  await page.waitForURL('**/abilities/table')
+  await page.waitForURL('**/abilities')
 });

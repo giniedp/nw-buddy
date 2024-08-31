@@ -66,6 +66,6 @@ export class ZoneDetailPageComponent {
     if (typeof vital !== 'string') {
       vital = this.vitalIdFn(vital)
     }
-    this.router.navigate(['/zones/table', this.itemId(), vital || ''])
+    this.router.navigate(['/zones', this.itemId(), vital || ''])
   }
 }
