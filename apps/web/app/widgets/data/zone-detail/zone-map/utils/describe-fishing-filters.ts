@@ -32,9 +32,5 @@ export function describeFishingFilters(
     subcategory: '',
     subcategoryLabel: '',
   }
-
-  if (variant) {
-    console.log({ variant })
-  }
   return props
 }

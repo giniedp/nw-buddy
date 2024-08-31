@@ -107,7 +107,6 @@ export class GlobalSearchInputComponent
   }
 
   protected submit(value: string) {
-    console.log('submit')
     this.patchState({ query: value })
   }
 

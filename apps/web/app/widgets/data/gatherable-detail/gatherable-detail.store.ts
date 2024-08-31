@@ -111,9 +111,6 @@ export const GatherableDetailStore = signalStore(
 
   withComputed(({ gatherable, siblings }) => {
     const gatherableId = computed(() => gatherable()?.GatherableID)
-    effect(() => {
-      console.log(gatherable())
-    })
     return {
       icon: computed(() => getGatherableIcon(gatherable()) || NW_FALLBACK_ICON),
       name: computed(() => gatherable()?.DisplayName),

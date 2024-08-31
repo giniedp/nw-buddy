@@ -41,9 +41,6 @@ export async function createViewer(options: {
     })
     viewer.onModelLoadedObservable.add((model) => {
       zone.run(() => {
-        console.log({
-          viewer, model
-        })
         const name = model.getAnimationNames()?.[0]
         if (name) {
           model.playAnimation(name)

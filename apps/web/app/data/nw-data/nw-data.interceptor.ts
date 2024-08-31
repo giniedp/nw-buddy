@@ -15,7 +15,6 @@ import { Observable, map } from 'rxjs'
 export function activateVersionGuard(param: string): CanActivateFn {
   return (snapshot) => {
     const version = snapshot.paramMap.get(param) || ''
-    console.log(version)
     const interceptor = inject(NwDataInterceptor)
     interceptor.setVersion(version)
     return true
@@ -45,7 +44,6 @@ export class NwDataInterceptor implements HttpInterceptor {
 
   public setVersion(version: string) {
     this.nwDataUrl = new URL(getNwDataPath(version), environment.cdnUrl).toString()
-    console.log(this.nwDataUrl)
   }
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

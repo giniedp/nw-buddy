@@ -154,7 +154,6 @@ export class ExpresssionBranchEditorComponent implements ControlValueAccessor {
         right: this.defaultRightValue(),
       }),
     })
-    console.log('addRow', rows)
     this.updateValue({
       join,
       rows,

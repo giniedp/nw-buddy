@@ -213,7 +213,6 @@ async function migrateCharacterLevel(db: CharactersDB) {
   const obj: Record<string, any> = JSON.parse(item)
   const level = Number(obj?.['language']) // HINT: used wrong key name to store character level
   if (level && Number.isFinite(level)) {
-    console.log('detected level', level)
     const char = await db.getCurrent()
     await db.update(char.id, {
       ...char,
@@ -237,7 +236,6 @@ async function migrateTradeskillLevels(db: CharactersDB) {
         levels[skill] = level
       }
     })
-    console.log('detected tradeskills', levels)
     const char = await db.getCurrent()
     await db.update(char.id, {
       ...char,

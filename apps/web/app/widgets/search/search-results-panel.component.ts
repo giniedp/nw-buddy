@@ -44,7 +44,6 @@ export class SearchResultsPanelComponent {
   }
 
   protected getIcon(item: SearchRecord) {
-    console.log('item', item)
     if (!item.icon) {
       return NW_FALLBACK_ICON
     }

@@ -279,12 +279,6 @@ export const FilterVitalsStore = signalStore(
       presets,
     }
   }),
-  withComputed(({ layerFilter }) => {
-    effect(() => {
-      console.log('layerFilter', layerFilter())
-    })
-    return {}
-  }),
 )
 
 function loadPresets(db: NwDataService) {

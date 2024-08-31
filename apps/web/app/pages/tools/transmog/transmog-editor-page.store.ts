@@ -192,10 +192,6 @@ export const TransmogEditorStore = signalStore(
     return {
       headModel: computed(() => headModels()?.[0]?.url),
       chestModel: computed(() => {
-        console.log({
-          handsAppearanceId: handsAppearanceId(),
-          chestModels: chestModels(),
-        })
         const models = chestModels() ?? []
         if (handsAppearanceId()) {
           return models[1]?.url ?? models[0]?.url

@@ -96,7 +96,6 @@ export class DataImportDialogComponent extends ComponentStore<DataImportDialogSt
     const data = JSON.parse(content)
     const db = data['db:nw-buddy']
     await recursivelyDecodeArrayBuffers(db)
-    console.log(db)
     this.preferences.import(data)
     await this.appDb.import(db)
   }

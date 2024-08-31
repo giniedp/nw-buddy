@@ -478,7 +478,6 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
   public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
     switchMap(({ tags, values, tables }) => {
-      console.log({ tags, values, tables })
       const ctx = new LootContext({
         tags: tags,
         values: values,
