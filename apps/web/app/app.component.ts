@@ -9,7 +9,7 @@ import {
   computed,
   inject,
 } from '@angular/core'
-import { Router, RouterModule } from '@angular/router'
+import { Router, RouterModule, UrlSegment } from '@angular/router'
 import { map, of, switchMap } from 'rxjs'
 
 import { TranslateService } from './i18n'
@@ -223,16 +223,14 @@ export class AppComponent {
   }
 
   protected getLangUrl(selection: LanguageOption) {
-    const result: string[] = this.router.url.split('/').filter((it) => !!it)
+    const url = this.router.parseUrl(this.router.url)
+    const segments = url.root.children['primary'].segments
     if (!this.langSelection().isDefault) {
-      result.shift()
+      segments.shift()
     }
     if (!selection.isDefault) {
-      result.unshift(selection.value)
+      segments.unshift(new UrlSegment(selection.value, {  }))
     }
-    if (!this.langSelection().isDefault) {
-      result.unshift('..')
-    }
-    return result
+    return url
   }
 }

@@ -90,34 +90,36 @@
         </span>
       </div>
       <ion-buttons slot="end">
-        <!-- <a
-          href="https://github.com/giniedp/nw-buddy"
-          target="_blank"
-          class="btn btn-square btn-ghost no-drag hidden md:flex"
-          [tooltip]="'Source code on github'"
-          [tooltipPlacement]="'bottom'"
-        >
-          <nwb-icon [icon]="iconGithub" class="w-7 h-7" />
-        </a>
-        <a
-          href=" https://discord.gg/PWxUwUagVX"
-          target="_blank"
-          rel="nofollow"
-          class="btn btn-square btn-ghost no-drag hidden md:flex"
-          [tooltip]="'Join Discord'"
-          [tooltipPlacement]="'bottom'"
-        >
-          <nwb-icon [icon]="iconDiscord" class="w-7 h-7" />
-        </a> -->
-        <nwb-global-search-input class="no-drag" />
-        <button
-          class="btn btn-square btn-ghost no-drag"
-          [cdkMenuTriggerFor]="tplLangMenu"
-          [tooltip]="'Switch language'"
-          [tooltipPlacement]="'bottom'"
-        >
-          {{ langLabel() }}
-        </button>
+        <div class="flex flex-row items-center gap-1">
+          <a
+            href="https://github.com/giniedp/nw-buddy"
+            target="_blank"
+            class="btn btn-circle btn-ghost no-drag hidden md:flex"
+            [tooltip]="'Source code on github'"
+            [tooltipPlacement]="'bottom'"
+          >
+            <nwb-icon [icon]="iconGithub" class="w-5 h-5" />
+          </a>
+          <a
+            href=" https://discord.gg/PWxUwUagVX"
+            target="_blank"
+            rel="nofollow"
+            class="btn btn-circle btn-ghost no-drag hidden md:flex"
+            [tooltip]="'Join Discord'"
+            [tooltipPlacement]="'bottom'"
+          >
+            <nwb-icon [icon]="iconDiscord" class="w-5 h-5" />
+          </a>
+          <nwb-global-search-input class="no-drag" />
+          <button
+            class="btn btn-circle btn-ghost no-drag"
+            [cdkMenuTriggerFor]="tplLangMenu"
+            [tooltip]="'Switch language'"
+            [tooltipPlacement]="'bottom'"
+          >
+            {{ langLabel() }}
+          </button>
+        </div>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
