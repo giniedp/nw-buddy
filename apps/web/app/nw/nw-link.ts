@@ -38,7 +38,7 @@ const BUDDY_TYPE_MAP: Record<NwLinkResource, string> = {
   gatherable: 'gatherables',
   housing: 'housing',
   item: 'items',
-  loot: 'loot',
+  loot: 'loot-tables',
   lore: 'lore',
   mount: 'mounts',
   npc: 'npcs',

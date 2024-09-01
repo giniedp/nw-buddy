@@ -141,7 +141,7 @@ function selectCategory(
       const poi = pois.find((it) => eqCaseInsensitive(it.GameMode, mode.GameModeId))
       const mutation = mutations?.find((it) => eqCaseInsensitive(it.expedition, mode.GameModeId))
       return {
-        id: mode.GameModeId,
+        id: mode.GameModeId.toLowerCase(),
         icon: mode.IconPath,
         backgroundImage: mode.BackgroundImagePath || mode.SimpleImagePath,
         title: poi?.NameLocalizationKey || mode.DisplayName,
@@ -166,8 +166,8 @@ function detectCategory(mode?: GameModeData): GameModeCategories {
   if (mode.IsDungeon) {
     return 'expeditions'
   }
-  if (mode.ActivityType) {
-    return 'activities'
-  }
+  // if (mode.ActivityType) {
+  //   return 'activities'
+  // }
   return null
 }

@@ -80,7 +80,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Zones', path: '/zones', svgIcon: svgMap },
 
       { label: 'Loot Limits', path: '/loot-limits', svgIcon: svgTime, divider: true },
-      { label: 'Loot Tables', path: '/loot', svgIcon: svgSack },
+      { label: 'Loot Tables', path: '/loot-tables', svgIcon: svgSack },
       { label: 'Loot Buckets', path: '/loot-buckets', svgIcon: svgBucket },
       { label: 'PvP Track Store', path: '/pvp-buckets', svgIcon: svgDice },
       { label: 'Game Events', path: '/game-events', svgIcon: svgClipboard },

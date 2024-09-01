@@ -6,7 +6,7 @@ import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { LootContext, NwLootService } from '~/nw/loot'
-import { selectStream, shareReplayRefCount } from '~/utils'
+import { eqCaseInsensitive, selectStream, shareReplayRefCount } from '~/utils'
 
 export interface GameModeDetailState {
   gameModeId: string
@@ -258,7 +258,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         ) {
           return true
         }
-        return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
+        return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
       })
       return result
     },
@@ -285,7 +285,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       for (const type of TAB_BOSSES_CREATURES) {
         const list = vitals.get(type) || []
         for (const item of list) {
-          if (getVitalDungeons(item, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)) {
+          if (getVitalDungeons(item, dungeons, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))) {
             result.push(item)
           }
         }
@@ -309,7 +309,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       for (const type of TAB_NAMED_CREATURES) {
         const list = vitals.get(type) || []
         for (const item of list) {
-          if (getVitalDungeons(item, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)) {
+          if (getVitalDungeons(item, dungeons, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))) {
             result.push(item)
           }
         }
