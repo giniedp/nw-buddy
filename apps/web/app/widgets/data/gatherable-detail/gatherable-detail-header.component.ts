@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router'
         [title]="name | nwText | nwTextBreak: ' - '"
         [text1]="'Gatherable'"
         [text2]="info"
-        [titleLink]="['/gatherables/table/', recordId]"
+        [titleLink]="['gatherable', recordId] | nwLink"
         [isSkeleton]="!store.isLoaded"
       />
     </nwb-item-header>

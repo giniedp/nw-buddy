@@ -103,7 +103,7 @@ export function vitalColName(util: VitalTableUtils, options?: { link: boolean })
         return content
       }
       return util.elA({
-        attrs: { target: '_blank', href: `/vitals/table/${data.VitalsID}` },
+        attrs: { target: '_blank', href: `/vitals/${data.VitalsID.toLowerCase()}` },
         class: ['link-hover'],
         html: content,
       })

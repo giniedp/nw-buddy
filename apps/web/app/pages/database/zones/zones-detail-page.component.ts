@@ -57,7 +57,7 @@ export class ZoneDetailPageComponent {
 
   protected virtualGridOptions = VitalGridCellComponent.buildGridOptions()
 
-  protected vitalIdFn = (it: VitalsData) => it?.VitalsID
+  protected vitalIdFn = (it: VitalsData) => it?.VitalsID?.toLowerCase()
 
   protected onVitalClicked(vital: VitalsData | string | number) {
     if (typeof vital === 'number') {
@@ -66,6 +66,6 @@ export class ZoneDetailPageComponent {
     if (typeof vital !== 'string') {
       vital = this.vitalIdFn(vital)
     }
-    this.router.navigate(['/zones', this.itemId(), vital || ''])
+    // this.router.navigate(['/zones', this.itemId(), vital || ''])
   }
 }
