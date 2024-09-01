@@ -224,7 +224,14 @@ export class AppComponent {
 
   protected getLangUrl(selection: LanguageOption) {
     const url = this.router.parseUrl(this.router.url)
-    const segments = url.root.children['primary'].segments
+    const segments = url.root.children['primary']?.segments
+    if (!segments) {
+      if (!selection.isDefault) {
+        return ['/', selection.value]
+      }
+      return ['/']
+    }
+
     if (!this.langSelection().isDefault) {
       segments.shift()
     }
