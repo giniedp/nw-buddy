@@ -60,6 +60,9 @@
       {{ viewerActive ? 'Close' : 'View 3D Model' }}
     </button>
   }
+  @if (card.consumable$ | async; as consumable) {
+    <nwb-consumable-detail [consumableId]="consumable" />
+  }
   @if (card.itemSet$ | async; as gearset) {
     @if (gearset.items?.length > 1) {
       <div class="nw-item-divider"></div>

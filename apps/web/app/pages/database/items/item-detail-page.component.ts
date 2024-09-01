@@ -25,6 +25,8 @@ import { LootModule } from '~/widgets/loot'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
+import { PropertyGridModule } from '~/ui/property-grid'
+import { ConsumableDetailModule } from '~/widgets/data/consumable-detail'
 
 @Component({
   standalone: true,
@@ -44,6 +46,7 @@ import { ItemTabsComponent } from './item-tabs.component'
     TooltipModule,
     GameEventDetailModule,
     ItemTabsComponent,
+    ConsumableDetailModule,
   ],
   providers: [],
   host: {
