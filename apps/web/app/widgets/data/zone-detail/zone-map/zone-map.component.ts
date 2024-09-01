@@ -61,6 +61,7 @@ export class ZoneDetailMapComponent {
   protected activeSegment = computed(() => this.segments().find((it) => it.id === this.segment()))
 
   public pinMenu = input(false)
+  public zoneId = input<string | number>()
 
   protected filterIcon = svgFilter
   protected labelsIcon = svgTags

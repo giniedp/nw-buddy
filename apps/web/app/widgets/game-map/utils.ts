@@ -136,12 +136,10 @@ export function attachLayerHover({
   map,
   sourceId,
   layerId,
-  //getId,
 }: {
   map: Map
   sourceId: string
   layerId: string
-  getId: (feature: MapGeoJSONFeature) => string | number
 }) {
   const hoverIds: Array<string | number> = []
   const toAdd: Array<string | number> = []

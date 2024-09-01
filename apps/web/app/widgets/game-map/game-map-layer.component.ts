@@ -177,7 +177,6 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         map: this.map,
         sourceId: sourceId,
         layerId: circleLayerId,
-        getId: (feature) => feature.id,
       })
     }
 

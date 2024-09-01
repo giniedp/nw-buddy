@@ -71,6 +71,7 @@
       <nwb-map
         class="ion-page"
         [mapId]="store.mapId()"
+        [zoneId]="zoneId()"
         [territories]="store.territories()"
         [areas]="store.areas()"
         [pois]="store.showPOI() ? store.pois() : null"
@@ -105,6 +106,11 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="bg-base-200 bg-opacity-80">
+      @if (!store.isLoaded()) {
+        <div class="flex items-center justify-center p-4">
+          <span class="loading loading-spinner loading-sm"></span>
+        </div>
+      }
       @if (activeSegment(); as segment) {
         @if (segment.source) {
           <nwb-map-filter-segment [source]="segment.source" />

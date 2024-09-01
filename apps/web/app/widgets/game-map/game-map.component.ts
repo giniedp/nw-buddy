@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, ElementRef, Injector, effect, inject, input, output, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { environment } from 'apps/web/environments'
-import { FeatureCollection } from 'geojson'
+import { Feature, FeatureCollection, Geometry } from 'geojson'
 import {
   AJAXError,
   FillLayerSpecification,
@@ -117,6 +117,7 @@ export class GameMapComponent {
   public territories = input<FeatureCollection>()
   public areas = input<FeatureCollection>()
   public pois = input<FeatureCollection>()
+  public zoneId = input<string | number>()
   public labels = input<boolean>(true)
   public zoneClick = output<string>()
 
@@ -178,6 +179,23 @@ export class GameMapComponent {
       const data = isOpenWorld ? this.pois() : null
       untracked(() => this.updatePois(data))
     })
+    this.effect(() => {
+      const zoneId = this.zoneId() ? Number(this.zoneId()) : null
+      const territory = this.territories()?.features?.find((it) => it.id === zoneId)
+      const area = this.areas()?.features?.find((it) => it.id === zoneId)
+      const poi = this.pois()?.features?.find((it) => it.id === zoneId)
+      untracked(() => {
+        this.updateZoneSelection(zoneId)
+
+        if (territory) {
+          this.moveToFeature(territory, 4.9)
+        } else if (area) {
+          this.moveToFeature(area, 5.9)
+        } else if (poi) {
+          this.moveToFeature(poi, 7)
+        }
+      })
+    })
   }
 
   private effect(fn: () => void) {
@@ -218,7 +236,6 @@ export class GameMapComponent {
         map: this.map,
         sourceId,
         layerId: layerFillId,
-        getId: (feature) => feature.id as string | number,
       })
       this.map.on('click', layerFillId, (e) => this.handleClick(e, 4.9))
     }
@@ -264,7 +281,6 @@ export class GameMapComponent {
         map: this.map,
         sourceId,
         layerId: layerFillId,
-        getId: (feature) => feature.id as string | number,
       })
       this.map.on('click', layerFillId, (e) => this.handleClick(e, 5.9))
     }
@@ -308,7 +324,6 @@ export class GameMapComponent {
         map: this.map,
         sourceId,
         layerId: layerFillId,
-        getId: (feature) => feature.id as string | number,
       })
       this.map.on('click', layerFillId, (e) => this.handleClick(e, 7))
     }
@@ -345,6 +360,20 @@ export class GameMapComponent {
     })
   }
 
+  private oldSelection: number
+  private updateZoneSelection(zoneId: string | number) {
+    const id = zoneId ? Number(zoneId) : null
+    for (const source of ['territories', 'areas', 'pois']) {
+      if (this.oldSelection) {
+        this.map.setFeatureState({ source, id: this.oldSelection }, { selected: false })
+      }
+      if (id) {
+        this.map.setFeatureState({ source, id }, { selected: true })
+      }
+    }
+    this.oldSelection = id
+  }
+
   private moveToBounds(bounds: [number, number, number, number]) {
     if (!bounds) {
       return
@@ -371,13 +400,20 @@ export class GameMapComponent {
         return
       }
       this.zoneClick.emit(String(feature.id))
-      const geometry = feature.geometry
-      const center = getGeometryCenter(geometry)
-      this.map.flyTo({
-        center: center,
-        zoom: zoom,
-        essential: true,
-      })
+      this.moveToFeature(feature, zoom)
+    })
+  }
+
+  private moveToFeature(feature: Feature<Geometry, unknown>, zoom: number) {
+    if (!feature) {
+      return
+    }
+    const geometry = feature.geometry
+    const center = getGeometryCenter(geometry)
+    this.map.flyTo({
+      center: center,
+      zoom: zoom,
+      essential: true,
     })
   }
 }
@@ -389,7 +425,14 @@ const territoryFillLayout: FillLayerSpecification = {
   layout: {},
   paint: {
     'fill-color': '#FFFFFF',
-    'fill-opacity': 0,
+    'fill-opacity': [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false],
+      0.2,
+      ['boolean', ['feature-state', 'hover'], false],
+      0.1,
+      0,
+    ],
   },
 }
 const territoryOutlineLayout: LineLayerSpecification = {
@@ -399,7 +442,14 @@ const territoryOutlineLayout: LineLayerSpecification = {
   layout: {},
   paint: {
     'line-color': '#FFFFFF',
-    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 8, 5],
+    'line-width': [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false],
+      8,
+      ['boolean', ['feature-state', 'hover'], false],
+      8,
+      5,
+    ],
   },
 }
 const territorySymbolLayout: SymbolLayerSpecification = {
@@ -425,7 +475,14 @@ const areaFillLayout: FillLayerSpecification = {
   layout: {},
   paint: {
     'fill-color': '#FFFFFF',
-    'fill-opacity': 0,
+    'fill-opacity': [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false],
+      0.2,
+      ['boolean', ['feature-state', 'hover'], false],
+      0.1,
+      0,
+    ],
   },
 }
 const areaOutlineLayout: LineLayerSpecification = {
@@ -437,7 +494,14 @@ const areaOutlineLayout: LineLayerSpecification = {
   },
   paint: {
     'line-color': '#FF0000',
-    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 4, 1],
+    'line-width': [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false],
+      4,
+      ['boolean', ['feature-state', 'hover'], false],
+      4,
+      1,
+    ],
   },
 }
 const areaSymbolLayout: SymbolLayerSpecification = {
@@ -447,7 +511,7 @@ const areaSymbolLayout: SymbolLayerSpecification = {
   layout: {
     'text-field': ['get', 'name'],
     'text-size': 20,
-    'text-overlap': 'always'
+    'text-overlap': 'always',
   },
   paint: {
     'text-color': '#FFFFFF',
@@ -462,7 +526,14 @@ const poisFillLayout: FillLayerSpecification = {
   type: 'fill',
   layout: {},
   paint: {
-    'fill-opacity': 0,
+    'fill-opacity': [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false],
+      0.2,
+      ['boolean', ['feature-state', 'hover'], false],
+      0.1,
+      0,
+    ],
   },
 }
 const poisOutlineLayout: LineLayerSpecification = {
@@ -474,7 +545,14 @@ const poisOutlineLayout: LineLayerSpecification = {
   },
   paint: {
     'line-color': '#ceba75',
-    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 4, 1],
+    'line-width': [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false],
+      4,
+      ['boolean', ['feature-state', 'hover'], false],
+      4,
+      1,
+    ],
     'line-dasharray': [4, 2],
   },
 }

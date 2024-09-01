@@ -63,9 +63,8 @@ export class ZonesPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'zone-table'
-  private urlParams$ = injectUrlParams('/zones/:category/:id/:vitalId')
+  private urlParams$ = injectUrlParams('/zones/:id')
   protected zoneIdParam = selectSignal(this.urlParams$, (it) => it?.['id'])
-  protected vitalIdParam = selectSignal(this.urlParams$, (it) => it?.['vitalId'])
   protected categoryParam = 'c'
   protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
