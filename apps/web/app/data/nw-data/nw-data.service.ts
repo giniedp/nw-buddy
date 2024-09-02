@@ -12,9 +12,10 @@ import {
   getQuestRequiredAchievmentIds,
   getSeasonPassDataId,
 } from '@nw-data/common'
-import { DATASHEETS, DataSheetUri, VariationDataGatherable, VitalsData } from '@nw-data/generated'
+import { DATASHEETS, DataSheetUri, HouseTypeData, VariationDataGatherable, VitalsData } from '@nw-data/generated'
 import {
   ScannedGatherable,
+  ScannedHouseType,
   ScannedLore,
   ScannedNpc,
   ScannedSpell,
@@ -94,6 +95,14 @@ export class NwDataService {
   public housingItem = tableLookup(() => this.housingItemsMap)
   public housingItemsByStatusEffectMap = tableGroupBy(() => this.housingItems, 'HousingStatusEffect')
   public housingItemsByStatusEffect = tableLookup(() => this.housingItemsByStatusEffectMap)
+
+  public houseTypes = table(() => this.loadEntries(DATASHEETS.HouseTypeData))
+  public houseTypesMap = tableIndexBy(() => this.houseTypes, 'HouseTypeID')
+  public houseType = tableLookup(() => this.houseTypesMap)
+
+  public houseTypesMeta = table(() => this.load<ScannedHouseType>({ uri: 'nw-data/generated/houses_metadata.json' }))
+  public houseTypesMetaMap = tableIndexBy(() => this.houseTypesMeta, 'houseTypeID')
+  public houseTypeMeta = tableLookup(() => this.houseTypesMetaMap)
 
   public itemOrHousingItem = (id: string | Observable<string> | Signal<string>) =>
     combineLatest({

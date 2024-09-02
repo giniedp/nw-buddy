@@ -100,7 +100,10 @@
         </ion-buttons>
         <ion-segment>
           @for (segment of segments(); track $index) {
-            <ion-segment-button (click)="selectSegment(segment.id)">{{ segment.label }}</ion-segment-button>
+            <ion-segment-button (click)="selectSegment(segment.id)" [tooltip]="segment.label">
+
+              <nwb-icon [icon]="segment.icon" class="w-5 h-5" />
+            </ion-segment-button>
           }
         </ion-segment>
       </ion-toolbar>
@@ -117,6 +120,9 @@
         }
         @if (segment.vitals) {
           <nwb-map-filter-vitals [data]="segment.vitals" />
+        }
+        @if (segment.houses) {
+          <ng-container [nwbMapLayer]="'houses'" [data]="segment.houses" [labels]="true" [polygons]="false" [heatmap]="true"/>
         }
       }
     </ion-content>

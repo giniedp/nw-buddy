@@ -21,6 +21,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public disabled = model(false)
   public data = model<FeatureCollection<G, P>>()
   public icons = input<boolean>()
+  public polygons = input<boolean>()
   public color = input<string>()
   public heatmap = input<boolean>()
   public labels = input<boolean>()
@@ -32,6 +33,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   private circleLayerId = computed(() => `circle-${this.layerId()}`)
   private heatmapLayerId = computed(() => `heatmap-${this.layerId()}`)
   private labelLayerId = computed(() => `label-${this.layerId()}`)
+  private polyLayerId = computed(() => `poly-${this.layerId()}`)
   public variants = signal<string[]>(null)
   public featuresBelowCursor = signal<Array<Feature<G, P>>>(null)
   public featureClick = output<Array<Feature<G, P>>>()
@@ -90,6 +92,12 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     const iconLayerId = this.iconLayerId()
     const circleLayerId = this.circleLayerId()
     const labelLayerId = this.labelLayerId()
+    const polyLayerId = this.polyLayerId()
+    const useIcons = this.icons()
+    const usePlolygons = this.polygons()
+    const useCircles = !useIcons && !usePlolygons
+    const useHeatmap = this.heatmap()
+    const useLabels = this.labels()
 
     if (!this.map.getSource(sourceId)) {
       this.map.addSource(sourceId, {
@@ -101,13 +109,16 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       })
     }
 
-    if (!this.heatmap() && this.map.getLayer(this.heatmapLayerId())) {
+    if (!useHeatmap && this.map.getLayer(this.heatmapLayerId())) {
       this.removeLayer(labelLayerId)
       this.removeLayer(circleLayerId)
       this.removeLayer(iconLayerId)
+      this.removeLayer(polyLayerId)
     }
 
-    if (this.icons() && !this.map.getLayer(iconLayerId)) {
+    if (!useIcons) {
+      this.removeLayer(iconLayerId)
+    } else if (!this.map.getLayer(iconLayerId)) {
       this.removeLayer(circleLayerId)
       this.map.addLayer({
         id: iconLayerId,
@@ -137,8 +148,24 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       this.map.on('mousemove', circleLayerId, this.handleMouseMove)
     }
 
-    if (!this.icons() && !this.map.getLayer(circleLayerId)) {
-      this.removeLayer(iconLayerId)
+    if (!usePlolygons) {
+      this.removeLayer(polyLayerId)
+    } else if (!this.map.getLayer(polyLayerId)) {
+      this.map.addLayer({
+        id: polyLayerId,
+        source: sourceId,
+        type: 'fill',
+        layout: {},
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.5,
+        },
+      })
+    }
+
+    if (!useCircles) {
+      this.removeLayer(circleLayerId)
+    } else if (!this.map.getLayer(circleLayerId)) {
       this.map.addLayer({
         id: circleLayerId,
         source: sourceId,
@@ -180,7 +207,9 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       })
     }
 
-    if (this.labels() && !this.map.getLayer(labelLayerId)) {
+    if (!useLabels) {
+      this.removeLayer(labelLayerId)
+    } else if (!this.map.getLayer(labelLayerId)) {
       this.map.addLayer({
         id: labelLayerId,
         source: sourceId,
@@ -200,11 +229,9 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       })
     }
 
-    if (!this.labels() && this.map.getLayer(labelLayerId)) {
-      this.removeLayer(labelLayerId)
-    }
-
-    if (this.heatmap() && !this.map.getLayer(this.heatmapLayerId())) {
+    if (!useHeatmap) {
+      this.removeLayer(this.heatmapLayerId())
+    } else if (!this.map.getLayer(this.heatmapLayerId())) {
       this.map.addLayer({
         id: this.heatmapLayerId(),
         source: sourceId,
@@ -249,11 +276,8 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         },
       })
     }
-    if (!this.heatmap()) {
-      this.removeLayer(this.heatmapLayerId())
-    }
 
-    if (this.heatmap()) {
+    if (useHeatmap) {
       this.withLayer(iconLayerId, (layer) => {
         layer.minzoom = 5
         layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
@@ -336,6 +360,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     this.removeLayer(this.iconLayerId())
     this.removeLayer(this.circleLayerId())
     this.removeLayer(this.heatmapLayerId())
+    this.removeLayer(this.polyLayerId())
     this.removeSource(this.sourceId())
   }
 

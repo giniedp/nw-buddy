@@ -50,8 +50,8 @@ export interface ScannedHouseType {
 }
 export interface ScannedHouse {
   mapID: string
-  territories: number[]
-  geometry: Polygon[]
+  houseTypeID: string
+  position: number[]
 }
 
 export type ScannedVariationData = ScannedVariation[]

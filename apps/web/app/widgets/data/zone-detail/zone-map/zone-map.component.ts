@@ -5,7 +5,7 @@ import { IonButton, IonButtons, IonMenuButton, IonSegment, IonSegmentButton } fr
 import { sortBy } from 'lodash'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgDice, svgFilter, svgFire, svgFont, svgTags } from '~/ui/icons/svg'
+import { svgDice, svgFilter, svgFire, svgFont, svgHouse, svgSkull, svgTags, svgWheat } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
@@ -54,8 +54,9 @@ export class ZoneDetailMapComponent {
   protected segment = signal('gathering')
   protected segments = computed(() => {
     return [
-      { id: 'gathering', label: 'Gathering', source: this.store.gatherables() },
-      { id: 'vitals', label: 'Vitals', vitals: this.store.vitals() },
+      { id: 'gathering', label: 'Gathering', source: this.store.gatherables(), icon: svgWheat },
+      { id: 'vitals', label: 'Vitals', vitals: this.store.vitals(), icon: svgSkull },
+      { id: 'houses', label: 'Houses', houses: this.store.houses(), icon: svgHouse },
     ]
   })
   protected activeSegment = computed(() => this.segments().find((it) => it.id === this.segment()))

@@ -6,7 +6,7 @@ import {
   scanForEncounterSpawner,
   scanForEncounterType,
   scanForPointSpawners,
-  scanForPrefabSpawner
+  scanForPrefabSpawner,
 } from './scan-for-spawners-utils'
 import { AZ__Entity } from './types/dynamicslice'
 import { resolveDynamicSliceFiles, rotatePoints, translatePoints } from './utils'
@@ -27,6 +27,7 @@ export type SpawnerScanResult = {
   mtlFile?: string
   adbFile?: string
   positions: Array<number[]>
+  houseTypes: string[]
 }
 
 export async function scanForSpawners(rootDir: string, file: string, assetId: string): Promise<SpawnerScanResult[]> {
@@ -131,7 +132,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         {
           ...item,
           encounter: encounterType || item.encounter,
-          variantID: spawn.variantID || item.variantID ,
+          variantID: spawn.variantID || item.variantID,
           positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
         },
         consume(spawn.entity),
@@ -182,6 +183,19 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
   }
 
   for (const item of unconsumed) {
+    if (item.houseTypes?.length) {
+      yield {
+        encounter: null,
+        gatherableID: null,
+        variantID: null,
+        positions: [[0, 0, 0]],
+        damageTable: null,
+        modelFile: null,
+        mtlFile: null,
+        adbFile: null,
+        houseTypes: item.houseTypes,
+      }
+    }
     if (item.vitalsID) {
       const result: SpawnerScanResult = {
         encounter: encounterType,
@@ -194,6 +208,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         positions: [[0, 0, 0]],
         mtlFile: item.mtlFile,
         adbFile: item.adbFile,
+        houseTypes: item.houseTypes,
       }
       debugVital(result, file)
       yield result
@@ -208,6 +223,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         modelFile: null,
         mtlFile: null,
         adbFile: null,
+        houseTypes: null,
       }
     }
     if (item.loreIDs?.length) {
@@ -219,6 +235,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         modelFile: null,
         mtlFile: null,
         adbFile: null,
+        houseTypes: null,
       }
     }
     if (item.npcID?.length) {
@@ -230,7 +247,10 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         modelFile: null,
         mtlFile: null,
         adbFile: null,
+        houseTypes: null,
       }
     }
   }
 }
+
+function moveHouseShape(spaw: SpawnerScanResult, houses) {}

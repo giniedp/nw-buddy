@@ -13,6 +13,7 @@ import {
   isSliceComponent,
   isTransformComponent,
 } from './types/dynamicslice'
+import { z } from 'zod'
 
 const cache: Record<string, Promise<any>> = {}
 export async function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
@@ -183,16 +184,20 @@ export function getEntityById(slice: SliceComponent, id: number) {
   return null
 }
 
-export function getChildren(parentId: number, slice: SliceComponent) {
+export function getComponentChildren(slice: SliceComponent, componentID: number) {
   const result: AZ__Entity[] = []
   for (const entity of slice.entities || []) {
     for (const component of entity.components) {
-      if (isTransformComponent(component) && component.parent === parentId) {
-        result.push(entity)
+      if (isTransformComponent(component)) {
+        if (component.parent === componentID) {
+          result.push(entity)
+        }
         break
       }
-      if (isGameTransformComponent(component) && component.m_parentid === parentId) {
-        result.push(entity)
+      if (isGameTransformComponent(component)) {
+        if (component.m_parentid === componentID) {
+          result.push(entity)
+        }
         break
       }
     }
@@ -200,22 +205,46 @@ export function getChildren(parentId: number, slice: SliceComponent) {
   return result
 }
 
+const boundarySchema = z.object({
+  vertices: z.array(z.array(z.number())),
+})
+
+export async function resolveBoundaryShape(rootDir: string, asset: Asset | AssetId) {
+  const assetFiles = await resolveAssetFile(rootDir, asset)
+  let file: string = null
+  if (typeof assetFiles === 'string') {
+    file = assetFiles
+  } else if (Array.isArray(assetFiles)) {
+    file = assetFiles[0]
+  }
+  if (!file) {
+    return null
+  }
+  const data = await readJSONFile(file, boundarySchema)
+  return data?.vertices
+}
+
 export function translatePoints(points: Array<number[]>, translation?: number[]) {
   if (!translation) {
     return points
   }
-  return points.map(([x, y, z]) => [x + translation[0], y + translation[1], z + translation[2]])
+  return points.map(([x, y, z]) => {
+    return [x + translation[0], y + translation[1], (z ?? 0) + (translation[2] ?? 0)]
+  })
 }
 
 export function rotatePoints(points: Array<number[]>, mRot3x3?: number[][]) {
   if (!points?.length || !mRot3x3?.length) {
     return points
   }
-  return points.map(([x, y, z]) => [
-    x * mRot3x3[0][0] + y * mRot3x3[1][0] + z * mRot3x3[2][0],
-    x * mRot3x3[0][1] + y * mRot3x3[1][1] + z * mRot3x3[2][1],
-    x * mRot3x3[0][2] + y * mRot3x3[1][2] + z * mRot3x3[2][2],
-  ])
+  return points.map(([x, y, z]) => {
+    z ??= 0
+    return [
+      x * mRot3x3[0][0] + y * mRot3x3[1][0] + z * mRot3x3[2][0],
+      x * mRot3x3[0][1] + y * mRot3x3[1][1] + z * mRot3x3[2][1],
+      x * mRot3x3[0][2] + y * mRot3x3[1][2] + z * mRot3x3[2][2],
+    ]
+  })
 }
 
 export function isPointInAABB(point: number[], min: number[], max: number[]) {

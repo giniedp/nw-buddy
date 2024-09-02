@@ -1,4 +1,4 @@
-import { Feature, FeatureCollection, MultiPoint } from 'geojson'
+import { Feature, FeatureCollection, MultiPoint, MultiPolygon, Polygon } from 'geojson'
 
 export interface FilterDataSet extends FilterGroup {
   id: string
@@ -88,4 +88,14 @@ export interface VitalsFeatureProperties {
   lootTags: string[]
   poiTags: string[]
   color: string
+}
+
+
+export type HouseFeatureCollection = FeatureCollection<MultiPoint, HouseFeatureProperties>
+export type HouseFeature = Feature<MultiPoint, HouseFeatureProperties>
+export interface HouseFeatureProperties {
+  id: string
+  color: string
+  label: string
+  size: number
 }

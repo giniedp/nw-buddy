@@ -14,6 +14,7 @@ export interface ScanResult {
   variations?: VariationScanRow[]
   territories?: TerritoryScanRow[]
   loreItems?: LoreScanRow[]
+  houseItems?: HouseScanRow[]
 }
 export interface NpcScanRow {
   npcID: string
@@ -28,6 +29,11 @@ export interface GatherableScanRow {
 }
 export interface LoreScanRow {
   loreID: string
+  position: [number, number, number]
+  mapID: string
+}
+export interface HouseScanRow {
+  houseTypeID: string
   position: [number, number, number]
   mapID: string
 }
@@ -62,6 +68,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
   const npcRows: NpcScanRow[] = []
   const variationsRows: VariationScanRow[] = []
   const loreRows: LoreScanRow[] = []
+  const houseRows: HouseScanRow[] = []
   const gatherableRows: GatherableScanRow[] = []
   function pushEntry({
     entry,
@@ -119,6 +126,15 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
           loreRows.push({
             mapID: mapId,
             loreID: loreId,
+            position: [position[0], position[1], position[2]],
+          })
+        }
+      }
+      if (entry.houseTypes?.length) {
+        for (const item of entry.houseTypes) {
+          houseRows.push({
+            mapID: mapId,
+            houseTypeID: item,
             position: [position[0], position[1], position[2]],
           })
         }
@@ -182,6 +198,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       variations: variationsRows,
       loreItems: loreRows,
       gatherables: gatherableRows,
+      houseItems: houseRows,
     }
   }
 

@@ -146,6 +146,7 @@ async function importSlices({
     )
     console.log('  ', data.territories.length, 'territories')
     console.log('  ', data.loreItems.length, 'lore items')
+    console.log('  ', data.houses.length, 'house items')
 
     return Promise.all([
       // write it into input directory, so table loader will pick it up
@@ -176,6 +177,11 @@ async function importSlices({
       }),
       writeJSONFile(data.loreItems, {
         target: path.join(jsonOutDir, 'lore_metadata.json'),
+        createDir: true,
+        serialize: jsonStringifyFormatted,
+      }),
+      writeJSONFile(data.houses, {
+        target: path.join(jsonOutDir, 'houses_metadata.json'),
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),

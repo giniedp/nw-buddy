@@ -2,6 +2,7 @@ import * as path from 'path'
 import {
   AZ__Entity,
   Asset,
+  AssetId,
   GameTransformComponent,
   SliceComponent,
   isAIVariantProviderComponent,
@@ -12,9 +13,12 @@ import {
   isEncounterComponent,
   isGameTransformComponent,
   isGatherableControllerComponent,
+  isHousingPlotComponent,
   isMeshComponent,
   isNpcComponent,
   isPointSpawnerComponent,
+  isPolygonPrismCommon,
+  isPolygonPrismShapeComponent,
   isPrefabSpawnerComponent,
   isProjectileSpawnerComponent,
   isReadingInteractionComponent,
@@ -30,6 +34,8 @@ import {
   getEntityById,
   lookupAssetPath,
   readDynamicSliceFile,
+  resolveAssetFile,
+  resolveBoundaryShape,
   resolveDynamicSliceFiles,
 } from './utils'
 
@@ -241,6 +247,7 @@ export interface ScannedData {
   gatherableID?: string
 
   loreIDs?: string[]
+  houseTypes?: string[]
 }
 
 export async function scanForData(sliceComponent: SliceComponent, rootDir: string, file: string) {
@@ -295,6 +302,10 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
         const materialAsset = component['static mesh render node']['material override asset']
         node.modelFile = await lookupAssetPath(rootDir, modelAsset)
         node.mtlFile = await lookupAssetPath(rootDir, materialAsset)
+      }
+      if (isHousingPlotComponent(component) && component.m_housetypestring) {
+        node.houseTypes = node.houseTypes || []
+        node.houseTypes.push(component.m_housetypestring)
       }
     }
     if (Object.keys(node).length) {

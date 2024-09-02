@@ -11,7 +11,7 @@ import {
   isTransform,
   isTransformComponent,
 } from './types/dynamicslice'
-import { resolveAssetFile } from './utils'
+import { resolveAssetFile, resolveBoundaryShape } from './utils'
 
 export interface TerritoryScanRow {
   territoryID: string
@@ -65,23 +65,4 @@ export async function scanForZones({ rootDir, file }: { rootDir: string; file: s
     }
   }
   return result
-}
-
-const boundarySchema = z.object({
-  vertices: z.array(z.array(z.number())),
-})
-
-async function resolveBoundaryShape(rootDir: string, asset: Asset | AssetId) {
-  const assetFiles = await resolveAssetFile(rootDir, asset)
-  let file: string = null
-  if (typeof assetFiles === 'string') {
-    file = assetFiles
-  } else if (Array.isArray(assetFiles)) {
-    file = assetFiles[0]
-  }
-  if (!file) {
-    return null
-  }
-  const data = await readJSONFile(file, boundarySchema)
-  return data?.vertices
 }
