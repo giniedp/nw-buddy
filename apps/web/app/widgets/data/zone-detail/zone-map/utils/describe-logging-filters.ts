@@ -6,6 +6,7 @@ import { getGatherableIcon, getTradeskillIcon } from "~/widgets/data/gatherable-
 import { eqCaseInsensitive, humanize } from "~/utils"
 import { parseSizeVariant } from "./parse-size-variant"
 import { CREATURES } from "./creatures"
+import { svgAxe } from "~/ui/icons/svg"
 
 export function describeLoggingFilters(
   lootTable: ParsedLootTable,
@@ -26,7 +27,7 @@ export function describeLoggingFilters(
 
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
-    sectionIcon: getTradeskillIcon(gatherable.Tradeskill),
+    sectionIcon: svgAxe,
 
     category: lootTable.original,
     categoryLabel: humanize(lootTable.original),

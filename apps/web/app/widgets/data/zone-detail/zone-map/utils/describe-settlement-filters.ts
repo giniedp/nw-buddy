@@ -4,6 +4,7 @@ import { humanize } from '~/utils'
 import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
+import { svgBoxesStacked } from '~/ui/icons/svg'
 
 export function describeSettlementFilters(
   lootTable: ParsedLootTable,
@@ -24,7 +25,7 @@ export function describeSettlementFilters(
 
     section: 'Settlement',
     sectionLabel: 'Settlement goods',
-    sectionIcon: NW_FALLBACK_ICON,
+    sectionIcon: svgBoxesStacked,
 
     category: lootTable.original,
     categoryLabel: variant?.Name || gatherable.DisplayName || lootTable.tokenized.join(' '),

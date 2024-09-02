@@ -1,0 +1,1 @@
+export const svgScalpel = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"> <path fill=\"currentColor\" d=\"M352 288L495.7 115.6C506.2 102.9 512 87 512 70.5l0-4.2C512 29.7 482.3 0 445.8 0c-18.9 0-36.9 8.1-49.5 22.2L160 288l192 0zM176 320L0 512s288-16 288-192l-112 0z\" /> </svg> "

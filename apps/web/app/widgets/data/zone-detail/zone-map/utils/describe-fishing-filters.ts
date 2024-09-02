@@ -4,6 +4,7 @@ import { humanize } from '~/utils'
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
 import { getTradeskillIcon } from '~/widgets/data/gatherable-detail/utils'
+import { svgFishingRod } from '~/ui/icons/svg'
 
 export function describeFishingFilters(
   lootTable: ParsedLootTable,
@@ -24,7 +25,7 @@ export function describeFishingFilters(
 
     section: 'Fishing',
     sectionLabel: 'Fishing',
-    sectionIcon: getTradeskillIcon(gatherable.Tradeskill),
+    sectionIcon: svgFishingRod,
 
     category: gatherable.GatherableID,
     categoryLabel: gatherable.DisplayName || gatherable.GameEventID,

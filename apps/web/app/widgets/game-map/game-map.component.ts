@@ -294,6 +294,7 @@ export class GameMapComponent {
     const layerFillId = 'poisFill'
     const layerOutlineId = 'poisOutline'
     const layerIconsId = 'poisIcons'
+    const layerCompassIconsId = 'poisCompassIcons'
     if (!this.map.getSource('pois')) {
       this.map.addSource(sourceId, {
         type: 'geojson',
@@ -320,12 +321,20 @@ export class GameMapComponent {
         source: sourceId,
         minzoom: 6,
       })
+      this.map.addLayer({
+        ...poisCompassIconLayout,
+        id: layerCompassIconsId,
+        source: sourceId,
+        maxzoom: 6,
+      })
       attachLayerHover({
         map: this.map,
         sourceId,
         layerId: layerFillId,
       })
       this.map.on('click', layerFillId, (e) => this.handleClick(e, 7))
+      this.map.on('click', layerIconsId, (e) => this.handleClick(e, 7))
+      this.map.on('click', layerCompassIconsId, (e) => this.handleClick(e, 7))
     }
     const source = this.map.getSource(sourceId) as GeoJSONSource
     source.setData(features || { type: 'FeatureCollection', features: [] })
@@ -568,6 +577,18 @@ const poisIconLayout: SymbolLayerSpecification = {
     'icon-image': ['get', 'icon'],
     'icon-size': 1,
     'icon-allow-overlap': true,
+  },
+}
+
+const poisCompassIconLayout: SymbolLayerSpecification = {
+  id: null,
+  source: null,
+  type: 'symbol',
+  layout: {
+    'icon-image': ['get', 'compassIcon'],
+    'icon-size': 1,
+    'icon-allow-overlap': true,
+    'icon-overlap': 'always',
   },
 }
 

@@ -3,6 +3,7 @@ import { GatherableData } from '@nw-data/generated'
 import { humanize } from '~/utils'
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
+import { svgTreasureChest } from '~/ui/icons/svg'
 
 const CHESTS = ['Chest', 'Chests', 'Sarcophagi', 'Loot', 'Container']
 export function describeChestsFilters(
@@ -25,7 +26,7 @@ export function describeChestsFilters(
 
     section: 'Chests',
     sectionLabel: 'Chests',
-    sectionIcon: NW_FALLBACK_ICON,
+    sectionIcon: svgTreasureChest,
 
     category: lootTable.original,
     categoryLabel: humanize(lootTable.original),

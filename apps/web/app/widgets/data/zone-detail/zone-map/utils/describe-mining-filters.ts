@@ -6,6 +6,7 @@ import { FilterDataPropertiesWithVariant } from '../data/types'
 import { CREATURES } from './creatures'
 import { ParsedLootTable } from './parse-loottable'
 import { parseSizeVariant } from './parse-size-variant'
+import { svgPickaxe } from '~/ui/icons/svg'
 
 export function describeMiningFilters(
   lootTable: ParsedLootTable,
@@ -26,7 +27,7 @@ export function describeMiningFilters(
 
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
-    sectionIcon: getTradeskillIcon(gatherable.Tradeskill),
+    sectionIcon: svgPickaxe,
 
     category: lootTable.original,
     categoryLabel: humanize(lootTable.original),

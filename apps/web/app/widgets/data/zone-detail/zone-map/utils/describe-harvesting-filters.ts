@@ -6,6 +6,7 @@ import { getGatherableIcon, getTradeskillIcon } from '~/widgets/data/gatherable-
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
 import { parseSizeVariant } from './parse-size-variant'
+import { svgSickle } from '~/ui/icons/svg'
 
 export function describeHarvestingFilters(
   lootTable: ParsedLootTable,
@@ -26,7 +27,7 @@ export function describeHarvestingFilters(
 
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
-    sectionIcon: getTradeskillIcon(gatherable.Tradeskill),
+    sectionIcon: svgSickle,
 
     category: lootTable.original,
     categoryLabel: gatherable.DisplayName || humanize(lootTable.original),

@@ -3,6 +3,7 @@ import { GatherableData } from '@nw-data/generated'
 import { humanize } from '~/utils'
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
+import { svgDungeon } from '~/ui/icons/svg'
 
 export function describeDungeonFilters(
   lootTable: ParsedLootTable,
@@ -29,7 +30,7 @@ export function describeDungeonFilters(
 
     section: lootTable.tokenized[0],
     sectionLabel: lootTable.tokenized[0],
-    sectionIcon: NW_FALLBACK_ICON,
+    sectionIcon: svgDungeon,
 
     category: match[2],
     categoryLabel: humanize(match[2]),

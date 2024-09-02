@@ -78,7 +78,8 @@ function territoryToFeature(
     properties: {
       id: territory.TerritoryID,
       type: getZoneType(territory),
-      icon: getZoneIcon(territory, null),
+      icon: territory.CompassIcon || getZoneIcon(territory, null),
+      compassIcon: territory.UnchartedIcon ? territory.CompassIcon : null,
       name: mapName(territory),
     },
     geometry: {

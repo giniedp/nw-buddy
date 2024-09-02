@@ -6,7 +6,8 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input } fr
   template: '',
   styles: [
     `
-      ::ng-deep svg {
+      ::ng-deep svg,
+      ::ng-deep img {
         max-height: 100%;
         max-width: 100%;
         width: inherit;
@@ -21,7 +22,13 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input } fr
 export class SvgIconComponent {
   @Input()
   public set icon(value: string) {
-    this.elRef.nativeElement.innerHTML = value
+    if (!value) {
+      this.elRef.nativeElement.innerHTML = ''
+    } else if (isSvg(value)) {
+      this.elRef.nativeElement.innerHTML = value
+    } else {
+      this.elRef.nativeElement.innerHTML = `<img src="${value}"/>`
+    }
   }
 
   @HostBinding('style.width.px')
@@ -33,4 +40,8 @@ export class SvgIconComponent {
   public constructor(private elRef: ElementRef<HTMLElement>) {
     //
   }
+}
+
+function isSvg(value: string): boolean {
+  return value?.includes('<svg')
 }

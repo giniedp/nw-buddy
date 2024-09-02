@@ -6,6 +6,7 @@ import { getGatherableIcon, getTradeskillIcon } from '~/widgets/data/gatherable-
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from '../utils/parse-loottable'
 import { CREATURES } from './creatures'
+import { svgScalpel } from '~/ui/icons/svg'
 
 export function describeSkinningFilters(
   lootTable: ParsedLootTable,
@@ -28,7 +29,7 @@ export function describeSkinningFilters(
 
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
-    sectionIcon: getTradeskillIcon(gatherable.Tradeskill),
+    sectionIcon: svgScalpel,
 
     category: lootTable.original,
     categoryLabel: lootTable.tokenized.filter((it) => it !== 'Skinning' && it !== 'Farm').join(' '),

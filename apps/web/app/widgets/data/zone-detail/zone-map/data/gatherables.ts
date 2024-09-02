@@ -17,6 +17,7 @@ import { describeSkinningFilters } from '../utils/describe-skinning-filters'
 import { parseLootTableID } from '../utils/parse-loottable'
 import { getSizeColor, parseSizeVariant } from '../utils/parse-size-variant'
 import { FilterDataSet, FilterGroup, FilterDataPropertiesWithVariant, FilterVariant } from './types'
+import { svgLocationQuestion } from '~/ui/icons/svg'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 export function loadGatherables(db: NwDataService, mapCoord: MapCoord) {
@@ -195,7 +196,7 @@ function describeGatherable(
     loreID: null,
 
     section: gatherable.Tradeskill,
-    sectionIcon: getTradeskillIcon(gatherable.Tradeskill) || NW_FALLBACK_ICON,
+    sectionIcon: svgLocationQuestion,
     category: lootTableId,
     categoryIcon: icon,
     subcategory: '',

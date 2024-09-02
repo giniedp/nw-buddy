@@ -3,6 +3,7 @@ import { GatherableData } from '@nw-data/generated'
 import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
 import { FilterDataPropertiesWithVariant } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
+import { svgFlaskRoundPotion } from '~/ui/icons/svg'
 
 export function describeAlchemyFilters(
   lootTable: ParsedLootTable,
@@ -15,7 +16,7 @@ export function describeAlchemyFilters(
     color: null,
     section: 'Alchemy',
     sectionLabel: 'campalchemy_groupname',
-    sectionIcon: NW_FALLBACK_ICON,
+    sectionIcon: svgFlaskRoundPotion,
     lootTable: lootTable.original,
     loreID: null,
   }

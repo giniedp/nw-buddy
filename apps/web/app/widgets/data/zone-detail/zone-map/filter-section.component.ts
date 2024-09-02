@@ -4,6 +4,7 @@ import { NwModule } from '~/nw'
 import { humanize } from '~/utils'
 import { FilterFeatureProperties, FilterDataSet } from './data/types'
 import { MapFilterCategoryComponent } from './filter-category.component'
+import { IconsModule } from '~/ui/icons'
 
 @Component({
   standalone: true,
@@ -13,7 +14,8 @@ import { MapFilterCategoryComponent } from './filter-category.component'
       <summary class="btn btn-block btn-ghost rounded-none flex flex-row justify-between items-center">
         <span class="flex flex-row items-center gap-2" [class.text-primary]="isActive()">
           @if (icon()) {
-            <img [nwImage]="icon()" class="w-6" />
+            <nwb-icon [icon]="icon()" class="w-4" />
+            <!-- <img [nwImage]="icon()" class="w-6" /> -->
           }
           {{ label() | nwText }}
         </span>
@@ -25,7 +27,7 @@ import { MapFilterCategoryComponent } from './filter-category.component'
       </div>
     </details>
   `,
-  imports: [NwModule, MapFilterCategoryComponent],
+  imports: [NwModule, MapFilterCategoryComponent, IconsModule],
   host: {
     class: 'block',
   },
