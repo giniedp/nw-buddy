@@ -72,12 +72,13 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Status Effects', path: '/status-effects', svgIcon: svgSparkles },
       { label: 'Damage Rows', path: '/damage', svgIcon: svgBurst },
 
-      { label: 'Gatherables', path: '/gatherables', svgIcon: svgWheat, divider: true },
+      { label: 'Map', path: '/map', svgIcon: svgMap, divider: true },
+      { label: 'Gatherables', path: '/gatherables', svgIcon: svgWheat },
       { label: 'Lore', path: '/lore', svgIcon: svgBooks },
       { label: 'NPCs', path: '/npcs', svgIcon: svgHeadSide },
       { label: 'Quests', path: '/quests', svgIcon: svgLocationQuestion },
       { label: 'Vitals', path: '/vitals', svgIcon: svgSkull },
-      { label: 'Zones', path: '/zones', svgIcon: svgMap },
+
 
       { label: 'Loot Limits', path: '/loot-limits', svgIcon: svgTime, divider: true },
       { label: 'Loot Tables', path: '/loot-tables', svgIcon: svgSack },

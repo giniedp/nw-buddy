@@ -21,12 +21,13 @@ const PAGE_ROUTES: Routes = [
   { path: 'status-effects', loadChildren: () => import('./pages/database/status-effects').then((m) => m.ROUTES) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.ROUTES) },
 
+  { path: 'zones', redirectTo: 'map' }, // deprecated
+  { path: 'map', loadChildren: () => import('./pages/database/zones').then((m) => m.ROUTES) },
   { path: 'gatherables', loadChildren: () => import('./pages/database/gatherables').then((m) => m.ROUTES) },
   { path: 'lore', loadChildren: () => import('./pages/database/lore').then((m) => m.ROUTES) },
   { path: 'npcs', loadChildren: () => import('./pages/database/npcs').then((m) => m.ROUTES) },
   { path: 'quests', loadChildren: () => import('./pages/database/quests').then((m) => m.ROUTES) },
   { path: 'vitals', loadChildren: () => import('./pages/database/vitals').then((m) => m.ROUTES) },
-  { path: 'zones', loadChildren: () => import('./pages/database/zones').then((m) => m.ROUTES) },
 
   { path: 'loot-limits', loadChildren: () => import('./pages/database/loot-limits').then((m) => m.ROUTES) },
   { path: 'loot', redirectTo: 'loot' }, // deprecated

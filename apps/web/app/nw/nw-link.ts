@@ -43,7 +43,7 @@ const BUDDY_TYPE_MAP: Record<NwLinkResource, string> = {
   mount: 'mounts',
   npc: 'npcs',
   perk: 'perks',
-  poi: 'zones',
+  poi: 'map',
   quest: 'quests',
   recipe: 'crafting',
   transmog: 'transmog',
