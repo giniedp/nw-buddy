@@ -307,7 +307,6 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     } else {
       filter = customFilter || variantFilter
     }
-    console.log('filter', filter)
     if (this.map.getLayer(this.iconLayerId())) {
       this.map.setFilter(this.iconLayerId(), filter)
     }
