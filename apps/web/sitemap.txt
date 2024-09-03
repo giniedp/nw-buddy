@@ -11,9 +11,9 @@ https://www.nw-buddy.de/lore
 https://www.nw-buddy.de/npcs
 https://www.nw-buddy.de/quests
 https://www.nw-buddy.de/vitals
-https://www.nw-buddy.de/zones
+https://www.nw-buddy.de/map
 https://www.nw-buddy.de/loot-limits
-https://www.nw-buddy.de/loot
+https://www.nw-buddy.de/loot-tables
 https://www.nw-buddy.de/loot-buckets
 https://www.nw-buddy.de/pvp-buckets
 https://www.nw-buddy.de/game-events
