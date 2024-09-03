@@ -300,13 +300,14 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     let filter: FilterSpecification = customFilter
     let variantFilter: FilterSpecification
     if (variants) {
-      variantFilter = ['in', 'variant', ...variants]
+      variantFilter = ['in', ['get', 'variant'], ['literal', variants]]
     }
     if (customFilter && variants) {
       filter = ['all', customFilter, variantFilter] as any
     } else {
       filter = customFilter || variantFilter
     }
+    console.log('filter', filter)
     if (this.map.getLayer(this.iconLayerId())) {
       this.map.setFilter(this.iconLayerId(), filter)
     }
