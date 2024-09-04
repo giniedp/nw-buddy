@@ -21,7 +21,14 @@ const PAGE_ROUTES: Routes = [
   { path: 'status-effects', loadChildren: () => import('./pages/database/status-effects').then((m) => m.ROUTES) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.ROUTES) },
 
-  { path: 'zones', redirectTo: 'map' }, // deprecated
+  {
+    path: 'zones',
+    redirectTo: (it) => {
+      const path = it.url.map((it) => it.path)
+      path[0] = 'map'
+      return `/${path.join('/')}`
+    },
+  }, // deprecated
   { path: 'map', loadChildren: () => import('./pages/database/zones').then((m) => m.ROUTES) },
   { path: 'gatherables', loadChildren: () => import('./pages/database/gatherables').then((m) => m.ROUTES) },
   { path: 'lore', loadChildren: () => import('./pages/database/lore').then((m) => m.ROUTES) },
@@ -30,15 +37,39 @@ const PAGE_ROUTES: Routes = [
   { path: 'vitals', loadChildren: () => import('./pages/database/vitals').then((m) => m.ROUTES) },
 
   { path: 'loot-limits', loadChildren: () => import('./pages/database/loot-limits').then((m) => m.ROUTES) },
-  { path: 'loot', redirectTo: 'loot' }, // deprecated
+  {
+    path: 'loot',
+    redirectTo: (it) => {
+      const path = it.url.map((it) => it.path)
+      path[0] = 'loot-tables'
+      if (path[1] === 'table') {
+        path.splice(1, 1)
+      }
+      return `/${path.join('/')}`
+    },
+  }, // deprecated
   { path: 'loot-tables', loadChildren: () => import('./pages/database/loot').then((m) => m.ROUTES) },
   { path: 'loot-buckets', loadChildren: () => import('./pages/database/loot-buckets').then((m) => m.ROUTES) },
   { path: 'pvp-buckets', loadChildren: () => import('./pages/database/pvp-buckets').then((m) => m.ROUTES) },
   { path: 'game-events', loadChildren: () => import('./pages/database/game-events').then((m) => m.ROUTES) },
 
-  { path: 'dungeons', redirectTo: 'game-modes' }, // deprecated
+  {
+    path: 'dungeons',
+    redirectTo: (it) => {
+      const path = it.url.map((it) => it.path)
+      path[0] = 'game-modes'
+      return `/${path.join('/')}`
+    },
+  }, // deprecated
   { path: 'game-modes', loadChildren: () => import('./pages/tools/game-modes').then((m) => m.ROUTES) },
-  { path: 'armorsets', redirectTo: 'armor-sets' }, // deprecated
+  {
+    path: 'armorsets',
+    redirectTo: (it) => {
+      const path = it.url.map((it) => it.path)
+      path[0] = 'armor-sets'
+      return `/${path.join('/')}`
+    },
+  }, // deprecated
   { path: 'armor-sets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ROUTES) },
   { path: 'armor-weights', loadChildren: () => import('./pages/tools/armor-weights').then((m) => m.ROUTES) },
   { path: 'transmog', loadChildren: () => import('./pages/tools/transmog').then((m) => m.ROUTES) },

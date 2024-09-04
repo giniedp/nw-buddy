@@ -1,11 +1,11 @@
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { isLootTagKnownCondition } from '@nw-data/common'
+import { NwLinkService } from '~/nw'
 import { LootNode, LootTableNode } from '~/nw/loot/loot-graph'
 import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
-import { LootGraphStore } from './loot-graph.store'
-import { includesConditionTag } from './utils'
 import { LootGraphService } from './loot-graph.service'
-import { isLootTagKnownCondition } from '@nw-data/common'
+import { LootGraphStore } from './loot-graph.store'
 
 export interface LootGraphNodeState<T = LootNode> {
   node: T
@@ -31,11 +31,13 @@ export const LootGraphNodeStore = signalStore(
       toggleExpand: () => patchState(state, { expand: !state.expand() }),
     }
   }),
-  withComputed(({ node, showLink, showLocked }, service = inject(LootGraphService)) => {
+  withComputed(({ node, showLink, showLocked }) => {
+    const service = inject(LootGraphService)
+    const linkService = inject(NwLinkService)
     return {
       expandable: computed(() => selectExpandable(node())),
       children: computed(() => selectChildren(node()?.children, showLocked())),
-      link: computed(() => (showLink() ? selectLink(node()) : null)),
+      link: computed(() => (showLink() ? selectLink(node(), linkService) : null)),
       typeName: computed(() => node()?.type),
       displayName: computed(() => node()?.ref),
       isHighlighted: computed(() => node()?.isHighlighted),
@@ -62,9 +64,9 @@ function selectExpandable(node: LootNode) {
   return !!node && (node.type === 'table' || node.type === 'bucket')
 }
 
-function selectLink(node: LootNode) {
+function selectLink(node: LootNode, service: NwLinkService) {
   if (node?.type === 'table') {
-    return ['/loot-tables', (node as LootTableNode).data.LootTableID.toLowerCase()]
+    return service.resourceLink({ type: 'loot', id: (node as LootTableNode).data.LootTableID.toLowerCase() })
   }
   return null
 }
