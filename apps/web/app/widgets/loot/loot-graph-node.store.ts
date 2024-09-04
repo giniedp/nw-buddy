@@ -64,7 +64,7 @@ function selectExpandable(node: LootNode) {
 
 function selectLink(node: LootNode) {
   if (node?.type === 'table') {
-    return ['/loot', (node as LootTableNode).data.LootTableID.toLowerCase()]
+    return ['/loot-tables', (node as LootTableNode).data.LootTableID.toLowerCase()]
   }
   return null
 }
