@@ -1,68 +1,76 @@
 import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
 import tinycolor from 'tinycolor2'
+import { svgSickle } from '~/ui/icons/svg'
 import { eqCaseInsensitive, humanize } from '~/utils'
-import { getGatherableIcon, getTradeskillIcon } from '~/widgets/data/gatherable-detail/utils'
-import { FilterDataPropertiesWithVariant } from '../data/types'
+import { getGatherableColor, getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
+import { FilterGroup } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
 import { parseSizeVariant } from './parse-size-variant'
-import { svgSickle } from '~/ui/icons/svg'
 
+const COLORS = {
+  Hemp: '#9f74b9'
+}
 export function describeHarvestingFilters(
   lootTable: ParsedLootTable,
   gatherable: GatherableData,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
+): FilterGroup {
   if (gatherable.Tradeskill !== 'Harvesting' || eqCaseInsensitive(lootTable.original, 'Empty')) {
     return null
   }
   const name = variant?.Name || gatherable.DisplayName || ''
-  const props: FilterDataPropertiesWithVariant = {
-    name,
-    color: null,
-    icon: null,
-    variant: null,
-    lootTable: lootTable.original,
-    loreID: null,
-
+  const icon = getGatherableIcon(gatherable)
+  const result: FilterGroup = {
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
     sectionIcon: svgSickle,
 
     category: lootTable.original,
     categoryLabel: gatherable.DisplayName || humanize(lootTable.original),
-    categoryIcon: getGatherableIcon(gatherable),
+    categoryIcon: icon,
 
     subcategory: '',
     subcategoryLabel: '',
+
+    icons: !!icon,
+    properties: {
+      color: getGatherableColor(gatherable),
+      icon: null,
+      label: null,
+      size: 1,
+
+      lootTable: lootTable.original,
+      // tooltip: name,
+    },
   }
 
   if (lootTable.normalized.endsWith('SporePod')) {
-    props.category = 'SporePod'
-    props.categoryLabel = 'Spore Pod'
-    props.subcategory = lootTable.normalized.replace('SporePod', '')
-    props.subcategoryLabel = humanize(props.subcategory)
-    props.variant = null
-    return props
+    result.category = 'SporePod'
+    result.categoryLabel = 'Spore Pod'
+    result.subcategory = lootTable.normalized.replace('SporePod', '')
+    result.subcategoryLabel = humanize(result.subcategory)
+
+    return result
   }
 
   if (lootTable.normalized.startsWith('PigmentPlant')) {
-    props.category = 'Fungus'
-    props.categoryLabel = 'Fungus'
-    props.subcategory = lootTable.original //
-    props.subcategoryLabel =
+    result.category = 'Fungus'
+    result.categoryLabel = 'Fungus'
+    result.subcategory = lootTable.original //
+    result.subcategoryLabel =
       variant?.Name || gatherable.DisplayName || lootTable.tokenized.filter((it) => it !== 'Plant').join(' ')
-    props.variant = null
-    return props
+
+    return result
   }
 
   if (lootTable.normalized.startsWith('DyePlant')) {
-    props.category = 'Dye'
-    props.categoryLabel = 'Dye'
-    props.subcategory = lootTable.original //
-    props.subcategoryLabel =
+    result.category = 'Dye'
+    result.categoryLabel = 'Dye'
+    result.subcategory = lootTable.original //
+    result.subcategoryLabel =
       variant?.Name || gatherable.DisplayName || lootTable.tokenized.filter((it) => it !== 'Plant').join(' ')
-    props.variant = null
+
     const colorName = lootTable.tokenized.filter((it) => it !== 'Plant' && it !== 'Dye').join('')
     const colors = {
       DesertRose: '#FFC0CB',
@@ -70,43 +78,40 @@ export function describeHarvestingFilters(
     }
     const tc = tinycolor(colorName)
     if (tc.isValid()) {
-      props.color = tc.toHexString()
+      result.properties.color = tc.toHexString()
     } else if (colors[colorName]) {
-      props.color = colors[colorName]
+      result.properties.color = colors[colorName]
     } else {
       console.warn('Invalid color', colorName)
     }
-    return props
+    return result
   }
 
   if (
     // lootTable.normalized.startsWith('BerryBush') ||
     // lootTable.normalized.startsWith('BlueberryBush') ||
-    lootTable.tokenized.includes('Plant') && !lootTable.tokenized.includes('Briar')
+    lootTable.tokenized.includes('Plant') &&
+    !lootTable.tokenized.includes('Briar')
   ) {
-    props.category = 'Cooking'
-    props.categoryLabel = 'Cooking'
-    props.subcategory = lootTable.original //
-    props.subcategoryLabel = variant?.Name || gatherable.DisplayName
-    return props
+    result.category = 'Cooking'
+    result.categoryLabel = 'Cooking'
+    result.subcategory = lootTable.original //
+    result.subcategoryLabel = variant?.Name || gatherable.DisplayName
+    return result
   }
 
   const size = parseSizeVariant(lootTable)
   if (size) {
-    props.category = lootTable.tokenized.filter((it) => it !== size.size).join(' ')
-    props.categoryLabel = humanize(props.category)
-    props.size = size.scale
-    props.variant = {
-      id: size.size,
-      label: size.label,
-      lootTable: lootTable.original,
-      name: variant?.Name || gatherable.DisplayName,
-    }
+    result.category = lootTable.tokenized.filter((it) => it !== size.size).join(' ')
+    result.categoryLabel = humanize(result.category)
+    result.properties.size = size.scale
+    result.variantID = size.size
+    result.variantLabel = size.label
   }
 
   if (lootTable.tokenized.includes('Hemp') || lootTable.tokenized.includes('Herb')) {
-    props.categoryLabel = variant?.Name || gatherable.DisplayName
+    result.categoryLabel = variant?.Name || gatherable.DisplayName
   }
 
-  return props
+  return result
 }

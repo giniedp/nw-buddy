@@ -1,30 +1,23 @@
-import { GatherableData } from "@nw-data/generated"
-import { ParsedLootTable } from "./parse-loottable"
-import { GatherableVariation } from "@nw-data/common"
-import { FilterDataPropertiesWithVariant } from "../data/types"
-import { getGatherableIcon, getTradeskillIcon } from "~/widgets/data/gatherable-detail/utils"
-import { eqCaseInsensitive, humanize } from "~/utils"
-import { parseSizeVariant } from "./parse-size-variant"
-import { CREATURES } from "./creatures"
-import { svgAxe } from "~/ui/icons/svg"
+import { GatherableVariation } from '@nw-data/common'
+import { GatherableData } from '@nw-data/generated'
+import { svgAxe } from '~/ui/icons/svg'
+import { eqCaseInsensitive, humanize } from '~/utils'
+import { getGatherableColor, getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
+import { FilterGroup } from '../data/types'
+import { CREATURES } from './creatures'
+import { ParsedLootTable } from './parse-loottable'
+import { parseSizeVariant } from './parse-size-variant'
 
 export function describeLoggingFilters(
   lootTable: ParsedLootTable,
   gatherable: GatherableData,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
+): FilterGroup {
   if (gatherable.Tradeskill !== 'Logging' || eqCaseInsensitive(lootTable.original, 'Empty')) {
     return null
   }
   const name = variant?.Name || gatherable.DisplayName || ''
-  const props: FilterDataPropertiesWithVariant = {
-    name,
-    color: null,
-    icon: null,
-    variant: null,
-    lootTable: lootTable.original,
-    loreID: null,
-
+  const result: FilterGroup = {
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
     sectionIcon: svgAxe,
@@ -35,32 +28,38 @@ export function describeLoggingFilters(
 
     subcategory: '',
     subcategoryLabel: '',
+
+    properties: {
+      color: getGatherableColor(gatherable),
+      icon: null,
+      label: null,
+      size: 1,
+
+      lootTable: lootTable.original,
+      // tooltip: name,
+    },
   }
 
   const size = parseSizeVariant(lootTable)
   if (size) {
-    props.category = lootTable.tokenized.filter((it) => it !== size.size).join(' ')
-    props.categoryLabel = lootTable.tokenized
+    result.category = lootTable.tokenized.filter((it) => it !== size.size).join(' ')
+    result.categoryLabel = lootTable.tokenized
       .filter((it) => it !== size.size && it !== 'Vein' && it !== 'Finish')
       .join(' ')
-    props.size = size.scale
-    props.variant = {
-      id: size.size,
-      label: size.label,
-      lootTable: lootTable.original,
-      name: variant?.Name || gatherable.DisplayName,
-    }
+    result.properties.size = size.scale
+    result.variantID = size.size
+    result.variantLabel = size.label
   }
 
   const creature = CREATURES.find((it) => lootTable.tokenized.includes(it))
   if (creature) {
-    props.category = 'Creature'
-    props.categoryLabel = 'Creature'
-    props.categoryIcon = null
-    props.subcategory = creature
-    props.subcategoryLabel = creature
-    props.subcategoryIcon = null
+    result.category = 'Creature'
+    result.categoryLabel = 'Creature'
+    result.categoryIcon = null
+    result.subcategory = creature
+    result.subcategoryLabel = creature
+    result.subcategoryIcon = null
   }
 
-  return props
+  return result
 }

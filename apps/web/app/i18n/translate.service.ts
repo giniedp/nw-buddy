@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { patchState, signalState } from '@ngrx/signals'
 import { TranslateService as NgxService } from '@ngx-translate/core'
@@ -17,9 +17,11 @@ import {
 import { selectStream } from '~/utils'
 import { LocaleService } from './locale.service'
 import { normalizeLookupKey } from './utils'
+import { DomSanitizer } from '@angular/platform-browser'
 
 @Injectable({ providedIn: 'root' })
 export class TranslateService {
+  public readonly sanitizer = inject(DomSanitizer)
   private state = signalState({
     isLoaded: false,
     languages: [] as string[],

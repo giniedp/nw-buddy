@@ -54,6 +54,30 @@ export interface ScannedHouse {
   position: number[]
 }
 
+export type ScannedStationTypeData = ScannedStationType[]
+export interface ScannedStationType {
+  stationID: string
+  stations: ScannedStation[]
+}
+export interface ScannedStation {
+  mapID: string
+  stationID: string
+  name: string
+  position: number[]
+}
+
+export type ScannedStructureTypeData = ScannedStructureType[]
+export interface ScannedStructureType {
+  type: string
+  structures: ScannedStructure[]
+}
+export interface ScannedStructure {
+  mapID: string
+  type: string
+  name: string
+  position: number[]
+}
+
 export type ScannedVariationData = ScannedVariation[]
 export interface ScannedVariation<T = PositionChunkRef> {
   variantID: string

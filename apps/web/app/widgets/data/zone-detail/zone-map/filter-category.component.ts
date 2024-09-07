@@ -1,6 +1,6 @@
 import { Component, Pipe, PipeTransform, computed, inject, input, output, signal, viewChildren } from '@angular/core'
 import { Feature } from 'geojson'
-import { sortBy, uniq } from 'lodash'
+import { sortBy, uniq, uniqBy } from 'lodash'
 import { FilterSpecification } from 'maplibre-gl'
 import tinycolor from 'tinycolor2'
 import { NwModule } from '~/nw'
@@ -55,8 +55,9 @@ export class MapFilterCategoryComponent {
   protected isOpen = signal(false)
   protected iconArrowLeft = svgAngleLeft
   protected iconInfo = svgInfo
-  protected layers = viewChildren(GameMapLayerDirective)
+  public layers = viewChildren(GameMapLayerDirective)
   protected hasChevron = computed(() => this.items().length > 1)
+  protected hasInfo = computed(() => !!this.lootTable())
   protected hoverItems = signal<FilterFeatureProperties[]>(null)
   protected items = this.source
   protected diceIcon = svgDice
@@ -71,8 +72,8 @@ export class MapFilterCategoryComponent {
       subcategories,
       label: first?.categoryLabel || humanize(first?.category),
       icon: first?.categoryIcon,
-      color: first?.color,
-      lootTable: first?.lootTable,
+      color: first?.properties.color,
+      lootTable: first?.properties.lootTable,
       variants: variants,
     }
   })
@@ -155,12 +156,14 @@ export class MapFilterCategoryComponent {
 
   protected handleMouseEnter(features: Array<Feature<any, FilterFeatureProperties>>) {
     const items = features.map((it) => it.properties as FilterFeatureProperties)
-    this.hoverItems.set(items)
+    const uniqueItems = uniqBy(items, (it) => [it.vitalID, it.lootTable, it.loreID].join())
+    this.hoverItems.set(uniqueItems)
   }
 
   protected handleMouseMove(features: Array<Feature<any, FilterFeatureProperties>>) {
     const items = features.map((it) => it.properties as FilterFeatureProperties)
-    this.hoverItems.set(items)
+    const uniqueItems = uniqBy(items, (it) => [it.vitalID, it.lootTable, it.loreID].join())
+    this.hoverItems.set(uniqueItems)
   }
 
   protected handleMouseLeave(features: Array<Feature<any, FilterFeatureProperties>>) {

@@ -54,9 +54,9 @@ export class ZoneDetailMapComponent {
   protected segment = signal('gathering')
   protected segments = computed(() => {
     return [
-      { id: 'gathering', label: 'Gathering', source: this.store.gatherables(), icon: svgWheat },
-      { id: 'vitals', label: 'Vitals', vitals: this.store.vitals(), icon: svgSkull },
-      { id: 'houses', label: 'Houses', houses: this.store.houses(), icon: svgHouse },
+      { id: 'gathering', open: false, label: 'Gathering', source: this.store.gatherables(), icon: svgWheat },
+      { id: 'vitals', open: false, label: 'Vitals', vitals: this.store.vitals(), icon: svgSkull },
+      { id: 'structures', open: true, label: 'Structures', source: this.store.houses(), icon: svgHouse },
     ]
   })
   protected activeSegment = computed(() => this.segments().find((it) => it.id === this.segment()))

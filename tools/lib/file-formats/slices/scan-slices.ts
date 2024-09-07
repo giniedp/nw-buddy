@@ -15,6 +15,8 @@ export interface ScanResult {
   territories?: TerritoryScanRow[]
   loreItems?: LoreScanRow[]
   houseItems?: HouseScanRow[]
+  stations?: StationScanRow[]
+  structures?: StructureScanRow[]
 }
 export interface NpcScanRow {
   npcID: string
@@ -34,6 +36,18 @@ export interface LoreScanRow {
 }
 export interface HouseScanRow {
   houseTypeID: string
+  position: [number, number, number]
+  mapID: string
+}
+export interface StationScanRow {
+  stationID: string
+  name: string
+  position: [number, number, number]
+  mapID: string
+}
+export interface StructureScanRow {
+  type: string
+  name: string
   position: [number, number, number]
   mapID: string
 }
@@ -64,12 +78,18 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       }
     }
   }
-  const vitalsRows: VitalScanRow[] = []
-  const npcRows: NpcScanRow[] = []
-  const variationsRows: VariationScanRow[] = []
-  const loreRows: LoreScanRow[] = []
-  const houseRows: HouseScanRow[] = []
-  const gatherableRows: GatherableScanRow[] = []
+  const result: Required<ScanResult> = {
+    vitals: [],
+    npcs: [],
+    gatherables: [],
+    variations: [],
+    territories: [],
+    loreItems: [],
+    houseItems: [],
+    stations: [],
+    structures: [],
+  }
+
   function pushEntry({
     entry,
     mapId,
@@ -82,7 +102,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
     for (let position of entry.positions || []) {
       position = mapPosition([...position])
       if (entry.gatherableID) {
-        gatherableRows.push({
+        result.gatherables.push({
           mapID: mapId,
           encounter: entry.encounter,
           gatherableID: entry.gatherableID,
@@ -90,7 +110,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
         })
       }
       if (entry.variantID) {
-        variationsRows.push({
+        result.variations.push({
           mapID: mapId,
           encounter: entry.encounter,
           variantID: entry.variantID,
@@ -98,7 +118,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
         })
       }
       if (entry.vitalsID) {
-        vitalsRows.push({
+        result.vitals.push({
           encounter: entry.encounter,
           mapID: mapId,
           vitalsID: entry.vitalsID,
@@ -115,7 +135,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
         })
       }
       if (entry.npcID) {
-        npcRows.push({
+        result.npcs.push({
           mapID: mapId,
           npcID: entry.npcID,
           position: [position[0], position[1], position[2]],
@@ -123,21 +143,35 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       }
       if (entry.loreIDs?.length) {
         for (const loreId of entry.loreIDs) {
-          loreRows.push({
+          result.loreItems.push({
             mapID: mapId,
             loreID: loreId,
             position: [position[0], position[1], position[2]],
           })
         }
       }
-      if (entry.houseTypes?.length) {
-        for (const item of entry.houseTypes) {
-          houseRows.push({
-            mapID: mapId,
-            houseTypeID: item,
-            position: [position[0], position[1], position[2]],
-          })
-        }
+      if (entry.houseType) {
+        result.houseItems.push({
+          mapID: mapId,
+          houseTypeID: entry.houseType,
+          position: [position[0], position[1], position[2]],
+        })
+      }
+      if (entry.structureType) {
+        result.structures.push({
+          mapID: mapId,
+          type: entry.structureType,
+          name: entry.name,
+          position: [position[0], position[1], position[2]],
+        })
+      }
+      if (entry.stationID) {
+        result.stations.push({
+          mapID: mapId,
+          stationID: entry.stationID,
+          name: entry.name,
+          position: [position[0], position[1], position[2]],
+        })
       }
     }
   }
@@ -161,7 +195,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
 
     for (const capital of data?.Capitals || []) {
       if (capital.variantName) {
-        variationsRows.push({
+        result.variations.push({
           mapID: mapId,
           variantID: capital.variantName,
           encounter: null,
@@ -192,14 +226,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
       }
     }
 
-    return {
-      vitals: vitalsRows,
-      npcs: npcRows,
-      variations: variationsRows,
-      loreItems: loreRows,
-      gatherables: gatherableRows,
-      houseItems: houseRows,
-    }
+    return result
   }
 
   return {}

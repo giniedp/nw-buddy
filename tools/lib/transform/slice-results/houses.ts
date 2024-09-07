@@ -1,4 +1,5 @@
-import { ScannedHouseType, ScannedHouseTypeData } from '../../../../libs/nw-data/scanner'
+import { sortBy, uniqBy } from 'lodash'
+import { ScannedHouse, ScannedHouseType, ScannedHouseTypeData } from '../../../../libs/nw-data/scanner'
 import { HouseScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface HouseIndex {
@@ -33,8 +34,14 @@ export function houseIndex(): HouseIndex {
     },
     result() {
       const result: ScannedHouseTypeData = []
+      function itemKey(it: ScannedHouse) {
+        return [it.mapID, it.houseTypeID, it.position.join()].join()
+      }
       for (const item of sortedEntries(index)) {
         result.push(item)
+      }
+      for (const item of result) {
+        item.houses = sortBy(uniqBy(item.houses, itemKey), itemKey)
       }
       return result
     },

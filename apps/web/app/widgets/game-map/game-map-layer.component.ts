@@ -95,7 +95,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     const polyLayerId = this.polyLayerId()
     const useIcons = this.icons()
     const usePlolygons = this.polygons()
-    const useCircles = !useIcons && !usePlolygons
+    const useCircles = !usePlolygons
     const useHeatmap = this.heatmap()
     const useLabels = this.labels()
 
@@ -114,38 +114,6 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       this.removeLayer(circleLayerId)
       this.removeLayer(iconLayerId)
       this.removeLayer(polyLayerId)
-    }
-
-    if (!useIcons) {
-      this.removeLayer(iconLayerId)
-    } else if (!this.map.getLayer(iconLayerId)) {
-      this.removeLayer(circleLayerId)
-      this.map.addLayer({
-        id: iconLayerId,
-        source: sourceId,
-        type: 'symbol',
-        layout: {
-          'icon-image': ['get', 'icon'],
-          'icon-size': [
-            'interpolate',
-            ['linear'],
-            ['coalesce', ['number', ['get', 'size', 1]], ['number', 1]],
-            0,
-            0,
-            2,
-            2,
-          ],
-          'icon-allow-overlap': true,
-          'symbol-sort-key': ['get', 'zindex'],
-        },
-        paint: {
-          //'icon-color': '#FF0000',
-        },
-      })
-      this.map.on('click', circleLayerId, this.handleClick)
-      this.map.on('mouseenter', circleLayerId, this.handleMouseEnter)
-      this.map.on('mouseleave', circleLayerId, this.handleMouseLeave)
-      this.map.on('mousemove', circleLayerId, this.handleMouseMove)
     }
 
     if (!usePlolygons) {
@@ -207,6 +175,29 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       })
     }
 
+    if (!useIcons) {
+      this.removeLayer(iconLayerId)
+    } else if (!this.map.getLayer(iconLayerId)) {
+      //this.removeLayer(circleLayerId)
+      this.map.addLayer({
+        id: iconLayerId,
+        source: sourceId,
+        type: 'symbol',
+        layout: {
+          'icon-image': ['get', 'icon'],
+          'icon-size': ['number', ['get', 'iconSize'], 1],
+          'icon-allow-overlap': true,
+          'symbol-sort-key': ['get', 'zindex'],
+        },
+        paint: {
+          //'icon-color': '#FF0000',
+        },
+      })
+      this.map.on('click', iconLayerId, this.handleClick)
+      this.map.on('mouseenter', iconLayerId, this.handleMouseEnter)
+      this.map.on('mouseleave', iconLayerId, this.handleMouseLeave)
+      this.map.on('mousemove', iconLayerId, this.handleMouseMove)
+    }
     if (!useLabels) {
       this.removeLayer(labelLayerId)
     } else if (!this.map.getLayer(labelLayerId)) {
@@ -217,8 +208,9 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         type: 'symbol',
         layout: {
           'text-field': ['get', 'label'],
-          'text-size': 12,
+          'text-size': 16,
           'text-overlap': 'cooperative',
+          'text-offset': [0, useIcons ? 1.5 : 0],
         },
         paint: {
           'text-color': '#FFFFFF',
@@ -280,8 +272,8 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     if (useHeatmap) {
       this.withLayer(iconLayerId, (layer) => {
         layer.minzoom = 5
-        layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
-        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
+        // layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
+        // layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
       })
       this.withLayer(circleLayerId, (layer) => {
         layer.minzoom = 5

@@ -1,49 +1,47 @@
-import { GatherableVariation, NW_FALLBACK_ICON } from '@nw-data/common'
+import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { humanize } from '~/utils'
-import { FilterDataPropertiesWithVariant } from '../data/types'
-import { ParsedLootTable } from './parse-loottable'
 import { svgTreasureChest } from '~/ui/icons/svg'
+import { humanize } from '~/utils'
+import { FilterGroup } from '../data/types'
+import { ParsedLootTable } from './parse-loottable'
 
 const CHESTS = ['Chest', 'Chests', 'Sarcophagi', 'Loot', 'Container']
 export function describeChestsFilters(
   lootTable: ParsedLootTable,
   gatherable: GatherableData,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
+): FilterGroup {
   if (!CHESTS.some((it) => lootTable.tokenized.includes(it))) {
     return null
   }
 
-  const name = variant?.Name || gatherable.DisplayName || ''
-  const props: FilterDataPropertiesWithVariant = {
-    name,
-    color: null,
-    icon: null,
-    variant: null,
-    lootTable: lootTable.original,
-    loreID: null,
-
+  const result: FilterGroup = {
     section: 'Chests',
     sectionLabel: 'Chests',
     sectionIcon: svgTreasureChest,
-
     category: lootTable.original,
     categoryLabel: humanize(lootTable.original),
-
     subcategory: '',
-    subcategoryLabel: variant?.Name || gatherable.DisplayName || lootTable.tokenized.join(' ')
+    subcategoryLabel: variant?.Name || gatherable.DisplayName || lootTable.tokenized.join(' '),
+    properties: {
+      color: null,
+      icon: null,
+      label: null,
+      size: 1,
+      lootTable: lootTable.original,
+      //tooltip: variant?.Name || gatherable.DisplayName || '',
+    },
   }
 
   if (lootTable.tokenized.includes('Beach')) {
-    props.category = 'Beach'
-    props.categoryLabel = 'Starter Beach'
-    props.subcategory = lootTable.normalized
+    result.category = 'Beach'
+    result.categoryLabel = 'Starter Beach'
+    result.subcategory = lootTable.normalized
   } else if (variant) {
-    props.category = lootTable.original
-    props.categoryLabel = lootTable.tokenized.filter((it) => !CHESTS.includes(it)).join(' ')
-    props.subcategory = variant.VariantID
+    result.category = lootTable.original
+    result.categoryLabel = lootTable.tokenized.filter((it) => !CHESTS.includes(it)).join(' ')
+    result.subcategory = variant.VariantID
   }
 
-  return props
+  return result
 }

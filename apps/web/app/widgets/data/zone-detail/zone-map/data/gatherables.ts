@@ -1,10 +1,11 @@
-import { GatherableVariation, NW_FALLBACK_ICON } from '@nw-data/common'
+import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
 import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { combineLatestOrEmpty, eqCaseInsensitive, stringToColor } from '~/utils'
-import { getGatherableIcon, getTradeskillIcon } from '../../../gatherable-detail/utils'
+import { svgLocationQuestion } from '~/ui/icons/svg'
+import { combineLatestOrEmpty, eqCaseInsensitive, stringToColor, stringToHSL } from '~/utils'
+import { getGatherableIcon } from '../../../gatherable-detail/utils'
 import { describeAlchemyFilters } from '../utils/describe-alchemy-filters'
 import { describeChestsFilters } from '../utils/describe-chests-filters'
 import { describeDungeonFilters } from '../utils/describe-dungeon-filters'
@@ -16,8 +17,7 @@ import { describeSettlementFilters } from '../utils/describe-settlement-filters'
 import { describeSkinningFilters } from '../utils/describe-skinning-filters'
 import { parseLootTableID } from '../utils/parse-loottable'
 import { getSizeColor, parseSizeVariant } from '../utils/parse-size-variant'
-import { FilterDataSet, FilterGroup, FilterDataPropertiesWithVariant, FilterVariant } from './types'
-import { svgLocationQuestion } from '~/ui/icons/svg'
+import { FilterDataSet, FilterGroup } from './types'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 export function loadGatherables(db: NwDataService, mapCoord: MapCoord) {
@@ -61,30 +61,31 @@ function collectGatherableDatasets(data: {
   mapCoord: MapCoord
 }): FilterDataSet[] {
   const result: Record<string, FilterDataSet> = {}
+  let featureId = 0
   for (const gatherable of data.gatherables) {
     const meta = data.gatherablesMeta.get(gatherable.GatherableID)
     const variations = data.variationsByGatherableId.get(gatherable.GatherableID)
 
-    let featureId = 0
     if (meta?.spawns?.length) {
       for (const spawn of meta.spawns) {
-        const properties = describeGatherable(gatherable, gatherable.FinalLootTable)
-        const groupId = generateId(properties)
-        const id = `${groupId}&r=${spawn.encounter}`
-        properties.color = properties.color || stringToColor(groupId)
-        properties.encounter = spawn.encounter
+        const group = describeGatherable(gatherable, gatherable.FinalLootTable)
+        const groupId = generateId(group)
+        const layerId = `${groupId},${spawn.encounter}`
+        const properties = group.properties
+        properties.color ||= stringToHSL(groupId).toHexString()
+        properties.encounter ||= spawn.encounter
+        properties.variant ||= group.variantID
         if (properties.variant) {
-          properties.variant.color = getSizeColor(properties.variant.id, properties.color)
+          properties.color = getSizeColor(properties.variant, properties.color)
         }
-        const layer = (result[id] = result[id] || {
-          id,
-          ...properties,
+        const layer = (result[layerId] = result[layerId] || {
+          id: layerId,
+          ...group,
           variants: [],
           data: {},
           count: 0,
         })
-
-        appendVariant(layer, properties.variant)
+        appendVariant(layer, group)
 
         const mapId = spawn.mapID
         const points = spawn.positions.map(data.mapCoord)
@@ -101,11 +102,7 @@ function collectGatherableDatasets(data: {
         mapData.geometry.features.push({
           id: featureId,
           type: 'Feature',
-          properties: {
-            ...properties,
-            variant: properties.variant?.id,
-            color: properties.variant?.color || properties.color,
-          },
+          properties: properties,
           geometry: {
             type: 'MultiPoint',
             coordinates: points,
@@ -127,22 +124,25 @@ function collectGatherableDatasets(data: {
         }
         for (const lootTable of lootTables) {
           for (const spawn of meta.spawns) {
-            const properties = describeGatherable(gatherable, lootTable, variant)
-            const groupId = generateId(properties)
-            const id = `${groupId}&r=${spawn.encounter}`
-            properties.color = properties.color || stringToColor(groupId)
-            properties.encounter = spawn.encounter
+            const group = describeGatherable(gatherable, lootTable, variant)
+            const groupId = generateId(group)
+            const layerId = `${groupId},${spawn.encounter}`
+            const properties = group.properties
+            properties.color ||= stringToHSL(groupId).toHexString()
+            properties.encounter ||= spawn.encounter
+            properties.variant ||= group.variantID
             if (properties.variant) {
-              properties.variant.color = getSizeColor(properties.variant.id, properties.color)
+              properties.color = getSizeColor(properties.variant, properties.color)
             }
-            const layer = (result[id] = result[id] || {
-              id,
-              ...properties,
+
+            const layer = (result[layerId] = result[layerId] || {
+              id: layerId,
+              ...group,
               variants: [],
               data: {},
               count: 0,
             })
-            appendVariant(layer, properties.variant)
+            appendVariant(layer, group)
 
             const mapId = spawn.mapID
             const mapData = (layer.data[mapId] = layer.data[mapId] || {
@@ -162,11 +162,7 @@ function collectGatherableDatasets(data: {
             mapData.geometry.features.push({
               id: featureId,
               type: 'Feature',
-              properties: {
-                ...properties,
-                variant: properties.variant?.id,
-                color: properties.variant?.color || properties.color,
-              },
+              properties: properties,
               geometry: {
                 type: 'MultiPoint',
                 coordinates: points,
@@ -184,25 +180,8 @@ function describeGatherable(
   gatherable: GatherableData,
   lootTableId: string,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
+): FilterGroup {
   const lootTable = parseLootTableID(lootTableId)
-  const icon = getGatherableIcon(gatherable)
-
-  const props: FilterDataPropertiesWithVariant = {
-    icon: icon,
-    name: gatherable.DisplayName,
-    color: null,
-    lootTable: lootTable.original,
-    loreID: null,
-
-    section: gatherable.Tradeskill,
-    sectionIcon: svgLocationQuestion,
-    category: lootTableId,
-    categoryIcon: icon,
-    subcategory: '',
-
-    variant: null,
-  }
 
   {
     const result = describeAlchemyFilters(lootTable, gatherable, variant)
@@ -266,59 +245,80 @@ function describeGatherable(
       return result
     }
   }
+
+  const icon = getGatherableIcon(gatherable)
+  const result: FilterGroup = {
+    section: gatherable.Tradeskill,
+    sectionIcon: svgLocationQuestion,
+    category: lootTableId,
+    categoryIcon: icon,
+    subcategory: '',
+    icons: false,
+    labels: false,
+    properties: {
+      icon: icon,
+      label: null,
+      size: 1,
+      tooltip: variant?.Name || gatherable.DisplayName,
+      color: null,
+      lootTable: lootTable.original,
+      loreID: null,
+    },
+  }
   if (eqCaseInsensitive(lootTable.normalized, 'empty')) {
-    props.section = '_Empty'
-    props.sectionLabel = 'No Loottable'
-    props.category = gatherable.DisplayName || gatherable.GatherableID
-    props.categoryLabel = gatherable.DisplayName
+    result.section = '_Empty'
+    result.sectionLabel = 'No Loottable'
+    result.category = gatherable.DisplayName || gatherable.GatherableID
+    result.categoryLabel = gatherable.DisplayName
     if (variant) {
-      props.subcategory = variant.VariantID
-      props.subcategoryLabel = variant.Name || variant.VariantID
+      result.subcategory = variant.VariantID
+      result.subcategoryLabel = variant.Name || variant.VariantID
     } else {
-      props.subcategory = gatherable.GatherableID
-      props.subcategoryLabel = gatherable.DisplayName
+      result.subcategory = gatherable.GatherableID
+      result.subcategoryLabel = gatherable.DisplayName
     }
-    return props
+    return result
   }
 
   if (eqCaseInsensitive(gatherable.Tradeskill, 'none')) {
-    props.section = '_None'
-    props.sectionLabel = 'No Tradeskill'
+    result.section = '_None'
+    result.sectionLabel = 'No Tradeskill'
     // props.category = 'Empty'
     // props.categoryLabel = 'Empty'
-    props.subcategory = variant?.VariantID || ''
-    props.subcategoryLabel = variant?.Name || ''
-    return props
+    result.subcategory = variant?.VariantID || ''
+    result.subcategoryLabel = variant?.Name || ''
+    return result
   }
 
   {
     const found = parseSizeVariant(lootTable)
     if (found) {
-      props.category = lootTable.normalized.replace(found.size, '')
-      props.size = found.scale
-      props.variant = {
-        id: found.size,
-        label: found.label,
-        lootTable: lootTable.original,
-        name: variant?.Name || gatherable.DisplayName,
-      }
-      return props
+      result.category = lootTable.normalized.replace(found.size, '')
+      result.properties.size = found.scale
+      result.variantID = found.size
+      result.variantLabel = found.label
+      return result
     }
   }
 
-  return props
+  return result
 }
 
-function generateId(properties: FilterGroup) {
-  return `s=${properties.section}&c=${properties.category}&s=${properties.subcategory}`
+function generateId(group: FilterGroup) {
+  return [group.section, group.category, group.subcategory].join()
 }
 
-function appendVariant(data: FilterDataSet, variant: FilterVariant) {
-  if (!variant) {
+function appendVariant(data: FilterDataSet, group: FilterGroup) {
+  if (!group?.variantID) {
     return
   }
-  if (data.variants.some((it) => it.id === variant.id)) {
+  if (data.variants.some((it) => it.id === group.variantID)) {
     return
   }
-  data.variants.push(variant)
+  data.variants.push({
+    id: group.variantID,
+    label: group.variantLabel,
+    icon: group.variantIcon,
+    properties: group.properties,
+  })
 }

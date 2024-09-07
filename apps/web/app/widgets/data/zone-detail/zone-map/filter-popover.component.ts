@@ -50,8 +50,8 @@ export class FilterPopoverComponent {
   protected lootTable = computed(() => {
     const tab = this.tabs().find((it) => it.active)
     if (tab) {
-      return tab.variant.lootTable
+      return tab.variant.properties.lootTable
     }
-    return this.data()[0].lootTable
+    return this.data()[0].properties.lootTable
   })
 }

@@ -1,41 +1,49 @@
-import { GatherableVariation, NW_FALLBACK_ICON } from '@nw-data/common'
+import { GatherableVariation, describeNodeSize, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
-import { FilterDataPropertiesWithVariant } from '../data/types'
-import { ParsedLootTable } from './parse-loottable'
 import { svgFlaskRoundPotion } from '~/ui/icons/svg'
+import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
+import { FilterGroup } from '../data/types'
+import { ParsedLootTable } from './parse-loottable'
+import { stringToColor, stringToHSL } from '~/utils'
 
 export function describeAlchemyFilters(
   lootTable: ParsedLootTable,
   gatherable: GatherableData,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
-  const defaults = {
-    icon: NW_FALLBACK_ICON,
-    name: variant?.Name || gatherable.DisplayName,
+): FilterGroup {
+  const section = 'Alchemy'
+  const sectionLabel = 'campalchemy_groupname'
+  const sectionIcon = svgFlaskRoundPotion
+  const properties: FilterGroup['properties'] = {
     color: null,
-    section: 'Alchemy',
-    sectionLabel: 'campalchemy_groupname',
-    sectionIcon: svgFlaskRoundPotion,
+    icon: null,
+    label: null,
+    size: 1,
     lootTable: lootTable.original,
-    loreID: null,
+    // tooltip: variant?.Name || gatherable.DisplayName,
   }
 
   {
     const match = lootTable.normalized.match(/(Air|Death|Earth|Fire|Life|Soul|Water)(_)?(Boid|Plant|Stone)/)
     if (match) {
+      const index = ['plant', 'stone', 'boid'].indexOf(match[3].toLowerCase())
+      const size = describeNodeSize(getGatherableNodeSizes()[index + 1])
+
       return {
-        ...defaults,
+        section,
+        sectionLabel,
+        sectionIcon,
         category: `Motes${match[1]}`,
         categoryLabel: `${match[1]} Motes`,
         categoryIcon: null,
         subcategory: '',
-        variant: {
-          id: match[3],
-          label: match[3],
-          icon: getGatherableIcon(gatherable),
-          lootTable: lootTable.original,
-          name: variant?.Name || gatherable.DisplayName,
+        variantID: size.size,
+        variantLabel: match[3],
+        variantIcon: getGatherableIcon(gatherable),
+        icons: false,
+        properties: {
+          ...properties,
+          color: stringToHSL(match[1]).toHexString(),
         },
       }
     }
@@ -43,25 +51,34 @@ export function describeAlchemyFilters(
 
   if (lootTable.normalized === 'AzothWaterSpring') {
     return {
-      ...defaults,
+      section,
+      sectionLabel,
+      sectionIcon,
       category: lootTable.original,
       categoryLabel: gatherable.DisplayName,
       categoryIcon: null,
       subcategory: lootTable.original,
       subcategoryLabel: gatherable.DisplayName,
-      variant: null,
+      properties: {
+        ...properties,
+      },
     }
   }
 
   if (lootTable.normalized.startsWith('PigmentPlant')) {
     return {
-      ...defaults,
+      section,
+      sectionLabel,
+      sectionIcon,
       category: 'Fungus',
       categoryLabel: 'Fungi',
       categoryIcon: null,
       subcategory: lootTable.original,
-      subcategoryLabel: variant?.Name || gatherable.DisplayName || lootTable.tokenized.filter((it) => it !== 'Plant').join(' '),
-      variant: null,
+      subcategoryLabel:
+        variant?.Name || gatherable.DisplayName || lootTable.tokenized.filter((it) => it !== 'Plant').join(' '),
+      properties: {
+        ...properties,
+      },
     }
   }
   return null

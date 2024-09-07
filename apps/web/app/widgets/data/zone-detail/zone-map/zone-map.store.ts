@@ -8,10 +8,10 @@ import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { xyToLngLat } from '~/widgets/game-map/utils'
 import { loadGatherables } from './data/gatherables'
+import { loadStructures } from './data/structures'
 import { loadTerritories } from './data/territories'
-import { FilterDataSet, HouseFeatureCollection, VitalDataSet } from './data/types'
+import { FilterDataSet, VitalDataSet } from './data/types'
 import { loadVitals } from './data/vitals'
-import { loadHouses } from './data/houses'
 
 export interface ZoneMapState {
   isLoaded: boolean
@@ -19,7 +19,7 @@ export interface ZoneMapState {
   vitals: VitalDataSet
   vitalsTypes: CreatureType[]
   vitalsCategories: string[]
-  houses: HouseFeatureCollection
+  houses: FilterDataSet[]
   territories: FeatureCollection
   areas: FeatureCollection
   pois: FeatureCollection
@@ -41,7 +41,7 @@ export const ZoneMapStore = signalStore(
     gatherables: [],
     vitalsTypes: [],
     vitalsCategories: [],
-    houses: null,
+    houses: [],
     vitals: {
       count: 0,
       data: {},
@@ -81,7 +81,7 @@ export const ZoneMapStore = signalStore(
               territories: loadTerritories(db, tl8, xyToLngLat),
               gatherables: loadGatherables(db, xyToLngLat),
               vitals: loadVitals(db, xyToLngLat),
-              houses: loadHouses(db, tl8, xyToLngLat),
+              houses: loadStructures(db, tl8, xyToLngLat),
               vitalsTypes: db.vitalsByCreatureType.pipe(map((it) => Array.from<CreatureType>(it.keys() as any))),
               vitalsCategories: db.vitalsCategories.pipe(map((list) => list.map((it) => it.VitalsCategoryID).sort())),
             })

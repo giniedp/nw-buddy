@@ -1,28 +1,20 @@
-import { GatherableVariation, NW_FALLBACK_ICON } from '@nw-data/common'
+import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { humanize } from '~/utils'
-import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
-import { FilterDataPropertiesWithVariant } from '../data/types'
-import { ParsedLootTable } from './parse-loottable'
 import { svgBoxesStacked } from '~/ui/icons/svg'
+import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
+import { FilterGroup } from '../data/types'
+import { ParsedLootTable } from './parse-loottable'
 
 export function describeSettlementFilters(
   lootTable: ParsedLootTable,
   gatherable: GatherableData,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
+): FilterGroup {
   if (!lootTable.original.startsWith('Settlement') && !lootTable.original.endsWith('Cart')) {
     return null
   }
   const name = variant?.Name || gatherable.DisplayName || ''
-  const props: FilterDataPropertiesWithVariant = {
-    name,
-    color: null,
-    icon: null,
-    variant: null,
-    lootTable: lootTable.original,
-    loreID: null,
-
+  const result: FilterGroup = {
     section: 'Settlement',
     sectionLabel: 'Settlement goods',
     sectionIcon: svgBoxesStacked,
@@ -33,7 +25,16 @@ export function describeSettlementFilters(
 
     subcategory: '',
     subcategoryLabel: '',
+    properties: {
+      color: null,
+      icon: null,
+      label: null,
+      size: 1,
+
+      lootTable: lootTable.original,
+      // tooltip: name,
+    },
   }
 
-  return props
+  return result
 }

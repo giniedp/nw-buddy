@@ -6,7 +6,16 @@ import { z } from 'zod'
 import { DatasheetFile } from '../file-formats/datasheet/converter'
 import { isPointInAABB, isPointInPolygon } from '../file-formats/slices/utils'
 import { runTasks } from '../worker/runner'
-import { TerritoryIndex, gatherableIndex, houseIndex, loreIndex, npcIndex, territoryIndex } from './slice-results'
+import {
+  TerritoryIndex,
+  gatherableIndex,
+  houseIndex,
+  loreIndex,
+  npcIndex,
+  stationIndex,
+  structureIndex,
+  territoryIndex,
+} from './slice-results'
 import { variationIndex } from './slice-results/variation'
 import { VitalsIndex, vitalsIndex } from './slice-results/vitals'
 
@@ -18,7 +27,9 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   const variations = variationIndex()
   const territories = territoryIndex()
   const loreItems = loreIndex()
-  const houseItems = houseIndex()
+  const houses = houseIndex()
+  const structures = structureIndex()
+  const stations = stationIndex()
 
   const tablesDir = path.join(inputDir, 'sharedassets/springboardentitites')
   const tablesFiles = await glob(path.join(tablesDir, 'datatables', '**', '*.json'))
@@ -60,7 +71,9 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
       variations.push(result.variations)
       territories.push(result.territories)
       loreItems.push(result.loreItems)
-      houseItems.push(result.houseItems)
+      houses.push(result.houseItems)
+      structures.push(result.structures)
+      stations.push(result.stations)
     },
   })
 
@@ -76,7 +89,9 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
     territories: territories.result(),
     loreItems: loreItems.result(),
     npcs: npcs.result(),
-    houses: houseItems.result(),
+    houses: houses.result(),
+    structures: structures.result(),
+    stations: stations.result(),
   }
 }
 

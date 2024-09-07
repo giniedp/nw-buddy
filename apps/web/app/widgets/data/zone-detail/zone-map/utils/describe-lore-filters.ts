@@ -1,20 +1,9 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { LoreData } from '@nw-data/generated'
-import { FilterDataPropertiesWithVariant } from '../data/types'
+import { FilterGroup } from '../data/types'
 
-export function describeLoreFilters(
-  lore: LoreData,
-  topic: LoreData,
-  chapter: LoreData,
-): FilterDataPropertiesWithVariant {
-  const result: FilterDataPropertiesWithVariant = {
-    name: lore.Title,
-    color: null,
-    icon: NW_FALLBACK_ICON,
-    variant: null,
-    lootTable: null,
-    loreID: lore.LoreID,
-
+export function describeLoreFilters(lore: LoreData, topic: LoreData, chapter: LoreData): FilterGroup {
+  const result: FilterGroup = {
     section: 'Lore',
     sectionLabel: 'Lore Notes',
     sectionIcon: NW_FALLBACK_ICON,
@@ -24,6 +13,16 @@ export function describeLoreFilters(
 
     subcategory: '',
     subcategoryLabel: '',
+
+    properties: {
+      color: null,
+      icon: null,
+      label: null,
+      size: 1,
+
+      loreID: lore.LoreID,
+      tooltip: lore.Title,
+    },
   }
 
   if (topic) {

@@ -1,8 +1,6 @@
-import * as path from 'path'
 import {
   AZ__Entity,
   Asset,
-  AssetId,
   GameTransformComponent,
   SliceComponent,
   isAIVariantProviderComponent,
@@ -10,22 +8,27 @@ import {
   isActionListComponent,
   isAreaSpawnerComponent,
   isAreaSpawnerComponentServerFacet,
+  isAssemblyComponent,
   isEncounterComponent,
   isGameTransformComponent,
   isGatherableControllerComponent,
   isHousingPlotComponent,
   isMeshComponent,
+  isNameComponent,
   isNpcComponent,
   isPointSpawnerComponent,
-  isPolygonPrismCommon,
-  isPolygonPrismShapeComponent,
   isPrefabSpawnerComponent,
   isProjectileSpawnerComponent,
   isReadingInteractionComponent,
   isSkinnedMeshComponent,
   isSpawnDefinition,
+  isStorageComponent,
+  isStorageComponentClientFacet,
+  isTradingPostComponent,
+  isTransformComponent,
   isVariationDataComponent,
   isVitalsComponent,
+  isWarboardComponent,
 } from './types/dynamicslice'
 
 import { arrayAppend, readJSONFile } from '../../utils'
@@ -34,8 +37,6 @@ import {
   getEntityById,
   lookupAssetPath,
   readDynamicSliceFile,
-  resolveAssetFile,
-  resolveBoundaryShape,
   resolveDynamicSliceFiles,
 } from './utils'
 
@@ -221,7 +222,7 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
           translation,
           entity,
           rotation,
-          variantID
+          variantID,
         })
       }
     }
@@ -231,6 +232,9 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
 
 export interface ScannedData {
   entity?: AZ__Entity
+  name?: string
+  transform?: number[]
+  position?: number[]
 
   vitalsID?: string
   npcID?: string
@@ -247,15 +251,36 @@ export interface ScannedData {
   gatherableID?: string
 
   loreIDs?: string[]
-  houseTypes?: string[]
+  houseType?: string
+  stationID?: string
+  structureType?: string
 }
 
 export async function scanForData(sliceComponent: SliceComponent, rootDir: string, file: string) {
   const result: ScannedData[] = []
   for (const entity of sliceComponent?.entities || []) {
     const node: ScannedData = {}
+    let transform: number[]
+    let position: number[]
+    let name: string
 
     for (const component of entity.components || []) {
+      if (isGameTransformComponent(component)) {
+        if (component.m_worldtm) {
+          position = component.m_worldtm.__value?.translation
+          transform = component.m_worldtm.__value?.['rotation/scale']
+        } else if (component.m_localtm) {
+          position = component.m_localtm.__value?.translation
+          transform = component.m_localtm.__value?.['rotation/scale']
+        }
+      }
+      if (isTransformComponent(component)) {
+        position = component.transform.__value?.translation
+        transform = component.transform.__value?.['rotation/scale']
+      }
+      if (isNameComponent(component)) {
+        name = component.m_name
+      }
       if (isNpcComponent(component) && component.m_npckey) {
         node.npcID = node.npcID || component.m_npckey
       }
@@ -304,13 +329,34 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
         node.mtlFile = await lookupAssetPath(rootDir, materialAsset)
       }
       if (isHousingPlotComponent(component) && component.m_housetypestring) {
-        node.houseTypes = node.houseTypes || []
-        node.houseTypes.push(component.m_housetypestring)
+        node.houseType = component.m_housetypestring
       }
+      if (isAssemblyComponent(component)) {
+        node.stationID = component.m_craftingstationreference?.m_craftingstationentry
+      }
+      if (isTradingPostComponent(component)) {
+        node.structureType = 'TradingPost'
+      }
+
+      if (
+        isStorageComponent(component) &&
+        isStorageComponentClientFacet(component.baseclass1?.m_clientfacetptr) &&
+        !component.baseclass1?.m_clientfacetptr.m_showpreview &&
+        component.m_isplayeruniquestorage
+      ) {
+        node.structureType = 'Storage'
+      }
+      // if (isWarboardComponent(component)) {
+      //   node.structureType = 'Warboard'
+      // }
     }
+
     if (Object.keys(node).length) {
       result.push({
         entity,
+        name,
+        position,
+        transform,
         ...node,
       })
     }
@@ -372,15 +418,11 @@ export function getRotation(component: GameTransformComponent) {
   const value = component?.m_worldtm?.__value
   let result: number[][] = null
   if (value?.['rotation/scale'] && Array.isArray(value?.['rotation/scale'])) {
-    const [
-      x1, y1, z1,
-      x2, y2, z2,
-      x3, y3, z3
-    ] = value['rotation/scale']
+    const [x1, y1, z1, x2, y2, z2, x3, y3, z3] = value['rotation/scale']
     result = [
       [x1, y1, z1],
       [x2, y2, z2],
-      [x3, y3, z3]
+      [x3, y3, z3],
     ]
   }
   if (!Array.isArray(result)) {

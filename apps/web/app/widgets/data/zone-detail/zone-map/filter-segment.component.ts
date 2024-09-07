@@ -9,7 +9,7 @@ import { ZoneMapStore } from './zone-map.store'
   selector: 'nwb-map-filter-segment',
   template: `
     @for (row of rows(); track row.key) {
-      <nwb-map-filter-section [source]="row.items" />
+      <nwb-map-filter-section [source]="row.items" [open]="open()" />
     }
   `,
   host: {
@@ -19,6 +19,7 @@ import { ZoneMapStore } from './zone-map.store'
 })
 export class MapFilterSegmentComponent {
   public source = input.required<FilterDataSet[]>()
+  public open = input<boolean>()
   public featureHover = output<FilterFeatureProperties[]>()
   protected mapId = inject(ZoneMapStore).mapId
   protected rows = computed(() => {

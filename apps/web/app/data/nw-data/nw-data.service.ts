@@ -19,6 +19,8 @@ import {
   ScannedLore,
   ScannedNpc,
   ScannedSpell,
+  ScannedStationType,
+  ScannedStructureType,
   ScannedTerritory,
   ScannedVariation,
   ScannedVital,
@@ -103,6 +105,14 @@ export class NwDataService {
   public houseTypesMeta = table(() => this.load<ScannedHouseType>({ uri: 'nw-data/generated/houses_metadata.json' }))
   public houseTypesMetaMap = tableIndexBy(() => this.houseTypesMeta, 'houseTypeID')
   public houseTypeMeta = tableLookup(() => this.houseTypesMetaMap)
+
+  public structureTypesMeta = table(() => this.load<ScannedStructureType>({ uri: 'nw-data/generated/structures_metadata.json' }))
+  public structureTypesMetaMap = tableIndexBy(() => this.structureTypesMeta, 'type')
+  public structureTypeMeta = tableLookup(() => this.structureTypesMetaMap)
+
+  public stationTypesMeta = table(() => this.load<ScannedStationType>({ uri: 'nw-data/generated/stations_metadata.json' }))
+  public stationTypesMetaMap = tableIndexBy(() => this.stationTypesMeta, 'stationID')
+  public stationTypeMeta = tableLookup(() => this.stationTypesMetaMap)
 
   public itemOrHousingItem = (id: string | Observable<string> | Signal<string>) =>
     combineLatest({

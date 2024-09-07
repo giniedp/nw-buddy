@@ -100,9 +100,9 @@
         </ion-buttons>
         <ion-segment>
           @for (segment of segments(); track $index) {
-            <ion-segment-button (click)="selectSegment(segment.id)" [tooltip]="segment.label">
-
+            <ion-segment-button (click)="selectSegment(segment.id)">
               <nwb-icon [icon]="segment.icon" class="w-5 h-5" />
+              <span>{{ segment.label }}</span>
             </ion-segment-button>
           }
         </ion-segment>
@@ -116,13 +116,10 @@
       }
       @if (activeSegment(); as segment) {
         @if (segment.source) {
-          <nwb-map-filter-segment [source]="segment.source" />
+          <nwb-map-filter-segment [source]="segment.source" [open]="segment.open" />
         }
         @if (segment.vitals) {
           <nwb-map-filter-vitals [data]="segment.vitals" />
-        }
-        @if (segment.houses) {
-          <ng-container [nwbMapLayer]="'houses'" [data]="segment.houses" [labels]="true" [polygons]="false" [heatmap]="true"/>
         }
       }
     </ion-content>

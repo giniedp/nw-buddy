@@ -12,6 +12,9 @@ export class PopoverDirective {
 
   @HostListener('click', ['$event'])
   protected async presentPopover(e: Event) {
+    if (!this.popover()) {
+      return
+    }
     const popover = await this.controller.create({
       component: PopoverComponent,
       componentProps: { content: this.popover() },

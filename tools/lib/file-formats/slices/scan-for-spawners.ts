@@ -16,6 +16,7 @@ export type SpawnerScanResult = {
   gatherableID?: string
   loreIDs?: string[]
   encounter: string
+  name: string
 
   vitalsID?: string
   npcID?: string
@@ -27,7 +28,9 @@ export type SpawnerScanResult = {
   mtlFile?: string
   adbFile?: string
   positions: Array<number[]>
-  houseTypes: string[]
+  houseType: string
+  stationID: string
+  structureType: string
 }
 
 export async function scanForSpawners(rootDir: string, file: string, assetId: string): Promise<SpawnerScanResult[]> {
@@ -183,8 +186,9 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
   }
 
   for (const item of unconsumed) {
-    if (item.houseTypes?.length) {
+    if (item.houseType) {
       yield {
+        name: item.name,
         encounter: null,
         gatherableID: null,
         variantID: null,
@@ -193,11 +197,14 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         modelFile: null,
         mtlFile: null,
         adbFile: null,
-        houseTypes: item.houseTypes,
+        houseType: item.houseType,
+        stationID: null,
+        structureType: null,
       }
     }
     if (item.vitalsID) {
       const result: SpawnerScanResult = {
+        name: item.name,
         encounter: encounterType,
         vitalsID: item.vitalsID,
         categoryID: item.categoryID,
@@ -208,13 +215,16 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         positions: [[0, 0, 0]],
         mtlFile: item.mtlFile,
         adbFile: item.adbFile,
-        houseTypes: item.houseTypes,
+        houseType: null,
+        stationID: null,
+        structureType: null,
       }
       debugVital(result, file)
       yield result
     }
     if (item.gatherableID || item.variantID) {
       yield {
+        name: item.name,
         encounter: encounterType,
         gatherableID: item.gatherableID,
         variantID: item.variantID,
@@ -223,11 +233,14 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         modelFile: null,
         mtlFile: null,
         adbFile: null,
-        houseTypes: null,
+        houseType: null,
+        stationID: null,
+        structureType: null,
       }
     }
     if (item.loreIDs?.length) {
       yield {
+        name: item.name,
         encounter: encounterType,
         loreIDs: item.loreIDs,
         positions: [[0, 0, 0]],
@@ -235,22 +248,57 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         modelFile: null,
         mtlFile: null,
         adbFile: null,
-        houseTypes: null,
+        houseType: null,
+        stationID: null,
+        structureType: null,
       }
     }
     if (item.npcID?.length) {
       yield {
+        name: item.name,
         encounter: encounterType,
         npcID: item.npcID,
-        positions: [[0, 0, 0]],
+        positions: [item.position || [0, 0, 0]],
         damageTable: null,
         modelFile: null,
         mtlFile: null,
         adbFile: null,
-        houseTypes: null,
+        houseType: null,
+        stationID: null,
+        structureType: null,
+      }
+    }
+
+    if (item.stationID) {
+      yield {
+        name: item.name,
+        encounter: null,
+        npcID: null,
+        positions: [item.position || [0, 0, 0]],
+        damageTable: null,
+        modelFile: null,
+        mtlFile: null,
+        adbFile: null,
+        houseType: null,
+        stationID: item.stationID,
+        structureType: null,
+      }
+    }
+
+    if (item.structureType) {
+      yield {
+        name: item.name,
+        encounter: null,
+        npcID: null,
+        positions: [item.position || [0, 0, 0]],
+        damageTable: null,
+        modelFile: null,
+        mtlFile: null,
+        adbFile: null,
+        houseType: null,
+        stationID: null,
+        structureType: item.structureType,
       }
     }
   }
 }
-
-function moveHouseShape(spaw: SpawnerScanResult, houses) {}

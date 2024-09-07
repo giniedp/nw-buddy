@@ -168,6 +168,91 @@ const LOOT_TABLE_ICONS = {
   Nut_Small: 'nutt1.png',
 }
 
+const LOOT_TABLE_COLORS = {
+  // spinfiber
+  HempSmallT52: '#616bd9',
+  HempMediumT52: '#616bd9',
+  HempLargeT52: '#616bd9',
+  // wirefiber
+  HempSmallT5: '#cf8874',
+  HempMediumT5: '#cf8874',
+  HempLargeT5: '#cf8874',
+  // silk
+  HempSmallT4: '#769cd2',
+  HempMediumT4: '#769cd2',
+  HempLargeT4: '#769cd2',
+  // hemp
+  HempSmallT1: '#9f74b9',
+  HempMediumT1: '#9f74b9',
+  HempLargeT1: '#9f74b9',
+  // herb
+  // Herb_Small: 'herb_compass.png',
+  // Herb_Medium: 'herb_compass.png',
+  // Herb_Large: 'herb_compass.png',
+  // wyrdwood_compass.png
+  Wyrdwood: '#79937e',
+  WyrdwoodTreeSmall: '#79937e',
+  WyrdwoodTreeMedium: '#79937e',
+  WyrdwoodTreeLarge: '#79937e',
+  // ironwood_compass.png
+  Ironwood: '#7a7066',
+  IronwoodTreeTiny: '#7a7066',
+  IronwoodTreeSmall: '#7a7066',
+  IronwoodTreeMedium: '#7a7066',
+  IronwoodTreeLarge: '#7a7066',
+  IronwoodTreeHuge: '#7a7066',
+  // runewood_compass.png
+  Runewood: '#4b36a8',
+  RunewoodTreeTiny: '#4b36a8',
+  RunewoodTreeSmall: '#4b36a8',
+  RunewoodTreeMedium: '#4b36a8',
+  RunewoodTreeLarge: '#4b36a8',
+  RunewoodTreeHuge: '#4b36a8',
+  // starmetal_compass.png
+  Starmetal: '#71bff1',
+  StarmetalOreVeinFinishSmall: '#71bff1',
+  StarmetalOreVeinFinishMedium: '#71bff1',
+  StarmetalOreVeinFinishLarge: '#71bff1',
+  OutpostRush_OreVeinSmall: '#71bff1',
+  OutpostRush_OreVeinMedium: '#71bff1',
+  OutpostRush_OreVeinLarge: '#71bff1',
+  // flintt1.png
+  Flint: '#3c3c3a',
+  Flint_Small: '#3c3c3a',
+  Flint_Medium: '#3c3c3a',
+  Flint_Large: '#3c3c3a',
+
+  Single_Stone: '#3c3c3a',
+  // gold_compass.png
+  Gold: '#b29968',
+  Gold_Small: '#b29968',
+  Gold_Medium: '#b29968',
+  Gold_Large: '#b29968',
+  // iron_compass.png
+  OreVeinFinishSmall: '#6f6451',
+  OreVeinFinishMedium: '#6f6451',
+  OreVeinFinishLarge: '#6f6451',
+  // mythril_compass.png
+  Mythril: '#a67fb9',
+  MythrilOreVeinFinishSmall: '#a67fb9',
+  MythrilOreVeinFinishMedium: '#a67fb9',
+  MythrilOreVeinFinishLarge: '#a67fb9',
+  // orichalcum_compass.png
+  Orichalcum: '#bb958b',
+  OrichalcumOreVeinFinishSmall: '#bb958b',
+  OrichalcumOreVeinFinishMedium: '#bb958b',
+  OrichalcumOreVeinFinishLarge: '#bb958b',
+  // platinum_compass.png
+  Platinum: '#a7c4d4',
+  Platinum_Small: '#a7c4d4',
+  Platinum_Medium: '#a7c4d4',
+  Platinum_Large: '#a7c4d4',
+  // silver_compass.png
+  Silver: '#323232',
+  Silver_Small: '#323232',
+  Silver_Medium: '#323232',
+  Silver_Large: '#323232',
+}
 export function getGatherableIcon(gatherable: GatherableData) {
   if (!gatherable) {
     return null
@@ -182,6 +267,13 @@ export function getGatherableIcon(gatherable: GatherableData) {
   //   return result
   // }
   return null
+}
+
+export function getGatherableColor(gatherable: GatherableData) {
+  if (!gatherable) {
+    return null
+  }
+  return LOOT_TABLE_COLORS[gatherable.IconTypeUnlock] || LOOT_TABLE_COLORS[gatherable.FinalLootTable]
 }
 
 export function getTradeskillIcon(tradeskill: string) {

@@ -3,10 +3,12 @@
   <ng-container
     #mapLayer="mapLayer"
     [nwbMapLayer]="layer.id"
+    [labels]="!!layer.labels"
+    [color]="layer.properties.color"
+    [icons]="!!layer.properties.icon"
     [disabled]="true"
     [heatmap]="showHeatmap()"
     [filter]="filter()"
-    [color]="layer.color"
     [data]="data?.geometry"
     (featureMouseEnter)="handleMouseEnter($event)"
     (featureMouseLeave)="handleMouseLeave($event)"
@@ -17,62 +19,21 @@
 @for (feature of hoverItems(); track $index) {
   @if (feature.lootTable) {
     <ng-template [nwbGameMapMouseTip]>
-      <nwb-loot-graph [tableId]="feature.lootTable" [showLocked]="true" class="w-80 mb-1 text-sm"/>
+      <nwb-loot-graph [tableId]="feature.lootTable" [showLocked]="true" class="w-80 mb-1 text-sm" />
     </ng-template>
-  }
-  @if (feature.loreID) {
+  } @else if (feature.tooltip) {
     <ng-template [nwbGameMapMouseTip]>
-      <div class="w-80 mb-1 p-4 bg-base-300 rounded-sm">
-        {{ feature.name | nwText }}
-      </div>
+      {{ feature.tooltip | nwText }}
     </ng-template>
   }
 }
 
-<div class="flex flex-row gap-1">
-  <div class="join w-full">
-    <button
-      class="join-item flex-1 btn btn-sm btn-ghost justify-start items-center gap-2 text-left"
-      (click)="toggleAll()"
-      [class.text-primary]="isAnyEnabled()"
-    >
-      <span class="flex-1">
-        {{ label() | nwText }}
-      </span>
-
-      @if (icon(); as icon) {
-        <img [nwImage]="icon" class="w-6 flex-none" />
-      }
-    </button>
-
-    @for (variant of variants(); track variant.id) {
-      @let isActive = isVariantActive(variant.id);
-      <button
-        class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
-        [class.btn-ghost]="!isActive"
-        [style.--btn-color]="isActive ? (variant.color | toLCH) : null"
-        (click)="toggleVariant(variant.id)"
-      >
-        @if (variant.icon; as icon) {
-          <img [nwImage]="icon" class="w-6" />
-        } @else {
-          {{ variant.label }}
-        }
-      </button>
-    } @empty {
-      @if (isAnyEnabled() && items().length === 1) {
-        <button
-          class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
-          [class.btn-ghost]="!isAnyEnabled()"
-          [style.--btn-color]="isAnyEnabled() ? (color() | toLCH) : null"
-          (click)="toggleAll()"
-        ></button>
-      }
-    }
-  </div>
-
+<div class="flex flex-row items-center group">
   @if (hasChevron()) {
-    <button class="flex-none btn btn-sm btn-square btn-ghost" (click)="isOpen.set(!isOpen())">
+    <button
+      class="btn btn-xs btn-square btn-ghost mx-1 hover:bg-transparent hover:text-primary"
+      (click)="isOpen.set(!isOpen())"
+    >
       <nwb-icon
         [icon]="iconArrowLeft"
         class="w-3 transition-transform"
@@ -80,30 +41,69 @@
         [class.-rotate-90]="isOpen()"
       />
     </button>
-  } @else {
-    <button class="join-item flex-none btn btn-sm btn-square btn-ghost" [popover]="tplTip">
-      <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
-    </button>
-    <ng-template #tplTip>
-      <div class="bg-base-300 w-96">
-        <nwb-map-filter-popover [data]="items()" />
-      </div>
-    </ng-template>
   }
+  <button
+    class="join-item flex-1 btn btn-sm btn-ghost hover:bg-transparent justify-start items-center gap-2 text-left pl-0"
+    (click)="toggleAll()"
+    [class.text-primary]="isAnyEnabled()"
+  >
+    <span class="flex-1 transition-transform group-hover:translate-x-1" [class.pl-8]="!hasChevron()">
+      {{ label() | nwText }}
+    </span>
+  </button>
+
+  @if (variants().length) {
+    <div class="join">
+      @for (variant of variants(); track variant.id) {
+        @let isActive = isVariantActive(variant.id);
+        <button
+          class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
+          [class.btn-ghost]="!isActive"
+          [style.--btn-color]="isActive ? (variant.properties.color | toLCH) : null"
+          (click)="toggleVariant(variant.id)"
+        >
+          @if (variant.icon; as icon) {
+            <img [nwImage]="icon" class="w-6 scale-150" />
+          } @else {
+            {{ variant.label }}
+          }
+        </button>
+      }
+    </div>
+  }
+
+  <button
+    class="join-item flex-none btn btn-sm btn-square btn-ghost ml-1"
+    [class.btn-ghost]="!isAnyEnabled()"
+    [class.btn-disabled]="!hasInfo()"
+    [style.--btn-color]="isAnyEnabled() && items().length === 1 && !variants().length ? (color() | toLCH) : null"
+    [popover]="tplTip"
+  >
+    @if (icon(); as icon) {
+      <img [nwImage]="icon" class="w-6 scale-150 flex-none" />
+    } @else if (hasInfo()) {
+      <nwb-icon [icon]="iconInfo" class="w-4 h-4 lg:opacity-0 group-hover:opacity-100" />
+    }
+  </button>
+  <ng-template #tplTip>
+    <div class="bg-base-300 w-96">
+      <nwb-map-filter-popover [data]="items()" />
+    </div>
+  </ng-template>
 </div>
 
 @if (isOpen()) {
-  <div class="grid grid-cols-2 gap-1 pl-8 mt-1">
+  <div class="grid grid-cols-2 gap-1 pl-5 mt-1 pb-4">
     @for (item of items(); track $index) {
       @let isActive = isLayerActive(item.id);
-      <div class="join">
+      <div class="join group" [class.text-primary]="isActive">
         <button
-          class="join-item flex-1 btn btn-sm btn-ghost justify-start text-left"
+          class="flex-1 btn btn-sm btn-ghost hover:bg-transparent justify-start text-left"
           (click)="toggleLayer(item.id)"
           [disabled]="
-            (item.encounter === 'random' && !mapStore.showRandomEncounter()) ||
-            (item.encounter === 'goblin' && !mapStore.showGoblinEncounter()) ||
-            (item.encounter === 'darkness' && !mapStore.showDarknessEncounter())
+            (item.properties.encounter === 'random' && !mapStore.showRandomEncounter()) ||
+            (item.properties.encounter === 'goblin' && !mapStore.showGoblinEncounter()) ||
+            (item.properties.encounter === 'darkness' && !mapStore.showDarknessEncounter())
           "
         >
           @if (item.subcategoryLabel) {
@@ -111,12 +111,12 @@
           } @else if (item.subcategory) {
             {{ item.subcategory }}
           } @else {
-            {{ item.lootTable | nwHumanize }}
+            {{ item.properties.lootTable | nwHumanize }}
           }
-          @if (item.encounter === 'random') {
+          @if (item.properties.encounter === 'random') {
             <nwb-icon [icon]="diceIcon" class="w-4 h-4" tooltip="Random Encounter" />
           }
-          @if (item.encounter === 'darkness') {
+          @if (item.properties.encounter === 'darkness') {
             <img
               [nwImage]="'assets/icons/gatherables/damned_compass.png'"
               class="w-5 h-5 filter"
@@ -124,7 +124,7 @@
               tooltip="Darkness Encounter"
             />
           }
-          @if (item.encounter === 'goblin') {
+          @if (item.properties.encounter === 'goblin') {
             <img
               [nwImage]="'assets/icons/gatherables/rafflebones.png'"
               class="w-5 h-5 filter"
@@ -134,12 +134,12 @@
           }
         </button>
         <button
-          class="join-item flex-none btn btn-sm btn-square"
+          class="flex-none btn btn-sm btn-square"
           [class.btn-ghost]="!isActive"
-          [style.--btn-color]="isActive ? (item.color | toLCH) : null"
+          [style.--btn-color]="isActive ? (item.properties.color | toLCH) : null"
           [popover]="tplTip"
         >
-          <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4 lg:opacity-0 group-hover:opacity-100" />
         </button>
         <ng-template #tplTip>
           <div class="bg-base-300 w-96">

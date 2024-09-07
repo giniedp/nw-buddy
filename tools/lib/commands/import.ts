@@ -185,6 +185,16 @@ async function importSlices({
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),
+      writeJSONFile(data.stations, {
+        target: path.join(jsonOutDir, 'stations_metadata.json'),
+        createDir: true,
+        serialize: jsonStringifyFormatted,
+      }),
+      writeJSONFile(data.structures, {
+        target: path.join(jsonOutDir, 'structures_metadata.json'),
+        createDir: true,
+        serialize: jsonStringifyFormatted,
+      }),
       writeJSONFile(data.variations.data, {
         target: path.join(jsonOutDir, 'variations_metadata.json'),
         createDir: true,

@@ -1,32 +1,25 @@
 import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
 
+import { svgScalpel } from '~/ui/icons/svg'
 import { eqCaseInsensitive } from '~/utils'
-import { getGatherableIcon, getTradeskillIcon } from '~/widgets/data/gatherable-detail/utils'
-import { FilterDataPropertiesWithVariant } from '../data/types'
+import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
+import { FilterGroup } from '../data/types'
 import { ParsedLootTable } from '../utils/parse-loottable'
 import { CREATURES } from './creatures'
-import { svgScalpel } from '~/ui/icons/svg'
 
 export function describeSkinningFilters(
   lootTable: ParsedLootTable,
   gatherable: GatherableData,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
+): FilterGroup {
   if (gatherable.Tradeskill !== 'Skinning' || eqCaseInsensitive(lootTable.original, 'Empty')) {
     return null
   }
   const name = variant?.Name || gatherable.DisplayName || ''
   const icon = getGatherableIcon(gatherable)
   const creature = CREATURES.find((it) => lootTable.tokenized.some((token) => eqCaseInsensitive(token, it)))
-  const props: FilterDataPropertiesWithVariant = {
-    name,
-    color: null,
-    icon: icon,
-    variant: null,
-    lootTable: lootTable.original,
-    loreID: null,
-
+  const result: FilterGroup = {
     section: gatherable.Tradeskill,
     sectionLabel: gatherable.Tradeskill,
     sectionIcon: svgScalpel,
@@ -37,11 +30,20 @@ export function describeSkinningFilters(
 
     subcategory: '',
     subcategoryLabel: lootTable.tokenized.filter((it) => it !== 'Skinning' && it !== 'Farm').join(' '),
+
+    properties: {
+      color: null,
+      icon: null,
+      label: null,
+      size: 1,
+
+      lootTable: lootTable.original,
+    },
   }
   if (creature) {
-    props.category = creature
-    props.categoryLabel = creature
-    props.subcategory = lootTable.original
+    result.category = creature
+    result.categoryLabel = creature
+    result.subcategory = lootTable.original
   }
 
   // const size = parseSizeVariant(lootTable)
@@ -59,5 +61,5 @@ export function describeSkinningFilters(
   //   }
   // }
 
-  return props
+  return result
 }

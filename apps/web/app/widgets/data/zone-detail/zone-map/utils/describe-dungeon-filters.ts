@@ -1,15 +1,15 @@
-import { GatherableVariation, NW_FALLBACK_ICON } from '@nw-data/common'
+import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { humanize } from '~/utils'
-import { FilterDataPropertiesWithVariant } from '../data/types'
-import { ParsedLootTable } from './parse-loottable'
 import { svgDungeon } from '~/ui/icons/svg'
+import { humanize } from '~/utils'
+import { FilterGroup } from '../data/types'
+import { ParsedLootTable } from './parse-loottable'
 
 export function describeDungeonFilters(
   lootTable: ParsedLootTable,
   gatherable: GatherableData,
   variant?: GatherableVariation,
-): FilterDataPropertiesWithVariant {
+): FilterGroup {
   if (lootTable.tokenized[0] !== 'Dungeon') {
     return null
   }
@@ -20,14 +20,7 @@ export function describeDungeonFilters(
     return null
   }
 
-  const props: FilterDataPropertiesWithVariant = {
-    name: gatherable.DisplayName,
-    color: null,
-    icon: null,
-    variant: null,
-    lootTable: lootTable.original,
-    loreID: null,
-
+  const result: FilterGroup = {
     section: lootTable.tokenized[0],
     sectionLabel: lootTable.tokenized[0],
     sectionIcon: svgDungeon,
@@ -37,7 +30,16 @@ export function describeDungeonFilters(
 
     subcategory: match[3],
     subcategoryLabel: humanize(match[3]),
+    properties: {
+      color: null,
+      icon: null,
+      label: null,
+      size: 1,
+
+      // tooltip: gatherable.DisplayName,
+      lootTable: lootTable.original,
+    },
   }
 
-  return props
+  return result
 }

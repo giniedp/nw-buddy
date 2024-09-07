@@ -6,6 +6,7 @@ import {
   ScannedVitalModelData,
 } from '../../../../libs/nw-data/scanner'
 import { VitalScanRow } from '../../file-formats/slices/scan-for-vitals'
+import { sortBy } from 'lodash'
 
 export interface VitalsIndex {
   push(entry: VitalScanRow[]): void
@@ -48,7 +49,7 @@ export function vitalsIndex(): VitalsIndex {
       const vitalID = row.vitalsID.toLowerCase()
       const mapID = row.mapID?.toLowerCase() || ''
       const position = row.position ? parsePosition(row.position) : null
-      const positionID = String(position)
+      const positionID = position?.join() || ''
 
       const bucket1 = getBucket(vitalsIndex, vitalID, () => ({}))
       const bucket2 = getBucket(bucket1, mapID, () => ({}))
@@ -186,6 +187,9 @@ export function vitalsIndex(): VitalsIndex {
         record.models.sort()
         record.tables.sort()
         record.territories.sort()
+        for (const key in record.spawns || {}) {
+          record.spawns[key] = sortBy(record.spawns[key], (it) => it.p.join())
+        }
       }
       return result
     },

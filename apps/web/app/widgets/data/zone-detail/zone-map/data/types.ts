@@ -16,11 +16,6 @@ export interface FilterDataSet extends FilterGroup {
 export type FilterFeatureCollection = FeatureCollection<MultiPoint, FilterFeatureProperties>
 export type FilterFeature = Feature<MultiPoint, FilterFeatureProperties>
 export interface FilterGroup {
-  icon: string
-  color: string
-  lootTable: string
-  loreID: string
-
   section: string
   sectionLabel?: string
   sectionIcon?: string
@@ -33,29 +28,37 @@ export interface FilterGroup {
   subcategoryLabel?: string
   subcategoryIcon?: string
 
-  encounter?: string
-  vitalId?: string
-  vitalLevel?: number
+  variantID?: string
+  variantLabel?: string
+  variantIcon?: string
+
+  labels?: boolean
+  icons?: boolean
+
+  properties: FilterFeatureProperties
 }
 
 export interface FilterVariant {
   id: string
   label: string
-  name: string
-  color?: string
-  icon?: string
-
-  lootTable: string
+  icon: string
+  properties: FilterFeatureProperties
 }
 
-export interface FilterFeatureProperties extends FilterGroup {
-  icon: string
+export interface FilterFeatureProperties {
   color: string
-  name: string
-  size?: number
-  variant?: string
+  icon: string
+  label: string
+  size: number
+  iconSize?: number
 
-  lootTable: string
+  tooltip?: string
+  lootTable?: string
+  loreID?: string
+  vitalID?: string
+  vitalLevel?: number
+  encounter?: string
+  variant?: string
 }
 
 export interface FilterDataPropertiesWithVariant extends Omit<FilterFeatureProperties, 'variant'> {
