@@ -66,6 +66,9 @@ export class CraftingCalculatorComponent implements OnInit {
     })
   }
 
+  @Input()
+  public recipeOnly = false
+
   protected iconImporter = svgDollarSign
   protected iconMode = svgPercent
   protected iconOptions = svgGears

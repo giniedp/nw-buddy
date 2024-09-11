@@ -9,13 +9,14 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { EmptyComponent } from '~/widgets/empty'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { TrophiesRecord } from './types'
+import { CraftingCalculatorComponent } from "../../../../widgets/crafting/crafting-calculator.component";
 
 @Component({
   standalone: true,
   selector: 'nwb-trophies-cell',
   templateUrl: './trophies-cell.component.html',
   styleUrls: ['./trophies-cell.component.scss'],
-  imports: [CommonModule, ItemDetailModule, NwModule, IconsModule, ItemTrackerModule, TooltipModule],
+  imports: [CommonModule, ItemDetailModule, NwModule, IconsModule, ItemTrackerModule, TooltipModule, CraftingCalculatorComponent],
   host: {
     class: 'flex m-2',
   },

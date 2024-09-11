@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getCraftingIngredients, getItemId, getRecipeForItem } from '@nw-data/common'
-import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
+import { getItemId, getRecipeForItem } from '@nw-data/common'
+import { CraftingRecipeData, HouseItems } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -43,8 +43,6 @@ export class TrophiesTableAdapter implements DataViewAdapter<TrophiesRecord> {
     combineLatest({
       recipes: this.db.recipesMapByItemId,
       trophies: this.db.housingItems.pipe(map((it) => it.filter(isTrophyItem))),
-      itemsMap: this.db.itemsMap,
-      housingMap: this.db.housingItemsMap,
     }),
     selectRecords,
   )
@@ -54,32 +52,12 @@ function isTrophyItem(item: HouseItems) {
   return item.HousingTags?.includes('IsTrophyBuff')
 }
 
-function selectRecords({
-  recipes,
-  trophies,
-  itemsMap,
-  housingMap,
-}: {
-  recipes: Map<string, CraftingRecipeData[]>
-  trophies: HouseItems[]
-  itemsMap: Map<string, MasterItemDefinitions>
-  housingMap: Map<string, HouseItems>
-}) {
+function selectRecords({ recipes, trophies }: { recipes: Map<string, CraftingRecipeData[]>; trophies: HouseItems[] }) {
   const records = trophies.map((housing): TrophiesRecord => {
-    const recipe = getRecipeForItem(housing, recipes)
-    const ingredients = getCraftingIngredients(recipe).map((it) => {
-      return {
-        quantity: it.quantity,
-        item: itemsMap.get(it.ingredient) || housingMap.get(it.ingredient),
-        itemId: it.ingredient,
-      }
-    })
-
     return {
       itemId: getItemId(housing),
       item: housing,
-      recipe: recipe,
-      ingredients: ingredients,
+      recipe: getRecipeForItem(housing, recipes),
     }
   })
 
