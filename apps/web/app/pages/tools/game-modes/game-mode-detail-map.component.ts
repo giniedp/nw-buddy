@@ -8,7 +8,12 @@ import { ZoneDetailMapComponent } from '~/widgets/data/zone-detail/zone-map/zone
   selector: 'nwb-game-mode-detail-map',
   template: `
     @if (store.mapId()) {
-      <nwb-map class="w-full h-full rounded-md bg-opacity-5" [mapId]="store.mapId()" [fitBounds]="store.bounds()" [fitBoundsOptions]="{ animate: false }" />
+      <nwb-map
+        class="w-full h-full rounded-md transition-all bg-opacity-0 hover:bg-opacity-10"
+        [mapId]="store.mapId()"
+        [fitBounds]="store.bounds()"
+        [fitBoundsOptions]="{ animate: false }"
+      />
     }
   `,
   imports: [GameMapComponent, ZoneDetailMapComponent],
