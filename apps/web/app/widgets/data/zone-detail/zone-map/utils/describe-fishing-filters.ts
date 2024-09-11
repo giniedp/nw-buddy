@@ -15,7 +15,7 @@ export function describeFishingFilters(
 
   const result: FilterGroup = {
     section: 'Fishing',
-    sectionLabel: 'Fishing',
+    sectionLabel: 'ui_fishing',
     sectionIcon: svgFishingRod,
 
     category: gatherable.GatherableID,
@@ -30,8 +30,8 @@ export function describeFishingFilters(
       label: null,
       size: 1,
 
-      lootTable: lootTable.original,
-      //tooltip: gatherable.DisplayName,
+      lootTableID: lootTable.original,
+      title: gatherable.DisplayName,
     },
   }
   return result

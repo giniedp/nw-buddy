@@ -13,7 +13,11 @@
 <ion-content>
   <ng-content />
   @for (node of menu; track $index) {
-    <ul class="menu menu-compact flex-none flex-nowrap m-0 p-0" [class.hidden]="node.category !== active" data-testid="app-menu">
+    <ul
+      class="menu menu-compact flex-none flex-nowrap m-0 p-0"
+      [class.hidden]="node.category !== active"
+      data-testid="app-menu"
+    >
       @for (item of node.items; track $index) {
         @if (item.divider) {
           <li></li>
@@ -22,7 +26,12 @@
           [routerLinkActive]="['border-l-4', 'border-primary']"
           (isActiveChange)="$event ? onGroupActive(node.category) : null"
         >
-          <a [routerLink]="link.withLocale(item.path)" nwbMenuClose class="rounded-none" [routerLinkActive]="['active']">
+          <a
+            [routerLink]="link.withLocale(item.path)"
+            nwbMenuClose
+            class="rounded-none"
+            [routerLinkActive]="['active']"
+          >
             @if (item.icon) {
               <img [nwImage]="item.icon" class="w-5 h-5" />
             } @else if (item.svgIcon) {
@@ -39,7 +48,9 @@
   <div class="flex flex-col gap-1 items-center p-4">
     <div class="flex-none flex flex-row flex-wrap gap-2 items-center justify-center">
       <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="link.withLocale('/links')">Links</a>
-      <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="link.withLocale('/preferences')">Preferences</a>
+      <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="link.withLocale('/preferences')">
+        Preferences
+      </a>
       <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="link.withLocale('/about')">About</a>
     </div>
     @if (showPtrSwitch) {

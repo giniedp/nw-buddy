@@ -3,21 +3,29 @@ import { groupBy, sortBy } from 'lodash'
 import { FilterFeatureProperties, FilterDataSet } from './data/types'
 import { MapFilterSectionComponent } from './filter-section.component'
 import { ZoneMapStore } from './zone-map.store'
+import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 
 @Component({
   standalone: true,
   selector: 'nwb-map-filter-segment',
   template: `
+    @if (rows()?.length) {
+      <div class="p-1">
+        <nwb-quicksearch-input />
+      </div>
+    }
     @for (row of rows(); track row.key) {
-      <nwb-map-filter-section [source]="row.items" [open]="open()" />
+      <nwb-map-filter-section [source]="row.items" [open]="open()" [search]="search.query()" />
     }
   `,
   host: {
     class: 'block',
   },
-  imports: [MapFilterSectionComponent],
+  imports: [MapFilterSectionComponent, QuicksearchModule],
+  providers: [QuicksearchService],
 })
 export class MapFilterSegmentComponent {
+  protected search = inject(QuicksearchService)
   public source = input.required<FilterDataSet[]>()
   public open = input<boolean>()
   public featureHover = output<FilterFeatureProperties[]>()

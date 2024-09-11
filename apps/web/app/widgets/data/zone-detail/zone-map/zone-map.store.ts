@@ -58,7 +58,7 @@ export const ZoneMapStore = signalStore(
     actions: {
       public: {
         load: noPayload,
-        loaded: payload<Omit<ZoneMapState, 'isLoaded'>>(),
+        loaded: payload<Omit<ZoneMapState, 'isLoaded' | 'mapId'>>(),
         toggleLootTable: payload<{ id: string }>(),
       },
       private: {},
@@ -80,7 +80,10 @@ export const ZoneMapStore = signalStore(
             return combineLatest({
               territories: loadTerritories(db, tl8, xyToLngLat),
               gatherables: loadGatherables(db, xyToLngLat),
-              vitals: loadVitals(db, xyToLngLat),
+              vitals: loadVitals({
+                db,
+                mapCoord: xyToLngLat,
+              }),
               houses: loadStructures(db, tl8, xyToLngLat),
               vitalsTypes: db.vitalsByCreatureType.pipe(map((it) => Array.from<CreatureType>(it.keys() as any))),
               vitalsCategories: db.vitalsCategories.pipe(map((list) => list.map((it) => it.VitalsCategoryID).sort())),
@@ -94,7 +97,7 @@ export const ZoneMapStore = signalStore(
               vitals,
               vitalsTypes,
               vitalsCategories,
-              mapId: 'newworld_vitaeeterna',
+              //mapId: 'newworld_vitaeeterna',
             }),
           ),
         ),

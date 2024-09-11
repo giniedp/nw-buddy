@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, Routes } from '@an
 
 import { ItemDetailPageComponent } from './item-detail-page.component'
 import { ItemsPageComponent } from './items-page.component'
+import { EmptyComponent } from '~/widgets/empty'
 
 const redirectFromDepricated = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   return inject(Router).parseUrl(state.url.replace('/table', ''))

@@ -7,5 +7,5 @@
   [disableInfo]="true"
   [nwbItemMarker]="item.ItemID"
   #itemMarker="itemMarker"
-  [class.is-collected]="!!(itemMarker.value$ | async)"
+  [class.is-collected]="!!itemMarker.value()"
 />

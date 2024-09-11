@@ -150,7 +150,20 @@ const LOOT_TABLE_ICONS = {
   //
   BearCorruptedSkinning: 'bear_compass.png',
   BearSkinning: 'bear_compass.png',
-
+  //
+  ElkSkinning: 'elk_compass.png',
+  //
+  CatSkinning: 'puma_compass.png',
+  //
+  FarmCow: 'cow_compass.png',
+  //
+  FarmPig: 'pig_compass.png',
+  //
+  Goat: 'sheep_compass.png',
+  //
+  Turkey: 'turkey_compass.png',
+  //
+  LargeBird: 'peacock_compass.png',
   //
   RabbitSkinning: 'hare_compass.png',
   BisonSkinning: 'bison_compass.png',

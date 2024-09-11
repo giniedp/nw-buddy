@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, inject, input } from '@angular/core'
+import { Component, computed, inject, input, signal } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { getQuestRequiredAchievmentIds, getQuestTypeIcon } from '@nw-data/common'
 import { Objectives } from '@nw-data/generated'
@@ -101,9 +101,9 @@ export class QuestNextComponent {
   standalone: true,
   selector: 'nwb-quest-tree',
   template: `
-    @if (left) {
+    <!-- @if (left) {
       <nwb-quest-prev [data]="left" />
-    }
+    } -->
     @if (quest) {
       <nwb-quest-link [quest]="quest" />
     }

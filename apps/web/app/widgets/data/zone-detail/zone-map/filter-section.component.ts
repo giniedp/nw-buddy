@@ -12,7 +12,7 @@ import { MapFilterCategoryComponent } from './filter-category.component'
   standalone: true,
   selector: 'nwb-map-filter-section',
   template: `
-    <details [attr.open]="open() ? 'open' : null">
+    <details [attr.open]="open() || !!search() ? 'open' : null">
       <summary
         class="btn btn-block btn-ghost no-animation rounded-none flex flex-row justify-start items-center group pr-2"
       >
@@ -33,7 +33,7 @@ import { MapFilterCategoryComponent } from './filter-category.component'
       </summary>
       <div class="px-2 space-y-1 pt-1 pb-8">
         @for (row of rows(); track row.key) {
-          <nwb-map-filter-category [source]="row.items" />
+          <nwb-map-filter-category [source]="row.items" [search]="search()" />
         }
       </div>
     </details>
@@ -41,11 +41,14 @@ import { MapFilterCategoryComponent } from './filter-category.component'
   imports: [NwModule, MapFilterCategoryComponent, IconsModule],
   host: {
     class: 'block',
+    '[class.hidden]': '!matchSearch()'
   },
 })
 export class MapFilterSectionComponent {
   public source = input.required<FilterDataSet[]>()
   public open = input<boolean>()
+  public search = input<string>()
+
   protected children = viewChildren(MapFilterCategoryComponent)
   protected layers = contentChildren(GameMapLayerDirective, { descendants: true })
   protected data = computed(() => {
@@ -63,9 +66,16 @@ export class MapFilterSectionComponent {
     return {
       items,
       rows,
-      label: first?.sectionLabel || humanize(first?.section),
+      label: first?.sectionLabel,
       icon: first?.sectionIcon,
     }
+  })
+  protected matchSearch = computed(() => {
+    const search = this.search()
+    if (!search) {
+      return true
+    }
+    return this.children().some((it) => it.matchSearch())
   })
 
   protected items = computed(() => this.data().items)

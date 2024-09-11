@@ -55,15 +55,17 @@
               <nwb-icon [icon]="diceIcon" class="w-5 h-5" />
             </button>
           </div>
-          <select
-            [ngModel]="store.mapId()"
-            (ngModelChange)="store.setMap($event)"
-            class="select select-sm select-ghost"
-          >
-            @for (option of mapsOptions(); track option.value) {
-              <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
+          @if (showMapOptions()) {
+            <select
+              [ngModel]="store.mapId()"
+              (ngModelChange)="store.setMap($event)"
+              class="select select-sm select-ghost"
+            >
+              @for (option of mapsOptions(); track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          }
         </div>
       </ion-toolbar>
     </ion-header>
@@ -78,6 +80,7 @@
         [labels]="store.showLabels()"
         (zoneClick)="zoneClicked.emit($event)"
       >
+        <game-map-coords class="absolute top-1 left-2 text-shadow-sm shadow-black font-mono text-sm"/>
       </nwb-map>
     </ion-content>
   </div>
@@ -98,9 +101,9 @@
             <ng-container [ngTemplateOutlet]="tplMenuStart" />
           }
         </ion-buttons>
-        <ion-segment>
+        <ion-segment [value]="segment()">
           @for (segment of segments(); track $index) {
-            <ion-segment-button (click)="selectSegment(segment.id)">
+            <ion-segment-button (click)="selectSegment(segment.id)" [value]="segment.id">
               <nwb-icon [icon]="segment.icon" class="w-5 h-5" />
               <span>{{ segment.label }}</span>
             </ion-segment-button>

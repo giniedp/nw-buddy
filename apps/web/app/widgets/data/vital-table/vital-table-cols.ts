@@ -11,22 +11,31 @@ import {
   isZonePoi,
   isZoneTerritory,
 } from '@nw-data/common'
-import { GameModeData, TerritoryDefinition, VitalsCategory, VitalsCategoryData, VitalsData } from '@nw-data/generated'
+import {
+  GameModeData,
+  TerritoryDefinition,
+  VitalsCategory,
+  VitalsCategoryData,
+  VitalsBaseData,
+  VitalsLevelVariantData,
+} from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
+
 import { uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize, stringToColor } from '~/utils'
 
 export type VitalTableUtils = TableGridUtils<VitalTableRecord>
-export type VitalTableRecord = VitalsData & {
-  $dungeons: GameModeData[]
-  $categories: VitalsCategoryData[]
-  $familyInfo: VitalFamilyInfo
-  $combatInfo: VitalFamilyInfo[] | null
-  $metadata: ScannedVital
-  $zones: TerritoryDefinition[]
-}
+export type VitalTableRecord = VitalsBaseData &
+  VitalsLevelVariantData & {
+    $dungeons: GameModeData[]
+    $categories: VitalsCategoryData[]
+    $familyInfo: VitalFamilyInfo
+    $combatInfo: VitalFamilyInfo[] | null
+    $metadata: ScannedVital
+    $zones: TerritoryDefinition[]
+  }
 
 const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) => {
   if (!value) {

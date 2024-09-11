@@ -1,14 +1,14 @@
-import { TerritoryDefinition, VitalsData } from '@nw-data/generated'
+import { TerritoryDefinition, VitalsBaseData as VitalsData } from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
 import { Feature, MultiPoint } from 'geojson'
 import { uniq } from 'lodash'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { stringToColor } from '~/utils'
+import { eqCaseInsensitive, stringToColor } from '~/utils'
 import { VitalsFeatureProperties, VitalDataSet } from './types'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
-export function loadVitals(db: NwDataService, mapCoord: MapCoord) {
+export function loadVitals({ db, mapCoord, mapIds }: { db: NwDataService; mapCoord: MapCoord; mapIds?: string[] }) {
   return combineLatest({
     vitals: db.vitals,
     vitalsMetaMap: db.vitalsMetadataMap,
@@ -18,23 +18,25 @@ export function loadVitals(db: NwDataService, mapCoord: MapCoord) {
       return collectVitalsDataset({
         ...data,
         mapCoord,
+        mapIds,
       })
     }),
   )
 }
 
-function collectVitalsDataset(data: {
+function collectVitalsDataset(options: {
   vitals: VitalsData[]
   vitalsMetaMap: Map<string, ScannedVital>
   territoriesMap: Map<number, TerritoryDefinition>
   mapCoord: MapCoord
+  mapIds?: string[]
 }): VitalDataSet {
   type MapID = string
   let featureId = 0
   const groups: Record<MapID, Record<string, Feature<MultiPoint, VitalsFeatureProperties>>> = {}
 
-  for (const item of data.vitals) {
-    const meta = data.vitalsMetaMap.get(item.VitalsID)
+  for (const item of options.vitals) {
+    const meta = options.vitalsMetaMap.get(item.VitalsID)
     const lvlSpawns = meta?.spawns
     if (!lvlSpawns) {
       continue
@@ -44,6 +46,9 @@ function collectVitalsDataset(data: {
     const type = (item.CreatureType || '').toLowerCase()
     const lootTags = (item.LootTags || []).map((it) => (it || '').toLowerCase())
     for (const mapId in lvlSpawns) {
+      if (options.mapIds && !options.mapIds.some((it) => eqCaseInsensitive(it, mapId))) {
+        continue
+      }
       const spawns = lvlSpawns[mapId]
       const mapData = (groups[mapId] = groups[mapId] || {})
       for (const spawn of spawns) {
@@ -51,7 +56,7 @@ function collectVitalsDataset(data: {
         const position = spawn.p
         const encounter = spawn.e
         const poiTags = spawn.t
-          .map((it) => data.territoriesMap.get(it)?.POITag || [])
+          .map((it) => options.territoriesMap.get(it)?.POITag || [])
           .flat()
           .map((it) => it.toLowerCase())
         const categories = uniq(
@@ -80,7 +85,7 @@ function collectVitalsDataset(data: {
             }
           }
 
-          mapData[key].geometry.coordinates.push(data.mapCoord(position))
+          mapData[key].geometry.coordinates.push(options.mapCoord(position))
         }
       }
     }

@@ -12,6 +12,7 @@ export const CREATURES = [
   'Elk',
   'Goat',
   'Panther',
+  'Pig',
   'Rabbit',
   'Rat',
   'Scarab',

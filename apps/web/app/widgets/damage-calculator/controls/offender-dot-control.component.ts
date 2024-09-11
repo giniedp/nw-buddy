@@ -62,7 +62,7 @@ export class OffenderDotControlComponent {
       'Standard',
       'Strike',
       'Thrust',
-      'Void',
+      // 'Void',
     ]
     for (const type of types) {
       options.push({

@@ -1,7 +1,7 @@
 import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
-import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
+import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus, getPerkScalingPerGearScore } from '@nw-data/common'
 import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -77,7 +77,7 @@ export const PerkDetailStore = signalStore(
       modsInfo: computed(() => getAffixMODs(affix())),
       affixProps: computed(() => selectAffixProperties(affix())),
 
-      scalesWithGearScore: computed(() => !!perk()?.ScalingPerGearScore),
+      scalesWithGearScore: computed(() => !!getPerkScalingPerGearScore(perk())),
       itemClassGsBonus: computed(() => getPerkItemClassGSBonus(perk())),
     }
   }),

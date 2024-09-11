@@ -1,227 +1,245 @@
-<ul
-  class="menu bg-base-200 flex-none menu-horizontal menu-compact overflow-auto scrollbar-hide w-full flex-nowrap xl:menu-vertical xl:menu-normal xl:w-56"
-  *ngIf="isMutable"
->
-  <li class="menu-title mt-4 hidden xl:block">
-    <span>Normal</span>
-  </li>
-  <li [class.bordered]="!difficultyLevel">
-    <a rel="nofollow" [routerLink]="['.']" [queryParams]="{}">
-      <span>Regular</span>
-    </a>
-  </li>
-  <li class="menu-title mt-4 hidden xl:block">
-    <span>Mutated</span>
-  </li>
-
-  @for (item of difficulties$ | async; track $index) {
-    <li [class.bordered]="item.MutationDifficulty == difficultyLevel">
-      <a
-        rel="nofollow"
-        [routerLink]="['.']"
-        [queryParams]="{ difficulty: item.MutationDifficulty }"
-        [queryParamsHandling]="'merge'"
-      >
-        <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" />
-        {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
+@if (isMutable) {
+  <ul
+    class="menu bg-base-200 flex-none menu-horizontal menu-compact overflow-auto scrollbar-hide w-full flex-nowrap xl:menu-vertical xl:menu-normal xl:w-56"
+  >
+    <li class="menu-title mt-4 hidden xl:block">
+      <span>Normal</span>
+    </li>
+    <li [class.bordered]="!difficultyLevel">
+      <a rel="nofollow" [routerLink]="['.']" [queryParams]="{}">
+        <span>Regular</span>
       </a>
     </li>
-  }
-</ul>
+    <li class="menu-title mt-4 hidden xl:block">
+      <span>Mutated</span>
+    </li>
 
-<div class="flex-1 relative rounded-r-md bg-base-100 overflow-clip" [class.rounded-l-md]="!isMutable">
-  <picture class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
+    @for (item of difficulties$ | async; track $index) {
+      <li [class.bordered]="item.MutationDifficulty == difficultyLevel">
+        <a
+          rel="nofollow"
+          [routerLink]="['.']"
+          [queryParams]="{ difficulty: item.MutationDifficulty }"
+          [queryParamsHandling]="'merge'"
+        >
+          <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" />
+          {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
+        </a>
+      </li>
+    }
+  </ul>
+}
+
+<ion-content class="flex-1 relative">
+  <picture class="absolute top-0 left-0 w-full h-full pointer-events-none">
     <img [nwImage]="backgroundImage" class="block w-full h-full object-cover blur-sm" />
   </picture>
-  <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-auto pb-20">
-    <div class="prose-base mt-8 flex-none">
-      <section class="font-nimbus">
-        <h1 class="mb-0 font-normal font-serif tracking-wider">
-          <span [nwText]="title"></span>
-          @if (difficultyLevel) {
-            <span>, Difficulty {{ difficultyLevel }}</span>
-          }
-        </h1>
-        <div>
-          @if (recommendedLevel && !requiredGearScore) {
-            <span>Recommended Level: </span>
-            <span class="font-semibold text-accent">{{ recommendedLevel }}</span>
-          }
-          @if (requiredGearScore) {
-            <span>Required Minimum Gear Score: </span>
-            <span class="font-semibold text-accent">{{ requiredGearScore }}</span>
-          }
-        </div>
-        <div class="nw-item-divider max-w-lg"></div>
-        <div [nwText]="description" class="text-nw-description"></div>
-      </section>
-
-      <section class="font-nimbus">
-        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
-          <span>Requirements</span>
-        </h2>
-        <div class="nw-item-divider max-w-lg"></div>
-        @if (requirementText) {
+  <ion-content class="ion-p-4">
+    <div class="content-grid">
+      <div class="content-grid-info prose-base">
+        <section class="font-nimbus">
+          <h1 class="mb-0 font-normal font-serif tracking-wider">
+            <span [nwText]="title"></span>
+            @if (difficultyLevel) {
+              <span>, Difficulty {{ difficultyLevel }}</span>
+            }
+          </h1>
           <div>
-            <span class="text-primary">Your group must have at least </span>
-            <span [nwText]="requirementText"></span>
+            @if (recommendedLevel && !requiredGearScore) {
+              <span>Recommended Level: </span>
+              <span class="font-semibold text-accent">{{ recommendedLevel }}</span>
+            }
+            @if (requiredGearScore) {
+              <span>Required Minimum Gear Score: </span>
+              <span class="font-semibold text-accent">{{ requiredGearScore }}</span>
+            }
           </div>
-        }
-        @if (groupSize) {
-          <div>
-            <span>{{ groupSize }} - {{ teamCapacity || 5 }} </span>
-            <span>Players</span>
-          </div>
-        }
-        @if (requiredLevel) {
-          <div>
-            <span>Level: </span>
-            <span class="font-semibold text-accent">{{ requiredLevel }}</span>
-          </div>
-        }
-      </section>
+          <div class="nw-item-divider max-w-lg"></div>
+          <div [nwText]="description" class="text-nw-description"></div>
+        </section>
 
-      <section class="font-nimbus" *ngIf="!!difficulty">
-        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
-          <span>Weekly Mutations </span>
-          @if (isMutated$ | async) {
-            <picture class="inline-block w-8 m-0 animate-pulse" [@fade]="true">
-              <img
-                [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
-                class="w-full aspect-square rounded-full animate-spin-cw"
-              />
-            </picture>
-            <span>Active </span>
+        <section class="font-nimbus">
+          <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
+            <span>Requirements</span>
+          </h2>
+          <div class="nw-item-divider max-w-lg"></div>
+          @if (requirementText) {
+            <div>
+              <span class="text-primary">Your group must have at least </span>
+              <span [nwText]="requirementText"></span>
+            </div>
           }
-        </h2>
-        <div class="nw-item-divider max-w-lg mb-2"></div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl">
-          @if (store.mutaElementAvailable$ | async) {
-            <nwb-muta-element-tile
-              [mutaElement]="store.mutaElement$ | async"
-              (mutaElementChanged)="onMutaElementSelected($event)"
-              [options]="store.mutaElementOptions$ | async"
-            />
+          @if (groupSize) {
+            <div>
+              <span>{{ groupSize }} - {{ teamCapacity || 5 }} </span>
+              <span>Players</span>
+            </div>
           }
-          @if (store.mutaPromotionAvailable$ | async) {
-            <nwb-muta-promotion-tile
-              [mutaPromotion]="store.mutaPromotion$ | async"
-              [mutaElement]="store.mutaElement$ | async"
-              (mutaPromotionChanged)="onMutaPromotionSelected($event)"
-              [options]="store.mutaPromotionOptions$ | async"
-            />
+          @if (requiredLevel) {
+            <div>
+              <span>Level: </span>
+              <span class="font-semibold text-accent">{{ requiredLevel }}</span>
+            </div>
           }
-          @if (store.mutaCurseAvailable$ | async) {
-            <nwb-muta-curse-tile
-              [mutaCurse]="store.mutaCurse$ | async"
-              [mutaElement]="store.mutaElement$ | async"
-              (mutaCurseChanged)="onMutaCurseSelected($event)"
-              [options]="store.mutaCurseOptions$ | async"
-            />
-          }
-        </div>
-      </section>
+        </section>
 
-      <section>
-        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
-          <span>Available Rewards </span>
-        </h2>
-        <div class="nw-item-divider max-w-lg"></div>
+        @if (difficulty) {
+          <section class="font-nimbus">
+            <h2 class="mb-0 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
+              <span>Weekly Mutations </span>
+              @if (isMutated$ | async) {
+                <picture class="inline-block w-8 m-0 animate-pulse" [@fade]="true">
+                  <img
+                    [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                    class="w-full aspect-square rounded-full animate-spin-cw"
+                  />
+                </picture>
+                <span>Active </span>
+              }
+            </h2>
+            <div class="nw-item-divider max-w-lg mb-2"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl">
+              @if (store.mutaElementAvailable$ | async) {
+                <nwb-muta-element-tile
+                  [mutaElement]="store.mutaElement$ | async"
+                  (mutaElementChanged)="onMutaElementSelected($event)"
+                  [options]="store.mutaElementOptions$ | async"
+                />
+              }
+              @if (store.mutaPromotionAvailable$ | async) {
+                <nwb-muta-promotion-tile
+                  [mutaPromotion]="store.mutaPromotion$ | async"
+                  [mutaElement]="store.mutaElement$ | async"
+                  (mutaPromotionChanged)="onMutaPromotionSelected($event)"
+                  [options]="store.mutaPromotionOptions$ | async"
+                />
+              }
+              @if (store.mutaCurseAvailable$ | async) {
+                <nwb-muta-curse-tile
+                  [mutaCurse]="store.mutaCurse$ | async"
+                  [mutaElement]="store.mutaElement$ | async"
+                  (mutaCurseChanged)="onMutaCurseSelected($event)"
+                  [options]="store.mutaCurseOptions$ | async"
+                />
+              }
+            </div>
+          </section>
+        }
 
-        <div class="flex flex-row flex-wrap layout-gap mt-2">
-          <ng-container *ngIf="expeditionItems$ | async; let items">
-            <div *ngIf="items?.length" class="w-full max-w-md">
-              <div class="flex flex-row gap-2">
-                @for (item of items; track $index) {
-                  <a [nwLinkTooltip]="['item', itemId(item)]" class="block w-full max-w-[60px] aspect-square">
-                    <picture [nwIcon]="item" class="block w-full h-full my-0"></picture>
-                  </a>
+        <section>
+          <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
+            <span>Available Rewards </span>
+          </h2>
+          <div class="nw-item-divider max-w-lg"></div>
+
+          <div class="flex flex-row flex-wrap layout-gap mt-2">
+            @if (expeditionItems$ | async; as items) {
+              @if (items.length) {
+                <div class="w-full max-w-md">
+                  <div class="flex flex-row flex-wrap gap-2">
+                    @for (item of items; track $index) {
+                      <a [nwLinkTooltip]="['item', itemId(item)]" class="block w-full max-w-[60px] aspect-square">
+                        <picture [nwIcon]="item" class="block w-full h-full my-0"></picture>
+                      </a>
+                    }
+                  </div>
+                </div>
+              }
+            }
+            @if (difficulty) {
+              <div class="stats bg-opacity-0 self-end w-full max-w-md">
+                @for (row of difficyltyRewards$ | async; track $index) {
+                  <div class="stat place-items-center p-0">
+                    <div class="stat-title">
+                      <span [nwText]="row.RankName"></span>
+                    </div>
+                    <div
+                      class="stat-value cursor-pointer transition-all rounded-md outline outline-4 outline-transparent focus:outline-primary hover:outline-primary"
+                      [class.text-primary]="row.Completed"
+                      (click)="row.toggle()"
+                    >
+                      {{ row.Quantity }}
+                    </div>
+                    <div class="stat-desc">
+                      <span [nwText]="row.ItemName"></span>
+                    </div>
+                  </div>
                 }
               </div>
-            </div>
-          </ng-container>
-          <div class="stats bg-opacity-0 self-end w-full max-w-md" *ngIf="difficulty">
-            <div class="stat place-items-center p-0" *ngFor="let row of difficyltyRewards$ | async">
-              <div class="stat-title">
-                <span [nwText]="row.RankName"></span>
-              </div>
-              <div
-                class="stat-value cursor-pointer transition-all rounded-md outline outline-4 outline-transparent focus:outline-primary hover:outline-primary"
-                [class.text-primary]="row.Completed"
-                (click)="row.toggle()"
-              >
-                {{ row.Quantity }}
-              </div>
-              <div class="stat-desc">
-                <span [nwText]="row.ItemName"></span>
-              </div>
-            </div>
+            }
+          </div>
+        </section>
+
+        <div class="mt-4">
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <span class="label-text">Show loot for your level</span>
+              <input
+                type="checkbox"
+                class="toggle"
+                [class.toggle-primary]="adjustLevel$ | async"
+                [ngModel]="adjustLevel$ | async"
+                (ngModelChange)="adjustLevel$.next($event)"
+              />
+            </label>
+          </div>
+          <div class="form-control w-full" *ngIf="adjustLevel$ | async">
+            <input
+              class="input input-bordered"
+              placeholder="60"
+              type="number"
+              [min]="1"
+              [max]="65"
+              [ngModel]="adjustedLevel$ | async"
+              (ngModelChange)="adjustedLevel$.next($event)"
+            />
           </div>
         </div>
-      </section>
-    </div>
-
-    <div class="max-w-md mt-4">
-      <div class="form-control">
-        <label class="label cursor-pointer">
-          <span class="label-text">Show loot for your level</span>
-          <input
-            type="checkbox"
-            class="toggle"
-            [class.toggle-primary]="adjustLevel$ | async"
-            [ngModel]="adjustLevel$ | async"
-            (ngModelChange)="adjustLevel$.next($event)"
-          />
-        </label>
       </div>
-      <div class="form-control w-full" *ngIf="adjustLevel$ | async">
-        <input
-          class="input input-bordered"
-          placeholder="60"
-          type="number"
-          [min]="1"
-          [max]="65"
-          [ngModel]="adjustedLevel$ | async"
-          (ngModelChange)="adjustedLevel$.next($event)"
+
+      <div class="content-grid-tabs tabs tabs-bordered mt-4 justify-stretch flex-none">
+        <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
+          <a
+            *ngIf="!item.externUrl"
+            class="tab"
+            [class.tab-active]="item.id === tab"
+            [routerLink]="['.']"
+            [queryParams]="{ tab: item.id }"
+            [queryParamsHandling]="'merge'"
+            rel="nofollow"
+          >
+            {{ item.label }}
+          </a>
+          <a
+            *ngIf="item.externUrl"
+            class="tab"
+            [class.tab-active]="item.id === tab"
+            [href]="item.externUrl"
+            target="_blank"
+          >
+            {{ item.label }}
+            <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4" />
+          </a>
+        </ng-container>
+      </div>
+
+      <div class="content-grid-map aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[450px]">
+        <nwb-game-mode-detail-map
+          class="w-full h-full max-w-[1200px]"
+          [gameModeId]="paramGameMode$ | async"
         />
       </div>
-    </div>
 
-    <div class="max-w-lg tabs tabs-bordered mt-4 justify-stretch flex-none">
-      <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
-        <a
-          *ngIf="!item.externUrl"
-          class="tab"
-          [class.tab-active]="item.id === tab"
-          [routerLink]="['.']"
-          [queryParams]="{ tab: item.id }"
-          [queryParamsHandling]="'merge'"
-          rel="nofollow"
-        >
-          {{ item.label }}
-        </a>
-        <a
-          *ngIf="item.externUrl"
-          class="tab"
-          [class.tab-active]="item.id === tab"
-          [href]="item.externUrl"
-          target="_blank"
-        >
-          {{ item.label }}
-          <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4" />
-        </a>
-      </ng-container>
-    </div>
-
-    <div class="flex-1 mt-4">
-      @for (item of tabs; track item.id) {
-        @if (item.id === tab) {
-          <ng-container *ngTemplateOutlet="item.tpl"></ng-container>
+      <div class="content-grid-content">
+        @for (item of tabs; track item.id) {
+          @if (item.id === tab) {
+            <ng-container *ngTemplateOutlet="item.tpl" />
+          }
         }
-      }
+      </div>
     </div>
-  </div>
-</div>
+  </ion-content>
+</ion-content>
 
 <ng-template #tplDungeonLoot>
   <div
@@ -306,6 +324,8 @@
         [level]="creatureLevel$ | async"
         [mutaElement]="mutaElementId$ | async"
         [mutaDifficulty]="difficultyLevel"
+        [activeTab]="paramVitalTab$ | async"
+        (activeTabChange)="handleVitalTabChange($event)"
       />
     }
   </div>
@@ -319,6 +339,8 @@
         [level]="creatureLevel$ | async"
         [mutaElement]="mutaElementId$ | async"
         [mutaDifficulty]="difficultyLevel"
+        [activeTab]="paramVitalTab$ | async"
+        (activeTabChange)="handleVitalTabChange($event)"
       />
     }
   </div>
@@ -332,13 +354,11 @@
         [level]="creatureLevel$ | async"
         [mutaElement]="mutaElementId$ | async"
         [mutaDifficulty]="difficultyLevel"
+        [activeTab]="paramVitalTab$ | async"
+        (activeTabChange)="handleVitalTabChange($event)"
       />
     }
   </div>
-</ng-template>
-
-<ng-template #tplDungeonMap>
-  <iframe [attr.src]="mapEmbed" class="map-frame"></iframe>
 </ng-template>
 
 <ng-template #tplExplain>

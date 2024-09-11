@@ -21,7 +21,7 @@ export function describeLoreFilters(lore: LoreData, topic: LoreData, chapter: Lo
       size: 1,
 
       loreID: lore.LoreID,
-      tooltip: lore.Title,
+      title: lore.Title,
     },
   }
 

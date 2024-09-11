@@ -72,7 +72,7 @@ export class SkillsetCellComponent implements VirtualGridCellComponent<SkillsetT
     result.length = Math.max(result.length, 3)
     for (let i = 0; i < result.length; i++) {
       if (!result[i]) {
-        result[i] = { icon: NW_FALLBACK_ICON, category: '' }
+        result[i] = { icon: NW_FALLBACK_ICON, category: 'none' }
       }
     }
     return result

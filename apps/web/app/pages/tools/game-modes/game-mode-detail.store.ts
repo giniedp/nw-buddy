@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalDungeons } from '@nw-data/common'
-import { CreatureType, MutationDifficultyStaticData, VitalsData } from '@nw-data/generated'
+import { CreatureType, MutationDifficultyStaticData, VitalsBaseData as VitalsData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'

@@ -59,9 +59,8 @@ export const AbilityDetailStore = signalStore(
       }
     },
   }),
-  withComputed(({ ability, cooldown }) => {
+  withComputed(({ ability }) => {
     return {
-      ability,
       icon: computed(() => ability()?.Icon || NW_FALLBACK_ICON),
       name: computed(() => ability()?.DisplayName),
       nameForDisplay: computed(() => ability()?.DisplayName || humanize(ability()?.AbilityID)),
@@ -71,7 +70,6 @@ export const AbilityDetailStore = signalStore(
       uiCategory: computed(() => ability()?.UICategory),
       description: computed(() => ability()?.Description),
       properties: computed(() => selectProperties(ability())),
-      cooldown: computed(() => cooldown()),
       refEffects: computed(() => {
         const it = ability()
         if (!it) {

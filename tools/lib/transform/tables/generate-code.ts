@@ -111,7 +111,7 @@ const ENUMS = {
   AchievementData: {
     Category: 'AchievementCategory',
   },
-  VitalsData: {
+  VitalsBaseData: {
     Family: 'VitalsFamily',
     VitalsCategories: 'VitalsCategory',
     CreatureType: 'CreatureType',

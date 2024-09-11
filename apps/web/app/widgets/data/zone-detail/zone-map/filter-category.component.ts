@@ -7,13 +7,17 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgDice, svgInfo } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize } from '~/utils'
-import { GameMapMouseTipDirective } from '~/widgets/game-map'
+import { humanize, selectSignal } from '~/utils'
+import { GameMapHost, GameMapMouseTipDirective } from '~/widgets/game-map'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
 import { LootGraphComponent } from '../../../loot/loot-graph.component'
 import { FilterFeatureProperties, FilterDataSet } from './data/types'
 import { FilterPopoverComponent } from './filter-popover.component'
 import { ZoneMapStore } from './zone-map.store'
+import { PropertyGridModule } from '~/ui/property-grid'
+import { TranslateService } from '~/i18n'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { isLootTableEmpty } from '../../gatherable'
 
 @Pipe({
   standalone: true,
@@ -41,15 +45,19 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
     FilterPopoverComponent,
     ToLCHPipe,
     LootGraphComponent,
-
+    PropertyGridModule,
   ],
   host: {
     class: 'block',
+    '[class.hidden]': '!matchSearch()',
   },
 })
 export class MapFilterCategoryComponent {
   public source = input.required<FilterDataSet[]>()
+  public search = input<string>()
+  protected i18n = inject(TranslateService)
   protected mapStore = inject(ZoneMapStore)
+  protected mapHost = inject(GameMapHost)
   protected mapId = this.mapStore.mapId
   protected showHeatmap = this.mapStore.showHeatmap
   protected isOpen = signal(false)
@@ -57,29 +65,53 @@ export class MapFilterCategoryComponent {
   protected iconInfo = svgInfo
   public layers = viewChildren(GameMapLayerDirective)
   protected hasChevron = computed(() => this.items().length > 1)
-  protected hasInfo = computed(() => !!this.lootTable())
+  protected hasInfo = computed(() => !isLootTableEmpty(this.lootTable()))
   protected hoverItems = signal<FilterFeatureProperties[]>(null)
+  protected hoverTips = signal<string[]>(null)
   protected items = this.source
   protected diceIcon = svgDice
 
   protected data = computed(() => {
     const items = this.items()
-    const subcategories = uniq(items.map((it) => it.subcategory))
+    const subcategories = uniqBy(items, (it) => it.subcategory)
     const first = items[0]
     const variants = sortBy(first?.variants || [], (it) => SIZE_ORDER.indexOf(it.label))
     return {
       items,
       subcategories,
       label: first?.categoryLabel || humanize(first?.category),
+      affix: first?.categoryAffix,
       icon: first?.categoryIcon,
       color: first?.properties.color,
-      lootTable: first?.properties.lootTable,
+      lootTable: first?.properties.lootTableID,
       variants: variants,
     }
   })
 
   protected subcategories = computed(() => this.data().subcategories)
   protected label = computed(() => this.data().label)
+  protected affix = computed(() => this.data().affix)
+
+  public matchSearch = selectSignal(
+    {
+      label: this.i18n.observe(toObservable(this.label)),
+      affix: this.i18n.observe(toObservable(this.affix)),
+      search: this.search,
+    },
+    ({ label, affix, search }) => {
+      if (!search) {
+        return true
+      }
+      if (label && label.toLocaleLowerCase().includes(search.toLocaleLowerCase())) {
+        return true
+      }
+      if (affix && affix.toLocaleLowerCase().includes(search.toLocaleLowerCase())) {
+        return true
+      }
+      return false
+    },
+  )
+
   protected icon = computed(() => this.data().icon)
   protected color = computed(() => this.data().color)
   protected variants = computed(() => this.data().variants)
@@ -156,17 +188,38 @@ export class MapFilterCategoryComponent {
 
   protected handleMouseEnter(features: Array<Feature<any, FilterFeatureProperties>>) {
     const items = features.map((it) => it.properties as FilterFeatureProperties)
-    const uniqueItems = uniqBy(items, (it) => [it.vitalID, it.lootTable, it.loreID].join())
+    const tips = uniq(items.map((it) => it.title)).filter((it) => !!it)
+    this.hoverTips.set(tips)
+    const uniqueItems = uniqBy(items, (it) =>
+      [it.vitalID, it.lootTableID, it.loreID, it.gatherableID, it.variationID].join(),
+    )
     this.hoverItems.set(uniqueItems)
+
+    // const lootTables = uniq(uniqueItems.map((it) => it.lootTableID)).filter((it) => !isLootTableEmpty(it))
+    // if (lootTables.length) {
+    //   this.mapHost.map.getCanvas().style.cursor = 'pointer'
+    // } else {
+    //   this.mapHost.map.getCanvas().style.cursor = 'help'
+    // }
   }
 
   protected handleMouseMove(features: Array<Feature<any, FilterFeatureProperties>>) {
     const items = features.map((it) => it.properties as FilterFeatureProperties)
-    const uniqueItems = uniqBy(items, (it) => [it.vitalID, it.lootTable, it.loreID].join())
+    const tips = uniq(items.map((it) => it.title)).filter((it) => !!it)
+    this.hoverTips.set(tips)
+    const uniqueItems = uniqBy(items, (it) =>
+      [it.vitalID, it.lootTableID, it.loreID, it.gatherableID, it.variationID].join(),
+    )
     this.hoverItems.set(uniqueItems)
   }
 
   protected handleMouseLeave(features: Array<Feature<any, FilterFeatureProperties>>) {
     this.hoverItems.set(null)
+    this.hoverTips.set(null)
+    this.mapHost.map.getCanvas().style.cursor = ''
+  }
+
+  protected handleMouseClick(features: Array<Feature<any, FilterFeatureProperties>>) {
+
   }
 }

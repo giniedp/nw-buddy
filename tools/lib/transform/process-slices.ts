@@ -95,10 +95,12 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   }
 }
 
+
 function readLevelMapping(tables: Array<DatasheetFile>) {
-  tables = tables.filter((it) => it.header.type === 'VitalsData')
+  tables = tables.filter((it) => it.header.type === 'VitalsLevelVariantData')
+
   if (!tables.length) {
-    throw new Error('Missing VitalsData table')
+    throw new Error('Missing VitalsLevelVariantData table')
   }
   const vitalSchema = z.object({
     VitalsID: z.string(),

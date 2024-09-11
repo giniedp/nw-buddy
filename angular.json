@@ -50,9 +50,15 @@
                 "ignore": [
                   "*.gz",
                   "*.zip",
-                  "**/worldtiles/**",
+
                   "**/items_hires/**"
                 ],
+                "input": "dist/nw-data/.current",
+                "output": "/nw-data/",
+                "followSymlinks": true
+              },
+              {
+                "glob": "**/items_hires/mount_*",
                 "input": "dist/nw-data/.current",
                 "output": "/nw-data/",
                 "followSymlinks": true

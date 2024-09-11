@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Pipe, PipeTransform, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { DomSanitizer } from '@angular/platform-browser'
 import { RouterModule } from '@angular/router'
@@ -16,6 +16,14 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
 import { injectCurrentUrl } from './utils/injection/current-url'
 import { LocaleService } from './i18n'
 
+@Pipe({ name: 'linkWithLocale' })
+export class LinkWithLocale implements PipeTransform {
+  transform(value: any, ...args: any[]) {
+
+  }
+}
+
+
 @Component({
   standalone: true,
   selector: 'app-menu',
@@ -31,6 +39,7 @@ import { LocaleService } from './i18n'
     IonSegmentButton,
     MenuCloseDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ion-page',
   },
@@ -89,4 +98,5 @@ export class AppMenuComponent {
   protected handleSegmentChange(event: SegmentCustomEvent) {
     patchState(this.state, { active: event.detail.value as any })
   }
+
 }

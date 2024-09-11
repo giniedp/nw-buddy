@@ -14,6 +14,6 @@ export function byDamageType<T>(getter: (type: DamageType) => T) {
     Standard: getter('Standard'),
     Strike: getter('Strike'),
     Thrust: getter('Thrust'),
-    Void: getter('Void'),
+    // Void: getter('Void'),
   } as const
 }

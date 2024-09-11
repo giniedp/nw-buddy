@@ -139,27 +139,19 @@ $nw-ability-category: (
   '2': url('../../assets/icons/abilities/abilities_bg2.png'),
   '3': url('../../assets/icons/abilities/abilities_bg3.png'),
   '4': url('../../assets/icons/abilities/abilities_bg4.png'),
-  '5': url('../../assets/icons/abilities/abilities_bg5.png'),
-  '6': url('../../assets/icons/abilities/abilities_bg6.png'),
 );
 
 @mixin bgAbility() {
-  &.bg-ability-melee {
-    background: map-get($nw-ability-category, '2') #000;
-  }
-  &.bg-ability-debuff {
-    background: map-get($nw-ability-category, '4') #000;
-  }
-  &.bg-ability-buff {
-    background: map-get($nw-ability-category, '5') #000;
-  }
-  &.bg-ability-range {
+  &.bg-ability-heal {
     background: map-get($nw-ability-category, '1') #000;
   }
-  &.bg-ability-magic {
+  &.bg-ability-attack {
+    background: map-get($nw-ability-category, '2') #000;
+  }
+  &.bg-ability-defense {
     background: map-get($nw-ability-category, '3') #000;
   }
-  &.bg-ability-heal {
-    background: map-get($nw-ability-category, '6') #000;
+  &.bg-ability-magic {
+    background: map-get($nw-ability-category, '4') #000;
   }
 }

@@ -1,4 +1,4 @@
-export type ExpressionConstant = 'ConsumablePotency' | 'Potency' | 'perkMultiplier'
+export type ExpressionConstant = 'ConsumablePotency' | 'Potency' | 'perkMultiplier' | 'attributePerkMultiplier'
 
 export type ExpressionResource =
   | 'AffixStatDataTable'

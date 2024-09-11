@@ -1,5 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  input,
+} from '@angular/core'
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ReplaySubject, distinctUntilChanged, switchMap } from 'rxjs'
 import { ItemPreferencesService } from '~/preferences'
 
@@ -13,65 +24,44 @@ import { ItemPreferencesService } from '~/preferences'
     class: 'flex flex-row',
   },
 })
-export class ItemMarkerComponent implements OnInit, OnChanges {
-  @Input()
-  public set itemId(value: string) {
-    this.itemId$.next(value)
-  }
+export class ItemMarkerComponent {
+  private meta = inject(ItemPreferencesService)
+  public itemId = input.required<string>()
+  public hasValue = computed(() => !!this.trackedValue())
+  private data = toSignal(toObservable(this.itemId).pipe(switchMap((id) => this.meta.observe(id))))
+  private trackedId = computed(() => this.data()?.id)
+  private trackedValue = computed(() => cleanValue(this.data()?.meta?.mark))
 
-  private itemId$ = new ReplaySubject<string>(1)
-  private trackedId: string
-  private trackedValue: number
-
-  public constructor(private meta: ItemPreferencesService, private cdRef: ChangeDetectorRef) {
-    this.itemId$
-      .pipe(distinctUntilChanged())
-      .pipe(switchMap((id) => this.meta.observe(id)))
-      .pipe(takeUntilDestroyed())
-      .subscribe((data) => {
-        this.trackedId = data.id
-        this.trackedValue = this.cleanValue(data.meta?.mark)
-        this.cdRef.markForCheck()
-      })
-  }
-
-  public ngOnInit(): void {}
-
-  public ngOnChanges(): void {
-    this.cdRef.markForCheck()
-  }
-
-  private value(index: number) {
-    return Math.pow(2, index)
-  }
   public toggle(index: number) {
-    let result = this.trackedValue
+    let result = this.trackedValue()
     if (this.checked(index)) {
-      result = result & ~this.value(index)
+      result = result & ~indexValue(index)
     } else {
-      result = result | this.value(index)
+      result = result | indexValue(index)
     }
     this.submitValue(result)
   }
 
   public checked(index: number) {
-    return !!(this.trackedValue & this.value(index))
+    return !!(this.trackedValue() & indexValue(index))
   }
 
   private submitValue(value: number | string) {
-    this.meta.merge(this.trackedId, {
-      mark: this.cleanValue(value),
+    this.meta.merge(this.trackedId(), {
+      mark: cleanValue(value),
     })
-    this.cdRef.markForCheck()
   }
+}
 
-  private cleanValue(value: string | number | boolean) {
-    if (typeof value !== 'number') {
-      value = Number(value)
-    }
-    if (Number.isFinite(value)) {
-      return value
-    }
-    return null
+function indexValue(index: number) {
+  return Math.pow(2, index)
+}
+function cleanValue(value: string | number | boolean) {
+  if (typeof value !== 'number') {
+    value = Number(value)
   }
+  if (Number.isFinite(value)) {
+    return value
+  }
+  return null
 }

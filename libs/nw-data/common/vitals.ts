@@ -4,7 +4,7 @@ import {
   GameModeData,
   MutationDifficultyStaticData,
   VitalsCategoryData,
-  VitalsData,
+  VitalsBaseData as VitalsData,
   VitalsLevelData,
   VitalsModifierData,
 } from '@nw-data/generated'

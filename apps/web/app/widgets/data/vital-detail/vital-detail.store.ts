@@ -17,7 +17,7 @@ import {
   DamageData,
   StatusEffectData,
   VitalsCategoryData,
-  VitalsData,
+  VitalsBaseData as VitalsData,
 } from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
 import { uniq } from 'lodash'

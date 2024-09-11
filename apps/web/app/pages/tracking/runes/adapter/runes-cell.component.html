@@ -6,7 +6,7 @@
   [enableInfoLink]="true"
   [nwbItemMarker]="item.itemId"
   #itemMarker="itemMarker"
-  [class.is-collected]="!!(itemMarker.value$ | async)"
+  [class.is-collected]="!!itemMarker.value()"
   class="w-full h-full"
 >
   <nwb-item-divider class="mx-4"></nwb-item-divider>

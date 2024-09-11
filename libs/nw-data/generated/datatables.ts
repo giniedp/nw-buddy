@@ -60,6 +60,7 @@ import type {
   ExpansionData,
   ExperienceData,
   ExplorerGuild,
+  FFAZoneBalanceData,
   FactionControlBuffDefinitions,
   FactionData,
   FishData,
@@ -93,7 +94,6 @@ import type {
   ItemTooltipLayout,
   ItemTransform,
   JointAliasData,
-  KitItemDefinitions,
   LeaderboardData,
   LeaderboardRewardsData,
   LeaderboardStatData,
@@ -180,9 +180,11 @@ import type {
   SpellData,
   SpringEventRanks,
   StaminaData,
+  StatMultiplierData,
   StatusEffectCategoryData,
   StatusEffectData,
   StoreProductData,
+  StoryProgressData,
   StructureFootprintData,
   StructurePieceData,
   SummerEventRanks,
@@ -192,16 +194,20 @@ import type {
   TerritoryUpkeepDefinition,
   Territory_Standing,
   ThrowableItemDefinitions,
-  TimelineRegistryEntryData,
   TradeSkillPostCapData,
   TradeskillRankData,
+  TutorialConditionData,
+  TutorialContentData,
+  TutorialData,
   TwitchDropsStatDefinitions,
   TwitchTagsStatDefinitions,
   VariationData,
   VariationDataGatherable,
+  VitalsBaseData,
   VitalsCategoryData,
   VitalsData,
   VitalsLevelData,
+  VitalsLevelVariantData,
   VitalsModifierData,
   WarBalanceData,
   WarboardStatDefinitions,
@@ -343,23 +349,14 @@ export const DATASHEETS = {
     Dexterity: <DataSheetUri<AttributeDefinition>>{
       uri: "datatables/javelindata_attributedexterity.json",
     },
-    Endurance: <DataSheetUri<AttributeDefinition>>{
-      uri: "datatables/javelindata_attributeendurance.json",
-    },
     Focus: <DataSheetUri<AttributeDefinition>>{
       uri: "datatables/javelindata_attributefocus.json",
     },
     Intelligence: <DataSheetUri<AttributeDefinition>>{
       uri: "datatables/javelindata_attributeintelligence.json",
     },
-    Spirit: <DataSheetUri<AttributeDefinition>>{
-      uri: "datatables/javelindata_attributespirit.json",
-    },
     Strength: <DataSheetUri<AttributeDefinition>>{
       uri: "datatables/javelindata_attributestrength.json",
-    },
-    Vitality: <DataSheetUri<AttributeDefinition>>{
-      uri: "datatables/javelindata_attributevitality.json",
     },
   },
   BackstoryDefinition: {
@@ -526,223 +523,202 @@ export const DATASHEETS = {
     },
   },
   ConversationStateData: {
-    ConversationStates_01: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/01_starterbeach/javelindata_01_conversationstates.json",
-    },
-    ConversationStates_02: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/02_brightwood/javelindata_02_conversationstate.json",
-    },
-    ConversationStates_02A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/02a_brightwood/javelindata_02a_conversationstates.json",
-    },
-    ConversationStates_03: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/03_greatcleave/javelindata_03_conversationstate.json",
-    },
-    ConversationStates_04A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/04a_everfall/javelindata_04a_conversationstates.json",
-    },
-    ConversationStates_05: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/05_reekwater/javelindata_05_conversationstate.json",
-    },
-    ConversationStates_06A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/06a_windsward/javelindata_06a_conversationstates.json",
-    },
-    ConversationStates_07: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/07_shatteredmoutain/javelindata_07_conversationstate.json",
-    },
-    ConversationStates_08: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/08_queensport/javelindata_08_conversationstate.json",
-    },
-    ConversationStates_09: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/09_firstlight/javelindata_09_conversationstate.json",
-    },
-    ConversationStates_09A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/09a_firstlight/javelindata_09a_conversationstate.json",
-    },
-    ConversationStates_10: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/10_cutlasskeys/javelindata_10_conversationstate.json",
-    },
-    ConversationStates_11: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/11_mourningdale/javelindata_11_conversationstate.json",
-    },
-    ConversationStates_12A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/12a_monarchsbluffs/javelindata_12a_conversationstates.json",
-    },
-    ConversationStates_13: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/13_weaversfen/javelindata_13_conversationstate.json",
-    },
-    ConversationStates_13A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/13a_weaversfen/javelindata_13a_conversationstates.json",
-    },
-    ConversationStates_14: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/14_edengrove/javelindata_14_conversationstate.json",
-    },
-    ConversationStates_15: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/15_restlessshore/javelindata_15_conversationstate.json",
-    },
-    ConversationStates_16: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/16_brimstonesands/javelindata_16_conversationstate.json",
-    },
     ConversationStates_74: <DataSheetUri<ConversationStateData>>{
       uri: "datatables/quests/74_devworld_red/javelindata_74_conversationstate.json",
     },
     ConversationStates_75: <DataSheetUri<ConversationStateData>>{
       uri: "datatables/quests/75_devworld_blue/javelindata_75_conversationstate.json",
     },
-    ConversationStates_92: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/92_weaponsandarmor/javelindata_92_conversationstates.json",
+    ConversationStates_C01: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c01_starterbeach/javelindata_c01_conversationstates.json",
     },
-    ConversationStates_94: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/94_mounts/javelindata_94_conversationstates.json",
+    ConversationStates_C02A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c02a_brightwood/javelindata_c02a_conversationstates.json",
     },
-    ConversationStates_95: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/95_seasons/javelindata_95_conversationstates.json",
+    ConversationStates_C03: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c03_greatcleave/javelindata_c03_conversationstate.json",
     },
-    ConversationStates_95_S04: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/95_s04_seasons/javelindata_95_s04_conversationstates.json",
+    ConversationStates_C04A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c04a_everfall/javelindata_c04a_conversationstates.json",
     },
-    ConversationStates_95A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/95a_seasons_s02/javelindata_95a_conversationstates.json",
+    ConversationStates_C05: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c05_reekwater/javelindata_c05_conversationstate.json",
     },
-    ConversationStates_98: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/98_factions/javelindata_98_conversationstates.json",
+    ConversationStates_C06A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c06a_windsward/javelindata_c06a_conversationstates.json",
     },
-    ConversationStates_99: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99_msq/javelindata_99_conversationstate.json",
+    ConversationStates_C07: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c07_shatteredmoutain/javelindata_c07_conversationstate.json",
     },
-    ConversationStates_99A: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99a_msq/javelindata_99a_conversationstates.json",
+    ConversationStates_C08: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c08_ebonscalereach/javelindata_c08_conversationstate.json",
     },
-    ConversationStates_99B: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99b_msq_brightwood/javelindata_99b_conversationstates.json",
+    ConversationStates_C09A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c09a_firstlight/javelindata_c09a_conversationstate.json",
     },
-    ConversationStates_99C: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99c_msq_weaversfen/javelindata_99c_conversationstates.json",
+    ConversationStates_C10A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c10a_cutlasskeys/javelindata_c10a_conversationstate.json",
     },
-    ConversationStates_99D: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99d_msq_greatcleave/javelindata_99d_conversationstates.json",
+    ConversationStates_C11: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c11_mourningdale/javelindata_c11_conversationstate.json",
     },
-    ConversationStates_99E: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99e_msq_edengrove/javelindata_99e_conversationstates.json",
+    ConversationStates_C12A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c12a_monarchsbluffs/javelindata_c12a_conversationstates.json",
     },
-    ConversationStates_99F: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99f_msq_ebonscale/javelindata_99f_conversationstates.json",
+    ConversationStates_C13A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c13a_weaversfen/javelindata_c13a_conversationstates.json",
     },
-    ConversationStates_99G: <DataSheetUri<ConversationStateData>>{
-      uri: "datatables/quests/99g_msq_shattered/javelindata_99g_conversationstates.json",
+    ConversationStates_C14: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c14_edengrove/javelindata_c14_conversationstate.json",
+    },
+    ConversationStates_C15: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c15_restlessshore/javelindata_c15_conversationstate.json",
+    },
+    ConversationStates_C16: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c16_brimstonesands/javelindata_c16_conversationstate.json",
+    },
+    ConversationStates_C80: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c80_holidays/javelindata_c80_conversationstates.json",
+    },
+    ConversationStates_C81: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c81_pushquests/javelindata_c81_conversationstates.json",
+    },
+    ConversationStates_C91: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c91_fishing/javelindata_c91_conversationstates.json",
+    },
+    ConversationStates_C94: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c94_mounts/javelindata_c94_conversationstates.json",
+    },
+    ConversationStates_C95: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c95_seasons/javelindata_c95_conversationstates.json",
+    },
+    ConversationStates_C95_S04: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c95_seasons_s04/javelindata_c95_s04_conversationstates.json",
+    },
+    ConversationStates_C95A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c95a_seasons_s02/javelindata_c95a_conversationstates.json",
+    },
+    ConversationStates_C98: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c98_factions/javelindata_c98_conversationstates.json",
+    },
+    ConversationStates_C99A: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c99a_msq/javelindata_c99a_conversationstates.json",
+    },
+    ConversationStates_C99B: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c99b_msq_brightwood/javelindata_c99b_conversationstates.json",
+    },
+    ConversationStates_C99C: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c99c_msq_weaversfen/javelindata_c99c_conversationstates.json",
+    },
+    ConversationStates_C99D: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c99d_msq_greatcleave/javelindata_c99d_conversationstates.json",
+    },
+    ConversationStates_C99E: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c99e_msq_edengrove/javelindata_c99e_conversationstates.json",
+    },
+    ConversationStates_C99F: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c99f_msq_ebonscale/javelindata_c99f_conversationstates.json",
+    },
+    ConversationStates_C99G: <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_conversationstates.json",
     },
   },
   ConversationTopicData: {
     ConversationTopics: <DataSheetUri<ConversationTopicData>>{
       uri: "datatables/javelindata_conversationtopics.json",
     },
-    ConversationTopics_01: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/01_starterbeach/javelindata_01_conversationtopics.json",
-    },
-    ConversationTopics_02: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/02_brightwood/javelindata_02_conversationtopics.json",
-    },
-    ConversationTopics_02A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/02a_brightwood/javelindata_02a_conversationtopics.json",
-    },
-    ConversationTopics_03: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/03_greatcleave/javelindata_03_conversationtopics.json",
-    },
-    ConversationTopics_04: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/04_everfall/javelindata_04_conversationtopics.json",
-    },
-    ConversationTopics_04A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/04a_everfall/javelindata_04a_conversationtopics.json",
-    },
-    ConversationTopics_05: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/05_reekwater/javelindata_05_conversationtopics.json",
-    },
-    ConversationTopics_06A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/06a_windsward/javelindata_06a_conversationtopics.json",
-    },
-    ConversationTopics_07: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/07_shatteredmoutain/javelindata_07_conversationtopics.json",
-    },
-    ConversationTopics_08: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/08_queensport/javelindata_08_conversationtopics.json",
-    },
-    ConversationTopics_09: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/09_firstlight/javelindata_09_conversationtopics.json",
-    },
-    ConversationTopics_09A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/09a_firstlight/javelindata_09a_conversationtopics.json",
-    },
-    ConversationTopics_10: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/10_cutlasskeys/javelindata_10_conversationtopics.json",
-    },
-    ConversationTopics_11: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/11_mourningdale/javelindata_11_conversationtopics.json",
-    },
-    ConversationTopics_12: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/12_monarchsbluffs/javelindata_12_conversationtopics.json",
-    },
-    ConversationTopics_12A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/12a_monarchsbluffs/javelindata_12a_conversationtopics.json",
-    },
-    ConversationTopics_13: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/13_weaversfen/javelindata_13_conversationtopics.json",
-    },
-    ConversationTopics_13A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/13a_weaversfen/javelindata_13a_conversationtopics.json",
-    },
-    ConversationTopics_14: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/14_edengrove/javelindata_14_conversationtopics.json",
-    },
-    ConversationTopics_15: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/15_restlessshore/javelindata_15_conversationtopics.json",
-    },
-    ConversationTopics_16: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/16_brimstonesands/javelindata_16_conversationtopics.json",
-    },
     ConversationTopics_75: <DataSheetUri<ConversationTopicData>>{
       uri: "datatables/quests/75_devworld_blue/javelindata_75_conversationtopic.json",
     },
-    ConversationTopics_92: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/92_weaponsandarmor/javelindata_92_conversationtopics.json",
+    ConversationTopics_C01: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c01_starterbeach/javelindata_c01_conversationtopics.json",
     },
-    ConversationTopics_94: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/94_mounts/javelindata_94_conversationtopics.json",
+    ConversationTopics_C02A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c02a_brightwood/javelindata_c02a_conversationtopics.json",
     },
-    ConversationTopics_95: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/95_seasons/javelindata_95_conversationtopics.json",
+    ConversationTopics_C03: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c03_greatcleave/javelindata_c03_conversationtopics.json",
     },
-    ConversationTopics_95_S04: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/95_s04_seasons/javelindata_95_s04_conversationtopics.json",
+    ConversationTopics_C04A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c04a_everfall/javelindata_c04a_conversationtopics.json",
     },
-    ConversationTopics_95A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/95a_seasons_s02/javelindata_95a_conversationtopics.json",
+    ConversationTopics_C05: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c05_reekwater/javelindata_c05_conversationtopics.json",
     },
-    ConversationTopics_98: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/98_factions/javelindata_98_conversationtopics.json",
+    ConversationTopics_C06A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c06a_windsward/javelindata_c06a_conversationtopics.json",
     },
-    ConversationTopics_99: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99_msq/javelindata_99_conversationtopics.json",
+    ConversationTopics_C07: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c07_shatteredmoutain/javelindata_c07_conversationtopics.json",
     },
-    ConversationTopics_99A: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99a_msq/javelindata_99a_conversationtopics.json",
+    ConversationTopics_C09A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c09a_firstlight/javelindata_c09a_conversationtopics.json",
     },
-    ConversationTopics_99B: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99b_msq_brightwood/javelindata_99b_conversationtopics.json",
+    ConversationTopics_C10A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c10a_cutlasskeys/javelindata_c10a_conversationtopics.json",
     },
-    ConversationTopics_99C: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99c_msq_weaversfen/javelindata_99c_conversationtopics.json",
+    ConversationTopics_C11: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c11_mourningdale/javelindata_c11_conversationtopics.json",
     },
-    ConversationTopics_99D: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99d_msq_greatcleave/javelindata_99d_conversationtopics.json",
+    ConversationTopics_C12A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c12a_monarchsbluffs/javelindata_c12a_conversationtopics.json",
     },
-    ConversationTopics_99E: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99e_msq_edengrove/javelindata_99e_conversationtopics.json",
+    ConversationTopics_C13A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c13a_weaversfen/javelindata_c13a_conversationtopics.json",
     },
-    ConversationTopics_99F: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99f_msq_ebonscale/javelindata_99f_conversationtopics.json",
+    ConversationTopics_C14: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c14_edengrove/javelindata_c14_conversationtopics.json",
     },
-    ConversationTopics_99G: <DataSheetUri<ConversationTopicData>>{
-      uri: "datatables/quests/99g_msq_shattered/javelindata_99g_conversationtopics.json",
+    ConversationTopics_C15: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c15_restlessshore/javelindata_c15_conversationtopics.json",
+    },
+    ConversationTopics_C16: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c16_brimstonesands/javelindata_c16_conversationtopics.json",
+    },
+    ConversationTopics_C80: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c80_holidays/javelindata_c80_conversationtopics.json",
+    },
+    ConversationTopics_C81: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c81_pushquests/javelindata_c81_conversationtopics.json",
+    },
+    ConversationTopics_C91: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c91_fishing/javelindata_c91_conversationtopics.json",
+    },
+    ConversationTopics_C94: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c94_mounts/javelindata_c94_conversationtopics.json",
+    },
+    ConversationTopics_C95: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c95_seasons/javelindata_c95_conversationtopics.json",
+    },
+    ConversationTopics_C95_S04: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c95_seasons_s04/javelindata_c95_s04_conversationtopics.json",
+    },
+    ConversationTopics_C95A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c95a_seasons_s02/javelindata_c95a_conversationtopics.json",
+    },
+    ConversationTopics_C98: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c98_factions/javelindata_c98_conversationtopics.json",
+    },
+    ConversationTopics_C99A: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c99a_msq/javelindata_c99a_conversationtopics.json",
+    },
+    ConversationTopics_C99B: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c99b_msq_brightwood/javelindata_c99b_conversationtopics.json",
+    },
+    ConversationTopics_C99C: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c99c_msq_weaversfen/javelindata_c99c_conversationtopics.json",
+    },
+    ConversationTopics_C99D: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c99d_msq_greatcleave/javelindata_c99d_conversationtopics.json",
+    },
+    ConversationTopics_C99E: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c99e_msq_edengrove/javelindata_c99e_conversationtopics.json",
+    },
+    ConversationTopics_C99F: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c99f_msq_ebonscale/javelindata_c99f_conversationtopics.json",
+    },
+    ConversationTopics_C99G: <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_conversationtopics.json",
     },
   },
   CooldownData: {
@@ -785,11 +761,17 @@ export const DATASHEETS = {
     CraftingRecipesMisc: <DataSheetUri<CraftingRecipeData>>{
       uri: "datatables/javelindata_crafting_misc.json",
     },
+    CraftingRecipesRaid: <DataSheetUri<CraftingRecipeData>>{
+      uri: "datatables/javelindata_crafting_raid.json",
+    },
     CraftingRecipesRefining: <DataSheetUri<CraftingRecipeData>>{
       uri: "datatables/javelindata_crafting_refining.json",
     },
     CraftingRecipesSeasons: <DataSheetUri<CraftingRecipeData>>{
       uri: "datatables/javelindata_crafting_seasons.json",
+    },
+    CraftingRecipesSpecialtyShops: <DataSheetUri<CraftingRecipeData>>{
+      uri: "datatables/javelindata_crafting_specialtyshops.json",
     },
     CraftingRecipesWeapon: <DataSheetUri<CraftingRecipeData>>{
       uri: "datatables/javelindata_crafting_weapon.json",
@@ -1081,6 +1063,9 @@ export const DATASHEETS = {
     DynastyWarriorDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/dynasty_datatables/javelindata_damagetable_dynasty_warrior.json",
     },
+    Elephant_H_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_elephant_h.json",
+    },
     EliteAffixDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/eliteaffix_datatables/javelindata_damagetable_elite_affix.json",
     },
@@ -1174,6 +1159,9 @@ export const DATASHEETS = {
     GoliathHorusBossDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/anubianguardian_datatables/javelindata_damagetable_goliathhorusboss.json",
     },
+    Gorilla_H_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/gorilla_datatables/javelindata_damagetable_gorilla_h.json",
+    },
     GorillaBossDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/gorilla_datatables/javelindata_damagetable_gorillaboss.json",
     },
@@ -1186,11 +1174,23 @@ export const DATASHEETS = {
     HercyneBoarDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercyneboar.json",
     },
+    HercyneBroodmotherDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercynebroodmother.json",
+    },
     HercyneCorvidDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercynecorvid.json",
     },
+    HercyneEchidnaDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercyneechidna.json",
+    },
     HercyneReindeerDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercynereindeer.json",
+    },
+    HercyneTyphonDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercynetyphon.json",
+    },
+    HercyneWolfDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercynewolf.json",
     },
     HumanBlunderbussDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/human_datatables/javelindata_damagetable_human_blunderbuss.json",
@@ -1453,6 +1453,9 @@ export const DATASHEETS = {
     SpellBotDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/spellbot_datatables/javelindata_damagetable_spellbot.json",
     },
+    SpiderDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/spider_datatables/javelindata_damagetable_spider.json",
+    },
     SpiritDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/javelindata_damagetable_spirit.json",
     },
@@ -1641,6 +1644,11 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_xpamountsbylevel.json",
     },
   },
+  FFAZoneBalanceData: {
+    FFAZonePvpBalanceTable: <DataSheetUri<FFAZoneBalanceData>>{
+      uri: "datatables/pvpbalancetables/javelindata_pvpbalance_ffa.json",
+    },
+  },
   FactionControlBuffDefinitions: {
     FactionControl_Buffs: <DataSheetUri<FactionControlBuffDefinitions>>{
       uri: "datatables/javelindata_factioncontrol_buffs.json",
@@ -1729,6 +1737,9 @@ export const DATASHEETS = {
     GameEvents_10: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_10_gameevents.json",
     },
+    GameEvents_10A: <DataSheetUri<GameEventData>>{
+      uri: "datatables/questgameevents/javelindata_10a_gameevents.json",
+    },
     GameEvents_11: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_11_gameevents.json",
     },
@@ -1758,6 +1769,15 @@ export const DATASHEETS = {
     },
     GameEvents_75: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_75_gameevents.json",
+    },
+    GameEvents_80: <DataSheetUri<GameEventData>>{
+      uri: "datatables/questgameevents/javelindata_80_gameevents.json",
+    },
+    GameEvents_81: <DataSheetUri<GameEventData>>{
+      uri: "datatables/questgameevents/javelindata_81_gameevents.json",
+    },
+    GameEvents_91: <DataSheetUri<GameEventData>>{
+      uri: "datatables/questgameevents/javelindata_91_gameevents.json",
     },
     GameEvents_92: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_92_gameevents.json",
@@ -1909,11 +1929,6 @@ export const DATASHEETS = {
   JointAliasData: {
     JointAlias: <DataSheetUri<JointAliasData>>{
       uri: "datatables/javelindata_jointalias.json",
-    },
-  },
-  KitItemDefinitions: {
-    KitItemDefinitions: <DataSheetUri<KitItemDefinitions>>{
-      uri: "datatables/javelindata_itemdefinitions_kits.json",
     },
   },
   LeaderboardData: {
@@ -2068,6 +2083,11 @@ export const DATASHEETS = {
     MasterItemDefinitions_MTX_2024Mar: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2024-3.json",
     },
+    MasterItemDefinitions_MTX_2024Season6: <
+      DataSheetUri<MasterItemDefinitions>
+    >{
+      uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2024-season6.json",
+    },
     MasterItemDefinitions_Named: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_named.json",
     },
@@ -2179,41 +2199,11 @@ export const DATASHEETS = {
     },
   },
   NPCData: {
-    NPCs_01: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/01_starterbeach/javelindata_01_npcs.json",
-    },
-    NPCs_02: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/02_brightwood/javelindata_02_npcs.json",
-    },
-    NPCs_02A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/02a_brightwood/javelindata_02a_npcs.json",
-    },
-    NPCs_03: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/03_greatcleave/javelindata_03_npcs.json",
-    },
-    NPCs_04A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/04a_everfall/javelindata_04a_npcs.json",
-    },
-    NPCs_05: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/05_reekwater/javelindata_05_npcs.json",
-    },
     NPCs_06: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/06_windsward/javelindata_06_npcs.json",
     },
-    NPCs_06A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/06a_windsward/javelindata_06a_npcs.json",
-    },
-    NPCs_07: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/07_shatteredmoutain/javelindata_07_npcs.json",
-    },
-    NPCs_08: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/08_queensport/javelindata_08_npcs.json",
-    },
     NPCs_09: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/09_firstlight/javelindata_09_npcs.json",
-    },
-    NPCs_09A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/09a_firstlight/javelindata_09a_npcs.json",
     },
     NPCs_10: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/10_cutlasskeys/javelindata_10_npcs.json",
@@ -2221,23 +2211,8 @@ export const DATASHEETS = {
     NPCs_11: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/11_mourningdale/javelindata_11_npcs.json",
     },
-    NPCs_12A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/12a_monarchsbluffs/javelindata_12a_npcs.json",
-    },
     NPCs_13: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/13_weaversfen/javelindata_13_npcs.json",
-    },
-    NPCs_13A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/13a_weaversfen/javelindata_13a_npcs.json",
-    },
-    NPCs_14: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/14_edengrove/javelindata_14_npcs.json",
-    },
-    NPCs_15: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/15_restlessshore/javelindata_15_npcs.json",
-    },
-    NPCs_16: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/16_brimstonesands/javelindata_16_npcs.json",
     },
     NPCs_74: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/74_devworld_red/javelindata_74_npcs.json",
@@ -2248,47 +2223,98 @@ export const DATASHEETS = {
     NPCs_92: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/92_weaponsandarmor/javelindata_92_npcs.json",
     },
-    NPCs_94: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/94_mounts/javelindata_94_npcs.json",
+    NPCs_C01: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c01_starterbeach/javelindata_c01_npcs.json",
     },
-    NPCs_95: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/95_seasons/javelindata_95_npcs.json",
+    NPCs_C02A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c02a_brightwood/javelindata_c02a_npcs.json",
     },
-    NPCs_95_S04: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/95_s04_seasons/javelindata_95_s04_npcs.json",
+    NPCs_C03: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c03_greatcleave/javelindata_c03_npcs.json",
     },
-    NPCs_95A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/95a_seasons_s02/javelindata_95a_npcs.json",
+    NPCs_C04A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c04a_everfall/javelindata_c04a_npcs.json",
     },
-    NPCs_98: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/98_factions/javelindata_98_npcs.json",
+    NPCs_C05: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c05_reekwater/javelindata_c05_npcs.json",
     },
-    NPCs_99: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99_msq/javelindata_99_npcs.json",
+    NPCs_C06A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c06a_windsward/javelindata_c06a_npcs.json",
     },
-    NPCs_99A: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99a_msq/javelindata_99a_npcs.json",
-    },
-    NPCs_99B: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99b_msq_brightwood/javelindata_99b_npcs.json",
-    },
-    NPCs_99C: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99c_msq_weaversfen/javelindata_99c_npcs.json",
-    },
-    NPCs_99D: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99d_msq_greatcleave/javelindata_99d_npcs.json",
-    },
-    NPCs_99E: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99e_msq_edengrove/javelindata_99e_npcs.json",
-    },
-    NPCs_99F: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99f_msq_ebonscale/javelindata_99f_npcs.json",
-    },
-    NPCs_99G: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/99g_msq_shattered/javelindata_99g_npcs.json",
+    NPCs_C07: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c07_shatteredmoutain/javelindata_c07_npcs.json",
     },
     NPCs_C08: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/console/c08_ebonscalereach/javelindata_c08_npcs.json",
+    },
+    NPCs_C09A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c09a_firstlight/javelindata_c09a_npcs.json",
+    },
+    NPCs_C10A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c10a_cutlasskeys/javelindata_c10a_npcs.json",
+    },
+    NPCs_C11: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c11_mourningdale/javelindata_c11_npcs.json",
+    },
+    NPCs_C12A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c12a_monarchsbluffs/javelindata_c12a_npcs.json",
+    },
+    NPCs_C13A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c13a_weaversfen/javelindata_c13a_npcs.json",
+    },
+    NPCs_C14: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c14_edengrove/javelindata_c14_npcs.json",
+    },
+    NPCs_C15: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c15_restlessshore/javelindata_c15_npcs.json",
+    },
+    NPCs_C16: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c16_brimstonesands/javelindata_c16_npcs.json",
+    },
+    NPCs_C80: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c80_holidays/javelindata_c80_npcs.json",
+    },
+    NPCs_C81: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c81_pushquests/javelindata_c81_npcs.json",
+    },
+    NPCs_C91: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c91_fishing/javelindata_c91_npcs.json",
+    },
+    NPCs_C94: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c94_mounts/javelindata_c94_npcs.json",
+    },
+    NPCs_C95: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c95_seasons/javelindata_c95_npcs.json",
+    },
+    NPCs_C95_S04: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c95_seasons_s04/javelindata_c95_s04_npcs.json",
+    },
+    NPCs_C95A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c95a_seasons_s02/javelindata_c95a_npcs.json",
+    },
+    NPCs_C98: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c98_factions/javelindata_c98_npcs.json",
+    },
+    NPCs_C99A: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c99a_msq/javelindata_c99a_npcs.json",
+    },
+    NPCs_C99B: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c99b_msq_brightwood/javelindata_c99b_npcs.json",
+    },
+    NPCs_C99C: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c99c_msq_weaversfen/javelindata_c99c_npcs.json",
+    },
+    NPCs_C99D: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c99d_msq_greatcleave/javelindata_c99d_npcs.json",
+    },
+    NPCs_C99E: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c99e_msq_edengrove/javelindata_c99e_npcs.json",
+    },
+    NPCs_C99F: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c99f_msq_ebonscale/javelindata_c99f_npcs.json",
+    },
+    NPCs_C99G: <DataSheetUri<NPCData>>{
+      uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_npcs.json",
     },
   },
   NotificationData: {
@@ -2300,187 +2326,109 @@ export const DATASHEETS = {
     ObjectiveTasksDataManager: <DataSheetUri<ObjectiveTasks>>{
       uri: "datatables/javelindata_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_01: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/01_starterbeach/javelindata_01_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_02: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/02_brightwood/javelindata_02_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_02A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/02a_brightwood/javelindata_02a_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_03: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/03_greatcleave/javelindata_03_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_04: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/04_everfall/javelindata_04_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_04A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/04a_everfall/javelindata_04a_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_05: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/05_reekwater/javelindata_05_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_06: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/06_windsward/javelindata_06_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_06A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/06a_windsward/javelindata_06a_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_07: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/07_shatteredmoutain/javelindata_07_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_08: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/08_queensport/javelindata_08_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_09: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/09_firstlight/javelindata_09_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_09A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/09a_firstlight/javelindata_09a_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_10: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/10_cutlasskeys/javelindata_10_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_11: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/11_mourningdale/javelindata_11_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_12: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/12_monarchsbluffs/javelindata_12_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_12A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/12a_monarchsbluffs/javelindata_12a_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_13: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/13_weaversfen/javelindata_13_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_13A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/13a_weaversfen/javelindata_13a_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_14: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/14_edengrove/javelindata_14_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_15: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/15_restlessshore/javelindata_15_objectivetasks.json",
-    },
-    ObjectiveTasksDataManager_16: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/16_brimstonesands/javelindata_16_objectivetasks.json",
-    },
     ObjectiveTasksDataManager_74: <DataSheetUri<ObjectiveTasks>>{
       uri: "datatables/quests/74_devworld_red/javelindata_74_objectivetasks.json",
     },
     ObjectiveTasksDataManager_75: <DataSheetUri<ObjectiveTasks>>{
       uri: "datatables/quests/75_devworld_blue/javelindata_75_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_92: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/92_weaponsandarmor/javelindata_92_objectivetasks.json",
+    ObjectiveTasksDataManager_C01: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c01_starterbeach/javelindata_c01_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_94: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/94_mounts/javelindata_94_objectivetasks.json",
+    ObjectiveTasksDataManager_C02A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c02a_brightwood/javelindata_c02a_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_95: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/95_seasons/javelindata_95_objectivetasks.json",
+    ObjectiveTasksDataManager_C03: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c03_greatcleave/javelindata_c03_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_95_S04: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/95_s04_seasons/javelindata_95_s04_objectivetasks.json",
+    ObjectiveTasksDataManager_C04A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c04a_everfall/javelindata_c04a_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_95A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/95a_seasons_s02/javelindata_95a_objectivetasks.json",
+    ObjectiveTasksDataManager_C05: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c05_reekwater/javelindata_c05_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_98: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/98_factions/javelindata_98_objectivetasks.json",
+    ObjectiveTasksDataManager_C06A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c06a_windsward/javelindata_c06a_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99_msq/javelindata_99_objectivetasks.json",
+    ObjectiveTasksDataManager_C07: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c07_shatteredmoutain/javelindata_c07_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99A: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99a_msq/javelindata_99a_objectivetasks.json",
+    ObjectiveTasksDataManager_C08: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c08_ebonscalereach/javelindata_c08_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99B: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99b_msq_brightwood/javelindata_99b_objectivetasks.json",
+    ObjectiveTasksDataManager_C09A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c09a_firstlight/javelindata_c09a_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99C: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99c_msq_weaversfen/javelindata_99c_objectivetasks.json",
+    ObjectiveTasksDataManager_C10A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c10a_cutlasskeys/javelindata_c10a_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99D: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99d_msq_greatcleave/javelindata_99d_objectivetasks.json",
+    ObjectiveTasksDataManager_C11: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c11_mourningdale/javelindata_c11_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99E: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99e_msq_edengrove/javelindata_99e_objectivetasks.json",
+    ObjectiveTasksDataManager_C12A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c12a_monarchsbluffs/javelindata_c12a_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99F: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99f_msq_ebonscale/javelindata_99f_objectivetasks.json",
+    ObjectiveTasksDataManager_C13A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c13a_weaversfen/javelindata_c13a_objectivetasks.json",
     },
-    ObjectiveTasksDataManager_99G: <DataSheetUri<ObjectiveTasks>>{
-      uri: "datatables/quests/99g_msq_shattered/javelindata_99g_objectivetasks.json",
+    ObjectiveTasksDataManager_C14: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c14_edengrove/javelindata_c14_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C15: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c15_restlessshore/javelindata_c15_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C16: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c16_brimstonesands/javelindata_c16_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C80: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c80_holidays/javelindata_c80_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C81: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c81_pushquests/javelindata_c81_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C91: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c91_fishing/javelindata_c91_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C94: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c94_mounts/javelindata_c94_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C95: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c95_seasons/javelindata_c95_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C95_S04: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c95_seasons_s04/javelindata_c95_s04_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C95A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c95a_seasons_s02/javelindata_c95a_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C98: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c98_factions/javelindata_c98_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C99A: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c99a_msq/javelindata_c99a_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C99B: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c99b_msq_brightwood/javelindata_c99b_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C99C: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c99c_msq_weaversfen/javelindata_c99c_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C99D: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c99d_msq_greatcleave/javelindata_c99d_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C99E: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c99e_msq_edengrove/javelindata_c99e_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C99F: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c99f_msq_ebonscale/javelindata_c99f_objectivetasks.json",
+    },
+    ObjectiveTasksDataManager_C99G: <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_objectivetasks.json",
     },
   },
   Objectives: {
     ObjectivesDataManager: <DataSheetUri<Objectives>>{
       uri: "datatables/javelindata_objectives.json",
-    },
-    ObjectivesDataManager_01: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/01_starterbeach/javelindata_01_objectives.json",
-    },
-    ObjectivesDataManager_02: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/02_brightwood/javelindata_02_objectives.json",
-    },
-    ObjectivesDataManager_02A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/02a_brightwood/javelindata_02a_objectives.json",
-    },
-    ObjectivesDataManager_03: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/03_greatcleave/javelindata_03_objectives.json",
-    },
-    ObjectivesDataManager_04A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/04a_everfall/javelindata_04a_objectives.json",
-    },
-    ObjectivesDataManager_05: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/05_reekwater/javelindata_05_objectives.json",
-    },
-    ObjectivesDataManager_06: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/06_windsward/javelindata_06_objectives.json",
-    },
-    ObjectivesDataManager_06A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/06a_windsward/javelindata_06a_objectives.json",
-    },
-    ObjectivesDataManager_07: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/07_shatteredmoutain/javelindata_07_objectives.json",
-    },
-    ObjectivesDataManager_08: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/08_queensport/javelindata_08_objectives.json",
-    },
-    ObjectivesDataManager_09: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/09_firstlight/javelindata_09_objectives.json",
-    },
-    ObjectivesDataManager_09A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/09a_firstlight/javelindata_09a_objectives.json",
-    },
-    ObjectivesDataManager_10: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/10_cutlasskeys/javelindata_10_objectives.json",
-    },
-    ObjectivesDataManager_11: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/11_mourningdale/javelindata_11_objectives.json",
-    },
-    ObjectivesDataManager_12: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/12_monarchsbluffs/javelindata_12_objectives.json",
-    },
-    ObjectivesDataManager_12A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/12a_monarchsbluffs/javelindata_12a_objectives.json",
-    },
-    ObjectivesDataManager_13: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/13_weaversfen/javelindata_13_objectives.json",
-    },
-    ObjectivesDataManager_13A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/13a_weaversfen/javelindata_13a_objectives.json",
-    },
-    ObjectivesDataManager_14: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/14_edengrove/javelindata_14_objectives.json",
-    },
-    ObjectivesDataManager_15: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/15_restlessshore/javelindata_15_objectives.json",
-    },
-    ObjectivesDataManager_16: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/16_brimstonesands/javelindata_16_objectives.json",
     },
     ObjectivesDataManager_74: <DataSheetUri<Objectives>>{
       uri: "datatables/quests/74_devworld_red/javelindata_74_objectives.json",
@@ -2488,44 +2436,98 @@ export const DATASHEETS = {
     ObjectivesDataManager_75: <DataSheetUri<Objectives>>{
       uri: "datatables/quests/75_devworld_blue/javelindata_75_objectives.json",
     },
-    ObjectivesDataManager_94: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/94_mounts/javelindata_94_objectives.json",
+    ObjectivesDataManager_C01: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c01_starterbeach/javelindata_c01_objectives.json",
     },
-    ObjectivesDataManager_95: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/95_seasons/javelindata_95_objectives.json",
+    ObjectivesDataManager_C02A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c02a_brightwood/javelindata_c02a_objectives.json",
     },
-    ObjectivesDataManager_95_S04: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/95_s04_seasons/javelindata_95_s04_objectives.json",
+    ObjectivesDataManager_C03: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c03_greatcleave/javelindata_c03_objectives.json",
     },
-    ObjectivesDataManager_95A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/95a_seasons_s02/javelindata_95a_objectives.json",
+    ObjectivesDataManager_C04A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c04a_everfall/javelindata_c04a_objectives.json",
     },
-    ObjectivesDataManager_98: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/98_factions/javelindata_98_objectives.json",
+    ObjectivesDataManager_C05: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c05_reekwater/javelindata_c05_objectives.json",
     },
-    ObjectivesDataManager_99: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99_msq/javelindata_99_objectives.json",
+    ObjectivesDataManager_C06A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c06a_windsward/javelindata_c06a_objectives.json",
     },
-    ObjectivesDataManager_99A: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99a_msq/javelindata_99a_objectives.json",
+    ObjectivesDataManager_C07: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c07_shatteredmoutain/javelindata_c07_objectives.json",
     },
-    ObjectivesDataManager_99B: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99b_msq_brightwood/javelindata_99b_objectives.json",
+    ObjectivesDataManager_C08: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c08_ebonscalereach/javelindata_c08_objectives.json",
     },
-    ObjectivesDataManager_99C: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99c_msq_weaversfen/javelindata_99c_objectives.json",
+    ObjectivesDataManager_C09A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c09a_firstlight/javelindata_c09a_objectives.json",
     },
-    ObjectivesDataManager_99D: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99d_msq_greatcleave/javelindata_99d_objectives.json",
+    ObjectivesDataManager_C10A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c10a_cutlasskeys/javelindata_c10a_objectives.json",
     },
-    ObjectivesDataManager_99E: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99e_msq_edengrove/javelindata_99e_objectives.json",
+    ObjectivesDataManager_C11: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c11_mourningdale/javelindata_c11_objectives.json",
     },
-    ObjectivesDataManager_99F: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99f_msq_ebonscale/javelindata_99f_objectives.json",
+    ObjectivesDataManager_C12A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c12a_monarchsbluffs/javelindata_c12a_objectives.json",
     },
-    ObjectivesDataManager_99G: <DataSheetUri<Objectives>>{
-      uri: "datatables/quests/99g_msq_shattered/javelindata_99g_objectives.json",
+    ObjectivesDataManager_C13A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c13a_weaversfen/javelindata_c13a_objectives.json",
+    },
+    ObjectivesDataManager_C14: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c14_edengrove/javelindata_c14_objectives.json",
+    },
+    ObjectivesDataManager_C15: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c15_restlessshore/javelindata_c15_objectives.json",
+    },
+    ObjectivesDataManager_C16: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c16_brimstonesands/javelindata_c16_objectives.json",
+    },
+    ObjectivesDataManager_C80: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c80_holidays/javelindata_c80_objectives.json",
+    },
+    ObjectivesDataManager_C81: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c81_pushquests/javelindata_c81_objectives.json",
+    },
+    ObjectivesDataManager_C91: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c91_fishing/javelindata_c91_objectives.json",
+    },
+    ObjectivesDataManager_C94: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c94_mounts/javelindata_c94_objectives.json",
+    },
+    ObjectivesDataManager_C95: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c95_seasons/javelindata_c95_objectives.json",
+    },
+    ObjectivesDataManager_C95_S04: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c95_seasons_s04/javelindata_c95_s04_objectives.json",
+    },
+    ObjectivesDataManager_C95A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c95a_seasons_s02/javelindata_c95a_objectives.json",
+    },
+    ObjectivesDataManager_C98: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c98_factions/javelindata_c98_objectives.json",
+    },
+    ObjectivesDataManager_C99A: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c99a_msq/javelindata_c99a_objectives.json",
+    },
+    ObjectivesDataManager_C99B: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c99b_msq_brightwood/javelindata_c99b_objectives.json",
+    },
+    ObjectivesDataManager_C99C: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c99c_msq_weaversfen/javelindata_c99c_objectives.json",
+    },
+    ObjectivesDataManager_C99D: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c99d_msq_greatcleave/javelindata_c99d_objectives.json",
+    },
+    ObjectivesDataManager_C99E: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c99e_msq_edengrove/javelindata_c99e_objectives.json",
+    },
+    ObjectivesDataManager_C99F: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c99f_msq_ebonscale/javelindata_c99f_objectives.json",
+    },
+    ObjectivesDataManager_C99G: <DataSheetUri<Objectives>>{
+      uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_objectives.json",
     },
   },
   OpenWorldBalanceData: {
@@ -2662,6 +2664,9 @@ export const DATASHEETS = {
     SeasonPass_Season5: <DataSheetUri<SeasonPassRankData>>{
       uri: "datatables/seasonsrewards/season5/javelindata_seasonpassdata_season5.json",
     },
+    SeasonPass_Season6: <DataSheetUri<SeasonPassRankData>>{
+      uri: "datatables/seasonsrewards/season6/javelindata_seasonpassdata_season6.json",
+    },
   },
   SeasonsRewardData: {
     SeasonsRewardData_Season1: <DataSheetUri<SeasonsRewardData>>{
@@ -2678,6 +2683,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardData_Season5: <DataSheetUri<SeasonsRewardData>>{
       uri: "datatables/seasonsrewards/season5/javelindata_rewarddata_season5.json",
+    },
+    SeasonsRewardData_Season6: <DataSheetUri<SeasonsRewardData>>{
+      uri: "datatables/seasonsrewards/season6/javelindata_rewarddata_season6.json",
     },
   },
   SeasonsRewardsActivitiesConfig: {
@@ -2706,6 +2714,11 @@ export const DATASHEETS = {
     >{
       uri: "datatables/seasonsrewards/season5/javelindata_seasonsrewardsactivitiesconfig_s5.json",
     },
+    SeasonsRewardsActivitiesConfig_Season6: <
+      DataSheetUri<SeasonsRewardsActivitiesConfig>
+    >{
+      uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardsactivitiesconfig_s6.json",
+    },
   },
   SeasonsRewardsActivitiesTasksData: {
     SeasonsRewardsActivitiesTasksData_Season4: <
@@ -2717,6 +2730,11 @@ export const DATASHEETS = {
       DataSheetUri<SeasonsRewardsActivitiesTasksData>
     >{
       uri: "datatables/seasonsrewards/season5/javelindata_seasonsrewardsactivitiestasks_s5.json",
+    },
+    SeasonsRewardsActivitiesTasksData_Season6: <
+      DataSheetUri<SeasonsRewardsActivitiesTasksData>
+    >{
+      uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardsactivitiestasks_s6.json",
     },
   },
   SeasonsRewardsCardData: {
@@ -2734,6 +2752,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardsCardData_Season5: <DataSheetUri<SeasonsRewardsCardData>>{
       uri: "datatables/seasonsrewards/season5/javelindata_seasonsrewardscarddata_s5.json",
+    },
+    SeasonsRewardsCardData_Season6: <DataSheetUri<SeasonsRewardsCardData>>{
+      uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardscarddata_s6.json",
     },
   },
   SeasonsRewardsCardTemplates: {
@@ -2762,6 +2783,11 @@ export const DATASHEETS = {
     >{
       uri: "datatables/seasonsrewards/season5/javelindata_seasonsrewardscardtemplates_s5.json",
     },
+    SeasonsRewardsCardTemplates_Season6: <
+      DataSheetUri<SeasonsRewardsCardTemplates>
+    >{
+      uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardscardtemplates_s6.json",
+    },
   },
   SeasonsRewardsChapterData: {
     SeasonsRewardsChapterData_Season1: <
@@ -2788,6 +2814,11 @@ export const DATASHEETS = {
       DataSheetUri<SeasonsRewardsChapterData>
     >{
       uri: "datatables/seasonsrewards/season5/javelindata_chapterdata_season5.json",
+    },
+    SeasonsRewardsChapterData_Season6: <
+      DataSheetUri<SeasonsRewardsChapterData>
+    >{
+      uri: "datatables/seasonsrewards/season6/javelindata_chapterdata_season6.json",
     },
   },
   SeasonsRewardsJourneyData: {
@@ -2820,6 +2851,11 @@ export const DATASHEETS = {
       DataSheetUri<SeasonsRewardsJourneyData>
     >{
       uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardsjourney_season6.json",
+    },
+    SeasonsRewardsJourneyData_Season7: <
+      DataSheetUri<SeasonsRewardsJourneyData>
+    >{
+      uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardsjourney_season7.json",
     },
   },
   SeasonsRewardsSeasonData: {
@@ -3002,6 +3038,11 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_staminacosts_player.json",
     },
   },
+  StatMultiplierData: {
+    StatMultiplierTable: <DataSheetUri<StatMultiplierData>>{
+      uri: "datatables/javelindata_statmultipliers.json",
+    },
+  },
   StatusEffectCategoryData: {
     StatusEffectCategories: <DataSheetUri<StatusEffectCategoryData>>{
       uri: "datatables/javelindata_statuseffectcategories.json",
@@ -3074,6 +3115,11 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_storeproducts.json",
     },
   },
+  StoryProgressData: {
+    StoryProgress: <DataSheetUri<StoryProgressData>>{
+      uri: "datatables/javelindata_storyprogress.json",
+    },
+  },
   StructureFootprintData: {
     WallFootprint: <DataSheetUri<StructureFootprintData>>{
       uri: "datatables/structuredata/javelindata_wallfootprint.json",
@@ -3099,6 +3145,9 @@ export const DATASHEETS = {
     },
     InvasionDefinitions: <DataSheetUri<TerritoryDefinition>>{
       uri: "datatables/invasion/javelindata_invasiondefinitions.json",
+    },
+    PointsOfInterest_02_00: <DataSheetUri<TerritoryDefinition>>{
+      uri: "datatables/pointofinterestdefinitions/javelindata_poidefinitions_02_00.json",
     },
     PointsOfInterest_02_02: <DataSheetUri<TerritoryDefinition>>{
       uri: "datatables/pointofinterestdefinitions/javelindata_poidefinitions_02_02.json",
@@ -3185,14 +3234,6 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_itemdefinitions_throwables.json",
     },
   },
-  TimelineRegistryEntryData: {
-    TimelineRegistryEntry: <DataSheetUri<TimelineRegistryEntryData>>{
-      uri: "datatables/timelines/javelindata_npc_votimelines.json",
-    },
-    WhisperTimelineRegistryEntry: <DataSheetUri<TimelineRegistryEntryData>>{
-      uri: "datatables/timelines/javelindata_whispertimelines.json",
-    },
-  },
   TradeSkillPostCapData: {
     TradeSkillPostCap: <DataSheetUri<TradeSkillPostCapData>>{
       uri: "datatables/javelindata_tradeskillpostcap.json",
@@ -3258,6 +3299,21 @@ export const DATASHEETS = {
     },
     Woodworking: <DataSheetUri<TradeskillRankData>>{
       uri: "datatables/javelindata_tradeskillwoodworking.json",
+    },
+  },
+  TutorialConditionData: {
+    TutorialConditionData: <DataSheetUri<TutorialConditionData>>{
+      uri: "datatables/playertutorials/javelindata_tutorialtriggerconditionsdata.json",
+    },
+  },
+  TutorialContentData: {
+    TutorialContentData: <DataSheetUri<TutorialContentData>>{
+      uri: "datatables/playertutorials/javelindata_tutorialcontentdata.json",
+    },
+  },
+  TutorialData: {
+    TutorialData: <DataSheetUri<TutorialData>>{
+      uri: "datatables/playertutorials/javelindata_tutorialdata.json",
     },
   },
   TwitchDropsStatDefinitions: {
@@ -3361,11 +3417,31 @@ export const DATASHEETS = {
     NPC: <DataSheetUri<VariationData>>{
       uri: "datatables/javelindata_variations_npcs.json",
     },
+    NPC_ClientPathing_Walkaway: <DataSheetUri<VariationData>>{
+      uri: "datatables/javelindata_variations_npcs_clientpathing_walkaway.json",
+    },
     NPC_Walkaway: <DataSheetUri<VariationData>>{
       uri: "datatables/javelindata_variations_npcs_walkaway.json",
     },
     RandomEncounter_Vitals: <DataSheetUri<VariationData>>{
       uri: "datatables/javelindata_variations_randomencounters.json",
+    },
+  },
+  VitalsBaseData: {
+    BaseVitals_Common: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/javelindata_basevitals_common.json",
+    },
+    BaseVitals_CutlassKeys: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/javelindata_basevitals_cutlasskeys.json",
+    },
+    BaseVitals_FirstLight: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/javelindata_basevitals_firstlight.json",
+    },
+    BaseVitals_Player: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/javelindata_basevitals_player.json",
+    },
+    BaseVitals_Raid_CutlassKeys: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/raids/javelindata_basevitals_raid_cutlasskeys.json",
     },
   },
   VitalsCategoryData: {
@@ -3374,22 +3450,30 @@ export const DATASHEETS = {
     },
   },
   VitalsData: {
-    Vitals: <DataSheetUri<VitalsData>>{
-      uri: "datatables/javelindata_vitals.json",
-    },
-    Vitals_FirstLight: <DataSheetUri<VitalsData>>{
-      uri: "datatables/vitalstables/javelindata_vitals_firstlight.json",
-    },
     Vitals_FtW: <DataSheetUri<VitalsData>>{
       uri: "datatables/ftw/javelindata_vitals_ftw.json",
-    },
-    Vitals_Player: <DataSheetUri<VitalsData>>{
-      uri: "datatables/javelindata_vitals_player.json",
     },
   },
   VitalsLevelData: {
     VitalsLevels: <DataSheetUri<VitalsLevelData>>{
       uri: "datatables/javelindata_vitalsleveldata.json",
+    },
+  },
+  VitalsLevelVariantData: {
+    LevelVariantVitals_Common: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/javelindata_levelvariantvitals_common.json",
+    },
+    LevelVariantVitals_CutlassKeys: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/javelindata_levelvariantvitals_cutlasskeys.json",
+    },
+    LevelVariantVitals_FirstLight: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/javelindata_levelvariantvitals_firstlight.json",
+    },
+    LevelVariantVitals_Player: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/javelindata_levelvariantvitals_player.json",
+    },
+    Vitals_Raid_CutlassKeys: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/raids/javelindata_levelvariantvitals_raid_cutlasskeys.json",
     },
   },
   VitalsModifierData: {

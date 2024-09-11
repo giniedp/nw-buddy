@@ -3,7 +3,7 @@
   [class.flipped]="showBackside"
   [nwbItemMarker]="item.recipeItem.ItemID"
   #itemMarker="itemMarker"
-  [class.is-collected]="!!(itemMarker.value$ | async)"
+  [class.is-collected]="!!itemMarker.value()"
 >
   <div class="flip-card-content bg-black rounded-md h-full">
     <nwb-item-detail [entity]="item.recipeItem" class="flip-card-front">

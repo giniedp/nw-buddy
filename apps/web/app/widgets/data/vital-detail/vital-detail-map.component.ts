@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, effect, inject, input, output, untracked, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { VitalsBaseData, VitalsLevelVariantData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgDice, svgExpand, svgFire } from '~/ui/icons/svg'

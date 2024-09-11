@@ -26,12 +26,12 @@ export class NwLinkService {
     })
   }
 
-  public withLocale(uri: string) {
+  public withLocale(uri: string, locale = this.locale.value()) {
     if (!uri || !uri.startsWith('/')) {
       return uri
     }
-    if (this.locale.value() && this.locale.value() !== 'en-us') {
-      uri = `/${this.locale.value()}${uri}`
+    if (locale && locale !== 'en-us') {
+      uri = `/${locale}${uri}`
     }
     return uri
   }

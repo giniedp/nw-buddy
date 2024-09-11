@@ -43,7 +43,7 @@ export const QuestDetailStore = signalStore(
       requiredAchievementId: selectSignal(quest, (it) => it?.RequiredAchievementId),
       requiredLevel: selectSignal(quest, (it) => it?.RequiredLevel),
       requiredFaction: selectSignal(quest, (it) => it?.RequiredFaction),
-      requiredProgression: selectSignal(quest, (it) => it?.RequiredProgression),
+      //requiredProgression: selectSignal(quest, (it) => it?.RequiredProgression),
     }
   }),
   withComputed(({ questId, quest, level }) => {

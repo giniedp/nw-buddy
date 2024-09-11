@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { NwExpEval, NwExpJoin, getItemGsBonus, getPerkMultiplier, isPerkGenerated, parseNwExpression, walkNwExpression } from '@nw-data/common'
+import { NwExpEval, NwExpJoin, getItemGsBonus, getPerkMultiplier, getPerkScalingPerGearScore, isPerkGenerated, parseNwExpression, walkNwExpression } from '@nw-data/common'
 import { AbilityData, StatusEffectData } from '@nw-data/generated'
 import { groupBy, sortBy, sumBy } from 'lodash'
 import { map } from 'rxjs'
@@ -96,7 +96,7 @@ function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, AbilityDat
 
       let description = tl8.get(perk.Description)
       let scaleInjected = true
-      if (!perk.ScalingPerGearScore) {
+      if (!getPerkScalingPerGearScore(perk)) {
         const withInjection = injectMultiplierIntoDescription(description)
         if (withInjection) {
           description = withInjection
