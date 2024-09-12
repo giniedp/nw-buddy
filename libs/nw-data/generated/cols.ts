@@ -4874,7 +4874,7 @@ export const COLS_OBJECTIVETASKS = {
   OnInteractStart: "boolean",
   OverrideLocation: "string",
   POITag: "string",
-  PauseAndClearLootOnTaskComplete: "boolean",
+  PauseAndClearLootOnTaskComplete: "string",
   RequiredLevel: "number",
   ResetOnCondition: "number",
   SS_StatePreset: "string",
