@@ -5,12 +5,20 @@
 >
   <picture class="block aspect-square w-3/5 relative">
     <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full spin-cw"
-      [nwImage]="'assets/loaders/crafting_rune_clockwise.png'"
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+      [nwImage]="'assets/loaders/basicscreenrune1.png'"
     />
     <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full spin-ccw"
-      [nwImage]="'assets/loaders/crafting_rune_counter_clockwise.png'"
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+      [nwImage]="'assets/loaders/basicscreenrune3.png'"
+    />
+    <img
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+      [nwImage]="'assets/loaders/basicscreenrune2.png'"
+    />
+    <img
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
+      [nwImage]="'assets/loaders/nwlogo.png'"
     />
   </picture>
 </div>
@@ -26,12 +34,7 @@
       [isNamed]="item.named"
       class="relative font-nimbus gap-2 w-full shadow-sm rounded whitespace-nowrap overflow-hidden overflow-ellipsis"
     >
-      <nwb-item-icon
-        [nwbItemIcon]="getIcon(item)"
-        [solid]="false"
-        [rarity]="item.rarity"
-        class="z-10 w-10 h-10"
-      />
+      <nwb-item-icon [nwbItemIcon]="getIcon(item)" [solid]="false" [rarity]="item.rarity" class="z-10 w-10 h-10" />
       <nwb-item-header-content class="z-10" [rarity]="item.rarity">
         <span class="title block overflow-hidden text-ellipsis">{{ item.text }}</span>
         <div class="flex flex-row gap-1">

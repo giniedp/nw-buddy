@@ -34,11 +34,19 @@
     <picture class="block aspect-square w-40 h-40 relative">
       <img
         class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
-        src="assets/loaders/crafting_rune_clockwise.png"
+        src="assets/loaders/basicscreenrune1.png"
       />
       <img
         class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-        src="assets/loaders/crafting_rune_counter_clockwise.png"
+        src="assets/loaders/basicscreenrune3.png"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        src="assets/loaders/basicscreenrune2.png"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
+        src="assets/loaders/nwlogo.png"
       />
     </picture>
   </div>
@@ -60,7 +68,7 @@
           </ng-container>
         </select>
         <button class="join-item btn btn-success" [disabled]="!serverId$() || isLoading$()" (click)="load(serverId$())">
-          <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="isLoading$()"/>
+          <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="isLoading$()" />
           <ng-container *ngIf="!isLoading$()"> Load </ng-container>
         </button>
       </div>
