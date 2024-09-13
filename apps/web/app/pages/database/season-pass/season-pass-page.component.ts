@@ -61,7 +61,7 @@ export class SeasonPassPageComponent {
   protected selectionParam = 'id'
   protected persistKey = 'season-pass-table'
   protected categoryParam = 'c'
-  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || 'season5')
+  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || 'season6')
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
