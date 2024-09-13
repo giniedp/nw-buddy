@@ -118,7 +118,7 @@ jobs:
           command: pnpm i --frozen-lockfile
       - run:
           name: Download nw-data
-          command: pnpm nw-cdn download -ws ptr
+          command: pnpm nw-cdn download
       - run:
           name: Build Website
           command: pnpm build:web
