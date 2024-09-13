@@ -50,7 +50,7 @@
                 "ignore": [
                   "*.gz",
                   "*.zip",
-
+                  "**/worldtiles/**",
                   "**/items_hires/**"
                 ],
                 "input": "dist/nw-data/.current",
