@@ -145,7 +145,7 @@ function loadState(db: NwDataService, perkId: string) {
       if (affix?.StatusEffect) {
         result.push(affix.StatusEffect)
       }
-      abilities?.forEach((it) => {
+      abilities?.filter((it) => !!it)?.forEach((it) => {
         if (it.SelfApplyStatusEffect?.length) {
           result.push(...it.SelfApplyStatusEffect)
         }
