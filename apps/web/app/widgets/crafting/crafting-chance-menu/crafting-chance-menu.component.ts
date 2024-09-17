@@ -12,7 +12,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { CaseInsensitiveSet, mapFilter } from '~/utils'
 
 const ARMOR_SLOT_IDS: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet']
-const SKILLS_WITH_BONUS = ['Arcana', 'Cooking', 'Smelting', 'Woodworking', 'Leatherworking', 'Weaving', 'Stonecutting']
+const SKILLS_WITH_BONUS = ['Arcana', 'Cooking', 'Smelting', 'Woodworking', 'Leatherworking', 'Weaving', 'Stonecutting', 'Jewelcrafting']
 @Component({
   standalone: true,
   selector: 'nwb-crafting-chance-menu',

@@ -62,18 +62,6 @@ const NW_CRAFTING_CATEGORY_NAMES = {
   Tools: 'inv_tools',
   Dyes: 'CategoryData_Dyes',
 }
-const CRAFTING_CATEGORY_GRANTING_BONUS = [
-  'ArcanaRefining',
-  'BasicCooking',
-  'Concoctions',
-  'CorruptedRefining',
-  'CutGems',
-  'CutStone',
-  'Dyes',
-  'Foods',
-  'FuseGems',
-  'RefinedResources',
-]
 
 export function sumCraftingIngredientQuantities(recipe: CraftingIngredients, multiplier = 1) {
   if (!recipe) {
@@ -126,13 +114,7 @@ export function calculateBonusItemChance({
   skill?: number
   customChance?: number
 }) {
-  if (!item || recipe?.BonusItemChance == null || !ingredients?.length) {
-    return 0
-  }
-  if (!CRAFTING_CATEGORY_GRANTING_BONUS.includes(recipe.CraftingCategory)) {
-    // this seems to work for all items except
-    // 'CorruptedRefining'
-    // TODO:
+  if (!item || !recipe?.IsRefining || recipe?.BonusItemChance == null || !ingredients?.length) {
     return 0
   }
   // only category ingrediens affect bonus chance
