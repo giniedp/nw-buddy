@@ -81,6 +81,7 @@ export async function generateSearch({
     await indexMounts(dict, tables, index)
     await indexAppearance(dict, tables, index)
     await indexWeaponAppearance(dict, tables, index)
+    await indexTerritories(dict, tables, index)
     const data = index.getData()
     const json = ['[', data.map((it) => JSON.stringify(it)).join(',\n'), ']'].join('\n')
     await onFileReady(locale, json)
@@ -321,6 +322,28 @@ async function indexWeaponAppearance(dict: Record<string, string>, tables: Datas
     }
   }
 }
+
+async function indexTerritories(dict: Record<string, string>, tables: DatasheetFile[], index: IndexTable) {
+  tables = tables.filter((it) => it.header.type === 'TerritoryDefinition')
+  if (!tables.length) {
+    logger.warn('No territory tables found')
+  }
+  type ItemType = { TerritoryID: string; NameLocalizationKey: string; MapIcon: string }
+  for (const table of tables) {
+    for (const item of table.rows as ItemType[]) {
+      if (!item.NameLocalizationKey) {
+        continue
+      }
+      index.add({
+        id: String(item.TerritoryID) ,
+        type: 'poi',
+        text: translate(dict, item.NameLocalizationKey) || '',
+        icon: item.MapIcon,
+      })
+    }
+  }
+}
+
 
 export function getItemRarity(item: any): string {
   if (!item) {
