@@ -27,6 +27,13 @@
     <nwb-spell-detail [spellId]="spellId" class="bg-black" />
   }
 
+  @for (abilityId of detail.store.foreignAbilities(); track $index; let i = $index; let isFirst = $first) {
+    @if (isFirst) {
+      <h3 class="prose mt-2">Referenced by Abilities:</h3>
+    }
+    <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+  }
+
   @for (spellId of spellIds$ | async; track i; let i = $index; let isFirst = $first) {
     @if (isFirst) {
       <h3 class="prose mt-2">Referenced by Spells:</h3>

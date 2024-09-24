@@ -1,5 +1,6 @@
 import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { AbilityData, CooldownData } from '@nw-data/generated'
@@ -10,7 +11,7 @@ import { humanize, rejectKeys, selectSignal } from '~/utils'
 
 export interface AbilityDetailState {
   abilityId: string
-  ability: AbilityData & { $source?: string}
+  ability: AbilityData & { $source?: string }
   cooldown: CooldownData
   isLoaded: boolean
 }
@@ -106,6 +107,17 @@ export const AbilityDetailStore = signalStore(
         return uniq(flatten([it.RequiredEquippedAbilityId, it.RequiredAbilityId, it.AbilityList])).filter(
           (e) => !!e && e !== it.AbilityID,
         )
+      }),
+    }
+  }),
+  withComputed(({ abilityId }) => {
+    const db = inject(NwDataService)
+    const ref1 = toSignal(db.abilitiesByRequiredAbilityId(abilityId), { initialValue: [] })
+    const ref2 = toSignal(db.abilitiesByRequiredEquippedAbilityId(abilityId), { initialValue: [] })
+    const ref3 = toSignal(db.abilitiesByAbilityList(abilityId), { initialValue: [] })
+    return {
+      foreignAbilities: computed(() => {
+        return uniq([ref1() || [], ref2() || [], ref3() || []].flat().map((it) => it.AbilityID))
       }),
     }
   }),

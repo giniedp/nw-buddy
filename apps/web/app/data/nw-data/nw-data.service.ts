@@ -148,6 +148,13 @@ export class NwDataService {
   public abilitiesBySelfApplyStatusEffect = tableLookup(() => this.abilitiesBySelfApplyStatusEffectMap)
   public abilitiesByOtherApplyStatusEffectMap = tableGroupBy(() => this.abilities, 'OtherApplyStatusEffect')
   public abilitiesByOtherApplyStatusEffect = tableLookup(() => this.abilitiesByOtherApplyStatusEffectMap)
+  public abilitiesByRequiredAbilityIdMap = tableGroupBy(() => this.abilities, 'RequiredAbilityId')
+  public abilitiesByRequiredAbilityId = tableLookup(() => this.abilitiesByRequiredAbilityIdMap)
+  public abilitiesByRequiredEquippedAbilityIdMap = tableGroupBy(() => this.abilities, 'RequiredEquippedAbilityId')
+  public abilitiesByRequiredEquippedAbilityId = tableLookup(() => this.abilitiesByRequiredEquippedAbilityIdMap)
+  public abilitiesByAbilityListMap = tableGroupBy(() => this.abilities, 'AbilityList')
+  public abilitiesByAbilityList = tableLookup(() => this.abilitiesByAbilityListMap)
+
 
   public statusEffects = table(() => this.loadEntries(DATASHEETS.StatusEffectData))
   public statusEffectsMap = tableIndexBy(() => this.statusEffects, 'StatusID')
