@@ -34,14 +34,14 @@ export function isPerkApplicableToItem(perk: Pick<PerkData, 'ItemClass'>, item: 
   return doListsIntersect(perk.ItemClass, item.ItemClass, eqIgnoreCase)
 }
 
-export function isPerkExcludedFromItem(perk: Pick<PerkData, 'ExcludeItemClass' | 'PerkType'>, item: Pick<MasterItemDefinitions, 'ItemClass'>) {
+export function isPerkExcludedFromItem(perk: Pick<PerkData, 'ExcludeItemClass' | 'PerkType'>, item: Pick<MasterItemDefinitions, 'ItemClass'>, checkGem: boolean) {
   if (!perk || !item) {
     return false
   }
   if (doListsIntersect(perk.ExcludeItemClass, item.ItemClass, eqIgnoreCase)) {
     return true
   }
-  if (isPerkGem(perk) && doesListInclude(item.ItemClass, 'NoGem', eqIgnoreCase)) {
+  if (checkGem && isPerkGem(perk) && doesListInclude(item.ItemClass, 'NoGem', eqIgnoreCase)) {
     return true
   }
   return false

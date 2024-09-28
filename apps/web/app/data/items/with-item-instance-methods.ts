@@ -30,11 +30,7 @@ export function withItemInstanceMethods() {
       return {
         updateItemInstancePerk: async (perkKey: string, perk: PerkData) => {
           const perks = makeCopy(itemInstance()).perks || {}
-          if (perk) {
-            perks[perkKey] = perk.PerkID
-          } else {
-            delete perks[perkKey]
-          }
+          perks[perkKey] = perk?.PerkID || null
           await patchItemInstance({ perks })
         },
       }

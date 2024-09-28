@@ -116,11 +116,7 @@ export function withGearsetMethods() {
         updateSlotPerk: async (slot: EquipSlotId, perkKey: string, perk: PerkData) => {
           const { instance } = await resolveSlot(gearset(), slot, itemDB)
           const perks = makeCopy(instance?.perks || {})
-          if (perk) {
-            perks[perkKey] = perk.PerkID
-          } else {
-            delete perks[perkKey]
-          }
+          perks[perkKey] = perk?.PerkID || null
           await patchSlot(slot, { perks })
         },
         updateGearsetImage: async (file: File) => {

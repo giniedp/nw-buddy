@@ -181,7 +181,7 @@ export class InventoryPickerService {
             // unchanged selection
             .pipe(filter((it) => !isEqual(it, [selection])))
             .pipe(map((it) => it?.[0]))
-            .pipe(map((it: string) => perks.get(it)))
+            .pipe(map((it: string) => perks.get(it) || null))
         )
       }),
     )
@@ -266,7 +266,7 @@ export class InventoryPickerService {
       DataViewPicker.open({
         injector: this.injector,
         title: 'Choose Perk',
-        selection: options.selectedPerkid ? [options.selectedPerkid] : null,
+        selection: options.selectedPerkid ? [options.selectedPerkid.toLowerCase()] : null,
         displayMode: ['grid'],
         dataView: {
           adapter: PerkTableAdapter,
@@ -380,7 +380,7 @@ export class InventoryPickerService {
 
         return perks
           .filter((it) => {
-            if (isPerkExcludedFromItem(it, item)) {
+            if (isPerkExcludedFromItem(it, item, !hasGemSlot)) {
               return false
             }
 
