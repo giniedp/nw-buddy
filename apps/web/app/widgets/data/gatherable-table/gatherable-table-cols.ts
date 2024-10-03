@@ -80,12 +80,31 @@ export function gatherableColTradeSkill(util: GatherableTableUtils) {
 }
 
 export function gatherableColLootTable(util: GatherableTableUtils) {
-  return util.colDef<string>({
+  return util.colDef<string[]>({
     colId: 'finalLootTable',
     headerValueGetter: () => 'Loot Table',
-    valueFormatter: ({ value }) => humanize(value),
     width: 120,
-    field: 'FinalLootTable',
+    valueGetter: ({ data }) => {
+      const result = []
+      if (data.FinalLootTable) {
+        result.push(data.FinalLootTable)
+      }
+      if (data.$variations) {
+        for (const variation of data.$variations || []) {
+          for (const gatherable of variation.Gatherables || []) {
+            if (gatherable.LootTable?.length) {
+              for (const lootTable of gatherable.LootTable) {
+                if (lootTable && !result.includes(lootTable)) {
+                  result.push(lootTable)
+                }
+              }
+            }
+          }
+        }
+      }
+      result.sort()
+      return result
+    },
     ...util.selectFilter({
       order: 'asc',
       search: true,
