@@ -5,8 +5,10 @@ import {
   scanForData,
   scanForEncounterSpawner,
   scanForEncounterType,
+  scanForFtueIslandSpawner,
   scanForPointSpawners,
   scanForPrefabSpawner,
+  scanForProjectileSpawner,
 } from './scan-for-spawners-utils'
 import { AZ__Entity } from './types/dynamicslice'
 import { resolveDynamicSliceFiles, rotatePoints, translatePoints } from './utils'
@@ -57,6 +59,7 @@ async function* scan(rootDir: string, file: string, stack: string[]) {
     }
   }
 }
+
 const DEBUG_VITAL = '' // 'Undead_Admiral_Brute_DG_Cutlass_00'
 function debugVital(result: SpawnerScanResult, file: string) {
   if (!DEBUG_VITAL) {
@@ -66,6 +69,7 @@ function debugVital(result: SpawnerScanResult, file: string) {
     console.log('DEBUG', result.vitalsID, result.positions)
   }
 }
+
 async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncGenerator<SpawnerScanResult> {
   if (!file) {
     return
@@ -111,8 +115,26 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
   }
 
-  const pointSpawns = await scanForPointSpawners(component, rootDir, file)
-  for (const spawn of pointSpawns || []) {
+  // #region FTUE Island Spawner
+  for (const spawn of (await scanForFtueIslandSpawner(component, rootDir, file)) || []) {
+    const result = mergeData(
+      {
+        positions: [[...spawn.translation]],
+        encounter: encounterType,
+        name: spawn.entity.name,
+        houseType: null,
+        stationID: null,
+        structureType: null,
+        vitalsID: 'Player',
+      },
+      consume(spawn.entity),
+    )
+    yield result
+  }
+  // #endregion
+
+  // #region Point Spawner
+  for (const spawn of (await scanForPointSpawners(component, rootDir, file)) || []) {
     spawn.translation = [0, 0, 0]
     for await (const item of scan(rootDir, spawn.slice, stack)) {
       const result = mergeData(
@@ -127,9 +149,10 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       yield result
     }
   }
+  // #endregion
 
-  const prefabSpawn = await scanForPrefabSpawner(component, rootDir, file)
-  for (const spawn of prefabSpawn || []) {
+  // #region Prefab Spawner
+  for (const spawn of (await scanForPrefabSpawner(component, rootDir, file)) || []) {
     for await (const item of scan(rootDir, spawn.slice, stack)) {
       const result = mergeData(
         {
@@ -144,9 +167,16 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       yield result
     }
   }
+  // #endregion
 
-  const encounterSpawns = await scanForEncounterSpawner(component, rootDir, file)
-  for (const spawn of encounterSpawns || []) {
+  // #region Projectile Spawner
+  for (const spawn of (await scanForProjectileSpawner(component, rootDir, file)) || []) {
+    // TODO: Implement projectile spawner
+  }
+  // #endregion
+
+  // #region Encounter Spawner
+  for (const spawn of (await scanForEncounterSpawner(component, rootDir, file)) || []) {
     const locations = spawn.locations?.length ? spawn.locations : [{ translation: [0, 0, 0], rotation: null }]
     for await (const item of scan(rootDir, spawn.slice, stack)) {
       for (const location of locations) {
@@ -163,9 +193,10 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       }
     }
   }
+  // #endregion
 
-  const areaSpawns = await scanForAreaSpawners(component, rootDir, file)
-  for (const spawn of areaSpawns || []) {
+  // #region Area Spawner
+  for (const spawn of (await scanForAreaSpawners(component, rootDir, file)) || []) {
     if (!spawn.locations?.length) {
       continue
     }
@@ -184,6 +215,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       }
     }
   }
+  // #endregion
 
   for (const item of unconsumed) {
     if (item.houseType) {

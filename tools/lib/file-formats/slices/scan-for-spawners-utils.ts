@@ -10,6 +10,7 @@ import {
   isAreaSpawnerComponentServerFacet,
   isAssemblyComponent,
   isEncounterComponent,
+  isFtueIslandSpawnerComponent,
   isGameTransformComponent,
   isGatherableControllerComponent,
   isHousingPlotComponent,
@@ -38,6 +39,7 @@ import {
   lookupAssetPath,
   readDynamicSliceFile,
   resolveDynamicSliceFiles,
+  getComponentTransforms,
 } from './utils'
 
 function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
@@ -54,6 +56,40 @@ export function readDynamicSliceFileCached(file: string) {
 export function readJsonFileCached<T>(file: string) {
   return cached(`readJsonFileCached ${file}`, () => {
     return readJSONFile<T>(file)
+  })
+}
+
+export async function scanForFtueIslandSpawner(sliceComponent: SliceComponent, rootDir: string, file: string) {
+  return cached(`scanForFtueIslandSpawner ${file}`, async () => {
+    const result: Array<{
+      entity: AZ__Entity
+      translation: number[]
+      rotation: number[][]
+    }> = []
+    for (const entity of sliceComponent.entities || []) {
+      let translation: number[]
+      let rotation: number[][]
+      let isSpawner = false
+      for (const component of entity.components || []) {
+        const transform = getComponentTransforms(component)
+        if (transform) {
+          translation = translation || transform.translation
+          rotation = rotation || transform.rotation
+        }
+        if (isFtueIslandSpawnerComponent(component)) {
+          isSpawner = true
+        }
+      }
+      if (!isSpawner) {
+        continue
+      }
+      result.push({
+        entity,
+        rotation,
+        translation,
+      })
+    }
+    return result
   })
 }
 
@@ -80,14 +116,12 @@ export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDi
 
         for (const location of facet.m_locations || []) {
           const entity = getEntityById(sliceComponent, location.entityid as any)
-          const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
-          const translation = getTranslation(transform)
-          const rotation = getRotation(transform)
-          if (Array.isArray(translation)) {
-            locations.push({
-              translation,
-              rotation,
-            })
+          const transformComponent = entity?.components?.find(
+            (it) => isGameTransformComponent(it) || isTransformComponent(it),
+          )
+          const transform = getComponentTransforms(transformComponent)
+          if (transform) {
+            locations.push(transform)
           }
         }
       }
@@ -116,9 +150,10 @@ export async function scanForPointSpawners(sliceComponent: SliceComponent, rootD
       let translation: number[]
       let rotation: number[][]
       for (const component of entity.components || []) {
-        if (isGameTransformComponent(component)) {
-          translation = translation || getTranslation(component)
-          rotation = rotation || getRotation(component)
+        const transform = getComponentTransforms(component)
+        if (transform) {
+          translation = translation || transform.translation
+          rotation = rotation || transform.rotation
         }
         if (isPointSpawnerComponent(component)) {
           await appendSlices(sliceFiles, rootDir, component.baseclass1.m_sliceasset)
@@ -163,14 +198,12 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
           const locations: (typeof result)[0]['locations'] = []
           for (const location of spawn.m_spawnlocations || []) {
             const entity = getEntityById(sliceComponent, location.entityid as any)
-            const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
-            const translation = getTranslation(transform)
-            const rotation = getRotation(transform)
-            if (Array.isArray(translation)) {
-              locations.push({
-                translation,
-                rotation,
-              })
+            const transformComponent = entity?.components?.find(
+              (it) => isGameTransformComponent(it) || isTransformComponent(it),
+            )
+            const transform = getComponentTransforms(transformComponent)
+            if (transform) {
+              locations.push(transform)
             }
           }
 
@@ -203,9 +236,10 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
       let rotation: number[][]
       let variantID: string
       for (const component of entity.components || []) {
-        if (isGameTransformComponent(component)) {
-          translation = translation || getTranslation(component)
-          rotation = rotation || getRotation(component)
+        const transform = getComponentTransforms(component)
+        if (transform) {
+          translation = translation || transform.translation
+          rotation = rotation || transform.rotation
         }
         if (isPrefabSpawnerComponent(component)) {
           variantID = component.m_slicevariant
@@ -225,6 +259,43 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
           variantID,
         })
       }
+    }
+    return result
+  })
+}
+
+export async function scanForProjectileSpawner(sliceComponent: SliceComponent, rootDir: string, file: string) {
+  return cached(`scanForProjectileSpawner ${file}`, async () => {
+    const result: Array<{
+      entity: AZ__Entity
+      ammoID: string
+      translation: number[]
+      rotation: number[][]
+    }> = []
+    for (const entity of sliceComponent.entities || []) {
+      let translation: number[]
+      let rotation: number[][]
+      let ammoID: string
+      for (const component of entity.components || []) {
+        const transform = getComponentTransforms(component)
+        if (transform) {
+          translation = translation || transform.translation
+          rotation = rotation || transform.rotation
+        }
+        if (isProjectileSpawnerComponent(component)) {
+          ammoID = component.m_ammoid
+        }
+      }
+      if (!translation || !ammoID) {
+        continue
+      }
+
+      result.push({
+        ammoID,
+        translation,
+        entity,
+        rotation,
+      })
     }
     return result
   })
@@ -404,51 +475,4 @@ export async function appendSlices(collection: string[], rootDir: string, asset:
       arrayAppend(collection, file)
     }
   }
-}
-
-export function getTranslation(component: GameTransformComponent) {
-  const translation = component?.m_worldtm?.__value?.['translation'] as number[]
-  if (Array.isArray(translation)) {
-    return [...translation]
-  }
-  return null
-}
-
-export function getRotation(component: GameTransformComponent) {
-  const value = component?.m_worldtm?.__value
-  let result: number[][] = null
-  if (value?.['rotation/scale'] && Array.isArray(value?.['rotation/scale'])) {
-    const [x1, y1, z1, x2, y2, z2, x3, y3, z3] = value['rotation/scale']
-    result = [
-      [x1, y1, z1],
-      [x2, y2, z2],
-      [x3, y3, z3],
-    ]
-  }
-  if (!Array.isArray(result)) {
-    return null
-  }
-  if (result.length !== 3) {
-    return null
-  }
-  for (const row of result) {
-    if (!Array.isArray(row) || row.length !== 3) {
-      return null
-    }
-  }
-  // skip if it is an identity matrix
-  if (
-    result[0][0] === 1 &&
-    result[0][1] === 0 &&
-    result[0][2] === 0 &&
-    result[1][0] === 0 &&
-    result[1][1] === 1 &&
-    result[1][2] === 0 &&
-    result[2][0] === 0 &&
-    result[2][1] === 0 &&
-    result[2][2] === 1
-  ) {
-    return null
-  }
-  return result
 }
