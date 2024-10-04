@@ -10,7 +10,7 @@ export const environment: Environment = {
   modelsUrlMid: getModelsUrlMidRes(env),
   modelsUrlHigh: getModelsUrlHiRes(env),
   nwDataUrl: getNwDataDeployUrl(env),
-  cdnDataUrl: getNwDataDeployUrl(env),
+  //cdnDataUrl: getNwDataDeployUrl(env),
   // use this for testing CDN assets
-  // cdnDataUrl: getNwDataCdnUrl(env),
+  cdnDataUrl: getNwDataCdnUrl(env),
 }
