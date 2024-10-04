@@ -43,12 +43,4 @@ export class VitalDetailHeaderComponent {
   protected setLevel(value: number) {
     patchState(this.store, { levelOverride: value })
   }
-
-  public constructor() {
-    effect(() => {
-      // reset level whenever the vital id changes
-      this.store.vitalId()
-      this.setLevel(null)
-    }, { allowSignalWrites: true })
-  }
 }

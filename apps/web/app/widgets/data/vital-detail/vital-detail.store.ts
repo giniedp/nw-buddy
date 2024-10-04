@@ -222,7 +222,7 @@ export const VitalDetailStore = signalStore(
   withMethods((state) => {
     const isVitalFromDungeon$ = toObservable(state.isVitalFromDungeon)
     return {
-      loadById: rxMethod<string>(pipe(map((id) => patchState(state, { vitalId: id })))),
+      loadById: rxMethod<string>(pipe(map((id) => patchState(state, { vitalId: id, levelOverride: null })))),
       loadMutaDifficulty: rxMethod<number>(
         pipe(
           switchMap((id) => {
