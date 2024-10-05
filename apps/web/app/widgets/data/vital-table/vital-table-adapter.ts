@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo } from '@nw-data/common'
-import { COLS_VITALSDATA } from '@nw-data/generated'
+import { COLS_VITALSBASEDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
@@ -129,7 +129,8 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_VITALSDATA,
+    //props: COLS_VITALSDATA,
+    props: COLS_VITALSBASEDATA,
   })
   return result
 }
