@@ -25,6 +25,7 @@ import { uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize, stringToColor } from '~/utils'
+import { VitalBuff } from '../vital-detail/vital-detail.store'
 
 export type VitalTableUtils = TableGridUtils<VitalTableRecord>
 export type VitalTableRecord = VitalsBaseData &
@@ -35,6 +36,7 @@ export type VitalTableRecord = VitalsBaseData &
     $combatInfo: VitalFamilyInfo[] | null
     $metadata: ScannedVital
     $zones: TerritoryDefinition[]
+    $buffs: VitalBuff[]
   }
 
 const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) => {
@@ -493,6 +495,54 @@ export function vitalColSpawnPois(util: VitalTableUtils) {
             id: it.TerritoryID as any,
             label: util.tl8(getZoneName(it)),
             icon: getZoneIcon(it),
+          }
+        })
+      },
+    }),
+  })
+}
+
+export function vitalColBuffs(util: VitalTableUtils) {
+  const zoneFilter = isZonePoi
+  return util.colDef<string[]>({
+    colId: 'buffs',
+    headerValueGetter: () => 'Buffs',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => data.$buffs.map((it) => {
+      if (it.ability) {
+        return it.ability.AbilityID
+      }
+      if (it.effect) {
+        return it.effect.StatusID
+      }
+      return null
+    }).filter(it => !!it),
+    autoHeight: true,
+    hide: true,
+    cellRenderer: util.tagsRenderer(),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
+        const items = data.$buffs.map((it) => {
+          if (it.ability) {
+            return {
+              id: it.ability.AbilityID,
+              name: it.ability.DisplayName || it.ability.AbilityID
+            }
+          }
+          if (it.effect) {
+            return {
+              id: it.effect.StatusID,
+              name: it.effect.DisplayName || it.effect.StatusID
+            }
+          }
+          return null
+        }).filter(it => !!it)
+        return items.map((it) => {
+          return {
+            id: it.id,
+            label: util.tl8(it.name),
           }
         })
       },
