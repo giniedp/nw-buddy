@@ -242,6 +242,7 @@ export function vitalColExpedition(util: VitalTableUtils) {
     valueGetter: ({ data }) => data?.$dungeons?.map((it) => util.i18n.get(it.DisplayName)),
     ...util.selectFilter({
       order: 'asc',
+      search: true,
     }),
   })
 }
@@ -503,42 +504,75 @@ export function vitalColSpawnPois(util: VitalTableUtils) {
 }
 
 export function vitalColBuffs(util: VitalTableUtils) {
-  const zoneFilter = isZonePoi
   return util.colDef<string[]>({
     colId: 'buffs',
     headerValueGetter: () => 'Buffs',
     getQuickFilterText: () => '',
-    valueGetter: ({ data }) => data.$buffs.map((it) => {
-      if (it.ability) {
-        return it.ability.AbilityID
-      }
-      if (it.effect) {
-        return it.effect.StatusID
-      }
-      return null
-    }).filter(it => !!it),
-    autoHeight: true,
+    valueGetter: ({ data }) =>
+      data.$buffs
+        .map((it) => {
+          if (it.ability) {
+            return it.ability.AbilityID
+          }
+          if (it.effect) {
+            return it.effect.StatusID
+          }
+          return null
+        })
+        .filter((it) => !!it),
     hide: true,
-    cellRenderer: util.tagsRenderer(),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      return util.el(
+        'div.flex.flex-row.flex-wrap.gap-1',
+        {},
+        data.$buffs
+          .map((it) => {
+            if (it.ability) {
+              return util.elA({
+                attrs: {
+                  target: '_blank',
+                  href: util.nwLink.resourceLink({ type: 'ability', id: it.ability.AbilityID }),
+                },
+                class: ['text-primary', 'link', 'text-xs', 'leading-tight'],
+                html: util.tl8(it.ability.DisplayName || it.ability.AbilityID),
+              })
+            }
+            if (it.effect) {
+              return util.elA({
+                attrs: {
+                  target: '_blank',
+                  href: util.nwLink.resourceLink({ type: 'status-effect', id: it.effect.StatusID }),
+                },
+                class: ['text-primary', 'link', 'text-xs', 'leading-tight'],
+                html: util.tl8(it.effect.DisplayName || it.effect.StatusID),
+              })
+            }
+            return null
+          })
+          .filter((it) => !!it),
+      )
+    }),
     ...util.selectFilter({
       order: 'asc',
       search: true,
       getOptions: ({ data }) => {
-        const items = data.$buffs.map((it) => {
-          if (it.ability) {
-            return {
-              id: it.ability.AbilityID,
-              name: it.ability.DisplayName || it.ability.AbilityID
+        const items = data.$buffs
+          .map((it) => {
+            if (it.ability) {
+              return {
+                id: it.ability.AbilityID,
+                name: it.ability.DisplayName || it.ability.AbilityID,
+              }
             }
-          }
-          if (it.effect) {
-            return {
-              id: it.effect.StatusID,
-              name: it.effect.DisplayName || it.effect.StatusID
+            if (it.effect) {
+              return {
+                id: it.effect.StatusID,
+                name: it.effect.DisplayName || it.effect.StatusID,
+              }
             }
-          }
-          return null
-        }).filter(it => !!it)
+            return null
+          })
+          .filter((it) => !!it)
         return items.map((it) => {
           return {
             id: it.id,
