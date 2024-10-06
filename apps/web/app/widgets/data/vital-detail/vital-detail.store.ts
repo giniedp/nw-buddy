@@ -115,7 +115,7 @@ export const VitalDetailStore = signalStore(
         creatureType: toObservable(state.creatureType),
       }),
       (data) => {
-        return collectVitalBuffs({
+        return !data ? [] : collectVitalBuffs({
           bucketIds: [data.element?.[data.creatureType]],
           buffMap: data.buffMap,
           effectMap: data.effectMap,
@@ -132,7 +132,7 @@ export const VitalDetailStore = signalStore(
         abilitiesMap: db.abilitiesMap,
       }),
       (data) => {
-        return collectVitalBuffs({
+        return !data ? [] : collectVitalBuffs({
           bucketIds: (data.vital.BuffBuckets || '').split(','),
           buffMap: data.buffMap,
           effectMap: data.effectMap,
