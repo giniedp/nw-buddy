@@ -14,6 +14,8 @@ export interface AbilityDetailState {
   ability: AbilityData & { $source?: string }
   cooldown: CooldownData
   isLoaded: boolean
+  isLoading: boolean
+  hasError: boolean
 }
 
 export type AbilityDetailStore = InstanceType<typeof AbilityDetailStore>
@@ -23,6 +25,8 @@ export const AbilityDetailStore = signalStore(
     ability: null,
     cooldown: null,
     isLoaded: false,
+    isLoading: false,
+    hasError: false,
   }),
   withRedux({
     actions: {
@@ -30,19 +34,28 @@ export const AbilityDetailStore = signalStore(
         load: payload<{ abilityId: string }>(),
       },
       private: {
-        loaded: payload<Omit<AbilityDetailState, 'isLoaded'>>(),
+        loadDone: payload<Omit<AbilityDetailState, 'isLoaded' | 'isLoading' | 'hasError'>>(),
+        loadError: payload<{ error: any }>(),
       },
     },
     reducer(actions, on) {
       on(actions.load, (state) => {
         patchState(state, {
-          isLoaded: false,
+          isLoading: true,
         })
       })
-      on(actions.loaded, (state, data) => {
+      on(actions.loadDone, (state, data) => {
         patchState(state, {
           ...data,
           isLoaded: true,
+          isLoading: false,
+          hasError: false,
+        })
+      })
+      on(actions.loadError, (state) => {
+        patchState(state, {
+          isLoading: false,
+          hasError: true,
         })
       })
     },
@@ -51,9 +64,10 @@ export const AbilityDetailStore = signalStore(
       return {
         load$: create(actions.load).pipe(
           switchMap(({ abilityId }) => loadState(db, abilityId)),
-          map((data) => actions.loaded(data)),
+          map((data) => actions.loadDone(data)),
           catchError((error) => {
             console.error(error)
+            actions.loadError({ error })
             return EMPTY
           }),
         ),
