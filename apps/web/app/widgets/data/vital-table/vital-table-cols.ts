@@ -523,7 +523,7 @@ export function vitalColBuffs(util: VitalTableUtils) {
     hide: true,
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.el(
-        'div.flex.flex-row.flex-wrap.gap-1',
+        'div.line-clamp-3.text-wrap.leading-tight',
         {},
         data.$buffs
           .map((it) => {
@@ -533,7 +533,7 @@ export function vitalColBuffs(util: VitalTableUtils) {
                   target: '_blank',
                   href: util.nwLink.resourceLink({ type: 'ability', id: it.ability.AbilityID }),
                 },
-                class: ['text-primary', 'link', 'text-xs', 'leading-tight'],
+                class: ['text-primary', 'link', 'text-xs', 'leading-tight', 'mr-2'],
                 html: util.tl8(it.ability.DisplayName || it.ability.AbilityID),
               })
             }
@@ -543,7 +543,7 @@ export function vitalColBuffs(util: VitalTableUtils) {
                   target: '_blank',
                   href: util.nwLink.resourceLink({ type: 'status-effect', id: it.effect.StatusID }),
                 },
-                class: ['text-primary', 'link', 'text-xs', 'leading-tight'],
+                class: ['text-primary', 'link', 'text-xs', 'leading-tight', 'mr-2'],
                 html: util.tl8(it.effect.DisplayName || it.effect.StatusID),
               })
             }
