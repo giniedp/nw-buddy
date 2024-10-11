@@ -17,6 +17,8 @@ import { MapFilterSectionComponent } from './filter-section.component'
 import { MapFilterSegmentComponent } from './filter-segment.component'
 import { MapFilterVitalsComponent } from './filter-vitals.component'
 import { ZoneMapStore } from './zone-map.store'
+import { gameMapOptionsForMapIds } from '~/widgets/game-map/utils'
+import { TranslateService } from '~/i18n'
 
 @Component({
   standalone: true,
@@ -50,6 +52,7 @@ import { ZoneMapStore } from './zone-map.store'
   },
 })
 export class ZoneDetailMapComponent {
+  private tl8 = inject(TranslateService)
   protected store = inject(ZoneMapStore)
   protected currentMapId = this.store.mapId
   protected segment = signal('g')
@@ -87,12 +90,8 @@ export class ZoneDetailMapComponent {
   }
 
   protected mapsOptions = computed(() => {
-    const result = this.store.mapIds().map((it) => {
-      return {
-        value: it,
-        label: humanize(it),
-      }
-    })
-    return sortBy(result, (it) => it.label)
+    this.tl8.locale.value()
+    const result = gameMapOptionsForMapIds(this.store.mapIds() || [])
+    return sortBy(result, (it) => this.tl8.get(it.label))
   })
 }

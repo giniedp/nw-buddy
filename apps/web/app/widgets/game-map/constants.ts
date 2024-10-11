@@ -330,4 +330,9 @@ export const NW_MAPS = [
     maxZoom: 1,
     hidePOILayer: true,
   },
+  {
+    id: 'nw_raid_cutlasskeys_00',
+    name: 'raid_cutlasskeys00_title',
+    bounds: null,
+  }
 ]

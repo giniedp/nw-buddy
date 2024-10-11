@@ -1,6 +1,7 @@
 import { Geometry, Position } from 'geojson'
-import { Map, MapGeoJSONFeature, RasterSourceSpecification } from 'maplibre-gl'
-import { NW_MAP_LEVELS, NW_MAP_TILE_SIZE } from './constants'
+import { Map, RasterSourceSpecification } from 'maplibre-gl'
+import { eqCaseInsensitive, humanize } from '~/utils'
+import { NW_MAP_LEVELS, NW_MAP_TILE_SIZE, NW_MAPS } from './constants'
 import {
   latFromMercatorY,
   lngFromMercatorX,
@@ -132,15 +133,7 @@ export function xyToLngLat([x, y]: [number, number]) {
   return [xToLng(x), yToLat(y)]
 }
 
-export function attachLayerHover({
-  map,
-  sourceId,
-  layerId,
-}: {
-  map: Map
-  sourceId: string
-  layerId: string
-}) {
+export function attachLayerHover({ map, sourceId, layerId }: { map: Map; sourceId: string; layerId: string }) {
   const hoverIds: Array<string | number> = []
   const toAdd: Array<string | number> = []
   const toRemove: Array<string | number> = []
@@ -244,4 +237,21 @@ export function getGeometryBounds(geometry: Geometry): [number, number, number, 
 export function getGeometryCenter(geometry: Geometry): [number, number] {
   const [minX, minY, maxX, maxY] = getGeometryBounds(geometry)
   return [(minX + maxX) / 2, (minY + maxY) / 2]
+}
+
+export function gameMapOptionsForMapIds(values: string[]) {
+  return values.map((mapId) => {
+    for (const map of NW_MAPS) {
+      if (eqCaseInsensitive(map.id, mapId)) {
+        return {
+          value: map.id,
+          label: map.name,
+        }
+      }
+    }
+    return {
+      value: mapId,
+      label: humanize(mapId),
+    }
+  })
 }

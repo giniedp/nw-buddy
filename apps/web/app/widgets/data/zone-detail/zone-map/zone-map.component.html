@@ -62,7 +62,7 @@
               class="select select-sm select-ghost"
             >
               @for (option of mapsOptions(); track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
+                <option [value]="option.value">{{ option.label | nwText }}</option>
               }
             </select>
           }
