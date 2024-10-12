@@ -18,6 +18,7 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { TranslateService } from '~/i18n'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { isLootTableEmpty } from '../../gatherable'
+import { GatherableDetailDirective } from '../../gatherable-detail'
 
 @Pipe({
   standalone: true,
@@ -46,6 +47,7 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
     ToLCHPipe,
     LootGraphComponent,
     PropertyGridModule,
+    GatherableDetailDirective,
   ],
   host: {
     class: 'block',
@@ -219,7 +221,5 @@ export class MapFilterCategoryComponent {
     this.mapHost.map.getCanvas().style.cursor = ''
   }
 
-  protected handleMouseClick(features: Array<Feature<any, FilterFeatureProperties>>) {
-
-  }
+  protected handleMouseClick(features: Array<Feature<any, FilterFeatureProperties>>) {}
 }

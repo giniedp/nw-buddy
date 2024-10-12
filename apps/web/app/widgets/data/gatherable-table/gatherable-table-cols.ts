@@ -115,7 +115,7 @@ export function gatherableColLootTable(util: GatherableTableUtils) {
 export function gatherableColGatherTime(util: GatherableTableUtils) {
   return util.colDef<number>({
     colId: 'baseGatherTime',
-    headerValueGetter: () => 'Gather Time',
+    headerValueGetter: () => 'Base Gather Time',
     getQuickFilterText: () => '',
     width: 150,
     field: 'BaseGatherTime',

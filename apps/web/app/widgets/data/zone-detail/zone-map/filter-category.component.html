@@ -24,10 +24,10 @@
         <div class="grid grid-cols-dl gap-x-2">
           <span class="badge badge-xs mt-[5px]" [style.background-color]="item.color"></span>
           <div class="flex flex-col">
-            @if(item.title; as text) {
+            @if (item.title; as text) {
               <span class="leading-normal"> {{ text | nwText }} </span>
             }
-            @if(item.subtitle; as text) {
+            @if (item.subtitle; as text) {
               <span class="leading-normal text-xs"> {{ text | nwText }} </span>
             }
             @if (!item.title && !item.subtitle) {
@@ -54,6 +54,19 @@
               @if (item.loreID; as text) {
                 <span>Lore</span>
                 <code class="font-mono"> {{ text }}</code>
+              }
+              @if (item.gatherableID) {
+                <ng-container [nwbGatherableDetail]="item.gatherableID" #detail="gatherableDetail">
+                  @if (detail.store.minRespawnRate(); as time) {
+                    <span>Respawn Rate</span>
+                    <span class="font-mono">
+                      <code> {{ time }}</code>
+                      @if (detail.store.maxRespawnRate(); as time) {
+                        - <code> {{ time }}</code>
+                      }
+                    </span>
+                  }
+                </ng-container>
               }
             </div>
           </div>
