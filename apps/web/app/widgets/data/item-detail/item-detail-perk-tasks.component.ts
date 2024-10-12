@@ -26,7 +26,7 @@ export interface PerkTask {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, IconsModule],
   host: {
-    class: 'flex flex-col gap-1',
+    class: 'flex nw-item-section flex-col gap-1',
   },
 })
 export class ItemDetailPerkTasksComponent {

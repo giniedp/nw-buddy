@@ -12,7 +12,7 @@ import { ItemDetailStore } from './item-detail.store'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule],
   host: {
-    class: 'block',
+    class: 'block nw-item-section',
   },
 })
 export class ItemDetailInfoComponent {

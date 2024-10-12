@@ -26,6 +26,7 @@ import { outputFromObservable } from '@angular/core/rxjs-interop'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    ItemDetailAttributionComponent,
     ItemDetailDescriptionComponent,
     ItemDetailHeaderComponent,
     ItemDetailInfoComponent,
@@ -134,44 +135,51 @@ export class ItemCardComponent extends ItemDetailStore {
   protected disablePerks$ = new BehaviorSubject(false)
   protected disableDescription$ = new BehaviorSubject(false)
 
-  protected components = selectSignal({
-    disableInfo: this.disableInfo$,
-    vmDescription: this.disableDescription$.pipe(switchMap((it) => (it ? of(null) : this.description$))),
-    vmStats: this.disableStats$.pipe(switchMap((it) => (it ? of(null) : this.vmStats$))),
-    vmPerks: this.disablePerks$.pipe(switchMap((it) => (it ? of(null) : this.vmPerks$))),
-    vmPerkTasks: this.artifactPerkTasks$,
-    vmWeapon: this.weaponStats$,
-    attribution: this.attribution$,
-    expansion: this.expansion$,
-  }, ({ vmDescription, vmStats, vmPerks, vmWeapon, vmPerkTasks, disableInfo, attribution, expansion }) => {
-    let list: Array<Type<any>> = []
-    if (!disableInfo && (attribution || expansion)) {
-      appendSection(list, ItemDetailAttributionComponent)
-    }
-    if (vmDescription?.image) {
-      appendSection(list, ItemDetailDescriptionComponent)
-    }
-    if (vmStats && (vmStats.gsLabel || vmStats.stats?.length)) {
-      appendSection(list, ItemDetailStatsComponent)
-      if (vmWeapon && getWeaponTagFromWeapon(vmWeapon)) {
-        appendSection(list, ItemDetailGsDamage)
-      }
-    }
-    if (vmPerks?.length) {
-      appendSection(list, ItemDetailPerksComponent)
-    }
-    if (!vmDescription?.image && !!vmDescription?.description) {
-      appendSection(list, ItemDetailDescriptionComponent)
-    }
-    if (this.enableTasks && vmPerkTasks) {
-      appendSection(list, ItemDetailPerkTasksComponent)
-    }
-    if (!disableInfo) {
-      appendSection(list, ItemDetailInfoComponent)
-    }
+  protected showAttribution = selectSignal(
+    {
+      disableInfo: this.disableInfo$,
+      attribution: this.attribution$,
+      expansion: this.expansion$,
+    },
+    ({ disableInfo, attribution, expansion }) => !disableInfo && (attribution || expansion),
+  )
 
-    return list.length ? list : null
-  })
+  protected components = selectSignal(
+    {
+      disableInfo: this.disableInfo$,
+      vmDescription: this.disableDescription$.pipe(switchMap((it) => (it ? of(null) : this.description$))),
+      vmStats: this.disableStats$.pipe(switchMap((it) => (it ? of(null) : this.vmStats$))),
+      vmPerks: this.disablePerks$.pipe(switchMap((it) => (it ? of(null) : this.vmPerks$))),
+      vmPerkTasks: this.artifactPerkTasks$,
+      vmWeapon: this.weaponStats$,
+    },
+    ({ vmDescription, vmStats, vmPerks, vmWeapon, vmPerkTasks, disableInfo }) => {
+      let list: Array<Type<any>> = []
+      if (vmDescription?.image) {
+        appendSection(list, ItemDetailDescriptionComponent)
+      }
+      if (vmStats && (vmStats.gsLabel || vmStats.stats?.length)) {
+        appendSection(list, ItemDetailStatsComponent)
+        if (vmWeapon && getWeaponTagFromWeapon(vmWeapon)) {
+          appendSection(list, ItemDetailGsDamage)
+        }
+      }
+      if (vmPerks?.length) {
+        appendSection(list, ItemDetailPerksComponent)
+      }
+      if (!vmDescription?.image && !!vmDescription?.description) {
+        appendSection(list, ItemDetailDescriptionComponent)
+      }
+      if (this.enableTasks && vmPerkTasks) {
+        appendSection(list, ItemDetailPerkTasksComponent)
+      }
+      if (!disableInfo) {
+        appendSection(list, ItemDetailInfoComponent)
+      }
+
+      return list.length ? list : null
+    },
+  )
 
   protected trackByIndex = (i: number) => i
 
@@ -184,8 +192,8 @@ function appendSection(list: Array<Type<any>>, component: Type<any>) {
   if (!list) {
     list = []
   }
-  if (list.length) {
-    list.push(ItemDividerComponent)
-  }
+  // if (list.length) {
+  //   list.push(ItemDividerComponent)
+  // }
   list.push(component)
 }

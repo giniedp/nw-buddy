@@ -30,8 +30,7 @@ import { ItemDetailModule } from '../../item-detail'
         [entityId]="itemId"
         [gsOverride]="instance?.gearScore"
         [perkOverride]="instance?.perks"
-      >
-      </nwb-item-card>
+      />
     </ng-template>
   `,
   imports: [CommonModule, ItemFrameModule, ItemDetailModule, TooltipModule],

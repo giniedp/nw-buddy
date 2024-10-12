@@ -5,7 +5,11 @@
   [disableContent]="square"
 />
 @if (!square) {
-  <div class="flex flex-col gap-2 p-4 empty:hidden">
+  @if (showAttribution()) {
+    <nwb-item-detail-attribution class="p-2" />
+    <div class="nw-item-divider"></div>
+  }
+  <div class="flex flex-col gap-2 p-4 empty:hidden ">
     @if (components(); as components) {
       @for (component of components; track $index) {
         <ng-container [ngComponentOutlet]="component" />
