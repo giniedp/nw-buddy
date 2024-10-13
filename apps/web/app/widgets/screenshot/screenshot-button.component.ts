@@ -17,6 +17,9 @@ export class ScreenshotButtonComponent {
   @Input()
   public nwbScreenshotBtn: void
 
+  @Input()
+  public nwbScreenshotBtnDelay: number
+
   @HostBinding('class.disabled')
   @HostBinding('class.opacity-25')
   @HostBinding('attr.disabled')
@@ -51,6 +54,9 @@ export class ScreenshotButtonComponent {
   }
 
   protected async makeScreenshot(frame: ScreenshotFrame) {
+    if (this.nwbScreenshotBtnDelay) {
+      await new Promise((resolve) => setTimeout(resolve, this.nwbScreenshotBtnDelay))
+    }
     this.isBusy = true
     await this.grabScreenshot(frame).catch(console.error)
     this.isBusy = false
@@ -66,6 +72,6 @@ export class ScreenshotButtonComponent {
     if (!blob) {
       return
     }
-    this.service.saveBlobWithDialog(blob, frame.description)
+    this.service.saveBlobWithDialog(blob, frame.name)
   }
 }

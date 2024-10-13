@@ -192,8 +192,8 @@ function appendSection(list: Array<Type<any>>, component: Type<any>) {
   if (!list) {
     list = []
   }
-  // if (list.length) {
-  //   list.push(ItemDividerComponent)
-  // }
+  if (list.length) {
+    list.push(ItemDividerComponent)
+  }
   list.push(component)
 }

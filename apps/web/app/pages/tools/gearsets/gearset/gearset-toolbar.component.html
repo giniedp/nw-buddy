@@ -125,6 +125,15 @@
 
     <li class="divider my-1 h-[2px]"></li>
     <li class="text-shadow-sm shadow-black">
+      <a (click)="onToggleItemInfoClicked()" cdkMenuItem class="rounded-none">
+        <nwb-icon [icon]="iconInfo" class="w-4 h-4 mr-2" />
+        <div class="flex flex-col leading-none">
+          <span>Toggle item info</span>
+          <span class="text-xs opacity-75">Toggle item description and infos</span>
+        </div>
+      </a>
+    </li>
+    <li class="text-shadow-sm shadow-black">
       <a (click)="onDeleteClicked()" cdkMenuItem class="rounded-none">
         <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error mr-2" />
         <div class="flex flex-col leading-none">

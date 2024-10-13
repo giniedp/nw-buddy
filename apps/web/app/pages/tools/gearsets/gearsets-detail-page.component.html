@@ -6,7 +6,7 @@
     style="--side-min-width: 50%; --side-max-width: 50%"
     [ngClass]="{
       'min-w-[200vw] lg:min-w-0': hasOpponent() && !isLarge(),
-      '-translate-x-[100vw]': isTabOpponent() && !isLarge()
+      '-translate-x-[100vw]': isTabOpponent() && !isLarge(),
     }"
   >
     <div
@@ -20,13 +20,13 @@
     >
       <ion-header class="bg-base-300">
         <ion-toolbar>
-          <nwb-gearset-toolbar [mode]="'player'" />
+          <nwb-gearset-toolbar [mode]="'player'" #toolbar />
         </ion-toolbar>
       </ion-header>
       <ion-content [scrollY]="false" [nwbSizeObserver] #size="size">
         <ion-split-pane
           [contentId]="'player'"
-          style="--side-min-width: 360px; --side-max-width: 400px;"
+          style="--side-min-width: 360px; --side-max-width: 400px"
           [when]="host.showCalculator && size.width() >= 768"
         >
           <ion-menu
@@ -38,11 +38,7 @@
             style="--min-width: min(100vw, 360px)"
           >
             <ion-content class="bg-black ion-p-4">
-              <nwb-damage-calculator
-                [layoutAsPage]="true"
-                [player]="player$ | async"
-                [opponent]="opponent$ | async"
-              />
+              <nwb-damage-calculator [layoutAsPage]="true" [player]="player$ | async" [opponent]="opponent$ | async" />
             </ion-content>
           </ion-menu>
           <div class="ion-page order-1" id="player">
@@ -98,7 +94,7 @@
           <ion-content [scrollY]="false" [nwbSizeObserver] #size="size">
             <ion-split-pane
               [contentId]="'opponent'"
-              style="--side-min-width: 360px; --side-max-width: 400px;"
+              style="--side-min-width: 360px; --side-max-width: 400px"
               [when]="host.showCalculator && size.width() >= 768"
             >
               <ion-menu

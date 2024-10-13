@@ -41,6 +41,7 @@ import {
   svgCompress,
   svgEllipsisVertical,
   svgEraser,
+  svgInfoCircle,
   svgPaste,
   svgShareNodes,
   svgSwords,
@@ -95,14 +96,12 @@ export class GearsetToolbarComponent {
   private vsQueryParam = queryParamModel('vs')
   private calcQueryParam = queryParamModel('calc')
 
-  protected compact = false
-  protected calculator = false
   protected iconCamera = svgCamera
   protected iconDelete = svgTrashCan
   protected iconCopy = svgPaste
   protected iconBack = svgChevronLeft
   protected iconClose = svgXmark
-  protected iconCompact = svgCompress
+  protected iconInfo = svgInfoCircle
   protected iconShare = svgShareNodes
   protected iconTags = svgTags
   protected iconCalculator = svgCalculator
@@ -141,13 +140,6 @@ export class GearsetToolbarComponent {
     this.store.patchGearset({ name: value })
   }
 
-  protected onCompactClicked() {
-    this.compact = !this.compact
-  }
-
-  protected onCalculatorClicked() {
-    this.calculator = !this.calculator
-  }
   protected onCloneClicked() {
     const record = this.store.gearset()
     PromptDialogComponent.open(this.modal, {
@@ -451,6 +443,14 @@ export class GearsetToolbarComponent {
     this.vsQueryParam.update(result, {
       replaceUrl: true,
     })
+  }
+
+  protected onToggleItemInfoClicked() {
+    const showItemInfo = !this.store.showItemInfo()
+    patchState(this.store, { showItemInfo })
+    // this.calcQueryParam.update(showCalculator ? String(showCalculator) : null, {
+    //   replaceUrl: true,
+    // })
   }
 
   protected onToggleCalculatorClicked() {

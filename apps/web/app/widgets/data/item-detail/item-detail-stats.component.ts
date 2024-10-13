@@ -18,7 +18,7 @@ import { svgEllipsisVertical } from '~/ui/icons/svg'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, OverlayModule, ItemFrameModule, IconsModule],
   host: {
-    class: 'block nw-item-section relative',
+    class: 'block relative',
   },
 })
 export class ItemDetailStatsComponent {

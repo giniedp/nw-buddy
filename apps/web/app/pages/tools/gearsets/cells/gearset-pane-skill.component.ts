@@ -23,7 +23,7 @@ import {
   svgRotate,
   svgTrashCan,
 } from '~/ui/icons/svg'
-import { LayoutModule, ModalService } from '~/ui/layout'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive } from '~/utils'
 import { SkillsetTableAdapter, SkillsetTableRecord } from '~/widgets/data/skillset-table'

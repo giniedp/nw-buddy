@@ -1,6 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, Input, computed, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, computed, inject, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { filter, take } from 'rxjs'
 
@@ -65,7 +65,6 @@ export class GearCellSlotComponent {
 
   protected store = inject(GearsetSlotStore)
   private itemDb = inject(ItemInstancesDB)
-  private injector = inject(Injector)
 
   protected iconRemove = svgTrashCan
   protected iconLink = svgLink16p
@@ -88,7 +87,7 @@ export class GearCellSlotComponent {
   protected isHidden = computed(() => {
     return !this.store.hasItem() && this.disabled
   })
-  protected isScreenshotHidden = computed(() => {
+  public isScreenshotHidden = computed(() => {
     return !this.store.hasItem() || this.disabled
   })
 
