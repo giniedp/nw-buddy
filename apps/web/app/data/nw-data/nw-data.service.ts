@@ -429,7 +429,12 @@ export class NwDataService {
 
   public tradeskillPostcap = table(() => this.loadEntries(DATASHEETS.TradeSkillPostCapData))
 
-  public vitalsMetadata = table(() => this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata.json' }))
+  public vitalsMetadata = table(() => {
+    return [
+      this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata1.json' }),
+      this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata2.json' })
+    ]
+  })
   public vitalsMetadataMap = tableIndexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = tableLookup(() => this.vitalsMetadataMap)
 
