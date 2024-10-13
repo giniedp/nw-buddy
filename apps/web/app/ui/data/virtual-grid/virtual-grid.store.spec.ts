@@ -1,6 +1,6 @@
 import { selectLayout } from "./virtual-grid.store"
 
-fdescribe('VirtualGridStore', () => {
+describe('VirtualGridStore', () => {
   describe('selectLayout', () => {
     const table: Array<{
       input: Parameters<typeof selectLayout>[0],
