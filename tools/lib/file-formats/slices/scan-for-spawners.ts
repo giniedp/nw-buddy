@@ -60,16 +60,6 @@ async function* scan(rootDir: string, file: string, stack: string[]) {
   }
 }
 
-const DEBUG_VITAL = '' // 'Undead_Admiral_Brute_DG_Cutlass_00'
-function debugVital(result: SpawnerScanResult, file: string) {
-  if (!DEBUG_VITAL) {
-    return
-  }
-  if (result?.vitalsID === DEBUG_VITAL) {
-    console.log('DEBUG', result.vitalsID, result.positions)
-  }
-}
-
 async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncGenerator<SpawnerScanResult> {
   if (!file) {
     return
@@ -135,7 +125,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
 
   // #region Point Spawner
   for (const spawn of (await scanForPointSpawners(component, rootDir, file)) || []) {
-    spawn.translation = [0, 0, 0]
+    spawn.translation = spawn.translation || [0, 0, 0]
     for await (const item of scan(rootDir, spawn.slice, stack)) {
       const result = mergeData(
         {
@@ -145,7 +135,6 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         },
         consume(spawn.entity),
       )
-      debugVital(result, file)
       yield result
     }
   }
@@ -163,7 +152,6 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         },
         consume(spawn.entity),
       )
-      debugVital(result, file)
       yield result
     }
   }
@@ -177,7 +165,9 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
 
   // #region Encounter Spawner
   for (const spawn of (await scanForEncounterSpawner(component, rootDir, file)) || []) {
-    const locations = spawn.locations?.length ? spawn.locations : [{ translation: [0, 0, 0], rotation: null }]
+    const locations = spawn.locations?.length
+      ? spawn.locations
+      : [{ translation: spawn.translation, rotation: spawn.rotation }]
     for await (const item of scan(rootDir, spawn.slice, stack)) {
       for (const location of locations) {
         const result = mergeData(
@@ -188,7 +178,6 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
           },
           consume(spawn.entity),
         )
-        debugVital(result, file)
         yield result
       }
     }
@@ -210,7 +199,6 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
           },
           consume(spawn.entity),
         )
-        debugVital(result, file)
         yield result
       }
     }
@@ -251,7 +239,6 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         stationID: null,
         structureType: null,
       }
-      debugVital(result, file)
       yield result
     }
     if (item.gatherableID || item.variantID) {

@@ -179,10 +179,20 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
       entity: AZ__Entity
       slice: string
       locations: Array<{ translation: number[]; rotation: number[][] }>
+      translation: number[]
+      rotation: number[][]
     }> = []
 
     for (const entity of sliceComponent.entities || []) {
+      let translation: number[]
+      let rotation: number[][]
+
       for (const component of entity.components || []) {
+        const transform = getComponentTransforms(component)
+        if (transform) {
+          translation = translation || transform.translation
+          rotation = rotation || transform.rotation
+        }
         if (!isEncounterComponent(component)) {
           continue
         }
@@ -212,6 +222,8 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
               slice,
               locations,
               entity,
+              translation,
+              rotation
             })
           }
         }
