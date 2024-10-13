@@ -89,6 +89,9 @@ export class PerkScalingPerGsGraphComponent {
             data: data.map((it) => it.acc),
             backgroundColor: '#ffa600',
             pointBackgroundColor: (it: any) => {
+              if (!bonus) {
+                return '#ffa600'
+              }
               const type = gsType(it.dataIndex)
               return LINE1COLOR[type]
             },
@@ -97,6 +100,9 @@ export class PerkScalingPerGsGraphComponent {
             radius: 1,
             spanGaps: true,
             pointRadius: (it: any) => {
+              if (!bonus) {
+                return 1
+              }
               const type = gsType(it.dataIndex)
               return type === 3 ? 3 : 1
             }
