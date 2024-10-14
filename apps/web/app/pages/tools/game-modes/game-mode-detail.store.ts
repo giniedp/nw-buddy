@@ -267,7 +267,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     }
   )
 
-  public readonly dingeonCommonCreatures$ = selectStream(this.creatures$, (list) => {
+  public readonly creaturesCommon$ = selectStream(this.creatures$, (list) => {
     return list.filter(
       (it) => !TAB_BOSSES_CREATURES.includes(it.CreatureType) && !TAB_NAMED_CREATURES.includes(it.CreatureType)
     )

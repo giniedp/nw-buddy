@@ -5,6 +5,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
+  signal,
   TemplateRef,
   TrackByFunction,
   ViewChild,
@@ -19,6 +20,7 @@ import {
   MasterItemDefinitions,
   MutationDifficultyStaticData,
   PromotionMutationStaticData,
+  VitalsBaseData,
 } from '@nw-data/generated'
 import {
   BehaviorSubject,
@@ -53,7 +55,7 @@ import {
 import { uniqBy } from 'lodash'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
-import { svgInfoCircle, svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { svgInfoCircle, svgLocationCrosshairs, svgLocationDot, svgSquareArrowUpRight, svgThumbtack } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
@@ -111,7 +113,7 @@ export interface Tab {
     MutaCurseTileComponent,
     MutaPromotionTileComponent,
     TooltipModule,
-    GameModeDetailMapComponent
+    GameModeDetailMapComponent,
   ],
   providers: [GameModeDetailStore],
   host: {
@@ -171,6 +173,11 @@ export class GameModeDetailComponent implements OnInit {
   protected adjustLevel$ = new BehaviorSubject<boolean>(false)
   protected adjustedLevel$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
   protected isMutated$ = this.paramMutation$.pipe(map((it) => !!it))
+  protected mapPinned = signal(false)
+  protected iconTarget = svgLocationCrosshairs
+  protected iconPin = svgThumbtack
+  protected vitalTargetHover = signal<VitalsBaseData>(null)
+  protected vitalTargetClick = signal<VitalsBaseData>(null)
 
   public iconExtern = svgSquareArrowUpRight
   public iconInfo = svgInfoCircle
@@ -178,7 +185,8 @@ export class GameModeDetailComponent implements OnInit {
   public dungeon$ = this.store.gameMode$.pipe(filter((it) => !!it))
   public creaturesBosses$ = this.store.creaturesBosses$
   public creaturesNamed$ = this.store.creaturesNamed$
-  public creatures$ = this.store.dingeonCommonCreatures$
+  public creaturesCommon$ = this.store.creaturesCommon$
+  public creatures$ = this.store.creatures$
   public creatureLevel$ = this.store.enemyLevelOverride$
   public mutaElementId$ = this.store.mutaElement$.pipe(map((it) => it?.ElementalMutationId))
 
@@ -428,13 +436,12 @@ export class GameModeDetailComponent implements OnInit {
             tpl: this.tplDungeonDifficultyLoot,
           })
         }
-        if (dungeon.IsRaidTrial || dungeon.IsSoloTrial) {
-          this.tabs.push({
-            id: 'creatures',
-            label: 'Creatures',
-            tpl: this.tplDungeonCreatures,
-          })
-        }
+
+        this.tabs.push({
+          id: 'creatures',
+          label: 'Creatures',
+          tpl: this.tplDungeonCreatures,
+        })
         this.tabs.push({
           id: 'named',
           label: 'Named',
@@ -514,6 +521,22 @@ export class GameModeDetailComponent implements OnInit {
 
   public updateRankToBronze() {
     this.updateRank('bronze')
+  }
+
+  protected handleVitalTargetEnter(vital: VitalsBaseData) {
+    this.vitalTargetHover.set(vital)
+  }
+
+  protected handleVitalTargetLeave(vital: VitalsBaseData) {
+    this.vitalTargetHover.set(null)
+  }
+
+  protected handleVitalTargetClick(vital: VitalsBaseData) {
+    if (this.vitalTargetClick() === vital) {
+      this.vitalTargetClick.set(null)
+    } else {
+      this.vitalTargetClick.set(vital)
+    }
   }
 
   public updateRank(value: DifficultyRank) {

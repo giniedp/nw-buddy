@@ -1,5 +1,8 @@
 <div class="bg-base-300 flex flex-col">
-  <nwb-vital-detail-header />
+  <nwb-vital-detail-header>
+    <ng-content select="[header]" />
+  </nwb-vital-detail-header>
+  <ng-content />
   <div class="tabs tabs-bordered justify-center">
     @for (tab of tabs(); track tab.id) {
       <a class="tab" [class.tab-active]="tab.active" (click)="currentTab.set(tab.id)">
@@ -12,7 +15,7 @@
   @for (tab of tabs(); track tab.id) {
     @if (tab.active) {
       <div [class.-m-4]="tab.id === 'models'">
-        <ng-container [ngComponentOutlet]="tab.component"/>
+        <ng-container [ngComponentOutlet]="tab.component" />
       </div>
     }
   }

@@ -183,51 +183,68 @@
               />
             </label>
           </div>
-          <div class="form-control w-full" *ngIf="adjustLevel$ | async">
-            <input
-              class="input input-bordered"
-              placeholder="60"
-              type="number"
-              [min]="1"
-              [max]="65"
-              [ngModel]="adjustedLevel$ | async"
-              (ngModelChange)="adjustedLevel$.next($event)"
-            />
-          </div>
+          @if (adjustLevel$ | async) {
+            <div class="form-control w-full">
+              <input
+                class="input input-bordered"
+                placeholder="60"
+                type="number"
+                [min]="1"
+                [max]="65"
+                [ngModel]="adjustedLevel$ | async"
+                (ngModelChange)="adjustedLevel$.next($event)"
+              />
+            </div>
+          }
         </div>
       </div>
 
       <div class="content-grid-tabs tabs tabs-bordered mt-4 justify-stretch flex-none">
-        <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
-          <a
-            *ngIf="!item.externUrl"
-            class="tab"
-            [class.tab-active]="item.id === tab"
-            [routerLink]="['.']"
-            [queryParams]="{ tab: item.id }"
-            [queryParamsHandling]="'merge'"
-            rel="nofollow"
-          >
-            {{ item.label }}
-          </a>
-          <a
-            *ngIf="item.externUrl"
-            class="tab"
-            [class.tab-active]="item.id === tab"
-            [href]="item.externUrl"
-            target="_blank"
-          >
-            {{ item.label }}
-            <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4" />
-          </a>
-        </ng-container>
+        @for (item of tabs; track item.id) {
+          @if (item.externUrl) {
+            <a class="tab" [class.tab-active]="item.id === tab" [href]="item.externUrl" target="_blank">
+              {{ item.label }}
+              <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4" />
+            </a>
+          } @else {
+            <a
+              class="tab"
+              [class.tab-active]="item.id === tab"
+              [routerLink]="['.']"
+              [queryParams]="{ tab: item.id }"
+              [queryParamsHandling]="'merge'"
+              rel="nofollow"
+            >
+              {{ item.label }}
+            </a>
+          }
+        }
       </div>
 
-      <div class="content-grid-map aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[450px]">
+      <div
+        class="content-grid-map flex justify-end aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[450px] z-50"
+        [class.sticky]="mapPinned()"
+        [class.top-0]="mapPinned()"
+        [class.right-0]="mapPinned()"
+        [class.max-h-[35vh]]="mapPinned()"
+      >
         <nwb-game-mode-detail-map
-          class="w-full h-full max-w-[1200px]"
+          class="w-full h-full max-w-[1200px] group "
           [gameModeId]="paramGameMode$ | async"
-        />
+          [creatures]="creatures$ | async"
+          [highlight]="(vitalTargetHover() || vitalTargetClick())?.VitalsID"
+          [class.bg-base-300]="mapPinned()"
+        >
+          <div class="inline-flex absolute top-0 right-0">
+            <button
+              class="btn btn-sm btn-ghost btn-square opacity-0 group-hover:opacity-100 "
+              [class.text-primary]="mapPinned()"
+              (click)="mapPinned.set(!mapPinned())"
+            >
+              <nwb-icon [icon]="iconPin" class="w-5 h-5" />
+            </button>
+          </div>
+        </nwb-game-mode-detail-map>
       </div>
 
       <div class="content-grid-content">
@@ -248,21 +265,24 @@
     #scroll="infiniteScroll"
     [@list]="scroll.count$ | async"
   >
-    <nwb-item-detail
-      *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
-      [@fade]="true"
-      [entity]="item"
-      [cdkContextMenuTriggerFor]="tplExplainMenu"
-      (cdkContextMenuOpened)="explainItemDrop(item, 'normal')"
-    >
-      <nwb-item-detail-header
-        [enableInfoLink]="true"
-        [enableTracker]="true"
-        [enableLink]="true"
-        class="rounded-md overflow-clip"
-      />
-    </nwb-item-detail>
-    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
+    @for (item of scroll.data$ | async; track $index) {
+      <nwb-item-detail
+        [@fade]="true"
+        [entity]="item"
+        [cdkContextMenuTriggerFor]="tplExplainMenu"
+        (cdkContextMenuOpened)="explainItemDrop(item, 'normal')"
+      >
+        <nwb-item-detail-header
+          [enableInfoLink]="true"
+          [enableTracker]="true"
+          [enableLink]="true"
+          class="rounded-md overflow-clip"
+        />
+      </nwb-item-detail>
+    }
+    @if (scroll.canLoad$ | async) {
+      <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+    }
   </div>
 </ng-template>
 
@@ -273,21 +293,24 @@
     #scroll="infiniteScroll"
     [@list]="scroll.count$ | async"
   >
-    <nwb-item-detail
-      *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
-      [@fade]="true"
-      [entity]="item"
-      [cdkContextMenuTriggerFor]="tplExplainMenu"
-      (cdkContextMenuOpened)="explainItemDrop(item, 'mutated')"
-    >
-      <nwb-item-detail-header
-        [enableInfoLink]="true"
-        [enableTracker]="true"
-        [enableLink]="true"
-        class="rounded-md overflow-clip"
-      />
-    </nwb-item-detail>
-    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
+    @for (item of scroll.data$ | async; track $index) {
+      <nwb-item-detail
+        [@fade]="true"
+        [entity]="item"
+        [cdkContextMenuTriggerFor]="tplExplainMenu"
+        (cdkContextMenuOpened)="explainItemDrop(item, 'mutated')"
+      >
+        <nwb-item-detail-header
+          [enableInfoLink]="true"
+          [enableTracker]="true"
+          [enableLink]="true"
+          class="rounded-md overflow-clip"
+        />
+      </nwb-item-detail>
+    }
+    @if (scroll.canLoad$ | async) {
+      <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+    }
   </div>
 </ng-template>
 
@@ -298,21 +321,24 @@
     #scroll="infiniteScroll"
     [@list]="scroll.count$ | async"
   >
-    <nwb-item-detail
-      *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
-      [@fade]="true"
-      [entity]="item"
-      [cdkContextMenuTriggerFor]="tplExplainMenu"
-      (cdkContextMenuOpened)="explainItemDrop(item, 'difficulty')"
-    >
-      <nwb-item-detail-header
-        [enableInfoLink]="true"
-        [enableTracker]="true"
-        [enableLink]="true"
-        class="rounded-md overflow-clip"
-      />
-    </nwb-item-detail>
-    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
+    @for (item of scroll.data$ | async; track $index) {
+      <nwb-item-detail
+        [@fade]="true"
+        [entity]="item"
+        [cdkContextMenuTriggerFor]="tplExplainMenu"
+        (cdkContextMenuOpened)="explainItemDrop(item, 'difficulty')"
+      >
+        <nwb-item-detail-header
+          [enableInfoLink]="true"
+          [enableTracker]="true"
+          [enableLink]="true"
+          class="rounded-md overflow-clip"
+        />
+      </nwb-item-detail>
+    }
+    @if (scroll.canLoad$ | async) {
+      <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+    }
   </div>
 </ng-template>
 
@@ -326,7 +352,18 @@
         [mutaDifficulty]="difficultyLevel"
         [activeTab]="paramVitalTab$ | async"
         (activeTabChange)="handleVitalTabChange($event)"
-      />
+      >
+        <button
+          class="absolute top-1 right-1 btn btn-sm btn-square btn-ghost"
+          header
+          [class.text-primary]="item === vitalTargetClick()"
+          (mouseenter)="handleVitalTargetEnter(item)"
+          (mouseleave)="handleVitalTargetLeave(item)"
+          (click)="handleVitalTargetClick(item)"
+        >
+          <nwb-icon [icon]="iconTarget" class="w-5 h-5" />
+        </button>
+      </nwb-vital-detail-card>
     }
   </div>
 </ng-template>
@@ -341,14 +378,25 @@
         [mutaDifficulty]="difficultyLevel"
         [activeTab]="paramVitalTab$ | async"
         (activeTabChange)="handleVitalTabChange($event)"
-      />
+      >
+        <button
+          class="absolute top-1 right-1 btn btn-sm btn-square btn-ghost"
+          header
+          [class.text-primary]="item === vitalTargetClick()"
+          (mouseenter)="handleVitalTargetEnter(item)"
+          (mouseleave)="handleVitalTargetLeave(item)"
+          (click)="handleVitalTargetClick(item)"
+        >
+          <nwb-icon [icon]="iconTarget" class="w-5 h-5" />
+        </button>
+      </nwb-vital-detail-card>
     }
   </div>
 </ng-template>
 
 <ng-template #tplDungeonCreatures>
   <div class="grid grid-vitals layout-gap">
-    @for (item of creatures$ | async; track $index) {
+    @for (item of creaturesCommon$ | async; track $index) {
       <nwb-vital-detail-card
         [vitalId]="item?.VitalsID"
         [level]="creatureLevel$ | async"
@@ -356,7 +404,18 @@
         [mutaDifficulty]="difficultyLevel"
         [activeTab]="paramVitalTab$ | async"
         (activeTabChange)="handleVitalTabChange($event)"
-      />
+      >
+        <button
+          class="absolute top-1 right-1 btn btn-sm btn-square btn-ghost"
+          header
+          [class.text-primary]="item === vitalTargetClick()"
+          (mouseenter)="handleVitalTargetEnter(item)"
+          (mouseleave)="handleVitalTargetLeave(item)"
+          (click)="handleVitalTargetClick(item)"
+        >
+          <nwb-icon [icon]="iconTarget" class="w-5 h-5" />
+        </button>
+      </nwb-vital-detail-card>
     }
   </div>
 </ng-template>
@@ -369,9 +428,9 @@
     </ion-toolbar>
   </ion-header>
   <ion-content [scrollY]="false" class="rounded-b-md bg-base-100">
-    <ng-container *ngIf="explainVm$ | async; let vm">
+    @if (explainVm$ | async; as vm) {
       <nwb-loot-graph [tags]="vm.tags" [tagValues]="vm.values" [tableId]="vm.tableIds" [highlight]="vm.itemId" />
-    </ng-container>
+    }
   </ion-content>
 </ng-template>
 
