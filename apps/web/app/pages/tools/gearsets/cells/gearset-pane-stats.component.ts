@@ -30,7 +30,7 @@ import { GearCellWeaponComponent } from '../cells/gear-cell-weapon.component'
     GearCellModsCooldownComponent,
   ],
   host: {
-    class: '@container',
+    class: '',
   },
 })
 export class GearsetPaneStatsComponent {
