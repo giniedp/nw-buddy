@@ -13,7 +13,7 @@ import { AttributesScalingStore } from './attributes-scale.store'
 @Component({
   standalone: true,
   selector: 'nwb-attributes-scale',
-  templateUrl: './attributes-scale.component.html',
+  template: ` <nwb-chart [config]="config$ | async" class="bg-base-100 rounded-md p-2" /> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ChartModule, IconsModule, TooltipModule],
   providers: [AttributesScalingStore],
@@ -100,28 +100,25 @@ export class AttributesScaleComponent {
   @Input()
   public set level(value: number) {
     this.store.patchState({
-      playerLevel: value
+      playerLevel: value,
     })
   }
 
   protected readonly config$ = this.store.chartConfig$
-  protected readonly showTotal$ = this.store.showTotal$
   protected readonly modeIcon = svgChartLine
   public readonly damage$ = this.store.damageStats$.pipe(map((it) => it.value))
   public readonly damageInvalid$ = this.store.damageStats$.pipe(map((it) => it.invalidValue))
 
-  public constructor(private store: AttributesScalingStore, private db: NwDataService) {
+  public constructor(
+    private store: AttributesScalingStore,
+    private db: NwDataService,
+  ) {
     //
   }
 
   private async useWeaponItem(itemId: string) {
     const item = await firstValueFrom(this.db.item(itemId))
     this.weaponRef = item?.ItemStatsRef
-  }
-  protected toggleMode() {
-    this.store.patchState({
-      showTotal: !this.store.state().showTotal,
-    })
   }
 }
 
