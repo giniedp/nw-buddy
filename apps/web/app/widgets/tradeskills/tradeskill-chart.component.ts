@@ -53,6 +53,16 @@ export class TradeskillChartComponent {
               },
             },
           },
+          hover: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+            },
+          },
         },
         data: {
           labels: tables[0].map((it) => String(it.Level)),
