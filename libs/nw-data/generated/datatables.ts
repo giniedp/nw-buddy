@@ -194,6 +194,7 @@ import type {
   TerritoryUpkeepDefinition,
   Territory_Standing,
   ThrowableItemDefinitions,
+  TimelineRegistryEntryData,
   TradeSkillPostCapData,
   TradeskillRankData,
   TutorialConditionData,
@@ -3232,6 +3233,14 @@ export const DATASHEETS = {
   ThrowableItemDefinitions: {
     ThrowableItemDefinitions: <DataSheetUri<ThrowableItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_throwables.json",
+    },
+  },
+  TimelineRegistryEntryData: {
+    TimelineRegistryEntry: <DataSheetUri<TimelineRegistryEntryData>>{
+      uri: "datatables/timelines/javelindata_npc_votimelines.json",
+    },
+    WhisperTimelineRegistryEntry: <DataSheetUri<TimelineRegistryEntryData>>{
+      uri: "datatables/timelines/javelindata_whispertimelines.json",
     },
   },
   TradeSkillPostCapData: {

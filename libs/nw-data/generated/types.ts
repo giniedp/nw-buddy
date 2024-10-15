@@ -4397,6 +4397,7 @@ export interface MasterItemDefinitions {
   ItemType: ItemType;
   ItemTypeDisplayName: string;
   MannequinTag: string;
+  MaxCraftGS: number;
   MaxGearScore: number;
   MaxStackSize: number | string;
   MinGearScore: number;
@@ -6563,6 +6564,12 @@ export interface ThrowableItemDefinitions {
   WarningTime: number;
 }
 
+export interface TimelineRegistryEntryData {
+  AssetDependencyPath: string;
+  TimelineAssetPath: string;
+  TimelineEntryName: string;
+}
+
 export interface TradeSkillPostCapData {
   Level01GameEvent: string;
   Level01GameEvent1: string;
@@ -7676,7 +7683,6 @@ export type ItemClass =
   | "Unique"
   | "UpgradeMaterial"
   | "VoidGauntlet"
-  | "VoidMagic"
   | "Weapon"
   | "WeaponConsumable"
   | "WeaponOil"
@@ -7768,6 +7774,7 @@ export type LootTag =
   | "Broad"
   | "Broadbin"
   | "Broodmother"
+  | "BroodmotherArtifact"
   | "BroodmotherWeekly"
   | "Bubblebeard"
   | "Bubblebeard2"
@@ -7862,6 +7869,7 @@ export type LootTag =
   | "EPOI"
   | "EXPFirstLight01"
   | "Echidna"
+  | "EchidnaArtifact"
   | "EchidnaWeekly"
   | "Edengrove00"
   | "Edmand"
@@ -8305,6 +8313,7 @@ export type LootTag =
   | "Tusk"
   | "TwinDoors"
   | "Typhon"
+  | "TyphonArtifact"
   | "TyphonWeekly"
   | "Ug"
   | "Ulfar"

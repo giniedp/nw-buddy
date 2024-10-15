@@ -4290,6 +4290,7 @@ export const COLS_MASTERITEMDEFINITIONS = {
   ItemType: "string",
   ItemTypeDisplayName: "string",
   MannequinTag: "string",
+  MaxCraftGS: "number",
   MaxGearScore: "number",
   MaxStackSize: "number",
   MinGearScore: "number",
@@ -4935,7 +4936,7 @@ export const COLS_OBJECTIVES = {
   PushObjectiveOnReqMet: "boolean",
   PushObjectiveOnReqRetrigger: "boolean",
   QuestArcTag: "string",
-  Repeatable: "string",
+  Repeatable: "number",
   RequiredAchievementId: "string",
   RequiredFaction: "string",
   RequiredLevel: "number",
@@ -6367,6 +6368,11 @@ export const COLS_THROWABLEITEMDEFINITIONS = {
   SpellName: "string",
   ThrowableId: "string",
   WarningTime: "number",
+};
+export const COLS_TIMELINEREGISTRYENTRYDATA = {
+  AssetDependencyPath: "string",
+  TimelineAssetPath: "string",
+  TimelineEntryName: "string",
 };
 export const COLS_TRADESKILLPOSTCAPDATA = {
   Level01GameEvent: "string",
