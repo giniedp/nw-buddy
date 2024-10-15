@@ -58,9 +58,9 @@ import { AbilityDetailStore } from './ability-detail.store'
       </ng-container>
     </ng-template>
 
-    <ng-template [nwbGridValue] let-cell #tplCooldownInfo>
+    <ng-template [nwbGridValue] let-value #tplCooldownInfo>
       <span>
-        {{ cell.value }}
+        {{ value }}
       </span>
       @if (cooldown()) {
         <span [tooltip]="tplCooldownTip" [tooltipClass]="'px-2 py-1'" class="text-accent">

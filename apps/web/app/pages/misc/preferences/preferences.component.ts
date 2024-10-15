@@ -25,12 +25,6 @@ import { DataImportDialogComponent } from './data-import-dialog.component'
   },
 })
 export class PreferencesComponent implements OnInit {
-  protected get tooltipProvider() {
-    return this.app.tooltipProvider.get()
-  }
-  protected set tooltipProvider(value: string) {
-    this.app.tooltipProvider.set(value as any)
-  }
 
   protected get collapseMenu() {
     return this.app.collapseMenuMode.get() == 'always'

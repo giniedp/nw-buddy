@@ -1,5 +1,6 @@
 import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { AbilityData, CooldownData } from '@nw-data/generated'
@@ -10,9 +11,11 @@ import { humanize, rejectKeys, selectSignal } from '~/utils'
 
 export interface AbilityDetailState {
   abilityId: string
-  ability: AbilityData & { $source?: string}
+  ability: AbilityData & { $source?: string }
   cooldown: CooldownData
   isLoaded: boolean
+  isLoading: boolean
+  hasError: boolean
 }
 
 export type AbilityDetailStore = InstanceType<typeof AbilityDetailStore>
@@ -22,6 +25,8 @@ export const AbilityDetailStore = signalStore(
     ability: null,
     cooldown: null,
     isLoaded: false,
+    isLoading: false,
+    hasError: false,
   }),
   withRedux({
     actions: {
@@ -29,19 +34,28 @@ export const AbilityDetailStore = signalStore(
         load: payload<{ abilityId: string }>(),
       },
       private: {
-        loaded: payload<Omit<AbilityDetailState, 'isLoaded'>>(),
+        loadDone: payload<Omit<AbilityDetailState, 'isLoaded' | 'isLoading' | 'hasError'>>(),
+        loadError: payload<{ error: any }>(),
       },
     },
     reducer(actions, on) {
       on(actions.load, (state) => {
         patchState(state, {
-          isLoaded: false,
+          isLoading: true,
         })
       })
-      on(actions.loaded, (state, data) => {
+      on(actions.loadDone, (state, data) => {
         patchState(state, {
           ...data,
           isLoaded: true,
+          isLoading: false,
+          hasError: false,
+        })
+      })
+      on(actions.loadError, (state) => {
+        patchState(state, {
+          isLoading: false,
+          hasError: true,
         })
       })
     },
@@ -50,18 +64,18 @@ export const AbilityDetailStore = signalStore(
       return {
         load$: create(actions.load).pipe(
           switchMap(({ abilityId }) => loadState(db, abilityId)),
-          map((data) => actions.loaded(data)),
+          map((data) => actions.loadDone(data)),
           catchError((error) => {
             console.error(error)
+            actions.loadError({ error })
             return EMPTY
           }),
         ),
       }
     },
   }),
-  withComputed(({ ability, cooldown }) => {
+  withComputed(({ ability }) => {
     return {
-      ability,
       icon: computed(() => ability()?.Icon || NW_FALLBACK_ICON),
       name: computed(() => ability()?.DisplayName),
       nameForDisplay: computed(() => ability()?.DisplayName || humanize(ability()?.AbilityID)),
@@ -71,7 +85,6 @@ export const AbilityDetailStore = signalStore(
       uiCategory: computed(() => ability()?.UICategory),
       description: computed(() => ability()?.Description),
       properties: computed(() => selectProperties(ability())),
-      cooldown: computed(() => cooldown()),
       refEffects: computed(() => {
         const it = ability()
         if (!it) {
@@ -108,6 +121,17 @@ export const AbilityDetailStore = signalStore(
         return uniq(flatten([it.RequiredEquippedAbilityId, it.RequiredAbilityId, it.AbilityList])).filter(
           (e) => !!e && e !== it.AbilityID,
         )
+      }),
+    }
+  }),
+  withComputed(({ abilityId }) => {
+    const db = inject(NwDataService)
+    const ref1 = toSignal(db.abilitiesByRequiredAbilityId(abilityId), { initialValue: [] })
+    const ref2 = toSignal(db.abilitiesByRequiredEquippedAbilityId(abilityId), { initialValue: [] })
+    const ref3 = toSignal(db.abilitiesByAbilityList(abilityId), { initialValue: [] })
+    return {
+      foreignAbilities: computed(() => {
+        return uniq([ref1() || [], ref2() || [], ref3() || []].flat().map((it) => it.AbilityID))
       }),
     }
   }),

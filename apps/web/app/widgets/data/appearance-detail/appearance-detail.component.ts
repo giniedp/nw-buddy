@@ -21,6 +21,7 @@ import {
 } from '../transmog/transmog-item'
 import { AppearanceDetailStore } from './appearance-detail.store'
 import { TRANSMOG_CATEGORIES } from '../transmog'
+import { getItemSourceShort } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -105,7 +106,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
     },
     {
       debounce: true,
-    }
+    },
   )
 
   protected itemset$ = this.select(this.transmog$, (it) => {
@@ -135,7 +136,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
       const groups = groupBy(items, (it) => it['$source'])
       const tabs = Object.entries(groups).map(([name, group]) => {
         return {
-          name,
+          name: humanize(getItemSourceShort(group[0])),
           items: group,
           active: false,
         }
@@ -148,7 +149,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
         tabs: tabs,
         items: tab?.items,
       }
-    }
+    },
   )
 
   protected dyeSlots(transmog: TransmogItem) {

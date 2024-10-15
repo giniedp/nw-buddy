@@ -6,6 +6,7 @@ import { ChartConfiguration } from 'chart.js'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
+import tc from 'tinycolor2'
 
 export interface AttributesScalingState {
   playerLevel: number
@@ -13,7 +14,6 @@ export interface AttributesScalingState {
   affixId: string
   gearScore: number
   stats: Record<AttributeRef, number>
-  showTotal: boolean
 }
 const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()
 const STAT_COLORS: Record<AttributeRef, string> = {
@@ -35,7 +35,6 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
 
   protected readonly playerLevel$ = this.select(({ playerLevel }) => playerLevel)
   protected readonly gearScore$ = this.select(({ gearScore }) => gearScore)
-  public readonly showTotal$ = this.select(({ showTotal }) => showTotal)
   protected readonly stats$ = this.select(({ stats }) => stats)
   protected readonly tables$ = selectStream(
     combineLatest({
@@ -76,7 +75,6 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
       tables: this.tables$,
       damageStats: this.damageStats$,
       stats: this.stats$,
-      showTotal: this.showTotal$,
     },
     (data) =>
       selectChartConfig({
@@ -84,7 +82,6 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
         tables: data.tables,
         damageStats: data.damageStats,
         stats: data.stats,
-        showTotal: data.showTotal,
       }),
     {
       debounce: true,
@@ -97,7 +94,6 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
       weaponId: null,
       affixId: null,
       gearScore: null,
-      showTotal: false,
       stats: {
         con: 0,
         dex: 0,
@@ -203,29 +199,45 @@ function selectChartConfig({
   tables,
   damageStats,
   stats,
-  showTotal,
 }: {
   levels: number[]
   tables: Record<AttributeRef, Array<Pick<AttributeDefinition, 'ModifierValue' | 'ModifierValueSum'>>>
   damageStats: WeaponDamageStats
   stats: Record<AttributeRef, number>
-  showTotal: boolean
 }): ChartConfiguration {
   const scale = damageStats.scale
   const keys: AttributeRef[] = Object.keys(tables).filter((key) => !!scale[key]) as AttributeRef[]
+
   return {
     type: 'line',
     options: {
       animation: false,
-      backgroundColor: '#FFF',
       elements: {
         point: {
           hoverRadius: (context) => {
             return stats[context.dataset['key']] === levels[context.dataIndex] ? 10 : 5
           },
           radius: (context) => {
-            return stats[context.dataset['key']] === levels[context.dataIndex] ? 8 : 3
+            return stats[context.dataset['key']] === levels[context.dataIndex] ? 8 : 1
           },
+        },
+      },
+      scales: {
+        y: {
+          position: 'left',
+        },
+        y1: {
+          position: 'right',
+        },
+      },
+      hover: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        tooltip: {
+          mode: 'index',
+          intersect: false,
         },
       },
     },
@@ -236,15 +248,26 @@ function selectChartConfig({
           const table = tables[key]
           return {
             key: key,
-            label: `${key.toUpperCase()} scale ${showTotal ? '' : 'increment'}`,
+            label: `${key.toUpperCase()} sum`,
             data: levels.map((_, index) => {
               index = Math.min(Math.max(index, 0), table.length - 1)
-              if (showTotal) {
-                return table[index]?.ModifierValueSum * scale[key] || 0
-              }
-              return table[index]?.ModifierValue * scale[key] || 0
+              return table[index]?.ModifierValueSum * scale[key] || 0
             }),
             backgroundColor: STAT_COLORS[key],
+            yAxisID: 'y1',
+          }
+        }),
+        ...keys.map((key, i) => {
+          const table = tables[key]
+          return {
+            key: key,
+            label: `${key.toUpperCase()} step`,
+            data: levels.map((_, index) => {
+              index = Math.min(Math.max(index, 0), table.length - 1)
+              return table[index]?.ModifierValue * scale[key] || 0
+            }),
+            backgroundColor: tc(STAT_COLORS[key]).darken(10).toHexString(),
+            yAxisID: 'y',
           }
         }),
       ],

@@ -5,9 +5,4 @@ export interface RecipeRecord {
   recipeItem: MasterItemDefinitions
   itemId: string
   item: MasterItemDefinitions | HouseItems
-  ingredients: Array<{
-    quantity: number
-    item: MasterItemDefinitions | HouseItems
-    itemId: string
-  }>
 }

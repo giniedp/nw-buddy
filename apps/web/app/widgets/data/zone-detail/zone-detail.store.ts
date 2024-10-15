@@ -10,11 +10,7 @@ import {
   getZoneType,
   isPointInZone,
 } from '@nw-data/common'
-import {
-  TerritoryDefinition,
-  VitalsCategoryData,
-  VitalsData,
-} from '@nw-data/generated'
+import { TerritoryDefinition, VitalsBaseData, VitalsCategoryData, VitalsLevelVariantData } from '@nw-data/generated'
 import { ScannedTerritory, ScannedVital } from '@nw-data/scanner'
 import { groupBy } from 'lodash'
 import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
@@ -27,6 +23,8 @@ export interface ZoneSpawn {
   levels: number[]
   categories: string[]
 }
+type VitalsData = VitalsBaseData & VitalsLevelVariantData
+
 export interface ZoneDetailState {
   recordId: number
   record: TerritoryDefinition

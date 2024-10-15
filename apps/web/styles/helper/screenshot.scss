@@ -4,3 +4,6 @@
 .screenshot-capture * {
   overflow: visible; // scrollbars are terrible for screenshots, this removes them
 }
+.screenshot-capture .screenshot-hidden {
+  display: none;
+}

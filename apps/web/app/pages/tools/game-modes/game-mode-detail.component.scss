@@ -1,18 +1,42 @@
-:host {
-  .grid.grid-loot,
-  .grid.grid-vitals {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  }
+.grid.grid-loot,
+.grid.grid-vitals {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
 
-  nwb-item-detail {
-    content-visibility: auto;
-    min-height: 86px;
-  }
-  .map-frame {
-    width: 100%;
-    height: 100%;
-    padding-bottom: 1rem;
-    min-height: 600px;
-    max-height: 100vh;
+.content-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-areas:
+    'info'
+    'map'
+    'tabs'
+    'content';
+
+  @media (min-width: 1600px) {
+    grid-template-areas:
+      'info map'
+      'tabs map'
+      'content content';
+    grid-template-columns: 500px 1fr;
+
   }
 }
+
+.content-grid-info {
+  grid-area: info;
+}
+.content-grid-tabs {
+  grid-area: tabs;
+}
+.content-grid-map {
+  grid-area: map;
+}
+.content-grid-content {
+  grid-area: content;
+}
+
+nwb-item-detail {
+  content-visibility: auto;
+  min-height: 86px;
+}
+

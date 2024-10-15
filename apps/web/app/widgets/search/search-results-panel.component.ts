@@ -84,6 +84,9 @@ export class SearchResultsPanelComponent {
     if (item.type === 'mount') {
       return this.link.resourceLink({ type: 'mount', id: item.id})
     }
+    if (item.type === 'poi') {
+      return this.link.resourceLink({ type: 'poi', id: item.id})
+    }
     console.warn('Unknown item type', item)
     return null
   }

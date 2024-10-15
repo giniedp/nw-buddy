@@ -6,19 +6,9 @@
   [enableInfoLink]="true"
   [nwbItemMarker]="item.itemId"
   #itemMarker="itemMarker"
-  [class.is-collected]="!!(itemMarker.value$ | async)"
+  [class.is-collected]="!!itemMarker.value()"
   class="w-full h-full"
 >
-  <nwb-item-divider class="mx-4"></nwb-item-divider>
-  <div class="flex flex-col gap-1 p-4">
-    <div
-      *ngFor="let ingr of item.ingredients; trackBy: trackByIndex"
-      class="flex flex-row gap-1 justify-start items-center"
-    >
-      <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
-      <span>{{ ingr.quantity }}</span>
-      <span>&times;</span>
-      <span [nwText]="ingr.item.Name"></span>
-    </div>
-  </div>
+  <nwb-item-divider/>
+  <nwb-crafting-calculator [recipe]="item.recipe" [recipeOnly]="true" class="-mx-4"/>
 </nwb-item-card>

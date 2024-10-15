@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalDungeons } from '@nw-data/common'
-import { CreatureType, MutationDifficultyStaticData, VitalsData } from '@nw-data/generated'
+import { CreatureType, MutationDifficultyStaticData, VitalsBaseData as VitalsData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -267,7 +267,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     }
   )
 
-  public readonly dingeonCommonCreatures$ = selectStream(this.creatures$, (list) => {
+  public readonly creaturesCommon$ = selectStream(this.creatures$, (list) => {
     return list.filter(
       (it) => !TAB_BOSSES_CREATURES.includes(it.CreatureType) && !TAB_NAMED_CREATURES.includes(it.CreatureType)
     )

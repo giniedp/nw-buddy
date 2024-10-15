@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core'
+import { Directive, ElementRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 
 @Directive({
@@ -6,8 +6,14 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
   selector: '[nwbScreenshotFrame]',
 })
 export class ScreenshotFrameDirective implements ScreenshotFrame, OnInit, OnDestroy {
+  private service = inject(ScreenshotService)
+  public readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef<HTMLElement>)
+
   @Input()
   public nwbScreenshotFrame: string
+
+  @Input()
+  public nwbScreenshotLabel: string
 
   @Input()
   public nwbScreenshotWidth: number
@@ -15,8 +21,12 @@ export class ScreenshotFrameDirective implements ScreenshotFrame, OnInit, OnDest
   @Input()
   public nwbScreenshotMode: 'detached' | 'attached' = 'attached'
 
-  public get description() {
+  public get name() {
     return this.nwbScreenshotFrame
+  }
+
+  public get label() {
+    return this.nwbScreenshotLabel
   }
 
   public get width() {
@@ -27,7 +37,7 @@ export class ScreenshotFrameDirective implements ScreenshotFrame, OnInit, OnDest
     return this.nwbScreenshotMode
   }
 
-  public constructor(private service: ScreenshotService, public readonly elementRef: ElementRef<HTMLElement>) {
+  public constructor() {
     //
   }
 

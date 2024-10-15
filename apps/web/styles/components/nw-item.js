@@ -35,7 +35,7 @@ module.exports = ({ addComponents }) => {
       borderWidth: 0,
       backgroundImage: `url('assets/icons/item/frame-divider.png')`,
       backgroundRepeat: 'repeat-x',
-      height: '4px',
+      height: '1px',
       '&.masked': {
         maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
       },
@@ -48,7 +48,7 @@ module.exports = ({ addComponents }) => {
         top: '-8px',
         content: '""',
         display: 'block',
-        height: '4px',
+        height: '1px',
         backgroundImage: `url('assets/icons/item/frame-divider.png')`,
         backgroundRepeat: 'repeat-x',
         opacity: 0.25,

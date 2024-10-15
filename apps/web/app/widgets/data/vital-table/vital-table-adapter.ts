@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo } from '@nw-data/common'
-import { COLS_VITALSDATA } from '@nw-data/generated'
+import { COLS_VITALSBASEDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
@@ -10,6 +10,7 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { VitalGridCellComponent } from './vital-cell.component'
 import {
   VitalTableRecord,
+  vitalColBuffs,
   vitalColCategories,
   vitalColCreatureType,
   vitalColDmgEffectivenessArcane,
@@ -35,6 +36,7 @@ import {
   vitalColSpawnPois,
   vitalColSpawnTerritories,
 } from './vital-table-cols'
+import { collectVitalBuffs } from '../vital-detail/vital-detail.store'
 
 @Injectable()
 export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
@@ -76,8 +78,11 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
         dungeons: this.db.gameModes,
         categories: this.db.vitalsCategoriesMap,
         territoriesMap: this.db.territoriesMap,
+        buffMap: this.db.buffBucketsMap,
+        effectMap: this.db.statusEffectsMap,
+        abilitiesMap: this.db.abilitiesMap,
       }).pipe(
-        map(({ vitals, vitalsMeta, dungeons, categories, territoriesMap }) => {
+        map(({ vitals, vitalsMeta, dungeons, categories, territoriesMap, buffMap, effectMap, abilitiesMap }) => {
           return vitals.map((vital): VitalTableRecord => {
             const familyInfo = getVitalFamilyInfo(vital)
             const combatInfo = getVitalCategoryInfo(vital)
@@ -91,6 +96,12 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
               $combatInfo: combatInfo,
               $metadata: vitalsMeta.get(vital.VitalsID),
               $zones: zones,
+              $buffs: collectVitalBuffs({
+                bucketIds: (vital.BuffBuckets || '').split(','),
+                buffMap: buffMap,
+                effectMap: effectMap,
+                abilitiesMap: abilitiesMap,
+              })
             }
           })
         }),
@@ -117,6 +128,7 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
       vitalColSpawnTerritories(util),
       vitalColSpawnAreas(util),
       vitalColSpawnPois(util),
+      vitalColBuffs(util),
       vitalColDmgEffectivenessSlash(util),
       vitalColDmgEffectivenessThrust(util),
       vitalColDmgEffectivenessStrike(util),
@@ -129,7 +141,8 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
     ],
   }
   addGenericColumns(result, {
-    props: COLS_VITALSDATA,
+    //props: COLS_VITALSDATA,
+    props: COLS_VITALSBASEDATA,
   })
   return result
 }

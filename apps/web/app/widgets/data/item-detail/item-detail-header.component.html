@@ -2,7 +2,7 @@
 @if (isNamed() || isArtifact()) {
   <div class="nw-item-header-fg"></div>
 }
-<div class="flex flex-row gap-2 p-1 relative">
+<div class="flex flex-row gap-2 p-1 relative group">
   <a
     [nwbItemIcon]="iconOverride || icon()"
     [cover]="true"
@@ -36,13 +36,21 @@
     >
       @if (enableTracker && !isMissing()) {
         <div class="header flex flex-col justify-end">
-          <nwb-item-marker [itemId]="recordId()" class="text-right" />
+          <nwb-item-marker
+            [itemId]="recordId()"
+            class="text-right transition-opacity opacity-0 group-hover:opacity-100"
+            [class.opacity-100]="marker.hasValue()"
+            #marker
+          />
           @if (enableGsTracker()) {
-            <nwb-gs-tracker
-              [itemId]="recordId()"
-              class="text-right mt-1 tooltip-left"
-              [emptyTip]="'Track Gear Score'"
-            />
+            <span class="text-right transition-opacity opacity-0 group-hover:opacity-100" [class.opacity-100]="!tracker.isEmpty()">
+              <nwb-gs-tracker
+                #tracker
+                [itemId]="recordId()"
+                class="text-right mt-1 tooltip-left"
+                [emptyTip]="'Track Gear Score'"
+              />
+            </span>
           }
         </div>
       }

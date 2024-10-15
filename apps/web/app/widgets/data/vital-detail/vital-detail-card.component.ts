@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, Type, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, Type, effect, inject, output, signal, untracked } from '@angular/core'
 import { patchState } from '@ngrx/signals'
 import { NwModule } from '~/nw'
 import { selectSignal } from '~/utils'
@@ -65,6 +65,8 @@ export class VitalDetailCardComponent {
     this.currentTab.set(value)
   }
 
+  public activeTabChange = output<string>()
+
   protected currentTab = signal<string>(null)
   protected hasDarkBg = selectSignal(this.currentTab, (it) => it === 'models')
   protected tabs = selectSignal(this.currentTab, (tab) => {
@@ -96,4 +98,14 @@ export class VitalDetailCardComponent {
       }
     })
   })
+
+  public constructor() {
+    effect(() => {
+      const tab = this.currentTab()
+      if (tab) {
+        console.log('tab', tab)
+        untracked(() => this.activeTabChange.emit(tab))
+      }
+    })
+  }
 }

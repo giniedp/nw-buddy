@@ -49,8 +49,7 @@ import { categorizeInventoryItem } from './utils'
     </nwb-item-detail>
 
     <ng-template #tplTip>
-      <nwb-item-card class="relative flex-1" [entityId]="itemId" [gsOverride]="gearScore" [perkOverride]="perks">
-      </nwb-item-card>
+      <nwb-item-card class="relative flex-1" [entityId]="itemId" [gsOverride]="gearScore" [perkOverride]="perks"/>
     </ng-template>
   `,
   imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule, ItemDetailModule],

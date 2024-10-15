@@ -1,4 +1,5 @@
-import { Directive, Input } from '@angular/core'
+import { Directive, Input, input, signal } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ReplaySubject, defer, map, switchMap } from 'rxjs'
 import { ItemPreferencesService } from '~/preferences'
 import { selectStream } from '~/utils'
@@ -8,18 +9,13 @@ import { selectStream } from '~/utils'
   exportAs: 'itemMarker',
 })
 export class ItemMarkerDirective {
-  @Input()
-  public set nwbItemMarker(value: string) {
-    this.itemId$.next(value)
-  }
+  public itemId = input.required<string>({ alias: 'nwbItemMarker' })
 
-  public value$ = selectStream(
-    defer(() => this.itemId$)
-      .pipe(switchMap((id) => this.meta.observe(id)))
-      .pipe(map((data) => data.meta?.mark))
-  )
+  private value$ = toObservable(this.itemId)
+    .pipe(switchMap((id) => this.meta.observe(id)))
+    .pipe(map((data) => data.meta?.mark))
 
-  private itemId$ = new ReplaySubject<string>(1)
+  public value = toSignal(this.value$)
 
   public constructor(private meta: ItemPreferencesService) {}
 }

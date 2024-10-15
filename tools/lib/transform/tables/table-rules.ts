@@ -97,7 +97,7 @@ export const TRANSFORM_RULES = [
   ),
   transformRule(
     {
-      type: 'VitalsData',
+      type: 'VitalsBaseData',
     },
     [
       mapPropToArray({

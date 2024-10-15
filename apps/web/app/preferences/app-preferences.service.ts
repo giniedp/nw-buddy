@@ -8,7 +8,6 @@ export class AppPreferencesService {
   public readonly projectName: StorageProperty<string>
   public readonly language: StorageProperty<string>
   public readonly theme: StorageProperty<string>
-  public readonly tooltipProvider: StorageProperty<'nwdb'>
   public readonly collapseMenuMode: StorageProperty<'auto' | 'always'>
   public readonly nwmpServer: StorageProperty<string>
   public readonly mapActive: StorageProperty<boolean>
@@ -24,7 +23,6 @@ export class AppPreferencesService {
     this.language = storage.storageProperty('language', 'en-us')
     this.theme = storage.storageProperty('theme', 'helloween')
     this.nwmpServer = storage.storageProperty('nwmpServer', null)
-    this.tooltipProvider = storage.storageProperty('tooltipProvider', null)
     this.collapseMenuMode = storage.storageProperty('collapseMenuMode', null)
     // this.web3token = storage.storageProperty('web3token', null)
     // this.web3gateway = storage.storageProperty('web3gateway', null)

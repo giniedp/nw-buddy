@@ -10,13 +10,22 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { IconsModule } from '~/ui/icons'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { svgRepeat } from '~/ui/icons/svg'
+import { CraftingCalculatorComponent } from '~/widgets/crafting'
 
 @Component({
   standalone: true,
   selector: 'nwb-schematic-cell',
   templateUrl: './schematic-cell.component.html',
   styleUrls: ['./schematic-cell.component.scss'],
-  imports: [CommonModule, ItemDetailModule, NwModule, IconsModule, ItemTrackerModule, TooltipModule],
+  imports: [
+    CommonModule,
+    ItemDetailModule,
+    NwModule,
+    IconsModule,
+    ItemTrackerModule,
+    TooltipModule,
+    CraftingCalculatorComponent,
+  ],
   host: {
     class: 'flex m-2',
   },

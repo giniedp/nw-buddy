@@ -75,10 +75,10 @@ export class QuestDetailComponent {
       id: 'npcs',
       label: 'NPCs',
     },
-    {
-      id: 'tree',
-      label: 'Quest Tree',
-    }
+    // {
+    //   id: 'tree',
+    //   label: 'Quest Tree',
+    // }
   ]
 
 }

@@ -191,6 +191,7 @@ function describeHouse(house: HouseTypeData, tl8: TranslateService): FilterGroup
       icon: null,
       label: `T${tier}`,
       size: size.scale * 2,
+      title: humanize(house.HouseTypeID)
     },
   }
 
@@ -215,7 +216,7 @@ const STATION_ICONS = {
 }
 
 function describeStation(station: ScannedStation, tl8: TranslateService): FilterGroup {
-  const name = stripHtml(tl8.get(station.name.replace('@', '')))
+  const name = stripHtml(tl8.get(station.name?.replace('@', '')))
 
   const result: FilterGroup = {
     section: 'structures',
@@ -235,6 +236,8 @@ function describeStation(station: ScannedStation, tl8: TranslateService): Filter
       icon: null,
       label: name,
       size: 2.5,
+
+      title: name || station.stationID,
     },
   }
 
@@ -284,6 +287,7 @@ function describeStructure(structure: ScannedStructure, tl8: TranslateService): 
       icon: icon,
       label: name,
       size: 2,
+      title: name,
     },
   }
 

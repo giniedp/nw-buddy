@@ -28,8 +28,11 @@ export function describeChestsFilters(
       icon: null,
       label: null,
       size: 1,
-      lootTable: lootTable.original,
-      //tooltip: variant?.Name || gatherable.DisplayName || '',
+      //
+      lootTableID: lootTable.original,
+      gatherableID: gatherable.GatherableID,
+      variationID: variant?.VariantID,
+      title: variant?.Name || gatherable.DisplayName || '',
     },
   }
 

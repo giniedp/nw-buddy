@@ -71,6 +71,9 @@ export class LoreItemTableAdapter implements DataViewAdapter<LoreItemTableRecord
 }
 
 function buildKey(list: LoreItemTableRecord[], item: LoreItemTableRecord) {
+  if (!item) {
+    return ''
+  }
   if (!item.ParentID) {
     let order = item.Order
     let label = item.LoreID

@@ -11,18 +11,17 @@
   <div class="flex flex-row flex-wrap gap-2 max-h-96 overflow-auto">
     @for (row of rows(); track $index) {
       <a
-        [routerLink]="['item', row.Item] | nwLink"
-        [nwbItemDetail]="row.Item"
         #detail="itemDetail"
-        [nwbItemIcon]="detail.item$ | async"
+        [nwbItemDetail]="row.Item"
+        [routerLink]="((detail.housingItem$ | async) ? ['housing', row.Item] : ['item', row.Item]) | nwLink"
+        [nwbItemIcon]="(detail.housingItem$ | async) ||(detail.item$ | async)"
         [rarity]="detail.rarity$ | async"
         [solid]="true"
         class="w-14 h-14 outline-1 outline-primary outline-offset-1"
         [class.outline]="row.Row === selectedRow()"
-
       ></a>
     }
   </div>
 
-  <ng-content/>
+  <ng-content />
 </div>

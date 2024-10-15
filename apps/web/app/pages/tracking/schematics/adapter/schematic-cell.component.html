@@ -1,33 +1,21 @@
 <div
-  class="cell w-full h-full flip-card relative"
+  class="cell w-full h-full flip-card relative overflow-clip"
   [class.flipped]="showBackside"
   [nwbItemMarker]="item.recipeItem.ItemID"
-  [class.is-collected]="!!(itemMarker.value$ | async)"
+  [class.is-collected]="!!itemMarker.value()"
   #itemMarker="itemMarker"
 >
   <div class="flip-card-content bg-black rounded-md h-full">
-    <nwb-item-detail [entity]="item.recipeItem" class="flip-card-front">
+    <nwb-item-detail [entity]="item.recipeItem" class="flip-card-front h-full overflow-hidden flex flex-col">
       <nwb-item-detail-header
         [enableTracker]="true"
         [enableInfoLink]="true"
         [enableLink]="true"
-        class="transition-opacity"
+        class="flex-none transition-opacity"
       />
-      <div class="flex flex-col gap-2 p-4">
-        <nwb-item-detail-description></nwb-item-detail-description>
-        <nwb-item-divider></nwb-item-divider>
-        <div class="flex flex-col gap-1">
-          <div *ngFor="let ingr of item.ingredients" class="flex flex-row items-center gap-2">
-            <a [nwLinkTooltip]="['item', ingr.itemId]" class="flex flex-row gap-1 justify-start items-center">
-              <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
-            </a>
-            <div>
-              <span>{{ ingr.quantity }}</span>
-              <span> &times; </span>
-              <a [nwText]="ingr.item?.Name" class="link-hover"></a>
-            </div>
-          </div>
-        </div>
+      <div class="flex-1 overflow-auto flex flex-col gap-2">
+        <nwb-item-detail-description class="px-4 mt-4"/>
+        <nwb-crafting-calculator [recipe]="item.recipe" [recipeOnly]="true"/>
       </div>
     </nwb-item-detail>
     <nwb-item-card
@@ -36,12 +24,12 @@
       [enableInfoLink]="true"
       [enableLink]="true"
       [disableInfo]="true"
-    ></nwb-item-card>
+    />
   </div>
   <button
     class="flip-card-btn btn btn-ghost btn-circle absolute bottom-1 right-1 opacity-50 scale-100 transition-all hover:opacity-75 hover:scale-110"
     (click)="showBackside = !showBackside"
   >
-    <nwb-icon [icon]="iconFlip" class="w-4 h-4"/>
+    <nwb-icon [icon]="iconFlip" class="w-4 h-4" />
   </button>
 </div>

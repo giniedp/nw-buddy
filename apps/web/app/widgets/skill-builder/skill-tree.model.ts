@@ -1,5 +1,5 @@
 import { getAbilityCategoryTag } from '@nw-data/common'
-import { AbilityData } from '@nw-data/generated'
+import { AbilityData, UICategory } from '@nw-data/generated'
 import { NwExpressionContext, NwTextContextService } from '~/nw/expression'
 import { CaseInsensitiveSet } from '~/utils'
 
@@ -52,7 +52,7 @@ export interface SkillTreeCell {
   /**
    *
    */
-  type: 'heal' | 'melee' | 'debuff' | 'buff' | 'range' | 'magic' | 'passive' | 'none'
+  type: 'none' | Lowercase<UICategory>
   /**
    * Additional tooltip message
    */

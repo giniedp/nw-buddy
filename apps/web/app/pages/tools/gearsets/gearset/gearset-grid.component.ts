@@ -16,6 +16,7 @@ import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component
 import { GearsetLoadoutItemComponent } from '../loadout'
 import { GearsetPaneComponent } from './gearset-pane.component'
 import { GearsetToolbarComponent } from './gearset-toolbar.component'
+import { NwModule } from '~/nw'
 
 @Component({
   standalone: true,
@@ -25,6 +26,7 @@ import { GearsetToolbarComponent } from './gearset-toolbar.component'
 
   imports: [
     CommonModule,
+    NwModule,
     FormsModule,
     GearCellSlotComponent,
     GearsetLoadoutItemComponent,
@@ -74,6 +76,9 @@ export class GearsetGridComponent {
   protected get gearset() {
     return this.store.gearset()
   }
+  protected get showItemInfo() {
+    return this.store.showItemInfo()
+  }
   protected slots = computed(() => {
     return EQUIP_SLOTS.filter(
       (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies',
@@ -83,6 +88,7 @@ export class GearsetGridComponent {
   constructor(screenshot: ScreenshotFrameDirective) {
     effect(() => {
       screenshot.nwbScreenshotFrame = this.gearset?.name
+      screenshot.nwbScreenshotLabel = 'Full Gearset'
       screenshot.nwbScreenshotWidth = 1660
       screenshot.nwbScreenshotMode = 'detached'
     })
@@ -102,5 +108,9 @@ export class GearsetGridComponent {
   }
   public scrollToGear() {
     this.elGear()[0].nativeElement.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  protected screenshotName(suffix: string) {
+    return `${this.gearset?.name} - ${suffix}`
   }
 }

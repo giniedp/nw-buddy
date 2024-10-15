@@ -9,7 +9,7 @@ import {
   MutationDifficultyStaticData,
 
   StatusEffectData,
-  VitalsData,
+  VitalsBaseData as VitalsData,
   VitalsLevelData,
   VitalsModifierData,
 } from '@nw-data/generated'

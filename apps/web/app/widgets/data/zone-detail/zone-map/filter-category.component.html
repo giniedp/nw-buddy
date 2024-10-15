@@ -13,19 +13,67 @@
     (featureMouseEnter)="handleMouseEnter($event)"
     (featureMouseLeave)="handleMouseLeave($event)"
     (featureMouseMove)="handleMouseMove($event)"
+    (featureClick)="handleMouseClick($event)"
   />
 }
 
-@for (feature of hoverItems(); track $index) {
-  @if (feature.lootTable) {
-    <ng-template [nwbGameMapMouseTip]>
-      <nwb-loot-graph [tableId]="feature.lootTable" [showLocked]="true" class="w-80 mb-1 text-sm" />
-    </ng-template>
-  } @else if (feature.tooltip) {
-    <ng-template [nwbGameMapMouseTip]>
-      {{ feature.tooltip | nwText }}
-    </ng-template>
-  }
+@if (hoverItems()?.length) {
+  <ul *nwbGameMapMouseTip class="men menu-sm rounded-sm bg-base-200 pb-1 mb-1">
+    @for (item of hoverItems(); track $index) {
+      <li>
+        <div class="grid grid-cols-dl gap-x-2">
+          <span class="badge badge-xs mt-[5px]" [style.background-color]="item.color"></span>
+          <div class="flex flex-col">
+            @if (item.title; as text) {
+              <span class="leading-normal"> {{ text | nwText }} </span>
+            }
+            @if (item.subtitle; as text) {
+              <span class="leading-normal text-xs"> {{ text | nwText }} </span>
+            }
+            @if (!item.title && !item.subtitle) {
+              <span class="leading-normal italic text-opacity-50"> unnamed </span>
+            }
+
+            <div class="grid grid-cols-dl gap-x-2 text-xs leading-none">
+              @if (item.lootTableID !== 'Empty' && item.lootTableID; as text) {
+                <span>Loot Table</span>
+                <code class="font-mono"> {{ text }}</code>
+              }
+              @if (item.gatherableID; as text) {
+                <span>Gatherable</span>
+                <code class="font-mono"> {{ text }}</code>
+              }
+              @if (item.variationID; as text) {
+                <span>Variation</span>
+                <code class="font-mono"> {{ text }}</code>
+              }
+              @if (item.vitalID; as text) {
+                <span>Vital</span>
+                <code class="font-mono"> {{ text }}</code>
+              }
+              @if (item.loreID; as text) {
+                <span>Lore</span>
+                <code class="font-mono"> {{ text }}</code>
+              }
+              @if (item.gatherableID) {
+                <ng-container [nwbGatherableDetail]="item.gatherableID" #detail="gatherableDetail">
+                  @if (detail.store.minRespawnRate(); as time) {
+                    <span>Respawn Rate</span>
+                    <span class="font-mono">
+                      <code> {{ time }}</code>
+                      @if (detail.store.maxRespawnRate(); as time) {
+                        - <code> {{ time }}</code>
+                      }
+                    </span>
+                  }
+                </ng-container>
+              }
+            </div>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
 }
 
 <div class="flex flex-row items-center group">
@@ -49,12 +97,15 @@
   >
     <span class="flex-1 transition-transform group-hover:translate-x-1" [class.pl-8]="!hasChevron()">
       {{ label() | nwText }}
+      @if (affix()) {
+        ({{ affix() | nwText }})
+      }
     </span>
   </button>
 
   @if (variants().length) {
     <div class="join">
-      @for (variant of variants(); track variant.id) {
+      @for (variant of variants(); track $index) {
         @let isActive = isVariantActive(variant.id);
         <button
           class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
@@ -106,13 +157,20 @@
             (item.properties.encounter === 'darkness' && !mapStore.showDarknessEncounter())
           "
         >
-          @if (item.subcategoryLabel) {
-            {{ item.subcategoryLabel | nwText }}
-          } @else if (item.subcategory) {
-            {{ item.subcategory }}
-          } @else {
-            {{ item.properties.lootTable | nwHumanize }}
-          }
+          <span class="flex flex-col leading-none">
+            <span>
+              @if (item.subcategoryLabel) {
+                {{ item.subcategoryLabel | nwText }}
+              } @else if (item.subcategory) {
+                {{ item.subcategory }}
+              } @else {
+                {{ item.properties.lootTableID | nwHumanize }}
+              }
+            </span>
+            @if (item.subcategoryAffix) {
+              <span class="text-xs">{{ item.subcategoryAffix | nwText }}</span>
+            }
+          </span>
           @if (item.properties.encounter === 'random') {
             <nwb-icon [icon]="diceIcon" class="w-4 h-4" tooltip="Random Encounter" />
           }

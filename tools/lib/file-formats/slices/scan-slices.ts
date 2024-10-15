@@ -1,7 +1,7 @@
 import * as path from 'path'
 import { readJSONFile } from '../../utils'
 import { SpawnerScanResult, scanForSpawners } from './scan-for-spawners'
-import { VariationScanRow, scanForVariantDistributions } from './scan-for-variants'
+import { DistributionScanRow, scanForDistributions } from './scan-for-distributions'
 import { VitalScanRow, scanForVitals } from './scan-for-vitals'
 import { TerritoryScanRow, scanForZones } from './scan-for-zones'
 import { Capital } from './types/capitals'
@@ -11,7 +11,7 @@ export interface ScanResult {
   vitals?: VitalScanRow[]
   npcs?: NpcScanRow[]
   gatherables?: GatherableScanRow[]
-  variations?: VariationScanRow[]
+  variations?: VariantScanRow[]
   territories?: TerritoryScanRow[]
   loreItems?: LoreScanRow[]
   houseItems?: HouseScanRow[]
@@ -20,6 +20,12 @@ export interface ScanResult {
 }
 export interface NpcScanRow {
   npcID: string
+  position: [number, number, number]
+  mapID: string
+}
+export interface VariantScanRow {
+  variantID: string
+  encounter: string
   position: [number, number, number]
   mapID: string
 }
@@ -53,8 +59,29 @@ export interface StructureScanRow {
 }
 export async function scanSlices({ inputDir, file }: { inputDir: string; file: string }): Promise<ScanResult> {
   if (file.endsWith('.distribution.json')) {
+    const variations: VariantScanRow[] = []
+    const gatherables: GatherableScanRow[] = []
+    const rows = await scanForDistributions(inputDir, file)
+    for (const row of rows) {
+      if (row.variantID) {
+        variations.push({
+          mapID: row.mapID,
+          encounter: row.encounter,
+          variantID: row.variantID,
+          position: [row.position[0], row.position[1], row.position[2]],
+        })
+      } else if (row.gatherableID) {
+        gatherables.push({
+          mapID: row.mapID,
+          encounter: row.encounter,
+          gatherableID: row.gatherableID,
+          position: [row.position[0], row.position[1], row.position[2]],
+        })
+      }
+    }
     return {
-      variations: await scanForVariantDistributions(file),
+      variations,
+      gatherables,
     }
   }
   if (file.endsWith('.dynamicslice.json')) {

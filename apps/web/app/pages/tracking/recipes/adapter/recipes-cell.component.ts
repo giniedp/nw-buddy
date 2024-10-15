@@ -2,21 +2,29 @@ import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { TooltipModule } from '~/ui/tooltip'
-import { EmptyComponent } from '~/widgets/empty'
-import { RecipeRecord } from './types'
-import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { IconsModule } from '~/ui/icons'
-import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { svgRepeat } from '~/ui/icons/svg'
+import { TooltipModule } from '~/ui/tooltip'
+import { CraftingCalculatorComponent } from '~/widgets/crafting'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
+import { EmptyComponent } from '~/widgets/empty'
+import { ItemTrackerModule } from '~/widgets/item-tracker'
+import { RecipeRecord } from './types'
 
 @Component({
   standalone: true,
   selector: 'nwb-recipes-cell',
   templateUrl: './recipes-cell.component.html',
   styleUrls: ['./recipes-cell.component.scss'],
-  imports: [CommonModule, ItemDetailModule, NwModule, IconsModule, ItemTrackerModule, TooltipModule],
+  imports: [
+    CommonModule,
+    ItemDetailModule,
+    NwModule,
+    IconsModule,
+    ItemTrackerModule,
+    TooltipModule,
+    CraftingCalculatorComponent,
+  ],
   host: {
     class: 'flex m-2',
   },
@@ -24,7 +32,7 @@ import { svgRepeat } from '~/ui/icons/svg'
 export class RecipeCellComponent implements VirtualGridCellComponent<RecipeRecord> {
   public static buildGridOptions(): VirtualGridOptions<RecipeRecord> {
     return {
-      height: 520,
+      height: 650,
       width: 375,
       cellDataView: RecipeCellComponent,
       cellEmptyView: EmptyComponent,

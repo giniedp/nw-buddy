@@ -1,7 +1,7 @@
 import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
-import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
+import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus, getPerkScalingPerGearScore } from '@nw-data/common'
 import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -17,6 +17,8 @@ export interface PerkDetailStoreState {
   refEffects: string[]
   resourceItems: MasterItemDefinitions[]
   isLoaded: boolean
+  isLoading: boolean
+  hasError: boolean
 }
 
 export type PerkDetailStore = InstanceType<typeof PerkDetailStore>
@@ -30,6 +32,8 @@ export const PerkDetailStore = signalStore(
     refEffects: [],
     resourceItems: [],
     isLoaded: false,
+    isLoading: false,
+    hasError: false,
   }),
   withRedux({
     actions: {
@@ -37,19 +41,30 @@ export const PerkDetailStore = signalStore(
         load: payload<{ perkId: string }>(),
       },
       private: {
-        loaded: payload<Omit<PerkDetailStoreState, 'isLoaded'>>(),
+        loadDone: payload<Omit<PerkDetailStoreState, 'isLoaded' | 'isLoading' | 'hasError'>>(),
+        loadError: payload<{ error: unknown }>(),
       },
     },
     reducer(actions, on) {
       on(actions.load, (state) => {
         patchState(state, {
-          isLoaded: false,
+          isLoading: true,
+          hasError: false,
         })
       })
-      on(actions.loaded, (state, data) => {
+      on(actions.loadDone, (state, data) => {
         patchState(state, {
           ...data,
           isLoaded: true,
+          isLoading: false,
+          hasError: false,
+        })
+      })
+      on(actions.loadError, (state, { error }) => {
+        console.error(error)
+        patchState(state, {
+          hasError: true,
+          isLoading: false,
         })
       })
     },
@@ -58,9 +73,9 @@ export const PerkDetailStore = signalStore(
       return {
         load$: create(actions.load).pipe(
           switchMap(({ perkId }) => loadState(db, perkId)),
-          map((data) => actions.loaded(data)),
+          map((data) => actions.loadDone(data)),
           catchError((error) => {
-            console.error(error)
+            actions.loadError({ error })
             return EMPTY
           }),
         ),
@@ -77,7 +92,7 @@ export const PerkDetailStore = signalStore(
       modsInfo: computed(() => getAffixMODs(affix())),
       affixProps: computed(() => selectAffixProperties(affix())),
 
-      scalesWithGearScore: computed(() => !!perk()?.ScalingPerGearScore),
+      scalesWithGearScore: computed(() => !!getPerkScalingPerGearScore(perk())),
       itemClassGsBonus: computed(() => getPerkItemClassGSBonus(perk())),
     }
   }),
@@ -145,15 +160,17 @@ function loadState(db: NwDataService, perkId: string) {
       if (affix?.StatusEffect) {
         result.push(affix.StatusEffect)
       }
-      abilities?.forEach((it) => {
-        if (it.SelfApplyStatusEffect?.length) {
-          result.push(...it.SelfApplyStatusEffect)
-        }
-        if (it.OtherApplyStatusEffect?.length) {
-          result.push(...it.OtherApplyStatusEffect)
-        }
-        it.StatusEffect
-      })
+      abilities
+        ?.filter((it) => !!it)
+        ?.forEach((it) => {
+          if (it.SelfApplyStatusEffect?.length) {
+            result.push(...it.SelfApplyStatusEffect)
+          }
+          if (it.OtherApplyStatusEffect?.length) {
+            result.push(...it.OtherApplyStatusEffect)
+          }
+          it.StatusEffect
+        })
       return result.length ? result : null
     },
   )

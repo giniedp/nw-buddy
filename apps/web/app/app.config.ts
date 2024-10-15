@@ -3,7 +3,7 @@ import { ApplicationConfig, importProvidersFrom, provideExperimentalZonelessChan
 import { FormsModule } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { provideRouter } from '@angular/router'
+import { provideRouter, withRouterConfig } from '@angular/router'
 import { provideIonicAngular } from '@ionic/angular/standalone'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
@@ -13,7 +13,12 @@ import { TranslateModule } from './i18n'
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(APP_ROUTES),
+    provideRouter(
+      APP_ROUTES,
+      withRouterConfig({
+        onSameUrlNavigation: 'reload',
+      }),
+    ),
     provideIonicAngular({
       rippleEffect: false,
       mode: 'md',

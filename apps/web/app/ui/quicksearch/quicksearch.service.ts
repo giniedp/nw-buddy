@@ -1,4 +1,5 @@
 import { Inject, Injectable, InjectionToken, Optional, Self, StaticProvider } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { tap } from 'rxjs'
@@ -35,22 +36,24 @@ export class QuicksearchService extends ComponentStore<QuicksearchState> {
   }
 
   public readonly active$ = this.select((it) => it.active)
+  public readonly active = toSignal(this.active$)
   public readonly query$ = this.select((it) => it.value)
     .pipe(
       tap({
         subscribe: () => setTimeout(() => this.patchState({ active: true, value: this.getQueryParam() })),
         next: (value) => this.setQueryParam(value),
         unsubscribe: () => this.patchState({ active: false, value: '' }),
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
+  public readonly query = toSignal(this.query$)
 
   public constructor(
     @Inject(QUICK_SEARCH_OPTIONS)
     @Optional()
     @Self()
     private options: QuicksearchOptions,
-    private router: Router
+    private router: Router,
   ) {
     super({ value: getQueryParam(router, options), active: false })
   }

@@ -16,7 +16,7 @@ export function describeSkinningFilters(
   if (gatherable.Tradeskill !== 'Skinning' || eqCaseInsensitive(lootTable.original, 'Empty')) {
     return null
   }
-  const name = variant?.Name || gatherable.DisplayName || ''
+
   const icon = getGatherableIcon(gatherable)
   const creature = CREATURES.find((it) => lootTable.tokenized.some((token) => eqCaseInsensitive(token, it)))
   const result: FilterGroup = {
@@ -37,7 +37,10 @@ export function describeSkinningFilters(
       label: null,
       size: 1,
 
-      lootTable: lootTable.original,
+      lootTableID: lootTable.original,
+      gatherableID: gatherable.GatherableID,
+      variationID: variant?.VariantID,
+      title: variant?.Name || gatherable.DisplayName || '',
     },
   }
   if (creature) {
@@ -45,21 +48,6 @@ export function describeSkinningFilters(
     result.categoryLabel = creature
     result.subcategory = lootTable.original
   }
-
-  // const size = parseSizeVariant(lootTable)
-  // if (size) {
-  //   props.category = lootTable.tokenized
-  //     .filter((it) => it !== 'Skinning' && it !== 'Farm' && it !== size.size)
-  //     .join(' ')
-  //   props.categoryLabel = humanize(props.category)
-  //   props.size = size.scale
-  //   props.variant = {
-  //     id: size.size,
-  //     label: size.label,
-  //     lootTable: lootTable.original,
-  //     name: variant?.Name || gatherable.DisplayName,
-  //   }
-  // }
 
   return result
 }

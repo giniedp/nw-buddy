@@ -19,8 +19,10 @@ export function describeAlchemyFilters(
     icon: null,
     label: null,
     size: 1,
-    lootTable: lootTable.original,
-    // tooltip: variant?.Name || gatherable.DisplayName,
+    lootTableID: lootTable.original,
+    title: variant?.Name || gatherable.DisplayName,
+    gatherableID: gatherable.GatherableID,
+    variationID: variant?.VariantID,
   }
 
   {
@@ -28,7 +30,7 @@ export function describeAlchemyFilters(
     if (match) {
       const index = ['plant', 'stone', 'boid'].indexOf(match[3].toLowerCase())
       const size = describeNodeSize(getGatherableNodeSizes()[index + 1])
-
+      const color = MOTE_COLORS[match[1].toLowerCase()]
       return {
         section,
         sectionLabel,
@@ -43,7 +45,7 @@ export function describeAlchemyFilters(
         icons: false,
         properties: {
           ...properties,
-          color: stringToHSL(match[1]).toHexString(),
+          color: color//stringToHSL(match[1]).toHexString(),
         },
       }
     }
@@ -61,6 +63,7 @@ export function describeAlchemyFilters(
       subcategoryLabel: gatherable.DisplayName,
       properties: {
         ...properties,
+        color: '#40A8C9'
       },
     }
   }
@@ -70,8 +73,8 @@ export function describeAlchemyFilters(
       section,
       sectionLabel,
       sectionIcon,
-      category: 'Fungus',
-      categoryLabel: 'Fungi',
+      category: 'Fungi',
+      categoryLabel: 'icontypeunlock_pigment',
       categoryIcon: null,
       subcategory: lootTable.original,
       subcategoryLabel:
@@ -82,4 +85,14 @@ export function describeAlchemyFilters(
     }
   }
   return null
+}
+
+const MOTE_COLORS = {
+  air: '#4683a5',// '#6F787D',
+  death: '#a848a8',// '#7E727E',
+  earth: '#417230',// '#496340',
+  fire: '#bd8767',// '#A98D7C',
+  life: '#e6de8b',// '#CAC7A8',
+  soul: '#f0e7bc',// '#E2DECB',
+  water: '#353378'// '#43426A',
 }

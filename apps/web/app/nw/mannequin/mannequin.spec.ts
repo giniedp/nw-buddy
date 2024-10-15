@@ -12,7 +12,7 @@ describe('Mannequin', () => {
     })
     mannequin = TestBed.inject(Mannequin)
     console.log(performance.now())
-    await firstValueFrom(mannequin.dbReady$)
+    //await firstValueFrom(mannequin.dbReady$)
     console.log(performance.now())
   })
 

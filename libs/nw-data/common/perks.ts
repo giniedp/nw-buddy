@@ -34,14 +34,14 @@ export function isPerkApplicableToItem(perk: Pick<PerkData, 'ItemClass'>, item: 
   return doListsIntersect(perk.ItemClass, item.ItemClass, eqIgnoreCase)
 }
 
-export function isPerkExcludedFromItem(perk: Pick<PerkData, 'ExcludeItemClass' | 'PerkType'>, item: Pick<MasterItemDefinitions, 'ItemClass'>) {
+export function isPerkExcludedFromItem(perk: Pick<PerkData, 'ExcludeItemClass' | 'PerkType'>, item: Pick<MasterItemDefinitions, 'ItemClass'>, checkGem: boolean) {
   if (!perk || !item) {
     return false
   }
   if (doListsIntersect(perk.ExcludeItemClass, item.ItemClass, eqIgnoreCase)) {
     return true
   }
-  if (isPerkGem(perk) && doesListInclude(item.ItemClass, 'NoGem', eqIgnoreCase)) {
+  if (checkGem && isPerkGem(perk) && doesListInclude(item.ItemClass, 'NoGem', eqIgnoreCase)) {
     return true
   }
   return false
@@ -171,22 +171,27 @@ export function explainPerkMods(options: { perk: PerkData; affix: AffixStatData;
   return result
 }
 
-export function getPerksInherentMODs(perk: Pick<PerkData, 'ScalingPerGearScore'>, affix: AffixStatData, gearScore: number) {
+export function getPerksInherentMODs(perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>, affix: AffixStatData, gearScore: number) {
   return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
 }
 
-export function getPerkMultiplier(perk: Pick<PerkData, 'ScalingPerGearScore'>, gearScore: number) {
-  if (!perk.ScalingPerGearScore) {
+export function getPerkScalingPerGearScore(perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>) {
+  return perk?.ScalingPerGearScore || perk?.ScalingPerGearScoreAttributes
+}
+
+export function getPerkMultiplier(perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>, gearScore: number) {
+  const scalingPerGearScore = getPerkScalingPerGearScore(perk)
+  if (!scalingPerGearScore) {
     return 1
   }
 
-  if (Number.isFinite(Number(perk.ScalingPerGearScore))) {
-    return Math.max(0, gearScore - 100) * Number(perk.ScalingPerGearScore) + 1
+  if (Number.isFinite(Number(scalingPerGearScore))) {
+    return Math.max(0, gearScore - 100) * Number(scalingPerGearScore) + 1
   }
 
-  if (typeof perk.ScalingPerGearScore === 'string') {
+  if (typeof scalingPerGearScore === 'string') {
     let result = 0
-    const ranges = parseScalingPerGearScore(perk.ScalingPerGearScore)
+    const ranges = parseScalingPerGearScore(scalingPerGearScore)
     ranges.forEach(({ score, scaling }, i) => {
       if (score > gearScore) {
         return

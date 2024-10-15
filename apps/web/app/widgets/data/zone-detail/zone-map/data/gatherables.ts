@@ -3,8 +3,8 @@ import { GatherableData } from '@nw-data/generated'
 import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { svgLocationQuestion } from '~/ui/icons/svg'
-import { combineLatestOrEmpty, eqCaseInsensitive, stringToColor, stringToHSL } from '~/utils'
+import { svgLocationQuestion, svgStaff } from '~/ui/icons/svg'
+import { combineLatestOrEmpty, eqCaseInsensitive, stringToHSL } from '~/utils'
 import { getGatherableIcon } from '../../../gatherable-detail/utils'
 import { describeAlchemyFilters } from '../utils/describe-alchemy-filters'
 import { describeChestsFilters } from '../utils/describe-chests-filters'
@@ -18,6 +18,9 @@ import { describeSkinningFilters } from '../utils/describe-skinning-filters'
 import { parseLootTableID } from '../utils/parse-loottable'
 import { getSizeColor, parseSizeVariant } from '../utils/parse-size-variant'
 import { FilterDataSet, FilterGroup } from './types'
+import { describeGatheringFilters } from '../utils/descrive-gathering-filters'
+import { environment } from 'apps/web/environments'
+import { describeVistaFilters } from '../utils/describe-vista-filters'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 export function loadGatherables(db: NwDataService, mapCoord: MapCoord) {
@@ -69,15 +72,18 @@ function collectGatherableDatasets(data: {
     if (meta?.spawns?.length) {
       for (const spawn of meta.spawns) {
         const group = describeGatherable(gatherable, gatherable.FinalLootTable)
+        if (!group) {
+          continue
+        }
         const groupId = generateId(group)
-        const layerId = `${groupId},${spawn.encounter}`
         const properties = group.properties
         properties.color ||= stringToHSL(groupId).toHexString()
-        properties.encounter ||= spawn.encounter
-        properties.variant ||= group.variantID
+        properties.encounter ||= spawn.encounter || ''
+        properties.variant ||= group.variantID || ''
         if (properties.variant) {
           properties.color = getSizeColor(properties.variant, properties.color)
         }
+        const layerId = `${groupId},${properties.encounter}`
         const layer = (result[layerId] = result[layerId] || {
           id: layerId,
           ...group,
@@ -125,16 +131,18 @@ function collectGatherableDatasets(data: {
         for (const lootTable of lootTables) {
           for (const spawn of meta.spawns) {
             const group = describeGatherable(gatherable, lootTable, variant)
+            if (!group) {
+              continue
+            }
             const groupId = generateId(group)
-            const layerId = `${groupId},${spawn.encounter}`
             const properties = group.properties
             properties.color ||= stringToHSL(groupId).toHexString()
-            properties.encounter ||= spawn.encounter
-            properties.variant ||= group.variantID
+            properties.encounter ||= spawn.encounter || ''
+            properties.variant ||= group.variantID || ''
             if (properties.variant) {
               properties.color = getSizeColor(properties.variant, properties.color)
             }
-
+            const layerId = `${groupId},${properties.encounter}`
             const layer = (result[layerId] = result[layerId] || {
               id: layerId,
               ...group,
@@ -246,9 +254,24 @@ function describeGatherable(
     }
   }
 
+  {
+    const result = describeGatheringFilters(lootTable, gatherable, variant)
+    if (result) {
+      return result
+    }
+  }
+
+  {
+    const result = describeVistaFilters(lootTable, gatherable, variant)
+    if (result) {
+      return result
+    }
+  }
+
   const icon = getGatherableIcon(gatherable)
   const result: FilterGroup = {
     section: gatherable.Tradeskill,
+    sectionLabel: gatherable.Tradeskill,
     sectionIcon: svgLocationQuestion,
     category: lootTableId,
     categoryIcon: icon,
@@ -259,12 +282,20 @@ function describeGatherable(
       icon: icon,
       label: null,
       size: 1,
-      tooltip: variant?.Name || gatherable.DisplayName,
       color: null,
-      lootTable: lootTable.original,
+      title: gatherable.DisplayName,
+      subtitle: variant?.Name,
+      lootTableID: lootTable.original,
+      gatherableID: gatherable.GatherableID,
+      variationID: variant?.VariantID,
       loreID: null,
     },
   }
+
+  if (eqCaseInsensitive(gatherable.Tradeskill, 'AzothStaff')) {
+    result.sectionIcon = svgStaff
+  }
+
   if (eqCaseInsensitive(lootTable.normalized, 'empty')) {
     result.section = '_Empty'
     result.sectionLabel = 'No Loottable'

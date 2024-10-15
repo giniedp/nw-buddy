@@ -9,13 +9,14 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { EmptyComponent } from '~/widgets/empty'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { RunesRecord } from './types'
+import { CraftingCalculatorComponent } from '~/widgets/crafting'
 
 @Component({
   standalone: true,
   selector: 'nwb-runes-cell',
   templateUrl: './runes-cell.component.html',
   styleUrls: ['./runes-cell.component.scss'],
-  imports: [CommonModule, ItemDetailModule, NwModule, IconsModule, ItemTrackerModule, TooltipModule],
+  imports: [CommonModule, ItemDetailModule, NwModule, IconsModule, ItemTrackerModule, TooltipModule, CraftingCalculatorComponent],
   host: {
     class: 'flex m-2',
   },
@@ -24,7 +25,7 @@ export class RunesCellComponent implements VirtualGridCellComponent<RunesRecord>
   public static buildGridOptions(): VirtualGridOptions<RunesRecord> {
     return {
       height: 1200,
-      width: null, // 400,
+      width: 320,
       cellDataView: RunesCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (record, tl8) => {

@@ -1,10 +1,8 @@
 import { DOCUMENT } from '@angular/common'
 import { Injectable, effect, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { env } from 'apps/web/environments/env'
 import { environment } from 'apps/web/environments/environment'
 import { LocaleService } from '~/i18n'
-import { AppPreferencesService } from '~/preferences/app-preferences.service'
 import { injectIsBrowser } from '~/utils/injection/platform'
 import { NwLinkOptions, NwLinkResource, buddyLinkUrl, nwdbLinkUrl } from './nw-link'
 
@@ -14,29 +12,27 @@ export type NwLinkProvider = 'nwdb' | 'buddy'
 export class NwLinkService {
   private locale = inject(LocaleService)
   private document = inject(DOCUMENT)
-  private preferences = inject(AppPreferencesService)
-  private tooltipProvider = toSignal<NwLinkProvider>(this.preferences.tooltipProvider.observe())
   private tooltipEnabled = !env.disableTooltips && injectIsBrowser()
 
   public constructor() {
     effect(() => {
-      if (this.tooltipEnabled && this.tooltipProvider() === 'nwdb') {
+      if (this.tooltipEnabled) {
         installNwdb(this.document)
       }
     })
   }
 
-  public withLocale(uri: string) {
+  public withLocale(uri: string, locale = this.locale.value()) {
     if (!uri || !uri.startsWith('/')) {
       return uri
     }
-    if (this.locale.value() && this.locale.value() !== 'en-us') {
-      uri = `/${this.locale.value()}${uri}`
+    if (locale && locale !== 'en-us') {
+      uri = `/${locale}${uri}`
     }
     return uri
   }
 
-  public resourceLink({ type, category, id }: { type: NwLinkResource, category?: string, id: string }) {
+  public resourceLink({ type, category, id }: { type: NwLinkResource; category?: string; id: string }) {
     return buddyLinkUrl({
       id: id,
       type: type,
@@ -56,13 +52,10 @@ export class NwLinkService {
       lang: this.locale.value(),
       ptr: environment.isPTR,
     }
-    if (this.tooltipProvider() === 'nwdb') {
+    if (this.tooltipEnabled) {
       return nwdbLinkUrl(options)
     }
-    if (this.tooltipProvider() === 'buddy') {
-      return buddyLinkUrl(options)
-    }
-    return ''
+    return buddyLinkUrl(options)
   }
 }
 

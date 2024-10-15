@@ -1,11 +1,11 @@
-<router-outlet />
-
 @if(outlet.isActivated) {
   <ng-container [ngTemplateOutlet]="tplModes" />
 } @else {
   <ng-container [ngTemplateOutlet]="tplIndex" />
 }
-
+<ion-content [class.hidden]="!outlet.isActivated">
+  <router-outlet />
+</ion-content>
 
 <ng-template #tplIndex>
   <ion-header>

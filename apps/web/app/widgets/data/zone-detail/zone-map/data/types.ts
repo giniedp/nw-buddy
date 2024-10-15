@@ -17,16 +17,18 @@ export type FilterFeatureCollection = FeatureCollection<MultiPoint, FilterFeatur
 export type FilterFeature = Feature<MultiPoint, FilterFeatureProperties>
 export interface FilterGroup {
   section: string
-  sectionLabel?: string
+  sectionLabel?: string | string[]
   sectionIcon?: string
 
   category: string
-  categoryLabel?: string
+  categoryLabel?: string | string[]
   categoryIcon?: string
+  categoryAffix?: string
 
   subcategory: string
-  subcategoryLabel?: string
+  subcategoryLabel?: string | string[]
   subcategoryIcon?: string
+  subcategoryAffix?: string
 
   variantID?: string
   variantLabel?: string
@@ -46,17 +48,22 @@ export interface FilterVariant {
 }
 
 export interface FilterFeatureProperties {
+  // geometry rendering properties
   color: string
   icon: string
   label: string
   size: number
   iconSize?: number
 
-  tooltip?: string
-  lootTable?: string
+  // data properties for tooltips and other logic
+  title?: string
+  subtitle?: string
   loreID?: string
   vitalID?: string
   vitalLevel?: number
+  lootTableID?: string
+  gatherableID?: string
+  variationID?: string
   encounter?: string
   variant?: string
 }

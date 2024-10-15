@@ -86,13 +86,6 @@ function selectRecords({
         itemId: itemId,
         recipeItem: recipeItem,
         recipe: recipe,
-        ingredients: getCraftingIngredients(recipe).map((it) => {
-          return {
-            quantity: it.quantity,
-            item: items.get(it.ingredient),
-            itemId: it.ingredient,
-          }
-        }),
       }
     })
     .filter((it) => !!it)

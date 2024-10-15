@@ -205,6 +205,79 @@ export function getComponentChildren(slice: SliceComponent, componentID: number)
   return result
 }
 
+
+export function getComponentTransforms(
+  component: AZ__Entity['components'][0],
+): { translation: number[]; rotation: number[][] } {
+  let translation: number[]
+  let rotation: number[]
+  if (isGameTransformComponent(component)) {
+    if (component.m_worldtm) {
+      translation = component.m_worldtm.__value?.translation
+      rotation = component.m_worldtm.__value?.['rotation/scale']
+    } else if (component.m_localtm) {
+      translation = component.m_localtm.__value?.translation
+      rotation = component.m_localtm.__value?.['rotation/scale']
+    }
+  }
+  if (isTransformComponent(component)) {
+    translation = component.transform.__value?.translation
+    rotation = component.transform.__value?.['rotation/scale']
+  }
+  if (translation && rotation) {
+    return {
+      translation: getTranslation(translation),
+      rotation: getRotation(rotation),
+    }
+  }
+  return null
+}
+
+function getTranslation(value?: number[]) {
+  if (Array.isArray(value)) {
+    return [...value]
+  }
+  return null
+}
+
+function getRotation(value?: number[]) {
+  let result: number[][] = null
+  if (value && Array.isArray(value) && value.length === 9) {
+    const [x1, y1, z1, x2, y2, z2, x3, y3, z3] = value
+    result = [
+      [x1, y1, z1],
+      [x2, y2, z2],
+      [x3, y3, z3],
+    ]
+  }
+  if (!Array.isArray(result)) {
+    return null
+  }
+  if (result.length !== 3) {
+    return null
+  }
+  for (const row of result) {
+    if (!Array.isArray(row) || row.length !== 3) {
+      return null
+    }
+  }
+  // skip if it is an identity matrix
+  if (
+    result[0][0] === 1 &&
+    result[0][1] === 0 &&
+    result[0][2] === 0 &&
+    result[1][0] === 0 &&
+    result[1][1] === 1 &&
+    result[1][2] === 0 &&
+    result[2][0] === 0 &&
+    result[2][1] === 0 &&
+    result[2][2] === 1
+  ) {
+    return null
+  }
+  return result
+}
+
 const boundarySchema = z.object({
   vertices: z.array(z.array(z.number())),
 })

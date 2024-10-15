@@ -1,1 +1,1 @@
-export * from './mount.module'
+export * from './mounts.routes'

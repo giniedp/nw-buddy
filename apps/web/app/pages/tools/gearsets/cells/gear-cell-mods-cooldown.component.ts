@@ -85,7 +85,7 @@ export class GearCellModsCooldownComponent {
         return []
       }
       return consumables
-        .filter((it) => it.consumable?.CooldownDuration && it.consumable.CooldownId)
+        .filter((it) => it.item && it.consumable?.CooldownDuration && it.consumable.CooldownId)
         .map(({ item, consumable }): CooldownRow => {
           return {
             label: item.Name,

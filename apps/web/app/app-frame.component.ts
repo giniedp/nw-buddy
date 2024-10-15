@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { injectIsBrowser } from './utils/injection/platform'
 
@@ -7,6 +7,7 @@ import { injectIsBrowser } from './utils/injection/platform'
   standalone: true,
   template: `<router-outlet />`,
   imports: [RouterModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ion-page',
   },

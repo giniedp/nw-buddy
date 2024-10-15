@@ -5,6 +5,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
+  signal,
   TemplateRef,
   TrackByFunction,
   ViewChild,
@@ -19,6 +20,7 @@ import {
   MasterItemDefinitions,
   MutationDifficultyStaticData,
   PromotionMutationStaticData,
+  VitalsBaseData,
 } from '@nw-data/generated'
 import {
   BehaviorSubject,
@@ -53,7 +55,7 @@ import {
 import { uniqBy } from 'lodash'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
-import { svgInfoCircle, svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { svgInfoCircle, svgLocationCrosshairs, svgLocationDot, svgSquareArrowUpRight, svgThumbtack } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
@@ -74,6 +76,7 @@ import { GameModeDetailStore } from './game-mode-detail.store'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
+import { GameModeDetailMapComponent } from './game-mode-detail-map.component'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -81,26 +84,7 @@ const DIFFICULTY_TIER_NAME = {
   3: 'Hard',
   4: 'Elite',
 }
-const MAP_EMBED_URLS = {
-  DungeonAmrine: 'https://aeternum-map.gg/Amrine%20Excavation?embed=true',
-  DungeonBrimstoneSands00: 'https://aeternum-map.gg/The%20Ennead?embed=true',
-  DungeonCutlassKeys00: 'https://aeternum-map.gg/Barnacles%20&%20Black%20Powder?embed=true',
-  DungeonEbonscale00: 'https://aeternum-map.gg/?bounds=4480,4096,5088,4640&embed=true',
-  DungeonEdengrove00: 'https://aeternum-map.gg/Garden%20of%20Genesis?embed=true',
-  DungeonGreatCleave01: 'https://aeternum-map.gg/Empyrean%20Forge?embed=true',
-  DungeonReekwater00: 'https://aeternum-map.gg/Lazarus%20Instrumentality?embed=true',
-  DungeonRestlessShores01: 'https://aeternum-map.gg/The%20Depths?embed=true',
-  DungeonShatteredObelisk: 'https://aeternum-map.gg/Starstone%20Barrows?embed=true',
-  DungeonShatterMtn00: "https://aeternum-map.gg/Tempest's%20Heart?embed=true",
-  DungeonFirstLight01: 'https://aeternum-map.gg/The%20Savage%20Divide?embed=true',
-  QuestApophis: null,
-}
 
-function withoutEmbedAttr(url: string) {
-  const result = new URL(url)
-  result.searchParams.delete('embed')
-  return result.toString()
-}
 export interface Tab {
   id: string
   label: string
@@ -129,10 +113,11 @@ export interface Tab {
     MutaCurseTileComponent,
     MutaPromotionTileComponent,
     TooltipModule,
+    GameModeDetailMapComponent,
   ],
   providers: [GameModeDetailStore],
   host: {
-    class: 'layout-col xl:flex-row',
+    class: 'ion-page flex flex-co, xl:flex-row',
   },
   animations: [
     trigger('list', [
@@ -182,11 +167,17 @@ export class GameModeDetailComponent implements OnInit {
     ({ mutation, curse }) => curse || mutation?.curse || null,
   )
 
+  protected paramVitalTab$ = selectStream(observeQueryParam(this.route, 'tabv'))
   protected paramTab$ = selectStream(observeQueryParam(this.route, 'tab'))
   protected paramPlayerLevel$ = selectStream(observeQueryParam(this.route, 'lvl'))
   protected adjustLevel$ = new BehaviorSubject<boolean>(false)
   protected adjustedLevel$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
   protected isMutated$ = this.paramMutation$.pipe(map((it) => !!it))
+  protected mapPinned = signal(false)
+  protected iconTarget = svgLocationCrosshairs
+  protected iconPin = svgThumbtack
+  protected vitalTargetHover = signal<VitalsBaseData>(null)
+  protected vitalTargetClick = signal<VitalsBaseData>(null)
 
   public iconExtern = svgSquareArrowUpRight
   public iconInfo = svgInfoCircle
@@ -194,7 +185,8 @@ export class GameModeDetailComponent implements OnInit {
   public dungeon$ = this.store.gameMode$.pipe(filter((it) => !!it))
   public creaturesBosses$ = this.store.creaturesBosses$
   public creaturesNamed$ = this.store.creaturesNamed$
-  public creatures$ = this.store.dingeonCommonCreatures$
+  public creaturesCommon$ = this.store.creaturesCommon$
+  public creatures$ = this.store.creatures$
   public creatureLevel$ = this.store.enemyLevelOverride$
   public mutaElementId$ = this.store.mutaElement$.pipe(map((it) => it?.ElementalMutationId))
 
@@ -332,16 +324,12 @@ export class GameModeDetailComponent implements OnInit {
   @ViewChild('tplRewards', { static: true })
   public tplRewards: TemplateRef<unknown>
 
-  @ViewChild('tplDungeonMap', { static: true })
-  public tplDungeonMap: TemplateRef<unknown>
-
   @ViewChild('tplExplain', { static: true })
   public tplExplain: TemplateRef<unknown>
 
   public dungeon: GameModeData
   public difficulty: MutationDifficultyStaticData
   public tab: string = ''
-  public mapEmbed: SafeResourceUrl
 
   public get title() {
     return this.dungeon?.DisplayName
@@ -448,13 +436,12 @@ export class GameModeDetailComponent implements OnInit {
             tpl: this.tplDungeonDifficultyLoot,
           })
         }
-        if (dungeon.IsRaidTrial || dungeon.IsSoloTrial) {
-          this.tabs.push({
-            id: 'creatures',
-            label: 'Creatures',
-            tpl: this.tplDungeonCreatures,
-          })
-        }
+
+        this.tabs.push({
+          id: 'creatures',
+          label: 'Creatures',
+          tpl: this.tplDungeonCreatures,
+        })
         this.tabs.push({
           id: 'named',
           label: 'Named',
@@ -465,20 +452,6 @@ export class GameModeDetailComponent implements OnInit {
           label: 'Bosses',
           tpl: this.tplDungeonBosses,
         })
-
-        const mapUrl = MAP_EMBED_URLS[dungeon.GameModeId]
-        this.mapEmbed = mapUrl ? this.domSanitizer.bypassSecurityTrustResourceUrl(mapUrl) : null
-        if (this.mapEmbed) {
-          const tab: Tab = {
-            id: 'map',
-            label: 'Map',
-            tpl: this.tplDungeonMap,
-          }
-          if (this.platform.isOverwolf) {
-            tab.externUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(withoutEmbedAttr(mapUrl))
-          }
-          this.tabs.push(tab)
-        }
 
         this.head.updateMetadata({
           title: this.i18n.get(dungeon.DisplayName),
@@ -550,6 +523,22 @@ export class GameModeDetailComponent implements OnInit {
     this.updateRank('bronze')
   }
 
+  protected handleVitalTargetEnter(vital: VitalsBaseData) {
+    this.vitalTargetHover.set(vital)
+  }
+
+  protected handleVitalTargetLeave(vital: VitalsBaseData) {
+    this.vitalTargetHover.set(null)
+  }
+
+  protected handleVitalTargetClick(vital: VitalsBaseData) {
+    if (this.vitalTargetClick() === vital) {
+      this.vitalTargetClick.set(null)
+    } else {
+      this.vitalTargetClick.set(vital)
+    }
+  }
+
   public updateRank(value: DifficultyRank) {
     if (this.dungeon && this.difficulty) {
       this.preferences.updateRank(this.dungeon.GameModeId, this.difficulty.MutationDifficulty, value)
@@ -612,6 +601,16 @@ export class GameModeDetailComponent implements OnInit {
       relativeTo: this.route,
       queryParams: {
         curse: value?.CurseMutationId || null,
+      },
+      queryParamsHandling: 'merge',
+    })
+  }
+
+  protected handleVitalTabChange(tab: string) {
+    this.router.navigate(['.'], {
+      relativeTo: this.route,
+      queryParams: {
+        tabv: tab,
       },
       queryParamsHandling: 'merge',
     })

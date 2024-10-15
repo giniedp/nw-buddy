@@ -1,12 +1,12 @@
 <nwb-item-header class="gap-2">
   <a [nwbItemIcon]="'assets/icons/menu/player-titles.png'" class="w-[76px] h-[76px]"></a>
-  <nwb-item-header-content class="z-10" [title]="title() | nwText" [text2]="'Player Title'" [text1]="type()" />
+  <nwb-item-header-content class="z-10" [title]="store.title() | nwText" [text2]="'Player Title'" [text1]="store.type()" />
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
-  @if (description(); as text) {
+  @if (store.description(); as text) {
     <div [nwHtml]="text | nwText" class="text-nw-description italic"></div>
     <nwb-item-divider />
   }
-  <nwb-property-grid [item]="properties()" class="overflow-auto gap-x-2 font-mono text-sm" />
+  <nwb-property-grid [item]="store.properties()" class="overflow-auto gap-x-2 font-mono text-sm" />
   <ng-content />
 </div>

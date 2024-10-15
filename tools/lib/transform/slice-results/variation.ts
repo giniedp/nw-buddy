@@ -1,10 +1,9 @@
 import { chain, sortBy } from 'lodash'
+import { VariantScanRow } from 'tools/lib/file-formats/slices/scan-slices'
 import { ScannedVariation, ScannedVariationData, ScannedVariationSpawn } from '../../../../libs/nw-data/scanner'
 
-import { VariationScanRow } from '../../file-formats/slices/scan-for-variants'
-
 export interface VariationIndex {
-  push(entry: VariationScanRow[]): void
+  push(entry: VariantScanRow[]): void
   result(): {
     data: ScannedVariationData
     chunks: Array<Float32Array>
@@ -15,7 +14,7 @@ export interface VariationIndex {
 export function variationIndex(): VariationIndex {
   const index: Record<string, Record<string, Record<string, ScannedVariationSpawn<Array<[number, number]>>>>> = {}
   return {
-    push(rows: VariationScanRow[]) {
+    push(rows: VariantScanRow[]) {
       if (!rows?.length) {
         return
       }
@@ -47,10 +46,7 @@ export function variationIndex(): VariationIndex {
 
       let chunkData: number[]
       let chunkIndex: number
-      function add(
-        variantID: string,
-        { mapID, encounter, positions }: ScannedVariationSpawn<Array<[number, number]>>,
-      ) {
+      function add(variantID: string, { mapID, encounter, positions }: ScannedVariationSpawn<Array<[number, number]>>) {
         variationIds.add(variantID)
         if (!chunkData || chunkData.length + positions.length > 1000000) {
           chunkIndex = chunks.length

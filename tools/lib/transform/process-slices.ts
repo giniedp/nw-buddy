@@ -81,8 +81,12 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   vitals.addLevels(levelMapping)
   await applyTerritoryToVital(vitals, territories, tables)
 
+  const vitalsMetadata = vitals.result()
+  const vitalsMetadata1 = vitalsMetadata.slice(0, vitalsMetadata.length / 2)
+  const vitalsMetadata2 = vitalsMetadata.slice(vitalsMetadata.length / 2)
   return {
-    vitals: vitals.result(),
+    vitalsMetadata1,
+    vitalsMetadata2,
     vitalsModels: vitals.models(),
     gatherables: gatherables.result(),
     variations: variations.result(),
@@ -95,10 +99,12 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   }
 }
 
+
 function readLevelMapping(tables: Array<DatasheetFile>) {
-  tables = tables.filter((it) => it.header.type === 'VitalsData')
+  tables = tables.filter((it) => it.header.type === 'VitalsLevelVariantData')
+
   if (!tables.length) {
-    throw new Error('Missing VitalsData table')
+    throw new Error('Missing VitalsLevelVariantData table')
   }
   const vitalSchema = z.object({
     VitalsID: z.string(),

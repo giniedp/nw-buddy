@@ -132,7 +132,7 @@ async function importSlices({
 
   await processSlices({ inputDir, threads: threads }).then((data) => {
     console.log('  ', data.npcs.length, 'npcs')
-    console.log('  ', data.vitals.length, 'vitals')
+    console.log('  ', data.vitalsMetadata1.length + data.vitalsMetadata2.length, 'vitals')
     console.log('  ', data.vitalsModels.length, 'vitals models')
     console.log('  ', data.gatherables.length, 'gatherables')
     console.log(
@@ -150,8 +150,13 @@ async function importSlices({
 
     return Promise.all([
       // write it into input directory, so table loader will pick it up
-      writeJSONFile(data.vitals, {
-        target: path.join(jsonOutDir, 'vitals_metadata.json'),
+      writeJSONFile(data.vitalsMetadata1, {
+        target: path.join(jsonOutDir, 'vitals_metadata1.json'),
+        createDir: true,
+        serialize: jsonStringifyFormatted,
+      }),
+      writeJSONFile(data.vitalsMetadata2, {
+        target: path.join(jsonOutDir, 'vitals_metadata2.json'),
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),

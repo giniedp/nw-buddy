@@ -9,7 +9,7 @@ import { svgDice, svgFilter, svgFire, svgFont, svgHouse, svgSkull, svgTags, svgW
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
-import { GameMapComponent, GameMapHost } from '~/widgets/game-map'
+import { GameMapComponent, GameMapCoordsComponent, GameMapHost } from '~/widgets/game-map'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
 import { LootModule } from '~/widgets/loot'
 import { VitalDetailModule } from '../../vital-detail'
@@ -17,6 +17,8 @@ import { MapFilterSectionComponent } from './filter-section.component'
 import { MapFilterSegmentComponent } from './filter-segment.component'
 import { MapFilterVitalsComponent } from './filter-vitals.component'
 import { ZoneMapStore } from './zone-map.store'
+import { gameMapOptionsForMapIds } from '~/widgets/game-map/utils'
+import { TranslateService } from '~/i18n'
 
 @Component({
   standalone: true,
@@ -28,6 +30,7 @@ import { ZoneMapStore } from './zone-map.store'
     FormsModule,
     GameMapComponent,
     GameMapLayerDirective,
+    GameMapCoordsComponent,
     IconsModule,
     IonButton,
     IonButtons,
@@ -49,20 +52,32 @@ import { ZoneMapStore } from './zone-map.store'
   },
 })
 export class ZoneDetailMapComponent {
+  private tl8 = inject(TranslateService)
   protected store = inject(ZoneMapStore)
-  protected mapId = this.store.mapId
-  protected segment = signal('gathering')
+  protected currentMapId = this.store.mapId
+  protected segment = signal('g')
   protected segments = computed(() => {
     return [
-      { id: 'gathering', open: false, label: 'Gathering', source: this.store.gatherables(), icon: svgWheat },
-      { id: 'vitals', open: false, label: 'Vitals', vitals: this.store.vitals(), icon: svgSkull },
-      { id: 'structures', open: true, label: 'Structures', source: this.store.houses(), icon: svgHouse },
+      { id: 'g', open: false, label: 'Gatherables', source: this.store.gatherables(), icon: svgWheat },
+      { id: 'v', open: false, label: 'Vitals', vitals: this.store.vitals(), icon: svgSkull },
+      { id: 's', open: true, label: 'Structures', source: this.store.houses(), icon: svgHouse },
     ]
   })
   protected activeSegment = computed(() => this.segments().find((it) => it.id === this.segment()))
 
   public pinMenu = input(false)
   public zoneId = input<string | number>()
+  public mapId = input(null, {
+    transform: (it: string) => {
+      if (it) {
+        this.store.setMap(it)
+      }
+      return it
+    },
+  })
+  public showMapOptions = input<boolean>(true)
+  public zoneClicked = output<string>()
+  public vitalClicked = output<string>()
 
   protected filterIcon = svgFilter
   protected labelsIcon = svgTags
@@ -70,20 +85,13 @@ export class ZoneDetailMapComponent {
   protected fireIcon = svgFire
   protected fontIcon = svgFont
 
-  public zoneClicked = output<string>()
-  public vitalClicked = output<string>()
-
   protected selectSegment(value: string) {
     this.segment.set(value)
   }
 
   protected mapsOptions = computed(() => {
-    const result = this.store.mapIds().map((it) => {
-      return {
-        value: it,
-        label: humanize(it),
-      }
-    })
-    return sortBy(result, (it) => it.label)
+    this.tl8.locale.value()
+    const result = gameMapOptionsForMapIds(this.store.mapIds() || [])
+    return sortBy(result, (it) => this.tl8.get(it.label))
   })
 }

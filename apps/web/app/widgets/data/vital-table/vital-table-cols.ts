@@ -11,22 +11,33 @@ import {
   isZonePoi,
   isZoneTerritory,
 } from '@nw-data/common'
-import { GameModeData, TerritoryDefinition, VitalsCategory, VitalsCategoryData, VitalsData } from '@nw-data/generated'
+import {
+  GameModeData,
+  TerritoryDefinition,
+  VitalsCategory,
+  VitalsCategoryData,
+  VitalsBaseData,
+  VitalsLevelVariantData,
+} from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
+
 import { uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize, stringToColor } from '~/utils'
+import { VitalBuff } from '../vital-detail/vital-detail.store'
 
 export type VitalTableUtils = TableGridUtils<VitalTableRecord>
-export type VitalTableRecord = VitalsData & {
-  $dungeons: GameModeData[]
-  $categories: VitalsCategoryData[]
-  $familyInfo: VitalFamilyInfo
-  $combatInfo: VitalFamilyInfo[] | null
-  $metadata: ScannedVital
-  $zones: TerritoryDefinition[]
-}
+export type VitalTableRecord = VitalsBaseData &
+  VitalsLevelVariantData & {
+    $dungeons: GameModeData[]
+    $categories: VitalsCategoryData[]
+    $familyInfo: VitalFamilyInfo
+    $combatInfo: VitalFamilyInfo[] | null
+    $metadata: ScannedVital
+    $zones: TerritoryDefinition[]
+    $buffs: VitalBuff[]
+  }
 
 const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) => {
   if (!value) {
@@ -231,6 +242,7 @@ export function vitalColExpedition(util: VitalTableUtils) {
     valueGetter: ({ data }) => data?.$dungeons?.map((it) => util.i18n.get(it.DisplayName)),
     ...util.selectFilter({
       order: 'asc',
+      search: true,
     }),
   })
 }
@@ -484,6 +496,87 @@ export function vitalColSpawnPois(util: VitalTableUtils) {
             id: it.TerritoryID as any,
             label: util.tl8(getZoneName(it)),
             icon: getZoneIcon(it),
+          }
+        })
+      },
+    }),
+  })
+}
+
+export function vitalColBuffs(util: VitalTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'buffs',
+    headerValueGetter: () => 'Buffs',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) =>
+      data.$buffs
+        .map((it) => {
+          if (it.ability) {
+            return it.ability.AbilityID
+          }
+          if (it.effect) {
+            return it.effect.StatusID
+          }
+          return null
+        })
+        .filter((it) => !!it),
+    hide: true,
+    cellRenderer: util.cellRenderer(({ data }) => {
+      return util.el(
+        'div.line-clamp-3.text-wrap.leading-tight',
+        {},
+        data.$buffs
+          .map((it) => {
+            if (it.ability) {
+              return util.elA({
+                attrs: {
+                  target: '_blank',
+                  href: util.nwLink.resourceLink({ type: 'ability', id: it.ability.AbilityID }),
+                },
+                class: ['text-primary', 'link', 'text-xs', 'leading-tight', 'mr-2'],
+                html: util.tl8(it.ability.DisplayName || it.ability.AbilityID),
+              })
+            }
+            if (it.effect) {
+              return util.elA({
+                attrs: {
+                  target: '_blank',
+                  href: util.nwLink.resourceLink({ type: 'status-effect', id: it.effect.StatusID }),
+                },
+                class: ['text-primary', 'link', 'text-xs', 'leading-tight', 'mr-2'],
+                html: util.tl8(it.effect.DisplayName || it.effect.StatusID),
+              })
+            }
+            return null
+          })
+          .filter((it) => !!it),
+      )
+    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
+        const items = data.$buffs
+          .map((it) => {
+            if (it.ability) {
+              return {
+                id: it.ability.AbilityID,
+                name: it.ability.DisplayName || it.ability.AbilityID,
+              }
+            }
+            if (it.effect) {
+              return {
+                id: it.effect.StatusID,
+                name: it.effect.DisplayName || it.effect.StatusID,
+              }
+            }
+            return null
+          })
+          .filter((it) => !!it)
+        return items.map((it) => {
+          return {
+            id: it.id,
+            label: util.tl8(it.name),
           }
         })
       },

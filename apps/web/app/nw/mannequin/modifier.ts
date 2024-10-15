@@ -1,5 +1,12 @@
 import { EquipSlotId, getItemGsBonus, getItemIconPath, getPerkMultiplier } from '@nw-data/common'
-import { AbilityData, AffixStatData, HouseItems, MasterItemDefinitions, PerkData, StatusEffectData } from '@nw-data/generated'
+import {
+  AbilityData,
+  AffixStatData,
+  HouseItems,
+  MasterItemDefinitions,
+  PerkData,
+  StatusEffectData,
+} from '@nw-data/generated'
 import { humanize } from '~/utils'
 import type { ActiveBonus, ActiveMods } from './types'
 
@@ -129,7 +136,13 @@ export function* eachModifier<T extends number | string>(
       continue
     }
     if (perk) {
-      scale = getPerkMultiplier(perk.perk, perk.gearScore)
+      scale = getPerkMultiplier(
+        {
+          ScalingPerGearScore: perk.perk?.ScalingPerGearScore,
+          ScalingPerGearScoreAttributes: null,
+        },
+        perk.gearScore,
+      )
     }
     const source: Required<ModifierSource> = {
       icon: null,
@@ -177,7 +190,13 @@ export function* eachModifier<T extends number | string>(
       continue
     }
     if (perk) {
-      upscale *= getPerkMultiplier(perk.perk, perk.gearScore)
+      upscale *= getPerkMultiplier(
+        {
+          ScalingPerGearScore: perk.perk?.ScalingPerGearScore,
+          ScalingPerGearScoreAttributes: null,
+        },
+        perk.gearScore,
+      )
     }
     if (scale) {
       upscale *= scale
@@ -204,7 +223,13 @@ export function* eachModifier<T extends number | string>(
         continue
       }
       if (perk) {
-        upscale *= getPerkMultiplier(perk.perk, perk.gearScore)
+        upscale *= getPerkMultiplier(
+          {
+            ScalingPerGearScore: perk.perk?.ScalingPerGearScore,
+            ScalingPerGearScoreAttributes: null,
+          },
+          perk.gearScore,
+        )
       }
       if (scale) {
         upscale *= scale

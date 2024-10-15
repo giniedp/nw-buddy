@@ -54,7 +54,7 @@
           class="tooltip-left tooltip-info text-primary whitespace-nowrap"
           #tracker
         ></nwb-price-tracker>
-        <span *ngIf="row.price && !tracker.showInput">
+        <span *ngIf="row.price && !tracker.showInput()">
           {{ row.price | number : '1.2-2' }}
         </span>
       </div>

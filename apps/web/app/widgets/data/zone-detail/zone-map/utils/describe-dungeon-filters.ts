@@ -36,8 +36,10 @@ export function describeDungeonFilters(
       label: null,
       size: 1,
 
-      // tooltip: gatherable.DisplayName,
-      lootTable: lootTable.original,
+      title: variant?.Name || gatherable.DisplayName,
+      lootTableID: lootTable.original,
+      gatherableID: gatherable.GatherableID,
+      variationID: variant?.VariantID,
     },
   }
 

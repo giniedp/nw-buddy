@@ -1,4 +1,4 @@
-import { AttackType, StatusEffectData } from '@nw-data/generated'
+import { AttackType, StatusEffectData, UICategory } from '@nw-data/generated'
 import { AbilityData, AffixStatData, DamageData, DamageTypeData } from '@nw-data/generated'
 import { KeysWithPrefix } from './utils/ts-types'
 
@@ -19,10 +19,8 @@ const WEAPON_TAG_NAME = {
   VoidGauntlet: 'ui_voidmagic',
 }
 
-export function getAbilityCategoryTag(ability: AbilityData) {
-  return (
-    (ability?.UICategory?.match(/(heal|melee|debuff|buff|range|magic|passive)/i)?.[0]?.toLowerCase() as any) || 'none'
-  )
+export function getAbilityCategoryTag(ability: AbilityData): Lowercase<UICategory> | 'none' {
+  return ability?.UICategory?.toLowerCase() as any || 'none'
 }
 
 export function getWeaponTagLabel(value: string) {

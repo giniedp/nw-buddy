@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
@@ -24,13 +23,6 @@ export class PlayerTitleDetailComponent {
 
   @Input()
   public set titleId(value: string) {
-    this.store.patchState({ titleId: value })
+    this.store.load({ titleId: value })
   }
-
-  public readonly type = toSignal(this.store.type$)
-  public readonly title = toSignal(this.store.title$)
-  public readonly titleFemale = toSignal(this.store.titleFemale$)
-  public readonly titleNeutral = toSignal(this.store.titleNeutral$)
-  public readonly description = toSignal(this.store.description$)
-  public readonly properties = toSignal(this.store.properties$)
 }

@@ -17,7 +17,7 @@ import {
   DamageData,
   StatusEffectData,
   VitalsCategoryData,
-  VitalsData,
+  VitalsBaseData as VitalsData,
 } from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
 import { uniq } from 'lodash'
@@ -115,7 +115,7 @@ export const VitalDetailStore = signalStore(
         creatureType: toObservable(state.creatureType),
       }),
       (data) => {
-        return collectBuffs({
+        return !data ? [] : collectVitalBuffs({
           bucketIds: [data.element?.[data.creatureType]],
           buffMap: data.buffMap,
           effectMap: data.effectMap,
@@ -132,7 +132,7 @@ export const VitalDetailStore = signalStore(
         abilitiesMap: db.abilitiesMap,
       }),
       (data) => {
-        return collectBuffs({
+        return !data ? [] : collectVitalBuffs({
           bucketIds: (data.vital.BuffBuckets || '').split(','),
           buffMap: data.buffMap,
           effectMap: data.effectMap,
@@ -291,7 +291,7 @@ function selectDamageTableNames(id: string, meta: ScannedVital) {
   return tables
 }
 
-function collectBuffs(
+export function collectVitalBuffs(
   data: {
     bucketIds: string[]
     buffMap: Map<string, BuffBucket>
@@ -300,7 +300,7 @@ function collectBuffs(
     chance?: number
     odd?: boolean
   },
-  result: Buff[] = [],
+  result: VitalBuff[] = [],
 ) {
   let odd = data.odd ?? true
   for (const bucketId of data.bucketIds || []) {
@@ -324,7 +324,7 @@ function collectBuffs(
         continue
       }
       if (row.BuffType === 'BuffBucket' && row.Buff) {
-        collectBuffs(
+        collectVitalBuffs(
           {
             ...data,
             bucketIds: [row.Buff],
@@ -351,14 +351,14 @@ function collectBuffs(
 
   return result
 }
-interface Buff {
+export interface VitalBuff {
   chance: number
   effect?: StatusEffectData
   ability?: AbilityData
   odd: boolean
 }
 
-function appendBuff(buffs: Buff[], buff: Buff) {
+function appendBuff(buffs: VitalBuff[], buff: VitalBuff) {
   const existing = buffs.find((it) => {
     if (buff.effect) {
       return it.effect?.StatusID === buff.effect.StatusID

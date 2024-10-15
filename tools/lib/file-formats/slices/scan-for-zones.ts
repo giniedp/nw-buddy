@@ -1,8 +1,5 @@
-import { z } from 'zod'
 import { readJSONFile } from '../../utils'
 import {
-  Asset,
-  AssetId,
   isAZ__Entity,
   isPolygonPrismCommon,
   isPolygonPrismShapeComponent,
@@ -11,7 +8,7 @@ import {
   isTransform,
   isTransformComponent,
 } from './types/dynamicslice'
-import { resolveAssetFile, resolveBoundaryShape } from './utils'
+import { resolveBoundaryShape } from './utils'
 
 export interface TerritoryScanRow {
   territoryID: string

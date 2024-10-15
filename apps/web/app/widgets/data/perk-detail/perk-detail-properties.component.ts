@@ -7,6 +7,8 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, tagsCell, localizedCell, valueCell, textCell } from '~/ui/property-grid/cells'
 import { PerkDetailStore } from './perk-detail.store'
+import { PerkScalingPerGsGraphComponent } from './perk-scaling-per-gs-graph.component'
+import { perkScalingCell } from './perk-scaling-cell.component'
 
 @Component({
   standalone: true,
@@ -26,7 +28,7 @@ import { PerkDetailStore } from './perk-detail.store'
       />
     }
   `,
-  imports: [NwModule, PropertyGridModule, ItemFrameModule],
+  imports: [NwModule, PropertyGridModule, ItemFrameModule, PerkScalingPerGsGraphComponent],
   host: {
     class: 'flex flex-col gap-2',
   },
@@ -41,7 +43,7 @@ export class PerkDetailPropertiesComponent {
   public perkDescriptor = gridDescriptor<PerkData>(
     {
       PerkID: (value) => linkCell({ value: String(value), routerLink: ['perk', value] }),
-      Affix: (value) => textCell({ value: String(value), textPrimary: true, fontItalic: true }) ,
+      Affix: (value) => textCell({ value: String(value), textPrimary: true, fontItalic: true }),
       ItemClass: (value) => tagsCell({ value }),
       ExcludeItemClass: (value) => tagsCell({ value }),
       ExclusiveLabels: (value) => tagsCell({ value }),
@@ -52,17 +54,8 @@ export class PerkDetailPropertiesComponent {
       AppliedSuffix: (value) => localizedCell({ value }),
       AppliedPrefix: (value) => localizedCell({ value }),
       ItemPerkConflictsLocText: (value) => localizedCell({ value }),
-      ScalingPerGearScore: (value) => textCell({
-        textAccent: true,
-        value: parseScalingPerGearScore(value)
-          .map(({ score, scaling }, i) => {
-            if (i === 0) {
-              return this.decimals.transform(scaling, '0.0-7')
-            }
-            return [this.decimals.transform(score, '0.0-7'), this.decimals.transform(scaling, '0.0-7')].join(':')
-          })
-          .join(', '),
-      }),
+      ScalingPerGearScore: (value) => perkScalingCell({ value, bonus: this.store.itemClassGsBonus()?.value }),
+      ScalingPerGearScoreAttributes: (value) => perkScalingCell({ value, bonus: this.store.itemClassGsBonus()?.value }),
     },
     (value) => valueCell({ value }),
   )

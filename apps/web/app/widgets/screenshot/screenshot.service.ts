@@ -10,7 +10,8 @@ import { injectWindow } from '~/utils/injection/window'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
-  description: string
+  name: string
+  label: string
   width: number
   mode: 'detached' | 'attached'
 }

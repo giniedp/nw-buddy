@@ -308,7 +308,7 @@ export function getItemGearScoreLabel(item: MasterItemDefinitions) {
   if (item.GearScoreOverride) {
     return String(item.GearScoreOverride)
   }
-  if (item.MinGearScore && item.MaxGearScore) {
+  if (item.MinGearScore && item.MaxGearScore && item.MinGearScore !== item.MaxGearScore) {
     return `${item.MinGearScore}-${item.MaxGearScore}`
   }
   return String(item.MaxGearScore || item.MinGearScore || '')

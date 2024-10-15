@@ -23,7 +23,7 @@ import { svgRepeat } from '~/ui/icons/svg'
 export class MusicCellComponent implements VirtualGridCellComponent<MusicRecord> {
   public static buildGridOptions(): VirtualGridOptions<MusicRecord> {
     return {
-      height: 200,
+      height: 250,
       width: 375,
       cellDataView: MusicCellComponent,
       cellEmptyView: EmptyComponent,

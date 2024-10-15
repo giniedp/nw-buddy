@@ -12,7 +12,15 @@ import {
   getQuestRequiredAchievmentIds,
   getSeasonPassDataId,
 } from '@nw-data/common'
-import { DATASHEETS, DataSheetUri, HouseTypeData, VariationDataGatherable, VitalsData } from '@nw-data/generated'
+
+import {
+  DATASHEETS,
+  DataSheetUri,
+  VariationDataGatherable,
+  VitalsBaseData,
+  VitalsLevelVariantData,
+} from '@nw-data/generated'
+
 import {
   ScannedGatherable,
   ScannedHouseType,
@@ -26,6 +34,7 @@ import {
   ScannedVital,
   ScannedVitalModel,
 } from '@nw-data/scanner'
+
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataLoaderService } from './nw-data-loader.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './views'
@@ -106,11 +115,15 @@ export class NwDataService {
   public houseTypesMetaMap = tableIndexBy(() => this.houseTypesMeta, 'houseTypeID')
   public houseTypeMeta = tableLookup(() => this.houseTypesMetaMap)
 
-  public structureTypesMeta = table(() => this.load<ScannedStructureType>({ uri: 'nw-data/generated/structures_metadata.json' }))
+  public structureTypesMeta = table(() =>
+    this.load<ScannedStructureType>({ uri: 'nw-data/generated/structures_metadata.json' }),
+  )
   public structureTypesMetaMap = tableIndexBy(() => this.structureTypesMeta, 'type')
   public structureTypeMeta = tableLookup(() => this.structureTypesMetaMap)
 
-  public stationTypesMeta = table(() => this.load<ScannedStationType>({ uri: 'nw-data/generated/stations_metadata.json' }))
+  public stationTypesMeta = table(() =>
+    this.load<ScannedStationType>({ uri: 'nw-data/generated/stations_metadata.json' }),
+  )
   public stationTypesMetaMap = tableIndexBy(() => this.stationTypesMeta, 'stationID')
   public stationTypeMeta = tableLookup(() => this.stationTypesMetaMap)
 
@@ -135,6 +148,13 @@ export class NwDataService {
   public abilitiesBySelfApplyStatusEffect = tableLookup(() => this.abilitiesBySelfApplyStatusEffectMap)
   public abilitiesByOtherApplyStatusEffectMap = tableGroupBy(() => this.abilities, 'OtherApplyStatusEffect')
   public abilitiesByOtherApplyStatusEffect = tableLookup(() => this.abilitiesByOtherApplyStatusEffectMap)
+  public abilitiesByRequiredAbilityIdMap = tableGroupBy(() => this.abilities, 'RequiredAbilityId')
+  public abilitiesByRequiredAbilityId = tableLookup(() => this.abilitiesByRequiredAbilityIdMap)
+  public abilitiesByRequiredEquippedAbilityIdMap = tableGroupBy(() => this.abilities, 'RequiredEquippedAbilityId')
+  public abilitiesByRequiredEquippedAbilityId = tableLookup(() => this.abilitiesByRequiredEquippedAbilityIdMap)
+  public abilitiesByAbilityListMap = tableGroupBy(() => this.abilities, 'AbilityList')
+  public abilitiesByAbilityList = tableLookup(() => this.abilitiesByAbilityListMap)
+
 
   public statusEffects = table(() => this.loadEntries(DATASHEETS.StatusEffectData))
   public statusEffectsMap = tableIndexBy(() => this.statusEffects, 'StatusID')
@@ -200,11 +220,11 @@ export class NwDataService {
   public gatherableVariations = table(
     () =>
       this.loadEntries<VariationDataGatherable>({
-        Gatherable_Darkness: DATASHEETS.VariationData.Gatherable_Darkness,
         Gatherable_Alchemy: DATASHEETS.VariationData.Gatherable_Alchemy,
         Gatherable_Bushes: DATASHEETS.VariationData.Gatherable_Bushes,
         Gatherable_Cinematic: DATASHEETS.VariationData.Gatherable_Cinematic,
         Gatherable_Cyclic: DATASHEETS.VariationData.Gatherable_Cyclic,
+        Gatherable_Darkness: DATASHEETS.VariationData.Gatherable_Darkness,
         Gatherable_Essences: DATASHEETS.VariationData.Gatherable_Essences,
         Gatherable_Holiday: DATASHEETS.VariationData.Gatherable_Holiday,
         Gatherable_Holiday_Proximity: DATASHEETS.VariationData.Gatherable_Holiday_Proximity,
@@ -213,7 +233,6 @@ export class NwDataService {
         Gatherable_Logs: DATASHEETS.VariationData.Gatherable_Logs,
         Gatherable_LootContainers: DATASHEETS.VariationData.Gatherable_LootContainers,
         Gatherable_Minerals: DATASHEETS.VariationData.Gatherable_Minerals,
-        Gatherables_NPCRescue_01: DATASHEETS.VariationData.Gatherables_NPCRescue_01,
         Gatherable_Plants: DATASHEETS.VariationData.Gatherable_Plants,
         Gatherable_POIObjects: DATASHEETS.VariationData.Gatherable_POIObjects,
         Gatherable_Quest: DATASHEETS.VariationData.Gatherable_Quest,
@@ -410,7 +429,12 @@ export class NwDataService {
 
   public tradeskillPostcap = table(() => this.loadEntries(DATASHEETS.TradeSkillPostCapData))
 
-  public vitalsMetadata = table(() => this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata.json' }))
+  public vitalsMetadata = table(() => {
+    return [
+      this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata1.json' }),
+      this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata2.json' })
+    ]
+  })
   public vitalsMetadataMap = tableIndexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = tableLookup(() => this.vitalsMetadataMap)
 
@@ -420,7 +444,26 @@ export class NwDataService {
   public vitalsModelsMetadataMap = tableIndexBy(() => this.vitalsModelsMetadata, 'id')
   public vitalsModelMeta = tableLookup(() => this.vitalsModelsMetadataMap)
 
-  public vitals = table(() => this.loadEntries(DATASHEETS.VitalsData))
+  public vitalsBase = table(() => this.loadEntries(DATASHEETS.VitalsBaseData))
+  public vitalsBaseMap = tableIndexBy(() => this.vitalsBase, 'VitalsID')
+  public vitalsVariants = table(() => this.loadEntries(DATASHEETS.VitalsLevelVariantData))
+
+  public vitals = table<VitalsBaseData & VitalsLevelVariantData>(() => {
+    return combineLatest({
+      baseMap: this.vitalsBaseMap,
+      variants: this.vitalsVariants,
+    }).pipe(
+      map(({ baseMap, variants }) => {
+        return variants.map((it) => {
+          const base = baseMap.get(it.VitalsID)
+          return {
+            ...base,
+            ...it,
+          }
+        })
+      }),
+    )
+  })
   public vitalsMap = tableIndexBy(() => this.vitals, 'VitalsID')
   public vital = tableLookup(() => this.vitalsMap)
 
@@ -431,7 +474,7 @@ export class NwDataService {
   public vitalsOfCreatureType = tableLookup(() => this.vitalsByCreatureType)
 
   public vitalsFamilies = table(() =>
-    this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<VitalsData['Family']>)),
+    this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<VitalsBaseData['Family']>)),
   )
 
   public vitalsCategories = table(() => this.loadEntries(DATASHEETS.VitalsCategoryData))
