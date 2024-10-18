@@ -1,5 +1,8 @@
 export async function onRequest(context) {
-  const server = context.params.server
+  const server = new URL(context.request.url).searchParams.get('server')
+  if (!server) {
+    return new Response(JSON.stringify(result))
+  }
   const url = `https://gaming.tools/prices/nwmp?serverName=${server}/`
   const response = await fetch(url, {
     headers: {

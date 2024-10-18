@@ -31,16 +31,16 @@ export class NwmpApiService {
   }
 
   public fetchPrices(server: string) {
-    let url = `https://gaming.tools/prices/nwmp?serverName=${encodeURIComponent(server)}`
+    let url = `https://gaming.tools/prices/nwmp`
+    let params: Record<string, string> = { serverName: server }
     if (!this.isStandalone) {
-      url = `/api/nwm/servers/${encodeURIComponent(server)}`
+      url = `/api/nwm/prices`
+      params = { server }
     }
 
     return this.http
       .get<Array<{ id: string; price: string }>>(url, {
-        params: {
-          serverName: server,
-        },
+        params,
       })
       .pipe(
         map((list) => {
