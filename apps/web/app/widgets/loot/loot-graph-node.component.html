@@ -85,30 +85,30 @@
       </div>
       <span class="flex-1"></span>
 
-      @if (showChance) {
-        <span class="cursor-help inline-flex flex-col text-right">
-          <span> {{ chanceAbs | percent: '0.0-6' }} </span>
-        </span>
-        <span> | </span>
-      }
       <span class="cursor-help text-xs" [tooltip]="tplTip">
-        <span [class.text-error]="!itemCountUnlocked" [class.text-success]="!!itemCountUnlocked">
-          {{ itemCountUnlocked }}
-        </span>
-        <span> / </span>
+        @if (showUnlockToggle) {
+          <span [class.text-error]="!itemCountUnlocked" [class.text-success]="!!itemCountUnlocked">
+            {{ itemCountUnlocked }}
+          </span>
+          <span> / </span>
+        }
         <span> {{ itemCountTotal }} </span>
         <ng-template #tplTip>
           <div class="p-2">
-            <span [class.text-error]="!itemCountUnlocked" [class.text-success]="!!itemCountUnlocked">
-              {{ itemCountUnlocked }}
-            </span>
-            of
-            <span>{{ itemCountTotal }} </span>
-            items unlocked
+            @if (showUnlockToggle) {
+              <span [class.text-error]="!itemCountUnlocked" [class.text-success]="!!itemCountUnlocked">
+                {{ itemCountUnlocked }}
+              </span>
+              of
+              <span>{{ itemCountTotal }} </span>
+              items unlocked
+            } @else {
+              This table has a total of <span class="text-accent">{{ itemCountTotal }} </span> (including sub tables)
+            }
           </div>
         </ng-template>
       </span>
-      @if (showLink) {
+      @if (showUnlockToggle) {
         <button
           class="btn btn-sm btn-square btn-ghost"
           (click)="toggleLockedClicked($event)"
@@ -227,10 +227,10 @@
   @if (chanceRel || rollThreshold) {
     <span
       class="whitespace-nowrap badge badge-sm cursor-help"
-      [class.badge-primary]="chanceRel > 0"
-      [class.text-shadow-none]="chanceRel > 0"
-      [class.badge-error]="!(chanceRel > 0)"
-      [tooltip]="tplChanceTip"
+      [class.badge-primary]="!showChance || chanceRel > 0"
+      [class.text-shadow-none]="!showChance || chanceRel > 0"
+      [class.badge-error]="showChance && !(chanceRel > 0)"
+      [tooltip]="showChance ? tplChanceTip : null"
     >
       @if (rollThreshold) {
         ≥ {{ rollThreshold }}

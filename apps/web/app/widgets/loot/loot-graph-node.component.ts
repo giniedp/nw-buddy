@@ -104,14 +104,17 @@ export class LootGraphNodeComponent {
     return this.store.showLink()
   }
 
+  public get tagsEditable() {
+    return this.service.tagsEditable
+  }
   public get showLocked() {
-    return this.service.showLocked
+    return !this.tagsEditable || this.service.showLocked
   }
   public get showChance() {
     return this.service.showChance
   }
-  public get tagsEditable() {
-    return this.service.tagsEditable
+  public get showUnlockToggle() {
+    return this.tagsEditable// d && this.showLink
   }
 
   public get table() {
