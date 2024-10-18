@@ -18,12 +18,6 @@ export const LINKS = [
     url: 'https://gaming.tools/newworld',
   },
   {
-    name: 'New World Market Prices',
-    image: '',
-    description: 'Pricing data sourced from our community of Market Watchers.',
-    url: 'https://nwmarketprices.com',
-  },
-  {
     name: 'NewWorldFans.com',
     image: 'https://newworldfans.com/og-card-fallback.jpg',
     description: "Builds, Guides, Database & Tools for Amazon's New World MMO",

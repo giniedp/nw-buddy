@@ -11,30 +11,33 @@ export class NwmpApiService {
     return this.platform.env.standalone || this.platform.env.environment === 'DEV'
   }
 
-  public constructor(private http: HttpClient, private platform: PlatformService) {
+  public constructor(
+    private http: HttpClient,
+    private platform: PlatformService,
+  ) {
     //
   }
 
   public fetchServers() {
-    let url = 'https://nwmarketprices.com/api/servers/'
+    let url = 'https://gaming.tools/prices/nwmp/servers'
     if (!this.isStandalone) {
       url = '/api/nwm/servers'
     }
-    return this.http.get<Record<string, { name: string }>>(url).pipe(
-      map((it) => {
-        return Object.keys(it).map((k) => ({ id: k, name: it[k].name }))
-      })
+    return this.http.get<Array<{ name: string }>>(url).pipe(
+      map((list) => {
+        return list.map(({ name }, i) => ({ id: name, name: name }))
+      }),
     )
   }
 
   public fetchPrices(server: string) {
-    let url = `https://nwmarketprices.com/api/latest-prices/${server}/`
+    let url = `https://gaming.tools/prices/nwmp?serverName=${encodeURIComponent(server)}`
     if (!this.isStandalone) {
-      url = `/api/nwm/servers/${server}`
+      url = `/api/nwm/servers/${encodeURIComponent(server)}`
     }
 
     return this.http
-      .get<Array<{ ItemId: string; Price: string; Availability: number; LastUpdated: string }>>(url, {
+      .get<Array<{ id: string; price: string }>>(url, {
         params: {
           serverName: server,
         },
@@ -42,12 +45,10 @@ export class NwmpApiService {
       .pipe(
         map((list) => {
           return list.map((it) => ({
-            id: it.ItemId,
-            price: Number(it.Price),
-            availability: it.Availability,
-            updatedAt: it.LastUpdated ? new Date(it.LastUpdated) : null,
+            id: it.id,
+            price: Number(it.price),
           }))
-        })
+        }),
       )
   }
 }

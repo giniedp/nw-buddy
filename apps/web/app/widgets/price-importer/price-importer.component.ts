@@ -31,10 +31,10 @@ export class PriceImporterComponent extends ComponentStore<{
   protected iconClose = svgXmark
   protected iconDollar = svgSackDollar
 
-  protected isJson$ = this.selectSignal(({ importer }) => importer === 'json')
-  protected isNWMP$ = this.selectSignal(({ importer }) => importer === 'nwmp')
-  protected importer$ = this.selectSignal(({ importer }) => importer)
-  protected data$ = this.selectSignal(({ data }) => data)
+  protected isJson = this.selectSignal(({ importer }) => importer === 'json')
+  protected isNWMP = this.selectSignal(({ importer }) => importer === 'nwmp')
+  protected importer = this.selectSignal(({ importer }) => importer)
+  protected data = this.selectSignal(({ data }) => data)
 
   public constructor(
     private modal: ModalService,
@@ -53,7 +53,7 @@ export class PriceImporterComponent extends ComponentStore<{
 
   protected import() {
     try {
-      this.data$()?.forEach((it) => {
+      this.data()?.forEach((it) => {
         const itemId = getItemId(it.item)
         if (itemId) {
           this.pref.merge(itemId, {

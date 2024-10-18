@@ -9,6 +9,4 @@ export interface NwmpPriceItem {
   id: string
   price: number
   item: MasterItemDefinitions | HouseItems
-  availability: number
-  updatedAt: Date
 }

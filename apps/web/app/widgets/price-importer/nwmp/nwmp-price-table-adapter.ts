@@ -10,8 +10,8 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { BehaviorSubject, Observable } from 'rxjs'
-import { TableGridUtils } from '~/ui/data/table-grid'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { TrackingCell } from '~/widgets/adapter/components'
 import { NwmpPriceItem } from './types'
@@ -20,7 +20,7 @@ export class NwmpPriceTableAdapter implements DataViewAdapter<NwmpPriceItem> {
   private util: TableGridUtils<NwmpPriceItem> = inject(TableGridUtils)
 
   public entityID(item: NwmpPriceItem): string {
-    return item.id
+    return item.id.toLowerCase()
   }
 
   public entityCategories(item: NwmpPriceItem): DataViewCategory[] {
@@ -72,7 +72,7 @@ function buildGridOptions(util: TableGridUtils<NwmpPriceItem>): GridOptions<Nwmp
               isArtifact: isMasterItem(item) && isItemArtifact(item),
               isNamed: isMasterItem(item) && isItemNamed(item),
               rarity: getItemRarity(item),
-            })
+            }),
           )
         }),
       },
@@ -104,18 +104,6 @@ function buildGridOptions(util: TableGridUtils<NwmpPriceItem>): GridOptions<Nwmp
         cellClass: 'text-right',
         valueGetter: util.valueGetter(({ data }) => data.price),
         //valueFormatter: ({ value }) => util.moneyFormatter.format(value),
-        width: 100,
-      },
-      {
-        headerName: 'Availability',
-        cellClass: 'text-right',
-        valueGetter: util.valueGetter(({ data }) => data.availability),
-        width: 100,
-      },
-      {
-        headerName: 'Updated at',
-        cellClass: 'text-right',
-        valueGetter: util.valueGetter(({ data }) => data.updatedAt?.toLocaleDateString()),
         width: 100,
       },
     ],

@@ -20,7 +20,7 @@ export class JsonPriceTableAdapter implements DataViewAdapter<JsonPriceItem> {
   private utils: TableGridUtils<JsonPriceItem> = inject(TableGridUtils)
 
   public entityID(item: JsonPriceItem): string {
-    return item.id
+    return item.id.toLowerCase()
   }
 
   public entityCategories(item: JsonPriceItem) {

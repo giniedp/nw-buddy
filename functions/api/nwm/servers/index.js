@@ -1,5 +1,5 @@
 export async function onRequest(context) {
-  const response = await fetch(`https://nwmarketprices.com/api/servers/`, {
+  const response = await fetch(`https://gaming.tools/prices/nwmp/servers`, {
     headers: {
       'user-agent': 'nw-buddy'
     }

@@ -1,2 +1,4 @@
-<nwb-icon [icon]="icon" *ngIf="icon" class="w-4 h-4"/>
-<ng-content></ng-content>
+@if (icon) {
+  <nwb-icon [icon]="icon" class="w-4 h-4" />
+}
+<ng-content />

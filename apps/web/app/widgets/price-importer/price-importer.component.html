@@ -1,33 +1,36 @@
 <div class="flex-none bg-black flex flex-row gap-1 flex-wrap items-center p-1">
   <button class="btn btn-ghost btn-square" tabindex="-1">
-    <nwb-icon [icon]="iconDollar" class="w-4 h-4"/>
+    <nwb-icon [icon]="iconDollar" class="w-4 h-4" />
   </button>
   <h3 class="font-bold text-lg">
     Import Item Prices
-    <span *ngIf="importer$()" class="uppercase"> • {{ importer$() }} </span>
+    @if (importer()) {
+      <span class="uppercase"> • {{ importer() }} </span>
+    }
   </h3>
   <span class="flex-1"></span>
 </div>
 
-<div *ngIf="!importer$()" class="flex-1 flex flex-col justify-center gap-2 p-4 bg-base-200">
-  <button class="btn btn-primary w-40 mx-auto" (click)="selectImporter('nwmp')" tabindex="0">NWMP Importer</button>
-  <div class="divider">OR</div>
-  <button class="btn btn-primary w-40 mx-auto" (click)="selectImporter('json')" tabindex="0">JSON Importer</button>
-</div>
-
-<div *ngIf="!!importer$()" class="flex-1 flex flex-col bg-base-200">
-  <ng-container *ngIf="isNWMP$()">
-    <nwb-price-importer-nwmp class="flex-1" (dataReceived)="patchState({ data: $event })"></nwb-price-importer-nwmp>
-  </ng-container>
-
-  <ng-container *ngIf="isJson$()">
-    <nwb-price-importer-json class="flex-1" (dataReceived)="patchState({ data: $event })"></nwb-price-importer-json>
-  </ng-container>
-</div>
+@if (!importer()) {
+  <div class="flex-1 flex flex-col justify-center gap-2 p-4 bg-base-200">
+    <button class="btn btn-primary w-40 mx-auto" (click)="selectImporter('nwmp')" tabindex="0">
+      gaming.tools Importer
+    </button>
+    <div class="divider">OR</div>
+    <button class="btn btn-primary w-40 mx-auto" (click)="selectImporter('json')" tabindex="0">JSON Importer</button>
+  </div>
+} @else {
+  @if (isNWMP()) {
+    <nwb-price-importer-nwmp class="flex-1" (dataReceived)="patchState({ data: $event })" />
+  }
+  @if (isJson()) {
+    <nwb-price-importer-json class="flex-1" (dataReceived)="patchState({ data: $event })" />
+  }
+}
 
 <div class="flex-none modal-action flex-row justify-end p-1 mt-0">
   <div class="join">
     <button type="button" class="join-item btn" (click)="close()">Cancel</button>
-    <button type="button" class="join-item btn btn-success" (click)="import()" [disabled]="!data$()">Import</button>
+    <button type="button" class="join-item btn btn-success" (click)="import()" [disabled]="!data()">Import</button>
   </div>
 </div>
