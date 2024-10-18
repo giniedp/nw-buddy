@@ -94,6 +94,8 @@ const PAGE_ROUTES: Routes = [
   { path: 'about', loadChildren: () => import('./pages/misc/about').then((m) => m.ROUTES) },
   { path: 'preferences', loadChildren: () => import('./pages/misc/preferences').then((m) => m.ROUTES) },
 
+  { path: 'weapon-definitions', loadChildren: () => import('./pages/database/weapon-definitions').then((m) => m.ROUTES) },
+
   {
     path: 'tracking',
     children: [

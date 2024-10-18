@@ -620,6 +620,10 @@ export class NwDataService {
   public weaponAppearancesMap = tableIndexBy(() => this.weaponAppearances, 'WeaponAppearanceID')
   public weaponAppearance = tableLookup(() => this.weaponAppearancesMap)
 
+  public weaponDefinitions = table(() => this.loadEntries(DATASHEETS.WeaponItemDefinitions))
+  public weaponDefinitionsMap = tableIndexBy(() => this.weaponDefinitions, 'WeaponID')
+  public weaponDefinition = tableLookup(() => this.weaponDefinitionsMap)
+
   public instrumentAppearances = table(() =>
     this.load(DATASHEETS.WeaponAppearanceDefinitions.InstrumentsAppearanceDefinitions),
   )
