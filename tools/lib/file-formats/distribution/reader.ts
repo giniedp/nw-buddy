@@ -23,12 +23,37 @@ export async function readDistributionFile(file: string) {
     const x = reader.readUInt16()
     positions.push([x, y])
   }
+  reader.seekRelative(count * 4)
+  reader.seekRelative(count)
+
+  count = reader.readUInt32()
+  const positions2: number[][] = []
+  for (let i = 0; i < count; i++) {
+    const y = reader.readUInt16()
+    const x = reader.readUInt16()
+    positions2.push([x, y])
+  }
+  const types2 = reader.readUInt8Array(count)
+
+  count = reader.readUInt32()
+  const positions3: number[][] = []
+  for (let i = 0; i < count; i++) {
+    const y = reader.readUInt16()
+    const x = reader.readUInt16()
+    positions3.push([x, y])
+  }
+  const types3 = reader.readUInt8Array(count)
+
   return {
     region,
     slices: slices,
     variants: variants,
     indices: indices,
     positions: positions,
+    positions2,
+    types2,
+    positions3,
+    types3,
   }
 }
 
