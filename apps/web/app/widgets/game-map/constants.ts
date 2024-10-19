@@ -306,7 +306,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_arena01',
-    name: 'Arean 1',
+    name: 'Areana 1',
     bounds: {
       left: 700,
       top: 1480,
@@ -319,7 +319,7 @@ export const NW_MAPS = [
   },
   {
     id: 'nw_arena02',
-    name: 'Arean 2',
+    name: 'Areana 2',
     bounds: {
       left: 700,
       top: 1480,
