@@ -11,8 +11,8 @@ import { readDistributionFile } from '../file-formats/distribution'
 import { readLocalizationFile } from '../file-formats/loc/reader'
 import { readShader } from '../file-formats/shader'
 import { readVshapecFile } from '../file-formats/vshapec'
-import { withProgressBar } from '../utils'
-import { copyFile, glob, replaceExtname, writeJSONFile, writeUTF8File } from '../utils/file-utils'
+import { spawn, withProgressBar } from '../utils'
+import { copyFile, glob, mkdir, replaceExtname, writeJSONFile, writeUTF8File } from '../utils/file-utils'
 import { logger } from '../utils/logger'
 import { runTasks } from '../worker/runner'
 
@@ -31,6 +31,7 @@ enum AssetType {
   shaders = 'shaders',
   objectstreams = 'objectstreams',
   images = 'images',
+  heightmap = 'heightmap',
 }
 
 function parseType(value: string): AssetType[] {
@@ -72,6 +73,9 @@ program
     logger.info(' threads:', options.threads)
     logger.verbose(options.threads <= 1)
 
+    // if (typeEnabled(modules, AssetType.heightmap)) {
+    //   await convertHeightmapFiles(unpackDir, convertDir)
+    // }
     if (typeEnabled(modules, AssetType.files)) {
       await copyCommonFiles(unpackDir, convertDir)
     }
@@ -103,7 +107,7 @@ program
         inputDir: unpackDir,
         outputDir: convertDir,
         threads: options.threads,
-        update: options.update
+        update: options.update,
       })
     }
   })
@@ -192,6 +196,24 @@ async function copyCommonFiles(inputDir: string, outputDir: string) {
   })
 }
 
+async function convertHeightmapFiles(inputDir: string, outputDir: string) {
+  const files = await glob([path.join(inputDir, '**', '*.heightmap'), path.join(inputDir, '**', '*.tractmap.tif')])
+  await withProgressBar({ label: 'Convert Heightmap', tasks: files }, async (file, i, log) => {
+    const relPath = path.relative(inputDir, file)
+    const outPath = path.join(outputDir, relPath)
+    const args = ['convert', file]
+    if (path.extname(file) === '.tif') {
+      args.push(replaceExtname(outPath, '.png'))
+    } else {
+      //args.push('-depth', '16', '-colorspace', 'gray')
+      args.push(outPath + '.png')
+    }
+    log(relPath)
+    await mkdir(path.dirname(outPath), { recursive: true })
+    await spawn(`magick`, args)
+  })
+}
+
 async function convertShaders(inputDir: string, outputDir: string) {
   const files = await glob([
     path.join(inputDir, 'shaders', 'cache', 'd3d11', '*.cfib'),
@@ -240,7 +262,7 @@ async function convertImages({
   inputDir,
   outputDir,
   threads,
-  update
+  update,
 }: {
   inputDir: string
   outputDir: string

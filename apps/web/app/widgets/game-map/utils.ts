@@ -1,7 +1,7 @@
 import { Geometry, Position } from 'geojson'
-import { Map, RasterSourceSpecification } from 'maplibre-gl'
+import { Map, RasterDEMSourceSpecification, RasterSourceSpecification } from 'maplibre-gl'
 import { eqCaseInsensitive, humanize } from '~/utils'
-import { NW_MAP_LEVELS, NW_MAP_TILE_SIZE, NW_MAPS } from './constants'
+import { NW_MAPS, NW_MAP_LEVELS, NW_MAP_TILE_SIZE } from './constants'
 import {
   latFromMercatorY,
   lngFromMercatorX,
@@ -15,6 +15,7 @@ import {
 
 export type TileAddress = {
   mapId: string
+  type: string
   x: number
   y: number
   z: number
@@ -41,16 +42,32 @@ export function withLayer(map: Map, layerId: string, callback: (layer: ReturnTyp
   }
 }
 
-export function encodedTileUrl(mapId: string) {
-  return `id=${mapId}&x={x}&y={y}&z={z}`
+export function encodedTileUrl(mapId: string, type: string) {
+  return `id=${mapId}&x={x}&y={y}&z={z}&type=${type || 'nw'}`
 }
 
-export function rasterTileSource(newWorldMapId: string): RasterSourceSpecification {
+export function rasterTileSource(
+  newWorldMapId: string,
+  type: string = null,
+): RasterSourceSpecification | RasterDEMSourceSpecification {
+  if (type === 'nw' || type === 'ocean') {
+    return {
+      type: 'raster',
+      tiles: [encodedTileUrl(newWorldMapId, type)],
+      tileSize: NW_MAP_TILE_SIZE,
+      bounds: [0, 0, 90, 90],
+    }
+  }
   return {
-    type: 'raster',
-    tiles: [encodedTileUrl(newWorldMapId)],
+    type: 'raster-dem',
+    tiles: [encodedTileUrl(newWorldMapId, type)],
     tileSize: NW_MAP_TILE_SIZE,
     bounds: [0, 0, 90, 90],
+    encoding: 'custom',
+    redFactor: 255 * 255,
+    greenFactor: 255,
+    blueFactor: 0,
+    baseShift: 0,
   }
 }
 
@@ -60,15 +77,36 @@ export function decodeTileUrl(encodedUrl: string): TileAddress {
   const x = Number(params.get('x'))
   const y = Number(params.get('y'))
   const z = Number(params.get('z'))
-  return { mapId, x, y, z }
+  const type = params.get('type')
+  return { mapId, x, y, z, type }
 }
 
+const oceanTile = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAALklEQVR42u3OMQEAAAQAMMJrQF5ieLYEy5reeJQCAgICAgICAgICAgICAgLfgQND2FXBysQXQQAAAABJRU5ErkJggg=='
 export function convertTileUrl({ encodedUrl, baseUrl }: { encodedUrl: string; baseUrl: string }) {
   const tile = decodeTileUrl(encodedUrl)
   const address = getTileAddress(tile)
-  const file = `map_l${address.l}_y${address.y}_x${address.x}.webp`
-  //return renderDebugTile({ text: `${tile.x}/${tile.y}/${tile.z} => (${address.x},${address.y},${address.l})`, tileSize: NW_TILES.tileSize })
-  return `${baseUrl}/lyshineui/worldtiles/${tile.mapId}/${file}`
+
+  // return renderDebugTile({
+  //   text: [
+  //     `x:${tile.x} y:${tile.y} z:${tile.z}`,
+  //     `${address.x},${address.y},${address.l}`,
+  //     `${address2.x},${address2.y},${address2.l}`,
+  //   ],
+  //   tileSize: 256,
+  // })
+  if (tile.type === 'ocean') {
+    return oceanTile
+  }
+  if (Number(address.x) < 0 || Number(address.y) < 0) {
+    return null
+  }
+
+  if (tile.type === 'nw') {
+    const file = `map_l${address.l}_y${address.y}_x${address.x}.webp`
+    return `${baseUrl}/lyshineui/worldtiles/${tile.mapId}/${file}`
+  }
+  const file = `${tile.type}_l${address.l}_y${address.y}_x${address.x}.png`
+  return `${baseUrl}/lyshineui/worldtiles/${tile.mapId}/${tile.type}/${address.l}/${file}`
 }
 
 let canvas: HTMLCanvasElement
@@ -82,7 +120,7 @@ function getContext() {
   return getCanvas().getContext('2d')
 }
 
-export function renderDebugTile({ text, tileSize }: { text: string; tileSize: number }): string {
+export function renderDebugTile({ text, tileSize }: { text: string[]; tileSize: number }): string {
   const canvas = getCanvas()
   const context = getContext()
   canvas.width = tileSize
@@ -91,7 +129,9 @@ export function renderDebugTile({ text, tileSize }: { text: string; tileSize: nu
   context.clearRect(0, 0, tileSize, tileSize)
   context.strokeRect(0, 0, tileSize, tileSize)
   context.font = '20px Arial'
-  context.fillText(text, 50, 50)
+  text.forEach((line, index) => {
+    context.fillText(line, 50, 20 + 20 * index)
+  })
   return canvas.toDataURL()
 }
 

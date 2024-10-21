@@ -14,12 +14,14 @@ import { formatTs, jsonStringifyFormatted, withProgressBar } from '../utils'
 import { glob, mkdir, readJSONFile, replaceExtname, writeFile, writeJSONFile, writeUTF8File } from '../utils/file-utils'
 import { logger } from '../utils/logger'
 import { runTasks } from '../worker/runner'
+import { processHeightmaps } from '../transform/process-heightmaps'
 
 enum ResourceType {
   slices = 'slices',
   locale = 'locale',
   tables = 'tables',
   images = 'images',
+  heightmap = 'heightmap',
   types = 'types',
   search = 'search',
   code = 'code',
@@ -84,6 +86,9 @@ program
     logger.info(' threads:', options.threads)
     // logger.verbose(options.threads <= 1)
 
+    // if (isEnabled(modules, ResourceType.heightmap)) {
+    //   await processHeightmaps({ inputDir: convertDir })
+    // }
     if (isEnabled(modules, ResourceType.slices)) {
       await importSlices({
         inputDir: convertDir,

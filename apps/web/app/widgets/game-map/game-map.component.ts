@@ -10,10 +10,12 @@ import {
   GeoJSONSource,
   LineLayerSpecification,
   MapLayerEventType,
+  NavigationControl,
   RasterTileSource,
   RequestTransformFunction,
   StyleSpecification,
   SymbolLayerSpecification,
+  TerrainControl,
 } from 'maplibre-gl'
 import { NW_MAPS, NW_MAP_TILE_SIZE } from './constants'
 import { GameMapHost } from './game-map-host'
@@ -28,6 +30,7 @@ import {
   xyToLngLat,
   yToLat,
 } from './utils'
+const elevationScale = 0.075 // 2048 / 0xFFFF
 @Component({
   standalone: true,
   selector: 'nwb-map',
@@ -74,10 +77,23 @@ export class GameMapComponent {
   protected styleSpec: StyleSpecification = {
     version: 8,
     sources: {
-      newworld_vitaeeterna: rasterTileSource('newworld_vitaeeterna'),
-      outpostrush: rasterTileSource('outpostrush'),
+      ocean: rasterTileSource('newworld_vitaeeterna', 'ocean'),
+      newworld_vitaeeterna: rasterTileSource('newworld_vitaeeterna', 'nw'),
+      outpostrush: rasterTileSource('outpostrush', 'nw'),
+
+      newworld_vitaeeterna_heightmap: rasterTileSource('newworld_vitaeeterna', 'heightmap'),
+      newworld_vitaeeterna_hillshade: rasterTileSource('newworld_vitaeeterna', 'heightmap'),
     },
+
     layers: [
+      {
+        id: 'ocean',
+        type: 'raster',
+        source: 'ocean',
+        layout: {
+          visibility: 'none',
+        },
+      },
       {
         id: 'tiles0',
         type: 'raster',
@@ -94,7 +110,20 @@ export class GameMapComponent {
           visibility: 'none',
         },
       },
+      {
+        id: 'hills',
+        type: 'hillshade',
+        source: 'newworld_vitaeeterna_hillshade',
+        layout: {
+          visibility: 'none', // keep it off. Lighting is baked into the tiles
+        },
+        paint: {
+          'hillshade-shadow-color': '#473B24',
+          'hillshade-exaggeration': 0,
+        },
+      },
     ],
+    sky: {},
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
   }
 
@@ -122,6 +151,15 @@ export class GameMapComponent {
   public zoneClick = output<string>()
 
   private injector = inject(Injector)
+  private terrainControl = new TerrainControl({
+    source: 'newworld_vitaeeterna_heightmap',
+    exaggeration: elevationScale,
+  })
+  private navigationControl = new NavigationControl({
+    visualizePitch: true,
+    showZoom: true,
+    showCompass: true,
+  })
 
   public constructor() {
     this.host.ready$.pipe(takeUntilDestroyed()).subscribe(() => this.handleMapLoad())
@@ -137,6 +175,8 @@ export class GameMapComponent {
 
   protected handleMapLoad() {
     this.attachSignals()
+    this.map.setMaxPitch(85)
+    this.map.addControl(this.navigationControl)
   }
 
   protected handleMapError(e: ErrorEvent) {
@@ -359,7 +399,7 @@ export class GameMapComponent {
         }
       }
       if (!source) {
-        this.map.addSource(id, rasterTileSource(id))
+        this.map.addSource(id, rasterTileSource(id, 'nw'))
       }
       const tile = tiles[index]
       if (tile?.type === 'raster') {
@@ -367,6 +407,26 @@ export class GameMapComponent {
         tile.visibility = 'visible'
       }
     })
+
+    if (isMapOpenWorld(mapId)) {
+      this.map.setMaxPitch(60)
+      this.map.setBearing(0)
+      this.map.dragRotate.enable()
+      this.map.keyboard.enable()
+      if (!this.map.hasControl(this.terrainControl)) {
+        this.map.addControl(this.terrainControl)
+      }
+      this.map.getLayer('ocean').visibility = 'visible'
+    } else {
+      this.map.setMaxPitch(0)
+      this.map.setBearing(0)
+      this.map.dragRotate.disable()
+      this.map.keyboard.disable()
+      if (this.map.hasControl(this.terrainControl)) {
+        this.map.removeControl(this.terrainControl)
+      }
+      this.map.getLayer('ocean').visibility = 'none'
+    }
   }
 
   private oldSelection: number
@@ -533,9 +593,7 @@ const poisFillLayout: FillLayerSpecification = {
   id: null,
   source: null,
   type: 'fill',
-  layout: {
-
-  },
+  layout: {},
   paint: {
     'fill-color': '#ceba75',
     'fill-opacity': [

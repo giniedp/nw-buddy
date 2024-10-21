@@ -123,6 +123,7 @@ program
       })
     }
 
+    console.log(toUpload)
     console.log('[UPLOAD]')
     await uploadFiles({
       client: client,
@@ -187,8 +188,12 @@ program.command('upload-tiles').action(async () => {
   const tilesDir = path.join(environment.nwDataDir(), 'lyshineui', remoteDir)
   const client = createClient()
 
-  const imageFiles = await glob(path.join(tilesDir, '**/*.webp'))
-  const files = await glob(path.join(tilesDir, '**/*.webp')).then((list) => {
+  const patterns = [
+    path.join(tilesDir, '**/*.webp'),
+    path.join(tilesDir, '**/*.png')
+  ]
+  const imageFiles = await glob(patterns)
+  const files = await glob(patterns).then((list) => {
     return list.map((file) => {
       return {
         file: file,
@@ -215,7 +220,7 @@ program.command('upload-tiles').action(async () => {
   }
 
   const toUpload = files
-  console.log('found', files.length, '.webp files', 'to upload', toUpload.length)
+  console.log('found', files.length, 'files', 'to upload', toUpload.length)
   await uploadFiles({
     client: client,
     files: toUpload,

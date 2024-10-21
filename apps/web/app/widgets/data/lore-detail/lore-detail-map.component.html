@@ -17,7 +17,7 @@
       </div>
     }
   }
-  <div class="flex flex-row w-full justify-between absolute top-0 left-0 z-50 pointer-events-none p-2">
+  <div class="flex flex-row w-full justify-between absolute top-0 left-0 pr-12 z-50 pointer-events-none p-2">
     <div class="text-sm font-mono">
       <game-map-coords class="text-shadow-sm shadow-black leading-none flex flex-col" />
     </div>
@@ -31,7 +31,7 @@
           <option [value]="value" [label]="value | nwHumanize"></option>
         }
       </select>
-      <div class="flex flex-col gap-1 pointer-events-auto">
+      <div class="flex flex-row gap-1 pointer-events-auto">
         <button class="btn btn-sm btn-circle" (click)="map.toggleFullscreen()" [tooltip]="'Toggle fullscreen'">
           <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
         </button>
