@@ -137,7 +137,7 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
   public import() {
     this.data$().forEach((it) => {
       if (it.item) {
-        this.pref.merge(getItemId(it.item), {
+        this.pref.merge(getItemId(it.item).toLowerCase(), {
           price: it.price,
         })
       }

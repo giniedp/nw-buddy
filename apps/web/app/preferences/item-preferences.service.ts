@@ -21,7 +21,7 @@ export class ItemPreferencesService {
   }
 
   public get(itemId: string): ItemMeta {
-    return this.storage.get(itemId)
+    return this.storage.get(itemId?.toLowerCase())
   }
 
   public getFavouritesIds() {
@@ -42,7 +42,7 @@ export class ItemPreferencesService {
   }
 
   public update(itemId: string, meta: ItemMeta) {
-    this.storage.set(itemId, meta)
+    this.storage.set(itemId?.toLowerCase(), meta)
   }
 
   public observe(itemId: string) {
