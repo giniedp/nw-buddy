@@ -1,6 +1,8 @@
 <span class="indicator">
-  <nwb-icon [icon]="icon" class="w-4 h-4"> </nwb-icon>
-  <span class="indicator-item badge badge-xs badge-primary -top-1 scale-75" *ngIf="showIndicator$ | async"></span>
+  <nwb-icon [icon]="icon" class="w-4 h-4" />
+  @if (showIndicator$ | async) {
+    <span class="indicator-item badge badge-xs badge-primary -top-1 scale-75"></span>
+  }
 </span>
 
 <ng-template
@@ -14,10 +16,15 @@
   (detach)="isPanelOpen = false"
 >
   <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
-    <ng-container [ngTemplateOutlet]="nwbDataViewOptionsMenu"/>
-    <ng-container *ngIf="service.isTableActive()">
-      <nwb-table-grid-panel [persistKey]="persistKey" [grid]="service.agGrid$ | async" (close)="isPanelOpen = false"/>
-    </ng-container>
-    <ng-content/>
+    <ng-container [ngTemplateOutlet]="nwbDataViewOptionsMenu" />
+    @if (service.isTableActive()) {
+      <nwb-table-grid-panel
+        [persistKey]="persistKey"
+        [grid]="service.agGrid$ | async"
+        (close)="isPanelOpen = false"
+        [actions]="nwbDataViewActions"
+      />
+    }
+    <ng-content />
   </div>
 </ng-template>

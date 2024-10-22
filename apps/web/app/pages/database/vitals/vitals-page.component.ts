@@ -3,24 +3,19 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
+import { AgGrid } from '~/ui/data/ag-grid'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
-import { DataGridModule } from '~/ui/data/table-grid'
+import { DataGridModule, TableGridActionButton } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { LayoutModule } from '~/ui/layout'
+import { svgDownload } from '~/ui/icons/svg'
+import { LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import {
-  HtmlHeadService,
-  eqCaseInsensitive,
-  injectBreakpoint,
-  injectChildRouteParam,
-  injectRouteParam,
-  selectSignal,
-} from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemTableRecord } from '~/widgets/data/item-table'
-import { VitalTableAdapter } from '~/widgets/data/vital-table'
+import { VitalTableAdapter, VitalTableRecord } from '~/widgets/data/vital-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -71,6 +66,7 @@ export class VitalsPageComponent {
   public constructor(
     protected service: DataViewService<ItemTableRecord>,
     protected search: QuicksearchService,
+    private modal: ModalService,
     head: HtmlHeadService,
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
@@ -79,4 +75,50 @@ export class VitalsPageComponent {
       title: 'New World - Vitals & Creatures DB',
     })
   }
+
+  protected actions: TableGridActionButton[] = [
+    {
+      action: (grid: AgGrid) => {
+        this.downloadPositions(grid)
+      },
+      icon: svgDownload,
+      label: 'Download Positions',
+      description: 'Download spawn positions of filtered creatures',
+    },
+  ]
+
+  private downloadPositions(grid: AgGrid) {
+    this.modal.withLoadingIndicator(
+      {
+        message: 'Generating data...',
+      },
+      async () => {
+        const data = this.generatePositionData(grid)
+        if (!data) {
+          return
+        }
+        download(data, 'vitals-positions.json', 'application/json')
+      },
+    )
+  }
+
+  private generatePositionData(grid: AgGrid<VitalTableRecord>) {
+    const result: any[] = []
+    grid.api.forEachNodeAfterFilter((node) => {
+      const meta = node.data.$metadata
+      if (!meta?.spawns || Object.keys(meta.spawns).length === 0) {
+        return
+      }
+      result.push(meta)
+    })
+    return JSON.stringify(result, null, 2)
+  }
+}
+
+function download(content: any, fileName: string, contentType: string) {
+  const a = document.createElement('a')
+  const file = new Blob([content], { type: contentType })
+  a.href = URL.createObjectURL(file)
+  a.download = fileName
+  a.click()
 }

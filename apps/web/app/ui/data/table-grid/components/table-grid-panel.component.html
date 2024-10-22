@@ -3,12 +3,12 @@
   <a class="tab flex-1" [class.tab-active]="showColumns" (click)="showColumns = !showColumns">Columns</a>
 </div>
 <div class="flex-1 overflow-auto h-full">
-  @if(!showColumns) {
+  @if (!showColumns) {
     <ul class="menu menu-compact menu-vertical">
       <li>
         <a (click)="autosizeColumns()">
           <span>
-            <nwb-icon [icon]="svgArrowsLeftRight" class="w-4 h-4"/>
+            <nwb-icon [icon]="svgArrowsLeftRight" class="w-4 h-4" />
           </span>
           <div class="flex flex-col leading-none">
             <span>Autosize columns</span>
@@ -20,7 +20,7 @@
       <li>
         <a (click)="resetColumns()">
           <span>
-            <nwb-icon [icon]="svgEraser" class="w-4 h-4"/>
+            <nwb-icon [icon]="svgEraser" class="w-4 h-4" />
           </span>
           <div class="flex flex-col leading-none">
             <span>Reset columns</span>
@@ -31,7 +31,7 @@
 
       <li>
         <a (click)="resetFilter()" [class.text-primary]="isFilterActive$()">
-          <nwb-icon [icon]="svgFilter" class="w-4 h-4"/>
+          <nwb-icon [icon]="svgFilter" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
             <span>Clear filters</span>
             <span class="text-xs opacity-75">Clears all active filters</span>
@@ -41,7 +41,7 @@
 
       <li>
         <a (click)="clearPins()">
-          <nwb-icon [icon]="svgPin" class="w-4 h-4"/>
+          <nwb-icon [icon]="svgPin" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
             <span>Clear pins</span>
             <span class="text-xs opacity-75">Removes all pinned items</span>
@@ -51,22 +51,20 @@
 
       <li>
         <a (click)="copyURL()">
-          <nwb-icon [icon]="svgLink" class="w-4 h-4"/>
+          <nwb-icon [icon]="svgLink" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
             <span>Copy URL</span>
-            <span class="text-xs opacity-75">
-              Copies a URL with current table column and filter state
-            </span>
+            <span class="text-xs opacity-75"> Copies a URL with current table column and filter state </span>
           </div>
         </a>
       </li>
     </ul>
-    @if(sigPersistKey()) {
+    @if (sigPersistKey()) {
       <div class="divider divider-vertical h-[1px] my-0"></div>
       <ul class="menu menu-compact menu-vertical">
         <li>
           <a (click)="saveState()">
-            <nwb-icon [icon]="svgDisk" class="w-4 h-4"/>
+            <nwb-icon [icon]="svgDisk" class="w-4 h-4" />
             <div class="flex flex-col leading-none">
               <span>Save State</span>
               <span class="text-xs opacity-75">Saves the current column order and filter. Pins are ignored.</span>
@@ -75,7 +73,7 @@
         </li>
         <li>
           <a (click)="loadState()">
-            <nwb-icon [icon]="svgDiskArrow" class="w-4 h-4"/>
+            <nwb-icon [icon]="svgDiskArrow" class="w-4 h-4" />
             <div class="flex flex-col leading-none">
               <span>Load State</span>
               <span class="text-xs opacity-75">Loads a previously saved state with column order and filters.</span>
@@ -86,14 +84,23 @@
     }
     <div class="divider divider-vertical h-[1px] my-0"></div>
     <ul class="menu menu-compact menu-vertical">
-      <li >
-        <a (click)="openExporter()" >
-          <nwb-icon [icon]="svgFileCsv" class="w-4 h-4"/>
+      <li>
+        <a (click)="openExporter()">
+          <nwb-icon [icon]="svgFileCsv" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
             <span>CSV Export</span>
             <span class="text-xs opacity-75">Exports all or selected data as CSV</span>
           </div>
         </a>
+        @for (item of actions; track $index) {
+          <a (click)="handleAction(item)">
+            <nwb-icon [icon]="item.icon" class="w-4 h-4" />
+            <div class="flex flex-col leading-none">
+              <span>{{ item.label }}</span>
+              <span class="text-xs opacity-75">{{ item.description }}</span>
+            </div>
+          </a>
+        }
       </li>
     </ul>
   } @else {
@@ -104,13 +111,13 @@
       <div *ngFor="let it of displayCols$ | async" class="flex flex-row gap-2">
         <div class="join">
           <button class="join-item btn btn-ghost btn-sm px-1" (click)="toggleHide(it.colId)">
-            <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide"/>
+            <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide" />
           </button>
           <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
-            <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'"/>
+            <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'" />
           </button>
           <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
-            <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'"/>
+            <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'" />
           </button>
         </div>
         <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>

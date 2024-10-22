@@ -18,6 +18,7 @@
         <button
           class="join-item btn btn-square btn-ghost"
           [nwbDataViewOptionsMenu]
+          [nwbDataViewActions]="actions"
           [persistKey]="persistKey"
           [disabled]="!service.isTableActive()"
         ></button>

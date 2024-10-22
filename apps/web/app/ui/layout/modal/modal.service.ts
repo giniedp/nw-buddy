@@ -1,5 +1,5 @@
 import { Injectable, Injector, TemplateRef, Type, inject } from '@angular/core'
-import { ModalController, ModalOptions } from '@ionic/angular/standalone'
+import { LoadingController, LoadingOptions, ModalController, ModalOptions } from '@ionic/angular/standalone'
 import { Subject, from } from 'rxjs'
 import { ModalComponent } from './modal.component'
 
@@ -30,6 +30,7 @@ export interface ModalOpenOptions<T> extends Omit<ModalOptions, 'component' | 'c
 export class ModalService {
   protected injector = inject(Injector)
   protected ctrl = inject(ModalController)
+  private loading = inject(LoadingController)
 
   public open<T, R>(options: ModalOpenOptions<T>) {
     options = { ...options }
@@ -88,6 +89,13 @@ export class ModalService {
   public close() {
     this.ctrl.dismiss()
   }
+
+  public async withLoadingIndicator(options: LoadingOptions, task: () => Promise<void>) {
+    const loading = await this.loading.create(options)
+    loading.present()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await task().finally(() => loading.dismiss())
+  }
 }
 
 @Injectable()
@@ -98,3 +106,4 @@ export class ModalRef<T = unknown> {
     this.close$.next(res)
   }
 }
+

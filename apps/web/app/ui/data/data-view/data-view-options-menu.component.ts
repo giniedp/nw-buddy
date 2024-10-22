@@ -4,7 +4,7 @@ import { Component, HostListener, Input, TemplateRef } from '@angular/core'
 import { IconsModule } from '../../icons'
 import { svgEllipsisVertical } from '../../icons/svg'
 import { gridHasAnyFilterPresent } from '../ag-grid/utils'
-import { TableGridPanelComponent } from '../table-grid'
+import { TableGridActionButton, TableGridPanelComponent } from '../table-grid'
 import { DataViewService } from './data-view.service'
 
 @Component({
@@ -17,6 +17,9 @@ import { DataViewService } from './data-view.service'
 export class DataViewOptionsMenuComponent {
   @Input()
   public nwbDataViewOptionsMenu: TemplateRef<unknown>
+
+  @Input()
+  public nwbDataViewActions: TableGridActionButton[]
 
   @Input()
   public persistKey: string

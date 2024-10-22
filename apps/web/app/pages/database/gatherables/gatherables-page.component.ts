@@ -3,11 +3,13 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
+import { AgGrid } from '~/ui/data/ag-grid'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
-import { DataGridModule } from '~/ui/data/table-grid'
+import { DataGridModule, TableGridActionButton } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { LayoutModule } from '~/ui/layout'
+import { svgDownload } from '~/ui/icons/svg'
+import { LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import {
@@ -73,6 +75,7 @@ export class GatherablesPageComponent {
   public constructor(
     protected service: DataViewService<GatherableTableRecord>,
     protected search: QuicksearchService,
+    protected modal: ModalService,
     head: HtmlHeadService,
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
@@ -81,4 +84,52 @@ export class GatherablesPageComponent {
       title: 'New World - Gatherables DB',
     })
   }
+
+  protected actions: TableGridActionButton[] = [
+    // {
+    //   action: (grid: AgGrid) => {
+    //     this.downloadPositions(grid)
+    //   },
+    //   icon: svgDownload,
+    //   label: 'Download Positions',
+    //   description: 'Download spawn positions of filtered items',
+    // },
+  ]
+
+  private downloadPositions(grid: AgGrid) {
+    this.modal.withLoadingIndicator(
+      {
+        message: 'Generating data...',
+      },
+      async () => {
+        const data = this.generatePositionData(grid)
+        console.dir(data)
+        if (!data) {
+          return
+        }
+        download(data, 'gatherables-positions.json', 'application/json')
+      },
+    )
+  }
+
+  private generatePositionData(grid: AgGrid<GatherableTableRecord>) {
+    const result: any[] = []
+    grid.api.forEachNodeAfterFilter((node) => {
+
+      const meta = node.data.$meta
+      if (!meta?.spawns?.length) {
+        return
+      }
+      result.push(meta)
+    })
+    return JSON.stringify(result, null, 2)
+  }
+}
+
+function download(content: any, fileName: string, contentType: string) {
+  const a = document.createElement('a')
+  const file = new Blob([content], { type: contentType })
+  a.href = URL.createObjectURL(file)
+  a.download = fileName
+  a.click()
 }

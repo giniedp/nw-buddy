@@ -1,11 +1,11 @@
-import { Column, ColumnState } from '@ag-grid-community/core'
+import { Column, ColumnState, GridApi } from '@ag-grid-community/core'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ToastController } from '@ionic/angular/standalone'
 import { ComponentStore } from '@ngrx/component-store'
-import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, switchMap, tap } from 'rxjs'
 import { AgGrid } from '~/ui/data/ag-grid'
 import { gridHasAnyFilterPresent } from '~/ui/data/ag-grid/utils'
 import { IconsModule } from '~/ui/icons'
@@ -29,11 +29,18 @@ import { LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
+import { injectWindow } from '~/utils/injection/window'
 import { gridStateToQueryParams } from '../table-grid-persistence.service'
 import { ExportDialogComponent } from './export-dialog.component'
 import { LoadStateDialogComponent } from './load-state-dialog.component'
 import { SaveStateDialogComponent } from './save-state-dialog.component'
-import { injectWindow } from '~/utils/injection/window'
+
+export interface TableGridActionButton {
+  icon: string
+  label: string
+  description: string
+  action: (grid: AgGrid) => void
+}
 
 @Component({
   standalone: true,
@@ -59,6 +66,9 @@ export class TableGridPanelComponent extends ComponentStore<{
   public set persistKey(value: string) {
     this.patchState({ persistKey: value })
   }
+
+  @Input()
+  public actions: TableGridActionButton[]
 
   @Output()
   public close = new EventEmitter()
@@ -250,6 +260,11 @@ export class TableGridPanelComponent extends ComponentStore<{
         grid: this.get(({ grid }) => grid.api),
       },
     })
+  }
+
+  protected handleAction(action: TableGridActionButton) {
+    action.action(this.get(({ grid }) => grid))
+    this.close.emit()
   }
 
   private submitState(state: ColumnState[]) {

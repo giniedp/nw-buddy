@@ -1169,8 +1169,17 @@ export const DATASHEETS = {
     GorillaDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/gorilla_datatables/javelindata_damagetable_gorilla.json",
     },
+    GourdspewerDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_gourdspewer.json",
+    },
     GruntDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/grunt_datatables/javelindata_damagetable_grunt.json",
+    },
+    HalloweenBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_halloweenboss.json",
+    },
+    HalloweenPlaguerDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_halloweenplaguer.json",
     },
     HercyneBoarDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercyneboar.json",
@@ -1378,6 +1387,9 @@ export const DATASHEETS = {
     },
     PriestLesserDamnedHoundDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_priest_lesser_damned_hound.json",
+    },
+    Pumpklin_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_pumpklin.json",
     },
     RatHercyneRatDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/rat_datatables/javelindata_damagetable_rat_hercynerat.json",
