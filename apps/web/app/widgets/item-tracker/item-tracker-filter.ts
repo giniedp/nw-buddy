@@ -1,9 +1,8 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode, RowNode } from '@ag-grid-community/core'
-import { injectDocument } from '~/utils/injection/document'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode } from '@ag-grid-community/core'
 
 export class ItemTrackerFilter implements IFilterComp {
   private el: HTMLElement
-  private document = injectDocument()
+  private document = document
   private options = [
     {
       value: Math.pow(2, 0),
@@ -23,7 +22,7 @@ export class ItemTrackerFilter implements IFilterComp {
 
   public init(params: IFilterParams) {
     this.params = params
-    this.el = this.document.createElement('ul')
+    this.el = document.createElement('ul')
     this.el.classList.add('menu', 'menu-compact', 'rounded-md', 'w-12', 'bg-base-300')
     this.renderFilter()
   }

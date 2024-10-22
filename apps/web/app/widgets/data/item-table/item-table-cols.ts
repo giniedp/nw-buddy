@@ -337,7 +337,7 @@ export function itemColBookmark(util: TableGridUtils<MasterItemDefinitions>) {
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.mark || 0,
+    valueGetter: ({ data }) => util.itemPref.get(data.ItemID.toLowerCase())?.mark || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (value: MasterItemDefinitions) => getItemId(value),

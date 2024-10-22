@@ -188,7 +188,7 @@ export function craftingColBookmark(util: CraftingTableUtils) {
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.mark || 0,
+    valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item)?.toLowerCase())?.mark || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (data: CraftingTableRecord) => getItemId(data.$item),
