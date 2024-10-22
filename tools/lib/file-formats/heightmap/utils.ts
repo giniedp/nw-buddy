@@ -108,7 +108,7 @@ function getTerrainSmoothHeightAt(heightmap: TerrainHeightmap, x: number, y: num
   return totalValue
 }
 
-export function downsampleTerrain(heightmap: TerrainHeightmap) {
+export function downsampleTerrain(heightmap: TerrainHeightmap, maxRegionSize = 2048) {
   const result: TerrainHeightmap = {
     regions: [],
     regionsX: 0,
@@ -117,10 +117,10 @@ export function downsampleTerrain(heightmap: TerrainHeightmap) {
     width: heightmap.width / 2,
     height: heightmap.height / 2,
   }
-  if (result.width >= 2048) {
-    result.regionSize = 2048
-    result.regionsX = Math.ceil(result.width / 2048)
-    result.regionsY = Math.ceil(result.height / 2048)
+  if (result.width >= maxRegionSize) {
+    result.regionSize = maxRegionSize
+    result.regionsX = Math.ceil(result.width / maxRegionSize)
+    result.regionsY = Math.ceil(result.height / maxRegionSize)
   } else {
     result.regionSize = result.width
     result.regionsX = 1
