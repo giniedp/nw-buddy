@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
+import { filter, firstValueFrom, of } from 'rxjs'
 import { NwModule } from '~/nw'
 import { AgGrid } from '~/ui/data/ag-grid'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
@@ -9,18 +10,12 @@ import { DataGridModule, TableGridActionButton } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgDownload } from '~/ui/icons/svg'
-import { LayoutModule, ModalService } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import {
-  HtmlHeadService,
-  eqCaseInsensitive,
-  injectBreakpoint,
-  injectChildRouteParam,
-  injectRouteParam,
-  selectSignal,
-} from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
+import { GatherableService } from '~/widgets/data/gatherable'
 import { GatherableTableAdapter, GatherableTableRecord } from '~/widgets/data/gatherable-table'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -65,12 +60,13 @@ export class GatherablesPageComponent {
   protected categoryParam = 'c'
   protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
-
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
   protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
+  private gatherableService = inject(GatherableService)
 
   public constructor(
     protected service: DataViewService<GatherableTableRecord>,
@@ -86,14 +82,14 @@ export class GatherablesPageComponent {
   }
 
   protected actions: TableGridActionButton[] = [
-    // {
-    //   action: (grid: AgGrid) => {
-    //     this.downloadPositions(grid)
-    //   },
-    //   icon: svgDownload,
-    //   label: 'Download Positions',
-    //   description: 'Download spawn positions of filtered items',
-    // },
+    {
+      action: (grid: AgGrid) => {
+        this.downloadPositions(grid)
+      },
+      icon: svgDownload,
+      label: 'Download Positions',
+      description: 'Download spawn positions of filtered items',
+    },
   ]
 
   private downloadPositions(grid: AgGrid) {
@@ -102,26 +98,36 @@ export class GatherablesPageComponent {
         message: 'Generating data...',
       },
       async () => {
-        const data = this.generatePositionData(grid)
-        console.dir(data)
+        const data = await this.generatePositionData(grid)
         if (!data) {
           return
         }
-        download(data, 'gatherables-positions.json', 'application/json')
+        const sizeInBytes = data.length
+        const sizeInKb = sizeInBytes / 1024
+        const sizeInMb = sizeInKb / 1024
+        const readableSize = sizeInMb > 1 ? `${sizeInMb.toFixed(2)} MB` : `${sizeInKb.toFixed(2)} KB`
+        ConfirmDialogComponent.open(this.modal, {
+          inputs: {
+            title: 'Confirm Download',
+            body: `Data has been generated. Download size is ${readableSize} MB. Do you want to proceed?`,
+            negative: 'Cancel',
+            positive: 'Download',
+          },
+        })
+          .result$.pipe(filter((it) => !!it))
+          .subscribe(async () => {
+            download(data, 'gatherables-positions.json', 'application/json')
+          })
       },
     )
   }
 
-  private generatePositionData(grid: AgGrid<GatherableTableRecord>) {
-    const result: any[] = []
+  private async generatePositionData(grid: AgGrid<GatherableTableRecord>) {
+    const gatherableIds: string[] = []
     grid.api.forEachNodeAfterFilter((node) => {
-
-      const meta = node.data.$meta
-      if (!meta?.spawns?.length) {
-        return
-      }
-      result.push(meta)
+      gatherableIds.push(node.data.GatherableID)
     })
+    const result = await firstValueFrom(this.gatherableService.gatherablesForDownload(of(gatherableIds)))
     return JSON.stringify(result, null, 2)
   }
 }

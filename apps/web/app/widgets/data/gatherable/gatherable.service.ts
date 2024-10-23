@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
+import { ScannedGatherable, ScannedGatherableSpawn, ScannedVariation, ScannedVariationSpawn } from '@nw-data/scanner'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -97,6 +97,65 @@ export class GatherableService {
             })
           }),
         )
+      }),
+    )
+  }
+
+  public gatherablesForDownload(gatherableIds$: Observable<string[]>) {
+    return combineLatest({
+      dataMap: this.gatherablesMap$,
+      dataIds: gatherableIds$,
+      chunks: this.positionChunks(gatherableIds$),
+    }).pipe(
+      map(({ dataMap, dataIds, chunks }) => {
+        const result: Array<{
+          gatherableID: string
+          lootTable: string
+          spawns: ScannedGatherableSpawn[]
+          variations: Array<{
+            variationID: string
+            lootTable: string[]
+            spawns: Array<{
+              mapID: string
+              positions: Array<[number, number]>
+            }>
+          }>
+        }> = []
+        for (const gatherableId of dataIds) {
+          const data = dataMap.get(gatherableId)
+          if (!data) {
+            continue
+          }
+          const item: (typeof result)[0] = {
+            gatherableID: data.GatherableID,
+            lootTable: data.FinalLootTable,
+            spawns: [],
+            variations: [],
+          }
+          for (const spawn of data.$meta?.spawns || []) {
+            item.spawns.push(spawn)
+          }
+          for (const variation of data.$variations || []) {
+            const spawns = variation.$meta?.spawns || []
+            item.variations.push({
+              variationID: variation.VariantID,
+              lootTable: variation.Gatherables.find((it) => eqCaseInsensitive(it.GatherableID, gatherableId))
+                ?.LootTable,
+              spawns: spawns.map(({ mapID, positions }) => {
+                const chunk = chunks.find((it) => it.chunk === positions.chunkID)
+                return {
+                  mapID: mapID,
+                  positions: chunk.data.slice(
+                    positions.elementOffset,
+                    positions.elementOffset + positions.elementCount,
+                  ),
+                }
+              }),
+            })
+          }
+          result.push(item)
+        }
+        return result
       }),
     )
   }

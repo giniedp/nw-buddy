@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
+import { filter } from 'rxjs'
 import { NwModule } from '~/nw'
 import { AgGrid } from '~/ui/data/ag-grid'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
@@ -9,7 +10,7 @@ import { DataGridModule, TableGridActionButton } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgDownload } from '~/ui/icons/svg'
-import { LayoutModule, ModalService } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
@@ -97,7 +98,22 @@ export class VitalsPageComponent {
         if (!data) {
           return
         }
-        download(data, 'vitals-positions.json', 'application/json')
+        const sizeInBytes = data.length
+        const sizeInKb = sizeInBytes / 1024
+        const sizeInMb = sizeInKb / 1024
+        const readableSize = sizeInMb > 1 ? `${sizeInMb.toFixed(2)} MB` : `${sizeInKb.toFixed(2)} KB`
+        ConfirmDialogComponent.open(this.modal, {
+          inputs: {
+            title: 'Confirm Download',
+            body: `Data has been generated. Download size is ${readableSize}. Do you want to proceed?`,
+            negative: 'Cancel',
+            positive: 'Download',
+          },
+        })
+          .result$.pipe(filter((it) => !!it))
+          .subscribe(async () => {
+            download(data, 'vitals-positions.json', 'application/json')
+          })
       },
     )
   }
