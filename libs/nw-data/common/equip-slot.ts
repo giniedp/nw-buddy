@@ -382,6 +382,8 @@ interface GearScoreSlot {
   id: EquipSlotId
   weight?: number
   unlockLevel?: number
+  minGsPerLevel?: number
+  useMinGsUntil?: number
 }
 
 const GS_GROUPS: GearScoreGroup[] = [
@@ -398,8 +400,8 @@ const GS_GROUPS: GearScoreGroup[] = [
   {
     weight: 0.35,
     slots: [
-      { id: 'weapon1', unlockLevel: 0 },
-      { id: 'weapon2', unlockLevel: 5 },
+      { id: 'weapon1', unlockLevel: 1, minGsPerLevel: 7 },
+      { id: 'weapon2', unlockLevel: 1, minGsPerLevel: 7 },
     ],
   },
   {
@@ -436,7 +438,7 @@ export function gearScoreRelevantSlots(): Array<EquipSlot & { weight: number }> 
 
 export function getAverageGearScore(
   equip: Array<{ id: EquipSlotId; gearScore: number }>,
-  playerLevel = NW_MAX_CHARACTER_LEVEL
+  playerLevel = NW_MAX_CHARACTER_LEVEL,
 ) {
   let result = 0
   for (let { slots, weight } of GS_GROUPS) {
@@ -446,14 +448,16 @@ export function getAverageGearScore(
       weight = weight / slots.length
     }
     for (const slot of slots) {
-      const found = equip.find((it) => it.id === slot.id)
-      if (!found) {
+      const foundGs = equip.find((it) => it.id === slot.id)?.gearScore || 0
+      const minGs = slot.minGsPerLevel ? slot.minGsPerLevel * playerLevel : 0
+      const useGs = Math.max(minGs, foundGs)
+      if (!useGs) {
         continue
       }
       if (slot.weight) {
-        result += found.gearScore * weight * slot.weight
+        result += useGs * weight * slot.weight
       } else {
-        result += found.gearScore * weight
+        result += useGs * weight
       }
     }
   }
