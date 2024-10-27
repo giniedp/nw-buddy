@@ -400,8 +400,8 @@ const GS_GROUPS: GearScoreGroup[] = [
   {
     weight: 0.35,
     slots: [
-      { id: 'weapon1', unlockLevel: 1, minGsPerLevel: 7 },
-      { id: 'weapon2', unlockLevel: 1, minGsPerLevel: 7 },
+      { id: 'weapon1', weight: 0.5, minGsPerLevel: 7 },
+      { id: 'weapon2', weight: 0.5, minGsPerLevel: 7 },
     ],
   },
   {
