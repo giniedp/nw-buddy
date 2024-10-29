@@ -1,4 +1,4 @@
-import { inject } from '@angular/core'
+import { computed, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'

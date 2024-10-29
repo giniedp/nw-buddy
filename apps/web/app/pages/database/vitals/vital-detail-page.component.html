@@ -46,7 +46,7 @@
     }
     @if (tab() === 'loot') {
       <div class="pt-2 space-y-4">
-        @if (lootTableId(); as tableId) {
+        @if (lootTableIds()?.length) {
           <nwb-loot-context-editor
             [vitalId]="vitalId()"
             [vitalLevel]="vitalLevel()"
@@ -56,9 +56,13 @@
           <nwb-loot-graph
             [tagsEditable]="true"
             (addTagClicked)="editor.addTag($event)"
+            (removeTagClicked)="editor.removeTag($event)"
             [tags]="editor.contextTags | async"
             [tagValues]="editor.contextTagValues | async"
-            [tableId]="tableId"
+            [tableId]="lootTableIds()"
+            [showLink]="true"
+            [showChance]="true"
+            [tagsEditable]="true"
           />
         }
         @if (gatherableIds()?.length) {

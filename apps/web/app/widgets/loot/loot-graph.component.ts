@@ -19,7 +19,7 @@ import { LootGraphStore } from './loot-graph.store'
   imports: [NwModule, LootGraphNodeComponent, LootContextEditorComponent],
   providers: [LootGraphStore, LootGraphService],
   host: {
-    class: 'block',
+    class: 'flex flex-col gap-2',
   },
 })
 export class LootGraphComponent {

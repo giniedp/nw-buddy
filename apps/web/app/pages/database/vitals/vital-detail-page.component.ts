@@ -61,13 +61,24 @@ export class VitalDetailPageComponent {
 
   protected iconEdit = svgPen
 
-  protected lootTableId = selectSignal(this.store.vital, (it) => it?.LootTableId)
+  protected lootTableIds: Signal<string[]> = selectSignal({
+    vital: this.store.vital,
+    isVitalFromDungeon: this.store.isVitalFromDungeon,
+  }, (it) => {
+    const result: string[] = []
+    if (it?.vital?.LootTableId) {
+      result.push(it.vital.LootTableId)
+    }
+    if (it?.isVitalFromDungeon) {
+      result.push('CreatureLootMaster_MutatedContainer')
+    }
+    return result
+  })
   protected gatherableIds = selectSignal(this.store.metadata, (it) => it?.gthIDs || [])
 
   @ViewChild(LootContextEditorComponent, { static: false })
   protected editor: LootContextEditorComponent
 
-  private db = inject(NwDataService)
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
