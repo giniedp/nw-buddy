@@ -1,43 +1,21 @@
-@if (vm$ | async; as vm) {
-  <ion-content>
-    @if (vm.hasValue && vm.value; as record) {
-      <div class="alert bg-base-200 shadow-lg max-w-md mx-auto mt-3">
-        <nwb-icon [icon]="iconInfo" class="w-6 h-6 text-info self-start" />
-        <div class="flex-1">
-          <h3 class="font-bold">Shared Skill Tree</h3>
-          <p class="text-xs">You can import this tree into your collection.</p>
-          <p class="text-xs mt-2" *ngIf="appLink; let link">
-            Or <a [href]="link" class="link link-primary">open in app</a> if you have the app installed.
-          </p>
+<ion-content>
+  <nwb-shared-content-loader
+    [name]="paramName()"
+    [cid]="paramCid()"
+    (importClicked)="onImportClicked($event)"
+    [showImport]="true"
+    [showGateways]="true"
+    [validType]="validType"
+    #loader
+  />
+  @if (loader.record(); as record) {
+    <div class="max-w-5xl mx-auto">
+      <nwb-skill-builder [ngModel]="record" [disabled]="true" />
+      @if (record.attrs) {
+        <div class="layout-pad">
+          <nwb-attributes-editor [freeMode]="true" [assigned]="record.attrs" />
         </div>
-        <div class="flex-none join">
-          <button class="join-item btn btn-sm btn-primary" (click)="onimportClicked(record)">Import</button>
-        </div>
-      </div>
-      <div class="max-w-5xl mx-auto">
-        <nwb-skill-builder [ngModel]="record" [disabled]="true"/>
-        @if(record.attrs){
-          <div class="layout-pad">
-            <nwb-attributes-editor [freeMode]="true" [assigned]="record.attrs"/>
-          </div>
-        }
-      </div>
-    } @else if (vm.hasError) {
-      <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
-        <nwb-icon [icon]="iconError" class="w-6 h-6 text-error slef-start" />
-        <div class="flex-1">
-          <h3 class="font-bold">Error!</h3>
-          <div class="text-xs">Data is unavailable</div>
-        </div>
-      </div>
-    } @else if (vm.pending) {
-      <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
-        <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin self-start" />
-        <div class="flex-1">
-          <h3 class="font-bold">Loading</h3>
-          <div class="text-xs">Fetching data from ipfs network...</div>
-        </div>
-      </div>
-    }
-  </ion-content>
-}
+      }
+    </div>
+  }
+</ion-content>

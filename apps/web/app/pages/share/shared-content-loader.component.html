@@ -1,0 +1,82 @@
+@if (isLoading() || !isLoaded()) {
+  <div class="alert bg-base-300 shadow-lg max-w-sm mx-auto my-3">
+    <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin self-start" />
+    <div class="flex-1">
+      <h3 class="font-bold">Loading</h3>
+      <div class="text-xs">Fetching data from ipfs network...</div>
+      @defer (on timer(10000ms)) {
+        @if (showGateways()) {
+          <p class="text-xs mt-2">
+            <ng-compontent [ngTemplateOutlet]="tplGatewaySwitcher" />
+          </p>
+        }
+      }
+    </div>
+  </div>
+} @else if (hasError()) {
+  <div class="alert bg-base-300 shadow-lg max-w-sm mx-auto my-3">
+    <nwb-icon [icon]="iconError" class="w-6 h-6 text-error self-start" />
+    <div class="flex-1">
+      <h3 class="font-bold">Error!</h3>
+      <div class="text-xs">Data is unavailable</div>
+      @if (showGateways()) {
+        <p class="text-xs mt-2">
+          <ng-compontent [ngTemplateOutlet]="tplGatewaySwitcher" />
+        </p>
+      }
+    </div>
+  </div>
+} @else if (!record()) {
+  <div class="alert bg-base-300 shadow-lg max-w-sm mx-auto my-3">
+    <nwb-icon [icon]="iconError" class="w-6 h-6 text-error self-start" />
+    <div class="flex-1">
+      <h3 class="font-bold">Invalid!</h3>
+      <div class="text-xs">Shared data is invalid</div>
+    </div>
+  </div>
+} @else if (showImport()) {
+  <div class="alert bg-base-300 shadow-lg max-w-md mx-auto mt-3">
+    <nwb-icon [icon]="iconInfo" class="w-6 h-6 text-info self-start" />
+    <div class="flex-1">
+      <h3 class="font-bold">Shared {{ recordType() }}</h3>
+      <p class="text-xs">You can import this item into your collection.</p>
+      @if (appLink; as link) {
+        <p class="text-xs mt-2">
+          Or <a [href]="link" class="link link-primary">open in app</a> if you have the app installed.
+        </p>
+      }
+    </div>
+    <div class="flex-none">
+      <button class="btn btn-sm btn-primary" (click)="handleImport(record())">Import</button>
+    </div>
+  </div>
+}
+
+<ng-template #tplGatewaySwitcher>
+  Try switching to a different content host
+  <ul class="menu menu-xs bg-base-100 rounded-box my-4 overflow-clip">
+    <li>
+      <a (click)="tryGateway('')">
+        use default gateway
+        @if (!currentGateway()) {
+          <span class="badge badge-xs badge-primary"></span>
+        } @else {
+          <span class="badge badge-xs badge-info"></span>
+        }
+      </a>
+    </li>
+    @for (gateway of knownGateways(); track $index) {
+      <li>
+        <a (click)="tryGateway(gateway)">
+          use {{ gateway }}
+          @if (gateway === currentGateway()) {
+            <span class="badge badge-xs badge-primary"></span>
+          } @else {
+            <span class="badge badge-xs badge-info"></span>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+  Or enter a custom host in the <a [routerLink]="'/preferences'" class="link link-primary">preferences</a>
+</ng-template>

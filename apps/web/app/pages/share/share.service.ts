@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
-import { Web3Storage } from 'web3.storage'
 import { ConfirmDialogComponent, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { getIpnsRevision, udpateIpnsRevision } from './utils/ipns-revision'
 
 const ENTRY_FILE_NAME = 'nw-buddy.json'
 const APPLICATION_NAME = 'nw-buddy'
+const KNOWN_GATEWAYS = ['ipfs.io', 'dweb.link', 'w3s.link', 'ipfs.cyou']
 
 export interface UploadOptions<T> {
   /**
@@ -22,10 +22,6 @@ export interface UploadOptions<T> {
    * If set, an ipns revision is cread
    */
   enableIpns?: boolean
-  /**
-   * If set, web3 storage will be used as upload target
-   */
-  // web3ApiToken?: string
 }
 
 export interface UploadContent<T> {
@@ -62,6 +58,10 @@ export interface ShareInfo {
   providedIn: 'root',
 })
 export class ShareService {
+  public get knownGateways() {
+    return [...KNOWN_GATEWAYS]
+  }
+
   public async importItem(modal: ModalService, router: Router) {
     PromptDialogComponent.open(modal, {
       inputs: {
@@ -84,7 +84,7 @@ export class ShareService {
         switchMap((input) => this.resolveCidFromString(input)),
         switchMap((cid) =>
           combineLatest({
-            type: this.downloadbyCid(cid).then((it) => it?.type),
+            type: this.download({ cid }).then((it) => it?.type),
             cid: of(cid),
           }),
         ),
@@ -131,20 +131,35 @@ export class ShareService {
     return result
   }
 
-  public async downloadByName(name: string) {
-    const revision = await getIpnsRevision(name)
-    const cid = revision.value.replace('/ipfs/', '')
-    return this.downloadbyCid(cid)
-  }
-
-  public async downloadbyCid(cid: string) {
-    const fileUri = `ipfs://${cid}/${ENTRY_FILE_NAME}`
-    const storage = this.getStorage()
-    const object = await storage.download(fileUri).then((res) => res?.json())
-    if (!validateSharedObject(object)) {
+  public async download({ name, cid, gateway }: { name?: string; cid?: string; gateway?: string }) {
+    if (name && !cid) {
+      cid = await this.resolveCidFromName(name)
+    }
+    if (!cid) {
+      throw new Error('Invalid CID')
+    }
+    let object: any = null
+    if (gateway) {
+      const fileUrl = this.buildIpfsUrl({
+        cid,
+        fileName: ENTRY_FILE_NAME,
+        gateway,
+      })
+      object = await fetch(fileUrl).then((res) => res.json())
+    } else {
+      const fileUri = `ipfs://${cid}/${ENTRY_FILE_NAME}`
+      const storage = this.getStorage()
+      object = await storage.download(fileUri).then((res) => res?.json())
+    }
+    if (!isValidSharedObject(object)) {
       return null
     }
     return object
+  }
+
+  public async resolveCidFromName(name: string) {
+    const revision = await getIpnsRevision(name)
+    return revision.value.replace('/ipfs/', '')
   }
 
   public async resolveCidFromString(input: string): Promise<string> {
@@ -168,9 +183,9 @@ export class ShareService {
       })
   }
 
-  public buildIpfsUrl(cid: string, fileName?: string) {
-    //const url = `https://${cid}.ipfs.${IPFS_GATEWAY}`
-    const url = `https://gateway.ipfscdn.io/ipfs/${cid}`
+  public buildIpfsUrl({ gateway, cid, fileName }: { gateway?: string; cid: string; fileName?: string }) {
+    gateway = gateway || this.knownGateways[0]
+    const url = `https://${gateway}/ipfs/${cid}`
     if (!fileName) {
       return url
     }
@@ -178,9 +193,6 @@ export class ShareService {
   }
 
   protected uploadContent({ content }: UploadOptions<any>) {
-    // if (web3ApiToken) {
-    //   return this.uploadToWeb3(web3ApiToken, content)
-    // }
     return this.uploadToIpfs(content)
   }
 
@@ -191,19 +203,6 @@ export class ShareService {
     return {
       cid: cid,
       file: name,
-    }
-  }
-
-  protected async uploadToWeb3(web3ApiToken: string, content: UploadContent<any>): Promise<ShareInfo> {
-    const client = new Web3Storage({ token: web3ApiToken })
-    const fileName = ENTRY_FILE_NAME
-    const file = createJsonFile(fileName, content)
-    const cid = await client.put([file], {
-      wrapWithDirectory: true,
-    })
-    return {
-      cid: cid,
-      file: fileName,
     }
   }
 
@@ -228,4 +227,8 @@ function validateSharedObject(object: UploadContent<any>) {
     return false
   }
   return true
+}
+
+function isValidSharedObject(object: any): object is UploadContent<any> {
+  return validateSharedObject(object)
 }

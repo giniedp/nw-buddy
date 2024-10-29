@@ -1,27 +1,15 @@
-<div nwbEmbedHeight *ngIf="vm() as vm">
-  @if (vm.hasValue && vm.value; as record) {
-    <div>
-      <nwb-skill-builder [ngModel]="record" [disabled]="true"></nwb-skill-builder>
-      <div *ngIf="record.attrs; let attrs" class="layout-pad">
-        <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"></nwb-attributes-editor>
-      </div>
-    </div>
-  } @else if(vm.hasError) {
-    <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
-      <nwb-icon [icon]="iconError" class="w-6 h-6 text-error self-start"/>
-      <div class="flex-1">
-        <h3 class="font-bold">Error!</h3>
-        <div class="text-xs">Data is unavailable</div>
-      </div>
-    </div>
-  } @else if(vm.pending) {
-    <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
-      <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin slef-start"/>
-      <div class="flex-1">
-        <h3 class="font-bold">Loading</h3>
-        <div class="text-xs">Fetching data from ipfs network...</div>
-      </div>
-
+<nwb-shared-content-loader
+  [name]="paramName()"
+  [cid]="paramCid()"
+  [showImport]="false"
+  [validType]="validType"
+  #loader
+/>
+@if (loader.record(); as record) {
+  <nwb-skill-builder [ngModel]="record" [disabled]="true" />
+  @if (record.attrs; as attrs) {
+    <div class="layout-pad">
+      <nwb-attributes-editor [freeMode]="true" [assigned]="attrs" />
     </div>
   }
-</div>
+}

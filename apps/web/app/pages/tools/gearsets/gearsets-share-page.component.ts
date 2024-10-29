@@ -1,16 +1,13 @@
-import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
-import { environment } from 'apps/web/environments'
-import { filter, map, switchMap } from 'rxjs'
+import { filter, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetsDB } from '~/data'
-import { NwModule } from '~/nw'
-import { ShareService } from '~/pages/share'
-import { IconsModule } from '~/ui/icons'
+import { ShareLoaderComponent } from '~/pages/share'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
-import { suspensify } from '~/utils'
+import { injectRouteParam } from '~/utils'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
@@ -22,44 +19,20 @@ import { GearsetSliderComponent } from './gearset/gearset-slider.component'
   templateUrl: './gearsets-share-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
-    NwModule,
     GearsetHostDirective,
     GearsetGridComponent,
     GearsetSliderComponent,
-    IconsModule,
     LayoutModule,
     EmbedHeightDirective,
+    ShareLoaderComponent,
   ],
   host: {
     class: 'ion-page',
   },
 })
 export class GearsetsSharePageComponent {
-  protected record$ = this.route.paramMap.pipe(
-    switchMap((it) => {
-      if (it.has('cid')) {
-        return this.web3.downloadbyCid(it.get('cid'))
-      }
-      return this.web3.downloadByName(it.get('name'))
-    }),
-    map((it): GearsetRecord => {
-      if (it.type === 'gearset') {
-        const record: GearsetRecord = it.data
-        delete record.id
-        return record
-      }
-      return null
-    }),
-    suspensify(),
-  )
-
-  protected get appLink() {
-    if (environment.standalone) {
-      return null
-    }
-    return this.sanitizer.bypassSecurityTrustUrl(`nw-buddy://${this.router.url}`)
-  }
+  protected paramName = toSignal(injectRouteParam('name'))
+  protected paramCid = toSignal(injectRouteParam('cid'))
   protected get isEmbed() {
     return this.router.url.includes('embed')
   }
@@ -71,7 +44,6 @@ export class GearsetsSharePageComponent {
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private web3: ShareService,
     private modal: ModalService,
     private gearsetDb: GearsetsDB,
     private sanitizer: DomSanitizer,
@@ -79,7 +51,8 @@ export class GearsetsSharePageComponent {
     //
   }
 
-  protected onimportClicked(record: GearsetRecord) {
+  protected onImportClicked(record: GearsetRecord) {
+    record = { ...record, id: null }
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Import',

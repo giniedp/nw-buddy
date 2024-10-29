@@ -61,7 +61,15 @@
         </label>
       </div>
 
-
+      <div class="form-control w-full mt-4">
+        <input type="text" class="input input-bordered" [(ngModel)]="ipfsGateway" [placeholder]="'IPFS Gateway'" />
+        <label class="label">
+          <span class="label-text-alt">
+            The preferred IPFS hostname to use when downloading shared content.
+            Check public gateways <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link link-primary">here</a>.
+          </span>
+        </label>
+      </div>
       <!-- <div class="divider"></div>
     <ng-template #tipWeb3token>
       <div class="alert rounded-md">

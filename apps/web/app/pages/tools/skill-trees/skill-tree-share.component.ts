@@ -1,18 +1,12 @@
-import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
-import { environment } from 'apps/web/environments'
-import { filter, of, switchMap, throwError } from 'rxjs'
+import { filter, switchMap } from 'rxjs'
 import { SkillBuildsDB, SkillSetRecord } from '~/data'
-import { NwModule } from '~/nw'
-import { ShareService } from '~/pages/share'
-import { IconsModule } from '~/ui/icons'
-import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
+import { ShareLoaderComponent } from '~/pages/share'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
-import { HtmlHeadService } from '~/utils'
-import { suspensify } from '~/utils/rx/suspensify'
+import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
@@ -21,47 +15,21 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
   selector: 'nwb-skill-tree-share',
   templateUrl: './skill-tree-share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, SkillBuilderComponent, AttributesEditorModule, LayoutModule],
+  imports: [FormsModule, SkillBuilderComponent, AttributesEditorModule, LayoutModule, ShareLoaderComponent],
   host: {
     class: 'ion-page',
   },
 })
 export class SkillBuildsShareComponent {
-  protected vm$ = this.route.paramMap.pipe(
-    switchMap((it) => {
-      if (it.has('cid')) {
-        return this.web3.downloadbyCid(it.get('cid'))
-      }
-      return this.web3.downloadByName(it.get('name'))
-    }),
-    switchMap((it) => {
-      if (it?.type === 'skill-build' && it.data) {
-        const record: SkillSetRecord = it.data
-        delete record.id
-        return of(record)
-      }
-      return throwError(() => new Error(`invalid data`))
-    }),
-    suspensify<SkillSetRecord>(),
-  )
-
-  protected iconInfo = svgCircleExclamation
-  protected iconError = svgCircleExclamation
-  protected iconLoading = svgCircleNotch
-  protected get appLink() {
-    if (environment.standalone) {
-      return null
-    }
-    return this.sanitizer.bypassSecurityTrustUrl(`nw-buddy://${this.router.url}`)
-  }
+  protected paramName = toSignal(injectRouteParam('name'))
+  protected paramCid = toSignal(injectRouteParam('cid'))
+  protected validType = 'skill-build'
 
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private web3: ShareService,
     private modal: ModalService,
     private db: SkillBuildsDB,
-    private sanitizer: DomSanitizer,
     head: HtmlHeadService,
   ) {
     head.updateMetadata({
@@ -70,7 +38,8 @@ export class SkillBuildsShareComponent {
     })
   }
 
-  protected onimportClicked(record: SkillSetRecord) {
+  protected onImportClicked(record: SkillSetRecord) {
+    record = { ...record, id: null }
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Import',

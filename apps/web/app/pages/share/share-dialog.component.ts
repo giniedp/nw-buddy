@@ -191,7 +191,6 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
         content: this.data.content,
         enableIpns: this.get((state) => state.ipnsEnabled),
         ipnsKey: this.get((state) => state.ipnsKey),
-        //web3ApiToken: this.preferences.web3token.get(),
       })
       .then((it) => {
         this.data.published({

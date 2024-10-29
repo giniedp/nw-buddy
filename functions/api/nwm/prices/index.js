@@ -3,7 +3,7 @@ export async function onRequest(context) {
   if (!server) {
     return new Response(JSON.stringify(result))
   }
-  const url = `https://gaming.tools/prices/nwmp?serverName=${server}/`
+  const url = `https://gaming.tools/prices/nwmp?serverName=${server}`
   const response = await fetch(url, {
     headers: {
       'user-agent': 'nw-buddy'

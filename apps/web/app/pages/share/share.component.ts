@@ -31,7 +31,7 @@ export class ShareComponent {
   protected iconShare = svgShareNodes
 
   protected cid$ = observeRouteParam(this.route, 'cid')
-  protected data$ = this.cid$.pipe(switchMap((info) => this.web3.downloadbyCid(info)))
+  protected data$ = this.cid$.pipe(switchMap((cid) => this.web3.download({ cid })))
   protected state = toSignal(this.data$.pipe(suspensify()))
 
   public constructor(
@@ -52,7 +52,7 @@ export class ShareComponent {
         value: value.name,
         positive: 'OK',
         negative: 'Cancel',
-      }
+      },
     })
       .result$.pipe(filter((it) => it != null))
       .pipe(

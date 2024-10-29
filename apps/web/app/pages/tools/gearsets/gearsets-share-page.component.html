@@ -1,53 +1,20 @@
-@if (record$ | async; as record) {
-  @if (record.pending) {
-    <ng-container *ngTemplateOutlet="tplLoading" />
-  } @else if (record.hasError) {
-    <ng-container *ngTemplateOutlet="tplError" />
-  } @else if (!record.hasValue) {
-    <ng-container *ngTemplateOutlet="tplError" />
-  } @else if (isEmbed) {
-    <ion-content [scrollY]="false">
-      <nwb-gearset-slider nwbGearsetHost [gearset]="record.value"/>
-    </ion-content>
-  } @else {
-    <ion-content>
-      <div nwbGearsetHost [gearset]="record.value">
-        <div class="alert bg-base-300 shadow-lg max-w-md mx-auto mt-3 ">
-          <nwb-icon [icon]="iconInfo" class="w-6 h-6 text-info self-start" />
-          <div class="flex-1">
-            <h3 class="font-bold">Shared Gearset</h3>
-            <p class="text-xs">You can import this set into your collection.</p>
-            <p class="text-xs mt-2" *ngIf="appLink; let link">
-              Or <a [href]="link" class="link link-primary">open in app</a> if you have the app installed.
-            </p>
-          </div>
-          <div class="flex-none">
-            <button class="btn btn-sm btn-primary" (click)="onimportClicked(record.value)">Import</button>
-          </div>
-        </div>
+<ion-content [scrollY]="!isEmbed">
+  <nwb-shared-content-loader
+    [name]="paramName()"
+    [cid]="paramCid()"
+    (importClicked)="onImportClicked($event)"
+    [showImport]="!isEmbed"
+    [showGateways]="!isEmbed"
+    [validType]="'gearset'"
+    #loader
+  />
+  @if (loader.record(); as record) {
+    @if (isEmbed) {
+      <nwb-gearset-slider nwbGearsetHost [gearset]="record" />
+    } @else {
+      <div nwbGearsetHost [gearset]="record">
         <nwb-gearset-grid class="p-4" [disabled]="true" />
       </div>
-    </ion-content>
+    }
   }
-}
-
-
-<ng-template #tplLoading>
-  <div class="alert bg-base-300 shadow-lg max-w-sm mx-auto my-3">
-    <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin self-start" />
-    <div class="flex-1">
-      <h3 class="font-bold">Loading</h3>
-      <div class="text-xs">Fetching data from ipfs network...</div>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #tplError>
-  <div class="alert bg-base-300 shadow-lg max-w-sm mx-auto my-3">
-    <nwb-icon [icon]="iconError" class="w-6 h-6 text-error self-start" />
-    <div class="flex-1">
-      <h3 class="font-bold">Error!</h3>
-      <div class="text-xs">Data is unavailable</div>
-    </div>
-  </div>
-</ng-template>
+</ion-content>
