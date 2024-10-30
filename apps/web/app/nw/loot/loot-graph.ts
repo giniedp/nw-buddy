@@ -54,35 +54,37 @@ export function buildLootGraph({
 }): LootNode {
   return resolve(entry)
 
-  function resolve(table: LootTable, parent?: LootNode, row?: LootTableRow) {
+  function resolve(table: LootTable, parent?: LootNode, row?: LootTableRow, depth = 0) {
     if (!table) {
       return null
     }
-    parent = buildTableNode(table, parent, row)
+    parent = buildTableNode(table, parent, row, depth)
+    let index = 0
     for (const row of table.Items) {
+      const trackPrefix = `${depth}-${index++}`
       if (row.ItemID) {
-        buildTableItemNode(row, parent)
+        buildTableItemNode(row, parent, trackPrefix)
       }
       if (row.LootBucketID) {
         const bucketRows = buckets.get(row.LootBucketID)
         if (bucketRows?.length) {
-          const bucketNode = buildBucketNode(bucketRows[0], parent, row)
+          const bucketNode = buildBucketNode(bucketRows[0], parent, row, trackPrefix)
           bucketRows.forEach((row) => {
-            buildBucketRowNode(row, bucketNode)
+            buildBucketRowNode(row, bucketNode, trackPrefix)
           })
         }
       }
       if (row.LootTableID) {
-        resolve(tables.get(row.LootTableID), parent, row)
+        resolve(tables.get(row.LootTableID), parent, row, depth + 1)
       }
     }
     return parent
   }
 }
 
-function buildTableNode(value: LootTable, parent: LootNode, row?: LootTableRow): LootTableNode {
+function buildTableNode(value: LootTable, parent: LootNode, row: LootTableRow, track: any): LootTableNode {
   const node: LootTableNode = {
-    trackId: value.LootTableID,
+    trackId: `${track}-${value.LootTableID}` ,
     type: 'table',
     data: value,
     row: row,
@@ -97,9 +99,9 @@ function buildTableNode(value: LootTable, parent: LootNode, row?: LootTableRow):
   return node
 }
 
-function buildTableItemNode(value: LootTableRow, parent: LootNode): LootTableItemNode {
+function buildTableItemNode(value: LootTableRow, parent: LootNode, track: any): LootTableItemNode {
   const node: LootTableItemNode = {
-    trackId: value.LootBucketID || value.LootTableID || value.ItemID,
+    trackId: `${track}-${value.LootBucketID || value.LootTableID || value.ItemID}` ,
     type: 'table-item',
     row: value,
     prob: getProb(value),
@@ -114,9 +116,9 @@ function buildTableItemNode(value: LootTableRow, parent: LootNode): LootTableIte
   return node
 }
 
-function buildBucketNode(value: LootBucketRow, parent: LootNode, row?: LootTableRow): LootBucketNode {
+function buildBucketNode(value: LootBucketRow, parent: LootNode, row: LootTableRow, track: any): LootBucketNode {
   const node: LootBucketNode = {
-    trackId: String(value.Row),
+    trackId: `${track}-${String(value.Row)}`,
     type: 'bucket',
     data: value.LootBucket,
     row: row,
@@ -131,9 +133,9 @@ function buildBucketNode(value: LootBucketRow, parent: LootNode, row?: LootTable
   return node
 }
 
-function buildBucketRowNode(value: LootBucketRow, parent: LootNode): LootBucketRowNode {
+function buildBucketRowNode(value: LootBucketRow, parent: LootNode, track: any): LootBucketRowNode {
   const node: LootBucketRowNode = {
-    trackId: String(value.Row),
+    trackId: `${track}-${String(value.Row)}` ,
     type: 'bucket-row',
     data: value,
     parent: parent,
