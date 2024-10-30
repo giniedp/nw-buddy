@@ -16,6 +16,7 @@ export type LootBucketRow = {
   Item: string
   LootBucket: string
   MatchOne: boolean
+  Odds: number
   Quantity: number[]
   Tags: Map<string, ParsedLootTag>
 }
@@ -43,6 +44,7 @@ function convertRow(data: LootBucketData, firstRow: LootBucketData, rowId: numbe
         Item: null as string,
         LootBucket: firstRow[bucketNameKey] || '',
         MatchOne: null,
+        Odds: null,
         Quantity: null as number[],
         Tags: new CaseInsensitiveMap(),
       }

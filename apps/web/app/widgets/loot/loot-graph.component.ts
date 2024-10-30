@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, Output, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState } from '@ngrx/signals'
-import { combineLatest, of, skip, switchMap } from 'rxjs'
+import { combineLatest, map, of, skip, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { LootNode, buildLootGraph, updateLootGraph } from '~/nw/loot/loot-graph'
@@ -10,6 +10,7 @@ import { LootContextEditorComponent } from './loot-context-editor.component'
 import { LootGraphNodeComponent } from './loot-graph-node.component'
 import { LootGraphService } from './loot-graph.service'
 import { LootGraphStore } from './loot-graph.store'
+import { uniq } from 'lodash'
 
 @Component({
   standalone: true,
@@ -93,6 +94,9 @@ export class LootGraphComponent {
   public set highlight(value: string) {
     patchState(this.store, { highlight: value })
   }
+  public get highlight() {
+    return this.store.highlight()
+  }
 
   @Output()
   public addTagClicked = this.service.addTagClicked
@@ -102,11 +106,14 @@ export class LootGraphComponent {
 
   protected graph = selectSignal(
     {
-      graph: toObservable(this.store.tableIds).pipe(switchMap((ids) => this.lootGraph(ids))),
+      graph: toObservable(this.store.tableIds).pipe(
+        map((ids) => uniq(ids || []).sort()),
+        switchMap((ids) => this.lootGraph(ids)),
+      ),
       context: this.store.context,
       dropChance: this.store.dropChance,
       highlight: this.store.highlight,
-      showLocked: this.store.showLocked
+      showLocked: this.store.showLocked,
     },
     ({ graph, context, dropChance, highlight, showLocked }) => {
       if (!graph) {

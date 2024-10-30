@@ -28,6 +28,7 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { eqCaseInsensitive } from '~/utils'
 import { ItemDetailHeaderComponent } from '../data/item-detail/item-detail-header.component'
 import { ItemDetailComponent } from '../data/item-detail/item-detail.component'
+import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
 import { LootGraphNodeStore } from './loot-graph-node.store'
 import { LootGraphService } from './loot-graph.service'
 import { LootTagComponent } from './loot-tag.component'
@@ -104,6 +105,14 @@ export class LootGraphNodeComponent {
     return this.store.showLink()
   }
 
+  @Input()
+  public set highlightId(value: string) {
+    patchState(this.store, { highlightId: value })
+  }
+  public get highlightId() {
+    return this.store.highlightId()
+  }
+
   public get tagsEditable() {
     return this.service.tagsEditable
   }
@@ -114,7 +123,7 @@ export class LootGraphNodeComponent {
     return this.service.showChance
   }
   public get showUnlockToggle() {
-    return this.tagsEditable// d && this.showLink
+    return this.tagsEditable // d && this.showLink
   }
 
   public get table() {
@@ -180,7 +189,9 @@ export class LootGraphNodeComponent {
   protected get matchOne() {
     return this.store.matchOne()
   }
-  // protected vm = this.store.vm
+  protected get odds() {
+    return this.store.odds()
+  }
 
   protected iconExpand = svgAngleLeft
   protected iconInfo = svgCircleExclamation
@@ -193,6 +204,10 @@ export class LootGraphNodeComponent {
   protected iconEye = svgEye
   protected iconEyeSlash = svgEyeSlash
   protected iconLuck = svgClover
+
+  public constructor() {
+    this.store.useGridOptions(LootGraphGridCellComponent.buildGridOptions())
+  }
 
   protected toggle() {
     this.store.toggleExpand()

@@ -11,13 +11,20 @@
     <nwb-item-detail-header class="h-full" [size]="'sm'" [enableLink]="true" [enableInfoLink]="true">
       <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto scrollbar-hide">
         @if (condition) {
-          <nwb-loot-tag [checked]="condition.checked"> ≥ {{ condition.value }} </nwb-loot-tag>
+          <nwb-loot-tag [checked]="condition.checked" [tooltip]="condition.tooltip">
+            {{ condition.label }}
+          </nwb-loot-tag>
         }
         <ng-container *ngTemplateOutlet="tplRollChanceBadge" />
 
         @if (itemQuantity) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none" [tooltip]="'Quantity'">
             {{ itemQuantity }} &times;
+          </span>
+        }
+        @if (odds) {
+          <span class="badge badge-sm text-shadow-none whitespace-nowrap px-1" [tooltip]="'Odds'">
+            🎲{{ odds | percent }}
           </span>
         }
         @if (matchOne) {
@@ -210,14 +217,14 @@
     } @else {
       <div class="grid grid-cols-fill-xs gap-2 mr-3">
         @for (node of children.items; track node.trackId) {
-          <nwb-loot-graph-node [node]="node" />
+          <nwb-loot-graph-node [node]="node" [highlightId]="highlightId" />
         }
       </div>
     }
   } @else if (children) {
     <div class="flex flex-col gap-2">
       @for (node of children.items; track node.trackId) {
-        <nwb-loot-graph-node [node]="node" />
+        <nwb-loot-graph-node [node]="node" [highlightId]="highlightId" />
       }
     </div>
   }
@@ -258,6 +265,12 @@
       <th>Cumulative chance</th>
       <td class="text-right font-mono text-accent">{{ chanceAbs | percent: '0.5-5' }}</td>
     </tr>
+    @if(odds) {
+      <tr>
+        <th>Cumulative with odds</th>
+        <td class="text-right font-mono text-accent">{{ (chanceAbs * odds) | percent: '0.5-5' }}</td>
+      </tr>
+    }
     @if (luckNeeded) {
       <tr>
         <th>Needed luck</th>

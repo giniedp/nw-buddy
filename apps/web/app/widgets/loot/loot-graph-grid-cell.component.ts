@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, computed, inject, signal } from '@angular/core'
+import { Component, Input, computed, effect, inject, signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { isLootTagKnownCondition } from '@nw-data/common'
 import { NwModule } from '~/nw'
@@ -13,6 +13,8 @@ import { ItemDetailStore } from '../data/item-detail'
 import { EmptyComponent } from '../empty'
 import { LootGraphService } from './loot-graph.service'
 import { LootTagComponent } from './loot-tag.component'
+import { LootGraphNodeStore } from './loot-graph-node.store'
+import { eqCaseInsensitive } from '~/utils'
 
 @Component({
   standalone: true,
@@ -33,6 +35,7 @@ import { LootTagComponent } from './loot-tag.component'
           [title]="itemName() | nwText"
           [text1]="rarityName() | nwText"
           [text2]="typeName() | nwText"
+          [titleLink]="['item', itemId()] | nwLink"
           class="whitespace-nowrap"
         />
       </div>
@@ -60,10 +63,19 @@ import { LootTagComponent } from './loot-tag.component'
           </span>
         }
         @if (condition(); as condition) {
-          <nwb-loot-tag [tag]="'≥ ' + condition.prob" [checked]="condition.checked" />
+          <nwb-loot-tag [checked]="condition.checked" [tooltip]="condition.tooltip">
+            {{ condition.label }}
+          </nwb-loot-tag>
         }
         @if (quantity(); as quantity) {
-          <span class="badge badge-sm badge-primary text-shadow-none whitespace-nowrap"> {{ quantity }} &times; </span>
+          <span class="badge badge-sm badge-primary text-shadow-none whitespace-nowrap" [tooltip]="'Quantity'">
+            {{ quantity }} &times;
+          </span>
+        }
+        @if (odds(); as odds) {
+          <span class="badge badge-sm text-shadow-none whitespace-nowrap px-1" [tooltip]="'Odds'">
+            🎲{{ odds | percent }}
+          </span>
         }
         @if (matchOne()) {
           <span
@@ -95,6 +107,12 @@ import { LootTagComponent } from './loot-tag.component'
           <th>Cumulative chance</th>
           <td class="text-right font-mono text-accent">{{ chanceAbs | percent: '0.5-5' }}</td>
         </tr>
+        @if (odds()) {
+          <tr>
+            <th>Cumulative with odds</th>
+            <td class="text-right font-mono text-accent">{{ chanceAbs * odds() | percent: '0.5-5' }}</td>
+          </tr>
+        }
       </table>
     </ng-template>
   `,
@@ -102,8 +120,9 @@ import { LootTagComponent } from './loot-tag.component'
   providers: [ItemDetailStore],
   host: {
     class: 'block rounded-md overflow-clip m-1',
-    '[class.outline]': 'selected',
-    '[class.outline-primary]': 'selected',
+    '[class.outline]': 'selected || isHighlighted()',
+    '[class.outline-primary]': 'selected && !isHighlighted()',
+    '[class.outline-accent]': 'isHighlighted()',
     '[tabindex]': '0',
   },
 })
@@ -112,11 +131,11 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
     return {
       width: 320,
       height: 95,
-
       cellDataView: LootGraphGridCellComponent,
       cellEmptyView: EmptyComponent,
     }
   }
+  private nodeStore = inject(LootGraphNodeStore)
 
   @Input()
   public selected: boolean
@@ -156,12 +175,15 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
     }
     return null
   })
+  protected odds = computed(() => {
+    return this.node()?.data?.Odds
+  })
 
   protected get rollThreshold() {
     const table = this.parentTable()
     const row = this.row()
     if (table && row && table.MaxRoll > 0) {
-      row.Prob
+      return row.Prob
     }
     return null
   }
@@ -196,8 +218,10 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
     const prob = this.row().Prob
     return {
       tag,
-      prob,
+      label: `≥ ${prob}`,
+      value: prob,
       checked: this.service.isTagInContext(tag, prob),
+      tooltip: `The ${tag} must be ≥ ${prob}`,
     }
   })
 
@@ -225,4 +249,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
   protected typeName = toSignal(this.itemStore.typeName$)
   protected entity = toSignal(this.itemStore.entity$)
   protected itemId = toSignal(this.itemStore.recordId$)
+  protected isHighlighted = computed(() => {
+    return eqCaseInsensitive(this.nodeStore.highlightId(), this.itemId())
+  })
 }

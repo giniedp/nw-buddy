@@ -2,8 +2,8 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { isLootTagKnownCondition } from '@nw-data/common'
 import { NwLinkService } from '~/nw'
-import { LootNode, LootTableNode } from '~/nw/loot/loot-graph'
-import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
+import { LootBucketRowNode, LootNode, LootTableNode } from '~/nw/loot/loot-graph'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { LootGraphService } from './loot-graph.service'
 import { LootGraphStore } from './loot-graph.store'
 
@@ -11,6 +11,8 @@ export interface LootGraphNodeState<T = LootNode> {
   node: T
   expand: boolean
   showLink: boolean
+  highlightId: string
+  gridOptions: VirtualGridOptions<LootBucketRowNode>
 }
 export const LootGraphNodeStore = signalStore(
   { protectedState: false },
@@ -18,6 +20,8 @@ export const LootGraphNodeStore = signalStore(
     node: null,
     expand: false,
     showLink: false,
+    highlightId: null,
+    gridOptions: null,
   }),
   withComputed((state, graph = inject(LootGraphStore)) => {
     return {
@@ -29,14 +33,15 @@ export const LootGraphNodeStore = signalStore(
   withMethods((state) => {
     return {
       toggleExpand: () => patchState(state, { expand: !state.expand() }),
+      useGridOptions: (options: VirtualGridOptions<LootBucketRowNode>) => patchState(state, { gridOptions: options }),
     }
   }),
-  withComputed(({ node, showLink, showLocked }) => {
+  withComputed(({ node, showLink, showLocked, gridOptions }) => {
     const service = inject(LootGraphService)
     const linkService = inject(NwLinkService)
     return {
       expandable: computed(() => selectExpandable(node())),
-      children: computed(() => selectChildren(node()?.children, showLocked())),
+      children: computed(() => selectChildren(node()?.children, showLocked(), gridOptions())),
       link: computed(() => (showLink() ? selectLink(node(), linkService) : null)),
       typeName: computed(() => node()?.type),
       displayName: computed(() => node()?.ref),
@@ -50,11 +55,12 @@ export const LootGraphNodeStore = signalStore(
       luckNeeded: computed(() => node()?.luckNeeded),
       table: computed(() => selectTable(node())),
       itemId: computed(() => selectItemId(node())),
-      itemQuantity: computed(() => selectItemQuantity(node())),
+      itemQuantity: computed(() => selectBucketItemQuantity(node())),
       rollThreshold: computed(() => selectRollThreshold(node())),
       condition: computed(() => selectCondition(node(), service)),
       conditions: computed(() => selectConditions(node(), service)),
-      matchOne: computed(() => selectMatchOne(node())),
+      matchOne: computed(() => selectBucketMatchOne(node())),
+      odds: computed(() => selectBucketOdds(node())),
       tags: computed(() => selectTags(node(), service)),
     }
   }),
@@ -71,7 +77,7 @@ function selectLink(node: LootNode, service: NwLinkService) {
   return null
 }
 
-function selectChildren(children: LootNode[], showLocked: boolean) {
+function selectChildren(children: LootNode[], showLocked: boolean, gridOptions: VirtualGridOptions<LootBucketRowNode>) {
   if (!showLocked) {
     children = children?.filter((it) => !!it.isUnlocked && !!it.itemCountUnlocked)
   }
@@ -81,7 +87,7 @@ function selectChildren(children: LootNode[], showLocked: boolean) {
   return {
     items: children,
     count: children.length,
-    gridOptions: LootGraphGridCellComponent.buildGridOptions(),
+    gridOptions: gridOptions,
     isOnlyItems: children.every((it) => it.type === 'bucket-row'),
   }
 }
@@ -106,18 +112,25 @@ function selectItemId(node: LootNode) {
   return null
 }
 
-function selectItemQuantity(node: LootNode) {
+function selectBucketItemQuantity(node: LootNode) {
   if (node?.type === 'bucket-row') {
     return node.data.Quantity.join('-')
   }
   return node.row?.Qty
 }
 
-function selectMatchOne(node: LootNode) {
+function selectBucketMatchOne(node: LootNode) {
   if (node?.type === 'bucket-row') {
     return node.data.MatchOne
   }
   return false
+}
+
+function selectBucketOdds(node: LootNode) {
+  if (node?.type === 'bucket-row') {
+    return node.data.Odds
+  }
+  return null
 }
 
 function selectRollThreshold(node: LootNode) {
@@ -152,8 +165,10 @@ function selectCondition(node: LootNode, service: LootGraphService) {
   }
   return {
     tag: condition,
+    label: `≥ ${row.Prob}`,
     value: row.Prob,
     checked: service.isTagInContext(condition, row.Prob),
+    tooltip: `The ${condition} must be ≥ ${row.Prob}`,
   }
 }
 
