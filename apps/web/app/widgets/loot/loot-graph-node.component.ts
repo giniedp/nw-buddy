@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, Input, effect, inject, untracked } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { LootTable } from '@nw-data/common'
 import { NwModule } from '~/nw'
@@ -13,6 +13,7 @@ import {
   svgCode,
   svgEye,
   svgEyeSlash,
+  svgFilter,
   svgLink,
   svgLock,
   svgLockOpen,
@@ -23,11 +24,14 @@ import { TooltipModule } from '~/ui/tooltip'
 
 import { animate, style, transition, trigger } from '@angular/animations'
 import { patchState } from '@ngrx/signals'
+import { isEqual } from 'date-fns/isEqual'
+import { filter, map, take } from 'rxjs'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { eqCaseInsensitive } from '~/utils'
+import { eqCaseInsensitive, tapDebug } from '~/utils'
 import { ItemDetailHeaderComponent } from '../data/item-detail/item-detail-header.component'
 import { ItemDetailComponent } from '../data/item-detail/item-detail.component'
+import { openItemsPicker } from '../data/item-table'
 import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
 import { LootGraphNodeStore } from './loot-graph-node.store'
 import { LootGraphService } from './loot-graph.service'
@@ -83,6 +87,7 @@ export interface LootGraphNodeState<T = LootNode> {
 export class LootGraphNodeComponent {
   protected service = inject(LootGraphService)
   protected store = inject(LootGraphNodeStore)
+  private injector = inject(Injector)
 
   @Input()
   public set node(value: LootNode) {
@@ -94,7 +99,7 @@ export class LootGraphNodeComponent {
     patchState(this.store, { expand: value })
   }
   public get expand() {
-    return this.store.expand()
+    return this.store.expand() || this.forceExpand
   }
 
   @Input()
@@ -106,11 +111,15 @@ export class LootGraphNodeComponent {
   }
 
   @Input()
-  public set highlightId(value: string) {
-    patchState(this.store, { highlightId: value })
+  public set showHighlightOnly(value: boolean) {
+    patchState(this.store, { showHighlightOnly: value })
   }
-  public get highlightId() {
-    return this.store.highlightId()
+  public get showHighlightOnly() {
+    return this.store.showHighlightOnly()
+  }
+
+  protected get forceExpand() {
+    return this.service.highlightPicker && !!this.service.highlight
   }
 
   public get tagsEditable() {
@@ -123,7 +132,10 @@ export class LootGraphNodeComponent {
     return this.service.showChance
   }
   public get showUnlockToggle() {
-    return this.tagsEditable // d && this.showLink
+    return this.showLink && this.tagsEditable
+  }
+  public get showHighlightPicker() {
+    return this.showLink && this.tagsEditable && this.service.highlightPicker
   }
 
   public get table() {
@@ -204,9 +216,16 @@ export class LootGraphNodeComponent {
   protected iconEye = svgEye
   protected iconEyeSlash = svgEyeSlash
   protected iconLuck = svgClover
+  protected iconFilter = svgFilter
 
   public constructor() {
     this.store.useGridOptions(LootGraphGridCellComponent.buildGridOptions())
+    effect(() => {
+      const showHighlightOnly = !!this.service.highlight && this.service.highlightPicker
+      untracked(() => {
+        patchState(this.store, { showHighlightOnly })
+      })
+    })
   }
 
   protected toggle() {
@@ -232,6 +251,29 @@ export class LootGraphNodeComponent {
     e.preventDefault()
     e.stopImmediatePropagation()
     this.service.showLocked = !this.showLocked
+  }
+
+  protected highlightPickerClicked(e: Event) {
+    e.preventDefault()
+    e.stopImmediatePropagation()
+    const selection = this.service.highlight
+    openItemsPicker({
+      injector: this.injector,
+      multiple: false,
+      selection: selection ? [selection] : [],
+    })
+      .pipe(
+        take(1),
+        // cancelled selection
+        filter((result) => result !== undefined),
+        map((result) => result[0]),
+        tapDebug('highlightPickerClicked'),
+        // unchanged selection
+        filter((result) => !isEqual(result, selection)),
+      )
+      .subscribe((result) => {
+        this.service.highlight = result
+      })
   }
 
   protected isConditionPassed(tag: string) {

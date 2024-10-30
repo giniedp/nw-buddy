@@ -8,6 +8,7 @@ export interface LootGraphState {
   tagValues: Record<string, string | number>
   dropChance: number
   highlight: string
+  highlightPicker: boolean
 
   showLocked: boolean
   showChance: boolean
@@ -24,6 +25,7 @@ export const LootGraphStore = signalStore(
     tagValues: {},
     dropChance: 1,
     highlight: null,
+    highlightPicker: false,
     showLocked: false,
     showChance: false,
     showStats: false,

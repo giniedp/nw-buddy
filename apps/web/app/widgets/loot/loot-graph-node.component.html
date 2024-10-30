@@ -115,15 +115,27 @@
           </div>
         </ng-template>
       </span>
-      @if (showUnlockToggle) {
-        <button
-          class="btn btn-sm btn-square btn-ghost"
-          (click)="toggleLockedClicked($event)"
-          [tooltip]="showLocked ? 'Hide locked items' : 'Show locked items'"
-        >
-          <nwb-icon [icon]="showLocked ? iconEye : iconEyeSlash" class="w-4 h-4" />
-        </button>
-      }
+      <div class="join">
+        @if (showUnlockToggle) {
+          <button
+            class="join-item btn btn-sm btn-square btn-ghost"
+            (click)="toggleLockedClicked($event)"
+            [tooltip]="showLocked ? 'Hide locked items' : 'Show locked items'"
+          >
+            <nwb-icon [icon]="showLocked ? iconEye : iconEyeSlash" class="w-4 h-4" />
+          </button>
+        }
+        @if (showHighlightPicker) {
+          <button
+            class="join-item btn btn-sm btn-square btn-ghost"
+            (click)="highlightPickerClicked($event)"
+            [tooltip]="'Find item' + (service.highlight ? ' or clear filter' : '')"
+            [class.text-accent]="service.highlight"
+          >
+            <nwb-icon [icon]="iconFilter" class="w-4 h-4" />
+          </button>
+        }
+      </div>
     </div>
     @if (expand) {
       <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" @childContainer>
@@ -217,14 +229,14 @@
     } @else {
       <div class="grid grid-cols-fill-xs gap-2 mr-3">
         @for (node of children.items; track node.trackId) {
-          <nwb-loot-graph-node [node]="node" [highlightId]="highlightId" />
+          <nwb-loot-graph-node [node]="node" [showHighlightOnly]="showHighlightOnly" />
         }
       </div>
     }
   } @else if (children) {
     <div class="flex flex-col gap-2">
       @for (node of children.items; track node.trackId) {
-        <nwb-loot-graph-node [node]="node" [highlightId]="highlightId" />
+        <nwb-loot-graph-node [node]="node" [showHighlightOnly]="showHighlightOnly" />
       }
     </div>
   }
@@ -265,10 +277,10 @@
       <th>Cumulative chance</th>
       <td class="text-right font-mono text-accent">{{ chanceAbs | percent: '0.5-5' }}</td>
     </tr>
-    @if(odds) {
+    @if (odds) {
       <tr>
         <th>Cumulative with odds</th>
-        <td class="text-right font-mono text-accent">{{ (chanceAbs * odds) | percent: '0.5-5' }}</td>
+        <td class="text-right font-mono text-accent">{{ chanceAbs * odds | percent: '0.5-5' }}</td>
       </tr>
     }
     @if (luckNeeded) {

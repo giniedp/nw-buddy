@@ -11,7 +11,7 @@ export interface LootGraphNodeState<T = LootNode> {
   node: T
   expand: boolean
   showLink: boolean
-  highlightId: string
+  showHighlightOnly: boolean
   gridOptions: VirtualGridOptions<LootBucketRowNode>
 }
 export const LootGraphNodeStore = signalStore(
@@ -20,7 +20,7 @@ export const LootGraphNodeStore = signalStore(
     node: null,
     expand: false,
     showLink: false,
-    highlightId: null,
+    showHighlightOnly: false,
     gridOptions: null,
   }),
   withComputed((state, graph = inject(LootGraphStore)) => {
@@ -36,12 +36,19 @@ export const LootGraphNodeStore = signalStore(
       useGridOptions: (options: VirtualGridOptions<LootBucketRowNode>) => patchState(state, { gridOptions: options }),
     }
   }),
-  withComputed(({ node, showLink, showLocked, gridOptions }) => {
+  withComputed(({ node, showLink, showLocked, gridOptions, showHighlightOnly }) => {
     const service = inject(LootGraphService)
     const linkService = inject(NwLinkService)
     return {
       expandable: computed(() => selectExpandable(node())),
-      children: computed(() => selectChildren(node()?.children, showLocked(), gridOptions())),
+      children: computed(() => {
+        return selectChildren({
+          children: node()?.children,
+          showLocked: showLocked(),
+          gridOptions: gridOptions(),
+          showHighlightOnly: showHighlightOnly(),
+        })
+      }),
       link: computed(() => (showLink() ? selectLink(node(), linkService) : null)),
       typeName: computed(() => node()?.type),
       displayName: computed(() => node()?.ref),
@@ -77,8 +84,20 @@ function selectLink(node: LootNode, service: NwLinkService) {
   return null
 }
 
-function selectChildren(children: LootNode[], showLocked: boolean, gridOptions: VirtualGridOptions<LootBucketRowNode>) {
-  if (!showLocked) {
+function selectChildren({
+  children,
+  showLocked,
+  gridOptions,
+  showHighlightOnly,
+}: {
+  children: LootNode[]
+  showLocked: boolean
+  gridOptions: VirtualGridOptions<LootBucketRowNode>
+  showHighlightOnly: boolean
+}) {
+  if (showHighlightOnly) {
+    children = children?.filter((it) => it.isHighlighted)
+  } else if (!showLocked) {
     children = children?.filter((it) => !!it.isUnlocked && !!it.itemCountUnlocked)
   }
   if (!children.length) {

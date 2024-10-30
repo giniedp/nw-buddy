@@ -98,6 +98,14 @@ export class LootGraphComponent {
     return this.store.highlight()
   }
 
+  @Input()
+  public set showHighlightPicker(value: boolean) {
+    patchState(this.store, { highlightPicker: value })
+  }
+  public get showHighlightPicker() {
+    return this.store.highlightPicker()
+  }
+
   @Output()
   public addTagClicked = this.service.addTagClicked
 
@@ -113,9 +121,8 @@ export class LootGraphComponent {
       context: this.store.context,
       dropChance: this.store.dropChance,
       highlight: this.store.highlight,
-      showLocked: this.store.showLocked,
     },
-    ({ graph, context, dropChance, highlight, showLocked }) => {
+    ({ graph, context, dropChance, highlight }) => {
       if (!graph) {
         return null
       }

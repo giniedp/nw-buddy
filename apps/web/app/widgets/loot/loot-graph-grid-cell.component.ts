@@ -136,6 +136,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
     }
   }
   private nodeStore = inject(LootGraphNodeStore)
+  private graph = inject(LootGraphService)
 
   @Input()
   public selected: boolean
@@ -250,6 +251,6 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
   protected entity = toSignal(this.itemStore.entity$)
   protected itemId = toSignal(this.itemStore.recordId$)
   protected isHighlighted = computed(() => {
-    return eqCaseInsensitive(this.nodeStore.highlightId(), this.itemId())
+    return eqCaseInsensitive(this.graph.highlight, this.itemId())
   })
 }

@@ -14,10 +14,10 @@
   [tags]="editor.contextTags | async"
   [tagValues]="editor.contextTagValues | async"
   [(showLocked)]="showLocked"
-  [tagsEditable]="true"
   [showLink]="true"
   [showChance]="true"
-
+  [tagsEditable]="true"
+  [showHighlightPicker]="true"
   (addTagClicked)="editor.addTag($event)"
   (removeTagClicked)="editor.removeTag($event)"
   class="overflow-hidden"
