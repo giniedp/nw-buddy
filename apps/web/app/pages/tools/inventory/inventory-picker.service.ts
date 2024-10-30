@@ -86,7 +86,6 @@ export class InventoryPickerService {
       combineLatest({
         data: this.db.itemsMap,
         result: openItemsPicker({
-          db: this.db,
           injector: this.injector,
           selection: selection,
 
