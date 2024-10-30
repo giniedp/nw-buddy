@@ -1,9 +1,9 @@
-import { Injectable, Output, inject } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { MetaAchievementData } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { humanize, rejectKeys, selectStream, tapDebug } from '~/utils'
+import { humanize, rejectKeys, selectStream } from '~/utils'
 
 @Injectable()
 export class MetaAchievementDetailStore extends ComponentStore<{ achievementId: string }> {

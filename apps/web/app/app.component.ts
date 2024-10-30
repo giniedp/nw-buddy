@@ -26,7 +26,7 @@ import { IconsModule } from './ui/icons'
 import { svgChevronLeft, svgDiscord, svgGithub, svgMap } from './ui/icons/svg'
 import { LayoutModule, LayoutService } from './ui/layout'
 import { TooltipModule } from './ui/tooltip'
-import { injectRouteParam, mapProp, selectSignal, tapDebug } from './utils'
+import { injectRouteParam, mapProp, selectSignal } from './utils'
 import { injectCurrentUrl } from './utils/injection/current-url'
 import { injectDocument } from './utils/injection/document'
 import { injectWindow } from './utils/injection/window'
@@ -236,7 +236,7 @@ export class AppComponent {
       segments.shift()
     }
     if (!selection.isDefault) {
-      segments.unshift(new UrlSegment(selection.value, {  }))
+      segments.unshift(new UrlSegment(selection.value, {}))
     }
     return url
   }

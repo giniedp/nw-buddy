@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { injectElementWidth } from '~/ui/layout/resize-observer.directive'
-import { tapDebug } from '~/utils'
 import { GearCellModsAbsComponent } from '../cells/gear-cell-mods-abs.component'
 import { GearCellModsCooldownComponent } from '../cells/gear-cell-mods-cooldown.component'
 import { GearCellModsCraftingComponent } from '../cells/gear-cell-mods-crafting.component'

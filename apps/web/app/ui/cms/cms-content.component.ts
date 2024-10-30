@@ -1,10 +1,9 @@
-import { Component, Input, inject } from '@angular/core'
-import { RichTextOutletDirective } from './blocks'
-import { ComponentStore } from '@ngrx/component-store'
-import { CmsContentService } from './cms-content.service'
-import { catchError, map, of, pipe, switchMap } from 'rxjs'
 import { CommonModule } from '@angular/common'
-import { tapDebug } from '~/utils'
+import { Component, Input, inject } from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
+import { catchError, map, of, pipe, switchMap } from 'rxjs'
+import { RichTextOutletDirective } from './blocks'
+import { CmsContentService } from './cms-content.service'
 
 @Component({
   standalone: true,
@@ -31,7 +30,7 @@ export class CmsContentComponent extends ComponentStore<{ contentPath: string }>
     catchError((err) => {
       console.error(err)
       return of(null)
-    })
+    }),
   )
 
   public constructor() {

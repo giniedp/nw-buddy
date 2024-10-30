@@ -4,7 +4,6 @@ import { ActivatedRoute, NavigationEnd, Route, Router } from '@angular/router'
 import { isEqual } from 'lodash'
 import { NEVER, ReplaySubject, distinctUntilChanged, filter, map, merge, of, startWith, switchMap, tap } from 'rxjs'
 import { VirtualGridStore } from '../virtual-grid.store'
-import { tapDebug } from '~/utils'
 
 @Directive({
   standalone: true,
@@ -18,7 +17,11 @@ export class VirtualGridSelectionRouteParamDirective {
 
   private selectionRouteParam$ = new ReplaySubject<string>(1)
 
-  public constructor(private route: ActivatedRoute, private router: Router, private store: VirtualGridStore<unknown>) {
+  public constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private store: VirtualGridStore<unknown>,
+  ) {
     this.selectionRouteParam$
       .pipe(switchMap((param) => (param ? of(param) : NEVER)))
       .pipe(switchMap((param) => merge(this.handleRouteChange(param), this.handleSelectionChange(param))))
@@ -38,7 +41,7 @@ export class VirtualGridSelectionRouteParamDirective {
           queryParamsHandling: 'preserve',
           preserveFragment: true,
         })
-      })
+      }),
     )
   }
 
@@ -51,7 +54,7 @@ export class VirtualGridSelectionRouteParamDirective {
         this.store.patchState({
           selection: value ? [value] : [],
         })
-      })
+      }),
     )
   }
 

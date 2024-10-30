@@ -13,7 +13,6 @@ import { svgCircleNotch } from '~/ui/icons/svg'
 import { NwmpPriceTableAdapter } from './nwmp-price-table-adapter'
 import { NwmpApiService } from './nwmp.service'
 import { NwmpPriceItem, NwmpServerOption } from './types'
-import { tapDebug } from '~/utils'
 
 export interface NwmpImporterState {
   serverId: string
@@ -103,7 +102,6 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
       prices: this.api.fetchPrices(server),
     })
       .pipe(
-
         tap({
           subscribe: () => {
             this.patchState({ isLoading: true, data: null })

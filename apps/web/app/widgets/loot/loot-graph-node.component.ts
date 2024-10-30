@@ -28,7 +28,7 @@ import { isEqual } from 'date-fns/isEqual'
 import { filter, map, take } from 'rxjs'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { eqCaseInsensitive, tapDebug } from '~/utils'
+import { eqCaseInsensitive } from '~/utils'
 import { ItemDetailHeaderComponent } from '../data/item-detail/item-detail-header.component'
 import { ItemDetailComponent } from '../data/item-detail/item-detail.component'
 import { openItemsPicker } from '../data/item-table'
@@ -267,7 +267,6 @@ export class LootGraphNodeComponent {
         // cancelled selection
         filter((result) => result !== undefined),
         map((result) => result[0]),
-        tapDebug('highlightPickerClicked'),
         // unchanged selection
         filter((result) => !isEqual(result, selection)),
       )

@@ -1,4 +1,6 @@
 import { Component, HostBinding, inject, input } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { RouterModule } from '@angular/router'
 import {
   NW_FALLBACK_ICON,
   getItemIconPath,
@@ -8,14 +10,12 @@ import {
   isHousingItem,
 } from '@nw-data/common'
 import { AchievementData } from '@nw-data/generated'
-import { Observable, map, of, switchMap, switchScan } from 'rxjs'
+import { Observable, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwLinkService, NwModule } from '~/nw'
-import { combineLatestOrEmpty, selectSignal, tapDebug } from '~/utils'
-import { AchievementExpression } from './utils/achievement-expression'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { RouterModule } from '@angular/router'
 import { IconsModule } from '~/ui/icons'
+import { combineLatestOrEmpty, selectSignal } from '~/utils'
+import { AchievementExpression } from './utils/achievement-expression'
 
 export interface AchievementResource {
   icon: string
