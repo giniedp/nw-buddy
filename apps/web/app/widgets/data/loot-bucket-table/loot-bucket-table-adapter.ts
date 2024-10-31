@@ -13,6 +13,7 @@ import {
   lootBucketColItem,
   lootBucketColMatchOne,
   lootBucketColName,
+  lootBucketColOdds,
   lootBucketColQuantity,
   lootBucketColTags,
 } from './loot-bucket-table-cols'
@@ -78,6 +79,7 @@ function buildOptions(util: TableGridUtils<LootBucketTableRecord>) {
       lootBucketColColumn(util),
       lootBucketColItem(util),
       lootBucketColQuantity(util),
+      lootBucketColOdds(util),
       lootBucketColMatchOne(util),
       lootBucketColTags(util),
     ],

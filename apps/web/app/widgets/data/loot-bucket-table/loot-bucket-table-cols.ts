@@ -106,6 +106,17 @@ export function lootBucketColQuantity(util: LootBucketTableUtils) {
   })
 }
 
+export function lootBucketColOdds(util: LootBucketTableUtils) {
+  return util.colDef<number>({
+    colId: 'odds',
+    headerValueGetter: () => 'Odds',
+    getQuickFilterText: () => '',
+    field: 'Odds',
+    width: 130,
+  })
+}
+
+
 export function lootBucketColTags(util: LootBucketTableUtils) {
   return util.colDef<string[]>({
     colId: 'tags',
