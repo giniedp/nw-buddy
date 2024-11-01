@@ -18,6 +18,7 @@ import {
   pvpStoreColName,
   pvpStoreColRandomWeights,
   pvpStoreColRewardId,
+  pvpStoreColRewardName,
   pvpStoreColTags,
   pvpStoreSelectOnceOnly,
   pvpStoreType,
@@ -30,7 +31,7 @@ export class PvpStoreTableAdapter implements DataViewAdapter<PvpStoreTableRecord
   private utils: TableGridUtils<PvpStoreTableRecord> = inject(TableGridUtils)
 
   public entityID(item: PvpStoreTableRecord): string {
-    return `${item.Bucket}_${item.Row}`//.toLowerCase()
+    return `${item.Bucket}_${item.Row}` //.toLowerCase()
   }
 
   public entityCategories(item: PvpStoreTableRecord): DataTableCategory[] {
@@ -78,6 +79,7 @@ function buildOptions(util: TableGridUtils<PvpStoreTableRecord>) {
       pvpStoreColColumn(util),
       pvpStoreColItem(util),
       pvpStoreColRewardId(util),
+      pvpStoreColRewardName(util),
       pvpStoreColTags(util),
 
       pvpStoreType(util),

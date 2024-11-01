@@ -176,6 +176,14 @@ export function pvpStoreColRewardId(util: PvpStoreTableUtils) {
     width: 200,
   })
 }
+export function pvpStoreColRewardName(util: PvpStoreTableUtils) {
+  return util.colDef<string>({
+    colId: 'rewardName',
+    headerValueGetter: () => 'Reward Name',
+    valueGetter: ({ data }) => util.tl8(data.$reward?.Name),
+    width: 200,
+  })
+}
 export function pvpStoreSelectOnceOnly(util: PvpStoreTableUtils) {
   return util.colDef<boolean>({
     colId: 'selectOnceOnly',
