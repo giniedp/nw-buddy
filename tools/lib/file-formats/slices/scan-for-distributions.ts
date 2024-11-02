@@ -27,26 +27,41 @@ export async function scanForDistributions(rootDir: string, file: string) {
     const index = data.indices[i]
     const sliceName = data.slices[index]
     const variantID = data.variants[index]
-    let gatherableID = null
+
     if (!position) {
-      continue
-    }
-    if (sliceName) {
-      const spawners = await scanForSpawners(rootDir, sliceName, null)
-      gatherableID = spawners?.[0]?.gatherableID
-    }
-    if (!variantID && !gatherableID) {
       continue
     }
     const x = (data.region[0] + position[0] / maxValue) * areaSize
     const y = (data.region[1] + position[1] / maxValue) * areaSize
-    result.push({
-      gatherableID,
-      variantID,
-      encounter: null,
-      position: [x, y] as any,
-      mapID: mapId,
-    })
+
+    if (variantID) {
+      result.push({
+        variantID,
+        encounter: null,
+        position: [x, y] as any,
+        mapID: mapId,
+      })
+      continue
+    }
+    if (!sliceName) {
+      continue
+    }
+    const spawners = await scanForSpawners(rootDir, sliceName, null)
+    for (const spawner of spawners || []) {
+      let positions = spawner.positions
+      if (!positions?.length) {
+        positions = [[0, 0]]
+      }
+      for (const [dx, dy] of positions) {
+        result.push({
+          variantID: spawner.variantID,
+          gatherableID: spawner.gatherableID,
+          encounter: null,
+          position: [x + dx, y + dy] as any,
+          mapID: mapId,
+        })
+      }
+    }
   }
 
   return result
