@@ -105,20 +105,23 @@ export function calculateBonusItemChance({
   item,
   ingredients,
   recipe,
-  skill,
+  skillLevel,
   customChance,
+  refiningChance,
 }: {
   item: MasterItemDefinitions | HouseItems
   ingredients: Array<MasterItemDefinitions | HouseItems>
   recipe: CraftingRecipeData
-  skill?: number
+  skillLevel?: number
   customChance?: number
+  refiningChance?: number
 }) {
   if (!item || !recipe?.IsRefining || recipe?.BonusItemChance == null || !ingredients?.length) {
     return 0
   }
   // only category ingrediens affect bonus chance
   ingredients = ingredients.filter((_, i) => recipe[`Type${i + 1}`] === 'Category_Only')
+  skillLevel = skillLevel ?? NW_MAX_TRADESKILL_LEVEL
 
   // positive Tier difference lookup map
   const increments = (recipe.BonusItemChanceIncrease || '').split(',').map(Number)
@@ -143,10 +146,11 @@ export function calculateBonusItemChance({
     return (diff < 0 ? decrements : increments)[Math.abs(diff) - 1] ?? 0
   })
   const baseChance = recipe.BonusItemChance
-  const skillChance = (skill ?? NW_MAX_TRADESKILL_LEVEL) / 1000
+  const skillChance = skillLevel / 1000
   const ingrChance = ingrChances.reduce((a, b) => a + b, 0)
+  refiningChance = (skillLevel ? refiningChance : 0) || 0
 
-  let result = baseChance + skillChance + ingrChance + (customChance || 0)
+  const result = baseChance + skillChance + ingrChance + (customChance || 0) + refiningChance
 
   // console.table({
   //   ingrTiers: ingrTiers.map(String),
@@ -156,6 +160,8 @@ export function calculateBonusItemChance({
   //   skillChance: [(skillChance * 100).toFixed(0)],
   //   baseChance: [(baseChance * 100).toFixed(0)],
   //   ingrChance: [(ingrChance * 100).toFixed(0)],
+  //   customChance: [(customChance * 100).toFixed(0)],
+  //   refiningChance: [(refiningChance * 100).toFixed(0)],
   //   result: [(result * 100).toFixed(0)],
   // })
 

@@ -6,15 +6,18 @@ import {
   getRecipeForItem,
 } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
-import { CharacterStore } from '~/data'
-import { NwDataService } from '~/data'
+import { combineLatest, map, Observable, of, switchMap } from 'rxjs'
+import { CharacterStore, NwDataService } from '~/data'
+import { NW_TRADESKILLS_INFOS_MAP } from '~/nw/tradeskill'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class CraftingCalculatorService {
-  public constructor(private db: NwDataService, private char: CharacterStore) {
+  public constructor(
+    private db: NwDataService,
+    private char: CharacterStore,
+  ) {
     //
   }
 
@@ -33,7 +36,7 @@ export class CraftingCalculatorService {
           type: 'Item',
         },
       },
-      []
+      [],
     )
   }
 
@@ -47,18 +50,18 @@ export class CraftingCalculatorService {
           map((options) => ({
             ...step,
             options: options,
-          }))
+          })),
         )
         .pipe<CraftingStep>(
           map((step) => ({
             ...step,
             selection: this.clampSelection(step),
-          }))
+          })),
         )
         .pipe<CraftingStep>(
           switchMap((step) => {
             return this.solveSteps(step, [...loopDetect])
-          })
+          }),
         )
     }
     return of<CraftingStep>({
@@ -95,11 +98,11 @@ export class CraftingCalculatorService {
                 recipeId: null,
                 ingredient: ingredient,
               },
-              [...loopDetect]
+              [...loopDetect],
             )
-          })
+          }),
         )
-      })
+      }),
     )
 
     return combineLatest({
@@ -112,7 +115,7 @@ export class CraftingCalculatorService {
           steps: steps,
           recipeId: recipeId,
         }
-      })
+      }),
     )
   }
 
@@ -149,7 +152,7 @@ export class CraftingCalculatorService {
   }
 
   public fetchIngredientsForItem(
-    itemId: string
+    itemId: string,
   ): Observable<{ itemId: string; recipeId: string; ingredients: Ingredient[] }> {
     return this.fetchItem(itemId).pipe(
       switchMap((item) => this.fetchRecipeForItem(item)),
@@ -163,7 +166,7 @@ export class CraftingCalculatorService {
             quantity: it.quantity,
           })),
         }
-      })
+      }),
     )
   }
 
@@ -177,10 +180,10 @@ export class CraftingCalculatorService {
               id: it.ingredient,
               type: (it.type as any) || 'Item', // TODO: data needs to be checked for consistency
               quantity: it.quantity,
-            })
+            }),
           ),
         }
-      })
+      }),
     )
   }
 
@@ -241,12 +244,13 @@ export class CraftingCalculatorService {
               item: item,
               ingredients: ingredients,
               recipe: recipe,
-              skill: skillLevel || 0,
+              skillLevel: skillLevel || 0,
               customChance: gearBonus + flBonusChance + (customBonus || 0) / 100,
+              refiningChance: (NW_TRADESKILLS_INFOS_MAP.get(recipe.Tradeskill)?.CraftBonus || 0) / 100,
             })
-          })
+          }),
         )
-      })
+      }),
     )
   }
 
