@@ -35,6 +35,17 @@ function getAssetCatalog(rootDir: string) {
   })
 }
 
+function getDatasheet<T>(rootDir: string, file: string) {
+  file = file?.toLowerCase()
+  return cached(`datasheet:${file}`, async () => {
+    const sheetFile = path.join(rootDir, file)
+    if (!fs.existsSync(sheetFile)) {
+      return null
+    }
+    return readJSONFile<T>(sheetFile)
+  })
+}
+
 function parseUUID(uuid: string) {
   if (!uuid) {
     return null
@@ -175,6 +186,37 @@ async function resolveFile(rootDir: string, file: string): Promise<string[]> {
   return [file]
 }
 
+const ammoSheetSchema = z.object({
+  rows: z.array(
+    z.object({
+      AmmoID: z.string(),
+      AmmoPrefabPath: z.string(),
+    }),
+  ),
+})
+export async function resolveAmmoId(rootDir: string, ammoId: string) {
+  if (!ammoId) {
+    return null
+  }
+  ammoId = ammoId.toLowerCase()
+  const rows = await getDatasheet(
+    rootDir,
+    'sharedassets/springboardentitites/datatables/javelindata_itemdefinitions_ammo.json',
+  )
+    .then((it) => ammoSheetSchema.parse(it).rows)
+    .catch((err) => {
+      console.error(err.message)
+      return []
+    })
+
+  for (const row of rows) {
+    if (row.AmmoID && row.AmmoID.toLowerCase() === ammoId) {
+      return row
+    }
+  }
+  return null
+}
+
 export function getEntityById(slice: SliceComponent, id: number) {
   for (const entity of slice.entities || []) {
     if (isAZ__Entity(entity) && entity.id === id) {
@@ -205,10 +247,10 @@ export function getComponentChildren(slice: SliceComponent, componentID: number)
   return result
 }
 
-
-export function getComponentTransforms(
-  component: AZ__Entity['components'][0],
-): { translation: number[]; rotation: number[][] } {
+export function getComponentTransforms(component: AZ__Entity['components'][0]): {
+  translation: number[]
+  rotation: number[][]
+} {
   let translation: number[]
   let rotation: number[]
   if (isGameTransformComponent(component)) {

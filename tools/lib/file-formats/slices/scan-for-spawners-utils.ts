@@ -19,6 +19,8 @@ import {
   isNpcComponent,
   isPointSpawnerComponent,
   isPrefabSpawnerComponent,
+  isProjectileComponent,
+  isProjectileComponentServerFacet,
   isProjectileSpawnerComponent,
   isReadingInteractionComponent,
   isSkinnedMeshComponent,
@@ -40,6 +42,7 @@ import {
   readDynamicSliceFile,
   resolveDynamicSliceFiles,
   getComponentTransforms,
+  resolveAmmoId,
 } from './utils'
 
 function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
@@ -223,7 +226,7 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
               locations,
               entity,
               translation,
-              rotation
+              rotation,
             })
           }
         }
@@ -281,6 +284,7 @@ export async function scanForProjectileSpawner(sliceComponent: SliceComponent, r
     const result: Array<{
       entity: AZ__Entity
       ammoID: string
+      slice: string
       translation: number[]
       rotation: number[][]
     }> = []
@@ -288,6 +292,7 @@ export async function scanForProjectileSpawner(sliceComponent: SliceComponent, r
       let translation: number[]
       let rotation: number[][]
       let ammoID: string
+      const sliceFiles: string[] = []
       for (const component of entity.components || []) {
         const transform = getComponentTransforms(component)
         if (transform) {
@@ -297,17 +302,35 @@ export async function scanForProjectileSpawner(sliceComponent: SliceComponent, r
         if (isProjectileSpawnerComponent(component)) {
           ammoID = component.m_ammoid
         }
+        if (
+          isProjectileComponent(component) &&
+          isProjectileComponentServerFacet(component.baseclass1?.m_serverfacetptr)
+        ) {
+          const facet = component.baseclass1.m_serverfacetptr
+          await appendSlices(sliceFiles, rootDir, facet.m_spawnonhitasset)
+        }
       }
-      if (!translation || !ammoID) {
+      if (!translation) {
         continue
       }
-
-      result.push({
-        ammoID,
-        translation,
-        entity,
-        rotation,
-      })
+      if (ammoID) {
+        result.push({
+          ammoID,
+          slice: await resolveAmmoId(rootDir, ammoID).then((it) => it?.AmmoPrefabPath),
+          translation,
+          entity,
+          rotation,
+        })
+      }
+      for (const slice of sliceFiles) {
+        result.push({
+          ammoID: null,
+          slice,
+          translation,
+          entity,
+          rotation,
+        })
+      }
     }
     return result
   })

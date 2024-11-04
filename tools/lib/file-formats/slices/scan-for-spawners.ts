@@ -159,7 +159,21 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
 
   // #region Projectile Spawner
   for (const spawn of (await scanForProjectileSpawner(component, rootDir, file)) || []) {
-    // TODO: Implement projectile spawner
+    if (!spawn.slice) {
+      continue
+    }
+    //const debug = spawn.ammoID === 'Sandworm_BreachEvent_AcidBallLauncher_Projectile_Burst'
+    for await (const item of scan(rootDir, spawn.slice, stack)) {
+      const result = mergeData(
+        {
+          ...item,
+          encounter: encounterType || item.encounter,
+          positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
+        },
+        consume(spawn.entity),
+      )
+      yield result
+    }
   }
   // #endregion
 
