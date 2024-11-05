@@ -38,6 +38,7 @@ import {
   svgTreasureChest,
   svgTurkey,
   svgUser,
+  svgWandSparkles,
   svgWeightHanging,
   svgWheat,
 } from './ui/icons/svg'
@@ -71,6 +72,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Abilities', path: '/abilities', svgIcon: svgCrosshairsSimple },
       { label: 'Status Effects', path: '/status-effects', svgIcon: svgSparkles },
       { label: 'Damage Rows', path: '/damage', svgIcon: svgBurst },
+      { label: 'Spells', path: '/spells', svgIcon: svgWandSparkles },
 
       { label: 'Map', path: '/map', svgIcon: svgMap, divider: true },
       { label: 'Gatherables', path: '/gatherables', svgIcon: svgWheat },
