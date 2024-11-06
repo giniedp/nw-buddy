@@ -1057,7 +1057,6 @@ export interface ConversationStateData {
   TopicId2: string;
   TopicId3: string;
   TopicId4: string;
-  TopicId5: string;
 }
 
 export interface ConversationTopicData {
@@ -1989,7 +1988,6 @@ export interface GatherableData {
   IsLootContainer: boolean;
   ItemRestrictionId: string;
   ItemRestrictionQuantity: number | string;
-  LandmarkIconPath: string;
   MaxRespawnRate: number;
   MinRespawnRate: number;
   MountGatherers: string;
@@ -2000,11 +1998,9 @@ export interface GatherableData {
   RequiredStatusEffect: string;
   RequiredTradeskillLevel: number;
   RequiredWhisperId: string;
-  RequirementDescription: string;
   ResetGatherTimeOnEndInteraction: boolean;
   Restriction: string;
   SongRewardId: string;
-  TooltipImage: string;
   Tradeskill: string;
   WaitForImpact: boolean;
 }
@@ -2806,13 +2802,11 @@ export interface LootBucketData {
   Item416: string;
   Item417: string;
   Item418: string;
-  Item419: string;
   Item42: string;
   Item421: string;
   Item422: string;
   Item423: string;
   Item424: string;
-  Item425: string;
   Item426: string;
   Item427: string;
   Item428: string;
@@ -3256,13 +3250,11 @@ export interface LootBucketData {
   LootBucket416: string;
   LootBucket417: string;
   LootBucket418: string;
-  LootBucket419: string;
   LootBucket42: string;
   LootBucket421: string;
   LootBucket422: string;
   LootBucket423: string;
   LootBucket424: string;
-  LootBucket425: string;
   LootBucket426: string;
   LootBucket427: string;
   LootBucket428: string;
@@ -3801,13 +3793,11 @@ export interface LootBucketData {
   Quantity416: number;
   Quantity417: number;
   Quantity418: number;
-  Quantity419: number;
   Quantity42: number;
   Quantity421: number;
   Quantity422: number;
   Quantity423: number;
   Quantity424: number;
-  Quantity425: number;
   Quantity426: number;
   Quantity427: number;
   Quantity428: number;
@@ -7918,7 +7908,6 @@ export type LootTag =
   | "FTUE_Rolfe"
   | "FTUE_TempestPriest"
   | "FTUE_Touarc"
-  | "Fae"
   | "Fallen"
   | "Fangsnap"
   | "Farlet"
@@ -12728,7 +12717,6 @@ export type VitalsCategory =
   | "FTUE_Sailor_z1"
   | "FTUE_Sailor_z2"
   | "FTUE_Sailor_z3"
-  | "Fae"
   | "Forged"
   | "Ghost"
   | "GhostCharred"
@@ -13050,10 +13038,6 @@ export type VitalsCategory =
   | "Goat_Mountain_42"
   | "Goat_Mountain_Named_00"
   | "Gorilla_Boss_DG_FirstLight_01"
-  | "Gourdspewer_Halloween_2022"
-  | "Gourdspewer_VineLeg_Minion_Halloween_2022"
-  | "HalloweenBoss"
-  | "Halloween_2022_Plaguer"
   | "Haunted"
   | "Hercyne"
   | "Hercyne_Boar"
@@ -13495,7 +13479,6 @@ export type VitalsCategory =
   | "Primal_Lion_Desert"
   | "Primal_Lion_Desert_Cub"
   | "Primal_Lion_Named_10WS01"
-  | "Pumpklin_Halloween_2022"
   | "Rabbit"
   | "Rabbit_Corrupted_40"
   | "Rabbit_Snowshoe_03GC06"
@@ -15394,7 +15377,6 @@ export type VitalsFamily =
   | "AncientGuardian"
   | "AngryEarth"
   | "Corrupted"
-  | "Fae"
   | "Human"
   | "Lost"
   | "Wildlife";
