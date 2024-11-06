@@ -662,7 +662,7 @@ export function getItemCostumeId(item: MasterItemDefinitions) {
 
 const ITEM_ID_TOKEN_LOAD = ['heavy', 'light', 'medium']
 const ITEM_ID_TOKEN_TIER = ['t1', 't2', 't3', 't4', 't5', 't51', 't52', 't53', 't54']
-const ITEM_ID_TOKEN_VERSION = ['v1', 'v2', 'v3', 'v4', 'v5', 'new', 'xpac']
+const ITEM_ID_TOKEN_VERSION = ['v1', 'v2', 'v3', 'v4', 'v5', 'new', 'xpac', 'flxpac', 'crx', 'crafted']
 const ITEM_ID_TOKEN_TRASH = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 const ITEM_ID_TOKEN_HEAD = ['cowl', 'hat', 'head', 'helm', 'masque', 'mask', 'crown', 'tiara']
 const ITEM_ID_TOKEN_CHEST = ['breastplate', 'chestguard', 'chest', 'coat', 'shirt', 'robe']
@@ -729,6 +729,8 @@ export function tokenizeItemID(itemID: string): string[] {
       .replace(/(\d\d\d)/g, ' $1 ')
       // separate trailing numbers (except tier and version)
       .replace(/([^VT\d])(\d)/g, '$1 $2')
+      // separate "crafted" word
+      .replace(/(crafted)/g, ' $1 ')
       // collapse whitespaces
       .replace(/_/g, ' ')
       .replace(/\s+/g, ' ')

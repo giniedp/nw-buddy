@@ -1,6 +1,5 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { NwDataService } from '~/data'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -18,7 +17,6 @@ import { TransmogRecord } from './types'
 
 @Injectable()
 export class TransmogTableAdapter implements DataViewAdapter<TransmogRecord> {
-  private db = inject(NwDataService)
   private service = inject(TransmogService)
   private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<TransmogRecord>({ optional: true })

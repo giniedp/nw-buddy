@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core'
-import { getAppearanceGearsetId } from '@nw-data/common'
+import { getAppearanceGearsetId, getItemSetFamilyName } from '@nw-data/common'
 import { ArmorAppearanceDefinitions, MasterItemDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { Observable, combineLatest, map, of } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -14,6 +14,7 @@ import {
   getAppearanceIdName,
   haveAppearancesSameModelFile,
 } from './transmog-item'
+import { uniq } from 'lodash'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogService {
@@ -93,6 +94,7 @@ function selectAppearances({
       category: category,
       subcategory: subcategory,
       items: sources,
+      itemSets: uniq(sources.map(getItemSetFamilyName))
     }
     const appearanceName = (appearance as ArmorAppearanceDefinitions).AppearanceName
     if (!appearanceName || !gender) {

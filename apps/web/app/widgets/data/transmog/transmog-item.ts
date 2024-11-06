@@ -31,6 +31,7 @@ export interface TransmogItem {
   female: TransmogItem
   set: TransmogItem[]
   items: MasterItemDefinitions[]
+  itemSets: string[]
 }
 
 export function getAppearanceId(item: TransmogAppearance) {
@@ -57,7 +58,7 @@ export function getAppearanceIdName(item: TransmogAppearance) {
 }
 
 export function isTransmogUnique(item: TransmogItem) {
-  return item.items?.length === 1
+  return item.itemSets?.length === 1
 }
 
 export function isTransmogSkin(item: TransmogItem) {
