@@ -1,6 +1,5 @@
-import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
-import { computed, inject } from '@angular/core'
-import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
+import { computed } from '@angular/core'
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import {
   getZoneBackground,
   getZoneDescription,
@@ -12,9 +11,10 @@ import {
 } from '@nw-data/common'
 import { TerritoryDefinition, VitalsBaseData, VitalsCategoryData, VitalsLevelVariantData } from '@nw-data/generated'
 import { ScannedTerritory, ScannedVital } from '@nw-data/scanner'
+import { NwDataSheets } from 'libs/nw-data/db/nw-data-sheets'
 import { groupBy } from 'lodash'
-import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, from, map, of, switchMap } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
 import { rejectKeys, selectStream } from '~/utils'
 
 export interface ZoneSpawn {
@@ -29,7 +29,6 @@ export interface ZoneDetailState {
   recordId: number
   record: TerritoryDefinition
   markedVitalId?: string
-  isLoaded: boolean
   vitals: VitalsData[]
   spawns: ZoneSpawn[]
   metadata: ScannedTerritory
@@ -43,51 +42,22 @@ export const ZoneDetailStore = signalStore(
     metadata: null,
     vitals: [],
     spawns: [],
-    isLoaded: false,
   }),
-  withRedux({
-    actions: {
-      public: {
-        load: payload<{ zoneId: string | number }>(),
-        mark: payload<{ vitalId: string }>(),
-      },
-      private: {
-        loaded: payload<Omit<ZoneDetailState, 'isLoaded'>>(),
-      },
-    },
-    reducer(actions, on) {
-      on(actions.load, (state) => {
-        patchState(state, {
-          isLoaded: false,
-        })
-      })
-      on(actions.mark, (state, { vitalId }) => {
-        patchState(state, {
-          markedVitalId: vitalId,
-        })
-      })
-      on(actions.loaded, (state, data) => {
-        patchState(state, {
-          ...data,
-          isLoaded: true,
-        })
-      })
-    },
-    effects(actions, create) {
-      const db = inject(NwDataService)
-      return {
-        load$: create(actions.load).pipe(
-          switchMap(({ zoneId }) => loadState(db, zoneId)),
-          map((data) => actions.loaded(data)),
-          catchError((error) => {
-            console.error(error)
-            return EMPTY
-          }),
-        ),
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load: ({ territoryId }: { territoryId: number | string }) => {
+        return loadState(db, territoryId)
       }
-    },
+    }
+  }), 
+  withMethods((state) => {
+    return {
+      markVital: (markedVitalId: string) => {
+        patchState(state, { markedVitalId })
+      }
+    }
   }),
-
   withComputed(({ record }) => {
     return {
       icon: computed(() => getZoneIcon(record())),
@@ -100,23 +70,23 @@ export const ZoneDetailStore = signalStore(
   }),
 )
 
-function loadState(db: NwDataService, zoneId: string | number) {
+function loadState(db: NwDataSheets, zoneId: string | number) {
   const recordId = zoneId == null ? null : Number(zoneId)
-  const record$ = db.territory(recordId)
+  const record$ = from(db.territoriesById(recordId))
   const metaId$ = record$.pipe(map(getZoneMetaId))
-  const metadata$ = db.territoryMetadata(metaId$)
+  const metadata$ = metaId$.pipe(switchMap((id)=> db.territoriesMetadataById(id)))
   const spawns$ = selectStream(
     {
       zoneMeta: metadata$,
-      vitals: db.vitals,
-      vitalsMetaMap: db.vitalsMetadataMap,
+      vitals: db.vitalsAll(),
+      vitalsMetaMap: db.vitalsMetadataByIdMap(),
     },
     selectZoneSpawns,
   )
   const vitals$ = selectStream(
     {
       vitalSpawns: spawns$,
-      vitalCategories: db.vitalsCategoriesMap,
+      vitalCategories: db.vitalsCategoriesByIdMap(),
     },
     selectSpawnVitals,
   )
@@ -128,6 +98,7 @@ function loadState(db: NwDataService, zoneId: string | number) {
     metadata: metadata$,
     spawns: spawns$,
     vitals: vitals$,
+    markedVitalId: of(null)
   })
 }
 

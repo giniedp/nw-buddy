@@ -1,28 +1,21 @@
-import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDataService } from '~/data'
+import { Directive, inject, Input } from '@angular/core'
 import { MountDetailStore } from './mount-detail.store'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 
 @Directive({
   standalone: true,
   selector: '[nwbMountDetail]',
   exportAs: 'mountDetail',
   providers: [
-    {
-      provide: MountDetailStore,
-      useExisting: forwardRef(() => MountDetailDirective),
-    },
+    MountDetailStore
   ],
 })
-export class MountDetailDirective extends MountDetailStore {
+export class MountDetailDirective {
+  public store = inject(MountDetailStore)
   @Input()
   public set nwbMountDetail(value: string) {
-    this.patchState({ mountId: value })
+    this.store.load(value)
   }
 
-  @Output()
-  public nwbMountChange = this.mount$
-
-  public constructor(db: NwDataService) {
-    super(db)
-  }
+  public nwbMountChange = outputFromObservable(toObservable(this.store.mount))
 }

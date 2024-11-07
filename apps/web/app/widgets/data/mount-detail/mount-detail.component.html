@@ -1,24 +1,24 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLinkTooltip]="['mount', mountId$ | async]" class="w-[76px] h-[76px]"> </a>
+  <a [nwbItemIcon]="store.icon()" [nwLinkTooltip]="['mount', store.mountId()]" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="name$ | async | nwText | nwTextBreak: ' - '"
-    [text1]="source$ | async"
-    [text2]="type$ | async | nwHumanize"
+    [title]="store.name() | nwText | nwTextBreak: ' - '"
+    [text1]="store.source()"
+    [text2]="store.type() | nwHumanize"
   />
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
-  <ng-container *ngIf="description$ | async | nwText: { itemId: mountId$ | async } | nwTextBreak; let description">
+  @if(store.description() | nwText: { itemId: store.mountId() }| nwTextBreak; as description) {
     <div [nwHtml]="description" class="text-nw-description italic"></div>
-    <nwb-item-divider></nwb-item-divider>
-  </ng-container>
+    <nwb-item-divider/>
+  }
+  @if(store.unlockMethod(); as text) {
+    <nwb-item-stat [label]="'Unlocked at'" >{{ text | nwText }}</nwb-item-stat>
+  }
 
-  <!-- <nwb-item-stat [label]="'Note'" *ngIf="note$ | async; let text">{{ text | nwText }}</nwb-item-stat> -->
-  <nwb-item-stat [label]="'Unlocked at'" *ngIf="unlockMethod$ | async; let text">{{ text | nwText }}</nwb-item-stat>
-
-  @if (models$ | async; as models) {
+  @if (store.models()?.length) {
     @if (modelViewerOpened) {
-      <nwb-model-viewer [models]="models" class="w-full rounded-md aspect-square" (close)="modelViewerOpened = false" />
+      <nwb-model-viewer [models]="store.models()" class="w-full rounded-md aspect-square" (close)="modelViewerOpened = false" />
     }
     <button
       class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
