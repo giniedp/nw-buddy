@@ -1,7 +1,8 @@
 import { ItemRarity, NW_FALLBACK_ICON, getItemIconPath, getItemId, getItemRarity, isHousingItem } from '@nw-data/common'
 import { EntitlementData } from '@nw-data/generated'
 import { Observable, map, of } from 'rxjs'
-import { NwDataService } from '~/data'
+import { NwDataBase } from '~/data'
+
 import { NwLinkResource } from '~/nw'
 import { combineLatestOrEmpty, humanize } from '~/utils'
 
@@ -15,7 +16,7 @@ export interface EntitlementReward {
 
 export function selectEntitlementRewards(
   entitlement: EntitlementData,
-  db: NwDataService,
+  db: NwDataBase,
 ): Observable<EntitlementReward[]> {
   if (!entitlement || !entitlement['Reward(s)']?.length) {
     return of([])
@@ -44,7 +45,7 @@ export function selectEntitlementRewards(
       )
     }
     case 'Emote': {
-      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.emote(id))).pipe(
+      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.emotesById(id))).pipe(
         map((items) => {
           return items.map((item): EntitlementReward => {
             return {
@@ -57,7 +58,7 @@ export function selectEntitlementRewards(
       )
     }
     case 'Mount': {
-      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.mount(id))).pipe(
+      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.mountsById(id))).pipe(
         map((items) => {
           return items.map((item): EntitlementReward => {
             return {
@@ -70,7 +71,7 @@ export function selectEntitlementRewards(
       )
     }
     case 'PlayerTitle': {
-      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.playerTitle(id))).pipe(
+      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.playerTitlesById(id))).pipe(
         map((items) => {
           return items.map((item): EntitlementReward => {
             return {
@@ -83,7 +84,7 @@ export function selectEntitlementRewards(
       )
     }
     case 'StatusEffect': {
-      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.statusEffect(id))).pipe(
+      return combineLatestOrEmpty(entitlement['Reward(s)'].map((id) => db.statusEffectsById(id))).pipe(
         map((items) => {
           return items.map((item): EntitlementReward => {
             return {

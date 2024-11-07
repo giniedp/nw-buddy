@@ -1,10 +1,10 @@
-import { Injectable, inject } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { ScannedGatherable, ScannedGatherableSpawn, ScannedVariation, ScannedVariationSpawn } from '@nw-data/scanner'
+import { ScannedGatherable, ScannedGatherableSpawn, ScannedVariation } from '@nw-data/scanner'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { tableIndexBy, tableLookup } from '~/data/nw-data/dsl'
 import { combineLatestOrEmpty, eqCaseInsensitive, selectStream } from '~/utils'
 
@@ -20,14 +20,14 @@ export interface GatherableVariationRecord extends GatherableVariation {
 
 @Injectable({ providedIn: 'root' })
 export class GatherableService {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public gatherables$ = selectStream(
     {
-      gatherables: this.db.gatherables,
-      gatherablesMetaMap: this.db.gatherablesMetadataMap,
-      variationsByGatherableIdMap: this.db.gatherableVariationsByGatherableIdMap,
-      variationsMetaMap: this.db.variationsMetadataMap,
+      gatherables: this.db.gatherablesAll(),
+      gatherablesMetaMap: this.db.gatherablesMetadataByIdMap(),
+      variationsByGatherableIdMap: this.db.gatherableVariationsByGatherableIdMap(),
+      variationsMetaMap: this.db.variationsMetadataByIdMap(),
     },
     ({ gatherables, gatherablesMetaMap, variationsMetaMap, variationsByGatherableIdMap }) => {
       return gatherables.map((gatherable) => {

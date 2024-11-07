@@ -1,35 +1,84 @@
-import { Injectable, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
+import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
+import { computed } from '@angular/core'
+import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { MetaAchievementData } from '@nw-data/generated'
-import { NwDataService } from '~/data'
-import { humanize, rejectKeys, selectStream } from '~/utils'
+import { catchError, EMPTY, map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
+import { humanize, rejectKeys } from '~/utils'
 
-@Injectable()
-export class MetaAchievementDetailStore extends ComponentStore<{ achievementId: string }> {
-  protected db = inject(NwDataService)
-
-  public readonly achievementId$ = this.select(({ achievementId }) => achievementId)
-  public readonly achievement$ = selectStream(this.db.metaAchievement(this.achievementId$))
-  public readonly icon$ = this.select(this.achievement$, (it) => it?.Icon || NW_FALLBACK_ICON)
-  public readonly title$ = this.select(this.achievement$, (it) => it?.Title)
-  public readonly description$ = this.select(this.achievement$, (it) => it?.Description)
-  public readonly displayCategory$ = this.select(this.achievement$, (it) => humanize(it?.UIDisplayCategory))
-  public readonly tierLabel$ = this.select(this.achievement$, (it) => it?.Tier)
-  public readonly properties$ = this.select(this.achievement$, selectProperties)
-
-  public constructor() {
-    super({ achievementId: null })
-  }
-
-  public load(idOrItem: string | MetaAchievementData) {
-    if (typeof idOrItem === 'string') {
-      this.patchState({ achievementId: idOrItem })
-    } else {
-      this.patchState({ achievementId: idOrItem?.AchievementsID })
-    }
-  }
+export interface MetaAchievementDetailState {
+  record: MetaAchievementData
+  isLoaded: boolean
+  isLoading: boolean
+  hasError: boolean
 }
+
+export const MetaAchievementDetailStore = signalStore(
+  withState<MetaAchievementDetailState>({
+    record: null,
+    isLoaded: false,
+    isLoading: false,
+    hasError: false,
+  }),
+  withRedux({
+    actions: {
+      public: {
+        load: payload<{ achievementId: string }>(),
+      },
+      private: {
+        loadDone: payload<Omit<MetaAchievementDetailState, 'isLoaded' | 'isLoading' | 'hasError'>>(),
+        loadError: payload<{ error: any }>(),
+      },
+    },
+    reducer(actions, on) {
+      on(actions.load, (state) => {
+        patchState(state, {
+          isLoading: true,
+        })
+      })
+      on(actions.loadDone, (state, data) => {
+        patchState(state, {
+          ...data,
+          isLoaded: true,
+          isLoading: false,
+          hasError: false,
+        })
+      })
+      on(actions.loadError, (state) => {
+        patchState(state, {
+          isLoading: false,
+          hasError: true,
+        })
+      })
+    },
+    effects(actions, create) {
+      const db = injectNwData()
+      return {
+        load$: create(actions.load).pipe(
+          switchMap(({ achievementId }) => db.metaAchievementsById(achievementId)),
+          map((record) => actions.loadDone({ record })),
+          catchError((error) => {
+            console.error(error)
+            actions.loadError({ error })
+            return EMPTY
+          }),
+        ),
+      }
+    },
+  }),
+  withComputed(({ record }) => {
+    return {
+      achievementId: computed(() => record()?.AchievementsID),
+      icon: computed(() => record()?.Icon || NW_FALLBACK_ICON),
+      title: computed(() => record()?.Title),
+      description: computed(() => record()?.Description),
+      displayCategory: computed(() => humanize(record()?.UIDisplayCategory)),
+      tierLabel: computed(() => record()?.Tier),
+      properties: computed(() => selectProperties(record())),
+    }
+  }),
+)
 
 function selectProperties(item: MetaAchievementData) {
   const reject: Array<keyof MetaAchievementData> = ['Title', 'Description', 'Icon', 'UIDisplayCategory', 'Tier']

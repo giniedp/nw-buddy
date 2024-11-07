@@ -1,19 +1,26 @@
-import { inject } from '@angular/core'
-import { signalStore, withComputed, withState } from '@ngrx/signals'
-import { NwDataService } from '~/data'
-import { selectSignal } from '~/utils'
+import { signalStore, withState } from '@ngrx/signals'
+import { AchievementData } from '@nw-data/generated'
+import { combineLatest, of } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
 
 export interface AchievementDetailState {
   achievementId: string
+  achievement: AchievementData
 }
+
 export const AchievementDetailStore = signalStore(
   withState<AchievementDetailState>({
     achievementId: null,
+    achievement: null,
   }),
-  withComputed(({ achievementId }) => {
-    const db = inject(NwDataService)
+  withStateLoader(() => {
+    const db = injectNwData()
     return {
-      achievement: selectSignal(db.achievement(achievementId)),
+      load: (data: { achievementId: string }) =>
+        combineLatest({
+          achievementId: of(data.achievementId),
+          achievement: db.achievementsById(data.achievementId),
+        }),
     }
   }),
 )

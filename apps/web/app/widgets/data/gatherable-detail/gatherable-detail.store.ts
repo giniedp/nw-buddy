@@ -1,6 +1,5 @@
-import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
-import { computed, effect, inject } from '@angular/core'
-import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
+import { computed, inject } from '@angular/core'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
 import {
   GatherableNodeSize,
   GatherableVariation,
@@ -11,8 +10,8 @@ import {
 import { GatherableData } from '@nw-data/generated'
 import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
 import { sortBy, uniq } from 'lodash'
-import { EMPTY, catchError, combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
 import { GatherableRecord, GatherableService, isLootTableEmpty } from '../gatherable/gatherable.service'
 import { getGatherableIcon } from './utils'
 
@@ -20,8 +19,6 @@ export interface GatherableDetailState {
   gatherableId: string
   gatherable: GatherableRecord
   siblings: Array<{ size: GatherableNodeSize; item: GatherableRecord }>
-  isLoaded: boolean
-  hasError: boolean
 }
 
 export interface GatherableSibling {
@@ -41,74 +38,30 @@ export const GatherableDetailStore = signalStore(
     gatherableId: null,
     gatherable: null,
     siblings: [],
-    isLoaded: false,
-    hasError: false,
   }),
-  withRedux({
-    actions: {
-      public: {
-        load: payload<{ id: string }>(),
-      },
-      private: {
-        loaded: payload<{
-          gatherable: GatherableRecord
-          siblings: GatherableDetailState['siblings']
-        }>(),
-        loadError: payload<{ error: any }>(),
-      },
-    },
-    reducer(actions, on) {
-      on(actions.load, (state) => {
-        patchState(state, {
-          isLoaded: false,
-        })
-      })
-      on(actions.loaded, (state, { gatherable, siblings }) => {
-        patchState(state, {
-          gatherableId: gatherable.GatherableID,
-          gatherable,
-          siblings,
-          isLoaded: true,
-        })
-      })
-    },
-    effects(actions, create) {
-      const db = inject(NwDataService)
-      const service = inject(GatherableService)
-      return {
-        load$: create(actions.load).pipe(
-          switchMap(({ id }) => {
-            return combineLatest({
-              gatherable: db.gatherable(id),
-              variant: db.gatherableVariation(id),
-              dataSet: service.gatherablesMap$,
-            })
-          }),
+  withStateLoader(() => {
+    const db = injectNwData()
+    const service = inject(GatherableService)
+    return {
+      load: ({ gatherableId }: Pick<GatherableDetailState, 'gatherableId'>): Observable<GatherableDetailState> => {
+        return combineLatest({
+          gatherable: db.gatherablesById(gatherableId),
+          variant: db.gatherableVariationsById(gatherableId),
+          dataSet: service.gatherablesMap$,
+        }).pipe(
           switchMap(({ gatherable, variant, dataSet }) => {
             const id = gatherable?.GatherableID || variant?.Gatherables?.[0]?.GatherableID
             const gatherable$ = service.gatherable$(id)
             return combineLatest({
+              gatherableId: of(gatherableId),
               gatherable: gatherable$,
               siblings: gatherable$.pipe(map((it) => selectSiblings(it, dataSet))),
             })
           }),
-          map(({ gatherable, siblings }) => {
-            actions.loaded({
-              gatherable,
-              siblings,
-            })
-            return null
-          }),
-          catchError((error) => {
-            console.error(error)
-            actions.loadError({ error })
-            return EMPTY
-          }),
-        ),
-      }
-    },
+        )
+      },
+    }
   }),
-
   withComputed(({ gatherable, siblings }) => {
     const gatherableId = computed(() => gatherable()?.GatherableID)
     return {

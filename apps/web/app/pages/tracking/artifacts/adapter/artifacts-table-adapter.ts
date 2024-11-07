@@ -1,22 +1,22 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, inject } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { getItemId, isItemArtifact } from '@nw-data/common'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
-import { selectStream } from '~/utils'
 
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 import { sortBy } from 'lodash'
+import { combineLatest, defer, map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { ArtifactCellComponent } from './artifacts-cell.component'
 import { ArtifactRecord } from './types'
 
 @Injectable()
 export class ArtifactsTableAdapter implements DataViewAdapter<ArtifactRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private tl8 = inject(TranslateService)
 
   public entityID(item: ArtifactRecord): string {
@@ -45,7 +45,14 @@ export class ArtifactsTableAdapter implements DataViewAdapter<ArtifactRecord> {
     return this.source$
   }
 
-  private source$ = selectStream({ locale: this.tl8.locale.value$, items: this.db.items }, ({ items }) => {
-    return sortBy(items.filter(isItemArtifact), (it) => this.tl8.get(it.Name))
-  })
+  private source$ = defer(() => {
+    return combineLatest({
+      locale: this.tl8.locale.value$,
+      items: this.db.itemsAll(),
+    })
+  }).pipe(
+    map(({ items }) => {
+      return sortBy(items.filter(isItemArtifact), (it) => this.tl8.get(it.Name))
+    }),
+  )
 }

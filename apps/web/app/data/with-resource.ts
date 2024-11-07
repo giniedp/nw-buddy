@@ -1,0 +1,96 @@
+import { computed, Signal } from '@angular/core'
+import {
+  patchState,
+  Prettify,
+  SignalStoreFeature,
+  signalStoreFeature,
+  SignalStoreFeatureResult,
+  StateSignals,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { catchError, EMPTY, Observable, Subject, switchMap, tap, Unsubscribable } from 'rxjs'
+
+export interface WithResourceState {
+  status: 'idle' | 'loading' | 'loaded' | 'error'
+  error: any
+}
+
+export type WithResourceConfig<P, R> = {
+  load: (arg: P) => Promise<R> | Observable<R>
+}
+
+export type WithResourceMethods<P, R> = {
+  load: ((input: P | Signal<P> | Observable<P>) => Unsubscribable) & Unsubscribable
+  loadDone: (data: R) => void
+  loadError: (err: any) => void
+  refresh: () => void
+}
+
+export type WithResourceComputed = {
+  hasError: Signal<boolean>
+  isLoading: Signal<boolean>
+  isLoaded: Signal<boolean>
+}
+
+export function withStateLoader<Input extends SignalStoreFeatureResult, P>(
+  factory: (
+    store: Prettify<StateSignals<Input['state']> & Input['computed'] & Input['methods']>,
+  ) => WithResourceConfig<P, Input['state']>,
+): SignalStoreFeature<
+  Input,
+  {
+    state: WithResourceState
+    computed: WithResourceComputed
+    methods: WithResourceMethods<P, Input['state']>
+  }
+> {
+  return signalStoreFeature(
+    withState<WithResourceState>({
+      status: 'idle',
+      error: null,
+    }),
+    withComputed(({ status, error }) => {
+      return {
+        hasError: computed(() => !!error()),
+        isLoading: computed(() => status() === 'loading'),
+        isLoaded: computed(() => status() !== 'idle' && status() !== 'loading'),
+      }
+    }),
+    withMethods((state): WithResourceMethods<P, Input['state']> => {
+      const r = factory(state as any)
+      const refresh$ = new Subject<void>()
+      function loadError(err: any) {
+        patchState(state, { status: 'error', error: err })
+      }
+      function loadDone(res: Input['state']) {
+        patchState(state, {
+          ...res,
+          status: 'loaded',
+          error: null,
+        })
+      }
+
+      return {
+        load: rxMethod<P>((input) =>
+          input.pipe(
+            // TODO: refresh
+            switchMap((params) => r.load(params)),
+            tap((res) => {
+              loadDone(res)
+            }),
+            catchError((err) => {
+              loadError(err)
+              return EMPTY
+            }),
+          ),
+        ),
+        loadDone,
+        loadError,
+        refresh: () => refresh$.next(),
+      }
+    }),
+  )
+}

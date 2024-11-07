@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, Input, untracked } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MetaAchievementDetailStore } from './meta-achievement-detail.store'
+import { apiResource } from '~/utils'
+import { injectNwData } from '~/data'
 
 @Component({
   standalone: true,
@@ -20,22 +22,23 @@ import { MetaAchievementDetailStore } from './meta-achievement-detail.store'
   },
 })
 export class MetaAchievementDetailComponent {
-  public readonly store = inject(MetaAchievementDetailStore)
+  public achievementId = input<string>()
+  public disableProperties = input<boolean>(false)
 
-  @Input()
-  public set achievementId(value: string) {
-    this.store.patchState({ achievementId: value })
+  public readonly store = inject(MetaAchievementDetailStore)
+  public constructor() {
+    effect(() => {
+      const id = this.achievementId()
+      untracked(() => this.store.load({ achievementId: id }))
+    })
   }
 
-  @Input()
-  public disableProperties: boolean
+  public readonly achievement = this.store.record
+  public readonly title = this.store.title
+  public readonly description = this.store.description
+  public readonly displayCategory = this.store.displayCategory
+  public readonly tierLabel = this.store.tierLabel
 
-  public readonly achievement = toSignal(this.store.achievement$)
-  public readonly title = toSignal(this.store.title$)
-  public readonly description = toSignal(this.store.description$)
-  public readonly displayCategory = toSignal(this.store.displayCategory$)
-  public readonly tierLabel = toSignal(this.store.tierLabel$)
-
-  public readonly icon = toSignal(this.store.icon$)
-  public readonly properties = toSignal(this.store.properties$)
+  public readonly icon = this.store.icon
+  public readonly properties = this.store.properties
 }

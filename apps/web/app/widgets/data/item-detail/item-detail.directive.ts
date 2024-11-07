@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Directive, forwardRef, Input } from '@angular/core'
+import { Directive, forwardRef, Input } from '@angular/core'
 import { NwDataService } from '~/data'
 import { ModelsService } from '../../model-viewer'
 import { ItemDetailStore } from './item-detail.store'
@@ -29,7 +29,7 @@ export class ItemDetailDirective extends ItemDetailStore {
   public set perkOverride(value: Record<string, string>) {
     this.patchState({ perkOverride: value })
   }
-  public constructor(db: NwDataService, models: ModelsService, cdRef: ChangeDetectorRef) {
-    super(db, models, cdRef)
+  public constructor(db: NwDataService, models: ModelsService) {
+    super(db, models)
   }
 }

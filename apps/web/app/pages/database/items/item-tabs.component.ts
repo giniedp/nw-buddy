@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectorRef, Component, Input, inject } from '@angular/core'
+import { Component, Input, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { observeQueryParam, shareReplayRefCount } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
@@ -12,8 +12,8 @@ import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { ModelsService } from '~/widgets/model-viewer'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
+import { ModelsService } from '~/widgets/model-viewer'
 
 export interface Tab {
   id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'transmog' | 'gearset' | 'loot'
@@ -57,7 +57,7 @@ export class ItemTabsComponent extends ItemDetailStore {
   }).pipe(
     map(({ armorM, armorF, weapon, instrument }) => {
       return armorM || armorF || weapon || instrument
-    })
+    }),
   )
 
   protected vm$ = combineLatest({
@@ -134,11 +134,11 @@ export class ItemTabsComponent extends ItemDetailStore {
           tabs,
           tabId: tabIds.find((it) => it === data.tabId) || tabIds[0],
         }
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(db: NwDataService, ms: ModelsService, cdref: ChangeDetectorRef) {
-    super(db, ms, cdref)
+  public constructor(db: NwDataService, ms: ModelsService) {
+    super(db, ms)
   }
 }

@@ -1,23 +1,23 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, Output, Type } from '@angular/core'
+import { ChangeDetectionStrategy, Component, forwardRef, Input, Output, Type } from '@angular/core'
+import { outputFromObservable } from '@angular/core/rxjs-interop'
 import { AttributeRef, getItemId, getWeaponTagFromWeapon } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs'
+import { BehaviorSubject, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDividerComponent } from '~/ui/item-frame/item-divider.component'
+import { selectSignal } from '~/utils'
 import { ModelsService } from '../../model-viewer/model-viewer.service'
+import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
 import { ItemDetailGsDamage } from './item-detail-gs-damage.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
 import { ItemDetailInfoComponent } from './item-detail-info.component'
+import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component'
 import { ItemDetailPerksComponent } from './item-detail-perks.component'
 import { ItemDetailStatsComponent } from './item-detail-stats.component'
 import { ItemDetailStore } from './item-detail.store'
-import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component'
-import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
-import { selectSignal, selectStream } from '~/utils'
-import { outputFromObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -183,8 +183,8 @@ export class ItemCardComponent extends ItemDetailStore {
 
   protected trackByIndex = (i: number) => i
 
-  public constructor(db: NwDataService, ms: ModelsService, cdRef: ChangeDetectorRef) {
-    super(db, ms, cdRef)
+  public constructor(db: NwDataService, ms: ModelsService) {
+    super(db, ms)
   }
 }
 

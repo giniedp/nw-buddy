@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core'
+import { inject, Injectable, Injector } from '@angular/core'
 import {
   EQUIP_SLOTS,
   EquipSlotId,
@@ -17,8 +17,8 @@ import {
 } from '@nw-data/common'
 import { ItemClass, MasterItemDefinitions, PerkData, StatusEffectData } from '@nw-data/generated'
 import { isEqual } from 'lodash'
-import { Observable, combineLatest, filter, from, map, switchMap, take } from 'rxjs'
-import { ItemInstance, NwDataService } from '~/data'
+import { combineLatest, filter, from, map, Observable, switchMap, take } from 'rxjs'
+import { injectNwData, ItemInstance } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { ModalService } from '~/ui/layout'
 import { eqCaseInsensitive, matchMapTo } from '~/utils'
@@ -30,13 +30,9 @@ import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryPickerService {
-  public constructor(
-    private db: NwDataService,
-    private modal: ModalService,
-    private injector: Injector,
-  ) {
-    //
-  }
+  private db = injectNwData()
+  private modal = inject(ModalService)
+  private injector = inject(Injector)
 
   public pickHousingItem({
     title,
@@ -51,9 +47,8 @@ export class InventoryPickerService {
   }) {
     return (
       combineLatest({
-        data: this.db.housingItemsMap,
+        data: this.db.housingItemsByIdMap(),
         result: openHousingItemsPicker({
-          db: this.db,
           injector: this.injector,
           selection: selection,
           title,
@@ -84,7 +79,7 @@ export class InventoryPickerService {
   }) {
     return (
       combineLatest({
-        data: this.db.itemsMap,
+        data: this.db.itemsByIdMap(),
         result: openItemsPicker({
           injector: this.injector,
           selection: selection,
@@ -107,7 +102,7 @@ export class InventoryPickerService {
   public pickGemForSlot({ slots }: { slots: EquipSlotId[] }) {
     return (
       combineLatest({
-        data: this.db.perksMap,
+        data: this.db.perksByIdMap(),
         result: this.openGemsPickerForSlot(slots),
       })
         .pipe(take(1))
@@ -120,7 +115,7 @@ export class InventoryPickerService {
   public pickAttributeForItems({ items }: { items: MasterItemDefinitions[] }) {
     return (
       combineLatest({
-        data: this.db.perksMap,
+        data: this.db.perksByIdMap(),
         result: this.openAttributePickerForItems(items),
       })
         .pipe(take(1))
@@ -152,8 +147,8 @@ export class InventoryPickerService {
 
   public pickPerkForItem(record: ItemInstance, slotKey: string): Observable<PerkData> {
     return combineLatest({
-      items: this.db.itemsMap,
-      perks: this.db.perksMap,
+      items: this.db.itemsByIdMap(),
+      perks: this.db.perksByIdMap(),
     }).pipe(
       switchMap(({ items, perks }) => {
         const item = items.get(record.itemId)
@@ -199,7 +194,7 @@ export class InventoryPickerService {
   }) {
     return (
       combineLatest({
-        data: this.db.statusEffectsMap,
+        data: this.db.statusEffectsByIdMap(),
         result: DataViewPicker.open({
           injector: this.injector,
           title: title || 'Pick effect',
@@ -356,9 +351,9 @@ export class InventoryPickerService {
     },
   ) {
     return combineLatest({
-      perks: this.db.perks,
-      perksMap: this.db.perksMap,
-      bucketsMap: this.db.perkBucketsMap,
+      perks: this.db.perksAll(),
+      perksMap: this.db.perksByIdMap(),
+      bucketsMap: this.db.perkBucketsByIdMap(),
     }).pipe(
       map(({ perks, perksMap, bucketsMap }) => {
         const perk = perksMap.get(item[slotKey])

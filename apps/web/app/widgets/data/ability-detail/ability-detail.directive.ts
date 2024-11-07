@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core'
+import { Directive, inject, Input } from '@angular/core'
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 import { AbilityDetailStore } from './ability-detail.store'
 
@@ -8,11 +8,12 @@ import { AbilityDetailStore } from './ability-detail.store'
   exportAs: 'abilityDetail',
   providers: [AbilityDetailStore],
 })
-export class AbilityDetailDirective extends AbilityDetailStore {
+export class AbilityDetailDirective {
+  public store = inject(AbilityDetailStore)
   @Input()
   public set nwbAbilityDetail(value: string) {
-    this.load({ abilityId: value })
+    this.store.load({ abilityId: value })
   }
 
-  public nwbAbilityChange = outputFromObservable(toObservable(this.ability))
+  public nwbAbilityChange = outputFromObservable(toObservable(this.store.ability))
 }

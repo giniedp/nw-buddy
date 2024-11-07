@@ -313,7 +313,6 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public constructor(
     protected db: NwDataService,
     private ms: ModelsService,
-    protected cdRef: ChangeDetectorRef,
   ) {
     super({})
   }

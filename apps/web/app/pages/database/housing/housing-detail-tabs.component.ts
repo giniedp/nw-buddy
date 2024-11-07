@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, TemplateRef, ViewChild } from '@angular/core'
+import { Component, Input } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { observeQueryParam, shareReplayRefCount } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
@@ -94,11 +94,15 @@ export class HousingTabsComponent extends ItemDetailStore {
           tabs,
           tabId: tabIds.find((it) => it === data.tabId) || tabIds[0],
         }
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(db: NwDataService, ms: ModelsService, cdref: ChangeDetectorRef, private route: ActivatedRoute) {
-    super(db, ms, cdref)
+  public constructor(
+    db: NwDataService,
+    ms: ModelsService,
+    private route: ActivatedRoute,
+  ) {
+    super(db, ms)
   }
 }

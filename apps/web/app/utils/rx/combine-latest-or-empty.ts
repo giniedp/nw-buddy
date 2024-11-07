@@ -1,6 +1,6 @@
-import { Observable, combineLatest, of } from 'rxjs'
+import { Observable, ObservableInput, combineLatest, of } from 'rxjs'
 
-export function combineLatestOrEmpty<T>(list: Array<Observable<T>>): Observable<Array<T>> {
+export function combineLatestOrEmpty<T>(list: Array<ObservableInput<T>>): Observable<Array<T>> {
   if (!list?.length) {
     return of([])
   }

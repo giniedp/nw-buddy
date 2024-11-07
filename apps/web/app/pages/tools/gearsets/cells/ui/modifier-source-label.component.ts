@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { getItemIconPath } from '@nw-data/common'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { ModifierSource } from '~/nw/mannequin/modifier'
 import { humanize } from '~/utils'
 
@@ -28,10 +27,6 @@ export class ModifierSourceLabelComponent {
 
   protected label: string
   protected icon: string
-
-  public constructor(private db: NwDataService) {
-    //
-  }
 
   private resolve(data: ModifierSource) {
     if (data.perk) {

@@ -50,7 +50,7 @@ export class GatherableDetailPageComponent {
   ) {
     effect(() => {
       const id = this.itemId()
-      untracked(() => this.store.load({ id }))
+      untracked(() => this.store.load({ gatherableId: id }))
     })
     effect(() => this.updateMeta())
   }

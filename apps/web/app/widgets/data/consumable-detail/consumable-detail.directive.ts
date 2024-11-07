@@ -1,6 +1,6 @@
 import { Directive, input } from '@angular/core'
-import { ConsumableDetailStore } from './consumable-detail.store'
 import { ConsumableItemDefinitions } from '@nw-data/generated'
+import { ConsumableDetailStore } from './consumable-detail.store'
 
 @Directive({
   standalone: true,

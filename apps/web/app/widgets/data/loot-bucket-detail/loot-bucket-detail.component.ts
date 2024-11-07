@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { NwModule } from '~/nw'
-import { LootBucketDetailStore } from './loot-bucket-detail.store'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { selectSignal } from '~/utils'
-import { ItemDetailModule } from '../item-detail'
+import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { NwModule } from '~/nw'
+import { ItemFrameModule } from '~/ui/item-frame'
+import { ItemDetailModule } from '../item-detail'
+import { LootBucketDetailStore } from './loot-bucket-detail.store'
 
 @Component({
   standalone: true,
@@ -24,24 +22,18 @@ export class LootBucketDetailComponent {
 
   @Input()
   public set bucket(value: string) {
-    this.store.patchState({ bucketId: value })
+    this.store.load({ bucketId: value })
   }
 
   @Input()
   public set row(value: number) {
-    this.store.patchState({ selectedRow: value })
+    this.store.selectRow(value)
   }
 
-  public lootTables$ = this.store.lootTables$
+  public lootTables = this.store.tables
+  public lootTableCount = this.store.tablesCount
 
-  protected bucketName = selectSignal(this.store.rows$, (rows) => {
-    return rows?.[0]?.LootBucket
+  protected bucketName = computed(() => {
+    return this.store.rows()?.[0]?.LootBucket
   })
-
-  protected icon = NW_FALLBACK_ICON
-  protected rows = selectSignal(this.store.rows$, (rows) => rows || [])
-  protected rowCount = selectSignal(this.store.rows$, (rows) => rows?.length || 0)
-  protected selectedRow = selectSignal(this.store.selectedRow$)
-  public lootTables = selectSignal(this.store.lootTables$)
-  public lootTableCount = selectSignal(this.lootTables, (it) => it?.length || 0)
 }

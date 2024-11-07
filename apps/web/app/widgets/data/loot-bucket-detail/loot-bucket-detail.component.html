@@ -1,15 +1,15 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon" class="w-[76px] h-[76px]"> </a>
+  <a [nwbItemIcon]="store.icon()" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
     [title]="bucketName() | nwHumanize"
     [text1]="'Loot Bucket'"
-    [text2]="'Items: ' + rowCount()"
+    [text2]="'Items: ' + store.rowCount()"
   />
 </nwb-item-header>
 <div class="flex flex-col gap-4 p-4">
   <div class="flex flex-row flex-wrap gap-2 max-h-96 overflow-auto">
-    @for (row of rows(); track $index) {
+    @for (row of store.rows(); track $index) {
       <a
         #detail="itemDetail"
         [nwbItemDetail]="row.Item"
@@ -18,7 +18,7 @@
         [rarity]="detail.rarity$ | async"
         [solid]="true"
         class="w-14 h-14 outline-1 outline-primary outline-offset-1"
-        [class.outline]="row.Row === selectedRow()"
+        [class.outline]="row.Row === store.selectedRow()"
       ></a>
     }
   </div>

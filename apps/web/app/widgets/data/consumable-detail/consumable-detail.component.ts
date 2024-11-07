@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core'
+import { Component, inject, input } from '@angular/core'
 import { ConsumableItemDefinitions } from '@nw-data/generated'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, tagsCell, valueCell } from '~/ui/property-grid/cells'
@@ -10,20 +10,22 @@ import { ConsumableDetailStore } from './consumable-detail.store'
   template: `
     <nwb-property-grid
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
-      [item]="properties()"
+      [item]="store.properties()"
       [descriptor]="descriptor"
     />
   `,
   imports: [PropertyGridModule],
+  providers: [ConsumableDetailStore],
   host: {
     class: 'block',
   },
 })
-export class ConsumableDetailComponent extends ConsumableDetailStore {
+export class ConsumableDetailComponent {
+  protected store = inject(ConsumableDetailStore)
   public consumableId = input.required({
     transform: (value: string | ConsumableItemDefinitions): string => {
       const id = typeof value === 'string' ? value : value?.ConsumableID
-      this.load({ id })
+      this.store.load({ id })
       return id
     },
   })

@@ -3,8 +3,9 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { ChartConfiguration } from 'chart.js'
-import { CharacterStore, NwDataService } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
 import { ChartComponent } from '~/ui/chart'
+import { apiResource } from '~/utils'
 
 @Component({
   standalone: true,
@@ -17,17 +18,20 @@ import { ChartComponent } from '~/ui/chart'
   },
 })
 export class XpChartPerLevelComponent {
-  private level = toSignal(inject(CharacterStore).level$, {
+  private character = inject(CharacterStore)
+  private db = injectNwData()
+
+  private level = toSignal(this.character.level$, {
     initialValue: NW_MAX_CHARACTER_LEVEL,
   })
 
-  private data = toSignal(inject(NwDataService).xpAmounts, {
-    initialValue: [],
+  private resource = apiResource({
+    loader: () => this.db.xpLevels(),
   })
 
   protected config = computed<ChartConfiguration>(() => {
     const level = this.level()
-    const data = this.data()
+    const data = this.resource.value() || []
     return {
       type: 'line',
       options: {

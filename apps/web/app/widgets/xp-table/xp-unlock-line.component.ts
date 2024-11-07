@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Output, inject } from '@angular/core'
+import { Component, computed, inject, output } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
-import { groupBy, sortBy } from 'lodash'
-import { CharacterStore, NwDataService } from '~/data'
+import { groupBy } from 'lodash'
+import { CharacterStore, injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircle, svgCircleCheck } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { selectSignal } from '~/utils'
+import { apiResource } from '~/utils'
 
 @Component({
   standalone: true,
@@ -21,15 +21,20 @@ import { selectSignal } from '~/utils'
   },
 })
 export class XpUnlockLineComponent {
-  @Output()
-  public readonly levelClicked = new EventEmitter<number>()
+  private db = injectNwData()
+  private character = inject(CharacterStore)
 
-  protected level = toSignal(inject(CharacterStore).level$, {
+  public readonly levelClicked = output<number>()
+
+  protected level = toSignal(this.character.level$, {
     initialValue: NW_MAX_CHARACTER_LEVEL,
   })
 
-  protected data = selectSignal(inject(NwDataService).mileStoneRewards, (data) => {
-    data = sortBy(data || [], (it) => it.MilestoneLevel)
+  protected resource = apiResource({
+    loader: () => this.db.milestoneRewardsAll(),
+  })
+  protected data = computed(() => {
+    const data = this.resource.value() || []
     const groups = groupBy(data, (it) => it.MilestoneLevel)
     return Object.entries(groups).map(([key, rewards]) => {
       const reward = rewards.find((it) => it.Image)

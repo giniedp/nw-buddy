@@ -37,7 +37,7 @@ export class ItemDetailComponent extends ItemDetailStore {
   public set perkOverride(value: Record<string, string>) {
     this.patchState({ perkOverride: value })
   }
-  public constructor(db: NwDataService, ms: ModelsService, cdRef: ChangeDetectorRef) {
-    super(db, ms, cdRef)
+  public constructor(db: NwDataService, ms: ModelsService) {
+    super(db, ms)
   }
 }
