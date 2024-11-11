@@ -1,6 +1,6 @@
-import { Injectable, computed, inject } from '@angular/core'
+import { computed, Injectable } from '@angular/core'
 import { patchState, signalState } from '@ngrx/signals'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { selectSignal } from '~/utils'
 import { selectElementalArmor, selectModsArmor, selectPhysicalArmor } from './mods/armoring'
 import { selectModsABS } from './mods/mods-abs'
@@ -46,7 +46,7 @@ import { ActiveMods, DbSlice, MannequinState } from './types'
 
 @Injectable()
 export class Mannequin {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public readonly state = signalState<MannequinState>({
     level: 1,
@@ -63,29 +63,29 @@ export class Mannequin {
 
   public readonly data = selectSignal<DbSlice>(
     {
-      items: this.db.itemsMap,
-      housings: this.db.housingItemsMap,
-      weapons: this.db.weaponsMap,
-      runes: this.db.runesMap,
-      armors: this.db.armorsMap,
-      ammos: this.db.ammosMap,
-      consumables: this.db.consumablesMap,
-      perks: this.db.perksMap,
-      effects: this.db.statusEffectsMap,
-      effectCategories: this.db.statusEffectCategoriesMap,
-      abilities: this.db.abilitiesMap,
-      affixes: this.db.affixStatsMap,
-      attrStr: this.db.attrStr,
-      attrDex: this.db.attrDex,
-      attrInt: this.db.attrInt,
-      attrFoc: this.db.attrFoc,
-      attrCon: this.db.attrCon,
-      cooldowns: this.db.cooldownsByAbilityIdMap,
-      damagaTable: this.db.damageTables0,
-      pvpBalanceArena: this.db.useTable((it) => it.ArenaBalanceData.ArenaPvpBalanceTable),
-      pvpBalanceOpenworld: this.db.useTable((it) => it.OpenWorldBalanceData.OpenWorldPvpBalanceTable),
-      pvpBalanceOutpostrush: this.db.useTable((it) => it.OutpostRushBalanceData.OutpostRushPvpBalanceTable),
-      pvpBalanceWar: this.db.useTable((it) => it.WarBalanceData.WarPvpBalanceTable),
+      items: this.db.itemsByIdMap(),
+      housings: this.db.housingItemsByIdMap(),
+      weapons: this.db.weaponItemsByIdMap(),
+      runes: this.db.runeItemsByIdMap(),
+      armors: this.db.armorItemsByIdMap(),
+      ammos: this.db.ammoItemsByIdMap(),
+      consumables: this.db.consumableItemsByIdMap(),
+      perks: this.db.perksByIdMap(),
+      effects: this.db.statusEffectsByIdMap(),
+      effectCategories: this.db.statusEffectCategoriesByIdMap(),
+      abilities: this.db.abilitiesByIdMap(),
+      affixes: this.db.affixStatsByIdMap(),
+      attrStr: this.db.attrStr(),
+      attrDex: this.db.attrDex(),
+      attrInt: this.db.attrInt(),
+      attrFoc: this.db.attrFoc(),
+      attrCon: this.db.attrCon(),
+      cooldowns: this.db.cooldownsByAbilityIdMap(),
+      damagaTable: this.db.damageTables0(),
+      pvpBalanceArena: this.db.arenaBalanceDataAll(),
+      pvpBalanceOpenworld: this.db.openWroldBalanceDataAll(),
+      pvpBalanceOutpostrush: this.db.outpostRushBalanceDataAll(),
+      pvpBalanceWar: this.db.warBalanceDataAll(),
     },
     (it) => {
       return {

@@ -1,20 +1,16 @@
-import { Directive, forwardRef, Input } from '@angular/core'
+import { Directive, forwardRef, inject, Input } from '@angular/core'
 import { MutaElementDetailStore } from './muta-element-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbMutaElementDetail]',
   exportAs: 'elementDetail',
-  providers: [
-    {
-      provide: MutaElementDetailStore,
-      useExisting: forwardRef(() => MutaElementDetailDirective),
-    },
-  ],
+  providers: [MutaElementDetailStore],
 })
-export class MutaElementDetailDirective extends MutaElementDetailStore {
+export class MutaElementDetailDirective {
+  public store = inject(MutaElementDetailStore)
   @Input()
   public set nwbMutaElementDetail(value: string) {
-    this.patchState({ elementId: value })
+    this.store.load({ elementId: value })
   }
 }

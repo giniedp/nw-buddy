@@ -4,14 +4,15 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { AbilityData } from '@nw-data/generated'
-import { firstValueFrom, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { firstValueFrom } from 'rxjs'
+import { injectNwData } from '~/data'
+
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
 import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { HtmlHeadService, observeRouteParam } from '~/utils'
+import { apiResource, HtmlHeadService, observeRouteParam } from '~/utils'
 import { AbilityDetailModule } from '~/widgets/data/ability-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { SpellDetailModule } from '~/widgets/data/spell-detail'
@@ -41,24 +42,33 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class AbilitiesDetailPageComponent {
+  private db = injectNwData()
+
   public itemId = toSignal(observeRouteParam(this.route, 'id'))
 
-  protected perkIds$ = this.db
-    .perksByEquipAbility(this.itemId)
-    .pipe(map((list) => list || []))
-    .pipe(map((list) => list.map((it) => it.PerkID)))
+  protected perkIds = apiResource({
+    request: () => this.itemId(),
+    loader: async ({ request }) =>
+      this.db
+        .perksByEquipAbility(request)
+        .then((list) => list || [])
+        .then((list) => list.map((it) => it.PerkID)),
+  }).value
 
-  protected spellIds$ = this.db
-    .spellsByAbilityId(this.itemId)
-    .pipe(map((list) => list || []))
-    .pipe(map((list) => list.map((it) => it.SpellID)))
+  protected spellIds = apiResource({
+    request: () => this.itemId(),
+    loader: async ({ request }) =>
+      this.db
+        .spellsByAbilityId(request)
+        .then((list) => list || [])
+        .then((list) => list.map((it) => it.SpellID)),
+  }).value
 
   public constructor(
     private route: ActivatedRoute,
     private i18n: TranslateService,
     private expr: NwExpressionService,
     private head: HtmlHeadService,
-    private db: NwDataService,
   ) {
     //
   }

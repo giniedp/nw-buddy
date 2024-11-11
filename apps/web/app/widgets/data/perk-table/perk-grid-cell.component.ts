@@ -71,7 +71,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
 
   @Input()
   public set data(value: PerkTableRecord) {
-    this.store.load({ perkId: value?.PerkID })
+    this.store.load(value?.PerkID)
     this.name = value?.DisplayName || value?.SecondaryEffectDisplayName
     this.icon = value?.IconPath || NW_FALLBACK_ICON
     this.description = value?.Description

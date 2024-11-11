@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_BACKSTORYDEFINITION } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -20,7 +20,7 @@ import {
 
 @Injectable()
 export class BackstoryTableAdapter implements DataViewAdapter<BackstoryTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<BackstoryTableRecord>({ optional: true })
   private utils: TableGridUtils<BackstoryTableRecord> = inject(TableGridUtils)
 
@@ -54,12 +54,12 @@ export class BackstoryTableAdapter implements DataViewAdapter<BackstoryTableReco
 
   public connect() {
     return combineLatest({
-      records: this.db.backstories,
-      itemsMap: this.db.itemsMap,
-      housingMap: this.db.housingItemsMap,
-      territoriesMap: this.db.territoriesMap,
-      perksMap: this.db.perksMap,
-      bucketsMap: this.db.perkBucketsMap,
+      records: this.db.backstoriesAll(),
+      itemsMap: this.db.itemsByIdMap(),
+      housingMap: this.db.housingItemsByIdMap(),
+      territoriesMap: this.db.territoriesByIdMap(),
+      perksMap: this.db.perksByIdMap(),
+      bucketsMap: this.db.perkBucketsByIdMap(),
     }).pipe(
       map(({ records, itemsMap, housingMap, territoriesMap, perksMap, bucketsMap }) => {
         return records.map((record): BackstoryTableRecord => {

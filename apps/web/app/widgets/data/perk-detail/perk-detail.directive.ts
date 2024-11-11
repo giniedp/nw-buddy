@@ -1,23 +1,19 @@
-import { Directive, forwardRef, Input } from '@angular/core'
-import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
+import { Directive, effect, inject, input, untracked } from '@angular/core'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbPerkDetail]',
   exportAs: 'perkDetail',
-  providers: [
-    {
-      provide: PerkDetailStore,
-      useExisting: forwardRef(() => PerkDetailDirective),
-    },
-  ],
+  providers: [PerkDetailStore],
 })
-export class PerkDetailDirective extends PerkDetailStore {
-  @Input()
-  public set nwbPerkDetail(value: string) {
-    this.load({ perkId: value })
-  }
-
-  public nwbPerkChange = outputFromObservable(toObservable(this.perk))
+export class PerkDetailDirective {
+  public store = inject(PerkDetailStore)
+  public perkId = input<string>(null, {
+    alias: 'nwbPerkDetail',
+  })
+  #fxLoad = effect(() => {
+    const perkId = this.perkId()
+    untracked(() => this.store.load(perkId))
+  })
 }

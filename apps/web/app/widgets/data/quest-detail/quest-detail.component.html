@@ -1,12 +1,13 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="detail.icon()" [solid]="true" [nwLinkTooltip]="['quest', questId]" class="w-[76px] h-[76px]"> </a>
+  <a [nwbItemIcon]="store.icon()" [solid]="true" [nwLinkTooltip]="['quest', questId()]" class="w-[76px] h-[76px]"> </a>
 
   <nwb-item-header-content
     class="z-10"
-    [title]="detail.title() | nwText | nwTextBreak: ' - '"
-    [text1]="detail.type() | nwHumanize"
+    [title]="store.title() | nwText | nwTextBreak: ' - '"
+    [text1]="store.type() | nwHumanize"
     [text2]="'quest'"
-    [text3]="detail.levelLabel()"
+    [text3]="store.levelLabel()"
+    [isSkeleton]="!store.isLoaded()"
   />
 </nwb-item-header>
 <nwb-quest-detail-description class="p-4" />
@@ -31,29 +32,29 @@
       <nwb-quest-detail-destination />
     }
     @case ('tree') {
-      <nwb-quest-tree [questId]="questId" />
+      <nwb-quest-tree [questId]="questId()" />
     }
     @default {
-      @if (detail.taskId()) {
+      @if (store.taskId()) {
         <div class="flex flex-col gap-1">
           <h3 class="font-bold">Tasks</h3>
-          <nwb-quest-task-detail [taskId]="detail.taskId()" />
+          <nwb-quest-task-detail [taskId]="store.taskId()" />
         </div>
       }
 
-      @if (detail.schedule(); as text) {
+      @if (store.schedule(); as text) {
         <div class="flex flex-col gap-1">
           <h3 class="font-bold">Schedule</h3>
           <div class="px-2">{{ text | nwHumanize }}</div>
         </div>
       }
-      @if (detail.rewards(); as rewards) {
+      @if (store.rewards(); as rewards) {
         <div class="flex flex-col gap-1">
           <h3 class="font-bold">Rewards</h3>
           <nwb-game-event-detail-rewards [rewards]="rewards" />
         </div>
       }
-      @if (detail.eventStatusEffect(); as effect) {
+      @if (store.eventStatusEffect(); as effect) {
         <div class="flex flex-col gap-1">
           <h3 class="font-bold">Rewards Effect</h3>
           <a class="flex-1 link-hover pl-2" [routerLink]="['status-effect', effect.StatusID] | nwLink">
@@ -61,25 +62,25 @@
           </a>
         </div>
       }
-      @if (detail.requiredAchievementId(); as value) {
+      @if (store.requiredAchievementId(); as value) {
         <div class="flex flex-col gap-1">
           <h3 class="font-bold">Required Achievement</h3>
           <nwb-required-achievement [achievementId]="value" />
         </div>
       }
-      @if (detail.requiredFaction(); as value) {
+      @if (store.requiredFaction(); as value) {
         <h3 class="font-bold">Required Faction: {{ value }}</h3>
       }
-      @if (detail.requiredLevel(); as value) {
+      @if (store.requiredLevel(); as value) {
         <h3 class="font-bold">Required Level: {{ value }}</h3>
       }
-      <!-- @if (detail.requiredProgression(); as value) {
+      <!-- @if (store.requiredProgression(); as value) {
         <div>
           <h3 class="font-bold">Required Progression</h3>
           <code class="ml-4 text-xs">{{ value }}</code>
         </div>
       } -->
-      @if (detail.followup(); as followup) {
+      @if (store.followup(); as followup) {
         <div class="flex flex-col gap-1">
           <h3 class="font-bold">Follow Up Quests</h3>
           @for (row of followup; track $index) {

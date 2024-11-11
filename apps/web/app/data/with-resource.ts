@@ -1,4 +1,4 @@
-import { computed, Signal } from '@angular/core'
+import { computed, effect, signal, Signal, untracked } from '@angular/core'
 import {
   patchState,
   Prettify,
@@ -53,15 +53,22 @@ export function withStateLoader<Input extends SignalStoreFeatureResult, P>(
       error: null,
     }),
     withComputed(({ status, error }) => {
+      const isLoaded = signal(false)
+      effect(() => {
+        if (status() === 'loaded' || status() === 'error') {
+          untracked(() => isLoaded.set(true))
+        }
+      })
       return {
         hasError: computed(() => !!error()),
         isLoading: computed(() => status() === 'loading'),
-        isLoaded: computed(() => status() !== 'idle' && status() !== 'loading'),
+        isLoaded: isLoaded,
       }
     }),
     withMethods((state): WithResourceMethods<P, Input['state']> => {
       const r = factory(state as any)
       const refresh$ = new Subject<void>()
+
       function loadError(err: any) {
         patchState(state, { status: 'error', error: err })
       }
@@ -77,7 +84,10 @@ export function withStateLoader<Input extends SignalStoreFeatureResult, P>(
         load: rxMethod<P>((input) =>
           input.pipe(
             // TODO: refresh
-            switchMap((params) => r.load(params)),
+            switchMap((params) => {
+              patchState(state, { status: 'loading', error: null })
+              return r.load(params)
+            }),
             tap((res) => {
               loadDone(res)
             }),

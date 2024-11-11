@@ -1,13 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, Input, untracked } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } from '@angular/core'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MetaAchievementDetailStore } from './meta-achievement-detail.store'
-import { apiResource } from '~/utils'
-import { injectNwData } from '~/data'
 
 @Component({
   standalone: true,
@@ -29,7 +26,7 @@ export class MetaAchievementDetailComponent {
   public constructor() {
     effect(() => {
       const id = this.achievementId()
-      untracked(() => this.store.load({ achievementId: id }))
+      untracked(() => this.store.load(id))
     })
   }
 

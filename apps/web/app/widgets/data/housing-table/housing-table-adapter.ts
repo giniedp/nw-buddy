@@ -2,7 +2,8 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getUIHousingCategoryLabel } from '@nw-data/common'
 import { COLS_HOUSEITEMS, HouseItems } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { defer } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
@@ -27,7 +28,7 @@ import {
 
 @Injectable()
 export class HousingTableAdapter implements DataViewAdapter<HousingTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<HousingTableRecord>({ optional: true })
   private utils: TableGridUtils<HousingTableRecord> = inject(TableGridUtils)
@@ -63,7 +64,7 @@ export class HousingTableAdapter implements DataViewAdapter<HousingTableRecord> 
     return this.source$
   }
 
-  private source$ = selectStream(this.config?.source || this.db.housingItems, (items) => {
+  private source$ = selectStream(this.config?.source || defer(() => this.db.housingItemsAll()), (items) => {
     const filter = this.config?.filter
     items = items.filter((it) => {
       if (it.ExcludeFromGame) {

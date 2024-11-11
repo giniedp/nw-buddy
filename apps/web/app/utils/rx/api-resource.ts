@@ -37,7 +37,7 @@ export function apiResource<P, R>({ request, loader }: ApiResourceOptions<P, R>)
   function load(params: P) {
     const ref = state.track() + 1
     patchState(state, { track: ref, status: 'loading', error: undefined })
-    loader({ request: params })
+    Promise.resolve(loader({ request: params }))
       .then((data) => {
         if (ref !== state.track()) {
           return
@@ -59,6 +59,6 @@ export function apiResource<P, R>({ request, loader }: ApiResourceOptions<P, R>)
     error: computed(() => state.error()),
     hasError: computed(() => !!state.error()),
     isLoading: computed(() => state.status() === 'loading'),
-    isLoaded: computed(() => state.status() !== 'idle' && state.status() !== 'loading'),
+    isLoaded: computed(() => state.status() === 'loaded' || !!state.value()),
   }
 }

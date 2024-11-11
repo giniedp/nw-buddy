@@ -1,25 +1,18 @@
-import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDataService } from '~/data'
+import { Directive, effect, inject, input, untracked } from '@angular/core'
 import { PerkBucketDetailStore } from './perk-bucket-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbPerkBucketDetail]',
   exportAs: 'bucketDetail',
-  providers: [
-    {
-      provide: PerkBucketDetailStore,
-      useExisting: forwardRef(() => PerkBucketDetailDirective),
-    },
-  ],
+  providers: [PerkBucketDetailStore],
 })
-export class PerkBucketDetailDirective extends PerkBucketDetailStore {
-  @Input()
-  public set nwbPerkBucketDetail(value: string) {
-    this.patchState({ perkBucketId: value })
-  }
+export class PerkBucketDetailDirective {
+  public store = inject(PerkBucketDetailStore)
+  public perkBucketId = input<string>(null, { alias: 'nwbPerkBucketDetail' })
 
-  public constructor(db: NwDataService) {
-    super(db)
-  }
+  #fxLoad = effect(() => {
+    const perkBucketId = this.perkBucketId()
+    untracked(() => this.store.load({ perkBucketId, itemId: null }))
+  })
 }

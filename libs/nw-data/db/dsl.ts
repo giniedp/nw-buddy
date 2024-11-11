@@ -31,6 +31,16 @@ export function table<T>(source: TableSource<T>, transform?: TableTransform<T, T
   })
 }
 
+export function tableSelector<T, R>(source: TableSource<T>, transform: TableTransform<T, R>): Table<R>
+export function tableSelector<T>(source: TableSource<T>): Table<T>
+export function tableSelector<T>(source: TableSource<T>, transform?: TableTransform<T, T>): Table<T> {
+  return cached(async () => {
+    return Promise.all(makeArray(source()))
+      .then((it) => it.flat(1))
+      .then((it) => (transform ? transform(it) : it))
+  })
+}
+
 export function primaryIndex<T, K extends keyof T>(table: Table<T>, key: K): PrimaryIndex<T[K], T>
 export function primaryIndex<T, K>(table: Table<T>, keyFn: (it: T) => K): PrimaryIndex<K, T>
 export function primaryIndex<T>(table: Table<T>, key: any): PrimaryIndex<any, T> {

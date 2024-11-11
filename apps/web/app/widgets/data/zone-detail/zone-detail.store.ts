@@ -46,16 +46,16 @@ export const ZoneDetailStore = signalStore(
   withStateLoader(() => {
     const db = injectNwData()
     return {
-      load: ({ territoryId }: { territoryId: number | string }) => {
+      load({ territoryId }: { territoryId: number | string }) {
         return loadState(db, territoryId)
-      }
+      },
     }
-  }), 
+  }),
   withMethods((state) => {
     return {
       markVital: (markedVitalId: string) => {
         patchState(state, { markedVitalId })
-      }
+      },
     }
   }),
   withComputed(({ record }) => {
@@ -74,7 +74,7 @@ function loadState(db: NwDataSheets, zoneId: string | number) {
   const recordId = zoneId == null ? null : Number(zoneId)
   const record$ = from(db.territoriesById(recordId))
   const metaId$ = record$.pipe(map(getZoneMetaId))
-  const metadata$ = metaId$.pipe(switchMap((id)=> db.territoriesMetadataById(id)))
+  const metadata$ = metaId$.pipe(switchMap((id) => db.territoriesMetadataById(id)))
   const spawns$ = selectStream(
     {
       zoneMeta: metadata$,
@@ -98,7 +98,7 @@ function loadState(db: NwDataSheets, zoneId: string | number) {
     metadata: metadata$,
     spawns: spawns$,
     vitals: vitals$,
-    markedVitalId: of(null)
+    markedVitalId: of(null),
   })
 }
 

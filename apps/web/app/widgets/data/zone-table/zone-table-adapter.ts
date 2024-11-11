@@ -1,7 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { inject, Injectable } from '@angular/core'
 import { COLS_TERRITORYDEFINITION } from '@nw-data/generated'
-import { injectNwData, NwDataService } from '~/data'
+import { from } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { addGenericColumns, DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -15,7 +16,6 @@ import {
   zoneColVitalsCategory,
   ZoneTableRecord,
 } from './zone-table-cols'
-import { from } from 'rxjs'
 
 @Injectable()
 export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord> {

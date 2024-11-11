@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { ActivatedRoute, RouterModule, RouterOutlet } from '@angular/router'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import {
@@ -10,7 +10,8 @@ import {
   PromotionMutationStaticData,
   TerritoryDefinition,
 } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { from } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
@@ -63,19 +64,22 @@ export interface CurrentMutation {
   ],
 })
 export class GameModesPageComponent {
+  private db = injectNwData()
+  private route = inject(ActivatedRoute)
+
   protected gameModeId$ = injectChildRouteParam(':id')
-  protected groups$ = selectStream(this.db.gameModes, groupByCategory)
+  protected groups$ = selectStream(from(this.db.gameModesAll()), groupByCategory)
   protected categories$ = selectStream(this.groups$, (it) => Object.keys(it).sort())
   protected categoryId$ = selectStream(this.route.paramMap, (it) => it.get('category'))
   protected modes$ = selectStream(
     {
-      pois: this.db.territories,
+      pois: this.db.territoriesAll(),
       categories: this.groups$,
       category: this.categoryId$,
       mutations: injectCurrentMutation(),
-      cursesMap: this.db.mutatorCursesMap,
-      elements: this.db.mutatorElements,
-      promotionsMap: this.db.mutatorPromotionsMap,
+      cursesMap: this.db.mutatorCursesByIdMap(),
+      elements: this.db.mutatorElementsAll(),
+      promotionsMap: this.db.mutatorPromotionsByIdMap(),
     },
     ({ pois, categories, category, mutations, cursesMap, elements, promotionsMap }) => {
       return selectCategory(
@@ -97,13 +101,6 @@ export class GameModesPageComponent {
   @ViewChild(RouterOutlet, { static: true })
   protected outlet: RouterOutlet
   protected iconBack = svgChevronLeft
-
-  public constructor(
-    private db: NwDataService,
-    private route: ActivatedRoute,
-  ) {
-    //
-  }
 }
 
 function groupByCategory(modes: GameModeData[]) {

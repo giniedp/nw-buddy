@@ -2,7 +2,8 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_STATUSEFFECTDATA, StatusEffectData } from '@nw-data/generated'
 import { sortBy } from 'lodash'
-import { NwDataService } from '~/data'
+import { defer } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -21,7 +22,7 @@ import {
 
 @Injectable()
 export class StatusEffectTableAdapter implements DataViewAdapter<StatusEffectTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private utils: TableGridUtils<StatusEffectTableRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<StatusEffectTableRecord>({ optional: true })
 
@@ -57,7 +58,7 @@ export class StatusEffectTableAdapter implements DataViewAdapter<StatusEffectTab
     return this.source$
   }
 
-  protected source$ = selectStream(this.config?.source || this.db.statusEffects, (list) => {
+  protected source$ = selectStream(this.config?.source || defer(() => this.db.statusEffectsAll()), (list) => {
     if (this.config?.filter) {
       list = list.filter(this.config.filter)
     }

@@ -1,40 +1,45 @@
-import { computed, effect, inject } from '@angular/core'
-import { signalStore, withComputed, withState } from '@ngrx/signals'
+import { signalStore, withState } from '@ngrx/signals'
 import { ObjectiveTasks } from '@nw-data/generated'
-import { NwDataService } from '~/data'
-import { selectSignal } from '~/utils'
+import { injectNwData, withStateLoader } from '~/data'
 
 export interface QuestTaskDetailState {
   taskId: string
+  task: ObjectiveTasks
+  children: TaskTree[]
 }
 
 export interface TaskTree {
-  task: ObjectiveTasks,
+  task: ObjectiveTasks
   children: TaskTree[]
 }
 
 export const QuestTaskDetailStore = signalStore(
-  { protectedState: false },
-  withState<QuestTaskDetailState>({ taskId: '' }),
-  withComputed(({ taskId }) => {
-    const db = inject(NwDataService)
-    const tree = selectSignal({
-      taskId: taskId,
-      tasksMap: db.objectiveTasksMap
-    }, ({ taskId, tasksMap }) => {
-      return selectTree(taskId, tasksMap)
-    })
-
+  withState<QuestTaskDetailState>({
+    taskId: null,
+    task: null,
+    children: [],
+  }),
+  withStateLoader(() => {
+    const db = injectNwData()
     return {
-      task: computed(() => tree().task),
-      children: computed(() => tree().children),
+      async load(taskId: string) {
+        const tasksMap = await db.objectiveTasksByIdMap()
+        const tree = selectTree(taskId, tasksMap)
+        return {
+          taskId,
+          task: tree?.task,
+          children: tree?.children,
+        }
+      },
     }
   }),
 )
 
 function selectTree(taskId: string, data: Map<string, ObjectiveTasks>): TaskTree {
   const task = data?.get(taskId)
-  const children = selectSubTaskIds(task).map((subTaskId) => selectTree(subTaskId, data)).filter((it) => it.task || it.children.length)
+  const children = selectSubTaskIds(task)
+    .map((subTaskId) => selectTree(subTaskId, data))
+    .filter((it) => it.task || it.children.length)
   return {
     task,
     children,

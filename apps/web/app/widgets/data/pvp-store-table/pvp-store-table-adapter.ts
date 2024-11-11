@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -26,7 +26,7 @@ import {
 
 @Injectable()
 export class PvpStoreTableAdapter implements DataViewAdapter<PvpStoreTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<PvpStoreTableRecord>({ optional: true })
   private utils: TableGridUtils<PvpStoreTableRecord> = inject(TableGridUtils)
 
@@ -49,11 +49,11 @@ export class PvpStoreTableAdapter implements DataViewAdapter<PvpStoreTableRecord
 
   public connect() {
     return combineLatest({
-      items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
-      rows: this.db.pvpStoreBuckets,
-      rewardsMap: this.db.pvpRewardsMap,
-      gameEventsMap: this.db.gameEventsMap,
+      items: this.db.itemsByIdMap(),
+      housing: this.db.housingItemsByIdMap(),
+      rows: this.db.pvpStoreBucketsAll(),
+      rewardsMap: this.db.pvpRewardsByIdMap(),
+      gameEventsMap: this.db.gameEventsByIdMap(),
     }).pipe(
       map(({ items, housing, rows, rewardsMap, gameEventsMap }) => {
         return rows.map((it): PvpStoreTableRecord => {

@@ -1,4 +1,4 @@
-import { animate, query, style, transition, trigger } from '@angular/animations'
+import { animate, group, query, style, transition, trigger } from '@angular/animations'
 
 export const LIST_COUNT_ANIMATION = trigger('fade', [
   transition(':enter, * => 0, * => -1', []),

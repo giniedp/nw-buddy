@@ -2,8 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { Observable, filter } from 'rxjs'
-import { GearsetRow, GearsetsStore, NwDataService } from '~/data'
-import { TranslateService } from '~/i18n'
+import { GearsetRow, GearsetsStore } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -19,8 +18,6 @@ import {
 
 @Injectable()
 export class GearsetTableAdapter implements DataViewAdapter<GearsetTableRecord> {
-  private db = inject(NwDataService)
-  private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<GearsetTableRecord>({ optional: true })
   private utils: TableGridUtils<GearsetTableRecord> = inject(TableGridUtils)
   private store = inject(GearsetsStore)

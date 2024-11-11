@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { getItemIconPath, getItemIdFromRecipe } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { LayoutModule } from '~/ui/layout'
@@ -32,17 +32,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class CraftingDetailPageComponent {
+  private db = injectNwData()
+  private i18n = inject(TranslateService)
+  private head = inject(HtmlHeadService)
   protected id$ = injectRouteParam('id')
-  protected recipe$ = this.db.recipe(this.id$)
+  protected recipe$ = this.id$.pipe(switchMap((id) => this.db.recipesById(id)))
   protected itemId$ = this.recipe$.pipe(map((it) => getItemIdFromRecipe(it)))
-
-  public constructor(
-    private db: NwDataService,
-    private i18n: TranslateService,
-    private head: HtmlHeadService,
-  ) {
-    //
-  }
 
   protected onEntity(entity: MasterItemDefinitions | HouseItems) {
     if (!entity) {

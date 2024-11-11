@@ -2,8 +2,8 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { PerkBucketEntry, isPerkGenerated, isPerkInherent } from '@nw-data/common'
 import { COLS_AFFIXSTATDATA, COLS_PERKDATA, PerkData } from '@nw-data/generated'
-import { Observable } from 'rxjs'
-import { NwDataService } from '~/data'
+import { Observable, defer } from 'rxjs'
+import { injectNwData } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
@@ -27,18 +27,18 @@ import {
 
 @Injectable()
 export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<PerkTableRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<PerkTableRecord>({ optional: true })
   private source$: Observable<PerkTableRecord[]> = selectStream(
     {
-      perks: this.config?.source || this.db.perks,
-      affixstats: this.db.affixStatsMap,
-      abilities: this.db.abilitiesMap,
-      itemsMap: this.db.itemsMap,
-      perkBucketsByPerkIdMap: this.db.perkBucketsByPerkIdMap,
-      resourcesByPerkBucket: this.db.resourcesByPerkBucketIdMap,
+      perks: this.config?.source || defer(() => this.db.perksAll()),
+      affixstats: defer(() => this.db.affixStatsByIdMap()),
+      abilities: defer(() => this.db.abilitiesByIdMap()),
+      itemsMap: defer(() => this.db.itemsByIdMap()),
+      perkBucketsByPerkIdMap: defer(() => this.db.perkBucketsByPerkIdMap()),
+      resourcesByPerkBucket: defer(() => this.db.resourceItemsByPerkBucketIdMap()),
     },
     ({ perks, affixstats, abilities, itemsMap, perkBucketsByPerkIdMap, resourcesByPerkBucket }) => {
       perks = perks.map((it): PerkTableRecord => {

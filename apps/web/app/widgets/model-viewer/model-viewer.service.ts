@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core'
 import { ArmorAppearanceDefinitions, HouseItems, WeaponAppearanceDefinitions } from '@nw-data/generated'
-import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, from, map, of, switchMap } from 'rxjs'
 import { environment } from '~/../environments'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { AppPreferencesService } from '~/preferences'
 import { humanize } from '~/utils'
 
@@ -17,6 +17,7 @@ export interface ItemModelInfo {
 
 @Injectable({ providedIn: 'root' })
 export class ModelsService {
+  private db = injectNwData()
   private preferences = inject(AppPreferencesService)
 
   private get cdnHost() {
@@ -24,10 +25,6 @@ export class ModelsService {
       return environment.modelsUrlHigh
     }
     return environment.modelsUrlMid
-  }
-
-  public constructor(private db: NwDataService) {
-    //
   }
 
   public playerMaleModel(): ItemModelInfo {
@@ -70,7 +67,8 @@ export class ModelsService {
   }
 
   public byMasterItemId(itemId$: Observable<string>) {
-    return this.db.item(itemId$).pipe(
+    return itemId$.pipe(
+      switchMap((id) => this.db.itemsById(id)),
       switchMap((item) => {
         return combineLatest([
           this.byAppearanceId(of(item?.ArmorAppearanceM)),
@@ -85,7 +83,8 @@ export class ModelsService {
   }
 
   public byHousingItemId(itemId$: Observable<string>) {
-    return this.db.housingItem(itemId$).pipe(
+    return itemId$.pipe(
+      switchMap((id) => this.db.housingItemsById(id)),
       map((item): ItemModelInfo => {
         if (!item?.PrefabPath) {
           return null
@@ -103,60 +102,74 @@ export class ModelsService {
   }
 
   public byAppearanceId(appearanceId$: Observable<string>) {
-    return combineLatest({
-      item: this.db.itemAppearance(appearanceId$).pipe(map((it) => this.selectItemModels(it))),
-      weapon: this.db.weaponAppearance(appearanceId$).pipe(map((it) => this.selectWeaponModels(it))),
-      weaponMale: this.db.weaponAppearance(appearanceId$).pipe(
-        switchMap((it) => this.db.itemAppearance(it?.Appearance)),
-        map((it) => this.selectItemModels(it)),
-      ),
-      weaponFemale: this.db.weaponAppearance(appearanceId$).pipe(
-        switchMap((it) => this.db.itemAppearance(it?.FemaleAppearance)),
-        map((it) => this.selectItemModels(it)),
-      ),
-      mountAttachment: this.db.mountAttachmentsAppearance(appearanceId$).pipe(map((it) => this.selectWeaponModels(it))),
-      instrument: this.db.instrumentAppearance(appearanceId$).pipe(map((it) => this.selectInstrumentModels(it))),
-    }).pipe(
-      map(({ item, weapon, weaponMale, weaponFemale, mountAttachment, instrument }) => {
-        return [
-          ...item,
-          //...weaponMale,
-          //...weaponFemale,
-          ...weapon,
-          ...mountAttachment,
-          ...instrument,
-        ]
-      }),
-    )
+    return appearanceId$
+      .pipe(
+        switchMap((id) => {
+          return combineLatest({
+            item: from(this.db.armorAppearancesById(id)).pipe(map((it) => this.selectItemModels(it))),
+            weapon: from(this.db.weaponAppearancesById(id)).pipe(map((it) => this.selectWeaponModels(it))),
+            weaponMale: from(this.db.weaponAppearancesById(id)).pipe(
+              switchMap((it) => this.db.armorAppearancesById(it?.Appearance)),
+              map((it) => this.selectItemModels(it)),
+            ),
+            weaponFemale: from(this.db.weaponAppearancesById(id)).pipe(
+              switchMap((it) => this.db.armorAppearancesById(it?.FemaleAppearance)),
+              map((it) => this.selectItemModels(it)),
+            ),
+            mountAttachment: from(this.db.mountAttachmentsAppearancesById(id)).pipe(
+              map((it) => this.selectWeaponModels(it)),
+            ),
+            instrument: from(this.db.instrumentAppearancesById(id)).pipe(map((it) => this.selectInstrumentModels(it))),
+          })
+        }),
+      )
+      .pipe(
+        map(({ item, weapon, weaponMale, weaponFemale, mountAttachment, instrument }) => {
+          return [
+            ...item,
+            //...weaponMale,
+            //...weaponFemale,
+            ...weapon,
+            ...mountAttachment,
+            ...instrument,
+          ]
+        }),
+      )
   }
 
   public byVitalsId(vitalsId$: Observable<string>) {
-    return combineLatest({
-      meta: this.db.vitalsMeta(vitalsId$),
-      modelsMap: this.db.vitalsModelsMetadataMap,
-      vital: this.db.vital(vitalsId$),
-    }).pipe(
-      map(({ meta, modelsMap, vital }) => {
-        const models = meta?.models?.map((it) => modelsMap.get(it))?.filter((it) => !!it)
-        if (!models?.length) {
-          return null
-        }
-        return models.map((model, i): ItemModelInfo => {
-          return {
-            name: vital?.DisplayName,
-            label: `Model ${i + 1}`,
-            url: `${this.cdnHost || ''}/vitals/${model.id}.glb`.toLowerCase(),
-            itemClass: [],
-            itemId: meta.vitalsID,
-            appearance: null,
+    return vitalsId$
+      .pipe(
+        switchMap((id) => {
+          return combineLatest({
+            vital: this.db.vitalsById(id),
+            meta: this.db.vitalsMetadataById(id),
+            modelsMap: this.db.vitalsModelsMetadataByIdMap(),
+          })
+        }),
+      )
+      .pipe(
+        map(({ meta, modelsMap, vital }) => {
+          const models = meta?.models?.map((it) => modelsMap.get(it))?.filter((it) => !!it)
+          if (!models?.length) {
+            return null
           }
-        })
-      }),
-    )
+          return models.map((model, i): ItemModelInfo => {
+            return {
+              name: vital?.DisplayName,
+              label: `Model ${i + 1}`,
+              url: `${this.cdnHost || ''}/vitals/${model.id}.glb`.toLowerCase(),
+              itemClass: [],
+              itemId: meta.vitalsID,
+              appearance: null,
+            }
+          })
+        }),
+      )
   }
 
   public byMountId(mountId$: Observable<string>) {
-    return this.db.mount(mountId$).pipe(
+    return mountId$.pipe(switchMap((id) => this.db.mountsById(id))).pipe(
       map((mount): ItemModelInfo[] => {
         if (!mount?.Mesh) {
           return null
@@ -176,7 +189,7 @@ export class ModelsService {
   }
 
   public byCostumeId(costumeId$: Observable<string>) {
-    return this.db.costume(costumeId$).pipe(
+    return costumeId$.pipe(switchMap((id) => this.db.costumeChangesById(id))).pipe(
       map((value): ItemModelInfo[] => {
         if (!value?.CostumeChangeMesh) {
           return null

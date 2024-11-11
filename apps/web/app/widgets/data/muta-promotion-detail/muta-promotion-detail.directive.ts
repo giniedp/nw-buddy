@@ -1,20 +1,16 @@
-import { Directive, forwardRef, Input } from '@angular/core'
+import { Directive, inject, Input } from '@angular/core'
 import { MutaPromotionDetailStore } from './muta-promotion-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbMutaPromotionDetail]',
   exportAs: 'promotionDetail',
-  providers: [
-    {
-      provide: MutaPromotionDetailStore,
-      useExisting: forwardRef(() => MutaPromotionDetailDirective),
-    },
-  ],
+  providers: [MutaPromotionDetailStore],
 })
-export class MutaPromotionDetailDirective extends MutaPromotionDetailStore {
+export class MutaPromotionDetailDirective {
+  private store = inject(MutaPromotionDetailStore)
   @Input()
   public set nwbMutaPromotionDetail(value: string) {
-    this.patchState({ promotionId: value })
+    this.store.load({ promotionId: value, elementId: null })
   }
 }

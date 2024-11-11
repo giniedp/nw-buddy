@@ -1,10 +1,10 @@
-import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
-import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
-import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus, getPerkScalingPerGearScore } from '@nw-data/common'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
+import { getAffixMODs, getPerkItemClassGSBonus, getPerkScalingPerGearScore, NW_FALLBACK_ICON } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
-import { EMPTY, catchError, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { combineLatestOrEmpty, rejectKeys, selectSignal, selectStream } from '~/utils'
 
@@ -16,9 +16,6 @@ export interface PerkDetailStoreState {
   refAbilities: string[]
   refEffects: string[]
   resourceItems: MasterItemDefinitions[]
-  isLoaded: boolean
-  isLoading: boolean
-  hasError: boolean
 }
 
 export type PerkDetailStore = InstanceType<typeof PerkDetailStore>
@@ -31,56 +28,14 @@ export const PerkDetailStore = signalStore(
     refAbilities: [],
     refEffects: [],
     resourceItems: [],
-    isLoaded: false,
-    isLoading: false,
-    hasError: false,
   }),
-  withRedux({
-    actions: {
-      public: {
-        load: payload<{ perkId: string }>(),
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load(perkId: string) {
+        return loadState(db, perkId)
       },
-      private: {
-        loadDone: payload<Omit<PerkDetailStoreState, 'isLoaded' | 'isLoading' | 'hasError'>>(),
-        loadError: payload<{ error: unknown }>(),
-      },
-    },
-    reducer(actions, on) {
-      on(actions.load, (state) => {
-        patchState(state, {
-          isLoading: true,
-          hasError: false,
-        })
-      })
-      on(actions.loadDone, (state, data) => {
-        patchState(state, {
-          ...data,
-          isLoaded: true,
-          isLoading: false,
-          hasError: false,
-        })
-      })
-      on(actions.loadError, (state, { error }) => {
-        console.error(error)
-        patchState(state, {
-          hasError: true,
-          isLoading: false,
-        })
-      })
-    },
-    effects(actions, create) {
-      const db = inject(NwDataService)
-      return {
-        load$: create(actions.load).pipe(
-          switchMap(({ perkId }) => loadState(db, perkId)),
-          map((data) => actions.loadDone(data)),
-          catchError((error) => {
-            actions.loadError({ error })
-            return EMPTY
-          }),
-        ),
-      }
-    },
+    }
   }),
   withComputed(({ perk, affix }) => {
     return {
@@ -141,14 +96,14 @@ export const PerkDetailStore = signalStore(
   }),
 )
 
-function loadState(db: NwDataService, perkId: string) {
-  const perk$ = db.perk(perkId)
+function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState> {
+  const perk$ = from(db.perksById(perkId))
   const affix$ = perk$.pipe(
     map((it) => it?.Affix),
-    switchMap((it) => db.affixStat(it)),
+    switchMap((it) => db.affixStatsById(it)),
   )
   const refAbilities$ = perk$.pipe(map((it) => it?.EquipAbility || []))
-  const abilities$ = refAbilities$.pipe(switchMap((it) => combineLatestOrEmpty(it?.map((id) => db.ability(id)))))
+  const abilities$ = refAbilities$.pipe(switchMap((it) => combineLatestOrEmpty(it?.map((id) => db.abilitiesById(id)))))
 
   const refEffects$ = selectStream(
     {
@@ -177,9 +132,9 @@ function loadState(db: NwDataService, perkId: string) {
 
   const resourceItems$ = selectStream(
     {
-      perkBuckets: db.perkBucketsByPerkIdMap,
-      resources: db.resourcesByPerkBucketIdMap,
-      items: db.itemsMap,
+      perkBuckets: db.perkBucketsByPerkIdMap(),
+      resources: db.resourceItemsByPerkBucketIdMap(),
+      items: db.itemsByIdMap(),
     },
     ({ perkBuckets, resources, items }) => {
       const buckets = perkBuckets.get(perkId)

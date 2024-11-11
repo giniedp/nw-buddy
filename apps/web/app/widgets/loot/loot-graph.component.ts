@@ -1,23 +1,26 @@
 import { ChangeDetectionStrategy, Component, Input, Output, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState } from '@ngrx/signals'
+import { uniq } from 'lodash'
 import { combineLatest, map, of, skip, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { LootNode, buildLootGraph, updateLootGraph } from '~/nw/loot/loot-graph'
 import { selectSignal, selectStream } from '~/utils'
-import { LootContextEditorComponent } from './loot-context-editor.component'
 import { LootGraphNodeComponent } from './loot-graph-node.component'
 import { LootGraphService } from './loot-graph.service'
 import { LootGraphStore } from './loot-graph.store'
-import { uniq } from 'lodash'
 
 @Component({
   standalone: true,
   selector: 'nwb-loot-graph',
   templateUrl: './loot-graph.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NwModule, LootGraphNodeComponent, LootContextEditorComponent],
+  imports: [
+    NwModule,
+    LootGraphNodeComponent,
+    //LootContextEditorComponent
+  ],
   providers: [LootGraphStore, LootGraphService],
   host: {
     class: 'flex flex-col gap-2',
@@ -26,7 +29,7 @@ import { uniq } from 'lodash'
 export class LootGraphComponent {
   private service = inject(LootGraphService)
   private store = inject(LootGraphStore)
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   @Input()
   public set showLocked(value: boolean) {
@@ -147,9 +150,9 @@ export class LootGraphComponent {
   private lootGraphForTable(tableId: string) {
     return selectStream(
       {
-        entry: this.db.lootTable(tableId),
-        tables: this.db.lootTablesMap,
-        buckets: this.db.lootBucketsMap,
+        entry: this.db.lootTablesById(tableId),
+        tables: this.db.lootTablesByIdMap(),
+        buckets: this.db.lootBucketsByIdMap(),
       },
       (data) => buildLootGraph(data),
     )

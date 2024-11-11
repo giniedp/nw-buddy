@@ -37,11 +37,11 @@ export const LoreDetailStore = signalStore(
     const db = injectNwData()
     return {
       load: ({ id }: { id: string }): Observable<LoreDetailState> => {
-        return loadData({ id, db})
-      }
+        return loadData({ id, db })
+      },
     }
   }),
-  withComputed(({ record, children, siblings }) => {
+  withComputed(({ record, siblings }) => {
     return {
       title: computed(() => record()?.Title),
       subtitle: computed(() => record()?.Subtitle),

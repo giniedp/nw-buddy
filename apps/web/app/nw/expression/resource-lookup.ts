@@ -1,39 +1,36 @@
+import { NwData } from '@nw-data/db'
 import { Observable, of } from 'rxjs'
 import { ExpressionResource } from './types'
-import { NwDataService } from '~/data'
 
-export function resourceLookup(
-  resource: ExpressionResource,
-  db: NwDataService
-): Observable<Map<string | number, unknown>> {
+export async function resourceLookup(resource: ExpressionResource, db: NwData): Promise<Map<string | number, unknown>> {
   switch (resource) {
     case 'AttributeThresholdAbilityTable': {
-      return db.abilitiesMap
+      return db.abilitiesByIdMap()
     }
     case 'Type_StatusEffectData': {
-      return db.statusEffectsMap
+      return db.statusEffectsByIdMap()
     }
     case 'DamageTable': {
-      return db.damageTableMap
+      return db.damageTablesByIdMap()
     }
     // case 'Type_DamageData': {
     //   return db.dmgTableEliteAffixMap
     // }
     case 'ConsumableItemDefinitions': {
-      return db.itemsConsumablesMap
+      return db.consumableItemsByIdMap()
     }
     case 'AffixStatDataTable':
     case 'Type_AffixStatData': {
-      return db.affixStatsMap
+      return db.affixStatsByIdMap()
     }
     case 'Afflictions': {
-      return db.afflictionsMap
+      return db.afflictionsByIdMap()
     }
     case 'ManaCosts_Player': {
-      return db.manacostsMap
+      return db.manaCostsByIdMap()
     }
     case 'StaminaCosts_Player': {
-      return db.staminacostsPlayerMap
+      return db.staminaDataByIdMap()
     }
     case 'SpellDataTable_Bow':
     case 'SpellDataTable_FireMagic':
@@ -49,7 +46,7 @@ export function resourceLookup(
     case 'SpellDataTable_VoidGauntlet':
     case 'SpellDataTable_WarHammer':
     case 'SpellDataTable_Flail': {
-      return db.spellsMap
+      return db.spellsByIdMap()
     }
     case 'ArtifactsAbilityTable':
     case 'BlunderbussAbilityTable':
@@ -70,17 +67,17 @@ export function resourceLookup(
     case 'Type_AbilityData':
     case 'VoidGauntletAbilityTable':
     case 'WarHammerAbilityTable': {
-      return db.abilitiesMap
+      return db.abilitiesByIdMap()
     }
     case 'LootLimits': {
-      return db.lootLimitsMap
+      return db.lootLimitsByIdMap()
     }
     case 'HouseItems': {
-      return db.housingItemsMap
+      return db.housingItemsByIdMap()
     }
     case 'Vitals_Player': {
-      return db.vitalsMap
+      return db.vitalsByIdMap()
     }
   }
-  return of(null)
+  return null
 }

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { combineLatest, defer, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
+import { DATASHEETS } from '@nw-data/generated'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { shareReplayRefCount } from '~/utils'
+import { apiResource } from '~/utils'
 
 export interface StandingRow {
   Level: number
@@ -11,14 +11,6 @@ export interface StandingRow {
   TradingPostLevel: number
   EarningCap: number
   NumberOfUpgradesRegressed: number
-}
-
-function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
-  let result = 0
-  for (let i = startIndex; i <= endIndex; i++) {
-    result += (data[i] as any)[key] as number
-  }
-  return result
 }
 
 @Component({
@@ -33,24 +25,24 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   },
 })
 export class TerritoryGovernanceTableComponent {
-  protected data$ = this.db.useTable((it) => it.TerritoryUpkeepDefinition.TerritoryUpkeep).pipe(shareReplayRefCount(1))
-  protected territries$ = defer(() =>
-    combineLatest({
-      data: this.data$,
-      territories: this.db.territoriesMap,
-    }),
-  ).pipe(
-    map(({ data, territories }) => {
-      return Object.keys(data[0])
-        .filter((it) => it.startsWith('EarningsDistributionTID'))
-        .map((it) => {
-          const id = Number(it.replace('EarningsDistributionTID', ''))
-          return territories.get(id)
-        })
-    }),
-  )
-
-  public constructor(private db: NwDataService) {
-    //
-  }
+  private db = injectNwData()
+  protected data = apiResource({
+    loader: () => this.db.loadDatasheet(DATASHEETS.TerritoryUpkeepDefinition.TerritoryUpkeep),
+  })
+  protected territoriesMap = apiResource({
+    loader: () => this.db.territoriesByIdMap(),
+  })
+  protected territories = computed(() => {
+    const data = this.data.value()
+    const territories = this.territoriesMap.value()
+    if (!data?.length || !territories) {
+      return []
+    }
+    return Object.keys(data[0])
+      .filter((it) => it.startsWith('EarningsDistributionTID'))
+      .map((it) => {
+        const id = Number(it.replace('EarningsDistributionTID', ''))
+        return territories.get(id)
+      })
+  })
 }

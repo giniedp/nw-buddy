@@ -1,8 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_LOOTTABLESDATA } from '@nw-data/generated'
-import { map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -16,10 +15,11 @@ import {
   lootTableColParents,
   lootTableColSource,
 } from './loot-table-cols'
+import { from } from 'rxjs'
 
 @Injectable()
 export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<LootTableGridRecord>({ optional: true })
   private utils: TableGridUtils<LootTableGridRecord> = inject(TableGridUtils)
 
@@ -50,7 +50,7 @@ export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord> {
   }
 
   public connect() {
-    return this.config?.source || this.db.lootTables.pipe(map(selectTables))
+    return this.config?.source || from(this.db.lootTablesAll().then(selectTables))
   }
 }
 

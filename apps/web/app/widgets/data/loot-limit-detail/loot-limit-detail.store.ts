@@ -1,43 +1,93 @@
-import { Injectable, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { getItemId } from '@nw-data/common'
-import { LootLimitData } from '@nw-data/generated'
+import { computed } from '@angular/core'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
+import { getItemId, LootBucketRow } from '@nw-data/common'
+import { GameEventData, HouseItems, LootLimitData, MasterItemDefinitions } from '@nw-data/generated'
+import { NwDataSheets } from 'libs/nw-data/db/nw-data-sheets'
 import { uniq } from 'lodash'
-import { map } from 'rxjs'
-import { NwDataService } from '~/data'
-import { eqCaseInsensitive, mapList, rejectKeys, selectStream, switchMapCombineLatest } from '~/utils'
+import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
+import { combineLatestOrEmpty, rejectKeys } from '~/utils'
 
-@Injectable()
-export class LootLimitDetailStore extends ComponentStore<{ limitId: string }> {
-  protected db = inject(NwDataService)
+export interface LootLimitDetailState {
+  limitId: string
+  lootLimit: LootLimitData
+  item: MasterItemDefinitions | HouseItems
+  buckets: LootBucketRow[]
+  lootTablesIds: string[]
+  eventsWithLimit: GameEventData[]
+  eventsAfterLimit: GameEventData[]
+}
+export const LootLimitDetailStore = signalStore(
+  withState<LootLimitDetailState>({
+    limitId: null,
+    lootLimit: null,
+    item: null,
+    buckets: [],
+    lootTablesIds: [],
+    eventsWithLimit: [],
+    eventsAfterLimit: [],
+  }),
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load: (id: string): Observable<LootLimitDetailState> => loadState(db, id),
+    }
+  }),
+  withComputed(({ lootLimit }) => {
+    return {
+      limitCount: computed(() => lootLimit()?.CountLimit),
+      cooldown: computed(() => secondsToDuration(lootLimit()?.LimitExpireSeconds)),
+      props: computed(() => selectProperties(lootLimit())),
+    }
+  }),
+)
 
-  public readonly limitId$ = this.select(({ limitId }) => limitId)
-  public readonly lootLimit$ = selectStream(this.db.lootLimit(this.limitId$))
-  public readonly limitCount$ = this.select(this.lootLimit$, (it) => it?.CountLimit)
-  public readonly cooldown$ = this.select(this.lootLimit$, (it) => secondsToDuration(it?.LimitExpireSeconds))
-  public readonly props$ = this.select(this.lootLimit$, selectProperties)
+function loadState(db: NwDataSheets, id: string): Observable<LootLimitDetailState> {
+  return combineLatest({
+    limitId: of(id),
+    lootLimit: from(db.lootLimitsById(id)),
+    item: from(db.itemOrHousingItem(id)),
+    buckets: from(db.lootBucketsByItemId(id)),
+  }).pipe(
+    switchMap((data) => {
+      return loadLootTableIds(db, { itemId: getItemId(data.item), limitId: data.limitId, buckets: data.buckets }).pipe(
+        map((list) => {
+          return {
+            ...data,
+            lootTablesIds: list,
+          }
+        }),
+      )
+    }),
+    switchMap((data) => {
+      return from(db.gameEventsByLootLimitId(data.limitId)).pipe(
+        map((eventsWithLimit) => {
+          return {
+            ...data,
+            eventsWithLimit,
+          }
+        }),
+      )
+    }),
+    switchMap((data) => {
+      return loadGameEventsAfterLimit(db, data.eventsWithLimit).pipe(
+        map((eventsAfterLimit) => {
+          return {
+            ...data,
+            eventsAfterLimit,
+          }
+        }),
+      )
+    }),
+  )
+}
 
-  public readonly item$ = selectStream(this.db.itemOrHousingItem(this.limitId$))
-
-  public readonly buckets$ = this.select(this.limitId$, this.db.lootBuckets, (itemId, buckets) => {
-    const result = buckets?.filter((it) => eqCaseInsensitive(it.Item, itemId))
-    return result?.length ? result : null
-  })
-
-  public readonly lootTables$ = selectStream(
-    {
-      limitId: this.limitId$,
-      itemId: this.item$.pipe(map(getItemId)),
-      lootTables: this.db.lootTables,
-      bucketIds: this.buckets$.pipe(
-        mapList((it) => it.LootBucket),
-        map((it) => uniq(it || [])),
-      ),
-    },
-    ({ limitId, itemId, lootTables, bucketIds }) => {
-      lootTables = lootTables || []
-
-      bucketIds = bucketIds || []
+function loadLootTableIds(db: NwDataSheets, options: { itemId: string; limitId: string; buckets: LootBucketRow[] }) {
+  return from(db.lootTablesAll()).pipe(
+    map((lootTables) => {
+      const itemId = options.itemId
+      const limitId = options.limitId
+      const bucketIds = options.buckets?.map((it) => it.LootBucket)
       let result: string[] = []
       for (const table of lootTables) {
         for (const item of table.Items) {
@@ -50,34 +100,15 @@ export class LootLimitDetailStore extends ComponentStore<{ limitId: string }> {
           }
         }
       }
-      result = uniq(result)
-      return result.length ? result : null
-    },
+      return uniq(result)
+    }),
   )
+}
 
-  public readonly eventsWithLimit$ = selectStream(this.db.gameEventsByLootLimitId(this.limitId$), (list) =>
-    list?.length ? list : null,
-  )
-  public readonly eventsAfterLimit$ = selectStream(
-    this.eventsWithLimit$.pipe(
-      mapList((it) => it.LootLimitReachedGameEventId),
-      map((list) => list?.filter((it) => !!it) || []),
-      switchMapCombineLatest((it) => this.db.gameEvent(it)),
-    ),
-    (list) => (list?.length ? list : null),
-  )
-
-  public constructor() {
-    super({ limitId: null })
-  }
-
-  public load(idOrItem: string | LootLimitData) {
-    if (typeof idOrItem === 'string') {
-      this.patchState({ limitId: idOrItem })
-    } else {
-      this.patchState({ limitId: idOrItem?.LootLimitID })
-    }
-  }
+function loadGameEventsAfterLimit(db: NwDataSheets, events: GameEventData[]): Observable<GameEventData[]> {
+  events ||= []
+  const eventIds = events.map((it) => it.LootLimitReachedGameEventId).filter((it) => !!it)
+  return combineLatestOrEmpty(eventIds.map((it) => db.gameEventsById(it)))
 }
 
 function selectProperties(item: LootLimitData) {

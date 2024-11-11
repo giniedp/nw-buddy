@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -20,7 +20,7 @@ import {
 
 @Injectable()
 export class LootBucketTableAdapter implements DataViewAdapter<LootBucketTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<LootBucketTableRecord>({ optional: true })
   private utils: TableGridUtils<LootBucketTableRecord> = inject(TableGridUtils)
 
@@ -53,9 +53,9 @@ export class LootBucketTableAdapter implements DataViewAdapter<LootBucketTableRe
 
   public connect() {
     return combineLatest({
-      items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
-      rows: this.db.lootBuckets,
+      items: this.db.itemsByIdMap(),
+      housing: this.db.housingItemsByIdMap(),
+      rows: this.db.lootBucketsAll(),
     }).pipe(
       map(({ items, housing, rows }) => {
         return rows

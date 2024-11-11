@@ -8,12 +8,12 @@ import { Observable, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { ItemInstancesDB } from '../items/items.db'
 import { ItemInstance } from '../items/types'
-import { NwDataService } from '../nw-data/nw-data.service'
 import { GearsetsDB } from './gearsets.db'
 import { GearsetRecord } from './types'
 import { withGearsetMethods } from './with-gearset-methods'
 import { withGearsetProps } from './with-gearset-props'
 import { withGearsetToMannequin } from './with-gearset-to-mannequin'
+import { NwData } from '@nw-data/db'
 
 export interface GearsetStoreState {
   readonly: boolean
@@ -104,12 +104,12 @@ export interface ResolvedItemPerkInfo extends ItemPerkInfo {
   bucket: PerkBucket
   perk: PerkData
 }
-export function resolveGearsetSlotItems(record: GearsetRecord, itemDB: ItemInstancesDB, db: NwDataService) {
+export function resolveGearsetSlotItems(record: GearsetRecord, itemDB: ItemInstancesDB, db: NwData) {
   return combineLatest({
     slots: resolveGearsetSlotInstances(record, itemDB),
-    items: db.itemsMap,
-    perks: db.perksMap,
-    buckets: db.perkBucketsMap,
+    items: db.itemsByIdMap(),
+    perks: db.perksByIdMap(),
+    buckets: db.perkBucketsByIdMap(),
   }).pipe(
     map(({ slots, items, perks, buckets }): ResolvedGersetSlotItem[] => {
       return slots.map(({ slot, instance }): ResolvedGersetSlotItem => {

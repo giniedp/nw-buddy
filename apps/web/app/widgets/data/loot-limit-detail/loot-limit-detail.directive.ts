@@ -1,4 +1,5 @@
-import { Directive, inject, Input, Output } from '@angular/core'
+import { Directive, inject, Input } from '@angular/core'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 import { LootLimitDetailStore } from './loot-limit-detail.store'
 
 @Directive({
@@ -12,9 +13,8 @@ export class LootLimitDetailDirective {
 
   @Input()
   public set nwbLootLimitDetail(value: string) {
-    this.store.patchState({ limitId: value })
+    this.store.load(value)
   }
 
-  @Output()
-  public nwbLootLimitDetailChange = this.store.lootLimit$
+  public nwbLootLimitDetailChange = outputFromObservable(toObservable(this.store.lootLimit))
 }

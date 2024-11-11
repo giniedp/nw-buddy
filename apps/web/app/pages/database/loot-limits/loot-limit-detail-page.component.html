@@ -10,30 +10,30 @@
       [disableStats]="true"
     />
   }
-  @if (detail.lootTables(); as tables) {
-    <h3 class="propse mt-2">Occurs In Loot Table</h3>
-    @for (table of tables; track $index) {
-      <nwb-loot-graph [tableId]="table" [showLocked]="true" [highlight]="limitId()" class="overflow-hidden" />
+  @for (table of detail.lootTables(); track $index; let isFirst = $first) {
+    @if (isFirst) {
+      <h3 class="propse mt-2">Occurs In Loot Table</h3>
     }
+    <nwb-loot-graph [tableId]="table" [showLocked]="true" [highlight]="limitId()" class="overflow-hidden" />
   }
-  @if (detail.eventsBeforeLimit(); as events) {
-    <h3 class="propse mt-2">Events Before Limit</h3>
-    @for (event of events; track $index) {
-      <nwb-game-event-detail [eventId]="event.EventID" #ed="detail">
-        @if (ed.lootTableId(); as table) {
-          <nwb-loot-graph class="mt-2" [tableId]="table" [showLocked]="true" [expand]="false" />
-        }
-      </nwb-game-event-detail>
+  @for (event of detail.eventsBeforeLimit(); track $index; let isFirst = $first) {
+    @if (isFirst) {
+      <h3 class="propse mt-2">Events Before Limit</h3>
     }
+    <nwb-game-event-detail [eventId]="event.EventID" #ed="detail">
+      @if (ed.lootTableId(); as table) {
+        <nwb-loot-graph class="mt-2" [tableId]="table" [showLocked]="true" [expand]="false" />
+      }
+    </nwb-game-event-detail>
   }
-  @if (detail.eventsAfterLimit(); as events) {
-    <h3 class="propse mt-2">Events After Limit</h3>
-    @for (event of events; track $index) {
-      <nwb-game-event-detail [eventId]="event.EventID" #ed="detail">
-        @if (ed.lootTableId(); as table) {
-          <nwb-loot-graph class="mt-2" [tableId]="table" [showLocked]="true" [expand]="false" />
-        }
-      </nwb-game-event-detail>
+  @for (event of detail.eventsAfterLimit(); track $index; let isFirst = $first) {
+    @if (isFirst) {
+      <h3 class="propse mt-2">Events After Limit</h3>
     }
+    <nwb-game-event-detail [eventId]="event.EventID" #ed="detail">
+      @if (ed.lootTableId(); as table) {
+        <nwb-loot-graph class="mt-2" [tableId]="table" [showLocked]="true" [expand]="false" />
+      }
+    </nwb-game-event-detail>
   }
 </div>

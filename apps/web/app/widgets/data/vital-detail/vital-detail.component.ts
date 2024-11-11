@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { patchState } from '@ngrx/signals'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailStore } from './vital-detail.store'
 
@@ -10,10 +9,7 @@ import { VitalDetailStore } from './vital-detail.store'
   templateUrl: './vital-detail.component.html',
   exportAs: 'vitalDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    VitalDetailHeaderComponent
-  ],
+  imports: [CommonModule, VitalDetailHeaderComponent],
   providers: [VitalDetailStore],
   host: {
     class: 'flex flex-col rounded-md overflow-clip',
@@ -21,24 +17,27 @@ import { VitalDetailStore } from './vital-detail.store'
 })
 export class VitalDetailComponent {
   public readonly store = inject(VitalDetailStore)
+  public vitalId = input<string>()
+  public level = input<number>()
+  public mutaElement = input<string>()
+  public mutaDifficulty = input<number>()
 
-  @Input({ required: true })
-  public set vitalId(value: string) {
-    patchState(this.store, { vitalId: value })
-  }
-
-  @Input()
-  public set level(value: number) {
-    patchState(this.store, { levelOverride: value })
-  }
-
-  @Input()
-  public set mutaElement(value: string) {
-    patchState(this.store, { mutaElementId: value })
-  }
-
-  @Input()
-  public set mutaDifficulty(value: number) {
-    patchState(this.store, { mutaDifficultyId: value })
+  public constructor() {
+    this.store.load(
+      computed(() => {
+        return {
+          vitalId: this.vitalId(),
+          level: this.level(),
+        }
+      }),
+    )
+    this.store.setMutation(
+      computed(() => {
+        return {
+          mutaElementId: this.mutaElement(),
+          mutaDifficultyId: this.mutaDifficulty(),
+        }
+      }),
+    )
   }
 }

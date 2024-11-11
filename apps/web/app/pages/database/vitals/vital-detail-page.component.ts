@@ -7,8 +7,8 @@ import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
 import { toSignal } from '@angular/core/rxjs-interop'
-import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
+import { TAB_SLIDE_ANIMATION } from '~/ui/animation/tab-slide'
 import { IconsModule } from '~/ui/icons'
 import { svgPen } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
@@ -19,7 +19,10 @@ import { VitalDetailModule, VitalDetailStore, VitalMapFeatureProperties } from '
 import { LootModule } from '~/widgets/loot'
 import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.component'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { LoadingBarComponent } from '../../../widgets/loader/loading-bar.component'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
+import { TabComponent } from "../../../ui/tabs/tab.component";
+import { TabsModule } from '~/ui/tabs'
 
 export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loot'
 
@@ -40,7 +43,9 @@ export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loo
     TooltipModule,
     IconsModule,
     GatherableDetailModule,
-  ],
+    LoadingBarComponent,
+    TabsModule,
+],
   providers: [VitalDetailStore],
   host: {
     class: 'block',
@@ -61,19 +66,22 @@ export class VitalDetailPageComponent {
 
   protected iconEdit = svgPen
 
-  protected lootTableIds: Signal<string[]> = selectSignal({
-    vital: this.store.vital,
-    isVitalFromDungeon: this.store.isVitalFromDungeon,
-  }, (it) => {
-    const result: string[] = []
-    if (it?.vital?.LootTableId) {
-      result.push(it.vital.LootTableId)
-    }
-    if (it?.isVitalFromDungeon) {
-      result.push('CreatureLootMaster_MutatedContainer')
-    }
-    return result
-  })
+  protected lootTableIds: Signal<string[]> = selectSignal(
+    {
+      vital: this.store.vital,
+      isVitalFromDungeon: this.store.isVitalFromDungeon,
+    },
+    (it) => {
+      const result: string[] = []
+      if (it?.vital?.LootTableId) {
+        result.push(it.vital.LootTableId)
+      }
+      if (it?.isVitalFromDungeon) {
+        result.push('CreatureLootMaster_MutatedContainer')
+      }
+      return result
+    },
+  )
   protected gatherableIds = selectSignal(this.store.metadata, (it) => it?.gthIDs || [])
 
   @ViewChild(LootContextEditorComponent, { static: false })
@@ -85,8 +93,26 @@ export class VitalDetailPageComponent {
     private i18n: TranslateService,
     private head: HtmlHeadService,
   ) {
-    this.store.loadById(observeRouteParam(this.route, 'id'))
-    this.store.loadMutaDifficulty(observeQueryParam(this.route, 'difficulty').pipe(map((it) => Number(it) || null)))
+    this.store.load(
+      observeRouteParam(this.route, 'id').pipe(
+        map((it) => {
+          return {
+            vitalId: it,
+            level: null,
+          }
+        }),
+      ),
+    )
+    this.store.setMutation(
+      observeQueryParam(this.route, 'difficulty').pipe(
+        map((it) => {
+          return {
+            mutaElementId: null,
+            mutaDifficultyId: Number(it) || null,
+          }
+        }),
+      ),
+    )
   }
 
   public selectTab(tab: DetailTabId) {

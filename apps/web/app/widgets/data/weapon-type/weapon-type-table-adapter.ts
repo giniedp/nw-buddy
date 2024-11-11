@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getUIHousingCategoryLabel } from '@nw-data/common'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
@@ -18,7 +18,7 @@ import {
 
 @Injectable()
 export class WeaponTypeTableAdapter implements DataViewAdapter<WeaponTypeTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<WeaponTypeTableRecord>({ optional: true })
   private utils: TableGridUtils<WeaponTypeTableRecord> = inject(TableGridUtils)

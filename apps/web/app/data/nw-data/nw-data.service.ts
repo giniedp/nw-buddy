@@ -37,7 +37,6 @@ import {
 
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataLoaderService } from './nw-data-loader.service'
-import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './views'
 
 import { annotate, table, tableGroupBy, tableIndexBy, tableLookup } from './dsl'
 
@@ -154,7 +153,6 @@ export class NwDataService {
   public abilitiesByRequiredEquippedAbilityId = tableLookup(() => this.abilitiesByRequiredEquippedAbilityIdMap)
   public abilitiesByAbilityListMap = tableGroupBy(() => this.abilities, 'AbilityList')
   public abilitiesByAbilityList = tableLookup(() => this.abilitiesByAbilityListMap)
-
 
   public statusEffects = table(() => this.loadEntries(DATASHEETS.StatusEffectData))
   public statusEffectsMap = tableIndexBy(() => this.statusEffects, 'StatusID')
@@ -432,7 +430,7 @@ export class NwDataService {
   public vitalsMetadata = table(() => {
     return [
       this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata1.json' }),
-      this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata2.json' })
+      this.load<ScannedVital>({ uri: 'nw-data/generated/vitals_metadata2.json' }),
     ]
   })
   public vitalsMetadataMap = tableIndexBy(() => this.vitalsMetadata, 'vitalsID')
@@ -546,9 +544,6 @@ export class NwDataService {
   public mutatorCurses = table(() => this.loadEntries(DATASHEETS.CurseMutationStaticData))
   public mutatorCursesMap = tableIndexBy(() => this.mutatorCurses, 'CurseMutationId')
   public mutatorCurse = tableLookup(() => this.mutatorCursesMap)
-
-  public viewGemPerksWithAffix = table(() => queryGemPerksWithAffix(this))
-  public viewMutatorDifficultiesWithRewards = table(() => queryMutatorDifficultiesWithRewards(this))
 
   public lootTables = table(() => {
     return this.loadEntries(DATASHEETS.LootTablesData).map((it) => it.pipe(map(convertLoottables)))

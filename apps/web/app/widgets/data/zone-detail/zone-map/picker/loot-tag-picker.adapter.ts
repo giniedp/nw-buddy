@@ -1,15 +1,13 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { inject } from '@angular/core'
 import { chain } from 'lodash'
-import { Observable, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { from, map, Observable } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { humanize } from '~/utils'
 import { LootTagCellComponent, LootTagRecord } from './loot-tag-cell.component'
 
 export class LootTagPickerAdapter implements DataViewAdapter<LootTagRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public entityID(item: LootTagRecord): string | number {
     return item.LootTagID.toLowerCase()
@@ -18,7 +16,7 @@ export class LootTagPickerAdapter implements DataViewAdapter<LootTagRecord> {
     return null
   }
   public connect(): Observable<LootTagRecord[]> {
-    return this.db.vitals.pipe(
+    return from(this.db.vitalsAll()).pipe(
       map((list) =>
         chain(list)
           .map((it) => it.LootTags || [])

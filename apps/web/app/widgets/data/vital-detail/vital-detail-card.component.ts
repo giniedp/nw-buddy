@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, Type, effect, inject, output, signal, untracked } from '@angular/core'
-import { patchState } from '@ngrx/signals'
+import { ChangeDetectionStrategy, Component, Type, computed, inject, input, model } from '@angular/core'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
-import { selectSignal } from '~/utils'
 import { VitalDetailAttacksComponent } from './vital-detail-attacks.component'
 import { VitalDetailBuffsComponent } from './vital-detail-buffs.component'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailModelsComponent } from './vital-detail-models.component'
 import { VitalDetailStatsComponent } from './vital-detail-stats.component'
 import { VitalDetailStore } from './vital-detail.store'
+import { LoadingBarComponent } from '~/widgets/loader'
+import { TabsModule } from '~/ui/tabs'
 
 export interface VitalDetailTab {
   id: string
@@ -25,10 +26,12 @@ export interface VitalDetailTab {
     CommonModule,
     NwModule,
     VitalDetailHeaderComponent,
+    LoadingBarComponent,
+    TabsModule,
     VitalDetailStatsComponent,
     VitalDetailAttacksComponent,
-    VitalDetailModelsComponent,
     VitalDetailBuffsComponent,
+    VitalDetailModelsComponent,
   ],
   providers: [VitalDetailStore],
   host: {
@@ -38,74 +41,31 @@ export interface VitalDetailTab {
   },
 })
 export class VitalDetailCardComponent {
-  private store = inject(VitalDetailStore)
-
-  @Input({ required: true })
-  public set vitalId(value: string) {
-    patchState(this.store, { vitalId: value })
-  }
-
-  @Input()
-  public set level(value: number) {
-    patchState(this.store, { levelOverride: value })
-  }
-
-  @Input()
-  public set mutaElement(value: string) {
-    patchState(this.store, { mutaElementId: value })
-  }
-
-  @Input()
-  public set mutaDifficulty(value: number) {
-    patchState(this.store, { mutaDifficultyId: value })
-  }
-
-  @Input()
-  public set activeTab(value: string) {
-    this.currentTab.set(value)
-  }
-
-  public activeTabChange = output<string>()
-
-  protected currentTab = signal<string>(null)
-  protected hasDarkBg = selectSignal(this.currentTab, (it) => it === 'models')
-  protected tabs = selectSignal(this.currentTab, (tab) => {
-    return [
-      {
-        id: 'stats',
-        label: 'Stats',
-        component: VitalDetailStatsComponent,
-      },
-      {
-        id: 'attacks',
-        label: 'Attacks',
-        component: VitalDetailAttacksComponent,
-      },
-      {
-        id: 'buffs',
-        label: 'Buffs',
-        component: VitalDetailBuffsComponent,
-      },
-      {
-        id: 'models',
-        label: '3D Model',
-        component: VitalDetailModelsComponent,
-      },
-    ].map((it, i) => {
-      return {
-        ...it,
-        active: (!tab && !i) || it.id === tab,
-      }
-    })
-  })
+  protected store = inject(VitalDetailStore)
+  public vitalId = input<string>()
+  public level = input<number>()
+  public mutaElement = input<string>()
+  public mutaDifficulty = input<number>()
+  public activeTab = model<string>()
+  public activeTabChange = outputFromObservable(toObservable(this.activeTab))
+  protected hasDarkBg = computed(() => this.activeTab() === 'models')
 
   public constructor() {
-    effect(() => {
-      const tab = this.currentTab()
-      if (tab) {
-        console.log('tab', tab)
-        untracked(() => this.activeTabChange.emit(tab))
-      }
-    })
+    this.store.load(
+      computed(() => {
+        return {
+          vitalId: this.vitalId(),
+          level: this.level(),
+        }
+      }),
+    )
+    this.store.setMutation(
+      computed(() => {
+        return {
+          mutaElementId: this.mutaElement(),
+          mutaDifficultyId: this.mutaDifficulty(),
+        }
+      }),
+    )
   }
 }

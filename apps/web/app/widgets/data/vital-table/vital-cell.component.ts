@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common'
-import { Component, HostListener, Input, inject } from '@angular/core'
+import { Component, HostListener, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getVitalCategoryInfo, getVitalHealth, getVitalTypeMarker } from '@nw-data/common'
+import { switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
-import { selectSignal, selectStream } from '~/utils'
+import { selectSignal } from '~/utils'
 import { EmptyComponent } from '~/widgets/empty'
 import { VitalTableRecord } from './vital-table-cols'
 
@@ -77,13 +78,13 @@ export class VitalGridCellComponent
     return this.state()?.vital
   }
 
-  private db = inject(NwDataService)
+  private db = injectNwData()
   protected vital$ = this.select(({ vital }) => vital)
   protected vitalId$ = this.select(({ vital }) => vital?.VitalsID)
   protected vitalLevel$ = this.select(({ vital }) => vital?.Level)
-  protected levelData$ = selectStream(this.db.vitalsLevel(this.vitalLevel$))
+  protected levelData$ = this.vitalLevel$.pipe(switchMap((it) => this.db.vitalsLevelsByLevel(it)))
   protected creatureType$ = this.select(({ vital }) => vital?.CreatureType)
-  protected modifier$ = selectStream(this.db.vitalsModifier(this.creatureType$))
+  protected modifier$ = this.creatureType$.pipe(switchMap((it) => this.db.vitalsModifiersById(it)))
   readonly health = selectSignal(
     {
       vital: this.vital$,

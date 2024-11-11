@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
 import { COLS_MASTERITEMDEFINITIONS, MasterItemDefinitions } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
@@ -40,7 +40,7 @@ import {
 
 @Injectable()
 export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<ItemTableRecord>({ optional: true })
   private utils: TableGridUtils<ItemTableRecord> = inject(TableGridUtils)
@@ -79,13 +79,13 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
 
   private source$ = selectStream(
     {
-      items: this.config?.source || this.db.items,
-      itemsMap: this.db.itemsMap,
-      housingMap: this.db.housingItemsMap,
-      perksMap: this.db.perksMap,
-      affixMap: this.db.affixStatsMap,
-      transformsMap: this.db.itemTransformsMap,
-      transformsMapReverse: this.db.itemTransformsByToItemIdMap,
+      items: this.config?.source || this.db.itemsAll(),
+      itemsMap: this.db.itemsByIdMap(),
+      housingMap: this.db.housingItemsByIdMap(),
+      perksMap: this.db.perksByIdMap(),
+      affixMap: this.db.affixStatsByIdMap(),
+      transformsMap: this.db.itemTransformsByIdMap(),
+      transformsMapReverse: this.db.itemTransformsByToItemIdMap(),
     },
     ({ items, itemsMap, housingMap, perksMap, affixMap, transformsMap, transformsMapReverse }) => {
       function getItem(id: string) {

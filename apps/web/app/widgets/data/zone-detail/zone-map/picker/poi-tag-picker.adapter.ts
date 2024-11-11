@@ -1,14 +1,13 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { inject } from '@angular/core'
 import { chain } from 'lodash'
-import { Observable, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { from, map, Observable } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { PoiTagCellComponent, PoiTagRecord } from './poi-tag-cell.component'
 
 export class PoiTagPickerAdapter implements DataViewAdapter<PoiTagRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public entityID(item: PoiTagRecord): string | number {
     return item.PoiTagID.toLowerCase()
@@ -17,7 +16,7 @@ export class PoiTagPickerAdapter implements DataViewAdapter<PoiTagRecord> {
     return null
   }
   public connect(): Observable<PoiTagRecord[]> {
-    return this.db.territories.pipe(
+    return from(this.db.territoriesAll()).pipe(
       map((list) =>
         chain(list)
           .map((it) => it.POITag || [])

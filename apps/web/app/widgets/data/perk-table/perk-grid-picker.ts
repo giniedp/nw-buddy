@@ -1,13 +1,11 @@
 import { Injector } from '@angular/core'
 import { Observable } from 'rxjs'
-import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { PerkTableAdapter, buildPerkTablePickerOptions } from './perk-table-adapter'
 import { PerkTableRecord } from './perk-table-cols'
 
 export function openPerksPicker(options: {
-  db: NwDataService
   ctx: NwTextContextService
   injector?: Injector
   title?: string

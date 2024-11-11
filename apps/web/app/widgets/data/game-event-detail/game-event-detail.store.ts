@@ -43,7 +43,7 @@ export const GameEventDetailStore = signalStore(
 )
 
 function loadState(db: NwDataBase, eventId: string) {
-  const gameEvent$ = from(db.gameEventsByid(eventId))
+  const gameEvent$ = from(db.gameEventsById(eventId))
   const reward$ = gameEvent$.pipe(map(selectGameEventItemReward))
   const itemReward$ = reward$.pipe(switchMap((it) => db.itemOrHousingItem(it?.itemId))).pipe()
   return combineLatest({

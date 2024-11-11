@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
-import { PerkBucketDetailPerksComponent } from './perk-bucket-detail.component'
+import { Component, computed, input, signal } from '@angular/core'
 import { PerkType } from '@nw-data/generated'
+import { injectNwData } from '~/data'
+import { apiResource } from '~/utils'
+import { PerkBucketDetailPerksComponent } from './perk-bucket-detail.component'
 
 export interface Tab {
   id: string
@@ -22,27 +21,27 @@ export interface Tab {
     class: 'block',
   },
 })
-export class PerkBucketDetailTabsComponent extends ComponentStore<{
-  perkBucketIds: string[]
-  itemId: string
-  tabId: string
-}> {
-  @Input()
-  public set perkBucketIds(value: string[]) {
-    this.patchState({ perkBucketIds: value })
-  }
+export class PerkBucketDetailTabsComponent {
+  private db = injectNwData()
 
-  @Input()
-  public set itemId(value: string) {
-    this.patchState({ itemId: value })
-  }
-  protected ids$ = this.select(({ perkBucketIds }) => perkBucketIds)
-  protected buckets$ = combineLatest({
-    buckets: this.db.perkBucketsMap,
-    ids: this.ids$,
-  }).pipe(map(({ ids, buckets }) => ids.map((id) => buckets.get(id)).filter((it) => !!it)))
+  public perkBucketIds = input<string[]>([])
+  public itemId = input<string>(null)
 
-  protected tabs$ = this.select(this.buckets$, (buckets) => {
+  protected resource = apiResource({
+    request: () => this.perkBucketIds(),
+    loader: async ({ request }) => {
+      if (!request?.length) {
+        return []
+      }
+      const bucketMap = await this.db.perkBucketsByIdMap()
+      const buckets = request.map((id) => bucketMap.get(id))
+      return buckets
+    },
+  })
+
+  public tabId = signal<string>(null)
+  public tabs = computed(() => {
+    const buckets = this.resource.value() || []
     return buckets.map((it, index): Tab => {
       return {
         id: String(index),
@@ -52,25 +51,11 @@ export class PerkBucketDetailTabsComponent extends ComponentStore<{
       }
     })
   })
-
-  protected tab$ = combineLatest({
-    tabId: this.select((it) => it.tabId),
-    tabs: this.tabs$,
-  }).pipe(map(({ tabId, tabs }) => tabs.find((it) => it.id === tabId) || tabs[0]))
-
-  protected vm$ = combineLatest({
-    itemId: this.select((it) => it.itemId),
-    tab: this.tab$,
-    tabs: this.tabs$,
+  public tab = computed(() => {
+    const tabId = this.tabId()
+    const tabs = this.tabs()
+    return tabs.find((it) => it.id === tabId) || tabs[0]
   })
-
-  public constructor(private db: NwDataService) {
-    super({
-      perkBucketIds: null,
-      tabId: null,
-      itemId: null,
-    })
-  }
 }
 
 function getPerkTypeLabel(type: PerkType) {
@@ -78,7 +63,7 @@ function getPerkTypeLabel(type: PerkType) {
     return 'Perk'
   }
   if (type === 'Inherent') {
-    return 'Attribute'
+    return 'Attr'
   }
   return type
 }

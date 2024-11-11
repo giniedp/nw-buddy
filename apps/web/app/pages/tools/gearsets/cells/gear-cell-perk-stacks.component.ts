@@ -1,12 +1,17 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { NwExpEval, NwExpJoin, getItemGsBonus, getPerkMultiplier, getPerkScalingPerGearScore, isPerkGenerated, parseNwExpression, walkNwExpression } from '@nw-data/common'
+import {
+  getItemGsBonus,
+  getPerkMultiplier,
+  getPerkScalingPerGearScore,
+  isPerkGenerated,
+  walkNwExpression,
+} from '@nw-data/common'
 import { AbilityData, StatusEffectData } from '@nw-data/generated'
 import { groupBy, sortBy, sumBy } from 'lodash'
-import { map } from 'rxjs'
+import { injectNwData } from '~/data'
 import { LocaleService, TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { ActivePerk, Mannequin } from '~/nw/mannequin'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
@@ -23,7 +28,7 @@ import { selectSignal } from '~/utils'
   },
 })
 export class GearCellPerkStacksComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private mannequin = inject(Mannequin)
   private i18n = inject(LocaleService)
   private tl8 = inject(TranslateService)
@@ -31,11 +36,11 @@ export class GearCellPerkStacksComponent {
   protected rows = selectSignal(
     {
       perks: this.mannequin.activePerks,
-      effects: this.db.statusEffectsMap,
-      abilities: this.db.abilitiesMap,
+      effects: this.db.statusEffectsByIdMap(),
+      abilities: this.db.abilitiesByIdMap(),
       locale: this.i18n.value$,
     },
-    (({ perks, effects, abilities }) => selectRows({ perks, effects, abilities, tl8: this.tl8 })),
+    ({ perks, effects, abilities }) => selectRows({ perks, effects, abilities, tl8: this.tl8 }),
   )
 }
 
@@ -43,7 +48,7 @@ function selectRows({
   perks,
   effects,
   abilities,
-  tl8
+  tl8,
 }: {
   perks: ActivePerk[]
   effects: Map<string, StatusEffectData>
@@ -68,7 +73,6 @@ function selectStackablePerks({
   effects: Map<string, StatusEffectData>
   abilities: Map<string, AbilityData>
 }) {
-
   return perks.filter(({ perk, affix }) => {
     // if (!perk.ScalingPerGearScore) {
     //   // HINT: in order to show correct number on tooltip, we need ScalingPerGearScore to be present
@@ -137,7 +141,7 @@ function injectMultiplierIntoDescription(description: string): string | null {
   if (description.includes('perkMultiplier')) {
     return description
   }
-  const parts: Array<{ lParen?: string, text: string, rParen?: string }> = []
+  const parts: Array<{ lParen?: string; text: string; rParen?: string }> = []
   walkNwExpression(description, {
     onText: (text) => parts.push({ text }),
     onExpression: (lParen, text, rParen) => {
@@ -145,7 +149,7 @@ function injectMultiplierIntoDescription(description: string): string | null {
     },
   })
 
-  const forceInjection = sumBy(parts, (it) => it.lParen ? 1 : 0) === 1
+  const forceInjection = sumBy(parts, (it) => (it.lParen ? 1 : 0)) === 1
   let isInjected = false
   const result = parts.map(({ lParen, text, rParen }) => {
     if (!lParen) {

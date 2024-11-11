@@ -29,6 +29,79 @@
     </div>
   }
   <nwb-vital-detail-map [vitalId]="vitalId()" (vitalClicked)="onPointClicked($event)" class="mb-2" />
+  <nwb-tabs-host>
+    <nwb-tab-left
+      class="btn btn-sm btn-square btn-ghost w-5"
+      [disabled]="!tabs.canScrollLeft()"
+      [class.hidden]="!tabs.canScroll()"
+    />
+    <nwb-tab-right
+      class="btn btn-sm btn-square btn-ghost w-5"
+      [disabled]="!tabs.canScrollRight()"
+      [class.hidden]="!tabs.canScroll()"
+    />
+    <nwb-tabs [active]="tab()" class="tabs tabs-bordered bg-base-300" #tabs>
+      <nwb-tab class="flex-1" [value]="'stats'" [content]="tabStats">Stats</nwb-tab>
+      <nwb-tab class="flex-1" [value]="'loot'" [content]="tabLoot">Loot</nwb-tab>
+      <nwb-tab class="flex-1" [value]="'damage-table'" [content]="tabAttacks">Attacks</nwb-tab>
+      <nwb-tab class="flex-1" [value]="'buffs'" [content]="tabBuffs">Buffs</nwb-tab>
+      <nwb-tab class="flex-1" [value]="'3d-model'" [content]="tabModels">3D</nwb-tab>
+    </nwb-tabs>
+    <ng-template #tabStats>
+      <div class="p-2">
+        <nwb-vital-detail-stats />
+      </div>
+    </ng-template>
+    <ng-template #tabAttacks>
+      <div class="p-2">
+        <nwb-vital-detail-attacks />
+      </div>
+    </ng-template>
+    <ng-template #tabBuffs>
+      <div class="p-2">
+        <nwb-vital-detail-buffs />
+      </div>
+    </ng-template>
+    <ng-template #tabModels>
+      <nwb-vital-detail-models />
+    </ng-template>
+    <ng-template #tabLoot>
+      <div class="space-y-4 p-2">
+        @if (lootTableIds()?.length) {
+          <nwb-loot-context-editor
+            [vitalId]="vitalId()"
+            [vitalLevel]="vitalLevel()"
+            [contLevel]="vitalLevel()"
+            #editor
+          />
+          <nwb-loot-graph
+            [tagsEditable]="true"
+            (addTagClicked)="editor.addTag($event)"
+            (removeTagClicked)="editor.removeTag($event)"
+            [tags]="editor.contextTags | async"
+            [tagValues]="editor.contextTagValues | async"
+            [tableId]="lootTableIds()"
+            [showLink]="true"
+            [showChance]="true"
+            [tagsEditable]="true"
+            [showHighlightPicker]="true"
+          />
+        }
+        @if (gatherableIds()?.length) {
+          <div>
+            <h3 class="text-nw-description">Gatherable</h3>
+            @for (item of gatherableIds(); track $index) {
+              <nwb-gatherable-detail [gatherableId]="item">
+                <nwb-gatherable-detail-header />
+              </nwb-gatherable-detail>
+            }
+          </div>
+        }
+      </div>
+    </ng-template>
+  </nwb-tabs-host>
+
+  <!--   
   <div class="flex tabs tabs-bordered flex-none justify-center bg-base-300">
     <button class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')">Stats</button>
     <button class="tab flex-1" [class.tab-active]="tab() === 'loot'" (click)="selectTab('loot')">Loot</button>
@@ -38,14 +111,13 @@
     <button class="tab flex-1" [class.tab-active]="tab() === 'buffs'" (click)="selectTab('buffs')">Buffs</button>
     <button class="tab flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')">3D</button>
   </div>
-  <div class="bg-base-300">
+  <nwb-loading-bar [isLoading]="store.isLoading()" />
+  <div class="bg-base-300 grid grid-cols-1 grid-rows-1" [class.mt-2]="tab() !== '3d-model'">
     @if (tab() === 'stats') {
-      <div class="p-4">
-        <nwb-vital-detail-stats />
-      </div>
+      <nwb-vital-detail-stats class="px-4 row-start-1 col-start-1" />
     }
     @if (tab() === 'loot') {
-      <div class="pt-2 space-y-4">
+      <div class="space-y-4 row-start-1 col-start-1">
         @if (lootTableIds()?.length) {
           <nwb-loot-context-editor
             [vitalId]="vitalId()"
@@ -79,13 +151,13 @@
       </div>
     }
     @if (tab() === 'damage-table') {
-      <nwb-vital-detail-attacks class="py-2 px-4" />
+      <nwb-vital-detail-attacks class="row-start-1 col-start-1" />
     }
     @if (tab() === 'buffs') {
-      <nwb-vital-detail-buffs />
+      <nwb-vital-detail-buffs class="row-start-1 col-start-1" />
     }
     @if (tab() === '3d-model') {
-      <nwb-vital-detail-models />
+      <nwb-vital-detail-models class="row-start-1 col-start-1" />
     }
-  </div>
+  </div> -->
 </div>

@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core'
 import { getPerkMultiplier, parseNwExpression } from '@nw-data/common'
-import { Observable, catchError, isObservable, map, of, throwError } from 'rxjs'
+import { catchError, from, isObservable, map, Observable, of, throwError } from 'rxjs'
+import { injectNwData } from '~/data'
 import { eqCaseInsensitive } from '~/utils'
 import { NwExpressionContext } from './nw-expression-context.service'
 import { resourceLookup } from './resource-lookup'
 import { ExpressionConstant } from './types'
-import { NwDataService } from '~/data'
 
 @Injectable({ providedIn: 'root' })
 export class NwExpressionService {
-  public constructor(private db: NwDataService) {}
+  private db = injectNwData()
+  //public constructor(private db: NwDataService) {}
 
   public parse(expression: string) {
     return parseNwExpression(expression)
@@ -23,7 +24,7 @@ export class NwExpressionService {
         catchError((err) => {
           console.error(err)
           return of(context.text)
-        })
+        }),
       )
   }
 
@@ -42,10 +43,10 @@ export class NwExpressionService {
 
   private evaluateResource(
     token: string,
-    context: NwExpressionContext & { text: string }
+    context: NwExpressionContext & { text: string },
   ): Observable<string | number> {
     const [resource, id, attr] = token.split('.')
-    return resourceLookup(resource as any, this.db)
+    return from(resourceLookup(resource as any, this.db))
       .pipe(
         map((data) => {
           if (!data) {
@@ -69,7 +70,7 @@ export class NwExpressionService {
             }
           }
           throw new Error(`Object has no attribute "${attr}" (for token "${token}" in text "${context.text}")`)
-        })
+        }),
       )
       .pipe(
         map((it) => {
@@ -79,39 +80,39 @@ export class NwExpressionService {
             return value
           }
           return it
-        })
+        }),
       )
   }
 
   private evaluateConstant(
     token: ExpressionConstant,
-    context: NwExpressionContext & { text: string }
+    context: NwExpressionContext & { text: string },
   ): Observable<string | number> {
     switch (token) {
       case 'ConsumablePotency': {
-        return this.db.statusEffectsMap.pipe(
+        return from(this.db.statusEffectsByIdMap()).pipe(
           map((it) => {
             if (it.has(context.itemId)) {
               return it.get(context.itemId).PotencyPerLevel * context.charLevel
             }
             console.error(
-              `ConsumablePotency not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`
+              `ConsumablePotency not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`,
             )
             return 1
-          })
+          }),
         )
       }
       case 'perkMultiplier':
       case 'attributePerkMultiplier':
-        return this.db.perksMap.pipe(
+        return from(this.db.perksByIdMap()).pipe(
           map((it) => {
             if (it.has(context.itemId)) {
               return getPerkMultiplier(it.get(context.itemId), context.gearScore)
             }
             throw new Error(
-              `perkMultiplier not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`
+              `perkMultiplier not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`,
             )
-          })
+          }),
         )
     }
 

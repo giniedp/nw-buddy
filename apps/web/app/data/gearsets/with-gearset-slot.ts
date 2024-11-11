@@ -1,4 +1,4 @@
-import { computed, effect, inject, signal } from '@angular/core'
+import { computed, inject, signal } from '@angular/core'
 import { signalStoreFeature, type, withComputed } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
@@ -14,7 +14,7 @@ import {
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { ItemInstance, ItemInstancesDB } from '../items'
-import { NwDataService } from '../nw-data'
+import { injectNwData } from '../nw-data'
 import { GearsetRecord } from './types'
 import { resolveGearsetSlot } from './utils'
 
@@ -29,7 +29,7 @@ export function withGearsetSlot() {
     },
     withComputed((state) => {
       const db = inject(ItemInstancesDB)
-      const data = inject(NwDataService)
+      const data = injectNwData()
 
       const instanceId = signal<string>(null)
       const instance = signal<ItemInstance>(null)
@@ -54,12 +54,14 @@ export function withGearsetSlot() {
           }),
         ),
       )
-      connect(computed(() => {
-        return {
-          gearset: state.gearset(),
-          slotId: state.slotId(),
-        }
-      }))
+      connect(
+        computed(() => {
+          return {
+            gearset: state.gearset(),
+            slotId: state.slotId(),
+          }
+        }),
+      )
 
       return {
         instanceId: computed(() => instanceId()),

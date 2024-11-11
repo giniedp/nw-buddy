@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Output, effect, inject, input, output, untracked, viewChild } from '@angular/core'
+import { Component, effect, inject, input, output, untracked, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { VitalsBaseData, VitalsLevelVariantData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgDice, svgExpand, svgFire } from '~/ui/icons/svg'
@@ -48,7 +47,7 @@ export class VitalDetailMapComponent {
     })
   }
 
-  protected onFeatureClicked(features: VitalMapFeature[]){
+  protected onFeatureClicked(features: VitalMapFeature[]) {
     const lookup = this.store.lookup()
     const feature = features?.[0]
     const properties = lookup[feature?.id]?.properties

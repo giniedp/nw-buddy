@@ -59,9 +59,9 @@ export function withGearsetsRows() {
     withNwData((db) => {
       const itemsDB = inject(ItemInstancesDB)
       return {
-        items: db.itemsMap,
-        perks: db.perksMap,
-        buckets: db.perkBucketsMap,
+        items: db.itemsByIdMap(),
+        perks: db.perksByIdMap(),
+        buckets: db.perkBucketsByIdMap(),
         instances: tableIndexBy(() => itemsDB.observeAll(), 'id'),
       }
     }),
