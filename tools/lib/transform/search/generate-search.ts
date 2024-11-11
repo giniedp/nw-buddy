@@ -243,7 +243,7 @@ async function indexQuests(dict: Record<string, string>, tables: DatasheetFile[]
 }
 
 async function indexVitals(dict: Record<string, string>, tables: DatasheetFile[], index: IndexTable) {
-  tables = tables.filter((it) => it.header.type === 'VitalsData')
+  tables = tables.filter((it) => it.header.type === 'VitalsBaseData')
   if (!tables.length) {
     logger.warn('No vitals tables found')
   }
