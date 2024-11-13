@@ -12,6 +12,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemDetailPageStore } from './inventory-detail-page.store'
 import { InventoryPickerService } from './inventory-picker.service'
+import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -44,6 +45,8 @@ export class InventoryDetailComponent {
     return this.store.isLoaded()
   }
 
+  protected minGs = NW_MIN_GEAR_SCORE
+  protected maxGs = NW_MAX_GEAR_SCORE
   protected isGearScoreOpen: boolean
   protected overrideGearScore: number
   protected gsTarget: Element

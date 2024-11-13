@@ -19,8 +19,8 @@
       <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
         <input
           type="range"
-          min="100"
-          max="700"
+          [min]="minGs"
+          [max]="maxGs"
           step="1"
           [ngModel]="instance?.gearScore"
           (ngModelChange)="handleGearScoreChange($event)"
