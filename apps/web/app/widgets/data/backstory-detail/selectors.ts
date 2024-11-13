@@ -20,6 +20,7 @@ const BACKGROUND_IMAGES = {
   Default: 'url(assets/backstories/backstory_image_level.png)',
 }
 
+export type BackstoryTradeskillData = ReturnType<typeof selectBackstoryTradeSkills>
 export function selectBackstoryTradeSkills(backstory: BackstoryDefinition) {
   return NW_TRADESKILLS_INFOS.map((it) => {
     return {

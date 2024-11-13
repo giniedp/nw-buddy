@@ -1,26 +1,64 @@
 import { inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
-import { AffixStatData, StatusEffectData } from '@nw-data/generated'
+import { NwData } from '@nw-data/db'
+import { AffixStatData, DamageData, SpellData, StatusEffectData } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
-import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
-import { humanize, mapList, rejectKeys, selectSignal } from '~/utils'
+import { injectNwData, withStateLoader } from '~/data'
+import { humanize, rejectKeys, selectSignal } from '~/utils'
 import { ModelsService } from '~/widgets/model-viewer'
 
 export interface StatusEffectDetailState {
   effectId: string
+  effect: StatusEffectData
+  affix: AffixStatData
+  foreignAbilities: string[]
+  foreignAffixStats: string[]
+  foreignPerks: string[]
+  foreignItems: string[]
+  foreignDamageTables: DamageData[]
+  foreignSpells: SpellData[]
 }
 export const StatusEffectDetailStore = signalStore(
-  withState<StatusEffectDetailState>({ effectId: null }),
-  withComputed(({ effectId }, db = inject(NwDataService)) => {
-    const effect = selectSignal(db.statusEffect(effectId))
-    const onHitAffixId = selectSignal(effect, (it) => it?.OnHitAffixes)
-    const affix = selectSignal(db.affixStat(onHitAffixId))
+  withState<StatusEffectDetailState>({
+    effectId: null,
+    effect: null,
+    affix: null,
+    foreignAbilities: [],
+    foreignAffixStats: [],
+    foreignPerks: [],
+    foreignItems: [],
+    foreignDamageTables: [],
+    foreignSpells: [],
+  }),
+  withStateLoader(() => {
+    const db = injectNwData()
     return {
-      effect,
-      affix,
+      load: async (effectId: string) => {
+        const effect = await db.statusEffectsById(effectId)
+        const affix$ = db.affixStatsById(effect?.OnHitAffixes)
+        const abilities$ = loadForeignAbilities(db, effectId)
+        const affixstat$ = loadForeignAffixStats(db, effectId)
+        const perks$ = loadForeignPerks(db, {
+          abilities: await abilities$,
+          affixes: await affixstat$,
+        })
+        const items$ = loadForeignItems(db, effectId)
+        const damageTables$ = loadForeignDamageTables(db, effectId)
+        const spells$ = loadForeignSpells(db, effectId)
+        return {
+          effectId,
+          effect,
+          affix: await affix$,
+          foreignAbilities: await abilities$,
+          foreignAffixStats: await affixstat$,
+          foreignPerks: await perks$,
+          foreignItems: await items$,
+          foreignDamageTables: await damageTables$,
+          foreignSpells: await spells$,
+        }
+      },
     }
   }),
   withComputed(({ effect, affix }) => {
@@ -37,82 +75,11 @@ export const StatusEffectDetailStore = signalStore(
       refAbilities: selectSignal(effect, (it) => uniq(flatten([it?.EquipAbility])).filter((e) => !!e)),
     }
   }),
-  withComputed(({ effectId }) => {
-    const db = inject(NwDataService)
-
-    const foreignAbilities = selectSignal(
-      [
-        db.abilitiesByStatusEffect(effectId).pipe(map((it) => it || [])),
-        db.abilitiesBySelfApplyStatusEffect(effectId).pipe(map((it) => it || [])),
-        db.abilitiesByOtherApplyStatusEffect(effectId).pipe(map((it) => it || [])),
-      ],
-      (abilities) => {
-        return uniq(flatten(abilities).map((it) => it?.AbilityID)).filter((it) => !!it)
-      },
-    )
-
-    const foreignAffixStats = selectSignal(db.affixByStatusEffect(effectId), (list) => {
-      return uniq(flatten(list || []).map((it) => it?.StatusID)).filter((it) => !!it)
-    })
-
-    const foreignPerks = selectSignal(
-      {
-        abilities: toObservable(foreignAbilities).pipe(switchMap((it) => perksByAbilities(it, db))),
-        affixes: toObservable(foreignAffixStats).pipe(switchMap((it) => perksByAffix(it, db))),
-      },
-      ({ abilities, affixes }) => {
-        return uniq([...(abilities || []), ...(affixes || [])]).filter((it) => !!it)
-      },
-    )
-
-    const foreignItems = selectSignal(
-      [
-        db
-          .housingItemsByStatusEffect(effectId)
-          .pipe(map((it) => it || []))
-          .pipe(mapList(getItemId)),
-        db
-          .consumablesByAddStatusEffects(effectId)
-          .pipe(map((it) => it || []))
-          .pipe(mapList((it) => it.ConsumableID)),
-      ],
-      (list) => list.flat().filter((it) => !!it),
-    )
-
-    const foreignDamageTables = selectSignal(
-      [db.damageTablesByStatusEffect(effectId).pipe(map((it) => it || []))],
-      (list) => list.flat().filter((it) => !!it),
-    )
-
-     const foreignSpells = selectSignal(
-      [db.spellsByStatusEffectId(effectId).pipe(map((it) => it || []))],
-      (list) => list.flat().filter((it) => !!it),
-    )
-    return {
-      foreignAbilities,
-      foreignAffixStats,
-      foreignPerks,
-      foreignItems,
-      foreignDamageTables,
-      foreignSpells,
-    }
-  }),
   withComputed(({ effect }) => {
     const costumeChangeId = selectSignal(effect, (it) => it?.CostumeChangeId)
     const costumeModel$ = inject(ModelsService).byCostumeId(toObservable(costumeChangeId))
     return {
       costumeModels: toSignal(costumeModel$),
-    }
-  }),
-  withMethods((state) => {
-    return {
-      load(idOrItem: string | StatusEffectData) {
-        if (typeof idOrItem === 'string') {
-          patchState(state, { effectId: idOrItem })
-        } else {
-          patchState(state, { effectId: idOrItem?.StatusID })
-        }
-      },
     }
   }),
 )
@@ -141,28 +108,88 @@ function selectStatusEffectReferences(item: StatusEffectData) {
     .filter((e) => e !== item.StatusID)
 }
 
-function perksByAffix(affix: string[], db: NwDataService): Observable<string[]> {
-  if (!affix?.length) {
-    return of<string[]>([])
-  }
-  return combineLatest(
-    affix.map((it) => {
-      return db.perksByAffix(it).pipe(map((it) => it || []))
-    }),
-  )
-    .pipe(map(flatten))
-    .pipe(mapList((it) => it.PerkID))
+async function loadForeignAbilities(db: NwData, effectId: string) {
+  return Promise.all([
+    db.abilitiesByStatusEffect(effectId),
+    db.abilitiesBySelfApplyStatusEffect(effectId),
+    db.abilitiesByOtherApplyStatusEffect(effectId),
+  ])
+    .then((l) => l.flat(1))
+    .then((l) => l.map((it) => it?.AbilityID))
+    .then((l) => l.filter((it) => !!it))
+    .then((l) => uniq(l))
 }
 
-function perksByAbilities(abilities: string[], db: NwDataService): Observable<string[]> {
-  if (!abilities?.length) {
-    return of<string[]>([])
+async function loadForeignAffixStats(db: NwData, effectId: string) {
+  return db
+    .affixByStatusEffect(effectId)
+    .then((l) => l || [])
+    .then((l) => l.map((it) => it?.StatusID))
+    .then((l) => l.filter((it) => !!it))
+    .then((l) => uniq(l))
+}
+
+async function loadForeignPerks(db: NwData, options: { abilities: string[]; affixes: string[] }) {
+  return await Promise.all([
+    //
+    loadPerksByAbilities(db, options.abilities),
+    loadPerksByAffix(db, options.affixes),
+  ])
+    .then((l) => l.flat(1))
+    .then((l) => l.filter((it) => !!it))
+    .then((l) => uniq(l))
+}
+
+async function loadForeignItems(db: NwData, effectId: string) {
+  const housingItems = db
+    .housingItemsByStatusEffect(effectId)
+    .then((l) => l || [])
+    .then((l) => l.map(getItemId))
+  const consumables = db
+    .consumableItemsByAddStatusEffects(effectId)
+    .then((l) => l || [])
+    .then((l) => l.map((it) => it.ConsumableID))
+
+  return Promise.all([housingItems, consumables])
+    .then((l) => l.flat(1))
+    .then((l) => l.filter((it) => !!it))
+    .then((l) => uniq(l))
+}
+
+async function loadForeignDamageTables(db: NwData, effectId: string) {
+  return db
+    .damageTablesByStatusEffect(effectId)
+    .then((l) => l || [])
+    .then((l) => l.filter((it) => !!it))
+}
+
+async function loadForeignSpells(db: NwData, effectId: string) {
+  return db
+    .spellsByStatusEffectId(effectId)
+    .then((l) => l || [])
+    .then((l) => l.filter((it) => !!it))
+}
+
+async function loadPerksByAffix(db: NwData, affix: string[]) {
+  if (!affix?.length) {
+    return []
   }
-  return combineLatest(
-    abilities.map((it) => {
-      return db.perksByEquipAbility(it).pipe(map((it) => it || []))
+  const perks = await Promise.all(
+    affix.map((it) => {
+      return db.perksByAffix(it)
     }),
-  )
-    .pipe(map(flatten))
-    .pipe(mapList((it) => it.PerkID))
+  ).then((it) => flatten(it || []))
+  return uniq(perks.map((it) => it.PerkID))
+}
+
+async function loadPerksByAbilities(db: NwData, abilities: string[]) {
+  if (!abilities?.length) {
+    return []
+  }
+  const perks = await Promise.all(
+    abilities.map((it) => {
+      return db.perksByEquipAbility(it)
+    }),
+  ).then((it) => flatten(it || []))
+  return uniq(perks.map((it) => it.PerkID))
 }

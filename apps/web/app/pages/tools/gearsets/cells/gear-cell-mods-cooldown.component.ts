@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
-import { NW_FALLBACK_ICON, getAbilityCategoryTag, getItemIconPath } from '@nw-data/common'
-import { NwDataService } from '~/data'
+import { getAbilityCategoryTag, getItemIconPath, NW_FALLBACK_ICON } from '@nw-data/common'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
@@ -37,11 +37,11 @@ export interface CooldownRow {
 })
 export class GearCellModsCooldownComponent {
   private mannequin = inject(Mannequin)
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   protected abilities = selectSignal(
     {
-      cooldowns: this.db.cooldownsByAbilityIdMap,
+      cooldowns: this.db.cooldownsByAbilityIdMap(),
       abilities: this.mannequin.activeWeaponAbilities,
       stats: this.mannequin.modCooldownReduction,
     },

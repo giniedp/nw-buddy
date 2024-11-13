@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getItemRarityWeight } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { Observable } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, DataViewCategory, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -22,7 +22,7 @@ import {
 
 @Injectable()
 export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private utils: TableGridUtils<ArmorsetGridRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<ArmorsetGridRecord>({ optional: true })
 
@@ -55,8 +55,8 @@ export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord> {
 
   private source$ = selectStream(
     {
-      items: this.db.items,
-      perks: this.db.perksMap,
+      items: this.db.itemsAll(),
+      perks: this.db.perksByIdMap(),
     },
     ({ items, perks }) => {
       const MIN_RARITY = 2

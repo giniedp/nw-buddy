@@ -1,9 +1,9 @@
-import { Injectable, inject } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { NPCData, VariationData } from '@nw-data/generated'
 import { ScannedNpc, ScannedVariation } from '@nw-data/scanner'
 import { groupBy, uniq } from 'lodash'
-import { firstValueFrom, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { table, tableGroupBy, tableIndexBy, tableLookup } from '~/data/nw-data/dsl'
 import { LocaleService, TranslateService } from '~/i18n'
 import { humanize, selectStream } from '~/utils'
@@ -27,7 +27,7 @@ export interface NpcGroup {
 
 @Injectable({ providedIn: 'root' })
 export class NpcService {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private tl8 = inject(TranslateService)
   private locale = inject(LocaleService)
 
@@ -35,10 +35,10 @@ export class NpcService {
   public npcsMap$ = tableIndexBy(() => this.npcs$, 'id')
   public npcs$ = selectStream(
     {
-      npcsMap: this.db.npcsMap,
-      npcMetaMap: this.db.npcsMetadataMap,
-      npcsVariationsMap: this.db.npcsVariationsByNpcIdMap,
-      variationMetaMap: this.db.variationsMetadataMap,
+      npcsMap: this.db.npcsByIdMap(),
+      npcMetaMap: this.db.npcsMetadataByIdMap(),
+      npcsVariationsMap: this.db.npcsVariationsByNpcIdMap(),
+      variationMetaMap: this.db.variationsMetadataByIdMap(),
     },
     (data) => {
       if (!data.npcsMap || !data.npcMetaMap || !data.npcsVariationsMap || !data.variationMetaMap) {
@@ -49,7 +49,7 @@ export class NpcService {
         //...data.npcsVariationsMap.keys(),
       ])
       return npcIds.map((id): NpcInfo => {
-        const npc = data.npcsMap.get(id)
+        const npcs = data.npcsMap.get(id)
         const meta = data.npcMetaMap.get(id)
 
         const variations =
@@ -61,7 +61,7 @@ export class NpcService {
           }) || []
         return {
           id: id,
-          data: npc,
+          data: npcs?.[0],
           meta: meta,
           variations: variations,
         }
@@ -90,7 +90,7 @@ export class NpcService {
           ids.map(async (id) => {
             return {
               id,
-              data: await firstValueFrom(this.db.variationsChunk(id)),
+              data: await this.db.variationsChunk(id),
             }
           }),
         )

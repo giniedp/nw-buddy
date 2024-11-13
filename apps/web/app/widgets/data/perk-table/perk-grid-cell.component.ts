@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input, OnInit, TemplateRef, ViewChild, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getAffixMODs } from '@nw-data/common'
 import { PerkData } from '@nw-data/generated'
-import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -100,8 +99,6 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
   public constructor(
     protected grid: VirtualGridComponent<PerkData>,
     protected context: NwTextContextService,
-
-    protected db: NwDataService,
     protected tip: TooltipDirective,
   ) {
     //

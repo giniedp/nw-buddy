@@ -1,26 +1,36 @@
-import { Injectable, Output } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
+import { computed } from '@angular/core'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { SpellData } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { injectNwData, withStateLoader } from '~/data'
 import { rejectKeys } from '~/utils'
 
-@Injectable()
-export class SpellDetailStore extends ComponentStore<{ spellId: string }> {
-  public readonly spellId$ = this.select(({ spellId }) => spellId)
-
-  @Output()
-  public readonly spell$ = this.select(this.db.spell(this.spellId$), (it) => it)
-
-  public readonly properties$ = this.select(this.spell$, selectProperties)
-
-  public constructor(protected db: NwDataService) {
-    super({ spellId: null })
-  }
-
-  public update(entityId: string) {
-    this.patchState({ spellId: entityId })
-  }
+export interface SpellDetailState {
+  spellId: string
+  spell: SpellData
 }
+
+export const SpellDetailStore = signalStore(
+  withState<SpellDetailState>({
+    spellId: null,
+    spell: null,
+  }),
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load: async (spellId: string) => {
+        return {
+          spellId,
+          spell: await db.spellsById(spellId),
+        }
+      },
+    }
+  }),
+  withComputed(({ spell }) => {
+    return {
+      properties: computed(() => selectProperties(spell())),
+    }
+  }),
+)
 
 function selectProperties(item: SpellData) {
   const reject = ['$source', 'SpellPrefabPath']

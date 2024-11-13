@@ -1,8 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, inject } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { getItemIdFromRecipe } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -18,7 +18,7 @@ import { SchematicRecord } from './types'
 
 @Injectable()
 export class SchematicsTableAdapter implements DataViewAdapter<SchematicRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private tl8 = inject(TranslateService)
   private config = injectDataViewAdapterOptions<SchematicRecord>({ optional: true })
 
@@ -55,10 +55,10 @@ export class SchematicsTableAdapter implements DataViewAdapter<SchematicRecord> 
   private source$ = selectStream(
     combineLatest({
       locale: this.tl8.locale.value$,
-      items: this.db.itemsMap,
-      itemsBySalvage: this.db.itemsBySalvageAchievement,
-      housingItems: this.db.housingItemsMap,
-      recipes: this.db.recipes,
+      items: this.db.itemsByIdMap(),
+      itemsBySalvage: this.db.itemsBySalvageAchievementMap(),
+      housingItems: this.db.housingItemsByIdMap(),
+      recipes: this.db.recipesAll(),
     }),
     (data) => {
       return sortBy(selectSchematics(data), (it) => this.tl8.get(it.item.Name))

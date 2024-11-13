@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, Input } from '@angular/core'
 import { getItemPerkIdsWithOverride } from '@nw-data/common'
 import { combineLatest, filter, firstValueFrom, map, of } from 'rxjs'
-import { GearsetStore, NwDataService } from '~/data'
+import { GearsetStore, injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { ActiveAttribute, Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
@@ -22,7 +22,7 @@ import { FlashDirective } from './ui/flash.directive'
   },
 })
 export class GearCellAttributesComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private store = inject(GearsetStore)
   private mannequin = inject(Mannequin)
   private modal = inject(ModalService)
@@ -75,9 +75,9 @@ export class GearCellAttributesComponent {
     const weapons = await firstValueFrom(
       combineLatest({
         weapons: of(this.mannequin.equippedWeapons()),
-        items: this.db.itemsMap,
-        perks: this.db.perksMap,
-        affix: this.db.affixStatsMap,
+        items: this.db.itemsByIdMap(),
+        perks: this.db.perksByIdMap(),
+        affix: this.db.affixStatsByIdMap(),
       }).pipe(
         map(({ weapons, items, perks, affix }) => {
           const weapon1 = weapons.find((it) => it.slot === 'weapon1')
@@ -140,12 +140,12 @@ export class GearCellAttributesComponent {
           con: attrs.con.bonus,
         },
         magnify: magnify,
-        magnifyPlacement
+        magnifyPlacement,
       },
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe((res) => {
-        this.store.patchGearset({ attrs: res.assigned, magnify: res.magnify})
+        this.store.patchGearset({ attrs: res.assigned, magnify: res.magnify })
       })
   }
 }

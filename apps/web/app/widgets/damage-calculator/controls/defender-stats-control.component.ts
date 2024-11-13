@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Injector } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, NW_MAX_GEAR_SCORE } from '@nw-data/common'
 import { filter, switchMap, take } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
@@ -40,16 +40,17 @@ import { PrecisionInputComponent } from './precision-input.component'
 export class DefenderStatsControlComponent {
   protected store = inject(DamageCalculatorStore)
   private injector = inject(Injector)
-  private data = inject(NwDataService)
+  private db = injectNwData()
   protected iconInfo = svgInfo
 
   protected isPlayer = defenderAccessor(this.store, 'isPlayer')
   protected vitalId = defenderAccessor(this.store, 'vitalId')
   protected level = defenderAccessor(this.store, 'level')
   protected gearScore = defenderAccessor(this.store, 'gearScore')
-  protected vitalName = selectSignal(this.data.vital(toObservable(this.store.defenderVitalId)), (it) => {
-    return it?.DisplayName
-  })
+
+  private vitalId$ = toObservable(this.store.defenderVitalId)
+  private vital$ = this.vitalId$.pipe(switchMap((it) => this.db.vitalsById(it)))
+  protected vitalName = selectSignal(this.vital$, (it) => it?.DisplayName)
   protected levelMin = 1
   protected get levelMax() {
     return this.isPlayer.value ? NW_MAX_CHARACTER_LEVEL : NW_MAX_ENEMY_LEVEL
@@ -82,7 +83,7 @@ export class DefenderStatsControlComponent {
     })
       .pipe(
         filter((it) => it != null),
-        switchMap((it: string[]) => this.data.vital(it[0])),
+        switchMap((it: string[]) => this.db.vitalsById(it[0])),
         take(1),
       )
       .subscribe((vital) => {

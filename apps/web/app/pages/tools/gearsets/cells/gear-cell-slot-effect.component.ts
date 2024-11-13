@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { combineLatest, take, tap } from 'rxjs'
+import { combineLatest, switchMap, take, tap } from 'rxjs'
 
 import { NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON, getStatusEffectTownBuffIds } from '@nw-data/common'
-import { GearsetSlotStore, NwDataService } from '~/data'
+import { getStatusEffectTownBuffIds, NW_FALLBACK_ICON } from '@nw-data/common'
+import { GearsetSlotStore, injectNwData } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -46,6 +46,7 @@ export interface EffectSlotState {
   },
 })
 export class GearCellSlotEffectComponent extends ComponentStore<EffectSlotState> {
+  private db = injectNwData()
   @Input()
   public set effectId(value: string) {
     this.patchState({ effectId: value })
@@ -68,9 +69,7 @@ export class GearCellSlotEffectComponent extends ComponentStore<EffectSlotState>
   public effectChange = new EventEmitter<Array<{ id: string; stack: number }>>()
 
   protected readonly effectId$ = this.select(({ effectId }) => effectId)
-  protected readonly effect$ = this.select(this.db.statusEffectsMap, this.effectId$, (effects, effectId) =>
-    effects.get(effectId),
-  )
+  protected readonly effect$ = this.effectId$.pipe(switchMap((id) => this.db.statusEffectsById(id)))
   protected readonly icon$ = this.select(this.effect$, (effect) => effect?.PlaceholderIcon || NW_FALLBACK_ICON)
   protected readonly count$ = this.select(({ count }) => count)
   protected readonly max$ = this.select(({ max }) => max)
@@ -97,7 +96,6 @@ export class GearCellSlotEffectComponent extends ComponentStore<EffectSlotState>
     .pipe(shareReplayRefCount(1))
 
   public constructor(
-    private db: NwDataService,
     private picker: InventoryPickerService,
     private renderer: Renderer2,
     private elRef: ElementRef<HTMLElement>,

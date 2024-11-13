@@ -4,15 +4,25 @@ import { FormsModule } from '@angular/forms'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { AttributeDefinition } from '@nw-data/generated'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, skip, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  from,
+  map,
+  of,
+  skip,
+  switchMap,
+} from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
 import { AttributeState, AttributesStore } from './attributes.store'
-import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -28,7 +38,7 @@ import { LayoutModule } from '~/ui/layout'
 })
 export class AttributesEditorComponent implements OnInit {
   private store = inject(AttributesStore)
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   @Input()
   public set level(value: number) {
@@ -92,7 +102,7 @@ export class AttributesEditorComponent implements OnInit {
   @Output()
   public magnifyPlacementChanged = this.store.magnifyPlacement$.pipe(skip(1)).pipe(distinctUntilChanged())
 
-  protected magnifyOptions: Array<{ label: string, value: AttributeRef }> = [
+  protected magnifyOptions: Array<{ label: string; value: AttributeRef }> = [
     { label: 'ui_Strength_short', value: 'str' },
     { label: 'ui_Dexterity_short', value: 'dex' },
     { label: 'ui_Intelligence_short', value: 'int' },
@@ -205,7 +215,7 @@ export class AttributesEditorComponent implements OnInit {
 
   protected getAbilities(state: AttributeState, points: number) {
     return combineLatest({
-      abilities: this.db.abilitiesMap,
+      abilities: this.db.abilitiesByIdMap(),
       levels: this.abilitiesLevels(state.ref),
     }).pipe(
       map(({ abilities, levels }) => {
@@ -245,15 +255,15 @@ export class AttributesEditorComponent implements OnInit {
   private attrLevels(ref: AttributeRef) {
     switch (resolveShortType(ref)) {
       case 'con':
-        return this.db.attrCon
+        return from(this.db.attrCon())
       case 'str':
-        return this.db.attrStr
+        return from(this.db.attrStr())
       case 'foc':
-        return this.db.attrFoc
+        return from(this.db.attrFoc())
       case 'int':
-        return this.db.attrInt
+        return from(this.db.attrInt())
       case 'dex':
-        return this.db.attrDex
+        return from(this.db.attrDex())
       default:
         return of<AttributeDefinition[]>([])
     }

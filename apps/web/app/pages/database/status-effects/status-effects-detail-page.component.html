@@ -2,49 +2,49 @@
   <div class="flex flex-col gap-2" [nwbScreenshotFrame]="recordId | async">
     <nwb-status-effect-detail [effectId]="recordId | async" class="bg-black" />
 
-     @for (effectId of detail.refEffects(); track $index; let isFirst = $first) {
+     @for (effectId of detail.store.refEffects(); track $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced Status Effects:</h3>
       }
       <nwb-status-effect-detail [effectId]="effectId" class="bg-black" />
     }
 
-    @for (abilityId of detail.refAbilities(); track $index; let isFirst = $first) {
+    @for (abilityId of detail.store.refAbilities(); track $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced Abilities:</h3>
       }
       <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
     }
 
-    @for (itemId of detail.foreignItems(); track $index; let isFirst = $first) {
+    @for (itemId of detail.store.foreignItems(); track $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced By Items:</h3>
       }
       <nwb-item-card [entityId]="itemId" [disableInfo]="true" [enableLink]="true" class="bg-black" />
     }
 
-    @for (abilityId of detail.foreignAbilities(); track $index; let isFirst = $first) {
+    @for (abilityId of detail.store.foreignAbilities(); track $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced By Abilities:</h3>
       }
       <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
     }
 
-    @for (perkId of detail.foreignPerks(); track $index; let isFirst = $first) {
+    @for (perkId of detail.store.foreignPerks(); track $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced By Perks:</h3>
       }
       <nwb-perk-detail [perkId]="perkId" class="bg-black" />
     }
 
-    @for (dmg of detail.foreignDamageTables(); track $index; let isFirst = $first) {
+    @for (dmg of detail.store.foreignDamageTables(); track $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced By Damage Tables:</h3>
       }
       <nwb-damage-row-detail [rowId]="dmg.DamageID" class="bg-black" />
     }
 
-    @for (spell of detail.foreignSpells(); track $index; let isFirst = $first) {
+    @for (spell of detail.store.foreignSpells(); track $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced By Spells:</h3>
       }

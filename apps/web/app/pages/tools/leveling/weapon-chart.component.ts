@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
-import { combineLatest, map } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { ChartModule } from '~/ui/chart'
+import { apiResource } from '~/utils'
 
 @Component({
   standalone: true,
@@ -18,31 +18,29 @@ import { ChartModule } from '~/ui/chart'
   },
 })
 export class WeaponChartComponent {
+  private db = injectNwData()
 
-  protected config$ = combineLatest({
-    data: this.db.weaponMastery
+  protected resource = apiResource({
+    loader: async (): Promise<ChartConfiguration> => {
+      const data = await this.db.weaponMasteryAll()
+      return {
+        type: 'line',
+        options: {
+          animation: false,
+          backgroundColor: '#FFF',
+        },
+        data: {
+          labels: data.map((it) => it.Rank + 1),
+          datasets: [
+            {
+              label: 'XP needed from previous level',
+              data: data.map((it) => it.MaximumInfluence),
+              backgroundColor: '#ffa600',
+            },
+          ],
+        },
+      }
+    },
   })
-  .pipe(map(({ data }): ChartConfiguration => {
-    return {
-      type: 'line',
-      options: {
-        animation: false,
-        backgroundColor: '#FFF',
-      },
-      data: {
-        labels: data.map((it) => it.Rank + 1),
-        datasets: [
-          {
-            label: 'XP needed from previous level',
-            data: data.map((it) => it.MaximumInfluence),
-            backgroundColor: '#ffa600'
-          }
-        ],
-      },
-    }
-  }))
-
-  public constructor(private db: NwDataService) {
-    //
-  }
+  protected config = this.resource.value
 }

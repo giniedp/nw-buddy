@@ -2,10 +2,11 @@ import { noPayload, payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
 import { describeNodeSize } from '@nw-data/common'
+import { ScannedVital } from '@nw-data/scanner'
 import { Feature, FeatureCollection, MultiPoint } from 'geojson'
 import { FilterSpecification } from 'maplibre-gl'
-import { EMPTY, catchError, combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { catchError, EMPTY, map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { GameMapService } from '~/widgets/game-map'
 
 export interface VitalDetailMapState {
@@ -93,7 +94,6 @@ export const VitalDetailMapStore = signalStore(
         patchState(state, { mapId })
       })
       on(actions.loaded, (state, data) => {
-
         const mapIds = Object.keys(data.data)
         patchState(state, {
           ...data,
@@ -114,11 +114,13 @@ export const VitalDetailMapStore = signalStore(
       })
     },
     effects(actions, create) {
-      const gameMap = inject(GameMapService)
-      const db = inject(NwDataService)
+      const service = inject(GameMapService)
+      const db = injectNwData()
       return {
         load$: create(actions.load).pipe(
-          switchMap(({ id }) => loadVitalData({ gameMap, db, id })),
+          switchMap(async ({ id }) => {
+            return loadVitalData(service, await db.vitalsMetadataById(id))
+          }),
           map(({ data, lookup, hasRandomEncounter }) => {
             actions.loaded({ data, lookup, hasRandomEncounter })
             return null
@@ -154,64 +156,57 @@ export const VitalDetailMapStore = signalStore(
   }),
 )
 
-function loadVitalData({ db, gameMap, id }: { db: NwDataService; gameMap: GameMapService; id: string }) {
-  return combineLatest({
-    vital: db.vital(id),
-    meta: db.vitalsMeta(id),
-  }).pipe(
-    map(({ vital, meta }) => {
-      const index: Record<string, Record<number, VitalMapFeature>> = {}
-      const lookup: Record<string | number, VitalMapFeature> = {}
-      const color = describeNodeSize('Medium').color
-      let hasRandomEncounter = false
-      let featureId = 0
-      for (const [mapId, spawns] of Object.entries(meta?.spawns || {})) {
-        index[mapId] ||= {}
-        const mapData = index[mapId]
-        for (const spawn of spawns) {
-          const levels = [...spawn.l]
-          if (levels.length === 0) {
-            levels.push(0)
-          }
-          for (const level of levels) {
-            hasRandomEncounter ||= spawn.e.includes('random')
-            mapData[level] ||= {
-              id: featureId++,
-              type: 'Feature',
-              geometry: {
-                type: 'MultiPoint',
-                coordinates: [],
-              },
-              properties: {
-                vitalId: id,
-                level: level,
-                color: color,
-                size: 1,
-                encounter: spawn.e,
-                territories: spawn.t || [],
-                label: String(level)
-              },
-            }
-            lookup[mapData[level].id] = mapData[level]
-            mapData[level].geometry.coordinates.push(gameMap.xyToLngLat([spawn.p[0], spawn.p[1]]))
-          }
-        }
+function loadVitalData(gameMap: GameMapService, meta: ScannedVital) {
+  const index: Record<string, Record<number, VitalMapFeature>> = {}
+  const lookup: Record<string | number, VitalMapFeature> = {}
+  const color = describeNodeSize('Medium').color
+  let hasRandomEncounter = false
+  let featureId = 0
+  for (const [mapId, spawns] of Object.entries(meta?.spawns || {})) {
+    index[mapId] ||= {}
+    const mapData = index[mapId]
+    for (const spawn of spawns) {
+      const levels = [...spawn.l]
+      if (levels.length === 0) {
+        levels.push(0)
       }
+      for (const level of levels) {
+        hasRandomEncounter ||= spawn.e.includes('random')
+        mapData[level] ||= {
+          id: featureId++,
+          type: 'Feature',
+          geometry: {
+            type: 'MultiPoint',
+            coordinates: [],
+          },
+          properties: {
+            vitalId: meta.vitalsID,
+            level: level,
+            color: color,
+            size: 1,
+            encounter: spawn.e,
+            territories: spawn.t || [],
+            label: String(level),
+          },
+        }
+        lookup[mapData[level].id] = mapData[level]
+        mapData[level].geometry.coordinates.push(gameMap.xyToLngLat([spawn.p[0], spawn.p[1]]))
+      }
+    }
+  }
 
-      const result: Record<string, VitalMapFeatureCollection> = {}
-      for (const [mapId, data] of Object.entries(index)) {
-        result[mapId] = {
-          type: 'FeatureCollection',
-          features: Object.values(data),
-        }
-      }
-      return {
-        data: result,
-        lookup,
-        hasRandomEncounter,
-      }
-    }),
-  )
+  const result: Record<string, VitalMapFeatureCollection> = {}
+  for (const [mapId, data] of Object.entries(index)) {
+    result[mapId] = {
+      type: 'FeatureCollection',
+      features: Object.values(data),
+    }
+  }
+  return {
+    data: result,
+    lookup,
+    hasRandomEncounter,
+  }
 }
 
 function selectBounds(data: VitalMapFeatureCollection): [number, number, number, number] {

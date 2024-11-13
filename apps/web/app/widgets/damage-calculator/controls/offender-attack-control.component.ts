@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NwDataService } from '~/data'
+import { AttackType } from '@nw-data/generated'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
@@ -10,35 +11,25 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize, selectSignal } from '~/utils'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
-import { StackedValueControlComponent } from './stacked-value-control.component'
 import { PrecisionInputComponent } from './precision-input.component'
-import { AttackType, DamageData } from '@nw-data/generated'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-attack-control',
   templateUrl: './offender-attack-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    FormsModule,
-    LayoutModule,
-    TooltipModule,
-    IconsModule,
-    PrecisionInputComponent,
-  ],
+  imports: [CommonModule, NwModule, FormsModule, LayoutModule, TooltipModule, IconsModule, PrecisionInputComponent],
   host: {
     class: 'form-control',
   },
 })
 export class OffenderAttackControlComponent {
-  private data = inject(NwDataService)
+  private db = injectNwData()
   protected store = inject(DamageCalculatorStore)
   protected damageRow = offenderAccessor(this.store, 'damageRow')
   protected attackType = offenderAccessor(this.store, 'attackType')
   protected attackKind = offenderAccessor(this.store, 'attackKind')
-  protected attackInfo =  computed(() => {
+  protected attackInfo = computed(() => {
     return attackInfo(this.attackType.value, this.attackKind.value === 'Ranged')
   })
 
@@ -51,7 +42,7 @@ export class OffenderAttackControlComponent {
   protected attackOptions = selectSignal(
     {
       weaponTag: this.store.offender.weaponTag,
-      tables: this.data.damageTables0,
+      tables: this.db.damageTables0(),
     },
     ({ weaponTag, tables }) => {
       if (!weaponTag || !tables) {
@@ -64,12 +55,11 @@ export class OffenderAttackControlComponent {
       return tables
         .filter((it) => it.DamageID.toLowerCase().startsWith(prefix.toLowerCase()))
         .map((it) => {
-
           return {
             label: humanize(it.DamageID.replace(prefix, '')),
             value: it.DamageID,
             coef: it.DmgCoef,
-            ...attackInfo(it.AttackType, ['1', 'true'].includes(String(it.IsRanged).toLowerCase()))
+            ...attackInfo(it.AttackType, ['1', 'true'].includes(String(it.IsRanged).toLowerCase())),
           }
         })
     },
@@ -89,6 +79,6 @@ function attackInfo(type: string, isRanged: boolean) {
     isLight: type === 'Light',
     isMagic: type === 'Magic',
     isAbility: type === 'Ability',
-    type: type
+    type: type,
   }
 }

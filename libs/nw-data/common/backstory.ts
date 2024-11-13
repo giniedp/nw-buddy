@@ -1,9 +1,4 @@
-import {
-  BackstoryDefinition,
-  HouseItems,
-  MasterItemDefinitions,
-  PerkData,
-} from '../generated/types'
+import { BackstoryDefinition, HouseItems, MasterItemDefinitions, PerkData } from '../generated/types'
 import { getItemMaxGearScore, getItemPerkBucketKeys, getItemPerkKeys, isMasterItem } from './item'
 import { PerkBucket } from './perk-buckets'
 import { isPerkInherent } from './perks'

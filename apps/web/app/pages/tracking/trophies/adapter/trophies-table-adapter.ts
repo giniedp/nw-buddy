@@ -1,8 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, inject } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { getItemId, getRecipeForItem } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { selectStream } from '~/utils'
@@ -11,13 +11,13 @@ import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 import { groupBy, sortBy } from 'lodash'
-import { combineLatest, map } from 'rxjs'
+import { combineLatest } from 'rxjs'
 import { TrophiesCellComponent } from './trophies-cell.component'
 import { TrophiesRecord } from './types'
 
 @Injectable()
 export class TrophiesTableAdapter implements DataViewAdapter<TrophiesRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public entityID(item: TrophiesRecord): string {
     return item.itemId
@@ -41,8 +41,8 @@ export class TrophiesTableAdapter implements DataViewAdapter<TrophiesRecord> {
 
   private source$ = selectStream(
     combineLatest({
-      recipes: this.db.recipesMapByItemId,
-      trophies: this.db.housingItems.pipe(map((it) => it.filter(isTrophyItem))),
+      recipes: this.db.recipesByItemIdMap(),
+      trophies: this.db.housingItemsAll().then((it) => it.filter(isTrophyItem)),
     }),
     selectRecords,
   )

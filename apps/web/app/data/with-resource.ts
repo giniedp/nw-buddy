@@ -70,6 +70,7 @@ export function withStateLoader<Input extends SignalStoreFeatureResult, P>(
       const refresh$ = new Subject<void>()
 
       function loadError(err: any) {
+        console.log(err)
         patchState(state, { status: 'error', error: err })
       }
       function loadDone(res: Input['state']) {

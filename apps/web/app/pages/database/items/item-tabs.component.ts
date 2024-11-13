@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component, Input, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { observeQueryParam, shareReplayRefCount } from '~/utils'
@@ -13,7 +12,6 @@ import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
-import { ModelsService } from '~/widgets/model-viewer'
 
 export interface Tab {
   id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'transmog' | 'gearset' | 'loot'
@@ -137,8 +135,4 @@ export class ItemTabsComponent extends ItemDetailStore {
       }),
     )
     .pipe(shareReplayRefCount(1))
-
-  public constructor(db: NwDataService, ms: ModelsService) {
-    super(db, ms)
-  }
 }

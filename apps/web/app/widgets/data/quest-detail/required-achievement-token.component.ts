@@ -10,8 +10,8 @@ import {
   isHousingItem,
 } from '@nw-data/common'
 import { AchievementData } from '@nw-data/generated'
-import { Observable, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { Observable, from, map, of, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwLinkService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { combineLatestOrEmpty, selectSignal } from '~/utils'
@@ -60,12 +60,14 @@ export interface AchievementResource {
   imports: [NwModule, RouterModule, IconsModule],
 })
 export class RequiredAchievementTokenComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private link = inject(NwLinkService)
 
   public token = input.required<AchievementExpression>()
   protected achievementId = selectSignal(this.token, (it) => it?.value)
-  protected achievement = selectSignal(this.db.achievement(this.achievementId))
+  protected achievement = selectSignal(
+    toObservable(this.achievementId).pipe(switchMap((id) => this.db.achievementsById(id))),
+  )
   protected resource = toSignal(toObservable(this.achievement).pipe(switchMap((it) => this.selectResource(it))))
 
   @HostBinding('class.border')
@@ -89,7 +91,7 @@ export class RequiredAchievementTokenComponent {
     if (category === 'FirstCraft' || category === 'Recipe') {
       // crafting by FirstCraftAchievementId
       // db.recipes.pipe(map((list) => list.find((it) => eqCaseInsensitive(it.FirstCraftAchievementId, achievementId))))
-      return this.db.recipesByFirstCraftAchievementId(achievementId).pipe(
+      return from(this.db.recipesByFirstCraftAchievementId(achievementId)).pipe(
         switchMap((list = []) => {
           return combineLatestOrEmpty(list.map((it) => this.db.itemOrHousingItem(getItemIdFromRecipe(it))))
         }),
@@ -114,7 +116,7 @@ export class RequiredAchievementTokenComponent {
     }
     if (category === 'Map') {
       // db.territories.pipe(map((list) => list.find((it) => eqCaseInsensitive(it.DiscoveredAchievement, achievementId))))
-      return this.db.territoriesByDiscoveredAchievement(achievementId).pipe(
+      return from(this.db.territoriesByDiscoveredAchievement(achievementId)).pipe(
         map((list = []) => {
           return list.map((it): AchievementResource => {
             return {
@@ -136,7 +138,7 @@ export class RequiredAchievementTokenComponent {
       // db.playerTitles.pipe(map((list) => list.find((it) => eqCaseInsensitive(it.AchievementId, achievementId))))
     }
     if (category === 'Objective') {
-      return this.db.objectivesByAchievementId(achievementId).pipe(
+      return from(this.db.objectivesByAchievementId(achievementId)).pipe(
         map((list = []) => {
           return list.map((it): AchievementResource => {
             return {

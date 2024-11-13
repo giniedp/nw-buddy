@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { AttributeType, NW_ATTRIBUTE_TYPES, PerkBucket, PerkBucketEntry, getItemIconPath, getPerkBucketPerks } from '@nw-data/common'
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
+import { AttributeType, getPerkBucketPerks, NW_ATTRIBUTE_TYPES, PerkBucket, PerkBucketEntry } from '@nw-data/common'
 import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
-import { of, startWith } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
-import { selectStream } from '~/utils'
+import { apiResource } from '~/utils'
 import { ItemDetailModule } from '../data/item-detail'
 
 export interface AttributeCraftMod {
@@ -28,20 +27,18 @@ export interface AttributeCraftMod {
   },
 })
 export class AttributeCraftModsComponent {
-  protected readonly attributes$ = of(NW_ATTRIBUTE_TYPES)
-  protected readonly table$ = selectStream(
-    {
-      attributes: this.attributes$,
-      items: selectStream(this.db.items, selectItems),
-      perks: this.db.perksMap,
-      buckets: this.db.perkBucketsMap,
+  private db = injectNwData()
+  protected attributes = signal(NW_ATTRIBUTE_TYPES)
+  protected resource = apiResource({
+    loader: async () => {
+      return selectMods({
+        attributes: NW_ATTRIBUTE_TYPES,
+        items: await this.db.itemsAll().then(selectItems),
+        perks: await this.db.perksByIdMap(),
+        buckets: await this.db.perkBucketsByIdMap(),
+      })
     },
-    selectMods
-  )
-
-  public constructor(private db: NwDataService) {
-    //
-  }
+  })
 }
 
 function selectItems(items: MasterItemDefinitions[]) {
@@ -73,10 +70,10 @@ function selectMods({
       const hasSecondary = primary.type !== secondary.type
 
       const item = items.find((it) => {
-        if (it.IngredientCategories[1] !== `Attribute${primary.type.substring(0,3)}`) {
+        if (it.IngredientCategories[1] !== `Attribute${primary.type.substring(0, 3)}`) {
           return false
         }
-        if (hasSecondary && it.IngredientCategories[2] !== `Attribute${secondary.type.substring(0,3)}`) {
+        if (hasSecondary && it.IngredientCategories[2] !== `Attribute${secondary.type.substring(0, 3)}`) {
           return false
         }
         return true
@@ -88,7 +85,7 @@ function selectMods({
         primaryAttribute: primary.shortName,
         secondaryAttribute: secondary.shortName,
         name: item.Name,
-        suffix: suffix
+        suffix: suffix,
       }
     })
   })

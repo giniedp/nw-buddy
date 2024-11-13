@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
-import { ActivatedRoute, RouterModule } from '@angular/router'
+import { RouterModule } from '@angular/router'
 import { TerritoryDefinition } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
-import { NwDataService } from '~/data'
 import { TerritoriesService } from '~/nw/territories'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
@@ -23,6 +23,8 @@ import { TerritoryModule } from '~/widgets/territory'
   },
 })
 export class TerritoriesListComponent {
+  private db = injectNwData()
+
   protected territories$ = defer(() => this.territories())
     .pipe(switchMap((it) => combineLatest(it.map((i) => this.territoryWithinfo(i)))))
     .pipe(map((it) => it.filter((i) => i.matchSearch)))
@@ -33,16 +35,15 @@ export class TerritoriesListComponent {
   protected trackById: TrackByFunction<TerritoryDefinition> = (i, it) => it?.TerritoryID
 
   public constructor(
-    private db: NwDataService,
     private i18n: TranslateService,
     private search: QuicksearchService,
-    private service: TerritoriesService
+    private service: TerritoriesService,
   ) {
     //
   }
 
   private territories() {
-    return defer(() => this.db.territories)
+    return defer(() => this.db.territoriesAll())
       .pipe(map((list) => list.filter((it) => it.IsTerritory && !!it.TerritoryStandingXpModifier)))
       .pipe(map((list) => sortBy(list, (it) => it.NameLocalizationKey)))
   }
@@ -50,19 +51,20 @@ export class TerritoriesListComponent {
   private territoryWithinfo(it: TerritoryDefinition) {
     return combineLatest({
       search: this.search.query$,
-      pref: this.service.getPreferences(it.TerritoryID)
-    })
-    .pipe(map(({ search, pref }) => {
-      const matchNotes = testString(pref?.notes, search)
-      const matchTags = pref?.tags?.some((tag) => testString(tag, search))
-      const matchName = testString(it.NameLocalizationKey, search)
+      pref: this.service.getPreferences(it.TerritoryID),
+    }).pipe(
+      map(({ search, pref }) => {
+        const matchNotes = testString(pref?.notes, search)
+        const matchTags = pref?.tags?.some((tag) => testString(tag, search))
+        const matchName = testString(it.NameLocalizationKey, search)
 
-      return {
-        territory: it,
-        pref: pref,
-        matchSearch: matchName || matchTags || matchNotes
-      }
-    }))
+        return {
+          territory: it,
+          pref: pref,
+          matchSearch: matchName || matchTags || matchNotes,
+        }
+      }),
+    )
   }
 }
 

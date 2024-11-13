@@ -1,13 +1,13 @@
 import { Injectable, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
 import { LootTable, getBackstoryItems, isItemOfAnyClass, isMasterItem } from '@nw-data/common'
 import { BackstoryDefinition, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, debounceTime, map, startWith } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
-import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
 import { BackstoryTreeNode } from './types'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 export interface BackstoryLootTreeState {
   nodes: BackstoryTreeNode[]
@@ -17,7 +17,7 @@ export interface BackstoryLootTreeState {
 
 @Injectable()
 export class BackstoryLootTreeStore extends ComponentStore<BackstoryLootTreeState> {
-  protected db = inject(NwDataService)
+  protected db = injectNwData()
   protected tl8 = inject(TranslateService)
   public readonly query$ = this.select(({ query }) => query)
   public readonly nodes$ = this.select(({ nodes }) => nodes)
@@ -42,7 +42,6 @@ export class BackstoryLootTreeStore extends ComponentStore<BackstoryLootTreeStat
       hasLoot: false,
       query: '',
     })
-    this.db.lootTablesMap
   }
 
   public updateTree(modify: (step: BackstoryTreeNode) => BackstoryTreeNode) {
@@ -67,9 +66,9 @@ export class BackstoryLootTreeStore extends ComponentStore<BackstoryLootTreeStat
   public readonly load = this.effect<BackstoryDefinition>((bs$) => {
     return combineLatest({
       data: bs$,
-      itemsMap: this.db.itemsMap,
-      housingMap: this.db.housingItemsMap,
-      lootTableMap: this.db.lootTablesMap,
+      itemsMap: this.db.itemsByIdMap(),
+      housingMap: this.db.housingItemsByIdMap(),
+      lootTableMap: this.db.lootTablesByIdMap(),
       query: this.query$.pipe(debounceTime(500)),
     }).pipe(
       map((options) => {

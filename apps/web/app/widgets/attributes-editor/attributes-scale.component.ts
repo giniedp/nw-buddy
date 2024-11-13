@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { WeaponTag } from '@nw-data/generated'
-import { firstValueFrom, map } from 'rxjs'
+import { map } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { ChartModule } from '~/ui/chart'
 import { IconsModule } from '~/ui/icons'
 import { svgChartLine } from '~/ui/icons/svg'
@@ -22,6 +22,9 @@ import { AttributesScalingStore } from './attributes-scale.store'
   },
 })
 export class AttributesScaleComponent {
+  private store = inject(AttributesScalingStore)
+  private db = injectNwData()
+
   @Input()
   public set weaponTag(value: string) {
     this.weaponRef = WEAPON_TAG_TO_REF[value as WeaponTag]
@@ -109,15 +112,8 @@ export class AttributesScaleComponent {
   public readonly damage$ = this.store.damageStats$.pipe(map((it) => it.value))
   public readonly damageInvalid$ = this.store.damageStats$.pipe(map((it) => it.invalidValue))
 
-  public constructor(
-    private store: AttributesScalingStore,
-    private db: NwDataService,
-  ) {
-    //
-  }
-
   private async useWeaponItem(itemId: string) {
-    const item = await firstValueFrom(this.db.item(itemId))
+    const item = await this.db.itemsById(itemId)
     this.weaponRef = item?.ItemStatsRef
   }
 }

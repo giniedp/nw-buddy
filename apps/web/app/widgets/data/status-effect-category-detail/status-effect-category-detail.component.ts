@@ -1,6 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { patchState } from '@ngrx/signals'
+import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } from '@angular/core'
 import { StatusEffectCategoryData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -22,11 +21,14 @@ import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 })
 export class StatusEffectCategoryDetailComponent {
   protected store = inject(StatusEffectCategoryDetailStore)
+  public categoryId = input<string>(null)
 
-  @Input()
-  public set categoryId(value: string) {
-    patchState(this.store, { categoryId: value })
-  }
+  #fxLoad = effect(() => {
+    const categoryId = this.categoryId()
+    untracked(() => {
+      this.store.load(categoryId)
+    })
+  })
 
   public descriptor = gridDescriptor<StatusEffectCategoryData>(
     {

@@ -1,8 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, inject } from '@angular/core'
-import { getCraftingIngredients, getItemIdFromRecipe, getItemTierAsRoman } from '@nw-data/common'
+import { inject, Injectable } from '@angular/core'
+import { getItemIdFromRecipe, getItemTierAsRoman } from '@nw-data/common'
 import { CraftingRecipeData, MasterItemDefinitions } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { selectStream } from '~/utils'
@@ -18,7 +18,7 @@ import { RecipeRecord } from './types'
 
 @Injectable()
 export class RecipesTableAdapter implements DataViewAdapter<RecipeRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private tl8 = inject(TranslateService)
 
   public entityID(item: RecipeRecord): string {
@@ -50,8 +50,8 @@ export class RecipesTableAdapter implements DataViewAdapter<RecipeRecord> {
   private source$ = selectStream(
     combineLatest({
       locale: this.tl8.locale.value$,
-      items: this.db.itemsMap,
-      recipes: this.db.recipes,
+      items: this.db.itemsByIdMap(),
+      recipes: this.db.recipesAll(),
     }),
     (data) => {
       return sortBy(selectRecords(data), (it) => this.tl8.get(it.item.Name))

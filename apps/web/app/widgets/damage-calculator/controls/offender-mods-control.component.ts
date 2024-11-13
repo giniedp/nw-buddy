@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { selectSignal } from '~/utils'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 import { StackedValueControlComponent } from './stacked-value-control.component'
 
@@ -31,7 +29,6 @@ import { StackedValueControlComponent } from './stacked-value-control.component'
 })
 export class OffenderModsControlComponent {
   protected store = inject(DamageCalculatorStore)
-  private data = inject(NwDataService)
 
   protected modPvP = offenderAccessor(this.store, 'modPvP')
   protected modAmmo = offenderAccessor(this.store, 'modAmmo')

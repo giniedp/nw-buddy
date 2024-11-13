@@ -485,6 +485,10 @@ export abstract class NwDataSheets {
   })
   public pvpStoreBucketsByIdMap = secondaryIndex(this.pvpStoreBucketsAll, 'Bucket')
   public pvpStoreBucketsById = indexLookup(this.pvpStoreBucketsByIdMap)
+  public pvpStoreBucketsByBucketAndRow = async (bucket: string, row: number) => {
+    const list = await this.pvpStoreBucketsAll()
+    return list.find((it) => it.Bucket === bucket && it.Row === row)
+  }
 
   public pvpRewardsAll = table(() => this.loadDatasheets(DATASHEETS.RewardTrackItemData))
   public pvpRewardsByIdMap = primaryIndex(this.pvpRewardsAll, 'RewardId')
@@ -655,4 +659,5 @@ export abstract class NwDataSheets {
   public expansionsAll = table(() => this.loadDatasheets(DATASHEETS.ExpansionData))
   public expansionsByIdMap = primaryIndex(this.expansionsAll, 'ExpansionId')
   public expansionsById = indexLookup(this.expansionsByIdMap)
+
 }

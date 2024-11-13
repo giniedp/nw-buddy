@@ -1,49 +1,37 @@
-import { Injectable, Output, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { buildBackstoryItemInstance, getBackstoryItems } from '@nw-data/common'
-import { NwDataService } from '~/data'
-import { selectStream } from '~/utils'
-import { selectBackstoryTradeSkills } from './selectors'
+import { signalStore, withState } from '@ngrx/signals'
+import { BackstoryItemInstance } from '@nw-data/common'
+import { BackstoryDefinition, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
+import { injectNwData, withStateLoader } from '~/data'
+import { BackstoryTradeskillData, selectBackstoryTradeSkills } from './selectors'
 
-@Injectable()
-export class BackstoryDetailStore extends ComponentStore<{ backstoryId: string }> {
-  protected db = inject(NwDataService)
-  public readonly backstoryId$ = this.select(({ backstoryId }) => backstoryId)
-
-  @Output()
-  public readonly backstory$ = selectStream(this.db.backstory(this.backstoryId$))
-
-  public readonly tradeSkills$ = this.select(this.backstory$, selectBackstoryTradeSkills)
-  public readonly inventoryItems$ = selectStream(
-    {
-      backstory: this.backstory$,
-      itemsMap: this.db.itemsMap,
-      housingMap: this.db.housingItemsMap,
-      territoriesMap: this.db.territoriesMap,
-      perksMap: this.db.perksMap,
-      bucketsMap: this.db.perkBucketsMap,
-    },
-    ({ backstory, itemsMap, housingMap, perksMap, bucketsMap }) => {
-      if (!backstory) {
-        return []
-      }
-      return getBackstoryItems(backstory).map((it) => {
-        const item = itemsMap.get(it.itemId) || housingMap.get(it.itemId)
-        const instance = buildBackstoryItemInstance(it, {
-          itemsMap,
-          housingMap,
-          perksMap,
-          bucketsMap,
-        })
-        return {
-          ...instance,
-          item,
-        }
-      })
-    },
-  )
-
-  public constructor() {
-    super({ backstoryId: null })
-  }
+export interface BackstoryDetailStore {
+  backstoryId: string
+  backstory: BackstoryDefinition
+  tradeskills: BackstoryTradeskillData
+  inventory: Array<BackstoryItemInstance & { item: MasterItemDefinitions | HouseItems }>
 }
+
+export const BackstoryDetailStore = signalStore(
+  withState<BackstoryDetailStore>({
+    backstoryId: null,
+    backstory: null,
+    tradeskills: [],
+    inventory: [],
+  }),
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load: async (backstoryId: string) => {
+        const backstory = await db.backstoriesById(backstoryId)
+        const inventory = await db.backstoriesItemsById(backstoryId)
+        const tradeskills = selectBackstoryTradeSkills(backstory)
+        return {
+          backstoryId,
+          backstory,
+          inventory,
+          tradeskills,
+        }
+      },
+    }
+  }),
+)

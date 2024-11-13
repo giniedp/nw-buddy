@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { getCraftingIngredients, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
 import { COLS_CRAFTINGRECIPEDATA } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
-import { CharacterStore, NwDataService } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -32,7 +32,7 @@ import {
 
 @Injectable()
 export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private character = inject(CharacterStore)
   private utils: TableGridUtils<CraftingTableRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<CraftingTableRecord>({ optional: true })
@@ -67,10 +67,10 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
 
   public connect(): Observable<CraftingTableRecord[]> {
     return combineLatest({
-      items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
-      recipes: this.db.recipes,
-      events: this.db.gameEventsMap,
+      items: this.db.itemsByIdMap(),
+      housing: this.db.housingItemsByIdMap(),
+      recipes: this.db.recipesAll(),
+      events: this.db.gameEventsByIdMap(),
     }).pipe(
       map(({ items, housing, recipes, events }) => {
         recipes = recipes.filter((it) => !!it.ItemID)

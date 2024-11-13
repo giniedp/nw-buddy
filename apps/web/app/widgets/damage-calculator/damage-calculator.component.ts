@@ -17,7 +17,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { getState, patchState } from '@ngrx/signals'
 import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
 import { BehaviorSubject, EMPTY, combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { svgRestartAlt } from '~/ui/icons/svg'
@@ -70,8 +70,8 @@ import { DamageResultsComponent } from './damage-results.component'
   providers: [DamageCalculatorStore],
 })
 export class DamageCalculatorComponent implements OnInit {
+  private db = injectNwData()
   private injector = inject(Injector)
-  private data = inject(NwDataService)
   private destroyRef = inject(DestroyRef)
   protected store = inject(DamageCalculatorStore)
 
@@ -155,8 +155,8 @@ export class DamageCalculatorComponent implements OnInit {
             patchState(this.store, updateOffender({ isBound: false }))
             return EMPTY
           }
-          const vitalCategories$ = this.data
-            .vital(toObservable(this.store.defenderVitalId, { injector: this.injector }))
+          const vitalCategories$ = toObservable(this.store.defenderVitalId, { injector: this.injector })
+            .pipe(switchMap((id) => this.db.vitalsById(id)))
             .pipe(map((it) => it?.VitalsCategories || []))
 
           return combineLatest({
