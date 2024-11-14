@@ -1,10 +1,10 @@
 ;(function (doc: Document) {
+  const registry = new Map<Window, HTMLObjectElement | HTMLIFrameElement>()
   if (doc.readyState === 'interactive' || doc.readyState === 'complete') {
     observe()
   } else {
     doc.addEventListener('DOMContentLoaded', observe)
   }
-  const registry = new Map<Window, HTMLObjectElement | HTMLIFrameElement>()
   function register(el: Node) {
     if ((el instanceof HTMLObjectElement || el instanceof HTMLIFrameElement) && el.contentWindow) {
       registry.set(el.contentWindow, el)
