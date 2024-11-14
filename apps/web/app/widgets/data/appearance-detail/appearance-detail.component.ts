@@ -1,27 +1,21 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, inject, Input, OnInit, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, untracked } from '@angular/core'
+import { outputFromObservable, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
+import { getItemSourceShort } from '@nw-data/common'
 import { groupBy } from 'lodash'
-import { BehaviorSubject, combineLatest, map } from 'rxjs'
+import { BehaviorSubject, combineLatest } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgBrush } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive, humanize, observeQueryParam } from '~/utils'
-import { ModelViewerModule } from '~/widgets/model-viewer'
+import { eqCaseInsensitive, humanize, observeQueryParam, selectStream } from '~/utils'
+import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemDetailModule } from '../item-detail'
-import {
-  getAppearanceDyeChannels,
-  getAppearanceGender,
-  getAppearanceIdName,
-  TransmogAppearance,
-  TransmogGender,
-  TransmogItem,
-} from '../transmog/transmog-item'
+import { TRANSMOG_CATEGORIES, TransmogService } from '../transmog'
+import { getAppearanceDyeChannels, getAppearanceGender, TransmogItem } from '../transmog/transmog-item'
 import { AppearanceDetailStore } from './appearance-detail.store'
-import { TRANSMOG_CATEGORIES } from '../transmog'
-import { getItemSourceShort } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -39,41 +33,50 @@ import { getItemSourceShort } from '@nw-data/common'
     TooltipModule,
     ModelViewerModule,
   ],
-  providers: [
-    {
-      provide: AppearanceDetailStore,
-      useExisting: forwardRef(() => AppearanceDetailComponent),
-    },
-  ],
+  providers: [AppearanceDetailStore],
   host: {
     class: 'flex flex-col gap-2',
   },
 })
-export class AppearanceDetailComponent extends AppearanceDetailStore implements OnInit {
-  @Input()
-  public set appearanceId(value: string) {
-    this.patchState({ appearanceId: value })
-  }
+export class AppearanceDetailComponent {
+  public store = inject(AppearanceDetailStore)
+  public appearanceId = input<string>(null)
+  public parentItemId = input<string>(null)
+  private variant = toSignal(observeQueryParam(inject(ActivatedRoute), 'gender'))
 
-  @Input()
-  public set parentItemId(value: string) {
-    this.patchState({ parentItemId: value })
-  }
+  #fxLoad = effect(() => {
+    const appearanceId = this.appearanceId()
+    untracked(() => this.store.load(appearanceId))
+  })
+  #fxParent = effect(() => {
+    const parentItemId = this.parentItemId()
+    untracked(() => this.store.setParent(parentItemId))
+  })
+  #fxGender = effect(() => {
+    const variant = this.variant()
+    untracked(() => this.store.setVariant(variant as any))
+  })
 
-  @Input()
-  public set appearance(value: TransmogAppearance) {
-    this.load(value)
-  }
+  public disableProperties = input<boolean>(false)
+  public appearanceChange$ = outputFromObservable(toObservable(this.store.appearance))
 
-  @Input()
-  public disableProperties: boolean
-
-  @Output()
-  public appearanceChange$ = this.appearance$
-
-  protected gender$ = observeQueryParam(inject(ActivatedRoute), 'gender')
   protected modelViewerOpened = false
   protected iconDye = svgBrush
+  protected models$ = this.store.models()
+  protected transmogs$ = this.store.transmogs()
+  protected similarTransmogs$ = this.store.transmogsWithSameModel()
+
+  protected gender = computed(() => getAppearanceGender(this.store.appearance()))
+  protected commonText = computed(() => {
+    if (this.gender() === 'male') {
+      return 'Male'
+    }
+    if (this.gender() === 'female') {
+      return 'Female'
+    }
+    return 'Common'
+  })
+
   protected vm$ = this.select(
     combineLatest({
       id: this.appearanceNameIdOrAlike$,
@@ -113,7 +116,6 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
     return it?.set?.length > 1 ? it.set : null
   })
 
-  protected trackByIndex = (index: number) => index
   protected similarItemsTab$ = new BehaviorSubject<string>(null)
   protected similarItemsVm$ = this.select(
     combineLatest({
@@ -158,9 +160,5 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
 
   protected categoryName(category: string) {
     return TRANSMOG_CATEGORIES.find((it) => it.id === category)?.name
-  }
-
-  public ngOnInit() {
-    this.loadVariant(this.gender$.pipe(map((it) => it as TransmogGender)))
   }
 }

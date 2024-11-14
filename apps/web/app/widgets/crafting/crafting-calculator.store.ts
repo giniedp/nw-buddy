@@ -16,14 +16,17 @@ export interface CraftingCalculatorState {
 @Injectable()
 export class CraftingCalculatorStore extends ComponentStore<CraftingCalculatorState> {
   public readonly recipeId$ = this.select(({ recipeId }) => recipeId)
-  public readonly recipe$ = this.select(this.service.fetchRecipe(this.recipeId$), (it) => it)
+  public readonly recipe$ = this.recipeId$.pipe(switchMap((it) => this.service.fetchRecipe(it)))
   public readonly amount$ = this.select(({ amount }) => amount)
   public readonly amountMode$ = this.select(({ amountMode }) => amountMode)
 
   public readonly tree$ = this.select(({ tree }) => tree)
 
   private cache: StorageScopeNode
-  public constructor(private service: CraftingCalculatorService, pref: PreferencesService) {
+  public constructor(
+    private service: CraftingCalculatorService,
+    pref: PreferencesService,
+  ) {
     super({
       recipeId: null,
       amount: 1,
@@ -36,7 +39,7 @@ export class CraftingCalculatorStore extends ComponentStore<CraftingCalculatorSt
   public load = this.effect<void>(() => {
     return this.recipe$.pipe(
       switchMap((recipe) => this.initializeState(recipe)),
-      switchMap(() => this.watchAndCacheState())
+      switchMap(() => this.watchAndCacheState()),
     )
   })
 
@@ -66,16 +69,16 @@ export class CraftingCalculatorStore extends ComponentStore<CraftingCalculatorSt
   private watchAndCacheState() {
     return this.state$.pipe(
       tap((state) => {
-        if (state.recipeId && this.cache) {
+        if (state.recipeId && state.tree && this.cache) {
           this.cache.set(state.recipeId, state)
         }
-      })
+      }),
     )
   }
 
   private initializeState(recipe: CraftingRecipeData) {
     const cache = this.cache?.get<CraftingCalculatorState>(recipe?.RecipeID)
-    if (cache) {
+    if (cache?.tree) {
       this.patchState(cache)
       return EMPTY
     }
@@ -84,7 +87,7 @@ export class CraftingCalculatorStore extends ComponentStore<CraftingCalculatorSt
         this.patchState({
           tree: step,
         })
-      })
+      }),
     )
   }
 }

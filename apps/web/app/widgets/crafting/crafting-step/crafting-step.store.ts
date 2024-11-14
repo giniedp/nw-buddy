@@ -23,7 +23,7 @@ export class CraftingStepStore extends ComponentStore<CraftingStepState> {
   public readonly amountIsGross$ = this.select(this.amountMode$, (it) => it === 'gross')
 
   public readonly bonus$ = this.step$.pipe(
-    switchMap((step) => (step?.expand ? this.service.getCraftBonus(step) : of(0)))
+    switchMap((step) => (step?.expand ? this.service.getCraftBonus(step) : of(0))),
   )
   public readonly amount$ = combineLatest({
     bonusPercent: this.bonus$,
@@ -35,27 +35,30 @@ export class CraftingStepStore extends ComponentStore<CraftingStepState> {
         amount,
         amountMode,
         bonusPercent,
-      })
-    )
+      }),
+    ),
   )
 
   private readonly stepIds$ = this.select(this.step$, selectStepIds)
   public readonly itemId$ = this.select(this.stepIds$, (it) => it.itemId)
-  public readonly item$ = this.select(this.service.fetchItem(this.itemId$), (it) => it)
+  public readonly item$ = this.itemId$.pipe(switchMap((it) => this.service.fetchItem(it)))
   public readonly currency$ = this.select(this.step$, (it) => {
     if (it?.ingredient?.type === 'Currency') {
       return {
         label: `ui_${it.ingredient.id}`,
-        quantity: it.ingredient.quantity
+        quantity: it.ingredient.quantity,
       }
     }
     return null
   })
   public readonly categoryId$ = this.select(this.stepIds$, (it) => it.categoryId)
-  public readonly category$ = this.select(this.service.fetchCategory(this.categoryId$), (it) => it)
+  public readonly category$ = this.categoryId$.pipe(switchMap((it) => this.service.fetchCategory(it)))
   public readonly options$ = this.select(this.stepIds$, (it) => it.optionIds)
 
-  public constructor(private parent: CraftingCalculatorStore, private service: CraftingCalculatorService) {
+  public constructor(
+    private parent: CraftingCalculatorStore,
+    private service: CraftingCalculatorService,
+  ) {
     super({
       step: null,
       amount: 1,
@@ -72,7 +75,7 @@ export class CraftingStepStore extends ComponentStore<CraftingStepState> {
           ...step,
           expand: value,
         }
-      }
+      },
     )
   }
 
@@ -90,7 +93,7 @@ export class CraftingStepStore extends ComponentStore<CraftingStepState> {
           ...step,
           selection: itemId,
         }
-      }
+      },
     )
   }
 }

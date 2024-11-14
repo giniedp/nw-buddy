@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
   calculateBonusItemChance,
   getCraftingIngredients,
@@ -6,20 +6,16 @@ import {
   getRecipeForItem,
 } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { combineLatest, map, Observable, of, switchMap } from 'rxjs'
-import { CharacterStore, NwDataService } from '~/data'
+import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs'
+import { CharacterStore, injectNwData } from '~/data'
 import { NW_TRADESKILLS_INFOS_MAP } from '~/nw/tradeskill'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class CraftingCalculatorService {
-  public constructor(
-    private db: NwDataService,
-    private char: CharacterStore,
-  ) {
-    //
-  }
+  private db = injectNwData()
+  private char = inject(CharacterStore)
 
   public solveRecipe(recipe: CraftingRecipeData) {
     if (!recipe) {
@@ -120,25 +116,25 @@ export class CraftingCalculatorService {
   }
 
   public findItemIdsForCraftingCategory(categoryId: string) {
-    return this.db
-      .itemsByIngredientCategory(categoryId)
-      .pipe(map((set) => (set ? Array.from(set?.values()).map((it) => it.ItemID) : null)))
+    return from(this.db.itemsByIngredientCategory(categoryId)).pipe(
+      map((set) => (set ? Array.from(set?.values()).map((it) => it.ItemID) : null)),
+    )
   }
 
-  public fetchRecipe(recipeId: string | Observable<string>) {
-    return this.db.recipe(recipeId)
+  public fetchRecipe(recipeId: string) {
+    return from(this.db.recipesById(recipeId))
   }
 
-  public fetchItem(itemId: string | Observable<string>) {
-    return this.db.itemOrHousingItem(itemId)
+  public fetchItem(itemId: string) {
+    return from(this.db.itemOrHousingItem(itemId))
   }
 
-  public fetchCategory(categoryId: string | Observable<string>) {
-    return this.db.recipeCategory(categoryId)
+  public fetchCategory(categoryId: string) {
+    return from(this.db.recipeCategoriesById(categoryId))
   }
 
   public fetchRecipeForItem(item: MasterItemDefinitions | HouseItems) {
-    return this.db.recipesMapByItemId.pipe(map((recipes) => getRecipeForItem(item, recipes)))
+    return from(this.db.recipesByItemIdMap()).pipe(map((recipes) => getRecipeForItem(item, recipes)))
   }
 
   public fetchIngredientsForStep(step: CraftingStep) {
@@ -171,7 +167,7 @@ export class CraftingCalculatorService {
   }
 
   public fetchIngredientsForRecipe(recipeId: string): Observable<{ recipeId: string; ingredients: Ingredient[] }> {
-    return this.db.recipe(recipeId).pipe(
+    return from(this.db.recipesById(recipeId)).pipe(
       map((recipe) => {
         return {
           recipeId: recipeId,
@@ -208,7 +204,7 @@ export class CraftingCalculatorService {
   }
 
   public fetchGameEventForRecipe(recipe: CraftingRecipeData) {
-    return this.db.gameEvent(recipe?.GameEventID)
+    return from(this.db.gameEventsById(recipe?.GameEventID))
   }
 
   private clampSelection({ options, selection }: CraftingStep) {
@@ -221,7 +217,7 @@ export class CraftingCalculatorService {
     }
     return combineLatest({
       item: this.fetchItem(step.ingredient.id),
-      recipes: this.db.recipesMapByItemId,
+      recipes: this.db.recipesByItemIdMap(),
     }).pipe(
       switchMap(({ item, recipes }) => {
         const recipe = getRecipeForItem(item, recipes)

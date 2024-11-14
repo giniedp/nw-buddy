@@ -1,5 +1,7 @@
-import { Injectable, inject } from '@angular/core'
+import { Injectable, computed, inject } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import {
   NW_FALLBACK_ICON,
   getItemId,
@@ -11,8 +13,8 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { ArmorAppearanceDefinitions, MasterItemDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
-import { Observable, combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { Observable, combineLatest, defer, map } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 import { ModelsService } from '~/widgets/model-viewer'
 import {
@@ -25,12 +27,93 @@ import {
   isAppearanceOfGender,
 } from '../transmog'
 
+export interface AppearanceDetailState {
+  appearanceIdOrName: string
+  parentItemId: string
+  variant: TransmogGender
+  instrumentAppearance: WeaponAppearanceDefinitions
+  weaponAppearance: WeaponAppearanceDefinitions
+  itemAppearance: ArmorAppearanceDefinitions
+  itemAppearanceByName: ArmorAppearanceDefinitions[]
+}
+export const AppearanceDetailStore = signalStore(
+  withState<AppearanceDetailState>({
+    appearanceIdOrName: null,
+    parentItemId: null,
+    variant: null,
+    instrumentAppearance: null,
+    weaponAppearance: null,
+    itemAppearance: null,
+    itemAppearanceByName: [],
+  }),
+  withStateLoader((state) => {
+    const db = injectNwData()
+    return {
+      load: async (appearanceIdOrName: string) => {
+        return {
+          appearanceIdOrName,
+          parentItemId: state.parentItemId(),
+          variant: state.variant(),
+          instrumentAppearance: await db.instrumentAppearancesById(appearanceIdOrName),
+          weaponAppearance: await db.weaponAppearancesById(appearanceIdOrName),
+          itemAppearance: await db.armorAppearancesById(appearanceIdOrName),
+          itemAppearanceByName: await db.armorAppearancesByName(appearanceIdOrName),
+        }
+      },
+    }
+  }),
+  withMethods((state) => {
+    return {
+      setVariant(variant: TransmogGender) {
+        patchState(state, { variant })
+      },
+      setParent(parentItemId: string) {
+        patchState(state, { parentItemId })
+      },
+    }
+  }),
+  withComputed(({ itemAppearance, itemAppearanceByName, instrumentAppearance, weaponAppearance, variant }) => {
+    const appearance = computed(() => {
+      const found = itemAppearanceByName()?.find((it) => isAppearanceOfGender(it, variant()))
+      return found || itemAppearance() || itemAppearanceByName()?.[0] || weaponAppearance() || instrumentAppearance()
+    })
+    return {
+      appearance,
+      appearanceId: computed(() => getAppearanceId(appearance())),
+      category: computed(() => getAppearanceCategory(appearance())),
+      icon: computed(() => appearance()?.IconPath || NW_FALLBACK_ICON),
+      name: computed(() => appearance()?.Name),
+      description: computed(() => appearance()?.Description),
+    }
+  }),
+  withMethods((store) => {
+    const modelService = inject(ModelsService)
+    const transmogService = inject(TransmogService)
+
+    const appearanceId$ = toObservable(store.appearanceId)
+    const appearance$ = toObservable(store.appearance)
+    return {
+      models: () => defer(() => modelService.byAppearanceId(appearanceId$)),
+      transmogs: () => defer(() => transmogService.byAppearance(appearance$)),
+      transmogsWithSameModel: () => {
+        return defer(() => transmogService.withSameModelAs(appearance$, true)).pipe(
+          map((list) => list || []),
+          map((list) => list.filter((it) => it.appearance?.ItemClass?.length > 0)),
+        )
+      },
+    }
+  }),
+)
+
 @Injectable()
-export class AppearanceDetailStore extends ComponentStore<{
+export class AppearanceDetailStoreOld extends ComponentStore<{
   appearanceId: string
   parentItemId: string
   vairant: TransmogGender
 }> {
+  private db = injectNwData()
+  private service = inject(TransmogService)
+
   public readonly appearanceNameIdOrAlike$ = this.select(({ appearanceId }) => appearanceId)
   public readonly parentItemId$ = this.select(({ parentItemId }) => parentItemId)
 
@@ -71,10 +154,7 @@ export class AppearanceDetailStore extends ComponentStore<{
     selectItems,
   )
 
-  public constructor(
-    protected db: NwDataService,
-    private service: TransmogService,
-  ) {
+  public constructor() {
     super({ appearanceId: null, parentItemId: null, vairant: null })
   }
 
