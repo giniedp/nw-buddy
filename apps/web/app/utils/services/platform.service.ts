@@ -114,4 +114,8 @@ export class PlatformService {
     }
     return location.origin
   }
+
+  public get isEmbed() {
+    return this.window.location.href.split('/').some((it) => it === 'embed')
+  }
 }
