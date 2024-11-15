@@ -1,6 +1,5 @@
-import { Injectable, computed, inject } from '@angular/core'
+import { computed, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { ComponentStore } from '@ngrx/component-store'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import {
   NW_FALLBACK_ICON,
@@ -13,12 +12,11 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { ArmorAppearanceDefinitions, MasterItemDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
-import { Observable, combineLatest, defer, map } from 'rxjs'
+import { combineLatest, defer, map } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'
-import { eqCaseInsensitive, selectStream } from '~/utils'
+import { eqCaseInsensitive } from '~/utils'
 import { ModelsService } from '~/widgets/model-viewer'
 import {
-  TransmogAppearance,
   TransmogGender,
   TransmogItem,
   TransmogService,
@@ -92,84 +90,104 @@ export const AppearanceDetailStore = signalStore(
 
     const appearanceId$ = toObservable(store.appearanceId)
     const appearance$ = toObservable(store.appearance)
+    const parentId$ = toObservable(store.parentItemId)
+
+    const models = () => defer(() => modelService.byAppearanceId(appearanceId$))
+    const transmogs = () => defer(() => transmogService.byAppearance(appearance$))
+    const transmogsWithSameModel = () => {
+      return defer(() => transmogService.withSameModelAs(appearance$, true)).pipe(
+        map((list) => list || []),
+        map((list) => list.filter((it) => it.appearance?.ItemClass?.length > 0)),
+      )
+    }
+    const similarItems = () =>
+      defer(() =>
+        combineLatest({
+          parentId: parentId$,
+          transmog: transmogs(),
+        }),
+      ).pipe(map(selectItems))
     return {
-      models: () => defer(() => modelService.byAppearanceId(appearanceId$)),
-      transmogs: () => defer(() => transmogService.byAppearance(appearance$)),
-      transmogsWithSameModel: () => {
-        return defer(() => transmogService.withSameModelAs(appearance$, true)).pipe(
-          map((list) => list || []),
-          map((list) => list.filter((it) => it.appearance?.ItemClass?.length > 0)),
-        )
-      },
+      models,
+      transmogs,
+      transmogsWithSameModel,
+      similarItems,
+      //   public readonly similarItems$ = this.select(
+      //     combineLatest({
+      //       transmog: this.transmog$,
+      //       parentId: this.parentItemId$,
+      //     }),
+      //     selectItems,
+      //   )
     }
   }),
 )
 
-@Injectable()
-export class AppearanceDetailStoreOld extends ComponentStore<{
-  appearanceId: string
-  parentItemId: string
-  vairant: TransmogGender
-}> {
-  private db = injectNwData()
-  private service = inject(TransmogService)
+// @Injectable()
+// export class AppearanceDetailStoreOld extends ComponentStore<{
+//   appearanceId: string
+//   parentItemId: string
+//   vairant: TransmogGender
+// }> {
+//   private db = injectNwData()
+//   private service = inject(TransmogService)
 
-  public readonly appearanceNameIdOrAlike$ = this.select(({ appearanceId }) => appearanceId)
-  public readonly parentItemId$ = this.select(({ parentItemId }) => parentItemId)
+//   public readonly appearanceNameIdOrAlike$ = this.select(({ appearanceId }) => appearanceId)
+//   public readonly parentItemId$ = this.select(({ parentItemId }) => parentItemId)
 
-  public readonly instrumentAppearance$ = this.db.instrumentAppearance(this.appearanceNameIdOrAlike$)
-  public readonly weaponAppearance$ = this.db.weaponAppearance(this.appearanceNameIdOrAlike$)
-  public readonly itemAppearance$ = selectStream(
-    {
-      appearance: this.db.itemAppearance(this.appearanceNameIdOrAlike$),
-      byName: this.db.itemAppearancesByName(this.appearanceNameIdOrAlike$),
-      variant: this.select(({ vairant }) => vairant),
-    },
-    ({ appearance, byName, variant }) => {
-      const found = byName?.find((it) => isAppearanceOfGender(it, variant))
-      return found || appearance || byName?.[0]
-    },
-  )
-  public readonly appearance$ = this.select(
-    this.itemAppearance$,
-    this.weaponAppearance$,
-    this.instrumentAppearance$,
-    (a, b, c): TransmogAppearance => a || b || c,
-  )
-  public readonly appearanceId$ = this.select(this.appearance$, getAppearanceId)
-  public readonly category$ = this.select(this.appearance$, getAppearanceCategory)
-  public readonly models$ = this.select(inject(ModelsService).byAppearanceId(this.appearanceId$), (it) => it)
-  public readonly icon$ = this.select(this.appearance$, (it) => it?.IconPath || NW_FALLBACK_ICON)
-  public readonly name$ = this.select(this.appearance$, (it) => it?.Name)
-  public readonly description$ = this.select(this.appearance$, (it) => it?.Description)
-  public readonly transmog$ = this.select(this.service.byAppearance(this.appearance$), (it) => it)
-  public readonly similarTransmogs$ = this.select(this.service.withSameModelAs(this.appearance$, true), (list) => {
-    return list.filter((it) => it.appearance?.ItemClass?.length > 0)
-  })
-  public readonly similarItems$ = this.select(
-    combineLatest({
-      transmog: this.transmog$,
-      parentId: this.parentItemId$,
-    }),
-    selectItems,
-  )
+//   public readonly instrumentAppearance$ = this.db.instrumentAppearance(this.appearanceNameIdOrAlike$)
+//   public readonly weaponAppearance$ = this.db.weaponAppearance(this.appearanceNameIdOrAlike$)
+//   public readonly itemAppearance$ = selectStream(
+//     {
+//       appearance: this.db.itemAppearance(this.appearanceNameIdOrAlike$),
+//       byName: this.db.itemAppearancesByName(this.appearanceNameIdOrAlike$),
+//       variant: this.select(({ vairant }) => vairant),
+//     },
+//     ({ appearance, byName, variant }) => {
+//       const found = byName?.find((it) => isAppearanceOfGender(it, variant))
+//       return found || appearance || byName?.[0]
+//     },
+//   )
+//   public readonly appearance$ = this.select(
+//     this.itemAppearance$,
+//     this.weaponAppearance$,
+//     this.instrumentAppearance$,
+//     (a, b, c): TransmogAppearance => a || b || c,
+//   )
+//   public readonly appearanceId$ = this.select(this.appearance$, getAppearanceId)
+//   public readonly category$ = this.select(this.appearance$, getAppearanceCategory)
+//   public readonly models$ = this.select(inject(ModelsService).byAppearanceId(this.appearanceId$), (it) => it)
+//   public readonly icon$ = this.select(this.appearance$, (it) => it?.IconPath || NW_FALLBACK_ICON)
+//   public readonly name$ = this.select(this.appearance$, (it) => it?.Name)
+//   public readonly description$ = this.select(this.appearance$, (it) => it?.Description)
+//   public readonly transmog$ = this.select(this.service.byAppearance(this.appearance$), (it) => it)
+//   public readonly similarTransmogs$ = this.select(this.service.withSameModelAs(this.appearance$, true), (list) => {
+//     return list.filter((it) => it.appearance?.ItemClass?.length > 0)
+//   })
+//   public readonly similarItems$ = this.select(
+//     combineLatest({
+//       transmog: this.transmog$,
+//       parentId: this.parentItemId$,
+//     }),
+//     selectItems,
+//   )
 
-  public constructor() {
-    super({ appearanceId: null, parentItemId: null, vairant: null })
-  }
+//   public constructor() {
+//     super({ appearanceId: null, parentItemId: null, vairant: null })
+//   }
 
-  public load(idOrItem: string | ArmorAppearanceDefinitions | WeaponAppearanceDefinitions) {
-    if (typeof idOrItem === 'string') {
-      this.patchState({ appearanceId: idOrItem })
-    } else {
-      this.patchState({ appearanceId: getAppearanceId(idOrItem) })
-    }
-  }
+//   public load(idOrItem: string | ArmorAppearanceDefinitions | WeaponAppearanceDefinitions) {
+//     if (typeof idOrItem === 'string') {
+//       this.patchState({ appearanceId: idOrItem })
+//     } else {
+//       this.patchState({ appearanceId: getAppearanceId(idOrItem) })
+//     }
+//   }
 
-  public loadVariant = this.effect((variant$: Observable<TransmogGender>) => {
-    return variant$.pipe(map((it) => this.patchState({ vairant: it })))
-  })
-}
+//   public loadVariant = this.effect((variant$: Observable<TransmogGender>) => {
+//     return variant$.pipe(map((it) => this.patchState({ vairant: it })))
+//   })
+// }
 
 function selectItems({ transmog, parentId }: { transmog: TransmogItem; parentId: string }) {
   let items = transmog?.items || []
