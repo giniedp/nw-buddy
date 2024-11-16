@@ -3,8 +3,8 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 import { CreatureType } from '@nw-data/generated'
 import { FeatureCollection } from 'geojson'
-import { combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, from, map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { xyToLngLat } from '~/widgets/game-map/utils'
 import { loadGatherables } from './data/gatherables'
@@ -72,7 +72,8 @@ export const ZoneMapStore = signalStore(
       })
     },
     effects(actions, create) {
-      const db = inject(NwDataService)
+      //const db = inject(NwDataService)
+      const db = injectNwData()
       const tl8 = inject(TranslateService)
       return {
         load$: create(actions.load).pipe(
@@ -81,12 +82,16 @@ export const ZoneMapStore = signalStore(
               territories: loadTerritories(db, tl8, xyToLngLat),
               gatherables: loadGatherables(db, xyToLngLat),
               vitals: loadVitals({
-                db,
+                db: db,
                 mapCoord: xyToLngLat,
               }),
               houses: loadStructures(db, tl8, xyToLngLat),
-              vitalsTypes: db.vitalsByCreatureType.pipe(map((it) => Array.from<CreatureType>(it.keys() as any))),
-              vitalsCategories: db.vitalsCategories.pipe(map((list) => list.map((it) => it.VitalsCategoryID).sort())),
+              vitalsTypes: from(db.vitalsByCreatureTypeMap()).pipe(
+                map((it) => Array.from<CreatureType>(it.keys() as any)),
+              ),
+              vitalsCategories: from(db.vitalsCategoriesAll()).pipe(
+                map((list) => list.map((it) => it.VitalsCategoryID).sort()),
+              ),
             })
           }),
           map(({ territories, gatherables, houses, vitals, vitalsTypes, vitalsCategories }) =>

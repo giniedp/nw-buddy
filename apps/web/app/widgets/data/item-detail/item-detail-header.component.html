@@ -32,7 +32,7 @@
       [text3]="size === 'sm' ? null : sourceLabel()"
       [rarity]="rarity()"
       [isNamed]="isNamed()"
-      [isSkeleton]="isLoading()"
+      [showSkeleton]="isLoading()"
     >
       @if (enableTracker && !isMissing()) {
         <div class="header flex flex-col justify-end">

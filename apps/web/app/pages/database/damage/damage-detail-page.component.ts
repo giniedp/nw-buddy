@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { NwModule } from '~/nw'
@@ -19,7 +20,9 @@ import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
   },
 })
 export class DamageDetailPageComponent {
-  protected id$ = observeRouteParam(this.route, 'id')
+  protected idParam = toSignal(observeRouteParam(this.route, 'id'))
+  protected table = computed(() => this.idParam()?.split('-')[0])
+  protected rowId = computed(() => this.idParam()?.split('-')[1])
   protected showLocked: boolean
   public constructor(private route: ActivatedRoute) {
     //

@@ -1,10 +1,11 @@
-import { computed, effect, inject } from '@angular/core'
+import { computed } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_MAX_ENEMY_LEVEL } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { FilterSpecification } from 'maplibre-gl'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { BranchExpression } from '~/ui/expression-branch'
 
 export interface FilterVitalsState {
@@ -273,7 +274,7 @@ export const FilterVitalsStore = signalStore(
     },
   ),
   withComputed(() => {
-    const db = inject(NwDataService)
+    const db = injectNwData()
     const presets = toSignal(loadPresets(db), { initialValue: [] })
     return {
       presets,
@@ -281,10 +282,10 @@ export const FilterVitalsStore = signalStore(
   }),
 )
 
-function loadPresets(db: NwDataService) {
+function loadPresets(db: NwData) {
   return combineLatest({
-    tasks: db.seasonsRewardsTasks,
-    stats: db.seasonsRewardsStatsKillMap,
+    tasks: db.seasonsRewardsTasksAll(),
+    stats: db.seasonsRewardsStatsKillByIdMap(),
   }).pipe(
     map(({ tasks, stats }) => {
       const presets: PresetRecord[] = []

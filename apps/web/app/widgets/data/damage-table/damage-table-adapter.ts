@@ -31,7 +31,8 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord> {
   private utils: TableGridUtils<DamageTableRecord> = inject(TableGridUtils)
 
   public entityID(item: DamageTableRecord): string {
-    return item.DamageID.toLowerCase()
+    return [item.$source, item.DamageID].join('-').toLowerCase()
+    // return item.DamageID.toLowerCase()
   }
 
   public entityCategories(item: DamageTableRecord): DataTableCategory[] {
@@ -48,7 +49,7 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord> {
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<DamageData> {
+  public virtualOptions(): VirtualGridOptions<DamageTableRecord> {
     return null
   }
 

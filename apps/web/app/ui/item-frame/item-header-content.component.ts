@@ -23,7 +23,7 @@ import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 })
 export class ItemHeaderContentComponent {
   @Input()
-  public isSkeleton: boolean
+  public showSkeleton: boolean
 
   @Input()
   public isNamed: boolean

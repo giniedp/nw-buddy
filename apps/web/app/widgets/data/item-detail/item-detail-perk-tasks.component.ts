@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { getQuestTypeIcon } from '@nw-data/common'
-import { ObjectiveTasks, TerritoryDefinition } from '@nw-data/generated'
-import { combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { ObjectiveTasks } from '@nw-data/generated'
+import { combineLatest, defer, from, map, of, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwModule } from '~/nw'
 import { NwExpressionContext } from '~/nw/expression'
@@ -30,7 +30,7 @@ export interface PerkTask {
   },
 })
 export class ItemDetailPerkTasksComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private tl8 = inject(TranslateService)
   private nwdb = inject(NwLinkService)
 
@@ -78,8 +78,8 @@ export class ItemDetailPerkTasksComponent {
 
   private resolveTargetName(task: ObjectiveTasks) {
     return combineLatest({
-      category: this.db.vitalsCategory(task.KillEnemyType),
-      vital: this.db.vital(task.KillEnemyType),
+      category: this.db.vitalsCategoriesById(task.KillEnemyType),
+      vital: this.db.vitalsById(task.KillEnemyType),
     }).pipe(
       switchMap(({ category, vital }) => {
         if (!category) {
@@ -102,7 +102,7 @@ export class ItemDetailPerkTasksComponent {
   }
 
   private resolvePOITags(task: ObjectiveTasks) {
-    return this.db.territoriesByPoiTag
+    return from(this.db.territoriesByPoiTagMap())
       .pipe(map((data) => data.get(task.POITag)))
       .pipe(map((it) => it?.[0] || null))
       .pipe(
@@ -121,18 +121,20 @@ export class ItemDetailPerkTasksComponent {
   }
 
   private resolveTerritoryID(task: ObjectiveTasks) {
-    return this.db.territoriesMap.pipe(map((it) => it.get(Number(task.TerritoryID)))).pipe(
-      switchMap((it) => {
-        if (!it) {
-          return of(task.TerritoryID)
-        }
-        return this.tl8.observe(it.NameLocalizationKey).pipe(
-          map((it) => {
-            const link = this.nwdb.tooltipLink('poi', String(task.TerritoryID))
-            return `<a href="${link}" target="_blank" class="link">${it}</a>`
-          }),
-        )
-      }),
-    )
+    return from(this.db.territoriesByIdMap())
+      .pipe(map((it) => it.get(Number(task.TerritoryID))))
+      .pipe(
+        switchMap((it) => {
+          if (!it) {
+            return of(task.TerritoryID)
+          }
+          return this.tl8.observe(it.NameLocalizationKey).pipe(
+            map((it) => {
+              const link = this.nwdb.tooltipLink('poi', String(task.TerritoryID))
+              return `<a href="${link}" target="_blank" class="link">${it}</a>`
+            }),
+          )
+        }),
+      )
   }
 }

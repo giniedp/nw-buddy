@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-2">
-  <nwb-damage-row-detail [rowId]="id$ | async" #detail class="bg-black" />
+  <nwb-damage-row-detail [table]="table()" [rowId]="rowId()" #detail class="bg-black" />
   @if (detail.effectIds() && detail.effectIds().length > 0) {
     <h3 class="prose mt-2">Referenced effect:</h3>
     <div class="flex flex-col gap-2">

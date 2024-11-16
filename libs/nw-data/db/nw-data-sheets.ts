@@ -32,6 +32,7 @@ import {
   ScannedVitalModel,
 } from '@nw-data/scanner'
 import { DataLoader, indexLookup, primaryIndex, secondaryIndex, table } from './dsl'
+import { eqCaseInsensitive } from '../common/utils/caseinsensitive-compare'
 
 export abstract class NwDataSheets {
   protected abstract loader: DataLoader
@@ -43,7 +44,14 @@ export abstract class NwDataSheets {
     return this.loader.loadDatasheets(collection)
   }
 
-  public itemsAll = table(() => this.loadDatasheets(DATASHEETS.MasterItemDefinitions))
+  public itemsAll = table(
+    () => this.loadDatasheets(DATASHEETS.MasterItemDefinitions),
+    (list) => {
+      return list.sort((a, b) => {
+        return b.$source === 'MasterItemDefinitions_AI' ? -1 : a.$source.localeCompare(b.$source)
+      })
+    },
+  )
   public itemsByIdMap = primaryIndex(this.itemsAll, 'ItemID')
   public itemsById = indexLookup(this.itemsByIdMap)
   public itemsByIdTradingFamilyMap = secondaryIndex(this.itemsAll, 'TradingFamily')
@@ -160,7 +168,14 @@ export abstract class NwDataSheets {
   public damageTable0 = indexLookup(this.damageTables0Map)
 
   public damageTablesAll = table(() => this.loadDatasheets(DATASHEETS.DamageData))
+  public damageTablesBySourceMap = secondaryIndex(this.damageTablesAll, '$source')
+  public damageTablesBySource = indexLookup(this.damageTablesBySourceMap)
+  public damageTablesBySourceAndRowId = (table: string, rowId: string) => {
+    return this.damageTablesBySource(table).then((list) => list.find((it) => eqCaseInsensitive(it.DamageID, rowId)))
+  }
+  // DEPRECATED:
   public damageTablesByIdMap = primaryIndex(this.damageTablesAll, 'DamageID')
+  // DEPRECATED:
   public damageTablesById = indexLookup(this.damageTablesByIdMap)
   public damageTablesByStatusEffectMap = secondaryIndex(this.damageTablesAll, 'StatusEffect')
   public damageTablesByStatusEffect = indexLookup(this.damageTablesByStatusEffectMap)
@@ -659,5 +674,4 @@ export abstract class NwDataSheets {
   public expansionsAll = table(() => this.loadDatasheets(DATASHEETS.ExpansionData))
   public expansionsByIdMap = primaryIndex(this.expansionsAll, 'ExpansionId')
   public expansionsById = indexLookup(this.expansionsByIdMap)
-
 }

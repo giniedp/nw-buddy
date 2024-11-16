@@ -17,7 +17,7 @@ export interface StatusEffectDetailState {
   foreignAffixStats: string[]
   foreignPerks: string[]
   foreignItems: string[]
-  foreignDamageTables: DamageData[]
+  foreignDamageTables: Array<DamageData & { $source: string}>
   foreignSpells: SpellData[]
 }
 export const StatusEffectDetailStore = signalStore(
@@ -179,7 +179,7 @@ async function loadPerksByAffix(db: NwData, affix: string[]) {
       return db.perksByAffix(it)
     }),
   ).then((it) => flatten(it || []))
-  return uniq(perks.map((it) => it.PerkID))
+  return uniq(perks.map((it) => it?.PerkID))
 }
 
 async function loadPerksByAbilities(db: NwData, abilities: string[]) {
@@ -191,5 +191,5 @@ async function loadPerksByAbilities(db: NwData, abilities: string[]) {
       return db.perksByEquipAbility(it)
     }),
   ).then((it) => flatten(it || []))
-  return uniq(perks.map((it) => it.PerkID))
+  return uniq(perks.map((it) => it?.PerkID))
 }

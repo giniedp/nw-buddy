@@ -1,12 +1,13 @@
 import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { AffixStatData, DamageData, StatusEffectData } from '@nw-data/generated'
-import { combineLatest, from, map, of, switchMap } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'
 import { damageTypeIcon } from '~/nw/weapon-types'
-import { combineLatestOrEmpty, rejectKeys, selectSignal } from '~/utils'
+import { rejectKeys, selectSignal } from '~/utils'
 
 export interface DamageDetailState {
+  table: string
+  rowId: string
   row: DamageData
   affix: AffixStatData
   effects: StatusEffectData[]
@@ -14,6 +15,8 @@ export interface DamageDetailState {
 
 export const DamageDetailStore = signalStore(
   withState<DamageDetailState>({
+    table: null,
+    rowId: null,
     row: null,
     affix: null,
     effects: [],
@@ -21,21 +24,20 @@ export const DamageDetailStore = signalStore(
   withStateLoader(() => {
     const db = injectNwData()
     return {
-      load: (data: { rowId: string }) => {
-        const row$ = from(db.damageTablesById(data.rowId))
-        const affix$ = row$.pipe(
-          map((it) => it?.Affixes),
-          switchMap((it) => (it ? db.affixStatsById(it) : of(null))),
-        )
-        const statusEffects$ = row$.pipe(
-          map((it) => it?.StatusEffect || []),
-          switchMap((ids) => combineLatestOrEmpty(ids.map((id) => db.statusEffectsById(id)))),
-        )
-        return combineLatest({
-          row: row$,
-          affix: affix$,
-          effects: statusEffects$,
-        })
+      load: async (data: { table: string; rowId: string }) => {
+        const row = await db.damageTablesBySourceAndRowId(data.table, data.rowId)
+        const affix = !row?.Affixes ? null : await db.affixStatsById(row.Affixes)
+        const effects = !row?.StatusEffect
+          ? []
+          : await Promise.all(row.StatusEffect.map((it) => db.statusEffectsById(it)))
+
+        return {
+          table: data.table,
+          rowId: data.rowId,
+          row,
+          affix,
+          effects,
+        }
       },
     }
   }),

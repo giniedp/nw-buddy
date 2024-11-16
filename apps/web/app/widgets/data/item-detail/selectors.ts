@@ -54,7 +54,7 @@ export function selectFinalRarity({
   perkDetails,
   perkOverride,
 }: {
-  item: MasterItemDefinitions
+  item: MasterItemDefinitions | HouseItems
   perkDetails: PerkSlot[]
   perkOverride: Record<string, string>
 }) {

@@ -4,11 +4,9 @@ import { outputFromObservable } from '@angular/core/rxjs-interop'
 import { AttributeRef, getItemId, getWeaponTagFromWeapon } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { BehaviorSubject, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDividerComponent } from '~/ui/item-frame/item-divider.component'
 import { selectSignal } from '~/utils'
-import { ModelsService } from '../../model-viewer/model-viewer.service'
 import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
 import { ItemDetailGsDamage } from './item-detail-gs-damage.component'
@@ -182,10 +180,6 @@ export class ItemCardComponent extends ItemDetailStore {
   )
 
   protected trackByIndex = (i: number) => i
-
-  public constructor(db: NwDataService, ms: ModelsService) {
-    super(db, ms)
-  }
 }
 
 function appendSection(list: Array<Type<any>>, component: Type<any>) {

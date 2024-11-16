@@ -1,5 +1,29 @@
 <nwb-damage-row-detail-header />
 <div class="p-3 flex flex-col gap-2">
+  @if (!store.isLoaded()) {
+    @if (store.isLoading()) {
+      <span class="skeleton w-full h-3"></span>
+      <div class="flex gap-1">
+        <span class="skeleton w-1/3 h-3"></span>
+        <span class="skeleton w-1/3 h-3"></span>
+      </div>
+    }
+  } @else if (store.hasError()) {
+    <div class="alert text-error">
+      <nwb-icon [icon]="iconInfo" class="w-5 h-5" />
+      <div class="text-sm">
+        Oh Snap! Something went wrong.
+      </div>
+    </div>
+  } @else if (!store.row()) {
+    <div class="alert text-error">
+      <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-error" />
+      <div class="text-sm">
+        <code class="text-white">{{ store.rowId() }}</code> does not exist.
+      </div>
+    </div>
+  }
+
   <nwb-property-grid
     class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
     [item]="properties()"
@@ -15,7 +39,7 @@
     />
   }
 
-  <ng-content></ng-content>
+  <ng-content/>
 </div>
 
 <ng-template [nwbGridCell] let-value #tplCategoryInfo>

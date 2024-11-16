@@ -1,9 +1,7 @@
-import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
+import { EventEmitter, inject, Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
   AttributeRef,
-  NW_FALLBACK_ICON,
-  NW_MAX_CHARACTER_LEVEL,
   getFirstItemClassOf,
   getItemAttribution,
   getItemExpansion,
@@ -24,11 +22,14 @@ import {
   isItemHeartGem,
   isItemNamed,
   isPerkGem,
+  NW_FALLBACK_ICON,
+  NW_MAX_CHARACTER_LEVEL,
 } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { uniq } from 'lodash'
-import { combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, from, map, of, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { humanize, mapProp, selectStream } from '~/utils'
 import { ModelsService } from '../../model-viewer/model-viewer.service'
 import { selectGameEventItemReward, selectGameEventRewards } from '../game-event-detail/selectors'
@@ -59,6 +60,9 @@ export interface ItemDetailState {
 
 @Injectable()
 export class ItemDetailStore extends ComponentStore<ItemDetailState> {
+  protected db = injectNwData()
+  private ms = inject(ModelsService)
+
   public readonly recordId$ = this.select(({ recordId }) => recordId)
   public readonly gsOverride$ = this.select(({ gsOverride }) => gsOverride)
   public readonly gsEditable$ = this.select(({ gsEditable }) => gsEditable)
@@ -76,20 +80,34 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly gsEdit$ = new EventEmitter<MouseEvent>()
   public readonly perkEdit$ = new EventEmitter<PerkSlot>()
 
-  public readonly transformToId$ = this.select(this.db.itemTransform(this.recordId$), (it) => it?.ToItemId)
-  public readonly transformFromIds$ = this.select(this.db.itemTransformsByToItemId(this.recordId$), (it) => {
-    return !it ? null : Array.from(it).map((it) => it.FromItemId)
-  })
+  public readonly transformToId$ = selectStream(
+    this.recordId$.pipe(switchMap((id) => this.db.itemTransformsById(id))),
+    (it) => it?.ToItemId,
+  )
+  public readonly transformFromIds$ = selectStream(
+    this.recordId$.pipe(switchMap((id) => this.db.itemTransformsByToItemId(id))),
+    (it) => {
+      return !it ? null : Array.from(it).map((it) => it.FromItemId)
+    },
+  )
 
-  public readonly item$ = this.select(this.db.item(this.recordId$), (it) => it)
-  public readonly housingItem$ = this.select(this.db.housingItem(this.recordId$), (it) => it)
-  public readonly consumable$ = this.select(this.db.consumable(this.recordId$), (it) => it)
-  public readonly resource$ = this.select(this.db.resource(this.recordId$), (it) => it)
-  public readonly resourcePerkIds$ = this.select(this.db.perkBucketsMap, this.resource$, selectResourcePerkIds)
+  public readonly item$ = selectStream(this.recordId$.pipe(switchMap((id) => this.db.itemsById(id))))
+  public readonly housingItem$ = selectStream(this.recordId$.pipe(switchMap((id) => this.db.housingItemsById(id))))
+  public readonly consumable$ = selectStream(this.recordId$.pipe(switchMap((id) => this.db.consumableItemsById(id))))
+  public readonly resource$ = selectStream(this.recordId$.pipe(switchMap((id) => this.db.resourceItemsById(id))))
+  public readonly resourcePerkIds$ = selectStream(
+    {
+      resource: this.resource$,
+      perkBuckets: this.db.perkBucketsByIdMap(),
+    },
+    ({ perkBuckets, resource }) => selectResourcePerkIds(perkBuckets, resource),
+  )
   public readonly perkBucketIds$ = this.select(this.item$, (item) => getItemPerkBucketIds(item))
   public readonly entity$ = this.select(this.item$, this.housingItem$, (item, housingItem) => item || housingItem)
   public readonly salvageGameEventId$ = this.select(this.item$, (it) => it?.SalvageGameEventID)
-  public readonly salvageGameEvent$ = selectStream(this.db.gameEvent(this.salvageGameEventId$))
+  public readonly salvageGameEvent$ = selectStream(
+    this.salvageGameEventId$.pipe(switchMap((id) => this.db.gameEventsById(id))),
+  )
   public readonly salvageGameEventItemReward$ = selectStream(this.salvageGameEvent$, (it) =>
     selectGameEventItemReward(it),
   )
@@ -98,7 +116,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     (it) => it?.housingItemId || it?.itemId,
   )
   public readonly salvageGameEventRewardItem$ = selectStream(
-    this.db.itemOrHousingItem(this.salvageGameEventRewardItemId$),
+    this.salvageGameEventRewardItemId$.pipe(switchMap((id) => this.db.itemOrHousingItem(id))),
   )
   public readonly salvageGameEventRewards$ = selectStream(
     {
@@ -108,12 +126,14 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     ({ event, item }) => selectGameEventRewards(event, item),
   )
   public readonly salvageAchievementId$ = this.select(this.item$, (it) => it?.SalvageAchievement)
-  public readonly salvageAchievementRecipe$ = selectStream(this.db.recipeByAchievementId(this.salvageAchievementId$))
+  public readonly salvageAchievementRecipe$ = selectStream(
+    this.salvageAchievementId$.pipe(switchMap((id) => this.db.recipesByRequiredAchievementId(id))),
+  )
   public readonly dropTableIds$ = selectStream(
     {
-      tablesByBycketMap: this.db.lootTablesByLootBucketIdMap,
-      tables: this.db.lootTablesByLootItemId(this.recordId$),
-      buckets: this.db.lootBucketsByItemId(this.recordId$),
+      tablesByBycketMap: this.db.lootTablesByLootBucketIdMap(),
+      tables: this.recordId$.pipe(switchMap((id) => this.db.lootTablesByLootItemId(id))),
+      buckets: this.recordId$.pipe(switchMap((id) => this.db.lootBucketsByItemId(id))),
     },
     ({ tablesByBycketMap, tables, buckets }) => {
       const result: string[] = []
@@ -133,20 +153,23 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
 
   public readonly itemGS$ = this.select(this.item$, this.gsOverride$, selectItemGearscore)
   public readonly itemGSLabel$ = this.select(this.item$, this.gsOverride$, selectItemGearscoreLabel)
-  public readonly craftableRecipes$ = this.select(this.db.recipesByIngredientId(this.recordId$), (it) => {
-    if (!it) {
-      return null
-    }
-    return Array.from(it.values())
-      .map((recipe) => {
-        return {
-          recipe,
-          itemId: getItemIdFromRecipe(recipe),
-        }
-      })
-      .filter((it) => !!it.itemId)
-  })
-  public readonly recipes$ = this.select(this.db.recipesByItemId(this.recordId$), (it) => {
+  public readonly craftableRecipes$ = this.select(
+    this.recordId$.pipe(switchMap((id) => this.db.recipesByIngredient(id))),
+    (it) => {
+      if (!it) {
+        return null
+      }
+      return Array.from(it.values())
+        .map((recipe) => {
+          return {
+            recipe,
+            itemId: getItemIdFromRecipe(recipe),
+          }
+        })
+        .filter((it) => !!it.itemId)
+    },
+  )
+  public readonly recipes$ = this.select(this.recordId$.pipe(switchMap((id) => this.db.recipesByItemId(id))), (it) => {
     if (!it) {
       return null
     }
@@ -164,10 +187,10 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     {
       item: this.item$,
       itemGS: this.itemGS$,
-      perks: this.db.perksMap,
-      buckets: this.db.perkBucketsMap,
-      affixes: this.db.affixStatsMap,
-      abilities: this.db.abilitiesMap,
+      perks: this.db.perksByIdMap(),
+      buckets: this.db.perkBucketsByIdMap(),
+      affixes: this.db.affixStatsByIdMap(),
+      abilities: this.db.abilitiesByIdMap(),
       perkOverride: this.perkOverride$,
     },
     (it) => {
@@ -188,9 +211,18 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly attribution$ = this.select(this.entity$, (it) => getItemAttribution(it))
   public readonly expansion$ = this.select(this.item$, (it) => getItemExpansion(it?.RequiredExpansionId))
 
-  public readonly weaponStats$ = this.select(this.db.weapon(this.itemStatsRef$), (it) => it)
-  public readonly armorStats$ = this.select(this.db.armor(this.itemStatsRef$), (it) => it)
-  public readonly runeStats$ = this.select(this.db.rune(this.itemStatsRef$), (it) => it)
+  public readonly weaponStats$ = this.select(
+    this.itemStatsRef$.pipe(switchMap((id) => this.db.weaponItemsById(id))),
+    (it) => it,
+  )
+  public readonly armorStats$ = this.select(
+    this.itemStatsRef$.pipe(switchMap((id) => this.db.armorItemsById(id))),
+    (it) => it,
+  )
+  public readonly runeStats$ = this.select(
+    this.itemStatsRef$.pipe(switchMap((id) => this.db.runeItemsById(id))),
+    (it) => it,
+  )
 
   public readonly name$ = this.select(this.entity$, (it) => it?.Name)
   public readonly namePrefix$ = this.select(this.item$, this.perkSlots$, selectNamePerfix)
@@ -220,38 +252,46 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     ({ entity, playerLevel }) => selectSalvageInfo(entity, playerLevel),
   )
   public readonly appearanceM$ = this.select(
-    this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceM'))),
+    this.item$.pipe(mapProp('ArmorAppearanceM')).pipe(switchMap((id) => this.db.armorAppearancesById(id))),
     (it) => it,
   )
   public readonly appearanceF$ = this.select(
-    this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceF'))),
+    this.item$.pipe(mapProp('ArmorAppearanceF')).pipe(switchMap((id) => this.db.armorAppearancesById(id))),
     (it) => it,
   )
   public readonly weaponAppearance$ = this.select(
-    this.db.weaponAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))),
+    this.item$.pipe(mapProp('WeaponAppearanceOverride')).pipe(switchMap((id) => this.db.weaponAppearancesById(id))),
     (it) => it,
   )
   public readonly instrumentAppearance$ = this.select(
-    this.db.instrumentAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))),
+    this.item$.pipe(mapProp('WeaponAppearanceOverride')).pipe(switchMap((id) => this.db.instrumentAppearancesById(id))),
     (it) => it,
   )
-  public readonly ingredientCategories$ = this.select(this.db.recipeCategoriesMap, this.item$, selectCraftingCategories)
+  public readonly ingredientCategories$ = this.select(
+    from(this.db.recipeCategoriesByIdMap()),
+    this.item$,
+    selectCraftingCategories,
+  )
   public readonly statusEffectsIds$ = this.select(this.consumable$, this.housingItem$, selectStatusEffectIds)
   public readonly gemDetail$ = this.select(this.perkSlots$, (list) => list?.find((it) => isPerkGem(it.perk)))
-  public readonly finalRarity$ = this.select(
-    combineLatest({
+  public readonly finalRarity$ = selectStream(
+    {
       item: this.entity$,
       perkDetails: this.perkSlots$,
       perkOverride: this.perkOverride$,
-    }),
-    selectFinalRarity,
+    },
+    (it) => selectFinalRarity(it),
   )
   public readonly finalRarityName$ = this.select(this.isArtifact$, this.finalRarity$, (isArtifact, rarity) => {
     return getItemRarityLabel(rarity)
   })
 
   public readonly itemSetName$ = this.select(this.item$, (it) => getItemSetFamilyName(it))
-  public readonly itemSet$ = this.select(this.item$, this.db.itemSet(this.itemSetName$), selectItemSet)
+  public readonly itemSet$ = this.select(
+    this.item$,
+    this.itemSetName$.pipe(switchMap((it) => this.db.itemsBySetFamilyName(it))),
+    selectItemSet,
+  )
 
   public readonly vmStats$ = combineLatest({
     item: this.item$,
@@ -310,10 +350,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     }),
   )
 
-  public constructor(
-    protected db: NwDataService,
-    private ms: ModelsService,
-  ) {
+  public constructor() {
     super({})
   }
 
@@ -322,8 +359,8 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   }
 }
 
-function collectArtifactTasks(item: MasterItemDefinitions, db: NwDataService) {
-  return db.objectiveTasksMap.pipe(
+function collectArtifactTasks(item: MasterItemDefinitions, db: NwData) {
+  return from(db.objectiveTasksByIdMap()).pipe(
     map((tasks) => {
       const task = tasks.get(`Task_ContainerPerks_${item.ItemID}`)
       if (!task) {

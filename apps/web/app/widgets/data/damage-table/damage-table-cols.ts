@@ -6,7 +6,7 @@ import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type DamageTableUtils = TableGridUtils<DamageTableRecord>
-export type DamageTableRecord = DamageData
+export type DamageTableRecord = DamageData & { $source: string }
 
 export function damageColIcon(util: DamageTableUtils) {
   return util.colDef({

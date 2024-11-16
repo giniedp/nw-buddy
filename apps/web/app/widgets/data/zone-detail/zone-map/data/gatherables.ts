@@ -1,8 +1,8 @@
 import { GatherableVariation } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { GatherableData } from '@nw-data/generated'
 import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
-import { combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, from, map, switchMap } from 'rxjs'
 import { svgLocationQuestion, svgStaff } from '~/ui/icons/svg'
 import { combineLatestOrEmpty, eqCaseInsensitive, stringToHSL } from '~/utils'
 import { getGatherableIcon } from '../../../gatherable-detail/utils'
@@ -15,20 +15,19 @@ import { describeLoggingFilters } from '../utils/describe-logging-filters'
 import { describeMiningFilters } from '../utils/describe-mining-filters'
 import { describeSettlementFilters } from '../utils/describe-settlement-filters'
 import { describeSkinningFilters } from '../utils/describe-skinning-filters'
+import { describeVistaFilters } from '../utils/describe-vista-filters'
+import { describeGatheringFilters } from '../utils/descrive-gathering-filters'
 import { parseLootTableID } from '../utils/parse-loottable'
 import { getSizeColor, parseSizeVariant } from '../utils/parse-size-variant'
 import { FilterDataSet, FilterGroup } from './types'
-import { describeGatheringFilters } from '../utils/descrive-gathering-filters'
-import { environment } from 'apps/web/environments'
-import { describeVistaFilters } from '../utils/describe-vista-filters'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
-export function loadGatherables(db: NwDataService, mapCoord: MapCoord) {
+export function loadGatherables(db: NwData, mapCoord: MapCoord) {
   return combineLatest({
-    gatherables: db.gatherables,
-    gatherablesMeta: db.gatherablesMetadataMap,
-    variationsByGatherableId: db.gatherableVariationsByGatherableIdMap,
-    variationsMeta: db.variationsMetadataMap,
+    gatherables: db.gatherablesAll(),
+    gatherablesMeta: db.gatherablesMetadataByIdMap(),
+    variationsByGatherableId: db.gatherableVariationsByGatherableIdMap(),
+    variationsMeta: db.variationsMetadataByIdMap(),
     chunks: loadAllChunks(db),
   }).pipe(
     map((data) =>
@@ -40,8 +39,8 @@ export function loadGatherables(db: NwDataService, mapCoord: MapCoord) {
   )
 }
 
-function loadAllChunks(db: NwDataService) {
-  return db.variationsMetadata.pipe(
+function loadAllChunks(db: NwData) {
+  return from(db.variationsMetadataAll()).pipe(
     switchMap((list) => {
       const chunkIds: number[] = []
       for (const item of list) {

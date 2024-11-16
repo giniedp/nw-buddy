@@ -56,7 +56,7 @@ export function craftingColIcon(util: CraftingTableUtils) {
           isArtifact: isMasterItem(item) && isItemArtifact(item),
           isNamed: isMasterItem(item) && isItemNamed(item),
           rarity: getItemRarity(item),
-        })
+        }),
       )
     }),
   })
@@ -76,7 +76,7 @@ export function craftingColSource(util: CraftingTableUtils) {
   return util.colDef<string>({
     colId: 'source',
     headerValueGetter: () => 'Source',
-    valueGetter: ({ data }) => data['$source'],
+    valueGetter: ({ data }) => (data['$source'] as string)?.replace('CraftingRecipes', ''),
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
     width: 125,
@@ -100,11 +100,11 @@ export function craftingColIngredients(util: CraftingTableUtils) {
   return util.colDef<string[]>({
     colId: 'ingredients',
     headerValueGetter: () => 'Ingredients',
-    width: 200,
+    width: 350,
     sortable: false,
     headerName: 'Ingredients',
     valueGetter: ({ data }) => data.$ingredients?.map(getItemId),
-    getQuickFilterText: ({ data }) => data.$ingredients?.map(({ Name }) => util.tl8(Name)).join(' '),
+    getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ data }) => {
       const items = data.$ingredients || []
       return util.el(
@@ -118,9 +118,9 @@ export function craftingColIngredients(util: CraftingTableUtils) {
             util.elItemIcon({
               class: ['transition-all scale-90 hover:scale-110'],
               icon: getItemIconPath(item) || NW_FALLBACK_ICON,
-            })
+            }),
           )
-        })
+        }),
       )
     }),
     ...util.selectFilter({
@@ -146,7 +146,7 @@ export function craftingColExpansion(util: CraftingTableUtils) {
     headerValueGetter: () => 'Expansion',
     width: 180,
     field: 'RequiredExpansion',
-    getQuickFilterText: ({ data }) => util.i18n.get(getItemExpansion(data?.RequiredExpansion)?.label),
+    getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ data }) => {
       const expansion = getItemExpansion(data?.RequiredExpansion)
       if (!expansion) {
@@ -184,7 +184,7 @@ export function craftingColBookmark(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'userBookmark',
     headerValueGetter: () => 'Bookmark',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
@@ -202,7 +202,7 @@ export function craftingColInStock(util: CraftingTableUtils) {
     colId: 'userStock',
     headerValueGetter: () => 'In Stock',
     headerTooltip: 'Number of items currently owned',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.stock,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
@@ -220,7 +220,7 @@ export function craftingColPrice(util: CraftingTableUtils) {
     colId: 'userPrice',
     headerValueGetter: () => 'Price',
     headerTooltip: 'Current price in Trading post',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.price,
     cellClass: 'text-right',
     cellRenderer: TrackingCell,
@@ -238,13 +238,13 @@ export function craftingColTradeskill(util: CraftingTableUtils) {
   return util.colDef<string>({
     colId: 'tradeskill',
     headerValueGetter: () => 'Tradeskill',
-    width: 120,
+    width: 150,
     valueGetter: ({ data }) => data.Tradeskill,
     valueFormatter: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -254,6 +254,7 @@ export function craftingColCraftingXP(util: CraftingTableUtils) {
     headerValueGetter: () => 'Crafting XP',
     width: 120,
     valueGetter: ({ data }) => getCraftingXP(data, data.$gameEvent),
+    getQuickFilterText: () => null,
     filter: 'agNumberColumnFilter',
   })
 }
@@ -266,7 +267,7 @@ export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Rec
     cellClass: 'cursor-pointer',
     headerTooltip: 'Whether you can craft this item based on your current tradeskill level',
     valueGetter: ({ data }) => skills()?.[data.Tradeskill] >= data.RecipeLevel,
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ value }) => {
       return util.el('span.badge.badge-sm', {
         class: value ? ['badge-success', 'badge-outline'] : 'badge-error',
@@ -275,7 +276,7 @@ export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Rec
     }),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -290,7 +291,7 @@ export function craftingColCategory(util: CraftingTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -312,7 +313,7 @@ export function craftingColRecipeLevel(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'recipeLevel',
     headerValueGetter: () => 'Recipe Level',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     width: 120,
     field: 'RecipeLevel',
     filter: RangeFilter,
@@ -326,7 +327,7 @@ export function craftingColItemChance(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'bonusItemChance',
     headerValueGetter: () => 'Bonus Chance',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     width: 120,
     field: 'BonusItemChance',
     valueGetter: ({ data }) => Math.round((data.BonusItemChance || 0) * 100),
@@ -342,7 +343,7 @@ export function craftingColCooldownQuantity(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'cooldownQuantity',
     headerValueGetter: () => 'Cooldown Quantity',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     field: 'CooldownQuantity',
     filter: RangeFilter,
     valueFormatter: ({ value }) => String(value ? value : ''),
@@ -356,7 +357,7 @@ export function craftingColCooldownCeconds(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'cooldownSeconds',
     headerValueGetter: () => 'Cooldown Time',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     field: 'CooldownSeconds',
     valueFormatter: ({ value }) => {
       if (!value) {

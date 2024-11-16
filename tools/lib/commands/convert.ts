@@ -32,6 +32,7 @@ enum AssetType {
   objectstreams = 'objectstreams',
   images = 'images',
   heightmap = 'heightmap',
+  lua = 'lua',
 }
 
 function parseType(value: string): AssetType[] {
@@ -75,6 +76,9 @@ program
 
     // if (typeEnabled(modules, AssetType.heightmap)) {
     //   await convertHeightmapFiles(unpackDir, convertDir)
+    // }
+    // if (typeEnabled(modules, AssetType.lua)) {
+    //   await convertLuaFiles(unpackDir, convertDir)
     // }
     if (typeEnabled(modules, AssetType.files)) {
       await copyCommonFiles(unpackDir, convertDir)
@@ -284,6 +288,22 @@ async function convertImages({
         outputDir,
         update: update ?? true,
         exe: 'tools/bin/texconv.exe',
+      }
+    }),
+  })
+}
+
+async function convertLuaFiles(inputDir: string, outputDir: string) {
+  const files = await glob([path.join(inputDir, 'lyshineui', '**', '*.luac')])
+  await runTasks({
+    label: 'Lua',
+    taskName: 'convertLuacToLua',
+    tasks: files.map((file) => {
+      return {
+        file,
+        inputDir,
+        outputDir,
+        jar: 'tools/bin/unluac.jar',
       }
     }),
   })

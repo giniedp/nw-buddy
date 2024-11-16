@@ -41,7 +41,7 @@
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced By Damage Tables:</h3>
       }
-      <nwb-damage-row-detail [rowId]="dmg.DamageID" class="bg-black" />
+      <nwb-damage-row-detail [table]="dmg.$source" [rowId]="dmg.DamageID" class="bg-black" />
     }
 
     @for (spell of detail.store.foreignSpells(); track $index; let isFirst = $first) {

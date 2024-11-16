@@ -1,12 +1,22 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  TemplateRef,
+  computed,
+  effect,
+  inject,
+  input,
+  untracked,
+  viewChild,
+} from '@angular/core'
 import { StatusEffectData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgInfoCircle } from '~/ui/icons/svg'
+import { svgCircleExclamation, svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
-import { linkCell, localizedCell, valueCell } from '~/ui/property-grid/cells'
+import { linkCell, localizedCell, tagsCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
@@ -34,19 +44,16 @@ import { StatusEffectDetailStore } from './status-effect.store'
   },
 })
 export class StatusEffectDetailComponent {
-  @Input()
-  public set effectId(value: string) {
-    this.store.load(value)
-  }
+  public effectId = input<string>(null)
+  public disableProperties = input<boolean>(false)
 
-  @Input()
-  public disableProperties: boolean
+  #fxLoad = effect(() => {
+    const effectId = this.effectId()
+    untracked(() => this.store.load(effectId))
+  })
 
-  @ViewChild('tplCategory', { static: true })
-  protected tplCategory: TemplateRef<any>
-
-  @ViewChild('tplCategoryInfo', { static: true })
-  protected tplCategoryInfo: TemplateRef<any>
+  protected tplCategory = viewChild.required<TemplateRef<any>>('tplCategory')
+  protected tplCategoryInfo = viewChild.required<TemplateRef<any>>('tplCategoryInfo')
 
   protected store = inject(StatusEffectDetailStore)
   protected decimals = inject(DecimalPipe)
@@ -62,6 +69,10 @@ export class StatusEffectDetailComponent {
   protected properties = this.store.properties
   protected affixProperties = this.store.affixProps
   protected costumeModels = this.store.costumeModels
+  protected isLoading = this.store.isLoading
+  protected isLoaded = this.store.isLoaded
+  protected hasError = this.store.hasError
+  protected hasData = computed(() => !!this.store.effect())
 
   public descriptor = gridDescriptor<StatusEffectData>(
     {
@@ -74,8 +85,10 @@ export class StatusEffectDetailComponent {
       OnTickStatusEffect: statusEffectCells,
       RemoveStatusEffects: statusEffectCells,
       EquipAbility: (value) => linkCell({ value, routerLink: ['ability', value] }),
-      EffectCategories: (value) => value?.map((it) => ({ value: it, template: this.tplCategory })),
-      RemoveStatusEffectCategories: (value) => value?.map((it) => ({ value: it, template: this.tplCategory })),
+      EffectCategories: (value) => value?.map((it) => ({ value: it, template: this.tplCategory() })),
+      RemoveStatusEffectCategories: (value) => value?.map((it) => ({ value: it, template: this.tplCategory() })),
+      PauseInGameModesList: (value) => tagsCell({ value }),
+      LootTags: (value) => tagsCell({ value }),
     },
     (value) => valueCell({ value }),
   )

@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { observeQueryParam, shareReplayRefCount } from '~/utils'
@@ -10,7 +9,6 @@ import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { ModelsService } from '~/widgets/model-viewer'
 
 export interface Tab {
   id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes'
@@ -37,6 +35,8 @@ export interface Tab {
   },
 })
 export class HousingTabsComponent extends ItemDetailStore {
+  private route = inject(ActivatedRoute)
+
   @Input()
   public set itemId(value: string) {
     this.patchState({ recordId: value })
@@ -97,12 +97,4 @@ export class HousingTabsComponent extends ItemDetailStore {
       }),
     )
     .pipe(shareReplayRefCount(1))
-
-  public constructor(
-    db: NwDataService,
-    ms: ModelsService,
-    private route: ActivatedRoute,
-  ) {
-    super(db, ms)
-  }
 }

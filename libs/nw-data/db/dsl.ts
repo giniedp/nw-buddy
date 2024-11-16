@@ -67,6 +67,9 @@ export function indexLookup<T, K>(index: SecondaryIndex<K, T>): IndexLookup<K, T
 export function indexLookup<T, K>(index: PrimaryIndex<K, T | T[]>): IndexLookup<K, T | T[]> {
   console.assert(index != null, 'Index is not defined')
   return async (key: any) => {
+    if (key == null) {
+      return null
+    }
     return index().then((it) => it?.get(key))
   }
 }
@@ -78,10 +81,13 @@ function createPrimaryIndex<T>(list: T[], key: string | ((it: any) => string | s
   const result = new CaseInsensitiveMap<any, T>()
   for (const item of list) {
     const key = fn(item)
+    if (key == null) {
+      continue
+    }
     if (!result.has(key)) {
       result.set(key, item)
     } else {
-      console.warn(`Duplicate key: ${key}`)
+      console.warn(`Duplicate key: ${key}`, item)
     }
   }
   return result
@@ -95,6 +101,9 @@ function createSecondaryIndex<T>(list: T[], key: string | ((it: any) => string |
   for (const item of list) {
     const keys = uniq(makeArray(fn(item)))
     for (const key of keys) {
+      if (key == null) {
+        continue
+      }
       if (!result.has(key)) {
         result.set(key, [])
       }

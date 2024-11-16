@@ -10,7 +10,6 @@ import { ExpressionConstant } from './types'
 @Injectable({ providedIn: 'root' })
 export class NwExpressionService {
   private db = injectNwData()
-  //public constructor(private db: NwDataService) {}
 
   public parse(expression: string) {
     return parseNwExpression(expression)

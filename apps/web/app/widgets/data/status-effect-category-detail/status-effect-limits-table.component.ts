@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
-import { patchState } from '@ngrx/signals'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
@@ -61,12 +60,12 @@ export class StatusEffectLimitsTableComponent {
   protected propId: string
 
   private loadById(id: string) {
-    patchState(this.store, { categoryId: id })
+    this.store.load(id)
   }
 
   private async loadByPropId(id: string) {
     const categories = await this.db.statusEffectCategoriesAll()
     const category = categories.find((it) => !!extractLimits(it.ValueLimits)?.[id])
-    patchState(this.store, { categoryId: category?.StatusEffectCategoryID })
+    this.store.load(category?.StatusEffectCategoryID)
   }
 }

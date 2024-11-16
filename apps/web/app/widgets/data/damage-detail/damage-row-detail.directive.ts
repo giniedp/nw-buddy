@@ -1,4 +1,4 @@
-import { Directive, forwardRef, Input } from '@angular/core'
+import { Directive, forwardRef, inject, Input } from '@angular/core'
 import { DamageDetailStore } from './damage-row-detail.store'
 
 @Directive({
@@ -6,15 +6,14 @@ import { DamageDetailStore } from './damage-row-detail.store'
   selector: '[nwbDamageRowDetail]',
   exportAs: 'damageRowDetail',
   providers: [
-    {
-      provide: DamageDetailStore,
-      useExisting: forwardRef(() => DamageDetailStore),
-    },
+    DamageDetailStore
   ],
 })
-export class DamageRowDetailDirective extends DamageDetailStore {
+export class DamageRowDetailDirective  {
+  public store = inject(DamageDetailStore)
+
   @Input()
-  public set nwbDamageRowDetail(value: string) {
-    this.load({ rowId: value })
+  public set nwbDamageRowDetail(value: { table: string, rowId: string} ) {
+    this.store.load(value)
   }
 }

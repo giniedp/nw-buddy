@@ -19,14 +19,13 @@ import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
+import { ConsumableDetailModule } from '~/widgets/data/consumable-detail'
 import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
-import { PropertyGridModule } from '~/ui/property-grid'
-import { ConsumableDetailModule } from '~/widgets/data/consumable-detail'
 
 @Component({
   standalone: true,

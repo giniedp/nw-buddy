@@ -11,7 +11,6 @@ export interface StatusEffectCategoryDetailState {
 }
 
 export const StatusEffectCategoryDetailStore = signalStore(
-  { protectedState: false },
   withState<StatusEffectCategoryDetailState>({
     categoryId: null,
     category: null,
@@ -33,7 +32,6 @@ export const StatusEffectCategoryDetailStore = signalStore(
     const limits = computed(() => extractLimits(category()))
     const table = computed(() => selectLimitsTable(category(), categories()))
     return {
-      category: category,
       limits: limits,
       table: table,
       hasLimits: computed(() => !!table()),
