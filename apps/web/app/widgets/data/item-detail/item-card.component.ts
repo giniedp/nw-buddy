@@ -1,13 +1,11 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input, Output, Type } from '@angular/core'
-import { outputFromObservable } from '@angular/core/rxjs-interop'
-import { AttributeRef, getItemId, getWeaponTagFromWeapon } from '@nw-data/common'
+import { ChangeDetectionStrategy, Component, effect, inject, input, Input, untracked } from '@angular/core'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
+import { AttributeRef, getItemId } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { BehaviorSubject, of, switchMap } from 'rxjs'
+import { skip } from 'rxjs'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ItemDividerComponent } from '~/ui/item-frame/item-divider.component'
-import { selectSignal } from '~/utils'
 import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
+import { ItemDetailDescriptionHeargemComponent } from './item-detail-description-heargem.component'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
 import { ItemDetailGsDamage } from './item-detail-gs-damage.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
@@ -16,6 +14,7 @@ import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component
 import { ItemDetailPerksComponent } from './item-detail-perks.component'
 import { ItemDetailStatsComponent } from './item-detail-stats.component'
 import { ItemDetailStore } from './item-detail.store'
+import { ItemEditorEventsService } from './item-editor-events.service'
 
 @Component({
   standalone: true,
@@ -23,12 +22,14 @@ import { ItemDetailStore } from './item-detail.store'
   templateUrl: './item-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ItemDetailAttributionComponent,
     ItemDetailDescriptionComponent,
+    ItemDetailDescriptionHeargemComponent,
+    ItemDetailGsDamage,
     ItemDetailHeaderComponent,
     ItemDetailInfoComponent,
     ItemDetailPerksComponent,
+    ItemDetailPerkTasksComponent,
     ItemDetailStatsComponent,
     ItemFrameModule,
   ],
@@ -36,62 +37,66 @@ import { ItemDetailStore } from './item-detail.store'
   host: {
     class: 'block bg-black rounded-md overflow-clip font-nimbus',
   },
-  providers: [
-    {
-      provide: ItemDetailStore,
-      useExisting: forwardRef(() => ItemCardComponent),
-    },
-  ],
+  providers: [ItemEditorEventsService, ItemDetailStore],
 })
-export class ItemCardComponent extends ItemDetailStore {
-  @Input()
-  public set entityId(value: string) {
-    this.patchState({ recordId: value })
-  }
+export class ItemCardComponent {
+  public readonly store = inject(ItemDetailStore)
+  private events = inject(ItemEditorEventsService)
 
-  @Input()
-  public set entity(value: MasterItemDefinitions | HouseItems) {
-    this.patchState({ recordId: getItemId(value) })
-  }
+  public entity = input<string, string | MasterItemDefinitions | HouseItems>(null, {
+    alias: 'entity',
+    transform: (value) => (typeof value === 'string' ? value : getItemId(value)),
+  })
+  public gsOverride = input<number>()
+  public gsEditable = input<boolean>()
+  public perkOverride = input<Record<string, string>>()
+  public perkEditable = input<boolean>()
 
-  @Input()
-  public set playerLevel(value: number) {
-    this.patchState({ playerLevel: value })
-  }
+  public playerLevel = input<number>()
+  public attrValueSums = input<Record<AttributeRef, number>>()
 
-  @Input()
-  public set attrValueSums(value: Record<AttributeRef, number>) {
-    this.patchState({ attrValueSums: value })
-  }
+  public perkEdit = outputFromObservable(this.events.editPerk)
+  public gsEdit = outputFromObservable(this.events.editGearScore)
+  public itemChange = outputFromObservable(toObservable(this.store.item).pipe(skip(1)))
+  public entityChange = outputFromObservable(toObservable(this.store.record).pipe(skip(1)))
+  public housingItemChange = outputFromObservable(toObservable(this.store.houseItem).pipe(skip(1)))
 
-  @Input()
-  public set gsOverride(value: number) {
-    this.patchState({ gsOverride: value })
-  }
-  @Input()
-  public set gsEditable(value: boolean) {
-    this.patchState({ gsEditable: value })
-  }
-  @Output()
-  public gsEdit = this.gsEdit$
-
-  public itemChange = outputFromObservable(this.item$)
-
-  public entityChange = outputFromObservable(this.entity$)
-
-  @Output()
-  public housingItemChange = this.housingItem$
-
-  @Input()
-  public set perkOverride(value: Record<string, string>) {
-    this.patchState({ perkOverride: value })
-  }
-  @Input()
-  public set perkEditable(value: boolean) {
-    this.patchState({ perkEditable: value })
-  }
-  @Output()
-  public perkEdit = this.perkEdit$
+  #fxLoad = effect(() => {
+    const itemId = this.entity()
+    untracked(() => {
+      this.store.load({
+        recordId: itemId,
+        gsOverride: this.gsOverride(),
+        perkOverride: this.perkOverride(),
+      })
+    })
+  })
+  #fxOverrideGs = effect(() => {
+    const gsOverride = this.gsOverride()
+    untracked(() => {
+      this.store.updateGsOverride(gsOverride)
+    })
+  })
+  #fxOverridePerks = effect(() => {
+    const perkOverride = this.perkOverride()
+    untracked(() => {
+      this.store.updatePerkOverride(perkOverride)
+    })
+  })
+  #fxSettings = effect(() => {
+    const playerLevel = this.playerLevel()
+    const gsEditable = this.gsEditable()
+    const perkEditable = this.perkEditable()
+    const attrValueSums = this.attrValueSums()
+    untracked(() => {
+      this.store.updateSettings({
+        playerLevel,
+        gsEditable,
+        attrValueSums,
+        perkEditable,
+      })
+    })
+  })
 
   @Input()
   public enableTracker: boolean
@@ -106,88 +111,17 @@ export class ItemCardComponent extends ItemDetailStore {
   public enableTasks: boolean
 
   @Input()
-  public set disableStats(value: boolean) {
-    this.disableStats$.next(value)
-  }
+  public disableStats: boolean
 
   @Input()
-  public set disableInfo(value: boolean) {
-    this.disableInfo$.next(value)
-  }
+  public disableInfo: boolean
 
   @Input()
-  public set disableDescription(value: boolean) {
-    this.disableDescription$.next(value)
-  }
+  public disableDescription: boolean
 
   @Input()
-  public set disablePerks(value: boolean) {
-    this.disablePerks$.next(value)
-  }
+  public disablePerks: boolean
 
   @Input()
   public square: boolean
-
-  protected disableInfo$ = new BehaviorSubject(false)
-  protected disableStats$ = new BehaviorSubject(false)
-  protected disablePerks$ = new BehaviorSubject(false)
-  protected disableDescription$ = new BehaviorSubject(false)
-
-  protected showAttribution = selectSignal(
-    {
-      disableInfo: this.disableInfo$,
-      attribution: this.attribution$,
-      expansion: this.expansion$,
-    },
-    ({ disableInfo, attribution, expansion }) => !disableInfo && (attribution || expansion),
-  )
-
-  protected components = selectSignal(
-    {
-      disableInfo: this.disableInfo$,
-      vmDescription: this.disableDescription$.pipe(switchMap((it) => (it ? of(null) : this.description$))),
-      vmStats: this.disableStats$.pipe(switchMap((it) => (it ? of(null) : this.vmStats$))),
-      vmPerks: this.disablePerks$.pipe(switchMap((it) => (it ? of(null) : this.vmPerks$))),
-      vmPerkTasks: this.artifactPerkTasks$,
-      vmWeapon: this.weaponStats$,
-    },
-    ({ vmDescription, vmStats, vmPerks, vmWeapon, vmPerkTasks, disableInfo }) => {
-      let list: Array<Type<any>> = []
-      if (vmDescription?.image) {
-        appendSection(list, ItemDetailDescriptionComponent)
-      }
-      if (vmStats && (vmStats.gsLabel || vmStats.stats?.length)) {
-        appendSection(list, ItemDetailStatsComponent)
-        if (vmWeapon && getWeaponTagFromWeapon(vmWeapon)) {
-          appendSection(list, ItemDetailGsDamage)
-        }
-      }
-      if (vmPerks?.length) {
-        appendSection(list, ItemDetailPerksComponent)
-      }
-      if (!vmDescription?.image && !!vmDescription?.description) {
-        appendSection(list, ItemDetailDescriptionComponent)
-      }
-      if (this.enableTasks && vmPerkTasks) {
-        appendSection(list, ItemDetailPerkTasksComponent)
-      }
-      if (!disableInfo) {
-        appendSection(list, ItemDetailInfoComponent)
-      }
-
-      return list.length ? list : null
-    },
-  )
-
-  protected trackByIndex = (i: number) => i
-}
-
-function appendSection(list: Array<Type<any>>, component: Type<any>) {
-  if (!list) {
-    list = []
-  }
-  if (list.length) {
-    list.push(ItemDividerComponent)
-  }
-  list.push(component)
 }

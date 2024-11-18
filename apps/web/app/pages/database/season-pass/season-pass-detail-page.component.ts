@@ -10,13 +10,23 @@ import { LayoutModule } from '~/ui/layout'
 import { apiResource, injectRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
+import { ItemDetailSalvageInfoComponent } from '../items/ui/item-detail-salvage-info.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-season-pass-detail-page',
   templateUrl: './season-pass-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, LayoutModule, ItemDetailModule, RouterModule, LootModule, IconsModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    LayoutModule,
+    ItemDetailModule,
+    RouterModule,
+    LootModule,
+    IconsModule,
+    ItemDetailSalvageInfoComponent,
+  ],
   host: {
     class: 'flex flex-col gap-2',
   },

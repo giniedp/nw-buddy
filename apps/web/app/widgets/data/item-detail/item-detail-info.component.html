@@ -1,54 +1,47 @@
-@if (isMissing()) {
-  <div class="bg-error text-error-content rounded-md p-3">
-    <div>
-      <span class="font-bold">Unknown item ID.</span>
-      Either given ID is wrong or item has been removed from Database</div>
-  </div>
-}
 @if (bindOnEquip()) {
-  <div class="text-emerald-500 font-bold">{{ 'ui_bindOnEquip' | nwText }}</div>
+  <div class="text-emerald-500 font-bold" [@inOut]>{{ 'ui_bindOnEquip' | nwText }}</div>
 }
 @if (bindOnPickup()) {
-  <div class="text-emerald-500 font-bold">{{ 'ui_bindOnPickup' | nwText }}</div>
+  <div class="text-emerald-500 font-bold" [@inOut]>{{ 'ui_bindOnPickup' | nwText }}</div>
 }
 @if (canReplaceGem()) {
-  <div class="text-emerald-500 font-bold">Can Replace Gem</div>
+  <div class="text-emerald-500 font-bold" [@inOut]>Can Replace Gem</div>
 }
 @if (cantReplaceGem()) {
-  <div class="text-red-600 font-bold">Can't Replace Gem</div>
+  <div class="text-red-600 font-bold" [@inOut]>Can't Replace Gem</div>
 }
 @if (tierLabel(); as text) {
-  <div>
+  <div [@inOut]>
     <span class="text-zinc-500">Tier</span> <span class="font-bold text-white"> {{ text }}</span>
   </div>
 }
-@if (weight(); as text) {
-  <div>
+@if (weight.value(); as text) {
+  <div [@inOut]>
     <span class="font-bold text-white">{{ text | number: '1.1-1' }}</span> <span class="text-zinc-500"> Weight</span>
   </div>
 }
 @if (durability(); as text) {
-  <div>
+  <div [@inOut]>
     <span class="font-bold text-white">{{ text }}</span> <span class="text-zinc-500"> Durability</span>
   </div>
 }
 @if (requiredLevel(); as text) {
-  <div>
+  <div [@inOut]>
     <span class="text-zinc-500">{{ 'ui_level_requirement' | nwText }}:</span>
     <span class="font-bold text-white"> {{ text }}</span>
   </div>
 }
 @if (maxStackSize(); as text) {
-  <div>
+  <div [@inOut]>
     <span class="text-zinc-500">Max Stack:</span> <span class="font-bold text-white"> {{ text }}</span>
   </div>
 }
-@if (ingredientTypes()?.length) {
-  <div>
+@if (ingredientTypes.value()?.length) {
+  <div [@inOut]>
     <span class="text-zinc-500"> {{ 'ui_tooltip_ingredient_types' | nwText }} </span>
     <span class="font-bold text-white">
-      @for(it of ingredientTypes(); track $index; let last = $last) {
-        {{ it?.DisplayText | nwText }}{{ last ? '' : ','}}
+      @for (it of ingredientTypes.value(); track $index; let last = $last) {
+        {{ it | nwText }}{{ last ? '' : ',' }}
       }
     </span>
   </div>

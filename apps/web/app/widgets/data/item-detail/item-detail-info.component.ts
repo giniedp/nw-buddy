@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { mapProp, selectSignal } from '~/utils'
+import { apiResource } from '~/utils'
+import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
@@ -14,28 +15,60 @@ import { ItemDetailStore } from './item-detail.store'
   host: {
     class: 'block',
   },
+  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailInfoComponent {
+  protected db = injectNwData()
   protected store = inject(ItemDetailStore)
+  protected isHidden = computed(() => !this.store.record())
 
-  protected bindOnEquip = toSignal(this.store.isBindOnEquip$)
-  protected bindOnPickup = toSignal(this.store.isBindOnPickup$)
-  protected tierLabel = toSignal(this.store.tierLabel$)
-  protected canReplaceGem = toSignal(this.store.canReplaceGem$)
-  protected cantReplaceGem = toSignal(this.store.cantReplaceGem$)
-  protected weight = selectSignal(
-    {
-      weapon: this.store.weaponStats$,
-      armor: this.store.armorStats$,
-      item: this.store.item$,
+  @HostBinding('@isHidden')
+  protected get isHiddenTrigger() {
+    return this.isHidden()
+  }
+
+  protected item = this.store.item
+  protected record = this.store.record
+
+  protected bindOnEquip = computed(() => !!this.store.item()?.BindOnEquip)
+  protected bindOnPickup = computed(() => !!this.store.record()?.BindOnPickup)
+  protected tierLabel = this.store.tierLabel
+  protected canReplaceGem = computed(() => this.item()?.CanHavePerks && this.item()?.CanReplaceGem)
+  protected cantReplaceGem = computed(() => this.item()?.CanHavePerks && !this.item()?.CanReplaceGem)
+
+  protected weight = apiResource({
+    request: () => {
+      return {
+        ref: this.item()?.ItemStatsRef,
+        record: this.record(),
+      }
     },
-    ({ weapon, armor, item }) => {
+    loader: async ({ request }) => {
+      const item = request.record
+      if (!item) {
+        return null
+      }
+      const weapon = await this.db.weaponItemsById(request.ref)
+      const armor = await this.db.armorItemsById(request.ref)
       return Math.floor(weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10
     },
-  )
-  protected durability = toSignal(this.store.item$.pipe(mapProp('Durability')))
-  protected maxStackSize = toSignal(this.store.entity$.pipe(mapProp('MaxStackSize')))
-  protected requiredLevel = toSignal(this.store.item$.pipe(mapProp('RequiredLevel')))
-  protected ingredientTypes = toSignal(this.store.ingredientCategories$)
-  protected isMissing = toSignal(this.store.isMissing$)
+  })
+
+  protected durability = computed(() => this.item()?.Durability)
+  protected maxStackSize = computed(() => this.record()?.MaxStackSize)
+  protected requiredLevel = computed(() => this.item()?.RequiredLevel)
+  protected ingredientTypes = apiResource({
+    request: () => this.item()?.IngredientCategories,
+    loader: async ({ request }) => {
+      if (!request?.length) {
+        return []
+      }
+      return Promise.all(
+        request.map(async (it) => {
+          const category = await this.db.recipeCategoriesById(it)
+          return category?.DisplayText
+        }),
+      )
+    },
+  })
 }

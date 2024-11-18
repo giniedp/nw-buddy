@@ -152,7 +152,7 @@
   }
   <div class="flex flex-col gap-1">
     @for (item of vm.items; track $index) {
-      <nwb-item-detail [entity]="item" class="rounded-md overflow-clip">
+      <nwb-item-detail [itemId]="item" class="rounded-md overflow-clip">
         <nwb-item-detail-header [enableLink]="true" [enableInfoLink]="true" [enableTracker]="true" />
       </nwb-item-detail>
     }

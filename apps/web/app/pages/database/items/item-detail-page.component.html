@@ -1,178 +1,18 @@
 <nwb-item-card
-  [entityId]="itemId()"
+  [entity]="itemId()"
   [enableInfoLink]="true"
   [enableTracker]="true"
   [enableLink]="true"
   [enableTasks]="true"
-  [nwbScreenshotFrame]="card.name$ | async | nwText"
+  [nwbScreenshotFrame]="card.store.fullName() | nwText"
   (itemChange)="onEntity($event)"
   #card="card"
 >
-  @if (card.salvageGameEventRewards$ | async; as rewards) {
-    <div>
-      <h3 class="font-bold mb-1">Salvage Rewards</h3>
-      <nwb-game-event-detail-rewards [rewards]="rewards" />
-    </div>
-  }
-  @if (card.salvageInfo$ | async; as salvage) {
-    <div class="join rounded-md">
-      <button
-        class="join-item btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
-        [nwbModalOpen]="{ content: tplSalvage, size: 'md' }"
-      >
-        Show Loot Table
-      </button>
-      <a
-        class="join-item btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
-        [routerLink]="['loot', salvage.tableId] | nwLink"
-      >
-        <nwb-icon [icon]="iconLink" class="w-4 h-4" />
-      </a>
-
-      <ng-template #tplSalvage>
-        <ion-header>
-          <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
-            <ion-title>Loot Table</ion-title>
-            <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>
-              &times;
-            </button>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content [scrollY]="false" class="rounded-b-md bg-base-100">
-          <nwb-loot-graph
-            class="h-full overflow-auto"
-            [tableId]="salvage.tableId"
-            [tags]="salvage.tags"
-            [tagValues]="salvage.tagValues"
-            [showLocked]="false"
-          />
-        </ion-content>
-      </ng-template>
-    </div>
-  }
-  @if (card.itemModels$ | async; as models) {
-    @if (viewerActive) {
-      <div class="aspect-square rounded-md overflow-clip" @appear>
-        <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full" />
-      </div>
-    }
-    <button class="btn btn-xs flex-1 btn-outline btn-ghost opacity-50 w-full" (click)="viewerActive = !viewerActive">
-      {{ viewerActive ? 'Close' : 'View 3D Model' }}
-    </button>
-  }
-  @if (card.consumable$ | async; as consumable) {
-    <nwb-consumable-detail [consumableId]="consumable" />
-  }
-  @if (card.itemSet$ | async; as gearset) {
-    @if (gearset.items?.length > 1) {
-      <div class="nw-item-divider"></div>
-      <div>
-        <h3 class="font-bold mb-1">Set Items</h3>
-        <div class="flex flex-row flex-wrap gap-2">
-          @for (item of gearset.items; track $index) {
-            <a
-              [tooltip]="item.ItemTypeDisplayName | nwText"
-              [tooltipClass]="'bg-base-200'"
-              [nwbItemIcon]="item"
-              [rarity]="itemRarity(item)"
-              [isNamed]="itemNamed(item)"
-              [solid]="true"
-              [routerLink]="['item', item.ItemID] | nwLink"
-              [routerLinkActive]="['outline']"
-              [queryParamsHandling]="'preserve'"
-              class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-            >
-            </a>
-          }
-        </div>
-      </div>
-    }
-    @if (gearset.variants?.length > 1) {
-      <div class="nw-item-divider"></div>
-      <div>
-        <h3 class="font-bold mb-1">Variants</h3>
-        <div class="flex flex-row flex-wrap gap-2">
-          @for (item of gearset.variants; track $index) {
-            <a
-              [tooltip]="itemVersion(item)"
-              [tooltipClass]="'bg-base-200'"
-              [nwbItemIcon]="item"
-              [rarity]="itemRarity(item)"
-              [isNamed]="itemNamed(item)"
-              [solid]="true"
-              [routerLink]="['item', item.ItemID] | nwLink"
-              [routerLinkActive]="['outline']"
-              [queryParamsHandling]="'preserve'"
-              class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-            >
-            </a>
-          }
-        </div>
-      </div>
-    }
-    @if (gearset.tiers?.length > 1) {
-      <div class="nw-item-divider"></div>
-      <div>
-        <h3 class="font-bold mb-1">Tier Variants</h3>
-        <div class="flex flex-row flex-wrap gap-2">
-          @for (item of gearset.tiers; track $index) {
-            <a
-              [tooltip]="itemTier(item)"
-              [tooltipClass]="'bg-base-200'"
-              [nwbItemIcon]="item"
-              [rarity]="itemRarity(item)"
-              [isNamed]="itemNamed(item)"
-              [solid]="true"
-              [routerLink]="['item', item.ItemID] | nwLink"
-              [routerLinkActive]="['outline']"
-              [queryParamsHandling]="'preserve'"
-              class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-            >
-            </a>
-          }
-        </div>
-      </div>
-    }
-  }
-  @if (card.transformToId$ | async; as itemId) {
-    <div class="nw-item-divider"></div>
-    <div>
-      <h3 class="font-bold mb-1">Transforms to</h3>
-      <div class="flex flex-row flex-wrap gap-2">
-        <a
-          [nwbItemDetail]="itemId"
-          #itemDetail="itemDetail"
-          [nwbItemIcon]="itemDetail.icon$ | async"
-          [rarity]="itemDetail.finalRarity$ | async"
-          [isNamed]="itemDetail.isNamed$ | async"
-          [solid]="true"
-          [routerLink]="['item', itemId] | nwLink"
-          class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-        >
-        </a>
-      </div>
-    </div>
-  }
-  @if (card.transformFromIds$ | async; as itemIds) {
-    <div class="nw-item-divider"></div>
-    <div>
-      <h3 class="font-bold mb-1">Transforms from</h3>
-      <div class="flex flex-row flex-wrap gap-2">
-        @for (itemId of itemIds; track $index) {
-          <a
-            [nwbItemDetail]="itemId"
-            #itemDetail="itemDetail"
-            [nwbItemIcon]="itemDetail.icon$ | async"
-            [rarity]="itemDetail.finalRarity$ | async"
-            [isNamed]="itemDetail.isNamed$ | async"
-            [solid]="true"
-            [routerLink]="['item', itemId] | nwLink"
-            class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-          >
-          </a>
-        }
-      </div>
-    </div>
-  }
+  <nwb-item-detail-salvage-rewards class="mt-2" />
+  <nwb-item-detail-salvage-info class="mt-2" />
+  <nwb-item-detail-model-viewer class="mt-2" />
+  <nwb-consumable-detail [consumableId]="itemId()" #cd [class.hidden]="!cd.store.consumable()" class="mt-2" />
+  <nwb-item-detail-set-items class="mt-2" />
+  <nwb-item-detail-transforms class="mt-2" />
 </nwb-item-card>
-<nwb-item-page-tabs [itemId]="itemId()" />
+<nwb-item-page-tabs [itemId]="itemId()" class="mt-2" />

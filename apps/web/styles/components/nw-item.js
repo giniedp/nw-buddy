@@ -70,6 +70,7 @@ module.exports = ({ addComponents }) => {
       left: 0,
       right: 0,
       bottom: 0,
+      transition: '--rarity-c0 0.15s ease',
     },
     '.nw-item-header-fg': {
       backgroundImage: 'var(--rarity-bg-ani)',
@@ -97,6 +98,7 @@ module.exports = ({ addComponents }) => {
       '-webkit-mask-composite': 'xor',
       mask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
       maskComposite: 'exclude',
+      transition: '--rarity-c0 0.15s ease, --rarity-c1 0.15s ease',
     },
     '.nw-item-icon-bg': {
       backgroundImage: `var(--rarity-bg, url('assets/icons/item/itemraritybgsquare0.png'))`,

@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import {
   getItemIconPath,
@@ -12,6 +12,8 @@ import {
   isItemNamed,
 } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
+import { switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -20,12 +22,13 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { ConsumableDetailModule } from '~/widgets/data/consumable-detail'
-import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
-import { ModelViewerModule } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
+import { ItemDetailModelViewerComponent } from './ui/item-detail-model-viewer.component'
+import { ItemDetailSalvageInfoComponent } from './ui/item-detail-salvage-info.component'
 
 @Component({
   standalone: true,
@@ -41,11 +44,11 @@ import { ItemTabsComponent } from './item-tabs.component'
     LootModule,
     LayoutModule,
     IconsModule,
-    ModelViewerModule,
     TooltipModule,
-    GameEventDetailModule,
     ItemTabsComponent,
     ConsumableDetailModule,
+    ItemDetailSalvageInfoComponent,
+    ItemDetailModelViewerComponent,
   ],
   providers: [],
   host: {
@@ -67,11 +70,16 @@ import { ItemTabsComponent } from './item-tabs.component'
   ],
 })
 export class ItemDetailPageComponent {
+  private ms = inject(ModelsService)
+  private db = injectNwData()
   protected itemId$ = injectRouteParam('id')
   protected itemId = toSignal(this.itemId$)
 
   protected iconLink = svgSquareArrowUpRight
   protected viewerActive = false
+  protected models$ = this.ms.byItemId(toObservable(this.itemId))
+  protected consumable$ = this.itemId$.pipe(switchMap((id) => this.db.consumableItemsById(id)))
+
   public constructor(
     private head: HtmlHeadService,
     private i18n: TranslateService,

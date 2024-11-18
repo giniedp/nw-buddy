@@ -1,6 +1,6 @@
 @if (!isLoaded || instance) {
   <nwb-item-card
-    [entityId]="instance?.itemId"
+    [entity]="instance?.itemId"
     [gsOverride]="overrideGearScore || instance?.gearScore"
     [gsEditable]="true"
     (gsEdit)="handleOpenGsEditor($event)"

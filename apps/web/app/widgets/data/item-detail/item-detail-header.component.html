@@ -4,37 +4,37 @@
 }
 <div class="flex flex-row gap-2 p-1 relative group">
   <a
-    [nwbItemIcon]="iconOverride || icon()"
+    [nwbItemIcon]="icon()"
     [cover]="true"
-    [nwLinkTooltip]="enableInfoLink ? ['item', recordId()] : null"
+    [nwLinkTooltip]="enableInfoLink() ? ['item', recordId()] : null"
     [rarity]="rarity()"
     class="aspect-square inline-block"
-    [class.w-12]="size === 'xs'"
-    [class.h-12]="size === 'xs'"
-    [class.w-14]="size === 'sm'"
-    [class.h-14]="size === 'sm'"
-    [class.w-[76px]]="size === 'md'"
-    [class.h-[76px]]="size === 'md'"
-    [class.w-20]="size === 'lg'"
-    [class.h-20]="size === 'lg'"
+    [class.w-14]="size() === 'xs'"
+    [class.h-14]="size() === 'xs'"
+    [class.w-16]="size() === 'sm'"
+    [class.h-16]="size() === 'sm'"
+    [class.w-20]="size() === 'md'"
+    [class.h-20]="size() === 'md'"
+    [class.w-24]="size() === 'lg'"
+    [class.h-24]="size() === 'lg'"
   >
     <span class="italic font-caslon">{{ tierLabel() }}</span>
     <ng-content select=".icon-overlay" />
   </a>
-  @if (!disableContent) {
+  @if (!disableContent()) {
     <nwb-item-header-content
       class="z-10"
       nwbItemHeaderContent
-      [title]="isMissing() ? recordId() : (name() | nwText | nwTextBreak: ' - ')"
-      [titleLink]="enableLink ? recordLink() : null"
+      [title]="(name() | nwText | nwTextBreak: ' - ') || (recordId() | nwHumanize)"
+      [titleLink]="enableLink() ? recordLink() : null"
       [text1]="rarityName() | nwText"
-      [text2]="isMissing() ? 'Missing Item' : (typeName() | nwText)"
-      [text3]="size === 'sm' ? null : sourceLabel()"
+      [text2]="isMissing() ? 'Not Found' : (typeName() | nwText)"
+      [text3]="size() === 'sm' ? null : sourceLabel()"
       [rarity]="rarity()"
       [isNamed]="isNamed()"
-      [showSkeleton]="isLoading()"
+      [showSkeleton]="showSkeleton()"
     >
-      @if (enableTracker && !isMissing()) {
+      @if (enableTracker() && !isMissing()) {
         <div class="header flex flex-col justify-end">
           <nwb-item-marker
             [itemId]="recordId()"
@@ -43,7 +43,10 @@
             #marker
           />
           @if (enableGsTracker()) {
-            <span class="text-right transition-opacity opacity-0 group-hover:opacity-100" [class.opacity-100]="!tracker.isEmpty()">
+            <span
+              class="text-right transition-opacity opacity-0 group-hover:opacity-100"
+              [class.opacity-100]="!tracker.isEmpty()"
+            >
               <nwb-gs-tracker
                 #tracker
                 [itemId]="recordId()"
@@ -54,8 +57,8 @@
           }
         </div>
       }
-      <ng-content select=".content"></ng-content>
+      <ng-content select=".content" />
     </nwb-item-header-content>
   }
 </div>
-<ng-content></ng-content>
+<ng-content />

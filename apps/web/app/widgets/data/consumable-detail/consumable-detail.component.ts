@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core'
+import { Component, effect, inject, input, untracked } from '@angular/core'
 import { ConsumableItemDefinitions } from '@nw-data/generated'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, tagsCell, valueCell } from '~/ui/property-grid/cells'
@@ -21,13 +21,16 @@ import { ConsumableDetailStore } from './consumable-detail.store'
   },
 })
 export class ConsumableDetailComponent {
-  protected store = inject(ConsumableDetailStore)
+  public store = inject(ConsumableDetailStore)
   public consumableId = input.required({
     transform: (value: string | ConsumableItemDefinitions): string => {
-      const id = typeof value === 'string' ? value : value?.ConsumableID
-      this.store.load({ id })
-      return id
+      return typeof value === 'string' ? value : value?.ConsumableID
     },
+  })
+
+  #fxLoad = effect(() => {
+    const id = this.consumableId()
+    untracked(() => this.store.load({ id }))
   })
 
   public descriptor = gridDescriptor<ConsumableItemDefinitions>(

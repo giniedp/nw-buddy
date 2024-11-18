@@ -37,6 +37,9 @@ module.exports = {
           '100%': { transform: 'rotate(-360deg)' },
         },
       },
+      lineHeight: {
+        tight: '1.2',
+      },
       textShadow: {
         none: 'none',
         sm: '1px 1px 2px var(--tw-shadow-color)',

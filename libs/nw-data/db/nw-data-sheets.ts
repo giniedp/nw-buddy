@@ -14,6 +14,7 @@ import {
 import {
   DATASHEETS,
   DataSheetUri,
+  MasterItemDefinitions,
   VariationDataGatherable,
   VitalsBaseData,
   VitalsLevelVariantData,
@@ -66,7 +67,7 @@ export abstract class NwDataSheets {
   public itemsByAppearanceId = indexLookup(this.itemsByAppearanceIdMap)
   public itemsByItemTypeMap = secondaryIndex(this.itemsAll, 'ItemType')
   public itemsByItemType = indexLookup(this.itemsByItemTypeMap)
-  public itemsBySetFamilyNameMap = secondaryIndex(this.itemsAll, getItemSetFamilyName)
+  public itemsBySetFamilyNameMap = secondaryIndex<MasterItemDefinitions, string>(this.itemsAll, getItemSetFamilyName)
   public itemsBySetFamilyName = indexLookup(this.itemsBySetFamilyNameMap)
 
   public housingItemsAll = table(() => [
@@ -349,7 +350,7 @@ export abstract class NwDataSheets {
   public recipesById = indexLookup(this.recipesByIdMap)
   public recipesByItemIdMap = secondaryIndex(this.recipesAll, getItemIdFromRecipe)
   public recipesByItemId = indexLookup(this.recipesByItemIdMap)
-  public recipesByRequiredAchievementIdMap = primaryIndex(this.recipesAll, 'RequiredAchievementID')
+  public recipesByRequiredAchievementIdMap = secondaryIndex(this.recipesAll, 'RequiredAchievementID')
   public recipesByRequiredAchievementId = indexLookup(this.recipesByRequiredAchievementIdMap)
   public recipesByIngredientsMap = secondaryIndex(this.recipesAll, (it) =>
     getCraftingIngredients(it)

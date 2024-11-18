@@ -4,12 +4,12 @@ import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
+import { DnDService } from '~/utils/services/dnd.service'
 import { EmptyComponent } from '~/widgets/empty'
 import { ItemDetailModule } from '../item-detail'
+import { TRANSMOG_CATEGORIES } from '../transmog'
 import { InventorySectionComponent } from './inventory-section.component'
 import { InventoryTableRecord } from './inventory-table-cols'
-import { DnDService } from '~/utils/services/dnd.service'
-import { TRANSMOG_CATEGORIES, categorizeAppearance } from '../transmog'
 import { categorizeInventoryItem } from './utils'
 
 @Component({
@@ -18,7 +18,7 @@ import { categorizeInventoryItem } from './utils'
   template: `
     <nwb-item-detail
       *ngIf="itemId"
-      [entityId]="itemId"
+      [itemId]="itemId"
       [perkOverride]="perks"
       class="p-1"
       class="flex flex-row gap-1 w"
@@ -26,21 +26,15 @@ import { categorizeInventoryItem } from './utils'
       [tooltipClass]="'p-0'"
       #detail
     >
-      <nwb-item-header
-        [rarity]="detail.finalRarity$ | async"
-        [isNamed]="detail.isNamed$ | async"
-        class="relative font-nimbus gap-2"
-      >
+      <nwb-item-header [rarity]="detail.rarity()" [isNamed]="detail.isNamed()" class="relative font-nimbus gap-2">
         <nwb-item-icon [nwbItemIcon]="item" [solid]="true" class="z-10 aspect-square"></nwb-item-icon>
-
-        <span
-          class="z-10 absolute bottom-0 right-0 p-[2px] rounded-tl-xl bg-base-100 bg-opacity-50"
-          *ngIf="detail.gemDetail$ | async; let gem"
-        >
-          <img [nwImage]="gem.perk?.IconPath" class="w-5 h-5" />
-        </span>
+        @if (detail.slottedGemIcon(); as icon) {
+          <span class="z-10 absolute bottom-0 right-0 p-[2px] rounded-tl-xl bg-base-100 bg-opacity-50">
+            <img [nwImage]="icon" class="w-5 h-5" />
+          </span>
+        }
         <span class="z-10 absolute top-0 left-0 px-2 py-[2px]">
-          {{ detail.tierLabel$ | async }}
+          {{ detail.tierLabel() }}
         </span>
         <span class="z-10 absolute bottom-0 left-0 px-[5px] rounded-tr-xl bg-base-100 bg-opacity-50">
           {{ gearScore }}
@@ -49,7 +43,7 @@ import { categorizeInventoryItem } from './utils'
     </nwb-item-detail>
 
     <ng-template #tplTip>
-      <nwb-item-card class="relative flex-1" [entityId]="itemId" [gsOverride]="gearScore" [perkOverride]="perks"/>
+      <nwb-item-card class="relative flex-1" [entity]="itemId" [gsOverride]="gearScore" [perkOverride]="perks" />
     </ng-template>
   `,
   imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule, ItemDetailModule],
@@ -100,7 +94,7 @@ export class InventoryCellComponent implements VirtualGridCellComponent<Inventor
   public constructor(
     protected grid: VirtualGridComponent<InventoryTableRecord>,
     private dnd: DnDService,
-    private elRef: ElementRef<HTMLElement>
+    private elRef: ElementRef<HTMLElement>,
   ) {
     //
   }
@@ -119,7 +113,7 @@ export class InventoryCellComponent implements VirtualGridCellComponent<Inventor
     e.dataTransfer.setDragImage(
       this.elRef.nativeElement,
       -this.elRef.nativeElement.clientWidth,
-      -this.elRef.nativeElement.clientHeight
+      -this.elRef.nativeElement.clientHeight,
     )
     this.dnd.data = JSON.parse(json)
   }

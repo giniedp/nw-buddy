@@ -17,22 +17,44 @@
     --fallback-p: #f28c18;
     --fallback-pc: #131616;
     --fallback-s: #6d3a9c;
-    --fallback-sc: #E3C4FF;
+    --fallback-sc: #e3c4ff;
     --fallback-a: #51a800;
-    --fallback-ac: #DCFFBB;
-    --fallback-n: #1B1D1D;
-    --fallback-nc: #CFD4D4;
+    --fallback-ac: #dcffbb;
+    --fallback-n: #1b1d1d;
+    --fallback-nc: #cfd4d4;
     --fallback-b1: #222222;
     --fallback-b2: #191919;
     --fallback-b3: #111111;
-    --fallback-bc: #CFD4D4;
-    --fallback-in: #2563EB;
-    --fallback-inc: #CFDEFF;
-    --fallback-su: #16A34A;
-    --fallback-suc: #BEFFD6;
-    --fallback-wa: #D97706;
-    --fallback-wac: #2D1800;
-    --fallback-er: #DC2626;
-    --fallback-erc: #FFCDCD;
+    --fallback-bc: #cfd4d4;
+    --fallback-in: #2563eb;
+    --fallback-inc: #cfdeff;
+    --fallback-su: #16a34a;
+    --fallback-suc: #beffd6;
+    --fallback-wa: #d97706;
+    --fallback-wac: #2d1800;
+    --fallback-er: #dc2626;
+    --fallback-erc: #ffcdcd;
   }
+}
+
+@property --rarity-c0 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #dddddd;
+}
+
+@property --rarity-c1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #666666;
+}
+@property --rarity-c2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #666666;
+}
+@property --rarity-c3 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #666666;
 }

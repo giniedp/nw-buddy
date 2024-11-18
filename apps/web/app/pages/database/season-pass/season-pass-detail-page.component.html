@@ -1,41 +1,7 @@
 @for (reward of resource.value(); track $index) {
   <h3 class="prose mt-2">{{ reward.title }}</h3>
-  <nwb-item-card [entityId]="reward.itemId" [enableInfoLink]="true" [enableLink]="true" #card="card">
-    @if (card.salvageInfo$ | async; as salvage) {
-      <div class="join">
-        <button
-          class="join-item btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
-          [nwbModalOpen]="{ content: tplSalvage, size: 'md' }"
-        >
-          Show Loot Table
-        </button>
-        <a
-          class="join-item btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
-          [routerLink]="['loot', salvage.tableId] | nwLink"
-        >
-          <nwb-icon [icon]="iconLink" class="w-4 h-4" />
-        </a>
-
-        <ng-template #tplSalvage>
-          <ion-header>
-            <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
-              <ion-title>Loot Table</ion-title>
-              <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>
-                &times;
-              </button>
-            </ion-toolbar>
-          </ion-header>
-          <ion-content [scrollY]="false" class="rounded-b-md bg-base-100">
-            <nwb-loot-graph
-              class="h-full overflow-auto"
-              [tableId]="salvage.tableId"
-              [tags]="salvage.tags"
-              [tagValues]="salvage.tagValues"
-              [showLocked]="false"
-            />
-          </ion-content>
-        </ng-template>
-      </div>
-    }
+  <nwb-item-card [entity]="reward.itemId" [enableInfoLink]="true" [enableLink]="true" #card="card">
+    <nwb-item-detail-salvage-rewards class="mt-2" />
+    <nwb-item-detail-salvage-info class="mt-2" />
   </nwb-item-card>
 }

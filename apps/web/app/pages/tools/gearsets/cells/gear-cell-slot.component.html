@@ -3,7 +3,7 @@
     class="relative font-nimbus gap-2 bg-neutral-content"
     [nwbItemDetail]="slotItemId()"
     #detail="itemDetail"
-    [rarity]="detail.rarity$ | async"
+    [rarity]="detail.rarity()"
   >
     <nwb-item-icon [nwbItemIcon]="slotIcon()" [solid]="hasItem()" class="z-10 w-12 h-12" />
 
@@ -39,7 +39,7 @@
 } @else {
   <nwb-item-card
     class="relative flex=1"
-    [entityId]="store.instance().itemId"
+    [entity]="store.instance().itemId"
     [gsOverride]="gsValue || store.instance().gearScore"
     [gsEditable]="!disabled && isGearSlot()"
     (gsEdit)="openGsEditor($event)"

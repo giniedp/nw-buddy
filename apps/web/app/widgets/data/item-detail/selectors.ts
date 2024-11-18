@@ -18,6 +18,7 @@ import {
   isPerkGem,
   isPerkItemIngredient,
 } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import {
   AbilityData,
   AffixStatData,
@@ -29,13 +30,24 @@ import {
   ResourceItemDefinitions,
 } from '@nw-data/generated'
 
-export interface PerkSlot {
+export interface ItemPerkSlot {
   key: string
   perkId?: string
   perk?: PerkData
   bucketId?: string
   bucket?: PerkBucket
   editable?: boolean
+}
+
+
+export interface PerkSlotExplained extends ItemPerkSlot {
+  key: string
+  perkId?: string
+  perk?: PerkData
+  bucketId?: string
+  bucket?: PerkBucket
+  editable?: boolean
+
   explain: PerkExplanation[]
   activationCooldown: number
   violatesItemClass: boolean
@@ -49,13 +61,13 @@ export function selectItemGearscoreLabel(item: MasterItemDefinitions, gsOverride
   return hasItemGearScore(item) ? gsOverride || getItemGearScoreLabel(item) : null
 }
 
-export function selectFinalRarity({
+export function selectItemRarity({
   item,
   perkDetails,
   perkOverride,
 }: {
   item: MasterItemDefinitions | HouseItems
-  perkDetails: PerkSlot[]
+  perkDetails: Array<PerkSlotExplained | ItemPerkSlot>
   perkOverride: Record<string, string>
 }) {
   if (!perkOverride) {
@@ -68,7 +80,7 @@ export function selectFinalRarity({
   return getItemRarity(item, perkIds)
 }
 
-export function selectSalvageInfo(item: MasterItemDefinitions | HouseItems, playerLevel: number) {
+export function selectItemSalvageInfo(item: MasterItemDefinitions | HouseItems, playerLevel: number) {
   if (!item || (isMasterItem(item) && !item.IsSalvageable)) {
     return null
   }
@@ -88,6 +100,36 @@ export function selectSalvageInfo(item: MasterItemDefinitions | HouseItems, play
   }
 }
 
+export async function fetItemPerkSlots(
+  db: NwData,
+  {
+    item,
+    perkOverride,
+  }: {
+    item: MasterItemDefinitions
+    perkOverride: Record<string, string>
+  },
+) {
+  const slots = getItemPerkSlots(item)
+  const result: ItemPerkSlot[] = []
+  for (const slot of slots) {
+    const key = slot.perkId ? slot.perkKey : slot.bucketKey
+    const perkId = slot.perkId
+    const perkIdOverride = perkOverride?.[key]
+    const perk = await db.perksById(perkIdOverride || perkId)
+    const bucket = await db.perkBucketsById(slot.bucketId)
+    result.push({
+      key: key,
+      perkId: perkIdOverride || perkId,
+      perk: perk,
+      bucketId: slot.bucketId,
+      bucket: bucket,
+      editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)),
+    })
+  }
+  return result
+}
+
 export function selectPerkSlots({
   item,
   itemGS,
@@ -104,14 +146,14 @@ export function selectPerkSlots({
   affixes: Map<string, AffixStatData>
   abilities: Map<string, AbilityData>
   perkOverride: Record<string, string>
-}): PerkSlot[] {
+}): PerkSlotExplained[] {
   if (isPerkItemIngredient(item)) {
     // case for perk carft mods
     const bucket = buckets.get(item?.ItemID)
     if (!bucket) {
       return []
     }
-    return getPerkBucketPerks(bucket, perks)?.map((perk, i): PerkSlot => {
+    return getPerkBucketPerks(bucket, perks)?.map((perk, i): PerkSlotExplained => {
       return {
         key: `${bucket.PerkBucketID}-${i}`,
         editable: false,
@@ -131,7 +173,7 @@ export function selectPerkSlots({
   }
 
   const slots = getItemPerkSlots(item)
-  const result: PerkSlot[] = []
+  const result: PerkSlotExplained[] = []
   for (const slot of slots) {
     const key = slot.perkId ? slot.perkKey : slot.bucketKey
     const perkId = slot.perkId
@@ -183,11 +225,11 @@ export function selectPerkSlots({
   return result
 }
 
-export function selectNamePerfix(item: MasterItemDefinitions, perks: PerkSlot[]) {
+export function selectNamePrefix(item: MasterItemDefinitions, perks: Array<{ perk?: PerkData }>) {
   return !item?.IgnoreNameChanges ? perks?.find((it) => it?.perk?.AppliedPrefix)?.perk?.AppliedPrefix : null
 }
 
-export function selectNameSuffix(item: MasterItemDefinitions, perks: PerkSlot[]) {
+export function selectNameSuffix(item: MasterItemDefinitions, perks: Array<{ perk?: PerkData }>) {
   return !item?.IgnoreNameChanges ? perks?.find((it) => it?.perk?.AppliedSuffix)?.perk?.AppliedSuffix : null
 }
 

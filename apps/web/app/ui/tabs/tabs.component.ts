@@ -82,7 +82,6 @@ export class TabsComponent<T> {
       const io = new IntersectionObserver(
         (it) => {
           for (const entry of it) {
-            console.log(entry)
             sub.next(entry.isIntersecting)
           }
         },

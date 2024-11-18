@@ -13,7 +13,7 @@ import {
 import { StatusEffectData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCircleExclamation, svgInfoCircle } from '~/ui/icons/svg'
+import { svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, localizedCell, tagsCell, valueCell } from '~/ui/property-grid/cells'

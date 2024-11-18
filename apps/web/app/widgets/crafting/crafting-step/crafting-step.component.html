@@ -97,14 +97,14 @@
       <li
         *ngFor="let item of vm.options"
         [nwbItemDetail]="item"
-        #itemDetail="itemDetail"
+        #detail="itemDetail"
         [class.text-primary]="vm.itemId === item"
         cdkMenuItem
         (cdkMenuItemTriggered)="setSelection(item)"
       >
         <a>
-          <picture [nwIcon]="itemDetail.entity$ | async" class="w-7 h-7 flex-none"></picture>
-          {{ itemDetail.name$ | async | nwText }}
+          <picture [nwIcon]="detail.icon()" class="w-7 h-7 flex-none"></picture>
+          {{ detail.name() | nwText }}
         </a>
       </li>
     </ul>

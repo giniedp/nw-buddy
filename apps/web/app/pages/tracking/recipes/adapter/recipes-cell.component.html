@@ -6,7 +6,7 @@
   [class.is-collected]="!!itemMarker.value()"
 >
   <div class="flip-card-content bg-black rounded-md h-full">
-    <nwb-item-detail [entity]="item.recipeItem" class="flip-card-front h-full overflow-hidden flex flex-col">
+    <nwb-item-detail [itemId]="item.recipeItem" class="flip-card-front h-full overflow-hidden flex flex-col">
       <nwb-item-detail-header
         [enableTracker]="true"
         [enableInfoLink]="true"
@@ -14,13 +14,13 @@
         class="flex-none transition-opacity"
       />
       <div class="flex-1 overflow-auto flex flex-col gap-2 p-4">
-        <nwb-item-detail-description/>
-        <nwb-crafting-calculator [recipe]="item.recipe" [recipeOnly]="true" class="-mx-4"/>
+        <nwb-item-detail-description />
+        <nwb-crafting-calculator [recipe]="item.recipe" [recipeOnly]="true" class="-mx-4" />
       </div>
     </nwb-item-detail>
     <nwb-item-card
-      [entityId]="item.itemId"
       class="flip-card-back transition-opacity"
+      [entity]="item.itemId"
       [enableInfoLink]="true"
       [enableLink]="true"
       [disableInfo]="true"

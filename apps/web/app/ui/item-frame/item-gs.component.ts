@@ -1,28 +1,21 @@
-import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 
 @Component({
   standalone: true,
   selector: 'nwb-item-gs',
   template: `
-    <span [class.line-through]="!!actual" [class.opacity-50]="!!actual">{{ value }}</span>
-    <span *ngIf="actual"> {{ actual }}</span>
-    <ng-content></ng-content>
+    <span [class.line-through]="!!actual()" [class.opacity-50]="!!actual()">{{ value() }}</span>
+    @if (actual()) {
+      <span> {{ actual() }}</span>
+    }
+    <ng-content />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
   host: {
     class: 'inline font-caslon',
   },
 })
 export class ItemGsComponent {
-  @Input()
-  public value: string | number
-
-  @Input()
-  public actual: string | number
-
-  public constructor() {
-    //
-  }
+  public value = input<string | number>()
+  public actual = input<string | number>()
 }

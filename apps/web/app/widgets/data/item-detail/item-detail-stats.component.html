@@ -1,21 +1,24 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  @if (vm.gsLabel; as gs) {
-    <div
-      class="flex flex-row gap-1 rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
-      [class.hover:outline-primary]="editable$()"
-      [class.hover:outline-offset-4]="editable$()"
-      [class.cursor-pointer]="editable$()"
-      [class.select-none]="editable$()"
-      (click)="onGearScoreEdit($event)"
-    >
-      <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-10 h-10 relative top-[2px]" />
-      <nwb-item-gs [value]="gs" cdkOverlayOrigin class="text-5xl" style="min-width: 3rem"/>
+@if (gsLabel(); as gs) {
+  <div
+    [@inOut]
+    class="flex flex-row gap-1 rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
+    [class.hover:outline-primary]="gsEditable()"
+    [class.hover:outline-offset-4]="gsEditable()"
+    [class.cursor-pointer]="gsEditable()"
+    [class.select-none]="gsEditable()"
+    (click)="onGearScoreEdit($event)"
+  >
+    <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-10 h-10 relative top-[2px]" />
+    <nwb-item-gs [value]="gs" cdkOverlayOrigin class="text-5xl" style="min-width: 3rem" />
+  </div>
+}
+@if (stats()?.length) {
+  @for (row of stats(); track $index) {
+    <div [@inOut]>
+      <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
     </div>
   }
-  @for (row of vm.stats; track $index) {
-    <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
-  }
-  @if (editable$()) {
-    <nwb-icon [icon]="editIcon" class="w-3 h-3 absolute top-4 -left-3 opacity-50 screenshot-hidden" />
-  }
-</ng-container>
+}
+@if (gsEditable()) {
+  <nwb-icon [icon]="editIcon" class="w-3 h-3 absolute top-4 -left-3 opacity-50 screenshot-hidden" />
+}

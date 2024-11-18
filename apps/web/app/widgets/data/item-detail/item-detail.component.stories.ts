@@ -18,14 +18,14 @@ export default {
     }),
   ],
   ...storyControls<ItemDetailComponent>((arg) => {
-    arg.text('entityId', {
+    arg.text('itemId', {
       defaultValue: 'HeavyChest_HugoT5',
     })
   }),
   render: (arg) => {
     return {
       template: `
-      <nwb-item-detail [entityId]="'${arg.entityId}'" #detail="detail">
+      <nwb-item-detail [itemId]="'${arg.itemId}'" #detail="detail">
         <nwb-item-detail-header/>
         <div *ngIf="!(detail.isLoading$ | async)" class="p-4">
           <nwb-item-detail-stats></nwb-item-detail-stats>

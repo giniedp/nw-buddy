@@ -1,6 +1,6 @@
-<div [nwbScreenshotFrame]="card.name$ | async | nwText">
+<div [nwbScreenshotFrame]="card.store.fullName() | nwText">
   <nwb-item-card
-    [entityId]="itemId$ | async"
+    [entity]="itemId$ | async"
     [enableInfoLink]="true"
     [enableLink]="true"
     (entityChange)="onEntity($event)"

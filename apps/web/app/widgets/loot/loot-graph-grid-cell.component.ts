@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, computed, effect, inject, signal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Component, Input, computed, inject, signal } from '@angular/core'
 import { isLootTagKnownCondition } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { LootBucketRowNode } from '~/nw/loot/loot-graph'
@@ -9,12 +8,11 @@ import { IconsModule } from '~/ui/icons'
 import { svgClover, svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
+import { eqCaseInsensitive } from '~/utils'
 import { ItemDetailStore } from '../data/item-detail'
 import { EmptyComponent } from '../empty'
 import { LootGraphService } from './loot-graph.service'
 import { LootTagComponent } from './loot-tag.component'
-import { LootGraphNodeStore } from './loot-graph-node.store'
-import { eqCaseInsensitive } from '~/utils'
 
 @Component({
   standalone: true,
@@ -23,7 +21,7 @@ import { eqCaseInsensitive } from '~/utils'
     <nwb-item-header
       [isNamed]="isNamed() || isArtifact()"
       [rarity]="rarity()"
-      [isColumn]="true"
+      [isRow]="false"
       [isPadded]="false"
       class="h-full"
     >
@@ -135,7 +133,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
       cellEmptyView: EmptyComponent,
     }
   }
-  private nodeStore = inject(LootGraphNodeStore)
+  // private nodeStore = inject(LootGraphNodeStore)
   private graph = inject(LootGraphService)
 
   @Input()
@@ -144,7 +142,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
   @Input()
   public set data(node: LootBucketRowNode) {
     this.node.set(node)
-    this.itemStore.patchState({ recordId: node.data.Item })
+    this.itemStore.load({ recordId: node.data.Item })
   }
   public get data() {
     return this.node()
@@ -242,14 +240,14 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
 
   protected service = inject(LootGraphService)
   private itemStore = inject(ItemDetailStore)
-  protected isNamed = toSignal(this.itemStore.isNamed$)
-  protected isArtifact = toSignal(this.itemStore.isArtifact$)
-  protected itemName = toSignal(this.itemStore.name$)
-  protected rarity = toSignal(this.itemStore.rarity$)
-  protected rarityName = toSignal(this.itemStore.rarityName$)
-  protected typeName = toSignal(this.itemStore.typeName$)
-  protected entity = toSignal(this.itemStore.entity$)
-  protected itemId = toSignal(this.itemStore.recordId$)
+  protected isNamed = this.itemStore.isNamed
+  protected isArtifact = this.itemStore.isArtifact
+  protected itemName = this.itemStore.fullName
+  protected rarity = this.itemStore.rarity
+  protected rarityName = this.itemStore.rarityLabel
+  protected typeName = this.itemStore.typeName
+  protected entity = this.itemStore.record
+  protected itemId = this.itemStore.recordId
   protected isHighlighted = computed(() => {
     return eqCaseInsensitive(this.graph.highlight, this.itemId())
   })

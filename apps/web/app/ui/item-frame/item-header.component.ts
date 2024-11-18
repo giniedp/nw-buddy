@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core'
-import { ItemRarity, getItemRarity, isItemNamed, isMasterItem } from '@nw-data/common'
+import { ChangeDetectionStrategy, Component, HostBinding, input, Input } from '@angular/core'
+import { getItemRarity, isItemNamed, isMasterItem, ItemRarity } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 @Component({
@@ -17,42 +17,20 @@ import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
   imports: [CommonModule],
   host: {
     class: 'nw-item-header flex text-shadow-sm shadow-black',
-    '[class.nw-item-rarity-common]': 'rarity === "common"',
-    '[class.nw-item-rarity-uncommon]': 'rarity === "uncommon"',
-    '[class.nw-item-rarity-rare]': 'rarity === "rare"',
-    '[class.nw-item-rarity-epic]': 'rarity === "epic"',
-    '[class.nw-item-rarity-legendary]': 'rarity === "legendary"',
-    '[class.nw-item-rarity-artifact]': 'rarity === "artifact"',
+    '[class.nw-item-rarity-common]': 'rarity() === "common"',
+    '[class.nw-item-rarity-uncommon]': 'rarity() === "uncommon"',
+    '[class.nw-item-rarity-rare]': 'rarity() === "rare"',
+    '[class.nw-item-rarity-epic]': 'rarity() === "epic"',
+    '[class.nw-item-rarity-legendary]': 'rarity() === "legendary"',
+    '[class.nw-item-rarity-artifact]': 'rarity() === "artifact"',
+    '[class.named]': 'isNamed()',
+    '[class.p-1]': 'isPadded()',
+    '[class.flex-row]': 'isRow()',
   },
 })
 export class ItemHeaderComponent {
-  @Input()
-  public rarity: ItemRarity = 'common'
-
-  @Input()
-  @HostBinding('class.named')
-  public isNamed: boolean
-
-  @Input()
-  @HostBinding('class.p-1')
-  public isPadded: boolean = true
-
-  @Input()
-  @HostBinding('class.flex-row')
-  public isRow: boolean = true
-
-  @Input()
-  @HostBinding('class.flex-col')
-  public set isColumn(value: boolean) {
-    this.isRow = !value
-  }
-  public get isColumn(): boolean {
-    return !this.isRow
-  }
-
-  @Input()
-  public set item(value: MasterItemDefinitions | HouseItems) {
-    this.rarity = getItemRarity(value)
-    this.isNamed = isMasterItem(value) && isItemNamed(value)
-  }
+  public rarity = input<ItemRarity>('common')
+  public isNamed = input<boolean>(false)
+  public isPadded = input<boolean>(true)
+  public isRow = input<boolean>(true)
 }
