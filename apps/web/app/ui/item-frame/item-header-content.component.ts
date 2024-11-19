@@ -1,19 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import {
-  ItemRarity,
-  getItemRarity,
-  getItemRarityLabel,
-  getItemSourceShort,
-  isItemNamed,
-  isMasterItem,
-} from '@nw-data/common'
-import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
+import { ItemRarity } from '@nw-data/common'
 
 @Component({
   standalone: true,
-  selector: 'nwb-item-header-content,a[nwbItemHeaderContent]',
+  selector: 'nwb-item-header-content',
   templateUrl: './item-header-content.component.html',
   imports: [CommonModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,37 +14,12 @@ import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
   },
 })
 export class ItemHeaderContentComponent {
-  @Input()
-  public showSkeleton: boolean
-
-  @Input()
-  public isNamed: boolean
-
-  @Input()
-  public rarity: ItemRarity
-
-  @Input()
-  public title: string
-
-  @Input()
-  public titleLink: string | any[]
-
-  @Input()
-  public text1: string
-
-  @Input()
-  public text2: string
-
-  @Input()
-  public text3: string
-
-  @Input()
-  public set item(value: MasterItemDefinitions | HouseItems) {
-    this.title = value?.Name
-    this.text1 = getItemRarityLabel(value)
-    this.text2 = value?.ItemType
-    this.text3 = getItemSourceShort(value)
-    this.rarity = getItemRarity(value)
-    this.isNamed = isMasterItem(value) && isItemNamed(value)
-  }
+  public showSkeleton = input<boolean>()
+  public isNamed = input<boolean>()
+  public rarity = input<ItemRarity>()
+  public title = input<string>()
+  public titleLink = input<string | any[]>()
+  public text1 = input<string>()
+  public text2 = input<string>()
+  public text3 = input<string>()
 }

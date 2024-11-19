@@ -21,7 +21,7 @@ import { PerkDetailStore } from './perk-detail.store'
         [showSkeleton]="showSkeleton()"
       >
         @if (store.isLoaded() && !store.perk()) {
-          <span text2 class="text-error">Not found</span>
+          <span header-text2 class="text-error">Not found</span>
         }
         @if (scalesWithGearScore()) {
           <div class="absolute right-1 bottom-1 flex flex-colr gap-1 items-center">

@@ -17,7 +17,7 @@ import { AbilityDetailStore } from './ability-detail.store'
         [showSkeleton]="store.isLoading() && !store.isLoaded()"
       >
         @if (store.isLoaded() && !store.ability()) {
-          <span text2 class="text-error"> Not found </span>
+          <span header-text2 class="text-error"> Not found </span>
         }
       </nwb-item-header-content>
     </nwb-item-header>

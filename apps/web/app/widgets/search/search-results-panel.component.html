@@ -36,7 +36,7 @@
     >
       <nwb-item-icon [nwbItemIcon]="getIcon(item)" [solid]="false" [rarity]="item.rarity" class="z-10 w-10 h-10" />
       <nwb-item-header-content class="z-10" [rarity]="item.rarity">
-        <span class="title block overflow-hidden text-ellipsis">{{ item.text }}</span>
+        <span header-end class="block overflow-hidden text-ellipsis">{{ item.text }}</span>
         <div class="flex flex-row gap-1">
           <span class="badge badge-sm badge-primary rounded-ms px-1 text-shadow-none">{{ item.type }}</span>
           @if (item.tier) {

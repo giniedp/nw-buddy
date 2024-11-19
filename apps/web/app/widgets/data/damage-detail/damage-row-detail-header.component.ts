@@ -9,13 +9,15 @@ import { DamageDetailStore } from './damage-row-detail.store'
   selector: 'nwb-damage-row-detail-header',
   template: `
     <nwb-item-header class="gap-2">
-      <nwb-item-icon [nwbItemIcon]="icon()" class="w-[76px] h-[76px]"  />
+      <nwb-item-icon [nwbItemIcon]="icon()" class="w-[76px] h-[76px]" />
       <nwb-item-header-content [showSkeleton]="isLoading()" [title]="title()" [text1]="'Damage'">
-        @if (row()) {
-          <span text2> {{ subtitle() }} &bullet; {{ attackType() }} &bullet; {{ coeff() | percent }} </span>
-        } @else {
-          <span text2 class="text-error"> Not found </span>
-        }
+        <span header-text2 [class.text-error]="!row()">
+          @if (row()) {
+            {{ subtitle() }} &bullet; {{ attackType() }} &bullet; {{ coeff() | percent }}
+          } @else {
+            Not found
+          }
+        </span>
       </nwb-item-header-content>
     </nwb-item-header>
   `,

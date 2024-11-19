@@ -28,7 +28,7 @@
   <nwb-item-header class="relative font-nimbus gap-2">
     <nwb-item-icon [nwbItemIcon]="store.slot()?.icon" [solid]="false" class="z-10 w-[76px] h-[76px]" />
     <nwb-item-header-content class="z-10">
-      <span class="title" [nwHtml]="store.slot()?.name | nwText"></span>
+      <span header-title [nwHtml]="store.slot()?.name | nwText"></span>
     </nwb-item-header-content>
     @if (!disabled) {
       <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">

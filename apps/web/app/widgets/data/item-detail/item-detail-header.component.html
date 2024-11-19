@@ -24,18 +24,21 @@
   @if (!disableContent()) {
     <nwb-item-header-content
       class="z-10"
-      nwbItemHeaderContent
       [title]="(name() | nwText | nwTextBreak: ' - ') || (recordId() | nwHumanize)"
       [titleLink]="enableLink() ? recordLink() : null"
       [text1]="rarityName() | nwText"
-      [text2]="isMissing() ? 'Not Found' : (typeName() | nwText)"
+      [text2]="typeName() | nwText"
       [text3]="size() === 'sm' ? null : sourceLabel()"
       [rarity]="rarity()"
       [isNamed]="isNamed()"
       [showSkeleton]="showSkeleton()"
     >
+      @if (isMissing()) {
+        <span header-text2 class="text-error"> Not Found </span>
+      }
+
       @if (enableTracker() && !isMissing()) {
-        <div class="header flex flex-col justify-end">
+        <div header-end class="flex flex-col justify-end">
           <nwb-item-marker
             [itemId]="recordId()"
             class="text-right transition-opacity opacity-0 group-hover:opacity-100"
@@ -57,7 +60,7 @@
           }
         </div>
       }
-      <ng-content select=".content" />
+      <!-- <ng-content select=".content" /> -->
     </nwb-item-header-content>
   }
 </div>
