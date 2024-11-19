@@ -23,7 +23,7 @@ export class TransmogTableAdapter implements DataViewAdapter<TransmogRecord> {
   private utils: TableGridUtils<TransmogRecord> = inject(TableGridUtils)
 
   public entityID(item: TransmogRecord): string {
-    return item.id
+    return item.id.toLowerCase()
   }
 
   public entityCategories(record: TransmogRecord): DataTableCategory[] {

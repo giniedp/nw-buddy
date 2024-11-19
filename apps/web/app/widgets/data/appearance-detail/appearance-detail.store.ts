@@ -1,4 +1,4 @@
-import { computed, inject } from '@angular/core'
+import { computed, effect, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import {
@@ -21,6 +21,7 @@ import {
   TransmogItem,
   TransmogService,
   getAppearanceCategory,
+  getAppearanceGender,
   getAppearanceId,
   isAppearanceOfGender,
 } from '../transmog'
@@ -47,11 +48,19 @@ export const AppearanceDetailStore = signalStore(
   withStateLoader((state) => {
     const db = injectNwData()
     return {
-      load: async (appearanceIdOrName: string) => {
+      load: async ({
+        appearanceIdOrName,
+        parentItemId,
+        variant,
+      }: {
+        appearanceIdOrName: string
+        parentItemId?: string
+        variant?: TransmogGender
+      }) => {
         return {
           appearanceIdOrName,
-          parentItemId: state.parentItemId(),
-          variant: state.variant(),
+          parentItemId: parentItemId ?? state.parentItemId(),
+          variant: variant ?? state.variant(),
           instrumentAppearance: await db.instrumentAppearancesById(appearanceIdOrName),
           weaponAppearance: await db.weaponAppearancesById(appearanceIdOrName),
           itemAppearance: await db.armorAppearancesById(appearanceIdOrName),
@@ -82,6 +91,11 @@ export const AppearanceDetailStore = signalStore(
       icon: computed(() => appearance()?.IconPath || NW_FALLBACK_ICON),
       name: computed(() => appearance()?.Name),
       description: computed(() => appearance()?.Description),
+      variants: computed(() => {
+        return itemAppearanceByName()
+          .map(getAppearanceGender)
+          .filter((it) => !!it)
+      }),
     }
   }),
   withMethods((store) => {

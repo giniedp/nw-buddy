@@ -13,8 +13,15 @@ import { eqCaseInsensitive, humanize, observeQueryParam } from '~/utils'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemDetailModule } from '../item-detail'
 import { TRANSMOG_CATEGORIES } from '../transmog'
-import { getAppearanceDyeChannels, getAppearanceGender, getAppearanceId, TransmogAppearance, TransmogItem } from '../transmog/transmog-item'
+import {
+  getAppearanceDyeChannels,
+  getAppearanceGender,
+  getAppearanceId,
+  TransmogAppearance,
+  TransmogItem,
+} from '../transmog/transmog-item'
 import { AppearanceDetailStore } from './appearance-detail.store'
+import { TabsModule } from '~/ui/tabs'
 
 @Component({
   standalone: true,
@@ -31,6 +38,7 @@ import { AppearanceDetailStore } from './appearance-detail.store'
     IconsModule,
     TooltipModule,
     ModelViewerModule,
+    TabsModule,
   ],
   providers: [AppearanceDetailStore],
   host: {
@@ -39,14 +47,24 @@ import { AppearanceDetailStore } from './appearance-detail.store'
 })
 export class AppearanceDetailComponent {
   public store = inject(AppearanceDetailStore)
-  public appearance = input<string | TransmogAppearance> (null)
+  public appearance = input<string | TransmogAppearance>(null)
   public parentItemId = input<string>(null)
   private variant = toSignal(observeQueryParam(inject(ActivatedRoute), 'gender'))
+
+  protected showSkeleton = computed(() => this.store.isLoading() && !this.store.appearance())
+  protected showMissing = computed(() => !this.store.isLoading() && !this.store.appearance())
+  protected showContent = computed(() => !this.showSkeleton() && !this.showMissing())
 
   #fxLoad = effect(() => {
     const appearance = this.appearance()
     const appearanceId = typeof appearance === 'string' ? appearance : getAppearanceId(appearance)
-    untracked(() => this.store.load(appearanceId))
+    untracked(() =>
+      this.store.load({
+        appearanceIdOrName: appearanceId,
+        parentItemId: this.parentItemId(),
+        variant: this.variant() as any,
+      }),
+    )
   })
   #fxParent = effect(() => {
     const parentItemId = this.parentItemId()
@@ -84,10 +102,14 @@ export class AppearanceDetailComponent {
     return ['/transmog', this.store.appearanceId()]
   })
   protected other = computed(() => {
+    if (!this.store.variants()?.length) {
+      return null
+    }
     const transmog = this.transmog()
     const gender = this.gender()
     if (gender) {
-      const other = gender === 'male' ? transmog?.male : transmog?.female
+      const other = gender === 'male' ? transmog?.female : transmog?.male
+      const result = getAppearanceGender(other?.appearance)
       return getAppearanceGender(other?.appearance)
     }
     return null

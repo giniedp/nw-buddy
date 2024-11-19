@@ -18,7 +18,7 @@ export class AppearanceDetailDirective {
   #fxLoad = effect(() => {
     const appearanceId = this.appearanceId()
     untracked(() => {
-      this.store.load(appearanceId)
+      this.store.load({ appearanceIdOrName: appearanceId })
     })
   })
 }
