@@ -4584,6 +4584,7 @@ export interface MountData {
   AudioPreloadFoley: string;
   AudioPreloadFstp: string;
   AudioPreloadSfx: string;
+  BDyeSlotDisabled: number;
   ConversionId: string;
   Description: string;
   DisplayName: string;
