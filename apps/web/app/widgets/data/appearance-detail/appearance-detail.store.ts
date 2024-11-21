@@ -93,7 +93,7 @@ export const AppearanceDetailStore = signalStore(
       description: computed(() => appearance()?.Description),
       variants: computed(() => {
         return itemAppearanceByName()
-          .map(getAppearanceGender)
+          ?.map(getAppearanceGender)
           .filter((it) => !!it)
       }),
     }

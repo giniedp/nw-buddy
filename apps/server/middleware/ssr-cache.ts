@@ -24,6 +24,10 @@ export const ssrCache = (options?: SsrCacheOptions): RequestHandler => {
       cache.clear()
     }
     const key = cacheKey(req)
+    if (!key) {
+      res.set('X-SSR-CACHE', 'SKIP')
+      return next()
+    }
     if (cache.has(key)) {
       const { status, body } = decodeResult(cache.get(key))
       res.set('X-SSR-CACHE', 'HIT')

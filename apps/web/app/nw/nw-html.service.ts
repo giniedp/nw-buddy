@@ -23,7 +23,7 @@ function updateNwHtml(el: HTMLElement) {
     img.classList.add('inline')
     let src = img.getAttribute('src') || ''
     if (src.match(/lyshineui[\\/]images/i)) {
-      src = environment.cdnDataUrl + '/' + src
+      src = environment.nwImagesUrl + '/' + src
       src = src.replace(/\.(png|jpg|jpeg|dds|tga)$/i, '')
       src = src + '.webp'
       src = src.toLowerCase()

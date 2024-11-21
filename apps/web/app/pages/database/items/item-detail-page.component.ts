@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
@@ -54,20 +53,6 @@ import { ItemDetailSalvageInfoComponent } from './ui/item-detail-salvage-info.co
   host: {
     class: 'block',
   },
-  animations: [
-    trigger('appear', [
-      transition(':enter', [
-        style({ height: 0, opacity: 0 }),
-        animate('0.15s ease-out', style({ height: '*' })),
-        animate('0.15s ease-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        style({ height: '*', opacity: '*' }),
-        animate('0.15s ease-out', style({ opacity: 0 })),
-        animate('0.15s ease-out', style({ height: 0 })),
-      ]),
-    ]),
-  ],
 })
 export class ItemDetailPageComponent {
   private ms = inject(ModelsService)

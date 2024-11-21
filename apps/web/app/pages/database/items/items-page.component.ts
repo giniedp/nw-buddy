@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject, NgZone } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, NgZone } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { interval, take } from 'rxjs'

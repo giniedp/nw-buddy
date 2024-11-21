@@ -8,7 +8,6 @@ import { provideIonicAngular } from '@ionic/angular/standalone'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
 import { APP_ROUTES } from './app.routes'
-import { NwDataInterceptor } from './data'
 import { TranslateModule } from './i18n'
 
 export const appConfig: ApplicationConfig = {
@@ -34,7 +33,6 @@ export const appConfig: ApplicationConfig = {
       // TODO: refactor to use withInterceptors() instead
       // withInterceptors([]),
     ),
-    NwDataInterceptor.provide(),
     importProvidersFrom(
       BrowserModule,
       BrowserAnimationsModule,

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http'
-import { ClassProvider, Injectable } from '@angular/core'
+import { ClassProvider, Injectable, inject } from '@angular/core'
 import { TranslateLoader as NgxTranslateLoader } from '@ngx-translate/core'
 import { Observable, catchError, combineLatest, map, of } from 'rxjs'
 
-import { NwDataLoaderService } from '~/data'
+import { environment } from 'apps/web/environments'
 import { normalizeDictionary } from './utils'
 
 @Injectable({ providedIn: 'root' })
@@ -15,21 +15,18 @@ export class TranslationLoader implements NgxTranslateLoader {
     }
   }
 
-  public constructor(
-    private http: HttpClient,
-    private nwData: NwDataLoaderService,
-  ) {
-    //
-  }
+  private http = inject(HttpClient)
 
   public getTranslation(lang: string): Observable<any> {
-    const gameLocales = this.nwData.loadTranslations(lang).pipe(
-      catchError((err) => {
-        console.error(err)
-        return of(null)
-      }),
-    )
-    const appLocales = this.http.get(`assets/i18n/${lang.toLowerCase()}.json`).pipe(
+    const gameLocales = this.http
+      .get<Record<string, string>>(`${environment.nwDataUrl}/localization/${lang}.json`)
+      .pipe(
+        catchError((err) => {
+          console.error(err)
+          return of(null)
+        }),
+      )
+    const appLocales = this.http.get<Record<string, string>>(`assets/i18n/${lang.toLowerCase()}.json`).pipe(
       catchError((err) => {
         console.error(err)
         return of(null)

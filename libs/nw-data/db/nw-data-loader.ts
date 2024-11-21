@@ -4,19 +4,26 @@ import { DataLoader } from './dsl'
 export interface NwDataOptions {
   dataUrl: string
   imagesUrl: string
+  baseUrl?: string
 }
 
 export class NwDataLoader implements DataLoader {
+  private baseUrl: string
   private dataUrl: string
   private imagesUrl: string
 
   public constructor(options: NwDataOptions) {
     this.dataUrl = options.dataUrl
     this.imagesUrl = options.imagesUrl
+    this.baseUrl = options.baseUrl
   }
 
   public fetch(url: string) {
-    return fetch(`${this.dataUrl}/${url}`)
+    url = `${this.dataUrl}/${url}`
+    if (this.baseUrl) {
+      url = new URL(url, this.baseUrl).toString()
+    }
+    return fetch(url)
   }
 
   public async fetchJson<T>(url: string): Promise<T> {
@@ -33,6 +40,10 @@ export class NwDataLoader implements DataLoader {
           }
         }
         return data as Array<T & { $source: string }>
+      })
+      .catch((err) => {
+        console.error('Failed to load datasheet', url, err)
+        return []
       })
   }
 

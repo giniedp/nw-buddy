@@ -1,20 +1,21 @@
 import { HttpClientModule } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
-import { firstValueFrom, lastValueFrom } from 'rxjs'
-import { NwDataInterceptor, NwDataService } from '~/data'
+import { NwData } from '@nw-data/db'
+import { lastValueFrom } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwExpressionService } from './nw-expression.service'
 
 describe('nw-expression.service', () => {
   let service: NwExpressionService
-  let db: NwDataService
+  let db: NwData
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule],
-      providers: [NwDataInterceptor.provide()],
+      providers: [],
     })
     service = TestBed.inject(NwExpressionService)
-    db = TestBed.inject(NwDataService)
+    db = TestBed.runInInjectionContext(injectNwData)
   })
 
   const locales = [
@@ -25,9 +26,10 @@ describe('nw-expression.service', () => {
     describe(locale, () => {
       let data: string[]
       beforeEach(async () => {
-        data = await firstValueFrom(db.data.loadTranslations(locale)).then((it) =>
-          Object.values(it).filter((it) => it.includes('{[')),
-        )
+        // TODO: load translations
+        // data = await firstValueFrom(db.data.loadTranslations(locale)).then((it) =>
+        //   Object.values(it).filter((it) => it.includes('{[')),
+        // )
       })
 
       xit('solves all expressions', async () => {

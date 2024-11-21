@@ -130,7 +130,7 @@ export class GameMapComponent {
   protected transformRequest: RequestTransformFunction = (url, resourceType) => {
     if (resourceType === 'Tile') {
       url = convertTileUrl({
-        baseUrl: environment.cdnDataUrl,
+        baseUrl: environment.nwTilesUrl,
         encodedUrl: url,
       })
     }

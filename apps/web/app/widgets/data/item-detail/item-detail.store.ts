@@ -3,6 +3,8 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
   AttributeRef,
+  NW_FALLBACK_ICON,
+  NW_MAX_CHARACTER_LEVEL,
   getItemIconPath,
   getItemRarity,
   getItemRarityLabel,
@@ -15,16 +17,14 @@ import {
   isItemNamed,
   isMasterItem,
   isPerkGem,
-  NW_FALLBACK_ICON,
-  NW_MAX_CHARACTER_LEVEL,
 } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'
 import { humanize } from '~/utils'
 import {
-  fetItemPerkSlots,
   ItemPerkSlot,
+  fetItemPerkSlots,
   selectDescription,
   selectItemGearscore,
   selectItemGearscoreLabel,

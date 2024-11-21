@@ -75,7 +75,7 @@ export class TabsComponent<T> {
   }
 
   private observeVisibility(el: HTMLElement) {
-    if (!el) {
+    if (!el || typeof IntersectionObserver === 'undefined') {
       return EMPTY
     }
     return new Observable((sub) => {
