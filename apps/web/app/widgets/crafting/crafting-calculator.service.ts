@@ -7,7 +7,7 @@ import {
 } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs'
-import { CharacterStore, injectNwData } from '~/data'
+import { CharacterService, CharacterStore, injectNwData } from '~/data'
 import { NW_TRADESKILLS_INFOS_MAP } from '~/nw/tradeskill'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
@@ -17,170 +17,12 @@ export class CraftingCalculatorService {
   private db = injectNwData()
   private char = inject(CharacterStore)
 
-  public solveRecipe(recipe: CraftingRecipeData) {
-    if (!recipe) {
-      return of(null)
-    }
-    const ingredientId = getItemIdFromRecipe(recipe)
-    return this.solveTree(
-      {
-        recipeId: recipe.RecipeID,
-        expand: true,
-        ingredient: {
-          id: ingredientId,
-          quantity: 1,
-          type: 'Item',
-        },
-      },
-      [],
-    )
-  }
-
-  public solveTree(step: CraftingStep, loopDetect: string[] = []): Observable<CraftingStep> {
-    if (step.ingredient.type === 'Item') {
-      return this.solveSteps(step, [...loopDetect])
-    }
-    if (step.ingredient.type === 'Category_Only') {
-      return this.findItemIdsForCraftingCategory(step.ingredient.id)
-        .pipe<CraftingStep>(
-          map((options) => ({
-            ...step,
-            options: options,
-          })),
-        )
-        .pipe<CraftingStep>(
-          map((step) => ({
-            ...step,
-            selection: this.clampSelection(step),
-          })),
-        )
-        .pipe<CraftingStep>(
-          switchMap((step) => {
-            return this.solveSteps(step, [...loopDetect])
-          }),
-        )
-    }
-    return of<CraftingStep>({
-      ingredient: step.ingredient,
-    })
-  }
-
-  public solveSteps(step: CraftingStep, loopDetect: string[]): Observable<CraftingStep> {
-    const key = `${step.recipeId}-${step.ingredient?.id}-${step.ingredient?.type}`
-    if (loopDetect.includes(key)) {
-      console.warn('Loop Detected', step)
-      return of({
-        ...step,
-        steps: null,
-        recipeId: null,
-      })
-    }
-    loopDetect.push(key)
-
-    const source$ = this.fetchIngredientsForStep(step).pipe(shareReplayRefCount(1))
-    const recipeId$ = source$.pipe(map((it) => it.recipeId))
-    const ingredients$ = source$.pipe(map((it) => it.ingredients))
-    const steps$ = ingredients$.pipe(
-      switchMap((ingredients) => {
-        if (!ingredients?.length) {
-          return of(null)
-        }
-        return combineLatest(
-          ingredients.map((ingredient) => {
-            const state = step.steps?.find((it) => it.ingredient?.id === ingredient.id)
-            return this.solveTree(
-              {
-                ...(state || {}),
-                recipeId: null,
-                ingredient: ingredient,
-              },
-              [...loopDetect],
-            )
-          }),
-        )
-      }),
-    )
-
-    return combineLatest({
-      recipeId: recipeId$,
-      steps: steps$,
-    }).pipe(
-      map(({ recipeId, steps }) => {
-        return {
-          ...step,
-          steps: steps,
-          recipeId: recipeId,
-        }
-      }),
-    )
-  }
-
-  public findItemIdsForCraftingCategory(categoryId: string) {
-    return from(this.db.itemsByIngredientCategory(categoryId)).pipe(
-      map((set) => (set ? Array.from(set?.values()).map((it) => it.ItemID) : null)),
-    )
-  }
-
   public fetchRecipe(recipeId: string) {
     return from(this.db.recipesById(recipeId))
   }
 
   public fetchItem(itemId: string) {
     return from(this.db.itemOrHousingItem(itemId))
-  }
-
-  public fetchCategory(categoryId: string) {
-    return from(this.db.recipeCategoriesById(categoryId))
-  }
-
-  public fetchRecipeForItem(item: MasterItemDefinitions | HouseItems) {
-    return from(this.db.recipesByItemIdMap()).pipe(map((recipes) => getRecipeForItem(item, recipes)))
-  }
-
-  public fetchIngredientsForStep(step: CraftingStep) {
-    if (step.recipeId) {
-      return this.fetchIngredientsForRecipe(step.recipeId)
-    }
-    if (step.options) {
-      return this.fetchIngredientsForItem(step.selection)
-    }
-    return this.fetchIngredientsForItem(step.ingredient.id)
-  }
-
-  public fetchIngredientsForItem(
-    itemId: string,
-  ): Observable<{ itemId: string; recipeId: string; ingredients: Ingredient[] }> {
-    return this.fetchItem(itemId).pipe(
-      switchMap((item) => this.fetchRecipeForItem(item)),
-      map((recipe) => {
-        return {
-          itemId,
-          recipeId: recipe?.RecipeID,
-          ingredients: getCraftingIngredients(recipe).map((it) => ({
-            id: it.ingredient,
-            type: (it.type as any) || 'Item', // TODO: data needs to be checked for consistency
-            quantity: it.quantity,
-          })),
-        }
-      }),
-    )
-  }
-
-  public fetchIngredientsForRecipe(recipeId: string): Observable<{ recipeId: string; ingredients: Ingredient[] }> {
-    return from(this.db.recipesById(recipeId)).pipe(
-      map((recipe) => {
-        return {
-          recipeId: recipeId,
-          ingredients: getCraftingIngredients(recipe).map(
-            (it): Ingredient => ({
-              id: it.ingredient,
-              type: (it.type as any) || 'Item', // TODO: data needs to be checked for consistency
-              quantity: it.quantity,
-            }),
-          ),
-        }
-      }),
-    )
   }
 
   public findItemsOrSelectedItems(steps: CraftingStep[]): Observable<Array<MasterItemDefinitions | HouseItems>> {
@@ -205,10 +47,6 @@ export class CraftingCalculatorService {
 
   public fetchGameEventForRecipe(recipe: CraftingRecipeData) {
     return from(this.db.gameEventsById(recipe?.GameEventID))
-  }
-
-  private clampSelection({ options, selection }: CraftingStep) {
-    return options.find((it) => eqCaseInsensitive(it, selection)) || options[0]
   }
 
   public getCraftBonus(step: CraftingStep): Observable<number> {

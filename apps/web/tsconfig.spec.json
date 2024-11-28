@@ -5,6 +5,6 @@
     "types": ["jasmine", "node"]
   },
   "files": ["test.ts", "polyfills.ts"],
-  "include": ["**/*.spec.ts", "**/*.d.ts", "../../libs/**/*.spec.ts", "../../libs/**/*.d.ts"],
+  "include": ["**/*.spec.ts", "**/*.d.ts", "**/*.worker.ts", "../../libs/**/*.spec.ts", "../../libs/**/*.d.ts", "../../libs/**/*.worker.ts"],
   "exclude": ["**/*.cy.ts"]
 }

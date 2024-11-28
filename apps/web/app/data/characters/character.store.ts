@@ -10,26 +10,39 @@ import { CharacterRecord } from './types'
 import { CharactersDB } from './characters.db'
 import { injectWindow } from '~/utils/injection/window'
 import { injectIsBrowser } from '~/utils/injection/platform'
+import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 
 export interface CharacterStoreState {
-  current: CharacterRecord
+  data: CharacterRecord
 }
+
+// export const CharacterStore = signalStore(
+//   withState<CharacterStoreState>({
+//     data: null,
+//   }),
+//   withMethods
+//   withHooks({
+//     onInit: () => {
+
+//     }
+//   })
+// )
 
 @Injectable({ providedIn: 'root' })
 export class CharacterStore extends ComponentStore<CharacterStoreState> {
   private window = injectWindow()
-  public readonly current$ = this.select(({ current }) => current)
-  public readonly name$ = this.select(({ current }) => current?.name)
-  public readonly serverName$ = this.select(({ current }) => current?.serverName)
-  public readonly companyName$ = this.select(({ current }) => current?.companyName)
-  public readonly faction$ = this.select(({ current }) => current?.faction)
-  public readonly level$ = this.select(({ current }) => current?.level ?? NW_MAX_CHARACTER_LEVEL)
-  public readonly tradeskills$ = this.select(({ current }) => current?.tradeskillLevels)
-  public readonly tradeskillSets$ = this.select(({ current }) => current?.tradeskillSets)
-  public readonly tradeskillBonus$ = this.select(({ current }) => current?.tradeskillBonus)
-  public readonly craftingFlBonus$ = this.select(({ current }) => current?.craftingFlBonus)
-  public readonly weapons$ = this.select(({ current }) => current?.weaponLevels)
-  public readonly imageId$ = this.select(({ current }) => current?.imageId)
+  public readonly current$ = this.select(({ data }) => data)
+  public readonly name$ = this.select(({ data }) => data?.name)
+  public readonly serverName$ = this.select(({ data }) => data?.serverName)
+  public readonly companyName$ = this.select(({ data }) => data?.companyName)
+  public readonly faction$ = this.select(({ data }) => data?.faction)
+  public readonly level$ = this.select(({ data }) => data?.level ?? NW_MAX_CHARACTER_LEVEL)
+  public readonly tradeskills$ = this.select(({ data }) => data?.tradeskillLevels)
+  public readonly tradeskillSets$ = this.select(({ data }) => data?.tradeskillSets)
+  public readonly tradeskillBonus$ = this.select(({ data }) => data?.tradeskillBonus)
+  public readonly craftingFlBonus$ = this.select(({ data }) => data?.craftingFlBonus)
+  public readonly weapons$ = this.select(({ data }) => data?.weaponLevels)
+  public readonly imageId$ = this.select(({ data }) => data?.imageId)
   public readonly imageRecord$ = this.imageId$.pipe(
     switchMap((id) => this.images.observeByid(id))
   )
@@ -75,25 +88,25 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   private isBrowser = injectIsBrowser()
   public constructor(private db: CharactersDB, private images: ImagesDB, private sanitizer: DomSanitizer) {
     super({
-      current: null,
+      data: null,
     })
     if (this.isBrowser){
-      const src$ = from(migrate(db)).pipe(switchMap(() => this.db.observeCurrent()))
+      const src$ = this.db.observeCurrent()
       this.loadCurrent(src$)
     }
   }
 
-  public readonly loadCurrent = this.updater((state, current: CharacterRecord) => {
+  public readonly loadCurrent = this.updater((state, data: CharacterRecord) => {
     return {
       ...state,
-      current,
+      data,
     }
   })
 
   public readonly updateLevel = this.effect<{ level: number }>((value$) => {
     return value$.pipe(
       tap(({ level }) => {
-        const current = this.get().current
+        const current = this.get().data
         this.writeRecord({
           ...current,
           level,
@@ -105,7 +118,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly updateSkillLevel = this.effect<{ skill: string; level: number }>((value$) => {
     return value$.pipe(
       tap(({ skill, level }) => {
-        const current = this.get().current
+        const current = this.get().data
         this.writeRecord({
           ...current,
           tradeskillLevels: {
@@ -120,7 +133,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly updateSkillBonus = this.effect<{ skill: string; value: number }>((value$) => {
     return value$.pipe(
       tap(({ skill, value }) => {
-        const current = this.get().current
+        const current = this.get().data
         this.writeRecord({
           ...current,
           tradeskillBonus: {
@@ -135,7 +148,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly updateWeaponLevel = this.effect<{ weapon: string; level: number }>((value$) => {
     return value$.pipe(
       tap(({ weapon, level }) => {
-        const current = this.get().current
+        const current = this.get().data
         this.writeRecord({
           ...current,
           weaponLevels: {
@@ -150,7 +163,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly toggleSkillSlot = this.effect<{ skill: string; slot: string }>((value$) => {
     return value$.pipe(
       tap(({ skill, slot }) => {
-        const current = this.get().current
+        const current = this.get().data
         const set = new CaseInsensitiveSet<string>(current?.tradeskillSets?.[skill] || [])
         if (set.has(slot)) {
           set.delete(slot)
@@ -171,7 +184,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly updateFlBonus = this.effect<{ value: boolean }>((value$) => {
     return value$.pipe(
       tap(({ value }) => {
-        const current = this.get().current
+        const current = this.get().data
         this.writeRecord({
           ...current,
           craftingFlBonus: value,
@@ -198,52 +211,4 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
     const url = urlCreator.createObjectURL(blob)
     return this.sanitizer.bypassSecurityTrustUrl(url)
   }
-}
-
-async function migrate(db: CharactersDB) {
-  await migrateCharacterLevel(db)
-  await migrateTradeskillLevels(db)
-}
-
-async function migrateCharacterLevel(db: CharactersDB) {
-  const item = localStorage.getItem('nwb:character')
-  if (!item) {
-    return
-  }
-  const obj: Record<string, any> = JSON.parse(item)
-  const level = Number(obj?.['language']) // HINT: used wrong key name to store character level
-  if (level && Number.isFinite(level)) {
-    const char = await db.getCurrent()
-    await db.update(char.id, {
-      ...char,
-      level: level,
-    })
-  }
-  localStorage.removeItem('nwb:character')
-}
-
-async function migrateTradeskillLevels(db: CharactersDB) {
-  const item = localStorage.getItem('nwb:tradeskills')
-  if (!item) {
-    return
-  }
-  const obj: Record<string, any> = JSON.parse(item)
-  if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
-    const levels: Record<string, number> = {}
-    Object.entries(obj).forEach(([skill, it]) => {
-      const level = Number(it?.level)
-      if (Number.isFinite(level)) {
-        levels[skill] = level
-      }
-    })
-    const char = await db.getCurrent()
-    await db.update(char.id, {
-      ...char,
-      tradeskillLevels: {
-        ...(char.tradeskillLevels || {}),
-        ...levels,
-      },
-    })
-  }
-  localStorage.removeItem('nwb:tradeskills')
 }

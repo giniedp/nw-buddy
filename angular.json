@@ -246,7 +246,7 @@
                   "*.gz",
                   "*.zip"
                 ],
-                "input": "dist/nw-data",
+                "input": "dist/nw-data/.current",
                 "output": "/nw-data/"
               }
             ]

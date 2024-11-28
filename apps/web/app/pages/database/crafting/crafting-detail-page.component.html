@@ -1,12 +1,22 @@
-<div [nwbScreenshotFrame]="card.store.fullName() | nwText">
-  <nwb-item-card
-    [entity]="itemId$ | async"
-    [enableInfoLink]="true"
-    [enableLink]="true"
-    (entityChange)="onEntity($event)"
-    #card="card"
-    class="layout-col"
-  />
-
-  <nwb-crafting-calculator [recipe]="recipe$ | async" class="flex-1 bg-base-200 mt-4 rounded-md overflow-clip" />
+<div [nwbScreenshotFrame]="detail.store.fullName() | nwText">
+  <nwb-crafting-calculator [entity]="id()" #calc class="bg-black rounded-md overflow-clip">
+    <nwb-item-detail
+      content-top
+      [itemId]="calc.itemId()"
+      [gsOverride]="calc.craftedGearScore()"
+      [perkOverride]="calc.craftedPerks()"
+      #detail="detail"
+    >
+      <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" />
+      <nwb-item-detail-attribution />
+      <div class="p-4">
+        <nwb-item-detail-description-heargem class="nw-item-section" />
+        <nwb-item-detail-stats class="nw-item-section" />
+        <nwb-item-detail-gs-damage class="nw-item-section" />
+        <nwb-item-detail-perks class="nw-item-section" />
+        <nwb-item-detail-description class="nw-item-section" />
+        <nwb-item-detail-info class="nw-item-section" />
+      </div>
+    </nwb-item-detail>
+  </nwb-crafting-calculator>
 </div>

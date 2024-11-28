@@ -3,7 +3,7 @@ import {
   NW_FALLBACK_ICON,
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
-  getCraftingXP,
+  getCraftingSkillXP,
   getItemExpansion,
   getItemIconPath,
   getItemId,
@@ -24,8 +24,14 @@ import { ItemTrackerFilter } from '~/widgets/item-tracker'
 export type CraftingTableUtils = TableGridUtils<CraftingTableRecord>
 export type CraftingTableRecord = CraftingRecipeData & {
   $item: MasterItemDefinitions | HouseItems
-  $ingredients: Array<MasterItemDefinitions | HouseItems>
+  $ingredients: Array<CraftingIngredient>
   $gameEvent: GameEventData
+}
+export type CraftingIngredient = {
+  itemId: string
+  categoryId: string
+  label: string
+  icon: string
 }
 
 export function craftingColIcon(util: CraftingTableUtils) {
@@ -103,7 +109,7 @@ export function craftingColIngredients(util: CraftingTableUtils) {
     width: 350,
     sortable: false,
     headerName: 'Ingredients',
-    valueGetter: ({ data }) => data.$ingredients?.map(getItemId),
+    valueGetter: ({ data }) => data.$ingredients?.map((it) => it.itemId || it.categoryId),
     getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ data }) => {
       const items = data.$ingredients || []
@@ -111,15 +117,23 @@ export function craftingColIngredients(util: CraftingTableUtils) {
         'div.flex.flex-row.items-center.h-full',
         {},
         items.map((item) => {
-          return util.elA(
-            {
-              attrs: { target: '_blank', href: util.tipLink('item', getItemId(item)) },
-            },
-            util.elItemIcon({
-              class: ['transition-all scale-90 hover:scale-110'],
-              icon: getItemIconPath(item) || NW_FALLBACK_ICON,
-            }),
-          )
+          const icon = util.elItemIcon({
+            class: ['transition-all scale-90 hover:scale-110'],
+            icon: item.icon || NW_FALLBACK_ICON,
+          })
+          if (item.itemId) {
+            return util.elA(
+              {
+                attrs: { target: '_blank', href: util.tipLink('item', item.itemId) },
+              },
+              icon,
+            )
+          }
+          return util.el('span', {
+            attrs: {
+              title: util.i18n.get(item.label),
+            }
+          }, icon)
         }),
       )
     }),
@@ -130,9 +144,9 @@ export function craftingColIngredients(util: CraftingTableUtils) {
         const items = data.$ingredients || []
         return items.map((item) => {
           return {
-            id: getItemId(item),
-            label: util.i18n.get(item.Name),
-            icon: getItemIconPath(item),
+            id: item.itemId || item.categoryId,
+            label: util.i18n.get(item.label),
+            icon: item.icon || NW_FALLBACK_ICON,
           }
         })
       },
@@ -253,7 +267,7 @@ export function craftingColCraftingXP(util: CraftingTableUtils) {
     colId: 'craftingXP',
     headerValueGetter: () => 'Crafting XP',
     width: 120,
-    valueGetter: ({ data }) => getCraftingXP(data, data.$gameEvent),
+    valueGetter: ({ data }) => getCraftingSkillXP(data, data.$gameEvent),
     getQuickFilterText: () => null,
     filter: 'agNumberColumnFilter',
   })

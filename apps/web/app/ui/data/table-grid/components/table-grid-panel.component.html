@@ -1,9 +1,9 @@
 <div class="flex-none tabs tabs-bordered w-full">
-  <a class="tab flex-1" [class.tab-active]="!showColumns" (click)="showColumns = !showColumns">Actions</a>
-  <a class="tab flex-1" [class.tab-active]="showColumns" (click)="showColumns = !showColumns">Columns</a>
+  <a class="tab flex-1" [class.tab-active]="!showColumns()" (click)="showColumns.set(!showColumns())">Actions</a>
+  <a class="tab flex-1" [class.tab-active]="showColumns()" (click)="showColumns.set(!showColumns())">Columns</a>
 </div>
-<div class="flex-1 overflow-auto h-full">
-  @if (!showColumns) {
+<div class="flex-1 overflow-auto h-full relative">
+  @if (!showColumns()) {
     <ul class="menu menu-compact menu-vertical">
       <li>
         <a (click)="autosizeColumns()">
@@ -59,7 +59,7 @@
         </a>
       </li>
     </ul>
-    @if (sigPersistKey()) {
+    @if (persistKey()) {
       <div class="divider divider-vertical h-[1px] my-0"></div>
       <ul class="menu menu-compact menu-vertical">
         <li>
@@ -92,7 +92,7 @@
             <span class="text-xs opacity-75">Exports all or selected data as CSV</span>
           </div>
         </a>
-        @for (item of actions; track $index) {
+        @for (item of actions(); track $index) {
           <a (click)="handleAction(item)">
             <nwb-icon [icon]="item.icon" class="w-4 h-4" />
             <div class="flex flex-col leading-none">
@@ -104,24 +104,33 @@
       </li>
     </ul>
   } @else {
-    <div class="px-2 py-1">
-      <nwb-quicksearch-input [placeholder]="'Search column name'" [bordered]="true"></nwb-quicksearch-input>
+    <div class="px-2 py-1 flex flex-row gap-1">
+      <button class="btn btn-ghost btn-square btn-sm px-1" (click)="setAllHidden(isAnyColumnVisible())" [tooltip]="'Toggle all columns'">
+        <nwb-icon
+          [icon]="!isAnyColumnVisible() ? svgEyeSlash : svgEye"
+          class="w-4 h-4"
+          [class.opacity-10]="!isAnyColumnVisible()"
+        />
+      </button>
+      <nwb-quicksearch-input class="flex-1" [placeholder]="'Search column name'" [bordered]="true" />
     </div>
     <div class="p-2">
-      <div *ngFor="let it of displayCols$ | async" class="flex flex-row gap-2">
-        <div class="join">
-          <button class="join-item btn btn-ghost btn-sm px-1" (click)="toggleHide(it.colId)">
-            <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide" />
-          </button>
-          <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
-            <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'" />
-          </button>
-          <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
-            <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'" />
-          </button>
+      @for (it of displayedCols(); track $index) {
+        <div class="flex flex-row gap-2">
+          <div class="join">
+            <button class="join-item btn btn-ghost btn-square btn-sm" (click)="toggleHide(it.colId)">
+              <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide" />
+            </button>
+            <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
+              <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'" />
+            </button>
+            <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
+              <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'" />
+            </button>
+          </div>
+          <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>
         </div>
-        <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>
-      </div>
+      }
     </div>
   }
 </div>

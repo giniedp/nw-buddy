@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, HostBinding, inject, input } from '@angular/core'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { apiResource } from '~/utils'
 import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
+import { CraftingRecipeData } from '@nw-data/generated'
 
 @Component({
   standalone: true,

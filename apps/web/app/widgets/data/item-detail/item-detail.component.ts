@@ -18,7 +18,6 @@ import { ItemDetailStore } from './item-detail.store'
 })
 export class ItemDetailComponent {
   public store = inject(ItemDetailStore)
-  //private storeOld = inject(ItemDetailStoreOld)
 
   public itemId = input<string | MasterItemDefinitions | HouseItems>(null)
   public gsOverride = input<number>()
@@ -33,28 +32,15 @@ export class ItemDetailComponent {
   #fxLoad = effect(() => {
     const item = this.itemId()
     const itemId = typeof item === 'string' ? item : getItemId(item)
-    untracked(() => {
-      this.store.load({
-        recordId: itemId,
-        gsOverride: this.gsOverride(),
-        perkOverride: this.perkOverride(),
-      })
-      //this.storeOld.patchState({ recordId: itemId })
-    })
+    untracked(() => this.store.load({ recordId: itemId }))
   })
 
-  #fxOverrideGs = effect(() => {
+  #fxOverride = effect(() => {
     const gsOverride = this.gsOverride()
-    untracked(() => {
-      //this.storeOld.patchState({ gsOverride })
-      this.store.updateGsOverride(gsOverride)
-    })
-  })
-
-  #fxOverridePerks = effect(() => {
     const perkOverride = this.perkOverride()
+    this.store.record() // track it
     untracked(() => {
-      //this.storeOld.patchState({ perkOverride })
+      this.store.updateGsOverride(gsOverride)
       this.store.updatePerkOverride(perkOverride)
     })
   })

@@ -1,34 +1,17 @@
 :host {
   display: block;
   position: relative;
-  line-height: 1;
-  .main-row {
-    height: 42px;
-  }
+  line-height: 1.2;
 
-  &.hidden {
-    display: none !important;
-  }
-  picture.cursor-pointer {
-    &::after {
-      position: absolute;
-      display: block;
-      content: '…';
-      bottom: -3px;
-      font-weight: bold;
-      z-index: 3;
-    }
-  }
-
-  nwb-crafting-step-toggle {
+  nwb-tree-node-toggle {
     display: none;
   }
 
   nwb-crafting-step {
-    nwb-crafting-step-toggle {
+    nwb-tree-node-toggle {
       display: inline-flex;
     }
-    .steps-container, .options-container {
+    .steps-container {
       border-left: 2px solid currentColor;
       margin-left: 15px;
       nwb-crafting-step {
@@ -37,13 +20,4 @@
     }
   }
 
-  &:last-child {
-    & > .main-row nwb-crafting-step-toggle::after {
-      display: none !important;
-    }
-    & > .steps-container,
-    & > .options-container {
-      border-left-color: transparent !important;
-    }
-  }
 }

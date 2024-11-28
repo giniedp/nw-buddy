@@ -1117,7 +1117,7 @@ export interface CraftingRecipeData {
   CooldownQuantity: number;
   CooldownSeconds: number;
   CraftAll: boolean;
-  CraftingCategory: string;
+  CraftingCategory: CraftingCategory;
   CraftingFee: number;
   CraftingGroup: string;
   DisallowBonusesToGS: boolean;
@@ -1162,14 +1162,14 @@ export interface CraftingRecipeData {
   StationType1: string;
   StationType2: string;
   StationType3: string;
-  Tradeskill: string;
-  Type1: string;
-  Type2: string;
-  Type3: string;
-  Type4: string;
-  Type5: string;
-  Type6: string;
-  Type7: string;
+  Tradeskill: CraftingTradeskill;
+  Type1: CraftingIngredientType;
+  Type2: CraftingIngredientType;
+  Type3: CraftingIngredientType;
+  Type4: CraftingIngredientType;
+  Type5: CraftingIngredientType;
+  Type6: CraftingIngredientType;
+  Type7: CraftingIngredientType;
   UnlockedAchievementBlocksRecrafting: boolean | number;
   UnlockedAchievementID: string;
   UseCraftingTax: number;
@@ -1761,7 +1761,7 @@ export interface GameEventData {
   AzothRewardChance: number;
   AzothSalt: number;
   AzothSaltChance: number;
-  CategoricalProgressionId: string;
+  CategoricalProgressionId: ProgressionCategory;
   CategoricalProgressionReward: number;
   CoinRewardChance: number;
   CreatureType: string;
@@ -7407,6 +7407,84 @@ export type ComparisonType =
   | "GreaterThanOrEqual"
   | "LessThan"
   | "LessThanOrEqual";
+export type CraftingCategory =
+  | "ArcanaRefining"
+  | "Armor"
+  | "ArtifactCrafting"
+  | "ArtisanCrafting"
+  | "Bags"
+  | "BasicCooking"
+  | "Components"
+  | "Concoctions"
+  | "Consumables"
+  | "CorruptedRefining"
+  | "CraftingQuestRecipe"
+  | "CutGems"
+  | "CutStone"
+  | "DoubloonApexCrafting"
+  | "DoubloonCrafting"
+  | "DoubloonCraftingApexNamed"
+  | "DoubloonCraftingMisc"
+  | "DoubloonCraftingNamed"
+  | "DungeonNamedReplicas"
+  | "DungeonNamedReplicas_FLXpac"
+  | "DungeonReplicas"
+  | "Dyes"
+  | "Faction"
+  | "FlameCoreCasting"
+  | "Foods"
+  | "Furniture"
+  | "FuseGems"
+  | "GatherableResearch"
+  | "Glasswares"
+  | "GypsumCasting"
+  | "GypsumRefining"
+  | "HercyneMateria"
+  | "Instruments"
+  | "Keys"
+  | "MagicStaves"
+  | "MaterialConversion"
+  | "NamedCrafting"
+  | "NightveilHallow"
+  | "PVPReplicas"
+  | "Pattern"
+  | "PrismaticTools"
+  | "RaidEquipment"
+  | "RefinedResources"
+  | "RuneglassFamily"
+  | "SOTS"
+  | "Salvage"
+  | "SalvageCreate"
+  | "Scarab"
+  | "SpringtideBloom"
+  | "SummerMedleyfaire"
+  | "TerritoryContribution"
+  | "TimelessShards"
+  | "Tools"
+  | "TrialNamedReplicas"
+  | "Trinkets"
+  | "Weapons"
+  | "WinterConvergence";
+export type CraftingIngredientType = "Category_Only" | "Currency" | "Item";
+export type CraftingTradeskill =
+  | "Arcana"
+  | "Armoring"
+  | "Cooking"
+  | "Engineering"
+  | "Fishing"
+  | "Furnishing"
+  | "Harvesting"
+  | "Jewelcrafting"
+  | "Leatherworking"
+  | "Logging"
+  | "Mining"
+  | "Musician"
+  | "Skinning"
+  | "Smelting"
+  | "Stonecutting"
+  | "Weaponsmithing"
+  | "Weaving"
+  | "Woodworking";
 export type CreatureType =
   | "Ally"
   | "Boss"
@@ -8345,6 +8423,48 @@ export type LootTag =
   | "notreal";
 export type PerkConditionEvent = "OnActive" | "OnEquip" | "OnUnsheathed";
 export type PerkType = "Gem" | "Generated" | "Inherent";
+export type ProgressionCategory =
+  | "10"
+  | "11"
+  | "12"
+  | "13"
+  | "14"
+  | "15"
+  | "16"
+  | "2"
+  | "4"
+  | "5"
+  | "6"
+  | "8"
+  | "9"
+  | "Arcana"
+  | "Armoring"
+  | "AzothStaff"
+  | "Battle_Token"
+  | "Camping"
+  | "Cooking"
+  | "Engineering"
+  | "EventProgress"
+  | "Fishing"
+  | "Furnishing"
+  | "HalloweenEventProgress"
+  | "Harvesting"
+  | "Jewelcrafting"
+  | "Leatherworking"
+  | "Logging"
+  | "Mining"
+  | "Musician"
+  | "Riding"
+  | "SeasonPass"
+  | "Skinning"
+  | "Smelting"
+  | "SpringEventProgress"
+  | "Stonecutting"
+  | "SummerEventProgress"
+  | "SwordAbilityTable"
+  | "Weaponsmithing"
+  | "Weaving"
+  | "Woodworking";
 export type StatusEffectCategory =
   | ""
   | "ABSCapped90Percent"

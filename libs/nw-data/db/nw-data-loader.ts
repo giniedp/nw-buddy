@@ -64,7 +64,7 @@ export class NwDataLoader implements DataLoader {
           continue
         }
         if (value.startsWith('lyshineui')) {
-          item[key] = this.imagesUrl + '/' + value
+          item[key] = (this.imagesUrl + '/' + value).toLowerCase()
         }
         if (value.startsWith('@')) {
           item[key] = value.substring(1)

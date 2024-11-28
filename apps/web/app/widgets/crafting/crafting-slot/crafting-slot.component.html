@@ -1,0 +1,45 @@
+<div class="flex flex-row items-center gap-1 main-row h-10" data-cy="step">
+  <nwb-crafting-step-toggle class="w-8 h-full flex-none" [ngModel]="false" [disabled]="true" />
+  <button class="btn btn-sm btn-square btn-ghost flex-none relative" (click)="pickClicked.emit()">
+    <nwb-item-icon
+      class="w-8 h-8"
+      [nwbItemIcon]="itemIcon()"
+      [rarity]="itemRarity()"
+      [solid]="true"
+      [borderless]="itemRarity() === 'common'"
+    />
+    <span class="absolute bottom-1 left-0 right-0 text-center">…</span>
+  </button>
+  <div class="flex flex-col items-center justify-center">
+    <span>
+      {{ amount() }}
+    </span>
+  </div>
+  &times;
+  <span class="flex flex-col flex-1">
+    <span class="opacity-50" [class.text-xs]="!!itemName()">
+      {{ typeLabel() | nwText }}
+    </span>
+    @if (itemName()) {
+      <span>
+        {{ itemName() | nwText }}
+      </span>
+    }
+  </span>
+  @if (itemId()) {
+    <label class="flex flex-col items-end text-sm" (click)="itemTracker.openInput($event)">
+      <nwb-price-tracker
+        [itemId]="itemId()"
+        [emptyTip]="'Edit item price'"
+        [format]="'1.2-2'"
+        class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap text-xs"
+        #itemTracker
+      />
+      @if (itemTracker.value; as price) {
+        <span class="whitespace-nowrap">
+          {{ amount() * price | number: '1.2-2' }}
+        </span>
+      }
+    </label>
+  }
+</div>

@@ -1,5 +1,6 @@
-import { Directive, effect, inject, input, untracked } from '@angular/core'
+import { Directive, computed, effect, inject, input, untracked } from '@angular/core'
 import { ItemDetailStore } from './item-detail.store'
+import { NwLinkService } from '~/nw'
 
 @Directive({
   standalone: true,
@@ -8,8 +9,8 @@ import { ItemDetailStore } from './item-detail.store'
   providers: [ItemDetailStore],
 })
 export class ItemDetailDirective {
+  private linkService = inject(NwLinkService)
   public store = inject(ItemDetailStore)
-  //private storeOld = inject(ItemDetailStoreOld)
 
   public itemId = input<string>(null, { alias: 'nwbItemDetail' })
   public gsOverride = input<number>()
@@ -23,6 +24,21 @@ export class ItemDetailDirective {
   public rarity = this.store.rarity
   public rarityLabel = this.store.rarityLabel
   public isNamed = this.store.isNamed
+  public itemLink = computed(() => {
+    if (this.houseItem()) {
+      return this.linkService.resourceLink({
+        type: 'housing',
+        id: this.store.recordId(),
+      })
+    }
+    if (this.item()) {
+      return this.linkService.resourceLink({
+        type: 'item',
+        id: this.store.recordId(),
+      })
+    }
+    return null
+  })
 
   #fxLoad = effect(() => {
     const itemId = this.itemId()
@@ -32,23 +48,16 @@ export class ItemDetailDirective {
         gsOverride: this.gsOverride(),
         perkOverride: this.perkOverride(),
       })
-      //this.storeOld.patchState({ recordId: itemId })
     })
   })
 
   #fxOverrideGs = effect(() => {
     const gsOverride = this.gsOverride()
-    untracked(() => {
-      //this.storeOld.patchState({ gsOverride })
-      this.store.updateGsOverride(gsOverride)
-    })
+    untracked(() => this.store.updateGsOverride(gsOverride))
   })
 
   #fxOverridePerks = effect(() => {
     const perkOverride = this.perkOverride()
-    untracked(() => {
-      //this.storeOld.patchState({ perkOverride })
-      this.store.updatePerkOverride(perkOverride)
-    })
+    untracked(() => this.store.updatePerkOverride(perkOverride))
   })
 }

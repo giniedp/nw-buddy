@@ -8,7 +8,9 @@ import { NwModule } from '~/nw'
   standalone: true,
   selector: 'nwb-item-icon,a[nwbItemIcon]',
   template: `
-    <div class="nw-item-icon-border"></div>
+    @if (!borderless()) {
+      <div class="nw-item-icon-border"></div>
+    }
     @for (item of icons(); track item.id) {
       <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]" [@inOut]>
         <img
@@ -48,6 +50,7 @@ export class ItemIconFrameComponent {
   public solid = input<boolean>(false)
   public isNamed = input<boolean>()
   public cover = input<boolean>(false)
+  public borderless = input<boolean>(false)
 
   protected icons = computed(() => {
     const value = this.icon()

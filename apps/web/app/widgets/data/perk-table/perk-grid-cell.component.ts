@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input, OnInit, TemplateRef, ViewChild, inject } from '@angular/core'
-import { NW_FALLBACK_ICON, getAffixMODs } from '@nw-data/common'
+import { ItemRarity, NW_FALLBACK_ICON, getAffixMODs, getItemIconPath, getItemId, getItemRarity } from '@nw-data/common'
 import { PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
@@ -20,29 +20,47 @@ import { PerkTableRecord } from './perk-table-cols'
     <nwb-item-header class="gap-2">
       <a [nwbItemIcon]="icon" [nwLinkTooltip]="['perk', perkId]" class="w-[76px] h-[76px]"> </a>
       <nwb-item-header-content class="z-10" [title]="name | nwText | nwTextBreak: ' - '">
-        <div class="flex flex-col">
-          <span class="text-xs">perk</span>
-          <div class="flex flex-row justify-between items-center">
-            <span>{{ type }}</span>
-            <div class="flex flex-row items-center gap-1">
-              <span *ngFor="let item of exclusiveLabels" class="badge badge-sm" [class.badge-error]="item.isError">
-                {{ item.label }}</span
-              >
-              <span>{{ mods | nwText }}</span>
-            </div>
-          </div>
+        @if (this.resourceName; as text) {
+          <div header-title class="text-sm italic opacity-75">{{ text | nwText }}</div>
+        }
+        <div class="flex flex-row items-center gap-1">
+          @for (item of exclusiveLabels; track $index) {
+            <span class="badge badge-sm" [class.badge-error]="item.isError"> {{ item.label }}</span>
+          }
+          <span class="flex-1"></span>
+          @for (mod of mods; track $index) {
+            @let isPrimary = mods.length === 1;
+            <span
+              class="badge badge-sm"
+              [class.text-shadow-none]="isPrimary"
+              [class.badge-primary]="isPrimary"
+              [class.badge-secondary]="!isPrimary"
+            >
+              {{ mod | nwText }}
+            </span>
+          }
         </div>
+        @if (resourceId) {
+          <nwb-item-icon
+            header-end
+            [nwbItemIcon]="resourceIcon"
+            [rarity]="resourceRarity"
+            [solid]="true"
+            [borderless]="true"
+            class="w-10 h-10 rounded-full"
+          />
+        }
       </nwb-item-header-content>
     </nwb-item-header>
-    <ng-template #tplTip>
-      <nwb-perk-detail-description />
-    </ng-template>
+    <div class="p-2 text-xs">
+      <nwb-perk-detail-description [preferBonus]="true" />
+    </div>
   `,
   imports: [CommonModule, ItemFrameModule, PerkDetailDescriptionComponent, NwModule, TooltipModule],
   hostDirectives: [TooltipDirective],
   providers: [PerkDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip m-1',
+    class: 'block rounded-md overflow-clip m-1 bg-black',
     '[class.outline]': 'selected',
     '[class.outline-primary]': 'selected',
     '[tabindex]': '0',
@@ -51,7 +69,7 @@ import { PerkTableRecord } from './perk-table-cols'
 export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTableRecord>, OnInit {
   public static buildGridOptions(): VirtualGridOptions<PerkTableRecord> {
     return {
-      height: 90,
+      height: 160,
       width: 320,
       cellDataView: PerkGridCellComponent,
       cellEmptyView: EmptyComponent,
@@ -78,6 +96,11 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
     this.perk = value
     this.mods = getAffixMODs(value?.$affix).map((it) => it.labelShort)
     this.exclusiveLabels = resolveExclusiveLabels(value)
+    const resource = value?.$items?.[0]
+    this.resourceId = getItemId(resource)
+    this.resourceIcon = getItemIconPath(resource)
+    this.resourceName = resource?.Name
+    this.resourceRarity = getItemRarity(resource)
   }
 
   protected perk: PerkData
@@ -88,6 +111,11 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
   protected type: string
   protected mods: string[]
   protected exclusiveLabels: Array<{ label: string; isError: boolean }>
+  protected resourceId: string
+  protected resourceIcon: string
+  protected resourceName: string
+  protected resourceRarity: ItemRarity
+
   protected get ctx() {
     return this.context.forPerk(this.perk) as any
   }

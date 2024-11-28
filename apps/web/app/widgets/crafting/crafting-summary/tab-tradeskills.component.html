@@ -1,35 +1,45 @@
-<ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex; let isLast = last; let isFirst = first">
-  <div class="divider my-0 h-0" *ngIf="!isFirst"></div>
+<div class="p-2">
+  <div class="flex flex-row gap-2 items-center">
+    <img [nwImage]="'/assets/icons/territories/icon_territorystanding.png'" class="w-10 h-10" />
+    <div class="flex-1 flex flex-col justify-center">
+      <span class="font-bold">Territory Standing</span>
+      <span>+{{ standingXp() | number }}</span>
+    </div>
+  </div>
+</div>
 
+@for (row of skillRows(); track $index; let isLast = $last; let isFirst = $first) {
+  @if (!isFirst) {
+    <div class="divider my-0 h-0"></div>
+  }
   <div class="flex flex-col gap-1 p-2 bg-base-100 rounded-sm">
     <div class="flex flex-row gap-2 items-center">
       <img [nwImage]="row.icon" class="w-10 h-10" />
       <div class="flex-1 flex flex-col justify-center">
-        <span [nwText]="row.name" class="font-bold"></span>
+        <span [nwText]="row.label" class="font-bold"></span>
         <span>+{{ row.xp | number }}</span>
       </div>
-      <nwb-tradeskill-progress
-        class="m-2"
-        [skillName]="row.id"
-        [skillLevel]="'auto'"
-        [skillPoints]="row.xp"
-      ></nwb-tradeskill-progress>
+      <nwb-tradeskill-progress class="m-2" [skillName]="row.id" [skillLevel]="'auto'" [skillPoints]="row.xp" />
     </div>
-    <div class="flex flex-row gap-2 items-center" *ngFor="let step of row.steps; trackBy: trackByIndex">
-      <a [nwLinkTooltip]="['item', step.itemId]">
-        <picture [nwIcon]="step.item" class="w-10 h-10"> </picture>
-      </a>
-      <div class="flex-1 flex flex-row items-center gap-1 leading-tight whitespace-nowrap overflow-hidden">
-        <span>{{ step.count }}</span>
-        <span> × </span>
-        <a class="overflow-hidden text-ellipsis select-text" [title]="step.label | nwText">
-          {{ step.label | nwText }}
+    @for (step of row.steps; track $index) {
+      <div class="flex flex-row gap-2 items-center">
+        <a [nwLinkTooltip]="['item', step.itemId]">
+          <picture [nwIcon]="step.item" class="w-10 h-10"> </picture>
         </a>
+        <div class="flex-1 flex flex-row items-center gap-1 leading-tight whitespace-nowrap overflow-hidden">
+          <span>{{ step.count }}</span>
+          <span> &times; </span>
+          <a class="overflow-hidden text-ellipsis select-text" [title]="step.label | nwText">
+            {{ step.label | nwText }}
+          </a>
+        </div>
+        <div class="flex flex-col items-end justify-around text-xs text-right whitespace-nowrap pr-1">
+          <span class="opacity-50 cursor-help" [tooltip]="'XP per unit crafted'">{{ step.xp | number }} PU</span>
+          <span class="cursor-help" [tooltip]="'XP for all units crafted'">
+            +{{ step.count * step.xp | number }} XP
+          </span>
+        </div>
       </div>
-      <div class="flex flex-col items-end justify-around text-xs text-right whitespace-nowrap pr-1">
-        <span class="opacity-50 cursor-help" [tooltip]="'XP per unit crafted'">{{ step.xp | number }} PU</span>
-        <span class="cursor-help" [tooltip]="'XP for all units crafted'">+{{ step.count * step.xp | number }} XP</span>
-      </div>
-    </div>
+    }
   </div>
-</ng-container>
+}

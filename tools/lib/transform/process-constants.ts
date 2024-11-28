@@ -78,6 +78,7 @@ export async function processConstants({ inputDir }: { inputDir: string }) {
   const maxGS = Math.max(...expansionData.rows.map((it) => it.MaxEquipGS || 0))
   const maxLevel = Math.max(...expansionData.rows.map((it) => it.MaxDisplayLevel || 0))
   const maxTradeLevel = Math.max(...expansionData.rows.map((it) => it.MaxTradeskillLevel || 0))
+  const maxCraftGs = Math.max(...expansionData.rows.map((it) => it.MaxCraftGS || 0))
 
   const pad = baseData['player attribute data']
   const result = {
@@ -138,6 +139,7 @@ export async function processConstants({ inputDir }: { inputDir: string }) {
     NW_MAX_GEAR_SCORE: maxGS,
     NW_MAX_CHARACTER_LEVEL: maxLevel,
     NW_MAX_TRADESKILL_LEVEL: maxTradeLevel,
+    NW_MAX_CRAFT_GEAR_SCORE: maxCraftGs,
   }
 
   // TODO:

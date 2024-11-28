@@ -4,6 +4,7 @@ import { NwData } from '@nw-data/db'
 import { lastValueFrom } from 'rxjs'
 import { injectNwData } from '~/data'
 import { NwExpressionService } from './nw-expression.service'
+import { provideExperimentalZonelessChangeDetection } from '@angular/core'
 
 describe('nw-expression.service', () => {
   let service: NwExpressionService
@@ -12,7 +13,9 @@ describe('nw-expression.service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule],
-      providers: [],
+      providers: [
+        provideExperimentalZonelessChangeDetection()
+      ],
     })
     service = TestBed.inject(NwExpressionService)
     db = TestBed.runInInjectionContext(injectNwData)

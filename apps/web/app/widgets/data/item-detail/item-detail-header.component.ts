@@ -58,8 +58,8 @@ export class ItemDetailHeaderComponent {
     }
     return null
   })
-  protected showSkeleton = computed(() => !this.store.isLoaded() && this.store.isLoading())
-  protected isMissing = computed(() => this.store.isLoaded() && !this.store.record())
+  protected showSkeleton = computed(() => !this.store.record() && this.store.isLoading())
+  protected isMissing = computed(() => !this.store.record() && this.store.isLoaded() && !this.store.isLoading())
 
   protected enableGsTracker = computed(() => {
     const record = this.record()

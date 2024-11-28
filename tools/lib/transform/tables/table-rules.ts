@@ -503,13 +503,29 @@ export const TRANSFORM_RULES = [
 
   transformRule(
     {
+      type: 'CraftingCategoryData',
+
+    },
+    (table, { inputDir }) => {
+      const imagePathKey = 'ImagePath'
+      for (const row of table) {
+        const imagePath = row[imagePathKey]
+        if (typeof imagePath !== 'string') {
+          continue
+        }
+        const filePath = replaceExtname(path.join('lyshineui', 'images', imagePath), '.png')
+        if (fs.existsSync(path.join(inputDir, filePath))) {
+          row[imagePathKey] = replaceExtname(filePath, '.webp').replace(/\\/g, '/')
+        }
+      }
+    }
+  ),
+  transformRule(
+    {
       type: 'MasterItemDefinitions',
     },
     (table, { tables, inputDir }) => {
       for (const row of table as MasterItemFile['rows']) {
-        if ('HiResIconPath' in row) {
-          row.HiResIconPath = row['IconPath'] || null
-        }
         for (const iconKey of ['IconPath', 'HiResIconPath']) {
           const candidates = [
             getAppearanceIcon(row.ArmorAppearanceM as string, tables, iconKey),

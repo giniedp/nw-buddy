@@ -34,6 +34,7 @@ import {
 } from '@nw-data/scanner'
 import { DataLoader, indexLookup, primaryIndex, secondaryIndex, table } from './dsl'
 import { eqCaseInsensitive } from '../common/utils/caseinsensitive-compare'
+import { NW_TRADESKILLS_INFOS } from '../common/tradeskill'
 
 export abstract class NwDataSheets {
   protected abstract loader: DataLoader
@@ -345,6 +346,10 @@ export abstract class NwDataSheets {
   public loreItemsMetadataByIdMap = primaryIndex(this.loreItemsMetadataAll, 'loreID')
   public loreItemsMetadataById = indexLookup(this.loreItemsMetadataByIdMap)
 
+  public craftingCategoriesAll = table(() => this.loadDatasheets(DATASHEETS.CraftingCategoryData))
+  public craftingCategoriesByIdMap = primaryIndex(this.craftingCategoriesAll, 'CategoryID')
+  public craftingCategoriesById = indexLookup(this.craftingCategoriesByIdMap)
+
   public recipesAll = table(() => this.loadDatasheets(DATASHEETS.CraftingRecipeData))
   public recipesByIdMap = primaryIndex(this.recipesAll, 'RecipeID')
   public recipesById = indexLookup(this.recipesByIdMap)
@@ -414,7 +419,17 @@ export abstract class NwDataSheets {
   public metaAchievementsByIdMap = primaryIndex(this.metaAchievementsAll, 'MetaAchievementId')
   public metaAchievementsById = indexLookup(this.metaAchievementsByIdMap)
 
+  public tradeskillAll = table(() => Promise.resolve(NW_TRADESKILLS_INFOS))
+  public tradeskillByIdMap = primaryIndex(this.tradeskillAll, 'ID')
+  public tradeskillById = indexLookup(this.tradeskillByIdMap)
   public tradeskillPostcapAll = table(() => this.loadDatasheets(DATASHEETS.TradeSkillPostCapData))
+  public tradeskillRankDataAll = table(() => this.loadDatasheets(DATASHEETS.TradeskillRankData))
+  public tradeskillRankDataByTradeskillMap = secondaryIndex(this.tradeskillRankDataAll, '$source')
+  public tradeskillRankDataByTradeskill = indexLookup(this.tradeskillRankDataByTradeskillMap)
+  public tradeskillRankDataByTradeskillAndLevel = async (tradeskill: string, level: number) => {
+    const list = await this.tradeskillRankDataByTradeskill(tradeskill)
+    return list?.find((it) => it.Level === level)
+  }
 
   public vitalsMetadataAll = table(() => {
     return [
@@ -634,17 +649,31 @@ export abstract class NwDataSheets {
   public objectiveTasksByIdMap = primaryIndex(this.objectiveTasksAll, 'TaskID')
   public objectiveTasksById = indexLookup(this.objectiveTasksByIdMap)
 
+  public seasonsAll = table(() => this.loadDatasheets(DATASHEETS.SeasonsRewardsSeasonData))
+  public seasonsByIdMap = primaryIndex(this.seasonsAll, 'SeasonId')
+  public seasonsById = indexLookup(this.seasonsByIdMap)
+  public seasonsByIndexMap = primaryIndex(this.seasonsAll, 'SeasonIndex')
+  public seasonsByIndex = indexLookup(this.seasonsByIndexMap)
+
   public seasonPassRanksAll = table(() => this.loadDatasheets(DATASHEETS.SeasonPassRankData))
   public seasonPassRanksByIdMap = primaryIndex(this.seasonPassRanksAll, getSeasonPassDataId)
   public seasonPassRanksById = indexLookup(this.seasonPassRanksByIdMap)
+  public seasonPassRanksByRewardIdMap = secondaryIndex(this.seasonPassRanksAll, (it) => [it.FreeRewardId, it.PremiumRewardId])
+  public seasonPassRanksByRewardId = indexLookup(this.seasonPassRanksByRewardIdMap)
 
-  public seasonPassRewards = table(() => this.loadDatasheets(DATASHEETS.SeasonsRewardData))
-  public seasonPassRewardsByIdMap = primaryIndex(this.seasonPassRewards, 'RewardId')
-  public seasonPassRewardsById = indexLookup(this.seasonPassRewardsByIdMap)
-  public seasonPassRewardsByDisplayItemIdMap = secondaryIndex(this.seasonPassRewards, 'DisplayItemId')
-  public seasonPassRewardsByDisplayItemId = indexLookup(this.seasonPassRewardsByDisplayItemIdMap)
-  public seasonPassRewardsByItemIdMap = secondaryIndex(this.seasonPassRewards, 'ItemId')
-  public seasonPassRewardsByItemId = indexLookup(this.seasonPassRewardsByItemIdMap)
+  public seasonsRewardsChaptersAll = table(() => this.loadDatasheets(DATASHEETS.SeasonsRewardsChapterData))
+  public seasonsRewardsChaptersByIdMap = primaryIndex(this.seasonsRewardsChaptersAll, 'ChapterId')
+  public seasonsRewardsChaptersById = indexLookup(this.seasonsRewardsChaptersByIdMap)
+  public seasonsRewardsChaptersByRewardIdMap = secondaryIndex(this.seasonsRewardsChaptersAll, 'ChapterRewardId')
+  public seasonsRewardsChaptersByRewardId = indexLookup(this.seasonsRewardsChaptersByRewardIdMap)
+
+  public seasonsRewardsAll = table(() => this.loadDatasheets(DATASHEETS.SeasonsRewardData))
+  public seasonsRewardsByIdMap = primaryIndex(this.seasonsRewardsAll, 'RewardId')
+  public seasonsRewardsById = indexLookup(this.seasonsRewardsByIdMap)
+  public seasonsRewardsByDisplayItemIdMap = secondaryIndex(this.seasonsRewardsAll, 'DisplayItemId')
+  public seasonsRewardsByDisplayItemId = indexLookup(this.seasonsRewardsByDisplayItemIdMap)
+  public seasonsRewardsByItemIdMap = secondaryIndex(this.seasonsRewardsAll, 'ItemId')
+  public seasonsRewardsByItemId = indexLookup(this.seasonsRewardsByItemIdMap)
 
   public seasonsRewardsTasksAll = table(() => this.loadDatasheets(DATASHEETS.SeasonsRewardsTasks))
   public seasonsRewardsTasksByIdMap = primaryIndex(this.seasonsRewardsTasksAll, 'SeasonsTaskID')
@@ -667,6 +696,8 @@ export abstract class NwDataSheets {
   public entitlementsAll = table(() => this.loadDatasheets(DATASHEETS.EntitlementData))
   public entitlementsByIdMap = primaryIndex(this.entitlementsAll, 'UniqueTagID')
   public entitlementsById = indexLookup(this.entitlementsByIdMap)
+  public entitlementsByRewardTypeMap = secondaryIndex(this.entitlementsAll, 'RewardType')
+  public entitlementsByRewardType = indexLookup(this.entitlementsByRewardTypeMap)
 
   public backstoriesAll = table(() => this.loadDatasheets(DATASHEETS.BackstoryDefinition))
   public backstoriesByIdMap = primaryIndex(this.backstoriesAll, 'BackstoryID')

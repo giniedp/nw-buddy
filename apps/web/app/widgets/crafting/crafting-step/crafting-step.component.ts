@@ -1,12 +1,13 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { map } from 'rxjs'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import { selectStream } from '~/utils'
+import { TreeNodeToggleComponent } from '~/ui/tree'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { CraftingStepToggleComponent } from '../crafting-step-toggle'
@@ -28,6 +29,9 @@ import { CraftingStepStore } from './crafting-step.store'
     CdkMenuModule,
     ItemDetailModule,
     TooltipModule,
+    ItemFrameModule,
+    RouterModule,
+    TreeNodeToggleComponent,
   ],
   providers: [CraftingStepStore],
   animations: [
@@ -49,6 +53,8 @@ import { CraftingStepStore } from './crafting-step.store'
   ],
 })
 export class CraftingStepComponent {
+  protected store = inject(CraftingStepStore)
+
   @Input()
   public set step(value: CraftingStep) {
     this.store.patchState({ step: value })
@@ -62,32 +68,6 @@ export class CraftingStepComponent {
   @Input()
   public set amountMode(value: AmountMode) {
     this.store.patchState({ amountMode: value })
-  }
-
-  protected vm$ = selectStream(
-    {
-      expand: this.store.expand$,
-      amountMode: this.store.amountMode$,
-      amountIsGross: this.store.amountIsGross$,
-      amount: this.store.amount$,
-      item: this.store.item$,
-      currency: this.store.currency$,
-      itemId: this.store.itemId$,
-      category: this.store.category$,
-      options: this.store.options$,
-      children: this.store.children$,
-      hasChildren: this.store.children$.pipe(map((it) => !!it?.length)),
-    },
-    (it) => it,
-    {
-      debounce: true,
-    },
-  )
-
-  public trackByIndex = (i: number) => i
-
-  public constructor(private store: CraftingStepStore) {
-    //
   }
 
   protected setExpand(value: boolean) {

@@ -39,8 +39,8 @@ export class SeasonPassDetailPageComponent {
     request: () => this.id(),
     loader: async ({ request }) => {
       const data = await this.db.seasonPassRanksById(request)
-      const freeReward = await this.db.seasonPassRewardsById(data.FreeRewardId)
-      const premiumReward = await this.db.seasonPassRewardsById(data.PremiumRewardId)
+      const freeReward = await this.db.seasonsRewardsById(data.FreeRewardId)
+      const premiumReward = await this.db.seasonsRewardsById(data.PremiumRewardId)
       // const entitlementsMap = await this.db.entitlementsByIdMap()
       return [
         {

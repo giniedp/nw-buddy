@@ -42,6 +42,7 @@ export class NwTradeskillService {
               if (!info) {
                 return null
               }
+
               return {
                 ID: info.ID,
                 Category: info.Category,

@@ -1,14 +1,27 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <div class="tabs tabs-lifted">
-    <a class="tab flex-1" [class.tab-active]="vm.isTabResources" (click)="patchState({ tab: 'resources' })">
-      Buy Order
-    </a>
-    <a class="tab flex-1" [class.tab-active]="vm.isTabSkills" (click)="patchState({ tab: 'skills' })">
-      Craft Order
-    </a>
-  </div>
-  <div class="bg-base-100 rounded-b-lg border border-base-300 border-t-0">
-    <tab-resources [tree]="vm.tree" *ngIf="vm.isTabResources"></tab-resources>
-    <tab-tradeskills [tree]="vm.tree" *ngIf="vm.isTabSkills"></tab-tradeskills>
-  </div>
-</ng-container>
+<nwb-tabs-host>
+  <nwb-tab-left
+    class="btn btn-sm btn-square btn-ghost w-5"
+    [disabled]="!tabs.canScrollLeft()"
+    [class.hidden]="!tabs.canScroll()"
+  />
+  <nwb-tab-right
+    class="btn btn-sm btn-square btn-ghost w-5"
+    [disabled]="!tabs.canScrollRight()"
+    [class.hidden]="!tabs.canScroll()"
+  />
+  <nwb-tabs [active]="tab()" (activeChange)="tab.set($event)" class="tabs tabs-lifted" #tabs>
+    <nwb-tab class="flex-1 whitespace-nowrap" [value]="'resources'"> Buy Order </nwb-tab>
+    <nwb-tab class="flex-1 whitespace-nowrap" [value]="'skills'"> XP </nwb-tab>
+  </nwb-tabs>
+</nwb-tabs-host>
+
+<div class="bg-base-100">
+  @switch (tab()) {
+    @case ('resources') {
+      <tab-resources [tree]="tree$ | async" />
+    }
+    @case ('skills') {
+      <tab-tradeskills [tree]="tree$ | async" />
+    }
+  }
+</div>

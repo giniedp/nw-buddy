@@ -1,3 +1,5 @@
+import { CraftingIngredientType } from '@nw-data/generated'
+
 export type AmountMode = 'net' | 'gross'
 
 export interface AmountDetail {
@@ -16,10 +18,8 @@ export interface CraftingStep {
   steps?: CraftingStep[]
 }
 
-export type IngredientType = 'Item' | 'Currency' | 'Category_Only'
-
 export interface Ingredient {
   id: string
-  type: IngredientType
+  type: CraftingIngredientType
   quantity: number
 }

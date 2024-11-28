@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, Signal, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { getCraftingIngredients, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
+import { getCraftingIngredients, getItemId, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
 import { COLS_CRAFTINGRECIPEDATA } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
 import { CharacterStore, injectNwData } from '~/data'
@@ -9,6 +9,7 @@ import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-vi
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
+  CraftingIngredient,
   CraftingTableRecord,
   craftingColBookmark,
   craftingColCanCraft,
@@ -71,8 +72,9 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
       housing: this.db.housingItemsByIdMap(),
       recipes: this.db.recipesAll(),
       events: this.db.gameEventsByIdMap(),
+      categoriesMap: this.db.craftingCategoriesByIdMap(),
     }).pipe(
-      map(({ items, housing, recipes, events }) => {
+      map(({ items, housing, recipes, events, categoriesMap }) => {
         recipes = recipes.filter((it) => !!it.ItemID)
         return recipes.map<CraftingTableRecord>((it) => {
           const itemId = getItemIdFromRecipe(it)
@@ -81,7 +83,27 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
             $gameEvent: events.get(it.GameEventID),
             $item: items.get(itemId) || housing.get(itemId),
             $ingredients: getCraftingIngredients(it)
-              .map((ing) => items.get(ing.ingredient) || housing.get(ing.ingredient))
+              .map((ingr): CraftingIngredient => {
+                if (ingr.type === 'Item') {
+                  const item = items.get(ingr.ingredient) || housing.get(ingr.ingredient)
+                  return {
+                    itemId: getItemId(item),
+                    categoryId: null,
+                    label: item?.Name,
+                    icon: item?.IconPath,
+                  }
+                }
+                if (ingr.type === 'Category_Only') {
+                  const category = categoriesMap.get(ingr.ingredient)
+                  return {
+                    itemId: null,
+                    categoryId: category?.CategoryID,
+                    label: category?.DisplayText,
+                    icon: category?.ImagePath,
+                  }
+                }
+                return null
+              })
               .filter((it) => !!it),
           }
         })

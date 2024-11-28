@@ -41,7 +41,7 @@ export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
       resourcesByPerkBucket: defer(() => this.db.resourceItemsByPerkBucketIdMap()),
     },
     ({ perks, affixstats, abilities, itemsMap, perkBucketsByPerkIdMap, resourcesByPerkBucket }) => {
-      perks = perks.map((it): PerkTableRecord => {
+      perks = perks.map((it: PerkData): PerkTableRecord => {
         const buckets = perkBucketsByPerkIdMap.get(it.PerkID)
         const resources = buckets
           ?.map((it) => resourcesByPerkBucket.get(it.PerkBucketID))

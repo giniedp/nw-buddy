@@ -11,15 +11,23 @@ import { ItemDetailStatsComponent } from './item-detail-stats.component'
 import { ItemDetailTransformsComponent } from './item-detail-transforms.component'
 import { ItemDetailComponent } from './item-detail.component'
 import { ItemDetailDirective } from './item-detail.directive'
+import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component'
+import { ItemDetailGsDamage } from './item-detail-gs-damage.component'
+import { ItemDetailDescriptionHeargemComponent } from './item-detail-description-heargem.component'
+import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
 
 const COMPONENTS = [
   ItemCardComponent,
+  ItemDetailAttributionComponent,
   ItemDetailComponent,
   ItemDetailDescriptionComponent,
+  ItemDetailDescriptionHeargemComponent,
   ItemDetailDirective,
+  ItemDetailGsDamage,
   ItemDetailHeaderComponent,
   ItemDetailInfoComponent,
   ItemDetailPerksComponent,
+  ItemDetailPerkTasksComponent,
   ItemDetailSalvageRewardsComponent,
   ItemDetailSetItemsComponent,
   ItemDetailStatsComponent,

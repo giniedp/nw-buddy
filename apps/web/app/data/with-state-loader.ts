@@ -1,4 +1,4 @@
-import { computed, effect, signal, Signal, untracked } from '@angular/core'
+import { computed, effect, inject, Injector, runInInjectionContext, signal, Signal, untracked } from '@angular/core'
 import {
   patchState,
   Prettify,
@@ -23,10 +23,11 @@ export type WithResourceConfig<P, R> = {
 }
 
 export type WithResourceMethods<P, R> = {
-  load: ((input: P | Signal<P> | Observable<P>) => Unsubscribable) & Unsubscribable
+  load: ((input?: P | Signal<P> | Observable<P>) => Unsubscribable) & Unsubscribable
   loadDone: (data: R) => void
   loadError: (err: any) => void
   refresh: () => void
+  whenDoneLoading: () => Promise<void>
 }
 
 export type WithResourceComputed = {
@@ -68,6 +69,7 @@ export function withStateLoader<Input extends SignalStoreFeatureResult, P>(
     withMethods((state): WithResourceMethods<P, Input['state']> => {
       const r = factory(state as any)
       const refresh$ = new Subject<void>()
+      const injector = inject(Injector)
 
       function loadError(err: any) {
         console.log(err)
@@ -101,8 +103,18 @@ export function withStateLoader<Input extends SignalStoreFeatureResult, P>(
         loadDone,
         loadError,
         refresh: () => refresh$.next(),
+        whenDoneLoading: () => {
+          return new Promise<void>((res) => {
+            runInInjectionContext(injector, () => {
+              effect(() => {
+                if (state.isLoaded()) {
+                  res(null)
+                }
+              })
+            })
+          })
+        },
       }
     }),
   )
 }
-

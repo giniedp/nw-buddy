@@ -14,19 +14,29 @@ import { NwData } from '@nw-data/db'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { injectNwData } from '~/data'
-import { NwModule } from '~/nw'
+import { NwLinkResource, NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { TabsModule } from '~/ui/tabs'
-import { apiResource, observeQueryParam } from '~/utils'
+import { apiResource, eqCaseInsensitive, observeQueryParam } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
+import { EntitlementDetailModule } from '~/widgets/data/entitlement-detail'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 
-export type ItemTabId = 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'transmog' | 'gearset' | 'loot'
+export type ItemTabId =
+  | 'effects'
+  | 'perks'
+  | 'unlocks'
+  | 'craftable'
+  | 'recipes'
+  | 'transmog'
+  | 'gearset'
+  | 'loot'
+  | 'rewards'
 export interface ItemTab {
   id: ItemTabId
   label: string
@@ -50,6 +60,7 @@ export interface ItemTab {
     AppearanceDetailModule,
     LootGraphComponent,
     TabsModule,
+    EntitlementDetailModule,
   ],
   providers: [ItemDetailStore],
   host: {
@@ -79,6 +90,7 @@ export class ItemTabsComponent {
         perkBucketIds: getItemPerkBucketIds(isMasterItem(request) ? request : null),
         lootTableIds: await loadLootTableIds(this.db, request),
         recipes: await loadRecipes(this.db, request),
+        rewardedFrom: await loadRewardedFrom(this.db, request),
       }
     },
   })
@@ -148,6 +160,13 @@ export class ItemTabsComponent {
       tabs.push({
         id: 'loot',
         label: 'Drop Tables',
+      })
+    }
+
+    if (data.rewardedFrom?.rewards?.length) {
+      tabs.push({
+        id: 'rewards',
+        label: 'Rewarded From',
       })
     }
     return tabs
@@ -247,4 +266,45 @@ async function loadRecipes(db: NwData, item: MasterItemDefinitions | HouseItems)
       }
     })
     .filter((it) => !!it.itemId)
+}
+
+async function loadRewardedFrom(db: NwData, item: MasterItemDefinitions | HouseItems) {
+  if (!item) {
+    return null
+  }
+
+  const rewards = await db.seasonsRewardsByDisplayItemId(getItemId(item))
+  if (!rewards?.length) {
+    return null
+  }
+
+  const entitlementIds = uniq((rewards || []).map((it) => it.EntitlementIds || []).flat())
+  const itemIds = uniq((rewards || []).map((it) => it.ItemId || []).flat())
+  const result = {
+    entitlements: entitlementIds,
+    items: itemIds,
+    rewards: await Promise.all(
+      rewards.map(async (it) => {
+        const ranks = await db.seasonPassRanksByRewardId(it.RewardId)
+        const chapters = await db.seasonsRewardsChaptersByRewardId(it.RewardId)
+        const source: Array<{ season: string; level?: number; chapter?: number; link?: string; premium?: boolean }> = []
+        for (const rank of ranks || []) {
+          source.push({
+            season: rank.FreeRewardId.split('_').shift(),
+            level: rank.Level,
+            link: `/season-pass/${rank.$source}-${rank.Level}`,
+            premium: eqCaseInsensitive(rank.PremiumRewardId, it.RewardId),
+          })
+        }
+        for (const chapter of chapters || []) {
+          source.push({
+            season: chapter.ChapterRewardId.split('_').shift(),
+            chapter: chapter.ChapterIndex,
+          })
+        }
+        return source
+      }),
+    ).then((it) => it.flat()),
+  }
+  return result
 }

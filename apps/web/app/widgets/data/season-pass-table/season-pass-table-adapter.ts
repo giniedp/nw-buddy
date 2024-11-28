@@ -57,7 +57,7 @@ export class SeasonPassTableAdapter implements DataViewAdapter<SeasonPassTableRe
       data: this.db.seasonPassRanksAll(),
       itemsMap: this.db.itemsByIdMap(),
       housingMap: this.db.housingItemsByIdMap(),
-      rewardsMap: this.db.seasonPassRewardsByIdMap(),
+      rewardsMap: this.db.seasonsRewardsByIdMap(),
     }).pipe(
       map(({ data, itemsMap, housingMap, rewardsMap }) => {
         return data.map((it) => {

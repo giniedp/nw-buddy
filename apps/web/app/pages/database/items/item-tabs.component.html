@@ -57,7 +57,7 @@
       }
       @case ('recipes') {
         @for (item of data()?.recipes; track $index) {
-          <nwb-crafting-calculator [recipe]="item.recipe" class="bg-base-300 rounded-b-md" />
+          <nwb-crafting-calculator [entity]="item.recipe" class="bg-base-300 rounded-b-md" />
         }
       }
       @case ('transmog') {
@@ -83,6 +83,44 @@
       @case ('loot') {
         @for (tableId of data()?.lootTableIds; track $index) {
           <nwb-loot-graph [tableId]="tableId" [expand]="false" [showLocked]="true" [highlight]="itemId()" />
+        }
+      }
+      @case ('rewards') {
+        <table class="table table-sm table-zebra bg-base-200 rounded-sm">
+          <thead>
+            <tr>
+              <th>Season</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          @for (item of data()?.rewardedFrom?.rewards; track $index) {
+            <tr>
+              <td>{{ item.season }}</td>
+              @if (item.chapter) {
+                <td colspan="2">Chapter {{ item.chapter }}</td>
+              } @else if (item.level) {
+                <td>Level {{ item.level }}</td>
+                <td class="text-right">
+                  @if (item.premium) {
+                    <span class="badge badge-secondary">Premium</span>
+                  } @else {
+                    <span class="badge badge-accent">Free</span>
+                  }
+                </td>
+              } @else {
+                <td colspan="2">???</td>
+              }
+            </tr>
+          }
+        </table>
+        @for (item of data()?.rewardedFrom?.items; track $index) {
+          <nwb-item-detail [itemId]="item">
+            <nwb-item-detail-header [size]="'xs'" [enableLink]="true" [enableInfoLink]="true"/>
+          </nwb-item-detail>
+        }
+        @for (item of data()?.rewardedFrom?.entitlements; track $index) {
+          <nwb-entitlement-detail [entitlementId]="item" class="bg-base-300 rounded-b-md" />
         }
       }
     }

@@ -9,6 +9,7 @@ import { TranslateService } from '~/i18n'
 import { AppTestingModule } from '~/test'
 import { recognizeItemDetails } from './recognize-item-details'
 import { recognizeTextFromImage } from './recognize-text-from-image'
+import { provideExperimentalZonelessChangeDetection } from '@angular/core'
 
 describe('item-scanner / scan', async () => {
   let db: NwData
@@ -19,6 +20,9 @@ describe('item-scanner / scan', async () => {
     beforeAll(async () => {
       TestBed.configureTestingModule({
         imports: [AppTestingModule],
+        providers: [
+          provideExperimentalZonelessChangeDetection()
+        ],
         teardown: { destroyAfterEach: false },
       })
       db = TestBed.runInInjectionContext(injectNwData)
