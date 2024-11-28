@@ -1,20 +1,22 @@
-<ion-content [scrollY]="!isEmbed">
-  <nwb-shared-content-loader
-    [name]="paramName()"
-    [cid]="paramCid()"
-    (importClicked)="onImportClicked($event)"
-    [showImport]="!isEmbed"
-    [showGateways]="!isEmbed"
-    [validType]="'gearset'"
-    #loader
-  />
-  @if (loader.record(); as record) {
-    @if (isEmbed) {
-      <nwb-gearset-slider nwbGearsetHost [gearset]="record" />
-    } @else {
-      <div nwbGearsetHost [gearset]="record">
-        <nwb-gearset-grid class="p-4" [disabled]="true" />
-      </div>
+<ion-content [scrollY]="showGrid">
+  <div nwbEmbedHeight>
+    <nwb-shared-content-loader
+      [name]="paramName()"
+      [cid]="paramCid()"
+      (importClicked)="onImportClicked($event)"
+      [showImport]="!isEmbed"
+      [showGateways]="!isEmbed"
+      [validType]="'gearset'"
+      #loader
+    />
+    @if (loader.record(); as record) {
+      @if (showGrid) {
+        <div nwbGearsetHost [gearset]="record">
+          <nwb-gearset-grid class="p-4" [disabled]="true" />
+        </div>
+      } @else {
+        <nwb-gearset-slider nwbGearsetHost [gearset]="record" />
+      }
     }
-  }
+  </div>
 </ion-content>

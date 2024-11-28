@@ -1,22 +1,24 @@
 import { CommonModule } from '@angular/common'
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild, computed, inject } from '@angular/core'
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  computed,
+  inject,
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
-import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
+import { EQUIP_SLOTS } from '@nw-data/common'
+import Swiper from 'swiper'
 import { GearsetStore } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
-import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
-import { GearsetLoadoutItemComponent } from '../loadout'
-import { GearsetPaneComponent } from './gearset-pane.component'
-import { GearsetToolbarComponent } from './gearset-toolbar.component'
-import Swiper from 'swiper'
-import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 
 @Component({
   standalone: true,
@@ -28,23 +30,16 @@ import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
     CommonModule,
     FormsModule,
     GearCellSlotComponent,
-    GearsetLoadoutItemComponent,
     GearsetPaneMainComponent,
     GearsetPaneSkillComponent,
     GearsetPaneStatsComponent,
-    GearsetToolbarComponent,
-    IonSegment,
-    IonSegmentButton,
     IconsModule,
     LayoutModule,
     ScreenshotModule,
-    SwiperDirective,
-    GearsetPaneComponent,
   ],
   host: {
     class: 'block',
   },
-  hostDirectives: [EmbedHeightDirective]
 })
 export class GearsetSliderComponent implements AfterViewInit {
   private store = inject(GearsetStore)
@@ -62,13 +57,13 @@ export class GearsetSliderComponent implements AfterViewInit {
 
   public ngAfterViewInit() {
     this.swiper = new Swiper(this.swiperRef.nativeElement, {
-      slidesPerView: "auto",
+      slidesPerView: 'auto',
       spaceBetween: 0,
       centeredSlides: true,
       grabCursor: true,
       keyboard: {
         enabled: true,
       },
-    });
+    })
   }
 }

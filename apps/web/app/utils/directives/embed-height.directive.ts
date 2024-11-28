@@ -1,40 +1,32 @@
-import { Directive, ElementRef, Inject, OnDestroy, OnInit } from '@angular/core'
-import { Subject, takeUntil } from 'rxjs'
 import { DOCUMENT } from '@angular/common'
+import { Directive, ElementRef, Inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ResizeObserverService } from '../services/resize-observer.service'
 
 @Directive({
   standalone: true,
-  selector: '[nwbEmbedHeight]'
+  selector: '[nwbEmbedHeight]',
 })
-export class EmbedHeightDirective implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>()
-
+export class EmbedHeightDirective {
   public constructor(
-    private elRef: ElementRef<HTMLElement>,
-    private resize: ResizeObserverService,
+    elRef: ElementRef<HTMLElement>,
+    resize: ResizeObserverService,
     @Inject(DOCUMENT)
-    private document: Document
-  ) {}
-
-  public ngOnInit(): void {
-    this.resize
-      .observe(this.elRef.nativeElement)
-      .pipe(takeUntil(this.destroy$))
+    document: Document,
+  ) {
+    resize
+      .observe(elRef.nativeElement)
+      .pipe(takeUntilDestroyed())
       .subscribe((res) => {
-        const parent = this.document?.defaultView?.parent
+        const parent = document?.defaultView?.parent
+        const height = Math.ceil(res.height)
         parent?.postMessage(
           {
             type: 'nw-buddy-resize',
-            height: res.height,
+            height: height,
           },
-          '*'
+          '*',
         )
       })
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next()
-    this.destroy$.complete()
   }
 }

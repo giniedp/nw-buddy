@@ -57,6 +57,7 @@ export interface ShareDialogState {
   ipnsEnabled?: boolean
   ipnsKey?: string
   ipnsName?: string
+  gridMode?: boolean
   // web3Enabled?: boolean
   // web3Token?: string
 
@@ -161,17 +162,18 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
     this.modalRef.close()
   }
 
-  protected prependHostname(path: string) {
+  protected finalizeUrl(path: string) {
     if (!path) {
       return null
     }
-    return this.platform.websiteUrl + path
+    const query = this.get((state) => state.gridMode) ? '?mode=grid' : ''
+    return this.platform.websiteUrl + path + query
   }
 
   protected buildShareUrl(cid: string, name: string) {
     if (cid || name) {
       const path = this.data.buildShareUrl?.(cid, name)
-      return this.prependHostname(path)
+      return this.finalizeUrl(path)
     }
     return null
   }
@@ -179,7 +181,7 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
   protected buildEmbedUrl(cid: string, name: string) {
     if (cid || name) {
       const path = this.data.buildEmbedUrl?.(cid, name)
-      return this.prependHostname(path)
+      return this.finalizeUrl(path)
     }
     return null
   }

@@ -7,7 +7,7 @@ import { GearsetRecord, GearsetsDB } from '~/data'
 import { ShareLoaderComponent } from '~/pages/share'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
-import { injectRouteParam } from '~/utils'
+import { injectQueryParam, injectRouteParam } from '~/utils'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
@@ -33,8 +33,12 @@ import { GearsetSliderComponent } from './gearset/gearset-slider.component'
 export class GearsetsSharePageComponent {
   protected paramName = toSignal(injectRouteParam('name'))
   protected paramCid = toSignal(injectRouteParam('cid'))
+  protected paramMode = toSignal(injectQueryParam('mode'))
   protected get isEmbed() {
     return this.router.url.includes('embed')
+  }
+  protected get showGrid() {
+    return !this.isEmbed || this.paramMode() === 'grid'
   }
 
   protected iconInfo = svgCircleExclamation
