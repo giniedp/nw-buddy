@@ -10,7 +10,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { TreeNodeToggleComponent } from '~/ui/tree'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
-import { CraftingStepToggleComponent } from '../crafting-step-toggle'
 import { AmountMode, CraftingStep } from '../types'
 import { CraftingStepStore } from './crafting-step.store'
 
@@ -24,7 +23,6 @@ import { CraftingStepStore } from './crafting-step.store'
     CommonModule,
     NwModule,
     FormsModule,
-    CraftingStepToggleComponent,
     ItemTrackerModule,
     CdkMenuModule,
     ItemDetailModule,

@@ -1,101 +1,125 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, EventEmitter, inject, Output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { EQUIP_SLOTS, EquipSlotId } from '@nw-data/common'
-import { Subject, combineLatest, debounceTime, map, switchMap, takeUntil } from 'rxjs'
+import { CraftingTradeskill } from '@nw-data/generated'
+import { sumBy, union } from 'lodash'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NwTradeskillService } from '~/nw/tradeskill'
 import { IconsModule } from '~/ui/icons'
-import { svgInfo, svgInfoCircle } from '~/ui/icons/svg'
+import { svgEllipsis, svgInfoCircle, svgPlus } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { CaseInsensitiveSet, mapFilter } from '~/utils'
+import { CraftingBuffStore, CraftingBuffTarget } from './crafting-buff.store'
+import { TabsModule } from '~/ui/tabs'
+import { CdkMenuModule } from '@angular/cdk/menu'
 
-const ARMOR_SLOT_IDS: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet']
-const SKILLS_WITH_BONUS = ['Arcana', 'Cooking', 'Smelting', 'Woodworking', 'Leatherworking', 'Weaving', 'Stonecutting', 'Jewelcrafting']
+const SKILLS_FOR_GS_BUFF: CraftingBuffTarget[] = [
+  'Arcana',
+  'Armoring',
+  'Engineering',
+  'Jewelcrafting',
+  'Weaponsmithing',
+]
+
+const SKILLS_FOR_YIELD_BUFF: CraftingBuffTarget[] = [
+  'Cooking',
+  'Smelting',
+  'Stonecutting',
+  'Leatherworking',
+  'Weaving',
+  'Woodworking',
+]
+
+const SKILLS_FOR_STANDING_BUFF: CraftingBuffTarget[] = ['Standing']
+
+function skillInfos(skill: CraftingBuffTarget) {
+  const isGs = SKILLS_FOR_GS_BUFF.includes(skill)
+  const isYield = SKILLS_FOR_YIELD_BUFF.includes(skill)
+  const isStanding = SKILLS_FOR_STANDING_BUFF.includes(skill)
+  const scale = isYield ? 1 / 100 : isStanding ? 100 : 1
+  const unit = isGs ? ' GS' : '%'
+  return { scale, unit }
+}
 @Component({
   standalone: true,
   selector: 'nwb-crafting-chance-menu',
   templateUrl: './crafting-chance-menu.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule, TabsModule, CdkMenuModule],
   host: {
-    class: 'layout-content',
+    class: 'block bg-base-300 h-full',
   },
 })
-export class CraftingChanceMenuComponent implements OnInit, OnDestroy {
+export class CraftingChanceMenuComponent {
+  private store = inject(CraftingBuffStore)
+  private char = inject(CharacterStore)
+  private skills = inject(NwTradeskillService)
+
+  protected isLoading = this.store.isLoading
+  protected isLoaded = this.store.isLoaded
+  protected iconInfo = svgInfoCircle
+  protected iconAdd = svgPlus
+  protected iconMore = svgEllipsis
+
+  protected tabValue = signal<CraftingBuffTarget>(null)
+  protected tabsItems = computed(() => {
+    return [...SKILLS_FOR_GS_BUFF, ...SKILLS_FOR_YIELD_BUFF, ...SKILLS_FOR_STANDING_BUFF].map((skill, i) => {
+      const { scale, unit } = skillInfos(skill)
+      return {
+        value: skill,
+        active: !this.tabValue() ? !i : this.tabValue() === skill,
+        bonus: this.store.getBuffValue(skill),
+        scale,
+        unit,
+      }
+    })
+  })
+
+  protected section = computed(() => {
+    const skill = this.tabsItems().find((it) => it.active)?.value
+    if (!skill || !this.store.buffs()) {
+      return null
+    }
+    const value = this.store.getBuffValue(skill)
+    const groups = this.store.buffs()[skill] || []
+    const stacks = this.store.stacks()[skill] || {}
+    const { scale, unit } = skillInfos(skill)
+    return {
+      skill,
+      value,
+      unit,
+      scale,
+      groups: groups.map((group) => {
+        return {
+          name: group.name,
+          stackMax: group.stack,
+          stackSum: sumBy(group.buffs, (it) => stacks[it.effect] || 0),
+          valueSum: sumBy(group.buffs, (it) => (stacks[it.effect] || 0) * it.value),
+          buffs: group.buffs,
+          stacks: group.buffs
+            .map((it) => {
+              return Array.from({ length: stacks[it.effect] || 0 }).map(() => it)
+            })
+            .flat(),
+        }
+      }),
+    }
+  })
+
   @Output()
   public stateChange = new EventEmitter()
 
-  protected trackBy = (i: number) => i
-  protected slots = ARMOR_SLOT_IDS.map((id) => EQUIP_SLOTS.find((it) => it.id === id))
-  protected skills$ = this.skills.skills.pipe(mapFilter((it) => SKILLS_WITH_BONUS.includes(it.ID)))
-  protected flBonus$ = this.char.craftingFlBonus$
-  protected iconInfo = svgInfoCircle
-
-  protected rows$ = this.skills$.pipe(
-    switchMap((skills) => {
-      return combineLatest(
-        skills.map((skill) => {
-          return combineLatest({
-            level: this.char.selectTradeSkillLevel(skill.ID),
-            gear: this.char.selectTradeSet(skill.ID),
-            bonus: this.char.selectCustomYieldBonus(skill.ID),
-          }).pipe(
-            map(({ level, gear, bonus }) => {
-              return {
-                skill: skill,
-                level: level,
-                bonus: bonus,
-                gear: new CaseInsensitiveSet(gear),
-              }
-            })
-          )
-        })
-      )
-    })
-  )
-
-  private destroy$ = new Subject<void>()
-
-  public constructor(private char: CharacterStore, private skills: NwTradeskillService) {
-    //
+  protected removeStack(skill: CraftingBuffTarget, effect: string) {
+    const value = this.store.getBuffStacks(skill, effect)
+    this.store.setBuffStacks(skill, effect, Math.max(0, value - 1))
   }
 
-  public ngOnInit(): void {
-    this.char.current$.pipe(debounceTime(100)).pipe(takeUntil(this.destroy$)).subscribe(this.stateChange)
+  protected addStack(skill: CraftingBuffTarget, effect: string) {
+    const value = this.store.getBuffStacks(skill, effect)
+    this.store.setBuffStacks(skill, effect, value + 1)
   }
 
-  public ngOnDestroy(): void {
-    this.destroy$.next()
-    this.destroy$.complete()
-  }
-
-  protected toggleSkillSlot(skill: string, slot: string) {
-    this.char.toggleSkillSlot({
-      skill: skill,
-      slot: slot,
-    })
-  }
-
-  protected updateSkillLevel(skill: string, level: number) {
-    this.char.updateSkillLevel({
-      skill: skill,
-      level: level,
-    })
-  }
-
-  protected updateSkillBonus(skill: string, value: number) {
-    this.char.updateSkillBonus({
-      skill: skill,
-      value: value,
-    })
-  }
-
-
-  protected updateFlBonus(value: boolean) {
-    this.char.updateFlBonus({
-      value: value,
-    })
-  }
+  //protected slots = ARMOR_SLOT_IDS.map((id) => EQUIP_SLOTS.find((it) => it.id === id))
+  // protected skills$ = this.skills.skills.pipe(mapFilter((it) => SKILLS_WITH_BONUS.includes(it.ID)))
+  // protected flBonus$ = this.char.craftingFlBonus$
 }

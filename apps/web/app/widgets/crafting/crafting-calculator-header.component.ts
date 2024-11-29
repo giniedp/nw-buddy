@@ -42,7 +42,7 @@ import { PriceImporterModule } from '../price-importer/price-importer.module'
         <button
           class="join-item btn btn-sm btn-ghost btn-square"
           [nwbModalOpen]="{ content: tplChances }"
-          [tooltip]="'Edit Bonus Chance'"
+          [tooltip]="'Edit crafting bonuses'"
         >
           <nwb-icon [icon]="iconOptions" class="w-4 h-4" />
         </button>
@@ -65,7 +65,7 @@ import { PriceImporterModule } from '../price-importer/price-importer.module'
     <ng-template #tplChances>
       <ion-header class="bg-base-300">
         <ion-toolbar>
-          <ion-title>Bonus Chance Editor</ion-title>
+          <ion-title>Crafting bonuses</ion-title>
           <button slot="end" class="btn btn-sm btn-circle btn-neutral mr-2" [nwbModalClose]>&times;</button>
         </ion-toolbar>
       </ion-header>

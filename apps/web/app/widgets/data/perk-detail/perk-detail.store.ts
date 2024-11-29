@@ -6,7 +6,7 @@ import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw
 import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
-import { combineLatestOrEmpty, rejectKeys, selectSignal, selectStream } from '~/utils'
+import { combineLatestOrEmpty, rejectKeys, selectSignal, selectStream, tapDebug } from '~/utils'
 
 export interface PerkDetailStoreState {
   perkId: string
@@ -124,7 +124,9 @@ function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState>
           if (it.OtherApplyStatusEffect?.length) {
             result.push(...it.OtherApplyStatusEffect)
           }
-          it.StatusEffect
+          if (it.StatusEffect) {
+            result.push(it.StatusEffect)
+          }
         })
       return result.length ? result : null
     },
@@ -152,7 +154,7 @@ function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState>
     affix: affix$,
     abilities: abilities$,
     refAbilities: refAbilities$,
-    refEffects: refEffects$,
+    refEffects: refEffects$.pipe(tapDebug('refEffects')),
     resourceItems: resourceItems$,
   })
 }
