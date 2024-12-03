@@ -1,10 +1,9 @@
-import { ProgressionCategory } from "../generated/types"
+import { ProgressionCategory, TradeskillRankData, GatheringTradeskill } from '../generated/types'
 
 export interface NwTradeSkillInfo {
   ID: ProgressionCategory
   Category: string
   Icon: string
-  CraftBonus?: number
 }
 
 export const NW_TRADESKILLS_INFOS: Array<NwTradeSkillInfo> = [
@@ -47,31 +46,26 @@ export const NW_TRADESKILLS_INFOS: Array<NwTradeSkillInfo> = [
     ID: 'Smelting',
     Category: 'Refining',
     Icon: 'assets/icons/tradeskills/smelting.png',
-    CraftBonus: 5,
   },
   {
     ID: 'Woodworking',
     Category: 'Refining',
     Icon: 'assets/icons/tradeskills/woodworking.png',
-    CraftBonus: 5,
   },
   {
     ID: 'Leatherworking',
     Category: 'Refining',
     Icon: 'assets/icons/tradeskills/leatherworking.png',
-    CraftBonus: 5,
   },
   {
     ID: 'Weaving',
     Category: 'Refining',
     Icon: 'assets/icons/tradeskills/weaving.png',
-    CraftBonus: 5,
   },
   {
     ID: 'Stonecutting',
     Category: 'Refining',
     Icon: 'assets/icons/tradeskills/stonecutting.png',
-    CraftBonus: 5,
   },
   {
     ID: 'Logging',
@@ -109,3 +103,7 @@ export const NW_TRADESKILLS_INFOS: Array<NwTradeSkillInfo> = [
     Icon: '', // TODO: add icon here
   },
 ]
+
+export function getTradeskillRankRollBonus(skill: Pick<TradeskillRankData, 'RollBonus'>) {
+  return (skill?.RollBonus || 0) / 10000
+}

@@ -1,13 +1,15 @@
 import { computed, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { NwTradeSkillInfo, calculateRecipeGearScore, getItemId, getItemIdFromRecipe } from '@nw-data/common'
+import { NwTradeSkillInfo, getCraftingGearScore, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { CharacterService, ItemInstance, injectNwData, withStateLoader } from '~/data'
 
 import { apiResource } from '~/utils'
-import { CraftingPerkSlot, loadRecipe, solveRecipeTree } from './loader/load-recipe'
-import { AmountMode, CraftingStep } from './types'
+import { CraftingPerkSlot, CraftingStep, loadRecipe, solveRecipeTree } from './loader/load-recipe'
+import { AmountMode } from './types'
+import { CraftingBuffStore } from './crafting-bonus/crafting-buff.store'
+import { PreferencesService } from '~/preferences'
 
 export interface CraftingCalculatorState {
   recipeId: string
@@ -35,6 +37,8 @@ export const CraftingCalculatorStore = signalStore(
   }),
   withStateLoader((state) => {
     const db = injectNwData()
+    const cache = inject(PreferencesService).session.storageScope('nwb-crafting')
+
     return {
       load: async (recipeId: string) => {
         const { recipe, slots, tree } = await loadRecipe(db, recipeId)
@@ -92,6 +96,7 @@ export const CraftingCalculatorStore = signalStore(
   withComputed(({ tree, recipe, item, slots }) => {
     const db = injectNwData()
     const char = inject(CharacterService)
+    const buffs = inject(CraftingBuffStore)
 
     const tradeSkill = computed(() => recipe()?.Tradeskill)
     const tradeSkill$ = toObservable(tradeSkill)
@@ -104,11 +109,12 @@ export const CraftingCalculatorStore = signalStore(
       },
     })
     const gearScoreDetails = computed(() => {
-      return calculateRecipeGearScore({
+      return getCraftingGearScore({
         item: item(),
         recipe: recipe(),
         ingredients: resource.value() || [],
         tradeskill: tradeSkillData(),
+        buffs: buffs.getTradeskillBonusForGS(tradeSkill()).total,
       })
     })
     const craftedGearScore = computed(() => gearScoreDetails()?.finalMax)
@@ -119,17 +125,19 @@ export const CraftingCalculatorStore = signalStore(
       }
       return result
     })
+
     return {
       gearScoreDetails,
       craftedGearScore,
       craftedPerks,
+      canCraft: computed(() => recipe()?.RecipeLevel <= tradeSkillData()?.Level),
       itemInstance: computed((): ItemInstance => {
         return {
           itemId: getItemId(item()),
           gearScore: craftedGearScore(),
           perks: craftedPerks(),
         }
-      })
+      }),
     }
   }),
 )

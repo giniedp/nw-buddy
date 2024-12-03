@@ -16,7 +16,7 @@ import {
   craftingColCategory,
   craftingColCooldownCeconds,
   craftingColCooldownQuantity,
-  craftingColCraftingXP,
+  craftingColTradeskillEXP,
   craftingColExpansion,
   craftingColGroup,
   craftingColID,
@@ -29,6 +29,10 @@ import {
   craftingColRecipeLevel,
   craftingColSource,
   craftingColTradeskill,
+  craftingColStandingEXP,
+  craftingColHasYieldBonus,
+  craftingColHasYieldBonusFromFort,
+  craftingColFilterText,
 } from './crafting-table-cols'
 
 @Injectable()
@@ -124,15 +128,18 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>, skills: Signal<
       craftingColBookmark(util),
       craftingColInStock(util),
       craftingColPrice(util),
-      craftingColCraftingXP(util),
       craftingColCategory(util),
       craftingColGroup(util),
       craftingColRecipeLevel(util),
       craftingColCanCraft(util, skills),
+      craftingColHasYieldBonus(util),
+      craftingColTradeskillEXP(util),
+      craftingColStandingEXP(util),
       craftingColExpansion(util),
       craftingColItemChance(util),
       craftingColCooldownQuantity(util),
       craftingColCooldownCeconds(util),
+      craftingColFilterText(util),
     ],
   }
   addGenericColumns(result, {

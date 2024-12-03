@@ -1,8 +1,14 @@
 import { computed, inject } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { getCraftingYieldBonus, getCraftingYieldBonusInfo } from '@nw-data/common'
+import { CharacterService, injectNwData } from '~/data'
+import { apiResource } from '~/utils'
+import { CraftingBuffStore } from '../crafting-bonus/crafting-buff.store'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingCalculatorStore } from '../crafting-calculator.store'
-import { AmountMode, CraftingStep } from '../types'
+import { CraftingStep } from '../loader/load-recipe'
+import { AmountMode } from '../types'
 
 export interface CraftingStepState {
   step: CraftingStep
@@ -30,7 +36,7 @@ export const CraftingStepStore = signalStore(
           }
         })
       },
-      selectOption: (itemId: string) => {
+      setSelection: (itemId: string) => {
         parent.updateStep(state.step(), (step) => {
           return {
             ...step,
@@ -40,7 +46,67 @@ export const CraftingStepStore = signalStore(
       },
     }
   }),
-  withComputed(({ step, amountMode, amount }) => {
+  withComputed(({ step }) => {
+    const db = injectNwData()
+    const char = inject(CharacterService)
+    const buffs = inject(CraftingBuffStore)
+
+    const resource = apiResource({
+      request: () => {
+        return {
+          recipeId: step()?.recipeId,
+          itemId: step()?.ingredient?.id,
+          ingredients: step()?.steps,
+        }
+      },
+      loader: async ({ request }) => {
+        const recipe = await db.recipesById(request.recipeId)
+        const item = await db.itemOrHousingItem(request.itemId)
+        const ingredients = await Promise.all(
+          (request.ingredients || []).map((it) => {
+            if (it.ingredient.type === 'Item') {
+              return db.itemOrHousingItem(it.ingredient.id)
+            }
+            if (it.ingredient.type === 'Category_Only') {
+              return db.itemOrHousingItem(it.selection)
+            }
+            return null
+          }),
+        ).then((items) => items.filter((it) => !!it))
+        return {
+          recipe,
+          item,
+          ingredients,
+        }
+      },
+    })
+
+    const recipe = computed(() => resource.value()?.recipe)
+    const item = computed(() => resource.value()?.item)
+    const ingredients = computed(() => resource.value()?.ingredients)
+    const skill = computed(() => recipe()?.Tradeskill)
+    const skillData = toSignal(char.tradeskillLevelData(toObservable(skill)))
+
+    const bonusDetail = computed(() => {
+      if (!step()?.expand) {
+        return null
+      }
+      const bonus = buffs.getTradeskillBonusForYield(skill())
+      return getCraftingYieldBonusInfo({
+        item: item(),
+        recipe: recipe(),
+        ingredients: ingredients(),
+        skill: skillData(),
+        buffs: bonus.buffs,
+        fortBuffs: bonus.fort,
+      })
+    })
+
+    return {
+      bonusDetail,
+    }
+  }),
+  withComputed(({ step, bonusDetail, amountMode, amount }) => {
     const service = inject(CraftingCalculatorService)
     const ingredient = computed(() => step()?.ingredient)
     const ingredientType = computed(() => ingredient()?.type)
@@ -53,11 +119,11 @@ export const CraftingStepStore = signalStore(
       return service.getCraftAmount({
         amount: amount(),
         amountMode: amountMode(),
-        bonusPercent: 0, // TODO:
+        bonusPercent: bonusDetail()?.total || 0,
       })
     })
     return {
-      itemId: computed(() => isItem() ? ingredient()?.id : step()?.selection),
+      itemId: computed(() => (isItem() ? ingredient()?.id : step()?.selection)),
       children,
       hasChildren,
       isCurrency,

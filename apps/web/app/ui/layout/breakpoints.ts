@@ -1,5 +1,5 @@
 export const BREAKPOINTS = {
-  xs: '0px',
+  xs: '375px',
   sm: '576px',
   md: '768px',
   lg: '992px',
@@ -11,4 +11,4 @@ export const BREAKPOINTS = {
   '6xl': '3000px',
 }
 
-export type BreakpointName = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl'
+export type BreakpointName = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl'

@@ -507,6 +507,9 @@ export abstract class NwDataSheets {
   public territoriesByDiscoveredAchievement = indexLookup(this.territoriesByDiscoveredAchievementMap)
   public territoriesByPoiTagMap = secondaryIndex(this.territoriesAll, (it) => it.POITag)
 
+  public territoriesByFactionControlBuffMap = secondaryIndex(this.territoriesAll, 'FactionControlBuff')
+  public territoriesByFactionControlBuff = indexLookup(this.territoriesByFactionControlBuffMap)
+
   public pvpRanksAll = table(() => this.loadDatasheets(DATASHEETS.PvPRankData))
   public pvpRanksByLevelMap = primaryIndex(this.pvpRanksAll, 'Level')
   public pvpRanksByLevel = indexLookup(this.pvpRanksByLevelMap)
@@ -706,4 +709,8 @@ export abstract class NwDataSheets {
   public expansionsAll = table(() => this.loadDatasheets(DATASHEETS.ExpansionData))
   public expansionsByIdMap = primaryIndex(this.expansionsAll, 'ExpansionId')
   public expansionsById = indexLookup(this.expansionsByIdMap)
+
+  public factionControlBuffsAll = table(() => this.loadDatasheets(DATASHEETS.FactionControlBuffDefinitions))
+  public factionControlBuffsByIdMap = primaryIndex(this.factionControlBuffsAll, 'FactionControlBuffID')
+  public factionControlBuffsById = indexLookup(this.factionControlBuffsByIdMap)
 }

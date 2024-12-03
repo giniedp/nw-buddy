@@ -5,7 +5,7 @@ module.exports = {
   content: ['./apps/web/**/*.{html,js,ts}'],
   theme: {
     screens: {
-      xs: '0px',
+      xs: '375px',
       sm: '576px',
       md: '768px',
       lg: '992px',

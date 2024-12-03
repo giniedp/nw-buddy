@@ -8,10 +8,12 @@ import { TabsModule } from '~/ui/tabs'
 import { combineLatestOrEmpty } from '~/utils'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingCalculatorStore } from '../crafting-calculator.store'
-import { AmountMode, CraftingStep } from '../types'
+import { AmountMode } from '../types'
 import { TabResourcesComponent } from './tab-resources.component'
 import { TabTradeskillsComponent } from './tab-tradeskills.component'
 import { CraftingStepWithAmount } from './types'
+import { getCraftingYieldBonus } from '@nw-data/common'
+import { CraftingStep } from '../loader/load-recipe'
 
 export type CraftingSummaryTab = 'resources' | 'skills' | 'standing'
 
@@ -38,6 +40,9 @@ export class CraftingSummaryComponent {
     amountMode: AmountMode
     step: CraftingStep
   }): Observable<CraftingStepWithAmount> {
+    // TODO
+    // getCraftingBonus({
+    // })
     return this.service.getCraftBonus(current.step).pipe(
       map((bonusPercent) => {
         return this.service.getCraftAmount({

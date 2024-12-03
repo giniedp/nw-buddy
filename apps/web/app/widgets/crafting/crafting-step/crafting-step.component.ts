@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, inject, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
@@ -10,8 +10,10 @@ import { TooltipModule } from '~/ui/tooltip'
 import { TreeNodeToggleComponent } from '~/ui/tree'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
-import { AmountMode, CraftingStep } from '../types'
+import { AmountMode } from '../types'
 import { CraftingStepStore } from './crafting-step.store'
+import { CraftingStep } from '../loader/load-recipe'
+import { IngredientPickerComponent } from './ingredient-picker.component'
 
 @Component({
   standalone: true,
@@ -30,6 +32,7 @@ import { CraftingStepStore } from './crafting-step.store'
     ItemFrameModule,
     RouterModule,
     TreeNodeToggleComponent,
+    IngredientPickerComponent
   ],
   providers: [CraftingStepStore],
   animations: [
@@ -52,6 +55,7 @@ import { CraftingStepStore } from './crafting-step.store'
 })
 export class CraftingStepComponent {
   protected store = inject(CraftingStepStore)
+  public bordered = input<boolean>(false)
 
   @Input()
   public set step(value: CraftingStep) {
@@ -73,6 +77,6 @@ export class CraftingStepComponent {
   }
 
   protected setSelection(value: string) {
-    this.store.selectOption(value)
+    this.store.setSelection(value)
   }
 }

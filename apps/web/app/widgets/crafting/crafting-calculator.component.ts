@@ -1,21 +1,19 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, computed, effect, inject, input, untracked } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, effect, inject, input, untracked } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CraftingRecipeData } from '@nw-data/generated'
 import { switchMap, take } from 'rxjs'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgDollarSign, svgGears, svgPercent } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { pickPerkForItem } from '../data/perk-table'
 import { PriceImporterModule } from '../price-importer/price-importer.module'
 import { CraftingCalculatorHeaderComponent } from './crafting-calculator-header.component'
 import { CraftingCalculatorStore } from './crafting-calculator.store'
-import { CraftingChanceMenuComponent } from './crafting-chance-menu'
 import { CraftingSlotComponent } from './crafting-slot'
 import { CraftingStepComponent } from './crafting-step'
 import { CraftingSummaryComponent } from './crafting-summary'
@@ -63,9 +61,6 @@ export class CraftingCalculatorComponent {
   public gearScoreInfo = this.store.gearScoreDetails
   public recipe = this.store.recipe
 
-  protected skill = this.store.tradeskill
-  protected skillLevel = computed(() => this.store.recipe()?.RecipeLevel)
-
   #fxLoad = effect(() => {
     const entity = this.entity()
     const recipeId = typeof entity === 'string' ? entity : entity?.RecipeID
@@ -80,11 +75,6 @@ export class CraftingCalculatorComponent {
       this.store.updateAmountMode(amountMode)
     })
   })
-
-  protected iconImporter = svgDollarSign
-  protected iconMode = svgPercent
-  protected iconOptions = svgGears
-  protected isToolOpen = false
 
   protected pickCraftMod(slot: CraftingPerkSlot) {
     pickPerkForItem({

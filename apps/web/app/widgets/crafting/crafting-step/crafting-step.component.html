@@ -1,6 +1,11 @@
 @if (store.currency(); as item) {
   <div class="flex flex-row items-center gap-1 h-10" data-cy="step">
-    <nwb-tree-node-toggle class="w-8 h-full flex-none" [ngModel]="store.expand" [disabled]="true" />
+    <nwb-tree-node-toggle
+      class="w-8 h-full flex-none"
+      [ngModel]="store.expand"
+      [isLast]="!bordered()"
+      [disabled]="true"
+    />
     <picture [nwIcon]="'assets/icons/rewards/azoth.png'" class="w-8 h-8 nw-icon flex-none cursor-default"></picture>
     <div class="flex flex-col items-center justify-center">
       <span>
@@ -21,6 +26,7 @@
   >
     <nwb-tree-node-toggle
       class="w-8 h-full flex-none"
+      [isLast]="!bordered()"
       [ngModel]="store.expand()"
       (ngModelChange)="store.setExpand($event)"
       [disabled]="!store.hasChildren()"
@@ -43,21 +49,18 @@
       }
     </button>
 
-    <div class="flex flex-col items-center justify-center" [tooltip]="store.amountBonus() ? bonusTip : null">
+    <div
+      class="flex flex-col items-center justify-center"
+      [class.cursor-help]="!!store.amountBonus()"
+      [tooltip]="store.amountBonus() ? tplYieldBonusInfo : null"
+    >
       <span data-cy="amount">
         {{ store.amountNet() }}
       </span>
       @if (store.amountBonus()) {
         <span data-cy="bonusPercent" class="text-xs text-success"> +{{ store.amountBonusPercent() | percent }} </span>
       }
-      <ng-template #bonusTip>
-        <div class="p-2">
-          {{ store.amountNet() }} + <span class="text-success">{{ store.amountBonus() }}</span> =
-          {{ store.amountNet() + store.amountBonus() }}
-        </div>
-      </ng-template>
     </div>
-
     &times;
     @if (detail.store.name() | nwText; as name) {
       <a
@@ -101,10 +104,11 @@
 
 <ng-content />
 @if (store.expand()) {
-  <div class="steps-container" data-cy="step children">
-    @for (step of store.children(); track $index) {
+  <div class="steps-container" [class.border-l-2]="bordered()" data-cy="step children">
+    @for (step of store.children(); track $index; let last = $last) {
       <nwb-crafting-step
         [step]="step"
+        [bordered]="!last"
         [amount]="store.amountNet() * (step.ingredient?.quantity || 1)"
         [amountMode]="store.amountMode()"
       />
@@ -113,27 +117,71 @@
 }
 
 <ng-template #tplOptions>
-  <ul class="menu menu-compact bg-base-300 rounded-md shadow-md" cdkMenu>
-    @for (item of store.options(); track $index) {
-      <li
-        [nwbItemDetail]="item"
-        #detail="itemDetail"
-        [class.text-primary]="store.itemId() === item"
-        cdkMenuItem
-        (cdkMenuItemTriggered)="setSelection(item)"
-      >
-        <a>
-          <nwb-item-icon
-            [nwbItemIcon]="detail.record()"
-            [rarity]="detail.rarity()"
-            [isNamed]="detail.isNamed()"
-            [solid]="true"
-            [borderless]="!detail.rarity() || detail.rarity() === 'common'"
-            class="w-7 h-7 nw-icon flex-none"
-          />
-          {{ detail.name() | nwText }}
-        </a>
-      </li>
-    }
-  </ul>
+  <nwb-ingredient-picker
+    [items]="store.options()"
+    [selection]="store.itemId()"
+    (selectionChange)="setSelection($event)"
+    cdkMenu
+  />
+</ng-template>
+
+<ng-template #tplYieldBonusInfo>
+  @if (store.bonusDetail(); as info) {
+    <table class="table table-xs">
+      @if (info.base; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Base</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      @if (info.ingredients; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Ingredients</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      @if (info.skill; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Skill</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      @if (info.buffs; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Buffs</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      @if (info.fort; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Fort</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      <tr>
+        <td>Total Bonus</td>
+        <td class="text-right font-bold text-success">{{ info.total >= 0 ? '+' : '' }}{{ info.total | percent }}</td>
+      </tr>
+    </table>
+  }
+  <div class="nw-item-divider"></div>
+  <div class="p-2">
+    <span>{{ store.amountNet() }}</span> + <span class="text-success">{{ store.amountBonus() }}</span> =
+    <span>{{ store.amountNet() + store.amountBonus() }}</span>
+  </div>
 </ng-template>

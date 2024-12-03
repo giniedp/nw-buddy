@@ -1,5 +1,5 @@
 import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { CraftingStep } from '../types'
+import { CraftingStep } from '../loader/load-recipe'
 
 export interface CraftingStepWithAmount extends CraftingStep {
   steps?: CraftingStepWithAmount[]

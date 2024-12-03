@@ -1,9 +1,13 @@
 import { Signal } from '@angular/core'
 import {
   NW_FALLBACK_ICON,
+  canCraftWithLevel,
+  isCraftedWithYieldBonus,
+  isCraftedWithFactionYieldBonus,
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
   getCraftingSkillXP,
+  getCraftingStandingXP,
   getItemExpansion,
   getItemIconPath,
   getItemId,
@@ -12,6 +16,7 @@ import {
   isItemArtifact,
   isItemNamed,
   isMasterItem,
+
 } from '@nw-data/common'
 import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
@@ -69,15 +74,46 @@ export function craftingColIcon(util: CraftingTableUtils) {
 }
 
 export function craftingColName(util: CraftingTableUtils) {
-  return util.colDef<string>({
+  return util.colDef<string[]>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 250,
     headerName: 'Name',
-    valueGetter: ({ data }) => util.i18n.get(data.RecipeNameOverride || data.$item?.Name),
-    getQuickFilterText: ({ value }) => value,
+    valueGetter: ({ data }) => {
+      const name = util.i18n.get(data.RecipeNameOverride || data.$item?.Name)
+      const itemName = util.i18n.get(data.$item?.Name)
+      const result = [name]
+      if (name !== itemName) {
+        result.push(itemName)
+      }
+      return result
+    },
+    valueFormatter: ({ value }) => value[0], // csv export only geth the recipe name
+    getQuickFilterText: ({ value }) => value.join(' '),
+    cellRenderer: util.cellRenderer(({ value }) => {
+      if (value.length > 1) {
+        return util.el('div.flex.flex-col', {}, [
+          util.el('span', { text: value[0] }),
+          util.el('span.text-xs.text-gray-500', { text: value[1] }),
+        ])
+      }
+      return value[0]
+    }),
   })
 }
+
+export function craftingColFilterText(util: CraftingTableUtils) {
+  return util.colDef<string>({
+    colId: 'additionalFilterText',
+    headerValueGetter: () => 'Additional Filter Text',
+    width: 200,
+    valueGetter: ({ data }) => {
+      const value = (data.AdditionalFilterText || '').split(' ').map((it) => it.replace(/^@/, '' ))
+      return util.i18n.get(value)
+    },
+  })
+}
+
 export function craftingColSource(util: CraftingTableUtils) {
   return util.colDef<string>({
     colId: 'source',
@@ -129,11 +165,15 @@ export function craftingColIngredients(util: CraftingTableUtils) {
               icon,
             )
           }
-          return util.el('span', {
-            attrs: {
-              title: util.i18n.get(item.label),
-            }
-          }, icon)
+          return util.el(
+            'span',
+            {
+              attrs: {
+                title: util.i18n.get(item.label),
+              },
+            },
+            icon,
+          )
         }),
       )
     }),
@@ -262,12 +302,25 @@ export function craftingColTradeskill(util: CraftingTableUtils) {
   })
 }
 
-export function craftingColCraftingXP(util: CraftingTableUtils) {
+export function craftingColTradeskillEXP(util: CraftingTableUtils) {
   return util.colDef<number>({
-    colId: 'craftingXP',
-    headerValueGetter: () => 'Crafting XP',
-    width: 120,
+    colId: 'tradeskillEXP',
+    headerValueGetter: () => 'Tradskill XP',
+    width: 130,
+    cellClass: 'text-right',
     valueGetter: ({ data }) => getCraftingSkillXP(data, data.$gameEvent),
+    getQuickFilterText: () => null,
+    filter: 'agNumberColumnFilter',
+  })
+}
+
+export function craftingColStandingEXP(util: CraftingTableUtils) {
+  return util.colDef<number>({
+    colId: 'standingEXP',
+    headerValueGetter: () => 'Standing XP',
+    width: 120,
+    cellClass: 'text-right',
+    valueGetter: ({ data }) => getCraftingStandingXP(data, data.$gameEvent),
     getQuickFilterText: () => null,
     filter: 'agNumberColumnFilter',
   })
@@ -280,7 +333,54 @@ export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Rec
     width: 100,
     cellClass: 'cursor-pointer',
     headerTooltip: 'Whether you can craft this item based on your current tradeskill level',
-    valueGetter: ({ data }) => skills()?.[data.Tradeskill] >= data.RecipeLevel,
+    valueGetter: ({ data }) => canCraftWithLevel(data, skills()?.[data.Tradeskill]),
+    getQuickFilterText: () => null,
+    cellRenderer: util.cellRenderer(({ value }) => {
+      return util.el('span.badge.badge-sm', {
+        class: value ? ['badge-success', 'badge-outline'] : 'badge-error',
+        text: value ? 'Yes' : 'No',
+      })
+    }),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
+  })
+}
+
+export function craftingColHasYieldBonus(util: CraftingTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'hasYieldBonus',
+    headerValueGetter: () => 'Yield Bonus',
+    width: 110,
+    cellClass: 'cursor-pointer',
+    headerTooltip: 'Yield bonuses that apply to this craft',
+    valueGetter: ({ data }) => {
+      const result: string[] = []
+      if (isCraftedWithYieldBonus(data)) {
+        result.push('Skill')
+        result.push('Buff')
+      }
+      if (isCraftedWithFactionYieldBonus(data)) {
+        result.push('Faction')
+      }
+      return result
+    },
+    getQuickFilterText: () => null,
+    cellRenderer: util.tagsRenderer(),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
+  })
+}
+
+export function craftingColHasYieldBonusFromFort(util: CraftingTableUtils) {
+  return util.colDef<boolean>({
+    colId: 'hasFortYieldBonus',
+    headerValueGetter: () => 'Fort Yield Bonus',
+    width: 130,
+    cellClass: 'cursor-pointer',
+    headerTooltip: 'Whether the item receives bonus from fort yield buff',
+    valueGetter: ({ data }) => isCraftedWithFactionYieldBonus(data),
     getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ value }) => {
       return util.el('span.badge.badge-sm', {

@@ -1,0 +1,33 @@
+@if (showTabs()) {
+  <div class="tabs tabs-bordered sticky">
+    @for (it of tabs(); track $index; let i = $index) {
+      <button class="tab" [class.tab-active]="tab() === i" (click)="tab.set(i)">T{{ it.tier }}</button>
+    }
+  </div>
+}
+@for (it of tabs(); track $index; let i = $index) {
+  @if (!showTabs()) {
+    <li class="menu-title">Tier {{ it.tier }}</li>
+  }
+  @if (!showTabs() || tab() === i) {
+    @for (option of it.items; track $index) {
+      <li
+        [class.text-primary]="option.value === selection()"
+        cdkMenuItem
+        (cdkMenuItemTriggered)="selectionChange.emit(option.value)"
+      >
+        <a>
+          <nwb-item-icon
+            [nwbItemIcon]="option.item"
+            [rarity]="option.rarity"
+            [isNamed]="option.isNamed"
+            [solid]="true"
+            [borderless]="!option.rarity || option.rarity === 'common'"
+            class="w-7 h-7 nw-icon flex-none"
+          />
+          {{ option.name | nwText }}
+        </a>
+      </li>
+    }
+  }
+}
