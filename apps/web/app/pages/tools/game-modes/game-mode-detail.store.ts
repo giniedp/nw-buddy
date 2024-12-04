@@ -246,12 +246,12 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly creatures$ = selectStream(
     {
       dungeonId: this.gameModeId$,
-      dungeons: this.db.gameModesAll(),
+      dungeonsMaps: this.db.gameModesMapsAll(),
       difficulty: this.mutaDifficulty$,
       vitals: this.db.vitalsAll(),
       vitalsMeta: this.db.vitalsMetadataByIdMap(),
     },
-    ({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): VitalsData[] => {
+    ({ vitals, vitalsMeta, dungeonsMaps, dungeonId, difficulty }): VitalsData[] => {
       const result = vitals.filter((it) => {
         if (
           difficulty != null &&
@@ -260,7 +260,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         ) {
           return true
         }
-        return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
+        return getVitalDungeons(it, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
       })
       return result
     },
@@ -278,16 +278,18 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly creaturesBosses$ = selectStream(
     {
       dungeonId: this.gameModeId$,
-      dungeons: this.db.gameModesAll(),
+      dungeonsMaps: this.db.gameModesMapsAll(),
       vitals: this.db.vitalsByCreatureTypeMap(),
       vitalsMeta: this.db.vitalsMetadataByIdMap(),
     },
-    ({ vitals, vitalsMeta, dungeons, dungeonId }): VitalsData[] => {
+    ({ vitals, vitalsMeta, dungeonsMaps, dungeonId }): VitalsData[] => {
       const result: VitalsData[] = []
       for (const type of TAB_BOSSES_CREATURES) {
         const list = vitals.get(type) || []
         for (const item of list) {
-          if (getVitalDungeons(item, dungeons, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))) {
+          if (
+            getVitalDungeons(item, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
+          ) {
             result.push(item)
           }
         }
@@ -302,16 +304,18 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly creaturesNamed$ = selectStream(
     {
       dungeonId: this.gameModeId$,
-      dungeons: this.db.gameModesAll(),
+      dungeonsMaps: this.db.gameModesMapsAll(),
       vitals: this.db.vitalsByCreatureTypeMap(),
       vitalsMeta: this.db.vitalsMetadataByIdMap(),
     },
-    ({ vitals, vitalsMeta, dungeons, dungeonId }): VitalsData[] => {
+    ({ vitals, vitalsMeta, dungeonsMaps, dungeonId }): VitalsData[] => {
       const result: VitalsData[] = []
       for (const type of TAB_NAMED_CREATURES) {
         const list = vitals.get(type) || []
         for (const item of list) {
-          if (getVitalDungeons(item, dungeons, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))) {
+          if (
+            getVitalDungeons(item, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
+          ) {
             result.push(item)
           }
         }

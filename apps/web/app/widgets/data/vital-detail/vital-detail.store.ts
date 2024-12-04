@@ -60,7 +60,11 @@ export const VitalDetailStore = signalStore(
               return db.vitalsCategoriesById(it)
             }),
           ).then((it) => it.filter((it) => !!it)),
-          dungeons: getVitalDungeons(vital, await db.gameModesAll(), await db.vitalsMetadataByIdMap()),
+          dungeons: await Promise.all(
+            getVitalDungeons(vital, await db.gameModesMapsAll(), await db.vitalsMetadataByIdMap()).map(async (it) =>
+              db.gameModesById(it.GameModeId),
+            ),
+          ),
           levelOverride: null,
         }
       },

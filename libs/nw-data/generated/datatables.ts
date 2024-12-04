@@ -1,9 +1,11 @@
 import type {
   AbilityData,
   AchievementData,
+  AchievementMetaData,
   AffixData,
   AffixStatData,
   AfflictionData,
+  AfkModeData,
   AmmoItemDefinitions,
   AppearanceTransforms,
   ArchetypeData,
@@ -49,6 +51,7 @@ import type {
   DarknessDifficultyData,
   DataPointData,
   DivertedLootData,
+  DuelBalanceData,
   DyeColorData,
   DyeItemDefinitions,
   EconomyTrackerData,
@@ -72,6 +75,7 @@ import type {
   FishingWaterData,
   GameEventData,
   GameModeData,
+  GameModeMapData,
   GameModeSchedulerStaticData,
   GatherableData,
   GeneratorRecipes,
@@ -183,7 +187,9 @@ import type {
   StatMultiplierData,
   StatusEffectCategoryData,
   StatusEffectData,
+  StoreCategoryProperties,
   StoreProductData,
+  StoreTagData,
   StoryProgressData,
   StructureFootprintData,
   StructurePieceData,
@@ -265,6 +271,9 @@ export const DATASHEETS = {
     IceMagicAbilityTable: <DataSheetUri<AbilityData>>{
       uri: "datatables/weaponabilities/javelindata_ability_icemagic.json",
     },
+    ItemsAbilityTable: <DataSheetUri<AbilityData>>{
+      uri: "datatables/weaponabilities/javelindata_ability_items.json",
+    },
     LifeMagicAbilityTable: <DataSheetUri<AbilityData>>{
       uri: "datatables/weaponabilities/javelindata_ability_lifemagic.json",
     },
@@ -279,6 +288,9 @@ export const DATASHEETS = {
     },
     RuneAbilityTable: <DataSheetUri<AbilityData>>{
       uri: "datatables/weaponabilities/javelindata_ability_rune.json",
+    },
+    SeasonalItemsAbilityTable: <DataSheetUri<AbilityData>>{
+      uri: "datatables/weaponabilities/javelindata_ability_seasonalitems.json",
     },
     SpearAbilityTable: <DataSheetUri<AbilityData>>{
       uri: "datatables/weaponabilities/javelindata_ability_spear.json",
@@ -298,6 +310,11 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_achievements.json",
     },
   },
+  AchievementMetaData: {
+    AchievementMetaDataTable: <DataSheetUri<AchievementMetaData>>{
+      uri: "datatables/javelindata_achievementmetadata.json",
+    },
+  },
   AffixData: {
     AffixDataTable: <DataSheetUri<AffixData>>{
       uri: "datatables/javelindata_affixdefinitions.json",
@@ -311,6 +328,11 @@ export const DATASHEETS = {
   AfflictionData: {
     Afflictions: <DataSheetUri<AfflictionData>>{
       uri: "datatables/javelindata_afflictions.json",
+    },
+  },
+  AfkModeData: {
+    AfkModes: <DataSheetUri<AfkModeData>>{
+      uri: "datatables/javelindata_afkmodes.json",
     },
   },
   AmmoItemDefinitions: {
@@ -768,6 +790,9 @@ export const DATASHEETS = {
     CraftingRecipesRefining: <DataSheetUri<CraftingRecipeData>>{
       uri: "datatables/javelindata_crafting_refining.json",
     },
+    CraftingRecipesSeasonalServers: <DataSheetUri<CraftingRecipeData>>{
+      uri: "datatables/javelindata_crafting_seasonalserver.json",
+    },
     CraftingRecipesSeasons: <DataSheetUri<CraftingRecipeData>>{
       uri: "datatables/javelindata_crafting_seasons.json",
     },
@@ -895,6 +920,9 @@ export const DATASHEETS = {
     },
     BloatedCorpseDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/bomber_datatables/javelindata_damagetable_bloated_corpse.json",
+    },
+    BloodOfTheSandsDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/seasons_datatables/season_02/javelindata_damagetable_malek_bloodofthesands.json",
     },
     BoarDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/javelindata_damagetable_boar.json",
@@ -1169,17 +1197,8 @@ export const DATASHEETS = {
     GorillaDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/gorilla_datatables/javelindata_damagetable_gorilla.json",
     },
-    GourdspewerDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_gourdspewer.json",
-    },
     GruntDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/grunt_datatables/javelindata_damagetable_grunt.json",
-    },
-    HalloweenBossDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_halloweenboss.json",
-    },
-    HalloweenPlaguerDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_halloweenplaguer.json",
     },
     HercyneBoarDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercyneboar.json",
@@ -1387,9 +1406,6 @@ export const DATASHEETS = {
     },
     PriestLesserDamnedHoundDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_priest_lesser_damned_hound.json",
-    },
-    Pumpklin_DamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_pumpklin.json",
     },
     RatHercyneRatDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/rat_datatables/javelindata_damagetable_rat_hercynerat.json",
@@ -1621,6 +1637,11 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_divertedloot.json",
     },
   },
+  DuelBalanceData: {
+    DuelPvpBalanceTable: <DataSheetUri<DuelBalanceData>>{
+      uri: "datatables/pvpbalancetables/javelindata_pvpbalance_duels.json",
+    },
+  },
   DyeColorData: {
     DyeColorDataTable: <DataSheetUri<DyeColorData>>{
       uri: "datatables/javelindata_dyecolors.json",
@@ -1849,6 +1870,11 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_gamemodes.json",
     },
   },
+  GameModeMapData: {
+    GameModeMap: <DataSheetUri<GameModeMapData>>{
+      uri: "datatables/javelindata_gamemodemaps.json",
+    },
+  },
   GameModeSchedulerStaticData: {
     GameModeScheduler: <DataSheetUri<GameModeSchedulerStaticData>>{
       uri: "datatables/javelindata_gamemodescheduler.json",
@@ -2048,6 +2074,11 @@ export const DATASHEETS = {
     MasterItemDefinitions_Common: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_common.json",
     },
+    MasterItemDefinitions_ConquerorsItems: <
+      DataSheetUri<MasterItemDefinitions>
+    >{
+      uri: "datatables/javelindata_itemdefinitions_master_conquerorsitems.json",
+    },
     MasterItemDefinitions_Crafting: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_crafting.json",
     },
@@ -2110,8 +2141,20 @@ export const DATASHEETS = {
     >{
       uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2024-season6.json",
     },
+    MasterItemDefinitions_MTX_2025Jan: <DataSheetUri<MasterItemDefinitions>>{
+      uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2025-01.json",
+    },
     MasterItemDefinitions_MTX_Dec2024: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2024-12.json",
+    },
+    MasterItemDefinitions_MTX_Feb2025: <DataSheetUri<MasterItemDefinitions>>{
+      uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2025-02.json",
+    },
+    MasterItemDefinitions_MTX_Generic: <DataSheetUri<MasterItemDefinitions>>{
+      uri: "datatables/mtx/javelindata_itemdefinitions_mtx_generic.json",
+    },
+    MasterItemDefinitions_MTX_Mar2025: <DataSheetUri<MasterItemDefinitions>>{
+      uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2025-03.json",
     },
     MasterItemDefinitions_Named: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_named.json",
@@ -2132,6 +2175,9 @@ export const DATASHEETS = {
     },
     MasterItemDefinitions_Quest: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_quest.json",
+    },
+    MasterItemDefinitions_SeasonalServer: <DataSheetUri<MasterItemDefinitions>>{
+      uri: "datatables/javelindata_itemdefinitions_master_seasonalserver.json",
     },
     MasterItemDefinitions_Seasons: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_seasons.json",
@@ -2692,6 +2738,9 @@ export const DATASHEETS = {
     SeasonPass_Season6: <DataSheetUri<SeasonPassRankData>>{
       uri: "datatables/seasonsrewards/season6/javelindata_seasonpassdata_season6.json",
     },
+    SeasonPass_Season7: <DataSheetUri<SeasonPassRankData>>{
+      uri: "datatables/seasonsrewards/season7/javelindata_seasonpassdata_season7.json",
+    },
   },
   SeasonsRewardData: {
     SeasonsRewardData_Season1: <DataSheetUri<SeasonsRewardData>>{
@@ -2711,6 +2760,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardData_Season6: <DataSheetUri<SeasonsRewardData>>{
       uri: "datatables/seasonsrewards/season6/javelindata_rewarddata_season6.json",
+    },
+    SeasonsRewardData_Season7: <DataSheetUri<SeasonsRewardData>>{
+      uri: "datatables/seasonsrewards/season7/javelindata_rewarddata_season7.json",
     },
   },
   SeasonsRewardsActivitiesConfig: {
@@ -2744,6 +2796,11 @@ export const DATASHEETS = {
     >{
       uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardsactivitiesconfig_s6.json",
     },
+    SeasonsRewardsActivitiesConfig_Season7: <
+      DataSheetUri<SeasonsRewardsActivitiesConfig>
+    >{
+      uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardsactivitiesconfig_s7.json",
+    },
   },
   SeasonsRewardsActivitiesTasksData: {
     SeasonsRewardsActivitiesTasksData_Season4: <
@@ -2760,6 +2817,11 @@ export const DATASHEETS = {
       DataSheetUri<SeasonsRewardsActivitiesTasksData>
     >{
       uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardsactivitiestasks_s6.json",
+    },
+    SeasonsRewardsActivitiesTasksData_Season7: <
+      DataSheetUri<SeasonsRewardsActivitiesTasksData>
+    >{
+      uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardsactivitiestasks_s7.json",
     },
   },
   SeasonsRewardsCardData: {
@@ -2780,6 +2842,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardsCardData_Season6: <DataSheetUri<SeasonsRewardsCardData>>{
       uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardscarddata_s6.json",
+    },
+    SeasonsRewardsCardData_Season7: <DataSheetUri<SeasonsRewardsCardData>>{
+      uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardscarddata_s7.json",
     },
   },
   SeasonsRewardsCardTemplates: {
@@ -2813,6 +2878,11 @@ export const DATASHEETS = {
     >{
       uri: "datatables/seasonsrewards/season6/javelindata_seasonsrewardscardtemplates_s6.json",
     },
+    SeasonsRewardsCardTemplates_Season7: <
+      DataSheetUri<SeasonsRewardsCardTemplates>
+    >{
+      uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardscardtemplates_s7.json",
+    },
   },
   SeasonsRewardsChapterData: {
     SeasonsRewardsChapterData_Season1: <
@@ -2844,6 +2914,11 @@ export const DATASHEETS = {
       DataSheetUri<SeasonsRewardsChapterData>
     >{
       uri: "datatables/seasonsrewards/season6/javelindata_chapterdata_season6.json",
+    },
+    SeasonsRewardsChapterData_Season7: <
+      DataSheetUri<SeasonsRewardsChapterData>
+    >{
+      uri: "datatables/seasonsrewards/season7/javelindata_chapterdata_season7.json",
     },
   },
   SeasonsRewardsJourneyData: {
@@ -3009,6 +3084,9 @@ export const DATASHEETS = {
     SpellDataTable_Bow: <DataSheetUri<SpellData>>{
       uri: "datatables/javelindata_spelltable_bow.json",
     },
+    SpellDataTable_Conqueror: <DataSheetUri<SpellData>>{
+      uri: "datatables/javelindata_spelltable_conquerorsitems.json",
+    },
     SpellDataTable_FireMagic: <DataSheetUri<SpellData>>{
       uri: "datatables/javelindata_spelltable_firemagic.json",
     },
@@ -3086,6 +3164,9 @@ export const DATASHEETS = {
     StatusEffects_Common: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_common.json",
     },
+    StatusEffects_ConquerorsItems: <DataSheetUri<StatusEffectData>>{
+      uri: "datatables/javelindata_statuseffects_conquerersitems.json",
+    },
     StatusEffects_Firestaff: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_firestaff.json",
     },
@@ -3135,9 +3216,19 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_statuseffects_warhammer.json",
     },
   },
+  StoreCategoryProperties: {
+    StoreCategoryPropertiesTable: <DataSheetUri<StoreCategoryProperties>>{
+      uri: "datatables/javelindata_storecategories.json",
+    },
+  },
   StoreProductData: {
     StoreProductData: <DataSheetUri<StoreProductData>>{
       uri: "datatables/javelindata_storeproducts.json",
+    },
+  },
+  StoreTagData: {
+    StoreTagDataTable: <DataSheetUri<StoreTagData>>{
+      uri: "datatables/javelindata_storetagdata.json",
     },
   },
   StoryProgressData: {

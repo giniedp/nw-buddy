@@ -254,7 +254,7 @@ export function isCraftedWithFactionYieldBonus(recipe: CraftingRecipeData) {
 }
 
 export function isCraftedWithYieldBonus(recipe: CraftingRecipeData) {
-  return !!recipe && !!recipe.CraftAll && !recipe.SkipGrantItems && !!recipe.Tradeskill// && !recipe.BaseGearScore
+  return !!recipe && !!recipe.CraftAll && !recipe.SkipGrantItems && !!recipe.Tradeskill // && !recipe.BaseGearScore
 }
 
 export function getCraftingBonusForIngredients({
@@ -279,7 +279,7 @@ export function getCraftingBonusForIngredients({
 
   ingredients = (ingredients || []).filter((_, i) => recipe[`Type${i + 1}`] === 'Category_Only')
   const increments = (recipe.BonusItemChanceIncrease || '').split(',').map(Number)
-  const decrements = (recipe.BonusItemChanceDecrease || '').split(',').map(Number)
+  const decrements = (String(recipe.BonusItemChanceDecrease) || '').split(',').map(Number)
 
   let recipeTier = recipe.BaseTier ?? item.Tier
   if (getItemId(item).toLowerCase() === 'blockt5') {
