@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { combineLatest, map, of, switchMap } from 'rxjs'
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core'
+import { combineLatest, map, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
 
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
-import { ComponentStore } from '@ngrx/component-store'
-import { isHousingItem } from '@nw-data/common'
 import { sumBy } from 'lodash'
 import { ItemPreferencesService } from '~/preferences'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
-import { CraftingCalculatorService } from '../crafting-calculator.service'
-import { CraftingStepWithAmount, ResourceRow, ResourceRowMode, SummaryRow } from './types'
+import { ResourceRow, ResourceRowMode, SummaryRow } from './types'
+import { CraftingCalculatorStore } from '../crafting-calculator.store'
+import { combineLatestOrEmpty } from '~/utils'
 
 @Component({
   standalone: true,
@@ -25,75 +25,57 @@ import { CraftingStepWithAmount, ResourceRow, ResourceRowMode, SummaryRow } from
     class: 'block',
   },
 })
-export class TabResourcesComponent extends ComponentStore<{
-  tree: CraftingStepWithAmount
-  rowModes: Record<string, ResourceRowMode>
-}> {
-  @Input()
-  public set tree(value: CraftingStepWithAmount) {
-    this.patchState({ tree: value })
-  }
+export class TabResourcesComponent {
+  public total = input<number>(1)
+  private itemPref = inject(ItemPreferencesService)
 
-  protected readonly summary$ = this.select(({ tree }) => aggregate(tree))
-  protected readonly rowModes$ = this.select(({ rowModes }) => rowModes)
-  protected readonly rows$ = this.select(this.resourcesTable(), (it) => it)
-  protected readonly value$ = this.select(this.rows$, (rows) => sumBy(rows, (row) => row.price))
+  public summary = input<SummaryRow[]>()
+  private summary$ = toObservable(this.summary)
 
-  protected trackByIndex = (i: number) => i
+  private rowModes = signal<Record<string, ResourceRowMode>>({})
+  private rowModes$ = toObservable(this.rowModes)
 
-  public constructor(private service: CraftingCalculatorService, private itemPref: ItemPreferencesService) {
-    super({
-      tree: null,
-      rowModes: {},
-    })
-  }
+  protected rows = toSignal(this.resourceRows())
+  protected value = computed(() => sumBy(this.rows() || [], (row) => row.price))
+  protected valuePerUnit = computed(() => this.value() / this.total())
 
-  protected toggleIgnore = this.updater((state, row: ResourceRow) => {
-    const modes = { ...state.rowModes }
+  protected toggleIgnore(row: ResourceRow) {
+    const modes = { ...this.rowModes() }
     if (modes[row.itemId]) {
       modes[row.itemId] = ResourceRowMode.None
     } else {
       modes[row.itemId] = ResourceRowMode.Ignore
     }
-    return {
-      ...state,
-      rowModes: modes,
-    }
-  })
+    this.rowModes.set(modes)
+  }
 
-  protected toggleStock = this.updater((state, row: ResourceRow) => {
-    const modes = { ...state.rowModes }
+  protected toggleStock(row: ResourceRow) {
+    const modes = { ...this.rowModes() }
     if (modes[row.itemId] === ResourceRowMode.Stock) {
       modes[row.itemId] = ResourceRowMode.None
     } else {
       modes[row.itemId] = ResourceRowMode.Stock
     }
-    return {
-      ...state,
-      rowModes: modes,
-    }
-  })
-
-  private resourcesTable() {
-    return this.summary$.pipe(switchMap((rows) => combineLatest(rows.map((row) => this.resolveRow(row)))))
+    this.rowModes.set(modes)
   }
 
-  private resolveRow({ itemId, currencyId, amount }: SummaryRow) {
+  private resourceRows() {
+    return this.summary$.pipe(switchMap((rows) => combineLatestOrEmpty((rows || []).map((row) => this.resolveRow(row)))))
+  }
+
+  private resolveRow({ itemId, amount }: SummaryRow) {
     return combineLatest({
-      item: currencyId ? of(null) : this.service.fetchItem(itemId),
       mode: this.rowModes$.pipe(map((modes) => modes[itemId])),
       meta: this.itemPref.observe(itemId).pipe(map((it) => it.meta)),
     }).pipe(
-      map(({ item, mode, meta }): ResourceRow => {
+      map(({ mode, meta }): ResourceRow => {
         const row: ResourceRow = {
           itemId,
-          currencyId,
           itemPrice: meta?.price || 0,
           amount,
           amountNeeded: amount,
           amountOwned: meta?.stock || 0,
           price: 0,
-          link: currencyId ? [isHousingItem(item) ? 'items' : 'housing', 'table', itemId] : null,
         }
         switch (mode || ResourceRowMode.None) {
           case ResourceRowMode.Ignore: {
@@ -119,46 +101,7 @@ export class TabResourcesComponent extends ComponentStore<{
           }
         }
         return row
-      })
+      }),
     )
-  }
-}
-
-function aggregate(step: CraftingStepWithAmount) {
-  const result = new Map<string, SummaryRow>()
-  collectLeafNodes(step, (node) => {
-    const leafId = selectLeafId(node)
-    const isCurrency = node.ingredient?.type === 'Currency'
-    if (!result.has(leafId)) {
-      result.set(leafId, {
-        recipeId: node.recipeId,
-        itemId: isCurrency ? null : leafId,
-        currencyId: isCurrency ? leafId : null,
-        amount: 0,
-      })
-    }
-    result.get(leafId).amount += node.amount
-  })
-  return Array.from(result.values())
-}
-
-function collectLeafNodes(step: CraftingStepWithAmount, fn: (step: CraftingStepWithAmount) => void) {
-  if (step?.expand) {
-    step.steps?.forEach((it) => collectLeafNodes(it, fn))
-  } else if (step) {
-    fn(step)
-  }
-}
-
-function selectLeafId(node: CraftingStepWithAmount) {
-  switch (node.ingredient?.type) {
-    case 'Item':
-      return node.ingredient.id
-    case 'Category_Only':
-      return node.selection
-    case 'Currency':
-      return node.ingredient.id
-    default:
-      return null
   }
 }

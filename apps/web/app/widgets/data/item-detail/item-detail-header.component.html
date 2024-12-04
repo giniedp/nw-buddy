@@ -33,11 +33,11 @@
       [isNamed]="isNamed()"
       [showSkeleton]="showSkeleton()"
     >
-      @if (isMissing()) {
+      @if (showMissing()) {
         <span header-text2 class="text-error"> Not Found </span>
       }
 
-      @if (enableTracker() && !isMissing()) {
+      @if (enableTracker() && !showMissing()) {
         <div header-end class="flex flex-col justify-end">
           <nwb-item-marker
             [itemId]="recordId()"

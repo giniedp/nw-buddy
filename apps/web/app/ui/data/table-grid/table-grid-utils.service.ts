@@ -144,6 +144,7 @@ export class TableGridUtils<T = any> {
       rarity?: ItemRarity
       isNamed?: boolean
       isArtifact?: boolean
+      isResource?: boolean
     },
   ) {
     const showBorder = props.rarity && props.rarity !== 'common'
@@ -154,13 +155,18 @@ export class TableGridUtils<T = any> {
             rarity: props.rarity,
             isNamed: props.isNamed,
             isArtifact: props.isArtifact,
+            isResource: props.isResource,
             solid: true,
           }),
           ...(props.class || []),
         ],
       },
       [
-        showBorder ? this.el('span', { class: 'nw-item-icon-border' }) : null,
+        showBorder
+          ? this.el('span', {
+              class: ['nw-item-icon-border', ...(props.isResource ? ['rounded-full', 'overflow-clip'] : [])],
+            })
+          : null,
         this.elImg({
           src: props.icon,
         }),

@@ -14,6 +14,7 @@ import { AmountMode } from '../types'
 import { CraftingStepStore } from './crafting-step.store'
 import { CraftingStep } from '../loader/load-recipe'
 import { IngredientPickerComponent } from './ingredient-picker.component'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -71,6 +72,8 @@ export class CraftingStepComponent {
   public set amountMode(value: AmountMode) {
     this.store.patchState({ amountMode: value })
   }
+
+  public totalCraft = outputFromObservable(toObservable(this.store.amountGross) )
 
   protected setExpand(value: boolean) {
     this.store.setExpand(value)

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
@@ -8,12 +8,11 @@ import { TabsModule } from '~/ui/tabs'
 import { combineLatestOrEmpty } from '~/utils'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingCalculatorStore } from '../crafting-calculator.store'
+import { CraftingStep } from '../loader/load-recipe'
 import { AmountMode } from '../types'
 import { TabResourcesComponent } from './tab-resources.component'
 import { TabTradeskillsComponent } from './tab-tradeskills.component'
-import { CraftingStepWithAmount } from './types'
-import { getCraftingYieldBonus } from '@nw-data/common'
-import { CraftingStep } from '../loader/load-recipe'
+import { CraftingStepWithAmount, SummaryRow } from './types'
 
 export type CraftingSummaryTab = 'resources' | 'skills' | 'standing'
 
@@ -23,8 +22,12 @@ export type CraftingSummaryTab = 'resources' | 'skills' | 'standing'
   templateUrl: './crafting-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, TabResourcesComponent, TabTradeskillsComponent, TabsModule],
+  host: {
+    class: 'block overflow-clip '
+  }
 })
 export class CraftingSummaryComponent {
+  public total = input<number>(0)
   protected store = inject(CraftingCalculatorStore)
   protected service = inject(CraftingCalculatorService)
   protected tab = signal<CraftingSummaryTab>('resources')
@@ -35,14 +38,16 @@ export class CraftingSummaryComponent {
     step: toObservable(this.store.tree),
   }).pipe(switchMap((it) => this.treeWithAmounts(it)))
 
+  protected leafs$ = this.tree$.pipe(map((it) => flattenTree(it, collectLeafs)))
+  protected leafs = toSignal(this.leafs$)
+  protected nodes$ = this.tree$.pipe(map((it) => flattenTree(it, collectNodes)))
+  protected nodes = toSignal(this.nodes$)
+
   private treeWithAmounts(current: {
     amount: number
     amountMode: AmountMode
     step: CraftingStep
   }): Observable<CraftingStepWithAmount> {
-    // TODO
-    // getCraftingBonus({
-    // })
     return this.service.getCraftBonus(current.step).pipe(
       map((bonusPercent) => {
         return this.service.getCraftAmount({
@@ -71,5 +76,63 @@ export class CraftingSummaryComponent {
         )
       }),
     )
+  }
+}
+
+type WalkFn = (step: CraftingStepWithAmount, fn: (step: CraftingStepWithAmount) => void) => void
+function flattenTree(step: CraftingStepWithAmount, walk: WalkFn): SummaryRow[] {
+  const result = new Map<string, SummaryRow>()
+  walk(step, (node) => {
+    const itemId = selectLeafId(node)
+    if (!result.has(itemId)) {
+      result.set(itemId, {
+        recipeId: node.recipeId,
+        itemId: itemId,
+        amount: 0,
+      })
+    }
+    result.get(itemId).amount += node.amount
+  })
+  return Array.from(result.values())
+}
+
+function collectNodes(step: CraftingStepWithAmount, fn: (step: CraftingStepWithAmount) => void) {
+  walkTree(step, (node) => {
+    if (!node.expand) {
+      return false
+    }
+    fn(node)
+    return true
+  })
+}
+
+function collectLeafs(step: CraftingStepWithAmount, fn: (step: CraftingStepWithAmount) => void) {
+  walkTree(step, (node) => {
+    if (!node.expand || !node.steps?.length) {
+      fn(node)
+      return false
+    }
+    return true
+  })
+}
+
+function walkTree(step: CraftingStepWithAmount, fn: (step: CraftingStepWithAmount) => boolean) {
+  if (fn(step)) {
+    for (const subStep of step.steps || []) {
+      walkTree(subStep, fn)
+    }
+  }
+}
+
+function selectLeafId(node: CraftingStepWithAmount) {
+  switch (node.ingredient?.type) {
+    case 'Item':
+      return node.ingredient.id
+    case 'Category_Only':
+      return node.selection
+    case 'Currency':
+      return node.ingredient.id
+    default:
+      return null
   }
 }

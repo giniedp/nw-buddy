@@ -11,7 +11,7 @@ import { groupBy, sumBy } from 'lodash'
 import { injectNwData } from '~/data'
 import { TooltipModule } from '~/ui/tooltip'
 import { TradeskillsModule } from '~/widgets/tradeskills'
-import { CraftingStepWithAmount } from './types'
+import { SummaryRow } from './types'
 
 @Component({
   standalone: true,
@@ -26,15 +26,17 @@ import { CraftingStepWithAmount } from './types'
 })
 export class TabTradeskillsComponent {
   private db = injectNwData()
-  public tree = input<CraftingStepWithAmount>(null)
+  public summary = input<SummaryRow[]>()
 
   protected resource = apiResource({
-    request: this.tree,
+    request: this.summary,
     loader: async ({ request }) => {
       const rows = await Promise.all(
-        flattenTree(request).map(async (row) => {
-          row.data = await resolveRowData(this.db, row)
-          return row
+        request.map(async (row) => {
+          return {
+            ...row,
+            data: await resolveRowData(this.db, row),
+          }
         }),
       )
       return {
@@ -47,13 +49,7 @@ export class TabTradeskillsComponent {
   protected standingXp = computed(() => this.resource.value()?.skillsXp)
 }
 
-export interface Row {
-  recipeId: string
-  itemId: string
-  count: number
-  data: RowData
-}
-
+export type Row = SummaryRow & { data: RowData }
 export interface RowData {
   item: MasterItemDefinitions | HouseItems
   recipe: CraftingRecipeData
@@ -62,33 +58,7 @@ export interface RowData {
   standingXp: number
 }
 
-function flattenTree(step: CraftingStepWithAmount): Row[] {
-  const result = new Map<string, Row>()
-  walkTree(step, (node) => {
-    const itemId = node.ingredient?.type === 'Item' ? node.ingredient.id : node.selection
-    if (!result.has(itemId)) {
-      result.set(itemId, {
-        recipeId: node.recipeId,
-        itemId: itemId,
-        count: 0,
-        data: null,
-      })
-    }
-    result.get(itemId).count += node.amount
-  })
-  return Array.from(result.values())
-}
-
-function walkTree(step: CraftingStepWithAmount, fn: (step: CraftingStepWithAmount) => void) {
-  if (step?.expand) {
-    fn(step)
-    for (const subStep of step.steps || []) {
-      walkTree(subStep, fn)
-    }
-  }
-}
-
-async function resolveRowData(db: NwData, row: Row): Promise<RowData> {
+async function resolveRowData(db: NwData, row: SummaryRow): Promise<RowData> {
   const recipe = await db.recipesById(row.recipeId)
   const event = await db.gameEventsById(recipe?.GameEventID)
 
@@ -105,7 +75,7 @@ function aggregateStandingXP(rows: Row[]) {
   const bonus = 1.05
   let result = 0
   for (const row of rows) {
-    result += (row.data.standingXp || 0) * row.count * bonus
+    result += (row.data.standingXp || 0) * row.amount * bonus
   }
   return Math.floor(result)
 }
@@ -152,9 +122,9 @@ function aggregateSkills(rows: Row[]) {
     const recipeGroups = groupBy(data, (it) => it.data.recipe?.RecipeID)
     for (const [recipeId, steps] of Object.entries(recipeGroups)) {
       const data = steps[0].data
-      skillRow.xp += sumBy(steps, (it) => it.count * it.data.skillXp)
+      skillRow.xp += sumBy(steps, (it) => it.amount * it.data.skillXp)
       skillRow.steps.push({
-        count: sumBy(steps, (it) => it.count),
+        count: sumBy(steps, (it) => it.amount),
         xp: data.skillXp,
         icon: data.item.IconPath,
         label: data.item.Name,

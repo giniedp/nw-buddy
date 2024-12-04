@@ -17,6 +17,9 @@ export class CraftingCalculatorService {
   }
 
   public getCraftBonus(step: CraftingStep): Observable<number> {
+    if (!step?.expand) {
+      return of(0)
+    }
     return of({
       recipeId: step?.recipeId,
       itemId: step?.ingredient?.id,

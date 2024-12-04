@@ -1,4 +1,4 @@
-import { computed, inject } from '@angular/core'
+import { computed, effect, inject, untracked } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NwTradeSkillInfo, getCraftingGearScore, getItemId, getItemIdFromRecipe } from '@nw-data/common'
@@ -23,6 +23,7 @@ export interface CraftingCalculatorState {
   slots: CraftingPerkSlot[]
 }
 
+export type SessionState = Pick<CraftingCalculatorState, 'recipeId' | 'tree' | 'amount' | 'amountMode'>
 export const CraftingCalculatorStore = signalStore(
   withState<CraftingCalculatorState>({
     recipeId: null,
@@ -35,13 +36,29 @@ export const CraftingCalculatorStore = signalStore(
     slots: [],
     tradeskill: null,
   }),
+
   withStateLoader((state) => {
     const db = injectNwData()
-    const cache = inject(PreferencesService).session.storageScope('nwb-crafting')
+    const session = inject(PreferencesService).session.storageScope('nwb:crafting')
+
+    effect(() => {
+      const key = state.recipeId()
+      if (!key || !state.tree()) {
+        return
+      }
+      const data: SessionState = {
+        recipeId: state.recipeId(),
+        tree: state.tree(),
+        amount: state.amount(),
+        amountMode: state.amountMode(),
+      }
+      untracked(() => session.set(key, data))
+    })
 
     return {
       load: async (recipeId: string) => {
-        const { recipe, slots, tree } = await loadRecipe(db, recipeId)
+        const sessionData = session.get<SessionState>(recipeId)
+        const { recipe, slots, tree } = await loadRecipe(db, recipeId, sessionData?.tree)
         const itemId = getItemIdFromRecipe(recipe)
         const item = await db.itemOrHousingItem(itemId)
         const tradeskill = await db.tradeskillById(recipe?.Tradeskill)
@@ -52,8 +69,8 @@ export const CraftingCalculatorStore = signalStore(
           item,
           tree,
           slots,
-          amount: state.amount(),
-          amountMode: state.amountMode(),
+          amount: sessionData?.amount ?? state.amount(),
+          amountMode: sessionData?.amountMode ?? state.amountMode(),
           tradeskill,
         }
       },
@@ -131,6 +148,7 @@ export const CraftingCalculatorStore = signalStore(
       craftedGearScore,
       craftedPerks,
       canCraft: computed(() => recipe()?.RecipeLevel <= tradeSkillData()?.Level),
+      tradeskillLevel: computed(() => tradeSkillData()?.Level),
       itemInstance: computed((): ItemInstance => {
         return {
           itemId: getItemId(item()),

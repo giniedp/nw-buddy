@@ -76,6 +76,10 @@ export function isPerkItemIngredient(item: MasterItemDefinitions | null) {
   return hasItemIngredientCategory(item, 'Perkitem')
 }
 
+export function isItemResource(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
+  return item?.ItemClass?.includes('Resource')
+}
+
 export function isItemOfAnyClass(item: Pick<MasterItemDefinitions, 'ItemClass'> | null, classes: ItemClass[]) {
   return classes.some((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
 }

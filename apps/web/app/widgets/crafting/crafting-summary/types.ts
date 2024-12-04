@@ -8,11 +8,7 @@ export interface CraftingStepWithAmount extends CraftingStep {
 
 export interface SummaryRow {
   recipeId: string
-  recipe?: CraftingRecipeData
   itemId: string
-  item?: MasterItemDefinitions | HouseItems
-  event?: GameEventData
-  currencyId?: string
   amount: number
 }
 

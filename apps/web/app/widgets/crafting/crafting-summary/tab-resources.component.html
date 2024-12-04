@@ -1,19 +1,23 @@
 <div class="flex flex-col gap-1 p-2">
-  <ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex">
+  @for (row of rows(); track $index) {
     <div
       [nwbItemDetail]="row.itemId"
       #detail="itemDetail"
       [class.opacity-75]="row.ignored"
       class="flex flex-row flex-nowrap gap-2"
     >
-      <picture
-        [nwIcon]="row.currencyId ? 'assets/icons/rewards/azoth.png' : (detail.icon())"
-        class="w-10 h-10 hover:cursor-pointer flex-none"
+      <nwb-item-icon
+        [nwbItemIcon]="detail.record()"
+        [rarity]="detail.rarity()"
+        [isNamed]="detail.isNamed()"
+        [rounded]="detail.isResource()"
+        [solid]="true"
+        [borderless]="!detail.rarity() || detail.rarity() === 'common'"
         [tooltip]="!row.ignored ? 'Click to exclude from calculation' : 'Click to include in calculation'"
         [class.grayscale]="row.ignored"
         (click)="toggleIgnore(row)"
-      ></picture>
-
+        class="w-10 h-10 hover:cursor-pointer flex-none"
+      />
       <div [class.text-accent]="row.stocked" class="flex-1 flex flex-row items-center gap-1 leading-tight">
         <span
           (click)="toggleStock(row)"
@@ -22,20 +26,22 @@
         >
           {{ row.amount | number }}
         </span>
-        <div *ngIf="row.stocked" class="inline-flex">
-          (
-          <span> - </span>
-          <nwb-stock-tracker
-            [itemId]="row.itemId"
-            [emptyTip]="'Edit stock value'"
-            class="tooltip-right tooltip-accent whitespace-nowrap text-accent"
-            #stockTracker
-          ></nwb-stock-tracker>
-          )
-        </div>
+        @if (row.stocked) {
+          <div class="inline-flex">
+            (
+            <span> - </span>
+            <nwb-stock-tracker
+              [itemId]="row.itemId"
+              [emptyTip]="'Edit stock value'"
+              class="tooltip-right tooltip-accent whitespace-nowrap text-accent"
+              #stockTracker
+            />
+            )
+          </div>
+        }
         <span> × </span>
         <a
-          [nwText]="row.currencyId ? 'Azoth' : (detail.name())"
+          [nwText]="row.currencyId ? 'Azoth' : detail.name()"
           [routerLink]="row.link"
           [class.line-through]="row.ignored"
           class="hover:underline overflow-hidden text-ellipsis select-text"
@@ -53,16 +59,20 @@
           [format]="'1.2-2'"
           class="tooltip-left tooltip-info text-primary whitespace-nowrap"
           #tracker
-        ></nwb-price-tracker>
-        <span *ngIf="row.price && !tracker.showInput()">
-          {{ row.price | number : '1.2-2' }}
-        </span>
+        />
+        @if (row.price && !tracker.showInput()) {
+          <span>
+            {{ row.price | number: '1.2-2' }}
+          </span>
+        }
       </div>
     </div>
-  </ng-container>
+  }
 </div>
 
-<div class="flex flex-row gap-1 items-center justify-end bg-base-200 p-1 rounded-b-md">
+<div class="flex flex-row gap-1 items-center justify-end bg-base-200 p-1">
+  <span class="opacity-50" [tooltip]="'Costs per unit'">{{ valuePerUnit() | number: '1.2-2' }} PU</span>
+  /
+  <span>{{ value() | number: '1.2-2' }}</span>
   <img [nwImage]="'assets/icons/icon_crown.png'" class="inline-block w-5 h-5" />
-  <span>{{ value$ | async | number : '1.2-2' }}</span>
 </div>

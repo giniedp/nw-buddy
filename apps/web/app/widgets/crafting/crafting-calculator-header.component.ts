@@ -29,8 +29,10 @@ import { PriceImporterModule } from '../price-importer/price-importer.module'
 export class CraftingCalculatorHeaderComponent {
   protected store = inject(CraftingCalculatorStore)
   protected skill = this.store.tradeskill
-  protected skillLevel = computed(() => this.store.recipe()?.RecipeLevel)
+  protected recipeLevel = computed(() => this.store.recipe()?.RecipeLevel)
+  protected skillLevel = this.store.tradeskillLevel
   protected canCraft = this.store.canCraft
+
 
   protected iconImporter = svgDollarSign
   protected iconMode = svgPercent

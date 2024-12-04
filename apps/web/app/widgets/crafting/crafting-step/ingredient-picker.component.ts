@@ -7,6 +7,7 @@ import {
   getItemRarityWeight,
   getItemTierAsRoman,
   isItemNamed,
+  isItemResource,
   isMasterItem,
 } from '@nw-data/common'
 import { groupBy, sortBy } from 'lodash'
@@ -41,6 +42,7 @@ export class IngredientPickerComponent {
           tierLabel: getItemTierAsRoman(item.Tier),
           rarity: getItemRarity(item),
           isNamed: isMasterItem(item) && isItemNamed(item),
+          isResource: isMasterItem(item) && isItemResource(item),
           name: item.Name,
         }
       })

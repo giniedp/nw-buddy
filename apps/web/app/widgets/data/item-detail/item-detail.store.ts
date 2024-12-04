@@ -15,6 +15,7 @@ import {
   isItemArtifact,
   isItemHeartGem,
   isItemNamed,
+  isItemResource,
   isMasterItem,
   isPerkGem,
 } from '@nw-data/common'
@@ -159,6 +160,7 @@ export const ItemDetailStore = signalStore(
       tierLabel: computed(() => getItemTierAsRoman(record()?.Tier, true)),
       isDeprecated: computed(() => /depricated/i.test(getItemSourceShort(record()) || '')),
       isNamed: computed(() => isItemNamed(item())),
+      isResource: computed(() => isItemResource(item())),
       isArtifact: computed(() => isItemArtifact(item())),
       isHeartGem: computed(() => isItemHeartGem(item())),
       gemPerk: computed(() => itemPerkSlots().find((it) => isPerkGem(it.perk))?.perk),

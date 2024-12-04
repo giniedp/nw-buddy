@@ -1,7 +1,7 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, effect, inject, input, untracked } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, effect, inject, input, signal, untracked } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CraftingRecipeData } from '@nw-data/generated'
 import { switchMap, take } from 'rxjs'
@@ -61,6 +61,7 @@ export class CraftingCalculatorComponent {
   public gearScoreInfo = this.store.gearScoreDetails
   public recipe = this.store.recipe
 
+  protected totalCraft = signal<number>(1)
   #fxLoad = effect(() => {
     const entity = this.entity()
     const recipeId = typeof entity === 'string' ? entity : entity?.RecipeID

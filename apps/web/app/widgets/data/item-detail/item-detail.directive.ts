@@ -24,6 +24,7 @@ export class ItemDetailDirective {
   public rarity = this.store.rarity
   public rarityLabel = this.store.rarityLabel
   public isNamed = this.store.isNamed
+  public isResource = this.store.isResource
   public itemLink = computed(() => {
     if (this.houseItem()) {
       return this.linkService.resourceLink({

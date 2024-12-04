@@ -19,6 +19,7 @@ import {
   getTradingCategoryLabel,
   isItemArtifact,
   isItemNamed,
+  isItemResource,
   isMasterItem,
 } from '@nw-data/common'
 import { AffixStatData, HouseItems, MasterItemDefinitions, PerkData } from '@nw-data/generated'
@@ -61,6 +62,7 @@ export function itemColIcon(util: ItemTableUtils) {
           icon: getItemIconPath(data) || NW_FALLBACK_ICON,
           isArtifact: isMasterItem(data) && isItemArtifact(data),
           isNamed: isMasterItem(data) && isItemNamed(data),
+          // isResource: isMasterItem(data) && isItemResource(data),
           rarity: getItemRarity(data),
         }),
       )

@@ -1,5 +1,5 @@
 <label class="join">
-  <span class="join-item btn btn-sm text-xs">Amount</span>
+  <span class="join-item btn btn-sm flex flex-col text-xs"> Amount </span>
   <input
     data-cy="amount"
     type="number"
@@ -11,10 +11,15 @@
 </label>
 <div class="flex-1"></div>
 <div class="flex flex-row gap-1 items-center">
-  @if (skillLevel()) {
-    <span class="badge cursor-help" [class.badge-error]="!canCraft()" [class.badge-success]="canCraft()" [tooltip]="tplTradeskill">
+  @if (recipeLevel()) {
+    <span
+      class="badge cursor-help"
+      [class.badge-error]="!canCraft()"
+      [class.badge-success]="canCraft()"
+      [tooltip]="tplTradeskill"
+    >
       <nwb-icon [icon]="skill()?.Icon" class="w-4 h-4 mr-1" />
-      {{ skillLevel() }}
+      {{ recipeLevel() }}
     </span>
   }
   @if (store.craftedGearScore()) {
@@ -64,7 +69,7 @@
     </tr>
     <tr>
       <td>Recipe Level</td>
-      <td class="text-right">{{ store.recipe()?.RecipeLevel }}</td>
+      <td class="text-right">{{ recipeLevel() }}</td>
     </tr>
     <tr>
       <td>Your Level</td>

@@ -34,7 +34,7 @@ export interface LoadedRecipe {
   slots: CraftingPerkSlot[]
   tree: CraftingStep
 }
-export async function loadRecipe(db: NwData, recipeId: string): Promise<LoadedRecipe> {
+export async function loadRecipe(db: NwData, recipeId: string, state: CraftingStep): Promise<LoadedRecipe> {
   const recipe = await db.recipesById(recipeId)
   if (!recipe) {
     return {
@@ -43,20 +43,21 @@ export async function loadRecipe(db: NwData, recipeId: string): Promise<LoadedRe
       tree: null,
     }
   }
-
   return {
     recipe: recipe,
     slots: await solvePerkSlots({ db, recipe }),
-    tree: await solveRecipeTree(db, {
-      recipeId: recipe.RecipeID,
-      expand: true,
-      ingredient: {
-        id: getItemIdFromRecipe(recipe),
-        quantity: 1,
-        type: 'Item',
-        ref: 'Item'
-      },
-    }),
+    tree:
+      state ||
+      (await solveRecipeTree(db, {
+        recipeId: recipe.RecipeID,
+        expand: true,
+        ingredient: {
+          id: getItemIdFromRecipe(recipe),
+          quantity: 1,
+          type: 'Item',
+          ref: '0',
+        },
+      })),
   }
 }
 
@@ -85,7 +86,7 @@ async function solvePerkSlots({ db, recipe }: { db: NwData; recipe: CraftingReci
       bucketType: bucket.PerkType,
       modItemId: null,
       modPerkId: null,
-      canCraft: false
+      canCraft: false,
     }
     if (craftSlot.bucketType === 'Inherent' && attrAllowed) {
       attrAllowed--
@@ -115,12 +116,7 @@ async function solveIngredient({
   if (step.ingredient.type === 'Category_Only') {
     const items = await db.itemsByIngredientCategory(step.ingredient.id)
     const itemIds = (items || []).map((it) => it.ItemID)
-    let selection = itemIds.find((it) => eqCaseInsensitive(it, step.selection))
-    if (!selection) {
-      const key = trace.join('-')
-      console.log('read setting', key)
-      selection = itemIds[0]
-    }
+    const selection = itemIds.find((it) => eqCaseInsensitive(it, step.selection)) || itemIds[0]
     step = {
       ...step,
       options: itemIds,
@@ -158,7 +154,9 @@ async function solveSteps({
     recipeId,
     steps: await Promise.all(
       ingredients.map((it) => {
-        const state = step.steps?.find((step) => eqCaseInsensitive(step.ingredient?.id, it.id) && eqCaseInsensitive(step.ingredient?.ref, it.ref))
+        const state = step.steps?.find(
+          (step) => eqCaseInsensitive(step.ingredient?.id, it.id) && eqCaseInsensitive(step.ingredient?.ref, it.ref),
+        )
         return solveIngredient({
           db,
           step: {
@@ -178,12 +176,14 @@ async function fetchIngredientsForStep(db: NwData, step: CraftingStep) {
     const recipe = await db.recipesById(step.recipeId)
     return {
       recipeId: step.recipeId,
-      ingredients: getCraftingIngredients(recipe).map((it): Ingredient => ({
-        id: it.ingredient,
-        type: it.type,
-        quantity: it.quantity,
-        ref: it.ref,
-      })),
+      ingredients: getCraftingIngredients(recipe).map(
+        (it): Ingredient => ({
+          id: it.ingredient,
+          type: it.type,
+          quantity: it.quantity,
+          ref: it.ref,
+        }),
+      ),
     }
   }
   let itemId = step.ingredient.id
@@ -195,11 +195,13 @@ async function fetchIngredientsForStep(db: NwData, step: CraftingStep) {
   return {
     itemId,
     recipeId: recipe?.RecipeID,
-    ingredients: getCraftingIngredients(recipe).map((it): Ingredient => ({
-      id: it.ingredient,
-      type: it.type || 'Item',
-      quantity: it.quantity,
-      ref: it.ref,
-    })),
+    ingredients: getCraftingIngredients(recipe).map(
+      (it): Ingredient => ({
+        id: it.ingredient,
+        type: it.type || 'Item',
+        quantity: it.quantity,
+        ref: it.ref,
+      }),
+    ),
   }
 }

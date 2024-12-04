@@ -11,17 +11,17 @@
   />
   <nwb-tabs [active]="tab()" (activeChange)="tab.set($event)" class="tabs tabs-lifted" #tabs>
     <nwb-tab class="flex-1 whitespace-nowrap" [value]="'resources'"> Buy Order </nwb-tab>
-    <nwb-tab class="flex-1 whitespace-nowrap" [value]="'skills'"> XP </nwb-tab>
+    <nwb-tab class="flex-1 whitespace-nowrap" [value]="'skills'"> Craft & XP </nwb-tab>
   </nwb-tabs>
 </nwb-tabs-host>
 
-<div class="bg-base-100">
+<div class="bg-base-100 rounded-b-md overflow-clip mx-[1px]">
   @switch (tab()) {
     @case ('resources') {
-      <tab-resources [tree]="tree$ | async" />
+      <tab-resources [summary]="leafs()" [total]="total()" />
     }
     @case ('skills') {
-      <tab-tradeskills [tree]="tree$ | async" />
+      <tab-tradeskills [summary]="nodes()" />
     }
   }
 </div>

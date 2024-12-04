@@ -26,6 +26,7 @@ import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
     '[class.named]': 'isNamed()',
     '[class.p-1]': 'isPadded()',
     '[class.flex-row]': 'isRow()',
+    '[class.flex-col]': '!isRow()',
   },
 })
 export class ItemHeaderComponent {

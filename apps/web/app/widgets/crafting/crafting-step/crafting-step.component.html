@@ -40,6 +40,7 @@
         [nwbItemIcon]="detail.record()"
         [rarity]="detail.rarity()"
         [isNamed]="detail.isNamed()"
+        [rounded]="detail.isResource()"
         [solid]="true"
         [borderless]="!detail.rarity() || detail.rarity() === 'common'"
         class="w-8 h-8 nw-icon flex-none"

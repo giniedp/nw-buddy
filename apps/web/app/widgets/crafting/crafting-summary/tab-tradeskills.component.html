@@ -1,12 +1,14 @@
-<div class="p-2">
-  <div class="flex flex-row gap-2 items-center">
-    <img [nwImage]="'/assets/icons/territories/icon_territorystanding.png'" class="w-10 h-10" />
-    <div class="flex-1 flex flex-col justify-center">
-      <span class="font-bold">Territory Standing</span>
-      <span>+{{ standingXp() | number }}</span>
+@if (standingXp()) {
+  <div class="p-2">
+    <div class="flex flex-row gap-2 items-center">
+      <img [nwImage]="'/assets/icons/territories/icon_territorystanding.png'" class="w-10 h-10" />
+      <div class="flex-1 flex flex-col justify-center">
+        <span class="font-bold">Territory Standing</span>
+        <span>+{{ standingXp() | number }}</span>
+      </div>
     </div>
   </div>
-</div>
+}
 
 @for (row of skillRows(); track $index; let isLast = $last; let isFirst = $first) {
   @if (!isFirst) {

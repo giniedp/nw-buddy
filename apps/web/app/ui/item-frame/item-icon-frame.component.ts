@@ -9,7 +9,7 @@ import { NwModule } from '~/nw'
   selector: 'nwb-item-icon,a[nwbItemIcon]',
   template: `
     @if (!borderless()) {
-      <div class="nw-item-icon-border"></div>
+      <div class="nw-item-icon-border" [class.rounded-full]="rounded()"></div>
     }
     @for (item of icons(); track item.id) {
       <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]" [@inOut]>
@@ -36,6 +36,8 @@ import { NwModule } from '~/nw'
     '[class.nw-item-icon-bg]': 'solid()',
     '[class.nw-item-icon-mask]': '!solid()',
     '[class.named]': 'isNamed()',
+    '[class.rounded-full]': 'rounded()',
+    '[class.overflow-clip]': 'rounded()'
   },
   animations: [
     trigger('inOut', [
@@ -51,7 +53,7 @@ export class ItemIconFrameComponent {
   public isNamed = input<boolean>()
   public cover = input<boolean>(false)
   public borderless = input<boolean>(false)
-
+  public rounded = input<boolean>(false)
   protected icons = computed(() => {
     const value = this.icon()
     if (!value) {
