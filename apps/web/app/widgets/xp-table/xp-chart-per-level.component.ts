@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { ChartConfiguration } from 'chart.js'
 import { CharacterStore, injectNwData } from '~/data'
 import { ChartComponent } from '~/ui/chart'
@@ -21,9 +19,7 @@ export class XpChartPerLevelComponent {
   private character = inject(CharacterStore)
   private db = injectNwData()
 
-  private level = toSignal(this.character.level$, {
-    initialValue: NW_MAX_CHARACTER_LEVEL,
-  })
+  private level = this.character.level
 
   private resource = apiResource({
     loader: () => this.db.xpLevels(),

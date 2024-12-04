@@ -1,5 +1,5 @@
-import { computed } from '@angular/core'
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
+import { inject } from '@angular/core'
+import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import {
   getPerkMultiplier,
   getStatusEffectEXPCategoricalProgression,
@@ -8,13 +8,13 @@ import {
 } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { CraftingTradeskill, PerkData, StatusEffectData } from '@nw-data/generated'
-import { injectNwData, withStateLoader } from '~/data'
-import { CaseInsensitiveMap, eqCaseInsensitive } from '~/utils'
-import { CraftingBuffType, CraftingBuffCategory, CraftingBuffGroup } from './types'
+import { CharacterStore, injectNwData, withStateLoader } from '~/data'
+import { eqCaseInsensitive } from '~/utils'
+import { CraftingBuffCategory, CraftingBuffGroup, CraftingBuffType } from './types'
 
 interface CraftingBuffState {
   buffs: CraftingBuffGroup[]
-  settings: Array<{ id: string; value: number }>
+  //settings: Array<{ id: string; value: number }>
 }
 
 export type CraftingBuffStore = InstanceType<typeof CraftingBuffStore>
@@ -22,14 +22,14 @@ export const CraftingBuffStore = signalStore(
   { providedIn: 'root' },
   withState<CraftingBuffState>({
     buffs: [],
-    settings: [],
+    //settings: [],
   }),
   withStateLoader(() => {
     const db = injectNwData()
     return {
       load: async () => {
         return {
-          settings: [],
+          //    settings: [],
           buffs: await loadAllBuffs(db),
         }
       },
@@ -40,38 +40,32 @@ export const CraftingBuffStore = signalStore(
       state.load()
     },
   }),
-  withComputed(({ settings }) => {
-    return {
-      settingsMap: computed(() => new CaseInsensitiveMap(settings().map((it) => [it.id, it.value]))),
-    }
-  }),
+
   withMethods((state) => {
+    const char = inject(CharacterStore)
     function getSetting(id: string) {
-      return state.settingsMap().get(id) || 0
+      return char.getEffectStacks(id) || 0
     }
     function setSetting(id: string, value: number) {
-      patchState(state, ({ settings }) => {
-        settings = [...settings]
-        const found = settings.find((it) => it.id === id)
-        if (found) {
-          found.value = value
-        } else {
-          settings.push({ id, value })
-        }
-        return {
-          settings,
-        }
-      })
+      char.setEffectStacks(id, value)
     }
     return {
       getSetting,
       setSetting,
       getSettingGS: (id: string) => getSetting(`${id}:gs`) ?? NW_MAX_GEAR_SCORE,
       setSettingGS: (id: string, value: number) => setSetting(`${id}:gs`, value),
-      clearSettings: () => patchState(state, { settings: [] }),
+      clearSettings: () => char.clearEffects(),
+      getSkillLevel: (skill: string) => {
+        return char.getTradeskillLevel(skill)
+      },
+      setSkillLevel: (skill: string, value: number) => {
+        char.setProgresssionLevel(skill, value)
+      }
     }
   }),
-  withMethods(({ buffs, settingsMap }) => {
+  withMethods(({ buffs }) => {
+    const char = inject(CharacterStore)
+    const settingsMap = char.effectStacksMap
     function getScaleFactor(group: CraftingBuffGroup['group'], type: CraftingBuffType) {
       if (type === 'yld' && group !== 'TerritoryStanding' && group !== 'FactionControl') {
         return 1 / 10000
@@ -578,7 +572,13 @@ async function loadBuffs(
   return result
 }
 
-function sumBuffs({ items, settings }: { items: CraftingBuffCategory[]; settings: Map<string, number> }): number {
+function sumBuffs({
+  items,
+  settings,
+}: {
+  items: CraftingBuffCategory[]
+  settings: ReadonlyMap<string, number>
+}): number {
   if (!items?.length || !settings) {
     return 0
   }

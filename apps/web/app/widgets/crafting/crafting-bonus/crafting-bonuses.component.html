@@ -6,14 +6,18 @@
 <div class="flex flex-row h-full">
   <ul class="flex-none menu flex-nowrap overflow-scroll p-0 [&_li>*]:rounded-none">
     @for (tab of tabsItems(); track $index) {
-      <li [class.bg-base-200]="tab.active">
+      <li [class.bg-base-200]="tab.isActive">
         <a (click)="tabValue.set(tab.id)">
           <nwb-icon [icon]="tab.icon" class="w-10 h-10" />
           <div class="hidden sm:flex flex-col gap-1">
             <span class="hidden sm:inline">
               {{ tab.group }}
             </span>
-            <span class="hidden sm:inline text-xs uppercase" [class.opacity-50]="!(tab.bonus || tab.bonusRaw)" [class.text-primary]="!!(tab.bonus || tab.bonusRaw)">
+            <span
+              class="hidden sm:inline text-xs uppercase"
+              [class.opacity-50]="!(tab.bonus || tab.bonusRaw)"
+              [class.text-primary]="!!(tab.bonus || tab.bonusRaw)"
+            >
               {{ tab.buffType }}
               @if (tab.isPercent) {
                 +{{ tab.bonus | percent }}
@@ -157,6 +161,21 @@
             </td>
           </tr>
         }
+      }
+      @if (tab()?.isSkill) {
+        <tr>
+          <td>Level</td>
+          <td>
+            <input
+              type="number"
+              min="0"
+              max="250"
+              [ngModel]="store.getSkillLevel(tab().group)"
+              (ngModelChange)="store.setSkillLevel(tab().group, $event)"
+              class="input input-bordered input-sm"
+            />
+          </td>
+        </tr>
       }
     </table>
   </div>

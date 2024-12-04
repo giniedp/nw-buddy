@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject, output } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { CharacterStore, injectNwData } from '~/data'
 import { NwModule } from '~/nw'
@@ -26,9 +24,7 @@ export class XpUnlockLineComponent {
 
   public readonly levelClicked = output<number>()
 
-  protected level = toSignal(this.character.level$, {
-    initialValue: NW_MAX_CHARACTER_LEVEL,
-  })
+  protected level = this.character.level
 
   protected resource = apiResource({
     loader: () => this.db.milestoneRewardsAll(),

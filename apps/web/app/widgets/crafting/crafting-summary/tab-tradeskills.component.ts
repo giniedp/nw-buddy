@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { NwModule } from '~/nw'
 import { apiResource } from '~/utils'
 
@@ -12,6 +12,7 @@ import { injectNwData } from '~/data'
 import { TooltipModule } from '~/ui/tooltip'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 import { SummaryRow } from './types'
+import { CraftingBuffStore } from '../crafting-bonus/crafting-buff.store'
 
 @Component({
   standalone: true,
@@ -27,7 +28,7 @@ import { SummaryRow } from './types'
 export class TabTradeskillsComponent {
   private db = injectNwData()
   public summary = input<SummaryRow[]>()
-
+  private store = inject(CraftingBuffStore)
   protected resource = apiResource({
     request: this.summary,
     loader: async ({ request }) => {
@@ -40,13 +41,16 @@ export class TabTradeskillsComponent {
         }),
       )
       return {
-        skillsXp: aggregateStandingXP(rows),
+        standingXp: aggregateStandingXP(rows),
         skills: aggregateSkills(rows),
       }
     },
   })
   protected skillRows = computed(() => this.resource.value()?.skills)
-  protected standingXp = computed(() => this.resource.value()?.skillsXp)
+  protected standingXp = computed(() => {
+    const buff = this.store.sumBonus('TerritoryStanding', 'exp', true)
+    return Math.floor(this.resource.value()?.standingXp * (1 + buff))
+  })
 }
 
 export type Row = SummaryRow & { data: RowData }
@@ -72,12 +76,11 @@ async function resolveRowData(db: NwData, row: SummaryRow): Promise<RowData> {
 }
 
 function aggregateStandingXP(rows: Row[]) {
-  const bonus = 1.05
   let result = 0
   for (const row of rows) {
-    result += (row.data.standingXp || 0) * row.amount * bonus
+    result += (row.data.standingXp || 0) * row.amount
   }
-  return Math.floor(result)
+  return result
 }
 
 export interface SkillStatsRow {

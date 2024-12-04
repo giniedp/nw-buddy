@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { CharacterStore } from '~/data'
@@ -20,16 +20,16 @@ import { WeaponChartComponent } from './weapon-chart.component'
   },
 })
 export class WeaponsComponent {
+  private weapons = inject(NwWeaponTypesService)
+  private char = inject(CharacterStore)
 
   protected categories$ = this.weapons.categories$
   protected trackBy = (i: number) => i
 
-  public constructor(private weapons: NwWeaponTypesService, private char: CharacterStore) {
-
-  }
+  public constructor() {}
 
   protected getValue(type: NwWeaponType) {
-    return this.char.selectWeaponLevel(type.WeaponTag)
+    return this.char.getWeaponLevel(type.WeaponTag)
   }
 
   protected getWeaponId(type: NwWeaponType) {
@@ -37,7 +37,6 @@ export class WeaponsComponent {
   }
 
   protected updateWeapon(type: NwWeaponType, level: number) {
-    const id = this.getWeaponId(type)
-    this.char.updateWeaponLevel({ weapon: id, level: level })
+    this.char.setWeaponLevel(type.ProgressionId, level)
   }
 }

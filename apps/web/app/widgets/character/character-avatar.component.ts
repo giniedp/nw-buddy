@@ -1,18 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { combineLatest } from 'rxjs'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 
 @Component({
   standalone: true,
   selector: 'nwb-character-avatar',
-  template: `
-    <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" *ngIf="vm$ | async; let vm">
-      <img [src]="vm.image" *ngIf="vm.image"/>
-      <span *ngIf="!vm.image">{{ vm.name || '?' }}</span>
-    </div>
-  `,
+  template: ` <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"></div> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule],
   host: {
@@ -20,13 +14,7 @@ import { NwModule } from '~/nw'
   },
 })
 export class CharacterAvatarComponent {
-
-  protected vm$ = combineLatest({
-    image: this.store.imageUrl$,
-    name: this.store.name$
-  })
-
-  public constructor(private store: CharacterStore) {
-    //
-  }
+  private char = inject(CharacterStore)
+  protected name = this.char.name
+  //protected imageUrl = this.char.imageUrl
 }

@@ -6,11 +6,11 @@
         <nwb-weapon-level-input
           [icon]="weapon.IconPath"
           [label]="weapon.UIName | nwText"
-          [ngModel]="getValue(weapon) | async"
+          [ngModel]="getValue(weapon)"
           (ngModelChange)="updateWeapon(weapon, $event)"
-        ></nwb-weapon-level-input>
+        />
       </div>
     </div>
   </div>
-  <nwb-weapon-chart class="w-full 2xl:max-w-[50%] mx-auto bg-base-100 rounded-md"></nwb-weapon-chart>
+  <nwb-weapon-chart class="w-full 2xl:max-w-[50%] mx-auto bg-base-100 rounded-md"/>
 </div>

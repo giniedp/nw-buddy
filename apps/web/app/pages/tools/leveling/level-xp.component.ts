@@ -31,10 +31,10 @@ import { XpTableModule } from '~/widgets/xp-table'
 })
 export class LevelXpComponent {
   protected char = inject(CharacterStore)
-  protected level = toSignal(this.char.level$)
+  protected level = this.char.level
   protected tab = toSignal(injectRouteParam('tab'))
 
   protected updateLevel(value: number) {
-    this.char.updateLevel({ level: value })
+    this.char.patchRecord({ level: value })
   }
 }

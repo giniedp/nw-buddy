@@ -29,6 +29,14 @@ export interface CharacterRecord {
    */
   faction: 'covenant' | 'syndicate' | 'marauder'
   /**
+   *
+   */
+  progressionLevels: Record<string, number>
+  /**
+   * Active crafting buffs (effect or perk or faction buff IDs)
+   */
+  effectStacks: Record<string, number>
+  /**
    * Character weapon levels
    */
   weaponLevels: Record<string, number>

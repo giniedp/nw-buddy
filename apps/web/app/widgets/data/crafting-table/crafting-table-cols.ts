@@ -1,9 +1,6 @@
-import { Signal } from '@angular/core'
 import {
   NW_FALLBACK_ICON,
   canCraftWithLevel,
-  isCraftedWithYieldBonus,
-  isCraftedWithFactionYieldBonus,
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
   getCraftingSkillXP,
@@ -13,13 +10,15 @@ import {
   getItemId,
   getItemRarity,
   getTradeSkillLabel,
+  isCraftedWithFactionYieldBonus,
+  isCraftedWithYieldBonus,
   isItemArtifact,
   isItemNamed,
   isMasterItem,
-
 } from '@nw-data/common'
 import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
+import { CharacterStore } from '~/data'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -108,7 +107,7 @@ export function craftingColFilterText(util: CraftingTableUtils) {
     headerValueGetter: () => 'Additional Filter Text',
     width: 200,
     valueGetter: ({ data }) => {
-      const value = (data.AdditionalFilterText || '').split(' ').map((it) => it.replace(/^@/, '' ))
+      const value = (data.AdditionalFilterText || '').split(' ').map((it) => it.replace(/^@/, ''))
       return util.i18n.get(value)
     },
   })
@@ -326,14 +325,14 @@ export function craftingColStandingEXP(util: CraftingTableUtils) {
   })
 }
 
-export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Record<string, number>>) {
+export function craftingColCanCraft(util: CraftingTableUtils, char: CharacterStore) {
   return util.colDef<boolean>({
     colId: 'userCanCraft',
     headerValueGetter: () => 'Can Craft',
     width: 100,
     cellClass: 'cursor-pointer',
     headerTooltip: 'Whether you can craft this item based on your current tradeskill level',
-    valueGetter: ({ data }) => canCraftWithLevel(data, skills()?.[data.Tradeskill]),
+    valueGetter: ({ data }) => canCraftWithLevel(data, char.getTradeskillLevel(data.Tradeskill)),
     getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ value }) => {
       return util.el('span.badge.badge-sm', {

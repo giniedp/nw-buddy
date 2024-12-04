@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { BehaviorSubject, combineLatest, defer, map, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
@@ -18,6 +18,9 @@ import { shareReplayRefCount } from '~/utils'
   },
 })
 export class TradeskillInputComponent {
+  private service = inject(NwTradeskillService)
+  private char = inject(CharacterStore)
+
   @Input()
   public set tradeskill(value: string) {
     this.id$.next(value)
@@ -32,20 +35,9 @@ export class TradeskillInputComponent {
   )
     .pipe(map(({ skills, id }) => skills.get(id)))
     .pipe(shareReplayRefCount(1))
-  protected level$ = this.tradeskill$.pipe(
-    switchMap((it) => {
-      return this.char.selectTradeSkillLevel(it.ID)
-    }),
-  )
-
-  constructor(
-    private service: NwTradeskillService,
-    private char: CharacterStore,
-  ) {
-    //
-  }
+  protected level$ = this.tradeskill$.pipe(switchMap((it) => this.char.observeProgressionLevel(it.ID)))
 
   protected updateLevel(id: string, level: number) {
-    this.char.updateSkillLevel({ skill: id, level: level })
+    this.char.setTradeskillLevel(id, level)
   }
 }

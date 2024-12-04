@@ -1,4 +1,5 @@
 import { Directive, EventEmitter, Input, OnInit, Output, inject } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState, signalState } from '@ngrx/signals'
 import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
@@ -55,7 +56,7 @@ export class GearsetHostDirective {
   public readonly mannequin = inject(Mannequin)
 
   public constructor() {
-    this.store.connectLevel(this.character.level$)
+    this.store.connectLevel(toObservable(this.character.level))
     this.store.connectToMannequin(this.mannequin)
   }
 }

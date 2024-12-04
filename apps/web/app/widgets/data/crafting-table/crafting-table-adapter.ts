@@ -1,6 +1,5 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, Signal, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
 import { COLS_CRAFTINGRECIPEDATA } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
@@ -16,9 +15,10 @@ import {
   craftingColCategory,
   craftingColCooldownCeconds,
   craftingColCooldownQuantity,
-  craftingColTradeskillEXP,
   craftingColExpansion,
+  craftingColFilterText,
   craftingColGroup,
+  craftingColHasYieldBonus,
   craftingColID,
   craftingColIcon,
   craftingColInStock,
@@ -28,11 +28,9 @@ import {
   craftingColPrice,
   craftingColRecipeLevel,
   craftingColSource,
-  craftingColTradeskill,
   craftingColStandingEXP,
-  craftingColHasYieldBonus,
-  craftingColHasYieldBonusFromFort,
-  craftingColFilterText,
+  craftingColTradeskill,
+  craftingColTradeskillEXP,
 } from './crafting-table-cols'
 
 @Injectable()
@@ -41,7 +39,6 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
   private character = inject(CharacterStore)
   private utils: TableGridUtils<CraftingTableRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<CraftingTableRecord>({ optional: true })
-  private skills = toSignal(this.character.tradeskills$, { initialValue: null })
 
   public entityID(item: CraftingTableRecord): string {
     return item.RecipeID.toLowerCase()
@@ -62,7 +59,7 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
 
   public gridOptions(): GridOptions<CraftingTableRecord> {
     const build = this.config?.gridOptions || buildOptions
-    return build(this.utils, this.skills)
+    return build(this.utils, this.character)
   }
 
   public virtualOptions(): VirtualGridOptions<CraftingTableRecord> {
@@ -116,7 +113,7 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
   }
 }
 
-function buildOptions(util: TableGridUtils<CraftingTableRecord>, skills: Signal<Record<string, number>>) {
+function buildOptions(util: TableGridUtils<CraftingTableRecord>, char: CharacterStore) {
   const result: GridOptions<CraftingTableRecord> = {
     columnDefs: [
       craftingColIcon(util),
@@ -131,7 +128,7 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>, skills: Signal<
       craftingColCategory(util),
       craftingColGroup(util),
       craftingColRecipeLevel(util),
-      craftingColCanCraft(util, skills),
+      craftingColCanCraft(util, char),
       craftingColHasYieldBonus(util),
       craftingColTradeskillEXP(util),
       craftingColStandingEXP(util),

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { CharacterStore, injectNwData } from '~/data'
 import { apiResource } from '~/utils'
@@ -29,9 +28,7 @@ export class XpLevelInfoComponent {
   private db = injectNwData()
   private character = inject(CharacterStore)
 
-  private level = toSignal(this.character.level$, {
-    initialValue: NW_MAX_CHARACTER_LEVEL,
-  })
+  private level = this.character.level
 
   private resource = apiResource({
     loader: () => this.db.xpLevels(),

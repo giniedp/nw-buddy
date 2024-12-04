@@ -37,7 +37,7 @@ import { CraftingBuffGroup } from './types'
   animations: [],
 })
 export class CraftingChanceMenuComponent {
-  private store = inject(CraftingBuffStore)
+  protected store = inject(CraftingBuffStore)
   private db = injectNwData()
 
   public group = input<CraftingBuffGroup['group']>(null)
@@ -68,23 +68,24 @@ export class CraftingChanceMenuComponent {
             isActive = !i
           }
         }
-
+        const isSkill = it.group !== 'FactionControl' && it.group !== 'TerritoryStanding'
         return {
           id,
           group: it.group,
           buffType: it.buffType,
           isPercent: it.buffType === 'exp' || it.buffType === 'yld',
-          active: isActive,
+          isSkill,
+          isActive,
           bonus: this.store.sumBonus(it.group, it.buffType, true),
           bonusRaw: it.buffType === 'yld' ? this.store.sumBonus(it.group, it.buffType, false) : null,
           icon: this.getGroupIcon(it.group),
         }
       })
   })
-  protected tab = computed(() => this.tabsItems().find((it) => it.active))
+  protected tab = computed(() => this.tabsItems().find((it) => it.isActive))
 
   protected sections = computed(() => {
-    const tab = this.tabsItems().find((it) => it.active)
+    const tab = this.tabsItems().find((it) => it.isActive)
     if (!tab || !this.store.buffs()) {
       return null
     }
