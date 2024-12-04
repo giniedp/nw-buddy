@@ -45,6 +45,21 @@
       </h3>
     }
     <table class="table table-xs">
+      @if (tab()?.isSkill) {
+        <tr>
+          <td>Level</td>
+          <td>
+            <input
+              type="number"
+              min="0"
+              max="250"
+              [ngModel]="store.getSkillLevel(tab().group)"
+              (ngModelChange)="store.setSkillLevel(tab().group, $event)"
+              class="input input-bordered input-sm"
+            />
+          </td>
+        </tr>
+      }
       @for (section of sections(); track $index) {
         @for (category of section.items; track $index) {
           <tr>
@@ -162,21 +177,7 @@
           </tr>
         }
       }
-      @if (tab()?.isSkill) {
-        <tr>
-          <td>Level</td>
-          <td>
-            <input
-              type="number"
-              min="0"
-              max="250"
-              [ngModel]="store.getSkillLevel(tab().group)"
-              (ngModelChange)="store.setSkillLevel(tab().group, $event)"
-              class="input input-bordered input-sm"
-            />
-          </td>
-        </tr>
-      }
+
     </table>
   </div>
 </div>

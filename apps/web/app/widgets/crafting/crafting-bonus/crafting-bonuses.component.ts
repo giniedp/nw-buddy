@@ -164,7 +164,7 @@ export class CraftingChanceMenuComponent {
       return 'assets/icons/territories/icon_territorystanding.png'
     }
     if (group === 'FactionControl') {
-      return null
+      return 'assets/icons/worldmap/icon_map_fort.png'
     }
     return this.tradeskills()?.get(group).Icon
   }

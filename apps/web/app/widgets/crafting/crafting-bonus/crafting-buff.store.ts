@@ -287,7 +287,7 @@ async function loadFactionBuffs(
             setting: buffId,
             name: buff.Name,
             description: buff.Description,
-            icon: null,
+            icon: 'assets/icons/icon_map_fort.png',
             scalingPerGS: null,
             value: buff.Value,
           },
