@@ -68,6 +68,10 @@
           }
         </a>
       </div>
+    } @else if (showBranchName) {
+      <div class="badge badge-secondary">
+        <span>{{branchName}}</span>&commat;v{{ version }}
+      </div>
     } @else if (version) {
       <div class="text-xs italic text-primary text-opacity-75">v{{ version }}</div>
     }

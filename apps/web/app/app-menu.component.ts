@@ -53,12 +53,20 @@ export class AppMenuComponent {
     return (this.isLive || this.isPTR) && !environment.standalone
   }
 
+  protected get showBranchName() {
+    return !environment.standalone
+  }
+
+  protected get branchName() {
+    return environment.branchname
+  }
+
   protected get isLive() {
-    return environment.workspace === 'live'
+    return this.branchName === 'live'
   }
 
   protected get isPTR() {
-    return environment.workspace === 'ptr'
+    return this.branchName === 'ptr'
   }
 
   protected ptrUrl = toSignal(
