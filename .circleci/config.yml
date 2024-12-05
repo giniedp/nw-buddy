@@ -17,7 +17,7 @@ workflows:
           filters:
             branches:
               only:
-                - stage
+                - playground
                 - dev
       - build_ptr:
           context:
