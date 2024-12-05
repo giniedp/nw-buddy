@@ -1,62 +1,66 @@
-import { computed, DestroyRef, inject, Injector } from '@angular/core'
+import { computed, inject, Injector } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_TRADESKILL_LEVEL, NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
-import { distinctUntilChanged, exhaustMap, filter, map } from 'rxjs'
-import { CaseInsensitiveMap } from '~/utils'
+import { distinctUntilChanged, exhaustMap, filter, map, pipe, switchMap } from 'rxjs'
+import { CaseInsensitiveMap, tapDebug } from '~/utils'
 
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { isEqual } from 'lodash'
 import { CharactersDB } from './characters.db'
 import { CharacterRecord } from './types'
+import { migrateCharacter } from './migrations'
 
 export interface CharacterStoreStateOLD {
   data: CharacterRecord
 }
 
-export interface CharacterStoreState {
-  record: CharacterRecord
-}
-
 export type CharacterStore = InstanceType<typeof CharacterStore>
 export const CharacterStore = signalStore(
   { providedIn: 'root' },
-  withState<CharacterStoreState>({
+  withState<{ record: CharacterRecord }>({
     record: null,
   }),
   withMethods((state) => {
     const db = inject(CharactersDB)
-    const dref = inject(DestroyRef)
     const record$ = toObservable(state.record)
     return {
-      connectDB: () => {
-        db.observeCurrent()
-          .pipe(takeUntilDestroyed(dref))
-          .subscribe((value) => {
-            patchState(state, { record: value })
-          })
-
-        record$
-          .pipe(
-            filter((it) => !!it),
-            distinctUntilChanged<CharacterRecord>(isEqual),
-            exhaustMap(async (record) => db.update(record.id, record).catch(console.error)),
-            takeUntilDestroyed(dref),
-          )
-          .subscribe()
-      },
+      load: rxMethod<string | void>(
+        pipe(
+          switchMap((id) => (id ? db.observeByid(id) : db.observeCurrent())),
+          map(migrateCharacter),
+          // tapDebug('load'),
+          distinctUntilChanged<CharacterRecord>(isEqual),
+          map((record) => patchState(state, { record })),
+        ),
+      ),
+      connectSync: rxMethod<void>(
+        pipe(
+          switchMap(() => record$),
+          filter((it) => !!it),
+          distinctUntilChanged<CharacterRecord>(isEqual),
+          // tapDebug('sync back'),
+          exhaustMap(async (record) => db.update(record.id, record).catch(console.error)),
+        ),
+      ),
     }
   }),
   withHooks({
     onInit: (state) => {
-      state.connectDB()
+      state.load()
+      state.connectSync()
     },
   }),
   withComputed(({ record }) => {
     return {
       name: computed(() => record()?.name),
       level: computed(() => record()?.level ?? NW_MAX_CHARACTER_LEVEL),
-      progressionMap: computed(() => new CaseInsensitiveMap(Object.entries(record()?.progressionLevels || {})) as ReadonlyMap<string, number>),
-      effectStacksMap: computed(() => new CaseInsensitiveMap(Object.entries(record()?.effectStacks || {})) as ReadonlyMap<string, number>),
+      progressionMap: computed(
+        () => new CaseInsensitiveMap(Object.entries(record()?.progressionLevels || {})) as ReadonlyMap<string, number>,
+      ),
+      effectStacksMap: computed(
+        () => new CaseInsensitiveMap(Object.entries(record()?.effectStacks || {})) as ReadonlyMap<string, number>,
+      ),
     }
   }),
   withMethods((state) => {

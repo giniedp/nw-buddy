@@ -1,7 +1,10 @@
-import { ProgressionCategory, TradeskillRankData, GatheringTradeskill } from '../generated/types'
+import { CraftingTradeskill, ProgressionCategory, TradeskillRankData } from '../generated/types'
+import { EndsWithTrimmed, Equals } from './utils/ts-types'
+
+export type TradeskillId = EndsWithTrimmed<ProgressionCategory, '_PostCap'> //| Equals<ProgressionCategory, 'Riding'>
 
 export interface NwTradeSkillInfo {
-  ID: ProgressionCategory
+  ID: CraftingTradeskill
   Category: string
   Icon: string
 }
@@ -93,14 +96,14 @@ export const NW_TRADESKILLS_INFOS: Array<NwTradeSkillInfo> = [
     Icon: 'assets/icons/tradeskills/tracking.png',
   },
   {
-    ID: 'Musician',
+    ID: 'Instruments' as CraftingTradeskill,
     Category: 'Casual',
     Icon: 'assets/icons/tradeskills/music.png',
   },
   {
-    ID: 'Riding',
+    ID: 'Riding' as CraftingTradeskill,
     Category: 'Casual',
-    Icon: '', // TODO: add icon here
+    Icon: '',
   },
 ]
 

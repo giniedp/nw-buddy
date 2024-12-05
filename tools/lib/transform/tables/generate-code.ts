@@ -150,7 +150,7 @@ const ENUMS = {
   WeaponAppearanceDefinitions: {
     ItemClass: 'ItemClass',
   },
-  GameEventData: {
+  CategoricalProgressionData: {
     CategoricalProgressionId: 'ProgressionCategory',
   },
   MasterItemDefinitions: {
