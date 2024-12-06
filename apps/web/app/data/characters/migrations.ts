@@ -31,6 +31,7 @@ interface DeprecatedFields {
 export function migrateCharacter(record: CharacterRecord): CharacterRecord {
   const old = record as unknown as DeprecatedFields
   if (old.tradeskillLevels) {
+    record.progressionLevels = record.progressionLevels || {}
     for (const [key, value] of Object.entries(old.tradeskillLevels)) {
       if (!record.progressionLevels || key in record.progressionLevels) {
         record.progressionLevels[key] = value
