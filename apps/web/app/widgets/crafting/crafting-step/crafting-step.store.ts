@@ -9,6 +9,7 @@ import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingCalculatorStore } from '../crafting-calculator.store'
 import { CraftingStep } from '../loader/load-recipe'
 import { AmountMode } from '../types'
+import { NwLinkService } from '~/nw'
 
 export interface CraftingStepState {
   step: CraftingStep
@@ -44,13 +45,20 @@ export const CraftingStepStore = signalStore(
           }
         })
       },
+      expandAll: () => {
+        parent.expandAll(state.step())
+      },
+      collapseAll: () => {
+        parent.collapseAll(state.step())
+      },
+
     }
   }),
   withComputed(({ step }) => {
     const db = injectNwData()
     const char = inject(CharacterService)
     const buffs = inject(CraftingBuffStore)
-
+    const link = inject(NwLinkService)
     const resource = apiResource({
       request: () => {
         return {
@@ -104,6 +112,12 @@ export const CraftingStepStore = signalStore(
 
     return {
       bonusDetail,
+      recipeLink: computed(() => {
+        if (!recipe()) {
+          return null
+        }
+        return link.resourceLink({ type: 'recipe', id: recipe()?.RecipeID })
+      })
     }
   }),
   withComputed(({ step, bonusDetail, amountMode, amount }) => {

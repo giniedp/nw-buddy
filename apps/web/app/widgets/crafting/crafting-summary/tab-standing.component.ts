@@ -20,8 +20,8 @@ import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuse
 
 @Component({
   standalone: true,
-  selector: 'tab-tradeskills',
-  templateUrl: './tab-tradeskills.component.html',
+  selector: 'tab-standing',
+  templateUrl: './tab-standing.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -38,7 +38,7 @@ import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuse
     class: 'block',
   },
 })
-export class TabTradeskillsComponent {
+export class TabStandingComponent {
   private db = injectNwData()
   public summary = input<SummaryRow[]>()
   private store = inject(CraftingBuffStore)
@@ -47,7 +47,7 @@ export class TabTradeskillsComponent {
   protected resource = apiResource({
     request: this.summary,
     loader: async ({ request }) => {
-      const rows = await Promise.all(
+      return await Promise.all(
         request.map(async (row) => {
           return {
             ...row,
@@ -55,10 +55,11 @@ export class TabTradeskillsComponent {
           }
         }),
       )
-      return aggregate(rows)
     },
   })
-  protected rows = computed(() => this.resource.value())
+  protected rows = computed(() => {
+    return aggregate(this.resource.value(), this.store.getTerritoryBonusForEXP())
+  })
 
   protected openChances(group: string) {
     CraftingBonusesModalComponent.open(this.modal, group)
@@ -81,7 +82,7 @@ async function resolveRowData(db: NwData, row: SummaryRow): Promise<RowData> {
     item: await db.itemOrHousingItem(row.itemId),
     skill: await db.tradeskillById(recipe?.Tradeskill),
     recipe: recipe,
-    xp: event ? getCraftingSkillXP(recipe, event) : 0,
+    xp: event ? getCraftingStandingXP(recipe, event) : 0,
   }
 }
 
@@ -89,56 +90,65 @@ export interface SkillStatsRow {
   id: string
   label: string
   icon: string
-  xp: number
+  xpSum: number
+  xpBonus: number
+  xpTotal: number
+  buff: number
   steps: SkillStatsSubRow[]
 }
 
 export interface SkillStatsSubRow {
-  count: number
+  amount: number
   label: string
   icon: string
   xp: number
+  xpSum: number
+  xpBonus: number
+  xpTotal: number
 
   itemId: string
   item: MasterItemDefinitions | HouseItems
 }
 
-function aggregate(rows: Row[]) {
-  const result = new Map<string, SkillStatsRow>()
+function aggregate(rows: Row[], buff: number) {
+  const group: SkillStatsRow = {
+    id: 'standing',
+    label: 'Standing',
+    icon: '/assets/icons/territories/icon_territorystanding.png',
+    xpSum: 0,
+    xpBonus: 0,
+    xpTotal: 0,
+    buff,
+    steps: [],
+  }
+  const recipeGroups = groupBy(rows, (it) => it.data.recipe?.RecipeID)
+  for (const [_, steps] of Object.entries(recipeGroups)) {
+    for (const { amount, data, itemId } of steps) {
+      const xp = data.xp
+      const xpSum = amount * xp
+      const xpBonus = Math.floor(xpSum * (1 + buff)) - xpSum
+      const xpTotal = xpSum + xpBonus
 
-  const skillGroups = groupBy(rows, (it) => it.data.skill?.ID || '')
-  const entries = Object.entries(skillGroups).filter(([skillId]) => !!skillId)
-  for (const [skillId, data] of entries) {
-    if (!skillId) {
-      continue
-    }
-    if (!result.has(skillId)) {
-      const skill = data[0].data.skill
-      result.set(skillId, {
-        id: skillId,
-        icon: skill.Icon,
-        label: skill.ID,
-        xp: 0,
-        steps: [],
-      })
-    }
-
-    const skillRow = result.get(skillId)
-
-    const recipeGroups = groupBy(data, (it) => it.data.recipe?.RecipeID)
-    for (const [recipeId, steps] of Object.entries(recipeGroups)) {
-      const data = steps[0].data
-      skillRow.xp += sumBy(steps, (it) => it.amount * it.data.xp)
-      skillRow.steps.push({
-        count: sumBy(steps, (it) => it.amount),
-        xp: data.xp,
+      group.xpSum += xpSum
+      group.xpBonus += xpBonus
+      group.xpTotal += xpTotal
+      group.steps.push({
+        xp,
+        xpSum,
+        xpBonus,
+        xpTotal,
+        amount,
         icon: data.item.IconPath,
         label: data.item.Name,
-
-        itemId: steps[0].itemId,
+        itemId: itemId,
         item: data.item,
       })
     }
   }
-  return Array.from(result.values())
+
+  const result = [group]
+  for (const group of result) {
+    group.steps = group.steps.filter((it) => !!it.xp)
+  }
+  return result
 }

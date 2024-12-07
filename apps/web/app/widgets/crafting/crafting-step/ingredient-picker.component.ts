@@ -22,7 +22,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
   imports: [CdkMenuModule, NwModule, ItemDetailModule],
   templateUrl: './ingredient-picker.component.html',
   host: {
-    class: 'menu menu-compact w-80 flex-nowrap overflow-auto bg-base-300 rounded-md shadow-md relative',
+    class: 'menu menu-compact w-80 flex-nowrap overflow-auto bg-base-300 rounded-md shadow-md relative max-h-[400px]',
   },
 })
 export class IngredientPickerComponent {

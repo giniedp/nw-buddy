@@ -52,6 +52,7 @@ export class CraftingCalculatorComponent {
   public amount = input<number>(1)
   public amountMode = input<AmountMode>('net')
   public recipeOnly = input<boolean>(false)
+  public headClass = input<string | string[]>([])
   public entity = input<CraftingRecipeData | string>()
 
   public itemId = this.store.itemId

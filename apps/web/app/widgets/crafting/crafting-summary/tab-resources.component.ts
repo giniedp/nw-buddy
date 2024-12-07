@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core'
 import { combineLatest, map, switchMap } from 'rxjs'
-import { NwModule } from '~/nw'
+import { NwLinkService, NwModule } from '~/nw'
 
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'

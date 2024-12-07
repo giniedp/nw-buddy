@@ -11,6 +11,7 @@ import { CraftingCalculatorStore } from '../crafting-calculator.store'
 import { CraftingStep } from '../loader/load-recipe'
 import { AmountMode } from '../types'
 import { TabResourcesComponent } from './tab-resources.component'
+import { TabStandingComponent } from './tab-standing.component'
 import { TabTradeskillsComponent } from './tab-tradeskills.component'
 import { CraftingStepWithAmount, SummaryRow } from './types'
 
@@ -21,10 +22,18 @@ export type CraftingSummaryTab = 'resources' | 'skills' | 'standing'
   selector: 'nwb-crafting-summary',
   templateUrl: './crafting-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, TabResourcesComponent, TabTradeskillsComponent, TabsModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    RouterModule,
+    TabResourcesComponent,
+    TabTradeskillsComponent,
+    TabStandingComponent,
+    TabsModule,
+  ],
   host: {
-    class: 'block overflow-clip '
-  }
+    class: 'block overflow-clip ',
+  },
 })
 export class CraftingSummaryComponent {
   public total = input<number>(0)

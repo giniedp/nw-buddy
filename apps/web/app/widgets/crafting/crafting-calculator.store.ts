@@ -108,6 +108,38 @@ export const CraftingCalculatorStore = signalStore(
         })
         patchState(state, { slots })
       },
+      expandAll: async (step: CraftingStep) => {
+        const tree = state.tree()
+        const list = flattenBranch(step)
+        modifyTree(tree, (it) => {
+          if (!list.includes(it)) {
+            return it
+          }
+          return {
+            ...it,
+            expand: true,
+          }
+        })
+        patchState(state, {
+          tree: await solveRecipeTree(db, tree),
+        })
+      },
+      collapseAll: async (step: CraftingStep) => {
+        const tree = state.tree()
+        const list = flattenBranch(step)
+        modifyTree(tree, (it) => {
+          if (!list.includes(it)) {
+            return it
+          }
+          return {
+            ...it,
+            expand: false,
+          }
+        })
+        patchState(state, {
+          tree: await solveRecipeTree(db, tree),
+        })
+      }
     }
   }),
   withComputed(({ tree, recipe, item, slots }) => {
@@ -186,4 +218,22 @@ function modifyTree(step: CraftingStep, modify: (step: CraftingStep) => Crafting
     step.steps = step.steps.map((it) => modifyTree(it, modify)).filter((it) => !!it)
   }
   return step
+}
+
+function flattenBranch(step: CraftingStep) {
+  const result: CraftingStep[] = []
+  walkBranch(step, (it) => result.push(it))
+  return result
+}
+
+function walkBranch(step: CraftingStep, fn: (step: CraftingStep) => void) {
+  if (!step) {
+    return
+  }
+  fn(step)
+  if (step.steps?.length) {
+    for (const child of step.steps) {
+      walkBranch(child, fn)
+    }
+  }
 }

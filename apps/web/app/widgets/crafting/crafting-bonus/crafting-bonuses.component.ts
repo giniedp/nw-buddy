@@ -4,13 +4,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   EventEmitter,
   inject,
   input,
   Output,
   signal,
-  untracked,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { getPerkMultiplier } from '@nw-data/common'

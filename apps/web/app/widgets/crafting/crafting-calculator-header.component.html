@@ -1,12 +1,12 @@
 <label class="join">
-  <span class="join-item btn btn-sm flex flex-col text-xs"> Amount </span>
+  <span class="join-item btn btn-sm flex flex-col text-xs pr-2"> Amount </span>
   <input
     data-cy="amount"
     type="number"
     min="1"
     [ngModel]="store.amount()"
     (ngModelChange)="store.updateAmount($event)"
-    class="join-item input input-bordered input-sm pr-0 w-20"
+    class="join-item input input-bordered input-sm ps-2 pr-0 w-16"
   />
 </label>
 <div class="flex-1"></div>

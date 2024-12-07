@@ -42,9 +42,10 @@
         <span> × </span>
         <a
           [nwText]="row.currencyId ? 'Azoth' : detail.name()"
-          [routerLink]="row.link"
+          [routerLink]="detail.itemLink()"
           [class.line-through]="row.ignored"
-          class="hover:underline overflow-hidden text-ellipsis select-text"
+          [class.link-hover]="!!detail.itemLink()"
+          class="overflow-hidden text-ellipsis select-text"
         ></a>
       </div>
 

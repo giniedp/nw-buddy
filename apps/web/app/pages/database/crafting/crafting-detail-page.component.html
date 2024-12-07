@@ -1,5 +1,5 @@
 <div [nwbScreenshotFrame]="detail.store.fullName() | nwText">
-  <nwb-crafting-calculator [entity]="id()" #calc class="bg-black rounded-md overflow-clip">
+  <nwb-crafting-calculator [entity]="id()" #calc class="bg-black rounded-md overflow-clip" [headClass]="'sticky -top-4 z-10 bg-black'">
     <nwb-item-detail
       content-top
       [itemId]="calc.itemId()"
