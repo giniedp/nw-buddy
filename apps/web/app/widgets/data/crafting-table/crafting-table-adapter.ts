@@ -29,6 +29,7 @@ import {
   craftingColRecipeLevel,
   craftingColSource,
   craftingColStandingEXP,
+  craftingColStation,
   craftingColTradeskill,
   craftingColTradeskillEXP,
 } from './crafting-table-cols'
@@ -74,15 +75,30 @@ export class CraftingTableAdapter implements DataViewAdapter<CraftingTableRecord
       recipes: this.db.recipesAll(),
       events: this.db.gameEventsByIdMap(),
       categoriesMap: this.db.craftingCategoriesByIdMap(),
+      stationsMap: this.db.stationTypesMetaMap(),
     }).pipe(
-      map(({ items, housing, recipes, events, categoriesMap }) => {
+      map(({ items, housing, recipes, events, categoriesMap, stationsMap }) => {
         recipes = recipes.filter((it) => !!it.ItemID)
         return recipes.map<CraftingTableRecord>((it) => {
           const itemId = getItemIdFromRecipe(it)
+          const stations: CraftingTableRecord['$stations'] = []
+          for (const stationId of [it.StationType1, it.StationType2, it.StationType3]) {
+            if (!stationId) {
+              continue
+            }
+            const station = stationsMap.get(stationId)?.stations?.[0]
+            stations.push(
+              station || {
+                stationID: stationId,
+                name: stationId,
+              },
+            )
+          }
           return {
             ...it,
             $gameEvent: events.get(it.GameEventID),
             $item: items.get(itemId) || housing.get(itemId),
+            $stations: stations,
             $ingredients: getCraftingIngredients(it)
               .map((ingr): CraftingIngredient => {
                 if (ingr.type === 'Item') {
@@ -132,6 +148,7 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>, char: Character
       craftingColHasYieldBonus(util),
       craftingColTradeskillEXP(util),
       craftingColStandingEXP(util),
+      craftingColStation(util),
       craftingColExpansion(util),
       craftingColItemChance(util),
       craftingColCooldownQuantity(util),

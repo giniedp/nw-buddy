@@ -17,6 +17,7 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
+import { ScannedStation } from '@nw-data/scanner'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { CharacterStore } from '~/data'
 import { RangeFilter } from '~/ui/data/ag-grid'
@@ -30,6 +31,7 @@ export type CraftingTableRecord = CraftingRecipeData & {
   $item: MasterItemDefinitions | HouseItems
   $ingredients: Array<CraftingIngredient>
   $gameEvent: GameEventData
+  $stations: Array<Pick<ScannedStation, 'stationID' | 'name'>>
 }
 export type CraftingIngredient = {
   itemId: string
@@ -481,5 +483,34 @@ export function craftingColCooldownCeconds(util: CraftingTableUtils) {
       return formatDistanceStrict(now, then)
     },
     width: 130,
+  })
+}
+
+export function craftingColStation(util: CraftingTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'station',
+    headerValueGetter: () => 'Station',
+    getQuickFilterText: () => null,
+    valueGetter: ({ data }) => data.$stations?.map((it) => it.stationID),
+
+    valueFormatter: ({ value, data }) => {
+      if (!value) {
+        return []
+      }
+      return data.$stations.map((it) => util.i18n.get(it.name?.replace(/^@/, '')) || humanize(it.stationID)) as any
+    },
+    width: 130,
+    ...util.selectFilter({
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const items = data.$stations || []
+        return items.map((item) => {
+          return {
+            id: item.stationID,
+            label: util.i18n.get(item.name?.replace(/^@/, '')) || humanize(item.stationID),
+          }
+        })
+      },
+    }),
   })
 }
