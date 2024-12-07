@@ -1,12 +1,12 @@
 import { computed, inject } from '@angular/core'
 import { signalStore, withComputed, withState } from '@ngrx/signals'
-import { getAffixMODs, getPerkItemClassGSBonus, getPerkScalingPerGearScore, NW_FALLBACK_ICON } from '@nw-data/common'
+import { NW_FALLBACK_ICON, getAffixMODs, getPerkItemClassGSBonus, getPerkScalingPerGearScore } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
-import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, from, map, of, switchMap } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
-import { combineLatestOrEmpty, rejectKeys, selectSignal, selectStream, tapDebug } from '~/utils'
+import { combineLatestOrEmpty, rejectKeys, selectSignal, selectStream } from '~/utils'
 
 export interface PerkDetailStoreState {
   perkId: string
@@ -154,7 +154,7 @@ function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState>
     affix: affix$,
     abilities: abilities$,
     refAbilities: refAbilities$,
-    refEffects: refEffects$.pipe(tapDebug('refEffects')),
+    refEffects: refEffects$,
     resourceItems: resourceItems$,
   })
 }
