@@ -55,7 +55,7 @@ export class NwTradeskillCircleComponent implements OnChanges {
           if (value !== 'auto') {
             return of(value)
           }
-          return this.skillName$.pipe(switchMap((name) => this.char.observeProgressionLevel(name)))
+          return this.skillName$.pipe(switchMap((name) => this.char.observeTradeskillLevel(name)))
         }),
       ),
     })

@@ -111,6 +111,9 @@ export const CharacterStore = signalStore(
         injector,
       }).pipe(map((map) => map.get(progressionId)))
     }
+    const observeTradeskillLevel = (skill: string) => {
+      return observeProgressionLevel(skill).pipe(map((level) => level ?? NW_MAX_TRADESKILL_LEVEL))
+    }
     return {
       getEffectStacks,
       setEffectStacks,
@@ -129,6 +132,7 @@ export const CharacterStore = signalStore(
         setProgresssionLevel(weapon, level)
       },
       observeProgressionLevel,
+      observeTradeskillLevel
     }
   }),
 )
