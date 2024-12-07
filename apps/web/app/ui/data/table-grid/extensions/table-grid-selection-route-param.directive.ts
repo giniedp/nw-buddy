@@ -1,5 +1,5 @@
-import { Directive, Input } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Directive, Input, input } from '@angular/core'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, NavigationEnd, Route, Router } from '@angular/router'
 import { isEqual } from 'lodash'
 import { NEVER, ReplaySubject, distinctUntilChanged, filter, map, merge, of, startWith, switchMap, tap } from 'rxjs'
@@ -10,12 +10,10 @@ import { TableGridStore } from '../table-grid.store'
   selector: 'nwb-table-grid[selectionRouteParam]',
 })
 export class DataGridSelectionRouteParamDirective {
-  @Input()
-  public set selectionRouteParam(value: string) {
-    this.selectionRouteParam$.next(value)
-  }
 
-  private selectionRouteParam$ = new ReplaySubject<string>(1)
+  public selectionRouteParam = input<string>(null)
+  private selectionRouteParam$ = toObservable(this.selectionRouteParam)
+  private selection$ = toObservable(this.store.selection)
 
   public constructor(
     private route: ActivatedRoute,
@@ -31,7 +29,7 @@ export class DataGridSelectionRouteParamDirective {
 
   private handleSelectionChange(param: string) {
     const childConfig = this.childRouteConfig(param)
-    return this.store.selection$.pipe(
+    return this.selection$.pipe(
       map((it) => it?.[0]),
       distinctUntilChanged(isEqual),
       tap((selection) => {

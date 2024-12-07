@@ -1,33 +1,28 @@
-import { Directive, Input } from '@angular/core'
+import { Directive, input } from '@angular/core'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { isEqual } from 'lodash'
-import { NEVER, ReplaySubject, combineLatest, merge, of, switchMap, takeUntil, tap } from 'rxjs'
-import { debounceSync } from '~/utils'
+import { NEVER, combineLatest, merge, of, switchMap, tap } from 'rxjs'
 import { AgGrid } from '~/ui/data/ag-grid'
+import { debounceSync } from '~/utils'
 import { TableGridPersistenceService } from '../table-grid-persistence.service'
 import { TableGridStore } from '../table-grid.store'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 @Directive({
   standalone: true,
   selector: 'nwb-table-grid[filterQueryParam]',
 })
 export class DataGridFilterQueryParamDirective {
-  @Input()
-  public set filterQueryParam(value: string) {
-    this.filterQueryParam$.next(value)
-  }
-
-  private filterQueryParam$ = new ReplaySubject<string>(1)
+  public filterQueryParam = input<string>(null)
 
   public constructor(
     private router: Router,
     private store: TableGridStore,
-    private persistence: TableGridPersistenceService
+    private persistence: TableGridPersistenceService,
   ) {
     combineLatest({
-      grid: this.store.grid$,
-      filterParam: this.filterQueryParam$,
+      grid: toObservable(this.store.grid),
+      filterParam: toObservable(this.filterQueryParam),
     })
       .pipe(
         debounceSync(),
@@ -44,7 +39,7 @@ export class DataGridFilterQueryParamDirective {
         tap(({ filterModel, filterParam }) => {
           // TODO: enable filter param
           // setQueryParam(this.router, filterParam, filterModel)
-        })
+        }),
       )
       .pipe(takeUntilDestroyed())
       .subscribe()

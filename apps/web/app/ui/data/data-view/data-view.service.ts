@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, afterNextRender } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
 import { Observable, map } from 'rxjs'
@@ -72,7 +72,9 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
       mode: 'table',
       modes: ['table', 'grid'],
     })
-    this.loadItems(adapter.connect())
+    setTimeout(() => {
+      this.loadItems(adapter.connect())
+    })
   }
 
   public loadCateory = this.effect((category: Observable<string | null>) => {
@@ -110,6 +112,9 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
 }
 
 function selectCategories<T>(adapter: DataViewAdapter<T>, items: T[]) {
+  if (!items) {
+    return []
+  }
   const result = new Map<string, DataViewCategory>()
 
   if (adapter.getCategories) {

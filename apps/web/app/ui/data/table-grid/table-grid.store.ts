@@ -1,7 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { isEqual } from 'lodash'
+import { patchState, signalState } from '@ngrx/signals'
 import { AgGrid } from '~/ui/data/ag-grid'
 
 export interface TableGridState<T> {
@@ -19,16 +18,28 @@ export interface TableGridState<T> {
 }
 
 @Injectable()
-export class TableGridStore<T = unknown> extends ComponentStore<TableGridState<T>> {
-  public readonly grid$ = this.select(({ grid }) => grid)
-  public readonly gridData$ = this.select(({ gridData }) => gridData)
-  public readonly gridOptions$ = this.select(({ gridOptions }) => gridOptions)
-  public readonly selection$ = this.select(({ selection }) => selection, { equal: isEqual })
-  public readonly pinned$ = this.select(({ pinned }) => pinned, { equal: isEqual })
-  public readonly identifyBy$ = this.selectSignal(({ identifyBy }) => identifyBy)
-  public readonly hasLoaded$ = this.select(({ hasLoaded }) => hasLoaded)
+export class TableGridStore<T = unknown> {
+  private state = signalState<TableGridState<T>>({
+    grid: null,
+    identifyBy: null,
+    gridData: [],
+    gridOptions: null,
+    selection: [],
+    pinned: [],
+    multiSelect: false,
+    filterModel: null,
+    hasLoaded: false,
+  })
 
-  public constructor() {
-    super({})
+  public readonly grid = this.state.grid
+  public readonly gridData = this.state.gridData
+  public readonly gridOptions = this.state.gridOptions
+  public readonly selection = this.state.selection
+  public readonly pinned = this.state.pinned
+  public readonly identifyBy = this.state.identifyBy
+  public readonly hasLoaded = this.state.hasLoaded
+
+  public patchState(state: Partial<TableGridState<T>>) {
+    patchState(this.state, state)
   }
 }

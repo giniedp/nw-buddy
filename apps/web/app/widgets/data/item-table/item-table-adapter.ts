@@ -6,6 +6,7 @@ import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
+import { combineLatest, defer } from 'rxjs'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -78,15 +79,17 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
   }
 
   private source$ = selectStream(
-    {
-      items: this.config?.source || this.db.itemsAll(),
-      itemsMap: this.db.itemsByIdMap(),
-      housingMap: this.db.housingItemsByIdMap(),
-      perksMap: this.db.perksByIdMap(),
-      affixMap: this.db.affixStatsByIdMap(),
-      transformsMap: this.db.itemTransformsByIdMap(),
-      transformsMapReverse: this.db.itemTransformsByToItemIdMap(),
-    },
+    defer(() =>
+      combineLatest({
+        items: this.config?.source || this.db.itemsAll(),
+        itemsMap: this.db.itemsByIdMap(),
+        housingMap: this.db.housingItemsByIdMap(),
+        perksMap: this.db.perksByIdMap(),
+        affixMap: this.db.affixStatsByIdMap(),
+        transformsMap: this.db.itemTransformsByIdMap(),
+        transformsMapReverse: this.db.itemTransformsByToItemIdMap(),
+      }),
+    ),
     ({ items, itemsMap, housingMap, perksMap, affixMap, transformsMap, transformsMapReverse }) => {
       function getItem(id: string) {
         if (!id) {
