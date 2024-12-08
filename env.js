@@ -34,6 +34,7 @@ const config = {
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
+  MUTATIONS_API_KEY: process.env.MUTATIONS_API_KEY,
   PACKAGE_VERSION: packageVersion,
   COMMIT_HASH: commitHash,
   NW_BADGE: env('NW_BADGE', nwWorkspace, ''),

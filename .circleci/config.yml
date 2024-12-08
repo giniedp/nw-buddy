@@ -61,6 +61,9 @@ jobs:
       - run:
           name: Build Website
           command: pnpm build:web
+      - run:
+          name: Transform Function
+          command: pnpm build:web
       # - run:
       #     name: Deliver Storybook
       #     command: pnpm wrangler pages deploy dist/web-storybook --project-name=nw-buddy --branch=storybook-${CIRCLE_BRANCH}

@@ -44,6 +44,7 @@
     "nw-generate": "ts-node ./tools/nw-generate.ts",
     "nw-inspect": "ts-node ./tools/nw-inspect.ts",
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
+    "nw-functions": "ts-node ./tools/nw-functions.ts",
     "nw-buddy": "pnpm build:tools && env-cmd --silent  -f .env node ./tools/dist/tools/nw-buddy.js",
     "nw-data-update": "pnpm nw-buddy unpack && pnpm nw-buddy convert -u && pnpm nw-buddy import",
     "nw-quick-update": "pnpm nw-buddy extract -f **/*.datasheet **/*.loc.xml **/*.json && pnpm nw-buddy import \"locale,tables,code\"",

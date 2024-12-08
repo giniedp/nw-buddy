@@ -1,5 +1,9 @@
-export async function onRequest(context) {
-  const result = await fetch(`https://mutations.5con.club/api/http_trigger`)
+export async function onRequest({ env }) {
+  const result = await fetch(`https://mutations.5con.club/api/v2/mutations/current`, {
+    headers: {
+      'x-api-key': env.MUTATIONS_API_KEY
+    }
+  })
     .then((it) => it.json())
     .then((it) => it.expeditions)
     .then((list) => list.map((it) => {
