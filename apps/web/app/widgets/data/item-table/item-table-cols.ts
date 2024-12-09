@@ -22,7 +22,14 @@ import {
   isItemResource,
   isMasterItem,
 } from '@nw-data/common'
-import { AffixStatData, HouseItems, MasterItemDefinitions, PerkData } from '@nw-data/generated'
+import {
+  AffixStatData,
+  CategoricalProgressionData,
+  HouseItems,
+  ItemCurrencyConversionData,
+  MasterItemDefinitions,
+  PerkData,
+} from '@nw-data/generated'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -37,6 +44,13 @@ export type ItemTableRecord = MasterItemDefinitions & {
   $perkBuckets?: string[]
   $transformTo?: MasterItemDefinitions | HouseItems
   $transformFrom?: Array<MasterItemDefinitions | HouseItems>
+  $conversions?: Array<ItemCurrencyConversionData>
+  $shops?: Array<
+    Pick<
+      CategoricalProgressionData,
+      'CategoricalProgressionId' | 'DisplayName' | 'DisplayDescription' | 'IconPath' | 'EventId'
+    >
+  >
 }
 
 export function itemColIcon(util: ItemTableUtils) {
@@ -638,6 +652,40 @@ export function colDefPin(util: ItemTableUtils) {
           })
         },
       })
+    }),
+  })
+}
+export function itemColShops(util: ItemTableUtils) {
+  return util.colDef({
+    colId: 'currencyShops',
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Shops',
+    width: 150,
+    valueGetter: ({ data }) => data.$shops?.map((it) => it?.CategoricalProgressionId),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const shops = data.$shops || []
+      return util.el('div.flex.flex-row.items-center.h-full', {}, [
+        ...shops.map((shop) =>
+          util.elImg({
+            class: ['w-7', 'h-7', 'nw-icon', 'flex-none'],
+            src: shop?.IconPath || NW_FALLBACK_ICON,
+          }),
+        ),
+      ])
+    }),
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const shops = data.$shops || []
+        return shops.map((shop) => {
+          return {
+            id: shop.CategoricalProgressionId,
+            label: shop.EventId ? humanize(shop.EventId) : util.i18n.get(shop.DisplayName),
+            icon: shop.IconPath || NW_FALLBACK_ICON,
+          }
+        })
+      },
     }),
   })
 }

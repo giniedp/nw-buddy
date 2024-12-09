@@ -1,21 +1,23 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
-import { COLS_MASTERITEMDEFINITIONS, MasterItemDefinitions } from '@nw-data/generated'
+import { NW_FALLBACK_ICON, getItemId, getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
+import { COLS_MASTERITEMDEFINITIONS, CategoricalProgressionData, MasterItemDefinitions } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
+import { uniq } from 'lodash'
 import { combineLatest, defer } from 'rxjs'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { selectStream } from '~/utils'
+import { humanize, selectStream } from '~/utils'
 import { ItemCellComponent } from './item-cell.component'
 import {
   ItemTableRecord,
   itemColAttributeMods,
   itemColBookmark,
+  itemColShops,
   itemColEvent,
   itemColExpansion,
   itemColGearScore,
@@ -88,9 +90,21 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         affixMap: this.db.affixStatsByIdMap(),
         transformsMap: this.db.itemTransformsByIdMap(),
         transformsMapReverse: this.db.itemTransformsByToItemIdMap(),
+        conversionMap: this.db.itemCurrencyConversionByItemIdMap(),
+        progressionMap: this.db.categoricalProgressionByIdMap(),
       }),
     ),
-    ({ items, itemsMap, housingMap, perksMap, affixMap, transformsMap, transformsMapReverse }) => {
+    ({
+      items,
+      itemsMap,
+      housingMap,
+      perksMap,
+      affixMap,
+      transformsMap,
+      transformsMapReverse,
+      conversionMap,
+      progressionMap,
+    }) => {
       function getItem(id: string) {
         if (!id) {
           return null
@@ -99,6 +113,20 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
       }
       items = items.map((it): ItemTableRecord => {
         const perks = getItemPerks(it, perksMap)
+        const conversions = conversionMap.get(getItemId(it)) || []
+        const shops = uniq(conversions.map((it) => it.CategoricalProgressionId)).map(
+          (id): CategoricalProgressionData => {
+            const result = progressionMap.get(id as any)
+            if (result) {
+              return result
+            }
+            return {
+              CategoricalProgressionId: id as any,
+              DisplayName: humanize(id as any),
+              IconPath: NW_FALLBACK_ICON,
+            } as any
+          },
+        )
         return {
           ...it,
           $perks: perks,
@@ -106,6 +134,8 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
           $perkBuckets: getItemPerkBucketIds(it),
           $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
           $transformFrom: (transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),
+          $conversions: conversions,
+          $shops: shops,
         }
       })
       const filter = this.config?.filter
@@ -139,6 +169,7 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColPrice(util),
       itemColGearScore(util),
       itemColSource(util),
+      itemColShops(util),
       itemColEvent(util),
       itemColExpansion(util),
       itemColItemType(util),

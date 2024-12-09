@@ -411,6 +411,14 @@ export abstract class NwDataSheets {
   public categoricalProgressionByIdMap = primaryIndex(this.categoricalProgressionAll, 'CategoricalProgressionId')
   public categoricalProgressionById = indexLookup(this.categoricalProgressionByIdMap)
 
+  public itemCurrencyConversionAll = table(() => this.loadDatasheets(DATASHEETS.ItemCurrencyConversionData))
+  public itemCurrencyConversionByIdMap = secondaryIndex(this.itemCurrencyConversionAll, 'ConversionID')
+  public itemCurrencyConversionById = indexLookup(this.itemCurrencyConversionByIdMap)
+  public itemCurrencyConversionByItemIdMap = secondaryIndex(this.itemCurrencyConversionAll, 'ItemID')
+  public itemCurrencyConversionByItemId = indexLookup(this.itemCurrencyConversionByItemIdMap)
+  public itemCurrencyConversionByProgressionIdMap = secondaryIndex(this.itemCurrencyConversionAll, 'CategoricalProgressionId')
+  public itemCurrencyConversionByProgressionId = indexLookup(this.itemCurrencyConversionByProgressionIdMap)
+
   public achievementsAll = table(() => this.loadDatasheets(DATASHEETS.AchievementData))
   public achievementsByIdMap = primaryIndex(this.achievementsAll, 'AchievementID')
   public achievementsById = indexLookup(this.achievementsByIdMap)
