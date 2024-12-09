@@ -147,6 +147,7 @@ export function abilityColWeaponTag(util: AbilityTableUtils) {
 export function abilityColSource(util: AbilityTableUtils) {
   return util.colDef<string>({
     colId: 'source',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Source',
     valueGetter: ({ data }) => data['$source'],
     hide: true,

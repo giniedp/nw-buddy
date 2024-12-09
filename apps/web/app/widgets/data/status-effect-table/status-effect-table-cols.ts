@@ -54,6 +54,7 @@ export function statusEffectColStatusID(util: StatusEffectTableUtils) {
 export function statusEffectColSource(util: StatusEffectTableUtils) {
   return util.colDef<string>({
     colId: 'source',
+    headerClass: 'bg-secondary bg-opacity-15',
     hide: true,
     headerValueGetter: () => 'Source',
     valueGetter: ({ data }) => data['$source'],

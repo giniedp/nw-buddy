@@ -10,6 +10,7 @@ export type SpellTableRecord = SpellData
 export function spellColIcon(util: SpellTableUtils) {
   return util.colDef({
     colId: 'icon',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,

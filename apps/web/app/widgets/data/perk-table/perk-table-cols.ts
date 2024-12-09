@@ -74,6 +74,7 @@ export function perkColId(util: PerkTableUtils) {
 export function perkCraftMod(util: PerkTableUtils) {
   return util.colDef<string[]>({
     colId: 'perkCraftModIds',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Craft Mod',
     valueGetter: ({ data }) => data.$items?.map((it) => it.ItemID),
     getQuickFilterText: ({ data }) => {
