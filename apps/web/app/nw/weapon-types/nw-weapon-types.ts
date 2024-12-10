@@ -15,6 +15,7 @@ export interface NwWeaponType {
   DamageType: DamageType
   DamageTablePrefix: string
   StatsRef: string
+  ProgressionId: string
 }
 
 export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
@@ -33,6 +34,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/1hswordsmall.png',
     DamageTablePrefix: '1H_Sword_',
     StatsRef: 'SwordT5',
+    ProgressionId: 'SwordAbilityTable',
   },
   {
     UIName: 'ui_rapier',
@@ -48,6 +50,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/1hrapiersmall.png',
     DamageTablePrefix: '1H_Rapier_',
     StatsRef: 'RapierT5',
+    ProgressionId: 'RapierAbilityTable',
   },
   {
     UIName: 'ui_hatchet',
@@ -63,6 +66,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/1hhatchetsmall.png',
     DamageTablePrefix: 'Hatchet_',
     StatsRef: 'HatchetT5',
+    ProgressionId: 'HatchetAbilityTable'
   },
   {
     UIName: 'ui_flail',
@@ -78,6 +82,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/1hflailsmall.png',
     DamageTablePrefix: '1H_Flail_',
     StatsRef: 'FlailT5',
+    ProgressionId: 'FlailAbilityTable'
   },
   // TWO HANDED
   {
@@ -94,6 +99,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/spearasmall.png',
     DamageTablePrefix: '2H_Spear_',
     StatsRef: 'SpearT5',
+    ProgressionId: 'SpearAbilityTable'
   },
   {
     UIName: 'ui_greataxe',
@@ -109,6 +115,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/2hgreataxesmall.png',
     DamageTablePrefix: 'GreatAxe_',
     StatsRef: '2HAxeT5',
+    ProgressionId: 'GreatAxeAbilityTable'
   },
   {
     UIName: 'ui_warhammer',
@@ -124,6 +131,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/2hdemohammersmall.png',
     DamageTablePrefix: 'Warhammer_',
     StatsRef: '2HHammerT5',
+    ProgressionId: 'WarHammerAbilityTable'
   },
   {
     UIName: 'ui_greatsword',
@@ -139,6 +147,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/2hgreatswordsmall.png',
     DamageTablePrefix: 'GreatSword_',
     StatsRef: '2hGreatSwordT5',
+    ProgressionId: 'GreatSwordAbilityTable'
   },
 
   // RANGED
@@ -156,6 +165,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/2hmusketasmall.png',
     DamageTablePrefix: 'Musket',
     StatsRef: 'MusketT5',
+    ProgressionId: 'MusketAbilityTable'
   },
   {
     UIName: 'ui_bow',
@@ -171,6 +181,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/bowbsmall.png',
     DamageTablePrefix: 'Bow',
     StatsRef: 'BowT5',
+    ProgressionId: 'BowAbilityTable'
   },
   {
     UIName: 'ui_blunderbuss',
@@ -186,6 +197,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/blunderbusssmall.png',
     DamageTablePrefix: 'Blunderbuss_',
     StatsRef: 'BlunderbussT5',
+    ProgressionId: 'BlunderbussAbilityTable'
   },
 
   // MAGIC
@@ -203,6 +215,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/stafffiresmall.png',
     DamageTablePrefix: 'Firestaff_',
     StatsRef: 'FireStaffT5',
+    ProgressionId: 'FireMagicAbilityTable'
   },
   {
     UIName: 'ui_lifestaff',
@@ -218,6 +231,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/stafflifesmall.png',
     DamageTablePrefix: 'LifeStaff_',
     StatsRef: 'LifeStaffT5',
+    ProgressionId: 'LifeMagicAbilityTable'
   },
   {
     UIName: 'ui_icemagic',
@@ -233,6 +247,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/icegauntletsmall.png',
     DamageTablePrefix: 'IceMagic_',
     StatsRef: '1hElementalGauntlet_IceT5',
+    ProgressionId: 'IceMagicAbilityTable'
   },
   {
     UIName: 'ui_voidmagic',
@@ -248,6 +263,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/voidgauntletsmall.png',
     DamageTablePrefix: 'VoidGauntlet_',
     StatsRef: 'VoidGauntletT5',
+    ProgressionId: 'VoidGauntletAbilityTable'
   },
 ]
 

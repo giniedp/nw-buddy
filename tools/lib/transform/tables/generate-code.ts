@@ -121,6 +121,20 @@ const ENUMS = {
     RewardType: 'EntitlementRewardType',
     SourceType: 'EntitlementSourceType',
   },
+  CraftingRecipeData: {
+    Type1: 'CraftingIngredientType',
+    Type2: 'CraftingIngredientType',
+    Type3: 'CraftingIngredientType',
+    Type4: 'CraftingIngredientType',
+    Type5: 'CraftingIngredientType',
+    Type6: 'CraftingIngredientType',
+    Type7: 'CraftingIngredientType',
+    Type8: 'CraftingIngredientType',
+    Type9: 'CraftingIngredientType',
+    Type10: 'CraftingIngredientType',
+    CraftingCategory: 'CraftingCategory',
+    Tradeskill: 'CraftingTradeskill',
+  },
   BuffBucketData: {
     TableType: 'BuffTableType',
     BuffType1: 'BuffType',
@@ -136,7 +150,9 @@ const ENUMS = {
   WeaponAppearanceDefinitions: {
     ItemClass: 'ItemClass',
   },
-
+  CategoricalProgressionData: {
+    CategoricalProgressionId: 'ProgressionCategory',
+  },
   MasterItemDefinitions: {
     ItemClass: 'ItemClass',
     ItemType: 'ItemType',

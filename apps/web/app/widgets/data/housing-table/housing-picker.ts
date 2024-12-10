@@ -1,12 +1,10 @@
 import { Injector } from '@angular/core'
-import { NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive } from '~/utils'
 import { HousingTableAdapter, buildPickerHousingGridOptions } from './housing-table-adapter'
 import { HousingTableRecord } from './housing-table-cols'
 
 export function openHousingItemsPicker(options: {
-  db: NwDataService
   injector?: Injector
   title?: string
   selection?: string[]

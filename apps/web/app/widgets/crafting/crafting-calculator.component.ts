@@ -1,21 +1,24 @@
+import { CdkMenuModule } from '@angular/cdk/menu'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, effect, inject, input, signal, untracked } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CraftingRecipeData } from '@nw-data/generated'
-import { combineLatest } from 'rxjs'
+import { switchMap, take } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgDollarSign, svgGears, svgPercent } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
+import { pickPerkForItem } from '../data/perk-table'
 import { PriceImporterModule } from '../price-importer/price-importer.module'
+import { CraftingCalculatorHeaderComponent } from './crafting-calculator-header.component'
 import { CraftingCalculatorStore } from './crafting-calculator.store'
-import { CraftingChanceMenuComponent } from './crafting-chance-menu'
+import { CraftingSlotComponent } from './crafting-slot'
 import { CraftingStepComponent } from './crafting-step'
 import { CraftingSummaryComponent } from './crafting-summary'
+import { CraftingPerkSlot } from './loader/load-recipe'
 import { AmountMode } from './types'
-import { CdkMenuModule } from '@angular/cdk/menu'
-import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -32,62 +35,71 @@ import { LayoutModule } from '~/ui/layout'
     LayoutModule,
     CraftingStepComponent,
     OverlayModule,
-    CraftingChanceMenuComponent,
     CraftingSummaryComponent,
     CdkMenuModule,
+    CraftingSlotComponent,
+    CraftingCalculatorHeaderComponent,
   ],
   providers: [CraftingCalculatorStore],
   host: {
     class: 'block',
   },
 })
-export class CraftingCalculatorComponent implements OnInit {
-  @Input()
-  public set amount(value: number) {
-    this.store.patchState({ amount: value })
-  }
+export class CraftingCalculatorComponent {
+  private db = injectNwData()
+  private injector = inject(Injector)
+  protected store = inject(CraftingCalculatorStore)
+  public amount = input<number>(1)
+  public amountMode = input<AmountMode>('net')
+  public recipeOnly = input<boolean>(false)
+  public headClass = input<string | string[]>([])
+  public entity = input<CraftingRecipeData | string>()
 
-  @Input()
-  public set amountMode(value: AmountMode) {
-    this.store.patchState({ amountMode: value })
-  }
+  public itemId = this.store.itemId
+  public craftedPerks = this.store.craftedPerks
+  public craftedGearScore = this.store.craftedGearScore
 
-  @Input()
-  public set recipe(value: CraftingRecipeData) {
-    this.store.patchState({
-      recipeId: value?.RecipeID,
-    })
-  }
+  public gearScoreInfo = this.store.gearScoreDetails
+  public recipe = this.store.recipe
 
-  @Input()
-  public set recipeId(value: string) {
-    this.store.patchState({
-      recipeId: value,
-    })
-  }
-
-  @Input()
-  public recipeOnly = false
-
-  protected iconImporter = svgDollarSign
-  protected iconMode = svgPercent
-  protected iconOptions = svgGears
-  protected isToolOpen = false
-
-  protected vm$ = combineLatest({
-    recipe: this.store.recipe$,
-    amount: this.store.amount$,
-    amountMode: this.store.amountMode$,
-    tree: this.store.tree$,
+  protected totalCraft = signal<number>(1)
+  #fxLoad = effect(() => {
+    const entity = this.entity()
+    const recipeId = typeof entity === 'string' ? entity : entity?.RecipeID
+    untracked(() => this.store.load(recipeId))
   })
 
-  public constructor(private store: CraftingCalculatorStore) {}
+  #fxConfig = effect(() => {
+    const amount = this.amount()
+    const amountMode = this.amountMode()
+    untracked(() => {
+      this.store.updateAmount(amount)
+      this.store.updateAmountMode(amountMode)
+    })
+  })
 
-  public ngOnInit(): void {
-    this.store.load()
-  }
-
-  protected toggleQuantityMode() {
-    this.store.toggleQuantityMode()
+  protected pickCraftMod(slot: CraftingPerkSlot) {
+    pickPerkForItem({
+      db: this.db,
+      injector: this.injector,
+      slotKey: slot.bucketKey,
+      craftOnly: true,
+      record: this.store.itemInstance(),
+    })
+      .pipe(
+        switchMap(async (perk) => {
+          const perkId = perk?.PerkID
+          const resources = await this.db.resourceItemsForPerkId(perkId)
+          const itemId = resources?.[0]?.ResourceID
+          return {
+            perkId,
+            itemId,
+          }
+        }),
+      )
+      .pipe(take(1))
+      .subscribe(({ perkId, itemId }) => {
+        this.store.updateSlot(slot, perkId, itemId)
+      })
   }
 }

@@ -4,11 +4,10 @@ import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { AttributeRef, patchPrecision } from '@nw-data/common'
 import { DamageType } from '@nw-data/generated'
-import { uniq } from 'lodash'
 import { filter, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
+import { damageTypeIcon } from '~/nw/weapon-types'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgInfo } from '~/ui/icons/svg'
@@ -17,7 +16,6 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { PerkTableAdapter } from '~/widgets/data/perk-table'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
-import { StackedValueControlComponent } from './stacked-value-control.component'
 import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
@@ -25,14 +23,23 @@ import { PrecisionInputComponent } from './precision-input.component'
   selector: 'nwb-offender-conversion-control',
   templateUrl: './offender-conversion-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule, PrecisionInputComponent],
+  imports: [
+    CommonModule,
+    NwModule,
+    FormsModule,
+    InputSliderComponent,
+    IconsModule,
+    LayoutModule,
+    TooltipModule,
+    PrecisionInputComponent,
+  ],
   host: {
     class: 'form-control',
   },
 })
 export class OffenderConversionControlComponent {
   private injector = inject(Injector)
-  private data = inject(NwDataService)
+  private db = injectNwData()
 
   protected store = inject(DamageCalculatorStore)
   protected iconMore = svgEllipsisVertical
@@ -124,7 +131,7 @@ export class OffenderConversionControlComponent {
       },
     })
       .pipe(filter((it) => !!it))
-      .pipe(switchMap((it) => this.data.perk(it[0])))
+      .pipe(switchMap((it) => this.db.perksById(it[0])))
       .subscribe((perk) => {
         this.affixId.value = perk?.Affix || null
       })

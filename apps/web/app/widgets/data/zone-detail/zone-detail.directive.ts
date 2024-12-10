@@ -1,4 +1,4 @@
-import { Directive, forwardRef, Input } from '@angular/core'
+import { Directive, forwardRef, inject, Input } from '@angular/core'
 import { ZoneDetailStore } from './zone-detail.store'
 
 @Directive({
@@ -6,20 +6,19 @@ import { ZoneDetailStore } from './zone-detail.store'
   selector: '[nwbZoneDetail]',
   exportAs: 'zoneDetail',
   providers: [
-    {
-      provide: ZoneDetailStore,
-      useExisting: forwardRef(() => ZoneDetailDirective),
-    },
+    ZoneDetailStore,
   ],
 })
-export class ZoneDetailDirective extends ZoneDetailStore {
+export class ZoneDetailDirective {
+  public store = inject(ZoneDetailStore)
+
   @Input()
   public set nwbZoneDetail(value: string | number) {
-    this.load({ zoneId: value })
+    this.store.load({ territoryId: value })
   }
 
   @Input()
   public set markVital(value: string) {
-    this.mark({ vitalId: value })
+    this.store.markVital(value)
   }
 }

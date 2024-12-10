@@ -8,27 +8,27 @@ import {
   ValueGetterFunc,
   ValueGetterParams,
 } from '@ag-grid-community/core'
-import { DOCUMENT, DecimalPipe } from '@angular/common'
+import { DOCUMENT } from '@angular/common'
 import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
+import { Router } from '@angular/router'
+import { ItemRarity } from '@nw-data/common'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkResource, NwLinkService } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
-import { ItemPreferencesService } from '~/preferences'
-import { ElementChildren, ElementProps, TagName, createEl } from '~/utils'
-import { AsyncCellRenderer, AsyncCellRendererParams } from '~/ui/data/ag-grid'
-import { getIconFrameClass } from '../../item-frame'
-import { colDefPrecision } from './utils'
-import { Router } from '@angular/router'
-import { ItemRarity } from '@nw-data/common'
-import { NwDataService } from '~/data'
-import { GridSelectFilterParams } from '../ag-grid/grid-select-filter/types'
-import { GridSelectFilter } from '../ag-grid/grid-select-filter'
 import { NwHtmlService } from '~/nw/nw-html.service'
+import { ItemPreferencesService } from '~/preferences'
+import { AsyncCellRenderer, AsyncCellRendererParams } from '~/ui/data/ag-grid'
+import { ElementChildren, ElementProps, TagName, createEl } from '~/utils'
+import { getIconFrameClass } from '../../item-frame'
+import { GridSelectFilter } from '../ag-grid/grid-select-filter'
+import { GridSelectFilterParams } from '../ag-grid/grid-select-filter/types'
+import { colDefPrecision } from './utils'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
-  public readonly db = inject(NwDataService)
+  public readonly db = injectNwData()
   public readonly document: Document = inject(DOCUMENT)
   public readonly expr = inject(NwExpressionService)
   public readonly i18n = inject(TranslateService)
@@ -49,7 +49,7 @@ export class TableGridUtils<T = any> {
 
   public fieldGetter<K extends keyof T = keyof T>(
     k: K,
-    transform: (it: T[K]) => any = (it) => it
+    transform: (it: T[K]) => any = (it) => it,
   ): string | ValueGetterFunc {
     return this.valueGetter(({ data }) => transform(data[k]))
   }
@@ -70,7 +70,9 @@ export class TableGridUtils<T = any> {
     return data
   }
 
-  public colGroupDef<V>(data: ColDef<T, V> & ColGroupDef & Required<Pick<ColGroupDef, 'children' | 'headerName'>>): ColDef {
+  public colGroupDef<V>(
+    data: ColDef<T, V> & ColGroupDef & Required<Pick<ColGroupDef, 'children' | 'headerName'>>,
+  ): ColDef {
     return data
   }
 
@@ -100,7 +102,7 @@ export class TableGridUtils<T = any> {
   public el<T extends keyof HTMLElementTagNameMap>(
     tagName: TagName<T>,
     attr: ElementProps<T>,
-    children?: ElementChildren
+    children?: ElementChildren,
   ) {
     return createEl(this.document, tagName, attr, children)
   }
@@ -142,7 +144,8 @@ export class TableGridUtils<T = any> {
       rarity?: ItemRarity
       isNamed?: boolean
       isArtifact?: boolean
-    }
+      isResource?: boolean
+    },
   ) {
     const showBorder = props.rarity && props.rarity !== 'common'
     return this.elPicture(
@@ -152,17 +155,22 @@ export class TableGridUtils<T = any> {
             rarity: props.rarity,
             isNamed: props.isNamed,
             isArtifact: props.isArtifact,
+            isResource: props.isResource,
             solid: true,
           }),
           ...(props.class || []),
         ],
       },
       [
-        showBorder ? this.el('span', { class: 'nw-item-icon-border' }) : null,
+        showBorder
+          ? this.el('span', {
+              class: ['nw-item-icon-border', ...(props.isResource ? ['rounded-full', 'overflow-clip'] : [])],
+            })
+          : null,
         this.elImg({
           src: props.icon,
         }),
-      ]
+      ],
     )
   }
 
@@ -172,7 +180,7 @@ export class TableGridUtils<T = any> {
       attr,
       tags?.map((attr) => {
         return this.el('span.badge.badge-sm.badge-secondary.bg-secondary.bg-opacity-50.px-1', attr)
-      })
+      }),
     )
   }
 
@@ -194,7 +202,7 @@ export class TableGridUtils<T = any> {
             text: transform(tag),
             class: getClass?.(tag),
           })
-        })
+        }),
       )
     }
   }

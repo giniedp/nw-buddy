@@ -1,83 +1,101 @@
+import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { Component } from '@angular/core'
-import { getDamageCoefForWeaponTag, getDamageFactorForGearScore, getWeaponTagFromWeapon, isAffixSplitDamage } from '@nw-data/common'
-import { combineLatest, map, switchMap } from 'rxjs'
+import { Component, computed, HostBinding, inject } from '@angular/core'
+import {
+  getDamageCoefForWeaponTag,
+  getDamageFactorForGearScore,
+  getWeaponTagFromWeapon,
+  isAffixSplitDamage,
+} from '@nw-data/common'
+import { firstValueFrom } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
-import { NwWeaponTypesService, damageTypeIcon } from '~/nw/weapon-types'
+import { damageTypeIcon, NwWeaponTypesService } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
-import { mapFilter, mapFind, mapList, switchMapCombineLatest } from '~/utils'
+import { apiResource } from '~/utils'
 import { ItemDetailStore } from './item-detail.store'
+import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 
 @Component({
   standalone: true,
   selector: 'nwb-item-detail-gs-damage',
   template: `
-    <div *ngFor="let item of vm$ | async; trackBy: trackBy" class="flex flex-row gap-1">
-      <img [nwImage]="item.icon" class="w-5 h-5" />
-      <span class="font-bold">{{ item.value | number : '0.0-0' }}</span>
-      <span class="opacity-50">{{ item.label | nwText }}</span>
-    </div>
+    @for (row of rows(); track $index) {
+      <div class="flex flex-row gap-1" [@inOut]>
+        <img [nwImage]="row.icon" class="w-5 h-5" />
+        <span class="font-bold">{{ row.value | number: '0.0-0' }}</span>
+        <span class="opacity-50">{{ row.label | nwText }}</span>
+      </div>
+    }
   `,
   host: {
     class: 'block',
   },
   imports: [CommonModule, IconsModule, NwModule],
+  animations: [
+    IS_HIDDEN_ANIM,
+    IN_OUT_ANIM,
+  ]
 })
 export class ItemDetailGsDamage {
-  protected trackBy = (i: number) => i
-  protected weaponTag$ = this.detail.weaponStats$.pipe(map((it) => getWeaponTagFromWeapon(it)))
-  protected weaponType$ = this.weaponTag$.pipe(switchMap((tag) => this.weapons.forWeaponTag(tag)))
-  protected damageType$ = this.weaponType$.pipe(map((it) => it?.DamageType))
-  protected splitDamage$ = this.detail.perkSlots$.pipe(
-    switchMapCombineLatest((it) => this.db.affixStat(it?.perk?.Affix)),
-    mapFilter((it) => !!it),
-    mapFind(isAffixSplitDamage)
-  )
+  private db = injectNwData()
+  private store = inject(ItemDetailStore)
+  private weapons = inject(NwWeaponTypesService)
 
-  protected vm$ = combineLatest({
-    dmgGS: this.detail.itemGS$.pipe(map(getDamageFactorForGearScore)),
-    dmgCoef: this.weaponTag$.pipe(map(getDamageCoefForWeaponTag)),
-    dmgBase: this.detail.weaponStats$.pipe(map((it) => it?.BaseDamage || 0)),
-    dmgType: this.damageType$,
-    split: this.splitDamage$,
-  }).pipe(
-    map(({ dmgGS, dmgCoef, dmgBase, dmgType, split }) => {
-      const dmg = dmgBase * dmgGS * dmgCoef
-      if (!dmg) {
-        return []
+  @HostBinding('@isHidden')
+  protected get isHiddenTrigger() {
+    return this.isHidden()
+  }
+
+  protected resource = apiResource({
+    request: () => {
+      const weaponId = this.store.item()?.ItemStatsRef
+      const affixIds = this.store.itemPerkSlots()?.map((it) => it?.perk?.Affix)
+      return { weaponId, affixIds }
+    },
+    loader: async ({ request }) => {
+      const weapon = await this.db.weaponItemsById(request.weaponId)
+      const weaponTag = getWeaponTagFromWeapon(weapon)
+      const weaponType = await firstValueFrom(this.weapons.forWeaponTag(weaponTag))
+      const damageType = weaponType?.DamageType
+      const affixes = await Promise.all(request.affixIds.map((it) => this.db.affixStatsById(it)))
+      return {
+        weapon,
+        weaponTag,
+        weaponType,
+        damageType,
+        affixes,
       }
-      if (split) {
-        return [
-          {
-            type: dmgType,
-            dmg: Math.floor(dmg * (1 - split.DamagePercentage)),
-          },
-          {
-            type: split.DamageType,
-            dmg: Math.floor(dmg * split.DamagePercentage),
-          },
-        ]
-      }
+    },
+  })
+
+  protected rows = computed(() => {
+    const value = this.resource.value()
+    if (!value || !value.damageType) {
+      return []
+    }
+    const { weapon, weaponTag, damageType, affixes } = this.resource.value()
+    const dmgGS = getDamageFactorForGearScore(this.store.itemGS())
+    const dmgCoef = getDamageCoefForWeaponTag(weaponTag)
+    const dmgBase = weapon?.BaseDamage || 0
+    const split = affixes.find(isAffixSplitDamage)
+    const dmg = dmgBase * dmgGS * dmgCoef
+    if (split) {
       return [
-        {
-          dmg: Math.floor(dmg),
-          type: dmgType,
-        },
+        buildRow(damageType, Math.floor(dmg * (1 - split.DamagePercentage))),
+        buildRow(split.DamageType, Math.floor(dmg * split.DamagePercentage)),
       ]
-    }),
-    mapList((it) => ({
-      icon: damageTypeIcon(it.type),
-      label: `${it.type}_DamageName`,
-      value: it.dmg,
-    }))
-  )
+    }
+    return [buildRow(damageType, Math.floor(dmg))]
+  })
 
-  public constructor(
-    protected detail: ItemDetailStore,
-    private weapons: NwWeaponTypesService,
-    private db: NwDataService
-  ) {
-    //
+  protected isHidden = computed(() => !this.rows()?.length)
+}
+
+function buildRow(type: string, dmg: number) {
+  return {
+    icon: damageTypeIcon(type),
+    label: `${type}_DamageName`,
+    value: dmg,
   }
 }

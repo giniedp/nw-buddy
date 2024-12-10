@@ -77,16 +77,28 @@ function parseExpression(text: string): NwExp {
           reader.next()
           break
         default: {
-          const token = reader.readUntil(' \t{(*/+-')
+          let token = reader.readUntil(' \t{(*/+-=')
+          if (reader.char === '=') {
+            console.warn(`skipped assigmnet operation "${token}=" in "${text}"`)
+            token = ''
+            reader.next()
+          }
+          else if (reader.char === '-' && reader.peek(-1)?.toLowerCase() === 'e' && reader.peek(1)?.match(/\d/)) {
+            token += '-'
+            reader.next()
+            token += reader.readUntil(' \t{(*/+-')
+          }
 
-          if (/^\s*\d+(.\d+)?\s*$/.test(token)) {
+          if (/^\s*\d+(\.\d+)?([eE]-\d+)?\s*$/.test(token)) {
             // Integer and Floating
             expr.push(new NwExpValue(token))
-          } else if (/^\s*.\d+\s*$/.test(token)) {
+          } else if (/^\s*.\d+([eE]-\d+)?\s*$/.test(token)) {
             // Floating without leading 0 e.g. .001
             expr.push(new NwExpValue(token))
-          } else {
+          } else if (token) {
             expr.push(new NwExpLookup(token))
+          } else {
+            // skipped
           }
         }
       }

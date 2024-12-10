@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, untracked } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { BackstoryDetailStore } from './backstory-detail.store'
 import { BackstoryLootNodeComponent } from './backstory-loot-node.component'
 import { BackstoryLootTreeStore } from './backstory-loot-tree.store'
-import { FormsModule } from '@angular/forms'
 
 @Component({
   standalone: true,
@@ -16,16 +16,17 @@ import { FormsModule } from '@angular/forms'
     '[class.hidden]': '!hasLoot()',
   },
 })
-export class BackstoryLootTreeComponent implements OnInit {
+export class BackstoryLootTreeComponent {
   protected detail = inject(BackstoryDetailStore)
   protected store = inject(BackstoryLootTreeStore)
   protected hasLoot = this.store.hasLoot
   protected nodes = this.store.nodesFiltered
   protected query = this.store.query
 
-  public ngOnInit(): void {
-    this.store.load(this.detail.backstory$)
-  }
+  #fxLoad = effect(() => {
+    const backstory = this.detail.backstory()
+    untracked(() => this.store.load(backstory))
+  })
 
   protected updateQuery(value: string) {
     this.store.patchState({ query: value })

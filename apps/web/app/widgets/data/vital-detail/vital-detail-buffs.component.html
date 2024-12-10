@@ -1,38 +1,89 @@
-@for (item of effects(); track $index) {
-  <a
-    class="flex flex-row gap-2 link-hover text-sky-600"
-    [routerLink]="['status-effect', item.id] | nwLink"
-    [tooltip]="tplEffectTip"
-    [tooltipClass]="'p-0 w-full max-w-sm'"
-  >
-    <picture class="flex-none">
-      <img [nwImage]="item.icon" class="w-6 h-6" />
-    </picture>
+@if (hasError()) {
+  <div swap class="alert shadow-lg bg-base-100">
+    <nwb-icon [icon]="errorIcon" class="w-6 h-6 text-error self-start" />
     <div>
-      <b>{{ item.label | nwText }}: </b>
-      {{ item.text | nwText }}
+      <h3 class="font-bold">Error</h3>
+      <div class="text-xs">Failed to load data</div>
     </div>
-    <ng-template #tplEffectTip>
-      <nwb-status-effect-detail [effectId]="item.id" />
-    </ng-template>
-  </a>
-}
-@for (item of abilities(); track $index) {
-  <a
-    class="flex flex-row gap-2 link-hover text-sky-600"
-    [routerLink]="['ability', item.id] | nwLink"
-    [tooltip]="tplAbilityTip"
-    [tooltipClass]="'p-0 w-full max-w-sm'"
-  >
-    <picture class="flex-none">
-      <img [nwImage]="item.icon" class="w-6 h-6" />
-    </picture>
+  </div>
+} @else if (!isLoaded()) {
+  @defer (on timer(50ms)) {
+    <div swap class="flex flex-col gap-1 mb-2">
+      <div class="skeleton bg-base-100 w-28 self-center h-6"></div>
+      <div class="flex flex-col gap-1 mb-2">
+        <div class="skeleton bg-base-100 w-24 h-4"></div>
+        <div class="flex flex-row flex-wrap gap-1">
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1 mb-2">
+        <div class="skeleton bg-base-100 w-24 h-4"></div>
+        <div class="flex flex-row flex-wrap gap-1">
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1 mb-2">
+        <div class="skeleton bg-base-100 w-24 h-4"></div>
+        <div class="flex flex-row flex-wrap gap-1">
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+          <div class="skeleton bg-base-100 w-16 h-4"></div>
+        </div>
+      </div>
+    </div>
+  }
+} @else if (!effects()?.length && !abilities()?.length) {
+  <div swap class="alert shadow-lg bg-base-100">
+    <nwb-icon [icon]="infoIcon" class="w-6 h-6 text-info self-start" />
     <div>
-      <code>{{ item.label | nwText }} </code>
+      <h3 class="font-bold">No buffs</h3>
+      <div class="text-xs">-</div>
     </div>
-    <ng-template #tplAbilityTip>
-      <nwb-ability-detail [abilityId]="item.id"/>
-    </ng-template>
-  </a>
+  </div>
+} @else {
+  <div swap>
+    @for (item of effects(); track $index) {
+      <a
+        class="flex flex-row gap-2 link-hover text-sky-600"
+        [routerLink]="['status-effect', item.id] | nwLink"
+        [tooltip]="tplEffectTip"
+        [tooltipPlacement]="'top-left'"
+        [tooltipClass]="'p-0 w-full max-w-sm'"
+      >
+        <picture class="flex-none">
+          <img [nwImage]="item.icon" class="w-6 h-6" />
+        </picture>
+        <div>
+          <b>{{ item.label | nwText }}: </b>
+          {{ item.text | nwText }}
+        </div>
+        <ng-template #tplEffectTip>
+          <nwb-status-effect-detail [effectId]="item.id" />
+        </ng-template>
+      </a>
+    }
+    @for (item of abilities(); track $index) {
+      <a
+        class="flex flex-row gap-2 link-hover text-sky-600"
+        [routerLink]="['ability', item.id] | nwLink"
+        [tooltip]="tplAbilityTip"
+        [tooltipPlacement]="'top-left'"
+        [tooltipClass]="'p-0 w-full max-w-sm'"
+      >
+        <picture class="flex-none">
+          <img [nwImage]="item.icon" class="w-6 h-6" />
+        </picture>
+        <div>
+          <code>{{ item.label | nwText }} </code>
+        </div>
+        <ng-template #tplAbilityTip>
+          <nwb-ability-detail [abilityId]="item.id" />
+        </ng-template>
+      </a>
+    }
+  </div>
 }
-

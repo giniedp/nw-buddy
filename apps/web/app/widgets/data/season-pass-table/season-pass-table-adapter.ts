@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getSeasonPassDataId } from '@nw-data/common'
 import { COLS_SEASONPASSRANKDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -19,7 +19,7 @@ import {
 
 @Injectable()
 export class SeasonPassTableAdapter implements DataViewAdapter<SeasonPassTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<SeasonPassTableRecord>({ optional: true })
   private utils: TableGridUtils<SeasonPassTableRecord> = inject(TableGridUtils)
 
@@ -54,10 +54,10 @@ export class SeasonPassTableAdapter implements DataViewAdapter<SeasonPassTableRe
 
   public connect() {
     return combineLatest({
-      data: this.db.seasonPassData,
-      itemsMap: this.db.itemsMap,
-      housingMap: this.db.housingItemsMap,
-      rewardsMap: this.db.seasonPassRewardsMap,
+      data: this.db.seasonPassRanksAll(),
+      itemsMap: this.db.itemsByIdMap(),
+      housingMap: this.db.housingItemsByIdMap(),
+      rewardsMap: this.db.seasonsRewardsByIdMap(),
     }).pipe(
       map(({ data, itemsMap, housingMap, rewardsMap }) => {
         return data.map((it) => {

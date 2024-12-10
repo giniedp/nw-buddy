@@ -12,6 +12,6 @@ export class EntitlementDetailDirective {
 
   @Input()
   public set nwbEntitlementDetail(value: string) {
-    this.store.patchState({ entitlementId: value })
+    this.store.load({ entitlementId: value })
   }
 }

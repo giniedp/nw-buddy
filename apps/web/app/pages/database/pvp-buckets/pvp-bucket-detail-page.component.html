@@ -30,7 +30,7 @@
   }
   @if (rewardItemId(); as item) {
     <h3 class="prose mt-2">Reward Item</h3>
-    <nwb-item-card [entityId]="item" [enableLink]="true" [enableInfoLink]="true" />
+    <nwb-item-card [entity]="item" [enableLink]="true" [enableInfoLink]="true" />
   }
   @if (rewardLTID(); as item) {
     <h3 class="prose mt-2">Reward Loot</h3>

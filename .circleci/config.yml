@@ -17,7 +17,7 @@ workflows:
           filters:
             branches:
               only:
-                - stage
+                - playground
                 - dev
       - build_ptr:
           context:
@@ -60,7 +60,7 @@ jobs:
       #     command: pnpm test:unit
       - run:
           name: Build Website
-          command: pnpm build:web
+          command: pnpm build:web-cdn
       - run:
           name: Transform Functions
           command: pnpm nw-functions transform
@@ -95,7 +95,7 @@ jobs:
           command: pnpm nw-cdn download
       - run:
           name: Build Website
-          command: pnpm build:web
+          command: pnpm build:web-cdn
       - run:
           name: Transform Functions
           command: pnpm nw-functions transform
@@ -127,7 +127,7 @@ jobs:
           command: pnpm nw-cdn download
       - run:
           name: Build Website
-          command: pnpm build:web
+          command: pnpm build:web-cdn
       - run:
           name: Transform Functions
           command: pnpm nw-functions transform

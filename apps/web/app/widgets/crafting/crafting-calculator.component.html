@@ -1,64 +1,31 @@
-@if (vm$ | async; as vm) {
-  @if (!recipeOnly) {
-    <div class="flex flex-row items-center">
-      <label class="join ml-2">
-        <span class="join-item btn btn-sm">Amount</span>
-        <input
-          data-cy="amount"
-          type="number"
-          min="1"
-          [ngModel]="vm.amount"
-          (ngModelChange)="amount = $event"
-          class="join-item input input-bordered input-sm pr-0 w-20"
-        />
-      </label>
-      <div class="flex-1"></div>
-      <div class="join my-2 mr-2">
-        <button
-          class="join-item btn btn-sm btn-ghost btn-square"
-          [nwbModalOpen]="{ content: tplChances }"
-          [tooltip]="'Edit Bonus Chance'"
-        >
-          <nwb-icon [icon]="iconOptions" class="w-4 h-4" />
-        </button>
+<ng-content select="[content-top]" />
 
-        <button
-          class="join-item btn btn-sm btn-ghost btn-square"
-          [tooltip]="'Toggle net/gross mode'"
-          (click)="toggleQuantityMode()"
-          [class.text-primary]="vm.amountMode === 'gross'"
-        >
-          <nwb-icon [icon]="iconMode" class="w-4 h-4" />
-        </button>
-        <nwb-price-importer-button
-          class="join-item btn btn-sm btn-ghost btn-square"
-          [tooltip]="'Open price importer'"
-        />
-      </div>
-    </div>
+<div class="px-2 pb-2 flex flex-col gap-2">
+  @if (!recipeOnly()) {
+    <nwb-crafting-calculator-header [ngClass]="headClass()"/>
   }
-  @if (vm.recipe) {
-    <div data-cy="body" class="p-4 pt-0">
-      <nwb-crafting-step [step]="vm.tree" [amount]="vm.amount" [amountMode]="vm.amountMode" />
-      @if (!recipeOnly) {
-        <nwb-crafting-summary [step]="vm.tree" [amount]="vm.amount" [amountMode]="vm.amountMode" class="mt-2" />
-        <a [nwGamingToolsLink]="vm.recipe" class="btn btn-block btn-ghost gap-2">
-          <img [nwImage]="'assets/gaming-tools-logo.svg'" class="w-14" width="1020" height="600" />
-          Calculator
-        </a>
+  @if (store.recipe()) {
+    <nwb-crafting-step [step]="store.tree()" [amount]="store.amount()" [amountMode]="store.amountMode()" (totalCraft)="totalCraft.set($event)">
+      @for (slot of store.slots(); track $index) {
+        @if (slot.canCraft) {
+          <nwb-crafting-slot
+            [slot]="slot"
+            [amount]="store.amount()"
+            [amountMode]="store.amountMode()"
+            (pickClicked)="pickCraftMod(slot)"
+          />
+        }
       }
-    </div>
+    </nwb-crafting-step>
   }
+  @if (!recipeOnly()) {
+    <nwb-crafting-summary [total]="totalCraft()"/>
 
-  <ng-template #tplChances>
-    <ion-header class="bg-base-300">
-      <ion-toolbar>
-        <ion-title>Bonus Chance Editor</ion-title>
-        <button slot="end" class="btn btn-sm btn-circle btn-neutral mr-2" [nwbModalClose]>&times;</button>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="bg-base-200">
-      <nwb-crafting-chance-menu />
-    </ion-content>
-  </ng-template>
-}
+    <a [nwGamingToolsLink]="store.recipe()" class="btn btn-block btn-ghost gap-2 screenshot-hidden">
+      <img [nwImage]="'assets/gaming-tools-logo.svg'" class="w-14" width="1020" height="600" />
+      Calculator
+    </a>
+  }
+</div>
+
+<ng-content />

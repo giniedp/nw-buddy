@@ -1,9 +1,10 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, inject } from '@angular/core'
-import { NwDataService } from '~/data'
+import { inject, Injectable } from '@angular/core'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
+import { defer } from 'rxjs'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -13,7 +14,7 @@ import { MountTableRecord } from './mount-table-cols'
 
 @Injectable()
 export class MountTableAdapter implements DataViewAdapter<MountTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<MountTableRecord>({ optional: true })
   private utils: TableGridUtils<MountTableRecord> = inject(TableGridUtils)
@@ -52,7 +53,7 @@ export class MountTableAdapter implements DataViewAdapter<MountTableRecord> {
 
   private source$ = selectStream(
     {
-      mounts: this.config?.source || this.db.mounts,
+      mounts: this.config?.source || defer(() => this.db.mountsAll()),
     },
     ({ mounts }) => {
       const filter = this.config?.filter

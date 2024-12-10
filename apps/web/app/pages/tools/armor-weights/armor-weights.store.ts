@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
   EQUIP_SLOTS,
@@ -9,10 +9,11 @@ import {
   getItemPerkIds,
   getWeightLabel,
 } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { ItemClass, MasterItemDefinitions } from '@nw-data/generated'
 import { sumBy } from 'lodash'
-import { combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, from, map, of, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 
 const UNYIELDING_ID = 'Artifact_Set1_HeavyHead'
@@ -83,7 +84,7 @@ export interface ArmorWeightSet {
 
 @Injectable()
 export class ArmorWeightsStore extends ComponentStore<ArmorWeightsState> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private items$ = selectStream(combineLatest(ITEM_IDS.map((id) => selectItem(this.db, id))))
 
   public readonly allVariations$ = this.select(this.items$, selectItemSets)
@@ -109,15 +110,6 @@ export class ArmorWeightsStore extends ComponentStore<ArmorWeightsState> {
     })
   })
 
-  public readonly selectedSet$ = selectStream({
-    head: this.db.item(this.select((state) => state.selectedHead)),
-    chest: this.select((state) => state.selectedChest),
-    hands: this.select((state) => state.selectedHands),
-    legs: this.select((state) => state.selectedLegs),
-    feet: this.select((state) => state.selectedFeet),
-    shield: this.select((state) => state.selectedShield),
-  })
-
   public constructor() {
     super({
       selectedChest: null,
@@ -130,18 +122,18 @@ export class ArmorWeightsStore extends ComponentStore<ArmorWeightsState> {
   }
 }
 
-function selectItem(db: NwDataService, itemId: string) {
-  return db.item(itemId).pipe(
+function selectItem(db: NwData, itemId: string) {
+  return from(db.itemsById(itemId)).pipe(
     switchMap((item) => {
       if (!item) {
         return of(null)
       }
       return combineLatest({
-        armor: db.armor(item.ItemStatsRef),
-        weapon: db.weapon(item.ItemStatsRef),
-        perksMap: db.perksMap,
-        affixMap: db.affixStatsMap,
-        abilitiesMap: db.abilitiesMap,
+        armor: db.armorItemsById(item.ItemStatsRef),
+        weapon: db.weaponItemsById(item.ItemStatsRef),
+        perksMap: db.perksByIdMap(),
+        affixMap: db.affixStatsByIdMap(),
+        abilitiesMap: db.abilitiesByIdMap(),
       }).pipe(
         map(({ armor, weapon, perksMap, affixMap, abilitiesMap }): SlotItem => {
           const slot = SLOTS.find((slot) => item.ItemClass?.some((it) => eqCaseInsensitive(it, slot.itemType)))

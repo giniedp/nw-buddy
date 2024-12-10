@@ -1,16 +1,18 @@
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { SAMPLES, sampleUrl } from './samples'
 
 import { HttpClient } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
+import { NwData } from '@nw-data/db'
 import { AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { AppTestingModule } from '~/test'
 import { recognizeItemFromImage } from './recognize-item'
+import { provideExperimentalZonelessChangeDetection } from '@angular/core'
 
 describe('item-scanner / recognize', async () => {
-  let db: NwDataService
+  let db: NwData
   let translate: TranslateService
   let http: HttpClient
 
@@ -22,15 +24,18 @@ describe('item-scanner / recognize', async () => {
     beforeAll(async () => {
       TestBed.configureTestingModule({
         imports: [AppTestingModule],
+        providers: [
+          provideExperimentalZonelessChangeDetection()
+        ],
         teardown: { destroyAfterEach: false },
       })
-      db = TestBed.inject(NwDataService)
+      db = TestBed.runInInjectionContext(() => injectNwData())
       translate = TestBed.inject(TranslateService)
       http = TestBed.inject(HttpClient)
 
-      items = await firstValueFrom(db.items)
-      affixMap = await firstValueFrom(db.affixStatsMap)
-      perksMap = await firstValueFrom(db.perksMap)
+      items = await db.itemsAll()
+      affixMap = await db.affixStatsByIdMap()
+      perksMap = await db.perksByIdMap()
 
       await translate.whenLocaleReady('en-us')
     })

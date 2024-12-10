@@ -1,5 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
-import { ItemRarity, NW_FALLBACK_ICON, getItemIconPath, getItemRarity } from '@nw-data/common'
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostBinding,
+  HostListener,
+  input,
+  Input,
+  signal,
+} from '@angular/core'
+import { getItemIconPath, getItemRarity, ItemRarity, NW_FALLBACK_ICON } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { assetUrl } from '~/utils'
 
@@ -15,7 +24,7 @@ import { assetUrl } from '~/utils'
       class="fade"
       [class.show]="isLoaded"
     />
-    <ng-content></ng-content>
+    <ng-content />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -86,53 +95,47 @@ const transparentPixel =
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'fade',
+    '[class.show]': 'isLoaded()',
+    '[attr.loading]': 'loading()',
+    '[attr.src]': 'source()',
   },
 })
 export class NwImageComponent {
-  @Input()
-  public set nwImage(value: string | MasterItemDefinitions | HouseItems) {
-    if (!value) {
-      this.updateSrc(transparentPixel)
-    } else if (typeof value === 'string') {
-      this.updateSrc(value)
-    } else {
-      this.updateSrc(getItemIconPath(value) || NW_FALLBACK_ICON)
-    }
-    this.cdRef.markForCheck()
-  }
-
-  @HostBinding()
-  public src: string
-
-  @Input()
-  @HostBinding()
-  public loading: 'lazy' | 'eager' = 'lazy'
-
-  @HostBinding('class.show')
-  public isLoaded = false
-
-  public constructor(private cdRef: ChangeDetectorRef) {
-    //
-  }
+  public loading = input<'lazy' | 'eager'>('lazy')
+  public source = input<string, string | MasterItemDefinitions | HouseItems>(null, {
+    alias: 'nwImage',
+    transform: (input) => this.transformSource(input),
+  })
+  protected isLoaded = signal<boolean>(false)
+  protected hasError = signal<boolean>(false)
 
   @HostListener('error')
   public onError(e: Event) {
-    this.isLoaded = false
-    this.cdRef.markForCheck()
+    this.isLoaded.set(false)
+    this.hasError.set(true)
   }
 
   @HostListener('load')
   public onLoad(e: Event) {
-    this.isLoaded = true
-    this.cdRef.markForCheck()
+    this.isLoaded.set(true)
+    this.hasError.set(false)
   }
 
-  private updateSrc(value: string) {
-    value = assetUrl(value)
-    if (this.src !== value) {
-      this.src = value
-      this.isLoaded = false
-      this.cdRef.markForCheck()
+  private transformSource(input: string | MasterItemDefinitions | HouseItems) {
+    let value: string = null
+    if (!input) {
+      value = transparentPixel
+    } else if (typeof input === 'string') {
+      value = input
+    } else {
+      value = getItemIconPath(input) || NW_FALLBACK_ICON
     }
+    value = assetUrl(value)
+    return value
+    // if (this.src !== value) {
+    //   this.src = value
+    //   this.isLoaded = false
+    //   this.cdRef.markForCheck()
+    // }
   }
 }

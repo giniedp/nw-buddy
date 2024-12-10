@@ -1,12 +1,9 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { LootLimitDetailStore } from './loot-limit-detail.store'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { selectSignal } from '~/utils'
-import { getItemId } from '@nw-data/common'
+import { LootLimitDetailStore } from './loot-limit-detail.store'
 
 @Component({
   standalone: true,
@@ -25,14 +22,14 @@ export class LootLimitDetailComponent {
 
   @Input()
   public set limitId(value: string) {
-    this.store.patchState({ limitId: value })
+    this.store.load(value)
   }
 
-  public readonly lootLimit = selectSignal(this.store.lootLimit$)
-  public readonly props = toSignal(this.store.props$)
-  public readonly item = selectSignal(this.store.item$)
-  public readonly buckets = selectSignal(this.store.buckets$)
-  public readonly lootTables = selectSignal(this.store.lootTables$)
-  public readonly eventsBeforeLimit = selectSignal(this.store.eventsWithLimit$)
-  public readonly eventsAfterLimit = selectSignal(this.store.eventsAfterLimit$)
+  public readonly lootLimit = this.store.lootLimit
+  public readonly props = this.store.props
+  public readonly item = this.store.item
+  public readonly buckets = this.store.buckets
+  public readonly lootTables = this.store.lootTablesIds
+  public readonly eventsBeforeLimit = this.store.eventsWithLimit
+  public readonly eventsAfterLimit = this.store.eventsAfterLimit
 }

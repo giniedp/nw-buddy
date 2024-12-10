@@ -12,13 +12,11 @@ export class LootBucketDetailDirective {
 
   @Input()
   public set nwbLootBucketDetail(value: string) {
-    this.store.patchState({ bucketId: value })
+    this.store.load({ bucketId: value })
   }
 
   @Input()
   public set selectedRow(value: number) {
-    this.store.patchState({ selectedRow: value })
+    this.store.selectRow(value)
   }
-
-  public lootTables$ = this.store.lootTables$
 }

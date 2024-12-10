@@ -123,7 +123,6 @@ program
       })
     }
 
-    console.log(toUpload)
     console.log('[UPLOAD]')
     await uploadFiles({
       client: client,

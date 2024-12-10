@@ -13,29 +13,29 @@ export interface Environment extends EnvVars {
   modelsUrlMid: string
   modelsUrlHigh: string
   nwDataUrl: string
-  cdnDataUrl: string
+  nwImagesUrl: string
+  nwTilesUrl: string
 }
 
-export function getModelsUrlLowRes(env: EnvVars) {
-  return new URL('models-512', env.cdnUrl).toString()
-}
-export function getModelsUrlMidRes(env: EnvVars) {
-  return new URL('models-1k', env.cdnUrl).toString()
-}
-export function getModelsUrlHiRes(env: EnvVars) {
-  return new URL('models-2k', env.cdnUrl).toString()
+export type BaseUrl = 'cdnUrl' | 'deployUrl'
+
+function getModelsUrl(env: EnvVars, baseUrl: BaseUrl, version: string) {
+  return normalizePath(`${env[baseUrl]}/${version}`)
 }
 
-export function getNwDataPath(version: string = null) {
-  return normalizePath(`nw-data/${version || ''}`)
+export function getModelsUrlLowRes(env: EnvVars, baseUrl: BaseUrl) {
+  return getModelsUrl(env, baseUrl, 'models-512')
 }
-
-export function getNwDataDeployUrl(env: EnvVars) {
-  return normalizePath(`${env.deployUrl}/${getNwDataPath()}`)
+export function getModelsUrlMidRes(env: EnvVars, baseUrl: BaseUrl) {
+  return getModelsUrl(env, baseUrl, 'models-1k')
 }
-
-export function getNwDataCdnUrl(env: EnvVars) {
-  return normalizePath(`${env.cdnUrl}/${getNwDataPath(env.branchname)}`)
+export function getModelsUrlHiRes(env: EnvVars, baseUrl: BaseUrl) {
+  return getModelsUrl(env, baseUrl, 'models-2k')
+}
+export function getNwDataUrl(env: EnvVars, baseUrl: BaseUrl) {
+  const version = baseUrl === 'cdnUrl' ? env.branchname : null
+  const nwDataPath = normalizePath(`nw-data/${version || ''}`)
+  return normalizePath(`${env[baseUrl]}/${nwDataPath}`)
 }
 
 function normalizePath(path: string) {

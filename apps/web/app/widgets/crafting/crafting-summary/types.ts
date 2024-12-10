@@ -1,5 +1,5 @@
-import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { CraftingStep } from '../types'
+import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
+import { CraftingStep } from '../loader/load-recipe'
 
 export interface CraftingStepWithAmount extends CraftingStep {
   steps?: CraftingStepWithAmount[]
@@ -9,7 +9,6 @@ export interface CraftingStepWithAmount extends CraftingStep {
 export interface SummaryRow {
   recipeId: string
   itemId: string
-  currencyId?: string
   amount: number
 }
 

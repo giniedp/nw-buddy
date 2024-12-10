@@ -1,11 +1,11 @@
-import { Component, computed, inject, input } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Component, computed, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
+import { apiResource } from '~/utils'
 import { RequiredAchievementComponent } from './required-achievement.component'
 
 export interface Chat {
@@ -85,28 +85,39 @@ export interface Chat {
   },
 })
 export class QuestDetailConversationComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   public conversationId = input.required<string>()
+  private resource = apiResource({
+    request: this.conversationId,
+    loader: async ({ request }) => {
+      const npcs = await this.db.npcsByConversationStateId(request)
+      const conversation = await this.db.conversationStatesById(request)
+      const requiredActiveQuest = await this.db.objectivesById(conversation?.RequiredActiveObjectiveId)
+      const requiredActiveTask = await this.db.objectiveTasksById(conversation?.RequiredActiveTaskId)
+      const requiredCompletedQuest = await this.db.objectivesById(conversation?.RequiredCompletedObjective)
+      return {
+        npcs,
+        conversation,
+        requiredActiveQuest,
+        requiredActiveTask,
+        requiredCompletedQuest,
+      }
+    },
+  })
+
   protected infoIcon = svgInfoCircle
-  protected npcs = toSignal(this.db.npcsByConversationStateId(this.conversationId))
-  protected conversation = toSignal(this.db.conversationState(this.conversationId))
+  protected npcs = computed(() => this.resource.value()?.npcs)
+  protected conversation = computed(() => this.resource.value()?.conversation)
   protected dialog = computed(() => this.conversation()?.DefaultDialogue)
 
   protected requiredLevel = computed(() => this.conversation()?.RequiredLevel)
   protected requiredFaction = computed(() => this.conversation()?.RequiredFaction)
   protected requiredFactionCooldown = computed(() => this.conversation()?.RequiredFactionCooldown)
   protected requiredProgression = computed(() => this.conversation()?.RequiredProgression)
-
   protected requiredAchievement = computed(() => this.conversation()?.RequiredAchievement)
-
-  protected requiredActiveQuestId = computed(() => this.conversation()?.RequiredActiveObjectiveId)
-  protected requiredActiveQuest = toSignal(this.db.objective(this.requiredActiveQuestId))
-
-  protected requiredActiveTaskId = computed(() => this.conversation()?.RequiredActiveTaskId)
-  protected requiredActiveTask = toSignal(this.db.objectiveTask(this.requiredActiveQuestId))
-
-  protected requiredCompletedQuestId = computed(() => this.conversation()?.RequiredCompletedObjective)
-  protected requiredCompletedQuest = toSignal(this.db.objective(this.requiredCompletedQuestId))
+  protected requiredActiveQuest = computed(() => this.resource.value()?.requiredActiveQuest)
+  protected requiredActiveTask = computed(() => this.resource.value()?.requiredActiveTask)
+  protected requiredCompletedQuest = computed(() => this.resource.value()?.requiredCompletedQuest)
 
   protected hasRequirements = computed(() => {
     return !!(

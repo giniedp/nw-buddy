@@ -18,11 +18,11 @@ import {
   isDamageTypeElemental,
   patchPrecision,
 } from '@nw-data/common'
+import { AttackType } from '@nw-data/generated'
 import { EMPTY, combineLatest, map, of, pipe, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
 import { DamageModStack, damageModStack, damageModSum } from './damage-mod-stack'
-import { AttackType } from '@nw-data/generated'
 
 export interface OffenderState {
   isBound: boolean // to a gearset
@@ -206,7 +206,7 @@ export const DamageCalculatorStore = signalStore(
     const attackContext = computed(() => {
       return {
         type: offender.attackType(),
-        kind: offender.attackKind()
+        kind: offender.attackKind(),
       }
     })
     const physicalRating = computed(() => {
@@ -391,7 +391,7 @@ export const DamageCalculatorStore = signalStore(
     }
   }),
   withMethods((state) => {
-    const data = inject(NwDataService)
+    const db = injectNwData()
     const injector = inject(Injector)
     return {
       connectWeaponTag: rxMethod<void>(
@@ -411,8 +411,8 @@ export const DamageCalculatorStore = signalStore(
 
             return combineLatest({
               weaponType: of(weaponType),
-              weapon: data.weapon(weaponType?.StatsRef),
-              damageRow: data.damageTable0(damageRow),
+              weapon: db.weaponItemsById(weaponType?.StatsRef),
+              damageRow: db.damageTable0(damageRow),
             })
           }),
           map(({ weaponType, weapon, damageRow }) => {
@@ -445,11 +445,11 @@ export const DamageCalculatorStore = signalStore(
               attributes: toObservable(state.offender.attributePoints, {
                 injector: injector,
               }),
-              conMap: data.attrConByLevel,
-              dexMap: data.attrDexByLevel,
-              focMap: data.attrFocByLevel,
-              intMap: data.attrIntByLevel,
-              strMap: data.attrStrByLevel,
+              conMap: db.attrConByLevel(),
+              dexMap: db.attrDexByLevel(),
+              focMap: db.attrFocByLevel(),
+              intMap: db.attrIntByLevel(),
+              strMap: db.attrStrByLevel(),
             })
           }),
           map(({ attributes, conMap, dexMap, focMap, intMap, strMap }) => {
@@ -460,7 +460,7 @@ export const DamageCalculatorStore = signalStore(
               return {
                 offender: {
                   ...offender,
-                  attributeHealSum:  focMap.get(index(attributes.foc))?.ScalingValue ?? 0,
+                  attributeHealSum: focMap.get(index(attributes.foc))?.ScalingValue ?? 0,
                   attributeModSums: {
                     con: conMap.get(index(attributes.con))?.ModifierValueSum ?? 0,
                     dex: dexMap.get(index(attributes.dex))?.ModifierValueSum ?? 0,
@@ -481,7 +481,7 @@ export const DamageCalculatorStore = signalStore(
               affix: toObservable(state.offender.affixId, {
                 injector: injector,
               }),
-              affixMap: data.affixStatsMap,
+              affixMap: db.affixStatsByIdMap(),
             })
           }),
           map(({ affix, affixMap }) => {
@@ -507,7 +507,8 @@ export const DamageCalculatorStore = signalStore(
       ),
       connectVital: rxMethod<void>(
         pipe(
-          switchMap(() => data.vital(toObservable(state.defender.vitalId, { injector: injector }))),
+          switchMap(() => toObservable(state.defender.vitalId, { injector: injector })),
+          switchMap((vitalId) => db.vitalsBaseById(vitalId)),
           switchMap((vital) => {
             if (!vital) {
               return EMPTY
@@ -516,7 +517,9 @@ export const DamageCalculatorStore = signalStore(
               dmgTypeWeapon: toObservable(state.offender.weaponDamageType, { injector }),
               dmgTypeAffix: toObservable(state.offender.affixDamageType, { injector }),
               dmgTypeDot: toObservable(state.offender.dotDamageType, { injector }),
-              vitalLevel: data.vitalsLevel(toObservable(state.defender.level, { injector })),
+              vitalLevel: toObservable(state.defender.level, { injector }).pipe(
+                switchMap((level) => db.vitalsLevelsByLevel(level)),
+              ),
               vital: of(vital),
             })
           }),

@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core'
+import { Injectable, afterNextRender } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
-import { Observable, map, of } from 'rxjs'
+import { Observable, map } from 'rxjs'
 import { eqCaseInsensitive } from '~/utils'
+import { AgGrid } from '../ag-grid'
 import { DataViewAdapter } from './data-view-adapter'
 import { DataViewCategory } from './data-view-category'
-import { AgGrid } from '../ag-grid'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 export type DataViewMode = 'grid' | 'table'
 export interface DataViewServiceState<T> {
@@ -72,14 +72,16 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
       mode: 'table',
       modes: ['table', 'grid'],
     })
-    this.loadItems(adapter.connect())
+    setTimeout(() => {
+      this.loadItems(adapter.connect())
+    })
   }
 
   public loadCateory = this.effect((category: Observable<string | null>) => {
     return category.pipe(
       map((value) => {
         this.patchState({ category: value })
-      })
+      }),
     )
   })
 
@@ -90,7 +92,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
           items: items,
           categories: selectCategories(this.adapter, items),
         })
-      })
+      }),
     )
   })
 
@@ -110,6 +112,9 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
 }
 
 function selectCategories<T>(adapter: DataViewAdapter<T>, items: T[]) {
+  if (!items) {
+    return []
+  }
   const result = new Map<string, DataViewCategory>()
 
   if (adapter.getCategories) {
@@ -141,6 +146,6 @@ function selectItemsByCategory<T>(adapter: DataViewAdapter<T>, items: T[], categ
     return items
   }
   return items.filter((it) =>
-    adapter.entityCategories(it)?.some((cat) => eqCaseInsensitive(String(cat.id), String(category)))
+    adapter.entityCategories(it)?.some((cat) => eqCaseInsensitive(String(cat.id), String(category))),
   )
 }

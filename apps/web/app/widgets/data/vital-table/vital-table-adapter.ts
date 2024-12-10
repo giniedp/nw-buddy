@@ -3,10 +3,11 @@ import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo } from '@nw-data/common'
 import { COLS_VITALSBASEDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { collectVitalBuffs } from '../vital-detail/vital-detail-buffs.component'
 import { VitalGridCellComponent } from './vital-cell.component'
 import {
   VitalTableRecord,
@@ -36,11 +37,10 @@ import {
   vitalColSpawnPois,
   vitalColSpawnTerritories,
 } from './vital-table-cols'
-import { collectVitalBuffs } from '../vital-detail/vital-detail.store'
 
 @Injectable()
 export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private utils: TableGridUtils<VitalTableRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<VitalTableRecord>({ optional: true })
 
@@ -73,14 +73,14 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
     return (
       this.config?.source ||
       combineLatest({
-        vitals: this.db.vitals,
-        vitalsMeta: this.db.vitalsMetadataMap,
-        dungeons: this.db.gameModes,
-        categories: this.db.vitalsCategoriesMap,
-        territoriesMap: this.db.territoriesMap,
-        buffMap: this.db.buffBucketsMap,
-        effectMap: this.db.statusEffectsMap,
-        abilitiesMap: this.db.abilitiesMap,
+        vitals: this.db.vitalsAll(),
+        vitalsMeta: this.db.vitalsMetadataByIdMap(),
+        dungeons: this.db.gameModesAll(),
+        categories: this.db.vitalsCategoriesByIdMap(),
+        territoriesMap: this.db.territoriesByIdMap(),
+        buffMap: this.db.buffBucketsByIdMap(),
+        effectMap: this.db.statusEffectsByIdMap(),
+        abilitiesMap: this.db.abilitiesByIdMap(),
       }).pipe(
         map(({ vitals, vitalsMeta, dungeons, categories, territoriesMap, buffMap, effectMap, abilitiesMap }) => {
           return vitals.map((vital): VitalTableRecord => {
@@ -101,7 +101,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
                 buffMap: buffMap,
                 effectMap: effectMap,
                 abilitiesMap: abilitiesMap,
-              })
+              }),
             }
           })
         }),

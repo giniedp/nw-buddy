@@ -25,8 +25,8 @@ import {
   ImagesDB,
   ItemInstance,
   ItemInstancesDB,
-  NwDataService,
   ResolvedItemPerkInfo,
+  injectNwData,
   resolveGearsetSlotItems,
 } from '~/data'
 import { NwModule } from '~/nw'
@@ -38,7 +38,6 @@ import {
   svgCalculator,
   svgCamera,
   svgChevronLeft,
-  svgCompress,
   svgEllipsisVertical,
   svgEraser,
   svgInfoCircle,
@@ -52,11 +51,11 @@ import {
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { queryParamModel } from '~/utils'
+import { PlatformService } from '~/utils/services/platform.service'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from '../dialogs'
-import { PlatformService } from '~/utils/services/platform.service'
 
 export const GEARSET_TAGS = [
   { value: 'PvP', icon: '' },
@@ -121,15 +120,14 @@ export class GearsetToolbarComponent {
   @Input()
   public mode: 'player' | 'opponent' = 'player'
 
+  private db = injectNwData()
   public constructor(
     private gearDb: GearsetsDB,
-    private db: NwDataService,
     private picker: InventoryPickerService,
-
     private itemsDb: ItemInstancesDB,
     private imagesDb: ImagesDB,
     private modal: ModalService,
-    private platform: PlatformService
+    private platform: PlatformService,
   ) {
     patchState(this.store, {
       showCalculator: this.calcQueryParam.value() === 'true',

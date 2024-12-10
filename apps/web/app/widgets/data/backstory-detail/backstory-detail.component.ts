@@ -1,15 +1,11 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { getItemPerkInfos, getItemRarity, isHousingItem, isItemNamed, isMasterItem } from '@nw-data/common'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, untracked } from '@angular/core'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { BackstoryDetailStore } from './backstory-detail.store'
-import { BackstoryLootTreeComponent } from './backstory-loot-tree.component'
-import { InventoryItem } from './types'
 
 const BACKGROUND_IMAGES = {
   Faction1: 'url(assets/backstories/backstory_image_marauders.png)',
@@ -29,10 +25,9 @@ const BACKGROUND_IMAGES = {
     NwModule,
     ItemFrameModule,
     PropertyGridModule,
-    DecimalPipe,
     TooltipModule,
     IconsModule,
-    BackstoryLootTreeComponent,
+    // BackstoryLootTreeComponent,
   ],
   providers: [DecimalPipe, BackstoryDetailStore],
   host: {
@@ -41,15 +36,16 @@ const BACKGROUND_IMAGES = {
 })
 export class BackstoryDetailComponent {
   protected store = inject(BackstoryDetailStore)
+  public backstoryId = input<string>(null)
 
-  @Input()
-  public set backstoryId(value: string) {
-    this.store.patchState({ backstoryId: value })
-  }
+  #fxLoad = effect(() => {
+    const backstoryId = this.backstoryId()
+    untracked(() => this.store.load(backstoryId))
+  })
 
-  public backstory = toSignal(this.store.backstory$)
+  public backstory = this.store.backstory
   public backgroundImage = computed(() => {
     return BACKGROUND_IMAGES[this.backstory()?.FactionOverride] || BACKGROUND_IMAGES.Default
   })
-  public inventoryItems = toSignal(this.store.inventoryItems$)
+  public inventoryItems = this.store.inventory
 }

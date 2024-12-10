@@ -13,7 +13,7 @@ export class GatherableDetailDirective {
 
   @Input()
   public set nwbGatherableDetail(value: string) {
-    this.store.load({ id: value })
+    this.store.load({ gatherableId: value })
   }
 
   @Output()

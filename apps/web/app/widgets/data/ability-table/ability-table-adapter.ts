@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_ABILITYDATA } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 
@@ -32,7 +32,7 @@ import {
 
 @Injectable()
 export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private utils: TableGridUtils<AbilityTableRecord> = inject(TableGridUtils)
   private weaponTypes: NwWeaponTypesService = inject(NwWeaponTypesService)
   private config = injectDataViewAdapterOptions<AbilityTableRecord>({ optional: true })
@@ -65,8 +65,8 @@ export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord> 
 
   public connect(): Observable<AbilityTableRecord[]> {
     return combineLatest({
-      abilities: this.db.abilities,
-      effects: this.db.statusEffectsMap,
+      abilities: this.db.abilitiesAll(),
+      effects: this.db.statusEffectsByIdMap(),
       weaponTypes: this.weaponTypes.byTag$,
     })
       .pipe(

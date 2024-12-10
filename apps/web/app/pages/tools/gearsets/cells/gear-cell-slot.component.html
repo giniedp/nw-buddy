@@ -3,7 +3,7 @@
     class="relative font-nimbus gap-2 bg-neutral-content"
     [nwbItemDetail]="slotItemId()"
     #detail="itemDetail"
-    [rarity]="detail.rarity$ | async"
+    [rarity]="detail.rarity()"
   >
     <nwb-item-icon [nwbItemIcon]="slotIcon()" [solid]="hasItem()" class="z-10 w-12 h-12" />
 
@@ -28,7 +28,7 @@
   <nwb-item-header class="relative font-nimbus gap-2">
     <nwb-item-icon [nwbItemIcon]="store.slot()?.icon" [solid]="false" class="z-10 w-[76px] h-[76px]" />
     <nwb-item-header-content class="z-10">
-      <span class="title" [nwHtml]="store.slot()?.name | nwText"></span>
+      <span header-title [nwHtml]="store.slot()?.name | nwText"></span>
     </nwb-item-header-content>
     @if (!disabled) {
       <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
@@ -39,7 +39,7 @@
 } @else {
   <nwb-item-card
     class="relative flex=1"
-    [entityId]="store.instance().itemId"
+    [entity]="store.instance().itemId"
     [gsOverride]="gsValue || store.instance().gearScore"
     [gsEditable]="!disabled && isGearSlot()"
     (gsEdit)="openGsEditor($event)"
@@ -103,7 +103,7 @@
             <nwb-icon [icon]="iconLink" class="w-4 h-4" />
             <div class="flex flex-col leading-none">
               <span>Link item</span>
-              <span class="text-xs opacity-75">Pick an item your inventory and link it to this slot</span>
+              <span class="text-xs opacity-75">Pick an item from inventory and link it to this slot</span>
             </div>
           </a>
         </li>
@@ -141,7 +141,7 @@
           <nwb-icon [icon]="iconLink" class="w-4 h-4 mr-2" />
           <div class="flex flex-col leading-none">
             <span>Link item</span>
-            <span class="text-xs opacity-75">Pick an item your inventory and link it to this slot</span>
+            <span class="text-xs opacity-75">Pick an item from inventory and link it to this slot</span>
           </div>
         </a>
       </li>

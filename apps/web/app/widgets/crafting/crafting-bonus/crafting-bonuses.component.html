@@ -1,0 +1,183 @@
+@if (isLoading()) {
+  <div class="p-4 w-full h-full flex items-center justify-center">
+    <span class="loading loading-infinity loading-lg"></span>
+  </div>
+}
+<div class="flex flex-row h-full">
+  <ul class="flex-none menu flex-nowrap overflow-scroll p-0 [&_li>*]:rounded-none">
+    @for (tab of tabsItems(); track $index) {
+      <li [class.bg-base-200]="tab.isActive">
+        <a (click)="tabValue.set(tab.id)">
+          <nwb-icon [icon]="tab.icon" class="w-10 h-10" />
+          <div class="hidden sm:flex flex-col gap-1">
+            <span class="hidden sm:inline">
+              {{ tab.group }}
+            </span>
+            <span
+              class="hidden sm:inline text-xs uppercase"
+              [class.opacity-50]="!(tab.bonus || tab.bonusRaw)"
+              [class.text-primary]="!!(tab.bonus || tab.bonusRaw)"
+            >
+              {{ tab.buffType }}
+              @if (tab.isPercent) {
+                +{{ tab.bonus | percent }}
+              } @else {
+                +{{ tab.bonus | number }}
+              }
+              @if (tab.bonusRaw) {
+                /
+                @if (tab.isPercent) {
+                  +{{ tab.bonusRaw | percent }}
+                } @else {
+                  +{{ tab.bonusRaw | number }}
+                }
+              }
+            </span>
+          </div>
+        </a>
+      </li>
+    }
+  </ul>
+  <div class="flex-1 h-full bg-base-200 p-2">
+    @if (tab(); as tab) {
+      <h3 class="block sm:hidden px-2 text-lg font-bold mb-2">
+        {{ tab.group }}
+      </h3>
+    }
+    <table class="table table-xs">
+      @if (tab()?.isSkill) {
+        <tr>
+          <td>Level</td>
+          <td>
+            <input
+              type="number"
+              min="0"
+              max="250"
+              [ngModel]="store.getSkillLevel(tab().group)"
+              (ngModelChange)="store.setSkillLevel(tab().group, $event)"
+              class="input input-bordered input-sm"
+            />
+          </td>
+        </tr>
+      }
+      @for (section of sections(); track $index) {
+        @for (category of section.items; track $index) {
+          <tr>
+            <td class="w-0 text-nowrap">
+              <div>{{ category.name | nwText }}</div>
+              <span
+                [class.opacity-50]="!category.valueSum"
+                class="text-xs uppercase inline xs:hidden"
+                [class.text-success]="!!category.valueSum"
+              >
+                @if (section.isPercent) {
+                  {{ section.buffType }} +{{ category.valueSum | percent }}
+                } @else {
+                  {{ section.buffType }} +{{ category.valueSum | number }}
+                }
+              </span>
+            </td>
+            <td>
+              <div class="join">
+                @for (buff of category.stacks; track $index) {
+                  <button
+                    class="join-item btn btn-sm btn-square btn-ghost"
+                    (click)="removeStack(buff.setting)"
+                    [tooltip]="tipBuffRemove"
+                  >
+                    <nwb-icon [icon]="buff.icon" class="w-6 h-6" />
+                    <ng-template #tipBuffRemove>
+                      <div class="p-2">
+                        <div class="flex flex-row gap-2">
+                          <nwb-icon [icon]="buff.icon" class="w-12 h-12 flex-none" />
+                          <div>
+                            <div [nwHtml]="buff.name | nwText" class="font-bold text-lg"></div>
+                            <div
+                              [nwHtml]="
+                                buff.description | nwText: { perkMultiplier: buff.perkMultiplier, value: buff.value }
+                              "
+                              class="text-nw-description italic"
+                            ></div>
+                          </div>
+                        </div>
+                        <div class="nw-item-divider my-2"></div>
+                        <div class="text-info text-center">Click to remove buff</div>
+                      </div>
+                    </ng-template>
+                  </button>
+                }
+                @if (category.stackSum < category.stackMax) {
+                  @if (category.buffs.length === 1) {
+                    @let buff = category.buffs[0];
+                    <button
+                      class="join-item btn btn-sm btn-square btn-ghost opacity-50 grayscale"
+                      (click)="addStack(buff.setting)"
+                      [tooltip]="tipBuffAdd"
+                    >
+                      <nwb-icon [icon]="buff.icon" class="w-6 h-6" />
+                      <ng-template #tipBuffAdd>
+                        <div class="p-2">
+                          <div class="flex flex-row gap-2">
+                            <nwb-icon [icon]="buff.icon" class="w-12 h-12 flex-none" />
+                            <div>
+                              <div [nwHtml]="buff.name | nwText" class="font-bold text-lg"></div>
+                              <div
+                                [nwHtml]="
+                                  buff.description | nwText: { perkMultiplier: buff.perkMultiplier, value: buff.value }
+                                "
+                                class="text-nw-description italic"
+                              ></div>
+                            </div>
+                          </div>
+                          <div class="nw-item-divider my-2"></div>
+                          <div class="text-info text-center">Click to add buff</div>
+                        </div>
+                      </ng-template>
+                    </button>
+                  } @else {
+                    <button class="join-item btn btn-sm btn-square btn-ghost" [popover]="tplOptions" #popover="popover">
+                      <nwb-icon [icon]="iconMore" class="w-5 h-5" />
+                    </button>
+                    <ng-template #tplOptions>
+                      <ul class="menu menu-compact bg-base-300 rounded-md shadow-md">
+                        @for (buff of category.buffs; track $index) {
+                          <li (click)="popover.close(); addStack(buff.setting)">
+                            <a>
+                              <nwb-icon [icon]="buff.icon" class="w-5 h-5 flex-none" />
+                              <div [nwHtml]="buff.name | nwText"></div>
+                              <span class="badge badge-sm badge-primary uppercase">
+                                @if (section.isPercent) {
+                                  {{ section.buffType }} +{{ buff.value | percent }}
+                                } @else {
+                                  {{ section.buffType }} +{{ buff.value | number }}
+                                }
+                              </span>
+                            </a>
+                          </li>
+                        }
+                      </ul>
+                    </ng-template>
+                  }
+                }
+              </div>
+            </td>
+            <td class="w-20 whitespace-nowrap text-right hidden xs:table-cell">
+              <span
+                [class.opacity-50]="!category.valueSum"
+                class="text-sm uppercase"
+                [class.text-success]="!!category.valueSum"
+              >
+                @if (section.isPercent) {
+                  {{ section.buffType }} +{{ category.valueSum | percent }}
+                } @else {
+                  {{ section.buffType }} +{{ category.valueSum | number }}
+                }
+              </span>
+            </td>
+          </tr>
+        }
+      }
+
+    </table>
+  </div>
+</div>

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -12,7 +12,7 @@ import { injectRouteParam } from '~/utils'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 import { NpcDetailModule } from '~/widgets/data/npc-detail'
 import { LootModule } from '~/widgets/loot'
-import { ModelViewerModule, ModelsService } from '~/widgets/model-viewer'
+import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -40,7 +40,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class NpcDetailPageComponent {
-  protected db = inject(NwDataService)
+  protected db = injectNwData()
   protected viewerService = inject(ModelsService)
   protected itemId = toSignal(injectRouteParam('id'))
   // protected npc$ = selectStream(this.db.npc(this.itemId$))

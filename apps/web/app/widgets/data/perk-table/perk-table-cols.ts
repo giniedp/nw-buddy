@@ -1,5 +1,24 @@
-import { NW_FALLBACK_ICON, explainPerkMods, getItemIconPath, getItemId, getItemRarity, getPerkItemClassGSBonus, getPerkItemClassGsBonus, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
-import { AbilityData, AffixStatData, COLS_ABILITYDATA, COLS_AFFIXSTATDATA, COLS_PERKDATA, MasterItemDefinitions, PerkData } from '@nw-data/generated'
+import {
+  NW_FALLBACK_ICON,
+  explainPerkMods,
+  getItemIconPath,
+  getItemId,
+  getItemRarity,
+  getPerkItemClassGSBonus,
+  getPerkItemClassGsBonus,
+  isItemArtifact,
+  isItemNamed,
+  isMasterItem,
+} from '@nw-data/common'
+import {
+  AbilityData,
+  AffixStatData,
+  COLS_ABILITYDATA,
+  COLS_AFFIXSTATDATA,
+  COLS_PERKDATA,
+  MasterItemDefinitions,
+  PerkData,
+} from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
@@ -37,7 +56,7 @@ export function perkColIcon(util: PerkTableUtils) {
         util.elItemIcon({
           class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
           icon: data.IconPath,
-        })
+        }),
       )
     }),
   })
@@ -55,6 +74,7 @@ export function perkColId(util: PerkTableUtils) {
 export function perkCraftMod(util: PerkTableUtils) {
   return util.colDef<string[]>({
     colId: 'perkCraftModIds',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Craft Mod',
     valueGetter: ({ data }) => data.$items?.map((it) => it.ItemID),
     getQuickFilterText: ({ data }) => {
@@ -100,8 +120,8 @@ export function perkCraftMod(util: PerkTableUtils) {
                 isNamed: isMasterItem(item) && isItemNamed(item),
                 rarity: getItemRarity(item),
               }),
-              util.el('span.ml-2', { text: util.tl8(item.Name)  }),
-            ])
+              util.el('span.ml-2', { text: util.tl8(item.Name) }),
+            ]),
           ),
         ),
       ])
@@ -185,9 +205,9 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
       source: ({ data }) => {
         return combineLatest({
           ctx: ctx.state$,
-          stats: util.db.affixStatsMap,
+          affix: util.db.affixStatsById(data.Affix),
         }).pipe(
-          switchMap(({ ctx, stats }) => {
+          switchMap(({ ctx, affix }) => {
             const context = {
               itemId: data.PerkID,
               gearScore: ctx.gearScore,
@@ -201,7 +221,7 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
             const result: Array<Observable<string>> = []
             const mods = explainPerkMods({
               perk: data,
-              affix: stats.get(data.Affix),
+              affix: affix,
               gearScore: context.gearScore,
             })
             for (const mod of mods) {
@@ -214,17 +234,17 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
                     ...context,
                     ...(mod.context || {}),
                   })
-                  .pipe(map((it) => `<span class="text-sky-600 not-italic"> ${it} </span>`))
+                  .pipe(map((it) => `<span class="text-sky-600 not-italic"> ${it} </span>`)),
               )
             }
             result.push(
               util.expr.solve({
                 text: util.i18n.get(data.Description || data.StatDisplayText),
                 ...context,
-              })
+              }),
             )
             return combineLatest(result).pipe(map((it) => it.join('<br>')))
-          })
+          }),
         )
       },
       update: (el, text) => {
@@ -242,7 +262,7 @@ export function perkColPerkType(util: PerkTableUtils) {
     width: 120,
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -271,7 +291,7 @@ export function perkColItemClassGSBonus(util: PerkTableUtils) {
         resizable: false,
         ...util.selectFilter({
           order: 'asc',
-        })
+        }),
       }),
       util.colDef({
         colId: 'itemClassGSBonusGS',
@@ -308,7 +328,7 @@ export function perkColItemClass(util: PerkTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 export function perkColExclusiveLabels(util: PerkTableUtils) {
@@ -324,7 +344,7 @@ export function perkColExclusiveLabels(util: PerkTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 export function perkColExcludeItemClass(util: PerkTableUtils) {
@@ -352,7 +372,7 @@ export function perkColIsStackableAbility(util: PerkTableUtils) {
       return ability?.IsStackableAbility
     },
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }

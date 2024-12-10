@@ -27,10 +27,10 @@ export class ZoneDetailComponent {
 
   @Input()
   public set zoneId(value: string | number) {
-    this.store.load({ zoneId: value })
+    this.store.load({ territoryId: value })
   }
 
   public markVital(vital: VitalsData) {
-    this.store.mark({ vitalId: vital?.VitalsID || null })
+    this.store.markVital(vital?.VitalsID || null)
   }
 }

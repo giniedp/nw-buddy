@@ -1,5 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, effect, inject, input, untracked } from '@angular/core'
 import { AffixStatData, DamageData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -37,12 +37,15 @@ import { DamageDetailStore } from './damage-row-detail.store'
   },
 })
 export class DamageRowDetailComponent {
-  private store = inject(DamageDetailStore)
+  protected store = inject(DamageDetailStore)
 
-  @Input()
-  public set rowId(value: string) {
-    this.store.load({ rowId: value })
-  }
+  public table = input<string>()
+  public rowId = input<string>()
+  #fxLoad = effect(() => {
+    const table = this.table()
+    const rowId = this.rowId()
+    untracked(() => this.store.load({ table, rowId }))
+  })
 
   protected iconInfo = svgInfoCircle
   protected trackByIndex = (i: number) => i

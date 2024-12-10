@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { territoryImage } from '@nw-data/common'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
 
@@ -15,6 +15,9 @@ import { shareReplayRefCount } from '~/utils'
   },
 })
 export class StandingInputComponent {
+  private db = injectNwData()
+  private pref = inject(TerritoriesPreferencesService)
+
   @Input()
   public set territoryId(value: number) {
     this.territoryId$.next(value)
@@ -26,7 +29,7 @@ export class StandingInputComponent {
   public territory$ = defer(() =>
     combineLatest({
       id: this.territoryId$,
-      territories: this.db.territoriesMap,
+      territories: this.db.territoriesByIdMap(),
     }),
   )
     .pipe(map(({ id, territories }) => territories.get(id)))
@@ -43,7 +46,7 @@ export class StandingInputComponent {
   public standingTitle$ = defer(() =>
     combineLatest({
       level: this.standingLevel$,
-      table: this.db.useTable((it) => it.CategoricalProgressionRankData.Territory_Standing),
+      table: this.db.categoricalRankTerritoryStanding(),
     }),
   )
     .pipe(
@@ -65,11 +68,4 @@ export class StandingInputComponent {
   }
 
   private territoryId$ = new BehaviorSubject<number>(null)
-
-  public constructor(
-    private db: NwDataService,
-    private pref: TerritoriesPreferencesService,
-  ) {
-    //
-  }
 }

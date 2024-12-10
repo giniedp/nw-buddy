@@ -1,20 +1,20 @@
 import { getZoneIcon, getZoneMetaId, getZoneName, getZoneType } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { TerritoryDefinition } from '@nw-data/generated'
 import { ScannedTerritory } from '@nw-data/scanner'
 import { Feature, FeatureCollection } from 'geojson'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 type MapName = (territory: TerritoryDefinition) => string
 
-export function loadTerritories(db: NwDataService, tl8: TranslateService, mapCoord: MapCoord) {
+export function loadTerritories(db: NwData, tl8: TranslateService, mapCoord: MapCoord) {
   const mapName = (territory: TerritoryDefinition) => tl8.get(getZoneName(territory))
   return combineLatest({
     locale: tl8.locale.value$,
-    territories: db.territories,
-    meta: db.territoriesMetadataMap,
+    territories: db.territoriesAll(),
+    meta: db.territoriesMetadataByIdMap(),
   }).pipe(
     map(({ territories, meta }) => {
       return territories.map((territory) => {

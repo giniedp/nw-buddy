@@ -47,7 +47,7 @@ export class SearchResultsPanelComponent {
     if (!item.icon) {
       return NW_FALLBACK_ICON
     }
-    return environment.cdnDataUrl + '/' + item.icon.replace(/\.png$/,'.webp').toLowerCase()
+    return environment.nwImagesUrl + '/' + item.icon.replace(/\.png$/,'.webp').toLowerCase()
   }
 
   protected getRoute(item: SearchRecord) {

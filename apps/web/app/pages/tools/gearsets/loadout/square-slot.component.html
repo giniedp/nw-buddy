@@ -1,5 +1,5 @@
 <nwb-item-detail
-  [entity]="store.item()"
+  [itemId]="store.item()"
   [perkOverride]="store.instance()?.perks"
   class="p-1"
   class="flex flex-row gap-1"
@@ -19,7 +19,7 @@
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
         (click)="pickItemClicked()"
       >
-        <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2"/>
+        <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2" />
       </button>
     } @else if (!disabled && !!menuTemplate) {
       <button
@@ -29,19 +29,18 @@
         <nwb-icon [icon]="iconMenu" class="w-4 h-4 mt-2" />
       </button>
     }
-    @if (detail.gemDetail$ | async; as gem) {
+    @if (detail.slottedGemIcon(); as icon) {
       <span class="z-10 absolute bottom-0 right-0 p-[2px] rounded-tl-xl bg-base-100 bg-opacity-50">
-        <img [nwImage]="gem.perk?.IconPath" class="w-5 h-5" />
+        <img [nwImage]="icon" class="w-5 h-5" />
       </span>
     }
   </nwb-item-header>
 </nwb-item-detail>
 
-
 <ng-template #tplTip>
   <nwb-item-card
     class="relative flex-1"
-    [entityId]="store.instance().itemId"
+    [entity]="store.instance().itemId"
     [gsOverride]="store.instance().gearScore"
     [perkOverride]="store.instance().perks"
   />

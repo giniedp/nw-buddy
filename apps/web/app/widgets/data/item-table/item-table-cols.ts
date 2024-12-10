@@ -19,9 +19,17 @@ import {
   getTradingCategoryLabel,
   isItemArtifact,
   isItemNamed,
+  isItemResource,
   isMasterItem,
 } from '@nw-data/common'
-import { AffixStatData, HouseItems, MasterItemDefinitions, PerkData } from '@nw-data/generated'
+import {
+  AffixStatData,
+  CategoricalProgressionData,
+  HouseItems,
+  ItemCurrencyConversionData,
+  MasterItemDefinitions,
+  PerkData,
+} from '@nw-data/generated'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -36,6 +44,13 @@ export type ItemTableRecord = MasterItemDefinitions & {
   $perkBuckets?: string[]
   $transformTo?: MasterItemDefinitions | HouseItems
   $transformFrom?: Array<MasterItemDefinitions | HouseItems>
+  $conversions?: Array<ItemCurrencyConversionData>
+  $shops?: Array<
+    Pick<
+      CategoricalProgressionData,
+      'CategoricalProgressionId' | 'DisplayName' | 'DisplayDescription' | 'IconPath' | 'EventId'
+    >
+  >
 }
 
 export function itemColIcon(util: ItemTableUtils) {
@@ -61,6 +76,7 @@ export function itemColIcon(util: ItemTableUtils) {
           icon: getItemIconPath(data) || NW_FALLBACK_ICON,
           isArtifact: isMasterItem(data) && isItemArtifact(data),
           isNamed: isMasterItem(data) && isItemNamed(data),
+          // isResource: isMasterItem(data) && isItemResource(data),
           rarity: getItemRarity(data),
         }),
       )
@@ -94,6 +110,7 @@ export function itemColItemId(util: ItemTableUtils) {
 export function itemColTransformTo(util: ItemTableUtils) {
   return util.colDef<string>({
     colId: 'transformTo',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Transform To',
     sortable: true,
     valueGetter: ({ data }) => getItemId(data.$transformTo),
@@ -149,6 +166,7 @@ export function itemColTransformFrom(util: ItemTableUtils) {
   return util.colDef<string[]>({
     colId: 'transformFrom',
     headerValueGetter: () => 'Transform From',
+    headerClass: 'bg-secondary bg-opacity-15',
     sortable: true,
     valueGetter: ({ data }) => data.$transformFrom?.map(getItemId),
     cellRenderer: util.cellRenderer(({ data }) => {
@@ -204,6 +222,7 @@ export function itemColPerks(
     colId: 'perks',
     width: 175,
     sortable: false,
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Perks',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => data.$perks?.map((it) => it?.PerkID),
@@ -262,6 +281,7 @@ export function itemColAttributeMods(util: ItemTableUtils) {
     colId: 'attributeMods',
     headerValueGetter: () => 'Attr. Mods',
     width: 100,
+    headerClass: 'bg-secondary bg-opacity-15',
     valueGetter: ({ data }) => {
       return data.$affixes
         .filter((it) => !!it)
@@ -332,6 +352,7 @@ export function itemColTier(util: ItemTableUtils) {
 export function itemColBookmark(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userBookmark',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Bookmark',
     getQuickFilterText: () => '',
     width: 100,
@@ -349,6 +370,7 @@ export function itemColBookmark(util: TableGridUtils<MasterItemDefinitions>) {
 export function itemColStockCount(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userStockCount',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'In Stock',
     getQuickFilterText: () => '',
     suppressHeaderMenuButton: false,
@@ -368,9 +390,10 @@ export function itemColStockCount(util: TableGridUtils<MasterItemDefinitions>) {
 export function itemColOwnedWithGS(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userOwnedWithGS',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Owned GS',
-    getQuickFilterText: () => '',
     headerTooltip: 'Item owned with this gear score',
+    getQuickFilterText: () => '',
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.gs,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
@@ -387,6 +410,7 @@ export function itemColPrice(util: TableGridUtils<MasterItemDefinitions>) {
     headerValueGetter: () => 'Price',
     getQuickFilterText: () => '',
     headerTooltip: 'Current price in Trading post',
+    headerClass: 'bg-secondary bg-opacity-15',
     cellClass: 'text-right',
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.price,
     cellRenderer: TrackingCell,
@@ -406,6 +430,7 @@ export function itemColGearScore(util: ItemTableUtils) {
     colId: 'gearScore',
     headerValueGetter: () => 'Gear Score',
     getQuickFilterText: () => '',
+    headerClass: 'bg-secondary bg-opacity-15',
     width: 120,
     cellClass: 'text-right',
     comparator: (a, b) => {
@@ -433,6 +458,7 @@ export function itemColSource(util: ItemTableUtils) {
   return util.colDef<string>({
     colId: 'source',
     headerValueGetter: () => 'Source',
+    headerClass: 'bg-secondary bg-opacity-15',
     valueGetter: ({ data }) => getItemSourceShort(data),
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
@@ -626,6 +652,40 @@ export function colDefPin(util: ItemTableUtils) {
           })
         },
       })
+    }),
+  })
+}
+export function itemColShops(util: ItemTableUtils) {
+  return util.colDef({
+    colId: 'currencyShops',
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Shops',
+    width: 150,
+    valueGetter: ({ data }) => data.$shops?.map((it) => it?.CategoricalProgressionId),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const shops = data.$shops || []
+      return util.el('div.flex.flex-row.items-center.h-full', {}, [
+        ...shops.map((shop) =>
+          util.elImg({
+            class: ['w-7', 'h-7', 'nw-icon', 'flex-none'],
+            src: shop?.IconPath || NW_FALLBACK_ICON,
+          }),
+        ),
+      ])
+    }),
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const shops = data.$shops || []
+        return shops.map((shop) => {
+          return {
+            id: shop.CategoricalProgressionId,
+            label: shop.EventId ? humanize(shop.EventId) : util.i18n.get(shop.DisplayName),
+            icon: shop.IconPath || NW_FALLBACK_ICON,
+          }
+        })
+      },
     }),
   })
 }

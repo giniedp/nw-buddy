@@ -5,6 +5,7 @@ import { PopoverComponent } from './popover.component'
 @Directive({
   standalone: true,
   selector: '[popover]',
+  exportAs: 'popover',
 })
 export class PopoverDirective {
   private controller = inject(PopoverController)
@@ -22,5 +23,9 @@ export class PopoverDirective {
     })
     popover.style.setProperty('--width', 'auto')
     await popover.present()
+  }
+
+  public close() {
+    this.controller.dismiss()
   }
 }

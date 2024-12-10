@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
-import { combineLatest } from 'rxjs'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 
@@ -15,16 +14,10 @@ import { NwModule } from '~/nw'
   },
 })
 export class CharacterSheetComponent {
-
-  public vm$ = combineLatest({
-    name: this.store.name$,
-    level: this.store.level$,
-    serverName: this.store.serverName$,
-    companyName: this.store.companyName$,
-    faction: this.store.faction$,
-  })
-
-  public constructor(private store: CharacterStore) {
-    //
-  }
+  private char = inject(CharacterStore)
+  protected name = this.char.name
+  protected level = this.char.level
+  //protected serverName = this.char.serverName
+  //protected companyName = this.char.companyName
+  //protected faction = this.char.faction
 }

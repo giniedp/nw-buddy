@@ -1,19 +1,18 @@
-import { Directive, Input, forwardRef } from '@angular/core'
+import { Directive, effect, inject, input, untracked } from '@angular/core'
 import { NpcDetailStore } from './npc-detail.store'
-import { patchState } from '@ngrx/signals'
 
 @Directive({
   selector: '[npcDetail]',
-  providers: [
-    {
-      provide: NpcDetailStore,
-      useExisting: forwardRef(() => NpcDetailDirective),
-    },
-  ],
+  providers: [NpcDetailStore],
 })
-export class NpcDetailDirective extends NpcDetailStore {
-  @Input()
-  public set npcDetail(value: string) {
-    patchState(this, { recordId: value })
-  }
+export class NpcDetailDirective {
+  public store = inject(NpcDetailStore)
+  public npcId = input.required<string>({
+    alias: 'npcDetail',
+  })
+
+  #fxLoad = effect(() => {
+    const npcId = this.npcId()
+    untracked(() => this.store.load(npcId))
+  })
 }

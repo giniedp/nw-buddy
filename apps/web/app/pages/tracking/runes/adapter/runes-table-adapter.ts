@@ -1,11 +1,11 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, inject } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { getItemIdFromRecipe } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
-import { mapFilter, selectStream } from '~/utils'
+import { selectStream } from '~/utils'
 
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -17,7 +17,7 @@ import { RunesRecord } from './types'
 
 @Injectable()
 export class RunesTableAdapter implements DataViewAdapter<RunesRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public entityID(item: RunesRecord): string {
     return item.itemId.toLowerCase()
@@ -51,9 +51,9 @@ export class RunesTableAdapter implements DataViewAdapter<RunesRecord> {
 
   private source$ = selectStream(
     combineLatest({
-      items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
-      recipes: this.db.recipes.pipe(mapFilter(isRunestone)),
+      items: this.db.itemsByIdMap(),
+      housing: this.db.housingItemsByIdMap(),
+      recipes: this.db.recipesAll().then((it) => it.filter(isRunestone)),
     }),
     selectSchematics,
   )

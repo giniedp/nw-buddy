@@ -12,10 +12,11 @@
         ></button>
       </li>
       <span class="flex-1"></span>
-
-      <li *ngIf="service.canToggleMode()">
-        <button [nwbDataViewToggle]></button>
-      </li>
+      @if (service.canToggleMode()) {
+        <li>
+          <button [nwbDataViewToggle]></button>
+        </li>
+      }
       <li>
         <a class="btn btn-sm btn-primary self-center mt-2" [routerLink]="'/transmog/editor'">Open Editor</a>
       </li>
@@ -66,11 +67,7 @@
 </ion-content>
 
 <ng-template #tplDetail>
-  <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
-    [class.bg-base-300]="true"
-  >
+  <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
     <router-outlet />
   </ion-content>
 </ng-template>

@@ -1,10 +1,9 @@
-import { Column, ColumnState, GridApi } from '@ag-grid-community/core'
+import { Column, ColumnState } from '@ag-grid-community/core'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core'
 
-import { toSignal } from '@angular/core/rxjs-interop'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ToastController } from '@ionic/angular/standalone'
-import { ComponentStore } from '@ngrx/component-store'
 import { BehaviorSubject, combineLatest, filter, map, switchMap, tap } from 'rxjs'
 import { AgGrid } from '~/ui/data/ag-grid'
 import { gridHasAnyFilterPresent } from '~/ui/data/ag-grid/utils'
@@ -53,70 +52,53 @@ export interface TableGridActionButton {
     class: 'flex flex-col gap-1 h-full overflow-hidden',
   },
 })
-export class TableGridPanelComponent extends ComponentStore<{
-  grid: AgGrid
-  persistKey: string
-}> {
-  @Input()
-  public set grid(value: AgGrid) {
-    this.patchState({ grid: value })
-  }
-
-  @Input()
-  public set persistKey(value: string) {
-    this.patchState({ persistKey: value })
-  }
-
-  @Input()
-  public actions: TableGridActionButton[]
-
-  @Output()
-  public close = new EventEmitter()
+export class TableGridPanelComponent {
+  public grid = input<AgGrid>()
+  public persistKey = input<string>()
+  public actions = input<TableGridActionButton[]>()
+  public close = output<void>()
 
   private window = injectWindow()
-  private grid$ = this.select(({ grid }) => grid)
-  private persistKey$ = this.select(({ persistKey }) => persistKey)
-  protected sigGrid = toSignal(this.grid$)
-  protected sigPersistKey = toSignal(this.persistKey$)
-  protected showColumns = false
+  private grid$ = toObservable(this.grid)
+  private state = computed(() => {
+    const state = this.grid()?.api?.getColumnState()
+    return {
+      columns: signal<ColumnState[]>(state || []),
+    }
+  })
 
+  protected showColumns = signal<boolean>(false)
+  protected columns = computed(() => {
+    const grid = this.grid()
+    const cols = this.state().columns()
+    return cols.map((it) => {
+      return {
+        ...it,
+        name: this.getHeaderName(grid, grid.api.getColumn(it.colId)),
+      }
+    })
+  })
+  protected isAnyColumnVisible = computed(() => {
+    return !!this.columns().find((it) => !it.hide)
+  })
+  protected isAnyColumnHidden = computed(() => {
+    return !!this.columns().find((it) => !!it.hide)
+  })
   protected isFilterActive$ = toSignal(gridHasAnyFilterPresent(this.grid$), {
     initialValue: false,
   })
-  protected columns$ = this.grid$
-    .pipe(filter((it) => !!it))
-    .pipe(
-      tap(({ api }) => this.colState.next(api.getColumnState())),
-      switchMap((grid) => {
-        return this.colState.pipe(
-          map((state) => {
-            return state.map((it) => {
-              return {
-                ...it,
-                name: this.getHeaderName(grid, grid.api.getColumn(it.colId)),
-              }
-            })
-          }),
-        )
-      }),
-    )
-    .pipe(shareReplayRefCount(1))
 
-  protected displayCols$ = combineLatest({
-    search: this.qs.query$,
-    cols: this.columns$,
-  }).pipe(
-    map(({ search, cols }) => {
-      if (!search) {
-        return cols
-      }
-      search = search.toLowerCase()
-      return cols.filter((it) => {
-        return it.colId?.toLowerCase()?.includes(search) || it.name?.toLowerCase()?.includes(search)
-      })
-    }),
-  )
-  private colState = new BehaviorSubject<ColumnState[]>([])
+  private filterQuery = toSignal(this.qs.query$)
+  protected displayedCols = computed(() => {
+    const search = this.filterQuery()?.toLowerCase()
+    const cols = this.columns()
+    if (!search) {
+      return cols
+    }
+    return cols.filter((it) => {
+      return it.colId?.toLowerCase()?.includes(search) || it.name?.toLowerCase()?.includes(search)
+    })
+  })
 
   protected svgEye = svgEye
   protected svgEyeSlash = svgEyeSlash
@@ -139,38 +121,50 @@ export class TableGridPanelComponent extends ComponentStore<{
     private modal: ModalService,
     private qs: QuicksearchService,
   ) {
-    super({ grid: null, persistKey: null })
+    //
   }
 
   protected sizeToFit() {
-    const grid = this.sigGrid()
-    grid?.api.sizeColumnsToFit(900)
+    this.grid()?.api.sizeColumnsToFit(900)
   }
 
   protected autosizeColumns() {
-    const grid = this.sigGrid()
-    grid?.api.autoSizeAllColumns()
+    this.grid()?.api.autoSizeAllColumns()
   }
 
   protected resetColumns() {
-    const grid = this.sigGrid()
-    grid?.api.resetColumnState()
-    this.colState.next(grid.api.getColumnState())
+    const api = this.grid()?.api
+    if (api) {
+      api.resetColumnState()
+      this.state().columns.set(api.getColumnState())
+    }
   }
 
   protected resetFilter() {
-    const grid = this.sigGrid()
-    grid.api.setFilterModel({})
-    grid.api.setGridOption('quickFilterText', '')
+    const api = this.grid()?.api
+    if (api) {
+      api.setFilterModel({})
+      api.setGridOption('quickFilterText', '')
+    }
   }
 
   protected clearPins() {
-    const grid = this.sigGrid()
-    grid.api.setGridOption('pinnedTopRowData', [])
+    const api = this.grid()?.api
+    if (api) {
+      api.setGridOption('pinnedTopRowData', [])
+    }
+  }
+
+  protected setAllHidden(hidden: boolean) {
+    const state = this.state().columns().map((it) => {
+      it.hide = hidden
+      return it
+    })
+    this.submitState(state)
   }
 
   protected toggleHide(id: string) {
-    const state = this.colState.value.map((it) => {
+    const state = this.state().columns().map((it) => {
       if (it.colId === id) {
         it.hide = !it.hide
       }
@@ -180,7 +174,7 @@ export class TableGridPanelComponent extends ComponentStore<{
   }
 
   protected togglePinLeft(id: string) {
-    const state = this.colState.value.map((it) => {
+    const state = this.state().columns().map((it) => {
       if (it.colId === id) {
         it.pinned = it.pinned === 'left' ? false : 'left'
       }
@@ -190,7 +184,7 @@ export class TableGridPanelComponent extends ComponentStore<{
   }
 
   protected togglePinRight(id: string) {
-    const state = this.colState.value.map((it) => {
+    const state = this.state().columns().map((it) => {
       if (it.colId === id) {
         it.pinned = it.pinned === 'right' ? false : 'right'
       }
@@ -201,8 +195,8 @@ export class TableGridPanelComponent extends ComponentStore<{
 
   protected saveState() {
     this.close.emit()
-    const grid = this.sigGrid()
-    const key = this.sigPersistKey()
+    const grid = this.grid()
+    const key = this.persistKey()
     SaveStateDialogComponent.open(this.modal, {
       inputs: {
         title: 'Save State',
@@ -220,12 +214,12 @@ export class TableGridPanelComponent extends ComponentStore<{
     LoadStateDialogComponent.open(this.modal, {
       inputs: {
         title: 'Load State',
-        key: this.get(({ persistKey }) => persistKey),
+        key: this.persistKey(),
       },
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe((state) => {
-        const grid = this.get(({ grid }) => grid)
+        const grid = this.grid()
         grid.api.applyColumnState({
           state: state.columns,
           applyOrder: true,
@@ -236,7 +230,7 @@ export class TableGridPanelComponent extends ComponentStore<{
 
   protected copyURL() {
     this.close.emit()
-    const grid = this.sigGrid()
+    const grid = this.grid()
     const params = gridStateToQueryParams(grid.api)
     const url = new URL(this.window.location.href)
     for (const key in params) {
@@ -257,22 +251,22 @@ export class TableGridPanelComponent extends ComponentStore<{
     ExportDialogComponent.open(this.modal, {
       inputs: {
         title: 'CSV Export',
-        grid: this.get(({ grid }) => grid.api),
+        grid: this.grid()?.api,
       },
     })
   }
 
   protected handleAction(action: TableGridActionButton) {
-    action.action(this.get(({ grid }) => grid))
+    action.action(this.grid())
     this.close.emit()
   }
 
   private submitState(state: ColumnState[]) {
-    const grid = this.sigGrid()
-    grid.api.applyColumnState({
-      state: state,
-    })
-    this.colState.next(grid.api.getColumnState())
+    const api = this.grid()?.api
+    if (api) {
+      api.applyColumnState({ state: state })
+      this.state().columns.set(api.getColumnState())
+    }
   }
 
   private getHeaderName(grid: AgGrid<any, unknown>, col: Column) {

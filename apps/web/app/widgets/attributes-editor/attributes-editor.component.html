@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-2 pr-[10px] font-nimbus overflow-clip">
   <div class="flex flex-row items-center gap-1">
     <span class="font-bold">Points</span>
-    <span class="font-bold text-center">{{ pointsAvailable$ | async }}</span>
+    <span class="font-bold text-center">{{ pointsAvailable() }}</span>
     <span class="flex-1"></span>
     @if (!freeMode) {
       <label class="join items-center my-1">
@@ -17,7 +17,7 @@
       </label>
     }
   </div>
-  @for (stat of stats$ | async; track $index) {
+  @for (stat of stats(); track $index) {
     <div class="flex flex-col">
       <div class="flex flex-row gap-4">
         <label class="inline-block w-16 font-serif text-nw-description uppercase text-center">
@@ -108,7 +108,7 @@
           </div>
 
           <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
-            @for (step of steps$ | async; track $index) {
+            @for (step of steps(); track $index) {
               <div
                 class="segment relative h-5 cursor-pointer"
                 [style.flex]="step.weight"

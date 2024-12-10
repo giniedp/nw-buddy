@@ -4,7 +4,7 @@ import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalDungeons } from '@n
 import { CreatureType, MutationDifficultyStaticData, VitalsBaseData as VitalsData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { LootContext, NwLootService } from '~/nw/loot'
 import { eqCaseInsensitive, selectStream, shareReplayRefCount } from '~/utils'
 
@@ -64,18 +64,20 @@ const TAB_BOSSES_CREATURES: Array<CreatureType> = [
 
 @Injectable()
 export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
-  private db: NwDataService = inject(NwDataService)
+  private db = injectNwData()
   private loot: NwLootService = inject(NwLootService)
 
   public readonly gameModeId$ = this.select(({ gameModeId }) => gameModeId)
-  public readonly gameMode$ = selectStream(this.db.gameMode(this.gameModeId$))
+  public readonly gameMode$ = selectStream(this.gameModeId$.pipe(switchMap((id) => this.db.gameModesById(id))))
   public readonly isMutable$ = this.select(this.gameMode$, (it) => it?.IsMutable)
 
   public readonly mutaDifficultyId$ = this.select(({ mutationDifficultyId }) => mutationDifficultyId)
-  public readonly mutaDifficulty$ = this.select(
-    this.isMutable$,
-    this.db.mutatorDifficulty(this.mutaDifficultyId$),
-    (isMutable, value) => (isMutable ? value : null)
+  public readonly mutaDifficulty$ = selectStream(
+    {
+      isMutable: this.isMutable$,
+      value: this.mutaDifficultyId$.pipe(switchMap((id) => this.db.mutatorDifficultiesById(id))),
+    },
+    ({ isMutable, value }) => (isMutable ? value : null),
   )
 
   public readonly mutaElementAvailable$ = this.select(this.mutaDifficulty$, (it) => !!it)
@@ -84,7 +86,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     {
       available: this.mutaElementAvailable$,
       difficulty: this.mutaDifficulty$,
-      values: this.db.mutatorElements,
+      values: this.db.mutatorElementsAll(),
     },
     ({ available, difficulty, values }) => {
       if (!available) {
@@ -101,7 +103,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           }
         })
     },
-    { debounce: true }
+    { debounce: true },
   )
   public readonly mutaElement$ = selectStream(
     {
@@ -115,7 +117,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       }
       return options.find((it) => it.value === ref)?.object || options[0].object
     },
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly mutaPromotionAvailable$ = this.select(this.mutaDifficulty$, (it) => it && it.MutationDifficulty > 1)
@@ -123,8 +125,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly mutaPromotion$ = selectStream(
     {
       available: this.mutaPromotionAvailable$,
-      options: this.db.mutatorPromotions,
-      value: this.db.mutatorPromotion(this.mutaPromotionId$),
+      options: this.db.mutatorPromotionsAll(),
+      value: this.mutaPromotionId$.pipe(switchMap((id) => this.db.mutatorPromotionsById(id))),
     },
     ({ available, options, value }) => {
       if (!available) {
@@ -135,13 +137,13 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       }
       return options[0]
     },
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly mutaPromotionOptions$ = selectStream(
     {
       available: this.mutaPromotionAvailable$,
-      values: this.db.mutatorPromotions,
+      values: this.db.mutatorPromotionsAll(),
     },
     ({ available, values }) => {
       if (!available) {
@@ -156,13 +158,13 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         }
       })
     },
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly mutationPromotionOptions$ = selectStream(
     {
       difficulty: this.mutaDifficulty$,
-      values: this.db.mutatorPromotions,
+      values: this.db.mutatorPromotionsAll(),
     },
     ({ difficulty, values }) => {
       if (!difficulty || difficulty.MutationDifficulty <= 1) {
@@ -176,7 +178,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         }
       })
     },
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly mutaCurseAvailable$ = this.select(this.mutaDifficulty$, (it) => it && it.MutationDifficulty > 2)
@@ -184,8 +186,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly mutaCurse$ = selectStream(
     {
       available: this.mutaCurseAvailable$,
-      options: this.db.mutatorCurses,
-      value: this.db.mutatorCurse(this.mutaCurseId$),
+      options: this.db.mutatorCursesAll(),
+      value: this.mutaCurseId$.pipe(switchMap((id) => this.db.mutatorCursesById(id))),
     },
     ({ available, options, value }) => {
       if (!available) {
@@ -196,12 +198,12 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       }
       return options[0]
     },
-    { debounce: true }
+    { debounce: true },
   )
   public readonly mutaCurseOptions$ = selectStream(
     {
       available: this.mutaCurseAvailable$,
-      values: this.db.mutatorCurses,
+      values: this.db.mutatorCursesAll(),
     },
     ({ available, values }) => {
       if (!available) {
@@ -216,14 +218,14 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         }
       })
     },
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly playerLevel$ = this.select(({ playerLevel }) => playerLevel)
   public readonly enemyLevelOverride$ = this.select(this.mutaDifficulty$, (diff) => (diff ? 70 : null))
 
   public readonly difficulties$ = this.isMutable$.pipe(
-    switchMap((mutable) => (mutable ? this.db.mutatorDifficulties : of<MutationDifficultyStaticData[]>([])))
+    switchMap((mutable) => (mutable ? this.db.mutatorDifficultiesAll() : of<MutationDifficultyStaticData[]>([]))),
   )
 
   public readonly possibleItemDropIds$ = this.select(this.gameMode$, (it) => {
@@ -232,22 +234,22 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly possibleItemDrops$ = selectStream(
     {
       ids: this.possibleItemDropIds$,
-      items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
+      items: this.db.itemsByIdMap(),
+      housing: this.db.housingItemsByIdMap(),
     },
     ({ ids, items, housing }) => ids.map((id) => items.get(id) || housing.get(id)).filter((it) => !!it),
     {
       debounce: true,
-    }
+    },
   )
 
   public readonly creatures$ = selectStream(
     {
       dungeonId: this.gameModeId$,
-      dungeons: this.db.gameModes,
+      dungeons: this.db.gameModesAll(),
       difficulty: this.mutaDifficulty$,
-      vitals: this.db.vitals,
-      vitalsMeta: this.db.vitalsMetadataMap,
+      vitals: this.db.vitalsAll(),
+      vitalsMeta: this.db.vitalsMetadataByIdMap(),
     },
     ({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): VitalsData[] => {
       const result = vitals.filter((it) => {
@@ -264,21 +266,21 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     },
     {
       debounce: true,
-    }
+    },
   )
 
   public readonly creaturesCommon$ = selectStream(this.creatures$, (list) => {
     return list.filter(
-      (it) => !TAB_BOSSES_CREATURES.includes(it.CreatureType) && !TAB_NAMED_CREATURES.includes(it.CreatureType)
+      (it) => !TAB_BOSSES_CREATURES.includes(it.CreatureType) && !TAB_NAMED_CREATURES.includes(it.CreatureType),
     )
   })
 
   public readonly creaturesBosses$ = selectStream(
     {
       dungeonId: this.gameModeId$,
-      dungeons: this.db.gameModes,
-      vitals: this.db.vitalsByCreatureType,
-      vitalsMeta: this.db.vitalsMetadataMap,
+      dungeons: this.db.gameModesAll(),
+      vitals: this.db.vitalsByCreatureTypeMap(),
+      vitalsMeta: this.db.vitalsMetadataByIdMap(),
     },
     ({ vitals, vitalsMeta, dungeons, dungeonId }): VitalsData[] => {
       const result: VitalsData[] = []
@@ -294,15 +296,15 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     },
     {
       debounce: true,
-    }
+    },
   )
 
   public readonly creaturesNamed$ = selectStream(
     {
       dungeonId: this.gameModeId$,
-      dungeons: this.db.gameModes,
-      vitals: this.db.vitalsByCreatureType,
-      vitalsMeta: this.db.vitalsMetadataMap,
+      dungeons: this.db.gameModesAll(),
+      vitals: this.db.vitalsByCreatureTypeMap(),
+      vitalsMeta: this.db.vitalsMetadataByIdMap(),
     },
     ({ vitals, vitalsMeta, dungeons, dungeonId }): VitalsData[] => {
       const result: VitalsData[] = []
@@ -318,7 +320,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     },
     {
       debounce: true,
-    }
+    },
   )
 
   public readonly creatureLootTags$ = selectStream(this.creatures$, (list) => {
@@ -328,7 +330,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly lootTagsNormalMode$ = combineLatest({
     dungeon: this.gameMode$,
     creatureTags: this.creatureLootTags$,
-    tables: combineLatest([this.db.lootTable('CreatureLootMaster')]),
+    tables: combineLatest([this.db.lootTablesById('CreatureLootMaster')]),
     playerLevel: this.playerLevel$,
   })
     .pipe(filter((it) => !!it.dungeon))
@@ -355,7 +357,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           tables,
           tableIds: tables.map((it) => it.LootTableID),
         }
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
 
@@ -368,7 +370,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
       return combineLatest(tables.map((table) => this.loot.resolveLootItems(table, ctx))).pipe(map((it) => it.flat()))
-    })
+    }),
   )
 
   public readonly lootTagsMutatedMode$ = selectStream(
@@ -377,8 +379,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       creatureTags: this.creatureLootTags$,
       playerLevel: this.playerLevel$,
       lootTables: combineLatest([
-        this.db.lootTable('CreatureLootMaster_MutatedContainer'),
-        this.db.lootTable('CreatureLootMaster'),
+        this.db.lootTablesById('CreatureLootMaster_MutatedContainer'),
+        this.db.lootTablesById('CreatureLootMaster'),
       ]),
     },
     ({ dungeon, creatureTags, lootTables, playerLevel }) => {
@@ -411,7 +413,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         tableIds: lootTables.map((it) => it.LootTableID),
       }
     },
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly lootMutatedMode = this.lootTagsMutatedMode$.pipe(
@@ -423,7 +425,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
       return combineLatest(tables.map((table) => this.loot.resolveLootItems(table, ctx))).pipe(map((it) => it.flat()))
-    })
+    }),
   )
 
   public readonly lootTagsDifficulty$ = selectStream(
@@ -433,8 +435,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       creatureTags: this.creatureLootTags$,
       playerLevel: this.playerLevel$,
       lootTables: combineLatest([
-        this.db.lootTable('CreatureLootMaster_MutatedContainer'),
-        this.db.lootTable('CreatureLootMaster'),
+        this.db.lootTablesById('CreatureLootMaster_MutatedContainer'),
+        this.db.lootTablesById('CreatureLootMaster'),
       ]),
     },
     ({ dungeon, difficulty, creatureTags, lootTables, playerLevel }) => {
@@ -473,7 +475,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         tableIds: lootTables.map((it) => it.LootTableID),
       }
     },
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
@@ -486,7 +488,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
       ctx.bucketTags = [...MUTATION_DIFFICULTY_LOOT_TAGS]
       return combineLatest(tables.map((table) => this.loot.resolveLootItems(table, ctx))).pipe(map((it) => it.flat()))
-    })
+    }),
   )
 
   public constructor() {

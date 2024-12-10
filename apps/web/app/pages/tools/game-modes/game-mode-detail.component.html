@@ -268,7 +268,7 @@
     @for (item of scroll.data$ | async; track $index) {
       <nwb-item-detail
         [@fade]="true"
-        [entity]="item"
+        [itemId]="item"
         [cdkContextMenuTriggerFor]="tplExplainMenu"
         (cdkContextMenuOpened)="explainItemDrop(item, 'normal')"
       >
@@ -296,7 +296,7 @@
     @for (item of scroll.data$ | async; track $index) {
       <nwb-item-detail
         [@fade]="true"
-        [entity]="item"
+        [itemId]="item"
         [cdkContextMenuTriggerFor]="tplExplainMenu"
         (cdkContextMenuOpened)="explainItemDrop(item, 'mutated')"
       >
@@ -324,7 +324,7 @@
     @for (item of scroll.data$ | async; track $index) {
       <nwb-item-detail
         [@fade]="true"
-        [entity]="item"
+        [itemId]="item"
         [cdkContextMenuTriggerFor]="tplExplainMenu"
         (cdkContextMenuOpened)="explainItemDrop(item, 'difficulty')"
       >

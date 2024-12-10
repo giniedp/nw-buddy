@@ -5,12 +5,12 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
-  signal,
   TemplateRef,
   TrackByFunction,
   ViewChild,
+  signal,
 } from '@angular/core'
-import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import {
   CurseMutationStaticData,
@@ -34,7 +34,7 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 
@@ -55,7 +55,7 @@ import {
 import { uniqBy } from 'lodash'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
-import { svgInfoCircle, svgLocationCrosshairs, svgLocationDot, svgSquareArrowUpRight, svgThumbtack } from '~/ui/icons/svg'
+import { svgInfoCircle, svgLocationCrosshairs, svgSquareArrowUpRight, svgThumbtack } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
@@ -72,11 +72,11 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { VitalDetailModule } from '~/widgets/data/vital-detail'
 import { LootModule } from '~/widgets/loot'
 import { injectCurrentMutation } from './current-mutation.service'
+import { GameModeDetailMapComponent } from './game-mode-detail-map.component'
 import { GameModeDetailStore } from './game-mode-detail.store'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
-import { GameModeDetailMapComponent } from './game-mode-detail-map.component'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -131,6 +131,7 @@ export interface Tab {
   ],
 })
 export class GameModeDetailComponent implements OnInit {
+  private db = injectNwData()
   public trackById: TrackByFunction<MasterItemDefinitions | HouseItems> = (i, item) => getItemId(item)
   public trackByIndex = (i: number) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
@@ -250,9 +251,9 @@ export class GameModeDetailComponent implements OnInit {
     combineLatest({
       rank: this.difficultyRank$,
       difficulty: this.difficulty$,
-      events: this.db.gameEventsMap,
-      items: this.db.itemsMap,
-      loot: this.db.lootTablesMap,
+      events: this.db.gameEventsByIdMap(),
+      items: this.db.itemsByIdMap(),
+      loot: this.db.lootTablesByIdMap(),
     }),
   ).pipe(
     map(({ rank, difficulty, events, items, loot }) => {
@@ -371,7 +372,6 @@ export class GameModeDetailComponent implements OnInit {
   public tabs: Array<Tab>
 
   public constructor(
-    private db: NwDataService,
     private route: ActivatedRoute,
     private router: Router,
     private cdRef: ChangeDetectorRef,

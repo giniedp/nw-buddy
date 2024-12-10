@@ -4,12 +4,16 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   EventEmitter,
+  Injector,
   Input,
   NgZone,
   OnInit,
   Output,
   ViewChild,
+  computed,
+  inject,
 } from '@angular/core'
 import { isEqual } from 'lodash'
 import {
@@ -32,6 +36,7 @@ import { selectStream } from '~/utils'
 import { runInZone } from '~/utils/rx/run-in-zone'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
+import { outputFromObservable, takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 
 export interface SelectionChangeEvent<T> {
   rows: T[]
@@ -91,8 +96,7 @@ export class TableGridComponent<T> implements OnInit {
   @Output()
   public readonly ready$ = new ReplaySubject<AgGrid<T>>(1)
 
-  @Output()
-  public readonly selection$ = defer(() => this.store.selection$)
+  public readonly selection$ = outputFromObservable(toObservable(this.store.selection).pipe(skip(1)))
 
   @Output()
   public readonly selectedRows$ = selectStream(defer(() => this.selectionChanged$).pipe(map((it) => it.rows)))
@@ -108,8 +112,12 @@ export class TableGridComponent<T> implements OnInit {
 
   public readonly rowCount$ = defer(() => gridDisplayRowCount(this.ready$))
 
-  protected gridData$ = this.store.gridData$
-  protected gridOptions$ = this.store.gridOptions$.pipe(map(selectGridOptions))
+  protected gridData = this.store.gridData
+  protected gridOptions = computed(() => {
+    return selectGridOptions(this.store.gridOptions())
+  })
+  private dref = inject(DestroyRef)
+  private injector = inject(Injector)
 
   public constructor(
     private locale: LocaleService,
@@ -129,7 +137,7 @@ export class TableGridComponent<T> implements OnInit {
   }
 
   private attachBootloader() {
-    this.ready$.pipe(takeUntil(this.store.destroy$)).subscribe((grid) => {
+    this.ready$.pipe(takeUntilDestroyed(this.dref)).subscribe((grid) => {
       this.store.patchState({ grid: grid, hasLoaded: true })
     })
   }
@@ -138,7 +146,7 @@ export class TableGridComponent<T> implements OnInit {
     this.ready$
       .pipe(switchMap((it) => this.locale.value$.pipe(map(() => it))))
       .pipe(skip(1)) // skip initial value
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(takeUntilDestroyed(this.dref))
       .subscribe(({ api }) => {
         // force re-render with new locale
         api.refreshCells({ force: true })
@@ -163,7 +171,7 @@ export class TableGridComponent<T> implements OnInit {
       // load pinned data state
       merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataChanged')).pipe(
         tap(({ api }) => {
-          this.persistence.loadPinnedState(api, this.persistKey, this.store.identifyBy$())
+          this.persistence.loadPinnedState(api, this.persistKey, this.store.identifyBy())
         }),
       ),
       // save pinned data state
@@ -172,7 +180,7 @@ export class TableGridComponent<T> implements OnInit {
         .pipe(debounceTime(500))
         .pipe(
           tap(({ api }) => {
-            this.persistence.savePinnedState(api, this.persistKey, this.store.identifyBy$())
+            this.persistence.savePinnedState(api, this.persistKey, this.store.identifyBy())
           }),
         ),
       // save column state whenever a column has changed
@@ -199,7 +207,7 @@ export class TableGridComponent<T> implements OnInit {
           }),
         ),
     )
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(takeUntilDestroyed(this.dref))
       .subscribe()
   }
 
@@ -209,19 +217,19 @@ export class TableGridComponent<T> implements OnInit {
       .pipe(runInZone(this.zone))
       .pipe(
         tap(({ api }) => {
-          const identifyBy = this.store.identifyBy$()
+          const identifyBy = this.store.identifyBy()
           const rows = gridGetPinnedTopData(api)
           const ids = identifyBy ? rows.map(identifyBy) : null
           this.store.patchState({ pinned: ids })
         }),
       )
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(takeUntilDestroyed(this.dref))
       .subscribe()
 
     this.grid
       .onEvent('rowClicked')
       .pipe(filter((it: RowClickedEvent) => !!it.rowPinned))
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(takeUntilDestroyed(this.dref))
       .subscribe((e: RowClickedEvent) => {
         e.api.forEachNode((it) => {
           if (it.data === e.data) {
@@ -236,7 +244,7 @@ export class TableGridComponent<T> implements OnInit {
     this.grid
       .onEvent('rowDoubleClicked')
       .pipe(filter((it: RowClickedEvent) => !it.rowPinned))
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(takeUntilDestroyed(this.dref))
       .subscribe((e: RowClickedEvent) => {
         this.rowDoubleClicked$.emit(e.data)
       })
@@ -248,7 +256,7 @@ export class TableGridComponent<T> implements OnInit {
         filter((e) => !!(e as any).source),
         runInZone(this.zone),
         tap(({ api }) => {
-          const identifyBy = this.store.identifyBy$()
+          const identifyBy = this.store.identifyBy()
           const rows = api.getSelectedRows()
           const ids = identifyBy ? rows.map(identifyBy) : null
           this.store.patchState({ selection: ids })
@@ -258,16 +266,16 @@ export class TableGridComponent<T> implements OnInit {
           })
         }),
       )
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(takeUntilDestroyed(this.dref))
       .subscribe()
 
     // sync selection from store -> grid
     combineLatest({
-      selection: this.store.selection$,
+      selection: toObservable(this.store.selection, { injector: this.injector }).pipe(skip(1)),
       change: merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataUpdated')),
       grid: this.ready$,
     })
-      .pipe(runInZone(this.zone), debounceTime(0), takeUntil(this.store.destroy$))
+      .pipe(runInZone(this.zone), debounceTime(0), takeUntilDestroyed(this.dref))
       .subscribe(({ selection, grid }) => {
         this.syncSelection({
           toSelect: selection,
@@ -286,7 +294,7 @@ export class TableGridComponent<T> implements OnInit {
     api: GridApi
     ensureVisible?: boolean
   }) {
-    const identifyBy = this.store.identifyBy$()
+    const identifyBy = this.store.identifyBy()
     if (!api || !identifyBy) {
       return
     }
@@ -309,7 +317,7 @@ export class TableGridComponent<T> implements OnInit {
   }
 
   private syncPinned({ toPin, api }: { toPin: Array<string | number>; api: GridApi }) {
-    const identifyBy = this.store.identifyBy$()
+    const identifyBy = this.store.identifyBy()
     if (!api || !identifyBy) {
       return
     }

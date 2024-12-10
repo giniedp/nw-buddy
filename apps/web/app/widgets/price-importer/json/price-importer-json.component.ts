@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, EventEmitter, Output } from '@angular/core'
+import { Component, EventEmitter, inject, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
-import { Observable, combineLatest, defer, map, take, tap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, defer, map, Observable, take, tap } from 'rxjs'
+
+import { injectNwData } from '~/data'
 import { DataViewModule, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { IconsModule } from '~/ui/icons'
@@ -36,6 +37,10 @@ export interface JsonImporterState {
   },
 })
 export class JsonPriceImporterComponent extends ComponentStore<JsonImporterState> {
+  private db = injectNwData()
+  private http = inject(HttpClient)
+  private adapter = inject(JsonPriceTableAdapter)
+
   @Output()
   protected dataReceived = new EventEmitter<JsonPriceItem[]>()
 
@@ -57,7 +62,7 @@ export class JsonPriceImporterComponent extends ComponentStore<JsonImporterState
   protected scale: number = 1
   protected iconSpin = svgCircleNotch
 
-  public constructor(private db: NwDataService, private http: HttpClient, private adapter: JsonPriceTableAdapter) {
+  public constructor() {
     super({})
   }
 
@@ -119,7 +124,7 @@ export class JsonPriceImporterComponent extends ComponentStore<JsonImporterState
               hasError: true,
             })
           },
-        })
+        }),
       )
       .subscribe(({ data, keyId, keyPrice, keys }) => {
         this.keyId = keyId
@@ -189,8 +194,8 @@ export class JsonPriceImporterComponent extends ComponentStore<JsonImporterState
     const keys = this.keys.filter((it) => it !== keyId && it !== keyPrice)
     const scale = this.scale
     combineLatest({
-      housing: this.db.housingItemsMap,
-      items: this.db.itemsMap,
+      housing: this.db.housingItemsByIdMap(),
+      items: this.db.itemsByIdMap(),
     })
       .pipe(
         map(({ housing, items }) => {
@@ -205,7 +210,7 @@ export class JsonPriceImporterComponent extends ComponentStore<JsonImporterState
               keys: keys,
             }
           })
-        })
+        }),
       )
       .pipe(take(1))
       .subscribe({

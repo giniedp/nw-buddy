@@ -1,10 +1,9 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, forwardRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } from '@angular/core'
 import { SpellData } from '@nw-data/generated'
-import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
+import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, valueCell } from '~/ui/property-grid/cells'
 import { SpellDetailStore } from './spell-detail.store'
 
@@ -14,30 +13,19 @@ import { SpellDetailStore } from './spell-detail.store'
   templateUrl: './spell-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
-  providers: [
-    DecimalPipe,
-    {
-      provide: SpellDetailStore,
-      useExisting: forwardRef(() => SpellDetailComponent),
-    },
-  ],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  providers: [DecimalPipe, SpellDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
-export class SpellDetailComponent extends SpellDetailStore {
-  @Input()
-  public set spellId(value: string) {
-    this.patchState({ spellId: value })
-  }
-
-  public constructor(
-    db: NwDataService,
-    private decimals: DecimalPipe,
-  ) {
-    super(db)
-  }
+export class SpellDetailComponent {
+  public store = inject(SpellDetailStore)
+  public spellId = input<string>(null)
+  #fxLoad = effect(() => {
+    const spellId = this.spellId()
+    untracked(() => this.store.load(spellId))
+  })
 
   public descriptor = gridDescriptor<SpellData>(
     {

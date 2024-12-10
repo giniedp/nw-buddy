@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
@@ -16,7 +16,7 @@ import { NpcTableRecord, npcColIcon, npcColId, npcColName, npcColTitle } from '.
 
 @Injectable()
 export class NpcsTableAdapter implements DataViewAdapter<NpcTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<NpcTableRecord>({ optional: true })
   private utils: TableGridUtils<NpcTableRecord> = inject(TableGridUtils)

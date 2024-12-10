@@ -5,16 +5,28 @@
   [disableContent]="square"
 />
 @if (!square) {
-  @if (showAttribution()) {
-    <nwb-item-detail-attribution class="p-2" />
-    <div class="nw-item-divider"></div>
-  }
-  <div class="flex flex-col gap-2 p-4 empty:hidden ">
-    @if (components(); as components) {
-      @for (component of components; track $index) {
-        <ng-container [ngComponentOutlet]="component" />
-      }
+  <nwb-item-detail-attribution />
+  <div class="p-4">
+    @if (!disableDescription) {
+      <nwb-item-detail-description-heargem class="nw-item-section" />
     }
-    <ng-content/>
+    @if (!disableStats) {
+      <nwb-item-detail-stats class="nw-item-section" />
+      <nwb-item-detail-gs-damage class="nw-item-section" />
+    }
+    @if (!disablePerks) {
+      <nwb-item-detail-perks class="nw-item-section" />
+    }
+    @if (!disableDescription) {
+      <nwb-item-detail-description class="nw-item-section" />
+    }
+    @if (enableTasks) {
+      <nwb-item-detail-perk-tasks class="nw-item-section" />
+    }
+    @if (!disableInfo) {
+      <nwb-item-detail-info class="nw-item-section" />
+    }
+
+    <ng-content />
   </div>
 }

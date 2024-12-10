@@ -16,9 +16,9 @@ import { ItemDetailModule } from '../../item-detail'
       [gsOverride]="instance?.gearScore"
       [perkOverride]="instance?.perks"
       #detail="itemDetail"
-      [nwbItemIcon]="detail.icon$ | async"
-      [isNamed]="detail.isNamed$ | async"
-      [rarity]="detail.finalRarity$ | async"
+      [nwbItemIcon]="detail.icon()"
+      [isNamed]="detail.isNamed()"
+      [rarity]="detail.rarity()"
       [solid]="true"
       [tooltip]="tplTip"
       [tooltipPlacement]="'right'"
@@ -27,7 +27,7 @@ import { ItemDetailModule } from '../../item-detail'
     <ng-template #tplTip>
       <nwb-item-card
         class="relative flex-1"
-        [entityId]="itemId"
+        [entity]="itemId"
         [gsOverride]="instance?.gearScore"
         [perkOverride]="instance?.perks"
       />

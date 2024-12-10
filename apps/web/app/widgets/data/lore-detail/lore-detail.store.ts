@@ -1,11 +1,11 @@
-import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
-import { computed, inject } from '@angular/core'
-import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
+import { computed } from '@angular/core'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { LoreData } from '@nw-data/generated'
 import { ScannedLore } from '@nw-data/scanner'
+import { NwDataSheets } from 'libs/nw-data/db/nw-data-sheets'
 import { sortBy } from 'lodash'
-import { EMPTY, catchError, combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { Observable, combineLatest, from, map, switchMap } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
 import { eqCaseInsensitive } from '~/utils'
 
 export interface LoreDetailState {
@@ -22,9 +22,6 @@ export interface LoreDetailState {
     record: LoreData
     meta: ScannedLore
   }>
-  isLoading: boolean
-  isLoaded: boolean
-  hasError: boolean
 }
 
 export const LoreDetailStore = signalStore(
@@ -35,61 +32,16 @@ export const LoreDetailStore = signalStore(
     meta: null,
     children: [],
     siblings: [],
-    isLoading: false,
-    isLoaded: false,
-    hasError: false,
   }),
-  withRedux({
-    actions: {
-      public: {
-        load: payload<{ id: string }>(),
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load: ({ id }: { id: string }): Observable<LoreDetailState> => {
+        return loadData({ id, db })
       },
-      private: {
-        loaded: payload<Pick<LoreDetailState, 'grandParent' | 'parent' | 'record' | 'meta' | 'children'>>(),
-        loadError: payload<{ error: any }>(),
-      },
-    },
-    reducer(actions, on) {
-      on(actions.load, (state) => {
-        patchState(state, {
-          isLoading: true,
-        })
-      })
-      on(actions.loaded, (state, data) => {
-        patchState(state, {
-          ...data,
-          isLoaded: true,
-          isLoading: false,
-          hasError: false,
-        })
-      })
-      on(actions.loadError, (state, { error }) => {
-        console.log(error)
-        patchState(state, {
-          isLoaded: true,
-          isLoading: false,
-          hasError: true,
-        })
-      })
-    },
-    effects(actions, create) {
-      const db = inject(NwDataService)
-      return {
-        load$: create(actions.load).pipe(
-          switchMap(({ id }) => loadData({ db, id })),
-          map((data) => {
-            actions.loaded(data)
-            return null
-          }),
-          catchError((error) => {
-            actions.loadError({ error })
-            return EMPTY
-          }),
-        ),
-      }
-    },
+    }
   }),
-  withComputed(({ record, children, siblings }) => {
+  withComputed(({ record, siblings }) => {
     return {
       title: computed(() => record()?.Title),
       subtitle: computed(() => record()?.Subtitle),
@@ -124,21 +76,21 @@ export const LoreDetailStore = signalStore(
   }),
 )
 
-function loadData({ db, id }: { db: NwDataService; id: string }) {
-  const record = db.loreItem(id)
-  const parent = record.pipe(switchMap((it) => db.loreItem(it?.ParentID)))
-  const grandParent = parent.pipe(switchMap((it) => db.loreItem(it?.ParentID)))
+function loadData({ db, id }: { db: NwDataSheets; id: string }) {
+  const record = from(db.loreItemsById(id))
+  const parent = record.pipe(switchMap((it) => db.loreItemsById(it?.ParentID)))
+  const grandParent = parent.pipe(switchMap((it) => db.loreItemsById(it?.ParentID)))
   const siblings = record.pipe(switchMap((it) => db.loreItemsByParentId(it?.ParentID)))
   const children = record.pipe(switchMap((it) => db.loreItemsByParentId(it?.LoreID)))
 
   return combineLatest({
     record,
-    meta: db.loreItemMeta(id),
+    meta: db.loreItemsMetadataById(id),
     parent,
     grandParent,
     siblings,
     children,
-    metaMap: db.loreItemsMetaMap,
+    metaMap: db.loreItemsMetadataByIdMap(),
   }).pipe(
     map((data) => {
       return {

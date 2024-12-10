@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { patchState } from '@ngrx/signals'
-import { firstValueFrom, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 import { extractLimits } from './utils'
@@ -32,7 +30,7 @@ import { extractLimits } from './utils'
           </tr>
         }
       </table>
-      <ng-content/>
+      <ng-content />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +41,7 @@ import { extractLimits } from './utils'
   providers: [StatusEffectCategoryDetailStore],
 })
 export class StatusEffectLimitsTableComponent {
-  protected db = inject(NwDataService)
+  protected db = injectNwData()
   protected store = inject(StatusEffectCategoryDetailStore)
 
   @Input()
@@ -62,17 +60,12 @@ export class StatusEffectLimitsTableComponent {
   protected propId: string
 
   private loadById(id: string) {
-    patchState(this.store, { categoryId: id })
+    this.store.load(id)
   }
 
   private async loadByPropId(id: string) {
-    const category = await firstValueFrom(
-      this.db.statusEffectCategories.pipe(
-        map((list) => {
-          return list.find((it) => !!extractLimits(it.ValueLimits)?.[id])
-        }),
-      ),
-    )
-    patchState(this.store, { categoryId: category?.StatusEffectCategoryID })
+    const categories = await this.db.statusEffectCategoriesAll()
+    const category = categories.find((it) => !!extractLimits(it.ValueLimits)?.[id])
+    this.store.load(category?.StatusEffectCategoryID)
   }
 }

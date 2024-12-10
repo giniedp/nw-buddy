@@ -1,14 +1,14 @@
 import { Component, computed, inject, input } from '@angular/core'
 
+import { coerceBooleanProperty } from '@angular/cdk/coercion'
 import { getItemId, getQuestTypeIcon, isHousingItem } from '@nw-data/common'
 import { ObjectiveTasks } from '@nw-data/generated'
-import { combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, defer, from, map, of, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwModule } from '~/nw'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { TaskTree } from './quest-task-detail.store'
-import { coerceBooleanProperty } from '@angular/cdk/coercion'
 
 @Component({
   standalone: true,
@@ -33,7 +33,7 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion'
   imports: [NwModule],
 })
 export class QuestTaskTreeComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private tl8 = inject(TranslateService)
   private links = inject(NwLinkService)
 
@@ -61,22 +61,19 @@ export class QuestTaskTreeComponent {
     }
   })
 
-  private resolveItemName(task: ObjectiveTasks) {
-    return this.db.itemOrHousingItem(task.ItemName).pipe(
-      map((it) => {
-        if (it) {
-          const link = this.links.tooltipLink(isHousingItem(it) ? 'housing' : 'item', getItemId(it))
-          return `<a href="${link}" target="_blank" class="link">${this.tl8.get(it?.Name)}</a>`
-        }
-        return null
-      }),
-    )
+  private async resolveItemName(task: ObjectiveTasks) {
+    const item = await this.db.itemOrHousingItem(task.ItemName)
+    if (item) {
+      const link = this.links.tooltipLink(isHousingItem(item) ? 'housing' : 'item', getItemId(item))
+      return `<a href="${link}" target="_blank" class="link">${this.tl8.get(item.Name)}</a>`
+    }
+    return null
   }
 
   private resolveTargetName(task: ObjectiveTasks) {
     return combineLatest({
-      category: this.db.vitalsCategory(task.KillEnemyType),
-      vital: this.db.vital(task.KillEnemyType),
+      category: this.db.vitalsCategoriesById(task.KillEnemyType),
+      vital: this.db.vitalsById(task.KillEnemyType),
     }).pipe(
       switchMap(({ category, vital }) => {
         if (!category) {
@@ -99,26 +96,26 @@ export class QuestTaskTreeComponent {
   }
 
   private resolvePOITags(task: ObjectiveTasks) {
-    return this.db.territoriesByPoiTag
-      .pipe(map((data) => data.get(task.POITag)))
-      .pipe(map((it) => it?.[0] || null))
-      .pipe(
-        switchMap((poi) => {
-          if (!poi) {
-            return of(task.POITag)
-          }
-          return this.tl8.observe(poi.NameLocalizationKey).pipe(
-            map((it) => {
-              const link = this.links.tooltipLink('poi', String(poi.TerritoryID))
-              return `<a href="${link}" target="_blank" class="link">${it}</a>`
-            }),
-          )
-        }),
-      )
+    return from(this.db.territoriesByPoiTagMap()).pipe(
+      map((data) => data.get(task.POITag)),
+      map((it) => it?.[0] || null),
+      switchMap((poi) => {
+        if (!poi) {
+          return of(task.POITag)
+        }
+        return this.tl8.observe(poi.NameLocalizationKey).pipe(
+          map((it) => {
+            const link = this.links.tooltipLink('poi', String(poi.TerritoryID))
+            return `<a href="${link}" target="_blank" class="link">${it}</a>`
+          }),
+        )
+      }),
+    )
   }
 
   private resolveTerritoryID(task: ObjectiveTasks) {
-    return this.db.territoriesMap.pipe(map((it) => it.get(Number(task.TerritoryID)))).pipe(
+    return from(this.db.territoriesByIdMap()).pipe(
+      map((it) => it.get(Number(task.TerritoryID))),
       switchMap((it) => {
         if (!it) {
           return of(task.TerritoryID)

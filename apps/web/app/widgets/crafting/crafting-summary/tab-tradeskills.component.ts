@@ -1,131 +1,142 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core'
 import { NwModule } from '~/nw'
-import { shareReplayRefCount } from '~/utils'
+import { apiResource } from '~/utils'
 
 import { RouterModule } from '@angular/router'
-import { ComponentStore } from '@ngrx/component-store'
-import { getCraftingXP, getItemId } from '@nw-data/common'
+import { NwTradeSkillInfo, getCraftingSkillXP, getCraftingStandingXP } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { groupBy, sumBy } from 'lodash'
-import { combineLatest, map, switchMap } from 'rxjs'
-import { NW_TRADESKILLS_INFOS_MAP } from '~/nw/tradeskill'
+import { injectNwData } from '~/data'
+import { LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { TradeskillsModule } from '~/widgets/tradeskills'
-import { CraftingCalculatorService } from '../crafting-calculator.service'
-import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
+import { CraftingChanceMenuComponent } from '../crafting-bonus'
+import { CraftingBuffStore } from '../crafting-bonus/crafting-buff.store'
+import { SummaryRow } from './types'
+import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuses-modal.component'
 
 @Component({
   standalone: true,
   selector: 'tab-tradeskills',
   templateUrl: './tab-tradeskills.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, TradeskillsModule, TooltipModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    RouterModule,
+    TradeskillsModule,
+    TooltipModule,
+    LayoutModule,
+    CraftingChanceMenuComponent,
+    ItemDetailModule,
+  ],
   providers: [],
   host: {
     class: 'block',
   },
 })
-export class TabTradeskillsComponent extends ComponentStore<{
-  tree: CraftingStepWithAmount
-}> {
-  @Input()
-  public set tree(value: CraftingStepWithAmount) {
-    this.patchState({ tree: value })
-  }
+export class TabTradeskillsComponent {
+  private db = injectNwData()
+  public summary = input<SummaryRow[]>()
+  private store = inject(CraftingBuffStore)
+  private modal = inject(ModalService)
 
-  protected readonly summary$ = this.select(({ tree }) => aggregate(tree))
-  protected readonly rows$ = this.select(this.table(), aggregateSkills)
-
-  protected trackByIndex = (i: number) => i
-
-  public constructor(private service: CraftingCalculatorService) {
-    super({
-      tree: null,
-    })
-  }
-
-  private table() {
-    return this.summary$.pipe(switchMap((rows) => combineLatest(rows.map((row) => this.resolveRow(row)))))
-  }
-
-  protected resolveRow(row: SummaryRow) {
-    const recipe$ = this.service.fetchRecipe(row.recipeId).pipe(shareReplayRefCount(1))
-    const event$ = recipe$.pipe(switchMap((it) => this.service.fetchGameEventForRecipe(it)))
-    return combineLatest({
-      recipe: recipe$,
-      event: event$,
-      item: this.service.fetchItem(row.itemId),
-    }).pipe(
-      map(({ recipe, event, item }) => {
-        return {
-          item: item,
-          recipe: recipe,
-          count: row.amount,
-          xp: event ? getCraftingXP(recipe, event) : 0,
-        }
-      })
-    )
-  }
-}
-
-function collectExpandedNodes(step: CraftingStepWithAmount, fn: (step: CraftingStepWithAmount) => void) {
-  if (step?.expand) {
-    fn(step)
-    step.steps?.forEach((it) => collectExpandedNodes(it, fn))
-  }
-}
-
-function aggregate(step: CraftingStepWithAmount): SummaryRow[] {
-  const result = new Map<string, SummaryRow>()
-  collectExpandedNodes(step, (node) => {
-    const itemId = node.ingredient?.type === 'Item' ? node.ingredient.id : node.selection
-    if (!result.has(itemId)) {
-      result.set(itemId, {
-        recipeId: node.recipeId,
-        itemId: itemId,
-        amount: 0,
-      })
-    }
-    result.get(itemId).amount += node.amount
+  protected resource = apiResource({
+    request: this.summary,
+    loader: async ({ request }) => {
+      const rows = await Promise.all(
+        request.map(async (row) => {
+          return {
+            ...row,
+            data: await resolveRowData(this.db, row),
+          }
+        }),
+      )
+      return aggregate(rows)
+    },
   })
-  return Array.from(result.values())
+  protected rows = computed(() => this.resource.value())
+
+  protected openChances(group: string) {
+    CraftingBonusesModalComponent.open(this.modal, group)
+  }
 }
 
-function aggregateSkills(
-  rows: Array<{ recipe: CraftingRecipeData; item: MasterItemDefinitions | HouseItems; xp: number; count: number }>
-) {
-  const result = new Map<string, SkillRow>()
+export type Row = SummaryRow & { data: RowData }
+export interface RowData {
+  item: MasterItemDefinitions | HouseItems
+  recipe: CraftingRecipeData
+  skill: NwTradeSkillInfo
+  xp: number
+}
 
-  const groups = groupBy(rows, (it) => it.recipe?.Tradeskill)
-  for (const [skillid, data] of Object.entries(groups)) {
-    const skill = NW_TRADESKILLS_INFOS_MAP.get(skillid)
-    if (!skill) {
+async function resolveRowData(db: NwData, row: SummaryRow): Promise<RowData> {
+  const recipe = await db.recipesById(row.recipeId)
+  const event = await db.gameEventsById(recipe?.GameEventID)
+
+  return {
+    item: await db.itemOrHousingItem(row.itemId),
+    skill: await db.tradeskillById(recipe?.Tradeskill),
+    recipe: recipe,
+    xp: event ? getCraftingSkillXP(recipe, event) : 0,
+  }
+}
+
+export interface SkillStatsRow {
+  id: string
+  label: string
+  icon: string
+  xp: number
+  steps: SkillStatsSubRow[]
+}
+
+export interface SkillStatsSubRow {
+  count: number
+  label: string
+  icon: string
+  xp: number
+
+  itemId: string
+  item: MasterItemDefinitions | HouseItems
+}
+
+function aggregate(rows: Row[]) {
+  const result = new Map<string, SkillStatsRow>()
+
+  const skillGroups = groupBy(rows, (it) => it.data.skill?.ID || '')
+  const entries = Object.entries(skillGroups).filter(([skillId]) => !!skillId)
+  for (const [skillId, data] of entries) {
+    if (!skillId) {
       continue
     }
-    if (!result.has(skill.ID)) {
-      result.set(skill.ID, {
-        id: skill.ID,
+    if (!result.has(skillId)) {
+      const skill = data[0].data.skill
+      result.set(skillId, {
+        id: skillId,
         icon: skill.Icon,
-        name: skill.ID,
+        label: skill.ID,
         xp: 0,
         steps: [],
       })
     }
 
-    const skillRow = result.get(skill.ID)
+    const skillRow = result.get(skillId)
 
-    const recipeGroups = groupBy(data, (it) => it.recipe?.RecipeID)
+    const recipeGroups = groupBy(data, (it) => it.data.recipe?.RecipeID)
     for (const [recipeId, steps] of Object.entries(recipeGroups)) {
-      skillRow.xp += sumBy(steps, (it) => it.count * it.xp)
+      const data = steps[0].data
+      skillRow.xp += sumBy(steps, (it) => it.amount * it.data.xp)
       skillRow.steps.push({
-        count: sumBy(steps, (it) => it.count),
-        xp: steps[0].xp,
-        recipe: steps[0].recipe,
-        item: steps[0].item,
-        itemId: getItemId(steps[0].item),
-        icon: steps[0].item?.IconPath,
-        label: steps[0].item?.Name,
+        count: sumBy(steps, (it) => it.amount),
+        xp: data.xp,
+        icon: data.item.IconPath,
+        label: data.item.Name,
+
+        itemId: steps[0].itemId,
+        item: data.item,
       })
     }
   }

@@ -8,7 +8,7 @@ export const SkillTreesPageStore = signalStore(
   withFilterByTags(),
   withNwData((db) => {
     return {
-      abilities: db.abilitiesMap,
+      abilities: db.abilitiesByIdMap(),
     }
   }),
   withComputed(({ filteredRecords, nwData, recordsAreLoaded, nwDataIsLoaded }) => {

@@ -29,23 +29,12 @@ export interface CharacterRecord {
    */
   faction: 'covenant' | 'syndicate' | 'marauder'
   /**
-   * Character weapon levels
+   *
    */
-  weaponLevels: Record<string, number>
+  progressionLevels: Record<string, number>
   /**
-   * Character tradeskill levels
+   * Active crafting buffs (effect or perk or faction buff IDs)
    */
-  tradeskillLevels: Record<string, number>
-  /**
-   * Character tradeskill armor sets
-   */
-  tradeskillSets: Record<string, string[]>
-  /**
-   * Cusom trade skill yield bonus
-   */
-  tradeskillBonus: Record<string, number>
-  /**
-   * Crafting preference: first light bonus
-   */
-  craftingFlBonus: boolean
+  effectStacks: Record<string, number>
+
 }

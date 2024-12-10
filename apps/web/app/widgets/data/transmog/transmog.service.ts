@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core'
 import { getAppearanceGearsetId, getItemSetFamilyName } from '@nw-data/common'
 import { ArmorAppearanceDefinitions, MasterItemDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
+import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { CaseInsensitiveMap, selectStream } from '~/utils'
 import { TRANSMOG_CATEGORIES, TransmogCategory, categorizeAppearance } from './transmog-categories'
@@ -14,21 +15,20 @@ import {
   getAppearanceIdName,
   haveAppearancesSameModelFile,
 } from './transmog-item'
-import { uniq } from 'lodash'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogService {
-  private readonly db = inject(NwDataService)
+  private readonly db = injectNwData()
   private readonly tl8 = inject(TranslateService)
 
   public readonly categories$ = of(TRANSMOG_CATEGORIES)
   public readonly transmogItems$ = selectStream(
     {
       categories: of(TRANSMOG_CATEGORIES),
-      itemsMap: this.db.itemsByAppearanceId,
-      itemAppearances: this.db.itemAppearances,
-      weaponAppearances: this.db.weaponAppearances,
-      instrumentAppearances: this.db.instrumentAppearances,
+      itemsMap: this.db.itemsByAppearanceIdMap(),
+      itemAppearances: this.db.armorAppearancesAll(),
+      weaponAppearances: this.db.weaponAppearancesAll(),
+      instrumentAppearances: this.db.instrumentAppearancesAll(),
     },
     (data) => selectAppearances(data),
   )
@@ -94,7 +94,7 @@ function selectAppearances({
       category: category,
       subcategory: subcategory,
       items: sources,
-      itemSets: uniq(sources.map(getItemSetFamilyName))
+      itemSets: uniq(sources.map(getItemSetFamilyName)),
     }
     const appearanceName = (appearance as ArmorAppearanceDefinitions).AppearanceName
     if (!appearanceName || !gender) {

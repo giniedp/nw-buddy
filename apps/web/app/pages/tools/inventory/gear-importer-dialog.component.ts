@@ -1,11 +1,11 @@
 import { A11yModule } from '@angular/cdk/a11y'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostListener, Input, OnInit, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EquipSlotId } from '@nw-data/common'
 import { ItemClass } from '@nw-data/generated'
 import { combineLatest, firstValueFrom, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
-import { ItemInstance, NwDataService } from '~/data'
+import { injectNwData, ItemInstance } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -67,7 +67,7 @@ export class GearImporterDialogComponent implements OnInit {
   )
 
   protected iconLeft = svgAngleLeft
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private tl8 = inject(TranslateService)
 
   public constructor(
@@ -123,9 +123,9 @@ export class GearImporterDialogComponent implements OnInit {
     combineLatest({
       image: this.store.imageFile$,
       itemClass: this.store.itemType$,
-      items: this.db.items,
-      affixMap: this.db.affixStatsMap,
-      perksMap: this.db.perksMap,
+      items: this.db.itemsAll(),
+      affixMap: this.db.affixStatsByIdMap(),
+      perksMap: this.db.perksByIdMap(),
     })
       .pipe(
         switchMap(({ image, itemClass, items, affixMap, perksMap }) => {

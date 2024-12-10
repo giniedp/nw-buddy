@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router'
         [text1]="'Gatherable'"
         [text2]="info"
         [titleLink]="['gatherable', recordId] | nwLink"
-        [isSkeleton]="!store.isLoaded"
+        [showSkeleton]="!store.isLoaded()"
       />
     </nwb-item-header>
   `,

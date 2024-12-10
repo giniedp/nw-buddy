@@ -50,6 +50,7 @@ import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from
     }),
     provideDataView({
       adapter: TransmogTableAdapter,
+
     }),
     QuicksearchService.provider({
       queryParam: 'search',

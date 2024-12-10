@@ -1,6 +1,6 @@
 import { Signal, computed, isSignal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { Observable, ObservableInput, isObservable } from 'rxjs'
+import { Observable, ObservableInput, from, isObservable } from 'rxjs'
 
 export type ObservableSignalInput<T> = ObservableInput<T> | Signal<T>
 
@@ -37,7 +37,11 @@ export function selectSignal(sources: any, project?: (input: any) => any): Signa
   for (const key in sources) {
     const source = sources[key]
     if (!isSignal(source)) {
-      sources[key] = toSignal(source)
+      if (isObservable(source)) {
+        sources[key] = toSignal(source)
+      } else {
+        sources[key] = toSignal(from(source))
+      }
     }
   }
 

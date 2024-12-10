@@ -2,16 +2,11 @@ import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input } from '@angular/core'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { NwModule } from '~/nw'
+import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import {
-  VirtualGridCellComponent,
-  VirtualGridComponent,
-  VirtualGridOptions,
-  provideVirtualGridOptions,
-} from '~/ui/data/virtual-grid'
-import { ItemDetailModule } from '../item-detail'
 import { EmptyComponent } from '~/widgets/empty'
+import { ItemDetailModule } from '../item-detail'
 import { ItemTableRecord } from './item-table-cols'
 
 @Component({

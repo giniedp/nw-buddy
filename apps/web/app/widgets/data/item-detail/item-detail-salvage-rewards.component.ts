@@ -1,0 +1,53 @@
+import { Component, computed, HostBinding, inject } from '@angular/core'
+import { injectNwData } from '~/data'
+import { apiResource } from '~/utils'
+import { GameEventDetailRewardsComponent } from '../game-event-detail/game-event-detail-rewards.component'
+import { selectGameEventItemReward, selectGameEventRewards } from '../game-event-detail/selectors'
+import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
+import { ItemDetailStore } from './item-detail.store'
+
+@Component({
+  standalone: true,
+  selector: 'nwb-item-detail-salvage-rewards',
+  template: `
+    @if (rewards()?.length) {
+      <h3 class="font-bold mb-1">Salvage Rewards</h3>
+      <nwb-game-event-detail-rewards [rewards]="rewards()" />
+    }
+  `,
+  imports: [GameEventDetailRewardsComponent],
+  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
+  host: {
+    class: 'block',
+  },
+})
+export class ItemDetailSalvageRewardsComponent {
+  private db = injectNwData()
+  private store = inject(ItemDetailStore)
+  protected resource = apiResource({
+    request: () => this.store.record(),
+    loader: async ({ request }) => {
+      const eventId = request?.SalvageGameEventID
+      const event = await this.db.gameEventsById(eventId)
+      const itemReward = selectGameEventItemReward(event)
+      const itemId = itemReward?.housingItemId || itemReward?.itemId
+      const item = await this.db.itemOrHousingItem(itemId)
+      const rewards = selectGameEventRewards(event, item)
+      return {
+        event,
+        item,
+        rewards,
+      }
+    },
+  })
+  protected rewards = computed(() => this.resource.value()?.rewards)
+
+  @HostBinding('@isHidden')
+  protected get isHiddenTrigger() {
+    return this.isHidden()
+  }
+
+  protected isHidden = computed(() => {
+    return !this.rewards()?.length
+  })
+}

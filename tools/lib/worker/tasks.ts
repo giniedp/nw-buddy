@@ -1,13 +1,15 @@
 import { scanSlices } from '../file-formats/slices/scan-slices'
 import { readPakIndex } from '../file-system/pak-index.task'
 import { convertDdsToPng } from './convert-dds-to-png'
+import { convertLuacToLua } from './convert-luac-to-lua'
 import { convertPngToWebp } from './convert-png-to-webp'
 
 export const WORKER_TASKS = {
   convertDdsToPng,
+  convertLuacToLua,
   convertPngToWebp,
-  scanSlices,
   readPakIndex,
+  scanSlices,
 } as const
 
 export type WorkerTasks = typeof WORKER_TASKS

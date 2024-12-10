@@ -1,36 +1,40 @@
-import { computed, effect } from '@angular/core'
-import { signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
-import { withNwData } from '~/data/with-nw-data'
+import { computed } from '@angular/core'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
+import { StatusEffectCategoryData } from '@nw-data/generated'
+import { injectNwData, withStateLoader } from '~/data'
 import { extractLimits, selectLimitsTable } from './utils'
-import { withHashLocation } from '@angular/router'
 
 export interface StatusEffectCategoryDetailState {
   categoryId: string
+  category: StatusEffectCategoryData
+  categories: StatusEffectCategoryData[]
 }
 
 export const StatusEffectCategoryDetailStore = signalStore(
-  { protectedState: false },
-  withState<StatusEffectCategoryDetailState>({ categoryId: null }),
-  withNwData((db) => {
+  withState<StatusEffectCategoryDetailState>({
+    categoryId: null,
+    category: null,
+    categories: [],
+  }),
+  withStateLoader(() => {
+    const db = injectNwData()
     return {
-      categoriesMap: db.statusEffectCategoriesMap,
-      categories: db.statusEffectCategories
+      load: async (categoryId: string) => {
+        return {
+          categoryId,
+          category: await db.statusEffectCategoriesById(categoryId),
+          categories: await db.statusEffectCategoriesAll(),
+        }
+      },
     }
   }),
-  withComputed(({ categoryId, nwData }) => {
-    const category = computed(() => nwData()?.categoriesMap?.get(categoryId()))
+  withComputed(({ category, categories }) => {
     const limits = computed(() => extractLimits(category()))
-    const table = computed(() => selectLimitsTable(category(), nwData()?.categories || []))
+    const table = computed(() => selectLimitsTable(category(), categories()))
     return {
-      category: category,
       limits: limits,
       table: table,
-      hasLimits: computed(() => !!table())
+      hasLimits: computed(() => !!table()),
     }
   }),
-  withHooks({
-    onInit: (state) => {
-      state.loadNwData()
-    }
-  })
 )

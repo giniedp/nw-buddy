@@ -1,0 +1,83 @@
+@for (row of rows(); track $index; let isLast = $last; let isFirst = $first) {
+  @if (!isFirst) {
+    <div class="divider my-0 h-0"></div>
+  }
+  <div class="flex flex-col gap-1 p-2 bg-base-100 rounded-sm">
+    <div class="flex flex-row gap-2 items-center">
+      <img [nwImage]="row.icon" class="w-10 h-10" />
+      <div class="flex-1 flex flex-col justify-center">
+        <span [nwText]="row.label" class="font-bold"></span>
+        <span>+{{ row.xpTotal | number }}</span>
+      </div>
+      <!-- <button class="btn btn-ghost btn-circle border-0 p-0 w-16 h-16" >
+        <nwb-tradeskill-progress [skillName]="row.id" [skillLevel]="'auto'" [skillPoints]="row.xp" />
+      </button> -->
+    </div>
+    @for (step of row.steps; track $index) {
+      <div class="flex flex-row gap-2 items-center" [nwbItemDetail]="step.itemId" #detail="itemDetail">
+        <a [nwLinkTooltip]="['item', step.itemId]">
+          <nwb-item-icon
+            class="w-10 h-10"
+            [nwbItemIcon]="detail.record()"
+            [rarity]="detail.rarity()"
+            [isNamed]="detail.isNamed()"
+            [rounded]="detail.isResource()"
+            [solid]="true"
+            [nwLinkTooltip]="['item', step.itemId]"
+            [borderless]="!detail.rarity() || detail.rarity() === 'common'"
+          />
+        </a>
+        <div class="flex-1 flex flex-row items-center gap-1 leading-tight whitespace-nowrap overflow-hidden">
+          <span>{{ step.amount }}</span>
+          <span> &times; </span>
+          <a
+            class="overflow-hidden text-ellipsis select-text link-hover"
+            [title]="step.label | nwText"
+            [routerLink]="detail.itemLink()"
+          >
+            {{ step.label | nwText }}
+          </a>
+        </div>
+        <div class="flex flex-col items-end justify-around text-xs text-right whitespace-nowrap pr-1">
+          <span class="opacity-50 cursor-help" [tooltip]="'Base XP per unit'"> {{ step.xp | number }} PU </span>
+          <span class="cursor-help" [tooltip]="tipStepXp"> +{{ step.xpTotal | number }} XP </span>
+          <ng-template #tipStepXp>
+            <div class="px-2 py-1 whitespace-nowrap gap-1">
+              @if (!row.buff) {
+                XP for all units crafted
+              } @else {
+                <table>
+                  <tr>
+                    <td></td>
+                    <td>
+                      {{ step.xp | number }}
+                      @if (step.amount) {
+                        &times; {{ step.amount }}
+                      }
+                      &times; (<span class="text-secondary">1</span> +
+                      <span class="text-success">{{ row.buff | number }} </span> )
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>=</td>
+                    <td>
+                      <span class="text-secondary">{{ step.xpSum | number }}</span>
+                      +
+                      <span class="text-success">{{ step.xpBonus | number }} </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>=</td>
+                    <td>
+                      <span class="text-primary">{{ step.xpTotal | number }}</span>
+                    </td>
+                  </tr>
+                </table>
+              }
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -1,20 +1,25 @@
-import { Signal } from '@angular/core'
 import {
   NW_FALLBACK_ICON,
+  canCraftWithLevel,
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
-  getCraftingXP,
+  getCraftingSkillXP,
+  getCraftingStandingXP,
   getItemExpansion,
   getItemIconPath,
   getItemId,
   getItemRarity,
   getTradeSkillLabel,
+  isCraftedWithFactionYieldBonus,
+  isCraftedWithYieldBonus,
   isItemArtifact,
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
 import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
+import { ScannedStation } from '@nw-data/scanner'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
+import { CharacterStore } from '~/data'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -24,8 +29,15 @@ import { ItemTrackerFilter } from '~/widgets/item-tracker'
 export type CraftingTableUtils = TableGridUtils<CraftingTableRecord>
 export type CraftingTableRecord = CraftingRecipeData & {
   $item: MasterItemDefinitions | HouseItems
-  $ingredients: Array<MasterItemDefinitions | HouseItems>
+  $ingredients: Array<CraftingIngredient>
   $gameEvent: GameEventData
+  $stations: Array<Pick<ScannedStation, 'stationID' | 'name'>>
+}
+export type CraftingIngredient = {
+  itemId: string
+  categoryId: string
+  label: string
+  icon: string
 }
 
 export function craftingColIcon(util: CraftingTableUtils) {
@@ -56,27 +68,59 @@ export function craftingColIcon(util: CraftingTableUtils) {
           isArtifact: isMasterItem(item) && isItemArtifact(item),
           isNamed: isMasterItem(item) && isItemNamed(item),
           rarity: getItemRarity(item),
-        })
+        }),
       )
     }),
   })
 }
 
 export function craftingColName(util: CraftingTableUtils) {
-  return util.colDef<string>({
+  return util.colDef<string[]>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 250,
     headerName: 'Name',
-    valueGetter: ({ data }) => util.i18n.get(data.RecipeNameOverride || data.$item?.Name),
-    getQuickFilterText: ({ value }) => value,
+    valueGetter: ({ data }) => {
+      const name = util.i18n.get(data.RecipeNameOverride || data.$item?.Name)
+      const itemName = util.i18n.get(data.$item?.Name)
+      const result = [name]
+      if (name !== itemName) {
+        result.push(itemName)
+      }
+      return result
+    },
+    valueFormatter: ({ value }) => value[0], // csv export only geth the recipe name
+    getQuickFilterText: ({ value }) => value.join(' '),
+    cellRenderer: util.cellRenderer(({ value }) => {
+      if (value.length > 1) {
+        return util.el('div.flex.flex-col', {}, [
+          util.el('span', { text: value[0] }),
+          util.el('span.text-xs.text-gray-500', { text: value[1] }),
+        ])
+      }
+      return value[0]
+    }),
   })
 }
+
+export function craftingColFilterText(util: CraftingTableUtils) {
+  return util.colDef<string>({
+    colId: 'additionalFilterText',
+    headerValueGetter: () => 'Additional Filter Text',
+    width: 200,
+    valueGetter: ({ data }) => {
+      const value = (data.AdditionalFilterText || '').split(' ').map((it) => it.replace(/^@/, ''))
+      return util.i18n.get(value)
+    },
+  })
+}
+
 export function craftingColSource(util: CraftingTableUtils) {
   return util.colDef<string>({
     colId: 'source',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Source',
-    valueGetter: ({ data }) => data['$source'],
+    valueGetter: ({ data }) => (data['$source'] as string)?.replace('CraftingRecipes', ''),
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
     width: 125,
@@ -100,27 +144,40 @@ export function craftingColIngredients(util: CraftingTableUtils) {
   return util.colDef<string[]>({
     colId: 'ingredients',
     headerValueGetter: () => 'Ingredients',
-    width: 200,
+    headerClass: 'bg-secondary bg-opacity-15',
+    width: 350,
     sortable: false,
     headerName: 'Ingredients',
-    valueGetter: ({ data }) => data.$ingredients?.map(getItemId),
-    getQuickFilterText: ({ data }) => data.$ingredients?.map(({ Name }) => util.tl8(Name)).join(' '),
+    valueGetter: ({ data }) => data.$ingredients?.map((it) => it.itemId || it.categoryId),
+    getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ data }) => {
       const items = data.$ingredients || []
       return util.el(
         'div.flex.flex-row.items-center.h-full',
         {},
         items.map((item) => {
-          return util.elA(
+          const icon = util.elItemIcon({
+            class: ['transition-all scale-90 hover:scale-110'],
+            icon: item.icon || NW_FALLBACK_ICON,
+          })
+          if (item.itemId) {
+            return util.elA(
+              {
+                attrs: { target: '_blank', href: util.tipLink('item', item.itemId) },
+              },
+              icon,
+            )
+          }
+          return util.el(
+            'span',
             {
-              attrs: { target: '_blank', href: util.tipLink('item', getItemId(item)) },
+              attrs: {
+                title: util.i18n.get(item.label),
+              },
             },
-            util.elItemIcon({
-              class: ['transition-all scale-90 hover:scale-110'],
-              icon: getItemIconPath(item) || NW_FALLBACK_ICON,
-            })
+            icon,
           )
-        })
+        }),
       )
     }),
     ...util.selectFilter({
@@ -130,9 +187,9 @@ export function craftingColIngredients(util: CraftingTableUtils) {
         const items = data.$ingredients || []
         return items.map((item) => {
           return {
-            id: getItemId(item),
-            label: util.i18n.get(item.Name),
-            icon: getItemIconPath(item),
+            id: item.itemId || item.categoryId,
+            label: util.i18n.get(item.label),
+            icon: item.icon || NW_FALLBACK_ICON,
           }
         })
       },
@@ -146,7 +203,7 @@ export function craftingColExpansion(util: CraftingTableUtils) {
     headerValueGetter: () => 'Expansion',
     width: 180,
     field: 'RequiredExpansion',
-    getQuickFilterText: ({ data }) => util.i18n.get(getItemExpansion(data?.RequiredExpansion)?.label),
+    getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ data }) => {
       const expansion = getItemExpansion(data?.RequiredExpansion)
       if (!expansion) {
@@ -183,8 +240,9 @@ export function craftingColExpansion(util: CraftingTableUtils) {
 export function craftingColBookmark(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'userBookmark',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Bookmark',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
@@ -200,9 +258,10 @@ export function craftingColBookmark(util: CraftingTableUtils) {
 export function craftingColInStock(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'userStock',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'In Stock',
     headerTooltip: 'Number of items currently owned',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.stock,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
@@ -218,9 +277,10 @@ export function craftingColInStock(util: CraftingTableUtils) {
 export function craftingColPrice(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'userPrice',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Price',
     headerTooltip: 'Current price in Trading post',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.price,
     cellClass: 'text-right',
     cellRenderer: TrackingCell,
@@ -238,35 +298,52 @@ export function craftingColTradeskill(util: CraftingTableUtils) {
   return util.colDef<string>({
     colId: 'tradeskill',
     headerValueGetter: () => 'Tradeskill',
-    width: 120,
+    width: 150,
     valueGetter: ({ data }) => data.Tradeskill,
     valueFormatter: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
-export function craftingColCraftingXP(util: CraftingTableUtils) {
+export function craftingColTradeskillEXP(util: CraftingTableUtils) {
   return util.colDef<number>({
-    colId: 'craftingXP',
-    headerValueGetter: () => 'Crafting XP',
-    width: 120,
-    valueGetter: ({ data }) => getCraftingXP(data, data.$gameEvent),
+    colId: 'tradeskillEXP',
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Tradskill XP',
+    width: 130,
+    cellClass: 'text-right',
+    valueGetter: ({ data }) => getCraftingSkillXP(data, data.$gameEvent),
+    getQuickFilterText: () => null,
     filter: 'agNumberColumnFilter',
   })
 }
 
-export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Record<string, number>>) {
+export function craftingColStandingEXP(util: CraftingTableUtils) {
+  return util.colDef<number>({
+    colId: 'standingEXP',
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Standing XP',
+    width: 120,
+    cellClass: 'text-right',
+    valueGetter: ({ data }) => getCraftingStandingXP(data, data.$gameEvent),
+    getQuickFilterText: () => null,
+    filter: 'agNumberColumnFilter',
+  })
+}
+
+export function craftingColCanCraft(util: CraftingTableUtils, char: CharacterStore) {
   return util.colDef<boolean>({
     colId: 'userCanCraft',
+    headerClass: 'bg-secondary bg-opacity-15',
     headerValueGetter: () => 'Can Craft',
     width: 100,
     cellClass: 'cursor-pointer',
     headerTooltip: 'Whether you can craft this item based on your current tradeskill level',
-    valueGetter: ({ data }) => skills()?.[data.Tradeskill] >= data.RecipeLevel,
-    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => canCraftWithLevel(data, char.getTradeskillLevel(data.Tradeskill)),
+    getQuickFilterText: () => null,
     cellRenderer: util.cellRenderer(({ value }) => {
       return util.el('span.badge.badge-sm', {
         class: value ? ['badge-success', 'badge-outline'] : 'badge-error',
@@ -275,7 +352,56 @@ export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Rec
     }),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
+  })
+}
+
+export function craftingColHasYieldBonus(util: CraftingTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'hasYieldBonus',
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Yield Bonus',
+    width: 110,
+    cellClass: 'cursor-pointer',
+    headerTooltip: 'Yield bonuses that apply to this craft',
+    valueGetter: ({ data }) => {
+      const result: string[] = []
+      if (isCraftedWithYieldBonus(data)) {
+        result.push('Skill')
+        result.push('Buff')
+      }
+      if (isCraftedWithFactionYieldBonus(data)) {
+        result.push('Faction')
+      }
+      return result
+    },
+    getQuickFilterText: () => null,
+    cellRenderer: util.tagsRenderer(),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
+  })
+}
+
+export function craftingColHasYieldBonusFromFort(util: CraftingTableUtils) {
+  return util.colDef<boolean>({
+    colId: 'hasFortYieldBonus',
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Fort Yield Bonus',
+    width: 130,
+    cellClass: 'cursor-pointer',
+    headerTooltip: 'Whether the item receives bonus from fort yield buff',
+    valueGetter: ({ data }) => isCraftedWithFactionYieldBonus(data),
+    getQuickFilterText: () => null,
+    cellRenderer: util.cellRenderer(({ value }) => {
+      return util.el('span.badge.badge-sm', {
+        class: value ? ['badge-success', 'badge-outline'] : 'badge-error',
+        text: value ? 'Yes' : 'No',
+      })
+    }),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 
@@ -290,7 +416,7 @@ export function craftingColCategory(util: CraftingTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -312,7 +438,7 @@ export function craftingColRecipeLevel(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'recipeLevel',
     headerValueGetter: () => 'Recipe Level',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     width: 120,
     field: 'RecipeLevel',
     filter: RangeFilter,
@@ -326,7 +452,7 @@ export function craftingColItemChance(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'bonusItemChance',
     headerValueGetter: () => 'Bonus Chance',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     width: 120,
     field: 'BonusItemChance',
     valueGetter: ({ data }) => Math.round((data.BonusItemChance || 0) * 100),
@@ -342,7 +468,7 @@ export function craftingColCooldownQuantity(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'cooldownQuantity',
     headerValueGetter: () => 'Cooldown Quantity',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     field: 'CooldownQuantity',
     filter: RangeFilter,
     valueFormatter: ({ value }) => String(value ? value : ''),
@@ -356,7 +482,7 @@ export function craftingColCooldownCeconds(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'cooldownSeconds',
     headerValueGetter: () => 'Cooldown Time',
-    getQuickFilterText: () => '',
+    getQuickFilterText: () => null,
     field: 'CooldownSeconds',
     valueFormatter: ({ value }) => {
       if (!value) {
@@ -367,5 +493,35 @@ export function craftingColCooldownCeconds(util: CraftingTableUtils) {
       return formatDistanceStrict(now, then)
     },
     width: 130,
+  })
+}
+
+export function craftingColStation(util: CraftingTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'station',
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Station',
+    getQuickFilterText: () => null,
+    valueGetter: ({ data }) => data.$stations?.map((it) => it.stationID),
+
+    valueFormatter: ({ value, data }) => {
+      if (!value) {
+        return []
+      }
+      return data.$stations.map((it) => util.i18n.get(it.name?.replace(/^@/, '')) || humanize(it.stationID)) as any
+    },
+    width: 130,
+    ...util.selectFilter({
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const items = data.$stations || []
+        return items.map((item) => {
+          return {
+            id: item.stationID,
+            label: util.i18n.get(item.name?.replace(/^@/, '')) || humanize(item.stationID),
+          }
+        })
+      },
+    }),
   })
 }

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
-import { map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { from, map } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { ChartModule } from '~/ui/chart'
 
@@ -17,30 +17,25 @@ import { ChartModule } from '~/ui/chart'
   },
 })
 export class TerritoryStandingChartComponent {
-  protected config$ = this.db
-    .useTable((it) => it.CategoricalProgressionRankData.Territory_Standing)
-    .pipe(
-      map((data): ChartConfiguration => {
-        return {
-          type: 'line',
-          options: {
-            backgroundColor: '#FFF',
-          },
-          data: {
-            labels: data.map((it) => it.Rank),
-            datasets: [
-              {
-                label: 'XP per level',
-                data: data.map((it) => it.InfluenceCost),
-                backgroundColor: '#ffa600',
-              },
-            ],
-          },
-        }
-      }),
-    )
-
-  public constructor(private db: NwDataService) {
-    //
-  }
+  private db = injectNwData()
+  protected config$ = from(this.db.categoricalRankTerritoryStanding()).pipe(
+    map((data): ChartConfiguration => {
+      return {
+        type: 'line',
+        options: {
+          backgroundColor: '#FFF',
+        },
+        data: {
+          labels: data.map((it) => it.Rank),
+          datasets: [
+            {
+              label: 'XP per level',
+              data: data.map((it) => it.InfluenceCost),
+              backgroundColor: '#ffa600',
+            },
+          ],
+        },
+      }
+    }),
+  )
 }

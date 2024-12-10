@@ -12,16 +12,16 @@ export const InventoryItemsStore = signalStore(
   withDbRecords(ItemInstancesDB),
   withNwData((db) => {
     return {
-      items: db.itemsMap,
-      perks: db.perksMap,
-      affixes: db.affixStatsMap,
-      buckets: db.perkBucketsMap,
+      items: db.itemsByIdMap(),
+      perks: db.perksByIdMap(),
+      affixes: db.affixStatsByIdMap(),
+      buckets: db.perkBucketsByIdMap(),
     }
   }),
   withComputed(({ records, nwData, recordsAreLoaded, nwDataIsLoaded }) => {
     const isLoaded = computed(() => recordsAreLoaded() && nwDataIsLoaded())
     return {
-      rows: computed(() => isLoaded() ? buildItemInstanceRows(records(), nwData()) : null),
+      rows: computed(() => (isLoaded() ? buildItemInstanceRows(records(), nwData()) : null)),
       isLoaded: isLoaded,
     }
   }),

@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, HostBinding, inject } from '@angular/core'
 import { getVitalDamageEffectiveness } from '@nw-data/common'
 import { VitalsBaseData as VitalsData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { NwModule } from '~/nw'
 import { damageTypeIcon, getWeaponTypes } from '~/nw/weapon-types'
-import { VitalDetailStore } from './vital-detail.store'
+import { SMOOTH_SWAP_ANIMATION } from '~/ui/animation'
 import { IconsModule } from '~/ui/icons'
-import { svgInfo } from '~/ui/icons/svg'
+import { svgCircleExclamation, svgInfo } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
+import { VitalDetailStore } from './vital-detail.store'
 
 export interface DamageEffectiveness {
   value: number
@@ -31,9 +31,15 @@ export interface DamageEffectiveness {
   host: {
     class: 'block',
   },
+  animations: [SMOOTH_SWAP_ANIMATION],
 })
 export class VitalDetailStatsComponent {
   protected store = inject(VitalDetailStore)
+
+  @HostBinding('@smoothSwap')
+  protected get swapStatus() {
+    return this.store.status()
+  }
 
   protected vital = this.store.vital
   protected aliasNames = this.store.aliasNames
@@ -45,6 +51,7 @@ export class VitalDetailStatsComponent {
   protected spawnLevels = selectSignal(this.store.metadata, (it) => it?.levels?.join(', '))
 
   protected infoIcon = svgInfo
+  protected errorIcon = svgCircleExclamation
 }
 
 function selectEffectiveness(vital: VitalsData): DamageEffectiveness[] {

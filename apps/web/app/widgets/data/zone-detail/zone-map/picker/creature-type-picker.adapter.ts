@@ -1,15 +1,14 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { inject } from '@angular/core'
 import { chain } from 'lodash'
-import { Observable, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { from, map, Observable } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { humanize } from '~/utils'
 import { CreatureTypeCellComponent, CreatureTypeRecord } from './creature-type-cell.component'
 
 export class CreatureTypePickerAdapter implements DataViewAdapter<CreatureTypeRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public entityID(item: CreatureTypeRecord): string | number {
     return item.CreatureTypeID.toLowerCase()
@@ -21,7 +20,7 @@ export class CreatureTypePickerAdapter implements DataViewAdapter<CreatureTypeRe
     return null
   }
   public connect(): Observable<CreatureTypeRecord[]> {
-    return this.db.vitals.pipe(
+    return from(this.db.vitalsAll()).pipe(
       map((list) =>
         chain(list)
           .map((it) => it.CreatureType)

@@ -1,25 +1,21 @@
-import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
-import { patchState } from '@ngrx/signals'
+import { Directive, effect, inject, input, untracked } from '@angular/core'
 import { QuestDetailStore } from './quest-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbQuestDetail]',
   exportAs: 'questDetail',
-  providers: [
-    {
-      provide: QuestDetailStore,
-      useExisting: forwardRef(() => QuestDetailDirective),
-    },
-  ],
+  providers: [QuestDetailStore],
 })
-export class QuestDetailDirective extends QuestDetailStore {
-  @Input()
-  public set nwbQuestDetail(value: string) {
-    patchState(this, { questId: value })
-  }
+export class QuestDetailDirective {
+  public store = inject(QuestDetailStore)
 
-  @Output()
-  public nwbQuestChange = toObservable(this.quest)
+  public questId = input<string>(null, {
+    alias: 'nwbQuestDetail',
+  })
+
+  #fxLoad = effect(() => {
+    const questId = this.questId()
+    untracked(() => this.store.load(questId))
+  })
 }

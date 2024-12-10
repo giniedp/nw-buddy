@@ -1,10 +1,9 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { EntitlementDetailStore } from './entitlement-detail.store'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
@@ -23,9 +22,8 @@ export class EntitlementDetailComponent {
 
   @Input()
   public set entitlementId(value: string) {
-    this.store.patchState({ entitlementId: value })
+    this.store.load({ entitlementId: value })
   }
 
-  protected rewards = toSignal(this.store.rewards$)
-
+  protected rewards = this.store.rewards
 }

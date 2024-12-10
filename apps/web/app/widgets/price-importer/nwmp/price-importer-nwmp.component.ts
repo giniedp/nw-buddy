@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, OnInit, Output } from '@angular/core'
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
 import { getItemId } from '@nw-data/common'
 import { combineLatest, map, take, tap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
 import { DataViewModule, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
@@ -38,6 +38,11 @@ export interface NwmpImporterState {
   },
 })
 export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState> implements OnInit {
+  private db = injectNwData()
+  private api = inject(NwmpApiService)
+  private pref = inject(ItemPreferencesService)
+  protected adapter = inject(NwmpPriceTableAdapter)
+
   @Output()
   protected dataReceived = new EventEmitter<NwmpPriceItem[]>()
 
@@ -55,13 +60,7 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
   protected iconSpin = svgCircleNotch
   private nwmpServer: StorageProperty<string>
 
-  public constructor(
-    private api: NwmpApiService,
-    private db: NwDataService,
-    private pref: ItemPreferencesService,
-    protected adapter: NwmpPriceTableAdapter,
-    app: AppPreferencesService,
-  ) {
+  public constructor(app: AppPreferencesService) {
     super({
       servers: [],
       serverId: app.nwmpServer.get(),
@@ -97,8 +96,8 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
   public load(server: string) {
     this.nwmpServer.set(server)
     combineLatest({
-      items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
+      items: this.db.itemsByIdMap(),
+      housing: this.db.housingItemsByIdMap(),
       prices: this.api.fetchPrices(server),
     })
       .pipe(

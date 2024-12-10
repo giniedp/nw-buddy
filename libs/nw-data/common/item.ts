@@ -76,6 +76,10 @@ export function isPerkItemIngredient(item: MasterItemDefinitions | null) {
   return hasItemIngredientCategory(item, 'Perkitem')
 }
 
+export function isItemResource(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
+  return item?.ItemClass?.includes('Resource')
+}
+
 export function isItemOfAnyClass(item: Pick<MasterItemDefinitions, 'ItemClass'> | null, classes: ItemClass[]) {
   return classes.some((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
 }
@@ -357,24 +361,7 @@ export function getItemId(item: MasterItemDefinitions | HouseItems) {
 }
 
 export function getItemIdFromRecipe(item: CraftingRecipeData): string {
-  if (!item) {
-    return null
-  }
-  if (item[`ProceduralTierID${item.BaseTier}`]) {
-    return item[`ProceduralTierID${item.BaseTier}`]
-  }
-  if (item.ItemID) {
-    return item.ItemID
-  }
-  return null
-  // return (
-  //   item &&
-  //   (item.ProceduralTierID5 ||
-  //     item.ProceduralTierID4 ||
-  //     item.ProceduralTierID3 ||
-  //     item.ProceduralTierID2 ||
-  //     item.ProceduralTierID1)
-  // )
+  return item?.ItemID
 }
 
 export function getRecipeForItem(item: MasterItemDefinitions | HouseItems, recipes: Map<string, CraftingRecipeData[]>) {

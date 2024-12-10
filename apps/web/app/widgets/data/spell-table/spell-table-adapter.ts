@@ -1,7 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_ABILITYDATA, COLS_SPELLDATA } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { COLS_SPELLDATA } from '@nw-data/generated'
+import { defer } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -25,7 +26,7 @@ import {
 
 @Injectable()
 export class SpellTableAdapter implements DataViewAdapter<SpellTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private utils: TableGridUtils<SpellTableRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<SpellTableRecord>({ optional: true })
 
@@ -61,7 +62,7 @@ export class SpellTableAdapter implements DataViewAdapter<SpellTableRecord> {
     return this.source$
   }
 
-  protected source$ = selectStream(this.config?.source || this.db.spells, (list) => {
+  protected source$ = selectStream(this.config?.source || defer(() => this.db.spellsAll()), (list) => {
     if (this.config?.filter) {
       list = list.filter(this.config.filter)
     }

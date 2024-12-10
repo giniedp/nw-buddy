@@ -5,7 +5,7 @@ module.exports = {
   content: ['./apps/web/**/*.{html,js,ts}'],
   theme: {
     screens: {
-      xs: '0px',
+      xs: '375px',
       sm: '576px',
       md: '768px',
       lg: '992px',
@@ -36,6 +36,9 @@ module.exports = {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(-360deg)' },
         },
+      },
+      lineHeight: {
+        tight: '1.2',
       },
       textShadow: {
         none: 'none',

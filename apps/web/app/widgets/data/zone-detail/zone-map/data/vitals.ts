@@ -1,18 +1,18 @@
+import { NwData } from '@nw-data/db'
 import { TerritoryDefinition, VitalsBaseData as VitalsData } from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
 import { Feature, MultiPoint } from 'geojson'
 import { uniq } from 'lodash'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
 import { eqCaseInsensitive, stringToColor } from '~/utils'
-import { VitalsFeatureProperties, VitalDataSet } from './types'
+import { VitalDataSet, VitalsFeatureProperties } from './types'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
-export function loadVitals({ db, mapCoord, mapIds }: { db: NwDataService; mapCoord: MapCoord; mapIds?: string[] }) {
+export function loadVitals({ db, mapCoord, mapIds }: { db: NwData; mapCoord: MapCoord; mapIds?: string[] }) {
   return combineLatest({
-    vitals: db.vitals,
-    vitalsMetaMap: db.vitalsMetadataMap,
-    territoriesMap: db.territoriesMap,
+    vitals: db.vitalsAll(),
+    vitalsMetaMap: db.vitalsMetadataByIdMap(),
+    territoriesMap: db.territoriesByIdMap(),
   }).pipe(
     map((data) => {
       return collectVitalsDataset({

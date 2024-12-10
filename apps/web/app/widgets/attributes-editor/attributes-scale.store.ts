@@ -1,12 +1,12 @@
-import { Injectable, inject } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL, getDamageForTooltip, getDamageScalingForWeapon } from '@nw-data/common'
 import { AffixStatData, AttributeDefinition, WeaponItemDefinitions } from '@nw-data/generated'
 import { ChartConfiguration } from 'chart.js'
-import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
-import { selectStream } from '~/utils'
+import { combineLatest, map, switchMap } from 'rxjs'
 import tc from 'tinycolor2'
+import { injectNwData } from '~/data'
+import { selectStream } from '~/utils'
 
 export interface AttributesScalingState {
   playerLevel: number
@@ -26,23 +26,23 @@ const STAT_COLORS: Record<AttributeRef, string> = {
 
 @Injectable()
 export class AttributesScalingStore extends ComponentStore<AttributesScalingState> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   protected readonly scalingAffixId$ = this.select(({ affixId }) => affixId)
-  protected readonly scalingAffix$ = this.select(this.db.affixStat(this.scalingAffixId$), (it) => it)
+  protected readonly scalingAffix$ = this.scalingAffixId$.pipe(switchMap((it) => this.db.affixStatsById(it)))
   protected readonly weaponId$ = this.select(({ weaponId }) => weaponId)
-  protected readonly weapon$ = this.select(this.db.weapon(this.weaponId$), (it) => it)
+  protected readonly weapon$ = this.weaponId$.pipe(switchMap((it) => this.db.weaponItemsById(it)))
 
   protected readonly playerLevel$ = this.select(({ playerLevel }) => playerLevel)
   protected readonly gearScore$ = this.select(({ gearScore }) => gearScore)
   protected readonly stats$ = this.select(({ stats }) => stats)
   protected readonly tables$ = selectStream(
     combineLatest({
-      dex: this.db.attrDex,
-      str: this.db.attrStr,
-      int: this.db.attrInt,
-      foc: this.db.attrFoc,
-      con: this.db.attrCon,
+      dex: this.db.attrDex(),
+      str: this.db.attrStr(),
+      int: this.db.attrInt(),
+      foc: this.db.attrFoc(),
+      con: this.db.attrCon(),
     }),
   )
 

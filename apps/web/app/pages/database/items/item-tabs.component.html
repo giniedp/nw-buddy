@@ -1,54 +1,77 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <div class="tabs tabs-bordered flex-nowrap justify-start overflow-auto whitespace-nowrap scrollbar-hide">
-    <a
-      class="tab tab-active"
-      [class.tab-active]="vm.tabId === tab.id"
-      [routerLink]="[]"
-      [queryParams]="{ itemTab: tab.id }"
-      [queryParamsHandling]="'merge'"
-      *ngFor="let tab of vm.tabs"
-    >
-      {{ tab.label }}
-    </a>
-  </div>
+@if (tabItems()?.length) {
+  <nwb-tabs-host>
+    <nwb-tab-left
+      class="btn btn-sm btn-square btn-ghost w-5"
+      [disabled]="!tabs.canScrollLeft()"
+      [class.hidden]="!tabs.canScroll()"
+    />
+    <nwb-tab-right
+      class="btn btn-sm btn-square btn-ghost w-5"
+      [disabled]="!tabs.canScrollRight()"
+      [class.hidden]="!tabs.canScroll()"
+    />
+    <nwb-tabs [active]="activeTab()" class="tabs tabs-bordered bg-base-300" #tabs>
+      @for (tab of tabItems(); track tab.id) {
+        <nwb-tab
+          class="whitespace-nowrap"
+          [value]="tab.id"
+          [routerLink]="[]"
+          [queryParams]="{ itemTab: tab.id }"
+          [queryParamsHandling]="'merge'"
+        >
+          {{ tab.label }}
+        </nwb-tab>
+      }
+    </nwb-tabs>
+  </nwb-tabs-host>
+
   <div class="flex flex-col gap-2 pt-2">
-    @switch (vm.tabId) {
+    @switch (activeTab()) {
       @case ('effects') {
-        @for (id of vm.grantsEffects; track $index) {
+        @for (id of data()?.grantsEffects; track $index) {
           <nwb-status-effect-detail [effectId]="id" class="bg-black" />
         }
       }
       @case ('perks') {
-        @for (id of vm.resourcePerks; track $index) {
+        @for (id of data()?.resourcePerks; track $index) {
           <nwb-perk-detail [perkId]="id" class="bg-black" />
         }
 
         <nwb-perk-bucket-detail-tabs
-          [perkBucketIds]="vm.perkBucketIds"
-          [itemId]="vm.entityId"
+          [perkBucketIds]="data()?.perkBucketIds"
+          [itemId]="itemId()"
           class="bg-base-300 rounded-b-md"
         />
       }
       @case ('unlocks') {
-        <nwb-item-card [entityId]="vm.unlocksRecipe.ItemID" [enableInfoLink]="true" [enableLink]="true" />
+        @for (recipe of data()?.unlocksRecipe; track $index) {
+          <nwb-item-card
+            [entity]="recipe?.ItemID"
+            [enableInfoLink]="true"
+            [enableLink]="true"
+            [disablePerks]="true"
+            [disableStats]="true"
+            [disableInfo]="true"
+          />
+        }
       }
       @case ('recipes') {
-        @for (item of vm.recipes; track $index) {
-          <nwb-crafting-calculator [recipe]="item.recipe" class="bg-base-300 rounded-b-md" />
+        @for (item of data()?.recipes; track $index) {
+          <nwb-crafting-calculator [entity]="item.recipe" class="bg-base-300 rounded-b-md" />
         }
       }
       @case ('transmog') {
-        <nwb-appearance-detail [appearance]="vm.appearance" [parentItemId]="vm.entityId" />
+        <nwb-appearance-detail [appearance]="data()?.appearance" [parentItemId]="itemId()" />
       }
       @case ('craftable') {
         <div
           class="flex flex-col gap-2"
-          [nwbInfniteScroll]="vm.craftableRecipes"
+          [nwbInfniteScroll]="data()?.craftableRecipes"
           [nwbInfniteScrollPerPage]="10"
           #scroll="infiniteScroll"
         >
           @for (item of scroll.data$ | async; track $index) {
-            <nwb-item-detail [entityId]="item.itemId" class="rounded-md overflow-clip">
+            <nwb-item-detail [itemId]="item.itemId" class="rounded-md overflow-clip">
               <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'xs'" />
             </nwb-item-detail>
           }
@@ -58,10 +81,48 @@
         </div>
       }
       @case ('loot') {
-        @for (tableId of vm.lootTableIds; track $index) {
-          <nwb-loot-graph [tableId]="tableId" [expand]="false" [showLocked]="true" [highlight]="recordId$ | async" />
+        @for (tableId of data()?.lootTableIds; track $index) {
+          <nwb-loot-graph [tableId]="tableId" [expand]="false" [showLocked]="true" [highlight]="itemId()" />
+        }
+      }
+      @case ('rewards') {
+        <table class="table table-sm table-zebra bg-base-200 rounded-sm">
+          <thead>
+            <tr>
+              <th>Season</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          @for (item of data()?.rewardedFrom?.rewards; track $index) {
+            <tr>
+              <td>{{ item.season }}</td>
+              @if (item.chapter) {
+                <td colspan="2">Chapter {{ item.chapter }}</td>
+              } @else if (item.level) {
+                <td>Level {{ item.level }}</td>
+                <td class="text-right">
+                  @if (item.premium) {
+                    <span class="badge badge-secondary">Premium</span>
+                  } @else {
+                    <span class="badge badge-accent">Free</span>
+                  }
+                </td>
+              } @else {
+                <td colspan="2">???</td>
+              }
+            </tr>
+          }
+        </table>
+        @for (item of data()?.rewardedFrom?.items; track $index) {
+          <nwb-item-detail [itemId]="item">
+            <nwb-item-detail-header [size]="'xs'" [enableLink]="true" [enableInfoLink]="true"/>
+          </nwb-item-detail>
+        }
+        @for (item of data()?.rewardedFrom?.entitlements; track $index) {
+          <nwb-entitlement-detail [entitlementId]="item" class="bg-base-300 rounded-b-md" />
         }
       }
     }
   </div>
-</ng-container>
+}

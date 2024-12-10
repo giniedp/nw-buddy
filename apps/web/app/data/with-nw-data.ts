@@ -1,21 +1,22 @@
-import { inject } from '@angular/core'
-import { patchState, signalStoreFeature, type, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStoreFeature, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { ObservableInput, combineLatest, map, pipe, switchMap } from 'rxjs'
-import { NwDataService } from './nw-data'
+import { NwData } from '@nw-data/db'
+import { combineLatest, map, ObservableInput, pipe, switchMap } from 'rxjs'
+import { injectNwData } from './nw-data'
 
 export interface WithNwDataState<T> {
   nwData: T
   nwDataIsLoaded: boolean
 }
 
-export function withNwData<T>(fn: (db: NwDataService) => { [K in keyof T]: ObservableInput<T[K]> }) {
+export function withNwData<T>(fn: (db: NwData) => { [K in keyof T]: ObservableInput<T[K]> }) {
   return signalStoreFeature(
     withState<WithNwDataState<T>>({
       nwData: {} as any,
       nwDataIsLoaded: false,
     }),
-    withMethods((state, db = inject(NwDataService)) => {
+    withMethods((state) => {
+      const db = injectNwData()
       return {
         loadNwData: rxMethod<void>(
           pipe(

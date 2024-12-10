@@ -1,7 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_DAMAGEDATA, DamageData } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { from } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -25,12 +26,13 @@ import {
 
 @Injectable()
 export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<DamageTableRecord>({ optional: true })
   private utils: TableGridUtils<DamageTableRecord> = inject(TableGridUtils)
 
   public entityID(item: DamageTableRecord): string {
-    return item.DamageID.toLowerCase()
+    return [item.$source, item.DamageID].join('-').toLowerCase()
+    // return item.DamageID.toLowerCase()
   }
 
   public entityCategories(item: DamageTableRecord): DataTableCategory[] {
@@ -47,7 +49,7 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord> {
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<DamageData> {
+  public virtualOptions(): VirtualGridOptions<DamageTableRecord> {
     return null
   }
 
@@ -59,7 +61,7 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord> {
   }
 
   public connect() {
-    return this.db.damageTables
+    return from(this.db.damageTablesAll())
   }
 }
 

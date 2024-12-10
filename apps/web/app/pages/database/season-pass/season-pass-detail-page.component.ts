@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
-import { mapProp, observeRouteParam, selectSignal } from '~/utils'
-import { EntitlementDetailModule } from '~/widgets/data/entitlement-detail'
+import { apiResource, injectRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
+import { ItemDetailSalvageInfoComponent } from '../items/ui/item-detail-salvage-info.component'
 
 @Component({
   standalone: true,
@@ -24,32 +25,23 @@ import { LootModule } from '~/widgets/loot'
     RouterModule,
     LootModule,
     IconsModule,
-    EntitlementDetailModule,
+    ItemDetailSalvageInfoComponent,
   ],
   host: {
     class: 'flex flex-col gap-2',
   },
 })
 export class SeasonPassDetailPageComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   protected route = inject(ActivatedRoute)
-  protected id$ = observeRouteParam(this.route, 'id')
-  protected data$ = this.db.seasonPassRow(this.id$)
-  protected freeReward$ = this.db.seasonPassReward(this.data$.pipe(mapProp('FreeRewardId')))
-  protected premiumReward$ = this.db.seasonPassReward(this.data$.pipe(mapProp('PremiumRewardId')))
-  protected iconLink = svgSquareArrowUpRight
-
-  protected itemRewards = selectSignal(
-    {
-      data: this.data$,
-      freeReward: this.freeReward$,
-      premiumReward: this.premiumReward$,
-      entitlementsMap: this.db.entitlementsMap,
-    },
-    ({ data, freeReward, premiumReward, entitlementsMap }) => {
-      if (!data || !entitlementsMap) {
-        return []
-      }
+  protected id = toSignal(injectRouteParam('id'))
+  protected resource = apiResource({
+    request: () => this.id(),
+    loader: async ({ request }) => {
+      const data = await this.db.seasonPassRanksById(request)
+      const freeReward = await this.db.seasonsRewardsById(data.FreeRewardId)
+      const premiumReward = await this.db.seasonsRewardsById(data.PremiumRewardId)
+      // const entitlementsMap = await this.db.entitlementsByIdMap()
       return [
         {
           title: 'Free Reward',
@@ -63,5 +55,6 @@ export class SeasonPassDetailPageComponent {
         },
       ].filter((it) => it.itemId)
     },
-  )
+  })
+  protected iconLink = svgSquareArrowUpRight
 }

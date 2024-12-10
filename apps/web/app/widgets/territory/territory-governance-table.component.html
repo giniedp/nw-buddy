@@ -1,27 +1,28 @@
 <table class="table table-compact w-full">
   <thead>
-    <tr >
+    <tr>
       <th>Level</th>
       <td class="text-right">Upkeep Cost</td>
       <td class="text-right">Trading post level</td>
       <td class="text-right">Upgrade Regress</td>
       <td class="text-right">Earning Cap</td>
-      <ng-container *ngFor="let t of territries$ | async">
+      @for (t of territories(); track $index) {
         <td class="text-right" [nwText]="t.NameLocalizationKey"></td>
-      </ng-container>
+      }
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let row of data$ | async; let i = index">
-      <th class="text-right">{{ row.Level | number }}</th>
-      <td class="text-right">{{ row.UpkeepCost / 100 | currency }}</td>
-      <td class="text-right">{{ row.TradingPostLevel | number }}</td>
-      <td class="text-right">{{ row.NumberOfUpgradesRegressed | number }}</td>
-      <td class="text-right">{{ (row.IntervalEarningsCap * row.CapModifier) / 100 | currency }}</td>
-      <ng-container *ngFor="let t of territries$ | async">
-        <td class="text-right">{{ row['EarningsDistributionTID' + t.TerritoryID] | percent:'0.2' }}</td>
-      </ng-container>
-    </tr>
+    @for (row of data.value(); track $index) {
+      <tr>
+        <th class="text-right">{{ row.Level | number }}</th>
+        <td class="text-right">{{ row.UpkeepCost / 100 | currency }}</td>
+        <td class="text-right">{{ row.TradingPostLevel | number }}</td>
+        <td class="text-right">{{ row.NumberOfUpgradesRegressed | number }}</td>
+        <td class="text-right">{{ (row.IntervalEarningsCap * row.CapModifier) / 100 | currency }}</td>
+        @for (t of territories(); track $index) {
+          <td class="text-right">{{ row['EarningsDistributionTID' + t.TerritoryID] | percent: '0.2' }}</td>
+        }
+      </tr>
+    }
   </tbody>
 </table>
-

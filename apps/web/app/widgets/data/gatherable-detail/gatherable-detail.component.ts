@@ -28,7 +28,7 @@ export class GatherableDetailComponent {
 
   @Input()
   public set gatherableId(value: string) {
-    this.store.load({ id: value })
+    this.store.load({ gatherableId: value })
   }
 
   public get tradeSkill() {

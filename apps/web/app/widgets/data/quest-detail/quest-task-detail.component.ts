@@ -1,5 +1,4 @@
 import { Component, Input, inject } from '@angular/core'
-import { patchState } from '@ngrx/signals'
 import { QuestTaskDetailStore } from './quest-task-detail.store'
 import { QuestTaskTreeComponent } from './quest-task-tree.component'
 
@@ -10,14 +9,14 @@ import { QuestTaskTreeComponent } from './quest-task-tree.component'
   providers: [QuestTaskDetailStore],
   imports: [QuestTaskTreeComponent],
   host: {
-    class: 'block'
-  }
+    class: 'block',
+  },
 })
 export class QuestTaskDetailComponent {
   protected store = inject(QuestTaskDetailStore)
   @Input()
   public set taskId(value: string) {
-    patchState(this.store, { taskId: value })
+    this.store.load(value)
   }
 
   public get task() {

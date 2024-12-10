@@ -3,20 +3,49 @@
     <ng-content select="[header]" />
   </nwb-vital-detail-header>
   <ng-content />
-  <div class="tabs tabs-bordered justify-center">
-    @for (tab of tabs(); track tab.id) {
-      <a class="tab" [class.tab-active]="tab.active" (click)="currentTab.set(tab.id)">
-        {{ tab.label }}
-      </a>
-    }
-  </div>
 </div>
-<div class="p-4">
-  @for (tab of tabs(); track tab.id) {
-    @if (tab.active) {
-      <div [class.-m-4]="tab.id === 'models'">
-        <ng-container [ngComponentOutlet]="tab.component" />
-      </div>
-    }
-  }
-</div>
+
+<nwb-tabs-host>
+  <nwb-tab-left
+    class="btn btn-sm btn-square btn-ghost w-5"
+    [disabled]="!tabs.canScrollLeft()"
+    [class.hidden]="!tabs.canScroll()"
+  />
+  <nwb-tab-right
+    class="btn btn-sm btn-square btn-ghost w-5"
+    [disabled]="!tabs.canScrollRight()"
+    [class.hidden]="!tabs.canScroll()"
+  />
+  <nwb-tabs
+    [active]="activeTab() || 'stats'"
+    (activeChange)="activeTab.set($event)"
+    class="tabs tabs-bordered bg-base-300 relative"
+    #tabs
+  >
+    <nwb-tab class="flex-1" [value]="'stats'" [content]="tabStats">Stats</nwb-tab>
+    <nwb-tab class="flex-1" [value]="'attacks'" [content]="tabAttacks">Attacks</nwb-tab>
+    <nwb-tab class="flex-1" [value]="'buffs'" [content]="tabBuffs">Buffs</nwb-tab>
+    <nwb-tab class="flex-1" [value]="'models'" [content]="tabModels">3D</nwb-tab>
+    <nwb-loading-bar [isLoading]="store.isLoading()" class="absolute bottom-0 left-0 right-0" />
+  </nwb-tabs>
+  <ng-template #tabStats>
+    <div class="px-4 py-2 min-h-60">
+      <nwb-vital-detail-stats />
+    </div>
+  </ng-template>
+  <ng-template #tabAttacks>
+    <div class="px-4 py-2 min-h-60">
+      <nwb-vital-detail-attacks />
+    </div>
+  </ng-template>
+  <ng-template #tabBuffs>
+    <div class="px-4 py-2 min-h-60">
+      <nwb-vital-detail-buffs />
+    </div>
+  </ng-template>
+  <ng-template #tabModels>
+    <div class="min-h-60">
+      <nwb-vital-detail-models />
+    </div>
+  </ng-template>
+</nwb-tabs-host>

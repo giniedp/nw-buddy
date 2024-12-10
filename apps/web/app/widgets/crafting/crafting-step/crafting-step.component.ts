@@ -1,17 +1,20 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, inject, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { map } from 'rxjs'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import { selectStream } from '~/utils'
+import { TreeNodeToggleComponent } from '~/ui/tree'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
-import { CraftingStepToggleComponent } from '../crafting-step-toggle'
-import { AmountMode, CraftingStep } from '../types'
+import { AmountMode } from '../types'
 import { CraftingStepStore } from './crafting-step.store'
+import { CraftingStep } from '../loader/load-recipe'
+import { IngredientPickerComponent } from './ingredient-picker.component'
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -23,11 +26,14 @@ import { CraftingStepStore } from './crafting-step.store'
     CommonModule,
     NwModule,
     FormsModule,
-    CraftingStepToggleComponent,
     ItemTrackerModule,
     CdkMenuModule,
     ItemDetailModule,
     TooltipModule,
+    ItemFrameModule,
+    RouterModule,
+    TreeNodeToggleComponent,
+    IngredientPickerComponent
   ],
   providers: [CraftingStepStore],
   animations: [
@@ -49,6 +55,9 @@ import { CraftingStepStore } from './crafting-step.store'
   ],
 })
 export class CraftingStepComponent {
+  protected store = inject(CraftingStepStore)
+  public bordered = input<boolean>(false)
+
   @Input()
   public set step(value: CraftingStep) {
     this.store.patchState({ step: value })
@@ -64,37 +73,13 @@ export class CraftingStepComponent {
     this.store.patchState({ amountMode: value })
   }
 
-  protected vm$ = selectStream(
-    {
-      expand: this.store.expand$,
-      amountMode: this.store.amountMode$,
-      amountIsGross: this.store.amountIsGross$,
-      amount: this.store.amount$,
-      item: this.store.item$,
-      currency: this.store.currency$,
-      itemId: this.store.itemId$,
-      category: this.store.category$,
-      options: this.store.options$,
-      children: this.store.children$,
-      hasChildren: this.store.children$.pipe(map((it) => !!it?.length)),
-    },
-    (it) => it,
-    {
-      debounce: true,
-    },
-  )
-
-  public trackByIndex = (i: number) => i
-
-  public constructor(private store: CraftingStepStore) {
-    //
-  }
+  public totalCraft = outputFromObservable(toObservable(this.store.amountGross) )
 
   protected setExpand(value: boolean) {
     this.store.setExpand(value)
   }
 
   protected setSelection(value: string) {
-    this.store.selectOption(value)
+    this.store.setSelection(value)
   }
 }

@@ -1,14 +1,13 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { inject } from '@angular/core'
 import { chain } from 'lodash'
-import { Observable, combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { combineLatest, from, map, Observable } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { CreatureCategoryCellComponent, CreatureCategoryRecord } from './creature-category-cell.component'
 
 export class CreatureCategoryPickerAdapter implements DataViewAdapter<CreatureCategoryRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
 
   public entityID(item: CreatureCategoryRecord): string | number {
     return item.CategoryID.toLowerCase()
@@ -17,7 +16,7 @@ export class CreatureCategoryPickerAdapter implements DataViewAdapter<CreatureCa
     return null
   }
   public connect(): Observable<CreatureCategoryRecord[]> {
-    const categories$ = this.db.vitals.pipe(
+    const categories$ = from(this.db.vitalsAll()).pipe(
       map((list) =>
         chain(list)
           .map((it) => it.VitalsCategories)
@@ -29,7 +28,7 @@ export class CreatureCategoryPickerAdapter implements DataViewAdapter<CreatureCa
       ),
     )
     return combineLatest({
-      categoriesMap: this.db.vitalsCategoriesMap,
+      categoriesMap: this.db.vitalsCategoriesByIdMap(),
       categories: categories$,
     }).pipe(
       map(({ categoriesMap, categories }) => {

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
-import { CharacterStore, NwDataService } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
+import { apiResource } from '~/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -25,17 +25,18 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   },
 })
 export class XpLevelInfoComponent {
-  private level = toSignal(inject(CharacterStore).level$, {
-    initialValue: NW_MAX_CHARACTER_LEVEL,
-  })
+  private db = injectNwData()
+  private character = inject(CharacterStore)
 
-  private data = toSignal(inject(NwDataService).xpAmounts, {
-    initialValue: [],
+  private level = this.character.level
+
+  private resource = apiResource({
+    loader: () => this.db.xpLevels(),
   })
 
   protected stats = computed(() => {
     const level = this.level()
-    const data = this.data()
+    const data = this.resource.value() || []
 
     const currentRow = data[level - 1]
     const nextRow = data[level]

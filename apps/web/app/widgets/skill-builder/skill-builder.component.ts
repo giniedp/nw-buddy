@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, Input, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Injector, Input, TemplateRef, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, asyncScheduler, combineLatest, defer, filter, map, of, subscribeOn, switchMap } from 'rxjs'
+import { asyncScheduler, BehaviorSubject, combineLatest, defer, filter, map, of, subscribeOn, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES, NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
@@ -38,6 +38,8 @@ export interface SkillBuildValue {
   },
 })
 export class SkillBuilderComponent implements ControlValueAccessor {
+  private char = inject(CharacterStore)
+
   @Input()
   public set weaponTag(value: string) {
     this.weapon$.next(value)
@@ -73,7 +75,11 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   protected tree1Spent$ = this.tree1$.pipe(map((it) => it?.length || 0))
   protected tree2Spent$ = this.tree2$.pipe(map((it) => it?.length || 0))
   protected weaponType$ = this.weapon$.pipe(switchMap((it) => this.types.forWeaponTag(it)))
-  protected weaponLevel$ = this.weapon$.pipe(switchMap((it) => this.char.selectWeaponLevel(it)))
+  protected weaponLevel$ = this.weaponType$.pipe(
+    switchMap((it) => {
+      return this.char.observeProgressionLevel(it.ProgressionId)
+    }),
+  )
   protected weaponPoints$ = this.weaponLevel$.pipe(map((it) => Math.max(0, it - 1)))
   protected weapons$ = this.types.all$
   protected points$ = combineLatest({
@@ -121,7 +127,6 @@ export class SkillBuilderComponent implements ControlValueAccessor {
 
   public constructor(
     private types: NwWeaponTypesService,
-    private char: CharacterStore,
     private injector: Injector,
   ) {
     //

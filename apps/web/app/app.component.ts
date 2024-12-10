@@ -4,14 +4,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  NgZone,
   Renderer2,
   RendererStyleFlags2,
   computed,
+  effect,
   inject,
 } from '@angular/core'
 import { Router, RouterModule, UrlSegment } from '@angular/router'
-import { map, of, switchMap } from 'rxjs'
-
+import { from, interval, map, of, switchMap, take } from 'rxjs'
 import { TranslateService } from './i18n'
 
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
@@ -20,6 +21,7 @@ import { IonApp, IonButton, IonButtons, IonContent, IonRouterOutlet, IonSplitPan
 import { environment } from '../environments'
 import { LANG_OPTIONS, LanguageOption } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
+import { injectNwData } from './data/nw-data/provider'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
 import { IconsModule } from './ui/icons'
@@ -165,6 +167,8 @@ export class AppComponent {
   protected iconGithub = svgGithub
   protected iconDiscord = svgDiscord
   protected iconBack = svgChevronLeft
+  private db = injectNwData()
+  //private items = toSignal(from(this.db.itemsAll()), { initialValue: [] })
 
   constructor(
     private preferences: AppPreferencesService,
@@ -175,9 +179,24 @@ export class AppComponent {
     private router: Router,
     private elRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
+    private zone: NgZone
   ) {
     this.bindLanguage()
     this.bindWatermark()
+
+    let time = performance.now()
+    // zone.runOutsideAngular(() => {
+    //   return interval(10).pipe(take(100)).subscribe(() => {
+    //     const now = performance.now()
+    //     console.log('tick', Math.floor(now - time))
+    //     time = now
+    //   })
+    // })
+    // effect(() => console.log(this.items()))
+
+    // this.db.
+    // this.db.itemsAll().then((it) => console.log('items', it))
+    // this.db.itemsById('artifact_set1_heavylegs').then((it) => console.log('artifact_set1_heavylegs', it))
   }
 
   private removeLoader() {

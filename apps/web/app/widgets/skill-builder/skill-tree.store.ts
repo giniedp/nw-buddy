@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { AbilityData } from '@nw-data/generated'
 import { combineLatest, distinctUntilChanged, filter, map, tap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { CaseInsensitiveSet, eqCaseInsensitive, mapDistinct } from '~/utils'
 import { buildGrid, getGridSelection, SkillTreeGrid, updateGrid } from './skill-tree.model'
 
@@ -18,6 +18,7 @@ export interface SkillTreeEditorState {
 
 @Injectable()
 export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
+  private db = injectNwData()
   public readonly isLoaded$ = this.select(({ isLoaded }) => isLoaded)
   public readonly whenLoaded$ = this.isLoaded$.pipe(filter((it) => !!it)).pipe(distinctUntilChanged())
   public readonly abilities$ = this.select(({ abilities }) => abilities)
@@ -25,7 +26,7 @@ export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
   public readonly rows$ = this.select(({ rows }) => rows)
   public readonly numCols$ = this.select(({ numCols }) => numCols)
 
-  public constructor(private db: NwDataService) {
+  public constructor() {
     super(createState(19, [], []))
   }
 
@@ -80,7 +81,7 @@ export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
   public readonly loadTree = this.effect<{ weapon: string; tree: number; points: number; selection: string[] }>(
     (value$) => {
       const abilities$ = combineLatest({
-        abilities: this.db.abilities,
+        abilities: this.db.abilitiesAll(),
         weapon: value$.pipe(mapDistinct(({ weapon }) => weapon)),
         tree: value$.pipe(mapDistinct(({ tree }) => tree)),
       }).pipe(
@@ -88,7 +89,7 @@ export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
           return abilities
             .filter(({ WeaponTag }) => eqCaseInsensitive(WeaponTag, weapon))
             .filter(({ TreeId }) => TreeId === tree)
-        })
+        }),
       )
 
       return combineLatest({
@@ -102,9 +103,9 @@ export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
             points,
             selection,
           })
-        })
+        }),
       )
-    }
+    },
   )
 
   /**

@@ -1,16 +1,18 @@
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { SAMPLES, sampleUrl } from './samples'
 
 import { HttpClient } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
+import { NwData } from '@nw-data/db'
 import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { AppTestingModule } from '~/test'
 import { recognizeItemDetails } from './recognize-item-details'
 import { recognizeTextFromImage } from './recognize-text-from-image'
+import { provideExperimentalZonelessChangeDetection } from '@angular/core'
 
 describe('item-scanner / scan', async () => {
-  let db: NwDataService
+  let db: NwData
   let translate: TranslateService
   let http: HttpClient
 
@@ -18,9 +20,12 @@ describe('item-scanner / scan', async () => {
     beforeAll(async () => {
       TestBed.configureTestingModule({
         imports: [AppTestingModule],
+        providers: [
+          provideExperimentalZonelessChangeDetection()
+        ],
         teardown: { destroyAfterEach: false },
       })
-      db = TestBed.inject(NwDataService)
+      db = TestBed.runInInjectionContext(injectNwData)
       translate = TestBed.inject(TranslateService)
       http = TestBed.inject(HttpClient)
 

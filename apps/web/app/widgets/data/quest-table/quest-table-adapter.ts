@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { COLS_GAMEEVENTDATA, COLS_OBJECTIVES, Objectives } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -27,7 +27,7 @@ import {
 
 @Injectable()
 export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<QuestTableRecord>({ optional: true })
   private utils: TableGridUtils<QuestTableRecord> = inject(TableGridUtils)
 
@@ -59,8 +59,8 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord> {
   public connect() {
     return selectStream(
       {
-        items: this.config?.source || this.db.objectives,
-        events: this.db.gameEventsMap,
+        items: this.config?.source || this.db.objectivesAll(),
+        events: this.db.gameEventsByIdMap(),
       },
       ({ items, events }) => {
         return items.map((it: Objectives): QuestTableRecord => {

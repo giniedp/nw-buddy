@@ -1,14 +1,17 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { firstValueFrom } from 'rxjs'
+import { getItemStatsArmor, getItemStatsWeapon } from '@nw-data/common'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { ItemDetailStore } from './item-detail.store'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
+import { ItemFrameModule } from '~/ui/item-frame'
+import { apiResource } from '~/utils'
+import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
+import { ItemDetailStore } from './item-detail.store'
+import { ItemEditorEventsService } from './item-editor-events.service'
 
 @Component({
   standalone: true,
@@ -20,20 +23,64 @@ import { svgEllipsisVertical } from '~/ui/icons/svg'
   host: {
     class: 'block relative',
   },
+  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailStatsComponent {
-  protected vm$ = this.store.vmStats$
-  protected trackByIndex: TrackByFunction<any> = (i) => i
-  protected editable$ = toSignal(this.store.gsEditable$)
-  protected editIcon = svgEllipsisVertical
+  private db = injectNwData()
+  private store = inject(ItemDetailStore)
+  private events = inject(ItemEditorEventsService, { optional: true })
 
-  public constructor(protected store: ItemDetailStore) {
-    //
+  @HostBinding('@isHidden')
+  protected get isHiddenTrigger() {
+    return this.isHidden()
   }
 
+  protected isHidden = computed(() => {
+    return !this.gsLabel() && !this.stats()?.length
+  })
+
+  protected gsLabel = this.store.itemGSLabel
+  protected gsEditable = this.store.gsEditable
+  private resource = apiResource({
+    request: () => this.store.item()?.ItemStatsRef,
+    loader: async ({ request }) => {
+      return {
+        weapon: await this.db.weaponItemsById(request),
+        armor: await this.db.armorItemsById(request),
+        rune: await this.db.runeItemsById(request),
+      }
+    },
+  })
+
+  protected stats = computed(() => {
+    if (!this.store.isLoaded() || !this.resource.isLoaded()) {
+      return null
+    }
+    const item = this.store.item()
+    const armor = this.resource.value()?.armor
+    const weapon = this.resource.value()?.weapon
+    const rune = this.resource.value()?.rune
+    const gearScore = this.store.itemGS()
+
+    const attrValueSums = this.store.attrValueSums()
+    const playerLevel = this.store.playerLevel()
+    return [
+      ...getItemStatsWeapon({
+        item,
+        stats: weapon || rune,
+        gearScore,
+        playerLevel,
+        attrValueSums,
+      }),
+      ...getItemStatsArmor(item, armor, gearScore),
+    ]
+  })
+
+  protected editIcon = svgEllipsisVertical
+
   protected onGearScoreEdit(e: MouseEvent) {
-    if (this.editable$()) {
-      this.store.gsEdit$.emit(e)
+    if (this.gsEditable() && this.events) {
+      this.events.editGearScore.next(e)
     }
   }
 }

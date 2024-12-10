@@ -1,21 +1,19 @@
 import { Injectable } from '@angular/core'
 import { LootTable } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { Observable, combineLatest, map } from 'rxjs'
+import { combineLatest, map, Observable } from 'rxjs'
+import { injectNwData } from '~/data'
 import { LootContext } from './loot-context'
 import { buildLootGraph, collectLootIds, updateLootGraph } from './loot-graph'
-import { NwDataService } from '~/data'
 
 @Injectable({ providedIn: 'root' })
 export class NwLootService {
-  public constructor(private db: NwDataService) {
-    //
-  }
+  private db = injectNwData()
 
   public buildGraph(table: LootTable) {
     return combineLatest({
-      tables: this.db.lootTablesMap,
-      buckets: this.db.lootBucketsMap,
+      tables: this.db.lootTablesByIdMap(),
+      buckets: this.db.lootBucketsByIdMap(),
     }).pipe(
       map(({ tables, buckets }) => {
         return buildLootGraph({
@@ -23,24 +21,24 @@ export class NwLootService {
           tables,
           buckets,
         })
-      })
+      }),
     )
   }
 
   public resolveLootItems(
     table: LootTable,
-    context: LootContext
+    context: LootContext,
   ): Observable<Array<MasterItemDefinitions | HouseItems>> {
     return combineLatest({
       graph: this.buildGraph(table),
-      items: this.db.itemsMap,
-      housings: this.db.housingItemsMap,
+      items: this.db.itemsByIdMap(),
+      housings: this.db.housingItemsByIdMap(),
     }).pipe(
       map(({ graph, items, housings }) => {
         graph = updateLootGraph({ graph, context })
         const itemIds = collectLootIds(graph)
         return Array.from(itemIds.values()).map((id) => items.get(id) || housings.get(id))
-      })
+      }),
     )
   }
 }

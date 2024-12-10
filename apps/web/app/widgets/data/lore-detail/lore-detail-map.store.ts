@@ -1,4 +1,4 @@
-import { Filter, noPayload, payload, withRedux } from '@angular-architects/ngrx-toolkit'
+import { noPayload, payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withState } from '@ngrx/signals'
 import { describeNodeSize } from '@nw-data/common'
@@ -6,12 +6,12 @@ import { LoreData } from '@nw-data/generated'
 import { ScannedLore } from '@nw-data/scanner'
 import { Feature, FeatureCollection, MultiPoint } from 'geojson'
 import { isEqual } from 'lodash'
-import { EMPTY, catchError, combineLatest, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { FilterSpecification } from 'maplibre-gl'
+import { catchError, combineLatest, EMPTY, map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { eqCaseInsensitive } from '~/utils'
 import { GameMapService } from '~/widgets/game-map'
 import { selectLoreList, selectLoreRoot, selectLoreTree } from './utils'
-import { FilterSpecification } from 'maplibre-gl'
 
 export interface LoreDetailMapState {
   items: LoreData[]
@@ -101,19 +101,19 @@ export const LoreDetailMapStore = signalStore(
             disabledIds.push(id)
           }
           return {
-            disabledIds
+            disabledIds,
           }
         })
       })
     },
     effects(actions, create) {
-      const db = inject(NwDataService)
+      const db = injectNwData()
       return {
         load$: create(actions.load).pipe(
           switchMap(() => {
             return combineLatest({
-              items: db.loreItems,
-              itemsMetaMap: db.loreItemsMetaMap,
+              items: db.loreItemsAll(),
+              itemsMetaMap: db.loreItemsMetadataByIdMap(),
             })
           }),
           map((data) => {
@@ -159,7 +159,7 @@ export const LoreDetailMapStore = signalStore(
               parent: item.ParentID,
               color: props.color,
               label: String(item.Order),
-              title: item.Title
+              title: item.Title,
             },
           })
         }
@@ -179,7 +179,7 @@ export const LoreDetailMapStore = signalStore(
     const bounds = computed(() => selectBounds(mapData()))
     return {
       mapData,
-      bounds
+      bounds,
     }
   }),
   withComputed(({ disabledIds }) => {
@@ -188,12 +188,11 @@ export const LoreDetailMapStore = signalStore(
         if (!disabledIds().length) {
           return null
         }
-        return ['!', ['in', ['get', 'id'], ['literal', disabledIds()] ]] as any
-      })
+        return ['!', ['in', ['get', 'id'], ['literal', disabledIds()]]] as any
+      }),
     }
-  })
+  }),
 )
-
 
 function selectBounds(data: LoreFeatureCollection): [number, number, number, number] {
   if (!data) {

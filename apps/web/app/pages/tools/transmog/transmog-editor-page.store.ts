@@ -1,8 +1,9 @@
 import { computed, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { DyeColorData, ArmorAppearanceDefinitions } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { ArmorAppearanceDefinitions, DyeColorData } from '@nw-data/generated'
+import { from } from 'rxjs'
+import { injectNwData } from '~/data'
 import { TransmogItem, TransmogService } from '~/widgets/data/transmog'
 import { ModelsService } from '~/widgets/model-viewer'
 
@@ -74,11 +75,13 @@ export const TransmogEditorStore = signalStore(
     },
   }),
   withComputed(() => {
-    const db = inject(NwDataService)
+    const db = injectNwData()
     const service = inject(TransmogService)
+    const dyeColorsMap$ = from<Promise<Map<number, DyeColorData>>>(db.dyeColorsByIndexMap())
+    const itemAppearancesMap$ = from<Promise<Map<string, ArmorAppearanceDefinitions>>>(db.armorAppearancesByIdMap())
     return {
-      dyeColorsMap: toSignal(db.dyeColorsMap, { initialValue: new Map<number, DyeColorData>() }),
-      itemAppearancesMap: toSignal(db.itemAppearancesMap, {
+      dyeColorsMap: toSignal(dyeColorsMap$, { initialValue: new Map<number, DyeColorData>() }),
+      itemAppearancesMap: toSignal(itemAppearancesMap$, {
         initialValue: new Map<string, ArmorAppearanceDefinitions>(),
       }),
       transmogMap: toSignal(service.transmogItemsMap$, { initialValue: new Map<string, TransmogItem>() }),

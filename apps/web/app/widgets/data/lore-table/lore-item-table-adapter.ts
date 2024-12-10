@@ -2,9 +2,9 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { COLS_LOREDATA, LoreData } from '@nw-data/generated'
-import { sortBy } from 'lodash'
-import { Observable, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { defer, sortBy } from 'lodash'
+import { Observable, from, map } from 'rxjs'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -21,7 +21,7 @@ import {
 
 @Injectable()
 export class LoreItemTableAdapter implements DataViewAdapter<LoreItemTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<LoreItemTableRecord>({ optional: true })
   private utils: TableGridUtils<LoreItemTableRecord> = inject(TableGridUtils)
 
@@ -53,7 +53,7 @@ export class LoreItemTableAdapter implements DataViewAdapter<LoreItemTableRecord
     return buildOptions(this.utils)
   }
   public connect() {
-    const source: Observable<LoreData[]> = this.config?.source || this.db.loreItems
+    const source: Observable<LoreData[]> = this.config?.source || from(this.db.loreItemsAll())
     return source.pipe(
       map((list) => {
         return list.map((item): LoreItemTableRecord => {

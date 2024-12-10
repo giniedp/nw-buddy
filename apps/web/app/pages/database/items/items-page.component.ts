@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, NgZone } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
@@ -66,11 +66,21 @@ export class ItemsPageComponent {
     protected service: DataViewService<ItemTableRecord>,
     protected search: QuicksearchService,
     head: HtmlHeadService,
+    zone: NgZone
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Items DB',
     })
+
+    // let time = performance.now()
+    // zone.runOutsideAngular(() => {
+    //   interval(10).pipe(take(100)).subscribe(() => {
+    //     const now = performance.now()
+    //     console.log('tick', Math.floor(now - time))
+    //     time = now
+    //   })
+    // })
   }
 }

@@ -342,7 +342,7 @@ async function importImages({
     tasks: Array.from(images).map((file) => {
       return {
         input: path.resolve(inputDir, replaceExtname(file, '.png')),
-        output: path.resolve(outputDir, replaceExtname(file, '.webp')),
+        output: path.resolve(outputDir, replaceExtname(file, '.webp')).toLowerCase(),
         update: update,
       }
     }),

@@ -1,1 +1,3 @@
-<nwb-chart [config]="config$ | async"></nwb-chart>
+@if (config(); as value) {
+  <nwb-chart [config]="value" />
+}

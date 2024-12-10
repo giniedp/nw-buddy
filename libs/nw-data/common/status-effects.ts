@@ -87,3 +87,13 @@ export function stripStatusEffectProperties(item: StatusEffectData): Partial<Sta
       return it
     }, {})
 }
+
+export function getStatusEffectEXPCategoricalProgression(item: StatusEffectData) {
+  if (!item?.EXPCategoricalProgression) {
+    return null
+  }
+  return item.EXPCategoricalProgression.split(',').map((it) => {
+    const [ category, value ] = it.split(':')
+    return { category, value }
+  })
+}

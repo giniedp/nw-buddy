@@ -1,5 +1,5 @@
 <nwb-item-card
-  [entityId]="item.itemId"
+  [entity]="item.itemId"
   [enableTracker]="true"
   [disableInfo]="true"
   [enableLink]="true"
@@ -9,6 +9,6 @@
   [class.is-collected]="!!itemMarker.value()"
   class="w-full h-full"
 >
-  <nwb-item-divider/>
-  <nwb-crafting-calculator [recipe]="item.recipe" [recipeOnly]="true" class="-mx-4"/>
+  <nwb-item-divider />
+  <nwb-crafting-calculator [entity]="item.recipe" [recipeOnly]="true" class="-mx-4" />
 </nwb-item-card>

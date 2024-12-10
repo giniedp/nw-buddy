@@ -1,10 +1,9 @@
-import { CommonModule } from '@angular/common'
-import { Component, computed, inject, input, signal } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { getQuestRequiredAchievmentIds, getQuestTypeIcon } from '@nw-data/common'
 import { Objectives } from '@nw-data/generated'
 import { flatten, groupBy } from 'lodash'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { humanize, selectSignal } from '~/utils'
 
@@ -111,18 +110,18 @@ export class QuestNextComponent {
       <nwb-quest-next [data]="right" />
     }
   `,
-  imports: [CommonModule, QuestPrevComponent, QuestNextComponent, QuestLinkComponent],
+  imports: [QuestNextComponent, QuestLinkComponent],
 })
 export class QuestTreeComponent {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   public questId = input.required<string>()
 
   public tree = selectSignal(
     {
       questId: this.questId,
-      questMap: this.db.objectivesMap,
-      questsByAchievementId: this.db.objectivesByAchievementIdMap,
-      questsByRequiredAchievementId: this.db.objectivesByRequiredAchievementIdMap,
+      questMap: this.db.objectivesByIdMap(),
+      questsByAchievementId: this.db.objectivesByAchievementIdMap(),
+      questsByRequiredAchievementId: this.db.objectivesByRequiredAchievementIdMap(),
     },
     ({ questId, questMap, questsByAchievementId, questsByRequiredAchievementId }) => {
       if (!questId || !questMap || !questsByRequiredAchievementId) {

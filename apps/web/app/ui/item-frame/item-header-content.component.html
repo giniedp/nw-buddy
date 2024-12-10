@@ -1,4 +1,4 @@
-@if (isSkeleton) {
+@if (showSkeleton()) {
   <div class="flex flex-row justify-between leading-tight animate-pulse">
     <span class="font-bold mt-[2px] h-3 bg-base-100 w-20 rounded-[4px]"></span>
   </div>
@@ -12,37 +12,39 @@
 } @else {
   <div class="flex flex-row justify-between leading-tight">
     <a
-      class="font-bold text-rarity-{{ rarity }} mt-[2px] flex-1 overflow-hidden leading-tight text-ellipsis"
-      [routerLink]="titleLink"
-      [class.hover:underline]="!!titleLink"
+      class="font-bold text-rarity-{{ rarity() }} mt-[2px] flex-1 overflow-hidden text-ellipsis"
+      [routerLink]="titleLink()"
+      [class.hover:underline]="!!titleLink()"
     >
-      <span [innerHTML]="title"></span>
-      <ng-content select=".title" />
-      <ng-content selector="[title]" />
+      @if(title(); as text) {
+        <span [innerHTML]="text"></span>
+      }
+      <ng-content select="[header-title]" />
     </a>
     <div class="flex flex-col items-end screenshot-hidden flex-none">
-      <ng-content select=".header" />
+      <ng-content select="[header-end]" />
     </div>
   </div>
-  <ng-content select=".sub-header" />
   <div class="flex flex-col leading-tight">
-    @if (text1 || isNamed) {
-      <div class="text-xs text-rarity-{{ rarity }}">
-        {{ text1 }}
-        @if (isNamed) {
-          • Named
-        }
-      </div>
-    }
+    <div class="text-xs text-rarity-{{ rarity() }} empty:hidden">
+      {{ text1() }}
+      <ng-content select="[header-text1]" />
+      @if (isNamed()) {
+        • Named
+      }
+    </div>
     <div class="flex flex-row justify-between gap-2 whitespace-nowrap">
       <span class="flex-1 overflow-hidden overflow-ellipsis">
-        {{ text2 }}
-        <ng-content selector=".sub-title" />
-        <ng-content selector="[text2]" />
+        {{ text2() }}
+        <ng-content select="[header-text2]" />
       </span>
-      <span class="text-rarity-{{ rarity }} text-sm">{{ text3 }}</span>
+      <span class="text-rarity-{{ rarity() }} text-sm">
+        {{ text3() }}
+        <ng-content select="[header-text3]" />
+      </span>
     </div>
   </div>
 }
 
 <ng-content />
+

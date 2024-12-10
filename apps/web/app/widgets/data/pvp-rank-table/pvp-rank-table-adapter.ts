@@ -1,8 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_PVPRANKDATA } from '@nw-data/generated'
-import { Observable } from 'rxjs'
-import { NwDataService } from '~/data'
+import { Observable, from } from 'rxjs'
+import { injectNwData } from '~/data'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 
@@ -18,7 +18,7 @@ import {
 
 @Injectable()
 export class PvpRankTableAdapter implements DataViewAdapter<PvpRankTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private utils: TableGridUtils<PvpRankTableRecord> = inject(TableGridUtils)
   private weaponTypes: NwWeaponTypesService = inject(NwWeaponTypesService)
   private config = injectDataViewAdapterOptions<PvpRankTableRecord>({ optional: true })
@@ -41,7 +41,7 @@ export class PvpRankTableAdapter implements DataViewAdapter<PvpRankTableRecord> 
   }
 
   public connect(): Observable<PvpRankTableRecord[]> {
-    return this.db.pvpRanks
+    return from(this.db.pvpRanksAll())
   }
 }
 

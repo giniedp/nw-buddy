@@ -1,9 +1,15 @@
-import { Injectable } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { combineLatest, map, of, switchMap } from 'rxjs'
+import { computed, inject } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { getCraftingYieldBonus, getCraftingYieldBonusInfo } from '@nw-data/common'
+import { CharacterService, injectNwData } from '~/data'
+import { apiResource } from '~/utils'
+import { CraftingBuffStore } from '../crafting-bonus/crafting-buff.store'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingCalculatorStore } from '../crafting-calculator.store'
-import { AmountMode, CraftingStep } from '../types'
+import { CraftingStep } from '../loader/load-recipe'
+import { AmountMode } from '../types'
+import { NwLinkService } from '~/nw'
 
 export interface CraftingStepState {
   step: CraftingStep
@@ -12,100 +18,147 @@ export interface CraftingStepState {
   showOptions: boolean
 }
 
-@Injectable()
-export class CraftingStepStore extends ComponentStore<CraftingStepState> {
-  public readonly step$ = this.select(({ step }) => step)
-  public readonly isCurreny$ = this.select(({ step }) => step.ingredient?.type === 'Currency')
-  public readonly children$ = this.select(({ step }) => step?.steps)
-  public readonly expand$ = this.select(({ step }) => step?.expand)
-  public readonly showOptions$ = this.select(({ showOptions }) => showOptions)
-  public readonly amountMode$ = this.select(({ amountMode }) => amountMode)
-  public readonly amountIsGross$ = this.select(this.amountMode$, (it) => it === 'gross')
-
-  public readonly bonus$ = this.step$.pipe(
-    switchMap((step) => (step?.expand ? this.service.getCraftBonus(step) : of(0)))
-  )
-  public readonly amount$ = combineLatest({
-    bonusPercent: this.bonus$,
-    amount: this.select(({ amount }) => amount),
-    amountMode: this.amountMode$,
-  }).pipe(
-    map(({ bonusPercent, amount, amountMode }) =>
-      this.service.getCraftAmount({
-        amount,
-        amountMode,
-        bonusPercent,
-      })
-    )
-  )
-
-  private readonly stepIds$ = this.select(this.step$, selectStepIds)
-  public readonly itemId$ = this.select(this.stepIds$, (it) => it.itemId)
-  public readonly item$ = this.select(this.service.fetchItem(this.itemId$), (it) => it)
-  public readonly currency$ = this.select(this.step$, (it) => {
-    if (it?.ingredient?.type === 'Currency') {
-      return {
-        label: `ui_${it.ingredient.id}`,
-        quantity: it.ingredient.quantity
-      }
-    }
-    return null
-  })
-  public readonly categoryId$ = this.select(this.stepIds$, (it) => it.categoryId)
-  public readonly category$ = this.select(this.service.fetchCategory(this.categoryId$), (it) => it)
-  public readonly options$ = this.select(this.stepIds$, (it) => it.optionIds)
-
-  public constructor(private parent: CraftingCalculatorStore, private service: CraftingCalculatorService) {
-    super({
-      step: null,
-      amount: 1,
-      amountMode: 'net',
-      showOptions: false,
-    })
-  }
-
-  public setExpand(value: boolean) {
-    this.parent.updateStep(
-      this.get(({ step }) => step),
-      (step) => {
-        return {
-          ...step,
-          expand: value,
-        }
-      }
-    )
-  }
-
-  public setShowoptions(value: boolean) {
-    this.patchState({
-      showOptions: !this.get(({ showOptions }) => showOptions),
-    })
-  }
-
-  public selectOption(itemId: string) {
-    this.parent.updateStep(
-      this.get(({ step }) => step),
-      (step) => {
-        return {
-          ...step,
-          selection: itemId,
-        }
-      }
-    )
-  }
-}
-
-function selectStepIds(step: CraftingStep) {
-  if (step?.options?.length) {
+export const CraftingStepStore = signalStore(
+  withState<CraftingStepState>({
+    step: null,
+    amount: 1,
+    amountMode: 'net',
+    showOptions: false,
+  }),
+  withMethods((state) => {
+    const parent = inject(CraftingCalculatorStore)
     return {
-      itemId: step.selection,
-      categoryId: step.ingredient.id,
-      optionIds: step.options,
+      patchState: (patch: Partial<CraftingStepState>) => patchState(state, patch),
+      setExpand: (value: boolean) => {
+        parent.updateStep(state.step(), (step) => {
+          return {
+            ...step,
+            expand: value,
+          }
+        })
+      },
+      setSelection: (itemId: string) => {
+        parent.updateStep(state.step(), (step) => {
+          return {
+            ...step,
+            selection: itemId,
+          }
+        })
+      },
+      expandAll: () => {
+        parent.expandAll(state.step())
+      },
+      collapseAll: () => {
+        parent.collapseAll(state.step())
+      },
+
     }
-  }
-  return {
-    itemId: step?.ingredient?.id || null,
-    categoryId: null,
-    optionIds: null,
-  }
-}
+  }),
+  withComputed(({ step }) => {
+    const db = injectNwData()
+    const char = inject(CharacterService)
+    const buffs = inject(CraftingBuffStore)
+    const link = inject(NwLinkService)
+    const resource = apiResource({
+      request: () => {
+        return {
+          recipeId: step()?.recipeId,
+          itemId: step()?.ingredient?.id,
+          ingredients: step()?.steps,
+        }
+      },
+      loader: async ({ request }) => {
+        const recipe = await db.recipesById(request.recipeId)
+        const item = await db.itemOrHousingItem(request.itemId)
+        const ingredients = await Promise.all(
+          (request.ingredients || []).map((it) => {
+            if (it.ingredient.type === 'Item') {
+              return db.itemOrHousingItem(it.ingredient.id)
+            }
+            if (it.ingredient.type === 'Category_Only') {
+              return db.itemOrHousingItem(it.selection)
+            }
+            return null
+          }),
+        ).then((items) => items.filter((it) => !!it))
+        return {
+          recipe,
+          item,
+          ingredients,
+        }
+      },
+    })
+
+    const recipe = computed(() => resource.value()?.recipe)
+    const item = computed(() => resource.value()?.item)
+    const ingredients = computed(() => resource.value()?.ingredients)
+    const skill = computed(() => recipe()?.Tradeskill)
+    const skillData = toSignal(char.tradeskillLevelData(toObservable(skill)))
+
+    const bonusDetail = computed(() => {
+      if (!step()?.expand) {
+        return null
+      }
+      const bonus = buffs.getTradeskillBonusForYield(skill())
+      return getCraftingYieldBonusInfo({
+        item: item(),
+        recipe: recipe(),
+        ingredients: ingredients(),
+        skill: skillData(),
+        buffs: bonus.buffs,
+        fortBuffs: bonus.fort,
+      })
+    })
+
+    return {
+      bonusDetail,
+      recipeLink: computed(() => {
+        if (!recipe()) {
+          return null
+        }
+        return link.resourceLink({ type: 'recipe', id: recipe()?.RecipeID })
+      })
+    }
+  }),
+  withComputed(({ step, bonusDetail, amountMode, amount }) => {
+    const service = inject(CraftingCalculatorService)
+    const ingredient = computed(() => step()?.ingredient)
+    const ingredientType = computed(() => ingredient()?.type)
+    const children = computed(() => step()?.steps)
+    const hasChildren = computed(() => !!children()?.length)
+    const isCurrency = computed(() => ingredientType() === 'Currency')
+    const isCateogry = computed(() => ingredientType() === 'Category_Only')
+    const isItem = computed(() => ingredientType() === 'Item')
+    const amountDetail = computed(() => {
+      return service.getCraftAmount({
+        amount: amount(),
+        amountMode: amountMode(),
+        bonusPercent: bonusDetail()?.total || 0,
+      })
+    })
+    return {
+      itemId: computed(() => (isItem() ? ingredient()?.id : step()?.selection)),
+      children,
+      hasChildren,
+      isCurrency,
+      isCateogry,
+      isItem,
+      expand: computed(() => hasChildren() && step()?.expand),
+      amountIsGross: computed(() => amountMode() === 'gross'),
+      options: computed(() => step()?.options),
+      currency: computed(() => {
+        if (isCurrency()) {
+          return {
+            label: `ui_${ingredient().id}`,
+            quantity: ingredient().quantity,
+          }
+        }
+        return null
+      }),
+      amountNet: computed(() => amountDetail().net),
+      amountGross: computed(() => amountDetail().gross),
+      amountBonus: computed(() => amountDetail().bonus),
+      amountBonusPercent: computed(() => amountDetail().bonusPercent),
+    }
+  }),
+)

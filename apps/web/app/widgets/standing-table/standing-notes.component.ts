@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
-import { NwDataService } from '~/data'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 
 @Component({
@@ -9,8 +8,8 @@ import { TerritoriesPreferencesService } from '~/preferences/territories-prefere
   // styleUrls: ['./standing-notes.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'block'
-  }
+    class: 'block',
+  },
 })
 export class StandingNotesComponent {
   @Input()
@@ -26,14 +25,13 @@ export class StandingNotesComponent {
   }
   public set text(value: string) {
     this.pref.merge(this.territoryId, {
-      notes: value
+      notes: value,
     })
   }
 
   private territoryId$ = new BehaviorSubject<number>(null)
 
-  public constructor(private db: NwDataService, private pref: TerritoriesPreferencesService) {
+  public constructor(private pref: TerritoriesPreferencesService) {
     //
   }
-
 }

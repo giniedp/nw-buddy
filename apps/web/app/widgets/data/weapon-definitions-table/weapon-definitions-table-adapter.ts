@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
@@ -8,6 +8,7 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { humanize, selectStream } from '~/utils'
 
 import { COLS_WEAPONITEMDEFINITIONS } from '@nw-data/generated'
+import { defer } from 'rxjs'
 import {
   WeaponDefinitionTableRecord,
   weaponDefColBaseDamage,
@@ -25,7 +26,7 @@ import {
 
 @Injectable()
 export class WeaponDefinitionTableAdapter implements DataViewAdapter<WeaponDefinitionTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private i18n = inject(TranslateService)
   private config = injectDataViewAdapterOptions<WeaponDefinitionTableRecord>({ optional: true })
   private utils: TableGridUtils<WeaponDefinitionTableRecord> = inject(TableGridUtils)
@@ -61,7 +62,7 @@ export class WeaponDefinitionTableAdapter implements DataViewAdapter<WeaponDefin
     return this.source$
   }
 
-  private source$ = selectStream(this.config?.source || this.db.weaponDefinitions, (items) => {
+  private source$ = selectStream(this.config?.source || defer(() => this.db.weaponItemsAll()), (items) => {
     if (this.config?.filter) {
       items = items.filter(this.config.filter)
     }

@@ -1,5 +1,14 @@
-import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { NW_MAX_TRADESKILL_LEVEL } from './constants'
+import {
+  CraftingIngredientType,
+  CraftingRecipeData,
+  GameEventData,
+  HouseItems,
+  MasterItemDefinitions,
+  TradeskillRankData,
+} from '@nw-data/generated'
+import { NW_MAX_CRAFT_GEAR_SCORE } from './constants'
+import { getItemId, isMasterItem } from './item'
+import { getTradeskillRankRollBonus } from './tradeskill'
 
 export type CraftingIngredients = Pick<
   CraftingRecipeData,
@@ -85,87 +94,285 @@ export function sumCraftingIngredientQuantities(recipe: CraftingIngredients, mul
 export function getCraftingIngredients(recipe: CraftingIngredients) {
   return Object.keys(recipe || {})
     .filter((it) => it.match(/^Ingredient\d+$/))
-    .map((_, i) => {
+    .map((key, i) => {
       return {
         ingredient: recipe[`Ingredient${i + 1}`] as string,
         quantity: recipe[`Qty${i + 1}`] as number,
-        type: recipe[`Type${i + 1}`] as string,
+        type: recipe[`Type${i + 1}`] as CraftingIngredientType,
+        ref: `${i}`,
       }
     })
 }
 
-export function getCraftingXP(recipe: CraftingIngredients, event: GameEventData) {
+export function getCraftingSkillXP(recipe: CraftingIngredients, event: GameEventData) {
   if (!event?.CategoricalProgressionReward || !recipe) {
     return 0
   }
   return sumCraftingIngredientQuantities(recipe, event.CategoricalProgressionReward || 0)
 }
 
-export function calculateBonusItemChance({
+export function getCraftingStandingXP(recipe: CraftingIngredients, event: GameEventData, scale = 1) {
+  if (!recipe || !event?.TerritoryStanding) {
+    return 0
+  }
+  return sumCraftingIngredientQuantities(recipe, (Number(event.TerritoryStanding) || 0) * scale)
+}
+
+export function canCraftWithLevel(recipe: CraftingRecipeData, tradeskillLevel: number) {
+  if (!recipe) {
+    return false
+  }
+  if (!recipe.Tradeskill || !recipe.RecipeLevel) {
+    return true
+  }
+  return tradeskillLevel >= recipe.RecipeLevel
+}
+
+export function getCraftingGearScore({
   item,
   ingredients,
   recipe,
-  skillLevel,
-  customChance,
-  refiningChance,
+  tradeskill,
+  buffs,
 }: {
   item: MasterItemDefinitions | HouseItems
   ingredients: Array<MasterItemDefinitions | HouseItems>
   recipe: CraftingRecipeData
-  skillLevel?: number
-  customChance?: number
-  refiningChance?: number
+  tradeskill: TradeskillRankData
+  buffs: number
 }) {
-  if (!item || !recipe?.IsRefining || recipe?.BonusItemChance == null || !ingredients?.length) {
+  if (!item || !recipe || !recipe.BaseGearScore) {
+    return null
+  }
+  const baseGs = recipe.BaseGearScore || 0
+  const itemTier = item.Tier
+  let skillBonusMin = tradeskill?.MinGearScoreBonus || 0
+  let skillBonusMax = tradeskill?.MaxGearScoreBonus || 0
+  if (tradeskill) {
+    if (itemTier >= 2) {
+      skillBonusMin = tradeskill.MinGearScoreBonusT2 ?? skillBonusMin
+      skillBonusMax = tradeskill.MaxGearScoreBonusT2 ?? skillBonusMax
+    }
+    if (itemTier >= 3) {
+      skillBonusMin = tradeskill.MinGearScoreBonusT3 ?? skillBonusMin
+      skillBonusMax = tradeskill.MaxGearScoreBonusT3 ?? skillBonusMax
+    }
+    if (itemTier >= 4) {
+      skillBonusMin = tradeskill.MinGearScoreBonusT4 ?? skillBonusMin
+      skillBonusMax = tradeskill.MaxGearScoreBonusT4 ?? skillBonusMax
+    }
+    if (itemTier >= 5) {
+      skillBonusMin = tradeskill.MinGearScoreBonusT5 ?? skillBonusMin
+      skillBonusMax = tradeskill.MaxGearScoreBonusT5 ?? skillBonusMax
+    }
+  }
+
+  const ingrMinBonuses = ingredients.map((it) => {
+    return isMasterItem(it) ? Number(it.IngredientGearScoreBaseBonus) || 0 : 0
+  })
+  const ingrMaxBonuses = ingredients.map((it) => {
+    return isMasterItem(it) ? Number(it.IngredientGearScoreMaxBonus) || 0 : 0
+  })
+
+  const result = {
+    base: baseGs,
+    bonusMin: 0,
+    bonusMax: 0,
+    override: isMasterItem(item) ? item.GearScoreOverride : 0,
+    finalMin: 0,
+    finalMax: 0,
+    uncappedMin: 0,
+    uncappedMax: 0,
+    maxCraftGs: NW_MAX_CRAFT_GEAR_SCORE,
+    bonuses: [] as Array<{ label: string; min: number; max: number; enabled: boolean }>,
+  }
+  if (isMasterItem(item) && item.MaxCraftGS) {
+    result.maxCraftGs = item.MaxCraftGS
+  }
+  for (let i = 0; i < ingredients?.length; i++) {
+    const ingredient = ingredients[i]
+    result.bonuses.push({
+      label: ingredient.Name,
+      min: ingrMinBonuses[i],
+      max: ingrMaxBonuses[i],
+      enabled: !recipe.DisallowBonusesToGS,
+    })
+  }
+  if (tradeskill) {
+    result.bonuses.push({
+      label: `${recipe.Tradeskill} lvl. ${tradeskill.Level}`,
+      min: skillBonusMin,
+      max: skillBonusMax,
+      enabled: !recipe.DisallowBonusesToGS,
+    })
+  }
+  if (buffs) {
+    result.bonuses.push({
+      label: `${recipe.Tradeskill} Buffs`,
+      min: buffs,
+      max: buffs,
+      enabled: !recipe.DisallowBonusesToGS,
+    })
+  }
+  for (const bonus of result.bonuses) {
+    if (bonus.enabled) {
+      result.bonusMin += bonus.min
+      result.bonusMax += bonus.max
+    }
+  }
+
+  result.finalMin = result.base + result.bonusMax
+  result.finalMax = result.base + result.bonusMax
+  result.uncappedMin = result.finalMin
+  result.uncappedMax = result.finalMax
+  if (result.maxCraftGs) {
+    result.finalMin = Math.min(result.finalMin, result.maxCraftGs)
+    result.finalMax = Math.min(result.finalMax, result.maxCraftGs)
+  }
+  if (result.override) {
+    result.finalMin = result.override
+    result.finalMax = result.override
+    result.uncappedMin = result.finalMin
+    result.uncappedMax = result.finalMax
+  }
+  return result
+}
+
+export function isCraftedWithRefiningSkill(recipe: Pick<CraftingRecipeData, 'Tradeskill'>) {
+  const skill = recipe?.Tradeskill
+  return (
+    skill === 'Woodworking' ||
+    skill === 'Weaving' ||
+    skill === 'Smelting' ||
+    skill === 'Stonecutting' ||
+    skill === 'Leatherworking'
+  )
+}
+
+export function isCraftedWithFactionYieldBonus(recipe: CraftingRecipeData) {
+  return isCraftedWithYieldBonus(recipe) && isCraftedWithRefiningSkill(recipe)
+}
+
+export function isCraftedWithYieldBonus(recipe: CraftingRecipeData) {
+  return !!recipe && !!recipe.CraftAll && !recipe.SkipGrantItems && !!recipe.Tradeskill// && !recipe.BaseGearScore
+}
+
+export function getCraftingBonusForIngredients({
+  item,
+  ingredients,
+  recipe,
+}: {
+  item: MasterItemDefinitions | HouseItems
+  ingredients: Array<MasterItemDefinitions | HouseItems>
+  recipe: CraftingRecipeData
+}) {
+  if (!item || !recipe) {
     return 0
   }
-  // only category ingrediens affect bonus chance
-  ingredients = ingredients.filter((_, i) => recipe[`Type${i + 1}`] === 'Category_Only')
-  skillLevel = skillLevel ?? NW_MAX_TRADESKILL_LEVEL
+  if (!recipe.BonusItemChanceIncrease && !recipe.BonusItemChanceDecrease) {
+    return 0
+  }
+  if (ingredients.length <= 1) {
+    // HACK: fixes charcoal recipes (charcoalt1)
+    return 0
+  }
 
-  // positive Tier difference lookup map
+  ingredients = (ingredients || []).filter((_, i) => recipe[`Type${i + 1}`] === 'Category_Only')
   const increments = (recipe.BonusItemChanceIncrease || '').split(',').map(Number)
-  // negative Tier difference lookup map
   const decrements = (recipe.BonusItemChanceDecrease || '').split(',').map(Number)
-  // seems to be a weird data bug in some recipes (Lumber) which leads
-  // to results different from values in the game, if we do not remove
-  // leading '0' entries
-  while (decrements[0] === 0) {
-    decrements.shift()
+
+  let recipeTier = recipe.BaseTier ?? item.Tier
+  if (getItemId(item).toLowerCase() === 'blockt5') {
+    // HACK: otherwise it has 5% more than ingame
+    recipeTier = 4
   }
-  while (increments[0] === 0) {
-    increments.shift()
+  if (
+    getItemId(item)
+      .toLowerCase()
+      .match(/^alkahestt\d$/)
+  ) {
+    // HACK:
+    recipeTier = 0
   }
 
-  const ingrTiers = ingredients.map((it) => it.Tier)
-  const ingrDiffs = ingrTiers.map((it) => it - item.Tier)
-  const ingrChances = ingrDiffs.map((diff) => {
-    if (diff === 0) {
-      return 0
+  const ingredTier = ingredients.map((it) => it.Tier)
+  const ingredDiffs = ingredTier.map((it) => it - recipeTier)
+  const ingredChances = ingredDiffs.map((diff) => {
+    if (diff < 0) {
+      return decrements[Math.abs(diff) - 1] ?? 0
     }
-    return (diff < 0 ? decrements : increments)[Math.abs(diff) - 1] ?? 0
+    if (diff > 0) {
+      return increments[diff - 1] ?? 0
+    }
+    return 0
   })
-  const baseChance = recipe.BonusItemChance
-  const skillChance = skillLevel / 1000
-  const ingrChance = ingrChances.reduce((a, b) => a + b, 0)
-  refiningChance = (skillLevel ? refiningChance : 0) || 0
-
-  const result = baseChance + skillChance + ingrChance + (customChance || 0) + refiningChance
-
   // console.table({
-  //   ingrTiers: ingrTiers.map(String),
-  //   ingrDiffs: ingrDiffs.map(String),
-  //   increments: increments.map((it) => (it * 100).toFixed(0)),
-  //   decrements: decrements.map((it) => (it * 100).toFixed(0)),
-  //   skillChance: [(skillChance * 100).toFixed(0)],
-  //   baseChance: [(baseChance * 100).toFixed(0)],
-  //   ingrChance: [(ingrChance * 100).toFixed(0)],
-  //   customChance: [(customChance * 100).toFixed(0)],
-  //   refiningChance: [(refiningChance * 100).toFixed(0)],
-  //   result: [(result * 100).toFixed(0)],
+  //   incr: recipe.BonusItemChanceIncrease,
+  //   decr: recipe.BonusItemChanceDecrease,
+  //   increments,
+  //   decrements,
+  //   ingredients: ingredients.map((it) => getItemId(it)),
+  //   recipeT: recipeTier,
+  //   ingrT: ingredTier,
+  //   ingrDiffs: ingredDiffs,
+  //   ingrChances: ingredChances,
   // })
 
-  return Math.max(0, result)
+  return ingredChances.reduce((a, b) => a + b, 0)
+}
+
+export interface CraftingYieldBonusInput {
+  item: MasterItemDefinitions | HouseItems
+  ingredients: Array<MasterItemDefinitions | HouseItems>
+  recipe: CraftingRecipeData
+  skill: Pick<TradeskillRankData, 'RollBonus'>
+  buffs: number
+  fortBuffs: number
+}
+export function getCraftingYieldBonusInfo({
+  item,
+  ingredients,
+  recipe,
+  skill,
+  buffs,
+  fortBuffs,
+}: CraftingYieldBonusInput) {
+  if (!recipe || !isCraftedWithYieldBonus(recipe)) {
+    return null
+  }
+
+  const chanceBuffs = buffs
+  const chanceSkill = getTradeskillRankRollBonus(skill)
+  const chanceFort = isCraftedWithFactionYieldBonus(recipe) ? fortBuffs : 0
+  const chanceBase = recipe.BonusItemChance || 0
+  const chanceIngr = getCraftingBonusForIngredients({
+    recipe,
+    item,
+    ingredients,
+  })
+
+  const result = Math.max(0, chanceBase + chanceIngr + chanceFort + chanceSkill + chanceBuffs)
+  // console.table({
+  //   recipe: recipe.RecipeID,
+  //   chanceBase,
+  //   chanceIngr,
+  //   chanceSkill,
+  //   chanceBuffs,
+  //   chanceFort,
+  //   result,
+  // })
+  return {
+    base: chanceBase,
+    ingredients: chanceIngr,
+    skill: chanceSkill,
+    buffs: chanceBuffs,
+    fort: chanceFort,
+    total: result,
+  }
+}
+
+export function getCraftingYieldBonus(options: CraftingYieldBonusInput) {
+  return getCraftingYieldBonusInfo(options)?.total || 0
 }
 
 export function getTradeSkillLabel(value: string) {

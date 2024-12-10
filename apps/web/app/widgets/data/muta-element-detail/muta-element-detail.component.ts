@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, forwardRef, inject, input, Input, untracked } from '@angular/core'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
@@ -14,21 +14,19 @@ import { StatusEffectData } from '@nw-data/generated'
   exportAs: 'elementDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, ModelViewerModule],
-  providers: [
-    {
-      provide: MutaElementDetailStore,
-      useExisting: forwardRef(() => MutaElementDetailComponent),
-    },
-  ],
+  providers: [MutaElementDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
-export class MutaElementDetailComponent extends MutaElementDetailStore {
-  @Input()
-  public set elementId(value: string) {
-    this.patchState({ elementId: value })
-  }
+export class MutaElementDetailComponent {
+  public store = inject(MutaElementDetailStore)
+  public elementId = input<string>()
+
+  #loader = effect(() => {
+    const elementId = this.elementId()
+    untracked(() => this.store.load({ elementId }))
+  })
 
   protected description(item: StatusEffectData) {
     return item.Description || `${item.StatusID}_Tooltip`

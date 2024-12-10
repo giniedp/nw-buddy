@@ -53,18 +53,18 @@ export type LootContextEditorStore = typeof LootContextEditorStore
 export const LootContextEditorStore = signalStore(
   { protectedState: false },
   withState<LootContextEditorState>(DEFAULT_STATE),
-  withNwData((data) => {
+  withNwData((db) => {
     return {
-      territories: data.territories,
-      territoriesMap: data.territoriesMap,
-      gameModes: data.gameModes,
-      gameModesMap: data.gameModesMap,
-      mutaDifficulties: data.mutatorDifficulties,
-      mutaDifficultiesMap: data.mutatorDifficultiesMap,
-      mutaElements: data.mutatorElementsPerks,
-      mutaElementsMap: data.mutatorElementsPerksMap,
-      vitals: data.vitals,
-      vitalsMap: data.vitalsMap,
+      territories: db.territoriesAll(),
+      territoriesMap: db.territoriesByIdMap(),
+      gameModes: db.gameModesAll(),
+      gameModesMap: db.gameModesByIdMap(),
+      mutaDifficulties: db.mutatorDifficultiesAll(),
+      mutaDifficultiesMap: db.mutatorDifficultiesByIdMap(),
+      mutaElements: db.mutatorElementsPerksAll(),
+      mutaElementsMap: db.mutatorElementsPerksByIdMap(),
+      vitals: db.vitalsAll(),
+      vitalsMap: db.vitalsByIdMap(),
     }
   }),
   withComputed(({ nwData, vitalId, territoryId, poiId, gameModeId, mutaDifficultyId, mutaElementTypeId }) => {

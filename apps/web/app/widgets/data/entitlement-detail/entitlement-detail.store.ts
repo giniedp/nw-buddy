@@ -1,31 +1,32 @@
-import { Injectable, Output, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
-import { selectStream } from '~/utils'
-import { selectEntitlementRewards } from './selectors'
+import { signalStore, withState } from '@ngrx/signals'
+import { EntitlementData } from '@nw-data/generated'
+import { combineLatest, from, Observable, of, switchMap } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
+import { EntitlementReward, selectEntitlementRewards } from './selectors'
 
-@Injectable()
-export class EntitlementDetailStore extends ComponentStore<{ entitlementId: string }> {
-  protected db = inject(NwDataService)
-  public readonly entitlementId$ = this.select(({ entitlementId }) => entitlementId)
-
-  @Output()
-  public readonly entitlement$ = selectStream(this.db.entitlement(this.entitlementId$))
-
-  public readonly rewards$ = selectStream(
-    this.entitlement$.pipe(
-      switchMap((it) => {
-        return selectEntitlementRewards(it, this.db)
-      }),
-    ),
-  )
-
-  public constructor() {
-    super({ entitlementId: null })
-  }
-
-  public update(entitlementId: string) {
-    this.patchState({ entitlementId: entitlementId })
-  }
+export interface EntitlementDetailState {
+  entitlementId: string
+  entitlement: EntitlementData
+  rewards: EntitlementReward[]
 }
+
+export const EntitlementDetailStore = signalStore(
+  withState<EntitlementDetailState>({
+    entitlementId: null,
+    entitlement: null,
+    rewards: [],
+  }),
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load: (data: Pick<EntitlementDetailState, 'entitlementId'>): Observable<EntitlementDetailState> => {
+        const record$ = from(db.entitlementsById(data.entitlementId))
+        return combineLatest({
+          entitlementId: of(data.entitlementId),
+          entitlement: record$,
+          rewards: record$.pipe(switchMap((it) => selectEntitlementRewards(it, db))),
+        })
+      },
+    }
+  }),
+)

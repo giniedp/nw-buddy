@@ -1,13 +1,11 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { patchState } from '@ngrx/signals'
+import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } from '@angular/core'
 import { StatusEffectCategoryData } from '@nw-data/generated'
-import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
-import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 import { valueCell } from '~/ui/property-grid/cells'
+import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 
 @Component({
   standalone: true,
@@ -15,21 +13,22 @@ import { valueCell } from '~/ui/property-grid/cells'
   templateUrl: './status-effect-category-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
   providers: [DecimalPipe, StatusEffectCategoryDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
 export class StatusEffectCategoryDetailComponent {
-  private decimals = inject(DecimalPipe)
-  private db = inject(NwDataService)
   protected store = inject(StatusEffectCategoryDetailStore)
+  public categoryId = input<string>(null)
 
-  @Input()
-  public set categoryId(value: string) {
-    patchState(this.store, { categoryId: value })
-  }
+  #fxLoad = effect(() => {
+    const categoryId = this.categoryId()
+    untracked(() => {
+      this.store.load(categoryId)
+    })
+  })
 
   public descriptor = gridDescriptor<StatusEffectCategoryData>(
     {

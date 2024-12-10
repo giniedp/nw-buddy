@@ -14,7 +14,7 @@ import {
 } from '@angular/core'
 import { ArmorAppearanceDefinitions, MountData } from '@nw-data/generated'
 import { Subject, catchError, firstValueFrom, from, of, switchMap, takeUntil, tap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgCircleExclamation, svgExpand, svgMoon, svgSun, svgXmark } from '~/ui/icons/svg'
@@ -106,7 +106,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   private model: ViewerModel
   private document = injectDocument()
   protected trackByIndex = (i: number) => i
-
+  private db = injectNwData()
   public constructor(
     @Optional()
     private ref: ModalRef,
@@ -115,7 +115,6 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     private screenshots: ScreenshotService,
     private i18n: TranslateService,
     protected store: ModelViewerStore,
-    private db: NwDataService,
   ) {
     this.store.patchState({
       canClose: !!ref,
@@ -276,11 +275,12 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
       return
     }
     const itemType = (appearance as MountData).MountId ? 'MountDye' : 'Dye'
-    const items = await firstValueFrom(this.db.itemsByItemTypeMap)
+    const items = await this.db
+      .itemsByItemTypeMap()
       .then((it) => it.get(itemType))
       .then((it) => it || [])
       .then((list) => list.map((it) => Number(it.ItemID.match(/\d+/)[0])))
-    const colors = await firstValueFrom(this.db.dyeColors).then((list) => {
+    const colors = await this.db.dyeColorsAll().then((list) => {
       return list.filter((it) => items.includes(it.Index))
     })
     this.store.patchState({

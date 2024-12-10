@@ -1,21 +1,18 @@
-import { payload, withRedux } from '@angular-architects/ngrx-toolkit'
-import { computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { computed } from '@angular/core'
+import { signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { AbilityData, CooldownData } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
-import { EMPTY, catchError, map, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
-import { humanize, rejectKeys, selectSignal } from '~/utils'
+import { combineLatest, from, map, of, switchMap } from 'rxjs'
+import { injectNwData, withStateLoader } from '~/data'
+import { humanize, rejectKeys } from '~/utils'
 
 export interface AbilityDetailState {
   abilityId: string
   ability: AbilityData & { $source?: string }
   cooldown: CooldownData
-  isLoaded: boolean
-  isLoading: boolean
-  hasError: boolean
+  foreignAbilities: string[]
 }
 
 export type AbilityDetailStore = InstanceType<typeof AbilityDetailStore>
@@ -24,55 +21,13 @@ export const AbilityDetailStore = signalStore(
     abilityId: null,
     ability: null,
     cooldown: null,
-    isLoaded: false,
-    isLoading: false,
-    hasError: false,
+    foreignAbilities: [],
   }),
-  withRedux({
-    actions: {
-      public: {
-        load: payload<{ abilityId: string }>(),
-      },
-      private: {
-        loadDone: payload<Omit<AbilityDetailState, 'isLoaded' | 'isLoading' | 'hasError'>>(),
-        loadError: payload<{ error: any }>(),
-      },
-    },
-    reducer(actions, on) {
-      on(actions.load, (state) => {
-        patchState(state, {
-          isLoading: true,
-        })
-      })
-      on(actions.loadDone, (state, data) => {
-        patchState(state, {
-          ...data,
-          isLoaded: true,
-          isLoading: false,
-          hasError: false,
-        })
-      })
-      on(actions.loadError, (state) => {
-        patchState(state, {
-          isLoading: false,
-          hasError: true,
-        })
-      })
-    },
-    effects(actions, create) {
-      const db = inject(NwDataService)
-      return {
-        load$: create(actions.load).pipe(
-          switchMap(({ abilityId }) => loadState(db, abilityId)),
-          map((data) => actions.loadDone(data)),
-          catchError((error) => {
-            console.error(error)
-            actions.loadError({ error })
-            return EMPTY
-          }),
-        ),
-      }
-    },
+  withStateLoader(() => {
+    const db = injectNwData()
+    return {
+      load: (data: { abilityId: string }) => loadState(db, data.abilityId),
+    }
   }),
   withComputed(({ ability }) => {
     return {
@@ -124,30 +79,25 @@ export const AbilityDetailStore = signalStore(
       }),
     }
   }),
-  withComputed(({ abilityId }) => {
-    const db = inject(NwDataService)
-    const ref1 = toSignal(db.abilitiesByRequiredAbilityId(abilityId), { initialValue: [] })
-    const ref2 = toSignal(db.abilitiesByRequiredEquippedAbilityId(abilityId), { initialValue: [] })
-    const ref3 = toSignal(db.abilitiesByAbilityList(abilityId), { initialValue: [] })
-    return {
-      foreignAbilities: computed(() => {
-        return uniq([ref1() || [], ref2() || [], ref3() || []].flat().map((it) => it.AbilityID))
-      }),
-    }
-  }),
 )
 
-function loadState(db: NwDataService, abilityId: string) {
-  return db.ability(abilityId).pipe(
+function loadState(db: NwData, abilityId: string) {
+  return from(db.abilitiesById(abilityId)).pipe(
     switchMap((ability) => {
-      const cooldownId = ability?.CooldownId
-      return db.cooldownsByAbilityId(cooldownId).pipe(
-        map((cooldowns) => ({
-          abilityId,
-          ability,
-          cooldown: cooldowns?.[0],
-        })),
-      )
+      return combineLatest({
+        abilityId: of(abilityId),
+        ability: of(ability),
+        cooldown: from(db.cooldownsByAbilityId(abilityId)).pipe(map((cooldowns) => cooldowns?.[0])),
+        foreignAbilities: combineLatest([
+          db.abilitiesByRequiredAbilityId(abilityId),
+          db.abilitiesByRequiredEquippedAbilityId(abilityId),
+          db.abilitiesByAbilityList(abilityId),
+        ]).pipe(
+          map((abilities) => {
+            return uniq(abilities.flat().map((it) => it?.AbilityID)).filter((it) => !!it)
+          }),
+        ),
+      })
     }),
   )
 }

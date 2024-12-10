@@ -29,6 +29,7 @@ export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<Gea
   }
 
   protected store = inject(GearsetStore)
+  private char = inject(CharacterStore)
 
   @Output()
   public delete = new EventEmitter<GearsetRecord>()
@@ -44,8 +45,8 @@ export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<Gea
     return this.store.gearScore()
   }
 
-  public constructor(char: CharacterStore) {
-    this.store.connectLevel(char.level$)
+  public constructor() {
+    this.store.connectLevel(this.char.level)
   }
 
   @Input()

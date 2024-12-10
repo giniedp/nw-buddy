@@ -34,14 +34,14 @@
     <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
   }
 
-  @for (spellId of spellIds$ | async; track i; let i = $index; let isFirst = $first) {
+  @for (spellId of spellIds(); track i; let i = $index; let isFirst = $first) {
     @if (isFirst) {
       <h3 class="prose mt-2">Referenced by Spells:</h3>
     }
     <nwb-spell-detail [spellId]="spellId" class="bg-black" />
   }
 
-  @for (perkId of perkIds$ | async; track i; let i = $index; let isFirst = $first) {
+  @for (perkId of perkIds(); track i; let i = $index; let isFirst = $first) {
     @if (isFirst) {
       <h3 class="prose mt-2">Referenced by Perks:</h3>
     }

@@ -19,6 +19,7 @@ import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 })
 export class GearsetLoadoutItemComponent {
   private store = inject(GearsetStore)
+  private char = inject(CharacterStore)
 
   @Input()
   public set geasrsetId(value: string) {
@@ -47,8 +48,8 @@ export class GearsetLoadoutItemComponent {
     return this.store.gearScore()
   }
 
-  public constructor(char: CharacterStore) {
-    this.store.connectLevel(char.level$)
+  public constructor() {
+    this.store.connectLevel(this.char.level)
   }
 
   @Input()

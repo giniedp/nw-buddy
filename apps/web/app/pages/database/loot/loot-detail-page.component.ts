@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, DestroyRef, Injector, OnInit, ViewChild, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
-import { LayoutModule } from '~/ui/layout'
-import { observeRouteParam, queryParamModel, selectSignal } from '~/utils'
-import { LootModule } from '~/widgets/loot'
-import { LootContextEditorComponent } from '~/widgets/loot'
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
-import { PreferencesService } from '~/preferences'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ToastController } from '@ionic/angular/standalone'
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
+import { map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
+import { NwModule } from '~/nw'
+import { PreferencesService } from '~/preferences'
+import { LayoutModule } from '~/ui/layout'
+import { observeRouteParam, queryParamModel } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
+import { LootContextEditorComponent, LootModule } from '~/widgets/loot'
 
 @Component({
   standalone: true,
@@ -25,7 +25,7 @@ import { PlatformService } from '~/utils/services/platform.service'
   },
 })
 export class LootDetailPageComponent implements OnInit {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private route = inject(ActivatedRoute)
   private router = inject(Router)
   private toast = inject(ToastController)
@@ -36,9 +36,11 @@ export class LootDetailPageComponent implements OnInit {
   private hideLockedParam = queryParamModel('hideLocked')
 
   protected id$ = observeRouteParam(this.route, 'id')
-  protected parents = selectSignal(this.db.lootTablesByLootTableId(this.id$), (it) => {
-    return it ? Array.from(it.values()) : null
-  })
+  protected parents$ = this.id$.pipe(
+    switchMap((id) => this.db.lootTablesByLootTableId(id)),
+    map((it) => (it ? Array.from(it.values()) : null)),
+  )
+  protected parents = toSignal(this.parents$, { initialValue: []})
 
   protected get showLocked() {
     return this.hideLockedParam.value() !== 'true'

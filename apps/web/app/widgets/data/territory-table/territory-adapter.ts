@@ -1,8 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_GAMEMODEDATA } from '@nw-data/generated'
-import { Observable } from 'rxjs'
-import { NwDataService } from '~/data'
+import { Observable, defer } from 'rxjs'
+import { injectNwData } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
@@ -20,19 +20,22 @@ import {
 
 @Injectable()
 export class TerritoryTableAdapter implements DataViewAdapter<TerritoryRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<TerritoryRecord> = inject(TableGridUtils)
   private config = injectDataViewAdapterOptions<TerritoryRecord>({ optional: true })
-  private source$: Observable<TerritoryRecord[]> = selectStream(this.config?.source || this.db.territories, (modes) => {
-    if (this.config?.filter) {
-      modes = modes.filter(this.config.filter)
-    }
-    if (this.config?.sort) {
-      modes = [...modes].sort(this.config.sort)
-    }
-    return modes
-  })
+  private source$: Observable<TerritoryRecord[]> = selectStream(
+    this.config?.source || defer(() => this.db.territoriesAll()),
+    (modes) => {
+      if (this.config?.filter) {
+        modes = modes.filter(this.config.filter)
+      }
+      if (this.config?.sort) {
+        modes = [...modes].sort(this.config.sort)
+      }
+      return modes
+    },
+  )
   public entityID(item: TerritoryRecord): number {
     return item.TerritoryID
   }

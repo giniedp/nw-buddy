@@ -85,22 +85,21 @@ export class PerksPageComponent {
   protected iconGrid = svgGrid
   protected iconFunc = svgFunction
   protected isFuncOpen = false
+  private char = inject(CharacterStore)
 
   public constructor(
     public search: QuicksearchService,
     public ctx: NwTextContextService,
     protected service: DataViewService<PerkTableRecord>,
     head: HtmlHeadService,
-    char: CharacterStore,
+
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Perks DB',
     })
-    firstValueFrom(char.level$).then((value) => {
-      ctx.patchState({ charLevel: value })
-    })
+    ctx.patchState({ charLevel: this.char.level() })
   }
   protected toggleMode() {
     // this.virtualModeActive = !this.virtualModeActive

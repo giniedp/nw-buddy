@@ -1,25 +1,19 @@
-import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDataService } from '~/data'
+import { Directive, effect, inject, input, untracked } from '@angular/core'
 import { SpellDetailStore } from './spell-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbSpellDetail]',
   exportAs: 'abilityDetail',
-  providers: [
-    {
-      provide: SpellDetailStore,
-      useExisting: forwardRef(() => SpellDetailDirective),
-    },
-  ],
+  providers: [SpellDetailStore],
 })
-export class SpellDetailDirective extends SpellDetailStore {
-  @Input()
-  public set nwbSpellDetail(value: string) {
-    this.patchState({ spellId: value })
-  }
-
-  public constructor(db: NwDataService) {
-    super(db)
-  }
+export class SpellDetailDirective {
+  public store = inject(SpellDetailStore)
+  public spellId = input<string>(null, {
+    alias: 'nwbSpellDetail',
+  })
+  #fxLoad = effect(() => {
+    const spellId = this.spellId()
+    untracked(() => this.store.load(spellId))
+  })
 }

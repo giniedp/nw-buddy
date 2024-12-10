@@ -1,15 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { getItemId, isHousingItem, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '@nw-data/common'
-import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwLinkService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../../item-tracker'
 import { ItemDetailStore } from './item-detail.store'
-import { map } from 'rxjs'
-import { selectSignal } from '~/utils'
 
 @Component({
   standalone: true,
@@ -20,10 +16,10 @@ import { selectSignal } from '~/utils'
   imports: [CommonModule, NwModule, RouterModule, ItemTrackerModule, ItemFrameModule],
   host: {
     class: 'nw-item-header relative flex flex-col text-shadow-sm shadow-black',
-    '[class.bg-base-300]': 'isLoading()',
+    '[class.bg-base-300]': 'showSkeleton()',
     '[class.named]': 'isNamed()',
     '[class.artifact]': 'isArtifact()',
-    '[class.nw-item-rarity-common]': '!isLoading() && (rarity() === "common")',
+    '[class.nw-item-rarity-common]': '!showSkeleton() && (rarity() === "common")',
     '[class.nw-item-rarity-uncommon]': 'rarity() === "uncommon"',
     '[class.nw-item-rarity-rare]': 'rarity() === "rare"',
     '[class.nw-item-rarity-epic]': 'rarity() === "epic"',
@@ -35,41 +31,23 @@ export class ItemDetailHeaderComponent {
   protected store = inject(ItemDetailStore)
   private link = inject(NwLinkService)
 
-  @Input()
-  public enableInfoLink: boolean
+  public enableInfoLink = input(false)
+  public enableLink = input(false)
+  public enableTracker = input(false)
+  public disableContent = input(false)
+  public size = input<'xs' | 'sm' | 'md' | 'lg'>('md')
 
-  @Input()
-  public enableLink: boolean
-
-  @Input()
-  public enableTracker: boolean
-
-  @Input()
-  public disableContent: boolean
-
-  @Input()
-  public iconOverride: MasterItemDefinitions | HouseItems
-
-  @Input()
-  public size: 'xs' | 'sm' | 'md' | 'lg' = 'md'
-
-  protected name = selectSignal({
-    name: this.store.name$,
-    prefix: this.store.namePrefix$,
-    suffix: this.store.nameSuffix$,
-  }, ({ prefix, name, suffix }) => {
-    return [prefix, name, suffix].filter((it) => !!it)
-  })
-  protected icon = toSignal(this.store.icon$)
-  protected isNamed = toSignal(this.store.isNamed$)
-  protected isArtifact = toSignal(this.store.isArtifact$)
-  protected rarity = toSignal(this.store.finalRarity$)
-  protected rarityName = toSignal(this.store.finalRarityName$)
-  protected typeName = toSignal(this.store.typeName$)
-  protected sourceLabel = toSignal(this.store.sourceLabel$)
-  protected tierLabel = toSignal(this.store.tierLabel$)
-  protected record = toSignal(this.store.entity$)
-  protected recordId = toSignal(this.store.recordId$)
+  protected name = this.store.fullName
+  protected icon = this.store.icon
+  protected isNamed = this.store.isNamed
+  protected isArtifact = this.store.isArtifact
+  protected rarity = this.store.rarity
+  protected rarityName = this.store.rarityLabel
+  protected typeName = this.store.typeName
+  protected sourceLabel = this.store.sourceLabel
+  protected tierLabel = this.store.tierLabel
+  protected record = this.store.record
+  protected recordId = this.store.recordId
   protected recordLink = computed(() => {
     const record = this.record()
     if (record) {
@@ -80,8 +58,8 @@ export class ItemDetailHeaderComponent {
     }
     return null
   })
-  protected isMissing = toSignal(this.store.isMissing$)
-  protected isLoading = toSignal(this.store.entity$.pipe(map(() => false)), { initialValue: true })
+  protected showSkeleton = computed(() => !this.store.record() && this.store.isLoading() || !this.store.isLoaded())
+  protected showMissing = computed(() => !this.store.record() && !this.store.isLoading() && this.store.isLoaded())
 
   protected enableGsTracker = computed(() => {
     const record = this.record()

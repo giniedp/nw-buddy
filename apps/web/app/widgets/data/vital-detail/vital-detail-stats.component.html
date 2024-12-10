@@ -1,95 +1,153 @@
-<table>
-  @if (gearScore()) {
-    <tr>
-      <td class="text-right font-bold text-white py-0 px-1">{{ gearScore() }}</td>
-      <td class="py-0 px-1">Gear Score</td>
-    </tr>
-  }
-  @if (damage()) {
-    <tr>
-      <td class="text-right font-bold text-white py-0 px-1 cursor-help" [tooltip]="'Based on DmgCoef: 1'">
-        {{ damage() | number: '0.0-0' }}
-      </td>
-      <td class="py-0 px-1">Damage</td>
-    </tr>
-  }
-  @if (armor(); as armor) {
-    <tr>
-      <td class="py-1 px-0 text-nw-description" colspan="2">Armor</td>
-    </tr>
-    <tr>
-      <td class="text-right font-bold text-white py-0 px-1">{{ armor.physicalRating }}</td>
-      <td class="py-0 px-1">Armor Rating - Physical</td>
-    </tr>
-    <tr>
-      <td class="text-right font-bold text-white py-0 px-1">{{ armor.elementalRating }}</td>
-      <td class="py-0 px-1">Armor Rating - Elemental</td>
-    </tr>
-    <tr>
-      <td class="text-right font-bold text-white py-0 px-1">{{ armor.physicalMitigation | percent }}</td>
-      <td class="py-0 px-1">Damage Mitigation - Physical</td>
-    </tr>
-    <tr>
-      <td class="text-right font-bold text-white py-0 px-1">{{ armor.elementalMitigation | percent }}</td>
-      <td class="py-0 px-1">Damage Mitigation - Elemental</td>
-    </tr>
-  }
-  @if (effectiveness()?.length) {
-    <tr>
-      <td class="py-1 px-0 text-nw-description" colspan="2">Weakness</td>
-    </tr>
-    @for (row of effectiveness(); track $index) {
+@if (store.hasError()) {
+  <div swap class="alert shadow-lg my-2 bg-base-100">
+    <nwb-icon [icon]="errorIcon" class="w-6 h-6 text-error self-start" />
+    <div>
+      <h3 class="font-bold">Error</h3>
+      <div class="text-xs">Failed to load data</div>
+    </div>
+  </div>
+} @else if (!store.isLoaded()) {
+  <div swap>
+    <table>
       <tr>
-        <td class="text-right font-bold text-white py-0 px-1">
-          {{ row.value | percent }}
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-12 h-4"></div>
         </td>
-        <td class="py-0 px-1">
-          <div class="flex flex-row gap-1">
-            <img [nwImage]="row.icon" class="w-5 h-5" />
-            <span>{{ row.name }}</span>
-          </div>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-32 h-4"></div>
         </td>
       </tr>
-    }
-  }
-  @if (combatCategories(); as categories) {
-    <tr>
-      <td class="py-1 px-0 text-nw-description" colspan="2">Categories</td>
-    </tr>
-    @for (row of combatCategories(); track $index) {
-      @if(row.ID){
+      <tr>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-12 h-4"></div>
+        </td>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-32 h-4"></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-12 h-4"></div>
+        </td>
+        <td class="py-0 px-1 h-6">
+          <!-- <div class="skeleton bg-base-100 w-32 h-4"></div> -->
+        </td>
+      </tr>
+      <tr>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-12 h-4"></div>
+        </td>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-32 h-4"></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-12 h-4"></div>
+        </td>
+        <td class="py-0 px-1 h-6">
+          <div class="skeleton bg-base-100 w-32 h-4"></div>
+        </td>
+      </tr>
+    </table>
+  </div>
+} @else {
+  <div swap>
+    <table>
+      @if (gearScore()) {
+        <tr>
+          <td class="text-right font-bold text-white py-0 px-1">{{ gearScore() }}</td>
+          <td class="py-0 px-1">Gear Score</td>
+        </tr>
+      }
+      @if (damage()) {
+        <tr>
+          <td class="text-right font-bold text-white py-0 px-1 cursor-help" [tooltip]="'Based on DmgCoef: 1'">
+            {{ damage() | number: '0.0-0' }}
+          </td>
+          <td class="py-0 px-1">Damage</td>
+        </tr>
+      }
+      @if (armor(); as armor) {
+        <tr>
+          <td class="py-1 px-0 text-nw-description" colspan="2">Armor</td>
+        </tr>
+        <tr>
+          <td class="text-right font-bold text-white py-0 px-1">{{ armor.physicalRating }}</td>
+          <td class="py-0 px-1">Armor Rating - Physical</td>
+        </tr>
+        <tr>
+          <td class="text-right font-bold text-white py-0 px-1">{{ armor.elementalRating }}</td>
+          <td class="py-0 px-1">Armor Rating - Elemental</td>
+        </tr>
+        <tr>
+          <td class="text-right font-bold text-white py-0 px-1">{{ armor.physicalMitigation | percent }}</td>
+          <td class="py-0 px-1">Damage Mitigation - Physical</td>
+        </tr>
+        <tr>
+          <td class="text-right font-bold text-white py-0 px-1">{{ armor.elementalMitigation | percent }}</td>
+          <td class="py-0 px-1">Damage Mitigation - Elemental</td>
+        </tr>
+      }
+      @for (row of effectiveness(); track $index; let first = $first) {
+        @if (first) {
+          <tr>
+            <td class="py-1 px-0 text-nw-description" colspan="2">Weakness</td>
+          </tr>
+        }
         <tr>
           <td class="text-right font-bold text-white py-0 px-1">
-            <img [nwImage]="row.IconBane" class="w-5 h-5" />
+            {{ row.value | percent }}
           </td>
           <td class="py-0 px-1">
-            {{ row.Name | nwText }}
+            <div class="flex flex-row gap-1">
+              <img [nwImage]="row.icon" class="w-5 h-5" />
+              <span>{{ row.name }}</span>
+            </div>
           </td>
         </tr>
       }
-    }
-  }
-  @if (spawnLevels(); as levels) {
-    <tr>
-      <td class="py-1 px-0 text-nw-description" colspan="2">Spawn Levels</td>
-    </tr>
-    <tr>
-      <td class="font-bold text-white py-0 px-1" colspan="2">
-        {{ levels }}
-      </td>
-    </tr>
-  }
+      @for (row of combatCategories(); track $index; let first = $first) {
+        @if (first) {
+          <tr>
+            <td class="py-1 px-0 text-nw-description" colspan="2">Categories</td>
+          </tr>
+        }
+        @if (row.ID) {
+          <tr>
+            <td class="text-right font-bold text-white py-0 px-1">
+              <img [nwImage]="row.IconBane" class="w-5 h-5" />
+            </td>
+            <td class="py-0 px-1">
+              {{ row.Name | nwText }}
+            </td>
+          </tr>
+        }
+      }
 
-  @if (aliasNames()?.length) {
-    <tr>
-      <td class="py-1 px-0 text-nw-description" colspan="2">Alias Names</td>
-    </tr>
-    @for (row of aliasNames(); track $index) {
-      <tr>
-        <td class="font-bold text-white py-0 px-1" colspan="2">
-          {{ row | nwText }}
-        </td>
-      </tr>
-    }
-  }
-</table>
+      @if (spawnLevels(); as levels) {
+        <tr>
+          <td class="py-1 px-0 text-nw-description" colspan="2">Spawn Levels</td>
+        </tr>
+        <tr>
+          <td class="font-bold text-white py-0 px-1" colspan="2">
+            {{ levels }}
+          </td>
+        </tr>
+      }
+
+      @for (row of aliasNames(); track $index; let first = $first) {
+        @if (first) {
+          <tr>
+            <td class="py-1 px-0 text-nw-description" colspan="2">Alias Names</td>
+          </tr>
+        }
+        <tr>
+          <td class="font-bold text-white py-0 px-1" colspan="2">
+            {{ row | nwText }}
+          </td>
+        </tr>
+      }
+    </table>
+  </div>
+}

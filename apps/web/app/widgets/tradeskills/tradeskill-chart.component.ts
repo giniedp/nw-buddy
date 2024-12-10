@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, defer, distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs'
@@ -8,6 +8,7 @@ import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { NwTradeskillInfo, NwTradeskillService } from '~/nw/tradeskill'
 import { ChartModule } from '~/ui/chart'
+import { combineLatestOrEmpty } from '~/utils'
 
 const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()
 
@@ -20,6 +21,8 @@ const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a'
   imports: [CommonModule, ChartModule, NwModule],
 })
 export class TradeskillChartComponent {
+  private char = inject(CharacterStore)
+
   @Input()
   public set category(value: string) {
     this.category$.next(value)
@@ -118,17 +121,12 @@ export class TradeskillChartComponent {
 
   private skillLevel$ = defer(() => this.skillInfo$).pipe(
     switchMap((skills) => {
-      return combineLatest(
-        skills.map((skill) => {
-          return this.char.selectTradeSkillLevel(skill.ID)
-        }),
-      )
+      return combineLatestOrEmpty(skills.map((skill) => this.char.observeProgressionLevel(skill.ID)))
     }),
   )
 
   public constructor(
     private service: NwTradeskillService,
-    private char: CharacterStore,
     private i18n: TranslateService,
   ) {
     //

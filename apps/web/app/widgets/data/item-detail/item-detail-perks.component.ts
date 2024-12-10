@@ -1,14 +1,19 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { explainPerk, getItemGsBonus, getPerkTypeWeight, isPerkApplicableToItem } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
+import { PerkData } from '@nw-data/generated'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import { PlatformService } from '~/utils/services/platform.service'
+import { apiResource } from '~/utils'
+import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
-import { PerkSlot } from './selectors'
+import { ItemEditorEventsService } from './item-editor-events.service'
+import { PerkSlotExplained } from './selectors'
 
 @Component({
   standalone: true,
@@ -19,32 +24,117 @@ import { PerkSlot } from './selectors'
   host: {
     class: 'flex flex-col gap-1',
   },
+  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailPerksComponent {
-  protected items$ = this.store.perkSlots$
-  protected editable$ = toSignal(this.store.perkEditable$)
+  private db = injectNwData()
+  private store = inject(ItemDetailStore)
+  private events = inject(ItemEditorEventsService, { optional: true })
+  protected slots = this.store.itemPerkSlots
+  protected editable = this.store.perkEditable
 
-  protected trackByIndex = (i: number) => i
   protected iconEdit = svgEllipsisVertical
   protected iconWarn = svgCircleExclamation
-  protected platform = inject(PlatformService)
-  protected linksEnabled = computed(() => !this.editable$() && !this.platform.isEmbed)
 
-  public constructor(private store: ItemDetailStore) {
-    //
+  @HostBinding('@isHidden')
+  protected get isHiddenTrigger() {
+    return this.isHidden()
   }
 
-  protected async editPerkClicked(slot: PerkSlot) {
-    if (this.isSlotEditable(slot)) {
-      this.store.perkEdit$.emit(slot)
+  protected isHidden = computed(() => {
+    return !this.rows()?.length
+  })
+
+  private resource = apiResource({
+    request: () => this.slots() || [],
+    loader: async ({ request }) => {
+      return Promise.all(
+        request.map(async (slot) => {
+          return {
+            ...slot,
+            abilities: await fetchAbilities(this.db, slot.perk),
+            affix: await fetchAffix(this.db, slot.perk),
+          }
+        }),
+      )
+    },
+  })
+
+  protected rows = computed(() => {
+    const item = this.store.item()
+    const itemGS = this.store.itemGS()
+    const slots = this.resource.value() || []
+    const result = slots.map(
+      ({ key, perkId, perk, editable, bucketId, bucket, abilities, affix }): PerkSlotExplained => {
+        return {
+          key: key,
+          perkId: perkId,
+          perk: perk,
+          bucketId: bucketId,
+          bucket: bucket,
+          editable: editable,
+          violatesExclusivity: false,
+          violatesItemClass: !!perk && !isPerkApplicableToItem(perk, item),
+          activationCooldown: abilities.find((a) => a?.ActivationCooldown)?.ActivationCooldown,
+          explain: explainPerk({
+            perk: perk,
+            affix: affix,
+            abilities: abilities,
+            gearScore: itemGS + (getItemGsBonus(perk, item) || 0),
+          }),
+        }
+      },
+    )
+    result.sort((a, b) => {
+      return getPerkTypeWeight(a.perk?.PerkType) - getPerkTypeWeight(b.perk?.PerkType)
+    })
+    for (const slot of result) {
+      const labels = slot.perk?.ExclusiveLabels
+      if (!labels?.length) {
+        continue
+      }
+      for (const other of result) {
+        if (other === slot) {
+          continue
+        }
+        const otherLabels = other.perk?.ExclusiveLabels
+        if (!otherLabels?.length) {
+          continue
+        }
+        if (labels.some((it) => otherLabels.includes(it))) {
+          slot.violatesExclusivity = true
+          break
+        }
+      }
+    }
+    return result
+  })
+
+  protected async editPerkClicked(slot: PerkSlotExplained) {
+    if (this.isSlotEditable(slot) && this.events) {
+      this.events.editPerk.next(slot)
     }
   }
 
-  protected isSlotEditable(slot: PerkSlot) {
-    return this.editable$() && !!slot?.editable
+  protected isSlotEditable(slot: PerkSlotExplained) {
+    return this.editable() && !!slot?.editable
   }
 
   protected buildTextContext(perkId: string, gs: number, context: Record<string, any>) {
     return { itemId: perkId, gearScore: gs, ...(context || {}) }
   }
+}
+
+async function fetchAbilities(db: NwData, perk: PerkData) {
+  if (!perk?.EquipAbility?.length) {
+    return []
+  }
+  return Promise.all(perk.EquipAbility.map((id) => db.abilitiesById(id)))
+}
+
+async function fetchAffix(db: NwData, perk: PerkData) {
+  if (!perk?.Affix) {
+    return null
+  }
+  return db.affixStatsById(perk.Affix)
 }

@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_LOOTLIMITDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -17,7 +17,7 @@ import {
 
 @Injectable()
 export class LootLimitTableAdapter implements DataViewAdapter<LootLimitTableRecord> {
-  private db = inject(NwDataService)
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<LootLimitTableRecord>({ optional: true })
   private utils: TableGridUtils<LootLimitTableRecord> = inject(TableGridUtils)
 
@@ -40,9 +40,9 @@ export class LootLimitTableAdapter implements DataViewAdapter<LootLimitTableReco
 
   public connect() {
     return combineLatest({
-      items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
-      limits: this.db.lootLimits,
+      items: this.db.itemsByIdMap(),
+      housing: this.db.housingItemsByIdMap(),
+      limits: this.db.lootLimitsAll(),
     }).pipe(
       map(({ items, housing, limits }) => {
         return limits.map((it): LootLimitTableRecord => {

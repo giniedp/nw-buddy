@@ -64,7 +64,7 @@
         (click)="pickVitalId(idExpressionInput, index, value)"
       >
         <span [nwbVitalDetail]="value" #detail="vitalDetail">
-          {{ detail.displayName() | nwText }}
+          {{ detail.store.displayName() | nwText }}
         </span>
       </button>
     </nwb-expresssion-branch-input>

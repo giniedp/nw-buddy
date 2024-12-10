@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 import { ItemDetailStore } from './item-detail.store'
-import { NwModule } from '~/nw'
 
 @Component({
   standalone: true,
@@ -54,6 +53,6 @@ import { NwModule } from '~/nw'
 })
 export class ItemDetailLootButtonComponent {
   private store = inject(ItemDetailStore)
-  protected salvage = toSignal(this.store.salvageInfo$)
+  protected salvage = this.store.salvageInfo
   protected iconLink = svgSquareArrowUpRight
 }

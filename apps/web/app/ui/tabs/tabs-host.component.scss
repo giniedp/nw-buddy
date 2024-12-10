@@ -1,0 +1,27 @@
+:host {
+  display: grid;
+  grid-template:
+    'l t r'
+    'c c c';
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr;
+}
+
+.tabs-header,
+nwb-tabs {
+  grid-area: t;
+  min-width: 0;
+}
+.tabs-header-start {
+  grid-area: l;
+  min-width: 0;
+  z-index: 50;
+}
+.tabs-header-end {
+  grid-area: r;
+  min-width: 0;
+  z-index: 50;
+}
+.tabs-content {
+  grid-area: c;
+}

@@ -1,8 +1,9 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <div class="flex flex-row items-center gap-1 main-row" data-cy="step" *ngIf="vm.currency; let item">
-    <nwb-crafting-step-toggle
+@if (store.currency(); as item) {
+  <div class="flex flex-row items-center gap-1 h-10" data-cy="step">
+    <nwb-tree-node-toggle
       class="w-8 h-full flex-none"
-      [ngModel]="vm.expand"
+      [ngModel]="store.expand"
+      [isLast]="!bordered()"
       [disabled]="true"
     />
     <picture [nwIcon]="'assets/icons/rewards/azoth.png'" class="w-8 h-8 nw-icon flex-none cursor-default"></picture>
@@ -16,97 +17,185 @@
       {{ item.label | nwText }}
     </span>
   </div>
-  <div class="flex flex-row items-center gap-1 main-row" data-cy="step" *ngIf="vm.item; let item">
-    <nwb-crafting-step-toggle
+} @else {
+  <div
+    class="flex flex-row items-center gap-1 h-10"
+    data-cy="step"
+    [nwbItemDetail]="store.itemId()"
+    #detail="itemDetail"
+  >
+    <nwb-tree-node-toggle
       class="w-8 h-full flex-none"
-      [ngModel]="vm.expand"
-      (ngModelChange)="setExpand($event)"
-      [disabled]="!vm.hasChildren"
-    ></nwb-crafting-step-toggle>
-
-    <picture
-      [nwIcon]="item"
-      class="w-8 h-8 nw-icon flex-none"
-      [class.cursor-pointer]="!!vm.category"
-      [class.cursor-default]="!vm.category"
-      [cdkMenuTriggerFor]="vm.category ? tplOptions : null"
-    ></picture>
-
-    <div class="flex flex-col items-center justify-center" [tooltip]="vm.amount.bonus ? bonusTip : null">
-      <span data-cy="amount">
-        {{ vm.amount.net }}
-      </span>
-      @if (vm.amount.bonus) {
-        <span data-cy="bonusPercent" class="text-xs text-success"> +{{ vm.amount.bonusPercent | percent }} </span>
+      [isLast]="!bordered()"
+      [ngModel]="store.expand()"
+      (ngModelChange)="store.setExpand($event)"
+      [disabled]="!store.hasChildren()"
+      [cdkContextMenuTriggerFor]="tplToggleOptions"
+    />
+    <button
+      class="btn btn-sm btn-square btn-ghost flex-none relative"
+      [disabled]="!store.isCateogry()"
+      [cdkMenuTriggerFor]="store.isCateogry() ? tplOptions : null"
+    >
+      <nwb-item-icon
+        [nwbItemIcon]="detail.record()"
+        [rarity]="detail.rarity()"
+        [isNamed]="detail.isNamed()"
+        [rounded]="detail.isResource()"
+        [solid]="true"
+        [borderless]="!detail.rarity() || detail.rarity() === 'common'"
+        class="w-8 h-8 nw-icon flex-none"
+      />
+      @if (store.isCateogry()) {
+        <span class="absolute bottom-1 left-0 right-0 text-center">…</span>
       }
-      <ng-template #bonusTip>
-        <div class="p-2">
-          {{ vm.amount.net }} + <span class="text-success">{{ vm.amount.bonus }}</span> =
-          {{ vm.amount.net + vm.amount.bonus }}
-        </div>
-      </ng-template>
+    </button>
+
+    <div
+      class="flex flex-col items-center justify-center leading-none"
+      [class.cursor-help]="!!store.amountBonus()"
+      [tooltip]="store.amountBonus() ? tplYieldBonusInfo : null"
+    >
+      <span data-cy="amount">
+        {{ store.amountNet() }}
+      </span>
+      @if (store.amountBonus()) {
+        <span data-cy="bonusPercent" class="text-xs text-success"> +{{ store.amountBonusPercent() | percent }} </span>
+      }
     </div>
     &times;
-    @if (item.Name | nwText; as name) {
-      <span data-cy="name" class="overflow-ellipsis overflow-hidden whitespace-nowrap select-text" [title]="name">
+    @if (detail.store.name() | nwText; as name) {
+      <a
+        data-cy="name"
+        class="overflow-ellipsis overflow-hidden whitespace-nowrap select-text"
+        [class.link-hover]="!!store.recipeLink()"
+        [title]="name"
+        [routerLink]="store.recipeLink()"
+      >
         {{ name }}
-      </span>
+      </a>
     }
 
     <span class="flex-1"></span>
 
     <label class="flex flex-col items-end text-sm" (click)="itemTracker.openInput($event)">
       <nwb-price-tracker
-        [itemId]="vm.itemId"
+        [itemId]="store.itemId()"
         [emptyTip]="'Edit item price'"
         [format]="'1.2-2'"
         class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap text-xs"
         #itemTracker
       />
       @if (itemTracker.value; as price) {
-        @if (vm.amountIsGross) {
-          <span [class.text-success]="!!vm.amount.bonus" class="whitespace-nowrap">
-            {{ vm.amount.gross * price | number: '1.2-2' }}
+        @let bonus = store.amountBonus();
+        @if (store.amountIsGross()) {
+          <span [class.text-success]="!!bonus" class="whitespace-nowrap">
+            {{ store.amountGross() * price | number: '1.2-2' }}
           </span>
         } @else {
-          <span [class.text-xs]="!!vm.amount.bonus" class="whitespace-nowrap">
-            {{ vm.amount.net * price | number: '1.2-2' }}
+          <span [class.text-xs]="!!bonus" class="whitespace-nowrap">
+            {{ store.amountNet() * price | number: '1.2-2' }}
           </span>
-          <span *ngIf="vm.amount.bonus" class="text-success text-xs whitespace-nowrap">
-            + {{ vm.amount.bonus * price | number: '1.2-2' }}
-          </span>
+          @if (bonus) {
+            <span class="text-success text-xs whitespace-nowrap"> + {{ bonus * price | number: '1.2-2' }} </span>
+          }
         }
       }
     </label>
   </div>
+}
 
-  @if (vm.expand && vm.hasChildren) {
-    <div class="steps-container" data-cy="step children">
-      @for (step of vm.children; track $index) {
-        <nwb-crafting-step
-          [step]="step"
-          [amount]="vm.amount.net * (step.ingredient?.quantity || 1)"
-          [amountMode]="vm.amountMode"
-        />
+<ng-content />
+@if (store.expand()) {
+  <div class="steps-container" [class.border-l-2]="bordered()" data-cy="step children">
+    @for (step of store.children(); track $index; let last = $last) {
+      <nwb-crafting-step
+        [step]="step"
+        [bordered]="!last"
+        [amount]="store.amountNet() * (step.ingredient?.quantity || 1)"
+        [amountMode]="store.amountMode()"
+      />
+    }
+  </div>
+}
+
+<ng-template #tplOptions>
+  <nwb-ingredient-picker
+    [items]="store.options()"
+    [selection]="store.itemId()"
+    (selectionChange)="setSelection($event)"
+    cdkMenu
+  />
+</ng-template>
+
+<ng-template #tplToggleOptions>
+  <ul class="menu menu-compact w-80 flex-nowrap overflow-auto bg-base-300 rounded-md shadow-md relative" cdkMenu>
+    <li cdkMenuItem (cdkMenuItemTriggered)="store.expandAll()">
+      <a> Expand All </a>
+    </li>
+    <li cdkMenuItem (cdkMenuItemTriggered)="store.collapseAll()">
+      <a> Collapse All </a>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template #tplYieldBonusInfo>
+  @if (store.bonusDetail(); as info) {
+    <table class="table table-xs">
+      @if (info.base; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Base</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
       }
-    </div>
+      @if (info.ingredients; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Ingredients</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      @if (info.skill; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Skill</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      @if (info.buffs; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Buffs</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      @if (info.fort; as value) {
+        @let isAdd = value >= 0;
+        <tr>
+          <td>Fort</td>
+          <td class="text-right italic" [class.text-success]="isAdd" [class.text-error]="!isAdd">
+            {{ isAdd ? '+' : '' }}{{ value | percent }}
+          </td>
+        </tr>
+      }
+      <tr>
+        <td>Total Bonus</td>
+        <td class="text-right font-bold text-success">{{ info.total >= 0 ? '+' : '' }}{{ info.total | percent }}</td>
+      </tr>
+    </table>
   }
-
-  <ng-template #tplOptions>
-    <ul class="menu menu-compact bg-base-300 rounded-md shadow-md" cdkMenu>
-      <li
-        *ngFor="let item of vm.options"
-        [nwbItemDetail]="item"
-        #itemDetail="itemDetail"
-        [class.text-primary]="vm.itemId === item"
-        cdkMenuItem
-        (cdkMenuItemTriggered)="setSelection(item)"
-      >
-        <a>
-          <picture [nwIcon]="itemDetail.entity$ | async" class="w-7 h-7 flex-none"></picture>
-          {{ itemDetail.name$ | async | nwText }}
-        </a>
-      </li>
-    </ul>
-  </ng-template>
-</ng-container>
+  <div class="nw-item-divider"></div>
+  <div class="p-2">
+    <span>{{ store.amountNet() }}</span> + <span class="text-success">{{ store.amountBonus() }}</span> =
+    <span>{{ store.amountNet() + store.amountBonus() }}</span>
+  </div>
+</ng-template>

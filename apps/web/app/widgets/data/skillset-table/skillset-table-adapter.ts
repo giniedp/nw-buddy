@@ -1,7 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
+import { NwData } from '@nw-data/db'
 import { defer } from 'rxjs'
-import { NwDataService, SkillBuildsDB, buildSkillSetRow } from '~/data'
+import { SkillBuildsDB, buildSkillSetRow, injectNwData } from '~/data'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
@@ -13,7 +14,7 @@ import { SkillsetTableRecord, skillsetColName, skillsetColSkills, skillsetColWea
 @Injectable()
 export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord> {
   private db = inject(SkillBuildsDB)
-  private data = inject(NwDataService)
+  private data = injectNwData()
   private config = injectDataViewAdapterOptions<SkillsetTableRecord>({ optional: true })
   private utils: TableGridUtils<SkillsetTableRecord> = inject(TableGridUtils)
   public entityID(item: SkillsetTableRecord): string {
@@ -81,11 +82,11 @@ function buildOptions(util: TableGridUtils<SkillsetTableRecord>) {
   return result
 }
 
-function sourceRows(data: NwDataService, db: SkillBuildsDB) {
+function sourceRows(data: NwData, db: SkillBuildsDB) {
   return selectStream(
     {
       items: db.observeAll(),
-      abilities: data.abilitiesMap,
+      abilities: data.abilitiesByIdMap(),
     },
     ({ items, abilities }) => {
       return items.map((it) => buildSkillSetRow(it, abilities))

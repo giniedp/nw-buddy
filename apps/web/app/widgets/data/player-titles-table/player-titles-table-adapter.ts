@@ -1,7 +1,8 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_PLAYERTITLEDATA, PlayerTitleData } from '@nw-data/generated'
-import { NwDataService } from '~/data'
+import { from } from 'rxjs'
+import { injectNwData } from '~/data/nw-data/provider'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -21,7 +22,8 @@ import {
 
 @Injectable()
 export class PlayerTitlesTableAdapter implements DataViewAdapter<PlayertitlesTableRecord> {
-  private db = inject(NwDataService)
+
+  private db = injectNwData()
   private config = injectDataViewAdapterOptions<PlayertitlesTableRecord>({ optional: true })
   private utils: TableGridUtils<PlayertitlesTableRecord> = inject(TableGridUtils)
 
@@ -54,7 +56,7 @@ export class PlayerTitlesTableAdapter implements DataViewAdapter<PlayertitlesTab
   }
 
   public connect() {
-    return this.db.playerTitles
+    return from(this.db.playerTitlesAll())
   }
 }
 

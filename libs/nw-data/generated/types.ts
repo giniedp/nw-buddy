@@ -837,7 +837,7 @@ export interface CategoricalProgressionData {
   AchievementIdOnMaxRank: string;
   AllowOverflow: boolean;
   AutoRankUp: boolean;
-  CategoricalProgressionId: string;
+  CategoricalProgressionId: ProgressionCategory;
   DisplayDescription: string;
   DisplayName: string;
   EconomyTrackerType: string;
@@ -1117,7 +1117,7 @@ export interface CraftingRecipeData {
   CooldownQuantity: number;
   CooldownSeconds: number;
   CraftAll: boolean;
-  CraftingCategory: string;
+  CraftingCategory: CraftingCategory;
   CraftingFee: number;
   CraftingGroup: string;
   DisallowBonusesToGS: boolean;
@@ -1162,14 +1162,14 @@ export interface CraftingRecipeData {
   StationType1: string;
   StationType2: string;
   StationType3: string;
-  Tradeskill: string;
-  Type1: string;
-  Type2: string;
-  Type3: string;
-  Type4: string;
-  Type5: string;
-  Type6: string;
-  Type7: string;
+  Tradeskill: CraftingTradeskill;
+  Type1: CraftingIngredientType;
+  Type2: CraftingIngredientType;
+  Type3: CraftingIngredientType;
+  Type4: CraftingIngredientType;
+  Type5: CraftingIngredientType;
+  Type6: CraftingIngredientType;
+  Type7: CraftingIngredientType;
   UnlockedAchievementBlocksRecrafting: boolean | number;
   UnlockedAchievementID: string;
   UseCraftingTax: number;
@@ -7407,6 +7407,84 @@ export type ComparisonType =
   | "GreaterThanOrEqual"
   | "LessThan"
   | "LessThanOrEqual";
+export type CraftingCategory =
+  | "ArcanaRefining"
+  | "Armor"
+  | "ArtifactCrafting"
+  | "ArtisanCrafting"
+  | "Bags"
+  | "BasicCooking"
+  | "Components"
+  | "Concoctions"
+  | "Consumables"
+  | "CorruptedRefining"
+  | "CraftingQuestRecipe"
+  | "CutGems"
+  | "CutStone"
+  | "DoubloonApexCrafting"
+  | "DoubloonCrafting"
+  | "DoubloonCraftingApexNamed"
+  | "DoubloonCraftingMisc"
+  | "DoubloonCraftingNamed"
+  | "DungeonNamedReplicas"
+  | "DungeonNamedReplicas_FLXpac"
+  | "DungeonReplicas"
+  | "Dyes"
+  | "Faction"
+  | "FlameCoreCasting"
+  | "Foods"
+  | "Furniture"
+  | "FuseGems"
+  | "GatherableResearch"
+  | "Glasswares"
+  | "GypsumCasting"
+  | "GypsumRefining"
+  | "HercyneMateria"
+  | "Instruments"
+  | "Keys"
+  | "MagicStaves"
+  | "MaterialConversion"
+  | "NamedCrafting"
+  | "NightveilHallow"
+  | "PVPReplicas"
+  | "Pattern"
+  | "PrismaticTools"
+  | "RaidEquipment"
+  | "RefinedResources"
+  | "RuneglassFamily"
+  | "SOTS"
+  | "Salvage"
+  | "SalvageCreate"
+  | "Scarab"
+  | "SpringtideBloom"
+  | "SummerMedleyfaire"
+  | "TerritoryContribution"
+  | "TimelessShards"
+  | "Tools"
+  | "TrialNamedReplicas"
+  | "Trinkets"
+  | "Weapons"
+  | "WinterConvergence";
+export type CraftingIngredientType = "Category_Only" | "Currency" | "Item";
+export type CraftingTradeskill =
+  | "Arcana"
+  | "Armoring"
+  | "Cooking"
+  | "Engineering"
+  | "Fishing"
+  | "Furnishing"
+  | "Harvesting"
+  | "Jewelcrafting"
+  | "Leatherworking"
+  | "Logging"
+  | "Mining"
+  | "Musician"
+  | "Skinning"
+  | "Smelting"
+  | "Stonecutting"
+  | "Weaponsmithing"
+  | "Weaving"
+  | "Woodworking";
 export type CreatureType =
   | "Ally"
   | "Boss"
@@ -8345,6 +8423,117 @@ export type LootTag =
   | "notreal";
 export type PerkConditionEvent = "OnActive" | "OnEquip" | "OnUnsheathed";
 export type PerkType = "Gem" | "Generated" | "Inherent";
+export type ProgressionCategory =
+  | "10"
+  | "11"
+  | "12"
+  | "13"
+  | "14"
+  | "15"
+  | "16"
+  | "2"
+  | "4"
+  | "5"
+  | "6"
+  | "74"
+  | "75"
+  | "8"
+  | "9"
+  | "Arcana"
+  | "Arcana_PostCap"
+  | "Armoring"
+  | "Armoring_PostCap"
+  | "AzothSalt_Currency"
+  | "AzothStaff"
+  | "Azoth_Currency"
+  | "Battle_Token"
+  | "BlunderbussAbilityTable"
+  | "BowAbilityTable"
+  | "Camping"
+  | "CollectibleTest"
+  | "Cooking"
+  | "Cooking_PostCap"
+  | "Covenant"
+  | "CovenantTokens"
+  | "DungeonBrimstoneSands00DifficultyExp23"
+  | "DungeonCutlass00DifficultyExp23"
+  | "DungeonEbonscale00DifficultyExp23"
+  | "DungeonEdengrove00DifficultyExp23"
+  | "DungeonEverfall00DifficultyExp23"
+  | "DungeonFirstLight01DifficultyExp23"
+  | "DungeonGreatCleave00DifficultyExp23"
+  | "DungeonGreatCleave01DifficultyExp23"
+  | "DungeonReekwater00DifficultyExp23"
+  | "DungeonRestlessShores01DifficultyExp23"
+  | "DungeonShatterMtn00DifficultyExp23"
+  | "Engineering"
+  | "Engineering_PostCap"
+  | "EventProgress"
+  | "FireMagicAbilityTable"
+  | "Fishing"
+  | "Fishing_PostCap"
+  | "FlailAbilityTable"
+  | "Furnishing"
+  | "Furnishing_PostCap"
+  | "GreatAxeAbilityTable"
+  | "GreatSwordAbilityTable"
+  | "HalloweenEventProgress"
+  | "Harvesting"
+  | "Harvesting_PostCap"
+  | "HatchetAbilityTable"
+  | "IceMagicAbilityTable"
+  | "Instruments_PostCap"
+  | "Jewelcrafting"
+  | "Jewelcrafting_PostCap"
+  | "Leatherworking"
+  | "Leatherworking_PostCap"
+  | "LifeMagicAbilityTable"
+  | "Logging"
+  | "Logging_PostCap"
+  | "Marauder"
+  | "MarauderTokens"
+  | "Mining"
+  | "Mining_PostCap"
+  | "Musician"
+  | "MusketAbilityTable"
+  | "PvP_XP"
+  | "RapierAbilityTable"
+  | "Repair_T1"
+  | "Riding"
+  | "SeasonPass"
+  | "Skinning"
+  | "Skinning_PostCap"
+  | "Smelting"
+  | "Smelting_PostCap"
+  | "SpearAbilityTable"
+  | "SpringEventProgress"
+  | "Stonecutting"
+  | "Stonecutting_PostCap"
+  | "SummerEventProgress"
+  | "SwordAbilityTable"
+  | "Syndicate"
+  | "SyndicateTokens"
+  | "Territory10_HouseBonusType0"
+  | "Territory11_HouseBonusType0"
+  | "Territory12_HouseBonusType0"
+  | "Territory13_HouseBonusType0"
+  | "Territory14_HouseBonusType0"
+  | "Territory15_HouseBonusType0"
+  | "Territory16_HouseBonusType0"
+  | "Territory2_HouseBonusType0"
+  | "Territory4_HouseBonusType0"
+  | "Territory5_HouseBonusType0"
+  | "Territory6_HouseBonusType0"
+  | "Territory8_HouseBonusType0"
+  | "Territory9_HouseBonusType0"
+  | "VoidGauntletAbilityTable"
+  | "WarHammerAbilityTable"
+  | "Weaponsmithing"
+  | "Weaponsmithing_PostCap"
+  | "Weaving"
+  | "Weaving_PostCap"
+  | "Woodworking"
+  | "Woodworking_PostCap";
 export type StatusEffectCategory =
   | ""
   | "ABSCapped90Percent"

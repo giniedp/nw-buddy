@@ -1,25 +1,26 @@
-<div
-  class="flex flex-row justify-center items-center w-full h-full absolute top-0 left-0 z-10 scale-100 bg-base-200"
-  *ngIf="!(store.hasLoaded$ | async)"
-  [@fade]
->
-  <picture class="block aspect-square w-40 h-40 relative">
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
-      src="assets/loaders/basicscreenrune1.png"
-    />
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-      src="assets/loaders/basicscreenrune3.png"
-    />
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-      src="assets/loaders/basicscreenrune2.png"
-    />
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
-      src="assets/loaders/nwlogo.png"
-    />
-  </picture>
-</div>
-<div nwbGrid [gridOptions]="gridOptions$ | async" [gridData]="gridData$ | async" class="h-full w-full"></div>
+@if (!store.hasLoaded()) {
+  <div
+    class="flex flex-row justify-center items-center w-full h-full absolute top-0 left-0 z-10 scale-100 bg-base-200"
+    [@fade]
+  >
+    <picture class="block aspect-square w-40 h-40 relative">
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+        src="assets/loaders/basicscreenrune1.png"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        src="assets/loaders/basicscreenrune3.png"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        src="assets/loaders/basicscreenrune2.png"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
+        src="assets/loaders/nwlogo.png"
+      />
+    </picture>
+  </div>
+}
+<div nwbGrid [gridOptions]="gridOptions()" [gridData]="gridData()" class="h-full w-full"></div>

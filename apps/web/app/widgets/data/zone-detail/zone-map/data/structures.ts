@@ -1,9 +1,9 @@
 import { describeNodeSize, getGatherableNodeSizes } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
 import { HouseTypeData } from '@nw-data/generated'
 import { ScannedStation, ScannedStructure } from '@nw-data/scanner'
 import { groupBy } from 'lodash'
 import { combineLatest, map } from 'rxjs'
-import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { svgHouse } from '~/ui/icons/svg'
 import { humanize, stringToHSL } from '~/utils'
@@ -12,13 +12,13 @@ import { FilterDataSet, FilterGroup } from './types'
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 
-export function loadStructures(db: NwDataService, tl8: TranslateService, mapCoord: MapCoord) {
+export function loadStructures(db: NwData, tl8: TranslateService, mapCoord: MapCoord) {
   return combineLatest({
     locale: tl8.locale.value$,
-    houseTypes: db.houseTypes,
-    metaMap: db.houseTypesMetaMap,
-    stations: db.stationTypesMeta,
-    structures: db.structureTypesMeta,
+    houseTypes: db.houseTypesAll(),
+    metaMap: db.houseTypesMetaByIdMap(),
+    stations: db.stationTypesMetaAll(),
+    structures: db.structureTypesMetaAll(),
   }).pipe(
     map(({ houseTypes, metaMap, structures, stations }) => {
       const result: Record<string, FilterDataSet> = {}
@@ -191,7 +191,7 @@ function describeHouse(house: HouseTypeData, tl8: TranslateService): FilterGroup
       icon: null,
       label: `T${tier}`,
       size: size.scale * 2,
-      title: humanize(house.HouseTypeID)
+      title: humanize(house.HouseTypeID),
     },
   }
 

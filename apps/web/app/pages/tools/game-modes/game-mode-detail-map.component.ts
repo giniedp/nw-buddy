@@ -1,9 +1,11 @@
-import { Component, computed, effect, inject, input, untracked } from '@angular/core'
-import { VitalsBaseData } from '@nw-data/generated'
-import { ZoneDetailMapComponent } from '~/widgets/data/zone-detail/zone-map/zone-map.component'
-import { GameMapComponent, GameMapLayerDirective } from '~/widgets/game-map'
-import { GameModeDetailMapStore } from './game-mode-detail-map.store'
-import { CommonModule } from '@angular/common'
+import { Component, computed, inject, input } from '@angular/core'
+import { GameModeData, VitalsBaseData } from '@nw-data/generated'
+import { ScannedVital } from '@nw-data/scanner'
+import { Feature, FeatureCollection, MultiPoint } from 'geojson'
+import { uniq } from 'lodash'
+import { injectNwData } from '~/data'
+import { apiResource, eqCaseInsensitive, stringToColor } from '~/utils'
+import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widgets/game-map'
 
 @Component({
   standalone: true,
@@ -29,21 +31,54 @@ import { CommonModule } from '@angular/common'
     }
     <ng-content />
   `,
-  imports: [CommonModule, GameMapComponent, GameMapLayerDirective, ZoneDetailMapComponent],
-  providers: [GameModeDetailMapStore],
+  imports: [GameMapComponent, GameMapLayerDirective],
   host: {
     class: 'block relative rounded-md overflow-clip',
   },
 })
 export class GameModeDetailMapComponent {
+  private db = injectNwData()
+  private service = inject(GameMapService)
+
   public gameModeId = input.required<string>()
   public creatures = input<VitalsBaseData[]>([])
   public highlight = input<string>()
 
-  protected store = inject(GameModeDetailMapStore)
-  protected mapId = this.store.mapId
-  protected bounds = this.store.bounds
-  protected vitals = this.store.vitals
+  protected vitalsMetaResource = apiResource({
+    loader: () => this.db.vitalsMetadataByIdMap(),
+  })
+  private gameModeResource = apiResource({
+    request: () => this.gameModeId(),
+    loader: async ({ request }) => await this.db.gameModesById(request),
+  })
+  private resource = apiResource({
+    request: () => {
+      return {
+        metaMap: this.vitalsMetaResource.value(),
+        gameMode: this.gameModeResource.value(),
+        creatures: this.creatures(),
+      }
+    },
+    loader: async ({ request: { creatures, gameMode, metaMap } }) => {
+      const mapId = gameMode?.MapId?.toLowerCase()
+      return {
+        mapId,
+        bounds: selectWorldBounds(gameMode, this.service),
+        gameMode,
+        vitals: selectVitalsData({
+          mapId,
+          vitals: creatures,
+          vitalsMetaMap: metaMap,
+          mapCoord: this.service.xyToLngLat,
+        }),
+      }
+    },
+  })
+
+  protected mapId = computed(() => this.resource.value()?.mapId)
+  protected bounds = computed(() => this.resource.value()?.bounds)
+  protected gameMode = computed(() => this.resource.value()?.gameMode)
+  protected vitals = computed(() => this.resource.value()?.vitals)
   protected filter = computed(() => {
     const highlight = this.highlight()?.toLowerCase()
     if (!highlight) {
@@ -51,22 +86,108 @@ export class GameModeDetailMapComponent {
     }
     return ['==', ['get', 'id'], highlight] as any
   })
-  public constructor() {
-    effect(() => {
-      const gameModId = this.gameModeId()
-      untracked(() => {
-        this.store.load({ gameModId })
-      })
-    })
-    effect(() => {
-      const creatures = this.creatures()
-      const mapId = this.mapId()
-      untracked(() => {
-        this.store.loadVitals({ vitals: creatures || [], mapId: mapId })
-      })
-    })
-    effect(() => {
-      console.log({ vitals: this.vitals() })
-    })
+}
+
+function selectWorldBounds(game: GameModeData, service: GameMapService): [number, number, number, number] {
+  if (!game?.WorldBounds) {
+    return null
+  }
+
+  if (BOUNDS[game.GameModeId]) {
+    const [x1, y1, x2, y2] = BOUNDS[game.GameModeId]
+    return [service.xToLng(x1), service.yToLat(y1), service.xToLng(x2), service.yToLat(y2)]
+  }
+
+  const [x, y, w, h] = (game.WorldBounds?.split(',') || []).map(Number)
+  return [service.xToLng(x), service.yToLat(y), service.xToLng(x + w), service.yToLat(y + h)]
+}
+
+const BOUNDS = {
+  DungeonAmrine: [600, 550, 1000, 1000],
+  DungeonShatteredObelisk: [300, 270, 1000, 730],
+  DungeonRestlessShores01: [690, 800, 1300, 1400],
+  DungeonEbonscale00: [4500, 4100, 5100, 4600],
+  DungeonEdengrove00: [350, 1000, 900, 1600],
+  DungeonReekwater00: [650, 550, 1000, 1000],
+  DungeonCutlassKeys00: [270, 760, 700, 1200],
+  DungeonGreatCleave01: [500, 200, 920, 670],
+  DungeonShatterMtn00: [360, 450, 1600, 1300],
+  DungeonBrimstoneSands00: [700, 820, 1370, 1500],
+  DungeonFirstLight01: [490, 650, 960, 1200],
+  DungeonGreatCleave00: [830, 440, 1260, 960],
+  RaidCutlassKeys00: [540, 600, 1340, 1340],
+}
+
+export type MapCoord = (coord: number[] | [number, number]) => number[]
+
+export type VitalsFeatureCollection = FeatureCollection<MultiPoint, VitalsFeatureProperties>
+export type VitalsFeature = Feature<MultiPoint, VitalsFeatureProperties>
+export interface VitalsFeatureProperties {
+  id: string
+  level: number
+  type: string
+  categories: string[]
+  color: string
+  size: number
+}
+function selectVitalsData(options: {
+  mapId: string
+  vitals: VitalsBaseData[]
+  vitalsMetaMap: Map<string, ScannedVital>
+  mapCoord: MapCoord
+}): VitalsFeatureCollection {
+  let featureId = 0
+
+  const features: Record<string, Feature<MultiPoint, VitalsFeatureProperties>> = {}
+  for (const item of options.vitals) {
+    const meta = options.vitalsMetaMap.get(item.VitalsID)
+    const lvlSpawns = meta?.spawns
+    if (!lvlSpawns) {
+      continue
+    }
+    const id = item.VitalsID.toLowerCase()
+    const color = stringToColor(item.VitalsID)
+    const type = (item.CreatureType || '').toLowerCase()
+    for (const mapId in lvlSpawns) {
+      if (!eqCaseInsensitive(options.mapId, mapId)) {
+        continue
+      }
+      const spawns = lvlSpawns[mapId]
+      for (const spawn of spawns) {
+        const levels = spawn.l
+        const position = spawn.p
+        const categories = uniq(
+          [...(item.VitalsCategories || []), ...(spawn.c || [])].map((it) => (it || '').toLowerCase()),
+        )
+        for (const level of levels) {
+          const key = [id, level, categories.join()].join()
+          if (!features[key]) {
+            features[key] = {
+              id: featureId++,
+              type: 'Feature',
+              geometry: {
+                type: 'MultiPoint',
+                coordinates: [],
+              },
+              properties: {
+                id,
+                level,
+                color,
+                categories,
+                type,
+                size: 0.65,
+              },
+            }
+          }
+
+          features[key].geometry.coordinates.push(options.mapCoord(position))
+        }
+      }
+    }
+  }
+
+  return {
+    type: 'FeatureCollection',
+    features: Object.values(features),
   }
 }

@@ -5,11 +5,13 @@ export function getIconFrameClass({
   rarity,
   isNamed,
   isArtifact,
+  isResource,
 }: {
   solid?: boolean
   rarity?: ItemRarity
   isNamed?: boolean
   isArtifact?: boolean
+  isResource?: boolean
 }) {
   const result: string[] = []
   if (rarity != null) {
@@ -22,6 +24,10 @@ export function getIconFrameClass({
   }
   if (isArtifact) {
     result.push('artifact')
+  }
+  if (isResource) {
+    result.push('rounded-full')
+    result.push('rounded-overflow-clip')
   }
   return result
 }

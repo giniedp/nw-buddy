@@ -49,16 +49,8 @@
                 "glob": "**/*",
                 "ignore": [
                   "*.gz",
-                  "*.zip",
-                  "**/worldtiles/**",
-                  "**/items_hires/**"
+                  "*.zip"
                 ],
-                "input": "dist/nw-data/.current",
-                "output": "/nw-data/",
-                "followSymlinks": true
-              },
-              {
-                "glob": "**/items_hires/mount_*",
                 "input": "dist/nw-data/.current",
                 "output": "/nw-data/",
                 "followSymlinks": true
@@ -93,6 +85,38 @@
                 }
               ]
             },
+            "dev-cdn": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "ssr": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.dev-cdn.ts"
+                },
+                {
+                  "replace": "apps/web/environments/env.ts",
+                  "with": "apps/web/environments/env.generated.ts"
+                }
+              ]
+            },
+            "dev-ssr": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "ssr": true,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.dev.ts"
+                },
+                {
+                  "replace": "apps/web/environments/env.ts",
+                  "with": "apps/web/environments/env.generated.ts"
+                }
+              ]
+            },
             "web": {
               "outputPath": "dist/web",
               "optimization": true,
@@ -109,20 +133,35 @@
                 }
               ]
             },
-            "capacitor": {
-              "outputPath": "dist/web-capacitor",
+            "web-cdn": {
+              "outputPath": "dist/web",
               "optimization": true,
               "outputHashing": "all",
-              "baseHref": "./",
-              "sourceMap": false,
-              "namedChunks": false,
-              "ssr": false,
-              "aot": true,
-              "extractLicenses": true,
+              "baseHref": "/",
+              "assets": [
+                "apps/web/_routes.json",
+                "apps/web/favicon.ico",
+                "apps/web/robots.txt",
+                "apps/web/sitemap.txt",
+                "apps/web/embed.js",
+                "apps/web/assets",
+                "apps/web/version",
+                {
+                  "glob": "**/*",
+                  "ignore": [
+                    "*.gz",
+                    "*.zip",
+                    "**/lyshineui/**"
+                  ],
+                  "input": "dist/nw-data/.current",
+                  "output": "/nw-data/",
+                  "followSymlinks": true
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
-                  "with": "apps/web/environments/environment.capacitor.ts"
+                  "with": "apps/web/environments/environment.web-cdn.ts"
                 },
                 {
                   "replace": "apps/web/environments/env.ts",
@@ -158,6 +197,12 @@
           "configurations": {
             "dev": {
               "buildTarget": "nw-buddy:build:dev"
+            },
+            "dev-cdn": {
+              "buildTarget": "nw-buddy:build:dev-cdn"
+            },
+            "dev-ssr": {
+              "buildTarget": "nw-buddy:build:dev-ssr"
             },
             "web": {
               "buildTarget": "nw-buddy:build:web"
@@ -201,7 +246,7 @@
                   "*.gz",
                   "*.zip"
                 ],
-                "input": "dist/nw-data",
+                "input": "dist/nw-data/.current",
                 "output": "/nw-data/"
               }
             ]

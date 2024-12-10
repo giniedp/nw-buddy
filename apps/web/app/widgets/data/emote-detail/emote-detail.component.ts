@@ -1,13 +1,10 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
-import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
-import { StatusEffectDetailModule } from '../status-effect-detail'
 import { EmotesDetailStore } from './emote-detail.store'
 
 @Component({
@@ -27,12 +24,12 @@ export class EmoteDetailComponent {
 
   @Input()
   public set emoteId(value: string) {
-    this.store.patchState({ emoteId: value })
+    this.store.load({ emoteId: value })
   }
 
-  public title = toSignal(this.store.name$)
-  public description = toSignal(this.store.description$)
-  public icon = toSignal(this.store.icon$)
-  public group = toSignal(this.store.group$)
-  public properties = toSignal(this.store.properties$)
+  public title = this.store.name
+  public description = this.store.description
+  public icon = this.store.icon
+  public group = this.store.group
+  public properties = this.store.properties
 }

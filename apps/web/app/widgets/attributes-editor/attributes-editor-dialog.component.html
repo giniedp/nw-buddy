@@ -19,7 +19,7 @@
     <ion-segment [value]="tab" class="mt-4">
       <ion-segment-button [value]="weapon1ItemId" (click)="tab = weapon1ItemId">
         <span>
-          {{ weapon1.name$ | async | nwText }}
+          {{ weapon1.name() | nwText }}
         </span>
         <span>
           (
@@ -36,7 +36,7 @@
       </ion-segment-button>
       <ion-segment-button [value]="weapon2ItemId" (click)="tab = weapon2ItemId">
         <span>
-          {{ weapon2.name$ | async | nwText }}
+          {{ weapon2.name() | nwText }}
         </span>
         <span>
           (

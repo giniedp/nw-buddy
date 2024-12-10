@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core'
-import { TradeSkillPostCapData, TradeskillRankData } from '@nw-data/generated'
+import { DATASHEETS, TradeSkillPostCapData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, defer, isObservable, map, of, shareReplay, switchMap } from 'rxjs'
-import { NwDataService } from '~/data'
+import { injectNwData } from '~/data'
 import { tableIndexBy } from '~/data/nw-data/dsl'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { NW_TRADESKILLS_INFOS_MAP } from './nw-tradeskill'
@@ -24,10 +24,12 @@ export interface NwTradeskillLevel {
 
 @Injectable({ providedIn: 'root' })
 export class NwTradeskillService {
+  private db = injectNwData()
+
   public skills = defer(() => {
     return combineLatest({
-      postcap: this.db.tradeskillPostcap,
-      categories: this.db.categoriesProgression,
+      postcap: this.db.tradeskillPostcapAll(),
+      categories: this.db.categoricalProgressionAll(),
     })
   })
     .pipe(
@@ -40,6 +42,7 @@ export class NwTradeskillService {
               if (!info) {
                 return null
               }
+
               return {
                 ID: info.ID,
                 Category: info.Category,
@@ -66,10 +69,6 @@ export class NwTradeskillService {
     .pipe(map((it) => uniq(it.map((i) => i.Category))))
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDataService) {
-    //
-  }
-
   public skillsByCategory(category: Observable<string> | string) {
     return combineLatest({
       cat: isObservable(category) ? category : of(category),
@@ -92,10 +91,12 @@ export class NwTradeskillService {
     const name$ = isObservable(name) ? name : of(name)
     return name$.pipe(
       switchMap((skillName) => {
-        return this.db.useTable<TradeskillRankData>((it) => {
-          const key = Object.keys(it.TradeskillRankData).find((key) => eqCaseInsensitive(key, skillName))
-          return it.TradeskillRankData[key]
-        })
+        for (const key in DATASHEETS.TradeskillRankData) {
+          if (eqCaseInsensitive(key, skillName)) {
+            return this.db.loadDatasheet(DATASHEETS.TradeskillRankData[key as 'Arcana'])
+          }
+        }
+        return of(null)
       }),
     )
   }
