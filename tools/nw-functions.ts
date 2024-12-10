@@ -14,7 +14,6 @@ program
       }
       console.log('Baking', file, MUTATIONS_API_KEY)
       const content = data.replaceAll('env.MUTATIONS_API_KEY', JSON.stringify(MUTATIONS_API_KEY))
-      console.log(content)
       fs.writeFileSync(file, content)
     }
   })

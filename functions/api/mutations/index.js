@@ -1,7 +1,8 @@
 export async function onRequest({ env }) {
+  const apiKey = env.MUTATIONS_API_KEY
   return await fetch(`https://mutations.5con.club/api/v2/mutations/current`, {
     headers: {
-      'x-api-key': env.MUTATIONS_API_KEY
+      'x-api-key': apiKey
     }
   })
     .then((it) => it.json())
