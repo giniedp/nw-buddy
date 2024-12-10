@@ -27,14 +27,21 @@ export function getPerkTypeWeight(type: string) {
   return PERK_SORT_WEIGHT[type] ?? 3
 }
 
-export function isPerkApplicableToItem(perk: Pick<PerkData, 'ItemClass'>, item: Pick<MasterItemDefinitions, 'ItemClass'>) {
+export function isPerkApplicableToItem(
+  perk: Pick<PerkData, 'ItemClass'>,
+  item: Pick<MasterItemDefinitions, 'ItemClass'>,
+) {
   if (!perk || !item || !perk.ItemClass || !item.ItemClass) {
     return false
   }
   return doListsIntersect(perk.ItemClass, item.ItemClass, eqIgnoreCase)
 }
 
-export function isPerkExcludedFromItem(perk: Pick<PerkData, 'ExcludeItemClass' | 'PerkType'>, item: Pick<MasterItemDefinitions, 'ItemClass'>, checkGem: boolean) {
+export function isPerkExcludedFromItem(
+  perk: Pick<PerkData, 'ExcludeItemClass' | 'PerkType'>,
+  item: Pick<MasterItemDefinitions, 'ItemClass'>,
+  checkGem: boolean,
+) {
   if (!perk || !item) {
     return false
   }
@@ -69,6 +76,21 @@ export function getPerkItemClassGSBonus(perk: Pick<PerkData, 'ItemClassGSBonus'>
     itemClass: match[1],
     value: Number(match[2]),
   }
+}
+
+export function getExclusiveLabelIntersection(perk1: PerkData, perk2: PerkData) {
+  if (!perk1?.ExclusiveLabels?.length || !perk2?.ExclusiveLabels?.length) {
+    return []
+  }
+  const result: string[] = []
+  for (const l1 of perk1.ExclusiveLabels) {
+    for (const l2 of perk2.ExclusiveLabels) {
+      if (eqIgnoreCase(l1, l2)) {
+        result.push(l1)
+      }
+    }
+  }
+  return result
 }
 
 export interface PerkExplanation {
@@ -122,7 +144,11 @@ export function explainPerk(options: {
   return result
 }
 
-export function explainPerkMods(options: { perk: PerkData; affix: AffixStatData; gearScore: number }): PerkExplanation[] {
+export function explainPerkMods(options: {
+  perk: PerkData
+  affix: AffixStatData
+  gearScore: number
+}): PerkExplanation[] {
   const { perk, affix, gearScore } = options
   const result: PerkExplanation[] = []
   if (!isPerkInherent(perk) || !affix) {
@@ -171,15 +197,24 @@ export function explainPerkMods(options: { perk: PerkData; affix: AffixStatData;
   return result
 }
 
-export function getPerksInherentMODs(perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>, affix: AffixStatData, gearScore: number) {
+export function getPerksInherentMODs(
+  perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
+  affix: AffixStatData,
+  gearScore: number,
+) {
   return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
 }
 
-export function getPerkScalingPerGearScore(perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>) {
+export function getPerkScalingPerGearScore(
+  perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
+) {
   return perk?.ScalingPerGearScore || perk?.ScalingPerGearScoreAttributes
 }
 
-export function getPerkMultiplier(perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>, gearScore: number) {
+export function getPerkMultiplier(
+  perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
+  gearScore: number,
+) {
   const scalingPerGearScore = getPerkScalingPerGearScore(perk)
   if (!scalingPerGearScore) {
     return 1

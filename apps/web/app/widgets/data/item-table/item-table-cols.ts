@@ -2,12 +2,14 @@ import {
   ItemRarity,
   NW_FALLBACK_ICON,
   getAffixMODs,
+  getExclusiveLabelIntersection,
   getItemAttribution,
   getItemExpansion,
   getItemIconPath,
   getItemId,
   getItemMaxGearScore,
   getItemMinGearScore,
+  getItemPerkBucketIds,
   getItemRarity,
   getItemRarityLabel,
   getItemRarityWeight,
@@ -19,8 +21,8 @@ import {
   getTradingCategoryLabel,
   isItemArtifact,
   isItemNamed,
-  isItemResource,
   isMasterItem,
+  isPerkApplicableToItem,
 } from '@nw-data/common'
 import {
   AffixStatData,
@@ -30,6 +32,7 @@ import {
   MasterItemDefinitions,
   PerkData,
 } from '@nw-data/generated'
+import { uniq } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -232,22 +235,36 @@ export function itemColPerks(
       if (!!perks && !buckets) {
         return null
       }
-      return util.el('div.flex.flex-row.items-center.h-full', {}, [
-        ...perks.map((perk) =>
-          util.elA(
+      getItemPerkBucketIds
+      return util.el('div.flex.flex-row.items-center.h-full.gap-[1px]', {}, [
+        ...perks.map((perk) => {
+          const isApplicableInvalid = !isPerkApplicableToItem(perk, data)
+          const isExclusiveInvalid = perks.some((it) => it !== perk && !!getExclusiveLabelIntersection(it, perk).length)
+          return util.elA(
             {
-              class: ['block', 'w-7', ' h-7'],
+              class: [
+                'block',
+                'w-7',
+                'h-7',
+                'indicator',
+                'rounded',
+                isApplicableInvalid ? 'bg-warning' : null,
+                isExclusiveInvalid ? 'bg-error' : null,
+                'bg-opacity-80',
+              ],
               attrs: {
                 target: '_blank',
                 href: util.tipLink('perk', perk?.PerkID),
               },
             },
-            util.elImg({
-              class: ['w-7', 'h-7', 'nw-icon'],
-              src: perk?.IconPath,
-            }),
-          ),
-        ),
+            [
+              util.elImg({
+                class: ['w-7', 'h-7', 'nw-icon'],
+                src: perk?.IconPath,
+              }),
+            ].filter((it) => !!it),
+          )
+        }),
         ...buckets.map(() => {
           return util.elImg({
             class: ['w-7', 'h-7', 'nw-icon'],
@@ -276,6 +293,67 @@ export function itemColPerks(
   })
 }
 
+export function itemColPerkValidity(util: ItemTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'perksValidity',
+    width: 175,
+    sortable: false,
+    hide: true,
+    headerClass: 'bg-secondary bg-opacity-15',
+    headerValueGetter: () => 'Perks Validity',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => {
+      const result: string[] = []
+      for (const perk of data.$perks || []) {
+        if (!isPerkApplicableToItem(perk, data)) {
+          result.push('item')
+        }
+        if (data.$perks.some((it) => it !== perk && !!getExclusiveLabelIntersection(it, perk).length)) {
+          result.push('exclusive')
+        }
+      }
+      if (!result.length && data.$perks?.length) {
+        result.push('valid')
+      }
+      return uniq(result)
+    },
+    cellRenderer: ({ value }) => {
+      return util.el(
+        'div.flex.flex-row.flex-wrap.gap-1.items-center',
+        {},
+        value?.map((tag: string) => {
+          if (tag === 'valid') {
+            return util.el('span.badge.badge-sm.badge-success', { text: tag })
+          }
+          if (tag === 'item') {
+            return util.el('span.badge.badge-sm.badge-warning', { text: tag })
+          }
+          return util.el('span.badge.badge-sm.badge-error', { text: tag })
+        }),
+      )
+    },
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+      getOptions: (it) => {
+        return [
+          {
+            id: 'valid',
+            label: 'Valid',
+          },
+          {
+            id: 'item',
+            label: 'Invalid item class',
+          },
+          {
+            id: 'exclusive',
+            label: 'Exclisive tags intersect',
+          },
+        ]
+      },
+    }),
+  })
+}
 export function itemColAttributeMods(util: ItemTableUtils) {
   return util.colDef<string[]>({
     colId: 'attributeMods',
