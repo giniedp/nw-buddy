@@ -1988,6 +1988,7 @@ export interface GatherableData {
   IsLootContainer: boolean;
   ItemRestrictionId: string;
   ItemRestrictionQuantity: number | string;
+  LandmarkIconPath: string;
   MaxRespawnRate: number;
   MinRespawnRate: number;
   MountGatherers: string;
@@ -2001,6 +2002,7 @@ export interface GatherableData {
   ResetGatherTimeOnEndInteraction: boolean;
   Restriction: string;
   SongRewardId: string;
+  TooltipImage: string;
   Tradeskill: string;
   WaitForImpact: boolean;
 }
@@ -7460,6 +7462,7 @@ export type CraftingCategory =
   | "SummerMedleyfaire"
   | "TerritoryContribution"
   | "TimelessShards"
+  | "Tokens"
   | "Tools"
   | "TrialNamedReplicas"
   | "Trinkets"
@@ -9458,7 +9461,9 @@ export type VitalsCategory =
   | "Avalancher_Shivers"
   | "Avalancher_Shivers_25"
   | "Avalancher_Shivers_60"
+  | "Avalancher_Shivers_YetiEncounter"
   | "Avalancher_Yeti"
+  | "Avalancher_YetiEncounter"
   | "Avalancher_Yeti_25"
   | "Avalancher_Yeti_60"
   | "Barbary_Lion"
@@ -13280,16 +13285,19 @@ export type VitalsCategory =
   | "IceDryad_Fiend_Shivers_Frostgrip"
   | "IceDryad_Fiend_Shivers_Frostgrip_25"
   | "IceDryad_Fiend_Shivers_Frostgrip_60"
+  | "IceDryad_Fiend_Shivers_YetiEncounter"
   | "IceDryad_Melee_Frostfang"
   | "IceDryad_Melee_Frostfang_25"
   | "IceDryad_Melee_Frostfang_61"
   | "IceDryad_Melee_Frostfang_62"
   | "IceDryad_Melee_Frostfang_65_ELITE"
+  | "IceDryad_Melee_Frostfang_YetiEncounter"
   | "IceDryad_Range_Frostgrip"
   | "IceDryad_Range_Frostgrip_25"
   | "IceDryad_Range_Frostgrip_61"
   | "IceDryad_Range_Frostgrip_62"
   | "IceDryad_Range_Frostgrip_65_ELITE"
+  | "IceDryad_Range_Frostgrip_YetiEncounter"
   | "IceGolem"
   | "IceWolf"
   | "Imhotep"
@@ -15549,6 +15557,7 @@ export type VitalsCategory =
   | "Wraith"
   | "Yeti"
   | "Yeti_03GC00_Elite"
+  | "Yeti_2022"
   | "Yeti_Named_04NW08"
   | "Yeti_Named_06SW02"
   | "Yeti_Named_07SM08"

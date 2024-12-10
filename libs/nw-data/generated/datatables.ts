@@ -1580,6 +1580,15 @@ export const DATASHEETS = {
     WolfWhiteDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_wolf_white.json",
     },
+    Yeti_2022_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/brute_datatables/javelindata_damagetable_yeti_2022.json",
+    },
+    YetiFrostfangDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostfang_minion.json",
+    },
+    YetiFrostgripDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostgrip_minion.json",
+    },
     YonasDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/questnpc_datatables/javelindata_damagetable_yonas_msq2_trial.json",
     },
@@ -2100,6 +2109,9 @@ export const DATASHEETS = {
       DataSheetUri<MasterItemDefinitions>
     >{
       uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2024-season6.json",
+    },
+    MasterItemDefinitions_MTX_Dec2024: <DataSheetUri<MasterItemDefinitions>>{
+      uri: "datatables/mtx/javelindata_itemdefinitions_mtx_2024-12.json",
     },
     MasterItemDefinitions_Named: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_named.json",
