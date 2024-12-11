@@ -121,7 +121,7 @@ export class TradeskillChartComponent {
 
   private skillLevel$ = defer(() => this.skillInfo$).pipe(
     switchMap((skills) => {
-      return combineLatestOrEmpty(skills.map((skill) => this.char.observeProgressionLevel(skill.ID)))
+      return combineLatestOrEmpty(skills.map((skill) => this.char.observeTradeskillLevel(skill.ID)))
     }),
   )
 

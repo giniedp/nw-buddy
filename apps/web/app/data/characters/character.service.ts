@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core'
-import { NW_MAX_TRADESKILL_LEVEL } from '@nw-data/common'
-import { Observable, combineLatest, map, switchMap } from 'rxjs'
+import { Observable, combineLatest, switchMap } from 'rxjs'
 import { injectNwData } from '../nw-data'
 import { CharacterStore } from './character.store'
 
@@ -10,10 +9,7 @@ export class CharacterService {
   private char = inject(CharacterStore)
 
   public tradeskillLevel(skill$: Observable<string>) {
-    return skill$.pipe(
-      switchMap((skill) => this.char.observeProgressionLevel(skill)),
-      map((level) => level ?? NW_MAX_TRADESKILL_LEVEL),
-    )
+    return skill$.pipe(switchMap((skill) => this.char.observeTradeskillLevel(skill)))
   }
 
   public tradeskillLevelData(skill$: Observable<string>) {

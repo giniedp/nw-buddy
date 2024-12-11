@@ -77,7 +77,10 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   protected weaponType$ = this.weapon$.pipe(switchMap((it) => this.types.forWeaponTag(it)))
   protected weaponLevel$ = this.weaponType$.pipe(
     switchMap((it) => {
-      return this.char.observeProgressionLevel(it.ProgressionId)
+      if (!it) {
+        return of(0)
+      }
+      return this.char.observeWeaponLevel(it.ProgressionId)
     }),
   )
   protected weaponPoints$ = this.weaponLevel$.pipe(map((it) => Math.max(0, it - 1)))

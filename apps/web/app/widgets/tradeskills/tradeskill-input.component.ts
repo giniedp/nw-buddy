@@ -35,7 +35,7 @@ export class TradeskillInputComponent {
   )
     .pipe(map(({ skills, id }) => skills.get(id)))
     .pipe(shareReplayRefCount(1))
-  protected level$ = this.tradeskill$.pipe(switchMap((it) => this.char.observeProgressionLevel(it.ID)))
+  protected level$ = this.tradeskill$.pipe(switchMap((it) => this.char.observeTradeskillLevel(it.ID)))
 
   protected updateLevel(id: string, level: number) {
     this.char.setTradeskillLevel(id, level)

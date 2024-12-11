@@ -114,6 +114,9 @@ export const CharacterStore = signalStore(
     const observeTradeskillLevel = (skill: string) => {
       return observeProgressionLevel(skill).pipe(map((level) => level ?? NW_MAX_TRADESKILL_LEVEL))
     }
+    const observeWeaponLevel = (weapon: string) => {
+      return observeProgressionLevel(weapon).pipe(map((level) => level ?? NW_MAX_WEAPON_LEVEL))
+    }
     return {
       getEffectStacks,
       setEffectStacks,
@@ -132,7 +135,8 @@ export const CharacterStore = signalStore(
         setProgresssionLevel(weapon, level)
       },
       observeProgressionLevel,
-      observeTradeskillLevel
+      observeTradeskillLevel,
+      observeWeaponLevel
     }
   }),
 )
