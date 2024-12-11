@@ -89,13 +89,11 @@ export class AttributesEditorComponent {
 
 
   public assignedChanged = outputFromObservable(
-    toObservable(this.store.assigned)
-      .pipe(skip(1))
-      .pipe(distinctUntilChanged((a, b) => isEqual(a, b))),
+    toObservable(this.store.assigned).pipe(distinctUntilChanged((a, b) => isEqual(a, b))),
   )
 
   public magnifyPlacementChanged = outputFromObservable(
-    toObservable(this.store.magnifyPlacement).pipe(skip(1)).pipe(distinctUntilChanged()),
+    toObservable(this.store.magnifyPlacement).pipe(distinctUntilChanged()),
   )
 
   protected magnifyOptions: Array<{ label: string; value: AttributeRef }> = [
@@ -117,33 +115,6 @@ export class AttributesEditorComponent {
   public readonly totalInt$ = toObservable(this.store.totalInt).pipe(debounceTime(300))
   public readonly totalFoc$ = toObservable(this.store.totalFoc).pipe(debounceTime(300))
   public readonly totalCon$ = toObservable(this.store.totalCon).pipe(debounceTime(300))
-
-  // public ngOnInit() {
-  //   const src = combineLatest({
-  //     level: this.level$,
-  //     points: this.freeMode$.pipe(map((it) => (it ? 380 : 0))), // TODO: calculate points
-  //     base: this.freeMode$.pipe(
-  //       switchMap((it) => {
-  //         if (!it) {
-  //           return this.base$
-  //         }
-  //         const base: Record<AttributeRef, number> = {
-  //           con: 5,
-  //           dex: 5,
-  //           foc: 5,
-  //           int: 5,
-  //           str: 5,
-  //         }
-  //         return of(base)
-  //       }),
-  //     ),
-  //     assigned: this.assigned$,
-  //     buffs: this.buffs$,
-  //     magnify: this.magnify$,
-  //     magnifyPlacement: this.magnifyPlacement$,
-  //   })
-  //   this.store.loadLazy(src)
-  // }
 
   protected attributeToggle(state: AttributeState, points: number) {
     const total = state.total - state.magnify
