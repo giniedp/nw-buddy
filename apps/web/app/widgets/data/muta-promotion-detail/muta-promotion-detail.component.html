@@ -4,8 +4,8 @@
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
   @if (store.effects()?.length) {
-    <div class="flex flex-row gap-1">
-      @for (item of store.effects(); track $index) {
+    @for (item of store.effects(); track $index) {
+      <div class="flex flex-row gap-1">
         <picture class="flex-none">
           <img [nwImage]="item.icon" class="w-6 h-6" />
         </picture>
@@ -13,8 +13,8 @@
           <b>{{ item.label | nwText }}: </b>
           {{ item.text | nwText }}
         </div>
-      }
-    </div>
+      </div>
+    }
   }
   <ng-content />
 </div>

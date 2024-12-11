@@ -27,9 +27,7 @@ export class MutaCurseDetailComponent {
   #loader = effect(() => {
     const curseId = this.curseId()
     const wildcard = this.wildcard()
-    untracked(() => {
-      this.store.load({ curseId, wildcard })
-    })
+    untracked(() => this.store.load({ curseId, wildcard }))
   })
 
   protected description(item: StatusEffectData) {

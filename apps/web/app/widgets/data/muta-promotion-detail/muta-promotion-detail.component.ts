@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } from '@angular/core'
 import { StatusEffectData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -26,7 +26,7 @@ export class MutaPromotionDetailComponent {
   #loader = effect(() => {
     const promotionId = this.promotionId()
     const elementId = this.elementId()
-    this.store.load({ promotionId, elementId })
+    untracked(() => this.store.load({ promotionId, elementId }))
   })
 
   protected description(item: StatusEffectData) {
