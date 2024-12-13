@@ -53,6 +53,10 @@ export class DiffEditorComponent implements OnInit, OnDestroy {
         readOnly: this.readonly(),
         theme: 'vs-dark',
         automaticLayout: true,
+        renderSideBySide: false,
+        hideUnchangedRegions: {
+          enabled: true
+        },
       }),
     )
   }
