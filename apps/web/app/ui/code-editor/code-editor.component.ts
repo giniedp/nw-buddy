@@ -1,20 +1,17 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  effect,
   ElementRef,
-  HostBinding,
-  Input,
+  inject,
+  input,
+  model,
   OnDestroy,
   OnInit,
+  signal,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-//import type * as monaco from 'monaco-editor'
-
-async function loadLibrary() {
-  return null
-  // return import('monaco-editor')
-}
+import { loadEditor, monaco } from './monaco-editor'
 
 @Component({
   standalone: true,
@@ -33,49 +30,43 @@ async function loadLibrary() {
   },
 })
 export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDestroy {
-  @Input()
-  public language: string = 'typescript'
-
-  @Input()
-  public readonly: boolean = false
-
-  @Input()
-  @HostBinding('style.min-height.px')
-  public minHeight: number = null
+  private elRef = inject(ElementRef)
+  public language = input<string>(null)
+  public theme = input<string>('vs-dark')
 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
   protected touched = false
-  protected value: string
+  protected value = signal<string>(null)
+  protected readonly = signal<boolean>(false)
 
-  protected editor: any// monaco.editor.IStandaloneCodeEditor
+  protected editor = signal<monaco.editor.IStandaloneCodeEditor>(null)
 
-  public constructor(private elRef: ElementRef<HTMLElement>, private cdRef: ChangeDetectorRef) {
-    //
+  public constructor() {
+    effect(() => {
+      this.updateEditor()
+    })
   }
 
   public async ngOnInit() {
-    const lib = await loadLibrary()
-    this.editor = lib.editor.create(this.elRef.nativeElement, {
-      value: this.value,
-      language: this.language,
-      readOnly: this.readonly,
-      theme: 'vs-dark',
+    const monaco = await loadEditor()
+    const editor = monaco.editor.create(this.elRef.nativeElement, {
+      value: this.value(),
+      language: this.language(),
+      readOnly: this.readonly(),
+      theme: this.theme(),
+      automaticLayout: true,
     })
-    this.editor.onDidBlurEditorWidget(() => {
-      this.commitValue()
-    })
+    this.editor.set(editor)
+    editor.onDidBlurEditorWidget(() => this.commitValue())
   }
 
   public ngOnDestroy(): void {
-    this.editor.dispose()
+    this.editor()?.dispose()
   }
 
   public writeValue(value: string): void {
-    this.value = value
-    if (this.editor) {
-      this.editor.setValue(value)
-    }
+    this.value.set(value)
   }
 
   public registerOnChange(fn: any): void {
@@ -85,16 +76,24 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
     this.onTouched = fn
   }
   public setDisabledState(isDisabled: boolean): void {
-    this.readonly = isDisabled
-    if (this.editor) {
-      this.editor.updateOptions({
-        readOnly: isDisabled,
-      })
-    }
+    this.readonly.set(isDisabled)
   }
 
   protected commitValue() {
-    this.value = this.editor.getValue({ preserveBOM: false, lineEnding: '\n' })
-    this.onChange(this.value)
+    const value = this.editor().getValue({ preserveBOM: false, lineEnding: '\n' })
+    this.value.set(value)
+    this.onChange(value)
+  }
+
+  private updateEditor() {
+    const editor = this.editor()
+    if (!editor) {
+      return
+    }
+    editor.setValue(this.value())
+    editor.updateOptions({
+      readOnly: this.readonly(),
+      theme: this.theme(),
+    })
   }
 }
