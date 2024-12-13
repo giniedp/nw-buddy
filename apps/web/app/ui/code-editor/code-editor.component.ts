@@ -11,8 +11,8 @@ import {
   signal,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { loadEditor, monaco } from './monaco-editor'
-
+import { monaco } from './monaco-editor'
+import { MonacoService } from './monaco.service'
 @Component({
   standalone: true,
   selector: 'nwb-code-editor',
@@ -30,6 +30,7 @@ import { loadEditor, monaco } from './monaco-editor'
   },
 })
 export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDestroy {
+  private service = inject(MonacoService)
   private elRef = inject(ElementRef)
   public language = input<string>(null)
   public theme = input<string>('vs-dark')
@@ -49,7 +50,7 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
   }
 
   public async ngOnInit() {
-    const monaco = await loadEditor()
+    const monaco = await this.service.loadMonaco()
     const editor = monaco.editor.create(this.elRef.nativeElement, {
       value: this.value(),
       language: this.language(),

@@ -4,13 +4,15 @@ import {
   effect,
   ElementRef,
   HostBinding,
+  inject,
   input,
   Input,
   OnDestroy,
   OnInit,
   signal,
 } from '@angular/core'
-import { loadEditor, monaco } from './monaco-editor'
+import { monaco } from './monaco-editor'
+import { MonacoService } from './monaco.service'
 
 @Component({
   standalone: true,
@@ -22,6 +24,7 @@ import { loadEditor, monaco } from './monaco-editor'
   },
 })
 export class DiffEditorComponent implements OnInit, OnDestroy {
+  private service = inject(MonacoService)
   public language = input<string>(null)
   public readonly = input<boolean>(false)
   public leftValue = input<string>(null)
@@ -40,7 +43,7 @@ export class DiffEditorComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit() {
-    const monaco = await loadEditor()
+    const monaco = await this.service.loadMonaco()
     this.editor.set(
       monaco.editor.createDiffEditor(this.elRef.nativeElement, {
         readOnly: this.readonly(),
@@ -63,7 +66,7 @@ export class DiffEditorComponent implements OnInit, OnDestroy {
       return
     }
 
-    const monaco = await loadEditor()
+    const monaco = await this.service.loadMonaco()
     editor.setModel({
       original: monaco.editor.createModel(left, language),
       modified: monaco.editor.createModel(right, language),

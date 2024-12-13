@@ -1,7 +1,8 @@
 export type * as monaco from 'monaco-editor'
 
+const BASE_URL = '/assets/monaco-editor/esm/vs'
 function getWorkerUrl(moduleId: string, label: string) {
-  const base = '/assets/monaco-editor/esm/vs'
+  const base = BASE_URL
   if (label === 'json') {
     return `${base}/language/json/json.worker.js`
   }
@@ -28,6 +29,17 @@ self.MonacoEnvironment = {
   getWorker,
 }
 
-export async function loadEditor() {
-  return import('monaco-editor')
-}
+// export async function loadEditor() {
+//   return new Promise<any>((resolve) => {
+//     const loaderScript: HTMLScriptElement = document.createElement('script')
+//     loaderScript.type = 'text/javascript'
+//     loaderScript.src = `/assets/monaco-editor/min/vs/loader.js`
+//     loaderScript.addEventListener('load', (res) => {
+//       console.log('monaco-editor loaded', res)
+//       resolve(res)
+//     })
+//     document.head.appendChild(loaderScript)
+//   })
+//   // /esm/vs/editor/editor.main.js
+//   //return import('monaco-editor')
+// }
