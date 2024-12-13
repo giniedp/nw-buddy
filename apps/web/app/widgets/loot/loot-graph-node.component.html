@@ -208,12 +208,9 @@
             }
 
             <span class="flex-1"></span>
-            <span [tooltip]="tplProps" class="badge badge-sm badge-info cursor-help mr-1">
-              <nwb-icon [icon]="iconCode" class="w-4 h-4 self-end" />
-              <ng-template #tplProps>
-                <nwb-property-grid [item]="getProps(table)" class="p-2 gap-x-2 font-mono text-sm" />
-              </ng-template>
-            </span>
+            @if (store.tableProps(); as tableProps) {
+              <nwb-diff-button [record]="tableProps" [idKey]="'LootTableID'" class="mr-1 btn-info" />
+            }
           </div>
         }
         <ng-container *ngTemplateOutlet="tplChildren" />

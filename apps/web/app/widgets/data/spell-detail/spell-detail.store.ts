@@ -33,6 +33,6 @@ export const SpellDetailStore = signalStore(
 )
 
 function selectProperties(item: SpellData) {
-  const reject = ['$source', 'SpellPrefabPath']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key as any))
+  const reject: Array<keyof SpellData> = ['SpellPrefabPath']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

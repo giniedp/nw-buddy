@@ -61,6 +61,7 @@ export const LootGraphNodeStore = signalStore(
       chanceCumulative: computed(() => node()?.chanceCumulative),
       luckNeeded: computed(() => node()?.luckNeeded),
       table: computed(() => selectTable(node())),
+      tableProps: computed(() => selectTableProps(node())),
       itemId: computed(() => selectItemId(node())),
       itemQuantity: computed(() => selectBucketItemQuantity(node())),
       rollThreshold: computed(() => selectRollThreshold(node())),
@@ -116,6 +117,18 @@ function selectTable(node: LootNode) {
     return node.data
   }
   return null
+}
+
+function selectTableProps(node: LootNode) {
+  let result = selectTable(node)
+  if (!result) {
+    return null
+  }
+  result = {
+    ...result,
+  }
+  delete result.Items
+  return result
 }
 
 function selectItemId(node: LootNode) {

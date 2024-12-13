@@ -25,7 +25,6 @@ import { DataImportDialogComponent } from './data-import-dialog.component'
   },
 })
 export class PreferencesComponent implements OnInit {
-
   protected get collapseMenu() {
     return this.app.collapseMenuMode.get() == 'always'
   }
@@ -45,6 +44,13 @@ export class PreferencesComponent implements OnInit {
   }
   protected set ipfsGateway(value: string) {
     this.app.ipfsGateway.set(value as any)
+  }
+
+  protected get gitAccessToken() {
+    return this.app.gitAccessToken.get()
+  }
+  protected set gitAccessToken(value: string) {
+    this.app.gitAccessToken.set(value as any)
   }
 
   protected get projectName() {

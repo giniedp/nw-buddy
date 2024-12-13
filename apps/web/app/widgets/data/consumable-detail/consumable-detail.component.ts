@@ -2,6 +2,7 @@ import { Component, effect, inject, input, untracked } from '@angular/core'
 import { ConsumableItemDefinitions } from '@nw-data/generated'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, tagsCell, valueCell } from '~/ui/property-grid/cells'
+import { diffButtonCell } from '~/widgets/diff-tool'
 import { ConsumableDetailStore } from './consumable-detail.store'
 
 @Component({
@@ -35,6 +36,10 @@ export class ConsumableDetailComponent {
 
   public descriptor = gridDescriptor<ConsumableItemDefinitions>(
     {
+      ConsumableID: (value) => [
+        valueCell({ value }),
+        diffButtonCell({ record: this.store.consumable(), idKey: 'ConsumableID' }),
+      ],
       DisplayStatusEffect: (value) => {
         return linkCell({
           value,

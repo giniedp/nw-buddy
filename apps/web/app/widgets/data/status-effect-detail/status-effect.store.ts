@@ -17,7 +17,7 @@ export interface StatusEffectDetailState {
   foreignAffixStats: string[]
   foreignPerks: string[]
   foreignItems: string[]
-  foreignDamageTables: Array<DamageData & { $source: string}>
+  foreignDamageTables: Array<DamageData & { $source: string }>
   foreignSpells: SpellData[]
 }
 export const StatusEffectDetailStore = signalStore(
@@ -85,13 +85,12 @@ export const StatusEffectDetailStore = signalStore(
 )
 
 function selectProperties(item: StatusEffectData) {
-  const reject = ['$source', 'PlaceholderIcon']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  const reject = ['PlaceholderIcon']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }
 
 function selectAffixProperties(item: AffixStatData) {
-  const reject = ['$source']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || key.startsWith('$'))
 }
 
 function selectStatusEffectReferences(item: StatusEffectData) {

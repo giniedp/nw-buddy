@@ -7,6 +7,7 @@ import { Observable, combineLatest, from, map, of, switchMap } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { combineLatestOrEmpty, rejectKeys, selectSignal, selectStream } from '~/utils'
+import { diffResourceFor } from '~/widgets/diff-tool'
 
 export interface PerkDetailStoreState {
   perkId: string
@@ -49,6 +50,12 @@ export const PerkDetailStore = signalStore(
 
       scalesWithGearScore: computed(() => !!getPerkScalingPerGearScore(perk())),
       itemClassGsBonus: computed(() => getPerkItemClassGSBonus(perk())),
+    }
+  }),
+  withComputed(({ perk, perkId }) => {
+    return {
+      diffResource: computed(() => diffResourceFor(perk(), ['PerkID'])),
+      recordCode: computed(() => JSON.stringify(perk(), null, 2)),
     }
   }),
   withComputed(({ perk }) => {
@@ -160,11 +167,10 @@ function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState>
 }
 
 function selectProperties(item: PerkData) {
-  const reject = ['$source', 'IconPath', 'DisplayName', 'Description']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  const reject: Array<keyof PerkData> = ['IconPath', 'DisplayName', 'Description']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }
 
 function selectAffixProperties(item: AffixStatData) {
-  const reject = ['$source']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || key.startsWith('$'))
 }

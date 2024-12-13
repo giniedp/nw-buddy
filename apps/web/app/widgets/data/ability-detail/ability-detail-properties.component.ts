@@ -8,6 +8,7 @@ import { linkCell, localizedCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { AbilityDetailStore } from './ability-detail.store'
+import { diffButtonCell } from '~/widgets/diff-tool'
 
 @Component({
   standalone: true,
@@ -105,7 +106,10 @@ export class AbilityDetailPropertiesComponent {
       StatusEffectBeingApplied: (value) => statusEffectCells(value),
       TargetStatusEffect: (value) => statusEffectCells(value),
       // abilities
-      AbilityID: (value) => abilitiesCells(value),
+      AbilityID: (value) => [
+        ...abilitiesCells(value),
+        diffButtonCell({ record: this.store.ability(), idKey: 'AbilityID' }),
+      ],
       RequiredEquippedAbilityId: (value) => abilitiesCells(value),
       RequiredAbilityId: (value) => abilitiesCells(value),
       AbilityList: (value) => abilitiesCells(value),

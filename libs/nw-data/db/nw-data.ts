@@ -1,3 +1,4 @@
+import { listRecordVersions } from './diff/list-versions'
 import { DataLoader } from './dsl'
 import { NwDataLoader, NwDataOptions } from './nw-data-loader'
 import { NwDataSheets } from './nw-data-sheets'
@@ -25,4 +26,5 @@ export class NwData extends NwDataSheets {
   public resourceItemsForPerkId = bind(this, resourceItemsForPerkId)
 
   public loadItemsTable = bind(this, loadItemsTable)
+  public listRecordVersions = listRecordVersions
 }

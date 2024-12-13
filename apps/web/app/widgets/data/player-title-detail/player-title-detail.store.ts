@@ -40,5 +40,5 @@ export const PlayerTitleDetailStore = signalStore(
 
 function selectProperties(item: PlayerTitleData) {
   const reject: Array<keyof PlayerTitleData> = ['TitleMale', 'TitleFemale', 'TitleNeutral', 'Description', 'TitleType']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

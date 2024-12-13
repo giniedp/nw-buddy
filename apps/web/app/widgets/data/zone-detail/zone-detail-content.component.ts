@@ -3,6 +3,7 @@ import { TerritoryDefinition } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { iconCell, linkCell, tagsCell, valueCell } from '~/ui/property-grid/cells'
+import { diffButtonCell } from '~/widgets/diff-tool'
 import { ZoneDetailStore } from './zone-detail.store'
 
 @Component({
@@ -47,7 +48,10 @@ export class ZoneDetailContentComponent {
   }
   public descriptor = gridDescriptor<TerritoryDefinition>(
     {
-      TerritoryID: (value) => linkCell({ value: String(value), routerLink: ['poi', String(value || '')] }),
+      TerritoryID: (value) => [
+        linkCell({ value: String(value), routerLink: ['poi', String(value || '')] }),
+        diffButtonCell({ record: this.store.record(), idKey: 'TerritoryID' }),
+      ],
       LootTags: (value) => tagsCell({ value }),
       POITag: (value) => tagsCell({ value }),
       CompassIcon: (value) => iconCell({ value, size: 'w-6 h-6' }),

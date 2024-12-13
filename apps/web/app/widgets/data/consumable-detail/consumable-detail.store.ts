@@ -29,6 +29,5 @@ export const ConsumableDetailStore = signalStore(
   }),
 )
 function selectProperties(item: ConsumableItemDefinitions) {
-  const reject = ['$source']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || key.startsWith('$'))
 }

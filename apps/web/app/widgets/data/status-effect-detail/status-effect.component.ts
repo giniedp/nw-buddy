@@ -21,6 +21,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { StatusEffectDetailStore } from './status-effect.store'
+import { diffButtonCell } from '~/widgets/diff-tool'
 
 @Component({
   standalone: true,
@@ -78,7 +79,15 @@ export class StatusEffectDetailComponent {
     {
       DisplayName: (value) => localizedCell({ value }),
       Description: (value) => localizedCell({ value }),
-      StatusID: statusEffectCells,
+      StatusID: (it) => {
+        return [
+          ...statusEffectCells(it),
+          diffButtonCell({
+            record: this.store.effect(),
+            idKey: 'StatusID',
+          }),
+        ]
+      },
       OnDeathStatusEffect: statusEffectCells,
       OnEndStatusEffect: statusEffectCells,
       OnStackStatusEffect: statusEffectCells,

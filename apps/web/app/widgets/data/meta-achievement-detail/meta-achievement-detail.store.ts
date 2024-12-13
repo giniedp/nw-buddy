@@ -17,9 +17,10 @@ export const MetaAchievementDetailStore = signalStore(
   withStateLoader(() => {
     const db = injectNwData()
     return {
-      load: (id: string) => combineLatest({
-        record: db.metaAchievementsById(id)
-      })
+      load: (id: string) =>
+        combineLatest({
+          record: db.metaAchievementsById(id),
+        }),
     }
   }),
   withComputed(({ record }) => {
@@ -37,5 +38,5 @@ export const MetaAchievementDetailStore = signalStore(
 
 function selectProperties(item: MetaAchievementData) {
   const reject: Array<keyof MetaAchievementData> = ['Title', 'Description', 'Icon', 'UIDisplayCategory', 'Tier']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

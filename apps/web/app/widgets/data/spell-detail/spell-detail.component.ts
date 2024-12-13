@@ -4,7 +4,8 @@ import { SpellData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
-import { linkCell, valueCell } from '~/ui/property-grid/cells'
+import { linkCell, textCell, valueCell } from '~/ui/property-grid/cells'
+import { diffButtonCell } from '~/widgets/diff-tool'
 import { SpellDetailStore } from './spell-detail.store'
 
 @Component({
@@ -29,12 +30,14 @@ export class SpellDetailComponent {
 
   public descriptor = gridDescriptor<SpellData>(
     {
-      // SpellID: (value) => {
-      //   return linkCell({
-      //     value,
-      //     routerLink: ['spells', value]
-      //   })
-      // },
+      SpellID: (value) => {
+        return [
+          textCell({
+            value,
+          }),
+          diffButtonCell({ record: this.store.spell(), idKey: 'SpellID' }),
+        ]
+      },
       StatusEffects: (value) => {
         return value?.map((it) => {
           return linkCell({

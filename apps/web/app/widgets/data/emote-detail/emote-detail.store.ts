@@ -38,5 +38,5 @@ export const EmotesDetailStore = signalStore(
 
 function selectProperties(item: EmoteData) {
   const reject: Array<keyof EmoteData> = ['DisplayName', 'DisplayGroup', 'UiImage', 'DisplayDescription']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

@@ -55,7 +55,6 @@ function loadState(db: NwDataBase, eventId: string) {
 
 function selectProperties(item: GameEventData) {
   const reject: Array<keyof GameEventData> = [
-    '$source' as any,
     'AzothReward',
     'AzothSalt',
     'CurrencyReward',
@@ -68,5 +67,5 @@ function selectProperties(item: GameEventData) {
     'PVPXP',
     'PvpXp',
   ]
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

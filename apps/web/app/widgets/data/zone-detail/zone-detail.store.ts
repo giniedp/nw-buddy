@@ -169,6 +169,6 @@ function selectSpawnVitals({
 }
 
 function selectProperties(item: TerritoryDefinition) {
-  const reject = ['$source', 'NameLocalizationKey', 'MapIcon', 'Description', 'IconPath', 'TooltipBackground']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  const reject = ['NameLocalizationKey', 'MapIcon', 'Description', 'IconPath', 'TooltipBackground']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

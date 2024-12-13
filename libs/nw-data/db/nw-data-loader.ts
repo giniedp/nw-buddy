@@ -37,6 +37,7 @@ export class NwDataLoader implements DataLoader {
         if (source) {
           for (const item of data) {
             item['$source'] = source
+            item['$uri'] = url.uri
           }
         }
         return data as Array<T & { $source: string }>

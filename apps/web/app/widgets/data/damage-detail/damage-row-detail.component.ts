@@ -1,5 +1,14 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, effect, inject, input, untracked } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  TemplateRef,
+  ViewChild,
+  effect,
+  inject,
+  input,
+  untracked,
+} from '@angular/core'
 import { AffixStatData, DamageData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -8,6 +17,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
+import { diffButtonCell } from '~/widgets/diff-tool'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { StatusEffectDetailModule } from '../status-effect-detail'
 import { DamageRowDetailHeaderComponent } from './damage-row-detail-header.component'
@@ -61,7 +71,10 @@ export class DamageRowDetailComponent {
   public damageDescriptor = gridDescriptor<DamageData>(
     {
       DamageID: (value) => {
-        return linkCell({ value, routerLink: ['damage', value] })
+        return [
+          linkCell({ value, routerLink: ['damage', value] }),
+          diffButtonCell({ record: this.store.row(), idKey: 'DamageID' }),
+        ]
       },
       StatusEffect: (value) => {
         return value?.map((it) => {

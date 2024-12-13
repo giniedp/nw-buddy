@@ -1,5 +1,5 @@
 import { computed } from '@angular/core'
-import { signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { AbilityData, CooldownData } from '@nw-data/generated'
@@ -103,6 +103,6 @@ function loadState(db: NwData, abilityId: string) {
 }
 
 function selectProperties(item: AbilityData) {
-  const reject = ['$source', 'Icon', 'DisplayName', 'Description', 'Sound']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  const reject: Array<keyof AbilityData> = ['Icon', 'DisplayName', 'Description', 'Sound']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

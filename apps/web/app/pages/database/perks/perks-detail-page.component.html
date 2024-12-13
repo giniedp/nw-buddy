@@ -1,8 +1,5 @@
-<div
-  class="flex flex-col gap-2"
-  [nwbScreenshotFrame]="itemId()"
->
-  <nwb-perk-detail [perkId]="itemId()" (perkChange)="onEntity($event)" class="bg-black" #detail="perkDetail" />
+<div class="flex flex-col gap-2" [nwbScreenshotFrame]="itemId()">
+  <nwb-perk-detail [perkId]="itemId()" (perkChange)="onEntity($event)" class="bg-black relative" #detail="perkDetail" />
 
   @for (item of detail.store.resourceItems(); track $index; let isFirst = $first) {
     @if (isFirst) {

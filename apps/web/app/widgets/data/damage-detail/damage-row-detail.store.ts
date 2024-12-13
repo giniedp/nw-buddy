@@ -52,11 +52,9 @@ export const DamageDetailStore = signalStore(
 )
 
 function selectProperties(item: DamageData) {
-  const reject = ['$source']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || key.startsWith('$'))
 }
 
 function selectAffixProperties(item: AffixStatData) {
-  const reject = ['$source']
-  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+  return rejectKeys(item, (key) => !item[key] || key.startsWith('$'))
 }

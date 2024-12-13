@@ -6,6 +6,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { valueCell } from '~/ui/property-grid/cells'
 import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
+import { diffButtonCell } from '~/widgets/diff-tool'
 
 @Component({
   standalone: true,
@@ -32,7 +33,15 @@ export class StatusEffectCategoryDetailComponent {
 
   public descriptor = gridDescriptor<StatusEffectCategoryData>(
     {
-      StatusEffectCategoryID: statusEffectCells,
+      StatusEffectCategoryID: (value) => {
+        return [
+          ...statusEffectCells(value),
+          diffButtonCell({
+            record: this.store.category(),
+            idKey: 'StatusEffectCategoryID',
+          }),
+        ]
+      },
     },
     (value) => {
       if (!Array.isArray(value) && typeof value === 'object') {

@@ -1,6 +1,5 @@
 <ion-content class="ion-p-4">
   <div class="flex flex-col items-center">
-
     <div class="w-80 bg-base-300 rounded-md p-4">
       <div class="alert shadow-lg" (click)="isDevCount = isDevCount + 1">
         <svg
@@ -65,8 +64,17 @@
         <input type="text" class="input input-bordered" [(ngModel)]="ipfsGateway" [placeholder]="'IPFS Gateway'" />
         <label class="label">
           <span class="label-text-alt">
-            The preferred IPFS hostname to use when downloading shared content.
-            Check public gateways <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link link-primary">here</a>.
+            The preferred IPFS hostname to use when downloading shared content. Check public gateways
+            <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link link-primary">here</a>.
+          </span>
+        </label>
+      </div>
+
+      <div class="form-control w-full mt-4">
+        <input type="text" class="input input-bordered" [(ngModel)]="gitAccessToken" [placeholder]="'Git token'" />
+        <label class="label">
+          <span class="label-text-alt">
+            Your git access token that will be used to fetch diff data from github API.
           </span>
         </label>
       </div>

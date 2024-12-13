@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, inject, signal } from '@angu
 import { GameEventData } from '@nw-data/generated'
 import { PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, valueCell } from '~/ui/property-grid/cells'
+import { diffButtonCell } from '~/widgets/diff-tool'
 import { GameEventDetailRewardsComponent } from './game-event-detail-rewards.component'
 import { GameEventDetailStore } from './game-event-detail.store'
 
@@ -36,7 +37,12 @@ export class GameEventDetailComponent {
 
   public descriptor = gridDescriptor<GameEventData>(
     {
-      EventID: (value) => linkCell({ value: String(value), routerLink: ['game-event', value] }),
+      EventID: (value) => {
+        return [
+          linkCell({ value: String(value), routerLink: ['game-event', value] }),
+          diffButtonCell({ record: this.store.gameEvent(), idKey: 'EventID' }),
+        ]
+      },
       LootLimitReachedGameEventId: (value) => linkCell({ value: String(value), routerLink: ['game-event', value] }),
       LootLimitId: (value) => linkCell({ value: String(value), routerLink: ['loot-limit', value] }),
       ItemReward: (value) => {

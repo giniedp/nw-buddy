@@ -1,13 +1,12 @@
 import { DecimalPipe } from '@angular/common'
 import { Component, TemplateRef, inject, viewChild } from '@angular/core'
-import { parseScalingPerGearScore } from '@nw-data/common'
 import { AffixStatData, PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
-import { linkCell, tagsCell, localizedCell, valueCell, textCell } from '~/ui/property-grid/cells'
+import { linkCell, localizedCell, tagsCell, textCell, valueCell } from '~/ui/property-grid/cells'
+import { diffButtonCell } from '~/widgets/diff-tool'
 import { PerkDetailStore } from './perk-detail.store'
-import { PerkScalingPerGsGraphComponent } from './perk-scaling-per-gs-graph.component'
 import { perkScalingCell } from './perk-scaling-cell.component'
 
 @Component({
@@ -28,7 +27,7 @@ import { perkScalingCell } from './perk-scaling-cell.component'
       />
     }
   `,
-  imports: [NwModule, PropertyGridModule, ItemFrameModule, PerkScalingPerGsGraphComponent],
+  imports: [NwModule, PropertyGridModule, ItemFrameModule],
   host: {
     class: 'flex flex-col gap-2',
   },
@@ -42,7 +41,15 @@ export class PerkDetailPropertiesComponent {
 
   public perkDescriptor = gridDescriptor<PerkData>(
     {
-      PerkID: (value) => linkCell({ value: String(value), routerLink: ['perk', value] }),
+      PerkID: (value) => {
+        return [
+          linkCell({ value: String(value), routerLink: ['perk', value] }),
+          diffButtonCell({
+            record: this.store.perk(),
+            idKey: 'PerkID',
+          }),
+        ]
+      },
       Affix: (value) => textCell({ value: String(value), textPrimary: true, fontItalic: true }),
       ItemClass: (value) => tagsCell({ value }),
       ExcludeItemClass: (value) => tagsCell({ value }),
@@ -62,7 +69,15 @@ export class PerkDetailPropertiesComponent {
 
   public affixDescriptor = gridDescriptor<AffixStatData>(
     {
-      StatusID: (value) => textCell({ value, textPrimary: true, fontItalic: true }),
+      StatusID: (value) => {
+        return [
+          textCell({ value, textPrimary: true, fontItalic: true }),
+          diffButtonCell({
+            record: this.store.affix(),
+            idKey: 'StatusID',
+          }),
+        ]
+      },
       StatusEffect: (value) => statusEffectCells(value),
     },
     (value) => valueCell({ value }),

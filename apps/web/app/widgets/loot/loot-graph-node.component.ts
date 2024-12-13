@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, Input, effect, inject, untracked } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, Injector, Input, untracked } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { LootTable } from '@nw-data/common'
 import { NwModule } from '~/nw'
@@ -24,14 +24,17 @@ import { TooltipModule } from '~/ui/tooltip'
 
 import { animate, style, transition, trigger } from '@angular/animations'
 import { patchState } from '@ngrx/signals'
+import { LootTablesData } from '@nw-data/generated'
 import { isEqual } from 'date-fns/isEqual'
 import { filter, map, take } from 'rxjs'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
-import { PropertyGridModule } from '~/ui/property-grid'
+import { gridDescriptor, PropertyGridModule } from '~/ui/property-grid'
+import { textCell, valueCell } from '~/ui/property-grid/cells'
 import { eqCaseInsensitive } from '~/utils'
 import { ItemDetailHeaderComponent } from '../data/item-detail/item-detail-header.component'
 import { ItemDetailComponent } from '../data/item-detail/item-detail.component'
 import { openItemsPicker } from '../data/item-table'
+import { diffButtonCell, DiffButtonComponent } from '../diff-tool'
 import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
 import { LootGraphNodeStore } from './loot-graph-node.store'
 import { LootGraphService } from './loot-graph.service'
@@ -64,6 +67,7 @@ export interface LootGraphNodeState<T = LootNode> {
     VirtualGridModule,
     PropertyGridModule,
     LootTagComponent,
+    DiffButtonComponent,
   ],
   providers: [LootGraphNodeStore],
   host: {
@@ -217,6 +221,15 @@ export class LootGraphNodeComponent {
   protected iconEyeSlash = svgEyeSlash
   protected iconLuck = svgClover
   protected iconFilter = svgFilter
+  public descriptor = gridDescriptor<LootTablesData>(
+    {
+      LootTableID: (value) => [
+        textCell({ value: String(value) }),
+        diffButtonCell({ record: this.store.table(), idKey: 'LootTableID' }),
+      ],
+    },
+    (value) => valueCell({ value }),
+  )
 
   public constructor() {
     this.store.useGridOptions(LootGraphGridCellComponent.buildGridOptions())
