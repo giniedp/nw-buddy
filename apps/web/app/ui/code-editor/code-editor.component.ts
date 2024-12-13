@@ -16,7 +16,11 @@ import { MonacoService } from './monaco.service'
 @Component({
   standalone: true,
   selector: 'nwb-code-editor',
-  template: '',
+  template: `
+    @if(!editor()) {
+      <div class="p-4 text-center">Waiting for editor <span class="loading loading-dots loading-xs"></span></div>
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
