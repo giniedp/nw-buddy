@@ -21,8 +21,7 @@ New World Buddy is a desktop application designed to be used while playing New W
 - website: https://www.nw-buddy.de/
 - github: https://github.com/giniedp/nw-buddy
 - releases: https://github.com/giniedp/nw-buddy/releases
-- discord permalink: https://discord.gg/PWxUwUagVX 
-
+- discord permalink: https://discord.gg/PWxUwUagVX
 
 # Development
 
@@ -47,7 +46,7 @@ cp .env.example .env
 # install dependencies
 pnpm install
 # download recent new world data files
-pnpm nw-cdn download
+pnpm nw-cdn download -v live
 # start development server
 pnpm dev:web
 ```
@@ -72,6 +71,7 @@ If you have already unpacked the game folder, adjust the `NW_UNPACK_LIVE` and/or
 Run `pnpm nw-extract`. This will extract all the necessary game data to whatever `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` is set to.
 
 ### Convert (mandatory)
+
 This will read files from the unpacked game data folder, convert them and place the results in `tmp/nw-data/live` (or `tmp/nw-data/ptr`). The conversion includes:
 
 - `.dds` -> `.png`
@@ -80,7 +80,9 @@ This will read files from the unpacked game data folder, convert them and place 
 - object stream conversion into `.json`
 
 ### Import (mandatory)
+
 This will read files from the conversion folder and prepare them for runtime use, e.g.
+
 - convert `.png` -> `.webp`
 - generate code and types from datatables
 - exctract only neccassary localization strings
@@ -98,7 +100,9 @@ Run `pnpm dev:web` if you only need a web browser for development
 There are multiple target that can be built
 
 ### Electron App
+
 Run `build:electron`. This will build the electron frame, the web app with electron target and then bundle it all together. The resulting `.exe` is written to `releases/nw-buddy [VERSION].exe`
 
 ### Web App
+
 Run `build:web`. This will build the web app that can be uploaded and hosted on a server. The result is written to `dist/web`
