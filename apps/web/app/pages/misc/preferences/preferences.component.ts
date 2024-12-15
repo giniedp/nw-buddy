@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { filter } from 'rxjs'
 import { DbService } from '~/data/db.service'
-import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
+import { AppPreferencesService, ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
@@ -24,48 +24,47 @@ import { DataImportDialogComponent } from './data-import-dialog.component'
     class: 'ion-page',
   },
 })
-export class PreferencesComponent implements OnInit {
+export class PreferencesComponent {
   protected get collapseMenu() {
-    return this.app.collapseMenuMode.get() == 'always'
+    return this.pref.collapseMenuMode.get() == 'always'
   }
   protected set collapseMenu(value: boolean) {
-    this.app.collapseMenuMode.set(value ? 'always' : 'auto')
+    this.pref.collapseMenuMode.set(value ? 'always' : 'auto')
   }
 
   protected get highQualityModels() {
-    return this.app.highQualityModels.get()
+    return this.pref.highQualityModels.get()
   }
   protected set highQualityModels(value: boolean) {
-    this.app.highQualityModels.set(value)
+    this.pref.highQualityModels.set(value)
   }
 
   protected get ipfsGateway() {
-    return this.app.ipfsGateway.get()
+    return this.pref.ipfsGateway.get()
   }
   protected set ipfsGateway(value: string) {
-    this.app.ipfsGateway.set(value as any)
+    this.pref.ipfsGateway.set(value as any)
   }
 
   protected get gitAccessToken() {
-    return this.app.gitAccessToken.get()
+    return this.pref.gitAccessToken.get()
   }
   protected set gitAccessToken(value: string) {
-    this.app.gitAccessToken.set(value as any)
+    this.pref.gitAccessToken.set(value as any)
   }
 
   protected get projectName() {
-    return this.app.projectName.get()
+    return this.pref.projectName.get()
   }
   protected set projectName(value: string) {
-    this.app.projectName.set(value as any)
+    this.pref.projectName.set(value as any)
   }
 
   protected isDev = false
   protected isDevCount = 0
   protected iconInfo = svgInfoCircle
   public constructor(
-    public app: AppPreferencesService,
-    public preferences: PreferencesService,
+    public pref: AppPreferencesService,
     public appDb: DbService,
     private itemPref: ItemPreferencesService,
     private modal: ModalService,
@@ -76,7 +75,6 @@ export class PreferencesComponent implements OnInit {
       description: 'Personal preferences to adjust your New World Buddy experience',
     })
   }
-  public ngOnInit(): void {}
 
   public async exportPreferences() {
     DataExportDialogComponent.open(this.modal)

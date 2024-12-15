@@ -10,7 +10,7 @@ export type DataWithVersion<T = unknown> = {
   standalone: true,
   selector: 'nwb-diff-history-editor',
   template: `
-    <ul class="menu bg-base-200 w-40 flex-nowrap p-0 [&_li>*]:rounded-none flex-none">
+    <ul class="menu bg-base-200 w-52 flex-nowrap p-0 [&_li>*]:rounded-none flex-none overflow-y-auto">
       @for (item of files(); track $index; let i = $index) {
         <li [class.text-primary]="selection() === i">
           <a (click)="selection.set(i)">{{ item.name }}</a>

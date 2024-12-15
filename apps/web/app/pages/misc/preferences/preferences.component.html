@@ -70,47 +70,61 @@
         </label>
       </div>
 
+      <div class="divider"></div>
+
       <div class="form-control w-full mt-4">
         <input type="text" class="input input-bordered" [(ngModel)]="gitAccessToken" [placeholder]="'Git token'" />
         <label class="label">
           <span class="label-text-alt">
-            Your git access token that will be used to fetch diff data from github API.
+            Your git access token that will be used to fetch diff data from github API. Create your token
+            <a href="https://github.com/settings/tokens" target="_blank" class="link link-primary">here</a>.
           </span>
         </label>
       </div>
-      <!-- <div class="divider"></div>
-    <ng-template #tipWeb3token>
-      <div class="alert rounded-md">
-        <div>
-          <span>
-            <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"/>
-          </span>
-          <div>
-            <h3 class="font-bold">Link Sharing</h3>
-            <div class="text-xs mb-1">
-              When sharing links, data is stored online for an indefinite period of time. This means that shared links may
-              stop work at some point. Provide a Web 3 API token to store shared data in your account instead.
-            </div>
-          </div>
-        </div>
+      <div class="form-control w-full mt-4">
+        <input
+          type="text"
+          class="input input-bordered"
+          [ngModel]="pref.nwDataRepo.observe() | async"
+          (ngModelChange)="pref.nwDataRepo.set($event || undefined)"
+        />
+        <label class="label">
+          <span class="label-text-alt"> Git repository url with branch name and path to datasheets folder </span>
+        </label>
       </div>
-    </ng-template>
-    <div class="form-control w-full">
-      <label class="label cursor-pointer">
-        <span class="label-text">Web 3 Token</span>
-      </label>
-      <label class="join">
-        <input type="text" class="input input-bordered" [(ngModel)]="web3token" />
-        <span [tooltip]="tipWeb3token" [tooltipClass]="'p-0'">
-          <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"/>
-        </span>
-      </label>
-      <label class="label">
-        <span class="label-text-alt">
-          Your <a href="https://web3.storage/" target="_blank" class="link">web3.storage</a> api token.
-        </span>
-      </label>
-    </div> -->
+      <div class="form-control w-full mt-4">
+        <input
+          type="number"
+          class="input input-bordered"
+          [ngModel]="pref.nwDataRepoUseLimit.observe() | async"
+          (ngModelChange)="pref.nwDataRepoUseLimit.set($event)"
+        />
+        <label class="label">
+          <span class="label-text-alt"> Number of history commits to evaluate. </span>
+        </label>
+      </div>
+      <div class="form-control w-full">
+        <label class="cursor-pointer label">
+          <span class="label-text">Use only tagged commits</span>
+          <input
+            type="checkbox"
+            class="toggle toggle-primary"
+            [ngModel]="pref.nwDataRepoUseTags.observe() | async"
+            (ngModelChange)="pref.nwDataRepoUseTags.set($event)"
+          />
+        </label>
+      </div>
+      <div class="form-control w-full">
+        <label class="cursor-pointer label">
+          <span class="label-text">Datasheets use original file name (not table type)</span>
+          <input
+            type="checkbox"
+            class="toggle toggle-primary"
+            [ngModel]="pref.nwDataRepoUseFiles.observe() | async"
+            (ngModelChange)="pref.nwDataRepoUseFiles.set($event)"
+          />
+        </label>
+      </div>
 
       <div class="divider"></div>
       <div class="form-control w-full">

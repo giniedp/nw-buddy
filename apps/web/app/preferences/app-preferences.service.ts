@@ -15,6 +15,11 @@ export class AppPreferencesService {
   public readonly appMenu: StorageProperty<Record<string, boolean>>
   public readonly highQualityModels: StorageProperty<boolean>
   public readonly gitAccessToken: StorageProperty<string>
+  public readonly nwDataRepo: StorageProperty<string>
+  public readonly nwDataMode: StorageProperty<string>
+  public readonly nwDataRepoUseTags: StorageProperty<boolean>
+  public readonly nwDataRepoUseFiles: StorageProperty<boolean>
+  public readonly nwDataRepoUseLimit: StorageProperty<number>
 
   public constructor(preferences: PreferencesService) {
     const storage = preferences.storage.storageObject('app')
@@ -27,6 +32,10 @@ export class AppPreferencesService {
     this.appMenu = storage.storageProperty('menu', null)
     this.highQualityModels = storage.storageProperty('highQualityModels', false)
     this.gitAccessToken = storage.storageProperty('gitAccessToken', null)
+    this.nwDataRepo = storage.storageProperty('nwDataRepo', 'https://github.com/giniedp/nw-buddy-data/tree/main/live/datatables')
+    this.nwDataRepoUseTags = storage.storageProperty('nwDataRepoUseTags', true)
+    this.nwDataRepoUseFiles = storage.storageProperty('nwDataRepoUseFiles', true)
+    this.nwDataRepoUseLimit = storage.storageProperty('nwDataRepoUseLimit', 5)
 
     const session = preferences.session.storageObject('app')
     this.mapActive = session.storageProperty('mapActive', false)
