@@ -45,7 +45,7 @@ async function listTags(client: Octokit, options: { owner: string; repo: string 
 
 async function listFileCommits(
   client: Octokit,
-  options: { owner: string; repo: string; path: string; useTags?: boolean; branch: string; limit: number },
+  options: { owner: string; repo: string; path: string; useTags: boolean; branch: string; limit: number },
 ) {
   const useTags = !!options.useTags
   return cached(`listFileCommits:${options.path}`, async () => {
@@ -142,6 +142,7 @@ export async function listRecordVersions<T>(options: ListRecordVersionsOptions<T
     path: options.file,
     branch: options.branch,
     limit: Math.max(options.limit || 0, 0),
+    useTags: options.useTags,
   })
   return commits.map(({ version, data }) => {
     return {
