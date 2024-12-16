@@ -1,6 +1,6 @@
-import { of, Observable as RxObservable } from 'rxjs'
+import { of, Observable as RxObservable, Subject } from 'rxjs'
 
-import { AppDb, AppDbTable } from './app-db'
+import { AppDb, AppDbTable, AppDbTableEvent } from './app-db'
 
 export class AppDbNoop extends AppDb {
   private tables: Record<string, AppDbNoopTable<any>> = {}
@@ -21,10 +21,12 @@ export class AppDbNoop extends AppDb {
 
 export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
   public db: AppDb
+  public tableName: string
 
   public constructor(db: AppDb, name: string) {
     super()
     this.db = db
+    this.tableName = name
   }
 
   public async tx<R>(fn: () => Promise<R>): Promise<R> {
