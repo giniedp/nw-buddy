@@ -727,10 +727,14 @@ function isActiveAbility(
     }
   }
 
-  if (REJECT_ABILITIES_WITH_PROPS.some((key) => !!ability[key])) {
+  if (REJECT_ABILITIES_WITH_PROPS.some((key) => isFalsey(key))) {
     return false
   }
   return true
+}
+
+function isFalsey(value: any) {
+  return !value || value === '0' || value === 'false' || value === 'FALSE'
 }
 
 function getAbilityScale(ability: AbilityData, state: MannequinState) {
