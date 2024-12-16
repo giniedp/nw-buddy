@@ -1,8 +1,8 @@
 import { Dexie, liveQuery, PromiseExtended, Table } from 'dexie'
 import { customAlphabet } from 'nanoid/non-secure'
-import { defer, isObservable, of, Observable as RxObservable, switchMap } from 'rxjs'
+import { defer, isObservable, of, Observable as RxObservable, Subject, switchMap } from 'rxjs'
 
-import { AppDb, AppDbTable } from './app-db'
+import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
 import {
   DBT_CHARACTERS,
   DBT_GEARSETS,
@@ -58,12 +58,15 @@ export class AppDbDexie extends AppDb {
 // https://zelark.github.io/nano-id-cc/
 const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
-export class AppDbDexieTable<T extends { id: string }> extends AppDbTable<T> {
+export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   public db: AppDbDexie
+  public tableName: string
   private table: Table<T>
+
   public constructor(db: AppDbDexie, name: string) {
     super()
     this.db = db
+    this.tableName = name
     this.table = db.dexie.table(name)
   }
 
@@ -92,7 +95,9 @@ export class AppDbDexieTable<T extends { id: string }> extends AppDbTable<T> {
       id: record.id || createId(),
     }
     const id = await this.table.add(record as T, record.id)
-    return this.read(id as any)
+    const row = await this.read(id as any)
+    this.events.next({ type: 'create', payload: row })
+    return row
   }
 
   public read(id: string): Promise<T> {
@@ -101,11 +106,20 @@ export class AppDbDexieTable<T extends { id: string }> extends AppDbTable<T> {
 
   public async update(id: string, record: Partial<T>): Promise<T> {
     await this.table.update(id, record)
-    return this.read(id)
+    const row = await this.read(id)
+    this.events.next({ type: 'update', payload: row })
+    return row
   }
 
   public async destroy(id: string | string[]): Promise<void> {
-    return this.table.delete(id)
+    await this.table.delete(id)
+    const ids = typeof id === 'string' ? [id] : id
+
+    for (const id of ids) {
+      this.events.next({ type: 'update', payload: { id } as T })
+    }
+
+    return
   }
 
   public async createOrUpdate(record: T): Promise<T> {

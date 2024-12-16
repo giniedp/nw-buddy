@@ -1,8 +1,12 @@
-import { Observable } from 'rxjs'
-import { AppDbRecord, AppDbTable } from './app-db'
+import { Observable, Subject } from 'rxjs'
+import { AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
 
 export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
   public abstract readonly table: AppDbTable<T>
+
+  public get tableName() {
+    return this.table.tableName
+  }
 
   public tx<R>(fn: () => Promise<R>): Promise<R> {
     return this.table.tx(fn)

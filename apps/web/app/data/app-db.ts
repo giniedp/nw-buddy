@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
+
 
 export type AppDbRecord = { id: string }
 
@@ -7,8 +8,17 @@ export abstract class AppDb {
   public abstract table<T extends AppDbRecord>(name: string): AppDbTable<T>
 }
 
+export interface AppDbTableEvent<T> {
+  type: 'delete' | 'create' | 'update'
+  payload: T
+}
 export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract readonly db: AppDb
+
+  public abstract readonly tableName: string
+
+  public readonly events = new Subject<AppDbTableEvent<T>>()
+
 
   public abstract tx<R>(fn: () => Promise<R>): Promise<R>
   public abstract count(): Promise<number>

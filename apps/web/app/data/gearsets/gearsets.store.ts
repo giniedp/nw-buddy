@@ -6,6 +6,12 @@ import { ItemInstance } from '../items/types'
 import { GearsetRecord } from './types'
 import { withGearsetsRows } from './with-gearsets'
 
+import { GearsetsDB } from './gearsets.db'
+import { inject, Injector } from '@angular/core'
+import { SyncService } from '../supabase/sync.service'
+import { AppDbTable } from '../app-db'
+
+
 export interface GearsetRowSlot {
   slot: EquipSlot
   instance: ItemInstance
@@ -40,6 +46,20 @@ export const GearsetsStore = signalStore(
     onInit(state) {
       state.connectDB()
       state.loadNwData()
+
+      const db = inject(GearsetsDB)
+      const remote = Injector.create({
+        providers: [
+          SyncService,
+          //   {
+          //   class: AppDbTable,
+          //   useValue: db,
+          // }
+        ],
+        parent: inject(Injector),
+      }).get(SyncService)
+
+      remote.connectTableSync(db)
     },
   }),
 )
