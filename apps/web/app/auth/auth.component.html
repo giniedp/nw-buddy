@@ -1,0 +1,30 @@
+@if (supabase.session(); as session) {
+  <!-- [cdkMenuTriggerFor]="tplAccMenu" -->
+  <button
+    class="btn btn-circle btn-ghost no-drag avatar"
+    [cdkMenuTriggerFor]="tplAccMenu"
+    [tooltip]="'Account'"
+    [tooltipPlacement]="'bottom'"
+  >
+    <img [src]="supabase.getAvatarUrl()" class="rounded-full" alt="" />
+  </button>
+} @else {
+  <button
+    class="btn btn-ghost no-drag avatar placeholder:"
+    [tooltip]="'Sign In'"
+    [tooltipPlacement]="'bottom'"
+    (click)="signIn()"
+  >
+    <span>Sign In</span>
+  </button>
+}
+<ng-template #tplAccMenu>
+  <ul class="menu menu-compact bg-base-300 border border-base-200 rounded-md w-40 shadow-md" cdkMenu>
+    <li>
+      <div cdkMenuItem class="menu-title">{{ supabase.getUsername() }}</div>
+    </li>
+    <li>
+      <button cdkMenuItem (click)="signOut()">Sign Out</button>
+    </li>
+  </ul>
+</ng-template>

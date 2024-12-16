@@ -34,6 +34,7 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
+import { AuthComponent } from './auth/auth.component'
 console.debug('environment', environment)
 @Component({
   selector: 'nw-buddy-app',
@@ -57,6 +58,7 @@ console.debug('environment', environment)
     IonButtons,
     IonButton,
     IonRouterOutlet,
+    AuthComponent,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [
