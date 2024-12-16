@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import type { EnvVars } from '../apps/web/environments/env'
+import { supabaseAnonKey, supabaseUrl, type EnvVars } from '../apps/web/environments/env'
 import {
   BRANCH_NAME,
   CDN_URL,
@@ -100,7 +100,8 @@ program
     if (fs.existsSync(dataLinkDir)) {
       fs.rmSync(dataLinkDir, { force: true })
     }
-    fs.symlinkSync(dataSrcDir, dataLinkDir)
+
+    fs.symlinkSync(dataSrcDir, dataLinkDir, 'dir')
   })
 
 program
