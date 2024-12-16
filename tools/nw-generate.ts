@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import type { EnvVars } from '../apps/web/environments/env'
+import { supabaseAnonKey, supabaseUrl, type EnvVars } from '../apps/web/environments/env'
 import {
   BRANCH_NAME,
   CDN_URL,
@@ -103,6 +103,8 @@ program
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
       disableTooltips: !['live', 'ptr'].includes(workspace.toLowerCase()),
       watermarkImageUrl: NW_WATERMARK || null,
+      supabaseAnonKey,
+      supabaseUrl,
     } satisfies EnvVars
     console.log(env)
     const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(
@@ -121,7 +123,8 @@ program
     if (fs.existsSync(dataLinkDir)) {
       fs.rmSync(dataLinkDir, { force: true })
     }
-    fs.symlinkSync(dataSrcDir, dataLinkDir)
+
+    fs.symlinkSync(dataSrcDir, dataLinkDir, 'dir')
   })
 
 program
