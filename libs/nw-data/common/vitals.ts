@@ -337,11 +337,11 @@ export function getVitalArmor(vital: VitalsData, level: VitalsLevelData) {
     physicalMitigation: vital.PhysicalMitigation,
     elementalRating: getArmorRating({
       gearScore: level.GearScore,
-      mitigation: vital.ElementalMitigation,
+      mitigation: vital.ElementalMitigation || 0,
     }),
     physicalRating: getArmorRating({
       gearScore: level.GearScore,
-      mitigation: vital.PhysicalMitigation,
+      mitigation: vital.PhysicalMitigation || 0,
     }),
   }
 }
