@@ -127,6 +127,7 @@ export class GearCellWeaponComponent {
         dotCoef: 0,
         dotRate: 0,
         dotDuration: 0,
+        dotPotency: 0,
 
         preferHigherScaling: true,
         affixPercent: affix?.Percent,

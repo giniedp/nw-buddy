@@ -293,6 +293,7 @@ export interface AttackerStats {
   attributeModSums: Record<AttributeRef, number>
 
   dotCoef: number
+  dotPotency: number
   dotRate: number
   dotDuration: number
 
@@ -556,7 +557,7 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
   const dotDamage = getDamageForWeapon({
     ...inputs,
     weaponScale: weaponScaling,
-    damageCoef: attacker.dotCoef ?? 0,
+    damageCoef: (attacker.dotCoef ?? 0) * (1 + (attacker.dotPotency ?? 0)),
     damageAdd: 0,
     reductionBase: defender.reductionBaseDot,
     modCrit: 0,

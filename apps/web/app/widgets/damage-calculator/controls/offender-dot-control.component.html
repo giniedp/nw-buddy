@@ -1,5 +1,6 @@
 <label class="label">
   <span class="label-text text-accent"> Damage Over Time </span>
+  <span class="label-text" > Coef {{ dotCoef() | percent: '0.2-2' }} </span>
 </label>
 <span class="join">
   <button
@@ -14,7 +15,10 @@
       <span class="italic"> - none - </span>
     }
     <ng-template #tplDamageType>
-      <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-[80vh] overflow-y-auto flex flex-col flex-nowrap" cdkMenu>
+      <ul
+        class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-[80vh] overflow-y-auto flex flex-col flex-nowrap"
+        cdkMenu
+      >
         @for (item of dotTypeOptions(); track $index) {
           <li class="text-shadow-sm shadow-black" cdkMenuItem>
             <a (click)="dotType.value = item.value">
@@ -73,4 +77,22 @@
   >
     <span class="absolute top-0 left-0 text-xs leading-none text-white text-opacity-30 scale-75">RATE</span>
   </nwb-precision-input>
+</span>
+<span class="join mt-1">
+  <button class="join-item btn btn-sm w-20 justify-start text-left">
+    Potency
+  </button>
+  <nwb-precision-input
+    class="join-item flex-1 input input-sm text-right"
+    [min]="0"
+    [max]="100"
+    [step]="0.1"
+    [stepShift]="10"
+    [stepCtrl]="1"
+    [stepAlt]="0.01"
+    [scale]="100"
+    [unit]="'%'"
+    [(ngModel)]="dotPotency.value"
+    [class.opacity-50]="!dotType.value"
+  />
 </span>

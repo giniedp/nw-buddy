@@ -40,6 +40,7 @@ export interface OffenderState {
 
   dotDamageType: string
   dotDamagePercent: number
+  dotDamagePotency: number
   dotDamageDuration: number
   dotDamageRate: number
 
@@ -123,6 +124,7 @@ const DEFAULT_STATE: DamageCalculatorState = {
 
     dotDamageType: null,
     dotDamagePercent: 0,
+    dotDamagePotency: 0,
     dotDamageDuration: 0,
     dotDamageRate: 1,
 
@@ -239,6 +241,10 @@ export const DamageCalculatorStore = signalStore(
       offenderArmorPenetration: computed(() => damageModSum(offender.armorPenetration(), attackContext())),
 
       offenderDotPercent: computed(() => offender.dotDamagePercent()),
+      offenderDotPotency: computed(() => offender.dotDamagePotency()),
+      offenderDotCoef: computed(() => {
+        return offender.dotDamagePercent() * (1 + (offender.dotDamagePotency() ?? 0))
+      }),
       offenderDotDuration: computed(() => offender.dotDamageDuration()),
       offenderDotRate: computed(() => offender.dotDamageRate()),
       offenderDotDamageType: computed(() => offender.dotDamageType()),
@@ -339,6 +345,7 @@ export const DamageCalculatorStore = signalStore(
             armorPenetration: state.offenderArmorPenetration().value,
 
             dotCoef: state.offenderDotPercent(),
+            dotPotency: state.offenderDotPotency(),
             dotDuration: state.offenderDotDuration(),
             dotRate: state.offenderDotRate(),
 

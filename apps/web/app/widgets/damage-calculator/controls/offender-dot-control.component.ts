@@ -22,7 +22,7 @@ import { PrecisionInputComponent } from './precision-input.component'
     CommonModule,
     NwModule,
     FormsModule,
-    InputSliderComponent,
+    // InputSliderComponent,
     IconsModule,
     LayoutModule,
     TooltipModule,
@@ -38,8 +38,10 @@ export class OffenderDotControlComponent {
   protected iconInfo = svgInfo
   protected dotType = offenderAccessor(this.store, 'dotDamageType')
   protected dotPercent = offenderAccessor(this.store, 'dotDamagePercent')
+  protected dotPotency = offenderAccessor(this.store, 'dotDamagePotency')
   protected dotDuration = offenderAccessor(this.store, 'dotDamageDuration')
   protected dotRate = offenderAccessor(this.store, 'dotDamageRate')
+  protected dotCoef = computed(() => this.store.offenderDotCoef())
 
   protected get dotDimmed() {
     return !this.dotType.value
