@@ -515,7 +515,7 @@ export const DamageCalculatorStore = signalStore(
       connectVital: rxMethod<void>(
         pipe(
           switchMap(() => toObservable(state.defender.vitalId, { injector: injector })),
-          switchMap((vitalId) => db.vitalsBaseById(vitalId)),
+          switchMap((vitalId) => db.vitalsById(vitalId)),
           switchMap((vital) => {
             if (!vital) {
               return EMPTY
