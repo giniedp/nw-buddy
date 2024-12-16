@@ -19,7 +19,7 @@
     "dev": "pnpm nw-generate env -c dev && npm-run-all -p dev:electron dev:web",
     "dev:electron": "pnpm electron:serve",
     "dev:web": "pnpm nw-generate env -c dev && ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
-    "dev:web-cdn": "pnpm nw-generate web -c dev-cdn && ng serve --host 0.0.0.0 --disable-host-check -c dev-cdn -o",
+    "dev:web-cdn": "pnpm nw-generate env -c dev-cdn && ng serve --host 0.0.0.0 --disable-host-check -c dev-cdn -o",
     "dev:ssr": "pnpm nw-generate env -c dev-ssr && ng serve --host 0.0.0.0 --disable-host-check -c dev-ssr -o",
     "dev:server": "ng run nw-buddy:serve-ssr",
     "dev:tools": "pnpm build:tools -w",
