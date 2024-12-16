@@ -36,6 +36,7 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
+import { AuthComponent } from './auth/auth.component'
 console.debug('environment', environment)
 @Component({
   standalone: true,
@@ -60,6 +61,7 @@ console.debug('environment', environment)
     IonButtons,
     IonButton,
     IonRouterOutlet,
+    AuthComponent,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [
@@ -180,7 +182,7 @@ export class AppComponent {
     private router: Router,
     private elRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     this.bindLanguage()
     this.bindWatermark()

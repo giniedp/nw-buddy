@@ -110,7 +110,6 @@
           >
             <nwb-icon [icon]="iconDiscord" class="w-5 h-5" />
           </a>
-          <nwb-global-search-input class="no-drag" />
           <button
             class="btn btn-circle btn-ghost no-drag"
             [cdkMenuTriggerFor]="tplLangMenu"
@@ -119,6 +118,8 @@
           >
             {{ langLabel() }}
           </button>
+          <nwb-global-search-input class="no-drag" />
+          <app-auth></app-auth>
         </div>
       </ion-buttons>
     </ion-toolbar>
