@@ -48,6 +48,7 @@
     "electron:serve": "pnpm electron:tsc && electron . --serve",
     "electron:builder": "electron-builder build --publish=never --config=electron-config.js",
     "nw-generate": "ts-node ./tools/nw-generate.ts",
+    "nw-generate:supabase": "npx supabase gen types typescript --local > ./apps/web/app/data/supabase/types.ts",
     "nw-inspect": "ts-node ./tools/nw-inspect.ts",
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
     "nw-functions": "ts-node ./tools/nw-functions.ts",
@@ -217,6 +218,7 @@
     "rimraf": "5.0.7",
     "rxjs": "7.8.1",
     "sharp": "0.33.4",
+    "supabase": "2.0.0",
     "swiper": "11.1.4",
     "tailwind": "4.0.0",
     "tailwind-merge": "2.3.0",
@@ -250,5 +252,8 @@
   "bugs": {
     "url": "https://github.com/giniedp/nw-buddy/issues"
   },
-  "packageManager": "pnpm@9.1.2"
+  "packageManager": "pnpm@9.1.2",
+  "dependencies": {
+    "@supabase/supabase-js": "2.47.8"
+  }
 }
