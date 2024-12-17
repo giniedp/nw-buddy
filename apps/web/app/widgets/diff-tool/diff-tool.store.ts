@@ -52,10 +52,10 @@ export const DiffToolStore = signalStore(
         return []
       }
       return collapseHistory([
-        {
-          data: current(),
-          version: 'current',
-        },
+        // {
+        //   data: current(),
+        //   version: 'current',
+        // },
         ...versions(),
       ])
     })

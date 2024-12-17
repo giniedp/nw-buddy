@@ -105,4 +105,37 @@ export class PreferencesComponent {
         })
       })
   }
+
+  protected onHistoryPresetChange(preset: string) {
+    switch (preset) {
+      case 'nw-buddy-data-live': {
+        this.pref.nwDataRepoPreset.set(preset)
+        this.pref.nwDataRepo.set('https://github.com/giniedp/nw-buddy-data/tree/main/live/datatables')
+        this.pref.nwDataRepoFormat.set('json')
+        this.pref.nwDataRepoUseTags.set(true)
+        this.pref.nwDataRepoUseFiles.set(true)
+        break
+      }
+      case 'nw-buddy-data-ptr': {
+        this.pref.nwDataRepoPreset.set(preset)
+        this.pref.nwDataRepo.set('https://github.com/giniedp/nw-buddy-data/tree/main/ptr/datatables')
+        this.pref.nwDataRepoFormat.set('json')
+        this.pref.nwDataRepoUseTags.set(false)
+        this.pref.nwDataRepoUseFiles.set(true)
+        break
+      }
+      case 'new-world-tools-live': {
+        this.pref.nwDataRepoPreset.set(preset)
+        this.pref.nwDataRepo.set('https://github.com/new-world-tools/datasheets-yaml/tree/main')
+        this.pref.nwDataRepoFormat.set('yaml')
+        this.pref.nwDataRepoUseTags.set(false)
+        this.pref.nwDataRepoUseFiles.set(false)
+        break
+      }
+      default: {
+        this.pref.nwDataRepoPreset.set('')
+        break
+      }
+    }
+  }
 }

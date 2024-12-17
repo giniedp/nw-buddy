@@ -4,6 +4,7 @@ import { injectNwData } from '~/data'
 import { AppPreferencesService } from '~/preferences'
 import { DiffResource } from './types'
 import { DATASHEETS } from '@nw-data/generated'
+import { map } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ export class DiffToolService {
   private useTags = toSignal(this.pref.nwDataRepoUseTags.observe())
   private useFiles = toSignal(this.pref.nwDataRepoUseFiles.observe())
   private useLimit = toSignal(this.pref.nwDataRepoUseLimit.observe())
+  private useYaml = toSignal(this.pref.nwDataRepoFormat.observe().pipe(map((it) => it === 'yaml')))
 
   public isAvailable = computed(() => !!this.token())
 
@@ -24,7 +26,7 @@ export class DiffToolService {
     if (!token || !resource) {
       return []
     }
-    const file = this.transformUri(resource.uri)
+    const file = this.transformUri(resource.uri, this.useYaml() ? 'yml' : 'json')
     const params = getRepoParams(this.repoAndPath())
     console.log('Fetching versions for', params, file)
     const versions = await this.db.listRecordVersions<T>({
@@ -41,7 +43,7 @@ export class DiffToolService {
     return versions
   }
 
-  private transformUri(uri: string){
+  private transformUri(uri: string, format: string){
     if (this.useFiles()) {
       return uri.replace(/^datatables\//, '')
     }
@@ -49,7 +51,7 @@ export class DiffToolService {
       const node = DATASHEETS[type]
       for (const subType in node) {
         if (node[subType].uri === uri) {
-          return `${type}/${subType}.json`
+          return `${type}/${subType}.${format}`
         }
       }
     }

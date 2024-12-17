@@ -1,5 +1,5 @@
 <ion-content class="ion-p-4">
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col gap-4 items-center">
     <div class="w-80 bg-base-300 rounded-md p-4">
       <div class="alert shadow-lg" (click)="isDevCount = isDevCount + 1">
         <svg
@@ -72,61 +72,6 @@
 
       <div class="divider"></div>
 
-      <div class="form-control w-full mt-4">
-        <input type="text" class="input input-bordered" [(ngModel)]="gitAccessToken" [placeholder]="'Git token'" />
-        <label class="label">
-          <span class="label-text-alt">
-            Your git access token that will be used to fetch diff data from github API. Create your token
-            <a href="https://github.com/settings/tokens" target="_blank" class="link link-primary">here</a>.
-          </span>
-        </label>
-      </div>
-      <div class="form-control w-full mt-4">
-        <input
-          type="text"
-          class="input input-bordered"
-          [ngModel]="pref.nwDataRepo.observe() | async"
-          (ngModelChange)="pref.nwDataRepo.set($event || undefined)"
-        />
-        <label class="label">
-          <span class="label-text-alt"> Git repository url with branch name and path to datasheets folder </span>
-        </label>
-      </div>
-      <div class="form-control w-full mt-4">
-        <input
-          type="number"
-          class="input input-bordered"
-          [ngModel]="pref.nwDataRepoUseLimit.observe() | async"
-          (ngModelChange)="pref.nwDataRepoUseLimit.set($event)"
-        />
-        <label class="label">
-          <span class="label-text-alt"> Number of history commits to evaluate. </span>
-        </label>
-      </div>
-      <div class="form-control w-full">
-        <label class="cursor-pointer label">
-          <span class="label-text">Use only tagged commits</span>
-          <input
-            type="checkbox"
-            class="toggle toggle-primary"
-            [ngModel]="pref.nwDataRepoUseTags.observe() | async"
-            (ngModelChange)="pref.nwDataRepoUseTags.set($event)"
-          />
-        </label>
-      </div>
-      <div class="form-control w-full">
-        <label class="cursor-pointer label">
-          <span class="label-text">Datasheets use original file name (not table type)</span>
-          <input
-            type="checkbox"
-            class="toggle toggle-primary"
-            [ngModel]="pref.nwDataRepoUseFiles.observe() | async"
-            (ngModelChange)="pref.nwDataRepoUseFiles.set($event)"
-          />
-        </label>
-      </div>
-
-      <div class="divider"></div>
       <div class="form-control w-full">
         <label class="cursor-pointer label">
           <span class="label-text">Collapse sidebar permanently</span>
@@ -145,6 +90,106 @@
           <a class="btn w-full mt-4" [routerLink]="['/dev/platform']">Open Dev Panel</a>
         </div>
       </ng-container>
+    </div>
+
+    <div class="w-80 bg-base-300 rounded-md p-4 flex flex-col gap-4">
+      <h3 class="text-nw-description text-lg font-bold uppercase">History Repository</h3>
+      <div class="form-control w-full">
+        <input
+          type="text"
+          class="input input-bordered"
+          [ngModel]="pref.gitAccessToken.observe() | async"
+          (ngModelChange)="pref.gitAccessToken.set($event)"
+          [placeholder]="'Git token'"
+        />
+        <label class="label">
+          <span class="label-text-alt">
+            Your git access token that will be used to fetch diff data from github API. Create your token
+            <a href="https://github.com/settings/tokens" target="_blank" class="link link-primary">here</a>.
+          </span>
+        </label>
+      </div>
+      @let hasToken = !!(pref.gitAccessToken.observe() | async);
+      @let hasPreset = !!(pref.nwDataRepoPreset.observe() | async);
+      @if (hasToken) {
+        <div class="form-control w-full">
+          <select
+            class="input input-bordered"
+            [ngModel]="pref.nwDataRepoPreset.observe() | async"
+            (ngModelChange)="onHistoryPresetChange($event)"
+          >
+            <option value="nw-buddy-data-live">NW Buddy Data: Live</option>
+            <option value="nw-buddy-data-ptr">NW Buddy Data: PTR</option>
+            <option value="new-world-tools-live">New World Tools: Live</option>
+            <option value="">Custom</option>
+          </select>
+          <label class="cursor-pointer label">
+            <span class="label-text">History repository</span>
+          </label>
+        </div>
+
+        @if (!hasPreset) {
+          <div class="form-control w-full">
+            <input
+              type="text"
+              class="input input-bordered"
+              [ngModel]="pref.nwDataRepo.observe() | async"
+              (ngModelChange)="pref.nwDataRepo.set($event || undefined)"
+            />
+            <label class="label">
+              <span class="label-text-alt"> Git repository url with branch name and path to datasheets folder </span>
+            </label>
+          </div>
+          <div class="form-control w-full">
+            <select
+              class="input input-bordered"
+              [ngModel]="pref.nwDataRepoFormat.observe() | async"
+              (ngModelChange)="pref.nwDataRepoFormat.set($event)"
+            >
+              <option value="json">JSON</option>
+              <option value="yaml">YAML</option>
+            </select>
+            <label class="cursor-pointer label">
+              <span class="label-text">Data format</span>
+            </label>
+          </div>
+        }
+        <div class="form-control w-full">
+          <input
+            type="number"
+            class="input input-bordered"
+            [ngModel]="pref.nwDataRepoUseLimit.observe() | async"
+            (ngModelChange)="pref.nwDataRepoUseLimit.set($event)"
+          />
+          <label class="label">
+            <span class="label-text-alt"> Number of history commits to evaluate. </span>
+          </label>
+        </div>
+        @if (!hasPreset) {
+          <div class="form-control w-full">
+            <label class="cursor-pointer label">
+              <span class="label-text">Use only tagged commits</span>
+              <input
+                type="checkbox"
+                class="toggle toggle-primary"
+                [ngModel]="pref.nwDataRepoUseTags.observe() | async"
+                (ngModelChange)="pref.nwDataRepoUseTags.set($event)"
+              />
+            </label>
+          </div>
+          <div class="form-control w-full">
+            <label class="cursor-pointer label">
+              <span class="label-text">Datasheets use original file name (not table type)</span>
+              <input
+                type="checkbox"
+                class="toggle toggle-primary"
+                [ngModel]="pref.nwDataRepoUseFiles.observe() | async"
+                (ngModelChange)="pref.nwDataRepoUseFiles.set($event)"
+              />
+            </label>
+          </div>
+        }
+      }
     </div>
   </div>
 </ion-content>

@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/core'
 import { eqCaseInsensitive } from 'libs/nw-data/common/utils/caseinsensitive-compare'
+import YAML from 'yaml'
 
 let client: Octokit = null
 function getClient(apiKey: string) {
@@ -48,7 +49,7 @@ async function listFileCommits(
   options: { owner: string; repo: string; path: string; useTags: boolean; branch: string; limit: number },
 ) {
   const useTags = !!options.useTags
-  return cached(`listFileCommits:${options.path}`, async () => {
+  return cached(`listFileCommits/${JSON.stringify(options)}`, async () => {
     const tags = useTags ? await listTags(client, options) : []
     const branchSha = await listRef(client, options).then((it) => it.object.sha)
     return await client
@@ -60,7 +61,6 @@ async function listFileCommits(
       })
       .then((res) => res.data)
       .then((commits) => {
-        console.log(commits)
         return Promise.all(
           commits
             .filter((it) => !useTags || tags.some((tag) => tag.commit.sha === it.sha))
@@ -100,10 +100,12 @@ async function fetchDatasheet(client: Octokit, options: { owner: string; repo: s
     .then((it) => it.data)
     .then((it) => {
       if ('content' in it && !!it.content) {
-        return JSON.parse(atob(it.content)) as Array<any>
+        return getJsonObject(options.path, atob(it.content))
       }
       if ('content' in it && !!it.download_url) {
-        return fetch(it.download_url).then((res) => res.json())
+        return fetch(it.download_url)
+          .then((res) => res.text())
+          .then((content) => getJsonObject(options.path, content))
       }
       console.log('No content found for', options.path, options.ref, it)
       return []
@@ -112,6 +114,19 @@ async function fetchDatasheet(client: Octokit, options: { owner: string; repo: s
       console.error(err)
       return []
     })
+}
+
+function getJsonObject(path: string, content: string) {
+  if (!content) {
+    return null
+  }
+  if (path.endsWith('.yml') || path.endsWith('.yaml')) {
+    return YAML.parse(content)
+  }
+  if (path.endsWith('.json')) {
+    return JSON.parse(content)
+  }
+  throw new Error(`Unknown file format: ${path}`)
 }
 
 export interface ListRecordVersionsOptions<T> {

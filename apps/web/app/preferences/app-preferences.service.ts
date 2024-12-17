@@ -16,7 +16,8 @@ export class AppPreferencesService {
   public readonly highQualityModels: StorageProperty<boolean>
   public readonly gitAccessToken: StorageProperty<string>
   public readonly nwDataRepo: StorageProperty<string>
-  public readonly nwDataMode: StorageProperty<string>
+  public readonly nwDataRepoPreset: StorageProperty<string>
+  public readonly nwDataRepoFormat: StorageProperty<'json' | 'yaml'>
   public readonly nwDataRepoUseTags: StorageProperty<boolean>
   public readonly nwDataRepoUseFiles: StorageProperty<boolean>
   public readonly nwDataRepoUseLimit: StorageProperty<number>
@@ -33,6 +34,8 @@ export class AppPreferencesService {
     this.highQualityModels = storage.storageProperty('highQualityModels', false)
     this.gitAccessToken = storage.storageProperty('gitAccessToken', null)
     this.nwDataRepo = storage.storageProperty('nwDataRepo', 'https://github.com/giniedp/nw-buddy-data/tree/main/live/datatables')
+    this.nwDataRepoPreset = storage.storageProperty('nwDataRepoPreset', '')
+    this.nwDataRepoFormat = storage.storageProperty('nwDataRepoFormat', 'json')
     this.nwDataRepoUseTags = storage.storageProperty('nwDataRepoUseTags', true)
     this.nwDataRepoUseFiles = storage.storageProperty('nwDataRepoUseFiles', true)
     this.nwDataRepoUseLimit = storage.storageProperty('nwDataRepoUseLimit', 5)
