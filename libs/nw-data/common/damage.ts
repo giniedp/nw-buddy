@@ -72,14 +72,15 @@ export function getDamageScalingSumForWeapon({
   return str + dex + int + foc
 }
 
-const WEAPON_COEF_FOR_TIP = {
+const DMG_COEF_FOR_TOOLTIP = {
   Heal: 1.07,
   Greatsword: 0.9,
-  Blunderbuss: 1.38, // 6 x 0.23
+  Blunderbuss: 1.14,
+  // all other weapons use 1 for primary attack
 }
 
 export function getDamageCoefForWeaponTag(tag: string) {
-  return WEAPON_COEF_FOR_TIP[tag] || 1
+  return DMG_COEF_FOR_TOOLTIP[tag] || 1
 }
 
 export function getDamageForTooltip({
@@ -88,12 +89,14 @@ export function getDamageForTooltip({
   weapon,
   weaponScale,
   attrSums,
+  damageCoef,
 }: {
   playerLevel: number
   gearScore: number
   weapon: WeaponItemDefinitions
   weaponScale?: Record<AttributeRef, number>
   attrSums: Record<AttributeRef, number>
+  damageCoef?: number
 }) {
   return getDamageForWeapon({
     level: playerLevel,
@@ -101,7 +104,7 @@ export function getDamageForTooltip({
     gearScore: gearScore,
     weaponScale: weaponScale || getDamageScalingForWeapon(weapon),
     modifierSums: attrSums,
-    damageCoef: getDamageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)),
+    damageCoef: damageCoef ?? getDamageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)),
   })
 }
 
