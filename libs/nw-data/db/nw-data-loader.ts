@@ -31,17 +31,23 @@ export class NwDataLoader implements DataLoader {
   }
 
   public async loadDatasheet<T>(url: DataSheetUri<T>, source?: string): Promise<Array<T & { $source: string }>> {
-    return this.fetchJson<T[]>(url.uri)
-      .then((res) => this.transformDatasheet(res))
-      .then((data) => {
-        if (source) {
-          for (const item of data) {
-            item['$source'] = source
-            item['$uri'] = url.uri
-          }
-        }
-        return data as Array<T & { $source: string }>
-      })
+    const uris = Array.isArray(url.uri) ? url.uri : [url.uri]
+    return Promise.all(
+      uris.map(async (uri) => {
+        return this.fetchJson<T[]>(uri)
+          .then((res) => this.transformDatasheet(res))
+          .then((data) => {
+            if (source) {
+              for (const item of data) {
+                item['$source'] = source
+                item['$uri'] = uri
+              }
+            }
+            return data as Array<T & { $source: string }>
+          })
+      }),
+    )
+      .then((list) => list.flat(1))
       .catch((err) => {
         console.error('Failed to load datasheet', url, err)
         return []

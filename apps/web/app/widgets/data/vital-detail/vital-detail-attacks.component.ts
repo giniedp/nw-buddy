@@ -101,7 +101,12 @@ async function loadVitalDamageTables(db: NwData, files: string[]): Promise<Array
   const rows = files
     .map((file) => {
       file = 'datatables/' + file.replace(/\\/g, '/').replace(/\.xml$/, '.json')
-      return tables.find(([_, url]) => eqCaseInsensitive(url.uri, file))
+      return tables.find(([_, url]) => {
+        if (typeof url.uri === 'string') {
+          return eqCaseInsensitive(url.uri, file)
+        }
+        return url.uri.some((it) => eqCaseInsensitive(it, file))
+      })
     })
     .filter((it) => !!it)
     .map(async ([name, uri]) => {

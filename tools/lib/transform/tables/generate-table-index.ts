@@ -18,16 +18,43 @@ export function generateTableIndex(
   code.push(`} from './types'`)
   code.push('')
   code.push(`export type DataSheetUri<T> = {`)
-  code.push(`  uri: string`)
+  code.push(`  uri: string | string[]`)
   code.push(`}`)
   code.push('')
   code.push(`export const DATASHEETS = {`)
   for (const sheetType of Object.keys(groups).sort()) {
     code.push(`  ${escapedName(sheetType)}: {`)
-    groups[sheetType].sort((a, b) => a.sheetName.localeCompare(b.sheetName))
+    const sheets: Record<
+      string,
+      {
+        uris: string[]
+        types: string[]
+      }
+    > = {}
+
     for (const { sheetName, type, file } of groups[sheetType]) {
       const url = file.replace(/\\/g, '/')
-      code.push(`    ${escapedName(sheetName)}: <DataSheetUri<${type}>>{ uri: '${url}' },`)
+      if (!sheets[sheetName]) {
+        sheets[sheetName] = {
+          uris: [],
+          types: [],
+        }
+      }
+      sheets[sheetName].uris.push(url)
+      sheets[sheetName].types.push(type)
+    }
+    for (const sheetName of Object.keys(sheets).sort((a, b) => a.localeCompare(b))) {
+      const uris = uniq(sheets[sheetName].uris)
+      const types = uniq(sheets[sheetName].types)
+      if (uris.length === 1) {
+        code.push(`    ${escapedName(sheetName)}: <DataSheetUri<${types[0]}>>{ uri: '${uris[0]}' },`)
+      } else {
+        code.push(
+          `    ${escapedName(sheetName)}: <DataSheetUri<${types.join(' | ')}>>{`,
+          `      uri: ${JSON.stringify(uris)}`,
+          `    },`,
+        )
+      }
     }
     code.push(`  },`)
   }

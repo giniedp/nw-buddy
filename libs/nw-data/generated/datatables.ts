@@ -224,7 +224,7 @@ import type {
 } from "./types";
 
 export type DataSheetUri<T> = {
-  uri: string;
+  uri: string | string[];
 };
 
 export const DATASHEETS = {
