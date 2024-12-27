@@ -3,7 +3,6 @@ import { RealtimeChannel } from '@supabase/supabase-js'
 import { AppDbRecord, AppDbTable } from '~/data/app-db'
 import { Database, TablesInsert, TablesUpdate } from '~/data/supabase/types'
 import { SupabaseService } from '~/data/supabase/supabase.service'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { filter, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { nanoid } from 'nanoid'
 
@@ -37,7 +36,7 @@ export class SyncService {
     this.supabase.userId$
       .pipe(
         filter((id) => !!id),
-        switchMap(() => db.events.pipe(tap((ev) => console.log(ev)))),
+        switchMap(() => db.events),
         takeUntil(this.destroy$),
       )
       .subscribe((ev) => {
@@ -66,12 +65,12 @@ export class SyncService {
       .on('postgres_changes', { event: '*', schema: 'public', table: this.name }, async ({ eventType, ...payload }) => {
         console.log('SUPABASE REALTIME EVENT FIRED', payload)
 
+        const keys = await this.db.keys()
         // const record = payload.new
 
         if (eventType === 'INSERT') {
           console.log('SUPABASE REALTIME ON INSERT EVENT')
 
-          const keys = await this.db.keys()
           if (keys.includes(payload.new['id'])) {
             return
           }
@@ -83,14 +82,16 @@ export class SyncService {
         if (eventType === 'UPDATE') {
           console.log('SUPABASE REALTIME ON UPDATE EVENT')
 
-          const local = this.db.read(payload.new['id'])
+          const local = await this.db.read(payload.new['id'])
+
           if (
             'updated_at' in local &&
             'updated_at' in payload.new &&
             new Date(local['updated_at'] as string) < new Date(payload.new['updated_at'])
           ) {
             console.log('SUPABASE REALTIME ON UPDATE EVENT -> REMOTE AHEAD OF LOCAL')
-            this.db.update(payload.new['id'], payload.new)
+            //@ts-expect-error
+            this.db.table.update(payload.new['id'], payload.new)
           }
           return
         }
@@ -98,12 +99,11 @@ export class SyncService {
         if (eventType === 'DELETE') {
           console.log('SUPABASE REALTIME ON DELETE EVENT')
 
-          const keys = await this.db.keys()
-          if (!keys.includes(payload.new['id'])) {
+          if (!keys.includes(payload.old['id'])) {
             return
           }
 
-          this.db.destroy(payload.new['id'])
+          this.db.destroy(payload.old['id'])
         }
       })
       .subscribe((status, error) => {
@@ -197,12 +197,12 @@ export class SyncService {
 
   async onUpdate<T extends AppDbRecord>(record: Partial<T>) {
     console.log(`${this.name.toUpperCase()} SUPABASE UPDATE CALL`)
-
     const user_id = this.getUser()?.id
 
     const { error, status, data } = await this.supabase.client
       .from(this.name)
       .upsert({ ...(record as any as TablesInsert<TableNames>), user_id })
+      .neq('updated_at', await this.db.read(record.id)['updated_at'])
       .select()
 
     if (error) {
