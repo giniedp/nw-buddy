@@ -90,9 +90,12 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   }
 
   public async create(record: Partial<T>): Promise<T> {
+    const now = new Date()
     record = {
       ...record,
       id: record.id || createId(),
+      created_at: now,
+      updated_at: now,
     }
     const id = await this.table.add(record as T, record.id)
     const row = await this.read(id as any)
@@ -105,6 +108,9 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   }
 
   public async update(id: string, record: Partial<T>): Promise<T> {
+    const now = new Date()
+    record['updated_at'] = now
+
     await this.table.update(id, record)
     const row = await this.read(id)
     this.events.next({ type: 'update', payload: row })
