@@ -116,7 +116,7 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     const ids = typeof id === 'string' ? [id] : id
 
     for (const id of ids) {
-      this.events.next({ type: 'update', payload: { id } as T })
+      this.events.next({ type: 'delete', payload: { id } as T })
     }
 
     return
