@@ -2,7 +2,6 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { supabaseAnonKey, supabaseUrl, type EnvVars } from '../apps/web/environments/env'
 import {
   BRANCH_NAME,
   CDN_URL,
@@ -103,8 +102,8 @@ program
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
       disableTooltips: !['live', 'ptr'].includes(workspace.toLowerCase()),
       watermarkImageUrl: NW_WATERMARK || null,
-      supabaseAnonKey,
-      supabaseUrl,
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+      supabaseUrl: process.env.SUPABASE_URL,
     } satisfies EnvVars
     console.log(env)
     const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(
