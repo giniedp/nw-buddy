@@ -1,4 +1,4 @@
-@if (supabase.session(); as session) {
+@if (supabase.isSignedIn()) {
   <!-- [cdkMenuTriggerFor]="tplAccMenu" -->
   <button
     class="btn btn-circle btn-ghost no-drag avatar"
@@ -6,7 +6,7 @@
     [tooltip]="'Account'"
     [tooltipPlacement]="'bottom'"
   >
-    <img [src]="supabase.getAvatarUrl()" class="rounded-full" alt="" />
+    <img [src]="supabase.avatarUrl()" class="rounded-full" alt="" />
   </button>
 } @else {
   <button
@@ -21,7 +21,7 @@
 <ng-template #tplAccMenu>
   <ul class="menu menu-compact bg-base-300 border border-base-200 rounded-md w-40 shadow-md" cdkMenu>
     <li>
-      <div cdkMenuItem class="menu-title">{{ supabase.getUsername() }}</div>
+      <div cdkMenuItem class="menu-title">{{ supabase.userName() }}</div>
     </li>
     <li>
       <button cdkMenuItem (click)="signOut()">Sign Out</button>
