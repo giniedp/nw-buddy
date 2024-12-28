@@ -1,15 +1,14 @@
-import { EquipSlot, ItemRarity, PerkBucket } from '@nw-data/common'
-import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
+import { EquipSlot, ItemRarity } from '@nw-data/common'
+import { MasterItemDefinitions } from '@nw-data/generated'
 
-import { signalStore, withHooks } from '@ngrx/signals'
+import { inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { signalStore, withHooks, withMethods } from '@ngrx/signals'
 import { ItemInstance } from '../items/types'
+import { SupabaseService } from '../supabase'
+import { GearsetsDB } from './gearsets.db'
 import { GearsetRecord } from './types'
 import { withGearsetsRows } from './with-gearsets'
-
-import { GearsetsDB } from './gearsets.db'
-import { inject, Injector } from '@angular/core'
-import { SyncService } from '../supabase/sync.service'
-import { AppDbTable } from '../app-db'
 
 
 export interface GearsetRowSlot {
@@ -46,20 +45,13 @@ export const GearsetsStore = signalStore(
     onInit(state) {
       state.connectDB()
       state.loadNwData()
-
-      const db = inject(GearsetsDB)
-      const remote = Injector.create({
-        providers: [
-          SyncService,
-          //   {
-          //   class: AppDbTable,
-          //   useValue: db,
-          // }
-        ],
-        parent: inject(Injector),
-      }).get(SyncService)
-
-      remote.connectTableSync(db)
     },
+  }),
+  withMethods(() => {
+    const table = inject(GearsetsDB)
+    const supabase = inject(SupabaseService)
+    return {
+      tableSync: () => supabase.tableSync(table)
+    }
   }),
 )

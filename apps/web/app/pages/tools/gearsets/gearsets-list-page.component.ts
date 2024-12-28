@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { debounceTime, filter, switchMap } from 'rxjs'
-import { GearsetRecord } from '~/data'
+import { GearsetRecord, GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
@@ -47,6 +48,7 @@ export class GearsetsListPageComponent {
   private router = inject(Router)
   private route = inject(ActivatedRoute)
   private share = inject(ShareService)
+  private gearsets = inject(GearsetsStore)
 
   protected get filterTags() {
     return this.store.filterTags()
@@ -61,6 +63,7 @@ export class GearsetsListPageComponent {
   public constructor() {
     this.store.connectDB()
     this.store.connectFilterQuery(this.quicksearch.query$.pipe(debounceTime(500)))
+    this.gearsets.tableSync().pipe(takeUntilDestroyed()).subscribe()
   }
 
   protected async handleCreate() {

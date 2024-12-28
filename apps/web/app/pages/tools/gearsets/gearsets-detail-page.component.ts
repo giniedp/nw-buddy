@@ -20,9 +20,9 @@ import { TooltipModule } from '~/ui/tooltip'
 import { injectBreakpoint, injectQueryParam, injectRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
-import { toSignal } from '@angular/core/rxjs-interop'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { BehaviorSubject, map } from 'rxjs'
-import { GearsetsDB } from '~/data'
+import { GearsetsDB, GearsetsStore } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
 import { svgCalculator, svgChartLine, svgCodeMerge, svgSwords, svgUser } from '~/ui/icons/svg'
 
@@ -65,6 +65,7 @@ import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
 export class GearsetsDetailPageComponent implements AfterViewInit {
   protected isTabOpponent = toSignal(injectQueryParam('tab').pipe(map((it) => it === 'vs')))
   protected isLarge = toSignal(injectBreakpoint('(min-width: 992px)'))
+  private gearsets = inject(GearsetsStore)
 
   protected gearsetId$ = injectRouteParam('id')
   protected oppenentId$ = injectQueryParam('vs')
@@ -84,6 +85,10 @@ export class GearsetsDetailPageComponent implements AfterViewInit {
   protected iconTabSkill = svgCodeMerge
   protected iconTabGear = svgSwords
   protected iconTabCalculator = svgCalculator
+
+  public constructor() {
+    this.gearsets.tableSync().pipe(takeUntilDestroyed()).subscribe()
+  }
 
   public ngAfterViewInit(): void {
     this.players.changes.subscribe(() => {
