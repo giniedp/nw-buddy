@@ -46,7 +46,7 @@ export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
     return []
   }
 
-  public async create(record: Partial<T>): Promise<T> {
+  public async create(record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     return null
   }
 
@@ -54,15 +54,15 @@ export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
     return null
   }
 
-  public async update(id: string, record: Partial<T>): Promise<T> {
+  public async update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     return null
   }
 
-  public async destroy(id: string | string[]): Promise<void> {
+  public async destroy(id: string | string[], options?: { silent: boolean }): Promise<void> {
     //
   }
 
-  public async createOrUpdate(record: T): Promise<T> {
+  public async createOrUpdate(record: T, options?: { silent: boolean }): Promise<T> {
     return null
   }
 

@@ -90,17 +90,19 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.toArray()
   }
 
-  public async create(record: Partial<T>): Promise<T> {
+  public async create(record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     const now = new Date()
     record = {
       ...record,
       id: record.id || createId(),
-      created_at: now,
-      updated_at: now,
+      created_at: now.toJSON(),
+      updated_at: now.toJSON(),
     }
     const id = await this.table.add(record as T, record.id)
     const row = await this.read(id as any)
-    this.events.next({ type: 'create', payload: row })
+    if (!options?.silent) {
+      this.events.next({ type: 'create', payload: row })
+    }
     return row
   }
 
@@ -108,33 +110,41 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.get(id)
   }
 
-  public async update(id: string, record: Partial<T>): Promise<T> {
+  public async update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     const now = new Date()
-    record['updated_at'] = now
+    record['updated_at'] = now.toJSON()
 
     await this.table.update(id, record)
     const row = await this.read(id)
-    this.events.next({ type: 'update', payload: row })
+    if (!options?.silent) {
+      this.events.next({ type: 'update', payload: row })
+    }
     return row
   }
 
-  public async destroy(id: string | string[]): Promise<void> {
+  public async destroy(id: string | string[], options?: { silent: boolean }): Promise<void> {
     await this.table.delete(id)
     const ids = typeof id === 'string' ? [id] : id
 
-    for (const id of ids) {
-      this.events.next({ type: 'delete', payload: { id } as T })
+    if (!options?.silent) {
+      for (const id of ids) {
+        this.events.next({ type: 'delete', payload: { id } as T })
+      }
     }
 
     return
   }
 
-  public async createOrUpdate(record: T): Promise<T> {
+  public async createOrUpdate(record: T, options?: { silent: boolean }): Promise<T> {
     if (record.id) {
       await this.table.put(record, record.id)
-      return this.read(record.id)
+      const row = await this.read(record.id)
+      if (!options?.silent) {
+        this.events.next({ type: 'create', payload: row })
+      }
+      return row
     }
-    return this.create(record)
+    return this.create(record, options)
   }
 
   public live<R>(fn: (tbale: Table<T>) => PromiseExtended<R>) {

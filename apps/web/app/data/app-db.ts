@@ -24,12 +24,12 @@ export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract keys(): Promise<string[]>
 
   public abstract list(): Promise<T[]>
-  public abstract create(record: Partial<T>): Promise<T>
+  public abstract create(record: Partial<T>, options?: { silent: boolean }): Promise<T>
   public abstract read(id: string): Promise<T>
-  public abstract update(id: string, record: Partial<T>): Promise<T>
-  public abstract destroy(id: string | string[]): Promise<void>
+  public abstract update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T>
+  public abstract destroy(id: string | string[], options?: { silent: boolean }): Promise<void>
 
-  public abstract createOrUpdate(record: T): Promise<T>
+  public abstract createOrUpdate(record: T, options?: { silent: boolean }): Promise<T>
 
   public abstract observeAll(): Observable<T[]>
   public abstract observeByid(id: string | Observable<string>): Observable<T>
