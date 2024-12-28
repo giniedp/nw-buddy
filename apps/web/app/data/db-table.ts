@@ -24,24 +24,24 @@ export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.list()
   }
 
-  public async create(record: Partial<T>) {
-    return this.table.create(record)
+  public async create(record: Partial<T>, options?: { silent: boolean }) {
+    return this.table.create(record, options)
   }
 
   public async read(id: string) {
     return this.table.read(id)
   }
 
-  public async update(id: string, record: Partial<T>) {
-    return this.table.update(id, record)
+  public async update(id: string, record: Partial<T>, options?: { silent: boolean }) {
+    return this.table.update(id, record, options)
   }
 
-  public async destroy(id: string | string[]) {
-    return this.table.destroy(id)
+  public async destroy(id: string | string[], options?: { silent: boolean }) {
+    return this.table.destroy(id, options)
   }
 
-  public async createOrUpdate(record: T) {
-    return this.table.createOrUpdate(record)
+  public async createOrUpdate(record: T, options?: { silent: boolean }) {
+    return this.table.createOrUpdate(record, options)
   }
 
   public observeAll() {

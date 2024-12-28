@@ -15,7 +15,6 @@ export interface SyncTableOptions {
 
 export function tableSyncStream(options: SyncTableOptions): Observable<void> {
   // defer, so it doesn't run until subscribed to
-  console.log(options)
   return defer(() => of(null)).pipe(
     switchMap(() => initialSync(options)),
     switchMap(() =>
@@ -59,7 +58,7 @@ async function initialSync({ client, table, userId }: SyncTableOptions) {
     if (local === null && remote !== null) {
       // Handle case where only remote row exists
       const { user_id, id, ...rest } = remote
-      await table.create({ ...rest, id })
+      await table.create({ ...rest, id }, { silent: true })
       return
     }
 
@@ -67,7 +66,7 @@ async function initialSync({ client, table, userId }: SyncTableOptions) {
       // Handle case where only local row exists
       if (local.id.length != 21) {
         const id = nanoid()
-        await table.update(local.id, { ...local, id })
+        await table.update(local.id, { ...local, id }, { silent: true })
         local.id = id
       }
       await client.from(tableName).insert({ ...(local as any as TablesInsert<TableNamesWithUserId>), user_id: userId })
@@ -96,7 +95,7 @@ async function initialSync({ client, table, userId }: SyncTableOptions) {
       console.log('REMOTE IS AHEAD OF LOCAL')
       console.log('local:', local)
       console.log('remote:', remote)
-      await table.update(local.id, remote)
+      await table.update(local.id, remote, { silent: true })
       return
     }
   })
@@ -158,7 +157,7 @@ function syncToLocal({ client, table }: SyncTableOptions): Observable<void> {
     console.debug(tag, 'INSERT', record.id)
     const local = await table.read(record.id)
     if (!local) {
-      await table.create(record)
+      await table.create(record, { silent: true })
     }
   }
 
@@ -176,7 +175,7 @@ function syncToLocal({ client, table }: SyncTableOptions): Observable<void> {
     console.debug(tag, 'LOCAL:', localTime, 'REMOTE:', remoteTime)
     if (localTime < remoteTime) {
       console.log('SUPABASE REALTIME ON UPDATE EVENT -> REMOTE AHEAD OF LOCAL')
-      table.update(remote.id, remote)
+      table.update(remote.id, remote, { silent: true })
     }
   }
 
@@ -184,7 +183,7 @@ function syncToLocal({ client, table }: SyncTableOptions): Observable<void> {
     console.debug(tag, 'DELETE', id)
     const local = await table.read(id)
     if (local) {
-      await table.destroy(id)
+      await table.destroy(id, { silent: true })
     }
   }
 }
