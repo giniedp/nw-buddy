@@ -22,6 +22,7 @@ export class AppDbNoop extends AppDb {
 export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
   public db: AppDb
   public tableName: string
+  public events = new Subject<AppDbTableEvent<T>>()
 
   public constructor(db: AppDb, name: string) {
     super()

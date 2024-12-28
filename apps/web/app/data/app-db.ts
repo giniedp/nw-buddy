@@ -16,8 +16,7 @@ export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract readonly db: AppDb
 
   public abstract readonly tableName: string
-
-  public readonly events = new Subject<AppDbTableEvent<T>>()
+  public abstract readonly events: Subject<AppDbTableEvent<T>>
 
 
   public abstract tx<R>(fn: () => Promise<R>): Promise<R>

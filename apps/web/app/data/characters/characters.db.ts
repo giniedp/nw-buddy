@@ -9,6 +9,9 @@ import { CharacterRecord } from './types'
 export class CharactersDB extends DBTable<CharacterRecord> {
   public readonly db = injectAppDB()
   public readonly table = this.db.table<CharacterRecord>(DBT_CHARACTERS)
+  public get events() {
+    return this.table.events
+  }
 
   public async getCurrent() {
     return this.tx(async () => {

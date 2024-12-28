@@ -8,4 +8,7 @@ import { SkillSetRecord } from './types'
 export class SkillBuildsDB extends DBTable<SkillSetRecord> {
   public readonly db = injectAppDB()
   public readonly table = this.db.table<SkillSetRecord>(DBT_SKILL_BUILDS)
+  public get events() {
+    return this.table.events
+  }
 }

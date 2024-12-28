@@ -13,6 +13,9 @@ export class ImagesDB extends DBTable<ImageRecord> {
   private window = injectWindow()
   public readonly db = injectAppDB()
   public readonly table = this.db.table<ImageRecord>(DBT_IMAGES)
+  public get events() {
+    return this.table.events
+  }
 
   private sanitizer = inject(DomSanitizer)
   public imageUrl(id: string | Observable<string>) {

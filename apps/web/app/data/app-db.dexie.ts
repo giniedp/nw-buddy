@@ -59,9 +59,10 @@ export class AppDbDexie extends AppDb {
 const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
 export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
-  public db: AppDbDexie
-  public tableName: string
-  private table: Table<T>
+  public readonly db: AppDbDexie
+  public readonly tableName: string
+  public readonly events = new Subject<AppDbTableEvent<T>>()
+  private readonly table: Table<T>
 
   public constructor(db: AppDbDexie, name: string) {
     super()
