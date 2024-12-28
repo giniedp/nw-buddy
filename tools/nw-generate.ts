@@ -2,7 +2,6 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { supabaseAnonKey, supabaseUrl, type EnvVars } from '../apps/web/environments/env'
 import {
   BRANCH_NAME,
   CDN_URL,
