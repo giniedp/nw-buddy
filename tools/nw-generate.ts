@@ -2,6 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
+import { type EnvVars } from '../apps/web/environments/env'
 import {
   BRANCH_NAME,
   CDN_URL,
@@ -97,7 +98,7 @@ program
     const dataLinkDir = environment.nwDataDir('.current')
     console.log('Linking data directory', dataSrcDir, '->', dataLinkDir)
     if (fs.existsSync(dataLinkDir)) {
-      fs.rmSync(dataLinkDir, { force: true, recursive: true })
+      fs.rmSync(dataLinkDir, { force: true })
     }
 
     fs.symlinkSync(dataSrcDir, dataLinkDir, 'dir')
