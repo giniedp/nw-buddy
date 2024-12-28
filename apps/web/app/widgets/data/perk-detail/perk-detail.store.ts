@@ -154,7 +154,7 @@ function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState>
     affix: affix$,
     abilities: abilities$,
     refAbilities: refAbilities$,
-    refEffects: refEffects$.pipe(tapDebug('refEffects')),
+    refEffects: refEffects$,
     resourceItems: resourceItems$,
   })
 }
