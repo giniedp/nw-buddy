@@ -448,8 +448,8 @@ importers:
         specifier: 0.33.4
         version: 0.33.4
       supabase:
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: 2.1.1
+        version: 2.1.1
       swiper:
         specifier: 11.1.4
         version: 11.1.4
@@ -10172,8 +10172,8 @@ packages:
     resolution: {integrity: sha512-MvjXzkz/BOfyVDkG0oFOtBxHX2u3gKbMHIF/dXblZsgD3BWOFLmHovIpZY7BykJdAjcqRCBi1WYBNdEC9yI7vg==}
     engines: {node: '>= 8.0'}
 
-  supabase@2.0.0:
-    resolution: {integrity: sha512-2Z42hoKgmjMjFMo3pVdVvV8nIDly/ac/v4ZcHSdDJohf+2Y+/OJ1sHGoIvm6v3N4dAGKe3SCovS3+HYFGL1L7w==}
+  supabase@2.1.1:
+    resolution: {integrity: sha512-KPP4LrvMmu6IWIcqSOcPbepTGT2Fv05TMiYwbcEaKgCVUznDNtlyXQTImJhjP+8FhNuJ+tF9SLoQgMQqDei+jA==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -13087,7 +13087,7 @@ snapshots:
       node-gyp: 9.4.1
       ora: 5.4.1
       read-binary-file-arch: 1.0.6
-      semver: 7.7.1
+      semver: 7.7.2
       tar: 6.2.1
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -14387,7 +14387,7 @@ snapshots:
   '@npmcli/fs@2.1.2':
     dependencies:
       '@gar/promisify': 1.1.3
-      semver: 7.7.1
+      semver: 7.7.2
 
   '@npmcli/fs@4.0.0':
     dependencies:
@@ -15365,7 +15365,7 @@ snapshots:
       jsdoc-type-pratt-parser: 4.1.0
       process: 0.11.10
       recast: 0.23.9
-      semver: 7.7.1
+      semver: 7.7.2
       util: 0.12.5
       ws: 8.18.0
     optionalDependencies:
@@ -16400,7 +16400,7 @@ snapshots:
       minimatch: 10.0.1
       resedit: 1.7.2
       sanitize-filename: 1.6.3
-      semver: 7.7.1
+      semver: 7.7.2
       tar: 6.2.1
       temp-file: 3.4.0
     transitivePeerDependencies:
@@ -20920,7 +20920,7 @@ snapshots:
 
   node-abi@3.71.0:
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   node-abort-controller@3.1.1: {}
 
@@ -20935,7 +20935,7 @@ snapshots:
 
   node-api-version@0.2.0:
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   node-domexception@1.0.0: {}
 
@@ -20985,7 +20985,7 @@ snapshots:
       nopt: 6.0.0
       npmlog: 6.0.2
       rimraf: 3.0.2
-      semver: 7.7.1
+      semver: 7.7.2
       tar: 6.2.1
       which: 2.0.2
     transitivePeerDependencies:
@@ -22810,7 +22810,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  supabase@2.0.0:
+  supabase@2.1.1:
     dependencies:
       bin-links: 5.0.0
       https-proxy-agent: 7.0.6

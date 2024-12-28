@@ -218,7 +218,7 @@
     "rimraf": "5.0.7",
     "rxjs": "7.8.1",
     "sharp": "0.33.4",
-    "supabase": "2.0.0",
+    "supabase": "2.1.1",
     "swiper": "11.1.4",
     "tailwind": "4.0.0",
     "tailwind-merge": "2.3.0",
