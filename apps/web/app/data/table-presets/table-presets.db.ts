@@ -8,10 +8,16 @@ import { TablePresetRecord, TableStateRecord } from './types'
 export class TablePresetDB extends DBTable<TablePresetRecord> {
   public readonly db = injectAppDB()
   public readonly table = this.db.table<TablePresetRecord>(DBT_TABLE_PRESETS)
+  public get events() {
+    return this.table.events
+  }
 }
 
 @Injectable({ providedIn: 'root' })
 export class TableStateDB extends DBTable<TableStateRecord> {
   public readonly db = injectAppDB()
   public readonly table = this.db.table<TableStateRecord>(DBT_TABLE_STATES)
+  public get events() {
+    return this.table.events
+  }
 }
