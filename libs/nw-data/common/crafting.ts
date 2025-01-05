@@ -98,7 +98,7 @@ export function getCraftingIngredients(recipe: CraftingIngredients) {
       return {
         ingredient: recipe[`Ingredient${i + 1}`] as string,
         quantity: recipe[`Qty${i + 1}`] as number,
-        type: recipe[`Type${i + 1}`] as CraftingIngredientType,
+        type: recipe[`Type${i + 1}`] as CraftingIngredientType ?? 'Item',
         ref: `${i}`,
       }
     })
