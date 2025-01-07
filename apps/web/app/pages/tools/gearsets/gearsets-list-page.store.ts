@@ -1,6 +1,9 @@
-import { computed } from '@angular/core'
-import { signalStore, withComputed } from '@ngrx/signals'
+import { computed, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { signalStore, withComputed, withHooks, withMethods } from '@ngrx/signals'
+import { of } from 'rxjs'
 import { GearsetRecord, GearsetsDB, withDbRecords, withFilterByQuery, withFilterByTags } from '~/data'
+import { BackendService } from '~/data/backend'
 
 export const GearsetsListPageStore = signalStore(
   withDbRecords(GearsetsDB),
@@ -24,7 +27,18 @@ export const GearsetsListPageStore = signalStore(
             return (a.name || '').localeCompare(b.name || '')
           }),
         ]
-      })
+      }),
     }
-  })
+  }),
+  withMethods(() => {
+    const backend = inject(BackendService)
+    return {
+      autoSync: () => backend.privateTables.gearsets?.autoSync$ || of(null),
+    }
+  }),
+  withHooks({
+    onInit(state) {
+      state.autoSync().pipe(takeUntilDestroyed()).subscribe()
+    },
+  }),
 )

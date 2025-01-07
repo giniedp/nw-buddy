@@ -1,6 +1,9 @@
-import { computed } from '@angular/core'
+import { computed, inject } from '@angular/core'
 
-import { signalStore, withComputed, withHooks } from '@ngrx/signals'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { signalStore, withComputed, withHooks, withMethods } from '@ngrx/signals'
+import { of } from 'rxjs'
+import { BackendService } from '../backend'
 import { withDbRecords } from '../with-db-records'
 import { withNwData } from '../with-nw-data'
 import { ItemInstancesDB } from './items.db'
@@ -8,7 +11,6 @@ import { buildItemInstanceRows } from './utils'
 
 export type InventoryItemsStore = InstanceType<typeof InventoryItemsStore>
 export const InventoryItemsStore = signalStore(
-  { providedIn: 'root' },
   withDbRecords(ItemInstancesDB),
   withNwData((db) => {
     return {
@@ -25,10 +27,17 @@ export const InventoryItemsStore = signalStore(
       isLoaded: isLoaded,
     }
   }),
+  withMethods(() => {
+    const backend = inject(BackendService)
+    return {
+      autoSync: () => backend.privateTables.items?.autoSync$ || of(null),
+    }
+  }),
   withHooks({
     onInit(state) {
       state.connectDB()
       state.loadNwData()
+      state.autoSync().pipe(takeUntilDestroyed()).subscribe()
     },
   }),
 )
