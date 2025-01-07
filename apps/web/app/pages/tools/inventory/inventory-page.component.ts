@@ -57,6 +57,7 @@ import { InventoryPickerService } from './inventory-picker.service'
     }),
     QuicksearchService,
     InventoryPickerService,
+    InventoryItemsStore
   ],
 })
 export class InventoryPageComponent implements OnInit {

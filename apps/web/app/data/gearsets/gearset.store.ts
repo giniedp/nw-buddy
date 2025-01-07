@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { EquipSlotId, ItemPerkInfo, NW_MAX_CHARACTER_LEVEL, PerkBucket, getItemPerkInfos } from '@nw-data/common'
 import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
@@ -14,6 +14,8 @@ import { withGearsetMethods } from './with-gearset-methods'
 import { withGearsetProps } from './with-gearset-props'
 import { withGearsetToMannequin } from './with-gearset-to-mannequin'
 import { NwData } from '@nw-data/db'
+import { BackendService } from '../backend'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 export interface GearsetStoreState {
   readonly: boolean
@@ -39,8 +41,10 @@ export const GearsetStore = signalStore(
   withGearsetMethods(),
   withGearsetToMannequin(),
   withMethods((state) => {
+    const backend = inject(BackendService)
     const db = inject(GearsetsDB)
     return {
+      autoSync: () => backend.privateTables.gearsets?.autoSync$ || of(null),
       connectGearsetDB: rxMethod<string>(
         pipe(
           switchMap((id) => db.observeByid(id)),
@@ -62,6 +66,11 @@ export const GearsetStore = signalStore(
         ),
       ),
     }
+  }),
+  withHooks({
+    onInit(state) {
+      state.autoSync().pipe(takeUntilDestroyed()).subscribe()
+    },
   }),
 )
 

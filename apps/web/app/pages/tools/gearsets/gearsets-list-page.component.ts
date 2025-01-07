@@ -48,7 +48,6 @@ export class GearsetsListPageComponent {
   private router = inject(Router)
   private route = inject(ActivatedRoute)
   private share = inject(ShareService)
-  private gearsets = inject(GearsetsStore)
 
   protected get filterTags() {
     return this.store.filterTags()
@@ -63,7 +62,6 @@ export class GearsetsListPageComponent {
   public constructor() {
     this.store.connectDB()
     this.store.connectFilterQuery(this.quicksearch.query$.pipe(debounceTime(500)))
-    this.gearsets.tableSync().pipe(takeUntilDestroyed()).subscribe()
   }
 
   protected async handleCreate() {

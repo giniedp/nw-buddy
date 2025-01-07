@@ -2,13 +2,13 @@ import { EquipSlot, ItemRarity } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 
 import { inject } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { signalStore, withHooks, withMethods } from '@ngrx/signals'
+import { of } from 'rxjs'
+import { BackendService } from '../backend'
 import { ItemInstance } from '../items/types'
-import { SupabaseService } from '../supabase'
-import { GearsetsDB } from './gearsets.db'
 import { GearsetRecord } from './types'
 import { withGearsetsRows } from './with-gearsets'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 
 export interface GearsetRowSlot {
@@ -41,17 +41,17 @@ export type GearsetsStore = InstanceType<typeof GearsetsStore>
 export const GearsetsStore = signalStore(
   { providedIn: 'root' },
   withGearsetsRows(),
+  withMethods(() => {
+    const backend = inject(BackendService)
+    return {
+      autoSync: () => backend.privateTables.gearsets?.autoSync$ || of(null),
+    }
+  }),
   withHooks({
     onInit(state) {
       state.connectDB()
       state.loadNwData()
+      state.autoSync().pipe(takeUntilDestroyed()).subscribe()
     },
-  }),
-  withMethods(() => {
-    const table = inject(GearsetsDB)
-    const supabase = inject(SupabaseService)
-    return {
-      tableSync: () => supabase.tableSync(table)
-    }
   }),
 )

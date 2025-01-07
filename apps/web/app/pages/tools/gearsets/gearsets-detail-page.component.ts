@@ -87,7 +87,7 @@ export class GearsetsDetailPageComponent implements AfterViewInit {
   protected iconTabCalculator = svgCalculator
 
   public constructor() {
-    this.gearsets.tableSync().pipe(takeUntilDestroyed()).subscribe()
+    this.gearsets.autoSync().pipe(takeUntilDestroyed()).subscribe()
   }
 
   public ngAfterViewInit(): void {
