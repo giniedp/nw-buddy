@@ -1,0 +1,14 @@
+services:
+  pocketbase:
+    image: nw-buddy-db:latest
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    ports:
+      - ${POCKETBASE_PORT:-3000}:3000
+    volumes:
+      - ./pb_data:/pb/pb_data
+      - ./pb_hooks:/pb/pb_hooks
+      - ./pb_public:/pb/pb_public
+      - ./pb_migrations:/pb/pb_migrations

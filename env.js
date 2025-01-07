@@ -38,6 +38,7 @@ const config = {
   COMMIT_HASH: commitHash,
   NW_BADGE: env('NW_BADGE', nwWorkspace, ''),
   NW_WATERMARK: env('NW_WATERMARK', nwWorkspace, ''),
+  POCKETBASE_URL: env('POCKETBASE_URL', nwWorkspace, ''),
 }
 
 function env(name, workspace, fallback) {
