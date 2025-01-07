@@ -104,9 +104,9 @@ program
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
       disableTooltips: !['live', 'ptr'].includes(workspace.toLowerCase()),
       watermarkImageUrl: NW_WATERMARK || null,
-      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-      supabaseUrl: process.env.SUPABASE_URL,
-      pocketbaseUrl: POCKETBASE_URL
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null,
+      supabaseUrl: process.env.SUPABASE_URL || null,
+      pocketbaseUrl: POCKETBASE_URL || null
     } satisfies EnvVars
     console.log(env)
     const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(
