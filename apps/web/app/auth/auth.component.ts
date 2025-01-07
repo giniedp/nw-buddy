@@ -1,23 +1,30 @@
-import { Component, inject } from '@angular/core'
-import { SupabaseService } from '../data/supabase'
-import { TooltipModule } from '~/ui/tooltip'
-import { AppMenuComponent } from '~/app-menu.component'
 import { CdkMenuModule } from '@angular/cdk/menu'
+import { Component, computed, inject } from '@angular/core'
+import { BackendService } from '~/data/backend'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'app-auth',
   templateUrl: './auth.component.html',
-  // styleUrls: ["./auth.component.scss"],
   imports: [TooltipModule, CdkMenuModule],
+  host: {
+    '[class.hidden]': '!isEnabled()'
+  }
 })
 export class AuthComponent {
-  protected supabase = inject(SupabaseService)
+  protected backend = inject(BackendService)
 
-  async signIn(): Promise<void> {
-    await this.supabase.signIn()
+  protected isEnabled = this.backend.isEnabled
+  protected isSignedIn = this.backend.isSignedIn
+  protected userName = computed(() => this.backend.session()?.name)
+  protected initials = computed(() => this.userName().substring(0, 2))
+
+  async signIn() {
+    await this.backend.signIn()
   }
+
   async signOut() {
-    await this.supabase.signOut()
+    await this.backend.signOut()
   }
 }
