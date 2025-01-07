@@ -12,6 +12,7 @@ import {
   NW_WATERMARK,
   NW_WORKSPACE,
   PACKAGE_VERSION,
+  POCKETBASE_URL,
   environment,
 } from '../env'
 import { tsFromSliceFiles } from './lib/file-formats/slices/generate-slice-types'
@@ -105,6 +106,7 @@ program
       watermarkImageUrl: NW_WATERMARK || null,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
       supabaseUrl: process.env.SUPABASE_URL,
+      pocketbaseUrl: POCKETBASE_URL
     } satisfies EnvVars
     console.log(env)
     const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(

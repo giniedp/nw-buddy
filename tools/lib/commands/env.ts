@@ -6,6 +6,7 @@ import {
   CDN_UPLOAD_SPACE,
   CDN_URL,
   NW_WORKSPACE,
+  POCKETBASE_URL,
   environment,
 } from '../../../env'
 
@@ -20,6 +21,7 @@ program
       CDN_UPLOAD_SPACE,
       CDN_URL,
       NW_WORKSPACE,
+      POCKETBASE_URL,
       environment,
     })
   })

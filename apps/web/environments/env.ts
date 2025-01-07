@@ -41,4 +41,5 @@ export const env = {
   watermarkImageUrl: '',
   supabaseUrl: '',
   supabaseAnonKey: '',
+  pocketbaseUrl: '',
 }
