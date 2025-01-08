@@ -29,7 +29,7 @@ export class WeaponsComponent {
   public constructor() {}
 
   protected getValue(type: NwWeaponType) {
-    return this.char.getWeaponLevel(type.WeaponTag)
+    return this.char.getWeaponLevel(type.ProgressionId)
   }
 
   protected getWeaponId(type: NwWeaponType) {
