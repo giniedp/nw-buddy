@@ -89,7 +89,7 @@
     <span>
       {{ value }}
     </span>
-    <span *ngIf="detail.hasLimits()" [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'">
+    <span *ngIf="detail.hasLimits()" [tooltip]="tplCategoryTip" [tooltipPlacement]="['left', 'auto']" [tooltipClass]="'max-w-none'">
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help" />
     </span>
     <ng-template #tplCategoryTip>
@@ -104,6 +104,7 @@
       *ngIf="detail.hasLimits()"
       [tooltip]="tplCategoryTip"
       [tooltipClass]="'max-w-none'"
+      [tooltipPlacement]="['left', 'auto']"
       class="text-error inline-flex"
     >
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help" />
