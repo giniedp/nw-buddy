@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core'
-import { GameModeData, VitalsBaseData } from '@nw-data/generated'
+import { GameModeData, GameModeMapData, VitalsBaseData } from '@nw-data/generated'
 import { ScannedVital } from '@nw-data/scanner'
 import { Feature, FeatureCollection, MultiPoint } from 'geojson'
 import { uniq } from 'lodash'
@@ -49,22 +49,22 @@ export class GameModeDetailMapComponent {
   })
   private gameModeResource = apiResource({
     request: () => this.gameModeId(),
-    loader: async ({ request }) => await this.db.gameModesById(request),
+    loader: async ({ request }) => await this.db.gameModesMapsById(request),
   })
   private resource = apiResource({
     request: () => {
       return {
         metaMap: this.vitalsMetaResource.value(),
-        gameMode: this.gameModeResource.value(),
+        gameModeMap: this.gameModeResource.value(),
         creatures: this.creatures(),
       }
     },
-    loader: async ({ request: { creatures, gameMode, metaMap } }) => {
-      const mapId = gameMode?.MapId?.toLowerCase()
+    loader: async ({ request: { creatures, gameModeMap, metaMap } }) => {
+      const mapId = gameModeMap?.UIMapId?.toLowerCase()
       return {
         mapId,
-        bounds: selectWorldBounds(gameMode, this.service),
-        gameMode,
+        bounds: selectWorldBounds(gameModeMap, this.service),
+        // gameMode,
         vitals: selectVitalsData({
           mapId,
           vitals: creatures,
@@ -77,7 +77,7 @@ export class GameModeDetailMapComponent {
 
   protected mapId = computed(() => this.resource.value()?.mapId)
   protected bounds = computed(() => this.resource.value()?.bounds)
-  protected gameMode = computed(() => this.resource.value()?.gameMode)
+  // protected gameMode = computed(() => this.resource.value()?.gameMode)
   protected vitals = computed(() => this.resource.value()?.vitals)
   protected filter = computed(() => {
     const highlight = this.highlight()?.toLowerCase()
@@ -88,7 +88,7 @@ export class GameModeDetailMapComponent {
   })
 }
 
-function selectWorldBounds(game: GameModeData, service: GameMapService): [number, number, number, number] {
+function selectWorldBounds(game: GameModeMapData, service: GameMapService): [number, number, number, number] {
   if (!game?.WorldBounds) {
     return null
   }

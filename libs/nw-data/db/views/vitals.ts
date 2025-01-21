@@ -14,7 +14,7 @@ export async function vitalsForGameMode(
   const { gameModeId, difficulty, creatureType } = params
   const vitals = await db.vitalsAll()
   const vitalsMeta = await db.vitalsMetadataByIdMap()
-  const gameModes = await db.gameModesAll()
+  const gameModes = await db.gameModesMapsAll()
   function isInDungeon(vital: VitalsBaseData) {
     if (
       difficulty != null &&
