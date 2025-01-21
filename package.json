@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "6.1.4-0",
+  "version": "2024.11.20-marketing-v0",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
@@ -52,7 +52,7 @@
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
     "nw-functions": "ts-node ./tools/nw-functions.ts",
     "nw-buddy": "pnpm build:tools && env-cmd --silent  -f .env node ./tools/dist/tools/nw-buddy.js",
-    "nw-data-update": "pnpm nw-buddy unpack && pnpm nw-buddy convert -u && pnpm nw-buddy import",
+    "nw-data-update": "pnpm nw-buddy unpack && pnpm nw-buddy convert && pnpm nw-buddy import",
     "nw-quick-update": "pnpm nw-buddy extract -f **/*.datasheet **/*.loc.xml **/*.json && pnpm nw-buddy import \"locale,tables,code\"",
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",

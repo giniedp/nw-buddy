@@ -57,6 +57,18 @@
                 "glob": "**/*",
                 "ignore": [
                   "*.gz",
+                  "*.zip",
+
+                  "**/items_hires/**"
+                ],
+                "input": "dist/nw-data/.current",
+                "output": "/nw-data/",
+                "followSymlinks": true
+              },
+              {
+                "glob": "**/*",
+                "ignore": [
+                  "*.gz",
                   "*.zip"
                 ],
                 "input": "dist/nw-data/.current",

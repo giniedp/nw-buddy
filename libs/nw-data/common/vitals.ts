@@ -2,6 +2,7 @@ import {
   DamageData,
   DamageType,
   GameModeData,
+  GameModeMapData,
   MutationDifficultyStaticData,
   VitalsCategoryData,
   VitalsBaseData as VitalsData,
@@ -258,9 +259,9 @@ export function getVitalDamageEffectivenessIcon(vital: VitalsData, damageType: V
 
 export function getVitalDungeons(
   vital: VitalsData,
-  dungeons: GameModeData[],
+  dungeons: GameModeMapData[],
   vitalsMeta: Map<string, ScannedVital>,
-): GameModeData[] {
+): GameModeMapData[] {
   if (!vital || !dungeons?.length) {
     return []
   }
@@ -270,7 +271,7 @@ export function getVitalDungeons(
   }
   // "WorldBounds": "4480.0,4096.0,608.0,544.0"
   return dungeons.filter((it) => {
-    if (!it.MapId || eqCaseInsensitive(it.MapId, 'newworld_vitaeeterna')) {
+    if (!it.UIMapId || eqCaseInsensitive(it.UIMapId, 'newworld_vitaeeterna')) {
       // dynasty dungeon and trials are in the open world map
       // all mobs have mapId set to 'newworld_vitaeeterna'
       // we check for bounds
@@ -283,11 +284,11 @@ export function getVitalDungeons(
         return p[0] >= x && p[0] <= x + w && p[1] >= y && p[1] <= y + h
       })
     }
-    return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, it.MapId))
+    return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, it.UIMapId))
   })
 }
 
-export function getVitalDungeon(vital: VitalsData, dungeons: GameModeData[], vitalsMeta: Map<string, ScannedVital>) {
+export function getVitalDungeon(vital: VitalsData, dungeons: GameModeMapData[], vitalsMeta: Map<string, ScannedVital>) {
   return getVitalDungeons(vital, dungeons, vitalsMeta)?.[0]
 }
 

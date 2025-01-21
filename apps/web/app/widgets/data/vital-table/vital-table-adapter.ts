@@ -75,14 +75,15 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
       combineLatest({
         vitals: this.db.vitalsAll(),
         vitalsMeta: this.db.vitalsMetadataByIdMap(),
-        dungeons: this.db.gameModesAll(),
+        dungeonsMap: this.db.gameModesByIdMap(),
+        dungeonMaps: this.db.gameModesMapsAll(),
         categories: this.db.vitalsCategoriesByIdMap(),
         territoriesMap: this.db.territoriesByIdMap(),
         buffMap: this.db.buffBucketsByIdMap(),
         effectMap: this.db.statusEffectsByIdMap(),
         abilitiesMap: this.db.abilitiesByIdMap(),
       }).pipe(
-        map(({ vitals, vitalsMeta, dungeons, categories, territoriesMap, buffMap, effectMap, abilitiesMap }) => {
+        map(({ vitals, vitalsMeta, dungeonsMap, dungeonMaps, categories, territoriesMap, buffMap, effectMap, abilitiesMap }) => {
           return vitals.map((vital): VitalTableRecord => {
             const familyInfo = getVitalFamilyInfo(vital)
             const combatInfo = getVitalCategoryInfo(vital)
@@ -90,7 +91,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
             const zones = metadata?.territories?.map((id) => territoriesMap.get(id)).filter((it) => !!it)
             return {
               ...vital,
-              $dungeons: getVitalDungeons(vital, dungeons, vitalsMeta),
+              $dungeons: getVitalDungeons(vital, dungeonMaps, vitalsMeta).map((it) => dungeonsMap.get(it.GameModeId)),
               $categories: metadata?.catIDs?.map((it) => categories.get(it)).filter((it) => !!it),
               $familyInfo: familyInfo,
               $combatInfo: combatInfo,
