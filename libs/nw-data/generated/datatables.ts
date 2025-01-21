@@ -238,6 +238,9 @@ export const DATASHEETS = {
     AIAbilityTable: <DataSheetUri<AbilityData>>{
       uri: "datatables/weaponabilities/javelindata_ability_ai.json",
     },
+    AIAbilityTable_IsleOfNight: <DataSheetUri<AbilityData>>{
+      uri: "datatables/weaponabilities/javelindata_ability_ai_isleofnight.json",
+    },
     ArtifactsAbilityTable: <DataSheetUri<AbilityData>>{
       uri: "datatables/weaponabilities/javelindata_ability_artifacts.json",
     },
@@ -338,6 +341,9 @@ export const DATASHEETS = {
   AmmoItemDefinitions: {
     AmmoItemDefinitions: <DataSheetUri<AmmoItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_ammo.json",
+    },
+    AmmoItemDefinitions_IsleOfNight: <DataSheetUri<AmmoItemDefinitions>>{
+      uri: "datatables/isleofnight_tables/javelindata_itemdefinitions_ammo_isleofnight.json",
     },
   },
   AppearanceTransforms: {
@@ -879,6 +885,9 @@ export const DATASHEETS = {
     AnubianLotusScarabDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json",
     },
+    AnubianLotusScarabWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_anubianlotusscarab_worldboss.json",
+    },
     AnubianScarabDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json",
     },
@@ -920,6 +929,9 @@ export const DATASHEETS = {
     },
     BloatedCorpseDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/bomber_datatables/javelindata_damagetable_bloated_corpse.json",
+    },
+    BloodbeastDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/grunt_datatables/javelindata_damagetable_bloodbeast.json",
     },
     BloodOfTheSandsDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/seasons_datatables/season_02/javelindata_damagetable_malek_bloodofthesands.json",
@@ -1069,7 +1081,10 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_damagetable_dungeon.json",
     },
     DynastyEmpressDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/empress_datatables/javelindata_damagetable_empress.json",
+      uri: [
+        "datatables/charactertables/empress_datatables/javelindata_damagetable_empress.json",
+        "datatables/charactertables/worldboss_datatables/javelindata_damagetable_empress_worldboss.json",
+      ],
     },
     DynastyEmpressPedestalDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/empress_datatables/javelindata_damagetable_pedestal.json",
@@ -1140,11 +1155,20 @@ export const DATASHEETS = {
     FeralArcherDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/dryad_datatables/javelindata_damagetable_dryadarcher.json",
     },
+    FeralGhoulDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/feralghoul_datatables/javelindata_damagetable_feralghoul.json",
+    },
+    FeralGhoulPuzzleDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/isleofnight_datatables/javelindata_damagetable_feralghoulpuzzle.json",
+    },
     FeralShamanDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/dryad_datatables/javelindata_damagetable_dryadshaman.json",
     },
     FireChampionDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/human_datatables/javelindata_damagetable_human_firechampion.json",
+    },
+    FireChampionWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_firechampion_worldboss.json",
     },
     FireNagaDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/naga_datatables/javelindata_damagetable_naga_fire.json",
@@ -1160,6 +1184,15 @@ export const DATASHEETS = {
     },
     GenericBossDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/boss_datatables/javelindata_damagetable_boss.json",
+    },
+    GhastlyHatchetDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_hatchet.json",
+    },
+    GhastlySniper_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_sniper.json",
+    },
+    GhastlyVillagerShovelDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_shovel.json",
     },
     GhostCharredDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/ghost_datatables/javelindata_damagetable_ghost_charred.json",
@@ -1296,6 +1329,12 @@ export const DATASHEETS = {
     InvasionBomberDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/bomber_datatables/javelindata_damagetable_invasion_bomber.json",
     },
+    IoNLostMonarchDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/isleofnight_datatables/javelindata_damagetable_ion_lost_monarch.json",
+    },
+    IoNLostYsHeiressDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/isleofnight_datatables/javelindata_damagetable_ion_lost_heiress.json",
+    },
     IsabellaDynastyShipyardDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/isabella_datatables/javelindata_damagetable_isabella_dynastyshipyard.json",
     },
@@ -1310,6 +1349,9 @@ export const DATASHEETS = {
     },
     IsabellaTigerDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/lion_datatables/javelindata_damagetable_isabella_tiger.json",
+    },
+    IsabellaWingedWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_isabella_winged_worldboss.json",
     },
     KnightHoundDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_evil_knight_hound.json",
@@ -1344,11 +1386,23 @@ export const DATASHEETS = {
     LostMonarchDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/lostknights_datatables/javelindata_damagetable_lost_monarch.json",
     },
+    LostPalatineGuardsDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/lost_palatine_guards_datatables/javelindata_damagetable_lost_palatine_guards.json",
+    },
+    LostPalatineGuardsShadowDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/lost_thorpe_datatables/javelindata_damagetable_lost_palatine_guards_shadow.json",
+    },
     LostPikemanDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/lostknights_datatables/javelindata_damagetable_lost_pikeman.json",
     },
     LostSirenDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/lostsiren_datatables/javelindata_damagetable_lost_siren.json",
+    },
+    LostThorpeDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/lost_thorpe_datatables/javelindata_damagetable_lost_thorpe.json",
+    },
+    LostTwinJestersDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/twinjesters_datatables/javelindata_damagetable_lost_twinjesters.json",
     },
     MalekDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/seasons_datatables/season_02/javelindata_damagetable_malek.json",
@@ -1382,6 +1436,9 @@ export const DATASHEETS = {
     },
     NagaAngryEarthDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/naga_datatables/javelindata_damagetable_naga_angryearth.json",
+    },
+    NagaAngryEarthWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_naga_angryearth_worldboss.json",
     },
     NagaCorruptedDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/naga_datatables/javelindata_damagetable_naga_corrupted.json",
@@ -1479,6 +1536,9 @@ export const DATASHEETS = {
     SkeletonSpearDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/skeleton_datatables/javelindata_damagetable_skeletonspear.json",
     },
+    SoulharvesterDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/soulharvester_datatables/javelindata_damagetable_soulharvester.json",
+    },
     SpellBotDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/spellbot_datatables/javelindata_damagetable_spellbot.json",
     },
@@ -1533,11 +1593,17 @@ export const DATASHEETS = {
     UndeadAdmiralBruteDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_admiral_brute.json",
     },
+    UndeadAdmiralBruteWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_undead_admiral_brute_worldboss.json",
+    },
     UndeadBerserkerDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_berserker.json",
     },
     UndeadBruteDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_brute.json",
+    },
+    UndeadCryptkeeperDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_cryptkeeper.json",
     },
     UndeadDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/javelindata_damagetable_undead.json",
@@ -1554,6 +1620,15 @@ export const DATASHEETS = {
     UndeadJavelineerDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_javelineer.json",
     },
+    UndeadMummifiedCorpseDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_mummifiedcorpse.json",
+    },
+    UndeadMutatedNurseDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_mutatednurse.json",
+    },
+    UndeadNagaDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undeadnaga_datatables/javelindata_damagetable_undeadnaga.json",
+    },
     UndeadNavigatorDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_navigator.json",
     },
@@ -1568,6 +1643,12 @@ export const DATASHEETS = {
     },
     UndeadShamanDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_shaman.json",
+    },
+    WB_Mammoth_FL_Mahantaram_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_wb_mammoth_fl_mahantaram.json",
+    },
+    WBFireNagaDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_wb_naga_fire.json",
     },
     WitheredBeetleDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/witheredbeetle_datatables/javelindata_damagetable_witheredbeetle.json",
@@ -1595,15 +1676,6 @@ export const DATASHEETS = {
     },
     WolfWhiteDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_wolf_white.json",
-    },
-    Yeti_2022_DamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/brute_datatables/javelindata_damagetable_yeti_2022.json",
-    },
-    YetiFrostfangDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostfang_minion.json",
-    },
-    YetiFrostgripDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostgrip_minion.json",
     },
     YonasDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/questnpc_datatables/javelindata_damagetable_yonas_msq2_trial.json",
@@ -1884,6 +1956,9 @@ export const DATASHEETS = {
     Gatherables: <DataSheetUri<GatherableData>>{
       uri: "datatables/javelindata_gatherables.json",
     },
+    Gatherables_IsleOfNight: <DataSheetUri<GatherableData>>{
+      uri: "datatables/isleofnight_tables/javelindata_gatherables_isleofnight.json",
+    },
     QuestGatherables: <DataSheetUri<GatherableData>>{
       uri: "datatables/javelindata_questgatherables.json",
     },
@@ -2067,6 +2142,9 @@ export const DATASHEETS = {
   MasterItemDefinitions: {
     MasterItemDefinitions_AI: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_ai.json",
+    },
+    MasterItemDefinitions_AI_IsleOfNight: <DataSheetUri<MasterItemDefinitions>>{
+      uri: "datatables/isleofnight_tables/javelindata_itemdefinitions_master_ai_isleofnight.json",
     },
     MasterItemDefinitions_Artifacts: <DataSheetUri<MasterItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_master_artifacts.json",
@@ -3078,6 +3156,9 @@ export const DATASHEETS = {
     SpellDataTable_AI: <DataSheetUri<SpellData>>{
       uri: "datatables/javelindata_spelltable_ai.json",
     },
+    SpellDataTable_AI_IsleOfNight: <DataSheetUri<SpellData>>{
+      uri: "datatables/isleofnight_tables/javelindata_spelltable_ai_isleofnight.json",
+    },
     SpellDataTable_Blunderbuss: <DataSheetUri<SpellData>>{
       uri: "datatables/javelindata_spelltable_blunderbuss.json",
     },
@@ -3155,6 +3236,9 @@ export const DATASHEETS = {
     StatusEffects_AI: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_ai.json",
     },
+    StatusEffects_AI_IsleOfNight: <DataSheetUri<StatusEffectData>>{
+      uri: "datatables/isleofnight_tables/javelindata_statuseffects_ai_isleofnight.json",
+    },
     StatusEffects_Blunderbuss: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_blunderbuss.json",
     },
@@ -3163,6 +3247,9 @@ export const DATASHEETS = {
     },
     StatusEffects_Common: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_common.json",
+    },
+    StatusEffects_Common_IsleOfNight: <DataSheetUri<StatusEffectData>>{
+      uri: "datatables/isleofnight_tables/javelindata_statuseffects_common_isleofnight.json",
     },
     StatusEffects_ConquerorsItems: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_conquerersitems.json",
@@ -3561,11 +3648,17 @@ export const DATASHEETS = {
     BaseVitals_FirstLight: <DataSheetUri<VitalsBaseData>>{
       uri: "datatables/vitalstables/javelindata_basevitals_firstlight.json",
     },
+    BaseVitals_IsleOfNight: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/raids/javelindata_basevitals_isleofnight.json",
+    },
     BaseVitals_Player: <DataSheetUri<VitalsBaseData>>{
       uri: "datatables/vitalstables/javelindata_basevitals_player.json",
     },
     BaseVitals_Raid_CutlassKeys: <DataSheetUri<VitalsBaseData>>{
       uri: "datatables/vitalstables/raids/javelindata_basevitals_raid_cutlasskeys.json",
+    },
+    BaseVitals_WorldBoss: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/javelindata_basevitals_worldboss.json",
     },
   },
   VitalsCategoryData: {
@@ -3593,8 +3686,14 @@ export const DATASHEETS = {
     LevelVariantVitals_FirstLight: <DataSheetUri<VitalsLevelVariantData>>{
       uri: "datatables/vitalstables/javelindata_levelvariantvitals_firstlight.json",
     },
+    LevelVariantVitals_IsleOfNight: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/raids/javelindata_levelvariantvitals_isleofnight.json",
+    },
     LevelVariantVitals_Player: <DataSheetUri<VitalsLevelVariantData>>{
       uri: "datatables/vitalstables/javelindata_levelvariantvitals_player.json",
+    },
+    LevelVariantVitals_WorldBoss: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/javelindata_levelvariantvitals_worldboss.json",
     },
     Vitals_Raid_CutlassKeys: <DataSheetUri<VitalsLevelVariantData>>{
       uri: "datatables/vitalstables/raids/javelindata_levelvariantvitals_raid_cutlasskeys.json",
@@ -3652,6 +3751,9 @@ export const DATASHEETS = {
     },
     WeaponItemDefinitions: <DataSheetUri<WeaponItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_weapons.json",
+    },
+    WeaponItemDefinitions_IsleOfNight: <DataSheetUri<WeaponItemDefinitions>>{
+      uri: "datatables/isleofnight_tables/javelindata_itemdefinitions_weapons_isleofnight.json",
     },
   },
   WhisperData: {

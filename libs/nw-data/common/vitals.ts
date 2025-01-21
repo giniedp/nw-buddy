@@ -381,7 +381,7 @@ export function getVitalDamage({
   //
   const baseDamage = level?.BaseDamage || 0
   const dmgCoef = damageTable.DmgCoef
-  const dmgMod = vital?.DamageMod || 1
+  const dmgMod = Number(vital?.DamageMod) || 1
   const categoryDamageMod = modifier?.CategoryDamageMod || 1
   const addDmg = damageTable.AddDmg || 0
   //const dmgIncMod = effectMap.get(difficulty?.DamageIncreaseMod)?.['DMG' + damageTable.DamageType] || 0
