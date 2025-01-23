@@ -150,6 +150,6 @@ function abilitiesCells(list: string | string[]): PropertyGridCell[] {
 function damageCells(list: string | string[]): PropertyGridCell[] {
   list = typeof list === 'string' ? [list] : list
   return list?.map((it) => {
-    return linkCell({ value: it, routerLink: ['damage', it], queryParams: { search: it } })
+    return linkCell({ value: it, routerLink: ['damage', 'damagetable-' + it], queryParams: { search: it } })
   })
 }

@@ -72,7 +72,7 @@ export class DamageRowDetailComponent {
     {
       DamageID: (value) => {
         return [
-          linkCell({ value, routerLink: ['damage', value] }),
+          linkCell({ value, routerLink: ['damage', 'damagetable-' + value] }),
           diffButtonCell({ record: this.store.row(), idKey: 'DamageID' }),
         ]
       },
