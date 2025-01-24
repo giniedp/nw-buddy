@@ -17,11 +17,17 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
 
-export function getDamageScalingForLevel(level: number) {
-  return NW_LEVEL_DAMAGE_MULTIPLIER * (level - 1)
+export function getDamageScalingForLevel(level: number, trace?: Tracer) {
+  const result = NW_LEVEL_DAMAGE_MULTIPLIER * (level - 1)
+  if (trace) {
+    trace?.log(`LEVEL_DAMAGE_MULTIPLIER * (level - 1)`)
+    trace?.log(`${NW_LEVEL_DAMAGE_MULTIPLIER} * (${level} - 1)`)
+    trace?.log(`${result}`)
+  }
+  return result
 }
 
-export function getDamageFactorForGearScore(gearScore: number) {
+export function getDamageFactorForGearScore(gearScore: number, trace?: Tracer) {
   gearScore = Math.floor(gearScore)
   const gsMin = NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE
   const gsMax = NW_DIMINISHING_GEAR_SCORE_THRESHOLD
@@ -35,6 +41,24 @@ export function getDamageFactorForGearScore(gearScore: number) {
   const factorLow = Math.pow(1 + baseDamageCompund, powerLow)
   const factorHigh = Math.pow(1 + baseDamageCompund * compoundDiminishingMulti, powerHigh)
   const result = factorLow * factorHigh
+
+  if (trace) {
+    trace?.log(`powerLow   = FLOOR((MIN(GS_MAX, MAX(gearScore, GS_MIN)) - gsMin) / gsRounding)`)
+    trace?.log(`           = FLOOR((MIN(${gsMax}, MAX(${gearScore}, ${gsMin})) - ${gsMin}) / ${gsRounding})`)
+    trace?.log(`           = ${powerLow}`)
+    trace?.log(`powerHigh  = FLOOR((MAX(gearScore, GS_MAX) - GS_MAX) / GS_ROUNDING)`)
+    trace?.log(`           = FLOOR((MAX(${gearScore}, ${gsMax}) - ${gsMax}) / ${gsRounding})`)
+    trace?.log(`           = ${powerHigh}`)
+    trace?.log(`factorLow  = pow(1 + BASE_DMG_COMPOUND_INC, powerLow)`)
+    trace?.log(`           = pow(1 + ${baseDamageCompund}, ${powerLow})`)
+    trace?.log(`           = ${factorLow}`)
+    trace?.log(`factorHigh = pow(1 + BASE_DMG_COMPOUND_INC * COMPOUND_DIMINISHING_MULTI, powerHigh)`)
+    trace?.log(`           = pow(1 + ${baseDamageCompund} * ${compoundDiminishingMulti}, ${powerHigh})`)
+    trace?.log(`           = ${factorHigh}`)
+    trace?.log(`result     = factorLow * factorHigh`)
+    trace?.log(`           = ${factorLow} * ${factorHigh}`)
+    trace?.log(`           = ${result}`)
+  }
   // console.table({
   //   gearScore,
   //   powerLow,
@@ -134,9 +158,10 @@ export function getDamageForWeapon(
   const baseDamage = options.weaponDamage ?? 0
   const damageCoef = options.damageCoef ?? 1
   const damageAdd = options.damageAdd ?? 0
-
-  const factorFromGS = getDamageFactorForGearScore(options.gearScore) ?? 1
-  const levelScaling = getDamageScalingForLevel(options.level) ?? 0
+  trace?.log(`factorFromGS =`)
+  const factorFromGS = getDamageFactorForGearScore(options.gearScore, trace?.indent()) ?? 1
+  trace?.log(`levelScaling =`)
+  const levelScaling = getDamageScalingForLevel(options.level, trace?.indent()) ?? 0
   const statsScaling =
     getDamageScalingSumForWeapon({
       weapon: options.weaponScale,
