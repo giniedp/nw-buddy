@@ -225,7 +225,8 @@ export function selectPerkAbilities({ abilities, effects }: DbSlice, perks: Acti
   for (const activePerk of perks) {
     for (const abilityId of activePerk.perk.EquipAbility || []) {
       const ability = abilities.get(abilityId)
-      if (!ability) {
+      // TODO: avoid hardcoding
+      if (!ability || eqCaseInsensitive(ability.AbilityID, 'GlobalPerk_Ability_Rapier_Flurry_Invul')) {
         continue
       }
       result.push({
