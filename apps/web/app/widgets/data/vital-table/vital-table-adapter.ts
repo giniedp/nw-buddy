@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo } from '@nw-data/common'
-import { COLS_VITALSBASEDATA } from '@nw-data/generated'
+import { COLS_VITALSBASEDATA, VitalsCategory, VitalsCategoryData } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { injectNwData } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
@@ -37,6 +37,7 @@ import {
   vitalColSpawnPois,
   vitalColSpawnTerritories,
 } from './vital-table-cols'
+import { uniqBy } from 'lodash'
 
 @Injectable()
 export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
@@ -89,10 +90,14 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
             const combatInfo = getVitalCategoryInfo(vital)
             const metadata = vitalsMeta.get(vital.VitalsID)
             const zones = metadata?.territories?.map((id) => territoriesMap.get(id)).filter((it) => !!it)
+            const $categories: VitalsCategoryData[] = [
+              ...(metadata?.catIDs || []).map((it) => categories.get(it)).filter((it) => !!it),
+              ...(vital.VitalsCategories || []).map((it) => categories.get(it)).filter((it) => !!it),
+            ].filter((it) => !!it)
             return {
               ...vital,
               $dungeons: getVitalDungeons(vital, dungeonMaps, vitalsMeta).map((it) => dungeonsMap.get(it.GameModeId)),
-              $categories: metadata?.catIDs?.map((it) => categories.get(it)).filter((it) => !!it),
+              $categories: uniqBy($categories, (it) => it.VitalsCategoryID),
               $familyInfo: familyInfo,
               $combatInfo: combatInfo,
               $metadata: vitalsMeta.get(vital.VitalsID),

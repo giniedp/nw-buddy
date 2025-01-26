@@ -25,6 +25,7 @@ import { getIconFrameClass } from '../../item-frame'
 import { GridSelectFilter } from '../ag-grid/grid-select-filter'
 import { GridSelectFilterParams } from '../ag-grid/grid-select-filter/types'
 import { colDefPrecision } from './utils'
+import { twMerge } from 'tailwind-merge'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
@@ -198,9 +199,17 @@ export class TableGridUtils<T = any> {
         'div.flex.flex-row.flex-wrap.gap-1.items-center',
         {},
         value?.map((tag: string) => {
-          return this.el('span.badge.badge-sm.badge-secondary.bg-secondary.bg-opacity-50.px-1', {
+          const list = [...(getClass?.(tag) || [])]
+          if (list.every((it) => it !== 'bg-primary' && it !== 'bg-error')) {
+            list.push('bg-secondary')
+            list.push('bg-opacity-50')
+          }
+          if (list.every((it) => it !== 'badge-primary' && it !== 'badge-error')) {
+            list.push('badge-secondary')
+          }
+          return this.el('span.badge.badge-sm.px-1', {
             text: transform(tag),
-            class: getClass?.(tag),
+            class: list,
           })
         }),
       )

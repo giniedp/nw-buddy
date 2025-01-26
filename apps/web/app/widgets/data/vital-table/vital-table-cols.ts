@@ -96,7 +96,9 @@ export function vitalColName(util: VitalTableUtils, options?: { link: boolean })
     valueGetter: ({ data }) => {
       const names = [util.i18n.get(data.DisplayName)]
       for (const cat of data.$categories || []) {
-        names.push(util.i18n.get(cat.DisplayName))
+        if (!cat.GroupVitalsCategoryId && cat.VitalsCategoryID !== 'Named') {
+          names.push(util.i18n.get(cat.DisplayName))
+        }
       }
       return uniqBy(names, (it) => it.toLowerCase())
     },
@@ -177,22 +179,39 @@ export function vitalColCreatureType(util: VitalTableUtils) {
   })
 }
 export function vitalColCategories(util: VitalTableUtils) {
-  return util.colDef<VitalsCategory[]>({
+  return util.colDef<VitalsCategoryData[]>({
     colId: 'categories',
     headerValueGetter: () => 'Categories',
     width: 250,
     valueGetter: ({ data }) => {
-      return data.VitalsCategories || null
+      return data.$categories || null
     },
     cellRenderer: util.tagsRenderer({
-      transform: humanize,
-      getClass: (value) => {
-        return isVitalCombatCategory(value) ? ['badge-error', 'bg-error'] : []
+      transform: (it: VitalsCategoryData) => util.i18n.get(it.DisplayName) || it.VitalsCategoryID,
+      getClass: (value: VitalsCategoryData) => {
+        if (!value) {
+          return []
+        }
+        if (isVitalCombatCategory(value.VitalsCategoryID)) {
+          return ['badge-error', 'bg-error']
+        }
+        if (value.IsNamed) {
+          return ['badge-primary', 'bg-primary']
+        }
+        return []
       },
     }),
     ...util.selectFilter({
       order: 'asc',
       search: true,
+      getOptions: ({ data }) => {
+        return (data.$categories || []).map((it) => {
+          return {
+            id: it.VitalsCategoryID,
+            label: util.i18n.get(it.DisplayName) || it.VitalsCategoryID,
+          }
+        })
+      },
     }),
   })
 }

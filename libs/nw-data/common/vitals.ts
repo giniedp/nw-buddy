@@ -4,6 +4,7 @@ import {
   GameModeData,
   GameModeMapData,
   MutationDifficultyStaticData,
+  VitalsBaseData,
   VitalsCategoryData,
   VitalsBaseData as VitalsData,
   VitalsLevelData,
@@ -11,6 +12,7 @@ import {
 } from '@nw-data/generated'
 import { ScannedVital } from '../scanner/types'
 import { getArmorRating } from './damage'
+import { uniq } from 'lodash'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
