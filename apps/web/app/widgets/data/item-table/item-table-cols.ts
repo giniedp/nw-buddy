@@ -27,6 +27,7 @@ import {
 import {
   AffixStatData,
   CategoricalProgressionData,
+  ConsumableItemDefinitions,
   HouseItems,
   ItemCurrencyConversionData,
   MasterItemDefinitions,
@@ -43,6 +44,7 @@ export type ItemTableUtils = TableGridUtils<ItemTableRecord>
 export type ItemTableRecord = MasterItemDefinitions & {
   $source?: string
   $perks?: PerkData[]
+  $consumable?: ConsumableItemDefinitions
   $affixes?: AffixStatData[]
   $perkBuckets?: string[]
   $transformTo?: MasterItemDefinitions | HouseItems

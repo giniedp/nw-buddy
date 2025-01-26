@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getItemId, getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
-import { COLS_MASTERITEMDEFINITIONS, CategoricalProgressionData, MasterItemDefinitions } from '@nw-data/generated'
+import { COLS_CONSUMABLEITEMDEFINITIONS, COLS_MASTERITEMDEFINITIONS, CategoricalProgressionData, MasterItemDefinitions } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -93,6 +93,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         transformsMapReverse: this.db.itemTransformsByToItemIdMap(),
         conversionMap: this.db.itemCurrencyConversionByItemIdMap(),
         progressionMap: this.db.categoricalProgressionByIdMap(),
+        consumablesMap: this.db.consumableItemsByIdMap(),
       }),
     ),
     ({
@@ -105,6 +106,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
       transformsMapReverse,
       conversionMap,
       progressionMap,
+      consumablesMap,
     }) => {
       function getItem(id: string) {
         if (!id) {
@@ -135,6 +137,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
           $perkBuckets: getItemPerkBucketIds(it),
           $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
           $transformFrom: (transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),
+          $consumable: consumablesMap.get(it.ItemID),
           $conversions: conversions,
           $shops: shops,
         }
@@ -185,6 +188,10 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
   }
   addGenericColumns(result, {
     props: COLS_MASTERITEMDEFINITIONS,
+  })
+  addGenericColumns(result, {
+    props: COLS_CONSUMABLEITEMDEFINITIONS,
+    scope: '$consumable',
   })
   return result
 }
