@@ -29,6 +29,7 @@ export class TransmogService {
       itemAppearances: this.db.armorAppearancesAll(),
       weaponAppearances: this.db.weaponAppearancesAll(),
       instrumentAppearances: this.db.instrumentAppearancesAll(),
+      mountAttachnetAppearances: this.db.mountAttachmentsAppearancesAll()
     },
     (data) => selectAppearances(data),
   )
@@ -68,15 +69,17 @@ function selectAppearances({
   itemAppearances,
   weaponAppearances,
   instrumentAppearances,
+  mountAttachnetAppearances,
   categories,
 }: {
   itemsMap: Map<string, MasterItemDefinitions[]>
   itemAppearances: ArmorAppearanceDefinitions[]
   weaponAppearances: WeaponAppearanceDefinitions[]
   instrumentAppearances: WeaponAppearanceDefinitions[]
+  mountAttachnetAppearances: WeaponAppearanceDefinitions[]
   categories: TransmogCategory[]
 }): TransmogItem[] {
-  const appearances = [...itemAppearances, ...weaponAppearances, ...instrumentAppearances]
+  const appearances = [...itemAppearances, ...weaponAppearances, ...instrumentAppearances, ...mountAttachnetAppearances]
   const transmogMap = new CaseInsensitiveMap<string, TransmogItem>()
   for (const appearance of appearances) {
     const appearanceId = getAppearanceId(appearance)

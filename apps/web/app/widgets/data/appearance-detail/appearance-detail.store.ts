@@ -34,6 +34,7 @@ export interface AppearanceDetailState {
   weaponAppearance: WeaponAppearanceDefinitions
   itemAppearance: ArmorAppearanceDefinitions
   itemAppearanceByName: ArmorAppearanceDefinitions[]
+  mountAppearance: WeaponAppearanceDefinitions
 }
 export const AppearanceDetailStore = signalStore(
   withState<AppearanceDetailState>({
@@ -44,6 +45,7 @@ export const AppearanceDetailStore = signalStore(
     weaponAppearance: null,
     itemAppearance: null,
     itemAppearanceByName: [],
+    mountAppearance: null
   }),
   withStateLoader((state) => {
     const db = injectNwData()
@@ -61,6 +63,7 @@ export const AppearanceDetailStore = signalStore(
           appearanceIdOrName,
           parentItemId: parentItemId ?? state.parentItemId(),
           variant: variant ?? state.variant(),
+          mountAppearance: await db.mountAttachmentsAppearancesById(appearanceIdOrName),
           instrumentAppearance: await db.instrumentAppearancesById(appearanceIdOrName),
           weaponAppearance: await db.weaponAppearancesById(appearanceIdOrName),
           itemAppearance: await db.armorAppearancesById(appearanceIdOrName),
@@ -79,10 +82,10 @@ export const AppearanceDetailStore = signalStore(
       },
     }
   }),
-  withComputed(({ itemAppearance, itemAppearanceByName, instrumentAppearance, weaponAppearance, variant }) => {
+  withComputed(({ mountAppearance, itemAppearance, itemAppearanceByName, instrumentAppearance, weaponAppearance, variant }) => {
     const appearance = computed(() => {
       const found = itemAppearanceByName()?.find((it) => isAppearanceOfGender(it, variant()))
-      return found || itemAppearance() || itemAppearanceByName()?.[0] || weaponAppearance() || instrumentAppearance()
+      return found || itemAppearance() || itemAppearanceByName()?.[0] || weaponAppearance() || instrumentAppearance() || mountAppearance()
     })
     return {
       appearance,
