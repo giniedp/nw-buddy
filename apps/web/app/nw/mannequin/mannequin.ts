@@ -169,12 +169,14 @@ export class Mannequin {
     return selectAttributes(this.data(), this.state(), {
       perks: this.activePerks(),
       effects: this.consumableEffects(),
+      level: this.level(),
     })
   })
   public readonly activeMagnify = computed(() => {
     return selectPlacingMods(this.data(), {
       perks: this.activePerks(),
       effects: this.consumableEffects(),
+      level: this.level(),
     })
   })
   public readonly activeAbilities = computed(() => {

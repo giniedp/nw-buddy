@@ -222,6 +222,7 @@ export interface ActiveEffect {
 export interface AttributeModsSource {
   perks: ActivePerk[]
   effects: ActiveEffect[]
+  level: number
 }
 
 export type Observed<T> = { [K in keyof T]: Observable<T[K]> }

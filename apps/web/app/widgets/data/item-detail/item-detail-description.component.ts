@@ -9,7 +9,7 @@ import { ItemDetailStore } from './item-detail.store'
   selector: 'nwb-item-detail-description',
   template: `
     @if (!isHidden()) {
-      <div [@inOut] class="text-nw-description italic" [nwHtml]="description() | nwText | nwTextBreak"></div>
+      <div [@inOut] class="text-nw-description italic" [nwHtml]="description() | nwText:{ itemId: store.recordId() } | nwTextBreak"></div>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

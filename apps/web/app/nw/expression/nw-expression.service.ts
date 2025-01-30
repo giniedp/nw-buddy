@@ -91,7 +91,7 @@ export class NwExpressionService {
       case 'ConsumablePotency': {
         return from(this.db.statusEffectsByIdMap()).pipe(
           map((it) => {
-            if (it.has(context.itemId)) {
+            if (it.get(context.itemId)?.PotencyPerLevel) {
               return it.get(context.itemId).PotencyPerLevel * context.charLevel
             }
             console.error(

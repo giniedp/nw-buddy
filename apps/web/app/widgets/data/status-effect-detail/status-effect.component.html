@@ -41,7 +41,7 @@
     </div>
   }
 
-  @if (description() | nwText | nwTextBreak; as description) {
+  @if (description() | nwText:{ itemId: effectId() } | nwTextBreak; as description) {
     <div [innerHTML]="description" class="text-nw-description italic font-nimbus leading-tight"></div>
     <nwb-item-divider />
   }

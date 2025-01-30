@@ -431,7 +431,7 @@ export function selectEquppedAttributes(
   return result
 }
 
-export function selectBonusAttributes(db: DbSlice, { effects }: AttributeModsSource) {
+export function selectBonusAttributes(db: DbSlice, { effects, level }: AttributeModsSource) {
   const result: Record<AttributeRef, number> = {
     con: 0,
     dex: 0,
@@ -444,11 +444,16 @@ export function selectBonusAttributes(db: DbSlice, { effects }: AttributeModsSou
     if (!effect || !consumable) {
       continue
     }
-    result.con += effect.MODConstitution || 0
-    result.dex += effect.MODDexterity || 0
-    result.foc += effect.MODFocus || 0
-    result.int += effect.MODIntelligence || 0
-    result.str += effect.MODStrength || 0
+    let scale = 1
+    if (effect.PotencyPerLevel) {
+      scale = effect.PotencyPerLevel * level
+    }
+    // TODO: why round here? usually we floor, but `PotencyPerLevel` consumables don't?
+    result.con += Math.round((effect.MODConstitution || 0) * scale)
+    result.dex += Math.round((effect.MODDexterity || 0) * scale)
+    result.foc += Math.round((effect.MODFocus || 0) * scale)
+    result.int += Math.round((effect.MODIntelligence || 0) * scale)
+    result.str += Math.round((effect.MODStrength || 0) * scale)
   }
   return result
 }

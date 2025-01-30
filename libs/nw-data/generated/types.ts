@@ -49,7 +49,6 @@ export interface AbilityData {
   DontHaveStatusEffect: string[];
   Duration: number;
   ElementalArmor: number;
-  EnableCrit: number;
   EnableHoldConditionIfTrackedSpellExistsOfType: string;
   EnableTaunt: boolean;
   EquipLoadCategory: EquipLoadCategory[];
@@ -58,7 +57,6 @@ export interface AbilityData {
   FastTravelAzothCostMod: number;
   FastTravelInnCooldownMod: number;
   ForceStatusEffectDamageTableRow: boolean;
-  ForceTakeStaminaDamage: number;
   GatheringTradeskill: GatheringTradeskill;
   GiveAzothPercentChance: number;
   HasGritActive: boolean;
@@ -69,7 +67,6 @@ export interface AbilityData {
   HealthDamageMitigation_Endvalue: number;
   HitFromBehindArmorPenetration: number;
   HitFromBehindDamage: number;
-  HitRateDmgReduction: number;
   HoldConditionButtonIcon: string;
   Icon: string;
   IgnoreDisabledAttackTypes: string;
@@ -156,7 +153,7 @@ export interface AbilityData {
   OnManaChanged: boolean;
   OnProjPassedThrough: boolean;
   OnSelfDamage: boolean;
-  OnStatusEffectApplied: boolean | string;
+  OnStatusEffectApplied: boolean;
   OnTargetBlockBreak: boolean;
   OnTargetSet: boolean;
   OnTargetStatusEffectRemoved: boolean;
@@ -192,7 +189,6 @@ export interface AbilityData {
   SetHealthOnFatalDamageTaken: number;
   SetMannequinTag: string;
   SetMannequinTagStatus: boolean;
-  SlayerScriptCondition: string;
   Sound: string;
   StaggerDamage: number;
   StaggerDamageReduction: number;
@@ -204,7 +200,7 @@ export interface AbilityData {
   StatusEffectCategoryToTransfer: string;
   StatusEffectComparison: string;
   StatusEffectDamageTableIdForRowOverride: string;
-  StatusEffectDamageTableRowOverride: number | string;
+  StatusEffectDamageTableRowOverride: string;
   StatusEffectDurationCats: StatusEffectCategory[];
   StatusEffectDurationMod: number;
   StatusEffectDurationMult: number;
@@ -768,12 +764,10 @@ export interface BlueprintItemDefinitions {
   HP: number;
   IsCamp: boolean;
   IsDeployable: number;
-  IsPvPCamp: boolean;
   IsSiegeWeapon: number;
   Name: string;
   PlacementGroundCastFilter: string;
   PrivilegeID: string;
-  PvPCampVariantID: string;
   ResourceCost: number;
   StructureCost_Ingredient1: string;
   StructureCost_Ingredient2: string;
@@ -1280,7 +1274,6 @@ export interface CutsceneCameraStaticData {
 }
 
 export interface DamageData {
-  " UseAttackerPosForReaction": boolean;
   AddAffliction: number | string;
   AddDmg: number;
   AddThreat: number;
@@ -1320,7 +1313,7 @@ export interface DamageData {
   CritPowerLevel_AI: number;
   CritStaggerDmgModifier: number;
   CritTargetCameraShakeID: string;
-  DamageGuildAndGroup: boolean | number;
+  DamageGuildAndGroup: boolean;
   DamageID: string;
   DamageReceiverCooldown: number;
   DamageType: DamageType;
@@ -1331,7 +1324,7 @@ export interface DamageData {
   DurabilityCostOverride: number;
   EffectOnlyOnDamage: boolean | number | string;
   EffectWhenNotBlocked: boolean;
-  EnableSharedDamage: boolean | string;
+  EnableSharedDamage: boolean;
   ForceAttackToHit: boolean;
   HitBlockedRuneCharge: number;
   HitRateDmgModifier: number;
@@ -1358,8 +1351,8 @@ export interface DamageData {
   NoBackstab: boolean;
   NoHeadshot: boolean;
   NoLegShots: boolean;
-  NoReaction: boolean | number | string;
-  PowerLevel: number | string;
+  NoReaction: boolean | number;
+  PowerLevel: number;
   PowerLevel_AI: number;
   StaggerDmgModifier: number | string;
   StaggerResistModifier: number;
@@ -6058,7 +6051,6 @@ export interface SpecializationDefinitions {
 }
 
 export interface SpellData {
-  AOECharRelPosOffsetZ: number;
   AOECharRelRotOffsetZ: number;
   AbilityId: string;
   AmmoSlot: string;
@@ -6099,13 +6091,13 @@ export interface SpellData {
   IgnoreStructures: boolean;
   IgnoreTargetIfAtDeathsDoor: boolean | string;
   IgnoreTargetIfDead: boolean | string;
-  InnerRadius: number | string;
+  InnerRadius: string;
   IsUnaffiliated: boolean;
   Length: number | string;
   MaintainDistanceFromGround: boolean;
   ManaCost: string;
   MaxChainNum: number;
-  MaxRadiusScaling: number | string;
+  MaxRadiusScaling: string;
   NotSpawnedByAWeapon: boolean;
   NumToSpawn: number;
   NumToSpawnBeforeFail: number;
@@ -6481,7 +6473,7 @@ export interface StatusEffectData {
   TerritoryStandingMod: number;
   TickCondition: string;
   TickRate: number;
-  UIPriority: number | string;
+  UIPriority: number;
   UiNameplatePriority: number | string;
   UseHealScalingValue: boolean;
   UseLightweightReplication: boolean;
@@ -6526,13 +6518,6 @@ export interface StoreProductData {
   ThumbnailImage: string;
   TypeDescription: string;
   UniqueTagID: string;
-}
-
-export interface StoreTagData {
-  ArchetypeId: string;
-  StoreTagBackgroundColor: string;
-  StoreTagBackgroundPath: string;
-  StoreTagTextColor: string;
 }
 
 export interface StoryProgressData {
@@ -6582,7 +6567,6 @@ export interface TerritoryDefinition {
   BaseStructureLimit: number;
   CampPreventionMessageOverride: string;
   CanPlaceCamp: boolean;
-  CanPlacePvPCamp: boolean;
   ChartedAchievement: string;
   CompassIcon: string;
   Containers: number;
@@ -7043,7 +7027,6 @@ export interface VariationDataGatherable {
 }
 
 export interface VitalsBaseData {
-  ABSAcid: number;
   ABSArcane: number;
   ABSCorruption: number;
   ABSFire: number;
@@ -7089,7 +7072,7 @@ export interface VitalsBaseData {
   DMGStrike: number;
   DMGThrust: number;
   DamageCooldown: number;
-  DamageMod: number | string;
+  DamageMod: number;
   DeathsDoorDelay: number;
   DeathsDoorTime: number;
   DifficultyTierOverride: number;
@@ -7340,15 +7323,15 @@ export interface WeaponAccessoryDefinitions {
 }
 
 export interface WeaponAppearanceDefinitions {
-  ADyeSlotDisabled: number;
+  ADyeSlotDisabled: number | string;
   Appearance: string;
   "Art ID Names": string;
-  BDyeSlotDisabled: number;
+  BDyeSlotDisabled: number | string;
   Description: string;
   EmissiveColor: string;
   EmissiveIntensity: number;
   FemaleAppearance: string;
-  GDyeSlotDisabled: number;
+  GDyeSlotDisabled: number | string;
   HiResIconPath: string;
   IconCaptureGroup: string;
   IconPath: string;
@@ -7370,7 +7353,7 @@ export interface WeaponAppearanceDefinitions {
   MeshOverride: string;
   MountAttachmentAppearanceId: string;
   Name: string;
-  RDyeSlotDisabled: number;
+  RDyeSlotDisabled: number | string;
   SkinOverride1: string;
   SkinOverride2: string;
   SoundTableID: string;
@@ -7708,7 +7691,6 @@ export type DamageType =
   | "True";
 export type DayPhases = "Day" | "Night";
 export type EntitlementRewardType =
-  | "BarbershopToken"
   | "CampSkin"
   | "Emote"
   | "Entitlement"
@@ -8735,16 +8717,10 @@ export type StatusEffectCategory =
   | "CC"
   | "CCDurReduction"
   | "CarryBoulder"
-  | "CarryBow"
   | "CarryCannonBall"
-  | "CarryExplosiveBarrel"
-  | "CarryHammer"
   | "CarryOrb"
-  | "CarrySpear"
-  | "CarrySword"
   | "Cleanse"
   | "ClearOnReset"
-  | "CloneOnly"
   | "CoatingBoost"
   | "ConquerorKnockBackDmg"
   | "ConquerorPoisonDoT"
@@ -8818,13 +8794,11 @@ export type StatusEffectCategory =
   | "Immortal"
   | "InSmoke"
   | "InfectedThrow"
-  | "KnockBackDmg"
   | "LastStand"
   | "LifeStaffBuff"
   | "LifestaffBuff"
   | "Luck"
   | "MammothEmpowered"
-  | "Mana"
   | "MeshOverrides"
   | "MusicBuff"
   | "MutatorCurse"
@@ -8841,7 +8815,6 @@ export type StatusEffectCategory =
   | "NonDispellableRend"
   | "NonDispellableSlow"
   | "NonDispellableWeaken"
-  | "NonDisplellableDebuff"
   | "NonStoryMode"
   | "NondispellableDebuff"
   | "NondispellableFortify"
@@ -8849,7 +8822,6 @@ export type StatusEffectCategory =
   | "OverheatDebuff"
   | "PassiveFoodRegen"
   | "Petrified"
-  | "PlayerOnly"
   | "Poison"
   | "PowderBurn"
   | "RainofArrows"
@@ -8861,7 +8833,6 @@ export type StatusEffectCategory =
   | "RidingObjectiveBuff"
   | "Root"
   | "ScalePlayer"
-  | "ShieldPotTrackingOrbs"
   | "Shock"
   | "ShowerRoot"
   | "Shrivelled"
@@ -8871,7 +8842,6 @@ export type StatusEffectCategory =
   | "Slow"
   | "Slow&Stun"
   | "SlowPotency"
-  | "SoulOnly"
   | "Spear"
   | "SporeDefense"
   | "SporeOffense"
@@ -8887,12 +8857,8 @@ export type StatusEffectCategory =
   | "SturgeonFishingBuff"
   | "Surge"
   | "SurvivalPotion"
-  | "TankAllyBuff"
-  | "TankSelfBuff"
-  | "TankSelfDebuff"
   | "Taunt"
   | "TeamWipeCat"
-  | "ThorpeOnly"
   | "Threat"
   | "ThrowingAxe"
   | "Timer"
@@ -8907,7 +8873,6 @@ export type StatusEffectCategory =
   | "TrapRoot"
   | "Trapper"
   | "TraversalHaste"
-  | "UnInterruptible"
   | "UnclampedAzothMod"
   | "UnclampedDisease"
   | "UnclampedEmpower"
@@ -8918,7 +8883,6 @@ export type StatusEffectCategory =
   | "UnclampedSlow"
   | "UnclampedWeaken"
   | "UncleansableDoT"
-  | "Unflinching"
   | "Uninterruptible"
   | "Void"
   | "VoidGauntlet"
@@ -13122,9 +13086,6 @@ export type VitalsCategory =
   | "FTUE_Sailor_z2"
   | "FTUE_Sailor_z3"
   | "Forged"
-  | "Ghastly_Sniper"
-  | "Ghastly_Villager_Hatchet"
-  | "Ghastly_Villager_Shovel"
   | "Ghost"
   | "GhostCharred"
   | "Ghost_Affix"
@@ -13526,53 +13487,6 @@ export type VitalsCategory =
   | "Invasion_Swordsman"
   | "Invasion_VoidDestroyer"
   | "Invasion_VoidDestroyer_Eye"
-  | "IoN_Dummy_PalatineGuard"
-  | "IoN_HeiressAndPG_Encounter_Manager"
-  | "IoN_Jester_Lost_Bloodbeast"
-  | "IoN_Jester_Lost_Brute"
-  | "IoN_Jester_Lost_Cryptkeeper"
-  | "IoN_Jester_Lost_FeralGhoul"
-  | "IoN_Jester_Lost_Ghastly_Villager_Hatchet"
-  | "IoN_Jester_Lost_Ghastly_Villager_Shovel"
-  | "IoN_Jester_Lost_MummifiedCorpse"
-  | "IoN_Jester_Lost_MutatedNurse"
-  | "IoN_Jester_Lost_SoulHarvester"
-  | "IoN_Jester_Lost_Undead_Naga"
-  | "IoN_Lost_Bloodbeast"
-  | "IoN_Lost_BossSoul"
-  | "IoN_Lost_Brute"
-  | "IoN_Lost_Brute_Elite"
-  | "IoN_Lost_Cryptkeeper"
-  | "IoN_Lost_FeralGhoul"
-  | "IoN_Lost_Ghastly_Villager_Hatchet"
-  | "IoN_Lost_Ghastly_Villager_Shovel"
-  | "IoN_Lost_Heiress"
-  | "IoN_Lost_Knight_Bow"
-  | "IoN_Lost_Knight_Pikeman"
-  | "IoN_Lost_Knight_Tank"
-  | "IoN_Lost_Knight_Warhammer"
-  | "IoN_Lost_Monarch"
-  | "IoN_Lost_Monarch_Elite"
-  | "IoN_Lost_MummifiedCorpse"
-  | "IoN_Lost_MutatedNurse"
-  | "IoN_Lost_Naga_Elite"
-  | "IoN_Lost_PalatineGuard_Archer"
-  | "IoN_Lost_PalatineGuard_Halberd"
-  | "IoN_Lost_PalatineGuard_Shield"
-  | "IoN_Lost_PalatineGuard_Swordsman"
-  | "IoN_Lost_Shadow_Heiress"
-  | "IoN_Lost_Shadow_Jester"
-  | "IoN_Lost_Shadow_PalatineArcher"
-  | "IoN_Lost_Shadow_PalatineHalberd"
-  | "IoN_Lost_Shadow_PalatineShield"
-  | "IoN_Lost_Shadow_PalatineSwordsman"
-  | "IoN_Lost_SoulHarvester"
-  | "IoN_Lost_Thorpe"
-  | "IoN_Lost_Thorpe_MinionManager"
-  | "IoN_Lost_Thorpe_Relic"
-  | "IoN_Lost_Undead_Naga"
-  | "IoN_Lost_Withered_Grunt"
-  | "IoN_PurgingBladeMinion"
   | "Isabella_DG_Ebonscale_00"
   | "Isabella_DG_ShatterMtn_Phase0_00"
   | "Isabella_DG_ShatterMtn_Phase1_00"
@@ -13703,14 +13617,11 @@ export type VitalsCategory =
   | "Loot_Goblin_60"
   | "Loot_Goblin_FOTB"
   | "Lost"
-  | "Lost_Autoguided_Surprise"
-  | "Lost_Bloodbeast"
   | "Lost_Fencer"
   | "Lost_Fencer_06SW09"
   | "Lost_Fencer_12MB04"
   | "Lost_Fencer_12MB05"
   | "Lost_Fencer_Named_12MB04"
-  | "Lost_FeralGhoul"
   | "Lost_Knight_Bow"
   | "Lost_Knight_Bow_06SW09"
   | "Lost_Knight_Bow_12MB03e"
@@ -13734,19 +13645,14 @@ export type VitalsCategory =
   | "Lost_Merc_Tank"
   | "Lost_Monarch"
   | "Lost_Monarch_S4"
-  | "Lost_MutatedNurse"
   | "Lost_Pikeman"
   | "Lost_Pikeman_06SW09"
   | "Lost_Pikeman_12MB04"
   | "Lost_Pikeman_12MB05"
   | "Lost_Pikeman_Named_12MB05"
   | "Lost_Siren_Named_ELITE_05WC11"
-  | "Lost_SoulHarvester"
   | "Lost_Totem"
   | "Lost_Totem_60"
-  | "Lost_Twin_Jesters"
-  | "Lost_Twin_Jesters_OneShotSummon"
-  | "Lost_Twin_Jesters_STDClone"
   | "Lynx"
   | "Lynx_03GC10"
   | "Lynx_14"
@@ -14800,8 +14706,6 @@ export type VitalsCategory =
   | "Undead_Bloated_Corpse_10WS09_ELITE"
   | "Undead_Bloated_Corpse_RE1"
   | "Undead_Brute"
-  | "Undead_Cryptkeeper"
-  | "Undead_Cryptkeeper_TombstoneMinion"
   | "Undead_GraveDigger"
   | "Undead_GraveDigger_03GC01"
   | "Undead_GraveDigger_13WF08a"
@@ -15089,8 +14993,6 @@ export type VitalsCategory =
   | "Undead_Javelineer_Named_01"
   | "Undead_Javelineer_Named_02"
   | "Undead_Javelineer_Named_02a"
-  | "Undead_MummifiedCorpse"
-  | "Undead_Naga"
   | "Undead_Navigator"
   | "Undead_Navigator_08QP05a"
   | "Undead_Navigator_08QP05b"
@@ -15382,18 +15284,6 @@ export type VitalsCategory =
   | "Unstable_Swamp_Fiend_ELITE_05WC10"
   | "Unstable_Swamp_Fiend_Minion"
   | "Varangian"
-  | "WB_Dynasty_Empress"
-  | "WB_Dynasty_Empress_Pedestal"
-  | "WB_Mammoth_FL_Mahantaram"
-  | "WB_Mammoth_FL_Mahantaram_Focus"
-  | "WB_Mammoth_FL_Mahantaram_Root_Arcane"
-  | "WB_Mammoth_FL_Mahantaram_Root_Fire"
-  | "WB_Mammoth_FL_Mahantaram_Root_Ice"
-  | "WB_Mammoth_FL_Mahantaram_Root_Lightning"
-  | "WB_Mammoth_FL_Mahantaram_Root_Void"
-  | "WB_Mammoth_FL_Mahantaram_Void_Ball"
-  | "WB_Mammoth_FL_Mahantaram_Void_Ball_Empowered"
-  | "WB_Naga_Fire"
   | "Waterfowl"
   | "Waterfowl_40"
   | "Withered"
@@ -15851,7 +15741,6 @@ export type VitalsCategory =
   | "Yeti_Named_S4_2"
   | "Yonas_MSQ"
   | "Yonas_MSQ2"
-  | "YsGuardian"
   | "vc_FL_Mammoth_09A_S6_Encounter";
 export type VitalsFamily =
   | "AncientGuardian"
@@ -15859,7 +15748,6 @@ export type VitalsFamily =
   | "Corrupted"
   | "Human"
   | "Lost"
-  | "Structure"
   | "Wildlife";
 export type WeaponTag =
   | "Axe"
