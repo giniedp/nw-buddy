@@ -13,8 +13,11 @@ import {
 import { glob, mkdir, withProgressBar } from '../utils'
 
 export async function processHeightmaps({ inputDir }: { inputDir: string }) {
-  const levels = await glob(path.join(inputDir, '**', 'newworld_vitaeeterna', '**', '*.heightmap.png'))
-    .then((list) => list.map(getHeightmapMeta))
+  const levels = await glob([
+    path.join(inputDir, '**', 'newworld_vitaeeterna', '**', '*.heightmap.png'),
+    path.join(inputDir, '**', 'nw_opr_004_trench', '**', '*.heightmap.png')
+  ])
+  .then((list) => list.map(getHeightmapMeta))
     .then((list) => groupBy(list, (it) => it.level))
 
   await withProgressBar({ label: 'Heightmaps', tasks: Object.entries(levels) }, async ([level, list], i, log) => {
