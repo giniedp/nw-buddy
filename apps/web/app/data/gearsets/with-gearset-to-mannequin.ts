@@ -71,6 +71,9 @@ function resolveSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
     Object.entries(slots || {}).map(([slotId, instanceOrId]) => {
       return resolveItemInstance(db, instanceOrId).pipe(
         map((instance): EquippedItem => {
+          if (!instance) {
+            return null
+          }
           return {
             itemId: instance.itemId,
             perks: instance.perks,
@@ -80,7 +83,7 @@ function resolveSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
         }),
       )
     }),
-  )
+  ).pipe(map((it) => it.filter((it) => it !== null)))
 }
 
 function resolveItemInstance(db: ItemInstancesDB, idOrInstance: string | ItemInstance) {

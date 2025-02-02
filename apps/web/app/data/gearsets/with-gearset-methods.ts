@@ -43,26 +43,31 @@ export function withGearsetMethods() {
 
           const instance = gearset().slots?.[slot] || null
           if (typeof instance === 'string') {
+            const instanceId = instance
             // patch the item instance
-            const data = await itemDB.read(instance)
-            await itemDB.update(instance, {
-              ...data,
-              ...patchValue,
-              perks: {
-                ...(data.perks || {}),
-                ...(patchValue.perks || {}),
-              }
-            })
-            return
+            const data = await itemDB.read(instanceId)
+            if (data) {
+              await itemDB.update(instanceId, {
+                ...data,
+                ...patchValue,
+                perks: {
+                  ...(data.perks || {}),
+                  ...(patchValue.perks || {}),
+                }
+              })
+              return
+            }
+            // instance not found, fall through to patch the slot
           }
+          const previous = typeof instance === 'string' ? null : instance
           // patch data on the gearset
           const record = makeCopy(gearset())
           record.slots = record.slots || {}
           record.slots[slot] = {
-            ...(instance || { itemId: null, gearScore: null }),
+            ...(previous || { itemId: null, gearScore: null }),
             ...(patchValue || {}),
             perks: {
-              ...(instance?.perks || {}),
+              ...(previous?.perks || {}),
               ...(patchValue?.perks || {}),
             }
           }
