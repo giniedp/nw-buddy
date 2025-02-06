@@ -27,4 +27,11 @@ export class NwData extends NwDataSheets {
 
   public loadItemsTable = bind(this, loadItemsTable)
   public listRecordVersions = listRecordVersions
+
+  public async fetchText(url: string): Promise<string> {
+    return this.loader.fetch(url).then((res) => res.text())
+  }
+  public async fetchJson(url: string): Promise<string> {
+    return this.loader.fetch(url).then((res) => res.json())
+  }
 }

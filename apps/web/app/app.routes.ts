@@ -107,6 +107,7 @@ const PAGE_ROUTES: Routes = [
       { path: 'artifacts', loadChildren: () => import('./pages/tracking/artifacts').then((m) => m.ROUTES) },
     ],
   },
+  { path: 'datasheets', loadChildren: () => import('./pages/datasheets').then((m) => m.ROUTES) },
 ]
 
 export const APP_ROUTES: Routes = [
