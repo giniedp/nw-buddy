@@ -1,0 +1,287 @@
+{
+	"__type": "AZ::Entity",
+	"id": 8238779001366180130,
+	"name": "SliceAssetEntity",
+	"isdependencyready": false,
+	"isruntimeactive": true,
+	"components": {
+		"__type": "AZStd::vector",
+		"element": {
+			"__type": "SliceComponent",
+			"baseclass1": {
+				"__type": "AZ::Component",
+				"id": 0
+			},
+			"entities": {
+				"__type": "AZStd::vector",
+				"element": [
+					{
+						"__type": "AZ::Entity",
+						"id": 2041131326794466980,
+						"name": "12MB02_DivineGaze_AI_32x32_collision_chunk_11_48_3",
+						"isdependencyready": false,
+						"isruntimeactive": true,
+						"components": {
+							"__type": "AZStd::vector",
+							"element": [
+								{
+									"__type": "GameTransformComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": 11262887678093707848
+										},
+										"m_replicationindex": 0
+									},
+									"m_worldtm": {
+										"data": [
+											1,
+											0,
+											0,
+											0,
+											1,
+											0,
+											0,
+											0,
+											1,
+											0,
+											0,
+											0
+										]
+									},
+									"m_parentid": 4294967295,
+									"m_localtm": {
+										"data": [
+											1,
+											0,
+											0,
+											0,
+											1,
+											0,
+											0,
+											0,
+											1,
+											0,
+											0,
+											0
+										]
+									},
+									"m_onnewparentkeepworldtm": true,
+									"m_isstatic": false
+								},
+								{
+									"__type": "PositionInTheWorldComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": 4993174721404612460
+										},
+										"m_replicationindex": 1
+									}
+								},
+								{
+									"__type": "AoiComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": 12556981330868048132
+										},
+										"m_replicationindex": 0
+									},
+									"m_aoigridcategory": 6,
+									"m_aoiradius": 0,
+									"m_slicephysicalgridradius": 200,
+									"m_slicedetectiongridradius": 0,
+									"m_slicephysicalradius": 0,
+									"m_additionalslicephysicalminradius": 0,
+									"m_isstaticslice": true,
+									"m_slicetags": 0,
+									"m_slicespawnradius": 25,
+									"m_useuserdefinedspawnradius": false,
+									"m_editorsliceviewradius": 0,
+									"m_editorslicephysicalradius": 0,
+									"m_editorslicespawnradius": 0,
+									"m_editoraoiradius": 0,
+									"m_editorisstaticslice": false,
+									"m_editorwillimpostor ": false,
+									"m_editorisrequiredonserver": false,
+									"m_editorrefreshbutton": false
+								},
+								{
+									"__type": "us-west-2",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": 4127192868429267930
+										},
+										"m_replicationindex": 2
+									}
+								}
+							]
+						}
+					},
+					{
+						"__type": "AZ::Entity",
+						"id": 1798290653,
+						"name": "Mesh_col",
+						"isdependencyready": false,
+						"isruntimeactive": true,
+						"components": {
+							"__type": "AZStd::vector",
+							"element": [
+								{
+									"__type": "GameTransformComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": 11262887678093707848
+										},
+										"m_replicationindex": 0
+									},
+									"m_worldtm": {
+										"data": [
+											-1.0958142,
+											0.0958699,
+											0,
+											-0.0958699,
+											-1.0958142,
+											0,
+											0,
+											0,
+											1.1,
+											-13.524414,
+											-13.226807,
+											0
+										]
+									},
+									"m_parentid": 2041131326794466980,
+									"m_localtm": {
+										"data": [
+											-1.0958142,
+											0.0958699,
+											0,
+											-0.0958699,
+											-1.0958142,
+											0,
+											0,
+											0,
+											1.1,
+											-13.524414,
+											-13.226807,
+											0
+										]
+									},
+									"m_onnewparentkeepworldtm": true,
+									"m_isstatic": false
+								},
+								{
+									"__type": "GameRigidBodyComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": 9316713822310998619
+										},
+										"m_replicationindex": 0
+									},
+									"m_center": [
+										0,
+										0,
+										0
+									],
+									"m_collisiontype": 0,
+									"m_rnrasset": {
+										"guid": "00000000-0000-0000-0000-000000000000",
+										"subid": "00000000-0000-0000-0000-000000000000",
+										"type": "D52CCCDD-9701-45D9-B261-8EA6881A6312",
+										"hint": ""
+									},
+									"m_materialoverrideasset": {
+										"guid": "00000000-0000-0000-0000-000000000000",
+										"subid": "00000000-0000-0000-0000-000000000000",
+										"type": "F46985B5-F7FF-4FCB-8E8C-DC240D701841",
+										"hint": ""
+									},
+									"m_collisionshape": {
+										"__type": "AZStd::shared_ptr"
+									},
+									"m_shapeentity": 4294967295,
+									"m_setprismasset": false,
+									"m_isdynamic": false,
+									"m_mass": 1,
+									"m_lineardamping": 0.05,
+									"m_angulardamping": 0.15,
+									"m_sleepminenergy": 0.5,
+									"m_interactwithtriggers": false,
+									"m_strfilter": "Structure",
+									"m_gameplayflags": {
+										"__type": "AZStd::vector"
+									},
+									"m_scaleshapes": false,
+									"m_deprecationwarning": "",
+									"m_converttoeditorgamerigidbodycomponent": false,
+									"m_configuration": {
+										"__type": "GameRigidBodyConfig",
+										"m_center": [
+											0,
+											0,
+											0
+										],
+										"m_collisiontype": 0,
+										"m_rnrasset": {
+											"guid": "B709B946-F6AA-56B1-8639-838858168352",
+											"subid": "00000064-0000-0000-0000-000000000000",
+											"type": "D52CCCDD-9701-45D9-B261-8EA6881A6312",
+											"hint": ""
+										},
+										"m_materialoverrideasset": {
+											"guid": "00000000-0000-0000-0000-000000000000",
+											"subid": "00000000-0000-0000-0000-000000000000",
+											"type": "F46985B5-F7FF-4FCB-8E8C-DC240D701841",
+											"hint": ""
+										},
+										"m_collisionshape": {
+											"__type": "AZStd::shared_ptr"
+										},
+										"m_overridecollisionshapematerial": false,
+										"m_overridecollisionshapematerialname": "",
+										"m_shapeentity": 4294967295,
+										"m_isdynamic": false,
+										"m_mass": 1,
+										"m_lineardamping": 0.05,
+										"m_angulardamping": 0.15,
+										"m_sleepminenergy": 0.5,
+										"m_interactwithtriggers": false,
+										"m_strfilter": "Structure",
+										"m_gameplayflags": {
+											"__type": "AZStd::vector"
+										},
+										"m_scaleshapes": false,
+										"m_applyalignmentdetails": false
+									}
+								}
+							]
+						}
+					}
+				]
+			},
+			"prefabs": {
+				"__type": "AZStd::list"
+			},
+			"isdynamic": false,
+			"shouldkeepinmemory": false,
+			"dependencyreloadmode": 0,
+			"dataflagsfornewentities": {
+				"__type": "DataFlagsPerEntity",
+				"entitytodataflags": {
+					"__type": "AZStd::unordered_map"
+				}
+			}
+		}
+	}
+}

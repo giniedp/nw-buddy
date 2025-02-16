@@ -68,7 +68,10 @@
     "storybook:serve": "npx http-server dist/web-storybook --port 5200",
     "storybook:wait": "pnpm wait-on http://127.0.0.1:5200",
     "storybook:test": "pnpm test-storybook -c apps/storybook --url http://127.0.0.1:5200",
-    "chromatic": "npx chromatic --storybook-build-dir dist/web-storybook"
+    "chromatic": "npx chromatic --storybook-build-dir dist/web-storybook",
+    "nwb": "go run ./tools/nw-kit",
+    "nwb:test": "go test ./tools/nw-kit/...",
+    "nwb:generate": "go generate ./tools/nw-kit/..."
   },
   "devDependencies": {
     "@ag-grid-community/client-side-row-model": "31.3.2",
