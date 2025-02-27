@@ -5,12 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+          "name": "Launch file",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${relativeFileDirname}",
+        },
+        {
             "name": "Renderer",
             "type": "chrome",
             "request": "attach",
             "port": 9876,
             "url": "http://localhost:4200",
-            "sourceMaps": true,  
+            "sourceMaps": true,
             "timeout": 10000,
             "trace": "verbose",
             "sourceMapPathOverrides": {

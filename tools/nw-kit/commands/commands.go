@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"nw-buddy/tools/nw-kit/commands/doctor"
+	"nw-buddy/tools/nw-kit/commands/list"
 	"nw-buddy/tools/nw-kit/commands/pull"
 	"nw-buddy/tools/nw-kit/commands/types"
 	"nw-buddy/tools/nw-kit/commands/unpack"
@@ -32,7 +33,7 @@ func Execute() error {
 func init() {
 	rootCmd.AddCommand(unpack.Cmd)
 	rootCmd.AddCommand(types.Cmd)
-	// rootCmd.AddCommand(scan.Cmd)
 	rootCmd.AddCommand(doctor.Cmd)
 	rootCmd.AddCommand(pull.Cmd)
+	rootCmd.AddCommand(list.Cmd)
 }

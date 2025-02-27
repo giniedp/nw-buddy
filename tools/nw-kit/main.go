@@ -4,25 +4,17 @@ import (
 	"fmt"
 	"log/slog"
 	"nw-buddy/tools/nw-kit/commands"
-	"nw-buddy/tools/nw-kit/utils"
+	"nw-buddy/tools/nw-kit/utils/env"
+	"nw-buddy/tools/nw-kit/utils/logging"
 	"os"
 	"runtime/debug"
-	"time"
 
-	"github.com/lmittmann/tint"
-	"github.com/mattn/go-isatty"
+	"runtime/pprof"
 )
 
 func init() {
-	w := os.Stderr
-	slog.SetDefault(slog.New(
-		tint.NewHandler(w, &tint.Options{
-			TimeFormat: time.TimeOnly,
-			NoColor:    !isatty.IsTerminal(w.Fd()),
-			Level:      slog.LevelDebug,
-		}),
-	))
-	utils.PrintEnvStatus()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	env.PrintStatus()
 }
 
 func main() {
@@ -33,6 +25,9 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+	cpuprof, _ := os.Create("cpu.prof")
+	pprof.StartCPUProfile(cpuprof)
+	defer pprof.StopCPUProfile()
 
 	err := commands.Execute()
 	if err != nil {

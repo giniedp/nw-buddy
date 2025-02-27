@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/nw-kit/nwfs"
 	"nw-buddy/tools/nw-kit/utils"
+	"nw-buddy/tools/nw-kit/utils/env"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -20,7 +21,7 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", utils.GetEnvGameDir(), "game root directory")
+	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
 }
 
 func run(ccmd *cobra.Command, args []string) {
@@ -32,7 +33,7 @@ func run(ccmd *cobra.Command, args []string) {
 	checkDubplicates(fs)
 }
 
-func checkDubplicates(fs nwfs.FileSystem) {
+func checkDubplicates(fs nwfs.Archive) {
 	slog.Info("Checking for duplicate file paths in pak files")
 	dubCounter := make(map[string][]nwfs.File)
 	files := utils.Must(fs.List())

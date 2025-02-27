@@ -18,7 +18,9 @@ func MarshalJSON(v any, fmt ...string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return writer.Bytes(), nil
+	data := writer.Bytes()
+	data = bytes.TrimSuffix(data, []byte("\n"))
+	return data, nil
 }
 
 func UnmarshalJSON(data []byte, v any) error {

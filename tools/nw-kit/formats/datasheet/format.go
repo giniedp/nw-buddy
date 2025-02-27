@@ -7,15 +7,25 @@ import (
 	"nw-buddy/tools/nw-kit/utils"
 )
 
-type FieldType int
+type FieldTypeID int
 
 const (
-	StringType FieldType = 1
-	NumberType FieldType = 2
-	BoolType   FieldType = 3
+	StringType FieldTypeID = 1
+	NumberType FieldTypeID = 2
+	BoolType   FieldTypeID = 3
 )
 
-type Record struct {
+var (
+	ErrKeyNotFound = fmt.Errorf("key not found")
+	ErrUnknownType = fmt.Errorf("unknown type")
+)
+
+type FieldType interface {
+	string | bool | float32
+}
+
+type Document struct {
+	File   string
 	Schema string
 	Table  string
 	Cols   []Col
@@ -23,27 +33,29 @@ type Record struct {
 }
 
 type Col struct {
-	Type FieldType
+	Type FieldTypeID
 	Name string
 }
 
-func Load(f nwfs.File) (Record, error) {
+func Load(f nwfs.File) (Document, error) {
 	data, err := f.Read()
 	if err != nil {
-		return Record{}, err
+		return Document{}, err
 	}
-	return Parse(data)
+	res, err := Parse(data)
+	res.File = f.Path()
+	return res, err
 }
 
-func Read(r io.Reader) (Record, error) {
+func Read(r io.Reader) (Document, error) {
 	data, err := io.ReadAll(r)
 	if err != nil {
-		return Record{}, err
+		return Document{}, err
 	}
 	return Parse(data)
 }
 
-func Parse(data []byte) (Record, error) {
+func Parse(data []byte) (Document, error) {
 	r := utils.NewByteReaderLE(data)
 	r.MustReadBytes(4)      // signatrue
 	r.MustReadInt32()       // name crc
@@ -69,24 +81,24 @@ func Parse(data []byte) (Record, error) {
 		return value
 	}
 
-	res := Record{}
+	res := Document{}
 	res.Schema = readString(int(to))
 	res.Table = readString(int(no))
 	res.Cols = make([]Col, colCount)
 	res.Rows = make([][]any, rowCount)
 
-	for i := 0; i < colCount; i++ {
+	for i := range colCount {
 		r.MustReadUint32()      // crc
 		o := r.MustReadUint32() // offset
 		t := r.MustReadUint32() // type
 		n := readString(int(o))
 		res.Cols[i] = Col{
-			Type: FieldType(t),
+			Type: FieldTypeID(t),
 			Name: n,
 		}
 	}
 
-	for i := 0; i < rowCount; i++ {
+	for i := range rowCount {
 		row := make([]any, colCount)
 		for j, col := range res.Cols {
 			switch col.Type {
@@ -101,10 +113,28 @@ func Parse(data []byte) (Record, error) {
 				r.SeekRelative(4) // hash
 				row[j] = r.MustReadUint32() == 1
 			default:
-				panic(fmt.Sprintf("unknown type %v", col.Type))
+				panic(fmt.Errorf("%w %v", ErrUnknownType, col.Type))
 			}
 		}
 		res.Rows[i] = row
 	}
 	return res, nil
+}
+
+func (it *Document) GetValue(row int, col string) (any, error) {
+	for i, c := range it.Cols {
+		if c.Name == col {
+			return it.Rows[row][i], nil
+		}
+	}
+	return nil, fmt.Errorf("%w %s", ErrKeyNotFound, col)
+}
+
+func (it *Document) GetValueStr(row int, col string) (string, bool) {
+	val, err := it.GetValue(row, col)
+	if err != nil {
+		return "", false
+	}
+	v, ok := val.(string)
+	return v, ok
 }

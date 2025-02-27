@@ -789,7 +789,7 @@
 	},
 	"0466ECC7-83FD-57A8-95A3-842D2DE4C7F6": {
 		"ID": "0466ECC7-83FD-57A8-95A3-842D2DE4C7F6",
-		"Name": "TAnimTrack\u003cKeyType\u003e\u003cISelectKey \u003e",
+		"Name": "TAnimTrack<KeyType><ISelectKey >",
 		"Members": {
 			"184893882": {
 				"Crc32": 184893882,
@@ -1005,7 +1005,7 @@
 	},
 	"052F8C6E-51B1-559A-B5FB-456FDA1B2FB2": {
 		"ID": "052F8C6E-51B1-559A-B5FB-456FDA1B2FB2",
-		"Name": "TAnimTrack\u003cKeyType\u003e\u003cIBoolKey \u003e",
+		"Name": "TAnimTrack<KeyType><IBoolKey >",
 		"Members": {
 			"184893882": {
 				"Crc32": 184893882,
@@ -3277,6 +3277,33 @@
 			}
 		}
 	},
+	"0F2DD1B9-B6FD-41B7-A861-7BDF3E19F809": {
+		"ID": "0F2DD1B9-B6FD-41B7-A861-7BDF3E19F809",
+		"Name": "SlicePercentReference",
+		"Members": {
+			"1034844325": {
+				"Crc32": 1034844325,
+				"Name": "slice",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1513624059": {
+				"Crc32": 1513624059,
+				"Name": "schedule",
+				"TypeID": "3B429139-BF67-557B-B347-D0A61D4F47B1",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1639350329": {
+				"Crc32": 1639350329,
+				"Name": "percent",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"0F4AACFC-1367-4AD7-A850-EB5E93EE34FE": {
 		"ID": "0F4AACFC-1367-4AD7-A850-EB5E93EE34FE",
 		"Name": "TutorialToastBinding",
@@ -3373,7 +3400,7 @@
 	},
 	"0FA3D981-4C3B-5CD8-BA09-62EDE9344677": {
 		"ID": "0FA3D981-4C3B-5CD8-BA09-62EDE9344677",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::PlayerComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::PlayerComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -3921,7 +3948,7 @@
 	},
 	"13A1A284-F27E-5788-BF9B-435A45131463": {
 		"ID": "13A1A284-F27E-5788-BF9B-435A45131463",
-		"Name": "TAnimTrack\u003cKeyType\u003e\u003cICharacterKey \u003e",
+		"Name": "TAnimTrack<KeyType><ICharacterKey >",
 		"Members": {
 			"184893882": {
 				"Crc32": 184893882,
@@ -4672,7 +4699,7 @@
 	},
 	"171F78A0-CAEB-4665-8439-F954EDCF29AE": {
 		"ID": "171F78A0-CAEB-4665-8439-F954EDCF29AE",
-		"Name": "AzFramework::SimpleAssetReference\u003cLmbrCentral::MannequinAnimationDatabaseAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<LmbrCentral::MannequinAnimationDatabaseAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -4731,7 +4758,7 @@
 	},
 	"173AC8F0-FD63-4583-8D38-F43FE59F2209": {
 		"ID": "173AC8F0-FD63-4583-8D38-F43FE59F2209",
-		"Name": "spline::TrackSplineInterpolator\u003cVec2\u003e",
+		"Name": "spline::TrackSplineInterpolator<Vec2>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -4864,7 +4891,7 @@
 	},
 	"17A70E99-A282-4FFE-9921-3EC4884A2F70": {
 		"ID": "17A70E99-A282-4FFE-9921-3EC4884A2F70",
-		"Name": "AzFramework::SimpleAssetReference\u003cLmbrCentral::MannequinControllerDefinitionAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<LmbrCentral::MannequinControllerDefinitionAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -5500,7 +5527,7 @@
 	},
 	"19ED7B41-FB10-4DF5-A7FD-697182186D7F": {
 		"ID": "19ED7B41-FB10-4DF5-A7FD-697182186D7F",
-		"Name": "AzFramework::SimpleAssetReference\u003cMB::MaterialOverrideAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<MB::MaterialOverrideAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -5641,7 +5668,7 @@
 	},
 	"1AE37C63-D5C2-4E65-A08B-7020E7696233": {
 		"ID": "1AE37C63-D5C2-4E65-A08B-7020E7696233",
-		"Name": "UiSpline::SplineKeyEx\u003cVec2\u003e",
+		"Name": "UiSpline::SplineKeyEx<Vec2>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -6568,7 +6595,7 @@
 	},
 	"1E34E372-3A0E-5246-A4B2-70E75B5AA11F": {
 		"ID": "1E34E372-3A0E-5246-A4B2-70E75B5AA11F",
-		"Name": "TUiAnimSplineTrack\u003cVec2 \u003e",
+		"Name": "TUiAnimSplineTrack<Vec2 >",
 		"Members": {
 			"1604449568": {
 				"Crc32": 1604449568,
@@ -7121,7 +7148,7 @@
 	},
 	"21D24B84-D914-5A58-A362-127C69774423": {
 		"ID": "21D24B84-D914-5A58-A362-127C69774423",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::Interact\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::Interact>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -7826,7 +7853,7 @@
 	},
 	"24A4D7E5-C36D-427D-AB49-CD86573B7288": {
 		"ID": "24A4D7E5-C36D-427D-AB49-CD86573B7288",
-		"Name": "spline::SplineKey\u003cVec2\u003e",
+		"Name": "spline::SplineKey<Vec2>",
 		"Members": {
 			"177674525": {
 				"Crc32": 177674525,
@@ -8670,7 +8697,7 @@
 	},
 	"2A1BCBD8-E57A-5E3A-B478-79DF377C4BF5": {
 		"ID": "2A1BCBD8-E57A-5E3A-B478-79DF377C4BF5",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::DelayedEventComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::DelayedEventComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -9007,7 +9034,7 @@
 	},
 	"2B434E84-7684-5FF1-A975-153E5C4AD74C": {
 		"ID": "2B434E84-7684-5FF1-A975-153E5C4AD74C",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::CurrencyComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::CurrencyComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -9164,7 +9191,7 @@
 	},
 	"2CA6155E-A6A4-57A2-9D14-FDADF0F8E7A8": {
 		"ID": "2CA6155E-A6A4-57A2-9D14-FDADF0F8E7A8",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::MarkerComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::MarkerComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -10600,7 +10627,7 @@
 	},
 	"333AB64F-A826-55A2-8923-4ED859DD657B": {
 		"ID": "333AB64F-A826-55A2-8923-4ED859DD657B",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::TimelineComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::TimelineComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -11806,7 +11833,7 @@
 	},
 	"38F814D4-6041-4442-9704-9F68E996D55B": {
 		"ID": "38F814D4-6041-4442-9704-9F68E996D55B",
-		"Name": "UiSpline::TrackSplineInterpolator\u003cVec2\u003e",
+		"Name": "UiSpline::TrackSplineInterpolator<Vec2>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -12286,6 +12313,19 @@
 				"Crc32": 1094737465,
 				"Name": "element",
 				"TypeID": "310EEEA7-79AE-4FC1-85ED-25D4D68502EB",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"3B429139-BF67-557B-B347-D0A61D4F47B1": {
+		"ID": "3B429139-BF67-557B-B347-D0A61D4F47B1",
+		"Name": "",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "F1423D3E-AE69-4134-B1B3-7C27C3E9F99F",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -17916,7 +17956,7 @@
 	},
 	"56B36445-2109-556D-B6F1-16364921CB50": {
 		"ID": "56B36445-2109-556D-B6F1-16364921CB50",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::WaypointsComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::WaypointsComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -19914,7 +19954,7 @@
 	},
 	"60310DCE-1F8E-573B-9F72-99C97FFCF6C6": {
 		"ID": "60310DCE-1F8E-573B-9F72-99C97FFCF6C6",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::GlobalStorageComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::GlobalStorageComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -21763,7 +21803,7 @@
 	},
 	"665B2599-32E9-560F-A434-2E69C8A25117": {
 		"ID": "665B2599-32E9-560F-A434-2E69C8A25117",
-		"Name": "TAnimSplineTrack\u003cVec2 \u003e",
+		"Name": "TAnimSplineTrack<Vec2 >",
 		"Members": {
 			"184893882": {
 				"Crc32": 184893882,
@@ -22324,7 +22364,7 @@
 	},
 	"68E92460-5C0C-4031-9620-6F1A08763243": {
 		"ID": "68E92460-5C0C-4031-9620-6F1A08763243",
-		"Name": "AzFramework::SimpleAssetReference\u003cLmbrCentral::TextureAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<LmbrCentral::TextureAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -22537,7 +22577,7 @@
 	},
 	"696AFD24-3A26-5DB5-9265-0B2F05F53C03": {
 		"ID": "696AFD24-3A26-5DB5-9265-0B2F05F53C03",
-		"Name": "TAnimTrack\u003cKeyType\u003e\u003cIEventKey \u003e",
+		"Name": "TAnimTrack<KeyType><IEventKey >",
 		"Members": {
 			"184893882": {
 				"Crc32": 184893882,
@@ -23221,7 +23261,7 @@
 	},
 	"6CCB1E78-9E55-5510-ADAF-0338362703A2": {
 		"ID": "6CCB1E78-9E55-5510-ADAF-0338362703A2",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::DetectionVolumeComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::DetectionVolumeComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -23576,7 +23616,7 @@
 	},
 	"6F612FE6-A054-4E49-830C-0288F3C79A52": {
 		"ID": "6F612FE6-A054-4E49-830C-0288F3C79A52",
-		"Name": "AzFramework::SimpleAssetReference\u003cTextureAtlasNamespace::TextureAtlasAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<TextureAtlasNamespace::TextureAtlasAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -26605,7 +26645,7 @@
 	},
 	"7EE21EFD-16B5-5D7C-8A94-C5D8E2766B3F": {
 		"ID": "7EE21EFD-16B5-5D7C-8A94-C5D8E2766B3F",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::NpcComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::NpcComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -27284,7 +27324,7 @@
 	},
 	"81459A9E-4CEE-49A0-AED1-B82B52B0CDD9": {
 		"ID": "81459A9E-4CEE-49A0-AED1-B82B52B0CDD9",
-		"Name": "AzFramework::SimpleAssetReference\u003cMB::DataSheetAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<MB::DataSheetAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -29384,7 +29424,7 @@
 	},
 	"926B14B8-B1A2-57B7-930A-5F4EAADFCA2E": {
 		"ID": "926B14B8-B1A2-57B7-930A-5F4EAADFCA2E",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::GameTransformComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::GameTransformComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -29849,7 +29889,7 @@
 	},
 	"95C1F7EB-D0AD-54E9-9404-42F84EB6B836": {
 		"ID": "95C1F7EB-D0AD-54E9-9404-42F84EB6B836",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::InteractorComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::InteractorComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -30278,7 +30318,7 @@
 	},
 	"96BCA307-A4D5-43A0-9985-08A29BCCCB30": {
 		"ID": "96BCA307-A4D5-43A0-9985-08A29BCCCB30",
-		"Name": "spline::SplineKeyEx\u003cVec2\u003e",
+		"Name": "spline::SplineKeyEx<Vec2>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -32025,7 +32065,7 @@
 	},
 	"A1342558-687A-406A-8BE4-784D6546589D": {
 		"ID": "A1342558-687A-406A-8BE4-784D6546589D",
-		"Name": "AzFramework::SimpleAssetReference\u003cCharacterDefinitionAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<CharacterDefinitionAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -32861,6 +32901,19 @@
 			}
 		}
 	},
+	"A49CEF1B-4706-5AEC-AC5A-C401F5BF5241": {
+		"ID": "A49CEF1B-4706-5AEC-AC5A-C401F5BF5241",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "AFB21C1A-98D5-4DB5-B111-E0AA6A3E0D12",
+				"TypeIDs": [],
+				"Array": true
+			}
+		}
+	},
 	"A4A9F2C1-0201-4D48-BC1F-D11FA628F00A": {
 		"ID": "A4A9F2C1-0201-4D48-BC1F-D11FA628F00A",
 		"Name": "CriticalHitsComponentClientFacet",
@@ -33106,7 +33159,7 @@
 	},
 	"A6F50685-C884-50C6-AD08-123028C77954": {
 		"ID": "A6F50685-C884-50C6-AD08-123028C77954",
-		"Name": "VertexContainer\u003cVector3 \u003e",
+		"Name": "VertexContainer<Vector3 >",
 		"Members": {
 			"1091746925": {
 				"Crc32": 1091746925,
@@ -33324,7 +33377,7 @@
 	},
 	"A8E73C3D-65DD-43D8-A25E-2E35674B4B78": {
 		"ID": "A8E73C3D-65DD-43D8-A25E-2E35674B4B78",
-		"Name": "SplineAttribute\u003cAttributeType\u003e",
+		"Name": "SplineAttribute<AttributeType>",
 		"Members": {
 			"1145702237": {
 				"Crc32": 1145702237,
@@ -34799,6 +34852,26 @@
 				"Crc32": 702058950,
 				"Name": "m_nummeshes",
 				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"AFB21C1A-98D5-4DB5-B111-E0AA6A3E0D12": {
+		"ID": "AFB21C1A-98D5-4DB5-B111-E0AA6A3E0D12",
+		"Name": "TagSlicesReference",
+		"Members": {
+			"3180279316": {
+				"Crc32": 3180279316,
+				"Name": "slices",
+				"TypeID": "FDBD40B4-8A70-5B23-BCE7-A717BA039A86",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"59357059": {
+				"Crc32": 59357059,
+				"Name": "tag",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -36580,7 +36653,7 @@
 	},
 	"B7B8ECC7-FF89-4A76-A50E-4C6CA2B6E6B4": {
 		"ID": "B7B8ECC7-FF89-4A76-A50E-4C6CA2B6E6B4",
-		"Name": "AzFramework::SimpleAssetReference\u003cLmbrCentral::MaterialAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<LmbrCentral::MaterialAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -38694,7 +38767,7 @@
 	},
 	"C51FF617-93F4-5948-A7B0-1F5CF4D8944E": {
 		"ID": "C51FF617-93F4-5948-A7B0-1F5CF4D8944E",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::ContainerComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::ContainerComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -38707,7 +38780,7 @@
 	},
 	"C53A81AF-E3D0-5013-9E0D-4B5EAF318D2F": {
 		"ID": "C53A81AF-E3D0-5013-9E0D-4B5EAF318D2F",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::SiegeWeaponComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::SiegeWeaponComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -40073,7 +40146,7 @@
 	},
 	"CEEB46B0-4C86-53E1-9748-C283BCBDAD23": {
 		"ID": "CEEB46B0-4C86-53E1-9748-C283BCBDAD23",
-		"Name": "LocalComponentRef\u003cInterfaceType\u003e\u003cconst char *__cdecl MB::GetTypeName\u003cclass Javelin::OwnershipComponent\u003e(void)\u003e",
+		"Name": "LocalComponentRef<InterfaceType><const char *__cdecl MB::GetTypeName<class Javelin::OwnershipComponent>(void)>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -41390,7 +41463,7 @@
 	},
 	"D6342379-A5FA-4B18-B890-702C2FE99A5A": {
 		"ID": "D6342379-A5FA-4B18-B890-702C2FE99A5A",
-		"Name": "AzFramework::SimpleAssetReference\u003cLyShine::FontAsset\u003e",
+		"Name": "AzFramework::SimpleAssetReference<LyShine::FontAsset>",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -43342,7 +43415,7 @@
 	},
 	"E2301E81-6BAF-4A17-886C-76F1A9C37118": {
 		"ID": "E2301E81-6BAF-4A17-886C-76F1A9C37118",
-		"Name": "UiSpline::SplineKey\u003cVec2\u003e",
+		"Name": "UiSpline::SplineKey<Vec2>",
 		"Members": {
 			"177674525": {
 				"Crc32": 177674525,
@@ -45047,7 +45120,7 @@
 	},
 	"EBE98B36-0783-5226-9739-064BD41EBB52": {
 		"ID": "EBE98B36-0783-5226-9739-064BD41EBB52",
-		"Name": "VertexContainer\u003cVector2 \u003e",
+		"Name": "VertexContainer<Vector2 >",
 		"Members": {
 			"1091746925": {
 				"Crc32": 1091746925,
@@ -45888,6 +45961,33 @@
 			"3653088435": {
 				"Crc32": 3653088435,
 				"Name": "m_ignoresGridFilter",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"F1423D3E-AE69-4134-B1B3-7C27C3E9F99F": {
+		"ID": "F1423D3E-AE69-4134-B1B3-7C27C3E9F99F",
+		"Name": "SlicePercentReference",
+		"Members": {
+			"1693303831": {
+				"Crc32": 1693303831,
+				"Name": "m_cheduleid",
+				"TypeID": "9F4E062E-06A0-46D4-85DF-E0DA96467D3A",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"234830100": {
+				"Crc32": 234830100,
+				"Name": "m_selectedschedulename",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3869861114": {
+				"Crc32": 3869861114,
+				"Name": "m_invertcheck",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -47298,6 +47398,19 @@
 			}
 		}
 	},
+	"F8ADBADF-B7B2-4FB8-AFB6-6C4004FD9BF7": {
+		"ID": "F8ADBADF-B7B2-4FB8-AFB6-6C4004FD9BF7",
+		"Name": "AliasAsset",
+		"Members": {
+			"1874629670": {
+				"Crc32": 1874629670,
+				"Name": "Tags",
+				"TypeID": "A49CEF1B-4706-5AEC-AC5A-C401F5BF5241",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"F8C49ED9-203A-47FF-98BA-72A4AB05D1F5": {
 		"ID": "F8C49ED9-203A-47FF-98BA-72A4AB05D1F5",
 		"Name": "PlayerTurretComponentClientFacet",
@@ -48054,6 +48167,19 @@
 			}
 		}
 	},
+	"FDBD40B4-8A70-5B23-BCE7-A717BA039A86": {
+		"ID": "FDBD40B4-8A70-5B23-BCE7-A717BA039A86",
+		"Name": "",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "0F2DD1B9-B6FD-41B7-A861-7BDF3E19F809",
+				"TypeIDs": [],
+				"Array": true
+			}
+		}
+	},
 	"FDC58CF7-8109-48F2-8D5D-BCBAF774ABB7": {
 		"ID": "FDC58CF7-8109-48F2-8D5D-BCBAF774ABB7",
 		"Name": "AnimationData",
@@ -48335,6 +48461,20 @@
 				"TypeIDs": [],
 				"Array": false
 			},
+			"1805685599": {
+				"Crc32": 1805685599,
+				"Name": "m_losobstructionfilternameoverride",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2702344761": {
+				"Crc32": 2702344761,
+				"Name": "m_completionobstructionfilternameoverride",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
 			"286549390": {
 				"Crc32": 286549390,
 				"Name": "m_tagtoallow",
@@ -48367,6 +48507,13 @@
 				"Crc32": 4284098803,
 				"Name": "m_allowanynotallowed",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"431680731": {
+				"Crc32": 431680731,
+				"Name": "le-tim",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
 			},

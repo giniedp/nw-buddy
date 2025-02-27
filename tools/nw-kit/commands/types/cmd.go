@@ -8,6 +8,8 @@ import (
 	"nw-buddy/tools/nw-kit/nwfs"
 	"nw-buddy/tools/nw-kit/rtti"
 	"nw-buddy/tools/nw-kit/utils"
+	"nw-buddy/tools/nw-kit/utils/env"
+	"nw-buddy/tools/nw-kit/utils/progress"
 	"os"
 	"path"
 
@@ -28,10 +30,10 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", utils.GetEnvGameDir(), "game root directory")
-	Cmd.Flags().StringVarP(&flgGameFile, "file", "f", path.Join(utils.GetEnvGameDir(), "Bin64", "NewWorld.exe"), "game executalbe")
-	Cmd.Flags().StringVarP(&flgLumberDir, "lumberyard", "l", utils.GetEnvLumberyardDir(), "path to lumberyard source")
-	Cmd.Flags().StringVarP(&flgOutputDir, "output", "o", path.Join(utils.GetEnvWorkDir(), "tools", "nw-kit", "rtti", "nwt"), "output directory")
+	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
+	Cmd.Flags().StringVarP(&flgGameFile, "file", "f", path.Join(env.GameDir(), "Bin64", "NewWorld.exe"), "game executalbe")
+	Cmd.Flags().StringVarP(&flgLumberDir, "lumberyard", "l", env.LumberyardDir(), "path to lumberyard source")
+	Cmd.Flags().StringVarP(&flgOutputDir, "output", "o", path.Join(env.WorkDir(), "tools", "nw-kit", "rtti", "nwt"), "output directory")
 }
 
 func args(cmd *cobra.Command, args []string) error {
@@ -118,7 +120,7 @@ func runScan() {
 
 	{
 		// TODO: scan datasheets
-		fs.Glob("")
+		// fs.Glob(".datasheets")
 	}
 
 	slog.Info("-- Object Streams --")
@@ -137,7 +139,7 @@ func runGenerate() {
 func runInspect() {
 	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
 	files := utils.Must(fs.List())
-	bar := utils.Progress(len(files), "scanning", 0)
+	bar := progress.Bar(len(files), "scanning")
 
 	meta := make(map[string]bool)
 	for _, file := range files {

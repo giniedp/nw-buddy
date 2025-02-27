@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type Record struct {
+type Document struct {
 	Region     [2]uint32   `json:"region"`
 	Slices     []string    `json:"slices"`
 	Variants   []string    `json:"variants"`
@@ -21,7 +21,7 @@ type Record struct {
 	Types3     []byte      `json:"types3"`
 }
 
-func Load(f nwfs.File) (*Record, error) {
+func Load(f nwfs.File) (*Document, error) {
 	data, err := f.Read()
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func Load(f nwfs.File) (*Record, error) {
 	return Parse(data, f.Path())
 }
 
-func Read(r io.Reader, file string) (*Record, error) {
+func Read(r io.Reader, file string) (*Document, error) {
 	data, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -37,10 +37,10 @@ func Read(r io.Reader, file string) (*Record, error) {
 	return Parse(data, file)
 }
 
-func Parse(data []byte, file string) (res *Record, err error) {
+func Parse(data []byte, file string) (res *Document, err error) {
 	defer utils.HandleRecover(&err)
 
-	res = &Record{}
+	res = &Document{}
 	tokens := strings.SplitN(path.Base(path.Dir(file)), "_", 3)
 	if len(tokens) == 3 {
 		r1, _ := strconv.Atoi(tokens[1])
@@ -59,14 +59,13 @@ func Parse(data []byte, file string) (res *Record, err error) {
 	res.Indices = make([]uint16, count)
 	res.Positions = make([][2]uint16, count)
 	if count > 0 {
-		for i := 0; i < int(count); i++ {
+		for i := range int(count) {
 			res.Indices[i] = r.MustReadUint16()
 		}
-		for i := 0; i < int(count); i++ {
-			res.Positions[i] = [2]uint16{
-				r.MustReadUint16(),
-				r.MustReadUint16(),
-			}
+		for i := range int(count) {
+			y := r.MustReadUint16()
+			x := r.MustReadUint16()
+			res.Positions[i] = [2]uint16{x, y}
 		}
 		r.SeekRelative(int(count * 4))
 		r.SeekRelative(int(count))
@@ -76,13 +75,12 @@ func Parse(data []byte, file string) (res *Record, err error) {
 	res.Positions2 = make([][2]uint16, count)
 	res.Types2 = make([]byte, count)
 	if count > 0 {
-		for i := 0; i < int(count); i++ {
-			res.Positions2[i] = [2]uint16{
-				r.MustReadUint16(),
-				r.MustReadUint16(),
-			}
+		for i := range int(count) {
+			y := r.MustReadUint16()
+			x := r.MustReadUint16()
+			res.Positions2[i] = [2]uint16{x, y}
 		}
-		for i := 0; i < int(count); i++ {
+		for i := range int(count) {
 			res.Types2[i] = r.MustReadByte()
 		}
 	}
@@ -91,13 +89,12 @@ func Parse(data []byte, file string) (res *Record, err error) {
 	res.Positions3 = make([][2]uint16, count)
 	res.Types3 = make([]byte, count)
 	if count > 0 {
-		for i := 0; i < int(count); i++ {
-			res.Positions3[i] = [2]uint16{
-				r.MustReadUint16(),
-				r.MustReadUint16(),
-			}
+		for i := range int(count) {
+			y := r.MustReadUint16()
+			x := r.MustReadUint16()
+			res.Positions3[i] = [2]uint16{x, y}
 		}
-		for i := 0; i < int(count); i++ {
+		for i := range int(count) {
 			res.Types3[i] = r.MustReadByte()
 		}
 	}
@@ -107,7 +104,7 @@ func Parse(data []byte, file string) (res *Record, err error) {
 
 func readStringArray(r *utils.ByteReader, count int) []string {
 	res := make([]string, count)
-	for i := 0; i < count; i++ {
+	for i := range count {
 		c := r.MustReadByte()
 		res[i] = string(r.MustReadBytes(int(c)))
 	}

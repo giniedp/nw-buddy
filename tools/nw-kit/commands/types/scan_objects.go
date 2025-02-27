@@ -7,9 +7,12 @@ import (
 	"nw-buddy/tools/nw-kit/nwfs"
 	"nw-buddy/tools/nw-kit/rtti"
 	"nw-buddy/tools/nw-kit/utils"
+	"nw-buddy/tools/nw-kit/utils/progress"
+	"path"
+	"strings"
 )
 
-func scanObjects(fs nwfs.FileSystem, uidTable rtti.UuidTable, crcTable rtti.CrcTable) (rtti.TypeTable, error) {
+func scanObjects(fs nwfs.Archive, uidTable rtti.UuidTable, crcTable rtti.CrcTable) (rtti.TypeTable, error) {
 	// patterns := []string{
 	// 	"**.dynamicslice",
 	// 	"**.slice.meta",
@@ -20,9 +23,10 @@ func scanObjects(fs nwfs.FileSystem, uidTable rtti.UuidTable, crcTable rtti.CrcT
 	// 	"**.aliasasset",
 	// }
 
-	files := utils.Must(fs.Glob("**.{meta,dynamicuicanvas,waterqt,metadata,slicedata,chunks,dynamicslice}"))
+	files := utils.Must(fs.Glob("**.{meta,dynamicuicanvas,waterqt,metadata,slicedata,chunks,dynamicslice,aliasasset,slice.meta}"))
+	counter := make(map[string]int)
 
-	bar := utils.Progress(len(files), "scanning", 0)
+	bar := progress.Bar(len(files), "scanning")
 	table := rtti.NewTypeTable()
 
 	for _, file := range files {
@@ -33,6 +37,10 @@ func scanObjects(fs nwfs.FileSystem, uidTable rtti.UuidTable, crcTable rtti.CrcT
 			slog.Error(fmt.Sprintf("%v %s", err, file.Path()))
 			continue
 		}
+
+		basename := path.Base(file.Path())
+		split := strings.SplitN(basename, ".", 2)
+		counter[split[1]]++
 
 		doc.Walk(func(node *azcs.WalkNode) bool {
 			el := node.Element
@@ -64,5 +72,8 @@ func scanObjects(fs nwfs.FileSystem, uidTable rtti.UuidTable, crcTable rtti.CrcT
 	}
 	bar.Close()
 
+	for ext, count := range counter {
+		slog.Info(fmt.Sprintf("%s: %d", ext, count))
+	}
 	return table, nil
 }

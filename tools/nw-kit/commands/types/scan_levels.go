@@ -11,7 +11,7 @@ import (
 
 var ErrNoLevelFiles = fmt.Errorf("no lumberyard files found")
 
-func scanLevels(fs nwfs.FileSystem) (crc rtti.CrcTable, table rtti.UuidTable, err error) {
+func scanLevels(fs nwfs.Archive) (crc rtti.CrcTable, table rtti.UuidTable, err error) {
 	files, err := fs.Glob("**.entities_xml")
 	if err != nil {
 		return nil, nil, err

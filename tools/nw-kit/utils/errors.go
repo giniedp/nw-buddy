@@ -1,6 +1,8 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func Must[T any](obj T, err error) T {
 	if err != nil {

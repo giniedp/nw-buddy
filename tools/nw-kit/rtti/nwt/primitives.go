@@ -41,7 +41,7 @@ var PRIMITIVES = map[string]reflect.Type{
 	"73103120-3DD3-4873-BAB3-9713FA2804FB": reflect.TypeOf(AzQuat{}),
 
 	// technically not a primitive, but has simple enough structure
-	"6383F1D3-BB27-4E6B-A49A-6409B2059EAA": reflect.TypeOf((*AzEntityId)(nil)),
+	// "6383F1D3-BB27-4E6B-A49A-6409B2059EAA": reflect.TypeOf((*AzEntityId)(nil)),
 }
 
 // unknown and unmapped primitives
@@ -328,34 +328,5 @@ func (it *AzTransform) Deserialize(el *azcs.Element) error {
 		res = append(res, AzFloat32(math.Float32frombits(bits)))
 	}
 	it.Data = res
-	return nil
-}
-
-//	type EntityId struct {
-//		Id AzUInt64 `crc:"3208210256"`
-//	}
-type AzEntityId uint64
-
-func (it *AzEntityId) Deserialize(el *azcs.Element) error {
-
-	if len(el.Elements) > 1 {
-		return fmt.Errorf("expected 0 or 1 elements, got %d", len(el.Elements))
-	}
-
-	if len(el.Elements) == 1 && el.Elements[0].NameCrc != 3208210256 {
-		return fmt.Errorf("expected element with crc 3208210256, got %d", el.Elements[0].NameCrc)
-	}
-
-	for _, e := range el.Elements {
-		if e.NameCrc == 3208210256 {
-			var id AzUInt64
-			if err := id.Deserialize(e); err != nil {
-				return err
-			}
-			*it = AzEntityId(id)
-			return nil
-		}
-	}
-
 	return nil
 }

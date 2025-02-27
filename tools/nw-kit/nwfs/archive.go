@@ -2,18 +2,22 @@ package nwfs
 
 import (
 	"fmt"
+	"nw-buddy/tools/nw-kit/utils/str"
 	"strings"
+	"sync"
 )
 
-type FileSystem interface {
+type Archive interface {
 	List(matcher ...func(string) bool) ([]File, error)
 	Glob(patterns ...string) ([]File, error)
 	Match(patterns ...string) ([]File, error)
 	ReadFile(path string) ([]byte, error)
+	Lookup(path string) (File, bool)
+	LookupBySuffix(suffix string) (File, bool)
 }
 
 type File interface {
-	FS() FileSystem
+	Archive() Archive
 	Package() string
 	Path() string
 	Read() ([]byte, error)
@@ -21,18 +25,59 @@ type File interface {
 
 type baseFS struct {
 	files []File
+	index map[string]File
+	lock  sync.RWMutex
+	sa    *str.SuffixArray
 }
 
-func (d *baseFS) ReadFile(path string) ([]byte, error) {
-	for _, entry := range d.files {
-		if entry.Path() == path {
-			return entry.Read()
+func (d *baseFS) initSuffix() {
+	files := make([]string, len(d.files))
+	for i, entry := range d.files {
+		files[i] = entry.Path()
+	}
+	d.sa = str.NewSuffixArray(files)
+}
+
+func (d *baseFS) Lookup(path string) (File, bool) {
+	if d.index == nil {
+		d.lock.Lock()
+		d.index = make(map[string]File)
+		for _, entry := range d.files {
+			d.index[entry.Path()] = entry
 		}
+		d.lock.Unlock()
+	}
+
+	d.lock.RLock()
+	defer d.lock.RUnlock()
+	if entry, ok := d.index[path]; ok {
+		return entry, true
+	}
+	return nil, false
+}
+
+func (d *baseFS) LookupBySuffix(suffix string) (File, bool) {
+	d.lock.RLock()
+	defer d.lock.RUnlock()
+
+	res, ok := d.sa.Lookup(suffix)
+	if ok {
+		return d.Lookup(res)
+	}
+	return nil, false
+}
+func (d *baseFS) ReadFile(path string) ([]byte, error) {
+	d.lock.RLock()
+	defer d.lock.RUnlock()
+	if entry, ok := d.Lookup(path); ok {
+		return entry.Read()
 	}
 	return nil, fmt.Errorf("file not found")
 }
 
 func (d *baseFS) List(match ...func(string) bool) ([]File, error) {
+	d.lock.RLock()
+	defer d.lock.RUnlock()
 	switch len(match) {
 	case 0:
 		return d.files, nil
@@ -44,6 +89,8 @@ func (d *baseFS) List(match ...func(string) bool) ([]File, error) {
 }
 
 func (d *baseFS) Glob(patterns ...string) (result []File, err error) {
+	d.lock.RLock()
+	defer d.lock.RUnlock()
 	if match, err := CompileGlob(patterns...); err != nil {
 		return nil, err
 	} else {
@@ -52,6 +99,8 @@ func (d *baseFS) Glob(patterns ...string) (result []File, err error) {
 }
 
 func (d *baseFS) Match(patterns ...string) (result []File, err error) {
+	d.lock.RLock()
+	defer d.lock.RUnlock()
 	if match, err := CompileRegexp(patterns...); err != nil {
 		return nil, err
 	} else {
@@ -60,6 +109,8 @@ func (d *baseFS) Match(patterns ...string) (result []File, err error) {
 }
 
 func (d *baseFS) list(match func(string) bool) (result []File, err error) {
+	d.lock.RLock()
+	defer d.lock.RUnlock()
 	result = make([]File, 0)
 	for _, entry := range d.files {
 		if match(entry.Path()) {

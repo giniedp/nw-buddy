@@ -2,7 +2,7 @@ package image_test
 
 import (
 	"nw-buddy/tools/nw-kit/formats/image"
-	"nw-buddy/tools/nw-kit/utils"
+	"nw-buddy/tools/nw-kit/utils/env"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,7 +14,7 @@ func TestConvert(t *testing.T) {
 
 	binDir, err := filepath.Abs("../../../bin")
 	assert.NoError(t, err, "build bin dir")
-	utils.AppendEnvPath(binDir)
+	env.AppendToPATH(binDir)
 
 	tmpDir, err := filepath.Abs("./tmp")
 	assert.NoError(t, err, "build tmp dir")

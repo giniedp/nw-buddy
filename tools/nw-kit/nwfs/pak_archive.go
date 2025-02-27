@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"nw-buddy/tools/nw-kit/formats/pak"
-	"nw-buddy/tools/nw-kit/utils"
+	"nw-buddy/tools/nw-kit/utils/progress"
 	"os"
 	"path"
 	"path/filepath"
@@ -20,34 +20,35 @@ var ExcludedPacks = []string{
 	//"shadersbin_d3d12.pak",
 }
 
-type pakFileSystem struct {
+type pakArchive struct {
 	baseFS
 	rootDir string
 }
 
 type pakFile struct {
 	pak.Entry
-	fs *pakFileSystem
+	fs *pakArchive
 }
 
-func (it *pakFile) FS() FileSystem {
+func (it *pakFile) Archive() Archive {
 	return it.fs
 }
 
 // NewPakFS creates a new file system using pak files from the given game directory.
-func NewPakFS(gameDir string) (FileSystem, error) {
+func NewPakFS(gameDir string) (Archive, error) {
 	gameDir = path.Clean(gameDir)
 	if !strings.HasSuffix(gameDir, "assets") {
 		gameDir = path.Join(gameDir, "assets")
 	}
-	d := &pakFileSystem{
+	d := &pakArchive{
 		rootDir: gameDir,
 	}
 	err := d.init()
+
 	return d, err
 }
 
-func (fs *pakFileSystem) init() error {
+func (fs *pakArchive) init() error {
 	stat, err := os.Stat(fs.rootDir)
 	if err != nil {
 		return err
@@ -62,11 +63,12 @@ func (fs *pakFileSystem) init() error {
 		return err
 	}
 
-	bar := utils.Progress(len(files), "Initialize fs", 1)
+	bar := progress.Bar(len(files), "Initialize fs")
 
 	fs.files = make([]File, 0)
 	for _, file := range files {
 		if slices.Contains(ExcludedPacks, filepath.Base(file)) {
+			bar.Add(1)
 			continue
 		}
 		rel, _ := filepath.Rel(fs.rootDir, file)
@@ -86,7 +88,7 @@ func (fs *pakFileSystem) init() error {
 			}
 		}
 		bar.Add(1)
-		bar.AddDetail(fmt.Sprintf("%v paks %v files", len(files), len(fs.files)))
+		bar.Detail(fmt.Sprintf("%v paks %v files", len(files), len(fs.files)))
 	}
 	bar.Close()
 
@@ -94,6 +96,6 @@ func (fs *pakFileSystem) init() error {
 	if err != nil {
 		return err
 	}
-
+	fs.initSuffix()
 	return nil
 }

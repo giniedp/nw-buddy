@@ -11,17 +11,17 @@ import (
 	"github.com/goreleaser/fileglob"
 )
 
-type unpakFileSystem struct {
+type unpakArchive struct {
 	baseFS
 	rootDir string
 }
 
 type unpakFile struct {
-	fs   *unpakFileSystem
+	fs   *unpakArchive
 	name string
 }
 
-func (it *unpakFile) FS() FileSystem {
+func (it *unpakFile) Archive() Archive {
 	return it.fs
 }
 
@@ -37,9 +37,9 @@ func (it *unpakFile) Read() ([]byte, error) {
 	return os.ReadFile(path.Join(it.fs.rootDir, it.name))
 }
 
-func NewUnpackedFS(rootDir string) (FileSystem, error) {
+func NewUnpackedFS(rootDir string) (Archive, error) {
 	rootDir = NormalizePath(rootDir)
-	fs := &unpakFileSystem{rootDir: rootDir}
+	fs := &unpakArchive{rootDir: rootDir}
 	pattern := path.Join(fs.rootDir, "**")
 	timeStart := time.Now()
 	files, err := fileglob.Glob(pattern, fileglob.MaybeRootFS)

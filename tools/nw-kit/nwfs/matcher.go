@@ -31,12 +31,15 @@ func CompileGlob(patterns ...string) (func(string) bool, error) {
 				return false
 			}
 		}
+		if len(includes) == 0 {
+			return true
+		}
 		for _, matcher := range includes {
-			if !matcher.Match(path) {
-				return false
+			if matcher.Match(path) {
+				return true
 			}
 		}
-		return true
+		return false
 	}
 	return match, nil
 }

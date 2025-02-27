@@ -9,7 +9,7 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type Record = map[string]*Asset
+type Document = map[string]*Asset
 
 type Asset struct {
 	Uuid string `json:"uuid"`
@@ -31,7 +31,7 @@ type AssetInfoRef struct {
 	FileNameOffset uint32
 }
 
-func Load(f nwfs.File) (Record, error) {
+func Load(f nwfs.File) (Document, error) {
 	data, err := f.Read()
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func Load(f nwfs.File) (Record, error) {
 	return Parse(data)
 }
 
-func Read(r io.Reader) (Record, error) {
+func Read(r io.Reader) (Document, error) {
 	data, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func Read(r io.Reader) (Record, error) {
 	return Parse(data)
 }
 
-func Parse(data []byte) (res Record, err error) {
+func Parse(data []byte) (res Document, err error) {
 	defer func() {
 		if e := utils.ToErr(recover()); e != nil {
 			err = e

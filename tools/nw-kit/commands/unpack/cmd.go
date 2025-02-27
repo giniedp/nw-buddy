@@ -8,6 +8,8 @@ import (
 	"nw-buddy/tools/nw-kit/nwfs"
 	"nw-buddy/tools/nw-kit/rtti"
 	"nw-buddy/tools/nw-kit/utils"
+	"nw-buddy/tools/nw-kit/utils/env"
+	"nw-buddy/tools/nw-kit/utils/progress"
 	"os"
 	"path"
 	"strings"
@@ -57,13 +59,13 @@ const (
 )
 
 func init() {
-	Cmd.Flags().StringVarP(&flgGameDir, "game-dir", "g", utils.GetEnvGameDir(), "game root directory")
-	Cmd.Flags().StringVarP(&flgUnpackDir, "out-dir", "o", utils.GetEnvUnpackDir(), "directory to unpack to")
-	Cmd.Flags().StringVar(&flgTempDir, "tmp-dir", ".nw-kit/tmp", "temporary directory, used for image conversion")
+	Cmd.Flags().StringVarP(&flgGameDir, "game-dir", "g", env.GameDir(), "game root directory")
+	Cmd.Flags().StringVarP(&flgUnpackDir, "out-dir", "o", env.UnpackDir(), "directory to unpack to")
+	Cmd.Flags().StringVar(&flgTempDir, "tmp-dir", ".nwbt/tmp", "temporary directory, used for image conversion")
 	Cmd.Flags().IntVarP(&flgWWC, "wcw", "w", 10, "worker count for write operations")
 	Cmd.Flags().IntVarP(&flgRWC, "wcr", "r", -1, "worker count for read and transform operations. If < 1 then it will be set to 'wcw' value")
 	Cmd.Flags().BoolVarP(&flgDryRun, "dry", "", false, "runs without writing to disk")
-	Cmd.Flags().StringVar(&flgDryLog, "dry-log", "dryrun.log", "the log file where dry run output will be written")
+	Cmd.Flags().StringVar(&flgDryLog, "dry-log", ".nwbt/dry.log", "the log file where dry run output will be written")
 	Cmd.Flags().StringVar(&flgGlobPattern, "glob", "", "file glob pattern. Ignored if --regex is set")
 	Cmd.Flags().StringVar(&flgRegxPattern, "regex", "", "regex pattern. If set, --glob is ignored")
 
@@ -72,8 +74,8 @@ func init() {
 	Cmd.Flags().StringVar(&flgFmtLocales, "x-loc", "", "transforms .loc.xml files to given format. Possible values: json")
 	Cmd.Flags().StringVar(&flgFmtDDS, "x-dds", "merge", "transforms .dds files to given format. Possible values: merge, png, webp")
 
-	Cmd.Flags().StringVar(&flgCrcFile, "crc-file", path.Join(utils.GetEnvWorkDir(), "tools/nw-kit/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
-	Cmd.Flags().StringVar(&flgUuidFile, "uuid-file", path.Join(utils.GetEnvWorkDir(), "tools/nw-kit/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
+	Cmd.Flags().StringVar(&flgCrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nw-kit/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
+	Cmd.Flags().StringVar(&flgUuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nw-kit/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
 }
 
 func run(ccmd *cobra.Command, args []string) {
@@ -98,7 +100,7 @@ func run(ccmd *cobra.Command, args []string) {
 	slog.Info("worker", "reader", readerCount, "writer", writerCount)
 	readChan := make(chan Task)
 	writeChan := make(chan Task)
-	doneChan := make(chan utils.ProgressMessage)
+	doneChan := make(chan progress.ProgressMessage)
 	var dryOut *os.File
 
 	if flgDryRun {
@@ -121,27 +123,31 @@ func run(ccmd *cobra.Command, args []string) {
 	}
 
 	files := listFiles()
-	wg := utils.ProgressGroup(len(files), "Unpacking", doneChan)
+	bar := progress.Group(len(files), "Unpacking", doneChan)
 	for _, entry := range files {
 		readChan <- Task{Input: entry}
 	}
-	wg.Wait()
+	bar.Wait()
 
 	close(readChan)
 	close(writeChan)
 	close(doneChan)
 
-	slog.Info("Done")
+	if flgDryRun {
+		slog.Info("Dry run output written to", slog.String("file", flgDryLog))
+	}
 }
 
 func listFiles() []nwfs.File {
 	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
 	var files []nwfs.File
 	if flgRegxPattern != "" {
+		flgRegxPattern = strings.ToLower(flgRegxPattern)
 		flgRegxPattern = strings.ReplaceAll(flgRegxPattern, "\\\\", "\\")
 		slog.Info("listing files with", "regex", flgRegxPattern)
 		files = utils.Must(fs.Match(strings.Split(flgRegxPattern, ";")...))
 	} else if flgGlobPattern != "" {
+		flgGlobPattern = strings.ToLower(flgGlobPattern)
 		slog.Info("listing files with", "glob", flgGlobPattern)
 		files = utils.Must(fs.Glob(strings.Split(flgGlobPattern, ";")...))
 	} else {
@@ -173,7 +179,7 @@ func readWorker(jobs <-chan Task, results chan<- Task) {
 type writerOpts struct {
 	unpackDir string
 	tasks     <-chan Task
-	results   chan<- utils.ProgressMessage
+	results   chan<- progress.ProgressMessage
 	dryOut    *os.File
 }
 
@@ -208,7 +214,7 @@ func writeWorker(opts writerOpts) {
 			msg = fmt.Sprintf("DRY: %s", msg)
 		}
 
-		opts.results <- utils.ProgressMessage{Err: task.Error, Msg: msg}
+		opts.results <- progress.ProgressMessage{Err: task.Error, Msg: msg}
 	}
 }
 

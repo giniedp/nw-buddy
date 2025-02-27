@@ -14,7 +14,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func DatasheetsToSqlite(sheets []datasheet.Record, outFile string) error {
+func DatasheetsToSqlite(sheets []datasheet.Document, outFile string) error {
 	outDir := path.Dir(outFile)
 	dbFile := outFile
 
@@ -52,7 +52,7 @@ func DatasheetsToSqlite(sheets []datasheet.Record, outFile string) error {
 	return nil
 }
 
-func datasheetToSqlStatement(t datasheet.Record) ([]string, error) {
+func datasheetToSqlStatement(t datasheet.Document) ([]string, error) {
 	MAX_COLS := 2000
 	segments := len(t.Cols)/MAX_COLS + 1
 

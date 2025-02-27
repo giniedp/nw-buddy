@@ -20,7 +20,7 @@ type SplitFile struct {
 func FindSplits(f nwfs.File) (Splits, error) {
 	res := Splits{}
 	res.Base.Header = f
-	splits, err := f.FS().Glob(fmt.Sprintf("%s.*", f.Path()))
+	splits, err := f.Archive().Glob(fmt.Sprintf("%s.*", f.Path()))
 	if err != nil {
 		return res, err
 	}
