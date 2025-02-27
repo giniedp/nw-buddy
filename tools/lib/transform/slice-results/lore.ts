@@ -4,7 +4,10 @@ import { LoreScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface LoreIndex {
   push(entry: LoreScanRow[]): void
-  result(): ScannedLoreData
+  result(): {
+    spawns: number
+    data: ScannedLoreData
+  }
 }
 
 export function loreIndex(): LoreIndex {
@@ -34,6 +37,7 @@ export function loreIndex(): LoreIndex {
     },
     result() {
       const result: ScannedLoreData = []
+      let count = 0
       for (const [recordID, bucket1] of sortedEntries(index)) {
         const record: ScannedLore = {
           loreID: recordID,
@@ -41,16 +45,21 @@ export function loreIndex(): LoreIndex {
         }
         result.push(record)
         for (const [mapID, data] of sortedEntries(bucket1)) {
+          const positions = chain(data.positions)
+            .uniqBy((it) => it.join(','))
+            .sortBy((it) => it.join(','))
+            .value()
+          count += positions.length
           record.spawns.push({
             mapID,
-            positions: chain(data.positions)
-              .uniqBy((it) => it.join(','))
-              .sortBy((it) => it.join(','))
-              .value(),
+            positions: positions,
           })
         }
       }
-      return result
+      return {
+        spawns: count,
+        data: result,
+      }
     },
   }
 }

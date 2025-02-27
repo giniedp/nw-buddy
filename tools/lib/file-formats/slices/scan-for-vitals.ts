@@ -16,6 +16,7 @@ export interface VitalScanRow {
   tags?: string[]
   position?: number[]
   mapID?: string
+  trace: string[]
 }
 
 export async function scanForVitals(inputDir: string, sliceFile: string): Promise<VitalScanRow[]> {
@@ -47,6 +48,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
       mtlFile: item.mtlFile,
       adbFile: item.adbFile,
       tags: item.tags,
+      trace: item.trace
     })
   }
 

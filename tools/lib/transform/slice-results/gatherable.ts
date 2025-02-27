@@ -4,7 +4,10 @@ import { GatherableScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface GatherableIndex {
   push(entry: GatherableScanRow[]): void
-  result(): ScannedGatherableData
+  result(): {
+    spawns: number
+    data: ScannedGatherableData
+  }
 }
 
 export function gatherableIndex(): GatherableIndex {
@@ -36,6 +39,7 @@ export function gatherableIndex(): GatherableIndex {
     },
     result() {
       const result: ScannedGatherableData = []
+      let count = 0
       for (const [recordID, bucket1] of sortedEntries(index)) {
         const record: ScannedGatherable = {
           gatherableID: recordID,
@@ -44,18 +48,23 @@ export function gatherableIndex(): GatherableIndex {
         result.push(record)
         for (const [_, bucket2] of sortedEntries(bucket1)) {
           for (const [_, entry] of sortedEntries(bucket2)) {
+            const positions = chain(entry.positions)
+              .uniqBy((it) => it.join(','))
+              .sortBy((it) => it.join(','))
+              .value()
+            count += positions.length
             record.spawns.push({
               mapID: entry.mapID,
               encounter: entry.encounter,
-              positions: chain(entry.positions)
-                .uniqBy((it) => it.join(','))
-                .sortBy((it) => it.join(','))
-                .value(),
+              positions: positions,
             })
           }
         }
       }
-      return result
+      return {
+        spawns: count,
+        data: result,
+      }
     },
   }
 }

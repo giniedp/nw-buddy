@@ -33,6 +33,7 @@ export type SpawnerScanResult = {
   houseType: string
   stationID: string
   structureType: string
+  trace: any[]
 }
 
 export async function scanForSpawners(rootDir: string, file: string, assetId: string): Promise<SpawnerScanResult[]> {
@@ -83,25 +84,25 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     }
     return data.find((it) => it.entity === entity)
   }
-  function mergeData(result: SpawnerScanResult, meta: ScannedData): SpawnerScanResult {
-    if (!meta) {
-      return result
+  function mergeData(base: SpawnerScanResult, parent: ScannedData): SpawnerScanResult {
+    if (!parent) {
+      return base
     }
 
     return {
-      ...result,
-      variantID: result.variantID || meta.variantID,
-      gatherableID: result.gatherableID || meta.gatherableID,
-      loreIDs: result.loreIDs || meta.loreIDs,
+      ...base,
+      variantID: base.variantID || parent.variantID,
+      gatherableID: base.gatherableID || parent.gatherableID,
+      loreIDs: base.loreIDs || parent.loreIDs,
 
-      vitalsID: meta.vitalsID || result.vitalsID,
-      categoryID: meta.categoryID || result.categoryID,
-      level: meta.level || result.level,
-      territoryLevel: meta.territoryLevel || result.territoryLevel,
-      modelFile: meta.modelFile || result.modelFile,
-      damageTable: meta.damageTable || result.damageTable,
-      mtlFile: meta.mtlFile || result.mtlFile,
-      adbFile: meta.adbFile || result.adbFile,
+      vitalsID: parent.vitalsID || base.vitalsID,
+      categoryID: parent.categoryID || base.categoryID,
+      level: parent.level || base.level,
+      territoryLevel: parent.territoryLevel || base.territoryLevel,
+      modelFile: parent.modelFile || base.modelFile,
+      damageTable: parent.damageTable || base.damageTable,
+      mtlFile: parent.mtlFile || base.mtlFile,
+      adbFile: parent.adbFile || base.adbFile,
     }
   }
 
@@ -116,6 +117,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         stationID: null,
         structureType: null,
         vitalsID: 'Player',
+        trace: [file],
       },
       consume(spawn.entity),
     )
@@ -135,6 +137,16 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         },
         consume(spawn.entity),
       )
+
+      result.trace.push([
+        `PointSpawners in ${file}`,
+        {
+          lvl: item.level,
+          tl: item.territoryLevel,
+          dt: item.damageTable,
+          cat: item.categoryID,
+        },
+      ])
       yield result
     }
   }
@@ -152,6 +164,15 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         },
         consume(spawn.entity),
       )
+      result.trace.push([
+        `PrefabSpawner in ${file}\n\t`,
+        {
+          lvl: item.level,
+          tl: item.territoryLevel,
+          dt: item.damageTable,
+          cat: item.categoryID,
+        },
+      ])
       yield result
     }
   }
@@ -172,6 +193,15 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         },
         consume(spawn.entity),
       )
+      result.trace.push([
+        `ProjectileSpawner in ${file}\n\t`,
+        {
+          lvl: item.level,
+          tl: item.territoryLevel,
+          dt: item.damageTable,
+          cat: item.categoryID,
+        },
+      ])
       yield result
     }
   }
@@ -192,6 +222,15 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
           },
           consume(spawn.entity),
         )
+        result.trace.push([
+          `EncounterSpawner in ${file}\n\t`,
+          {
+            lvl: item.level,
+            tl: item.territoryLevel,
+            dt: item.damageTable,
+            cat: item.categoryID,
+          },
+        ])
         yield result
       }
     }
@@ -213,6 +252,15 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
           },
           consume(spawn.entity),
         )
+        result.trace.push([
+          `AreaSpawner in ${file}\n\t`,
+          {
+            lvl: item.level,
+            tl: item.territoryLevel,
+            dt: item.damageTable,
+            cat: item.categoryID,
+          },
+        ])
         yield result
       }
     }
@@ -234,6 +282,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         houseType: item.houseType,
         stationID: null,
         structureType: null,
+        trace: item.trace,
       }
     }
     if (item.vitalsID) {
@@ -252,6 +301,16 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         houseType: null,
         stationID: null,
         structureType: null,
+        trace: [
+          ...item.trace,
+          {
+            id: item.vitalsID,
+            lvl: item.level,
+            tl: item.territoryLevel,
+            dt: item.damageTable,
+            cat: item.categoryID,
+          },
+        ],
       }
       yield result
     }
@@ -269,6 +328,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         houseType: null,
         stationID: null,
         structureType: null,
+        trace: item.trace,
       }
     }
     if (item.loreIDs?.length) {
@@ -284,6 +344,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         houseType: null,
         stationID: null,
         structureType: null,
+        trace: item.trace,
       }
     }
     if (item.npcID?.length) {
@@ -299,6 +360,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         houseType: null,
         stationID: null,
         structureType: null,
+        trace: item.trace,
       }
     }
 
@@ -315,6 +377,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         houseType: null,
         stationID: item.stationID,
         structureType: null,
+        trace: item.trace,
       }
     }
 
@@ -331,6 +394,7 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         houseType: null,
         stationID: null,
         structureType: item.structureType,
+        trace: item.trace,
       }
     }
   }

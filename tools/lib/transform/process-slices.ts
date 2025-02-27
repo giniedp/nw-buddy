@@ -46,10 +46,8 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   })
 
   const files = await glob([
-    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
-    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
-    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.slicedata.json`,
     `${inputDir}/**/region.distribution.json`,
+    `${inputDir}/**/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/**/*.dynamicslice.json`,
     `!${inputDir}/lyshineui/**/*`,
   ])
@@ -82,9 +80,10 @@ export async function processSlices({ inputDir, threads }: { inputDir: string; t
   await applyTerritoryToVital(vitals, territories, tables)
 
   const vitalsMetadata = vitals.result()
-  const vitalsMetadata1 = vitalsMetadata.slice(0, vitalsMetadata.length / 2)
-  const vitalsMetadata2 = vitalsMetadata.slice(vitalsMetadata.length / 2)
+  const vitalsMetadata1 = vitalsMetadata.items.slice(0, vitalsMetadata.items.length / 2)
+  const vitalsMetadata2 = vitalsMetadata.items.slice(vitalsMetadata.items.length / 2)
   return {
+    vitalsCount: vitalsMetadata.count,
     vitalsMetadata1,
     vitalsMetadata2,
     vitalsModels: vitals.models(),

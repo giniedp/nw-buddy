@@ -136,10 +136,10 @@ async function importSlices({
   const jsonOutDir = generatedDir(outputDir)
 
   await processSlices({ inputDir, threads: threads }).then((data) => {
-    console.log('  ', data.npcs.length, 'npcs')
-    console.log('  ', data.vitalsMetadata1.length + data.vitalsMetadata2.length, 'vitals')
+    console.log('  ', data.npcs.data.length, 'npcs', data.npcs.spawns, 'spawns')
+    console.log('  ', data.vitalsMetadata1.length + data.vitalsMetadata2.length, 'vitals', data.vitalsCount, 'spawns',)
     console.log('  ', data.vitalsModels.length, 'vitals models')
-    console.log('  ', data.gatherables.length, 'gatherables')
+    console.log('  ', data.gatherables.data.length, 'gatherables', data.gatherables.spawns, 'spawns')
     console.log(
       '  ',
       data.variations.variationsIDs.length,
@@ -148,13 +148,14 @@ async function importSlices({
       'chunks',
       data.variations.data.length,
       'entries',
+      data.variations.spawns,
+      'spawns',
     )
     console.log('  ', data.territories.length, 'territories')
-    console.log('  ', data.loreItems.length, 'lore items')
+    console.log('  ', data.loreItems.data.length, 'lore items', data.loreItems.spawns, 'spawns')
     console.log('  ', data.houses.length, 'house items')
 
     return Promise.all([
-      // write it into input directory, so table loader will pick it up
       writeJSONFile(data.vitalsMetadata1, {
         target: path.join(jsonOutDir, 'vitals_metadata1.json'),
         createDir: true,
@@ -175,17 +176,17 @@ async function importSlices({
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),
-      writeJSONFile(data.gatherables, {
+      writeJSONFile(data.gatherables.data, {
         target: path.join(jsonOutDir, 'gatherables_metadata.json'),
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),
-      writeJSONFile(data.npcs, {
+      writeJSONFile(data.npcs.data, {
         target: path.join(jsonOutDir, 'npcs_metadata.json'),
         createDir: true,
         serialize: jsonStringifyFormatted,
       }),
-      writeJSONFile(data.loreItems, {
+      writeJSONFile(data.loreItems.data, {
         target: path.join(jsonOutDir, 'lore_metadata.json'),
         createDir: true,
         serialize: jsonStringifyFormatted,

@@ -12,7 +12,10 @@ export interface VitalsIndex {
   push(entry: VitalScanRow[]): void
   addLevels(levelMapping: Map<string, number>): void
   addTerritories(fn: (position: number[]) => Array<{ TerritoryID: number; LevelOverride: number }>): void
-  result(): ScannedVitalData
+  result(): {
+    count: number,
+    items: ScannedVitalData
+  }
   models(): ScannedVitalModelData
 }
 
@@ -34,6 +37,7 @@ export function vitalsIndex(): VitalsIndex {
           position: number[]
           tables: string[]
           territories: number[]
+          // traces: any[]
         }
       >
     >
@@ -47,9 +51,10 @@ export function vitalsIndex(): VitalsIndex {
     processed = true
     for (const row of scannedRows || []) {
       const vitalID = row.vitalsID.toLowerCase()
+
       const mapID = row.mapID?.toLowerCase() || ''
       const position = row.position ? parsePosition(row.position) : null
-      const positionID = position?.join() || ''
+      const positionID = positionKey(position) || ''
 
       const bucket1 = getBucket(vitalsIndex, vitalID, () => ({}))
       const bucket2 = getBucket(bucket1, mapID, () => ({}))
@@ -63,6 +68,7 @@ export function vitalsIndex(): VitalsIndex {
           models: [],
           tables: [],
           territories: [],
+          // traces: []
         }
       })
 
@@ -85,6 +91,7 @@ export function vitalsIndex(): VitalsIndex {
       if (level) {
         append(bucket3.levels, level)
       }
+      // append(bucket3.traces, row.trace)
 
       const damagetable = row.damageTable?.toLowerCase()?.replace('sharedassets/springboardentitites/datatables/', '')
       if (damagetable) {
@@ -174,24 +181,31 @@ export function vitalsIndex(): VitalsIndex {
                 g: entry.gatherables.sort(),
                 t: entry.territories.sort(),
                 m: entry.models.sort(),
+                // tr: entry.traces,
               })
             }
           }
         }
       }
+
+      let count = 0
       for (const record of result) {
         record.catIDs.sort()
         record.gthIDs.sort()
-        record.levels.sort()
+        record.levels.sort((a, b) => a - b)
         record.mapIDs.sort()
         record.models.sort()
         record.tables.sort()
-        record.territories.sort()
+        record.territories.sort((a, b) => a - b)
         for (const key in record.spawns || {}) {
           record.spawns[key] = sortBy(record.spawns[key], (it) => it.p.join())
+          count += record.spawns[key].length
         }
       }
-      return result
+      return {
+        count,
+        items: result
+      }
     },
     models(): ScannedVitalModelData {
       process()
@@ -237,4 +251,11 @@ function buildModelMetadata(vital: VitalScanRow): ScannedVitalModel {
   }
   result.id = createHash('md5').update(JSON.stringify(result)).digest('hex')
   return result
+}
+
+function positionKey(position: number[]): string {
+  if (!position) {
+    return ''
+  }
+  return position.map((it) => it.toFixed(3).padStart(10, '0')).join(',')
 }

@@ -159,6 +159,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
           mtlFile: entry.mtlFile,
           territoryLevel: entry.territoryLevel,
           position: [position[0], position[1], position[2]],
+          trace: entry.trace,
         })
       }
       if (entry.npcID) {
@@ -209,6 +210,7 @@ export async function scanSlices({ inputDir, file }: { inputDir: string; file: s
     for (const it of data.slicemetadatamap) {
       const spawners = await scanForSpawners(inputDir, it.value1.slicename, null)
       for (const entry of spawners || []) {
+        entry.trace = [...entry.trace, file]
         pushEntry({
           entry,
           mapId,

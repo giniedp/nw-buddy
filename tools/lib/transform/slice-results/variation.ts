@@ -7,7 +7,8 @@ export interface VariationIndex {
   result(): {
     data: ScannedVariationData
     chunks: Array<Float32Array>
-    variationsIDs: string[]
+    variationsIDs: string[],
+    spawns: number
   }
 }
 
@@ -43,7 +44,7 @@ export function variationIndex(): VariationIndex {
       const data: Record<string, ScannedVariation> = {}
       const chunks: number[][] = []
       const variationIds = new Set<string>()
-
+      let count = 0
       let chunkData: number[]
       let chunkIndex: number
       function add(variantID: string, { mapID, encounter, positions }: ScannedVariationSpawn<Array<[number, number]>>) {
@@ -64,6 +65,7 @@ export function variationIndex(): VariationIndex {
             spawns: [],
           }
         }
+        count += elementCount
         data[variantID].spawns.push({
           mapID,
           encounter,
@@ -88,6 +90,7 @@ export function variationIndex(): VariationIndex {
         }
       }
       return {
+        spawns: count,
         data: sortBy(Object.entries(data), ([id]) => id).map(([_, value]) => value),
         chunks: chunks.map((it) => new Float32Array(it)),
         variationsIDs: Array.from(variationIds),

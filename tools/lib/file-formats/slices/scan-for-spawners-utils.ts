@@ -360,12 +360,16 @@ export interface ScannedData {
   houseType?: string
   stationID?: string
   structureType?: string
+
+  trace: string[]
 }
 
 export async function scanForData(sliceComponent: SliceComponent, rootDir: string, file: string) {
   const result: ScannedData[] = []
   for (const entity of sliceComponent?.entities || []) {
-    const node: ScannedData = {}
+    const node: ScannedData = {
+      trace: [file],
+    }
     let transform: number[]
     let position: number[]
     let name: string

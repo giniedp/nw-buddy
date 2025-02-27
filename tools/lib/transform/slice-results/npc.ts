@@ -4,7 +4,10 @@ import { NpcScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface NpcIndex {
   push(entry: NpcScanRow[]): void
-  result(): SannedNpcData
+  result():   {
+    spawns: number
+    data: SannedNpcData
+  }
 }
 
 export function npcIndex(): NpcIndex {
@@ -33,6 +36,7 @@ export function npcIndex(): NpcIndex {
       }
     },
     result() {
+      let count = 0
       const result: SannedNpcData = []
       for (const [recordID, bucket1] of sortedEntries(index)) {
         const record: ScannedNpc = {
@@ -41,16 +45,21 @@ export function npcIndex(): NpcIndex {
         }
         result.push(record)
         for (const [mapID, data] of sortedEntries(bucket1)) {
+          const positions = chain(data.positions)
+          .uniqBy((it) => it.join(','))
+          .sortBy((it) => it.join(','))
+          .value()
+          count += positions.length
           record.spawns.push({
             mapID,
-            positions: chain(data.positions)
-              .uniqBy((it) => it.join(','))
-              .sortBy((it) => it.join(','))
-              .value(),
+            positions: positions,
           })
         }
       }
-      return result
+      return {
+        spawns: count,
+        data: result,
+      }
     },
   }
 }
