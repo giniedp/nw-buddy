@@ -199,7 +199,6 @@ import type {
   TerritoryUpkeepDefinition,
   Territory_Standing,
   ThrowableItemDefinitions,
-  TimelineRegistryEntryData,
   TradeSkillPostCapData,
   TradeskillRankData,
   TutorialConditionData,
@@ -1196,17 +1195,8 @@ export const DATASHEETS = {
     GorillaDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/gorilla_datatables/javelindata_damagetable_gorilla.json",
     },
-    GourdspewerDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_gourdspewer.json",
-    },
     GruntDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/grunt_datatables/javelindata_damagetable_grunt.json",
-    },
-    HalloweenBossDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_halloweenboss.json",
-    },
-    HalloweenPlaguerDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_halloweenplaguer.json",
     },
     HercyneBoarDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/hercyne_datatables/javelindata_damagetable_hercyneboar.json",
@@ -1415,9 +1405,6 @@ export const DATASHEETS = {
     PriestLesserDamnedHoundDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_priest_lesser_damned_hound.json",
     },
-    Pumpklin_DamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/halloween_datatables/javelindata_damagetable_pumpklin.json",
-    },
     RatHercyneRatDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/rat_datatables/javelindata_damagetable_rat_hercynerat.json",
     },
@@ -1606,15 +1593,6 @@ export const DATASHEETS = {
     },
     WolfWhiteDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_wolf_white.json",
-    },
-    Yeti_2022_DamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/brute_datatables/javelindata_damagetable_yeti_2022.json",
-    },
-    YetiFrostfangDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostfang_minion.json",
-    },
-    YetiFrostgripDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostgrip_minion.json",
     },
     YonasDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/questnpc_datatables/javelindata_damagetable_yonas_msq2_trial.json",
@@ -3354,14 +3332,6 @@ export const DATASHEETS = {
   ThrowableItemDefinitions: {
     ThrowableItemDefinitions: <DataSheetUri<ThrowableItemDefinitions>>{
       uri: "datatables/javelindata_itemdefinitions_throwables.json",
-    },
-  },
-  TimelineRegistryEntryData: {
-    TimelineRegistryEntry: <DataSheetUri<TimelineRegistryEntryData>>{
-      uri: "datatables/timelines/javelindata_npc_votimelines.json",
-    },
-    WhisperTimelineRegistryEntry: <DataSheetUri<TimelineRegistryEntryData>>{
-      uri: "datatables/timelines/javelindata_whispertimelines.json",
     },
   },
   TradeSkillPostCapData: {
