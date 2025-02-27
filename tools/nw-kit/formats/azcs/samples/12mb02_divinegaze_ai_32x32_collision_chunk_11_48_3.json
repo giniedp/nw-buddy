@@ -1,0 +1,396 @@
+{
+	"__type": "AZ::Entity",
+	"components": {
+		"__type": "AZStd::vector",
+		"element": {
+			"__type": "SliceComponent",
+			"baseclass1": {
+				"__type": "AZ::Component",
+				"id": {
+					"__type": "AZ::u64"
+				}
+			},
+			"dataflagsfornewentities": {
+				"__type": "DataFlagsPerEntity",
+				"entitytodataflags": {
+					"__type": "AZStd::unordered_map"
+				}
+			},
+			"dependencyreloadmode": {
+				"__type": "int"
+			},
+			"entities": {
+				"__type": "AZStd::vector",
+				"element": [
+					{
+						"__type": "AZ::Entity",
+						"components": {
+							"__type": "AZStd::vector",
+							"element": [
+								{
+									"__type": "GameTransformComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": {
+												"__type": "AZ::u64"
+											}
+										},
+										"m_replicationindex": {
+											"__type": "unsigned int"
+										}
+									},
+									"m_isstatic": {
+										"__type": "bool"
+									},
+									"m_localtm": {
+										"__type": "Transform"
+									},
+									"m_onnewparentkeepworldtm": {
+										"__type": "bool"
+									},
+									"m_parentid": {
+										"__type": "EntityId",
+										"id": {
+											"__type": "AZ::u64"
+										}
+									},
+									"m_worldtm": {
+										"__type": "Transform"
+									}
+								},
+								{
+									"__type": "PositionInTheWorldComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": {
+												"__type": "AZ::u64"
+											}
+										},
+										"m_replicationindex": {
+											"__type": "unsigned int"
+										}
+									}
+								},
+								{
+									"__type": "AoiComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": {
+												"__type": "AZ::u64"
+											}
+										},
+										"m_replicationindex": {
+											"__type": "unsigned int"
+										}
+									},
+									"m_additionalslicephysicalminradius": {
+										"__type": "float"
+									},
+									"m_aoigridcategory": {
+										"__type": "int"
+									},
+									"m_aoiradius": {
+										"__type": "float"
+									},
+									"m_editoraoiradius": {
+										"__type": "float"
+									},
+									"m_editorisrequiredonserver": {
+										"__type": "bool"
+									},
+									"m_editorisstaticslice": {
+										"__type": "bool"
+									},
+									"m_editorrefreshbutton": {
+										"__type": "bool"
+									},
+									"m_editorslicephysicalradius": {
+										"__type": "float"
+									},
+									"m_editorslicespawnradius": {
+										"__type": "float"
+									},
+									"m_editorsliceviewradius": {
+										"__type": "float"
+									},
+									"m_editorwillimpostor ": {
+										"__type": "bool"
+									},
+									"m_isstaticslice": {
+										"__type": "bool"
+									},
+									"m_slicedetectiongridradius": {
+										"__type": "float"
+									},
+									"m_slicephysicalgridradius": {
+										"__type": "float"
+									},
+									"m_slicephysicalradius": {
+										"__type": "float"
+									},
+									"m_slicespawnradius": {
+										"__type": "float"
+									},
+									"m_slicetags": {
+										"__type": "unsigned int"
+									},
+									"m_useuserdefinedspawnradius": {
+										"__type": "bool"
+									}
+								},
+								{
+									"__type": "us-west-2",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": {
+												"__type": "AZ::u64"
+											}
+										},
+										"m_replicationindex": {
+											"__type": "unsigned int"
+										}
+									}
+								}
+							]
+						},
+						"id": {
+							"__type": "EntityId",
+							"id": {
+								"__type": "AZ::u64"
+							}
+						},
+						"isdependencyready": {
+							"__type": "bool"
+						},
+						"isruntimeactive": {
+							"__type": "bool"
+						},
+						"name": {
+							"__type": "AZStd::string"
+						}
+					},
+					{
+						"__type": "AZ::Entity",
+						"components": {
+							"__type": "AZStd::vector",
+							"element": [
+								{
+									"__type": "GameTransformComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": {
+												"__type": "AZ::u64"
+											}
+										},
+										"m_replicationindex": {
+											"__type": "unsigned int"
+										}
+									},
+									"m_isstatic": {
+										"__type": "bool"
+									},
+									"m_localtm": {
+										"__type": "Transform"
+									},
+									"m_onnewparentkeepworldtm": {
+										"__type": "bool"
+									},
+									"m_parentid": {
+										"__type": "EntityId",
+										"id": {
+											"__type": "AZ::u64"
+										}
+									},
+									"m_worldtm": {
+										"__type": "Transform"
+									}
+								},
+								{
+									"__type": "GameRigidBodyComponent",
+									"baseclass1": {
+										"__type": "FacetedComponent",
+										"baseclass1": {
+											"__type": "AZ::Component",
+											"id": {
+												"__type": "AZ::u64"
+											}
+										},
+										"m_replicationindex": {
+											"__type": "unsigned int"
+										}
+									},
+									"m_angulardamping": {
+										"__type": "float"
+									},
+									"m_center": {
+										"__type": "Vector3"
+									},
+									"m_collisionshape": {
+										"__type": "AZStd::shared_ptr"
+									},
+									"m_collisiontype": {
+										"__type": "int"
+									},
+									"m_configuration": {
+										"__type": "GameRigidBodyConfig",
+										"m_angulardamping": {
+											"__type": "float"
+										},
+										"m_applyalignmentdetails": {
+											"__type": "bool"
+										},
+										"m_center": {
+											"__type": "Vector3"
+										},
+										"m_collisionshape": {
+											"__type": "AZStd::shared_ptr"
+										},
+										"m_collisiontype": {
+											"__type": "int"
+										},
+										"m_gameplayflags": {
+											"__type": "AZStd::vector"
+										},
+										"m_interactwithtriggers": {
+											"__type": "bool"
+										},
+										"m_isdynamic": {
+											"__type": "bool"
+										},
+										"m_lineardamping": {
+											"__type": "float"
+										},
+										"m_mass": {
+											"__type": "float"
+										},
+										"m_materialoverrideasset": {
+											"__type": "Asset"
+										},
+										"m_overridecollisionshapematerial": {
+											"__type": "bool"
+										},
+										"m_overridecollisionshapematerialname": {
+											"__type": "AZStd::string"
+										},
+										"m_rnrasset": {
+											"__type": "Asset"
+										},
+										"m_scaleshapes": {
+											"__type": "bool"
+										},
+										"m_shapeentity": {
+											"__type": "EntityId",
+											"id": {
+												"__type": "AZ::u64"
+											}
+										},
+										"m_sleepminenergy": {
+											"__type": "float"
+										},
+										"m_strfilter": {
+											"__type": "AZStd::string"
+										}
+									},
+									"m_converttoeditorgamerigidbodycomponent": {
+										"__type": "bool"
+									},
+									"m_deprecationwarning": {
+										"__type": "AZStd::string"
+									},
+									"m_gameplayflags": {
+										"__type": "AZStd::vector"
+									},
+									"m_interactwithtriggers": {
+										"__type": "bool"
+									},
+									"m_isdynamic": {
+										"__type": "bool"
+									},
+									"m_lineardamping": {
+										"__type": "float"
+									},
+									"m_mass": {
+										"__type": "float"
+									},
+									"m_materialoverrideasset": {
+										"__type": "Asset"
+									},
+									"m_rnrasset": {
+										"__type": "Asset"
+									},
+									"m_scaleshapes": {
+										"__type": "bool"
+									},
+									"m_setprismasset": {
+										"__type": "bool"
+									},
+									"m_shapeentity": {
+										"__type": "EntityId",
+										"id": {
+											"__type": "AZ::u64"
+										}
+									},
+									"m_sleepminenergy": {
+										"__type": "float"
+									},
+									"m_strfilter": {
+										"__type": "AZStd::string"
+									}
+								}
+							]
+						},
+						"id": {
+							"__type": "EntityId",
+							"id": {
+								"__type": "AZ::u64"
+							}
+						},
+						"isdependencyready": {
+							"__type": "bool"
+						},
+						"isruntimeactive": {
+							"__type": "bool"
+						},
+						"name": {
+							"__type": "AZStd::string"
+						}
+					}
+				]
+			},
+			"isdynamic": {
+				"__type": "bool"
+			},
+			"prefabs": {
+				"__type": "AZStd::list"
+			},
+			"shouldkeepinmemory": {
+				"__type": "bool"
+			}
+		}
+	},
+	"id": {
+		"__type": "EntityId",
+		"id": {
+			"__type": "AZ::u64"
+		}
+	},
+	"isdependencyready": {
+		"__type": "bool"
+	},
+	"isruntimeactive": {
+		"__type": "bool"
+	},
+	"name": {
+		"__type": "AZStd::string"
+	}
+}

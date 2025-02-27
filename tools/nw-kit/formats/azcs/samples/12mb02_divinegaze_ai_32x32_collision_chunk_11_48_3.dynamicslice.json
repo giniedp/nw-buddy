@@ -1,0 +1,285 @@
+{
+    "__type": "AZ::Entity",
+    "id": 8238779001366180130,
+    "name": "SliceAssetEntity",
+    "isdependencyready": false,
+    "isruntimeactive": true,
+    "components": [
+        {
+            "__type": "SliceComponent",
+            "baseclass1": {
+                "__type": "AZ::Component",
+                "id": 0
+            },
+            "entities": [
+                {
+                    "__type": "AZ::Entity",
+                    "id": 2041131326794466980,
+                    "name": "12MB02_DivineGaze_AI_32x32_collision_chunk_11_48_3",
+                    "isdependencyready": false,
+                    "isruntimeactive": true,
+                    "components": [
+                        {
+                            "__type": "GameTransformComponent",
+                            "baseclass1": {
+                                "__type": "FacetedComponent",
+                                "baseclass1": {
+                                    "__type": "AZ::Component",
+                                    "id": 11262887678093707848
+                                },
+                                "m_replicationindex": 0
+                            },
+                            "m_worldtm": {
+                                "__type": "Transform",
+                                "__value": {
+                                    "rotation/scale": [
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        1
+                                    ],
+                                    "translation": [
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                }
+                            },
+                            "m_parentid": 4294967295,
+                            "m_localtm": {
+                                "__type": "Transform",
+                                "__value": {
+                                    "rotation/scale": [
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        1
+                                    ],
+                                    "translation": [
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                }
+                            },
+                            "m_onnewparentkeepworldtm": true,
+                            "m_isstatic": false
+                        },
+                        {
+                            "__type": "PositionInTheWorldComponent",
+                            "baseclass1": {
+                                "__type": "FacetedComponent",
+                                "baseclass1": {
+                                    "__type": "AZ::Component",
+                                    "id": 4993174721404612460
+                                },
+                                "m_replicationindex": 1
+                            }
+                        },
+                        {
+                            "__type": "AoiComponent",
+                            "baseclass1": {
+                                "__type": "FacetedComponent",
+                                "baseclass1": {
+                                    "__type": "AZ::Component",
+                                    "id": 12556981330868048132
+                                },
+                                "m_replicationindex": 0
+                            },
+                            "m_aoigridcategory": 6,
+                            "m_aoiradius": 0,
+                            "m_slicephysicalgridradius": 200,
+                            "m_slicedetectiongridradius": 0,
+                            "m_slicephysicalradius": 0,
+                            "m_additionalslicephysicalminradius": 0,
+                            "m_isstaticslice": true,
+                            "m_slicetags": 0,
+                            "m_slicespawnradius": 25,
+                            "m_useuserdefinedspawnradius": false,
+                            "m_editorsliceviewradius": 0,
+                            "m_editorslicephysicalradius": 0,
+                            "m_editorslicespawnradius": 0,
+                            "m_editoraoiradius": 0,
+                            "m_editorisstaticslice": false,
+                            "m_editorwillimpostor ": false,
+                            "m_editorisrequiredonserver": false,
+                            "m_editorrefreshbutton": false
+                        },
+                        {
+                            "__type": "da83400a-0cbc-4639-86bb-635f97c375a7",
+                            "baseclass1": {
+                                "__type": "FacetedComponent",
+                                "baseclass1": {
+                                    "__type": "AZ::Component",
+                                    "id": 4127192868429267930
+                                },
+                                "m_replicationindex": 2
+                            }
+                        }
+                    ]
+                },
+                {
+                    "__type": "AZ::Entity",
+                    "id": 1798290653,
+                    "name": "Mesh_col",
+                    "isdependencyready": false,
+                    "isruntimeactive": true,
+                    "components": [
+                        {
+                            "__type": "GameTransformComponent",
+                            "baseclass1": {
+                                "__type": "FacetedComponent",
+                                "baseclass1": {
+                                    "__type": "AZ::Component",
+                                    "id": 11262887678093707848
+                                },
+                                "m_replicationindex": 0
+                            },
+                            "m_worldtm": {
+                                "__type": "Transform",
+                                "__value": {
+                                    "rotation/scale": [
+                                        -1.0958142,
+                                        0.0958699,
+                                        0,
+                                        -0.0958699,
+                                        -1.0958142,
+                                        0,
+                                        0,
+                                        0,
+                                        1.1
+                                    ],
+                                    "translation": [
+                                        -13.524414,
+                                        -13.226807,
+                                        0
+                                    ]
+                                }
+                            },
+                            "m_parentid": 2041131326794466980,
+                            "m_localtm": {
+                                "__type": "Transform",
+                                "__value": {
+                                    "rotation/scale": [
+                                        -1.0958142,
+                                        0.0958699,
+                                        0,
+                                        -0.0958699,
+                                        -1.0958142,
+                                        0,
+                                        0,
+                                        0,
+                                        1.1
+                                    ],
+                                    "translation": [
+                                        -13.524414,
+                                        -13.226807,
+                                        0
+                                    ]
+                                }
+                            },
+                            "m_onnewparentkeepworldtm": true,
+                            "m_isstatic": false
+                        },
+                        {
+                            "__type": "GameRigidBodyComponent",
+                            "baseclass1": {
+                                "__type": "FacetedComponent",
+                                "baseclass1": {
+                                    "__type": "AZ::Component",
+                                    "id": 9316713822310998619
+                                },
+                                "m_replicationindex": 0
+                            },
+                            "m_center": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "m_collisiontype": 0,
+                            "m_rnrasset": {
+                                "__type": "Asset",
+                                "guid": "00000000-0000-0000-0000-000000000000",
+                                "subId": 0,
+                                "type": "d52cccdd-9701-45d9-b261-8ea6881a6312"
+                            },
+                            "m_materialoverrideasset": {
+                                "__type": "Asset",
+                                "guid": "00000000-0000-0000-0000-000000000000",
+                                "subId": 0,
+                                "type": "f46985b5-f7ff-4fcb-8e8c-dc240d701841"
+                            },
+                            "m_collisionshape": null,
+                            "m_shapeentity": 4294967295,
+                            "m_setprismasset": false,
+                            "m_isdynamic": false,
+                            "m_mass": 1,
+                            "m_lineardamping": 0.05,
+                            "m_angulardamping": 0.15,
+                            "m_sleepminenergy": 0.5,
+                            "m_interactwithtriggers": false,
+                            "m_strfilter": "Structure",
+                            "m_gameplayflags": [],
+                            "m_scaleshapes": false,
+                            "m_deprecationwarning": "",
+                            "m_converttoeditorgamerigidbodycomponent": false,
+                            "m_configuration": {
+                                "__type": "GameRigidBodyConfig",
+                                "m_center": [
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "m_collisiontype": 0,
+                                "m_rnrasset": {
+                                    "__type": "Asset",
+                                    "guid": "b709b946-f6aa-56b1-8639-838858168352",
+                                    "subId": 100,
+                                    "type": "d52cccdd-9701-45d9-b261-8ea6881a6312"
+                                },
+                                "m_materialoverrideasset": {
+                                    "__type": "Asset",
+                                    "guid": "00000000-0000-0000-0000-000000000000",
+                                    "subId": 0,
+                                    "type": "f46985b5-f7ff-4fcb-8e8c-dc240d701841"
+                                },
+                                "m_collisionshape": null,
+                                "m_overridecollisionshapematerial": false,
+                                "m_overridecollisionshapematerialname": "",
+                                "m_shapeentity": 4294967295,
+                                "m_isdynamic": false,
+                                "m_mass": 1,
+                                "m_lineardamping": 0.05,
+                                "m_angulardamping": 0.15,
+                                "m_sleepminenergy": 0.5,
+                                "m_interactwithtriggers": false,
+                                "m_strfilter": "Structure",
+                                "m_gameplayflags": [],
+                                "m_scaleshapes": false,
+                                "m_applyalignmentdetails": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "prefabs": [],
+            "isdynamic": false,
+            "shouldkeepinmemory": false,
+            "dependencyreloadmode": 0,
+            "dataflagsfornewentities": {
+                "__type": "DataFlagsPerEntity",
+                "entitytodataflags": []
+            }
+        }
+    ]
+}

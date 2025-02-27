@@ -26,6 +26,8 @@ yarn-error.log
 .angular
 .env
 .wrangler
+.nwbt
+.prof
 
 # IDE - VSCode
 .vscode/*
