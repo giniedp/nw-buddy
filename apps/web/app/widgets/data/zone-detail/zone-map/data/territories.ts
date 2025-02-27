@@ -1,7 +1,7 @@
 import { getZoneIcon, getZoneMetaId, getZoneName, getZoneType } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { TerritoryDefinition } from '@nw-data/generated'
-import { ScannedTerritory } from '@nw-data/scanner'
+import { ScannedTerritory } from '@nw-data/generated'
 import { Feature, FeatureCollection } from 'geojson'
 import { combineLatest, map } from 'rxjs'
 import { TranslateService } from '~/i18n'

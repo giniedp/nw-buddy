@@ -1,5 +1,5 @@
 import { TerritoryDefinition } from '../generated/types'
-import { ScannedTerritory } from '../scanner/types'
+import { ScannedTerritory } from '../generated/meta-types'
 import { NW_FALLBACK_ICON } from './constants'
 
 export type ZoneType = 'Territory' | 'Area' | 'POI'

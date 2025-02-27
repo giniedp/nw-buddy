@@ -1,12 +1,53 @@
 package scan
 
 import (
+	"fmt"
 	"iter"
+	"log/slog"
+	"nw-buddy/tools/formats/azcs"
+	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils/crymath"
 	"regexp"
 	"strings"
 )
+
+func LoadObject(file nwfs.File) (any, error) {
+	data, err := file.Read()
+	if err != nil {
+		return nil, fmt.Errorf("can't read file '%s': %w", file.Path(), err)
+	}
+
+	doc, err := azcs.Parse(data)
+	if err != nil {
+		return nil, fmt.Errorf("can't parse file '%s': %w", file.Path(), err)
+	}
+
+	if len(doc.Elements) == 0 {
+		return nil, fmt.Errorf("no root element in file '%s'", file.Path())
+	}
+	if len(doc.Elements) > 1 {
+		slog.Debug(fmt.Sprintf("multiple root elements in file '%s'", file.Path()))
+	}
+
+	node, err := rtti.Load(doc.Elements[0])
+	if err != nil {
+		return nil, fmt.Errorf("can't load file '%s': %w", file.Path(), err)
+	}
+	return node, nil
+}
+
+func LoadAzEntity(file nwfs.File) (*nwt.AZ__Entity, error) {
+	node, err := LoadObject(file)
+	if node == nil || err != nil {
+		return nil, err
+	}
+	if v, ok := node.(nwt.AZ__Entity); ok {
+		return &v, nil
+	}
+	return nil, nil
+}
 
 func FindSliceComponent(it *nwt.AZ__Entity) *nwt.SliceComponent {
 	if it == nil {

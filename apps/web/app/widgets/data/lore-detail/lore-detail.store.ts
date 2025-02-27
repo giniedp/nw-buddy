@@ -1,7 +1,7 @@
 import { computed } from '@angular/core'
 import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { LoreData } from '@nw-data/generated'
-import { ScannedLore } from '@nw-data/scanner'
+import { ScannedLore } from '@nw-data/generated'
 import { NwDataSheets } from 'libs/nw-data/db/nw-data-sheets'
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, from, map, switchMap } from 'rxjs'

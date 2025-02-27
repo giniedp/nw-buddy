@@ -19,7 +19,7 @@ import {
   VitalsCategoryData,
   VitalsLevelVariantData,
 } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/scanner'
+import { ScannedVital } from '@nw-data/generated'
 
 import { uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'

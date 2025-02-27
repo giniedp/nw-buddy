@@ -120,6 +120,12 @@ func (d *baseFS) list(match func(string) bool) (result []File, err error) {
 	return result, nil
 }
 
-func NormalizePath(path string) string {
-	return strings.ReplaceAll(path, "\\", "/")
+func NormalizePath(filePath string) string {
+	filePath = strings.TrimSpace(filePath)
+	filePath = strings.ToLower(filePath)
+	filePath = strings.ReplaceAll(filePath, "\\", "/")
+	for strings.Contains(filePath, "//") {
+		filePath = strings.ReplaceAll(filePath, "//", "/")
+	}
+	return filePath
 }

@@ -1,5 +1,5 @@
 import { chain } from 'lodash'
-import { ScannedLore, ScannedLoreData, ScannedLoreSpawn } from '../../../../libs/nw-data/scanner'
+import { ScannedLore, ScannedLoreData, ScannedLoreSpawn } from '../../../../libs/nw-data/generated'
 import { LoreScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface LoreIndex {

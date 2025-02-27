@@ -3,6 +3,7 @@ package datasheet
 import (
 	"nw-buddy/tools/utils"
 	"reflect"
+	"strconv"
 )
 
 func (it *Document) ToJSON(format ...string) ([]byte, error) {
@@ -92,4 +93,40 @@ func (r JSONRow) GetString(key string) string {
 		return str
 	}
 	return ""
+}
+
+func (r JSONRow) GetInt(key string) int {
+	v, ok := r.Get(key)
+	if !ok || v == nil {
+		return 0
+	}
+	switch it := v.(type) {
+	case float32:
+		return int(it)
+	case float64:
+		return int(it)
+	case string:
+		res, _ := strconv.Atoi(it)
+		return res
+	default:
+		return 0
+	}
+}
+
+func (r JSONRow) GetNumber(key string) float32 {
+	v, ok := r.Get(key)
+	if !ok || v == nil {
+		return 0
+	}
+	switch it := v.(type) {
+	case float32:
+		return float32(it)
+	case float64:
+		return float32(it)
+	case string:
+		res, _ := strconv.ParseFloat(it, 32)
+		return float32(res)
+	default:
+		return 0
+	}
 }

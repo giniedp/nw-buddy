@@ -22,10 +22,6 @@ var (
 )
 
 func init() {
-	// if testing.Testing() {
-	// 	return
-	// }
-
 	workDir := WorkDir()
 	envFile := path.Join(workDir, ".env")
 	if _, err := os.Stat(envFile); os.IsNotExist(err) {
@@ -58,7 +54,8 @@ func PrintStatus() {
 	slog.Info(fmt.Sprintf("[ENV]   pull dir: %v", PullDataDir()))
 }
 
-// WorkDir returns the current working directory
+// WorkDir returns the current working directory from where the application is running, usually the project root.
+// During tests, this always returns the project root.
 func WorkDir() string {
 	if testing.Testing() {
 		return projectRoot
@@ -139,7 +136,11 @@ func LumberyardDir() string {
 
 // Logfile returns the log file path
 func Logfile() string {
-	return path.Join(TempDir(), "nwbt.log")
+	fallback := "nwbt.log"
+	if testing.Testing() {
+		fallback = "test.log"
+	}
+	return path.Join(TempDir(), fallback)
 }
 
 func readPackageJsonVersion(file string) string {

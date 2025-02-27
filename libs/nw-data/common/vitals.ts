@@ -9,8 +9,8 @@ import {
   VitalsBaseData as VitalsData,
   VitalsLevelData,
   VitalsModifierData,
+  ScannedVital,
 } from '@nw-data/generated'
-import { ScannedVital } from '../scanner/types'
 import { getArmorRating } from './damage'
 import { uniq } from 'lodash'
 

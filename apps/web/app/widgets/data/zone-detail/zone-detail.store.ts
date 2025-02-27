@@ -10,7 +10,7 @@ import {
   isPointInZone,
 } from '@nw-data/common'
 import { TerritoryDefinition, VitalsBaseData, VitalsCategoryData, VitalsLevelVariantData } from '@nw-data/generated'
-import { ScannedTerritory, ScannedVital } from '@nw-data/scanner'
+import { ScannedTerritory, ScannedVital } from '@nw-data/generated'
 import { NwDataSheets } from 'libs/nw-data/db/nw-data-sheets'
 import { groupBy } from 'lodash'
 import { combineLatest, from, map, of, switchMap } from 'rxjs'

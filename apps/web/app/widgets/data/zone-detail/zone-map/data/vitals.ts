@@ -1,6 +1,6 @@
 import { NwData } from '@nw-data/db'
 import { TerritoryDefinition, VitalsBaseData as VitalsData } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/scanner'
+import { ScannedVital } from '@nw-data/generated'
 import { Feature, MultiPoint } from 'geojson'
 import { uniq } from 'lodash'
 import { combineLatest, map } from 'rxjs'

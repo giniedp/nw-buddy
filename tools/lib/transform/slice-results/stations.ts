@@ -1,5 +1,5 @@
 import { sortBy, uniqBy } from 'lodash'
-import { ScannedStation, ScannedStationType, ScannedStationTypeData } from '../../../../libs/nw-data/scanner'
+import { ScannedStation, ScannedStationType, ScannedStationTypeData } from '../../../../libs/nw-data/generated'
 import { StationScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface StationIndex {

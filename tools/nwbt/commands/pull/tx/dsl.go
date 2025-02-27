@@ -4,6 +4,7 @@ import (
 	"context"
 	"nw-buddy/tools/formats/datasheet"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -16,6 +17,14 @@ type Rule struct {
 	Table      string
 	Match      func(table *datasheet.Document) bool
 	Transforms []Transformer
+}
+
+type Transform struct {
+	Op func(table *datasheet.Document, ctx context.Context) error
+}
+
+func (it Transform) Transform(table *datasheet.Document, ctx context.Context) error {
+	return it.Op(table, ctx)
 }
 
 type MapProp struct {
@@ -101,6 +110,31 @@ func (it MapValue) Transform(table *datasheet.Document, ctx context.Context) err
 		for index := range table.Cols {
 			col := table.Cols[index].Name
 			row[index] = it.Op(ctx, col, row[index], rowIndex)
+		}
+	}
+	return nil
+}
+
+type AddColsIfMissing struct {
+	Keys []string
+}
+
+func (it AddColsIfMissing) Transform(table *datasheet.Document, ctx context.Context) error {
+	colsToAdd := slices.Clone(it.Keys)
+	for _, col := range table.Cols {
+		index := slices.Index(colsToAdd, col.Name)
+		if index != -1 {
+			colsToAdd = slices.Delete(colsToAdd, index, index+1)
+		}
+	}
+	// slog.Debug("Adding clumns", "colsToAdd", colsToAdd, "to", table.Schema, "table", table.Table)
+	for _, col := range colsToAdd {
+		if col == "" {
+			continue
+		}
+		table.Cols = append(table.Cols, datasheet.Col{Name: col, Type: datasheet.StringType})
+		for i := range table.Rows {
+			table.Rows[i] = append(table.Rows[i], "")
 		}
 	}
 	return nil

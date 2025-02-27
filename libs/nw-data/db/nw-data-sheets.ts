@@ -31,7 +31,7 @@ import {
   ScannedVariation,
   ScannedVital,
   ScannedVitalModel,
-} from '@nw-data/scanner'
+} from '@nw-data/generated'
 import { DataLoader, indexLookup, primaryIndex, secondaryIndex, table } from './dsl'
 import { eqCaseInsensitive } from '../common/utils/caseinsensitive-compare'
 import { NW_TRADESKILLS_INFOS } from '../common/tradeskill'
@@ -71,10 +71,7 @@ export abstract class NwDataSheets {
   public itemsBySetFamilyNameMap = secondaryIndex<MasterItemDefinitions, string>(this.itemsAll, getItemSetFamilyName)
   public itemsBySetFamilyName = indexLookup(this.itemsBySetFamilyNameMap)
 
-  public housingItemsAll = table(() => [
-    this.loadDatasheet(DATASHEETS.VariationData.HouseItems),
-    this.loadDatasheet(DATASHEETS.VariationData.HouseItemsMTX),
-  ])
+  public housingItemsAll = table(() => this.loadDatasheets(DATASHEETS.HouseItems))
   public housingItemsByIdMap = primaryIndex(this.housingItemsAll, 'HouseItemID')
   public housingItemsById = indexLookup(this.housingItemsByIdMap)
   public housingItemsByStatusEffectMap = secondaryIndex(this.housingItemsAll, 'HousingStatusEffect')
@@ -202,30 +199,9 @@ export abstract class NwDataSheets {
   public gatherablesMetadataById = indexLookup(this.gatherablesMetadataByIdMap)
 
   public gatherableVariationsAll = table(
-    () =>
-      this.loadDatasheets<VariationDataGatherable>({
-        Gatherable_Alchemy: DATASHEETS.VariationData.Gatherable_Alchemy,
-        Gatherable_Bushes: DATASHEETS.VariationData.Gatherable_Bushes,
-        Gatherable_Cinematic: DATASHEETS.VariationData.Gatherable_Cinematic,
-        Gatherable_Cyclic: DATASHEETS.VariationData.Gatherable_Cyclic,
-        Gatherable_Darkness: DATASHEETS.VariationData.Gatherable_Darkness,
-        Gatherable_Essences: DATASHEETS.VariationData.Gatherable_Essences,
-        Gatherable_Holiday: DATASHEETS.VariationData.Gatherable_Holiday,
-        Gatherable_Holiday_Proximity: DATASHEETS.VariationData.Gatherable_Holiday_Proximity,
-        Gatherable_Items: DATASHEETS.VariationData.Gatherable_Items,
-        Gatherable_LockedGates: DATASHEETS.VariationData.Gatherable_LockedGates,
-        Gatherable_Logs: DATASHEETS.VariationData.Gatherable_Logs,
-        Gatherable_LootContainers: DATASHEETS.VariationData.Gatherable_LootContainers,
-        Gatherable_Minerals: DATASHEETS.VariationData.Gatherable_Minerals,
-        Gatherable_Plants: DATASHEETS.VariationData.Gatherable_Plants,
-        Gatherable_POIObjects: DATASHEETS.VariationData.Gatherable_POIObjects,
-        Gatherable_Quest: DATASHEETS.VariationData.Gatherable_Quest,
-        Gatherable_Quest_AncientGlyph: DATASHEETS.VariationData.Gatherable_Quest_AncientGlyph,
-        Gatherable_Quest_Damageable: DATASHEETS.VariationData.Gatherable_Quest_Damageable,
-        Gatherable_Quest_Proximity: DATASHEETS.VariationData.Gatherable_Quest_Proximity,
-        Gatherable_Stones: DATASHEETS.VariationData.Gatherable_Stones,
-        Gatherable_Trees: DATASHEETS.VariationData.Gatherable_Trees,
-      }),
+    () => {
+      return this.loadDatasheets<VariationDataGatherable>(DATASHEETS.VariationDataGatherable)
+    },
     convertGatherableVariations,
   )
 

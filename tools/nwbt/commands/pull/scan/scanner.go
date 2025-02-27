@@ -4,11 +4,9 @@ import (
 	"fmt"
 
 	"log/slog"
-	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
-	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
 	"path"
@@ -58,34 +56,14 @@ func (it *Scanner) LoadAzcs(file nwfs.File) (any, error) {
 		return res, nil
 	}
 
-	data, err := file.Read()
+	node, err := LoadObject(file)
 	if err != nil {
-		it.objectCache[key] = nil
-		return nil, fmt.Errorf("scanner can't read file '%s': %w", file.Path(), err)
-	}
-
-	doc, err := azcs.Parse(data)
-	if err != nil {
-		it.objectCache[key] = nil
-		return nil, fmt.Errorf("scanner can't parse file '%s': %w", file.Path(), err)
-	}
-
-	if len(doc.Elements) == 0 {
-		it.objectCache[key] = nil
 		slog.Debug(fmt.Sprintf("no root element in file '%s'", key))
-		return nil, nil
-	}
-	if len(doc.Elements) > 1 {
-		slog.Debug(fmt.Sprintf("multiple root elements in file '%s'", key))
-	}
-
-	node, err := rtti.Load(doc.Elements[0])
-	if err != nil {
 		it.objectCache[key] = nil
-		return nil, fmt.Errorf("scanner can't load file '%s': %w", file.Path(), err)
 	}
 	it.objectCache[key] = node
 	return node, nil
+
 }
 
 func (it *Scanner) LoadDatasheet(file nwfs.File) (datasheet.JSONRows, error) {
@@ -115,7 +93,6 @@ func (it *Scanner) LoadEntity(file nwfs.File) (*nwt.AZ__Entity, error) {
 		return &v, nil
 	}
 	return nil, nil
-
 }
 
 func (it *Scanner) LoadSliceComponent(file nwfs.File) (*nwt.SliceComponent, error) {

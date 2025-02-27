@@ -2,9 +2,12 @@ package ts
 
 import (
 	"fmt"
+	"log/slog"
 	"nw-buddy/tools/formats/datasheet"
+	"nw-buddy/tools/utils"
 	"reflect"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -73,7 +76,7 @@ func (it *TypeMember) TsTypeName() string {
 	} else if len(it.Types) > 0 {
 		t = strings.Join(it.Types, " | ")
 	}
-	if it.IsArray && len(it.Types) == 1 {
+	if it.IsArray && len(it.Types) <= 1 {
 		t = t + "[]"
 	}
 	if it.IsArray && len(it.Types) > 1 {
@@ -100,7 +103,6 @@ func ResolveTableTypes(tables []*datasheet.Document) TypeMap {
 		typeInfo := types[tableName]
 		typeInfo.Files.Add(table.Table, table.File)
 
-	cols:
 		for i, col := range table.Cols {
 			if _, ok := typeInfo.Members[col.Name]; !ok {
 				typeInfo.Members[col.Name] = &TypeMember{
@@ -115,7 +117,6 @@ func ResolveTableTypes(tables []*datasheet.Document) TypeMap {
 				if enum, ok := it[col.Name]; ok {
 					memberInfo.Types = []string{enum}
 					memberInfo.IsEnum = true
-					continue cols
 				}
 			}
 
@@ -124,22 +125,151 @@ func ResolveTableTypes(tables []*datasheet.Document) TypeMap {
 			}
 			for _, row := range table.Rows {
 				value := row[i]
-				if isValueArray(value) {
+				if memberInfo.IsEnum && isValueArray(value) {
 					memberInfo.IsArray = true
 					continue
 				}
+				if isValueArray(value) {
+					memberInfo.IsArray = true
+					valueType := kindToJsType(reflect.TypeOf(value).Elem())
+					if !slices.Contains(memberInfo.Types, valueType) && valueType != "uknown" {
+						memberInfo.Types = append(memberInfo.Types, valueType)
+					}
+					continue
+				}
 				valueType := getTypeOf(value)
-				if valueType == "" {
-					continue
-				}
-				if slices.Contains(memberInfo.Types, valueType) {
-					continue
-				}
-				memberInfo.Types = append(memberInfo.Types, valueType)
+				memberInfo.Types = utils.AppendUniqNoZero(memberInfo.Types, valueType)
 			}
 		}
 	}
 	return types
+}
+
+func FixTableTypes(tables []*datasheet.Document, types TypeMap) {
+	groups := utils.NewRecord[[]*datasheet.Document]()
+
+	for _, table := range tables {
+		tableName := getTableTypeName(table)
+		if list, ok := groups.Get(tableName); ok {
+			groups.Set(tableName, append(list, table))
+		} else {
+			groups.Set(tableName, []*datasheet.Document{table})
+		}
+	}
+
+	for tableName, tables := range groups.Iter() {
+		typeInfo, ok := types[tableName]
+		if !ok {
+			panic(fmt.Sprintf("missing type info for table %s", tableName))
+		}
+		for member, info := range typeInfo.Members {
+			if info.IsArray || info.IsEnum || len(info.Types) <= 1 {
+				continue
+			}
+			if slices.Contains(info.Types, "boolean") {
+				if err := fixBooleanColumn(tables, member); err != nil {
+					slog.Error("failed to fix boolean column", "table", tableName, "column", member, "error", err)
+					continue
+				}
+				info.Types = []string{"boolean"}
+			} else if slices.Contains(info.Types, "number") {
+				if err := fixNumberColumn(tables, member); err != nil {
+					slog.Error("failed to fix number column", "table", tableName, "column", member, "error", err)
+					continue
+				}
+				info.Types = []string{"number"}
+			}
+		}
+	}
+}
+
+var (
+	errFixSkipped = fmt.Errorf("fix skipped")
+)
+
+func fixBooleanColumn(tables []*datasheet.Document, col string) error {
+	for _, table := range tables {
+		index := slices.IndexFunc(table.Cols, func(c datasheet.Col) bool {
+			return c.Name == col
+		})
+		if index < 0 {
+			// this table does not have the column
+			continue
+		}
+		for _, row := range table.Rows {
+			value := row[index]
+			if value == nil {
+				continue
+			}
+			switch v := value.(type) {
+			case bool:
+				continue
+			case string:
+				switch strings.ToLower(v) {
+				case "":
+					row[index] = nil
+				case "true":
+					row[index] = true
+				case "false":
+					row[index] = false
+				case "1":
+					row[index] = true
+				case "0":
+					row[index] = false
+				default:
+					return fmt.Errorf("invalid boolean value '%v'", v)
+				}
+			case float32, float64:
+				str := fmt.Sprintf("%v", v)
+				switch str {
+				case "0":
+					row[index] = false
+				case "1":
+					row[index] = true
+				default:
+					return fmt.Errorf("invalid boolean value '%v'", v)
+				}
+			default:
+				return fmt.Errorf("invalid boolean value '%v' %t", v, v)
+			}
+		}
+	}
+	return nil
+}
+
+func fixNumberColumn(tables []*datasheet.Document, col string) error {
+	for _, table := range tables {
+		index := slices.IndexFunc(table.Cols, func(c datasheet.Col) bool {
+			return c.Name == col
+		})
+		if index < 0 {
+			// this table does not have the column
+			continue
+		}
+		for _, row := range table.Rows {
+			value := row[index]
+			if value == nil {
+				continue
+			}
+			switch v := value.(type) {
+			case float32, float64:
+				continue
+			case string:
+				if v == "" {
+					row[index] = nil
+					continue
+				}
+				res, err := strconv.ParseFloat(v, 32)
+				if err != nil {
+					return fmt.Errorf("invalid number value '%v' %w", v, err)
+				}
+				row[index] = res
+			default:
+				return fmt.Errorf("invalid number value '%v' %t", v, v)
+			}
+		}
+	}
+	return nil
 }
 
 func ResolveEnumTypes(tables []*datasheet.Document) EnumMap {
@@ -180,7 +310,7 @@ func getTypeOf(value any) string {
 	switch value.(type) {
 	case string:
 		return "string"
-	case float32:
+	case float32, float64:
 		return "number"
 	case bool:
 		return "boolean"
@@ -200,10 +330,6 @@ func isValueArray(value any) (res bool) {
 func getTableTypeName(rec *datasheet.Document) string {
 	switch rec.Schema {
 	case "unknown":
-		{
-			return rec.Table
-		}
-	case "CategoricalProgressionRankData":
 		{
 			return rec.Table
 		}
@@ -296,6 +422,64 @@ func (it TypeMap) getTypeName(t reflect.Type) string {
 		return it.getTypeName(t.Elem())
 	case reflect.Map:
 		return fmt.Sprintf("Record<%s, %s>", it.getTypeName(t.Key()), it.getTypeName(t.Elem()))
+	case reflect.Interface:
+		return "any"
+	default:
+		return "unknown"
+	}
+}
+
+func kindToJsType(t reflect.Type) string {
+
+	switch t.Kind() {
+	case reflect.String:
+		return "string"
+	case reflect.Bool:
+		return "boolean"
+	case reflect.Int:
+		return "number"
+	case reflect.Int8:
+		return "number"
+	case reflect.Int16:
+		return "number"
+	case reflect.Int32:
+		return "number"
+	case reflect.Int64:
+		return "number"
+	case reflect.Uint:
+		return "number"
+	case reflect.Uint8:
+		return "number"
+	case reflect.Uint16:
+		return "number"
+	case reflect.Uint32:
+		return "number"
+	case reflect.Uint64:
+		return "number"
+	case reflect.Float32:
+		return "number"
+	case reflect.Float64:
+		return "number"
+	case reflect.Slice:
+		return fmt.Sprintf("Array<%s>", kindToJsType(t.Elem()))
+	case reflect.Array:
+		name := "["
+		for i := range t.Len() {
+			if i > 0 {
+				name += ","
+			}
+			name += kindToJsType(t.Elem())
+		}
+		name += "]"
+		return name
+	case reflect.Struct:
+		name := t.Name()
+		pkgPath := t.PkgPath()
+		return strings.TrimPrefix(name, pkgPath)
+	case reflect.Ptr:
+		return kindToJsType(t.Elem())
+	case reflect.Map:
+		return fmt.Sprintf("Record<%s, %s>", kindToJsType(t.Key()), kindToJsType(t.Elem()))
 	case reflect.Interface:
 		return "any"
 	default:

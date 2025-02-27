@@ -74,8 +74,8 @@ func init() {
 	Cmd.Flags().StringVar(&flgFmtLocales, "x-loc", "", "transforms .loc.xml files to given format. Possible values: json")
 	Cmd.Flags().StringVar(&flgFmtDDS, "x-dds", "merge", "transforms .dds files to given format. Possible values: merge, png, webp")
 
-	Cmd.Flags().StringVar(&flgCrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nw-kit/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
-	Cmd.Flags().StringVar(&flgUuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nw-kit/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
+	Cmd.Flags().StringVar(&flgCrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
+	Cmd.Flags().StringVar(&flgUuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
 }
 
 func run(ccmd *cobra.Command, args []string) {

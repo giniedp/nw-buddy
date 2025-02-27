@@ -16,6 +16,7 @@ import (
 )
 
 func pullImages(fs nwfs.Archive, outDir string, update bool) {
+
 	imageSet := utils.NewRecord[bool]()
 	progress.RunTasks(progress.TasksConfig[nwfs.File, string]{
 		Description:   "img scan (tables)",
@@ -62,7 +63,8 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 		images = append(images, tile.Path())
 	}
 
-	missingSet := utils.NewRecord[bool]()
+	skipped := 0
+	missing := utils.NewRecord[bool]()
 	progress.RunTasks(progress.TasksConfig[string, *Blob]{
 		Description:   "pull images",
 		ProducerCount: int(flgWorkerCount),
@@ -71,16 +73,14 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 		Producer: func(img string) (output *Blob, err error) {
 			output = &Blob{Path: img}
 
-			img = strings.TrimSpace(img)
-			img = strings.ToLower(img)
-			img = strings.ReplaceAll(img, "\\", "/")
+			img = nwfs.NormalizePath(img)
 			f, ok := fs.Lookup(img)
 			if !ok {
 				img = utils.ReplaceExt(img, ".dds")
 				f, ok = fs.Lookup(img)
 			}
 			if !ok {
-				missingSet.Set(img, true)
+				missing.Set(img, true)
 				return
 			}
 			ext := path.Ext(img)
@@ -90,6 +90,7 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 
 			output.Path = utils.ReplaceExt(path.Join(outDir, img), ".webp")
 			if !update && utils.FileExists(output.Path) {
+				skipped++
 				return
 			}
 			output.Data, err = image.ConvertDDSFile(
@@ -111,6 +112,8 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 			return
 		},
 	})
+
+	stats.Add("Images", "total", len(images), "skipped", skipped, "missed", missing.Len())
 }
 
 func isPossiblyImage(name string) bool {

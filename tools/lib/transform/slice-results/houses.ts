@@ -1,5 +1,5 @@
 import { sortBy, uniqBy } from 'lodash'
-import { ScannedHouse, ScannedHouseType, ScannedHouseTypeData } from '../../../../libs/nw-data/scanner'
+import { ScannedHouse, ScannedHouseType, ScannedHouseTypeData } from '../../../../libs/nw-data/generated'
 import { HouseScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface HouseIndex {

@@ -12,7 +12,7 @@ import {
   VitalsLevelData,
   VitalsModifierData,
 } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/scanner'
+import { ScannedVital } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'

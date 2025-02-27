@@ -1,4 +1,4 @@
-import { ScannedTerritory, ScannedTerritoryData } from '../../../../libs/nw-data/scanner'
+import { ScannedTerritory, ScannedTerritoryData } from '../../../../libs/nw-data/generated'
 import { TerritoryScanRow } from '../../file-formats/slices/scan-for-zones'
 
 export interface TerritoryIndex {

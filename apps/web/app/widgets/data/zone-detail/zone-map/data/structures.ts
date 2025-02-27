@@ -1,7 +1,7 @@
 import { describeNodeSize, getGatherableNodeSizes } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { HouseTypeData } from '@nw-data/generated'
-import { ScannedStation, ScannedStructure } from '@nw-data/scanner'
+import { ScannedStation, ScannedStructure } from '@nw-data/generated'
 import { groupBy } from 'lodash'
 import { combineLatest, map } from 'rxjs'
 import { TranslateService } from '~/i18n'

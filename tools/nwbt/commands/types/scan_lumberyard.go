@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/rtti"
+	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
 	"strings"
@@ -34,7 +35,6 @@ func scanLumberyard(inputDir string) (crc rtti.CrcTable, table rtti.UuidTable, e
 		return nil, nil, ErrNoLumberyardFiles
 	}
 
-	slog.Info(fmt.Sprintf("%d files", len(files)))
 	table = rtti.NewUuidTable()
 	crc = rtti.NewCrcTable()
 	alias := map[string]string{
@@ -55,8 +55,12 @@ func scanLumberyard(inputDir string) (crc rtti.CrcTable, table rtti.UuidTable, e
 		"EditorStaticPhysicsConfiguration<StaticPhysicsConfiguration >": "EditorStaticPhysicsConfig",
 	}
 
+	bar := progress.Bar(len(files), "Lumberyard")
+	defer bar.Close()
+
 	for _, file := range files {
-		// slog.Info(file)
+		bar.Add(1)
+
 		data, err := os.ReadFile(file)
 		if !strings.Contains(string(data), "<ObjectStream") {
 			continue
@@ -95,5 +99,6 @@ func scanLumberyard(inputDir string) (crc rtti.CrcTable, table rtti.UuidTable, e
 			return true
 		})
 	}
+
 	return
 }

@@ -1,5 +1,5 @@
 import { sortBy, uniqBy } from 'lodash'
-import { ScannedStructure, ScannedStructureType, ScannedStructureTypeData } from '../../../../libs/nw-data/scanner'
+import { ScannedStructure, ScannedStructureType, ScannedStructureTypeData } from '../../../../libs/nw-data/generated'
 import { StructureScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface StructureIndex {

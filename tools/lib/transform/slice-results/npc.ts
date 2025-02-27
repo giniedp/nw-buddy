@@ -1,5 +1,5 @@
 import { chain } from 'lodash'
-import { SannedNpcData, ScannedNpc, ScannedNpcSpawn } from '../../../../libs/nw-data/scanner'
+import { SannedNpcData, ScannedNpc, ScannedNpcSpawn } from '../../../../libs/nw-data/generated'
 import { NpcScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface NpcIndex {

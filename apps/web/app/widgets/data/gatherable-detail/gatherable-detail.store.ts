@@ -8,7 +8,7 @@ import {
   getGatherableNodeSizes,
 } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
+import { ScannedGatherable, ScannedVariation } from '@nw-data/generated'
 import { sortBy, uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'

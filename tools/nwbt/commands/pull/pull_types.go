@@ -16,6 +16,8 @@ import (
 func pullTypes(tables []*datasheet.Document, outDir string) {
 	bar := progress.Bar(0, "Codegen")
 	types := ts.ResolveTableTypes(tables)
+	ts.FixTableTypes(tables, types)
+
 	bar.Add(len(types))
 	enums := ts.ResolveEnumTypes(tables)
 	bar.Add(len(enums))
@@ -144,6 +146,7 @@ func codeGenScanTypes() string {
 	types.AddReflect(reflect.TypeOf(scan.ScannedVital{}))
 	types.AddReflect(reflect.TypeOf(scan.ScannedVitalModel{}))
 	types.AddReflect(reflect.TypeOf(SearchItem{}))
+	types.AddReflect(reflect.TypeOf(ScannedSpell{}))
 
 	w := utils.NewStringBuilder()
 	for _, tKey := range types.SortedKeys() {

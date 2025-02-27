@@ -1,7 +1,7 @@
 import { GatherableVariation } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { GatherableData } from '@nw-data/generated'
-import { ScannedGatherable, ScannedVariation } from '@nw-data/scanner'
+import { ScannedGatherable, ScannedVariation } from '@nw-data/generated'
 import { combineLatest, from, map, switchMap } from 'rxjs'
 import { svgLocationQuestion, svgStaff } from '~/ui/icons/svg'
 import { combineLatestOrEmpty, eqCaseInsensitive, stringToHSL } from '~/utils'

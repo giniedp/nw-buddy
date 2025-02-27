@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
-import { ScannedGatherable, ScannedGatherableSpawn, ScannedVariation } from '@nw-data/scanner'
+import { ScannedGatherable, ScannedGatherableSpawn, ScannedVariation } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core'
 import { NPCData, VariationData } from '@nw-data/generated'
-import { ScannedNpc, ScannedVariation } from '@nw-data/scanner'
+import { ScannedNpc, ScannedVariation } from '@nw-data/generated'
 import { groupBy, uniq } from 'lodash'
 import { switchMap } from 'rxjs'
 import { injectNwData } from '~/data'

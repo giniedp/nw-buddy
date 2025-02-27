@@ -16,7 +16,7 @@ import {
   VitalsLevelVariantData,
   VitalsModifierData,
 } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/scanner'
+import { ScannedVital } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
 import { map } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'

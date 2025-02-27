@@ -5,6 +5,7 @@ package nwt
 import "reflect"
 
 var GENERATED = map[string]reflect.Type{
+	"A8DC7564-5C02-4737-ADF1-931FED726914": reflect.TypeOf(AIAudioTrigger{}),
 	"D480029E-0BD7-40DB-9A80-C59DB3C2780A": reflect.TypeOf(AIConstraintComponent{}),
 	"FAF303E4-D526-4BD2-9CD2-F043265D2324": reflect.TypeOf(AIConstraintComponentClientFacet{}),
 	"888F13D8-97CF-464A-B1FB-81BBAE674E95": reflect.TypeOf(AIConstraintComponentServerFacet{}),
@@ -40,166 +41,250 @@ var GENERATED = map[string]reflect.Type{
 	"F3F36F24-788E-4881-857A-B0BD63C21519": reflect.TypeOf(AIWaypointComponentClientFacet{}),
 	"6421B8C9-1737-4FB5-9E3C-7879A19BCB3B": reflect.TypeOf(AIWaypointComponentServerFacet{}),
 	"7DC5C9BB-B030-4FA3-B70F-F3F51C2C30CA": reflect.TypeOf(ALCScopeData{}),
+	"382BB2D7-FF34-5AAA-B9F3-9848D197DAA3": reflect.TypeOf(AZStd__array{}),
+	"C450144F-FA6D-5EEF-9B6B-AF5C90A0E138": reflect.TypeOf(AZStd__array_0{}),
+	"AB963B65-DB38-5DC3-B457-9080B51ACC38": reflect.TypeOf(AZStd__array_1{}),
 	"52758A3D-F4D5-5BB5-AC80-970D81A83784": reflect.TypeOf(AZStd__fixed_vector{}),
-	"FBDE333E-E339-56EB-9EFD-BA9B1EAF6044": reflect.TypeOf(AZStd__intrusive_ptr{}),
-	"E60FCB60-F631-5F86-A9CB-66FF429F3C0A": reflect.TypeOf(AZStd__intrusive_ptr_0{}),
-	"18136753-CBD7-5FCE-8126-AC6352DBB319": reflect.TypeOf(AZStd__intrusive_ptr_1{}),
-	"B1FE9A95-C664-5DD7-A687-25A033E669DA": reflect.TypeOf(AZStd__intrusive_ptr_2{}),
-	"3F7CA4BC-B6DF-59B6-A36E-2DCDA6C6E547": reflect.TypeOf(AZStd__intrusive_ptr_3{}),
-	"FC373751-3E99-5791-B583-0635BDC4A193": reflect.TypeOf(AZStd__intrusive_ptr_4{}),
-	"87EB26CF-88CE-516E-AC15-95AB2F9F0016": reflect.TypeOf(AZStd__list{}),
-	"5422804E-9A36-5B7D-B113-B58E6AE06B6C": reflect.TypeOf(AZStd__list_0{}),
-	"BD759900-55F5-5687-A98B-FA0515FD4783": reflect.TypeOf(AZStd__list_1{}),
+	"B1FE9A95-C664-5DD7-A687-25A033E669DA": reflect.TypeOf(AZStd__intrusive_ptr{}),
+	"FBDE333E-E339-56EB-9EFD-BA9B1EAF6044": reflect.TypeOf(AZStd__intrusive_ptr_0{}),
+	"15C790A0-1277-5005-9524-2F3836A526DD": reflect.TypeOf(AZStd__intrusive_ptr_1{}),
+	"E60FCB60-F631-5F86-A9CB-66FF429F3C0A": reflect.TypeOf(AZStd__intrusive_ptr_2{}),
+	"FC373751-3E99-5791-B583-0635BDC4A193": reflect.TypeOf(AZStd__intrusive_ptr_3{}),
+	"3F7CA4BC-B6DF-59B6-A36E-2DCDA6C6E547": reflect.TypeOf(AZStd__intrusive_ptr_4{}),
+	"18136753-CBD7-5FCE-8126-AC6352DBB319": reflect.TypeOf(AZStd__intrusive_ptr_5{}),
+	"729E994D-B596-5E95-AF7C-CA9B5EDB83B1": reflect.TypeOf(AZStd__list{}),
+	"D6DE6E49-880F-5548-A0A7-1C7E8B5153C2": reflect.TypeOf(AZStd__list_0{}),
+	"87EB26CF-88CE-516E-AC15-95AB2F9F0016": reflect.TypeOf(AZStd__list_1{}),
 	"32B3430B-DDBB-5B4F-91BD-8A565AF0ECD5": reflect.TypeOf(AZStd__list_2{}),
-	"DAD45EB6-5853-5645-B762-3A37F8775E12": reflect.TypeOf(AZStd__list_3{}),
-	"BD764B4D-B3C3-541B-ADCA-537D881562F3": reflect.TypeOf(AZStd__list_4{}),
+	"5422804E-9A36-5B7D-B113-B58E6AE06B6C": reflect.TypeOf(AZStd__list_3{}),
+	"DAD45EB6-5853-5645-B762-3A37F8775E12": reflect.TypeOf(AZStd__list_4{}),
 	"A0A94174-3982-5CFC-A8E1-624BD628D91E": reflect.TypeOf(AZStd__list_5{}),
-	"31D0DFEB-C899-568D-AF9F-0246BFFF5FA3": reflect.TypeOf(AZStd__map{}),
-	"F9134830-DA63-5455-A1E3-450654A116C1": reflect.TypeOf(AZStd__map_0{}),
-	"0D3E43D1-FA32-55A8-A953-CAC60D1684D5": reflect.TypeOf(AZStd__map_1{}),
-	"EF5CD71A-71D5-5EC3-A578-14DD0DFDB2FD": reflect.TypeOf(AZStd__map_2{}),
-	"5D30068C-1D6A-51F6-94A1-FA512EF61ED6": reflect.TypeOf(AZStd__map_3{}),
-	"30DDE93C-E899-5AB9-856D-FC456D054EDB": reflect.TypeOf(AZStd__pair{}),
-	"EEECB8FC-B543-5F90-AE0B-25F17CA75E21": reflect.TypeOf(AZStd__shared_ptr{}),
-	"7D2CE1AA-8AEF-5EFC-97A2-E2661B3B76DA": reflect.TypeOf(AZStd__shared_ptr_0{}),
+	"BD759900-55F5-5687-A98B-FA0515FD4783": reflect.TypeOf(AZStd__list_6{}),
+	"BD764B4D-B3C3-541B-ADCA-537D881562F3": reflect.TypeOf(AZStd__list_7{}),
+	"5D30068C-1D6A-51F6-94A1-FA512EF61ED6": reflect.TypeOf(AZStd__map{}),
+	"A9C46D5C-8CB6-50F9-902D-47ABA1FEC96E": reflect.TypeOf(AZStd__map_0{}),
+	"EF5CD71A-71D5-5EC3-A578-14DD0DFDB2FD": reflect.TypeOf(AZStd__map_1{}),
+	"0D3E43D1-FA32-55A8-A953-CAC60D1684D5": reflect.TypeOf(AZStd__map_2{}),
+	"E0D33CF2-B141-5BD3-AE21-0475EFC95B54": reflect.TypeOf(AZStd__map_3{}),
+	"DA75F931-04B6-523B-ABDE-EBC400625918": reflect.TypeOf(AZStd__map_4{}),
+	"4EA71F88-D1F0-5DB0-B804-5B0EFAABCC22": reflect.TypeOf(AZStd__map_5{}),
+	"31D0DFEB-C899-568D-AF9F-0246BFFF5FA3": reflect.TypeOf(AZStd__map_6{}),
+	"1F239D04-3E14-54CE-A252-2334710119DC": reflect.TypeOf(AZStd__map_7{}),
+	"F9134830-DA63-5455-A1E3-450654A116C1": reflect.TypeOf(AZStd__map_8{}),
+	"735906FE-CB32-5B83-83D8-D367E2954EC5": reflect.TypeOf(AZStd__map_9{}),
+	"59EBE460-C1B3-5BBE-A1C6-8F59FF841EFE": reflect.TypeOf(AZStd__map_10{}),
+	"25672DE4-785F-5842-92AA-8C6F67D1431F": reflect.TypeOf(AZStd__pair{}),
+	"610673EF-D543-5C96-ACD8-2846C2FA4ED7": reflect.TypeOf(AZStd__pair_0{}),
+	"4A87CD48-6A4F-5B1A-94F6-013B8B39CFD6": reflect.TypeOf(AZStd__pair_1{}),
+	"30DDE93C-E899-5AB9-856D-FC456D054EDB": reflect.TypeOf(AZStd__pair_2{}),
+	"70C6F9CD-959E-5DEF-B5CC-1F31D3759126": reflect.TypeOf(AZStd__pair_3{}),
+	"5CFB552C-335A-5F0A-9721-A3A8B3EB5962": reflect.TypeOf(AZStd__pair_4{}),
+	"95552CED-0EB0-535C-9A83-93FB9BDF5967": reflect.TypeOf(AZStd__pair_5{}),
+	"342E9680-7201-5301-94DA-6A46913F51B8": reflect.TypeOf(AZStd__pair_6{}),
+	"64503325-ECF4-5F02-95F9-E37D00810E59": reflect.TypeOf(AZStd__pair_7{}),
+	"C98748F5-DC08-5BED-A624-3C0A0919A051": reflect.TypeOf(AZStd__pair_8{}),
+	"ADB8A963-3E79-5020-8233-0EB42F9B9B4A": reflect.TypeOf(AZStd__shared_ptr{}),
+	"E13859C4-1F24-5C44-A133-F17B4B050D7C": reflect.TypeOf(AZStd__shared_ptr_0{}),
 	"9D45D855-D194-5C90-A293-C40EAAFD7F0E": reflect.TypeOf(AZStd__shared_ptr_1{}),
 	"2A30A5CA-4F67-5B0C-8A7A-9DCE9D42F091": reflect.TypeOf(AZStd__shared_ptr_2{}),
-	"E13859C4-1F24-5C44-A133-F17B4B050D7C": reflect.TypeOf(AZStd__shared_ptr_3{}),
-	"2E879A16-9143-5862-A5B3-EDED931C60BC": reflect.TypeOf(AZStd__shared_ptr_4{}),
-	"ADB8A963-3E79-5020-8233-0EB42F9B9B4A": reflect.TypeOf(AZStd__shared_ptr_5{}),
+	"EEECB8FC-B543-5F90-AE0B-25F17CA75E21": reflect.TypeOf(AZStd__shared_ptr_3{}),
+	"7D2CE1AA-8AEF-5EFC-97A2-E2661B3B76DA": reflect.TypeOf(AZStd__shared_ptr_4{}),
+	"2E879A16-9143-5862-A5B3-EDED931C60BC": reflect.TypeOf(AZStd__shared_ptr_5{}),
 	"5D0EA2DE-EA92-54F1-99F0-ECC12CE8A32B": reflect.TypeOf(AZStd__unique_ptr{}),
-	"CF4AED90-165D-5081-9CCF-F03671BDD607": reflect.TypeOf(AZStd__unordered_flat_map{}),
-	"2840B537-C3D1-5257-9659-94E0B170825C": reflect.TypeOf(AZStd__unordered_flat_map_0{}),
-	"ECFDCA9E-45D2-52B4-A1EB-CFF7B0B5CDB9": reflect.TypeOf(AZStd__unordered_map{}),
-	"3888CF90-4921-53D6-AAD3-D94D53E967CB": reflect.TypeOf(AZStd__unordered_map_0{}),
-	"6133A797-1A04-55B2-8125-3616BC67D71B": reflect.TypeOf(AZStd__unordered_map_1{}),
-	"CAB9E1F5-761E-54B8-916E-E7FB597E5EDE": reflect.TypeOf(AZStd__unordered_map_2{}),
-	"F87FA543-7DF5-5FC8-8767-9F1AFCBD1D0D": reflect.TypeOf(AZStd__unordered_map_3{}),
-	"3F80885A-9011-5172-8D94-87108B31D950": reflect.TypeOf(AZStd__unordered_map_4{}),
-	"FAEF7F13-E5A6-51AC-B2D3-22FB8D0928BC": reflect.TypeOf(AZStd__unordered_map_5{}),
-	"1F6EFDE3-C180-5C8A-96D7-A92049CD119E": reflect.TypeOf(AZStd__unordered_map_6{}),
-	"6C8F8E52-AB4A-5C1F-8E56-9AC390290B94": reflect.TypeOf(AZStd__unordered_set{}),
-	"93BBB90E-EBB4-507D-89B6-E4921FE44AFF": reflect.TypeOf(AZStd__unordered_set_0{}),
+	"465475CB-D215-55C2-9E8F-A9BA6A8E76BF": reflect.TypeOf(AZStd__unordered_flat_map{}),
+	"4CCF3754-33D3-5BB6-A770-BD37A66A5E35": reflect.TypeOf(AZStd__unordered_flat_map_0{}),
+	"2840B537-C3D1-5257-9659-94E0B170825C": reflect.TypeOf(AZStd__unordered_flat_map_1{}),
+	"CF4AED90-165D-5081-9CCF-F03671BDD607": reflect.TypeOf(AZStd__unordered_flat_map_2{}),
+	"DA0AAB24-92A0-5EA4-9A1A-5CEF4E8C3BF9": reflect.TypeOf(AZStd__unordered_map{}),
+	"6133A797-1A04-55B2-8125-3616BC67D71B": reflect.TypeOf(AZStd__unordered_map_0{}),
+	"74CCF29C-5848-5404-80AD-EC6284EA6E12": reflect.TypeOf(AZStd__unordered_map_1{}),
+	"F87FA543-7DF5-5FC8-8767-9F1AFCBD1D0D": reflect.TypeOf(AZStd__unordered_map_2{}),
+	"3F80885A-9011-5172-8D94-87108B31D950": reflect.TypeOf(AZStd__unordered_map_3{}),
+	"FAEF7F13-E5A6-51AC-B2D3-22FB8D0928BC": reflect.TypeOf(AZStd__unordered_map_4{}),
+	"ECFDCA9E-45D2-52B4-A1EB-CFF7B0B5CDB9": reflect.TypeOf(AZStd__unordered_map_5{}),
+	"3888CF90-4921-53D6-AAD3-D94D53E967CB": reflect.TypeOf(AZStd__unordered_map_6{}),
+	"1F6EFDE3-C180-5C8A-96D7-A92049CD119E": reflect.TypeOf(AZStd__unordered_map_7{}),
+	"961F1E06-1A3A-57AC-A374-5A242B903450": reflect.TypeOf(AZStd__unordered_map_8{}),
+	"CAB9E1F5-761E-54B8-916E-E7FB597E5EDE": reflect.TypeOf(AZStd__unordered_map_9{}),
+	"18D9B2C9-1E6A-5917-BE3B-04E61ED0F7FF": reflect.TypeOf(AZStd__unordered_set{}),
+	"4C9C7F67-4B86-58AF-B45A-ABF4D2EAE45F": reflect.TypeOf(AZStd__unordered_set_0{}),
 	"104B16EC-793B-5BB1-B613-1F4343F3C94F": reflect.TypeOf(AZStd__unordered_set_1{}),
-	"18D9B2C9-1E6A-5917-BE3B-04E61ED0F7FF": reflect.TypeOf(AZStd__unordered_set_2{}),
-	"3E464841-C244-56FF-B013-C4626FA97E7E": reflect.TypeOf(AZStd__vector{}),
-	"E7781CB0-E712-5E6A-948D-92FD4FE87F0D": reflect.TypeOf(AZStd__vector_0{}),
-	"BD6C5ECD-6719-57C7-B915-AEB80934D44C": reflect.TypeOf(AZStd__vector_1{}),
-	"5ABA2D15-B399-598E-9D5B-4D87B6B669ED": reflect.TypeOf(AZStd__vector_2{}),
-	"E1F8EC50-8068-5A04-8704-297DCB289E20": reflect.TypeOf(AZStd__vector_3{}),
-	"43BBF8FE-0E37-5ECD-9D8A-9D2FE30EE8EF": reflect.TypeOf(AZStd__vector_4{}),
-	"24A1B3FF-51E3-5699-9ED7-49D835DE1DED": reflect.TypeOf(AZStd__vector_5{}),
-	"8D3ADB79-65D4-55BE-8CA6-43D60306FED0": reflect.TypeOf(AZStd__vector_6{}),
-	"0B79DF5C-21F2-52AF-853A-59A53357F84E": reflect.TypeOf(AZStd__vector_7{}),
-	"E000AD1B-B395-5A76-90F7-8E9285C1A406": reflect.TypeOf(AZStd__vector_8{}),
-	"03145BF4-AD4A-5888-A3BB-3DBB8F67FB8C": reflect.TypeOf(AZStd__vector_9{}),
-	"2DA7F2DF-ACB8-54FA-B5CE-E9DCD5C1C6E5": reflect.TypeOf(AZStd__vector_10{}),
-	"4599647A-45DD-585B-AFC0-4BAD29EB49A7": reflect.TypeOf(AZStd__vector_11{}),
-	"72B7AF5B-CC81-52B6-B010-F68A367AA6E6": reflect.TypeOf(AZStd__vector_12{}),
-	"28732331-2F6D-5B14-A4B1-ECD2470D93BA": reflect.TypeOf(AZStd__vector_13{}),
-	"AA8E896E-97A3-54D7-B668-059B9AD08B03": reflect.TypeOf(AZStd__vector_14{}),
-	"3A3B8C41-182B-56EC-AB97-A122BFAC5FED": reflect.TypeOf(AZStd__vector_15{}),
-	"99DAD0BC-740E-5E82-826B-8FC7968CC02C": reflect.TypeOf(AZStd__vector_16{}),
-	"9C065BE0-C62A-5C35-8644-014AD0E558D1": reflect.TypeOf(AZStd__vector_17{}),
-	"66CB6DE4-BD7B-534A-BC4C-9F1D736FA88D": reflect.TypeOf(AZStd__vector_18{}),
-	"FD5D9944-AF75-562B-881C-BE40F0A54B01": reflect.TypeOf(AZStd__vector_19{}),
-	"A3F5E99F-1683-5F67-9D1B-43E0AB1953D7": reflect.TypeOf(AZStd__vector_20{}),
-	"0DE523D9-AEAE-5FC4-9D40-967A2E2B8A62": reflect.TypeOf(AZStd__vector_21{}),
-	"4D729C22-E61C-5E9C-B7F6-B3F14D4578A2": reflect.TypeOf(AZStd__vector_22{}),
-	"4C5BBE88-4272-5885-A61F-23021017FD30": reflect.TypeOf(AZStd__vector_23{}),
-	"1548729E-B8F9-57AC-93CF-8CB518379A75": reflect.TypeOf(AZStd__vector_24{}),
-	"77CD140E-4E9E-52B7-A2F0-23B1E4D05F3A": reflect.TypeOf(AZStd__vector_25{}),
-	"3F597068-805C-5515-B313-C901DC05060E": reflect.TypeOf(AZStd__vector_26{}),
-	"1D452656-EC6B-5373-AF0F-E1F60B9546DD": reflect.TypeOf(AZStd__vector_27{}),
-	"6106BF95-5ACD-5071-8D0E-4F846C2138AD": reflect.TypeOf(AZStd__vector_28{}),
-	"3F622D9B-E7E9-5772-A219-3C9879FA1146": reflect.TypeOf(AZStd__vector_29{}),
-	"735823F4-791D-5976-8D9B-35B2EB471F99": reflect.TypeOf(AZStd__vector_30{}),
-	"E4FDB250-C70E-5D4D-9B08-2499F7A9F628": reflect.TypeOf(AZStd__vector_31{}),
-	"83144AA3-23B5-5A07-9757-AFBF43BA3F1D": reflect.TypeOf(AZStd__vector_32{}),
-	"F376E9E0-5D5C-5BD7-B35F-A38B5FF13118": reflect.TypeOf(AZStd__vector_33{}),
-	"5407A20B-7766-5097-963E-A678DD01D872": reflect.TypeOf(AZStd__vector_34{}),
-	"A43DFE44-E89A-5728-9015-61B70FB8D73D": reflect.TypeOf(AZStd__vector_35{}),
-	"38671F38-34B8-51EE-8B0E-35CDE55439A2": reflect.TypeOf(AZStd__vector_36{}),
-	"06A837A8-606F-5C74-88E4-A28C349A8827": reflect.TypeOf(AZStd__vector_37{}),
-	"191CA7C2-92DE-5474-8D2C-A095A6B6EDC6": reflect.TypeOf(AZStd__vector_38{}),
-	"0E01AB2F-311C-5A98-9F25-D61D530CD296": reflect.TypeOf(AZStd__vector_39{}),
-	"784CCDCF-5EF2-504E-BBF5-8AD430BFC827": reflect.TypeOf(AZStd__vector_40{}),
-	"287CEE87-6FF3-52FC-9D32-38255E2C7FE9": reflect.TypeOf(AZStd__vector_41{}),
-	"4099F9DC-9272-5007-AD07-2FF0078AF776": reflect.TypeOf(AZStd__vector_42{}),
-	"B23C52AB-2E15-5442-B4F3-69D6EA47FB4A": reflect.TypeOf(AZStd__vector_43{}),
-	"4841CFF0-7A5C-519C-BD16-D3625E99605E": reflect.TypeOf(AZStd__vector_44{}),
-	"22709583-E444-5872-A474-08E62A5A4BD6": reflect.TypeOf(AZStd__vector_45{}),
-	"298B8423-D30C-5742-B960-80C1126279CE": reflect.TypeOf(AZStd__vector_46{}),
-	"7E71304C-8FD6-5EDD-82E8-FA2809931F1C": reflect.TypeOf(AZStd__vector_47{}),
-	"DE651C28-3B6C-5154-9692-D95BF6A0C024": reflect.TypeOf(AZStd__vector_48{}),
-	"DBC6F418-248E-53E9-B303-DE7FD774531F": reflect.TypeOf(AZStd__vector_49{}),
-	"178658A6-5E82-54D0-AFE2-97E1B179C0A6": reflect.TypeOf(AZStd__vector_50{}),
-	"C5C91C71-CEE0-5558-9EDD-BBEEEFD241C3": reflect.TypeOf(AZStd__vector_51{}),
-	"E1EDCBE5-AE2D-553F-9954-FB5B9CA391EA": reflect.TypeOf(AZStd__vector_52{}),
-	"7F5CA986-91F3-5DC2-9979-ACD921CD8D53": reflect.TypeOf(AZStd__vector_53{}),
-	"3D5173BE-2E10-5FAA-884A-2E6F23546C8B": reflect.TypeOf(AZStd__vector_54{}),
-	"F93F0C05-EFB0-5F78-9D46-813DD03BEE40": reflect.TypeOf(AZStd__vector_55{}),
-	"12923D0C-714A-5383-AF8C-3BB47DDDA45C": reflect.TypeOf(AZStd__vector_56{}),
-	"56942E81-55BE-53E7-BAC4-0F567BCA3863": reflect.TypeOf(AZStd__vector_57{}),
-	"198013DC-527D-5558-BC75-BDBAE68E4252": reflect.TypeOf(AZStd__vector_58{}),
-	"1D600529-C846-5672-8065-8C9055F4CF24": reflect.TypeOf(AZStd__vector_59{}),
-	"E7055B06-DEDB-582C-ACCB-B570A9E8EB47": reflect.TypeOf(AZStd__vector_60{}),
-	"E2649755-83EE-5DAC-8121-3048E8BA59AC": reflect.TypeOf(AZStd__vector_61{}),
-	"AAEE3D79-4C1B-5AE8-BA28-31BE53E183C4": reflect.TypeOf(AZStd__vector_62{}),
-	"85207448-E0C7-562B-887C-90C208FC0083": reflect.TypeOf(AZStd__vector_63{}),
-	"A49CEF1B-4706-5AEC-AC5A-C401F5BF5241": reflect.TypeOf(AZStd__vector_64{}),
-	"01192A92-3993-567B-B14D-081B1FF2C9F1": reflect.TypeOf(AZStd__vector_65{}),
-	"A67CAACD-44C3-5CD9-94E8-B1A7886919E2": reflect.TypeOf(AZStd__vector_66{}),
-	"9F8D44A9-9731-5314-885E-B958D4216073": reflect.TypeOf(AZStd__vector_67{}),
-	"A78865CF-2A12-58C7-8EED-CE91E7448B99": reflect.TypeOf(AZStd__vector_68{}),
-	"9D58C86F-F141-5501-B033-200D7ED4B025": reflect.TypeOf(AZStd__vector_69{}),
-	"F75BCB15-E0BC-5EB6-A2A1-C8E7DF7AC7A5": reflect.TypeOf(AZStd__vector_70{}),
-	"AAB666C3-890B-537C-900F-0FC5D22FC2EC": reflect.TypeOf(AZStd__vector_71{}),
-	"9DFD295F-10F0-57E1-9887-9AA5B545D6F9": reflect.TypeOf(AZStd__vector_72{}),
+	"6C8F8E52-AB4A-5C1F-8E56-9AC390290B94": reflect.TypeOf(AZStd__unordered_set_2{}),
+	"93BBB90E-EBB4-507D-89B6-E4921FE44AFF": reflect.TypeOf(AZStd__unordered_set_3{}),
+	"1E72D2E1-31D7-59C6-B582-6773582D7A82": reflect.TypeOf(AZStd__vector{}),
+	"61D3F007-BD8B-5F15-8694-A337A222710E": reflect.TypeOf(AZStd__vector_0{}),
+	"4135704D-CE60-5A44-87B0-CE3C67076DBA": reflect.TypeOf(AZStd__vector_1{}),
+	"50320E3E-9D52-5ED7-945D-CF52B939A39E": reflect.TypeOf(AZStd__vector_2{}),
+	"0DE523D9-AEAE-5FC4-9D40-967A2E2B8A62": reflect.TypeOf(AZStd__vector_3{}),
+	"6EF039B8-0C43-5E84-AED2-3D532BE5DB81": reflect.TypeOf(AZStd__vector_4{}),
+	"287CEE87-6FF3-52FC-9D32-38255E2C7FE9": reflect.TypeOf(AZStd__vector_5{}),
+	"FE9811F1-14D6-50A8-87E8-DC58D0C87CE2": reflect.TypeOf(AZStd__vector_6{}),
+	"7F5CA986-91F3-5DC2-9979-ACD921CD8D53": reflect.TypeOf(AZStd__vector_7{}),
+	"9C23762C-C88D-5917-8746-1604E07C4CC0": reflect.TypeOf(AZStd__vector_8{}),
+	"99DAD0BC-740E-5E82-826B-8FC7968CC02C": reflect.TypeOf(AZStd__vector_9{}),
+	"0BEAAF16-DD76-57FE-B793-92A481CCFE6E": reflect.TypeOf(AZStd__vector_10{}),
+	"CEEF81AF-B476-5463-AF1E-B7EC9F65C02F": reflect.TypeOf(AZStd__vector_11{}),
+	"4C5BBE88-4272-5885-A61F-23021017FD30": reflect.TypeOf(AZStd__vector_12{}),
+	"9C065BE0-C62A-5C35-8644-014AD0E558D1": reflect.TypeOf(AZStd__vector_13{}),
+	"3999D332-BE04-5382-9E40-A2BF965E61EB": reflect.TypeOf(AZStd__vector_14{}),
+	"F31F64EA-E384-5536-ACD6-8F01849730FC": reflect.TypeOf(AZStd__vector_15{}),
+	"CF11014F-ABEC-596B-8877-4EA036F969FA": reflect.TypeOf(AZStd__vector_16{}),
+	"A49CEF1B-4706-5AEC-AC5A-C401F5BF5241": reflect.TypeOf(AZStd__vector_17{}),
+	"EFEC8EB2-C2CF-5817-A89D-9D16C63C7A19": reflect.TypeOf(AZStd__vector_18{}),
+	"98062BCE-C7FD-5BDF-BC6F-BA51978A38C7": reflect.TypeOf(AZStd__vector_19{}),
+	"B00AB0CD-1767-5B51-8F6A-C982E296204A": reflect.TypeOf(AZStd__vector_20{}),
+	"1297B8AF-3355-5871-914E-82178F34B16E": reflect.TypeOf(AZStd__vector_21{}),
+	"C49E415F-B1DB-5FF4-9343-97BF586F284B": reflect.TypeOf(AZStd__vector_22{}),
+	"A4986D1B-9427-5D87-88E3-0B9EEA758672": reflect.TypeOf(AZStd__vector_23{}),
+	"E4FDB250-C70E-5D4D-9B08-2499F7A9F628": reflect.TypeOf(AZStd__vector_24{}),
+	"585275AA-54B1-528B-AE4B-90D8DD2D7B1C": reflect.TypeOf(AZStd__vector_25{}),
+	"85AFA5E8-AA5C-50A3-9CAB-B8C483DA88C5": reflect.TypeOf(AZStd__vector_26{}),
+	"FD5D9944-AF75-562B-881C-BE40F0A54B01": reflect.TypeOf(AZStd__vector_27{}),
+	"AAB666C3-890B-537C-900F-0FC5D22FC2EC": reflect.TypeOf(AZStd__vector_28{}),
+	"779755E7-D85D-5D47-91D5-5FDBB851DA57": reflect.TypeOf(AZStd__vector_29{}),
+	"191CA7C2-92DE-5474-8D2C-A095A6B6EDC6": reflect.TypeOf(AZStd__vector_30{}),
+	"AAEE3D79-4C1B-5AE8-BA28-31BE53E183C4": reflect.TypeOf(AZStd__vector_31{}),
+	"37E0BB8B-D0EC-5DA9-AC30-C1B1D9D21DB9": reflect.TypeOf(AZStd__vector_32{}),
+	"320209AC-D7A9-5E7D-9144-80DD766C46F6": reflect.TypeOf(AZStd__vector_33{}),
+	"43BBF8FE-0E37-5ECD-9D8A-9D2FE30EE8EF": reflect.TypeOf(AZStd__vector_34{}),
+	"2621D752-87AB-5398-B4B8-5F031CAD287E": reflect.TypeOf(AZStd__vector_35{}),
+	"BD6C5ECD-6719-57C7-B915-AEB80934D44C": reflect.TypeOf(AZStd__vector_36{}),
+	"C3DDC723-EDFD-58AE-AB03-CA5CC1D4123F": reflect.TypeOf(AZStd__vector_37{}),
+	"784CCDCF-5EF2-504E-BBF5-8AD430BFC827": reflect.TypeOf(AZStd__vector_38{}),
+	"2D93CC0A-78E0-5FDF-AF40-C2F0491FACD0": reflect.TypeOf(AZStd__vector_39{}),
+	"7CE2ED0E-33D2-5140-930B-D230249A15FF": reflect.TypeOf(AZStd__vector_40{}),
+	"9CDAD0E5-5BF4-533E-AAC1-7AC87E305B6F": reflect.TypeOf(AZStd__vector_41{}),
+	"56942E81-55BE-53E7-BAC4-0F567BCA3863": reflect.TypeOf(AZStd__vector_42{}),
+	"CFC542CA-0D79-5EBD-AE5C-C58159B3FB1D": reflect.TypeOf(AZStd__vector_43{}),
+	"8F72A3A6-3B12-5D1D-99B1-F77572E253FF": reflect.TypeOf(AZStd__vector_44{}),
+	"0B79DF5C-21F2-52AF-853A-59A53357F84E": reflect.TypeOf(AZStd__vector_45{}),
+	"7A21D61F-F8E9-52C4-816C-189743FD2894": reflect.TypeOf(AZStd__vector_46{}),
+	"0946F795-E2EC-511E-903F-2138BB6C1451": reflect.TypeOf(AZStd__vector_47{}),
+	"9D58C86F-F141-5501-B033-200D7ED4B025": reflect.TypeOf(AZStd__vector_48{}),
+	"9739FF42-1E1D-55E4-A3BF-5AE5D307C9A1": reflect.TypeOf(AZStd__vector_49{}),
+	"66CB6DE4-BD7B-534A-BC4C-9F1D736FA88D": reflect.TypeOf(AZStd__vector_50{}),
+	"4599647A-45DD-585B-AFC0-4BAD29EB49A7": reflect.TypeOf(AZStd__vector_51{}),
+	"6106BF95-5ACD-5071-8D0E-4F846C2138AD": reflect.TypeOf(AZStd__vector_52{}),
+	"6C2704D3-5D34-51ED-88CD-BAAA248F3E30": reflect.TypeOf(AZStd__vector_53{}),
+	"E2649755-83EE-5DAC-8121-3048E8BA59AC": reflect.TypeOf(AZStd__vector_54{}),
+	"9FFE44E4-7695-5AA0-8E4B-33276E0E6306": reflect.TypeOf(AZStd__vector_55{}),
+	"0424C5A6-C681-5A60-9700-B3D6F5655C00": reflect.TypeOf(AZStd__vector_56{}),
+	"F376E9E0-5D5C-5BD7-B35F-A38B5FF13118": reflect.TypeOf(AZStd__vector_57{}),
+	"8BD98C9A-AE86-5CBD-8697-F0EB31C6A44B": reflect.TypeOf(AZStd__vector_58{}),
+	"0C5B29E6-74C4-5ADF-8FCF-C3204A7E4662": reflect.TypeOf(AZStd__vector_59{}),
+	"5ABA2D15-B399-598E-9D5B-4D87B6B669ED": reflect.TypeOf(AZStd__vector_60{}),
+	"12923D0C-714A-5383-AF8C-3BB47DDDA45C": reflect.TypeOf(AZStd__vector_61{}),
+	"22709583-E444-5872-A474-08E62A5A4BD6": reflect.TypeOf(AZStd__vector_62{}),
+	"28732331-2F6D-5B14-A4B1-ECD2470D93BA": reflect.TypeOf(AZStd__vector_63{}),
+	"72B7AF5B-CC81-52B6-B010-F68A367AA6E6": reflect.TypeOf(AZStd__vector_64{}),
+	"1F42A37A-E3E7-5D85-BFD3-BB5D9B8B713A": reflect.TypeOf(AZStd__vector_65{}),
+	"2DA7F2DF-ACB8-54FA-B5CE-E9DCD5C1C6E5": reflect.TypeOf(AZStd__vector_66{}),
+	"178658A6-5E82-54D0-AFE2-97E1B179C0A6": reflect.TypeOf(AZStd__vector_67{}),
+	"4FF803BF-727F-5364-B7BB-66D08964897C": reflect.TypeOf(AZStd__vector_68{}),
+	"610235B0-9462-5402-8B37-31D23542F047": reflect.TypeOf(AZStd__vector_69{}),
+	"B555F388-8F89-5380-AF27-467E63D18147": reflect.TypeOf(AZStd__vector_70{}),
+	"F93F0C05-EFB0-5F78-9D46-813DD03BEE40": reflect.TypeOf(AZStd__vector_71{}),
+	"C3F734DD-07BC-597E-95F8-88B4B17C0BC3": reflect.TypeOf(AZStd__vector_72{}),
 	"E0C1DFF2-081B-5927-9198-AC83D2865B37": reflect.TypeOf(AZStd__vector_73{}),
-	"E3B6A07B-498D-50CE-A8E5-5AFDA2231792": reflect.TypeOf(AZStd__vector_74{}),
-	"3349AACD-BE04-50BC-9478-528BF2ACFD55": reflect.TypeOf(AZStd__vector_75{}),
-	"69C92A7F-B783-581F-ADD0-201DD7668EDE": reflect.TypeOf(AZStd__vector_76{}),
-	"C9CD49BD-F143-5F75-AE47-5957339FAD55": reflect.TypeOf(AZStd__vector_77{}),
-	"B00AB0CD-1767-5B51-8F6A-C982E296204A": reflect.TypeOf(AZStd__vector_78{}),
-	"0424C5A6-C681-5A60-9700-B3D6F5655C00": reflect.TypeOf(AZStd__vector_79{}),
-	"8F72A3A6-3B12-5D1D-99B1-F77572E253FF": reflect.TypeOf(AZStd__vector_80{}),
-	"C3F734DD-07BC-597E-95F8-88B4B17C0BC3": reflect.TypeOf(AZStd__vector_81{}),
-	"4F980781-CE3A-5C48-AADC-E46E62CAEC4E": reflect.TypeOf(AZStd__vector_82{}),
-	"9CDAD0E5-5BF4-533E-AAC1-7AC87E305B6F": reflect.TypeOf(AZStd__vector_83{}),
-	"0D23B755-6E8F-5C6C-B7C9-A352A55DC1DF": reflect.TypeOf(AZStd__vector_84{}),
-	"74FD121B-2251-5DFD-8B25-99894F22D6BB": reflect.TypeOf(AZStd__vector_85{}),
-	"7016336A-3C8A-5EF3-961E-75D6F1F31434": reflect.TypeOf(AZStd__vector_86{}),
-	"58C8502D-99D5-5271-955A-FD6690D4B4C1": reflect.TypeOf(AZStd__vector_87{}),
-	"585275AA-54B1-528B-AE4B-90D8DD2D7B1C": reflect.TypeOf(AZStd__vector_88{}),
-	"944CD9A2-3F31-5371-AEDF-1EC0B8015DFE": reflect.TypeOf(AZStd__vector_89{}),
-	"60BCFB83-1E14-5C59-AE5B-546F8602129D": reflect.TypeOf(AZStd__vector_90{}),
-	"9C23762C-C88D-5917-8746-1604E07C4CC0": reflect.TypeOf(AZStd__vector_91{}),
-	"B505B05D-57BF-5A45-9113-B3A2784E2CD7": reflect.TypeOf(AZStd__vector_92{}),
-	"54626338-CFA6-51E7-BD07-CF779D5A1C9B": reflect.TypeOf(AZStd__vector_93{}),
-	"B8D057E8-DB89-5797-837C-677326489BEB": reflect.TypeOf(AZStd__vector_94{}),
-	"82AC1A71-2EA7-5FBC-9B3B-72B1CCFDD292": reflect.TypeOf(AZStd__vector_95{}),
-	"069E1F33-EE87-5D39-88EA-121AFC48952B": reflect.TypeOf(AZStd__vector_96{}),
-	"EFEC8EB2-C2CF-5817-A89D-9D16C63C7A19": reflect.TypeOf(AZStd__vector_97{}),
-	"9739AEF5-28E9-5D5B-A0F4-0B3401CD5814": reflect.TypeOf(AZStd__vector_98{}),
-	"9739FF42-1E1D-55E4-A3BF-5AE5D307C9A1": reflect.TypeOf(AZStd__vector_99{}),
-	"38DBD54C-4D0F-5091-8F07-12E522A92322": reflect.TypeOf(AZStd__vector_100{}),
-	"6EF039B8-0C43-5E84-AED2-3D532BE5DB81": reflect.TypeOf(AZStd__vector_101{}),
-	"7A21D61F-F8E9-52C4-816C-189743FD2894": reflect.TypeOf(AZStd__vector_102{}),
-	"1E72D2E1-31D7-59C6-B582-6773582D7A82": reflect.TypeOf(AZStd__vector_103{}),
-	"F31F64EA-E384-5536-ACD6-8F01849730FC": reflect.TypeOf(AZStd__vector_104{}),
-	"E96869AD-5A74-5D28-B30B-B5C7F09DF17C": reflect.TypeOf(AZStd__vector_105{}),
-	"199BF315-BCCA-5268-971A-D03666AE3B04": reflect.TypeOf(AZStd__vector_106{}),
-	"94CD3484-8501-5A1C-A8C0-40801AB402F3": reflect.TypeOf(AZStd__vector_107{}),
-	"0E59C14D-9E35-538D-B864-69ADBAFC4227": reflect.TypeOf(AZStd__vector_108{}),
-	"29AF3B2D-4458-5BDD-94A9-78348DC6A30C": reflect.TypeOf(AZStd__vector_109{}),
-	"1931D5B0-D9F3-53A1-B6A9-F03AEBB51954": reflect.TypeOf(AZStd__vector_110{}),
-	"DB4B66E4-13A0-5CD5-8026-F02CA7DA76F8": reflect.TypeOf(AZStd__vector_111{}),
-	"5A5F3802-BF68-5F71-9C5A-759036F2757F": reflect.TypeOf(AZStd__vector_112{}),
-	"4134D00A-7C5E-51E7-B1E9-1AD9FE2C08F6": reflect.TypeOf(AZStd__vector_113{}),
-	"B555F388-8F89-5380-AF27-467E63D18147": reflect.TypeOf(AZStd__vector_114{}),
-	"C49E415F-B1DB-5FF4-9343-97BF586F284B": reflect.TypeOf(AZStd__vector_115{}),
-	"9FFE44E4-7695-5AA0-8E4B-33276E0E6306": reflect.TypeOf(AZStd__vector_116{}),
+	"3CFEC107-DBE3-5D98-B520-579BB5DD4C9C": reflect.TypeOf(AZStd__vector_74{}),
+	"B8D057E8-DB89-5797-837C-677326489BEB": reflect.TypeOf(AZStd__vector_75{}),
+	"B23C52AB-2E15-5442-B4F3-69D6EA47FB4A": reflect.TypeOf(AZStd__vector_76{}),
+	"24A1B3FF-51E3-5699-9ED7-49D835DE1DED": reflect.TypeOf(AZStd__vector_77{}),
+	"866EB75E-8CFD-511B-A4F0-B8DFA17138BD": reflect.TypeOf(AZStd__vector_78{}),
+	"9DFD295F-10F0-57E1-9887-9AA5B545D6F9": reflect.TypeOf(AZStd__vector_79{}),
+	"3574252D-97EF-51EA-B824-6348DF1A6F7B": reflect.TypeOf(AZStd__vector_80{}),
+	"8B83AA0C-520E-5074-8C4E-5AD60C3D70FE": reflect.TypeOf(AZStd__vector_81{}),
+	"5A5F3802-BF68-5F71-9C5A-759036F2757F": reflect.TypeOf(AZStd__vector_82{}),
+	"F75BCB15-E0BC-5EB6-A2A1-C8E7DF7AC7A5": reflect.TypeOf(AZStd__vector_83{}),
+	"411A6E6C-91F6-53E2-A6FE-ACC5BEB71994": reflect.TypeOf(AZStd__vector_84{}),
+	"061C02AD-D89A-5FBE-8523-9A3A83815CB4": reflect.TypeOf(AZStd__vector_85{}),
+	"38671F38-34B8-51EE-8B0E-35CDE55439A2": reflect.TypeOf(AZStd__vector_86{}),
+	"A3F5E99F-1683-5F67-9D1B-43E0AB1953D7": reflect.TypeOf(AZStd__vector_87{}),
+	"B505B05D-57BF-5A45-9113-B3A2784E2CD7": reflect.TypeOf(AZStd__vector_88{}),
+	"E96869AD-5A74-5D28-B30B-B5C7F09DF17C": reflect.TypeOf(AZStd__vector_89{}),
+	"E7055B06-DEDB-582C-ACCB-B570A9E8EB47": reflect.TypeOf(AZStd__vector_90{}),
+	"944CD9A2-3F31-5371-AEDF-1EC0B8015DFE": reflect.TypeOf(AZStd__vector_91{}),
+	"4134D00A-7C5E-51E7-B1E9-1AD9FE2C08F6": reflect.TypeOf(AZStd__vector_92{}),
+	"4099F9DC-9272-5007-AD07-2FF0078AF776": reflect.TypeOf(AZStd__vector_93{}),
+	"36DED226-205F-5B11-B612-E5EFDF32F325": reflect.TypeOf(AZStd__vector_94{}),
+	"30677A8F-E3B4-5554-8B78-BD91639B3F82": reflect.TypeOf(AZStd__vector_95{}),
+	"1548729E-B8F9-57AC-93CF-8CB518379A75": reflect.TypeOf(AZStd__vector_96{}),
+	"A67CAACD-44C3-5CD9-94E8-B1A7886919E2": reflect.TypeOf(AZStd__vector_97{}),
+	"ED8C17D0-9A78-5CA6-A371-2058B4A7986D": reflect.TypeOf(AZStd__vector_98{}),
+	"C9CD49BD-F143-5F75-AE47-5957339FAD55": reflect.TypeOf(AZStd__vector_99{}),
+	"3E464841-C244-56FF-B013-C4626FA97E7E": reflect.TypeOf(AZStd__vector_100{}),
+	"0F74B356-F0A4-5B77-B832-8E074A190D16": reflect.TypeOf(AZStd__vector_101{}),
+	"542E9381-FF14-5C69-A104-F29E69E94836": reflect.TypeOf(AZStd__vector_102{}),
+	"0EDEA1B8-234F-52B4-9CE4-789963119A53": reflect.TypeOf(AZStd__vector_103{}),
+	"A78865CF-2A12-58C7-8EED-CE91E7448B99": reflect.TypeOf(AZStd__vector_104{}),
+	"C5C91C71-CEE0-5558-9EDD-BBEEEFD241C3": reflect.TypeOf(AZStd__vector_105{}),
+	"4A7F5EA4-A5C6-50D0-8431-01CBFE2BE1B2": reflect.TypeOf(AZStd__vector_106{}),
+	"58C8502D-99D5-5271-955A-FD6690D4B4C1": reflect.TypeOf(AZStd__vector_107{}),
+	"A43DFE44-E89A-5728-9015-61B70FB8D73D": reflect.TypeOf(AZStd__vector_108{}),
+	"14E6D05A-E9F7-5557-AC4F-CEE5125A0BF6": reflect.TypeOf(AZStd__vector_109{}),
+	"82AC1A71-2EA7-5FBC-9B3B-72B1CCFDD292": reflect.TypeOf(AZStd__vector_110{}),
+	"A5E59C7E-A1B8-5D2C-9C1A-FD3C52CBB021": reflect.TypeOf(AZStd__vector_111{}),
+	"69C92A7F-B783-581F-ADD0-201DD7668EDE": reflect.TypeOf(AZStd__vector_112{}),
+	"9D8142AA-BF29-5EDF-B8D1-004CAAF0E5FE": reflect.TypeOf(AZStd__vector_113{}),
+	"5407A20B-7766-5097-963E-A678DD01D872": reflect.TypeOf(AZStd__vector_114{}),
+	"564629DE-A2D1-5686-904A-7B084CE88714": reflect.TypeOf(AZStd__vector_115{}),
+	"54D78056-F00C-5987-AA2D-E25EA0161613": reflect.TypeOf(AZStd__vector_116{}),
+	"3F597068-805C-5515-B313-C901DC05060E": reflect.TypeOf(AZStd__vector_117{}),
+	"E1EDCBE5-AE2D-553F-9954-FB5B9CA391EA": reflect.TypeOf(AZStd__vector_118{}),
+	"DE651C28-3B6C-5154-9692-D95BF6A0C024": reflect.TypeOf(AZStd__vector_119{}),
+	"DB4B66E4-13A0-5CD5-8026-F02CA7DA76F8": reflect.TypeOf(AZStd__vector_120{}),
+	"3F622D9B-E7E9-5772-A219-3C9879FA1146": reflect.TypeOf(AZStd__vector_121{}),
+	"38DBD54C-4D0F-5091-8F07-12E522A92322": reflect.TypeOf(AZStd__vector_122{}),
+	"03145BF4-AD4A-5888-A3BB-3DBB8F67FB8C": reflect.TypeOf(AZStd__vector_123{}),
+	"83144AA3-23B5-5A07-9757-AFBF43BA3F1D": reflect.TypeOf(AZStd__vector_124{}),
+	"D276DFB3-A8EC-58C2-96E2-145BC5A6EE3D": reflect.TypeOf(AZStd__vector_125{}),
+	"06A837A8-606F-5C74-88E4-A28C349A8827": reflect.TypeOf(AZStd__vector_126{}),
+	"22506720-E7AF-56C3-AE08-471FCD604C81": reflect.TypeOf(AZStd__vector_127{}),
+	"60BCFB83-1E14-5C59-AE5B-546F8602129D": reflect.TypeOf(AZStd__vector_128{}),
+	"9F8D44A9-9731-5314-885E-B958D4216073": reflect.TypeOf(AZStd__vector_129{}),
+	"77CD140E-4E9E-52B7-A2F0-23B1E4D05F3A": reflect.TypeOf(AZStd__vector_130{}),
+	"199BF315-BCCA-5268-971A-D03666AE3B04": reflect.TypeOf(AZStd__vector_131{}),
+	"3A3B8C41-182B-56EC-AB97-A122BFAC5FED": reflect.TypeOf(AZStd__vector_132{}),
+	"3349AACD-BE04-50BC-9478-528BF2ACFD55": reflect.TypeOf(AZStd__vector_133{}),
+	"0E59C14D-9E35-538D-B864-69ADBAFC4227": reflect.TypeOf(AZStd__vector_134{}),
+	"85207448-E0C7-562B-887C-90C208FC0083": reflect.TypeOf(AZStd__vector_135{}),
+	"3A753E0F-942F-56E7-A029-58434364DBA1": reflect.TypeOf(AZStd__vector_136{}),
+	"9739AEF5-28E9-5D5B-A0F4-0B3401CD5814": reflect.TypeOf(AZStd__vector_137{}),
+	"298B8423-D30C-5742-B960-80C1126279CE": reflect.TypeOf(AZStd__vector_138{}),
+	"14693584-F5F6-5B50-95EF-D89CDD13CA5D": reflect.TypeOf(AZStd__vector_139{}),
+	"4D729C22-E61C-5E9C-B7F6-B3F14D4578A2": reflect.TypeOf(AZStd__vector_140{}),
+	"198013DC-527D-5558-BC75-BDBAE68E4252": reflect.TypeOf(AZStd__vector_141{}),
+	"C999ECD9-2F0B-57BF-8744-F1E83C74C233": reflect.TypeOf(AZStd__vector_142{}),
+	"E3B6A07B-498D-50CE-A8E5-5AFDA2231792": reflect.TypeOf(AZStd__vector_143{}),
+	"4F980781-CE3A-5C48-AADC-E46E62CAEC4E": reflect.TypeOf(AZStd__vector_144{}),
+	"AA8E896E-97A3-54D7-B668-059B9AD08B03": reflect.TypeOf(AZStd__vector_145{}),
+	"E000AD1B-B395-5A76-90F7-8E9285C1A406": reflect.TypeOf(AZStd__vector_146{}),
+	"90E196AE-633C-5338-AEF5-68902DDF4B3C": reflect.TypeOf(AZStd__vector_147{}),
+	"E7781CB0-E712-5E6A-948D-92FD4FE87F0D": reflect.TypeOf(AZStd__vector_148{}),
+	"0D23B755-6E8F-5C6C-B7C9-A352A55DC1DF": reflect.TypeOf(AZStd__vector_149{}),
+	"66A0712E-0A9A-5D34-9B78-9533BBD47FFD": reflect.TypeOf(AZStd__vector_150{}),
+	"7E71304C-8FD6-5EDD-82E8-FA2809931F1C": reflect.TypeOf(AZStd__vector_151{}),
+	"3D5173BE-2E10-5FAA-884A-2E6F23546C8B": reflect.TypeOf(AZStd__vector_152{}),
+	"1D452656-EC6B-5373-AF0F-E1F60B9546DD": reflect.TypeOf(AZStd__vector_153{}),
+	"9E9C521E-A0DD-5747-BFB0-59B66CF1817C": reflect.TypeOf(AZStd__vector_154{}),
+	"C696327F-8C7D-5EFE-8C0F-EA3C0EF86C94": reflect.TypeOf(AZStd__vector_155{}),
+	"1931D5B0-D9F3-53A1-B6A9-F03AEBB51954": reflect.TypeOf(AZStd__vector_156{}),
+	"1D600529-C846-5672-8065-8C9055F4CF24": reflect.TypeOf(AZStd__vector_157{}),
+	"54626338-CFA6-51E7-BD07-CF779D5A1C9B": reflect.TypeOf(AZStd__vector_158{}),
+	"0E01AB2F-311C-5A98-9F25-D61D530CD296": reflect.TypeOf(AZStd__vector_159{}),
+	"735823F4-791D-5976-8D9B-35B2EB471F99": reflect.TypeOf(AZStd__vector_160{}),
+	"8D3ADB79-65D4-55BE-8CA6-43D60306FED0": reflect.TypeOf(AZStd__vector_161{}),
+	"DBC6F418-248E-53E9-B303-DE7FD774531F": reflect.TypeOf(AZStd__vector_162{}),
+	"7016336A-3C8A-5EF3-961E-75D6F1F31434": reflect.TypeOf(AZStd__vector_163{}),
+	"53DE1751-3981-5DA4-8F72-F9E5712B3127": reflect.TypeOf(AZStd__vector_164{}),
+	"E1F8EC50-8068-5A04-8704-297DCB289E20": reflect.TypeOf(AZStd__vector_165{}),
+	"01192A92-3993-567B-B14D-081B1FF2C9F1": reflect.TypeOf(AZStd__vector_166{}),
+	"94CD3484-8501-5A1C-A8C0-40801AB402F3": reflect.TypeOf(AZStd__vector_167{}),
+	"29AF3B2D-4458-5BDD-94A9-78348DC6A30C": reflect.TypeOf(AZStd__vector_168{}),
+	"4841CFF0-7A5C-519C-BD16-D3625E99605E": reflect.TypeOf(AZStd__vector_169{}),
+	"74FD121B-2251-5DFD-8B25-99894F22D6BB": reflect.TypeOf(AZStd__vector_170{}),
+	"33D6E083-A124-527F-BAAC-824DEB5CD6E8": reflect.TypeOf(AZStd__vector_171{}),
+	"069E1F33-EE87-5D39-88EA-121AFC48952B": reflect.TypeOf(AZStd__vector_172{}),
 	"EDFCB2CF-F75D-43BE-B26B-F35821B29247": reflect.TypeOf(AZ__Component{}),
 	"75651658-8663-478D-9090-2432DFCAFA44": reflect.TypeOf(AZ__Entity{}),
 	"28E986DD-CF7C-404D-9BEE-EEE067180CD1": reflect.TypeOf(AZ__ScriptPropertyGenericClassArray{}),
@@ -224,9 +309,11 @@ var GENERATED = map[string]reflect.Type{
 	"30ED0ACE-51DD-48B9-BA41-2FA6775CD106": reflect.TypeOf(ActionListComponent{}),
 	"59762609-6D5B-48B4-B4A8-BFF04E6E1B2B": reflect.TypeOf(ActionListComponentClientFacet{}),
 	"F37AB16D-4C98-4B21-899A-29548F0A788A": reflect.TypeOf(ActionListComponentServerFacet{}),
+	"754C1847-63DA-47EA-942A-A1F0C8655086": reflect.TypeOf(ActivateEntity{}),
 	"19D2CFC0-FB6F-4229-8694-CADDEC635EA1": reflect.TypeOf(ActivateVirtualInputComponent{}),
 	"D20C3469-4ACD-4269-9B54-C0AB86E408AB": reflect.TypeOf(ActivateVirtualInputComponentClientFacet{}),
 	"4FF3678D-90CE-420E-8124-823A86D1119C": reflect.TypeOf(ActivateVirtualInputComponentServerFacet{}),
+	"DAC8F491-915C-4282-ACB3-E14A793B35F3": reflect.TypeOf(AdditiveConversationCameraMovementData{}),
 	"2AACAF8C-AD1F-44A5-B5C8-D329F41F2853": reflect.TypeOf(Advanced{}),
 	"4C925C2C-B449-4C4B-AB19-AD505256173D": reflect.TypeOf(AggregateContractCountComponent{}),
 	"D3988D38-514D-4FA1-90E7-6E7D21DFB33B": reflect.TypeOf(AggregateContractCountComponentClientFacet{}),
@@ -244,6 +331,7 @@ var GENERATED = map[string]reflect.Type{
 	"65D4346C-FB16-4CB0-9BDC-1185B122C4A9": reflect.TypeOf(Anchors{}),
 	"147EAB48-2D6E-41CF-8414-CEABF3F1E59B": reflect.TypeOf(AnimatedLayer{}),
 	"2EC40FEA-8691-42A0-9F71-205A35B4EC4F": reflect.TypeOf(Animation{}),
+	"B8D39822-6CAB-42C0-AF6E-5B53C3E243FC": reflect.TypeOf(AnimationClip{}),
 	"FDC58CF7-8109-48F2-8D5D-BCBAF774ABB7": reflect.TypeOf(AnimationData{}),
 	"03924488-C7F4-4D6D-948B-ABC2D1AE2FD3": reflect.TypeOf(Any{}),
 	"04119A9D-FD5B-43AE-B8BA-1460CA2C2A95": reflect.TypeOf(AoiComponent{}),
@@ -269,6 +357,8 @@ var GENERATED = map[string]reflect.Type{
 	"56BD2504-DF0D-4200-A86D-DC2797736747": reflect.TypeOf(ArenaComponent{}),
 	"CB418EA0-3A18-40FF-BCA8-0566DF4596CB": reflect.TypeOf(ArenaComponentClientFacet{}),
 	"809C7953-9CC3-440F-8735-6C9DF3905528": reflect.TypeOf(ArenaComponentServerFacet{}),
+	"13B87761-89AB-4A4B-A370-DAD3875380DA": reflect.TypeOf(ArmorOffsetData{}),
+	"8C1FA8A8-2E58-4791-ACDA-2C3625318832": reflect.TypeOf(ArmorOffsetDatabase{}),
 	"520015FD-2674-49E1-B862-E7371AE60043": reflect.TypeOf(AssemblyComponent{}),
 	"7629C00B-133C-4B0A-9EF7-F9C1D2695B61": reflect.TypeOf(AssemblyComponentClientFacet{}),
 	"3F0B965A-6DFB-460D-839E-11EAE9D463CA": reflect.TypeOf(AssemblyComponentServerFacet{}),
@@ -278,6 +368,7 @@ var GENERATED = map[string]reflect.Type{
 	"74B4BF3E-EFD7-4034-A6C5-3C7B8CB37B06": reflect.TypeOf(AsyncRenderTransformComponentServerFacet{}),
 	"2D17A64A-7AC5-4C02-AC36-C5E8141FFDDF": reflect.TypeOf(AttachmentComponent{}),
 	"74B5DC69-DE44-4640-836A-55339E116795": reflect.TypeOf(AttachmentConfiguration{}),
+	"FC296230-5F66-473E-90C8-66AD7028FD07": reflect.TypeOf(AttachmentOffsetData{}),
 	"9E420223-AF07-4A32-B0E3-348B3CA5BD48": reflect.TypeOf(AttackHeightRetargetComponent{}),
 	"60471FF2-A9F5-43BC-BBB3-2441CE0020BC": reflect.TypeOf(AttackHeightRetargetComponentClientFacet{}),
 	"D4CFA980-732A-4251-B46F-448C0042F4C5": reflect.TypeOf(AttackHeightRetargetComponentServerFacet{}),
@@ -290,8 +381,8 @@ var GENERATED = map[string]reflect.Type{
 	"00B5358C-3EEE-4012-93FC-6222B0004404": reflect.TypeOf(AudioListenerComponent{}),
 	"6B28DF87-D282-4E5B-A817-0B115C72280B": reflect.TypeOf(AudioOverrideComponent{}),
 	"CBBB1234-4DCA-427E-80FF-E2BB0866EEB1": reflect.TypeOf(AudioPreloadComponent{}),
-	"F27A8955-0679-4AA2-96AB-F1B4DBD90C88": reflect.TypeOf(AudioProxyComponent{}),
-	"0EE6EE0F-7939-4AB8-B0E3-F9B3925D61EE": reflect.TypeOf(AudioProxyComponent_0{}),
+	"0EE6EE0F-7939-4AB8-B0E3-F9B3925D61EE": reflect.TypeOf(AudioProxyComponent{}),
+	"F27A8955-0679-4AA2-96AB-F1B4DBD90C88": reflect.TypeOf(AudioProxyComponent_0{}),
 	"946012A8-C17C-48E7-B36F-BF4362D66CFD": reflect.TypeOf(AudioProxyComponentClientFacet{}),
 	"40163348-9D28-462B-ACE2-F603FC63038C": reflect.TypeOf(AudioProxyComponentServerFacet{}),
 	"C54C7AE6-08AA-49E0-B6CD-E1BBB4950DAF": reflect.TypeOf(AudioRtpcComponent{}),
@@ -319,6 +410,7 @@ var GENERATED = map[string]reflect.Type{
 	"A0229C6D-B010-47E7-8985-EE220FC7BFAF": reflect.TypeOf(AzFramework__ScriptPropertyString{}),
 	"899993A5-D717-41BB-B89B-04A27952CA6D": reflect.TypeOf(AzFramework__ScriptPropertyStringArray{}),
 	"A1342558-687A-406A-8BE4-784D6546589D": reflect.TypeOf(AzFramework__SimpleAssetReference_CharacterDefinitionAsset_{}),
+	"DCC8130F-6608-4A91-B7B8-6D91E5C3735F": reflect.TypeOf(AzFramework__SimpleAssetReference_Javelin__SkinAsset_{}),
 	"171F78A0-CAEB-4665-8439-F954EDCF29AE": reflect.TypeOf(AzFramework__SimpleAssetReference_LmbrCentral__MannequinAnimationDatabaseAsset_{}),
 	"17A70E99-A282-4FFE-9921-3EC4884A2F70": reflect.TypeOf(AzFramework__SimpleAssetReference_LmbrCentral__MannequinControllerDefinitionAsset_{}),
 	"B7B8ECC7-FF89-4A76-A50E-4C6CA2B6E6B4": reflect.TypeOf(AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_{}),
@@ -327,6 +419,7 @@ var GENERATED = map[string]reflect.Type{
 	"81459A9E-4CEE-49A0-AED1-B82B52B0CDD9": reflect.TypeOf(AzFramework__SimpleAssetReference_MB__DataSheetAsset_{}),
 	"19ED7B41-FB10-4DF5-A7FD-697182186D7F": reflect.TypeOf(AzFramework__SimpleAssetReference_MB__MaterialOverrideAsset_{}),
 	"6F612FE6-A054-4E49-830C-0288F3C79A52": reflect.TypeOf(AzFramework__SimpleAssetReference_TextureAtlasNamespace__TextureAtlasAsset_{}),
+	"3CD7E8C7-C8B5-451A-8C1D-11D78CC4C805": reflect.TypeOf(BaitData{}),
 	"F5786AAF-54B3-4510-9401-BF2D423C1F27": reflect.TypeOf(Base{}),
 	"0BD9E8FC-8EF3-49E0-BD6D-49797EE5E394": reflect.TypeOf(BaseSpectatorCameraComponent{}),
 	"D3810AAA-E459-4B0B-AA87-4BD535806C7A": reflect.TypeOf(BeamAttackComponent{}),
@@ -379,6 +472,9 @@ var GENERATED = map[string]reflect.Type{
 	"095038A0-5A3E-55D7-011F-1646B10FCA65": reflect.TypeOf(BuildableStateComponent{}),
 	"DCE205A2-F33F-4A33-B583-454275704995": reflect.TypeOf(BuildableStateComponentClientFacet{}),
 	"E63974F4-26EB-41B5-9EC3-E3B4708B9BE1": reflect.TypeOf(BuildableStateComponentServerFacet{}),
+	"AAE18229-4474-4687-9E77-F33176719E9D": reflect.TypeOf(BuildableStateData{}),
+	"78AA0C25-92B9-4F30-A3F7-C43980D46784": reflect.TypeOf(BuildableStateDatabase{}),
+	"0A7DEDE3-F920-48C6-8544-7DB50B5FD808": reflect.TypeOf(BuildableStateEnum{}),
 	"A27A8BDA-29A9-4A1D-BB6B-C8C8C9CFC661": reflect.TypeOf(BuildableStateTransitionEvents{}),
 	"A42B5703-1534-7A65-79FB-5EF7D436A98F": reflect.TypeOf(BuilderComponent{}),
 	"FCAAC4B3-8C69-44E8-854C-79AF987E0378": reflect.TypeOf(BuilderComponentClientFacet{}),
@@ -409,9 +505,12 @@ var GENERATED = map[string]reflect.Type{
 	"B7F335FF-5B90-4055-8116-2845E33D4048": reflect.TypeOf(CameraLockTargetComponent{}),
 	"ABC07432-10AA-46CA-AF3E-8B0667799BF6": reflect.TypeOf(CameraLockTargetComponentClientFacet{}),
 	"6BA3F935-5E69-4696-A820-C6B67DA4AA7F": reflect.TypeOf(CameraLockTargetComponentServerFacet{}),
+	"4D839880-14D5-48E5-A4F6-AA847B991DA2": reflect.TypeOf(CameraProperties{}),
+	"B20CDD89-12AE-413D-946B-C7B20B1F398D": reflect.TypeOf(CameraShake{}),
 	"B3FDC2D9-865B-43D3-88AB-E2E4ADAE8BD2": reflect.TypeOf(CameraStateComponent{}),
 	"6142325B-50AF-4F07-9F72-7F08FC727EDB": reflect.TypeOf(CameraStateComponentClientFacet{}),
 	"A99BDF00-0863-4BBE-9AB3-A7FF191E2607": reflect.TypeOf(CameraStateComponentServerFacet{}),
+	"BDAE3278-3CDA-4359-B4BF-BFDA6A818753": reflect.TypeOf(CampTierData{}),
 	"B5F89002-4A4D-4411-9C8F-1DEA20AFDA4C": reflect.TypeOf(CampingComponent{}),
 	"CDCC1F2B-A0BC-47AC-8EAC-E411CF9F816C": reflect.TypeOf(CampingComponentClientFacet{}),
 	"76D97176-BA0F-41BB-844E-2B56FAC42A02": reflect.TypeOf(CampingComponentServerFacet{}),
@@ -431,6 +530,9 @@ var GENERATED = map[string]reflect.Type{
 	"8817475C-56BE-46F3-9597-FF325929461E": reflect.TypeOf(CharacterComponentClientFacet{}),
 	"E9C20ECF-9DE9-4969-B76D-91582ED7294D": reflect.TypeOf(CharacterComponentServerFacet{}),
 	"17F4E4AD-AED9-468B-A900-416DE646AB37": reflect.TypeOf(CharacterControllerResizeParams{}),
+	"D1E63EA6-8BD3-4381-B564-DBE47335DA44": reflect.TypeOf(CharacterCreationData{}),
+	"A12F9BAB-1706-4DED-B3C5-70913BE02D1F": reflect.TypeOf(CharacterCreationDatabase{}),
+	"019EF5EB-CAE9-4163-8DBF-5AC00AD00046": reflect.TypeOf(CharacterEventClip{}),
 	"D707D6C5-3EFA-4275-82EB-A954F845D324": reflect.TypeOf(CharacterPhysicsComponent{}),
 	"D920CAC8-CDF8-4380-BA90-594A54B7822D": reflect.TypeOf(ChargeComponent{}),
 	"72DD1BA4-31D9-4624-B1FD-6F38259595A0": reflect.TypeOf(ChargeComponentClientFacet{}),
@@ -448,12 +550,16 @@ var GENERATED = map[string]reflect.Type{
 	"92A577B8-CA98-4A79-AC9B-ED7367BE2470": reflect.TypeOf(ClearEncounterZonesComponentServerFacet{}),
 	"0643CDC7-B1C9-4721-92CE-7AC02E6175C9": reflect.TypeOf(ClientFacet{}),
 	"C148C555-3264-41F7-A335-E48B65F91728": reflect.TypeOf(ClientRef{}),
+	"D6F2C792-D886-4600-B81C-548DF895A5E6": reflect.TypeOf(CollisionFilterColor{}),
+	"3F5634A1-8683-4783-8ACB-07478CB686FE": reflect.TypeOf(CollisionFiltersAsset{}),
+	"3C0E5DC7-06B9-4411-893E-DAAC101731D3": reflect.TypeOf(CombatDebugSettings{}),
 	"D2671994-3011-4BFE-BB0B-C206B742070E": reflect.TypeOf(CombatStatusComponent{}),
 	"C68ABEB4-3627-46DC-9883-3C6A76710408": reflect.TypeOf(CombatStatusComponentClientFacet{}),
 	"5DFA124A-E8DA-45C3-8C2C-629CC939E9B8": reflect.TypeOf(CombatStatusComponentServerFacet{}),
 	"8D3E605A-8237-4650-81F2-613678106EB7": reflect.TypeOf(CombatTextComponent{}),
 	"8E9BB131-DD2A-4A90-A45E-93BA79F08FB4": reflect.TypeOf(CombatTextComponentClientFacet{}),
 	"3CB00F7D-E935-4ED0-A107-46A3D92DE241": reflect.TypeOf(CombatTextComponentServerFacet{}),
+	"BAAD4E91-45AA-4EA4-8450-F1B54FA15AC0": reflect.TypeOf(CommandClip{}),
 	"C0C817DE-843F-44C8-9FC1-989CDE66B662": reflect.TypeOf(CompoundShapeComponent{}),
 	"4CEB4E5C-4CBD-4A84-88BA-87B23C103F3F": reflect.TypeOf(CompoundShapeConfiguration{}),
 	"102BB9EC-0DD9-4304-BDCB-A768CFB0393A": reflect.TypeOf(ConditionalTutorialStep{}),
@@ -463,6 +569,8 @@ var GENERATED = map[string]reflect.Type{
 	"EC800737-774F-4D9F-AB14-A2CDF5B146EA": reflect.TypeOf(ContainerTransferComponent{}),
 	"165DD184-12BA-4B37-B773-C83B515E4A9E": reflect.TypeOf(ContainerTransferComponentClientFacet{}),
 	"FA0E56A1-68FA-4F27-A891-BABC78676F9A": reflect.TypeOf(ContainerTransferComponentServerFacet{}),
+	"06F4F968-0A4A-4FAC-AF23-D6B5B018069D": reflect.TypeOf(ContractBuySellFeeData{}),
+	"8FBA1347-A061-43C0-8950-2DD9A1E15B34": reflect.TypeOf(ContractConfigData{}),
 	"4C7B898E-FA72-4166-AF07-17D6AC62B641": reflect.TypeOf(ContractsComponent{}),
 	"6EA5527A-804D-4592-9195-1AB98E31A00C": reflect.TypeOf(ContractsComponentClientFacet{}),
 	"81EAD316-3E99-48D2-A629-6117245F829C": reflect.TypeOf(ContractsComponentServerFacet{}),
@@ -485,8 +593,14 @@ var GENERATED = map[string]reflect.Type{
 	"F7C1E949-1AE0-410F-B36E-6226843FD706": reflect.TypeOf(CraftingComponent{}),
 	"C8056871-470E-4844-845F-7BC01740A21B": reflect.TypeOf(CraftingComponentClientFacet{}),
 	"D567FD75-06DE-4840-B2B7-D10047108CD3": reflect.TypeOf(CraftingComponentServerFacet{}),
+	"75CFB9E3-FE11-4D1D-AC0A-44916A5C27A0": reflect.TypeOf(CraftingStationData{}),
+	"72175D3E-9370-4B21-970F-DC2ADC11E52B": reflect.TypeOf(CraftingStationDatabase{}),
 	"FFF40D4B-D06E-4985-91C3-EC13BD3FF665": reflect.TypeOf(CraftingStationPropertiesReference{}),
 	"9F4E062E-06A0-46D4-85DF-E0DA96467D3A": reflect.TypeOf(Crc32{}),
+	"4D2A06D4-5686-47C6-AF00-2CC6DAB1DDEB": reflect.TypeOf(CreditModifierData{}),
+	"E13466E0-02EB-488D-9A83-1423E8490C30": reflect.TypeOf(CrestColorData{}),
+	"64AB17AB-0592-47E8-820D-81D89429A8D6": reflect.TypeOf(CrestData{}),
+	"2DE9E46E-703F-4708-990F-C45A6D08EDB8": reflect.TypeOf(CrestDatabase{}),
 	"4538C76C-269B-4CD6-B414-AD7A5609D0A6": reflect.TypeOf(CriticalHitsComponent{}),
 	"A4A9F2C1-0201-4D48-BC1F-D11FA628F00A": reflect.TypeOf(CriticalHitsComponentClientFacet{}),
 	"1D6264A3-D846-48FF-9EED-A9DC52F6B3CA": reflect.TypeOf(CriticalHitsComponentServerFacet{}),
@@ -497,6 +611,12 @@ var GENERATED = map[string]reflect.Type{
 	"A532E58D-BDD6-4583-B1A8-8AB98D0F0281": reflect.TypeOf(CurrencyConversionComponent{}),
 	"32CAF5C3-8C13-41EB-85C5-E58DFC85A535": reflect.TypeOf(CurrencyConversionComponentClientFacet{}),
 	"1D9F4DC8-C265-4E5B-85C8-F08ADBE71F45": reflect.TypeOf(CurrencyConversionComponentServerFacet{}),
+	"6675B91A-94D6-4BBC-BFBD-402CD33D507C": reflect.TypeOf(Curve{}),
+	"C33EE41D-3EC0-49B0-AF72-1FCD9DB46A1D": reflect.TypeOf(CurveAxis{}),
+	"8289E43D-F370-470C-AE10-EB4F302D6BE8": reflect.TypeOf(CurveAxis__EditorMetadata{}),
+	"3D558252-5406-4457-B86D-D771BCEAA905": reflect.TypeOf(CurveConfiguration{}),
+	"4C278554-BC9B-45A4-B10E-65213C536E68": reflect.TypeOf(CurveConfigurationListAsset{}),
+	"0DA65FEA-1307-451B-9878-235CBAB4C84C": reflect.TypeOf(Curve__EditorMetadata{}),
 	"206CAA75-E470-4725-817F-7E81F7427246": reflect.TypeOf(CustomDataEntry{}),
 	"7B1E1BFF-1B7F-4B38-A864-2AAACAE92ACC": reflect.TypeOf(CustomizableCharacterComponent{}),
 	"79A3DC91-7A1B-4ED6-84D4-5ABC64CE275B": reflect.TypeOf(CustomizableMeshComponent{}),
@@ -509,6 +629,7 @@ var GENERATED = map[string]reflect.Type{
 	"257D798E-87E0-450A-82C7-C974499670CF": reflect.TypeOf(Cylinder{}),
 	"B0C6AA97-E754-4E33-8D32-33E267DB622F": reflect.TypeOf(CylinderShapeComponent{}),
 	"53254779-82F1-441E-9116-81E1FACFECF4": reflect.TypeOf(CylinderShapeConfig{}),
+	"815AB639-EF70-43F7-9E96-EB1B2E511087": reflect.TypeOf(DailyBonusData{}),
 	"1BD9D601-9DE8-4A8B-B115-BB534EB6020C": reflect.TypeOf(DamageReceiverComponent{}),
 	"0298F9D1-5D29-4BE2-880E-F9CA382C7752": reflect.TypeOf(DamageReceiverComponentClientFacet{}),
 	"4D335B40-103D-4DEB-B4E9-BC1789529C1D": reflect.TypeOf(DamageReceiverComponentServerFacet{}),
@@ -523,6 +644,7 @@ var GENERATED = map[string]reflect.Type{
 	"C9EEF146-8969-4711-94BA-9F6960FA8426": reflect.TypeOf(DarknessGroupSpecification{}),
 	"B9D7F0E8-6518-48C0-88E1-9D084C03259A": reflect.TypeOf(DarknessLevel{}),
 	"57FE7B9E-B2AF-4F6F-9F8D-87F671E91C99": reflect.TypeOf(DataFlagsPerEntity{}),
+	"ADC0760A-6D9B-4329-AFC4-9CA11703434B": reflect.TypeOf(DeactivateEntity{}),
 	"446D036F-BACF-4FB0-97A8-83E6E7DF37A8": reflect.TypeOf(DebugComponent{}),
 	"4FF974BD-EE8B-45B1-A90F-EB54FFD5E68A": reflect.TypeOf(DebugComponentClientFacet{}),
 	"321ADA9B-21B6-4A2E-9E8F-19DB76192C5F": reflect.TypeOf(DebugComponentServerFacet{}),
@@ -535,6 +657,7 @@ var GENERATED = map[string]reflect.Type{
 	"0C7CC711-DF6C-4E19-8E26-965051A50150": reflect.TypeOf(DebugVisualizationComponentServerFacet{}),
 	"1C2CEAA8-786F-4684-8202-CA7D940D627B": reflect.TypeOf(DecalComponent{}),
 	"47082F75-428F-4353-AC82-FAE8AB017F3B": reflect.TypeOf(DecalConfiguration{}),
+	"EC89C545-A600-4452-8C4B-ED049D070EF9": reflect.TypeOf(DefaultAppearanceData{}),
 	"CF33E3AA-E48A-464D-B319-ECD8D0BAD687": reflect.TypeOf(DefaultCondition{}),
 	"1B7C5203-9FA5-408D-877A-B5D634C1D963": reflect.TypeOf(DefenseCollisionComponent{}),
 	"468B1CF9-9F24-4F45-BE9B-7A747D28E925": reflect.TypeOf(DefenseCollisionComponentClientFacet{}),
@@ -607,6 +730,10 @@ var GENERATED = map[string]reflect.Type{
 	"BCE81364-B266-4A2C-A2DC-1CC6922B4A57": reflect.TypeOf(EconomyTrackerComponentClientFacet{}),
 	"7782DACA-B60F-44BA-B652-EB3EE0CB2915": reflect.TypeOf(EconomyTrackerComponentServerFacet{}),
 	"9A339DE9-0D6E-4708-922F-F46AF04370E9": reflect.TypeOf(EditCrc{}),
+	"0F8A4615-8824-4E01-BA47-A5CBF14227CA": reflect.TypeOf(EditableCollisionFilter{}),
+	"32502B25-0F43-4CD3-AFFA-9E6A541E83A7": reflect.TypeOf(EditorMetadata{}),
+	"62F718F2-00DF-4D8E-BADE-31BAFE7B9E08": reflect.TypeOf(EditorMetadata_0{}),
+	"E266BD5C-9DB8-405C-9997-132300D7126B": reflect.TypeOf(EditorMetadata_1{}),
 	"A297D455-5F26-47FE-9268-BB4526E9917A": reflect.TypeOf(EffectData{}),
 	"6213000E-DDCA-8598-398F-DD8DDDFD538B": reflect.TypeOf(EmoteControllerComponent{}),
 	"22A1A428-12D7-4125-979D-195F265E22B1": reflect.TypeOf(EmoteControllerComponentClientFacet{}),
@@ -633,10 +760,15 @@ var GENERATED = map[string]reflect.Type{
 	"1C5389F4-C99E-4362-B225-65AB588A8984": reflect.TypeOf(EntityEventAction{}),
 	"6383F1D3-BB27-4E6B-A49A-6409B2059EAA": reflect.TypeOf(EntityId{}),
 	"13BF588C-59BC-4F60-AC74-FCD201779404": reflect.TypeOf(EntityLootLockEvent{}),
+	"0386D9B0-3E95-411F-823F-4A800C74F7ED": reflect.TypeOf(EquipTypeData{}),
+	"F937C753-FFC0-4F9C-A234-7C71C9A5BDB3": reflect.TypeOf(EquipTypesDatabase{}),
+	"AA0275B2-9B50-467E-B746-061C92ED1891": reflect.TypeOf(EventCreditData{}),
 	"46F1804A-234D-4511-A5A0-70851CF1096F": reflect.TypeOf(EventData{}),
 	"F6019A00-7F0B-47BC-ABDC-F5F256313A43": reflect.TypeOf(EventNotificationComponent{}),
 	"69FF4550-48E7-4B53-87C1-7B229C55643E": reflect.TypeOf(EventNotificationComponentClientFacet{}),
 	"4BA767AF-2DA4-40CE-81BC-26EAB0B78D30": reflect.TypeOf(EventNotificationComponentServerFacet{}),
+	"2958D8DB-DCD6-487C-B70F-8781F48C6524": reflect.TypeOf(EventNotificationData{}),
+	"5C624458-C56D-417D-A7A8-16A98EEE22A6": reflect.TypeOf(EventNotificationDatabase{}),
 	"EA210BD0-1072-C3D6-25F0-82BBBECB0BFB": reflect.TypeOf(EventRerouterComponent{}),
 	"8B0550C2-11EA-4CBC-A30F-BABD119C325A": reflect.TypeOf(EventRerouterComponentClientFacet{}),
 	"585E3D10-B91A-49B6-8610-E6B1F7E3D1E5": reflect.TypeOf(EventRerouterComponentServerFacet{}),
@@ -648,6 +780,12 @@ var GENERATED = map[string]reflect.Type{
 	"704E9C3F-8784-4F6E-9FB6-1CA7E769F5A3": reflect.TypeOf(ExcludeAOIComponent{}),
 	"EAC8A81D-C885-4037-94AF-0DCEDF6EA379": reflect.TypeOf(ExcludeAOIComponentClientFacet{}),
 	"E642F795-7A31-4EA9-A00A-ED107AA8941C": reflect.TypeOf(ExcludeAOIComponentServerFacet{}),
+	"2C2294DC-58E2-43C4-B1DC-C6C81643F701": reflect.TypeOf(EyeColorData{}),
+	"31643D5C-EBF9-4680-BE4C-E86927FC8807": reflect.TypeOf(EyeColorDatabase{}),
+	"D5ABE406-1894-45F4-83FA-38361AFAB246": reflect.TypeOf(FaceMarkColorData{}),
+	"F33FF914-7CA4-4A60-BBE6-7A20464D4896": reflect.TypeOf(FaceMarkData{}),
+	"F74CFAA9-F045-4873-B834-5D9563F3A25C": reflect.TypeOf(FaceMarkDatabase{}),
+	"5CDE1677-E54B-433C-8194-9BB3AF97ACAC": reflect.TypeOf(FaceMarkSkinToneData{}),
 	"9469C437-6529-489D-8CF8-63EEAB723A79": reflect.TypeOf(Facet{}),
 	"65CD8F3E-73AA-43E9-8D9A-B5AE43F624F9": reflect.TypeOf(FacetedComponent{}),
 	"2BBB6C0D-28A5-4C6C-9E02-1B28EBD8170C": reflect.TypeOf(FactionComponent{}),
@@ -662,17 +800,23 @@ var GENERATED = map[string]reflect.Type{
 	"D1ABFC7C-EEDB-4086-B8DB-7A44AAA2AC80": reflect.TypeOf(FactionControlOwnerComponent{}),
 	"02F3F825-1908-4BC3-9C5D-87743A181E1F": reflect.TypeOf(FactionControlOwnerComponentClientFacet{}),
 	"F9B06579-8DF2-48B3-9E6A-238372C97877": reflect.TypeOf(FactionControlOwnerComponentServerFacet{}),
+	"5C98F982-85C3-423C-8CD8-65C55FAADE0C": reflect.TypeOf(FactionData{}),
+	"8ED959C4-B0E3-4D45-84D1-FCAEC1C7D1A4": reflect.TypeOf(FactionInfluenceConfigData{}),
 	"173AD9DC-DD96-459F-B64E-1EA470767ABE": reflect.TypeOf(FastNoiseGradientComponent{}),
 	"F5047B8D-A81F-4C8C-930E-FF1711535D89": reflect.TypeOf(FastNoiseGradientConfig{}),
 	"E7DFDAA1-237C-40F7-961B-3CC6455B4653": reflect.TypeOf(FishCaughtComponent{}),
 	"25E921BB-DE04-4D19-9564-6A5E851B3087": reflect.TypeOf(FishCaughtComponentClientFacet{}),
 	"AF57253B-61CB-4F77-AF9D-4E58535EC889": reflect.TypeOf(FishCaughtComponentServerFacet{}),
+	"E4493D0B-9B01-44FE-A3F1-D1B06C159660": reflect.TypeOf(FishData{}),
 	"1B2624D3-7941-41C1-BBFF-AEE2C699E41D": reflect.TypeOf(FishingBobberPhysicsHack{}),
 	"F9A207D3-7000-4960-BE9C-7F2C6E9528EB": reflect.TypeOf(FishingBobberPhysicsHackClientFacet{}),
 	"A6EC2ABB-052B-448D-8D5D-38F3B5902B70": reflect.TypeOf(FishingBobberPhysicsHackServerFacet{}),
 	"58D5A000-BDED-4F36-A02D-05EF61BAC977": reflect.TypeOf(FishingComponent{}),
 	"516DAD3A-56AF-4D47-B799-ACDC3E8A9AC1": reflect.TypeOf(FishingComponentClientFacet{}),
 	"F428B83A-CF4E-4A9A-8367-202FF1050000": reflect.TypeOf(FishingComponentServerFacet{}),
+	"83E5FD61-2687-45B6-A7A6-731CE943D74C": reflect.TypeOf(FishingData{}),
+	"5BB64CB7-6300-4090-A9CF-DC2A8E61CC30": reflect.TypeOf(FishingDatabase{}),
+	"5A15D6AD-8101-45F0-B66D-8BBA847FB437": reflect.TypeOf(FishingGameData{}),
 	"96114AF3-69EA-4723-B6B5-855C6649D027": reflect.TypeOf(FishingHotspotComponent{}),
 	"54B656DE-CB3E-4F35-B24E-399C1EA105F6": reflect.TypeOf(FishingHotspotComponentClientFacet{}),
 	"8724999E-BCD1-460E-B4C3-E204D1077A7E": reflect.TypeOf(FishingHotspotComponentServerFacet{}),
@@ -705,14 +849,18 @@ var GENERATED = map[string]reflect.Type{
 	"FBB3821A-F32F-45CD-B53C-FE625B9CAEA3": reflect.TypeOf(FtuePlayerHealthMonitorComponentClientFacet{}),
 	"FFF73C76-DE94-4FA7-8F4A-652739C73A13": reflect.TypeOf(FtuePlayerHealthMonitorComponentServerFacet{}),
 	"4A7D8017-5062-4056-967E-BF66BE3A96BD": reflect.TypeOf(FtueQTECompletionObjective{}),
+	"E91E57F1-7543-4FD4-A0DB-8C436871A9DB": reflect.TypeOf(FuelCategoryData{}),
+	"F2436F34-B1A0-4920-953E-4217ABEC108B": reflect.TypeOf(FuelCategoryDatabase{}),
 	"349223A9-34FB-48D1-AEEE-538EF3CFA2F4": reflect.TypeOf(FxScriptComponent{}),
 	"398BE3E5-FF6E-4386-A0F8-7D2F1CA9F73E": reflect.TypeOf(FxScriptComponentClientFacet{}),
 	"052B7923-C728-D47B-19E3-91C672C61287": reflect.TypeOf(FxScriptComponentServerFacet{}),
 	"279A690F-144A-486D-9F75-AEA93AC8477E": reflect.TypeOf(FxScriptMaterialRefHelper{}),
 	"07CE17BA-C4B7-4B42-81C1-79AF6A61F9A5": reflect.TypeOf(GDEID{}),
+	"3E5DB037-AE49-43E4-8BCC-67F8C511A091": reflect.TypeOf(GameDebugSettings{}),
 	"65CD1F9B-45A8-4334-A2D5-C24ADC949829": reflect.TypeOf(GameEventComponent{}),
 	"D28B5F05-7C81-4C90-AC51-2B6E1AD09143": reflect.TypeOf(GameEventComponentClientFacet{}),
 	"38372B4F-176E-4CAA-BE24-E7A75495CE72": reflect.TypeOf(GameEventComponentServerFacet{}),
+	"3B7D0A86-3451-423B-B3B0-8548796B7D1C": reflect.TypeOf(GameEventDatabase{}),
 	"419948FD-2D35-484A-A798-CCB2B7CA0267": reflect.TypeOf(GameMasterComponent{}),
 	"3D8AF697-3BB6-43A9-BAEC-0688D4AE9DFD": reflect.TypeOf(GameMasterComponentClientFacet{}),
 	"6F1F49B3-E1BE-487D-A0C3-FDDEC20016E7": reflect.TypeOf(GameMasterComponentServerFacet{}),
@@ -732,6 +880,7 @@ var GENERATED = map[string]reflect.Type{
 	"0BCAB3AC-6ABB-4462-9253-44565E6BD8D8": reflect.TypeOf(GameRigidBodyConfig{}),
 	"0C1F07A3-01D4-426F-B853-3B2FF9979913": reflect.TypeOf(GameRigidBodyServerFacetConfig{}),
 	"484AE67D-ABD0-4D9C-B2C8-9BB0EEC900E0": reflect.TypeOf(GameTransformComponent{}),
+	"BE1D2815-14DA-48ED-B11C-D40172FBBB34": reflect.TypeOf(GatherGameData{}),
 	"41996A3D-446A-48A9-AC29-14D89E67594E": reflect.TypeOf(GatherableCondition{}),
 	"0B382AF4-7946-4698-9223-206D1187B612": reflect.TypeOf(GatherableControllerComponent{}),
 	"96175897-4273-4B21-9208-6283F0FAB91D": reflect.TypeOf(GatherableControllerComponentClientFacet{}),
@@ -741,20 +890,28 @@ var GENERATED = map[string]reflect.Type{
 	"22DB1CD7-BA04-4991-AF2A-62AD80B06516": reflect.TypeOf(GatherableStateComponentClientFacet{}),
 	"8D60C77E-D1F1-431D-97E1-6C9196D82E2D": reflect.TypeOf(GatherableStateComponentServerFacet{}),
 	"44453A02-05E6-40FF-8691-63D14D2BAD41": reflect.TypeOf(GatherableStateTransitionEvents{}),
+	"5CFD353D-418D-4421-A207-2C748CFBDD16": reflect.TypeOf(GatheringAction{}),
+	"A6B5258C-2984-4225-88E9-B66813457286": reflect.TypeOf(GatheringActionData{}),
+	"9AC82655-BC8F-4165-AE2F-6D6F3D543D9A": reflect.TypeOf(GatheringActionDatabase{}),
 	"B07C16BA-216D-4C60-B4DA-9E221E2CF2EC": reflect.TypeOf(GatheringComponent{}),
 	"B658EB66-43FC-4ED9-ABDA-6798C6506765": reflect.TypeOf(GatheringComponentClientFacet{}),
 	"A22BCADB-F56E-45BD-A14F-21BADD42214E": reflect.TypeOf(GatheringComponentServerFacet{}),
+	"579ABCC6-EC1E-4157-ABC5-2569C7624B0A": reflect.TypeOf(GatheringData{}),
+	"1EF311CC-A16E-426D-9763-A40473495330": reflect.TypeOf(GatheringDatabase{}),
+	"3266A19A-6BAC-4703-B663-9F6ED48F1D76": reflect.TypeOf(GatheringTypeData{}),
 	"3218DB33-BF7C-4508-9A95-2B7561CA1497": reflect.TypeOf(General{}),
 	"C93BFB74-2300-4887-9267-B447A21EF006": reflect.TypeOf(GenericInviteComponent{}),
 	"F8476E41-BBE3-479C-B990-5EB1F76E8787": reflect.TypeOf(GenericInviteComponentClientFacet{}),
 	"5CAECB95-4232-4705-B33A-BFE0ABB52D4C": reflect.TypeOf(GenericInviteComponentServerFacet{}),
 	"138199F6-61B9-49FF-BFA9-D083430BEA81": reflect.TypeOf(GenericParameter{}),
+	"840C351A-0075-42C0-BEB1-5230489B489E": reflect.TypeOf(GlobalAttributesDatabase{}),
 	"4B313CC6-D9FD-4451-93EC-679A1D552045": reflect.TypeOf(GlobalMapDataComponent{}),
 	"561D0EB6-240E-4C1C-9E2B-78397C52887F": reflect.TypeOf(GlobalMapDataComponentClientFacet{}),
 	"AE267C37-54F9-4BFF-9C71-AD16839471A9": reflect.TypeOf(GlobalMapDataComponentServerFacet{}),
 	"10231040-C752-446B-8FCC-4A2685CCD816": reflect.TypeOf(GlobalMapDataManagerComponent{}),
 	"90E73454-0AB0-4947-B8BD-023E64E1A724": reflect.TypeOf(GlobalMapDataManagerComponentClientFacet{}),
 	"E9BF7510-16B9-4625-A83C-DE5D9820A70C": reflect.TypeOf(GlobalMapDataManagerComponentServerFacet{}),
+	"DF571E68-3991-4E49-9F91-5E62C70EE98D": reflect.TypeOf(GlobalMarketData{}),
 	"127579B6-B5BE-4282-8985-BF1FCE3C3F51": reflect.TypeOf(GlobalStorageComponent{}),
 	"ED6D7BCB-3C6C-4E12-ABEA-8170585CFC2C": reflect.TypeOf(GlobalStorageComponentClientFacet{}),
 	"2CE31DAD-4340-43BC-88F1-C6E0628D641F": reflect.TypeOf(GlobalStorageComponentServerFacet{}),
@@ -770,14 +927,24 @@ var GENERATED = map[string]reflect.Type{
 	"3097A91B-7D18-4178-AAD3-DB1A6BBA8E7B": reflect.TypeOf(GroupsComponent{}),
 	"94EAAC65-DA36-428E-97CB-5951D524B8D2": reflect.TypeOf(GroupsComponentClientFacet{}),
 	"BDC3454B-72AF-40FA-96A4-B4D8696C659F": reflect.TypeOf(GroupsComponentServerFacet{}),
+	"6583011A-4493-4FC9-9407-6EA993257296": reflect.TypeOf(GuaranteedItemTransferData{}),
+	"E756A995-93ED-F487-1A76-23B1AD74DF11": reflect.TypeOf(GuildRankData{}),
+	"1B34AF34-C6AC-4360-BA4A-60F06485710B": reflect.TypeOf(GuildSiegeWindowRegionData{}),
+	"500578D5-B32D-4773-9027-3CF3041C565D": reflect.TypeOf(GuildTreasuryData{}),
 	"0C61A87F-8F6E-4ACC-A20E-DB70951A115D": reflect.TypeOf(GuildsComponent{}),
 	"1F5003F4-C4FD-4E99-9F62-42FA41725947": reflect.TypeOf(GuildsComponentClientFacet{}),
 	"56831EF8-CE88-47C5-95F9-89E1FBDCA1EB": reflect.TypeOf(GuildsComponentServerFacet{}),
 	"D81B28DC-7F57-48A8-A501-B56BB02FB18A": reflect.TypeOf(HUDComponent{}),
 	"DE0FB0F0-8DC9-48F3-ACFD-4CB3F2998CF5": reflect.TypeOf(HUDComponentClientFacet{}),
 	"11389F83-F26A-4FF7-9FB6-A3EFD69FF372": reflect.TypeOf(HUDComponentServerFacet{}),
+	"41DACFD5-2F9B-49B0-82A2-39D4D94166B3": reflect.TypeOf(HairColorData{}),
+	"AAFC34D8-053B-44B0-8E87-F9451ACF0AC6": reflect.TypeOf(HairTransfomData{}),
+	"5777CBA3-DCB7-408D-B40F-CCB7A1CA4151": reflect.TypeOf(HairstyleData{}),
+	"CE851BB1-03D6-493F-81F5-B3D8DDC70D3C": reflect.TypeOf(HairstyleDatabase{}),
+	"F3C58383-4D28-4F23-97F3-261EC7DF4537": reflect.TypeOf(HairstyleVariantData{}),
 	"782226AB-905D-438C-912E-37184345DA6B": reflect.TypeOf(HealthThresholdBossPhaseConfig{}),
 	"0D2E9851-A3CD-4D74-8BA4-AFE3FF16DA75": reflect.TypeOf(HideLargeToastTutorialStep{}),
+	"83C9E723-862E-4507-9F3C-F30F9366B536": reflect.TypeOf(HideMesh{}),
 	"B2BB73CB-350E-457C-BFFB-DC642561518F": reflect.TypeOf(HideToastTutorialStep{}),
 	"6D3E998C-FC19-4C9D-B8F6-77C3FE985D29": reflect.TypeOf(HitVolumeComponent{}),
 	"7C3A4D83-E2E4-4692-8828-C2D5BFF843D3": reflect.TypeOf(HitVolumeComponentClientFacet{}),
@@ -823,6 +990,7 @@ var GENERATED = map[string]reflect.Type{
 	"3BC5AC20-A15F-45A5-835D-8525B832273B": reflect.TypeOf(IncapacitatedCharacterComponentClientFacet{}),
 	"FF66A5D5-2369-49EF-B2AE-4C424C72CF45": reflect.TypeOf(IncapacitatedCharacterComponentServerFacet{}),
 	"6CA40C61-5632-4B8C-A69A-AD129F2BB396": reflect.TypeOf(InitPaperdollData{}),
+	"B5F2C326-3798-440D-B94B-22621BBFA596": reflect.TypeOf(InputCancelClip{}),
 	"3106EE2A-4816-433E-B855-D17A6484D5EC": reflect.TypeOf(InputConfigurationComponent{}),
 	"C6F39CF1-C6D2-43E6-AB2D-EC6165A8270D": reflect.TypeOf(InputFilter{}),
 	"BD389E28-BED1-4188-B918-00E432DF3533": reflect.TypeOf(InputFilterTutorialStep{}),
@@ -839,6 +1007,7 @@ var GENERATED = map[string]reflect.Type{
 	"B69045A3-A129-4334-BDFB-069C18CC84A2": reflect.TypeOf(Interact{}),
 	"E688460F-E660-4C7A-9449-033420E7FF66": reflect.TypeOf(InteractClientFacet{}),
 	"BEBF6D8C-C3DA-4812-9277-049D158D8612": reflect.TypeOf(InteractCondition{}),
+	"F0887E97-5084-413C-BCE7-5C24CECB03C0": reflect.TypeOf(InteractOptionData{}),
 	"97B0AD10-1A8E-4DDA-B6EC-3C4D319F0F64": reflect.TypeOf(InteractOptionEntityRef{}),
 	"7995538B-03E5-496D-A37D-14E8C5CA3DFC": reflect.TypeOf(InteractOptionRef{}),
 	"C7BF1096-1AAF-4151-81B1-4C6A224F1353": reflect.TypeOf(InteractServerFacet{}),
@@ -889,6 +1058,7 @@ var GENERATED = map[string]reflect.Type{
 	"476B4B9F-9C00-4476-AFA2-2D9F1179BAD5": reflect.TypeOf(ItemManagementComponent{}),
 	"8C6443F2-53B6-48E9-ABD4-856727770594": reflect.TypeOf(ItemManagementComponentClientFacet{}),
 	"2DB550D0-EF24-4703-93F5-49E13FD7B126": reflect.TypeOf(ItemManagementComponentServerFacet{}),
+	"70B5DE69-114F-41B5-993A-2249FDA496DE": reflect.TypeOf(ItemRarityData{}),
 	"237D9B36-9454-40AC-A9D1-8CB227215DCB": reflect.TypeOf(ItemRepairComponent{}),
 	"4FB9F60E-9807-45E3-94A1-7458D91E6C93": reflect.TypeOf(ItemRepairComponentClientFacet{}),
 	"02E30132-0484-4BDF-B4B5-C8016C6C5E35": reflect.TypeOf(ItemRepairComponentServerFacet{}),
@@ -902,6 +1072,8 @@ var GENERATED = map[string]reflect.Type{
 	"CEA785A2-511A-43D6-9AFF-A574A608C2E1": reflect.TypeOf(JavSpectatorCameraComponentClientFacet{}),
 	"61342260-38DD-4A9D-9140-B57BA916E438": reflect.TypeOf(JavSpectatorCameraComponentServerFacet{}),
 	"DF61983D-6059-42A1-989B-B3A2690B4650": reflect.TypeOf(Javelin__CutsceneEntityEvent{}),
+	"1B469E23-AB5D-476F-BDF1-32B62AD67B63": reflect.TypeOf(Keyframe{}),
+	"38D54DD1-24B4-446A-9B7F-8BAC8EF2BB2B": reflect.TypeOf(Keyframe__EditorMetadata{}),
 	"BA5688E3-0802-428A-B94C-D726B8564ADD": reflect.TypeOf(KillSpawnsAction{}),
 	"E3626A07-D134-434F-8AE3-84B4F8328C33": reflect.TypeOf(LandClaimComponent{}),
 	"19CA2D66-7A92-409E-95CD-7BAB7210F202": reflect.TypeOf(LandClaimComponentClientFacet{}),
@@ -916,6 +1088,7 @@ var GENERATED = map[string]reflect.Type{
 	"07593109-4A57-473F-B868-C2DCF9270186": reflect.TypeOf(LensFlareComponent{}),
 	"1E28DADD-0BD4-4AD5-A94B-2665813BF346": reflect.TypeOf(LensFlareConfiguration{}),
 	"FA6F70E5-D425-4BFA-8917-932630ACA878": reflect.TypeOf(LevelMeterSettings{}),
+	"D159813F-9B6B-430D-B7E0-89B20322501C": reflect.TypeOf(LightClip{}),
 	"6B9AB512-CA8A-4D2B-B570-DF128EA7CE6A": reflect.TypeOf(LightComponent{}),
 	"F4CC7BB4-C541-480C-88FC-C5A8F37CC67F": reflect.TypeOf(LightConfiguration{}),
 	"CE3EAE12-2063-41CB-908B-20D433A7B91D": reflect.TypeOf(LightweightCharacterComponent{}),
@@ -983,6 +1156,7 @@ var GENERATED = map[string]reflect.Type{
 	"F8DEA8E4-2D5B-4DC9-9EAA-FC47BE020321": reflect.TypeOf(MaterialEffectComponent{}),
 	"A7D37E04-7158-4574-B685-AB366E54CDEC": reflect.TypeOf(MaterialEffectComponentClientFacet{}),
 	"53BBEE28-9416-405F-8234-C7753094744D": reflect.TypeOf(MaterialEffectComponentServerFacet{}),
+	"763987AF-4084-4762-83C1-328938BB7C14": reflect.TypeOf(MaterialOverride{}),
 	"825DB218-2B8A-415F-AF40-B3574D08179D": reflect.TypeOf(MaterialOverrideComponent{}),
 	"A70D1C4F-8E9D-4ED5-96F8-8A58D5B921C8": reflect.TypeOf(MaterialOverrideComponentClientFacet{}),
 	"F16D036F-151B-4994-9507-9F4A7F2752AE": reflect.TypeOf(MaterialOverrideComponentServerFacet{}),
@@ -1000,6 +1174,8 @@ var GENERATED = map[string]reflect.Type{
 	"3458A5A9-F332-4A5E-83D1-414BD3D8B15F": reflect.TypeOf(MetaAchievementComponent{}),
 	"B237BBC2-582D-4653-AC87-8A62EB00F999": reflect.TypeOf(MetaAchievementComponentClientFacet{}),
 	"25DB329A-C5E3-4BB7-B2D2-1C6EBF120546": reflect.TypeOf(MetaAchievementComponentServerFacet{}),
+	"E1AFB1E4-F50C-48AA-8635-3518C7DB71AD": reflect.TypeOf(MilestoneCorrectionData{}),
+	"7511B879-B09F-4F6B-8C0A-742DB3C0E7BD": reflect.TypeOf(MilestoneCorrectionEntryData{}),
 	"6518AD3D-117D-4F1E-8D5F-85A003FDC90E": reflect.TypeOf(MinionVitalsProviderComponent{}),
 	"175CBBF4-4E73-4B4A-9F3D-CF6590CAF579": reflect.TypeOf(MinionVitalsProviderComponentClientFacet{}),
 	"7ACC0899-1A77-4AA3-AE15-B0B1D71A8ADE": reflect.TypeOf(MinionVitalsProviderComponentServerFacet{}),
@@ -1112,11 +1288,13 @@ var GENERATED = map[string]reflect.Type{
 	"BA93B9FF-7A7E-4028-889E-12D418A11C71": reflect.TypeOf(PaperdollComponent{}),
 	"447D6BC6-1C61-7343-0326-8A8B2BBC816D": reflect.TypeOf(PaperdollComponentClientFacet{}),
 	"ACA8AB76-AE4F-421E-9787-388715C262A1": reflect.TypeOf(PaperdollComponentServerFacet{}),
+	"DA5A104D-82E3-490E-8C13-135A5607BBBC": reflect.TypeOf(PaperdollSlotDatabase{}),
 	"69524C86-0664-425D-A064-E53F667CF12C": reflect.TypeOf(Parameters{}),
 	"418D3A41-A6F7-47BD-8F7D-33AE499CC523": reflect.TypeOf(ParticipantTrackerComponent{}),
 	"373F3007-C182-4055-9721-784571890544": reflect.TypeOf(ParticipantTrackerComponentClientFacet{}),
 	"BE8B88EE-5B2F-46E8-A635-AD711BF16542": reflect.TypeOf(ParticipantTrackerComponentServerFacet{}),
 	"65BC817A-ABF6-440F-AD4F-581C40F92795": reflect.TypeOf(ParticleComponent{}),
+	"ED687799-0030-4245-A69D-267E91BF1C76": reflect.TypeOf(ParticleEffect{}),
 	"D29E0CF9-8F02-4E61-BBDE-7BEB76D13FE5": reflect.TypeOf(ParticleEmitBoneLayer{}),
 	"A1E34557-30DB-4716-B4CE-39D52A113D0C": reflect.TypeOf(ParticleEmitterSettings{}),
 	"75CCE808-7663-402E-A022-EB3A4254662C": reflect.TypeOf(PathLocationComponent{}),
@@ -1131,6 +1309,8 @@ var GENERATED = map[string]reflect.Type{
 	"6061B5D3-AAB0-4369-96D7-A85B3747178D": reflect.TypeOf(PerkConditionComponent{}),
 	"C153F75C-D3B6-4BAF-A876-EE26C3355A2C": reflect.TypeOf(PerkConditionComponentClientFacet{}),
 	"229B932C-C392-444D-B955-8289C90A0F86": reflect.TypeOf(PerkConditionComponentServerFacet{}),
+	"F9944C92-939C-4F11-B809-106EE60E48E9": reflect.TypeOf(PerkGenerationData{}),
+	"1C7129EC-C7B6-471C-A6FF-278A2B3205A8": reflect.TypeOf(PerkTierData{}),
 	"D2D35998-FAF1-473A-8186-0B6C2EFBA4DE": reflect.TypeOf(PersistentVariationData{}),
 	"6C2A2397-C33D-4ACA-8813-42B99E7B84DB": reflect.TypeOf(PhysicsComponent{}),
 	"FECC8785-5D77-7138-0BDF-573DE220D90E": reflect.TypeOf(PlacementObstructionComponent{}),
@@ -1148,9 +1328,11 @@ var GENERATED = map[string]reflect.Type{
 	"7158CE3F-E02D-44CB-BADD-BA2A43F1EFF4": reflect.TypeOf(PlayerArenaComponent{}),
 	"1B6B5128-04DA-48E4-BFAC-67A5D50F5149": reflect.TypeOf(PlayerArenaComponentClientFacet{}),
 	"C0C2AF6A-E702-4B25-9345-6394ECE95C94": reflect.TypeOf(PlayerArenaComponentServerFacet{}),
+	"46113BED-540D-4584-92AA-B9223D83875A": reflect.TypeOf(PlayerAttributeData{}),
 	"15DD9D56-495F-4E6F-98B5-7BE3A8364E6F": reflect.TypeOf(PlayerAudioProxyComponent{}),
 	"AE979545-C122-41B2-9B43-B9EFDD958DBE": reflect.TypeOf(PlayerAudioProxyComponentClientFacet{}),
 	"7DFC337F-4BF1-4EE8-B2EC-BBE3C0F01F77": reflect.TypeOf(PlayerAudioProxyComponentServerFacet{}),
+	"0F40ECC6-ACE9-476A-9A5C-B83BE6129A4B": reflect.TypeOf(PlayerBaseAttributes{}),
 	"D50340CF-A082-4B90-9933-8C42387C0C77": reflect.TypeOf(PlayerComponent{}),
 	"68AF28ED-E426-49C1-9502-B1E97F6EA047": reflect.TypeOf(PlayerComponentClientFacet{}),
 	"E6EA5644-D713-473E-9121-7C96D7C07022": reflect.TypeOf(PlayerComponentServerFacet{}),
@@ -1218,6 +1400,7 @@ var GENERATED = map[string]reflect.Type{
 	"2BBE284D-C550-4197-B2B3-B9D2FE9AD3F2": reflect.TypeOf(PositionalTicketingComponent{}),
 	"782B7389-541E-48EA-8A70-68A8BB010745": reflect.TypeOf(PositionalTicketingComponentClientFacet{}),
 	"8432A24F-CFAA-40D5-BBBE-FE8245936F8C": reflect.TypeOf(PositionalTicketingComponentServerFacet{}),
+	"D7F096A0-C95F-4ED1-8736-AD0619DB0EB7": reflect.TypeOf(PostEffectGroup{}),
 	"7624DDEA-B00B-49DD-835C-6DD37B914E91": reflect.TypeOf(PrefabReferencerComponent{}),
 	"1ADB6EF8-E043-FE2E-2351-E6E288346391": reflect.TypeOf(PrefabSpawnRandomizer{}),
 	"5F93A1A5-8633-45D1-9058-8114BBE5511B": reflect.TypeOf(PrefabSpawnRandomizerClientFacet{}),
@@ -1227,12 +1410,15 @@ var GENERATED = map[string]reflect.Type{
 	"9C3A631F-A83B-4D76-9F37-42C579D2E3F9": reflect.TypeOf(PrefabSpawnerComponentServerFacet{}),
 	"9CB3707A-73B3-4EE5-84EA-3CF86E0E3722": reflect.TypeOf(PrimitiveColliderComponent{}),
 	"85AA27D6-E019-469F-8472-89862323DBF7": reflect.TypeOf(PrimitiveColliderConfig{}),
+	"E1766B2B-75FD-4EB2-AB13-0E5F343B7E68": reflect.TypeOf(ProgressionCategoryEntry{}),
 	"C25E71A9-B386-4003-ABFD-208C456AE34A": reflect.TypeOf(ProgressionComponent{}),
 	"A929D071-2716-40FC-8AC5-3F3785D2CFF2": reflect.TypeOf(ProgressionComponentClientFacet{}),
 	"DFA2FC71-A4ED-4B68-801B-4312A57183BB": reflect.TypeOf(ProgressionComponentServerFacet{}),
 	"507F0CC0-E3BB-460A-9E69-9C18F193E184": reflect.TypeOf(ProgressionPointComponent{}),
 	"DF3C60DA-C7EA-4993-AC83-BA841AD8B0AC": reflect.TypeOf(ProgressionPointComponentClientFacet{}),
 	"92EF31D9-F0E1-4E3A-BE91-8726BF70B3B3": reflect.TypeOf(ProgressionPointComponentServerFacet{}),
+	"D91778A1-A110-46E4-8B9A-30402D8996D6": reflect.TypeOf(ProgressionSpawnerEntry{}),
+	"A80AB26A-3364-42D8-B1E3-A6828561F04D": reflect.TypeOf(ProgressionValidationAchievementData{}),
 	"5637158A-9AE1-41A7-A5C0-D07A76116EAF": reflect.TypeOf(ProjectileComponent{}),
 	"145ADCFC-FE1C-4BC1-8620-46C6BB3E3DB1": reflect.TypeOf(ProjectileComponentClientFacet{}),
 	"475568B1-A3AD-4482-8733-3F5C53AE18C2": reflect.TypeOf(ProjectileComponentServerFacet{}),
@@ -1242,6 +1428,7 @@ var GENERATED = map[string]reflect.Type{
 	"E29A05BE-9934-474E-8B94-6095E772D157": reflect.TypeOf(PvPSpectatorCamControllerComponent{}),
 	"CA455CA0-437C-4E3D-B599-929ED1E0CA1A": reflect.TypeOf(PvPSpectatorCamControllerComponentClientFacet{}),
 	"6EF766B4-6848-4B81-BDA7-2FEEBCD16ECD": reflect.TypeOf(PvPSpectatorCamControllerComponentServerFacet{}),
+	"D911F9A5-D0DA-4461-AED6-95A250A49A6B": reflect.TypeOf(PvpValueEntry{}),
 	"27462017-FE0F-4B81-96E9-8875B750EC69": reflect.TypeOf(QueryShapeAabb{}),
 	"CF5EB8E9-9C03-4A19-828D-ED500C732978": reflect.TypeOf(QueryShapeBase{}),
 	"C6651A66-23D4-4508-B4AD-180C516655A8": reflect.TypeOf(QueryShapeBox{}),
@@ -1278,6 +1465,12 @@ var GENERATED = map[string]reflect.Type{
 	"9EECE8BD-2355-4600-BEF0-49415CAF72E8": reflect.TypeOf(RainComponent{}),
 	"44EEA846-4252-405F-BB66-0B8696DF5D36": reflect.TypeOf(RainOptions{}),
 	"515CF4CF-4992-4139-BDE5-42A887432B45": reflect.TypeOf(Range{}),
+	"4A62734B-8A4E-4C41-B869-3AA9E30B61A7": reflect.TypeOf(RangedAttackArcShotData{}),
+	"EC92AE9F-6D78-4592-8320-C46A6E671B5D": reflect.TypeOf(RangedAttackData{}),
+	"1DA9A807-F706-4492-B40C-49A6AF74EE83": reflect.TypeOf(RangedAttackData_0{}),
+	"7B7FA731-D537-40DE-B9AB-FC9C3E8A2827": reflect.TypeOf(RangedAttackDatabase{}),
+	"2F2C2714-E932-43BF-A702-CACD8C9AE544": reflect.TypeOf(RankData{}),
+	"B0024F1F-651D-48A5-A56A-9DEA80CB487E": reflect.TypeOf(RankDatabase{}),
 	"32F0711B-235E-43EE-9687-253AE1FCD68A": reflect.TypeOf(ReactionTrackingComponent{}),
 	"B6F9180F-48A3-4BBD-B26C-33265372EE45": reflect.TypeOf(ReactionTrackingComponentClientFacet{}),
 	"7019450C-44A4-4B42-ACF3-4915BE20E640": reflect.TypeOf(ReactionTrackingComponentServerFacet{}),
@@ -1287,10 +1480,14 @@ var GENERATED = map[string]reflect.Type{
 	"B18C9858-CBE8-4F24-8622-891F2804FF7D": reflect.TypeOf(ReadingInteractionComponent{}),
 	"4403FD55-97D3-4D31-8A15-14E7646C5F3A": reflect.TypeOf(ReadingInteractionComponentClientFacet{}),
 	"9ECFF158-0EC3-4C37-B04C-2723999A49CF": reflect.TypeOf(ReadingInteractionComponentServerFacet{}),
+	"ED6DCECC-3DCF-4D49-92DC-F20FD39D1A20": reflect.TypeOf(RefreshZoneConfiguration{}),
+	"8A106A65-E6E7-42F7-9BDB-60950BEEBBD6": reflect.TypeOf(RefreshZoneConfigurationAsset{}),
 	"BDA6ADF9-991E-489D-B0F5-796CC24D7AFB": reflect.TypeOf(RegionMetadataAsset{}),
 	"BE64A116-579D-49B1-9511-87D2CE9AC3E6": reflect.TypeOf(RegionSliceDataLookup{}),
 	"5BEDCB9D-F3BE-4300-80AF-B4E17A7F4646": reflect.TypeOf(RemoteServerContextRef{}),
 	"17207DAC-730B-4793-B975-23591A950260": reflect.TypeOf(RemoteServerGDERef{}),
+	"42E861DC-5038-490F-A16A-6FF0D226E3B2": reflect.TypeOf(RemoteStorageItemTransferFeeData{}),
+	"A440FA71-1598-4ED4-BCDE-5E3DF1EBD81B": reflect.TypeOf(RemoteStorageItemTypeMultiplierData{}),
 	"6328304A-B754-4AD3-BF78-87236958B55B": reflect.TypeOf(RemoteTypelessServerFacetRef{}),
 	"FC98A154-6A92-4A71-95BC-1AA8926ECC82": reflect.TypeOf(RenderGuildFlagComponent{}),
 	"AEDFC696-EBAF-4689-A079-82012E62CED5": reflect.TypeOf(RenderGuildFlagComponentClientFacet{}),
@@ -1320,6 +1517,9 @@ var GENERATED = map[string]reflect.Type{
 	"310EEEA7-79AE-4FC1-85ED-25D4D68502EB": reflect.TypeOf(RtpcMeterSettings{}),
 	"78594643-90FC-49D3-8DF7-D6BBC3CC975B": reflect.TypeOf(RuinState{}),
 	"0AF5339B-3F79-7FED-FBFD-29542BADB3E0": reflect.TypeOf(SBItemClass{}),
+	"573F4ECA-7F16-4B50-BEA6-2B04397D79B9": reflect.TypeOf(ScarColorData{}),
+	"9BC6BDFA-05C2-4112-9737-A1CF7BF9044F": reflect.TypeOf(ScarData{}),
+	"1E639682-6B81-445C-9BE6-EE9B9C4E5723": reflect.TypeOf(ScarDatabase{}),
 	"8DF85DCB-A2A8-4525-8F5C-B4258158878D": reflect.TypeOf(ScheduleConstraintComponent{}),
 	"8B157ED9-F54E-44CF-AEEC-F50CD18CEFF3": reflect.TypeOf(ScheduleConstraintComponentClientFacet{}),
 	"AAE3B29E-A5FC-4892-BC4F-6E3AADE9CCF2": reflect.TypeOf(ScheduleConstraintComponentServerFacet{}),
@@ -1340,6 +1540,7 @@ var GENERATED = map[string]reflect.Type{
 	"3E40C7A8-7947-4215-A7E0-363D35AC7BE7": reflect.TypeOf(SettlementComponent{}),
 	"FDE2698B-D40E-4464-8640-BA787B2C9E1B": reflect.TypeOf(SettlementComponentClientFacet{}),
 	"AC28C6C8-9E95-48A3-A5EC-C5AECC92600E": reflect.TypeOf(SettlementComponentServerFacet{}),
+	"0543759C-4CF0-4EBA-B0DD-F0F020B480B3": reflect.TypeOf(SettlementProgressionData{}),
 	"3E86211E-FDA6-41F9-AB77-2D6891E5FA31": reflect.TypeOf(SettlementProgressionSpawnerEntry{}),
 	"1A20DF81-9545-4138-8442-9D70EE85639A": reflect.TypeOf(ShakeComponent{}),
 	"36D4884D-F369-4848-A5C2-276A18820BB6": reflect.TypeOf(ShakeComponentClientFacet{}),
@@ -1347,6 +1548,7 @@ var GENERATED = map[string]reflect.Type{
 	"1E18D562-0B4A-4330-A625-347D0B70610C": reflect.TypeOf(ShapeLocationComponent{}),
 	"6276F6DE-7FD6-47C3-8519-2167CD0B56A6": reflect.TypeOf(ShapeLocationComponentClientFacet{}),
 	"2F1B4679-770D-43FB-B57A-3F20320C0D0D": reflect.TypeOf(ShapeLocationComponentServerFacet{}),
+	"1244DFF9-F100-4B2C-A8C0-C896C65CE07C": reflect.TypeOf(ShowMesh{}),
 	"3CF55A7C-F12C-4106-97C1-E8613F21AB59": reflect.TypeOf(ShowOnMapUIComponent{}),
 	"3CE67D77-BD51-4F9C-AB35-700013CA8EE9": reflect.TypeOf(ShowToastLargeTutorialStep{}),
 	"05F22336-0509-46C0-A44A-0A07C03F879D": reflect.TypeOf(ShowToastTutorialStep{}),
@@ -1369,6 +1571,9 @@ var GENERATED = map[string]reflect.Type{
 	"E16CA6C5-5C78-4AD9-8E9B-F8C1FB4D1DB8": reflect.TypeOf(SimpleAssetReferenceBase{}),
 	"393CDA3F-7A95-438A-B7F5-3230ABB36C8A": reflect.TypeOf(SimpleMarkerComponent{}),
 	"15DC8057-E89B-4B7D-A14E-A8CCD791A165": reflect.TypeOf(SkinMeshAttachmentVisibilityInfo{}),
+	"67085557-DE31-48FF-8CCC-F81F71C7FD75": reflect.TypeOf(SkinToneData{}),
+	"4997CFB3-8342-4617-8196-3DDC101CDA3E": reflect.TypeOf(SkinToneDatabase{}),
+	"178A59BC-A6DA-4690-BEAB-33A8141EE308": reflect.TypeOf(SkinToneTransformData{}),
 	"04D84DFC-9340-4B39-82BE-FB1A822CE11D": reflect.TypeOf(SkinnedMeshAttachmentVisibilityComponent{}),
 	"FE9DA201-EBAF-4011-B44E-1FD9032E0204": reflect.TypeOf(SkinnedMeshAttachmentVisibilityComponentClientFacet{}),
 	"82275F40-EB1A-4F17-ADA1-6F48C9714330": reflect.TypeOf(SkinnedMeshAttachmentVisibilityComponentServerFacet{}),
@@ -1390,9 +1595,10 @@ var GENERATED = map[string]reflect.Type{
 	"7D314916-0502-4D0C-B457-AE485E62A156": reflect.TypeOf(SliceMetaData{}),
 	"0C584B89-F7CD-414E-8200-15BD5DE7E623": reflect.TypeOf(SliceMetaDataMeshEntry{}),
 	"BEFF7D78-15DF-4F72-8F0C-40100EBDA993": reflect.TypeOf(SliceMetaDataSpawnerEntry{}),
-	"0F2DD1B9-B6FD-41B7-A861-7BDF3E19F809": reflect.TypeOf(SlicePercentReference{}),
-	"F1423D3E-AE69-4134-B1B3-7C27C3E9F99F": reflect.TypeOf(SlicePercentReference_0{}),
+	"F1423D3E-AE69-4134-B1B3-7C27C3E9F99F": reflect.TypeOf(SlicePercentReference{}),
+	"0F2DD1B9-B6FD-41B7-A861-7BDF3E19F809": reflect.TypeOf(SlicePercentReference_0{}),
 	"3FB4F4AF-5840-4FB0-AE8A-BD72A3F03AC7": reflect.TypeOf(SliceSpawnedObjective{}),
+	"550A9BEB-8FAF-4C36-81AF-D23A7F796FD9": reflect.TypeOf(SlotData{}),
 	"861F0D51-7058-4F27-ACDB-5EB5A9A9BCA8": reflect.TypeOf(SnapToTerrainComponent{}),
 	"A809D3C1-F4BE-4C4E-8C9A-DC7555AD0D2A": reflect.TypeOf(SnapToTerrainComponentClientFacet{}),
 	"FEFE1155-C2E3-4F1F-AC98-EE2904EAA70A": reflect.TypeOf(SnapToTerrainComponentServerFacet{}),
@@ -1401,6 +1607,7 @@ var GENERATED = map[string]reflect.Type{
 	"9D7614D2-EF0C-479F-AA39-A8E44338CC86": reflect.TypeOf(SocialComponent{}),
 	"48A63235-7A0B-4568-B675-1C99085E578B": reflect.TypeOf(SocialComponentClientFacet{}),
 	"548DD9C1-2F63-4B04-8E24-11B4C09A8E8E": reflect.TypeOf(SocialComponentServerFacet{}),
+	"E13AAB0E-A554-45CC-8A0B-F71F60482BB8": reflect.TypeOf(SoundEffect{}),
 	"5B19445A-04E9-41D9-B254-6E981FD05090": reflect.TypeOf(SpawnCapConstraintComponent{}),
 	"05EE6C1E-2346-4695-AF98-89E909E5D9B1": reflect.TypeOf(SpawnCapConstraintComponentClientFacet{}),
 	"108AC913-5AB4-4F00-812F-0532D101B9A9": reflect.TypeOf(SpawnCapConstraintComponentServerFacet{}),
@@ -1444,6 +1651,10 @@ var GENERATED = map[string]reflect.Type{
 	"96BCA307-A4D5-43A0-9985-08A29BCCCB30": reflect.TypeOf(Spline__SplineKeyEx_Vec2_{}),
 	"24A4D7E5-C36D-427D-AB49-CD86573B7288": reflect.TypeOf(Spline__SplineKey_Vec2_{}),
 	"173AC8F0-FD63-4583-8D38-F43FE59F2209": reflect.TypeOf(Spline__TrackSplineInterpolator_Vec2_{}),
+	"C9A85695-845C-4A44-A821-5B002B98238E": reflect.TypeOf(SpreadshotConfig{}),
+	"0F5C7901-230B-41CD-A16D-1CA11F3B75F1": reflect.TypeOf(SpreadshotConfigCustom{}),
+	"AB400EBE-6462-4F09-AA89-8129F59F2D31": reflect.TypeOf(SpreadshotConfigCustomShotData{}),
+	"E21F82E1-B3AD-4107-8D22-882920CB1A01": reflect.TypeOf(SpreadshotConfigShotgun{}),
 	"454F3998-20C4-40E0-8CC1-0B30B35F0139": reflect.TypeOf(SpringboardDataSheetContainer{}),
 	"167EED78-848F-48E4-ACF6-141BF356CA7D": reflect.TypeOf(StaminaComponent{}),
 	"27D2C6D5-AC88-4C8F-B32E-1A4F5F2F2F96": reflect.TypeOf(StaminaComponentClientFacet{}),
@@ -1459,12 +1670,15 @@ var GENERATED = map[string]reflect.Type{
 	"1A3A143C-F324-4073-8BAA-2C99B4DFEC55": reflect.TypeOf(StimulusComponent{}),
 	"F7F95FDC-9540-4357-AD13-694D6A8BD692": reflect.TypeOf(StimulusComponentClientFacet{}),
 	"36AB58F5-26BE-42B4-832F-3341719C4A45": reflect.TypeOf(StimulusComponentServerFacet{}),
+	"C6D61EF7-C1D5-4DFA-92C3-AF5A5231F5EC": reflect.TypeOf(StimulusConfigurationAsset{}),
 	"D1048C2F-F5BF-4630-BFEC-7C9FAC8701F9": reflect.TypeOf(StopHighlightingUIElementTutorialStep{}),
 	"F09B20F4-6A64-477E-9690-A099EE1BF746": reflect.TypeOf(StorageComponent{}),
 	"5B6DDA17-4548-4BC4-A5FA-E2713A9E6C6F": reflect.TypeOf(StorageComponentClientFacet{}),
 	"5E9BE066-759E-46FA-AEB5-FE33DCE71036": reflect.TypeOf(StorageComponentServerFacet{}),
 	"37405861-CD7D-48C5-9EBC-FEDDB66D41DB": reflect.TypeOf(StrafeActionConfiguration{}),
 	"E0CAD8E9-CA34-429B-B23A-C9A206CCB827": reflect.TypeOf(StringParameter{}),
+	"1E5E78CF-C590-412A-853E-1EFD1CD11694": reflect.TypeOf(StructureAttributeData{}),
+	"0AAC0D48-9308-4ADB-B6CA-B1DCAAC61AA5": reflect.TypeOf(StructurePlacementData{}),
 	"05987B3F-7F37-41CB-A8E4-11BA051801C2": reflect.TypeOf(SurfaceAlignmentComponent{}),
 	"D4A13CAF-7366-4643-BF5A-5854FA31EA9B": reflect.TypeOf(SurfaceAlignmentComponentClientFacet{}),
 	"85DE1D2D-5F39-4642-811F-EC22AE998E15": reflect.TypeOf(SurfaceAlignmentComponentServerFacet{}),
@@ -1473,14 +1687,20 @@ var GENERATED = map[string]reflect.Type{
 	"13A1A284-F27E-5788-BF9B-435A45131463": reflect.TypeOf(TAnimTrack_KeyType__ICharacterKey__{}),
 	"696AFD24-3A26-5DB5-9265-0B2F05F53C03": reflect.TypeOf(TAnimTrack_KeyType__IEventKey__{}),
 	"0466ECC7-83FD-57A8-95A3-842D2DE4C7F6": reflect.TypeOf(TAnimTrack_KeyType__ISelectKey__{}),
-	"B638C840-C1D7-483A-B04E-B22DA539DB8D": reflect.TypeOf(TSplineBezierBasisVec2{}),
-	"B661D05E-B912-4BD9-B102-FA82938243A9": reflect.TypeOf(TSplineBezierBasisVec2_0{}),
+	"B661D05E-B912-4BD9-B102-FA82938243A9": reflect.TypeOf(TSplineBezierBasisVec2{}),
+	"B638C840-C1D7-483A-B04E-B22DA539DB8D": reflect.TypeOf(TSplineBezierBasisVec2_0{}),
 	"1E34E372-3A0E-5246-A4B2-70E75B5AA11F": reflect.TypeOf(TUiAnimSplineTrack_Vec2__{}),
 	"0F16A377-EAA0-47D2-8472-9EAAA680B169": reflect.TypeOf(TagComponent{}),
 	"AFB21C1A-98D5-4DB5-B111-E0AA6A3E0D12": reflect.TypeOf(TagSlicesReference{}),
+	"BBDF342C-BB09-49AD-BA03-5D58A448325E": reflect.TypeOf(TargetSelectionLimits{}),
 	"EFF2DB3F-0129-44E4-9447-D341E13DAB18": reflect.TypeOf(TargetingComponent{}),
 	"58A6FD6C-4701-470E-8664-4BFE589E9713": reflect.TypeOf(TargetingComponentClientFacet{}),
 	"1E2FF20C-081A-48A9-9C47-4A67D7921CA5": reflect.TypeOf(TargetingComponentServerFacet{}),
+	"1E1CA0DB-AD63-43F4-B6C0-6DF1BEE20556": reflect.TypeOf(TaskInteractData{}),
+	"6D541438-BA60-46E4-A4C5-9B6BE645275B": reflect.TypeOf(TaskInteractEntryData{}),
+	"58FCC019-9FF1-453E-96F1-FF354CEF72B4": reflect.TypeOf(TattooColorData{}),
+	"ABDD364E-34D2-4030-B782-25B1510C3610": reflect.TypeOf(TattooData{}),
+	"AD2F9C39-00AB-4FDE-B7ED-488BDA006015": reflect.TypeOf(TattooDatabase{}),
 	"E2AE1B42-7DEC-4AE8-B3E0-B263C2602E78": reflect.TypeOf(TeleportContributorsAction{}),
 	"171FA882-C8AF-41DF-BD19-09CBBFEB1C1C": reflect.TypeOf(TemporaryAffiliationComponent{}),
 	"785DCE90-AB5C-4FD3-B9BE-BC83DEF4E804": reflect.TypeOf(TemporaryAffiliationComponentClientFacet{}),
@@ -1496,6 +1716,7 @@ var GENERATED = map[string]reflect.Type{
 	"EFC5D83C-A790-6A1F-F6F2-150E05D4D093": reflect.TypeOf(TerritoryDetectorComponent{}),
 	"D0F8FE67-F19C-4B10-8187-D725160FC630": reflect.TypeOf(TerritoryDetectorComponentClientFacet{}),
 	"E645E8B3-569D-4C55-B1EB-5D01F6F150AC": reflect.TypeOf(TerritoryDetectorComponentServerFacet{}),
+	"B565FDCA-4CF3-46DC-B2B8-506829883905": reflect.TypeOf(TerritoryEntryData{}),
 	"76C164A9-49EB-444A-B120-31A84485C4A3": reflect.TypeOf(TerritoryGovernanceComponent{}),
 	"C01E7DEB-CA8F-4AC9-AD49-65B5DEC1D187": reflect.TypeOf(TerritoryGovernanceComponentClientFacet{}),
 	"38839367-031E-4875-8AC9-CDB3F539B4F6": reflect.TypeOf(TerritoryGovernanceComponentServerFacet{}),
@@ -1518,6 +1739,8 @@ var GENERATED = map[string]reflect.Type{
 	"06D4DFD6-2F0B-4576-B5EE-0CA74B207630": reflect.TypeOf(TimeOfDayConstraintComponentServerFacet{}),
 	"CC0B1060-4410-4787-85D3-301D52F0C955": reflect.TypeOf(TimeOfDayPOIComponent{}),
 	"3E64FB88-5593-47D4-9AA5-2C5FFF5FF439": reflect.TypeOf(TimeOfDayPOIConfig{}),
+	"FF0B0821-A56A-4C61-BF82-F8F826BB129F": reflect.TypeOf(Timeline{}),
+	"D8D4045D-FFA2-40DF-9454-476CA09C901D": reflect.TypeOf(TimelineClip{}),
 	"711F015C-C03B-4735-8C69-B21A224EF2DD": reflect.TypeOf(TimelineComponent{}),
 	"39426C2E-3592-46AB-A768-D29C4A7CF686": reflect.TypeOf(TimelineComponentClientFacet{}),
 	"1B39EC97-1D35-403A-A83B-C6BA1CBDA904": reflect.TypeOf(TimelineComponentServerFacet{}),
@@ -1525,6 +1748,9 @@ var GENERATED = map[string]reflect.Type{
 	"B0D91CF6-EF57-4A40-81B0-992CBEAA804D": reflect.TypeOf(TimelineControllerComponentClientFacet{}),
 	"2CAC6364-CF8C-4850-89D2-67C1B65961DB": reflect.TypeOf(TimelineControllerComponentServerFacet{}),
 	"E14CF7D7-9F3B-4AAE-A320-A284DFFD02EE": reflect.TypeOf(TimelineEntry{}),
+	"F99A21AB-F403-4B90-AD52-25EE26C36F25": reflect.TypeOf(TimelineLayer{}),
+	"CDAAD694-9A24-491F-A468-6D2D83FA4E8D": reflect.TypeOf(TimelinePause{}),
+	"52AAA346-3A16-46DD-899C-2CA7EFD3F773": reflect.TypeOf(TimelineStart{}),
 	"C94C3AF5-A62D-4397-AAE2-969527C65150": reflect.TypeOf(TippingPoolComponent{}),
 	"FC52D29B-2B86-4632-BC7D-0CF98B68CA8E": reflect.TypeOf(TippingPoolComponentClientFacet{}),
 	"0B0D8151-3C8D-4BB5-9429-52C358928D6B": reflect.TypeOf(TippingPoolComponentServerFacet{}),
@@ -1537,6 +1763,7 @@ var GENERATED = map[string]reflect.Type{
 	"E39C42D5-A8CA-44CC-A482-B6793003DB7D": reflect.TypeOf(TransactionComponent{}),
 	"5BD20859-D08D-4AE8-80A7-86C4F8D18F91": reflect.TypeOf(TransactionComponentClientFacet{}),
 	"BCB3033E-6142-4342-BFA2-A3FF476ABE2B": reflect.TypeOf(TransactionComponentServerFacet{}),
+	"0E0EF911-F8E7-4D3C-AFAA-68D5D370F244": reflect.TypeOf(Transform{}),
 	"22B10178-39B6-4C12-BB37-77DB45FDD3B6": reflect.TypeOf(TransformComponent{}),
 	"96E1730A-AD0F-4AA6-A198-CB28F7717D66": reflect.TypeOf(TransformLinkChildComponent{}),
 	"EC137F00-1586-493C-9987-68B623754777": reflect.TypeOf(TransformLinkChildComponentClientFacet{}),
@@ -1570,6 +1797,7 @@ var GENERATED = map[string]reflect.Type{
 	"30F71DED-9735-41D3-9DB2-A8617020030D": reflect.TypeOf(TriggerAreaPlayerCutsceneComponent{}),
 	"28AEA560-D436-447F-BA2B-1C41FC6842B8": reflect.TypeOf(TriggerAreaPlayerCutsceneComponentClientFacet{}),
 	"E9F30616-FB4A-4E88-8903-0698AE767B7A": reflect.TypeOf(TriggerAreaPlayerCutsceneComponentServerFacet{}),
+	"0D3B86F8-458D-4045-8CE6-24A8D4A83859": reflect.TypeOf(TriggerEntity{}),
 	"1A4BAC98-275D-487A-88D7-F0B69CFA342F": reflect.TypeOf(TriggerEntityComponent{}),
 	"351A7CBF-29C9-4F89-92B9-0A205780A01B": reflect.TypeOf(TriggerEntityComponentClientFacet{}),
 	"2272FD74-E1AA-4AF1-ABC9-E56D936532E0": reflect.TypeOf(TriggerEntityComponentServerFacet{}),
@@ -1600,6 +1828,8 @@ var GENERATED = map[string]reflect.Type{
 	"C7FD75B7-A776-4654-8A90-4EA3A1C74BB7": reflect.TypeOf(UITriggerEventComponentServerFacet{}),
 	"0B66E343-C513-5EB3-B152-770C4628BB73": reflect.TypeOf(UUID_0B66E343_C513_5EB3_B152_770C4628BB73{}),
 	"12E435DD-B28E-5082-8E17-67F1BBC894B1": reflect.TypeOf(UUID_12E435DD_B28E_5082_8E17_67F1BBC894B1{}),
+	"14F31861-6045-5B62-B6D2-1FA6DA976FB8": reflect.TypeOf(UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8{}),
+	"16738E68-CBA3-4B1E-948C-D30E5C5189F6": reflect.TypeOf(UUID_16738E68_CBA3_4B1E_948C_D30E5C5189F6{}),
 	"1937FE82-E3FC-4F21-9788-8BDFEC29A43B": reflect.TypeOf(UUID_1937FE82_E3FC_4F21_9788_8BDFEC29A43B{}),
 	"1CED0D23-5BD7-50DD-80BB-21B6081B8F00": reflect.TypeOf(UUID_1CED0D23_5BD7_50DD_80BB_21B6081B8F00{}),
 	"283F62D6-A310-5D1E-A38E-409DB6C165A4": reflect.TypeOf(UUID_283F62D6_A310_5D1E_A38E_409DB6C165A4{}),
@@ -1607,11 +1837,15 @@ var GENERATED = map[string]reflect.Type{
 	"2C4AB36A-7ABB-5DEB-B4BB-9F033FA9E3B7": reflect.TypeOf(UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7{}),
 	"2F09439E-051F-5360-859E-55EAB094FEB5": reflect.TypeOf(UUID_2F09439E_051F_5360_859E_55EAB094FEB5{}),
 	"31D79E49-9CD5-51BF-8403-F9A16BEDECF5": reflect.TypeOf(UUID_31D79E49_9CD5_51BF_8403_F9A16BEDECF5{}),
+	"32737B9C-7A9F-547A-868D-79E601645FC8": reflect.TypeOf(UUID_32737B9C_7A9F_547A_868D_79E601645FC8{}),
 	"33C158B9-7C9D-54C1-AE8E-ED3C7F5B77C6": reflect.TypeOf(UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6{}),
+	"344F38EA-4D1D-5D55-83C1-5F6060C0A09D": reflect.TypeOf(UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D{}),
+	"363ED6CD-26B0-5FB8-BF5C-A0320F380286": reflect.TypeOf(UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286{}),
 	"36675533-C431-4EAD-9883-846E3696BF99": reflect.TypeOf(UUID_36675533_C431_4EAD_9883_846E3696BF99{}),
 	"3B1D6FE2-1CA5-51ED-A0B2-99392B9AE7D1": reflect.TypeOf(UUID_3B1D6FE2_1CA5_51ED_A0B2_99392B9AE7D1{}),
 	"3B429139-BF67-557B-B347-D0A61D4F47B1": reflect.TypeOf(UUID_3B429139_BF67_557B_B347_D0A61D4F47B1{}),
 	"3C9D208A-2E62-51E2-8AA1-5B6BB7473A52": reflect.TypeOf(UUID_3C9D208A_2E62_51E2_8AA1_5B6BB7473A52{}),
+	"3EDC016A-52CF-5BB9-B450-2550DB28F9E2": reflect.TypeOf(UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2{}),
 	"4E495371-25FE-5D42-8E40-AE22C9C5DE42": reflect.TypeOf(UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42{}),
 	"54CB00F3-C64E-48B9-9779-859545BF46B3": reflect.TypeOf(UUID_54CB00F3_C64E_48B9_9779_859545BF46B3{}),
 	"59EAF609-9D81-561C-A744-77F737CF92C4": reflect.TypeOf(UUID_59EAF609_9D81_561C_A744_77F737CF92C4{}),
@@ -1619,37 +1853,51 @@ var GENERATED = map[string]reflect.Type{
 	"5A67F793-0D02-4FAC-876D-131A40642505": reflect.TypeOf(UUID_5A67F793_0D02_4FAC_876D_131A40642505{}),
 	"5B5C3E6D-91FC-5863-96CA-57879B448A3C": reflect.TypeOf(UUID_5B5C3E6D_91FC_5863_96CA_57879B448A3C{}),
 	"5C2BE455-C7DE-5AC4-A834-88E740CFF639": reflect.TypeOf(UUID_5C2BE455_C7DE_5AC4_A834_88E740CFF639{}),
+	"6270FE26-CE9D-5972-B088-E57B8E6D9F66": reflect.TypeOf(UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66{}),
 	"6434A20B-A21D-5575-AEC5-5A7319FBC3FB": reflect.TypeOf(UUID_6434A20B_A21D_5575_AEC5_5A7319FBC3FB{}),
 	"65CDD55C-BE9B-5689-8E2C-A4117FF26F6E": reflect.TypeOf(UUID_65CDD55C_BE9B_5689_8E2C_A4117FF26F6E{}),
+	"661C1835-82E9-519E-852C-4586C3435B17": reflect.TypeOf(UUID_661C1835_82E9_519E_852C_4586C3435B17{}),
 	"69C38C99-611D-49F8-AE99-F42D54777FA9": reflect.TypeOf(UUID_69C38C99_611D_49F8_AE99_F42D54777FA9{}),
 	"6C3DEDA3-D591-59B8-80FF-4148F8C2A5EC": reflect.TypeOf(UUID_6C3DEDA3_D591_59B8_80FF_4148F8C2A5EC{}),
 	"6D152BFE-EC46-52D0-9F1A-24DD1151F86B": reflect.TypeOf(UUID_6D152BFE_EC46_52D0_9F1A_24DD1151F86B{}),
+	"734B2005-8CD7-5561-B79F-58ED4EB9C0C2": reflect.TypeOf(UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2{}),
 	"777E8FDA-6A1B-55FD-BAF9-8AFF3C0B7397": reflect.TypeOf(UUID_777E8FDA_6A1B_55FD_BAF9_8AFF3C0B7397{}),
 	"77B3BC35-E577-5281-AEBE-11C0E1B622BF": reflect.TypeOf(UUID_77B3BC35_E577_5281_AEBE_11C0E1B622BF{}),
 	"7FF36F26-644E-5051-84BB-AE54534C84D4": reflect.TypeOf(UUID_7FF36F26_644E_5051_84BB_AE54534C84D4{}),
 	"87148FED-8B47-5174-827C-10619D3D79F2": reflect.TypeOf(UUID_87148FED_8B47_5174_827C_10619D3D79F2{}),
 	"877C4A33-39B5-51D7-948D-F97DB81372A1": reflect.TypeOf(UUID_877C4A33_39B5_51D7_948D_F97DB81372A1{}),
+	"9266A50C-9EAF-5EF7-9288-C88C54C28EFA": reflect.TypeOf(UUID_9266A50C_9EAF_5EF7_9288_C88C54C28EFA{}),
 	"945D6962-DF72-5875-861B-52D14D233D65": reflect.TypeOf(UUID_945D6962_DF72_5875_861B_52D14D233D65{}),
+	"98F0B819-838F-5548-B645-4CF0959F2D43": reflect.TypeOf(UUID_98F0B819_838F_5548_B645_4CF0959F2D43{}),
+	"9C719DD5-F8D3-59D3-B55B-627422922A43": reflect.TypeOf(UUID_9C719DD5_F8D3_59D3_B55B_627422922A43{}),
 	"9D2F173A-AE75-4A1E-8F6F-D476C587F313": reflect.TypeOf(UUID_9D2F173A_AE75_4A1E_8F6F_D476C587F313{}),
 	"AC608BE6-77F3-5AF5-A7A9-607621389D91": reflect.TypeOf(UUID_AC608BE6_77F3_5AF5_A7A9_607621389D91{}),
 	"AD73F519-A850-4FF0-8733-E7AC9D228C8B": reflect.TypeOf(UUID_AD73F519_A850_4FF0_8733_E7AC9D228C8B{}),
 	"B27B9A2C-895B-5DBE-813D-DD7A16EBE833": reflect.TypeOf(UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833{}),
 	"B6E08B3F-F4E1-50C2-8752-3CF3C4AB414A": reflect.TypeOf(UUID_B6E08B3F_F4E1_50C2_8752_3CF3C4AB414A{}),
+	"BC2FD03C-7FA0-5D12-B681-C5266456E0EC": reflect.TypeOf(UUID_BC2FD03C_7FA0_5D12_B681_C5266456E0EC{}),
 	"BD28477A-6D73-5D2E-B509-5FD32A06F475": reflect.TypeOf(UUID_BD28477A_6D73_5D2E_B509_5FD32A06F475{}),
+	"BD7E940E-6D84-5185-87C3-99D6C8DB63E0": reflect.TypeOf(UUID_BD7E940E_6D84_5185_87C3_99D6C8DB63E0{}),
 	"BF40FF0C-C902-53C4-9B81-38881BB92E54": reflect.TypeOf(UUID_BF40FF0C_C902_53C4_9B81_38881BB92E54{}),
+	"C2FD8C07-90D3-5D02-BAB7-B1FAC968C43F": reflect.TypeOf(UUID_C2FD8C07_90D3_5D02_BAB7_B1FAC968C43F{}),
 	"CDADEE50-C32A-5AC5-9422-C61083EF25ED": reflect.TypeOf(UUID_CDADEE50_C32A_5AC5_9422_C61083EF25ED{}),
 	"CDD27E9C-1D94-52BC-9A97-A75DCCF349F6": reflect.TypeOf(UUID_CDD27E9C_1D94_52BC_9A97_A75DCCF349F6{}),
+	"D65E4F21-2DC2-5FF9-B67E-8A79EB8A0082": reflect.TypeOf(UUID_D65E4F21_2DC2_5FF9_B67E_8A79EB8A0082{}),
 	"D71FB08F-8229-5A55-A084-15787BDB9764": reflect.TypeOf(UUID_D71FB08F_8229_5A55_A084_15787BDB9764{}),
 	"D8B4529D-EDDB-525C-BA46-09A63951E5FD": reflect.TypeOf(UUID_D8B4529D_EDDB_525C_BA46_09A63951E5FD{}),
 	"DB52AACF-0A06-572D-8DC2-A36C84FE19C6": reflect.TypeOf(UUID_DB52AACF_0A06_572D_8DC2_A36C84FE19C6{}),
+	"DE1CB64D-EBC4-583E-AF31-EB257B8AC677": reflect.TypeOf(UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677{}),
 	"E42047B1-C78D-5B68-8B27-DFBC3E14994A": reflect.TypeOf(UUID_E42047B1_C78D_5B68_8B27_DFBC3E14994A{}),
 	"E876F68C-57D8-54F0-826C-9ADC5D082850": reflect.TypeOf(UUID_E876F68C_57D8_54F0_826C_9ADC5D082850{}),
+	"EE7708E0-79E7-5085-A0F2-81EEF4527CBC": reflect.TypeOf(UUID_EE7708E0_79E7_5085_A0F2_81EEF4527CBC{}),
 	"F54891FA-D2F9-503D-9E59-3680D40B1262": reflect.TypeOf(UUID_F54891FA_D2F9_503D_9E59_3680D40B1262{}),
 	"F6E6495E-59A8-5724-8DE1-D6B68162DB92": reflect.TypeOf(UUID_F6E6495E_59A8_5724_8DE1_D6B68162DB92{}),
 	"F7F30D6D-06D0-5533-ACB3-8FBE9D047904": reflect.TypeOf(UUID_F7F30D6D_06D0_5533_ACB3_8FBE9D047904{}),
 	"F8EAF34E-7A4A-436F-8A8A-141D8F3459A2": reflect.TypeOf(UUID_F8EAF34E_7A4A_436F_8A8A_141D8F3459A2{}),
 	"FD14840B-21BD-5C50-9FAC-D20CE0B95474": reflect.TypeOf(UUID_FD14840B_21BD_5C50_9FAC_D20CE0B95474{}),
 	"FDBD40B4-8A70-5B23-BCE7-A717BA039A86": reflect.TypeOf(UUID_FDBD40B4_8A70_5B23_BCE7_A717BA039A86{}),
+	"FFA1E556-F423-5A4D-AE2C-8F30D28BE5FD": reflect.TypeOf(UUID_FFA1E556_F423_5A4D_AE2C_8F30D28BE5FD{}),
+	"3AABE13D-4482-4DFE-8EF5-B843F5606E7F": reflect.TypeOf(UiAdditionalInfoType{}),
 	"B2E9F22C-8DB5-40FA-9DF1-276E91BA8B95": reflect.TypeOf(UiAnimParamData{}),
 	"2592269B-EF74-4409-B29F-682DC0B45DAF": reflect.TypeOf(UiAnimationSystem{}),
 	"7329DFE8-0F3C-4629-B395-78B2CF646B96": reflect.TypeOf(UiButtonComponent{}),
@@ -1657,6 +1905,8 @@ var GENERATED = map[string]reflect.Type{
 	"68D62281-B360-4426-AACA-E8BDE8BFEB3A": reflect.TypeOf(UiCheckboxComponent{}),
 	"A1AB7323-837F-43E1-9E41-23BD4932E2D3": reflect.TypeOf(UiDamageNumberAnchorComponent{}),
 	"FE8D6FF2-77E2-480D-A2DF-2911312C5026": reflect.TypeOf(UiDamageNumberComponent{}),
+	"7CC2B992-1C5B-4B27-BCB9-790175F09DA6": reflect.TypeOf(UiDatabase{}),
+	"A1119A25-48F3-4585-A078-26EF4CBB23E6": reflect.TypeOf(UiDelayedInteractionData{}),
 	"3C909D7B-EC4E-4474-85E2-E923D39BA42D": reflect.TypeOf(UiDesaturatorComponent{}),
 	"C96B1EEF-033A-479B-829B-ED3555D0F33A": reflect.TypeOf(UiDraggableComponent{}),
 	"E4B8ACE0-FCE7-42D8-9836-942F910168B4": reflect.TypeOf(UiDropTargetComponent{}),
@@ -1671,6 +1921,11 @@ var GENERATED = map[string]reflect.Type{
 	"BDBEFD23-DBB4-4726-A32D-4FEAC24E51F6": reflect.TypeOf(UiImageComponent{}),
 	"2422EC06-9003-4165-A609-9D6AB90C2332": reflect.TypeOf(UiImageRepeaterComponent{}),
 	"BFAC7909-3A56-4980-AF7C-261A99D6371B": reflect.TypeOf(UiImageSequenceComponent{}),
+	"BA36E7E7-3B73-480E-BEF9-4D80C17D2745": reflect.TypeOf(UiInteractActionType{}),
+	"2E72BBBE-7A5A-4D26-B26F-3F50D648664E": reflect.TypeOf(UiInteractAvailabilityData{}),
+	"54315677-23C8-48BC-BE6B-F39E9E8097D4": reflect.TypeOf(UiInteractInputType{}),
+	"DCE8218D-42FB-48B5-BAD1-3ED6A88A185D": reflect.TypeOf(UiInteractOptionCategory{}),
+	"75EFB374-E8B8-478E-921D-37D58C6605EF": reflect.TypeOf(UiInteractPrivilegeId{}),
 	"A42EB486-1C89-434C-AD22-A3FC6CEEC46F": reflect.TypeOf(UiInteractableComponent{}),
 	"ABCD5D45-CC47-4C17-8D21-9471032618F6": reflect.TypeOf(UiInteractableStateAlpha{}),
 	"D7978A94-592F-4E1A-86EF-E34A819A55FB": reflect.TypeOf(UiInteractableStateColor{}),
@@ -1708,12 +1963,15 @@ var GENERATED = map[string]reflect.Type{
 	"2CB3872B-D2B4-4DDB-B39A-97492310AE11": reflect.TypeOf(UiTextInputComponent{}),
 	"2751A5A5-3291-4A4D-9FC0-9CB0EB8D1DE6": reflect.TypeOf(UiTransform2dComponent{}),
 	"1AFB26D6-E891-406A-9DED-862B9D9C708C": reflect.TypeOf(UiTriggerAreaEventComponent{}),
+	"A4422AEA-6278-4CD0-90F0-2490E32668C0": reflect.TypeOf(UnTriggerEntity{}),
+	"EBC0595E-4ADB-4323-9527-82D07E30908C": reflect.TypeOf(UnifiedInteractData{}),
 	"18FFC90D-E89A-4CA5-88AC-67BC8A497EA7": reflect.TypeOf(UnifiedInteractOptionComponent{}),
 	"9299475D-B524-487D-9B19-697B55017225": reflect.TypeOf(UnifiedInteractOptionsComponent{}),
 	"194B3BCF-E9B8-444B-951C-0914BA5328E7": reflect.TypeOf(UnstuckComponent{}),
 	"D654805E-DAF8-43F5-887C-79B658625BF9": reflect.TypeOf(UnstuckComponentClientFacet{}),
 	"27E8B9D2-BF1C-49B8-9696-32F23DEE1B59": reflect.TypeOf(UnstuckComponentServerFacet{}),
 	"DA83400A-0CBC-4639-86BB-635F97C375A7": reflect.TypeOf(Us_west_2{}),
+	"4F986681-3060-4A47-9A45-694A027E5F46": reflect.TypeOf(ValidGroupData{}),
 	"FB77698E-9828-F02A-A66E-7A66C7082857": reflect.TypeOf(ValidateTerrainComponent{}),
 	"20A804CC-C813-44B2-B600-237F4A57394B": reflect.TypeOf(ValidateTerrainComponentClientFacet{}),
 	"B314FD81-1366-4880-9EDB-3DBF96343AD1": reflect.TypeOf(ValidateTerrainComponentServerFacet{}),
@@ -1776,6 +2034,7 @@ var GENERATED = map[string]reflect.Type{
 	"53E3290B-D740-4746-B0D7-88894ADD0C41": reflect.TypeOf(VegetationWaterDepthFilterConfig{}),
 	"EBE98B36-0783-5226-9739-064BD41EBB52": reflect.TypeOf(VertexContainer_Vector2__{}),
 	"A6F50685-C884-50C6-AD08-123028C77954": reflect.TypeOf(VertexContainer_Vector3__{}),
+	"F15EF74D-1520-4B40-BA45-9FA7E47F32E1": reflect.TypeOf(VirtualAudioTriggerConfigAsset{}),
 	"CD3CCD34-BDC0-4329-B4AD-634618C3CEBF": reflect.TypeOf(VisionPerceptionProfile{}),
 	"0C848755-1F41-4408-B2BE-0A3627674F50": reflect.TypeOf(VitalsComponent{}),
 	"DE603F49-4B80-426D-9DD0-2DD1748ED000": reflect.TypeOf(VitalsComponentClientFacet{}),
@@ -1795,9 +2054,12 @@ var GENERATED = map[string]reflect.Type{
 	"8C475E53-F464-4537-8026-A44D787326B9": reflect.TypeOf(WarCampComponentClientFacet{}),
 	"97A2BD99-EA80-40E8-B864-D04ACE58A1A8": reflect.TypeOf(WarCampComponentServerFacet{}),
 	"FFC155EF-A269-4D6E-A034-1FE7A4295BDC": reflect.TypeOf(WarCampSpawn{}),
+	"15829599-0D65-4FB3-ABF7-10830776530D": reflect.TypeOf(WarColorData{}),
+	"4FEBCF31-140C-4EF1-8C53-814DAA4426AC": reflect.TypeOf(WarData{}),
 	"8070BEFC-5E8B-45CD-B8A7-E8C5F4D9FF02": reflect.TypeOf(WarDataComponent{}),
 	"450A84C8-CCCC-4041-BF2D-346B523C88EF": reflect.TypeOf(WarDataComponentClientFacet{}),
 	"0C15DFBA-3D49-4D85-A3F5-AF93BDD3BC9D": reflect.TypeOf(WarDataComponentServerFacet{}),
+	"FDA4A41D-1FC4-4038-B3B8-A8725DB08A24": reflect.TypeOf(WarDeployableLimitData{}),
 	"19E37D4C-CDDE-40CF-B80B-0D8668917EAB": reflect.TypeOf(WarboardComponent{}),
 	"02196E5E-69CC-46C1-8C95-6616DD9FC33D": reflect.TypeOf(WarboardComponentClientFacet{}),
 	"072664FA-24C1-4D6B-9B00-F039F275435B": reflect.TypeOf(WarboardComponentServerFacet{}),
@@ -1826,6 +2088,12 @@ var GENERATED = map[string]reflect.Type{
 	"AB92ADDD-F660-4F0A-A74D-B11C1A4EE191": reflect.TypeOf(WorldBoundTrackerComponentServerFacet{}),
 }
 
+type AIAudioTrigger struct {
+	Audioradius AzFloat32 `crc:"3554029061"`
+	Soundtype   AzUInt8   `crc:"1802146231"`
+	Triggername AzString  `crc:"393454930"`
+}
+
 type AIConstraintComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -1836,7 +2104,7 @@ type AIConstraintComponentClientFacet struct {
 
 type AIConstraintComponentServerFacet struct {
 	BaseClass1        SpawnerConstraintComponentServerFacet `crc:"3566360373"`
-	M_configoverrides AZStd__vector_2                       `crc:"1630591068"`
+	M_configoverrides AZStd__vector_60                      `crc:"1630591068"`
 	M_priority        AzUInt8                               `crc:"1845258847"`
 }
 
@@ -1870,8 +2138,8 @@ type AIObjectiveManagerComponentServerFacet struct {
 }
 
 type AIPathComponent struct {
-	BaseClass1    FacetedComponent `crc:"3566360373"`
-	M_waypointids AZStd__vector_44 `crc:"250156812"`
+	BaseClass1    FacetedComponent  `crc:"3566360373"`
+	M_waypointids AZStd__vector_169 `crc:"250156812"`
 }
 
 type AIPathComponentClientFacet struct {
@@ -1883,7 +2151,7 @@ type AIPathComponentServerFacet struct {
 	M_controllerdefinition AzFramework__SimpleAssetReference_LmbrCentral__MannequinControllerDefinitionAsset_ `crc:"1272076662"`
 	M_depthtest            AzBool                                                                             `crc:"234801921"`
 	M_pathtravesalpolicy   AzUInt8                                                                            `crc:"1402801485"`
-	M_waypointentities     AZStd__vector_55                                                                   `crc:"4270433310"`
+	M_waypointentities     AZStd__vector_71                                                                   `crc:"4270433310"`
 }
 
 type AIPatrolComponent struct {
@@ -2017,16 +2285,28 @@ type ALCScopeData struct {
 	Scopename AzString                                                                        `crc:"690627596"`
 }
 
+type AZStd__array struct {
+	Element []AzUInt32 `crc:"1094737465"`
+}
+
+type AZStd__array_0 struct {
+	Element []AzInt32 `crc:"1094737465"`
+}
+
+type AZStd__array_1 struct {
+	Element []AzUInt32 `crc:"1094737465"`
+}
+
 type AZStd__fixed_vector struct {
 	Element []AzString `crc:"1094737465"`
 }
 
 type AZStd__intrusive_ptr struct {
-	Element any `crc:"1094737465"`
+	Element TUiAnimSplineTrack_Vec2__ `crc:"1094737465"`
 }
 
 type AZStd__intrusive_ptr_0 struct {
-	Element CUiAnimSequence `crc:"1094737465"`
+	Element any `crc:"1094737465"`
 }
 
 type AZStd__intrusive_ptr_1 struct {
@@ -2034,27 +2314,31 @@ type AZStd__intrusive_ptr_1 struct {
 }
 
 type AZStd__intrusive_ptr_2 struct {
-	Element TUiAnimSplineTrack_Vec2__ `crc:"1094737465"`
+	Element CUiAnimSequence `crc:"1094737465"`
 }
 
 type AZStd__intrusive_ptr_3 struct {
-	Element CAnimSequence `crc:"1094737465"`
-}
-
-type AZStd__intrusive_ptr_4 struct {
 	Element CUiAnimAzEntityNode `crc:"1094737465"`
 }
 
+type AZStd__intrusive_ptr_4 struct {
+	Element CAnimSequence `crc:"1094737465"`
+}
+
+type AZStd__intrusive_ptr_5 struct {
+	Element any `crc:"1094737465"`
+}
+
 type AZStd__list struct {
-	Element []FxScriptMaterialRefHelper `crc:"1094737465"`
+	Element []SkinToneTransformData `crc:"1094737465"`
 }
 
 type AZStd__list_0 struct {
-	Element AnimatedLayer `crc:"1094737465"`
+	Element []HairTransfomData `crc:"1094737465"`
 }
 
 type AZStd__list_1 struct {
-	Element []EntityId `crc:"1094737465"`
+	Element []FxScriptMaterialRefHelper `crc:"1094737465"`
 }
 
 type AZStd__list_2 struct {
@@ -2062,36 +2346,117 @@ type AZStd__list_2 struct {
 }
 
 type AZStd__list_3 struct {
+	Element AnimatedLayer `crc:"1094737465"`
 }
 
 type AZStd__list_4 struct {
-	Element []AzString `crc:"1094737465"`
 }
 
 type AZStd__list_5 struct {
 }
 
+type AZStd__list_6 struct {
+	Element []EntityId `crc:"1094737465"`
+}
+
+type AZStd__list_7 struct {
+	Element []AzString `crc:"1094737465"`
+}
+
 type AZStd__map struct {
-}
-
-type AZStd__map_0 struct {
-}
-
-type AZStd__map_1 struct {
-	Element []UUID_59FE499C_650B_50BD_AC05_909D3D56505C `crc:"1094737465"`
-}
-
-type AZStd__map_2 struct {
-	Element []UUID_DB52AACF_0A06_572D_8DC2_A36C84FE19C6 `crc:"1094737465"`
-}
-
-type AZStd__map_3 struct {
 	Element []UUID_FD14840B_21BD_5C50_9FAC_D20CE0B95474 `crc:"1094737465"`
 }
 
+type AZStd__map_0 struct {
+	Element []AZStd__pair_6 `crc:"1094737465"`
+}
+
+type AZStd__map_1 struct {
+	Element []UUID_DB52AACF_0A06_572D_8DC2_A36C84FE19C6 `crc:"1094737465"`
+}
+
+type AZStd__map_2 struct {
+	Element []UUID_59FE499C_650B_50BD_AC05_909D3D56505C `crc:"1094737465"`
+}
+
+type AZStd__map_3 struct {
+	Element []AZStd__pair_8 `crc:"1094737465"`
+}
+
+type AZStd__map_4 struct {
+	Element []UUID_9266A50C_9EAF_5EF7_9288_C88C54C28EFA `crc:"1094737465"`
+}
+
+type AZStd__map_5 struct {
+	Element []AZStd__pair_0 `crc:"1094737465"`
+}
+
+type AZStd__map_6 struct {
+}
+
+type AZStd__map_7 struct {
+	Element []AZStd__pair_3 `crc:"1094737465"`
+}
+
+type AZStd__map_8 struct {
+	Element []AZStd__pair_4 `crc:"1094737465"`
+}
+
+type AZStd__map_9 struct {
+}
+
+type AZStd__map_10 struct {
+	Element []AZStd__pair_5 `crc:"1094737465"`
+}
+
 type AZStd__pair struct {
+	Value1 AzInt32 `crc:"2725604442"`
+	Value2 AzInt32 `crc:"997998048"`
+}
+
+type AZStd__pair_0 struct {
+	Value1 AzString         `crc:"2725604442"`
+	Value2 RangedAttackData `crc:"997998048"`
+}
+
+type AZStd__pair_1 struct {
+	Value1 AzString                   `crc:"2725604442"`
+	Value2 GuildSiegeWindowRegionData `crc:"997998048"`
+}
+
+type AZStd__pair_2 struct {
 	Value1 EntityId `crc:"2725604442"`
 	Value2 EntityId `crc:"997998048"`
+}
+
+type AZStd__pair_3 struct {
+	Value1 AzInt32                `crc:"2725604442"`
+	Value2 ContractBuySellFeeData `crc:"997998048"`
+}
+
+type AZStd__pair_4 struct {
+	Value1 AzString `crc:"2725604442"`
+	Value2 AzString `crc:"997998048"`
+}
+
+type AZStd__pair_5 struct {
+	Value1 AzString              `crc:"2725604442"`
+	Value2 DefaultAppearanceData `crc:"997998048"`
+}
+
+type AZStd__pair_6 struct {
+	Value1 AzInt32 `crc:"2725604442"`
+	Value2 AzColor `crc:"997998048"`
+}
+
+type AZStd__pair_7 struct {
+	Value1 AzInt32 `crc:"2725604442"`
+	Value2 AzInt32 `crc:"997998048"`
+}
+
+type AZStd__pair_8 struct {
+	Value1 AzString           `crc:"2725604442"`
+	Value2 RangedAttackData_0 `crc:"997998048"`
 }
 
 type AZStd__shared_ptr struct {
@@ -2114,11 +2479,11 @@ type AZStd__shared_ptr_3 struct {
 }
 
 type AZStd__shared_ptr_4 struct {
-	Element PolygonPrism `crc:"1094737465"`
+	Element any `crc:"1094737465"`
 }
 
 type AZStd__shared_ptr_5 struct {
-	Element any `crc:"1094737465"`
+	Element PolygonPrism `crc:"1094737465"`
 }
 
 type AZStd__unique_ptr struct {
@@ -2126,14 +2491,21 @@ type AZStd__unique_ptr struct {
 }
 
 type AZStd__unordered_flat_map struct {
-	Element []UUID_E42047B1_C78D_5B68_8B27_DFBC3E14994A `crc:"1094737465"`
 }
 
 type AZStd__unordered_flat_map_0 struct {
+}
+
+type AZStd__unordered_flat_map_1 struct {
 	Element []UUID_F7F30D6D_06D0_5533_ACB3_8FBE9D047904 `crc:"1094737465"`
 }
 
+type AZStd__unordered_flat_map_2 struct {
+	Element []UUID_E42047B1_C78D_5B68_8B27_DFBC3E14994A `crc:"1094737465"`
+}
+
 type AZStd__unordered_map struct {
+	Element []AZStd__pair_1 `crc:"1094737465"`
 }
 
 type AZStd__unordered_map_0 struct {
@@ -2157,12 +2529,21 @@ type AZStd__unordered_map_5 struct {
 type AZStd__unordered_map_6 struct {
 }
 
+type AZStd__unordered_map_7 struct {
+}
+
+type AZStd__unordered_map_8 struct {
+	Element []UUID_EE7708E0_79E7_5085_A0F2_81EEF4527CBC `crc:"1094737465"`
+}
+
+type AZStd__unordered_map_9 struct {
+}
+
 type AZStd__unordered_set struct {
-	Element []EntityId `crc:"1094737465"`
 }
 
 type AZStd__unordered_set_0 struct {
-	Element []Crc32 `crc:"1094737465"`
+	Element []AzUInt32 `crc:"1094737465"`
 }
 
 type AZStd__unordered_set_1 struct {
@@ -2170,471 +2551,700 @@ type AZStd__unordered_set_1 struct {
 }
 
 type AZStd__unordered_set_2 struct {
-}
-
-type AZStd__vector struct {
-	Element []AZStd__intrusive_ptr_1 `crc:"1094737465"`
-}
-
-type AZStd__vector_0 struct {
-	Element []AzUInt64 `crc:"1094737465"`
-}
-
-type AZStd__vector_1 struct {
-	Element []SpawnDefinition `crc:"1094737465"`
-}
-
-type AZStd__vector_2 struct {
-	Element []UUID_2F09439E_051F_5360_859E_55EAB094FEB5 `crc:"1094737465"`
-}
-
-type AZStd__vector_3 struct {
-	Element []InputFilter `crc:"1094737465"`
-}
-
-type AZStd__vector_4 struct {
-	Element []ParticleEmitBoneLayer `crc:"1094737465"`
-}
-
-type AZStd__vector_5 struct {
-	Element []AzColor `crc:"1094737465"`
-}
-
-type AZStd__vector_6 struct {
-}
-
-type AZStd__vector_7 struct {
-	Element []VariantData `crc:"1094737465"`
-}
-
-type AZStd__vector_8 struct {
-	Element []AzAsset `crc:"1094737465"`
-}
-
-type AZStd__vector_9 struct {
-	Element DetectionVolumeEventData `crc:"1094737465"`
-}
-
-type AZStd__vector_10 struct {
-}
-
-type AZStd__vector_11 struct {
-	Element []AzVec3 `crc:"1094737465"`
-}
-
-type AZStd__vector_12 struct {
-	Element []AbilityInstanceLimit `crc:"1094737465"`
-}
-
-type AZStd__vector_13 struct {
-}
-
-type AZStd__vector_14 struct {
-	Element []BuildableGridHeightData `crc:"1094737465"`
-}
-
-type AZStd__vector_15 struct {
-	Element []TerritoryLoreData `crc:"1094737465"`
-}
-
-type AZStd__vector_16 struct {
-	Element []AzString `crc:"1094737465"`
-}
-
-type AZStd__vector_17 struct {
-	Element []DarknessLevel `crc:"1094737465"`
-}
-
-type AZStd__vector_18 struct {
-}
-
-type AZStd__vector_19 struct {
-	Element []EffectData `crc:"1094737465"`
-}
-
-type AZStd__vector_20 struct {
-	Element []LocalInteractOptionRef `crc:"1094737465"`
-}
-
-type AZStd__vector_21 struct {
-	Element []ChildEntityIdOrderEntry `crc:"1094737465"`
-}
-
-type AZStd__vector_22 struct {
-	Element []UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833 `crc:"1094737465"`
-}
-
-type AZStd__vector_23 struct {
-	Element []RuinState `crc:"1094737465"`
-}
-
-type AZStd__vector_24 struct {
-	Element []Spline__SplineKeyEx_Vec2_ `crc:"1094737465"`
-}
-
-type AZStd__vector_25 struct {
-	Element []VegetationMixedGradientLayer `crc:"1094737465"`
-}
-
-type AZStd__vector_26 struct {
-}
-
-type AZStd__vector_27 struct {
-	Element []VegetationDescriptor `crc:"1094737465"`
-}
-
-type AZStd__vector_28 struct {
-	Element []AzFloat32 `crc:"1094737465"`
-}
-
-type AZStd__vector_29 struct {
-	Element []TerritoryLandmarkData `crc:"1094737465"`
-}
-
-type AZStd__vector_30 struct {
-	Element []WarCampSpawn `crc:"1094737465"`
-}
-
-type AZStd__vector_31 struct {
-	Element []DamageState `crc:"1094737465"`
-}
-
-type AZStd__vector_32 struct {
-	Element []AbilityEditorData `crc:"1094737465"`
-}
-
-type AZStd__vector_33 struct {
-	Element []LayerEntityAssignment `crc:"1094737465"`
-}
-
-type AZStd__vector_34 struct {
-	Element ISelectKey `crc:"1094737465"`
-}
-
-type AZStd__vector_35 struct {
-	Element []GatherableRegionEntry `crc:"1094737465"`
-}
-
-type AZStd__vector_36 struct {
-	Element []EventTimelineDatapoint `crc:"1094737465"`
-}
-
-type AZStd__vector_37 struct {
-	Element []SpawnScalingSpecification `crc:"1094737465"`
-}
-
-type AZStd__vector_38 struct {
-	Element []MaterialOverrideInfo `crc:"1094737465"`
-}
-
-type AZStd__vector_39 struct {
-	Element []DarknessGroupSpecification `crc:"1094737465"`
-}
-
-type AZStd__vector_40 struct {
-	Element []LimbIKLimbConfig `crc:"1094737465"`
-}
-
-type AZStd__vector_41 struct {
-	Element []Crc32 `crc:"1094737465"`
-}
-
-type AZStd__vector_42 struct {
-	Element []NPCData `crc:"1094737465"`
-}
-
-type AZStd__vector_43 struct {
-	Element []RepulsorDescriptor `crc:"1094737465"`
-}
-
-type AZStd__vector_44 struct {
 	Element []EntityId `crc:"1094737465"`
 }
 
-type AZStd__vector_45 struct {
-	Element []AzInt32 `crc:"1094737465"`
+type AZStd__unordered_set_3 struct {
+	Element []Crc32 `crc:"1094737465"`
 }
 
-type AZStd__vector_46 struct {
-	Element []SkinMeshAttachmentVisibilityInfo `crc:"1094737465"`
-}
-
-type AZStd__vector_47 struct {
-}
-
-type AZStd__vector_48 struct {
-	Element NavigationAreaCost `crc:"1094737465"`
-}
-
-type AZStd__vector_49 struct {
-	Element AutoSpellEntry `crc:"1094737465"`
-}
-
-type AZStd__vector_50 struct {
-	Element []EncounterEntry `crc:"1094737465"`
-}
-
-type AZStd__vector_51 struct {
-	Element DarknessActivationSpecification `crc:"1094737465"`
-}
-
-type AZStd__vector_52 struct {
-	Element []AzAsset `crc:"1094737465"`
-}
-
-type AZStd__vector_53 struct {
-	Element FoundationState `crc:"1094737465"`
-}
-
-type AZStd__vector_54 struct {
-	Element []IBoolKey `crc:"1094737465"`
-}
-
-type AZStd__vector_55 struct {
-	Element []LocalEntityRef `crc:"1094737465"`
-}
-
-type AZStd__vector_56 struct {
-	Element []BuildableStateTransitionEvents `crc:"1094737465"`
-}
-
-type AZStd__vector_57 struct {
-	Element []AZ__Entity `crc:"1094737465"`
-}
-
-type AZStd__vector_58 struct {
-	Element []DetectionVolumeEvent `crc:"1094737465"`
-}
-
-type AZStd__vector_59 struct {
-	Element TutorialToastBinding `crc:"1094737465"`
-}
-
-type AZStd__vector_60 struct {
-	Element []UiTelemetryEventTypePair `crc:"1094737465"`
-}
-
-type AZStd__vector_61 struct {
-	Element []UUID_3C9D208A_2E62_51E2_8AA1_5B6BB7473A52 `crc:"1094737465"`
-}
-
-type AZStd__vector_62 struct {
-	Element []InteractOptionEntityRef `crc:"1094737465"`
-}
-
-type AZStd__vector_63 struct {
-	Element []InvasionObjectiveOffset `crc:"1094737465"`
-}
-
-type AZStd__vector_64 struct {
-	Element []TagSlicesReference `crc:"1094737465"`
-}
-
-type AZStd__vector_65 struct {
-	Element []OwnershipMessageEvent `crc:"1094737465"`
-}
-
-type AZStd__vector_66 struct {
-	Element AutoSpellRateOfFire `crc:"1094737465"`
-}
-
-type AZStd__vector_67 struct {
-	Element []AZStd__intrusive_ptr_0 `crc:"1094737465"`
-}
-
-type AZStd__vector_68 struct {
-	Element []AzAsset `crc:"1094737465"`
-}
-
-type AZStd__vector_69 struct {
-	Element []BuildableGridPointActiveData `crc:"1094737465"`
-}
-
-type AZStd__vector_70 struct {
-	Element []AzInt32 `crc:"1094737465"`
-}
-
-type AZStd__vector_71 struct {
-	Element []PlayerSetting `crc:"1094737465"`
-}
-
-type AZStd__vector_72 struct {
-	Element []BuffBucketEditorData `crc:"1094737465"`
-}
-
-type AZStd__vector_73 struct {
-	Element []AZStd__intrusive_ptr `crc:"1094737465"`
-}
-
-type AZStd__vector_74 struct {
-	Element []ScriptPropertyGroup `crc:"1094737465"`
-}
-
-type AZStd__vector_75 struct {
-	Element []AzUInt32 `crc:"1094737465"`
-}
-
-type AZStd__vector_76 struct {
-	Element []UiSpline__SplineKeyEx_Vec2_ `crc:"1094737465"`
-}
-
-type AZStd__vector_77 struct {
-	Element []EventTimelineData `crc:"1094737465"`
-}
-
-type AZStd__vector_78 struct {
-	Element []NavConfiguration `crc:"1094737465"`
-}
-
-type AZStd__vector_79 struct {
-	Element []SettlementProgressionSpawnerEntry `crc:"1094737465"`
-}
-
-type AZStd__vector_80 struct {
-	Element []EventData `crc:"1094737465"`
-}
-
-type AZStd__vector_81 struct {
-	Element []AZStd__pair `crc:"1094737465"`
-}
-
-type AZStd__vector_82 struct {
-	Element []any `crc:"1094737465"`
-}
-
-type AZStd__vector_83 struct {
-	Element []FortSpawn `crc:"1094737465"`
-}
-
-type AZStd__vector_84 struct {
-	Element []any `crc:"1094737465"`
-}
-
-type AZStd__vector_85 struct {
-	Element []HubLocalCacheDetectorDescriptor `crc:"1094737465"`
-}
-
-type AZStd__vector_86 struct {
-	Element AZStd__intrusive_ptr_2 `crc:"1094737465"`
-}
-
-type AZStd__vector_87 struct {
-	Element []BehaviorTreeAssetRef `crc:"1094737465"`
-}
-
-type AZStd__vector_88 struct {
-}
-
-type AZStd__vector_89 struct {
-	Element []ALCScopeData `crc:"1094737465"`
-}
-
-type AZStd__vector_90 struct {
-	Element []BeamAttackData `crc:"1094737465"`
-}
-
-type AZStd__vector_91 struct {
-	Element []DynamicSerializableField `crc:"1094737465"`
-}
-
-type AZStd__vector_92 struct {
-	Element []AzBool `crc:"1094737465"`
-}
-
-type AZStd__vector_93 struct {
-	Element []WaterNodeData `crc:"1094737465"`
-}
-
-type AZStd__vector_94 struct {
-	Element []AZStd__shared_ptr_5 `crc:"1094737465"`
-}
-
-type AZStd__vector_95 struct {
-	Element []AzVec2 `crc:"1094737465"`
-}
-
-type AZStd__vector_96 struct {
-	Element []IEventKey `crc:"1094737465"`
-}
-
-type AZStd__vector_97 struct {
-	Element []GatherableStateTransitionEvents `crc:"1094737465"`
-}
-
-type AZStd__vector_98 struct {
-	Element AzInt32 `crc:"1094737465"`
-}
-
-type AZStd__vector_99 struct {
-	Element []AzInt32 `crc:"1094737465"`
-}
-
-type AZStd__vector_100 struct {
-	Element []InitPaperdollData `crc:"1094737465"`
-}
-
-type AZStd__vector_101 struct {
-	Element []TimelineEntry `crc:"1094737465"`
-}
-
-type AZStd__vector_102 struct {
-	Element []TutorialToastMessageLine `crc:"1094737465"`
-}
-
-type AZStd__vector_103 struct {
+type AZStd__vector struct {
 	Element []AISpawnLocation `crc:"1094737465"`
 }
 
-type AZStd__vector_104 struct {
+type AZStd__vector_0 struct {
+	Element []PerkTierData `crc:"1094737465"`
+}
+
+type AZStd__vector_1 struct {
+	Element []FaceMarkSkinToneData `crc:"1094737465"`
+}
+
+type AZStd__vector_2 struct {
+	Element []EditCrc `crc:"1094737465"`
+}
+
+type AZStd__vector_3 struct {
+	Element []ChildEntityIdOrderEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_4 struct {
+	Element []TimelineEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_5 struct {
+	Element []Crc32 `crc:"1094737465"`
+}
+
+type AZStd__vector_6 struct {
+	Element []HairstyleVariantData `crc:"1094737465"`
+}
+
+type AZStd__vector_7 struct {
+	Element FoundationState `crc:"1094737465"`
+}
+
+type AZStd__vector_8 struct {
+	Element []DynamicSerializableField `crc:"1094737465"`
+}
+
+type AZStd__vector_9 struct {
+	Element []AzString `crc:"1094737465"`
+}
+
+type AZStd__vector_10 struct {
+	Element []AIAudioTrigger `crc:"1094737465"`
+}
+
+type AZStd__vector_11 struct {
+	Element []GatheringActionData `crc:"1094737465"`
+}
+
+type AZStd__vector_12 struct {
+	Element []RuinState `crc:"1094737465"`
+}
+
+type AZStd__vector_13 struct {
+	Element []DarknessLevel `crc:"1094737465"`
+}
+
+type AZStd__vector_14 struct {
+	Element []ProgressionSpawnerEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_15 struct {
 	Element []AzFloat64 `crc:"1094737465"`
 }
 
-type AZStd__vector_105 struct {
-	Element LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__ContainerComponent__void__ `crc:"1094737465"`
+type AZStd__vector_16 struct {
+	Element []RefreshZoneConfiguration `crc:"1094737465"`
 }
 
-type AZStd__vector_106 struct {
-	Element []any `crc:"1094737465"`
+type AZStd__vector_17 struct {
+	Element []TagSlicesReference `crc:"1094737465"`
 }
 
-type AZStd__vector_107 struct {
-	Element []VegetationSurfaceTag `crc:"1094737465"`
+type AZStd__vector_18 struct {
+	Element []GatherableStateTransitionEvents `crc:"1094737465"`
 }
 
-type AZStd__vector_108 struct {
-	Element ICharacterKey `crc:"1094737465"`
+type AZStd__vector_19 struct {
+	Element []CurveAxis `crc:"1094737465"`
 }
 
-type AZStd__vector_109 struct {
-	Element []SliceMetaDataMeshEntry `crc:"1094737465"`
+type AZStd__vector_20 struct {
+	Element []NavConfiguration `crc:"1094737465"`
 }
 
-type AZStd__vector_110 struct {
-	Element []AzInt32 `crc:"1094737465"`
+type AZStd__vector_21 struct {
+	Element []RankData `crc:"1094737465"`
 }
 
-type AZStd__vector_111 struct {
-	Element AZStd__intrusive_ptr_4 `crc:"1094737465"`
-}
-
-type AZStd__vector_112 struct {
-	Element []BezierData `crc:"1094737465"`
-}
-
-type AZStd__vector_113 struct {
-	Element []SliceMetaDataSpawnerEntry `crc:"1094737465"`
-}
-
-type AZStd__vector_114 struct {
-	Element []EncounterRewardTier `crc:"1094737465"`
-}
-
-type AZStd__vector_115 struct {
+type AZStd__vector_22 struct {
 	Element []UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6 `crc:"1094737465"`
 }
 
-type AZStd__vector_116 struct {
+type AZStd__vector_23 struct {
+	Element []FaceMarkColorData `crc:"1094737465"`
+}
+
+type AZStd__vector_24 struct {
+	Element []DamageState `crc:"1094737465"`
+}
+
+type AZStd__vector_25 struct {
+}
+
+type AZStd__vector_26 struct {
+	Element []AzInt32 `crc:"1094737465"`
+}
+
+type AZStd__vector_27 struct {
+	Element []EffectData `crc:"1094737465"`
+}
+
+type AZStd__vector_28 struct {
+	Element []PlayerSetting `crc:"1094737465"`
+}
+
+type AZStd__vector_29 struct {
+	Element []GatheringTypeData `crc:"1094737465"`
+}
+
+type AZStd__vector_30 struct {
+	Element []MaterialOverrideInfo `crc:"1094737465"`
+}
+
+type AZStd__vector_31 struct {
+	Element []InteractOptionEntityRef `crc:"1094737465"`
+}
+
+type AZStd__vector_32 struct {
+	Element []PvpValueEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_33 struct {
+	Element []FishData `crc:"1094737465"`
+}
+
+type AZStd__vector_34 struct {
+	Element []ParticleEmitBoneLayer `crc:"1094737465"`
+}
+
+type AZStd__vector_35 struct {
+	Element []UiInteractPrivilegeId `crc:"1094737465"`
+}
+
+type AZStd__vector_36 struct {
+	Element []SpawnDefinition `crc:"1094737465"`
+}
+
+type AZStd__vector_37 struct {
+	Element []SlotData `crc:"1094737465"`
+}
+
+type AZStd__vector_38 struct {
+	Element []LimbIKLimbConfig `crc:"1094737465"`
+}
+
+type AZStd__vector_39 struct {
+	Element []ProgressionCategoryEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_40 struct {
+	Element []CurveConfiguration `crc:"1094737465"`
+}
+
+type AZStd__vector_41 struct {
+	Element []FortSpawn `crc:"1094737465"`
+}
+
+type AZStd__vector_42 struct {
+	Element []AZ__Entity `crc:"1094737465"`
+}
+
+type AZStd__vector_43 struct {
+	Element []CharacterCreationData `crc:"1094737465"`
+}
+
+type AZStd__vector_44 struct {
+	Element []EventData `crc:"1094737465"`
+}
+
+type AZStd__vector_45 struct {
+	Element []VariantData `crc:"1094737465"`
+}
+
+type AZStd__vector_46 struct {
+	Element []TutorialToastMessageLine `crc:"1094737465"`
+}
+
+type AZStd__vector_47 struct {
+	Element []TattooColorData `crc:"1094737465"`
+}
+
+type AZStd__vector_48 struct {
+	Element []BuildableGridPointActiveData `crc:"1094737465"`
+}
+
+type AZStd__vector_49 struct {
+	Element []AzInt32 `crc:"1094737465"`
+}
+
+type AZStd__vector_50 struct {
+}
+
+type AZStd__vector_51 struct {
+	Element []AzVec3 `crc:"1094737465"`
+}
+
+type AZStd__vector_52 struct {
+	Element []AzFloat32 `crc:"1094737465"`
+}
+
+type AZStd__vector_53 struct {
+	Element []AZStd__intrusive_ptr_1 `crc:"1094737465"`
+}
+
+type AZStd__vector_54 struct {
+	Element []UUID_3C9D208A_2E62_51E2_8AA1_5B6BB7473A52 `crc:"1094737465"`
+}
+
+type AZStd__vector_55 struct {
 	Element []AzFramework__SimpleAssetReference_TextureAtlasNamespace__TextureAtlasAsset_ `crc:"1094737465"`
+}
+
+type AZStd__vector_56 struct {
+	Element []SettlementProgressionSpawnerEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_57 struct {
+	Element []LayerEntityAssignment `crc:"1094737465"`
+}
+
+type AZStd__vector_58 struct {
+	Element []TimelineLayer `crc:"1094737465"`
+}
+
+type AZStd__vector_59 struct {
+	Element []GatheringAction `crc:"1094737465"`
+}
+
+type AZStd__vector_60 struct {
+	Element []UUID_2F09439E_051F_5360_859E_55EAB094FEB5 `crc:"1094737465"`
+}
+
+type AZStd__vector_61 struct {
+	Element []BuildableStateTransitionEvents `crc:"1094737465"`
+}
+
+type AZStd__vector_62 struct {
+	Element []AzInt32 `crc:"1094737465"`
+}
+
+type AZStd__vector_63 struct {
+}
+
+type AZStd__vector_64 struct {
+	Element []AbilityInstanceLimit `crc:"1094737465"`
+}
+
+type AZStd__vector_65 struct {
+	Element []CrestData `crc:"1094737465"`
+}
+
+type AZStd__vector_66 struct {
+}
+
+type AZStd__vector_67 struct {
+	Element []EncounterEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_68 struct {
+	Element []SkinToneData `crc:"1094737465"`
+}
+
+type AZStd__vector_69 struct {
+	Element []HairstyleData `crc:"1094737465"`
+}
+
+type AZStd__vector_70 struct {
+	Element []EncounterRewardTier `crc:"1094737465"`
+}
+
+type AZStd__vector_71 struct {
+	Element []LocalEntityRef `crc:"1094737465"`
+}
+
+type AZStd__vector_72 struct {
+	Element []AZStd__pair_2 `crc:"1094737465"`
+}
+
+type AZStd__vector_73 struct {
+	Element []AZStd__intrusive_ptr_0 `crc:"1094737465"`
+}
+
+type AZStd__vector_74 struct {
+	Element []EventNotificationData `crc:"1094737465"`
+}
+
+type AZStd__vector_75 struct {
+	Element []AZStd__shared_ptr `crc:"1094737465"`
+}
+
+type AZStd__vector_76 struct {
+	Element []RepulsorDescriptor `crc:"1094737465"`
+}
+
+type AZStd__vector_77 struct {
+	Element []AzColor `crc:"1094737465"`
+}
+
+type AZStd__vector_78 struct {
+	Element []CraftingStationData `crc:"1094737465"`
+}
+
+type AZStd__vector_79 struct {
+	Element []BuffBucketEditorData `crc:"1094737465"`
+}
+
+type AZStd__vector_80 struct {
+	Element []UUID_BC2FD03C_7FA0_5D12_B681_C5266456E0EC `crc:"1094737465"`
+}
+
+type AZStd__vector_81 struct {
+	Element []AttachmentOffsetData `crc:"1094737465"`
+}
+
+type AZStd__vector_82 struct {
+	Element []BezierData `crc:"1094737465"`
+}
+
+type AZStd__vector_83 struct {
+	Element []AzInt32 `crc:"1094737465"`
+}
+
+type AZStd__vector_84 struct {
+	Element []FuelCategoryData `crc:"1094737465"`
+}
+
+type AZStd__vector_85 struct {
+	Element []CreditModifierData `crc:"1094737465"`
+}
+
+type AZStd__vector_86 struct {
+	Element []EventTimelineDatapoint `crc:"1094737465"`
+}
+
+type AZStd__vector_87 struct {
+	Element []LocalInteractOptionRef `crc:"1094737465"`
+}
+
+type AZStd__vector_88 struct {
+	Element []AzBool `crc:"1094737465"`
+}
+
+type AZStd__vector_89 struct {
+	Element LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__ContainerComponent__void__ `crc:"1094737465"`
+}
+
+type AZStd__vector_90 struct {
+	Element []UiTelemetryEventTypePair `crc:"1094737465"`
+}
+
+type AZStd__vector_91 struct {
+	Element []ALCScopeData `crc:"1094737465"`
+}
+
+type AZStd__vector_92 struct {
+	Element []SliceMetaDataSpawnerEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_93 struct {
+	Element []NPCData `crc:"1094737465"`
+}
+
+type AZStd__vector_94 struct {
+	Element []BuildableStateEnum `crc:"1094737465"`
+}
+
+type AZStd__vector_95 struct {
+	Element []Keyframe `crc:"1094737465"`
+}
+
+type AZStd__vector_96 struct {
+	Element []Spline__SplineKeyEx_Vec2_ `crc:"1094737465"`
+}
+
+type AZStd__vector_97 struct {
+	Element AutoSpellRateOfFire `crc:"1094737465"`
+}
+
+type AZStd__vector_98 struct {
+	Element []EditableCollisionFilter `crc:"1094737465"`
+}
+
+type AZStd__vector_99 struct {
+	Element []EventTimelineData `crc:"1094737465"`
+}
+
+type AZStd__vector_100 struct {
+	Element []AZStd__intrusive_ptr_5 `crc:"1094737465"`
+}
+
+type AZStd__vector_101 struct {
+	Element []CrestColorData `crc:"1094737465"`
+}
+
+type AZStd__vector_102 struct {
+	Element []BaitData `crc:"1094737465"`
+}
+
+type AZStd__vector_103 struct {
+	Element []RemoteStorageItemTypeMultiplierData `crc:"1094737465"`
+}
+
+type AZStd__vector_104 struct {
+	Element []AzAsset `crc:"1094737465"`
+}
+
+type AZStd__vector_105 struct {
+	Element DarknessActivationSpecification `crc:"1094737465"`
+}
+
+type AZStd__vector_106 struct {
+	Element []ItemRarityData `crc:"1094737465"`
+}
+
+type AZStd__vector_107 struct {
+	Element []BehaviorTreeAssetRef `crc:"1094737465"`
+}
+
+type AZStd__vector_108 struct {
+	Element []GatherableRegionEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_109 struct {
+	Element []ScarColorData `crc:"1094737465"`
+}
+
+type AZStd__vector_110 struct {
+	Element []AzVec2 `crc:"1094737465"`
+}
+
+type AZStd__vector_111 struct {
+	Element []EyeColorData `crc:"1094737465"`
+}
+
+type AZStd__vector_112 struct {
+	Element []UiSpline__SplineKeyEx_Vec2_ `crc:"1094737465"`
+}
+
+type AZStd__vector_113 struct {
+	Element []BuildableStateData `crc:"1094737465"`
+}
+
+type AZStd__vector_114 struct {
+	Element ISelectKey `crc:"1094737465"`
+}
+
+type AZStd__vector_115 struct {
+	Element []TattooData `crc:"1094737465"`
+}
+
+type AZStd__vector_116 struct {
+	Element []SpreadshotConfigCustomShotData `crc:"1094737465"`
+}
+
+type AZStd__vector_117 struct {
+}
+
+type AZStd__vector_118 struct {
+	Element []AzAsset `crc:"1094737465"`
+}
+
+type AZStd__vector_119 struct {
+	Element NavigationAreaCost `crc:"1094737465"`
+}
+
+type AZStd__vector_120 struct {
+	Element AZStd__intrusive_ptr_3 `crc:"1094737465"`
+}
+
+type AZStd__vector_121 struct {
+	Element []TerritoryLandmarkData `crc:"1094737465"`
+}
+
+type AZStd__vector_122 struct {
+	Element []InitPaperdollData `crc:"1094737465"`
+}
+
+type AZStd__vector_123 struct {
+	Element DetectionVolumeEventData `crc:"1094737465"`
+}
+
+type AZStd__vector_124 struct {
+	Element []AbilityEditorData `crc:"1094737465"`
+}
+
+type AZStd__vector_125 struct {
+	Element ArmorOffsetData `crc:"1094737465"`
+}
+
+type AZStd__vector_126 struct {
+	Element []SpawnScalingSpecification `crc:"1094737465"`
+}
+
+type AZStd__vector_127 struct {
+	Element []AZStd__pair `crc:"1094737465"`
+}
+
+type AZStd__vector_128 struct {
+	Element []BeamAttackData `crc:"1094737465"`
+}
+
+type AZStd__vector_129 struct {
+	Element []AZStd__intrusive_ptr_2 `crc:"1094737465"`
+}
+
+type AZStd__vector_130 struct {
+	Element []VegetationMixedGradientLayer `crc:"1094737465"`
+}
+
+type AZStd__vector_131 struct {
+	Element []any `crc:"1094737465"`
+}
+
+type AZStd__vector_132 struct {
+	Element []TerritoryLoreData `crc:"1094737465"`
+}
+
+type AZStd__vector_133 struct {
+	Element []AzUInt32 `crc:"1094737465"`
+}
+
+type AZStd__vector_134 struct {
+	Element ICharacterKey `crc:"1094737465"`
+}
+
+type AZStd__vector_135 struct {
+	Element []InvasionObjectiveOffset `crc:"1094737465"`
+}
+
+type AZStd__vector_136 struct {
+	Element []TerritoryEntryData `crc:"1094737465"`
+}
+
+type AZStd__vector_137 struct {
+	Element AzInt32 `crc:"1094737465"`
+}
+
+type AZStd__vector_138 struct {
+	Element []SkinMeshAttachmentVisibilityInfo `crc:"1094737465"`
+}
+
+type AZStd__vector_139 struct {
+	Element []AZStd__pair_7 `crc:"1094737465"`
+}
+
+type AZStd__vector_140 struct {
+	Element []UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833 `crc:"1094737465"`
+}
+
+type AZStd__vector_141 struct {
+	Element []DetectionVolumeEvent `crc:"1094737465"`
+}
+
+type AZStd__vector_142 struct {
+	Element []CampTierData `crc:"1094737465"`
+}
+
+type AZStd__vector_143 struct {
+	Element []ScriptPropertyGroup `crc:"1094737465"`
+}
+
+type AZStd__vector_144 struct {
+	Element []any `crc:"1094737465"`
+}
+
+type AZStd__vector_145 struct {
+	Element []BuildableGridHeightData `crc:"1094737465"`
+}
+
+type AZStd__vector_146 struct {
+	Element []AzAsset `crc:"1094737465"`
+}
+
+type AZStd__vector_147 struct {
+	Element []TaskInteractEntryData `crc:"1094737465"`
+}
+
+type AZStd__vector_148 struct {
+	Element []AzUInt64 `crc:"1094737465"`
+}
+
+type AZStd__vector_149 struct {
+	Element []any `crc:"1094737465"`
+}
+
+type AZStd__vector_150 struct {
+	Element []ScarData `crc:"1094737465"`
+}
+
+type AZStd__vector_151 struct {
+}
+
+type AZStd__vector_152 struct {
+	Element []IBoolKey `crc:"1094737465"`
+}
+
+type AZStd__vector_153 struct {
+	Element []VegetationDescriptor `crc:"1094737465"`
+}
+
+type AZStd__vector_154 struct {
+	Element []FaceMarkData `crc:"1094737465"`
+}
+
+type AZStd__vector_155 struct {
+	Element []HairColorData `crc:"1094737465"`
+}
+
+type AZStd__vector_156 struct {
+	Element []AzInt32 `crc:"1094737465"`
+}
+
+type AZStd__vector_157 struct {
+	Element TutorialToastBinding `crc:"1094737465"`
+}
+
+type AZStd__vector_158 struct {
+	Element []WaterNodeData `crc:"1094737465"`
+}
+
+type AZStd__vector_159 struct {
+	Element []DarknessGroupSpecification `crc:"1094737465"`
+}
+
+type AZStd__vector_160 struct {
+	Element []WarCampSpawn `crc:"1094737465"`
+}
+
+type AZStd__vector_161 struct {
+}
+
+type AZStd__vector_162 struct {
+	Element AutoSpellEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_163 struct {
+	Element AZStd__intrusive_ptr `crc:"1094737465"`
+}
+
+type AZStd__vector_164 struct {
+	Element []EquipTypeData `crc:"1094737465"`
+}
+
+type AZStd__vector_165 struct {
+	Element []InputFilter `crc:"1094737465"`
+}
+
+type AZStd__vector_166 struct {
+	Element []OwnershipMessageEvent `crc:"1094737465"`
+}
+
+type AZStd__vector_167 struct {
+	Element []VegetationSurfaceTag `crc:"1094737465"`
+}
+
+type AZStd__vector_168 struct {
+	Element []SliceMetaDataMeshEntry `crc:"1094737465"`
+}
+
+type AZStd__vector_169 struct {
+	Element []EntityId `crc:"1094737465"`
+}
+
+type AZStd__vector_170 struct {
+	Element []HubLocalCacheDetectorDescriptor `crc:"1094737465"`
+}
+
+type AZStd__vector_171 struct {
+	Element []InteractOptionData `crc:"1094737465"`
+}
+
+type AZStd__vector_172 struct {
+	Element []IEventKey `crc:"1094737465"`
 }
 
 type AZ__Component struct {
@@ -2642,36 +3252,36 @@ type AZ__Component struct {
 }
 
 type AZ__Entity struct {
-	Components        AZStd__vector_84 `crc:"3997758973"`
-	Id                EntityId         `crc:"3208210256"`
-	IsDependencyReady AzBool           `crc:"2530513992"`
-	IsRuntimeActive   AzBool           `crc:"1991040116"`
-	Name              AzString         `crc:"1579384326"`
+	Components        AZStd__vector_149 `crc:"3997758973"`
+	Id                EntityId          `crc:"3208210256"`
+	IsDependencyReady AzBool            `crc:"2530513992"`
+	IsRuntimeActive   AzBool            `crc:"1991040116"`
+	Name              AzString          `crc:"1579384326"`
 }
 
 type AZ__ScriptPropertyGenericClassArray struct {
 	BaseClass1  AzFramework__ScriptProperty `crc:"3566360373"`
 	Elementtype AzUuid                      `crc:"2524831163"`
-	Values      AZStd__vector_91            `crc:"984042726"`
+	Values      AZStd__vector_8             `crc:"984042726"`
 }
 
 type AbilityComponent struct {
-	BaseClass1               FacetedComponent `crc:"3566360373"`
-	CRC_4075277063           AZStd__vector_16 `crc:"4075277063"`
-	M_disabledattacktypecrcs AZStd__vector_41 `crc:"1826506104"`
-	M_initialabilities       AZStd__vector_32 `crc:"1561648523"`
-	M_runeattack             AzString         `crc:"2215316487"`
-	M_runeattackhold         AzString         `crc:"2183549480"`
-	M_runeattackrelease      AzString         `crc:"969534869"`
-	M_specialattack1         AzString         `crc:"500085878"`
-	M_specialattack2         AzString         `crc:"2227693004"`
-	M_specialattack3         AzString         `crc:"4089501018"`
-	M_specialattackhold1     AzString         `crc:"3707516603"`
-	M_specialattackhold2     AzString         `crc:"1173710593"`
-	M_specialattackhold3     AzString         `crc:"854742935"`
-	M_specialattackrelease1  AzString         `crc:"2883123731"`
-	M_specialattackrelease2  AzString         `crc:"852601769"`
-	M_specialattackrelease3  AzString         `crc:"1171692351"`
+	BaseClass1               FacetedComponent  `crc:"3566360373"`
+	CRC_4075277063           AZStd__vector_9   `crc:"4075277063"`
+	M_disabledattacktypecrcs AZStd__vector_5   `crc:"1826506104"`
+	M_initialabilities       AZStd__vector_124 `crc:"1561648523"`
+	M_runeattack             AzString          `crc:"2215316487"`
+	M_runeattackhold         AzString          `crc:"2183549480"`
+	M_runeattackrelease      AzString          `crc:"969534869"`
+	M_specialattack1         AzString          `crc:"500085878"`
+	M_specialattack2         AzString          `crc:"2227693004"`
+	M_specialattack3         AzString          `crc:"4089501018"`
+	M_specialattackhold1     AzString          `crc:"3707516603"`
+	M_specialattackhold2     AzString          `crc:"1173710593"`
+	M_specialattackhold3     AzString          `crc:"854742935"`
+	M_specialattackrelease1  AzString          `crc:"2883123731"`
+	M_specialattackrelease2  AzString          `crc:"852601769"`
+	M_specialattackrelease3  AzString          `crc:"1171692351"`
 }
 
 type AbilityComponentClientFacet struct {
@@ -2707,7 +3317,7 @@ type AbilityInstanceLimit struct {
 
 type AbilityInstanceTrackingComponent struct {
 	BaseClass1       FacetedComponent `crc:"3566360373"`
-	M_instancelimits AZStd__vector_12 `crc:"125771692"`
+	M_instancelimits AZStd__vector_64 `crc:"125771692"`
 }
 
 type AbilityInstanceTrackingComponentClientFacet struct {
@@ -2778,7 +3388,7 @@ type ActionListComponent struct {
 	M_cdfpath                           AzFramework__SimpleAssetReference_CharacterDefinitionAsset_                        `crc:"3531235069"`
 	M_controllerdefinition              AzFramework__SimpleAssetReference_LmbrCentral__MannequinControllerDefinitionAsset_ `crc:"1272076662"`
 	M_damagetable                       SpringboardDataSheetContainer                                                      `crc:"1092804900"`
-	M_defaulttags                       AZStd__list_4                                                                      `crc:"1869838018"`
+	M_defaulttags                       AZStd__list_7                                                                      `crc:"1869838018"`
 	M_groundslopedeadzonemax            AzFloat32                                                                          `crc:"598482530"`
 	M_groundslopedeadzonemin            AzFloat32                                                                          `crc:"530653499"`
 	M_hitvolumesentity                  LocalEntityRef                                                                     `crc:"789022434"`
@@ -2786,7 +3396,7 @@ type ActionListComponent struct {
 	M_meleeloscheckoriginheightoverride AzFloat32                                                                          `crc:"1287902531"`
 	M_meleeloscheckverticalangleoffset  AzFloat32                                                                          `crc:"4182931066"`
 	M_motionparametersmoothingsettings  MotionParameterSmoothingSettings                                                   `crc:"1171808018"`
-	M_scopedata                         AZStd__vector_89                                                                   `crc:"2217413329"`
+	M_scopedata                         AZStd__vector_91                                                                   `crc:"2217413329"`
 	M_skinnedmeshentity                 LocalEntityRef                                                                     `crc:"1881727689"`
 	M_slayerscriptname                  AzString                                                                           `crc:"3294360234"`
 	M_spawnaction                       AzString                                                                           `crc:"1506254674"`
@@ -2811,6 +3421,11 @@ type ActionListComponentServerFacet struct {
 	M_rangedminionspawnerentityid EntityId       `crc:"2602630113"`
 }
 
+type ActivateEntity struct {
+	Applytoallchildren AzBool       `crc:"2471114906"`
+	BaseClass1         TimelineClip `crc:"3566360373"`
+}
+
 type ActivateVirtualInputComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -2823,18 +3438,26 @@ type ActivateVirtualInputComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type AdditiveConversationCameraMovementData struct {
+	Camspeedpersecond      AzFloat32 `crc:"2978981246"`
+	Inversemovementscaler  AzFloat32 `crc:"1598849370"`
+	Maxcamspeedvariation   AzFloat32 `crc:"480715352"`
+	Maxdeviationfromcenter AzFloat32 `crc:"3649504551"`
+	Ymovementmodifier      AzFloat32 `crc:"3500381215"`
+}
+
 type Advanced struct {
 	UnderwaterDistortion AzFloat32 `crc:"1146089650"`
 }
 
 type AggregateContractCountComponent struct {
 	BaseClass1          FacetedComponent       `crc:"3566360373"`
-	M_outpostactoridmap AZStd__unordered_map_6 `crc:"2718624638"`
+	M_outpostactoridmap AZStd__unordered_map_7 `crc:"2718624638"`
 }
 
 type AggregateContractCountComponentClientFacet struct {
 	BaseClass1                 ClientFacet            `crc:"3566360373"`
-	M_outpostcontractcountsmap AZStd__unordered_map_1 `crc:"1676188061"`
+	M_outpostcontractcountsmap AZStd__unordered_map_0 `crc:"1676188061"`
 }
 
 type AggregateContractCountComponentServerFacet struct {
@@ -2842,7 +3465,7 @@ type AggregateContractCountComponentServerFacet struct {
 }
 
 type AliasAsset struct {
-	Tags AZStd__vector_64 `crc:"1874629670"`
+	Tags AZStd__vector_17 `crc:"1874629670"`
 }
 
 type AlignToTerrainComponent struct {
@@ -2910,6 +3533,22 @@ type Animation struct {
 	AnimationWindSpeed     AzFloat32 `crc:"262255784"`
 }
 
+type AnimationClip struct {
+	Animationalias        AzString     `crc:"776455288"`
+	Animationstarttime    AzFloat32    `crc:"498227340"`
+	BaseClass1            TimelineClip `crc:"3566360373"`
+	Blendintime           AzFloat32    `crc:"1134671000"`
+	Blendouttime          AzFloat32    `crc:"1982835308"`
+	Hidemeshuntilanimated AzBool       `crc:"1863589459"`
+	Layer                 AzUInt32     `crc:"3839566106"`
+	Loop                  AzBool       `crc:"2707365358"`
+	Looptostartoffset     AzBool       `crc:"2299230558"`
+	Playbackspeed         AzFloat32    `crc:"2086884648"`
+	Runonserver           AzBool       `crc:"1894105038"`
+	Stoponend             AzBool       `crc:"1321717526"`
+	Weight                AzFloat32    `crc:"130897217"`
+}
+
 type AnimationData struct {
 	Serializestring AzString `crc:"3338447561"`
 }
@@ -2962,11 +3601,11 @@ type AoiExceptionComponentServerFacet struct {
 }
 
 type ApplyResourceDetailsComponent struct {
-	Background_image   EntityId         `crc:"1852713324"`
-	BaseClass1         AZ__Component    `crc:"3566360373"`
-	Cache              EntityId         `crc:"1095199719"`
-	Layout             EntityId         `crc:"976907234"`
-	Required_resources AZStd__vector_44 `crc:"2262070911"`
+	Background_image   EntityId          `crc:"1852713324"`
+	BaseClass1         AZ__Component     `crc:"3566360373"`
+	Cache              EntityId          `crc:"1095199719"`
+	Layout             EntityId          `crc:"976907234"`
+	Required_resources AZStd__vector_169 `crc:"2262070911"`
 }
 
 type AreaSpawnerComponent struct {
@@ -2987,7 +3626,7 @@ type AreaSpawnerComponentServerFacet struct {
 	M_cooldownAfterDespawn        AzBool           `crc:"1241362013"`
 	M_ignoreCooldownOverride      AzBool           `crc:"1197698058"`
 	M_livecount                   AzInt32          `crc:"1498527409"`
-	M_locations                   AZStd__vector_55 `crc:"1228400898"`
+	M_locations                   AZStd__vector_71 `crc:"1228400898"`
 	M_maintainpopulation          AzBool           `crc:"3762124212"`
 	M_maxrespawnrange             AzFloat64        `crc:"4159179015"`
 	M_minrespawnrange             AzFloat64        `crc:"3495128630"`
@@ -3016,14 +3655,14 @@ type AreaStatusEffectComponentClientFacet struct {
 
 type AreaStatusEffectComponentServerFacet struct {
 	BaseClass1                  ServerFacet      `crc:"3566360373"`
-	M_addstatuseffects          AZStd__vector_19 `crc:"921833192"`
+	M_addstatuseffects          AZStd__vector_27 `crc:"921833192"`
 	M_detectedtargettype        AzInt32          `crc:"2914110177"`
 	M_detectionentity           LocalEntityRef   `crc:"1333519473"`
 	M_inheritstatuseffects      AzBool           `crc:"687177924"`
 	M_initialdelayseconds       AzFloat32        `crc:"1259779799"`
 	M_reapplicationdelayseconds AzFloat32        `crc:"2901701986"`
 	M_removeonexit              AzBool           `crc:"1393251505"`
-	M_removestatuseffects       AZStd__vector_19 `crc:"3577254606"`
+	M_removestatuseffects       AZStd__vector_27 `crc:"3577254606"`
 }
 
 type AreaTemporaryAffiliationComponent struct {
@@ -3036,14 +3675,14 @@ type AreaTemporaryAffiliationComponentClientFacet struct {
 
 type AreaTemporaryAffiliationComponentServerFacet struct {
 	BaseClass1                  ServerFacet                                                                                                          `crc:"3566360373"`
-	M_affiliationstoapplybyname AZStd__map_1                                                                                                         `crc:"207908999"`
+	M_affiliationstoapplybyname AZStd__map_2                                                                                                         `crc:"207908999"`
 	M_detectionvolumeref        LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__DetectionVolumeComponent__void__ `crc:"2992951648"`
 }
 
 type AreaTriggerTutorialStep struct {
-	BaseClass1 TutorialStep     `crc:"3566360373"`
-	M_areas    AZStd__vector_44 `crc:"340200760"`
-	M_onenter  AzBool           `crc:"4151440994"`
+	BaseClass1 TutorialStep      `crc:"3566360373"`
+	M_areas    AZStd__vector_169 `crc:"340200760"`
+	M_onenter  AzBool            `crc:"4151440994"`
 }
 
 type Arena3v3 struct {
@@ -3068,6 +3707,15 @@ type ArenaComponentServerFacet struct {
 	M_exitteleportentityid           EntityId       `crc:"3887472985"`
 	M_participanttrackerid           EntityId       `crc:"2305554628"`
 	M_useiteminteractavailableentity LocalEntityRef `crc:"2727453812"`
+}
+
+type ArmorOffsetData struct {
+	Attachments AZStd__vector_81 `crc:"1204091606"`
+	Name        AzString         `crc:"1579384326"`
+}
+
+type ArmorOffsetDatabase struct {
+	Armor_offsets AZStd__vector_125 `crc:"2282200990"`
 }
 
 type AssemblyComponent struct {
@@ -3118,6 +3766,12 @@ type AttachmentConfiguration struct {
 	Update_Tolerance   AzFloat32   `crc:"3241971672"`
 }
 
+type AttachmentOffsetData struct {
+	Attachment                           AzString `crc:"2036324795"`
+	Attachment_offset_position           AzVec3   `crc:"379390882"`
+	Attachment_offset_rotation__degrees_ AzVec3   `crc:"581018980"`
+}
+
 type AttackHeightRetargetComponent struct {
 	BaseClass1                       FacetedComponent `crc:"3566360373"`
 	M_deadzoneangledegrees           AzFloat32        `crc:"1275912911"`
@@ -3127,7 +3781,7 @@ type AttackHeightRetargetComponent struct {
 	M_defaultmaxangledegrees         AzFloat32        `crc:"2836392331"`
 	M_defaultminangledegrees         AzFloat32        `crc:"2394197690"`
 	M_defaultupperangleoffsetdegrees AzFloat32        `crc:"2268248119"`
-	M_jointnames                     AZStd__vector_16 `crc:"3556648197"`
+	M_jointnames                     AZStd__vector_9  `crc:"3556648197"`
 	M_locktargetdironstart           AzBool           `crc:"1390056331"`
 	M_skinnedmeshentityid            EntityId         `crc:"3943036971"`
 }
@@ -3142,15 +3796,15 @@ type AttackHeightRetargetComponentServerFacet struct {
 
 type AttributeComponent struct {
 	BaseClass1            FacetedComponent       `crc:"3566360373"`
-	M_prereloadattributes AZStd__unordered_map_3 `crc:"928772666"`
+	M_prereloadattributes AZStd__unordered_map_2 `crc:"928772666"`
 }
 
 type AttributeComponentClientFacet struct {
 	BaseClass1                ClientFacet            `crc:"3566360373"`
-	M_cachedattributes        AZStd__unordered_map_3 `crc:"839060401"`
-	M_cachedspentpoints       AZStd__unordered_map_3 `crc:"1269090277"`
+	M_cachedattributes        AZStd__unordered_map_2 `crc:"839060401"`
+	M_cachedspentpoints       AZStd__unordered_map_2 `crc:"1269090277"`
 	M_cachedunspentpoints     AzInt32                `crc:"3338712036"`
-	M_pendingspentpoints      AZStd__unordered_map_3 `crc:"1390438157"`
+	M_pendingspentpoints      AZStd__unordered_map_2 `crc:"1390438157"`
 	M_totalpendingspentpoints AzInt32                `crc:"2428433208"`
 	M_totalspentpoints        AzInt32                `crc:"598899964"`
 }
@@ -3201,17 +3855,17 @@ type AudioPreloadComponent struct {
 }
 
 type AudioProxyComponent struct {
-	BaseClass1          FacetedComponent `crc:"3566360373"`
-	M_skinnedmeshentity LocalEntityRef   `crc:"1881727689"`
-}
-
-type AudioProxyComponent_0 struct {
 	BaseClass1                    AZ__Component `crc:"3566360373"`
 	Continuous_Bone_Update        AzBool        `crc:"1979839849"`
 	Occlusion_Ignore_EntireEntity AzBool        `crc:"2073971237"`
 	Occlusion_Ignore_Entity       AzBool        `crc:"4289955507"`
 	Occlusion_Ignore_Radius       AzFloat32     `crc:"3404180609"`
 	Transform_Tolerance           AzFloat32     `crc:"3173069138"`
+}
+
+type AudioProxyComponent_0 struct {
+	BaseClass1          FacetedComponent `crc:"3566360373"`
+	M_skinnedmeshentity LocalEntityRef   `crc:"1881727689"`
 }
 
 type AudioProxyComponentClientFacet struct {
@@ -3294,7 +3948,7 @@ type AutoSpellComponent struct {
 	M_defaultrateoffire                 AutoSpellRateOfFire `crc:"3424620246"`
 	M_lifetimeexpireevent               EventData           `crc:"1388640526"`
 	M_ownershipmessagecomponententityid EntityId            `crc:"3005384666"`
-	M_rateoffireconfigs                 AZStd__vector_66    `crc:"2770665686"`
+	M_rateoffireconfigs                 AZStd__vector_97    `crc:"2770665686"`
 }
 
 type AutoSpellComponentClientFacet struct {
@@ -3302,17 +3956,17 @@ type AutoSpellComponentClientFacet struct {
 }
 
 type AutoSpellComponentServerFacet struct {
-	BaseClass1                     ServerFacet      `crc:"3566360373"`
-	M_castatalltargets             AzBool           `crc:"888424489"`
-	M_detectionvolumeevententityid EntityId         `crc:"2644853782"`
-	M_lifetime                     AzFloat32        `crc:"851281648"`
-	M_lifetimeonhit                AzFloat32        `crc:"64677994"`
-	M_skinnedmeshentityid          EntityId         `crc:"3943036971"`
-	M_spellentries                 AZStd__vector_49 `crc:"3554214349"`
+	BaseClass1                     ServerFacet       `crc:"3566360373"`
+	M_castatalltargets             AzBool            `crc:"888424489"`
+	M_detectionvolumeevententityid EntityId          `crc:"2644853782"`
+	M_lifetime                     AzFloat32         `crc:"851281648"`
+	M_lifetimeonhit                AzFloat32         `crc:"64677994"`
+	M_skinnedmeshentityid          EntityId          `crc:"3943036971"`
+	M_spellentries                 AZStd__vector_162 `crc:"3554214349"`
 }
 
 type AutoSpellEntry struct {
-	M_projectilelaunchangles AZStd__vector_28 `crc:"4114562362"`
+	M_projectilelaunchangles AZStd__vector_52 `crc:"4114562362"`
 	M_spellname              AzString         `crc:"1488670371"`
 }
 
@@ -3358,7 +4012,7 @@ type AzFramework__ScriptPropertyNumber struct {
 
 type AzFramework__ScriptPropertyNumberArray struct {
 	BaseClass1 AzFramework__ScriptProperty `crc:"3566360373"`
-	Values     AZStd__vector_104           `crc:"984042726"`
+	Values     AZStd__vector_15            `crc:"984042726"`
 }
 
 type AzFramework__ScriptPropertyString struct {
@@ -3368,10 +4022,14 @@ type AzFramework__ScriptPropertyString struct {
 
 type AzFramework__ScriptPropertyStringArray struct {
 	BaseClass1 AzFramework__ScriptProperty `crc:"3566360373"`
-	Values     AZStd__vector_16            `crc:"984042726"`
+	Values     AZStd__vector_9             `crc:"984042726"`
 }
 
 type AzFramework__SimpleAssetReference_CharacterDefinitionAsset_ struct {
+	BaseClass1 SimpleAssetReferenceBase `crc:"3566360373"`
+}
+
+type AzFramework__SimpleAssetReference_Javelin__SkinAsset_ struct {
 	BaseClass1 SimpleAssetReferenceBase `crc:"3566360373"`
 }
 
@@ -3407,6 +4065,15 @@ type AzFramework__SimpleAssetReference_TextureAtlasNamespace__TextureAtlasAsset_
 	BaseClass1 SimpleAssetReferenceBase `crc:"3566360373"`
 }
 
+type BaitData struct {
+	Bait_loottable_level__1_3_     AzInt32   `crc:"1920840201"`
+	Bait_name                      AzString  `crc:"3102135638"`
+	Bite_range_increase_multiplier AzFloat32 `crc:"2987098786"`
+	Bite_time_multiplier           AzFloat32 `crc:"2607659304"`
+	Location_id                    AzInt32   `crc:"1507856099"`
+	Loottable_overrride            AzString  `crc:"33037158"`
+}
+
 type Base struct {
 	M_scanweight AzFloat32 `crc:"792290030"`
 }
@@ -3416,11 +4083,11 @@ type BaseSpectatorCameraComponent struct {
 }
 
 type BeamAttackComponent struct {
-	BaseClass1                              FacetedComponent `crc:"3566360373"`
-	M_beamdata                              AZStd__vector_90 `crc:"260435689"`
-	M_detectionvolume                       LocalEntityRef   `crc:"4173950407"`
-	M_respecttriggeruntriggerevents         AzBool           `crc:"236251666"`
-	M_shouldusetargetprovidedbyspelldetails AzBool           `crc:"2940521624"`
+	BaseClass1                              FacetedComponent  `crc:"3566360373"`
+	M_beamdata                              AZStd__vector_128 `crc:"260435689"`
+	M_detectionvolume                       LocalEntityRef    `crc:"4173950407"`
+	M_respecttriggeruntriggerevents         AzBool            `crc:"236251666"`
+	M_shouldusetargetprovidedbyspelldetails AzBool            `crc:"2940521624"`
 }
 
 type BeamAttackComponentClientFacet struct {
@@ -3481,10 +4148,10 @@ type BehaviorTreeAssetRef struct {
 }
 
 type BehaviorTreeComponent struct {
-	BaseClass1                        FacetedComponent `crc:"3566360373"`
-	M_autoevaluateblackboardvariables AZStd__vector_16 `crc:"2670788301"`
-	M_autoevaluationfrequency         AzFloat32        `crc:"2700500008"`
-	M_behaviortreeassets              AZStd__vector_87 `crc:"2427737932"`
+	BaseClass1                        FacetedComponent  `crc:"3566360373"`
+	M_autoevaluateblackboardvariables AZStd__vector_9   `crc:"2670788301"`
+	M_autoevaluationfrequency         AzFloat32         `crc:"2700500008"`
+	M_behaviortreeassets              AZStd__vector_107 `crc:"2427737932"`
 }
 
 type BehaviorTreeComponentClientFacet struct {
@@ -3502,17 +4169,17 @@ type BezierData struct {
 }
 
 type BezierSpline struct {
-	BaseClass1  Spline            `crc:"3566360373"`
-	Bezier_Data AZStd__vector_112 `crc:"751464201"`
-	Granularity AzUInt16          `crc:"4012098334"`
+	BaseClass1  Spline           `crc:"3566360373"`
+	Bezier_Data AZStd__vector_82 `crc:"751464201"`
+	Granularity AzUInt16         `crc:"4012098334"`
 }
 
 type BezierSplineVec2 struct {
-	BaseClass1 TSplineBezierBasisVec2_0 `crc:"3566360373"`
+	BaseClass1 TSplineBezierBasisVec2 `crc:"3566360373"`
 }
 
 type BezierSplineVec2_0 struct {
-	BaseClass1 TSplineBezierBasisVec2 `crc:"3566360373"`
+	BaseClass1 TSplineBezierBasisVec2_0 `crc:"3566360373"`
 }
 
 type BitSet struct {
@@ -3527,9 +4194,9 @@ type BlackboardComponentClientFacet struct {
 }
 
 type BlackboardComponentServerFacet struct {
-	BaseClass1          ServerFacet     `crc:"3566360373"`
-	M_configparams      AZStd__vector_2 `crc:"124261041"`
-	M_meleedamagefilter AzString        `crc:"3263019785"`
+	BaseClass1          ServerFacet      `crc:"3566360373"`
+	M_configparams      AZStd__vector_60 `crc:"124261041"`
+	M_meleedamagefilter AzString         `crc:"3263019785"`
 }
 
 type BlendValueComponent struct {
@@ -3556,8 +4223,8 @@ type BooleanParameter struct {
 }
 
 type BossPhaseComponent struct {
-	BaseClass1      FacetedComponent  `crc:"3566360373"`
-	M_bossphasedata AZStd__vector_115 `crc:"3625208257"`
+	BaseClass1      FacetedComponent `crc:"3566360373"`
+	M_bossphasedata AZStd__vector_22 `crc:"3625208257"`
 }
 
 type BossPhaseComponentClientFacet struct {
@@ -3631,7 +4298,7 @@ type BuffBucketsProviderComponentClientFacet struct {
 
 type BuffBucketsProviderComponentServerFacet struct {
 	BaseClass1               ServerFacet      `crc:"3566360373"`
-	M_buffbucketeditordata   AZStd__vector_72 `crc:"247034903"`
+	M_buffbucketeditordata   AZStd__vector_79 `crc:"247034903"`
 	M_overridedefaultbuckets AzBool           `crc:"3534842328"`
 }
 
@@ -3639,73 +4306,73 @@ type BuildableController struct {
 	BaseClass1                                     FacetedComponent `crc:"3566360373"`
 	M_buildergameeventonallresourcesapplied        AzString         `crc:"514101582"`
 	M_canbepickedup                                AzBool           `crc:"1247890240"`
-	M_completionstates                             AZStd__vector_80 `crc:"704209400"`
-	M_containerentities                            AZStd__vector_55 `crc:"2546842388"`
-	M_damagestates                                 AZStd__vector_31 `crc:"2462678103"`
+	M_completionstates                             AZStd__vector_44 `crc:"704209400"`
+	M_containerentities                            AZStd__vector_71 `crc:"2546842388"`
+	M_damagestates                                 AZStd__vector_24 `crc:"2462678103"`
 	M_destroyedprefabreference                     AzAsset          `crc:"453464401"`
 	M_destroyupgradeonruin                         AzBool           `crc:"2109348709"`
 	M_emptycontaineruponunclaimed                  AzBool           `crc:"3272407417"`
-	M_foundationstates                             AZStd__vector_53 `crc:"4269748642"`
-	M_ghostmaterialentities                        AZStd__vector_55 `crc:"2364488083"`
+	M_foundationstates                             AZStd__vector_7  `crc:"4269748642"`
+	M_ghostmaterialentities                        AZStd__vector_71 `crc:"2364488083"`
 	M_ghostparententity                            LocalEntityRef   `crc:"886738491"`
 	M_ignoreterritoryrestriction                   AzBool           `crc:"2313664353"`
 	M_initialstate                                 AzInt32          `crc:"190850099"`
 	M_isdeployable                                 AzBool           `crc:"165335071"`
 	M_issiegeweapon                                AzBool           `crc:"1163516887"`
 	M_keepownershipwhenunclaimed                   AzBool           `crc:"752529908"`
-	M_oncompletionstateentertransitionevents       AZStd__vector_56 `crc:"3889256991"`
-	M_onunclaimedstateentertransitionevents        AZStd__vector_56 `crc:"2614750597"`
+	M_oncompletionstateentertransitionevents       AZStd__vector_61 `crc:"3889256991"`
+	M_onunclaimedstateentertransitionevents        AZStd__vector_61 `crc:"2614750597"`
 	M_placementobstructionentity                   LocalEntityRef   `crc:"4046888381"`
 	M_placementrulecanplaceinprotectedarea         AzBool           `crc:"3809461459"`
 	M_placementruleprotectionmatchesguild          AzBool           `crc:"2913299121"`
 	M_placementruleterritorymatchesguild           AzBool           `crc:"1236156702"`
-	M_placingstates                                AZStd__vector_80 `crc:"3756704022"`
+	M_placingstates                                AZStd__vector_44 `crc:"3756704022"`
 	M_playerteleportentity                         LocalEntityRef   `crc:"2668879316"`
 	M_requiresgamemodeplacementvalidation          AzBool           `crc:"2890756030"`
 	M_resetonallresourcesapplied                   AzBool           `crc:"3380226767"`
 	M_ruinhealth                                   AzFloat32        `crc:"97738700"`
-	M_ruinstates                                   AZStd__vector_23 `crc:"4207610770"`
+	M_ruinstates                                   AZStd__vector_12 `crc:"4207610770"`
 	M_spawnobjectprefabreference                   AzAsset          `crc:"4231110959"`
 	M_structurename                                AzString         `crc:"366701606"`
 	M_traversaloverridebound                       EntityId         `crc:"2609784686"`
 	M_triggerbuildergameeventonallresourcesapplied AzBool           `crc:"3493525167"`
-	M_unclaimedstates                              AZStd__vector_80 `crc:"1955435294"`
+	M_unclaimedstates                              AZStd__vector_44 `crc:"1955435294"`
 	M_upgradeblueprintid                           AzString         `crc:"1852142529"`
-	M_upgradecompletestates                        AZStd__vector_80 `crc:"2211001941"`
-	M_upgradestates                                AZStd__vector_80 `crc:"1451842836"`
+	M_upgradecompletestates                        AZStd__vector_44 `crc:"2211001941"`
+	M_upgradestates                                AZStd__vector_44 `crc:"1451842836"`
 }
 
 type BuildableControllerClientFacet struct {
 	BaseClass1                   ClientFacet      `crc:"3566360373"`
 	M_obstructionwarningdistance AzFloat32        `crc:"1774033342"`
 	M_removaltriggerarea         LocalEntityRef   `crc:"4291603529"`
-	M_upgradetimesetevents       AZStd__vector_80 `crc:"1587768778"`
+	M_upgradetimesetevents       AZStd__vector_44 `crc:"1587768778"`
 }
 
 type BuildableControllerServerFacet struct {
 	BaseClass1                         ServerFacet      `crc:"3566360373"`
 	M_allowrepairfromruin              AzBool           `crc:"2385172889"`
-	M_downgradeevents                  AZStd__vector_80 `crc:"1439239289"`
+	M_downgradeevents                  AZStd__vector_44 `crc:"1439239289"`
 	M_lootdroppositionentity           LocalEntityRef   `crc:"1293469227"`
 	M_ownershipEntity                  LocalEntityRef   `crc:"4082794647"`
 	M_repairfromruincompletepercentage AzFloat32        `crc:"4093332166"`
-	M_upgradeevents                    AZStd__vector_80 `crc:"885816595"`
+	M_upgradeevents                    AZStd__vector_44 `crc:"885816595"`
 }
 
 type BuildableGridComponent struct {
-	BaseClass1                        FacetedComponent `crc:"3566360373"`
-	M_aligntoterrainheightwhensnapped AzBool           `crc:"4122845915"`
-	M_buildablegridlisteners          AZStd__vector_55 `crc:"1865265176"`
-	M_gridheightsdata                 AZStd__vector_14 `crc:"1930677518"`
-	M_height                          AzInt32          `crc:"3219044337"`
-	M_ignoreplacementruleswhensnapped AzBool           `crc:"3988609986"`
-	M_numcolumns                      AzInt32          `crc:"691575441"`
-	M_numrows                         AzInt32          `crc:"220766396"`
+	BaseClass1                        FacetedComponent  `crc:"3566360373"`
+	M_aligntoterrainheightwhensnapped AzBool            `crc:"4122845915"`
+	M_buildablegridlisteners          AZStd__vector_71  `crc:"1865265176"`
+	M_gridheightsdata                 AZStd__vector_145 `crc:"1930677518"`
+	M_height                          AzInt32           `crc:"3219044337"`
+	M_ignoreplacementruleswhensnapped AzBool            `crc:"3988609986"`
+	M_numcolumns                      AzInt32           `crc:"691575441"`
+	M_numrows                         AzInt32           `crc:"220766396"`
 }
 
 type BuildableGridComponentClientFacet struct {
 	BaseClass1                  ClientFacet      `crc:"3566360373"`
-	M_gridsidesactiveclientview AZStd__vector_18 `crc:"43165072"`
+	M_gridsidesactiveclientview AZStd__vector_50 `crc:"43165072"`
 	M_hassnaptotransform        AzBool           `crc:"566678263"`
 	M_wasaddedtomanager         AzBool           `crc:"3999242270"`
 	Shouldrender                AzBool           `crc:"2246958778"`
@@ -3729,7 +4396,7 @@ type BuildableGridPointActiveData struct {
 }
 
 type BuildableGridSideData struct {
-	M_activegridpoints AZStd__vector_69 `crc:"1621020182"`
+	M_activegridpoints AZStd__vector_48 `crc:"1621020182"`
 	M_side             AzInt32          `crc:"3173917076"`
 }
 
@@ -3747,8 +4414,22 @@ type BuildableStateComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type BuildableStateData struct {
+	Does_deteriorate  AzBool             `crc:"1397600124"`
+	My_state          BuildableStateEnum `crc:"891412267"`
+	Valid_transitions AZStd__vector_94   `crc:"2512236580"`
+}
+
+type BuildableStateDatabase struct {
+	Buildable_states AZStd__vector_113 `crc:"3552472453"`
+}
+
+type BuildableStateEnum struct {
+	M_enum AzInt32 `crc:"2417071216"`
+}
+
 type BuildableStateTransitionEvents struct {
-	M_events             AZStd__vector_80 `crc:"420742580"`
+	M_events             AZStd__vector_44 `crc:"420742580"`
 	M_transitioningstate AzInt32          `crc:"48543570"`
 }
 
@@ -3806,14 +4487,14 @@ type CAnimSceneNode struct {
 }
 
 type CAnimSequence struct {
-	Events           AZStd__vector_16 `crc:"1401378634"`
-	Flags            AzInt32          `crc:"184893882"`
-	Id               AzUInt32         `crc:"3208210256"`
-	Name             AzString         `crc:"1579384326"`
-	Nodes            AZStd__vector    `crc:"490538492"`
-	SequenceEntityId EntityId         `crc:"602809851"`
-	SequenceType     AzInt32          `crc:"2610385846"`
-	TimeRange        Range            `crc:"1662985087"`
+	Events           AZStd__vector_9   `crc:"1401378634"`
+	Flags            AzInt32           `crc:"184893882"`
+	Id               AzUInt32          `crc:"3208210256"`
+	Name             AzString          `crc:"1579384326"`
+	Nodes            AZStd__vector_100 `crc:"490538492"`
+	SequenceEntityId EntityId          `crc:"602809851"`
+	SequenceType     AzInt32           `crc:"2610385846"`
+	TimeRange        Range             `crc:"1662985087"`
 }
 
 type CBoolTrack struct {
@@ -3830,7 +4511,7 @@ type CCompoundSplineTrack struct {
 	Flags         AzInt32          `crc:"184893882"`
 	NumSubTracks  AzInt32          `crc:"3049438893"`
 	ParamType     CAnimParamType   `crc:"2123125098"`
-	SubTrackNames AZStd__vector_16 `crc:"1842476797"`
+	SubTrackNames AZStd__vector_9  `crc:"1842476797"`
 	SubTracks     AZStd__vector_73 `crc:"1108451851"`
 	ValueType     AzInt32          `crc:"2453718079"`
 }
@@ -3849,11 +4530,11 @@ type CUiAnimAzEntityNode struct {
 }
 
 type CUiAnimNode struct {
-	Flags  AzInt32          `crc:"184893882"`
-	Id     AzInt32          `crc:"3208210256"`
-	Name   AzString         `crc:"1579384326"`
-	Parent AzInt32          `crc:"1032740943"`
-	Tracks AZStd__vector_86 `crc:"611133998"`
+	Flags  AzInt32           `crc:"184893882"`
+	Id     AzInt32           `crc:"3208210256"`
+	Name   AzString          `crc:"1579384326"`
+	Parent AzInt32           `crc:"1032740943"`
+	Tracks AZStd__vector_163 `crc:"611133998"`
 }
 
 type CUiAnimParamType struct {
@@ -3864,7 +4545,7 @@ type CUiAnimSequence struct {
 	Flags     AzInt32           `crc:"184893882"`
 	Id        AzUInt32          `crc:"3208210256"`
 	Name      AzString          `crc:"1579384326"`
-	Nodes     AZStd__vector_111 `crc:"490538492"`
+	Nodes     AZStd__vector_120 `crc:"490538492"`
 	TimeRange Range             `crc:"1662985087"`
 }
 
@@ -3929,7 +4610,7 @@ type CameraLockTargetComponent struct {
 	BaseClass1                            FacetedComponent `crc:"3566360373"`
 	M_ignorespawnedentitiesforloschecks   AzBool           `crc:"3697348646"`
 	M_offset                              AzVec3           `crc:"328833070"`
-	M_spawnerentitiestoignoreforloschecks AZStd__vector_55 `crc:"3917260433"`
+	M_spawnerentitiestoignoreforloschecks AZStd__vector_71 `crc:"3917260433"`
 	M_targetlockiconjoint                 AzString         `crc:"3638931471"`
 	M_targetlockiconjointverticaloffset   AzFloat32        `crc:"854501559"`
 }
@@ -3957,6 +4638,35 @@ type CameraLockTargetComponentServerFacet struct {
 	M_nottargetableoninit AzBool      `crc:"2253913806"`
 }
 
+type CameraProperties struct {
+	BaseClass1                     TimelineClip `crc:"3566360373"`
+	Colorcorrectionbrightnesscurve Curve        `crc:"1615030650"`
+	Colorcorrectioncontrastcurve   Curve        `crc:"2719598201"`
+	Colorcorrectioncyancurve       Curve        `crc:"4095552532"`
+	Colorcorrectionhuecurve        Curve        `crc:"2950127564"`
+	Colorcorrectionluminencecurve  Curve        `crc:"3957351210"`
+	Colorcorrectionmagentacurve    Curve        `crc:"2683771795"`
+	Colorcorrectionsaturationcurve Curve        `crc:"1755868433"`
+	Colorcorrectionyellowcurve     Curve        `crc:"126313638"`
+	Depthoffieldbluramountcurve    Curve        `crc:"1334535270"`
+	Depthoffieldenable             Curve        `crc:"933573482"`
+	Depthoffieldfocusdistancecurve Curve        `crc:"91681601"`
+	Depthoffieldfocusrangecurve    Curve        `crc:"1305637179"`
+	Farclipcurve                   Curve        `crc:"3108091154"`
+	Fieldofviewcurve               Curve        `crc:"144624571"`
+	Fieldofviewstumheightcurve     Curve        `crc:"278570891"`
+	Frustumwidthcurve              Curve        `crc:"1711708747"`
+	Nearclipcurve                  Curve        `crc:"1315647969"`
+	Restoreonend                   AzBool       `crc:"926230735"`
+}
+
+type CameraShake struct {
+	BaseClass1          TimelineClip `crc:"3566360373"`
+	ShakeRange          AzFloat32    `crc:"2166619862"`
+	Shakeepicenterrange AzFloat32    `crc:"2560170599"`
+	Shakename           AzString     `crc:"1299099999"`
+}
+
 type CameraStateComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -3970,6 +4680,11 @@ type CameraStateComponentClientFacet struct {
 
 type CameraStateComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type CampTierData struct {
+	Blueprint_id EditCrc `crc:"524843416"`
+	Effect_id    EditCrc `crc:"2856621910"`
 }
 
 type CampingComponent struct {
@@ -4028,7 +4743,7 @@ type CapturePointComponentServerFacet struct {
 	M_endwaroncapture                    AzBool                                    `crc:"1974454967"`
 	M_postcapturelocktime                AzFloat32                                 `crc:"379773624"`
 	M_respawnnamesbyfortspawnid          UUID_65CDD55C_BE9B_5689_8E2C_A4117FF26F6E `crc:"863655569"`
-	M_siegecapturepointsrequiredtounlock AZStd__vector_99                          `crc:"574929527"`
+	M_siegecapturepointsrequiredtounlock AZStd__vector_49                          `crc:"574929527"`
 	M_territorydetectorentity            LocalEntityRef                            `crc:"3701741345"`
 }
 
@@ -4067,7 +4782,7 @@ type CellIndex struct {
 type CharacterColliderConfig struct {
 	M_configid        AzString            `crc:"2553810433"`
 	M_previewineditor AzBool              `crc:"3665452870"`
-	M_shape           AZStd__shared_ptr_0 `crc:"2445754556"`
+	M_shape           AZStd__shared_ptr_4 `crc:"2445754556"`
 	M_shapeoffset     AzVec3              `crc:"2075805167"`
 }
 
@@ -4081,8 +4796,8 @@ type CharacterComponent struct {
 	M_maxextentpoint                                         AzVec3                                    `crc:"121706433"`
 	M_maxslope                                               AzFloat32                                 `crc:"1976083998"`
 	M_originrepulsorradius                                   AzFloat32                                 `crc:"4204709177"`
-	M_repulsors                                              AZStd__vector_43                          `crc:"4224162834"`
-	M_shape                                                  AZStd__shared_ptr_0                       `crc:"2445754556"`
+	M_repulsors                                              AZStd__vector_76                          `crc:"4224162834"`
+	M_shape                                                  AZStd__shared_ptr_4                       `crc:"2445754556"`
 	M_shapeoffset                                            AzVec3                                    `crc:"2075805167"`
 	M_strFilter                                              AzString                                  `crc:"3961383120"`
 	M_uselightweightcharactercontroller                      AzBool                                    `crc:"4280053096"`
@@ -4100,6 +4815,40 @@ type CharacterControllerResizeParams struct {
 	M_crawlcapsulehalfheight  AzFloat32 `crc:"702393203"`
 	M_crouchcapsulehalfheight AzFloat32 `crc:"1130022206"`
 	M_mountcapsulehalfheight  AzFloat32 `crc:"1535270899"`
+}
+
+type CharacterCreationData struct {
+	Default_skin_tone                AzString                                                     `crc:"3102179793"`
+	Eye_color_database_style_sheet   AzAsset                                                      `crc:"3233691049"`
+	Face_mark_database_style_sheet   AzAsset                                                      `crc:"90464421"`
+	Facial_hair_database_style_sheet AzAsset                                                      `crc:"4267640286"`
+	Hair_style_database_style_sheet  AzAsset                                                      `crc:"2015721130"`
+	Head_skin                        AzFramework__SimpleAssetReference_Javelin__SkinAsset_        `crc:"3319860182"`
+	Name                             AzString                                                     `crc:"1579384326"`
+	Scar_database_style_sheet        AzAsset                                                      `crc:"773394967"`
+	Skin_tone_database_style_sheet   AzAsset                                                      `crc:"3605594046"`
+	Tattoo_database_style_sheet      AzAsset                                                      `crc:"1722555582"`
+	Ui_selection_image               AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"1688677023"`
+}
+
+type CharacterCreationDatabase struct {
+	Creation_screen_equipment_data AZStd__map_8     `crc:"2532208594"`
+	Default_appearance_data        AZStd__map_10    `crc:"1193854227"`
+	Default_idle_animation_name    AzString         `crc:"3524390884"`
+	Gender                         AzString         `crc:"3343321666"`
+	Races                          AZStd__vector_43 `crc:"1572675273"`
+}
+
+type CharacterEventClip struct {
+	Attachmentjoint                 AzString     `crc:"950212643"`
+	Audioobstructiontype            AzInt32      `crc:"2261798684"`
+	BaseClass1                      TimelineClip `crc:"3566360373"`
+	Characternameforjointattachment AzString     `crc:"1462465351"`
+	Eventname                       AzString     `crc:"42443311"`
+	Triggerstoponclipend            AzBool       `crc:"3864787360"`
+	Usercontext1                    AzString     `crc:"415633790"`
+	Usercontext2                    AzString     `crc:"2177843396"`
+	Usercontext3                    AzString     `crc:"4140331090"`
 }
 
 type CharacterPhysicsComponent struct {
@@ -4178,7 +4927,7 @@ type ClearEncounterZonesComponentClientFacet struct {
 
 type ClearEncounterZonesComponentServerFacet struct {
 	BaseClass1 ServerFacet      `crc:"3566360373"`
-	Locations  AZStd__vector_55 `crc:"400968378"`
+	Locations  AZStd__vector_71 `crc:"400968378"`
 }
 
 type ClientFacet struct {
@@ -4187,6 +4936,27 @@ type ClientFacet struct {
 
 type ClientRef struct {
 	M_clientref Amazon__Hub__ActorRef `crc:"890515722"`
+}
+
+type CollisionFilterColor struct {
+	Color AzColor  `crc:"1716930793"`
+	Name  AzString `crc:"1579384326"`
+}
+
+type CollisionFiltersAsset struct {
+	Categories           AZStd__vector_9                           `crc:"989021800"`
+	Characterfiltercolor AzColor                                   `crc:"2173572725"`
+	Customfiltercolors   UUID_FFA1E556_F423_5A4D_AE2C_8F30D28BE5FD `crc:"162978760"`
+	Filters              AZStd__vector_98                          `crc:"2021091213"`
+	Ghostfiltercolor     AzColor                                   `crc:"1732364474"`
+	Sleepingbodycolor    AzColor                                   `crc:"2936879165"`
+}
+
+type CombatDebugSettings struct {
+	Disable_durability_penalty_on_death AzBool `crc:"429903575"`
+	Disable_item_durability             AzBool `crc:"880532799"`
+	Disable_player_loot_drop_on_death   AzBool `crc:"76657494"`
+	Disable_weapon_durability           AzBool `crc:"2559298940"`
 }
 
 type CombatStatusComponent struct {
@@ -4219,20 +4989,28 @@ type CombatTextComponentServerFacet struct {
 	M_sendcombattexttoclients AzBool      `crc:"3299953651"`
 }
 
+type CommandClip struct {
+	BaseClass1                      TimelineClip `crc:"3566360373"`
+	CRC_447931111                   AzInt32      `crc:"447931111"`
+	CRC_908330411                   AzBool       `crc:"908330411"`
+	Executestringcommand            AzString     `crc:"2398894834"`
+	Executestringcommand_clientcvar AzString     `crc:"198166777"`
+}
+
 type CompoundShapeComponent struct {
 	BaseClass1    AZ__Component              `crc:"3566360373"`
 	Configuration CompoundShapeConfiguration `crc:"2783094231"`
 }
 
 type CompoundShapeConfiguration struct {
-	Child_shape_entities AZStd__list_1 `crc:"2114955965"`
+	Child_shape_entities AZStd__list_6 `crc:"2114955965"`
 }
 
 type ConditionalTutorialStep struct {
-	BaseClass1        TutorialStep        `crc:"3566360373"`
-	M_condition       AZStd__shared_ptr_5 `crc:"3808898043"`
-	M_conditionalstep AZStd__shared_ptr_5 `crc:"3009570751"`
-	M_invert          AzBool              `crc:"3095477305"`
+	BaseClass1        TutorialStep      `crc:"3566360373"`
+	M_condition       AZStd__shared_ptr `crc:"3808898043"`
+	M_conditionalstep AZStd__shared_ptr `crc:"3009570751"`
+	M_invert          AzBool            `crc:"3095477305"`
 }
 
 type ContainerComponent struct {
@@ -4242,13 +5020,13 @@ type ContainerComponent struct {
 	M_canreceivebonusencumbrance AzBool              `crc:"1909719203"`
 	M_checkpaperdoll             AzBool              `crc:"1393520463"`
 	M_clearcontainerondeactivate AzBool              `crc:"1874123952"`
-	M_container                  AZStd__vector_10    `crc:"2574471075"`
+	M_container                  AZStd__vector_66    `crc:"2574471075"`
 	M_currentencumbrance         AzInt32             `crc:"3395202162"`
 	M_emptyitem                  AZStd__shared_ptr_2 `crc:"1401168343"`
 	M_initialcontainersize       AzInt32             `crc:"883800265"`
 	M_itemclass                  SBItemClass         `crc:"646942407"`
 	M_lockuponemptied            AzBool              `crc:"2210653866"`
-	M_oncontaineremptied         AZStd__vector_80    `crc:"1508708368"`
+	M_oncontaineremptied         AZStd__vector_44    `crc:"1508708368"`
 	M_ownershipEntity            LocalEntityRef      `crc:"4082794647"`
 	M_playertradeentity          LocalEntityRef      `crc:"3219306131"`
 	M_rowreference               AzString            `crc:"2466568760"`
@@ -4260,7 +5038,7 @@ type ContainerComponentClientFacet struct {
 
 type ContainerComponentServerFacet struct {
 	BaseClass1             ServerFacet                                                                                                          `crc:"3566360373"`
-	M_containerchanges     AZStd__unordered_map_5                                                                                               `crc:"3596090694"`
+	M_containerchanges     AZStd__unordered_map_4                                                                                               `crc:"3596090694"`
 	M_detectionvolume      LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__DetectionVolumeComponent__void__ `crc:"4173950407"`
 	M_onlyupdateself       AzBool                                                                                                               `crc:"2181510758"`
 	M_tradedistancesquared AzFloat32                                                                                                            `crc:"3997675883"`
@@ -4277,8 +5055,23 @@ type ContainerTransferComponentClientFacet struct {
 
 type ContainerTransferComponentServerFacet struct {
 	BaseClass1       ServerFacet                                                                                                    `crc:"3566360373"`
-	M_fromcontainers AZStd__vector_105                                                                                              `crc:"464931407"`
+	M_fromcontainers AZStd__vector_89                                                                                               `crc:"464931407"`
 	M_tocontainer    LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__ContainerComponent__void__ `crc:"1207484390"`
+}
+
+type ContractBuySellFeeData struct {
+	Flat_fee       AzUInt32  `crc:"963696813"`
+	Percentage_fee AzFloat32 `crc:"48420066"`
+}
+
+type ContractConfigData struct {
+	Base_number_of_buy_sell_contracts AzUInt32     `crc:"1551400803"`
+	Base_number_of_other_contracts    AzUInt32     `crc:"1977021285"`
+	Buy_contract_duration_fee_map     AZStd__map_7 `crc:"3751401499"`
+	Buy_contract_transaction_tax      AzFloat32    `crc:"333830732"`
+	Default_contract_duration_days    AzInt32      `crc:"3628086358"`
+	Sell_contract_duration_fee_map    AZStd__map_7 `crc:"2902958614"`
+	Sell_contract_transaction_tax     AzFloat32    `crc:"2331529866"`
 }
 
 type ContractsComponent struct {
@@ -4317,7 +5110,7 @@ type ContributionTrackerComponentClientFacet struct {
 
 type ContributionTrackerComponentServerFacet struct {
 	BaseClass1                      ServerFacet                   `crc:"3566360373"`
-	M_categories                    AZStd__vector_16              `crc:"4279741557"`
+	M_categories                    AZStd__vector_9               `crc:"4279741557"`
 	M_contributionpointsheet        SpringboardDataSheetContainer `crc:"127241641"`
 	M_gatherablecontrollerid        EntityId                      `crc:"2615885288"`
 	M_mutatorrewardspawnposoverride AzVec3                        `crc:"745196467"`
@@ -4388,6 +5181,17 @@ type CraftingComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type CraftingStationData struct {
+	Azothdiscountpercent AzFloat32       `crc:"757151162"`
+	Craftingtypes        AZStd__vector_9 `crc:"169774472"`
+	Mannequintag         AzString        `crc:"1024826923"`
+	Name                 AzString        `crc:"1579384326"`
+}
+
+type CraftingStationDatabase struct {
+	Crafting_stations AZStd__vector_78 `crc:"2156395334"`
+}
+
 type CraftingStationPropertiesReference struct {
 	M_craftingstationasset AzAsset  `crc:"2047665432"`
 	M_craftingstationentry AzString `crc:"1401037364"`
@@ -4395,6 +5199,42 @@ type CraftingStationPropertiesReference struct {
 
 type Crc32 struct {
 	Value AzUInt32 `crc:"494360628"`
+}
+
+type CreditModifierData struct {
+	Currency_modifier           AzFloat32 `crc:"3033367530"`
+	Loot_modifier               AzFloat32 `crc:"2971211125"`
+	Territory_standing_modifier AzFloat32 `crc:"2089590721"`
+	Xp_modifier                 AzFloat32 `crc:"2504197109"`
+}
+
+type CrestColorData struct {
+	Color         AzColor  `crc:"1716930793"`
+	Entitlementid AzString `crc:"3726511063"`
+	Faction       AzUInt8  `crc:"2198113168"`
+	Isentitlement AzBool   `crc:"1141241085"`
+	Isselectable  AzBool   `crc:"1120243053"`
+	Name          AzString `crc:"1579384326"`
+}
+
+type CrestData struct {
+	Entitlementid AzString                                                     `crc:"3726511063"`
+	Faction       AzUInt8                                                      `crc:"2198113168"`
+	Image         AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"3309110367"`
+	Isentitlement AzBool                                                       `crc:"1141241085"`
+	Isselectable  AzBool                                                       `crc:"1120243053"`
+	Name          AzString                                                     `crc:"1579384326"`
+}
+
+type CrestDatabase struct {
+	Background_colors AZStd__vector_101 `crc:"2110124452"`
+	Background_data   AZStd__vector_65  `crc:"803445068"`
+	Descriptions      AZStd__vector_9   `crc:"3379474102"`
+	Foreground_colors AZStd__vector_101 `crc:"407712231"`
+	Foreground_data   AZStd__vector_65  `crc:"4003726830"`
+	Groups            AZStd__vector_9   `crc:"4033689968"`
+	Missions          AZStd__vector_9   `crc:"888263806"`
+	Origins           AZStd__vector_9   `crc:"3789488958"`
 }
 
 type CriticalHitsComponent struct {
@@ -4443,6 +5283,53 @@ type CurrencyConversionComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type Curve struct {
+	Axes          AZStd__vector_19      `crc:"700107254"`
+	Editormetdata Curve__EditorMetadata `crc:"3168138435"`
+}
+
+type CurveAxis struct {
+	Editormetdata CurveAxis__EditorMetadata `crc:"3168138435"`
+	Keyframes     AZStd__vector_95          `crc:"2523404393"`
+	Name          AzString                  `crc:"1579384326"`
+}
+
+type CurveAxis__EditorMetadata struct {
+	Islocked  AzBool `crc:"739690365"`
+	Isvisible AzBool `crc:"3553264133"`
+}
+
+type CurveConfiguration struct {
+	Customdatakey     AzString  `crc:"381352994"`
+	Identifier        AzString  `crc:"1999537002"`
+	InputMax          AzFloat32 `crc:"3447061871"`
+	InputMin          AzFloat32 `crc:"4051223094"`
+	Konstant          AzFloat32 `crc:"412077677"`
+	M_generatepreview AzBool    `crc:"4066673792"`
+	OutputMax         AzFloat32 `crc:"624860985"`
+	OutputMin         AzFloat32 `crc:"422813792"`
+	Outputscalar      AzFloat32 `crc:"242146426"`
+	Slope             AzFloat32 `crc:"1489782149"`
+	Type              AzInt32   `crc:"2363381545"`
+	Xintercept        AzFloat32 `crc:"4016139495"`
+	Yintercept        AzFloat32 `crc:"10684377"`
+}
+
+type CurveConfigurationListAsset struct {
+	Configurations        AZStd__vector_40      `crc:"52194009"`
+	Targetselectionlimits TargetSelectionLimits `crc:"2132838142"`
+	Targetselectionmethod AzInt32               `crc:"2008712229"`
+}
+
+type Curve__EditorMetadata struct {
+	Editrange    AzFloat32 `crc:"2137298353"`
+	Editrangemin AzFloat32 `crc:"588141206"`
+	Humanname    AzString  `crc:"2511221002"`
+	Isvisible    AzBool    `crc:"3553264133"`
+	Propertyname AzString  `crc:"3514053423"`
+	Showineditor AzBool    `crc:"522637254"`
+}
+
 type CustomDataEntry struct {
 	Datacategory AzInt32  `crc:"370126413"`
 	Datakey      AzString `crc:"3676622757"`
@@ -4487,60 +5374,60 @@ type CutsceneFinishedObjective struct {
 }
 
 type CutsceneInfo struct {
-	M_achievementtounlock             AzString         `crc:"3903120646"`
-	M_bannerdescriptiontext           AzString         `crc:"1386505152"`
-	M_bannertitlelabeltext            AzString         `crc:"125943168"`
-	M_bannertitletext                 AzString         `crc:"3183715395"`
-	M_blockplayerinput                AzBool           `crc:"988062995"`
-	M_camerastate                     AzString         `crc:"396252831"`
-	M_camerastatelookat               AzString         `crc:"3326746582"`
-	M_camerastateorigin               AzString         `crc:"3244616577"`
-	M_camerastatetosetonexit          AzString         `crc:"2897418021"`
-	M_cancelinventory                 AzBool           `crc:"3123905328"`
-	M_canskip                         AzBool           `crc:"1105550077"`
-	M_cutscenename                    AzString         `crc:"3119648093"`
-	M_depthoffieldoverride            AzString         `crc:"1056548018"`
-	M_dismountplayer                  AzBool           `crc:"3160915851"`
-	M_dummyanimationinfo              AzString         `crc:"1760143279"`
-	M_dummyisarmed                    AzBool           `crc:"3201010908"`
-	M_dummylookatinfo                 AzString         `crc:"3750271199"`
-	M_dummypresetpos                  AzString         `crc:"2467548503"`
-	M_dummypresetrot                  AzString         `crc:"250842266"`
-	M_enterblendtime                  AzFloat32        `crc:"846907056"`
-	M_exitblendtime                   AzFloat32        `crc:"3240025873"`
-	M_followentity                    EntityId         `crc:"776462544"`
-	M_forcehighqualitylods            AzBool           `crc:"1443270944"`
-	M_forceinstantexittransition      AzBool           `crc:"917445852"`
-	M_forceinstantlookats             AzBool           `crc:"3583340894"`
-	M_hidenearbyaiavatars             AzBool           `crc:"177699415"`
-	M_hidenearbybuildables            AzBool           `crc:"3218822007"`
-	M_hidenearbynpcavatars            AzBool           `crc:"693122984"`
-	M_hidenearbyplayeravatars         AzBool           `crc:"2473316561"`
-	M_hideplayeravatar                AzBool           `crc:"1605700875"`
-	M_hideuiontrigger                 AzBool           `crc:"1555760630"`
-	M_ignoreai                        AzBool           `crc:"99863706"`
-	M_interruptincombat               AzBool           `crc:"2233748559"`
-	M_interruptonmovement             AzBool           `crc:"1909653604"`
-	M_lockcamerastateonexituntilinput AzBool           `crc:"368237040"`
-	M_lookatsmoothtimeoverride        AzFloat32        `crc:"2328200877"`
-	M_multinpcids                     AzString         `crc:"1646518354"`
-	M_npcanimationinfo                AzString         `crc:"1158286907"`
-	M_npclookatinfo                   AzString         `crc:"3965294712"`
-	M_npctointeract                   AzString         `crc:"968554580"`
-	M_oncutscenestartevents           AZStd__vector_80 `crc:"2484338872"`
-	M_oncutscenestoppedevents         AZStd__vector_80 `crc:"3095381349"`
-	M_originenterblendtime            AzFloat32        `crc:"2278581839"`
-	M_originentity                    EntityId         `crc:"2262423182"`
-	M_originexitblendtime             AzFloat32        `crc:"3144749484"`
-	M_playerfaderate                  AzFloat32        `crc:"2698944651"`
-	M_playerinvincibility             AzBool           `crc:"246333284"`
-	M_playfadeeffect                  AzBool           `crc:"1400054615"`
-	M_preloadentitypositions          AZStd__vector_44 `crc:"507922871"`
-	M_sourceslicename                 AzString         `crc:"1118611717"`
-	M_speakingnpcid                   AzString         `crc:"34097724"`
-	M_usecutsceneobserver             AzBool           `crc:"1238046885"`
-	M_waitforpreloading               AzFloat32        `crc:"3640373654"`
-	Releasecameraoverridesin          AzFloat32        `crc:"1309762661"`
+	M_achievementtounlock             AzString          `crc:"3903120646"`
+	M_bannerdescriptiontext           AzString          `crc:"1386505152"`
+	M_bannertitlelabeltext            AzString          `crc:"125943168"`
+	M_bannertitletext                 AzString          `crc:"3183715395"`
+	M_blockplayerinput                AzBool            `crc:"988062995"`
+	M_camerastate                     AzString          `crc:"396252831"`
+	M_camerastatelookat               AzString          `crc:"3326746582"`
+	M_camerastateorigin               AzString          `crc:"3244616577"`
+	M_camerastatetosetonexit          AzString          `crc:"2897418021"`
+	M_cancelinventory                 AzBool            `crc:"3123905328"`
+	M_canskip                         AzBool            `crc:"1105550077"`
+	M_cutscenename                    AzString          `crc:"3119648093"`
+	M_depthoffieldoverride            AzString          `crc:"1056548018"`
+	M_dismountplayer                  AzBool            `crc:"3160915851"`
+	M_dummyanimationinfo              AzString          `crc:"1760143279"`
+	M_dummyisarmed                    AzBool            `crc:"3201010908"`
+	M_dummylookatinfo                 AzString          `crc:"3750271199"`
+	M_dummypresetpos                  AzString          `crc:"2467548503"`
+	M_dummypresetrot                  AzString          `crc:"250842266"`
+	M_enterblendtime                  AzFloat32         `crc:"846907056"`
+	M_exitblendtime                   AzFloat32         `crc:"3240025873"`
+	M_followentity                    EntityId          `crc:"776462544"`
+	M_forcehighqualitylods            AzBool            `crc:"1443270944"`
+	M_forceinstantexittransition      AzBool            `crc:"917445852"`
+	M_forceinstantlookats             AzBool            `crc:"3583340894"`
+	M_hidenearbyaiavatars             AzBool            `crc:"177699415"`
+	M_hidenearbybuildables            AzBool            `crc:"3218822007"`
+	M_hidenearbynpcavatars            AzBool            `crc:"693122984"`
+	M_hidenearbyplayeravatars         AzBool            `crc:"2473316561"`
+	M_hideplayeravatar                AzBool            `crc:"1605700875"`
+	M_hideuiontrigger                 AzBool            `crc:"1555760630"`
+	M_ignoreai                        AzBool            `crc:"99863706"`
+	M_interruptincombat               AzBool            `crc:"2233748559"`
+	M_interruptonmovement             AzBool            `crc:"1909653604"`
+	M_lockcamerastateonexituntilinput AzBool            `crc:"368237040"`
+	M_lookatsmoothtimeoverride        AzFloat32         `crc:"2328200877"`
+	M_multinpcids                     AzString          `crc:"1646518354"`
+	M_npcanimationinfo                AzString          `crc:"1158286907"`
+	M_npclookatinfo                   AzString          `crc:"3965294712"`
+	M_npctointeract                   AzString          `crc:"968554580"`
+	M_oncutscenestartevents           AZStd__vector_44  `crc:"2484338872"`
+	M_oncutscenestoppedevents         AZStd__vector_44  `crc:"3095381349"`
+	M_originenterblendtime            AzFloat32         `crc:"2278581839"`
+	M_originentity                    EntityId          `crc:"2262423182"`
+	M_originexitblendtime             AzFloat32         `crc:"3144749484"`
+	M_playerfaderate                  AzFloat32         `crc:"2698944651"`
+	M_playerinvincibility             AzBool            `crc:"246333284"`
+	M_playfadeeffect                  AzBool            `crc:"1400054615"`
+	M_preloadentitypositions          AZStd__vector_169 `crc:"507922871"`
+	M_sourceslicename                 AzString          `crc:"1118611717"`
+	M_speakingnpcid                   AzString          `crc:"34097724"`
+	M_usecutsceneobserver             AzBool            `crc:"1238046885"`
+	M_waitforpreloading               AzFloat32         `crc:"3640373654"`
+	Releasecameraoverridesin          AzFloat32         `crc:"1309762661"`
 }
 
 type CyclicGatherableData struct {
@@ -4563,6 +5450,10 @@ type CylinderShapeConfig struct {
 	Radius     AzFloat32 `crc:"998010458"`
 }
 
+type DailyBonusData struct {
+	Bonusresethour AzUInt8 `crc:"1477237658"`
+}
+
 type DamageReceiverComponent struct {
 	BaseClass1                                   FacetedComponent `crc:"3566360373"`
 	M_allowblock                                 AzBool           `crc:"196627243"`
@@ -4577,7 +5468,7 @@ type DamageReceiverComponent struct {
 	M_ishitfrombehindminangle                    AzFloat32        `crc:"538821932"`
 	M_landclaimentity                            LocalEntityRef   `crc:"4102380384"`
 	M_nameentity                                 LocalEntityRef   `crc:"2412908716"`
-	M_ondamageevents                             AZStd__vector_80 `crc:"471299764"`
+	M_ondamageevents                             AZStd__vector_44 `crc:"471299764"`
 	M_ondamageeventscooldownseconds              AzFloat32        `crc:"2741863695"`
 	M_onlydamagablebyplayer                      AzBool           `crc:"502742490"`
 	M_overrideobstructionchecktargetheightoffset AzFloat32        `crc:"1126633515"`
@@ -4600,7 +5491,7 @@ type DamageReceiverComponentServerFacet struct {
 }
 
 type DamageState struct {
-	Events         AZStd__vector_80 `crc:"1401378634"`
+	Events         AZStd__vector_44 `crc:"1401378634"`
 	Percentdamaged AzUInt32         `crc:"3818796640"`
 }
 
@@ -4610,8 +5501,8 @@ type DarknessActivationSpecification struct {
 }
 
 type DarknessConstraintComponent struct {
-	BaseClass1         FacetedComponent `crc:"3566360373"`
-	M_spawnscalingspec AZStd__vector_37 `crc:"1877925513"`
+	BaseClass1         FacetedComponent  `crc:"3566360373"`
+	M_spawnscalingspec AZStd__vector_126 `crc:"1877925513"`
 }
 
 type DarknessConstraintComponentClientFacet struct {
@@ -4628,12 +5519,12 @@ type DarknessConstraintComponentServerFacet struct {
 
 type DarknessControllerComponent struct {
 	BaseClass1               FacetedComponent              `crc:"3566360373"`
-	M_activationspec         AZStd__vector_51              `crc:"269361976"`
+	M_activationspec         AZStd__vector_105             `crc:"269361976"`
 	M_darknessupdatesenabled AzBool                        `crc:"3852587532"`
 	M_datatabledarknessid    AzString                      `crc:"2417124492"`
 	M_difficultyscalinggroup AzString                      `crc:"1309989667"`
 	M_difficultyscalingtable SpringboardDataSheetContainer `crc:"3590131872"`
-	M_groupactivationspec    AZStd__vector_39              `crc:"3472418363"`
+	M_groupactivationspec    AZStd__vector_159             `crc:"3472418363"`
 	M_territoryoffset        AzUInt32                      `crc:"1345096092"`
 	M_territorytype          AzUInt32                      `crc:"1017432614"`
 	M_totaldarknessduration  AzUInt32                      `crc:"1679035747"`
@@ -4645,7 +5536,7 @@ type DarknessControllerComponentClientFacet struct {
 
 type DarknessControllerComponentServerFacet struct {
 	BaseClass1       ServerFacet      `crc:"3566360373"`
-	M_darknesslevels AZStd__vector_17 `crc:"4082943885"`
+	M_darknesslevels AZStd__vector_13 `crc:"4082943885"`
 }
 
 type DarknessGroupSpecification struct {
@@ -4659,7 +5550,12 @@ type DarknessLevel struct {
 }
 
 type DataFlagsPerEntity struct {
-	EntityToDataFlags AZStd__unordered_map_2 `crc:"1595130787"`
+	EntityToDataFlags AZStd__unordered_map_9 `crc:"1595130787"`
+}
+
+type DeactivateEntity struct {
+	Applytoallchildren AzBool       `crc:"2471114906"`
+	BaseClass1         TimelineClip `crc:"3566360373"`
 }
 
 type DebugComponent struct {
@@ -4737,6 +5633,13 @@ type DecalConfiguration struct {
 	SortPriority                         AzUInt32                                                      `crc:"3009033127"`
 	View_Distance_Multiplier             AzFloat32                                                     `crc:"2774810448"`
 	Visible                              AzBool                                                        `crc:"2058414169"`
+}
+
+type DefaultAppearanceData struct {
+	Apply_skin_material AzBool                                                        `crc:"3384217097"`
+	Mask                AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_  `crc:"2138030896"`
+	Material_Override   AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"3955306051"`
+	Skin                AzFramework__SimpleAssetReference_Javelin__SkinAsset_         `crc:"41510942"`
 }
 
 type DefaultCondition struct {
@@ -4839,9 +5742,9 @@ type DetectableComponentServerFacet struct {
 
 type DetectableObjectComponent struct {
 	BaseClass1             FacetedComponent    `crc:"3566360373"`
-	M_additionalstrfilters AZStd__vector_16    `crc:"2662627312"`
+	M_additionalstrfilters AZStd__vector_9     `crc:"2662627312"`
 	M_center               AzVec3              `crc:"174307802"`
-	M_shape                AZStd__shared_ptr_0 `crc:"2445754556"`
+	M_shape                AZStd__shared_ptr_4 `crc:"2445754556"`
 	M_strFilter            AzString            `crc:"3961383120"`
 }
 
@@ -4861,7 +5764,7 @@ type DetectionVolumeComponent struct {
 	M_enablescaling           AzBool                                    `crc:"1161510811"`
 	M_ghostallquery           AzBool                                    `crc:"4215359564"`
 	M_ignoreheight            AzBool                                    `crc:"938637926"`
-	M_shape                   AZStd__shared_ptr_0                       `crc:"2445754556"`
+	M_shape                   AZStd__shared_ptr_4                       `crc:"2445754556"`
 	M_shapeentityid           EntityId                                  `crc:"1182112611"`
 	M_strFilter               AzString                                  `crc:"3961383120"`
 }
@@ -4899,13 +5802,13 @@ type DetectionVolumeEvent struct {
 }
 
 type DetectionVolumeEventComponent struct {
-	BaseClass1                        FacetedComponent `crc:"3566360373"`
-	M_detectedgdeonenternotifications AZStd__vector_9  `crc:"3679604283"`
-	M_detectedgdeonexitnotifications  AZStd__vector_9  `crc:"1641510247"`
-	M_eventsonenter                   AZStd__vector_58 `crc:"2444781948"`
-	M_eventsonexit                    AZStd__vector_58 `crc:"1578633270"`
-	M_eventsonfirstenter              AZStd__vector_58 `crc:"4211471486"`
-	M_eventsonlastexit                AZStd__vector_58 `crc:"248935850"`
+	BaseClass1                        FacetedComponent  `crc:"3566360373"`
+	M_detectedgdeonenternotifications AZStd__vector_123 `crc:"3679604283"`
+	M_detectedgdeonexitnotifications  AZStd__vector_123 `crc:"1641510247"`
+	M_eventsonenter                   AZStd__vector_141 `crc:"2444781948"`
+	M_eventsonexit                    AZStd__vector_141 `crc:"1578633270"`
+	M_eventsonfirstenter              AZStd__vector_141 `crc:"4211471486"`
+	M_eventsonlastexit                AZStd__vector_141 `crc:"248935850"`
 }
 
 type DetectionVolumeEventComponentClientFacet struct {
@@ -4956,10 +5859,10 @@ type DetectionVolumeTeleportComponentServerFacet struct {
 	BaseClass1                            ServerFacet      `crc:"3566360373"`
 	M_entitytoteleportto                  EntityId         `crc:"204515305"`
 	M_numberofteleportsbeforedeactivation AzInt32          `crc:"3696487825"`
-	M_ondisableevents                     AZStd__vector_80 `crc:"1404682936"`
-	M_onenableevents                      AZStd__vector_80 `crc:"1787891200"`
-	M_onmaxteleportsreachedevents         AZStd__vector_80 `crc:"2863093254"`
-	M_onteleportevents                    AZStd__vector_80 `crc:"1783144880"`
+	M_ondisableevents                     AZStd__vector_44 `crc:"1404682936"`
+	M_onenableevents                      AZStd__vector_44 `crc:"1787891200"`
+	M_onmaxteleportsreachedevents         AZStd__vector_44 `crc:"2863093254"`
+	M_onteleportevents                    AZStd__vector_44 `crc:"1783144880"`
 	M_teleportdelayinseconds              AzFloat32        `crc:"3706008944"`
 }
 
@@ -4995,11 +5898,11 @@ type DiegeticObjectivePinsComponent struct {
 
 type DiegeticObjectivePinsComponentClientFacet struct {
 	BaseClass1                 ClientFacet                               `crc:"3566360373"`
-	M_diegeticpinentities      AZStd__vector_55                          `crc:"3689800827"`
+	M_diegeticpinentities      AZStd__vector_71                          `crc:"3689800827"`
 	M_lastplayerpos            AzVec3                                    `crc:"1054333788"`
 	M_lastupdatedplayerpostime WallClockTimePoint                        `crc:"275719033"`
 	M_pinidstodata             UUID_5B5C3E6D_91FC_5863_96CA_57879B448A3C `crc:"2048698695"`
-	M_sortedpinids             AZStd__vector_0                           `crc:"670937625"`
+	M_sortedpinids             AZStd__vector_148                         `crc:"670937625"`
 }
 
 type DiegeticObjectivePinsComponentServerFacet struct {
@@ -5018,7 +5921,7 @@ type DoorComponentClientFacet struct {
 
 type DoorComponentServerFacet struct {
 	BaseClass1         ServerFacet      `crc:"3566360373"`
-	M_doorentities     AZStd__vector_55 `crc:"3882442330"`
+	M_doorentities     AZStd__vector_71 `crc:"3882442330"`
 	M_oncloseevent     EventData        `crc:"1836842119"`
 	M_onopenevent      EventData        `crc:"1026572501"`
 	M_teleportdistance AzFloat32        `crc:"4057011595"`
@@ -5026,7 +5929,7 @@ type DoorComponentServerFacet struct {
 
 type DungeonBrimstoneSands00Data struct {
 	BaseClass1                    SlayerScriptData `crc:"3566360373"`
-	Detectionvolumetriggereddoors AZStd__vector_16 `crc:"4040092227"`
+	Detectionvolumetriggereddoors AZStd__vector_9  `crc:"4040092227"`
 }
 
 type DungeonDialPuzzleData struct {
@@ -5070,12 +5973,12 @@ type DungeonGreatCleave01 struct {
 }
 
 type DungeonReekwater00Data struct {
-	BaseClass1     SlayerScriptData `crc:"3566360373"`
-	Glyphassets    AZStd__vector_52 `crc:"1504308248"`
-	Glyphlights    AZStd__vector_16 `crc:"415507326"`
-	Pressureplates AZStd__vector_16 `crc:"4042791178"`
-	Solutionset1   AZStd__vector_16 `crc:"1582157183"`
-	Solutionset2   AZStd__vector_16 `crc:"3343162565"`
+	BaseClass1     SlayerScriptData  `crc:"3566360373"`
+	Glyphassets    AZStd__vector_118 `crc:"1504308248"`
+	Glyphlights    AZStd__vector_9   `crc:"415507326"`
+	Pressureplates AZStd__vector_9   `crc:"4042791178"`
+	Solutionset1   AZStd__vector_9   `crc:"1582157183"`
+	Solutionset2   AZStd__vector_9   `crc:"3343162565"`
 }
 
 type DungeonShatteredObeliskData struct {
@@ -5116,6 +6019,31 @@ type EditCrc struct {
 	M_valuestr AzString `crc:"3432344339"`
 }
 
+type EditableCollisionFilter struct {
+	Collidewithcategories AZStd__vector_9                           `crc:"3869464348"`
+	Description           AzString                                  `crc:"1843675174"`
+	Filtertags            UUID_661C1835_82E9_519E_852C_4586C3435B17 `crc:"3305311246"`
+	Inheritsfilters       AZStd__vector_9                           `crc:"2716852536"`
+	Iscategories          AZStd__vector_9                           `crc:"1888979482"`
+	Name                  AzString                                  `crc:"1579384326"`
+}
+
+type EditorMetadata struct {
+	Enabled  AzBool `crc:"1358543748"`
+	Selected AzBool `crc:"2561261446"`
+}
+
+type EditorMetadata_0 struct {
+	EntityId   EntityId `crc:"1672219998"`
+	Groupname  AzString `crc:"2430242693"`
+	Isexpanded AzBool   `crc:"702022172"`
+}
+
+type EditorMetadata_1 struct {
+	Horizontalzoomscale AzFloat32 `crc:"1079487304"`
+	Timeoffset          AzFloat32 `crc:"2520827696"`
+}
+
 type EffectData struct {
 	M_effectid AzString `crc:"299976613"`
 }
@@ -5136,13 +6064,13 @@ type EncounterAction struct {
 }
 
 type EncounterComponent struct {
-	BaseClass1      FacetedComponent `crc:"3566360373"`
-	M_endactions    AZStd__vector_61 `crc:"1233426361"`
-	M_objectives    AZStd__vector_22 `crc:"2840888177"`
-	M_spawntimeline AZStd__vector_1  `crc:"163204861"`
-	M_stages        AZStd__vector_55 `crc:"1697724570"`
-	M_startactions  AZStd__vector_61 `crc:"2298946402"`
-	M_userwave      AzBool           `crc:"1931699072"`
+	BaseClass1      FacetedComponent  `crc:"3566360373"`
+	M_endactions    AZStd__vector_54  `crc:"1233426361"`
+	M_objectives    AZStd__vector_140 `crc:"2840888177"`
+	M_spawntimeline AZStd__vector_36  `crc:"163204861"`
+	M_stages        AZStd__vector_71  `crc:"1697724570"`
+	M_startactions  AZStd__vector_54  `crc:"2298946402"`
+	M_userwave      AzBool            `crc:"1931699072"`
 }
 
 type EncounterComponentClientFacet struct {
@@ -5169,7 +6097,7 @@ type EncounterEventObjective struct {
 
 type EncounterManagerComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
-	M_stages   AZStd__vector_55 `crc:"1697724570"`
+	M_stages   AZStd__vector_71 `crc:"1697724570"`
 }
 
 type EncounterManagerComponentClientFacet struct {
@@ -5204,8 +6132,8 @@ type EncounterObjective struct {
 }
 
 type EncounterRewardTier struct {
-	M_requiredcontribution AzFloat32        `crc:"272390881"`
-	M_rewardeventidstrs    AZStd__vector_16 `crc:"3326432996"`
+	M_requiredcontribution AzFloat32       `crc:"272390881"`
+	M_rewardeventidstrs    AZStd__vector_9 `crc:"3326432996"`
 }
 
 type EncounterRewardsComponent struct {
@@ -5217,10 +6145,10 @@ type EncounterRewardsComponentClientFacet struct {
 }
 
 type EncounterRewardsComponentServerFacet struct {
-	BaseClass1                    ServerFacet       `crc:"3566360373"`
-	M_failurerewards              AZStd__vector_114 `crc:"1822358559"`
-	M_successrewards              AZStd__vector_114 `crc:"167760882"`
-	M_universalsuccessgameeventid AzString          `crc:"2212529372"`
+	BaseClass1                    ServerFacet      `crc:"3566360373"`
+	M_failurerewards              AZStd__vector_70 `crc:"1822358559"`
+	M_successrewards              AZStd__vector_70 `crc:"167760882"`
+	M_universalsuccessgameeventid AzString         `crc:"2212529372"`
 }
 
 type EntitlementComponent struct {
@@ -5263,6 +6191,35 @@ type EntityLootLockEvent struct {
 	Eventtype       AzInt32                                   `crc:"3497691904"`
 }
 
+type EquipTypeData struct {
+	Attachment                                    AzString `crc:"2036324795"`
+	Attachment_offset_position                    AzVec3   `crc:"379390882"`
+	Attachment_offset_rotation__degrees_          AzVec3   `crc:"581018980"`
+	Name                                          AzString `crc:"1579384326"`
+	Off_hand_attachment                           AzString `crc:"2388996306"`
+	Off_hand_attachment_offset_position           AzVec3   `crc:"2522934056"`
+	Off_hand_attachment_offset_rotation__degrees_ AzVec3   `crc:"97015342"`
+	Off_hand_sheath_data                          AzString `crc:"1101872181"`
+	Off_hand_sheath_offset_position               AzVec3   `crc:"1077303719"`
+	Off_hand_sheath_offset_rotation__degrees_     AzVec3   `crc:"789454983"`
+	Sheath_data                                   AzString `crc:"1966399264"`
+	Sheath_offset_position                        AzVec3   `crc:"619916990"`
+	Sheath_offset_rotation__degrees_              AzVec3   `crc:"768083228"`
+}
+
+type EquipTypesDatabase struct {
+	Equip_types AZStd__vector_164 `crc:"1388966666"`
+}
+
+type EventCreditData struct {
+	Contribution_type_multipliers      AZStd__unordered_map_1 `crc:"4139811862"`
+	Credit_health_threshold_percentage AzFloat32              `crc:"129430256"`
+	Credit_range_limit_meters          AzInt32                `crc:"3101756431"`
+	Credit_time_limit_seconds          AzInt32                `crc:"2020063494"`
+	Event_credit_modifiers             AZStd__vector_85       `crc:"2584201242"`
+	Group_credit_modifiers             AZStd__vector_85       `crc:"1135006271"`
+}
+
 type EventData struct {
 	M_applyrecursively AzBool         `crc:"993664239"`
 	M_entityref        LocalEntityRef `crc:"2916754806"`
@@ -5282,18 +6239,60 @@ type EventNotificationComponent struct {
 }
 
 type EventNotificationComponentClientFacet struct {
-	BaseClass1          ClientFacet `crc:"3566360373"`
-	M_islocalplayer     AzBool      `crc:"2760799168"`
-	M_notificationtimes AZStd__map  `crc:"3588190060"`
+	BaseClass1          ClientFacet  `crc:"3566360373"`
+	M_islocalplayer     AzBool       `crc:"2760799168"`
+	M_notificationtimes AZStd__map_6 `crc:"3588190060"`
 }
 
 type EventNotificationComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type EventNotificationData struct {
+	Interaction_ui_action AzUInt8  `crc:"1764981939"`
+	Notification_id       AzString `crc:"2964828905"`
+}
+
+type EventNotificationDatabase struct {
+	Coin_generation_limited_notification_id                              AzString         `crc:"2656085793"`
+	Coin_transferal_disabled_notification_id                             AzString         `crc:"518455330"`
+	Crafting_disabled_notification_id                                    AzString         `crc:"4281575682"`
+	Currency_received_from_player_notification_id                        AzString         `crc:"2637435109"`
+	Currency_send_failed_notification_id                                 AzString         `crc:"1951901791"`
+	Currency_sent_to_player_notification_id                              AzString         `crc:"1116140539"`
+	Damage_ignored_not_flagged_for_pvp_notification_id                   AzString         `crc:"946505713"`
+	Damage_ignored_not_in_duel_notification_id                           AzString         `crc:"2802053334"`
+	Damage_ignored_sanctuary_notification_id                             AzString         `crc:"4124773029"`
+	Damage_ignored_siege_capture_points_unclaimed_notification_id        AzString         `crc:"3563528536"`
+	Interact_focus_notification_ids                                      AZStd__vector_74 `crc:"1141819617"`
+	Item_salvaging_disabled_notification_id                              AzString         `crc:"275056076"`
+	New_items_dropped_notification_id                                    AzString         `crc:"2716492405"`
+	Open_loot_disabled_notification_id                                   AzString         `crc:"3948730153"`
+	Other_player_encountered_notification_id                             AzString         `crc:"1883304986"`
+	Recipe_salvaging_disabled_notification_id                            AzString         `crc:"788254379"`
+	Salvaging_disabled_notification_id                                   AzString         `crc:"3681973380"`
+	Structure_placed_notification_id                                     AzString         `crc:"1461395665"`
+	Teleport_denied_notification_id                                      AzString         `crc:"203597587"`
+	Teleport_failed_notification_id                                      AzString         `crc:"4014293249"`
+	Teleport_pending_notification_id                                     AzString         `crc:"4191412756"`
+	Trade_failure_global_storage_invalid_deposit_notification_id         AzString         `crc:"2092188238"`
+	Trade_failure_global_storage_invalid_deposit_rfi_notification_id     AzString         `crc:"2169146601"`
+	Trade_failure_global_storage_invalid_deposit_storage_inaccessible_id AzString         `crc:"4244176321"`
+	Trade_failure_global_storage_not_enough_currency_notification_id     AzString         `crc:"2799379161"`
+	Trade_failure_global_storage_wrong_faction_notification_id           AzString         `crc:"4078089509"`
+	Trade_failure_no_deposit_permissions_notification_id                 AzString         `crc:"1409508787"`
+	Trade_failure_no_withdrawal_permissions_notification_id              AzString         `crc:"446083498"`
+	Trade_failure_not_enough_space_notification_id                       AzString         `crc:"448494695"`
+	Trade_failure_not_in_ffa_state_notification_id                       AzString         `crc:"2928062863"`
+	Trade_failure_not_in_pvp_state_notification_id                       AzString         `crc:"2015422946"`
+	Trade_failure_notificationid                                         AzString         `crc:"359060394"`
+	Tradingpost_insufficient_quantity_notification_id                    AzString         `crc:"791064456"`
+	Tradingpost_price_change_notification_id                             AzString         `crc:"207815285"`
+}
+
 type EventRerouterComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
-	M_events   AZStd__vector_80 `crc:"420742580"`
+	M_events   AZStd__vector_44 `crc:"420742580"`
 }
 
 type EventRerouterComponentClientFacet struct {
@@ -5306,7 +6305,7 @@ type EventRerouterComponentServerFacet struct {
 
 type EventTimelineComponent struct {
 	BaseClass1          FacetedComponent `crc:"3566360373"`
-	M_eventtimelinedata AZStd__vector_77 `crc:"3946398311"`
+	M_eventtimelinedata AZStd__vector_99 `crc:"3946398311"`
 	M_triggeroninit     AzBool           `crc:"1368144341"`
 }
 
@@ -5320,8 +6319,8 @@ type EventTimelineComponentServerFacet struct {
 
 type EventTimelineData struct {
 	M_delayduration AzFloat32        `crc:"3176243493"`
-	M_onendevents   AZStd__vector_36 `crc:"1248823199"`
-	M_onstartevents AZStd__vector_36 `crc:"938601429"`
+	M_onendevents   AZStd__vector_86 `crc:"1248823199"`
+	M_onstartevents AZStd__vector_86 `crc:"938601429"`
 }
 
 type EventTimelineDatapoint struct {
@@ -5339,6 +6338,43 @@ type ExcludeAOIComponentClientFacet struct {
 
 type ExcludeAOIComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type EyeColorData struct {
+	Enabled       AzBool                                                       `crc:"1358543748"`
+	Name          AzString                                                     `crc:"1579384326"`
+	Redcolor      AzColor                                                      `crc:"1640552574"`
+	Redmaskamount AzFloat32                                                    `crc:"2116826181"`
+	Redoverride   AzFloat32                                                    `crc:"480877774"`
+	Ui_image      AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"2601500639"`
+}
+
+type EyeColorDatabase struct {
+	Eye_colors AZStd__vector_111 `crc:"2894997427"`
+}
+
+type FaceMarkColorData struct {
+	Color AzColor `crc:"1716930793"`
+	Type  AzUInt8 `crc:"2363381545"`
+}
+
+type FaceMarkData struct {
+	Enabled                   AzBool                                                       `crc:"1358543748"`
+	Face_mark_texture         AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"2399491614"`
+	Name                      AzString                                                     `crc:"1579384326"`
+	Type                      AzUInt8                                                      `crc:"2363381545"`
+	Ui_female_selection_image AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"3594475221"`
+	Ui_male_selection_image   AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"4053733209"`
+}
+
+type FaceMarkDatabase struct {
+	Face_mark_skin_tones AZStd__vector_1   `crc:"60997290"`
+	Face_mark_styles     AZStd__vector_154 `crc:"3094063231"`
+}
+
+type FaceMarkSkinToneData struct {
+	Face_mark_colors AZStd__vector_23 `crc:"3431960853"`
+	Skin_tone_name   AzString         `crc:"3474548050"`
 }
 
 type Facet struct {
@@ -5403,6 +6439,44 @@ type FactionControlOwnerComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type FactionData struct {
+	Faction_change_cooldown_seconds     AzUInt32         `crc:"550091185"`
+	Faction_change_cost_increment       AzUInt32         `crc:"2506048629"`
+	Faction_change_cost_level           AzUInt32         `crc:"1972206351"`
+	Faction_change_cost_max             AzUInt32         `crc:"2269858096"`
+	Faction_change_cost_min             AzUInt32         `crc:"3141957225"`
+	Fort_capture_gameeventid            EditCrc          `crc:"2497435893"`
+	Influence_tower_capture_gameeventid EditCrc          `crc:"340903611"`
+	Pvp_kill_faction_token_modifier     AzFloat32        `crc:"1937022092"`
+	Pvp_kill_gameeventid                EditCrc          `crc:"3999529636"`
+	Pvp_kill_value_per_second           AzFloat32        `crc:"300448909"`
+	Pvp_kill_value_thresholds           AZStd__vector_32 `crc:"910412131"`
+	Sanctuary_enter_notification_id     AzString         `crc:"3716389768"`
+	Sanctuary_exit_notification_id      AzString         `crc:"1531928721"`
+	Toggle_pvp_notification_id          AzString         `crc:"3976828538"`
+}
+
+type FactionInfluenceConfigData struct {
+	Decrementrate                           AzFloat32 `crc:"248877581"`
+	Incrementrate                           AzFloat32 `crc:"946558589"`
+	Influence_race_attacker_win_gameeventid EditCrc   `crc:"3955269061"`
+	Influence_race_defender_win_gameeventid EditCrc   `crc:"4185005372"`
+	Influence_race_lose_gameeventid         EditCrc   `crc:"133354445"`
+	Maxdecrementtimemodifier                AzFloat32 `crc:"4122187992"`
+	Maxincrementtimemodifier                AzFloat32 `crc:"1863355891"`
+	Maxinfluence                            AzFloat32 `crc:"395720578"`
+	Minimuminfluencethresholdforwar         AzFloat32 `crc:"2843732293"`
+	Minimumtimesincelastwar                 AzFloat32 `crc:"1849113849"`
+	Minterritorydifftoapplyudmechanics      AzInt32   `crc:"3534559663"`
+	Mintimetoapplyudmechanics               AzInt32   `crc:"4053497098"`
+	Uderdogfactionrepgain                   AzFloat32 `crc:"2215238996"`
+	Underdogfactionrepgaincap               AzFloat32 `crc:"228066325"`
+	Underdogmissioninfluencegain            AzFloat32 `crc:"535067170"`
+	Underdogmissioninfluencegaincap         AzFloat32 `crc:"3494748733"`
+	Underdogpvpinfluencegain                AzFloat32 `crc:"3461082958"`
+	Underdogpvpinfluencegaincap             AzFloat32 `crc:"3688845454"`
+}
+
 type FastNoiseGradientComponent struct {
 	BaseClass1    AZ__Component           `crc:"3566360373"`
 	Configuration FastNoiseGradientConfig `crc:"2783094231"`
@@ -5436,6 +6510,20 @@ type FishCaughtComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type FishData struct {
+	Fish_name               AzString  `crc:"2169872015"`
+	Is_junk                 AzBool    `crc:"3901408518"`
+	Maxrandomtension        AzFloat32 `crc:"2507791207"`
+	Minrandomtension        AzFloat32 `crc:"3296747578"`
+	Randommovespeed         AzFloat32 `crc:"3939355861"`
+	Reeling_difficulty      AzFloat32 `crc:"1008114908"`
+	Runningfrequencysetting AzFloat32 `crc:"2319131176"`
+	Runningmaxtime          AzFloat32 `crc:"1936065075"`
+	Runningmintime          AzFloat32 `crc:"1888871036"`
+	Runningspeed            AzFloat32 `crc:"2944856929"`
+	Spawn_object_on_catch   AzAsset   `crc:"4049143610"`
+}
+
 type FishingBobberPhysicsHack struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -5460,6 +6548,68 @@ type FishingComponentClientFacet struct {
 
 type FishingComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type FishingData struct {
+	Bait_loss_chance_cast_hit_land            AzFloat32 `crc:"3266947033"`
+	Bait_loss_chance_fish_caught              AzFloat32 `crc:"2170614665"`
+	Bait_loss_chance_hook_miss                AzFloat32 `crc:"2972845211"`
+	Bait_loss_chance_reeling_miss_distance    AzFloat32 `crc:"2103454932"`
+	Bait_loss_chance_reeling_miss_tension     AzFloat32 `crc:"349847223"`
+	Bite_window_open_duration_seconds         AzFloat32 `crc:"3188740401"`
+	Fish_behavior_time_block_duration_seconds AzFloat32 `crc:"2960672549"`
+	Fish_catch_durability_loss                AzUInt32  `crc:"4034599875"`
+	Fish_catch_game_event                     AzString  `crc:"354343535"`
+	Fish_fighting_line_tension_multiplier     AzFloat32 `crc:"3747307841"`
+	Fish_fighting_reel_in_multiplier          AzFloat32 `crc:"4136940551"`
+	Fish_fighting_swim_away_multiplier        AzFloat32 `crc:"2282417166"`
+	Fish_hook_game_event                      AzString  `crc:"22775080"`
+	Fish_loss_durability_loss                 AzUInt32  `crc:"1557070008"`
+	Fish_tired_line_tension_multiplier        AzFloat32 `crc:"2883815129"`
+	Fish_tired_reel_in_multiplier             AzFloat32 `crc:"1162232286"`
+	Fish_tired_swim_away_multiplier           AzFloat32 `crc:"354887449"`
+	Line_break_durability_loss                AzUInt32  `crc:"747643822"`
+	Min_reel_path_distance                    AzFloat32 `crc:"1837269201"`
+}
+
+type FishingDatabase struct {
+	Bait              AZStd__vector_102 `crc:"438903880"`
+	Fish              AZStd__vector_33  `crc:"1064584243"`
+	Fishing_game_data FishingGameData   `crc:"4101742620"`
+}
+
+type FishingGameData struct {
+	Audiotriggeraction          AzString  `crc:"2072193820"`
+	Audiotriggerexitofgame      AzString  `crc:"742194549"`
+	Audiotriggerfailure         AzString  `crc:"732422721"`
+	Audiotriggeridle            AzString  `crc:"4134260532"`
+	Audiotriggerlargeaction     AzString  `crc:"4073212562"`
+	Audiotriggerminor1          AzString  `crc:"2036340982"`
+	Audiotriggerminor2          AzString  `crc:"3764996428"`
+	Audiotriggerstart           AzString  `crc:"3543796395"`
+	Audiotriggerstartcancel     AzString  `crc:"2133110610"`
+	Audiotriggersuccess         AzString  `crc:"1698446898"`
+	Effectaction                AzString  `crc:"151342977"`
+	Effectexitofgame            AzString  `crc:"4279928877"`
+	Effectfailure               AzString  `crc:"2775288796"`
+	Effectidle                  AzString  `crc:"1264960736"`
+	Effectlargeaction           AzString  `crc:"2544612641"`
+	Effectminor1                AzString  `crc:"199654507"`
+	Effectminor2                AzString  `crc:"2465148369"`
+	Effectstart                 AzString  `crc:"1379471981"`
+	Effectsuccess               AzString  `crc:"3958396847"`
+	M_bobberslice               AzAsset   `crc:"2762147599"`
+	M_bobberthrowstrengthmax    AzFloat32 `crc:"1302882237"`
+	M_bobberthrowstrengthmin    AzFloat32 `crc:"1906661604"`
+	M_catchfishdistance         AzFloat32 `crc:"340229748"`
+	M_maxlinelength             AzFloat32 `crc:"838754121"`
+	M_numfailedbitesallowed     AzInt32   `crc:"736159731"`
+	M_reelingspeedmodifier      AzFloat32 `crc:"111731751"`
+	M_reelingtensionmodifier    AzFloat32 `crc:"210583577"`
+	M_tensiondecreasespeed      AzFloat32 `crc:"1076887910"`
+	M_timeallowedmaxlinetension AzFloat32 `crc:"1750494395"`
+	M_timehookonbite            AzFloat32 `crc:"1441278472"`
+	M_uihidedelaylength         AzFloat32 `crc:"4190366453"`
 }
 
 type FishingHotspotComponent struct {
@@ -5543,13 +6693,13 @@ type FortMajorStructureComponentServerFacet struct {
 }
 
 type FortSpawn struct {
-	M_activecondition                          AzInt32          `crc:"1347294692"`
-	M_persistencekey                           AzString         `crc:"3501090826"`
-	M_prefabspawner                            LocalEntityRef   `crc:"780483735"`
-	M_raididassignmenttype                     AzInt32          `crc:"2842723273"`
-	M_settlementprogressioncategory            AzInt32          `crc:"1892378509"`
-	M_settlementprogressionlevelsliceoverrides AZStd__vector_52 `crc:"3981948423"`
-	M_settlementprogressionrequiredlevel       AzInt32          `crc:"3381350970"`
+	M_activecondition                          AzInt32           `crc:"1347294692"`
+	M_persistencekey                           AzString          `crc:"3501090826"`
+	M_prefabspawner                            LocalEntityRef    `crc:"780483735"`
+	M_raididassignmenttype                     AzInt32           `crc:"2842723273"`
+	M_settlementprogressioncategory            AzInt32           `crc:"1892378509"`
+	M_settlementprogressionlevelsliceoverrides AZStd__vector_118 `crc:"3981948423"`
+	M_settlementprogressionrequiredlevel       AzInt32           `crc:"3381350970"`
 }
 
 type FortSpawnDataProviderComponent struct {
@@ -5567,13 +6717,13 @@ type FortSpawnDataProviderComponentServerFacet struct {
 }
 
 type FoundationState struct {
-	Events          AZStd__vector_80 `crc:"1401378634"`
+	Events          AZStd__vector_44 `crc:"1401378634"`
 	Percentcomplete AzUInt32         `crc:"942857234"`
 }
 
 type FtueDetectionVolumeComponent struct {
 	BaseClass1          FacetedComponent `crc:"3566360373"`
-	M_entitiestotrigger AZStd__vector_80 `crc:"68546803"`
+	M_entitiestotrigger AZStd__vector_44 `crc:"68546803"`
 }
 
 type FtueDetectionVolumeComponentClientFacet struct {
@@ -5600,7 +6750,7 @@ type FtueIslandComponentServerFacet struct {
 
 type FtueIslandSpawnerComponent struct {
 	BaseClass1              FacetedComponent `crc:"3566360373"`
-	M_cutscenenamestooffset AZStd__vector_16 `crc:"1144518934"`
+	M_cutscenenamestooffset AZStd__vector_9  `crc:"1144518934"`
 }
 
 type FtueIslandSpawnerComponentClientFacet struct {
@@ -5625,7 +6775,7 @@ type FtueMetricComponentServerFacet struct {
 
 type FtuePlayerHealthMonitorComponent struct {
 	BaseClass1   FacetedComponent `crc:"3566360373"`
-	M_events     AZStd__vector_80 `crc:"420742580"`
+	M_events     AZStd__vector_44 `crc:"420742580"`
 	M_percentage AzFloat32        `crc:"1458547235"`
 }
 
@@ -5642,6 +6792,14 @@ type FtueQTECompletionObjective struct {
 	M_timelineidstr AzString           `crc:"244215825"`
 }
 
+type FuelCategoryData struct {
+	Item_class AzUInt64 `crc:"1033420123"`
+}
+
+type FuelCategoryDatabase struct {
+	Fuel_category_data AZStd__vector_84 `crc:"3315590545"`
+}
+
 type FxScriptComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -5649,11 +6807,11 @@ type FxScriptComponent struct {
 type FxScriptComponentClientFacet struct {
 	BaseClass1            ClientFacet                               `crc:"3566360373"`
 	M_fxscriptinitialized AzBool                                    `crc:"3444479635"`
-	M_fxscripts           AZStd__vector_8                           `crc:"2825293149"`
+	M_fxscripts           AZStd__vector_146                         `crc:"2825293149"`
 	M_fxscripttriggered   AzBool                                    `crc:"2134601053"`
-	M_materialassets      AZStd__list                               `crc:"1913972671"`
-	M_runoninitfxlist     AZStd__list_4                             `crc:"2654199338"`
-	M_runontriggerfxlist  AZStd__list_4                             `crc:"2619575086"`
+	M_materialassets      AZStd__list_1                             `crc:"1913972671"`
+	M_runoninitfxlist     AZStd__list_7                             `crc:"2654199338"`
+	M_runontriggerfxlist  AZStd__list_7                             `crc:"2619575086"`
 	M_scriptdatacontainer UUID_6D152BFE_EC46_52D0_9F1A_24DD1151F86B `crc:"2020439924"`
 	M_scriptlists         AZStd__list_5                             `crc:"4135196121"`
 }
@@ -5671,6 +6829,10 @@ type GDEID struct {
 	Id AzUInt64 `crc:"3208210256"`
 }
 
+type GameDebugSettings struct {
+	Combat_settings CombatDebugSettings `crc:"3204566528"`
+}
+
 type GameEventComponent struct {
 	BaseClass1             FacetedComponent `crc:"3566360373"`
 	M_combateventbusentity LocalEntityRef   `crc:"1090325483"`
@@ -5684,6 +6846,14 @@ type GameEventComponentClientFacet struct {
 type GameEventComponentServerFacet struct {
 	BaseClass1          ServerFacet    `crc:"3566360373"`
 	M_progressionentity LocalEntityRef `crc:"2862956487"`
+}
+
+type GameEventDatabase struct {
+	Default_attack_xp_mod_    AzFloat32 `crc:"2233136624"`
+	Player_attack_xp_mod_     AzFloat32 `crc:"3444245083"`
+	Self_damage_xp_mod_       AzFloat32 `crc:"4188504192"`
+	Structure_attack_xp_mod_  AzFloat32 `crc:"4279682299"`
+	Unarmed_attack_event_name AzString  `crc:"3226076920"`
 }
 
 type GameMasterComponent struct {
@@ -5748,12 +6918,12 @@ type GameRigidBodyComponent struct {
 	BaseClass1                              FacetedComponent    `crc:"3566360373"`
 	M_angularDamping                        AzFloat32           `crc:"2265801283"`
 	M_center                                AzVec3              `crc:"174307802"`
-	M_collisionShape                        AZStd__shared_ptr_0 `crc:"3613528594"`
+	M_collisionShape                        AZStd__shared_ptr_4 `crc:"3613528594"`
 	M_collisionType                         AzInt32             `crc:"3734878887"`
 	M_configuration                         GameRigidBodyConfig `crc:"3001722934"`
 	M_convertToEditorGameRigidBodyComponent AzBool              `crc:"3182275548"`
 	M_deprecationWarning                    AzString            `crc:"1642173981"`
-	M_gameplayFlags                         AZStd__vector_98    `crc:"3483990231"`
+	M_gameplayFlags                         AZStd__vector_137   `crc:"3483990231"`
 	M_interactWithTriggers                  AzBool              `crc:"2813086901"`
 	M_isDynamic                             AzBool              `crc:"3154166608"`
 	M_linearDamping                         AzFloat32           `crc:"1890445899"`
@@ -5781,9 +6951,9 @@ type GameRigidBodyConfig struct {
 	M_angularDamping                     AzFloat32           `crc:"2265801283"`
 	M_applyAlignmentDetails              AzBool              `crc:"453002445"`
 	M_center                             AzVec3              `crc:"174307802"`
-	M_collisionShape                     AZStd__shared_ptr_0 `crc:"3613528594"`
+	M_collisionShape                     AZStd__shared_ptr_4 `crc:"3613528594"`
 	M_collisionType                      AzInt32             `crc:"3734878887"`
-	M_gameplayFlags                      AZStd__vector_98    `crc:"3483990231"`
+	M_gameplayFlags                      AZStd__vector_137   `crc:"3483990231"`
 	M_interactWithTriggers               AzBool              `crc:"2813086901"`
 	M_isDynamic                          AzBool              `crc:"3154166608"`
 	M_linearDamping                      AzFloat32           `crc:"1890445899"`
@@ -5811,6 +6981,11 @@ type GameTransformComponent struct {
 	M_worldTM                AzTransform      `crc:"3525507554"`
 }
 
+type GatherGameData struct {
+	Average_hit_time_amount_to_take AzFloat32 `crc:"1066455636"`
+	Perfect_hit_time_amount_to_take AzFloat32 `crc:"875251048"`
+}
+
 type GatherableCondition struct {
 	BaseClass1 InteractCondition `crc:"3566360373"`
 }
@@ -5825,7 +7000,7 @@ type GatherableControllerComponent struct {
 	M_gatherableentryid                  AzString                                                                                                          `crc:"761880579"`
 	M_gatherableradius                   AzFloat32                                                                                                         `crc:"3923506743"`
 	M_gatheringendevent                  EventData                                                                                                         `crc:"964132187"`
-	M_gatheringinterruptedevent          AZStd__vector_80                                                                                                  `crc:"37946562"`
+	M_gatheringinterruptedevent          AZStd__vector_44                                                                                                  `crc:"37946562"`
 	M_gatheringstartevent                EventData                                                                                                         `crc:"2792543170"`
 	M_instancedlootentityref             LocalEntityRef                                                                                                    `crc:"3084269056"`
 	M_interactcomponent                  LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__Interact__void__              `crc:"2601268354"`
@@ -5843,12 +7018,12 @@ type GatherableControllerComponentClientFacet struct {
 }
 
 type GatherableControllerComponentServerFacet struct {
-	BaseClass1               ServerFacet            `crc:"3566360373"`
-	M_achievementserverstate AzUInt8                `crc:"2173438946"`
-	M_depleters              AZStd__unordered_set_2 `crc:"2643733412"`
-	M_isdamageablegatherable AzBool                 `crc:"2015710430"`
-	M_isproximitygatherable  AzBool                 `crc:"1846281641"`
-	M_obstructions           AZStd__unordered_set_2 `crc:"3286832274"`
+	BaseClass1               ServerFacet          `crc:"3566360373"`
+	M_achievementserverstate AzUInt8              `crc:"2173438946"`
+	M_depleters              AZStd__unordered_set `crc:"2643733412"`
+	M_isdamageablegatherable AzBool               `crc:"2015710430"`
+	M_isproximitygatherable  AzBool               `crc:"1846281641"`
+	M_obstructions           AZStd__unordered_set `crc:"3286832274"`
 }
 
 type GatherableRegionEntry struct {
@@ -5866,9 +7041,9 @@ type GatherableRegionEntry struct {
 type GatherableStateComponent struct {
 	BaseClass1                     FacetedComponent `crc:"3566360373"`
 	M_onstateenterevent            EventData        `crc:"2425316208"`
-	M_onstateentertransitionevents AZStd__vector_97 `crc:"2195866141"`
+	M_onstateentertransitionevents AZStd__vector_18 `crc:"2195866141"`
 	M_onstateexitevent             EventData        `crc:"3688434618"`
-	M_onstateexittransitionevents  AZStd__vector_97 `crc:"1986761770"`
+	M_onstateexittransitionevents  AZStd__vector_18 `crc:"1986761770"`
 }
 
 type GatherableStateComponentClientFacet struct {
@@ -5880,8 +7055,22 @@ type GatherableStateComponentServerFacet struct {
 }
 
 type GatherableStateTransitionEvents struct {
-	M_events             AZStd__vector_80 `crc:"420742580"`
+	M_events             AZStd__vector_44 `crc:"420742580"`
 	M_transitioningstate AzUInt8          `crc:"48543570"`
+}
+
+type GatheringAction struct {
+	Mannequin_tag AzString `crc:"2777524544"`
+	Name          AzString `crc:"1579384326"`
+}
+
+type GatheringActionData struct {
+	Mannequin_tag AzString `crc:"2777524544"`
+	Name          AzString `crc:"1579384326"`
+}
+
+type GatheringActionDatabase struct {
+	Gathering_actions AZStd__vector_11 `crc:"1482662604"`
 }
 
 type GatheringComponent struct {
@@ -5905,6 +7094,23 @@ type GatheringComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type GatheringData struct {
+	Gathering_actions             AZStd__vector_59 `crc:"1482662604"`
+	Gathering_types               AZStd__vector_29 `crc:"2065483900"`
+	None_gathering_type           AzString         `crc:"3194172210"`
+	Required_water_gathering_type AzString         `crc:"674599067"`
+}
+
+type GatheringDatabase struct {
+	Gathering_data GatheringData `crc:"2208564949"`
+}
+
+type GatheringTypeData struct {
+	Requirement_text AzString                                                     `crc:"2484547296"`
+	Type             AzString                                                     `crc:"2363381545"`
+	Ui_icon          AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"2312546211"`
+}
+
 type General struct {
 	OceanMaterial  AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"3953152751"`
 	UseOceanBottom AzBool                                                        `crc:"417722945"`
@@ -5924,6 +7130,10 @@ type GenericInviteComponentServerFacet struct {
 
 type GenericParameter struct {
 	M_name AzString `crc:"3230417959"`
+}
+
+type GlobalAttributesDatabase struct {
+	Global_market_data GlobalMarketData `crc:"3040884426"`
 }
 
 type GlobalMapDataComponent struct {
@@ -5950,6 +7160,11 @@ type GlobalMapDataManagerComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type GlobalMarketData struct {
+	Time_between_demand_recharge_ticks_in_seconds__can_not_be_shorter_than_one_second_   AzInt32 `crc:"81590771"`
+	Time_between_global_price_broadcasts_in_seconds__can_not_be_shorter_than_one_minute_ AzInt32 `crc:"4030241780"`
+}
+
 type GlobalStorageComponent struct {
 	BaseClass1                  FacetedComponent `crc:"3566360373"`
 	M_containerstorage          LocalEntityRef   `crc:"2718785103"`
@@ -5970,7 +7185,7 @@ type GritComponent struct {
 	BaseClass1                   FacetedComponent `crc:"3566360373"`
 	M_defaultstaggerresistrating AzFloat32        `crc:"4247779864"`
 	M_initmax                    AzFloat32        `crc:"4189793607"`
-	M_listenerentities           AZStd__vector_55 `crc:"3615797800"`
+	M_listenerentities           AZStd__vector_71 `crc:"3615797800"`
 	M_maxnohittime               AzFloat32        `crc:"1310011620"`
 	M_min                        AzFloat32        `crc:"1792319447"`
 	M_paperdollentity            LocalEntityRef   `crc:"2058096243"`
@@ -6028,6 +7243,31 @@ type GroupsComponentServerFacet struct {
 	M_memberupdatesdelayseconds AzFloat32   `crc:"1745714563"`
 }
 
+type GuaranteedItemTransferData struct {
+	Itemname     AzString `crc:"4099742926"`
+	Itemquantity AzUInt32 `crc:"3773223199"`
+}
+
+type GuildRankData struct {
+	M_allprivileges AzBool                 `crc:"928054442"`
+	M_name          AzString               `crc:"3230417959"`
+	M_privilegeids  AZStd__unordered_set_0 `crc:"2614315740"`
+	M_securitylevel AzUInt32               `crc:"265698600"`
+}
+
+type GuildSiegeWindowRegionData struct {
+	Dstrule     AzString `crc:"82705720"`
+	Dstruleid   Crc32    `crc:"1806324199"`
+	End_hour    AzUInt32 `crc:"626977300"`
+	Observesdst AzBool   `crc:"3203166957"`
+	Start_hour  AzUInt32 `crc:"874843026"`
+	Utcoffset   AzInt32  `crc:"649146453"`
+}
+
+type GuildTreasuryData struct {
+	Default_daily_withdrawal_limit AzUInt64 `crc:"1461443877"`
+}
+
 type GuildsComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -6068,6 +7308,46 @@ type HUDComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type HairColorData struct {
+	Bluecolor       AzColor                                                      `crc:"1439028969"`
+	Bluemaskamount  AzFloat32                                                    `crc:"1311234258"`
+	Blueoverride    AzFloat32                                                    `crc:"80176060"`
+	Enabled         AzBool                                                       `crc:"1358543748"`
+	Greencolor      AzColor                                                      `crc:"3723198575"`
+	Greenmaskamount AzFloat32                                                    `crc:"1601090615"`
+	Greenoverride   AzFloat32                                                    `crc:"3511218971"`
+	Name            AzString                                                     `crc:"1579384326"`
+	Redcolor        AzColor                                                      `crc:"1640552574"`
+	Redmaskamount   AzFloat32                                                    `crc:"2116826181"`
+	Redoverride     AzFloat32                                                    `crc:"480877774"`
+	Ui_image        AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"2601500639"`
+}
+
+type HairTransfomData struct {
+	Newname AzString `crc:"709487594"`
+	Oldname AzString `crc:"2356239556"`
+}
+
+type HairstyleData struct {
+	Enabled                   AzBool                                                        `crc:"1358543748"`
+	Material_asset            AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"2923186438"`
+	Name                      AzString                                                      `crc:"1579384326"`
+	Style_variants            AZStd__vector_6                                               `crc:"3176171470"`
+	Ui_selection_image_prefix AzString                                                      `crc:"3109470872"`
+}
+
+type HairstyleDatabase struct {
+	Hair_colors          AZStd__vector_155 `crc:"499209069"`
+	Hair_styles          AZStd__vector_69  `crc:"1764059655"`
+	Hair_transform_table AZStd__list_0     `crc:"661450445"`
+	Ui_base_image_path   AzString          `crc:"3837456925"`
+}
+
+type HairstyleVariantData struct {
+	Skin_asset AzFramework__SimpleAssetReference_Javelin__SkinAsset_ `crc:"4157500875"`
+	Variant    AzInt32                                               `crc:"4047749037"`
+}
+
 type HealthThresholdBossPhaseConfig struct {
 	BaseClass1      BossPhaseConfig `crc:"3566360373"`
 	M_healthpercent AzFloat32       `crc:"4100424414"`
@@ -6076,6 +7356,11 @@ type HealthThresholdBossPhaseConfig struct {
 type HideLargeToastTutorialStep struct {
 	BaseClass1   TutorialStep `crc:"3566360373"`
 	M_dummyvalue AzInt32      `crc:"312593300"`
+}
+
+type HideMesh struct {
+	Applytochildren AzBool       `crc:"1819744918"`
+	BaseClass1      TimelineClip `crc:"3566360373"`
 }
 
 type HideToastTutorialStep struct {
@@ -6091,7 +7376,7 @@ type HitVolumeComponent struct {
 	M_isheadshot                   AzBool              `crc:"1030475864"`
 	M_islegshot                    AzBool              `crc:"3753464344"`
 	M_lightweightcharacterentityid EntityId            `crc:"1101715722"`
-	M_shape                        AZStd__shared_ptr_0 `crc:"2445754556"`
+	M_shape                        AZStd__shared_ptr_4 `crc:"2445754556"`
 	M_strFilter                    AzString            `crc:"3961383120"`
 	M_targetbonename               AzString            `crc:"4267962715"`
 	M_volumename                   AzString            `crc:"4247270938"`
@@ -6107,19 +7392,19 @@ type HitVolumeComponentServerFacet struct {
 }
 
 type HomeComponent struct {
-	BaseClass1                         FacetedComponent `crc:"3566360373"`
-	M_allowuseasunstuckpoint           AzBool           `crc:"2350962440"`
-	M_childspawnpoints                 AZStd__vector_44 `crc:"3467859766"`
-	M_maxspawnrange                    AzFloat32        `crc:"431821346"`
-	M_minspawnrange                    AzFloat32        `crc:"1509059156"`
-	M_nameentity                       LocalEntityRef   `crc:"2412908716"`
-	M_ownershipEntity                  LocalEntityRef   `crc:"4082794647"`
-	M_respawncooldown                  AzFloat32        `crc:"3254308775"`
-	M_respawntype                      AzInt32          `crc:"1287932008"`
-	M_rotateplayer                     AzBool           `crc:"2748223119"`
-	M_uniquespawnpointidongde          AzUInt32         `crc:"713536111"`
-	M_usingchildspawnpointsforpostwar  AzBool           `crc:"2569491328"`
-	M_usingchildspawnpointsforrespawns AzBool           `crc:"1851006807"`
+	BaseClass1                         FacetedComponent  `crc:"3566360373"`
+	M_allowuseasunstuckpoint           AzBool            `crc:"2350962440"`
+	M_childspawnpoints                 AZStd__vector_169 `crc:"3467859766"`
+	M_maxspawnrange                    AzFloat32         `crc:"431821346"`
+	M_minspawnrange                    AzFloat32         `crc:"1509059156"`
+	M_nameentity                       LocalEntityRef    `crc:"2412908716"`
+	M_ownershipEntity                  LocalEntityRef    `crc:"4082794647"`
+	M_respawncooldown                  AzFloat32         `crc:"3254308775"`
+	M_respawntype                      AzInt32           `crc:"1287932008"`
+	M_rotateplayer                     AzBool            `crc:"2748223119"`
+	M_uniquespawnpointidongde          AzUInt32          `crc:"713536111"`
+	M_usingchildspawnpointsforpostwar  AzBool            `crc:"2569491328"`
+	M_usingchildspawnpointsforrespawns AzBool            `crc:"1851006807"`
 }
 
 type HomeComponentClientFacet struct {
@@ -6184,8 +7469,8 @@ type HomingTargetScanWedge struct {
 
 type HouseDataComponent struct {
 	BaseClass1              FacetedComponent       `crc:"3566360373"`
-	M_currenttagcounts      AZStd__unordered_map_0 `crc:"2953744404"`
-	M_maxhousingitemspertag AZStd__unordered_map_0 `crc:"4023837590"`
+	M_currenttagcounts      AZStd__unordered_map_6 `crc:"2953744404"`
+	M_maxhousingitemspertag AZStd__unordered_map_6 `crc:"4023837590"`
 	M_maxtotalhousingitems  AzUInt16               `crc:"2874147565"`
 }
 
@@ -6202,19 +7487,19 @@ type HousingDecorationComponent struct {
 }
 
 type HousingItemComponent struct {
-	BaseClass1              AZ__Component    `crc:"3566360373"`
-	Blendvalueentityids     AZStd__vector_44 `crc:"1297409193"`
-	Collisionmeshentityids  AZStd__vector_44 `crc:"999181791"`
-	Meshandoutlineentityids AZStd__vector_81 `crc:"1358098197"`
-	Timelineentityids       AZStd__vector_44 `crc:"3914203550"`
+	BaseClass1              AZ__Component     `crc:"3566360373"`
+	Blendvalueentityids     AZStd__vector_169 `crc:"1297409193"`
+	Collisionmeshentityids  AZStd__vector_169 `crc:"999181791"`
+	Meshandoutlineentityids AZStd__vector_72  `crc:"1358098197"`
+	Timelineentityids       AZStd__vector_169 `crc:"3914203550"`
 }
 
 type HousingPlotComponent struct {
-	BaseClass1             FacetedComponent `crc:"3566360373"`
-	M_boundsshapeentityids AZStd__vector_44 `crc:"179014080"`
-	M_enterentityid        EntityId         `crc:"1798130201"`
-	M_exitentityid         EntityId         `crc:"3058017035"`
-	M_housetypestring      AzString         `crc:"2507476761"`
+	BaseClass1             FacetedComponent  `crc:"3566360373"`
+	M_boundsshapeentityids AZStd__vector_169 `crc:"179014080"`
+	M_enterentityid        EntityId          `crc:"1798130201"`
+	M_exitentityid         EntityId          `crc:"3058017035"`
+	M_housetypestring      AzString          `crc:"2507476761"`
 }
 
 type HousingPlotComponentClientFacet struct {
@@ -6235,7 +7520,7 @@ type HubLocalCacheComponent struct {
 	BaseClass1            FacetedComponent                          `crc:"3566360373"`
 	M_agentdescriptor     HubLocalCacheAgentDescriptor              `crc:"2156853315"`
 	M_customdataentries   UUID_31D79E49_9CD5_51BF_8403_F9A16BEDECF5 `crc:"3314553676"`
-	M_detectordescriptors AZStd__vector_85                          `crc:"702173662"`
+	M_detectordescriptors AZStd__vector_170                         `crc:"702173662"`
 	M_forceenabletick     AzBool                                    `crc:"1248154971"`
 }
 
@@ -6369,16 +7654,20 @@ type InitPaperdollData struct {
 	M_slottype AzInt32  `crc:"1557899846"`
 }
 
+type InputCancelClip struct {
+	BaseClass1 TimelineClip `crc:"3566360373"`
+}
+
 type InputConfigurationComponent struct {
-	BaseClass1           AZ__Component    `crc:"3566360373"`
-	Input_contexts       AZStd__vector_16 `crc:"406460056"`
-	Input_event_bindings AzAsset          `crc:"359181329"`
+	BaseClass1           AZ__Component   `crc:"3566360373"`
+	Input_contexts       AZStd__vector_9 `crc:"406460056"`
+	Input_event_bindings AzAsset         `crc:"359181329"`
 }
 
 type InputFilter struct {
-	M_inputstofilter AZStd__vector_16 `crc:"3597598156"`
-	M_inverted       AzBool           `crc:"845636064"`
-	M_name           AzString         `crc:"3230417959"`
+	M_inputstofilter AZStd__vector_9 `crc:"3597598156"`
+	M_inverted       AzBool          `crc:"845636064"`
+	M_name           AzString        `crc:"3230417959"`
 }
 
 type InputFilterTutorialStep struct {
@@ -6399,16 +7688,16 @@ type InstancedLootComponent struct {
 
 type InstancedLootComponentClientFacet struct {
 	BaseClass1                ClientFacet      `crc:"3566360373"`
-	M_initialevents           AZStd__vector_80 `crc:"3331386942"`
-	M_lootedevents            AZStd__vector_80 `crc:"2718358114"`
-	M_rarityparticleentityref AZStd__vector_55 `crc:"791772579"`
-	M_rolledevents            AZStd__vector_80 `crc:"3137388522"`
+	M_initialevents           AZStd__vector_44 `crc:"3331386942"`
+	M_lootedevents            AZStd__vector_44 `crc:"2718358114"`
+	M_rarityparticleentityref AZStd__vector_71 `crc:"791772579"`
+	M_rolledevents            AZStd__vector_44 `crc:"3137388522"`
 }
 
 type InstancedLootComponentServerFacet struct {
 	BaseClass1               ServerFacet      `crc:"3566360373"`
 	M_backstoryspecificloot  AzBool           `crc:"4241900661"`
-	M_completelylootedevents AZStd__vector_80 `crc:"2112698829"`
+	M_completelylootedevents AZStd__vector_44 `crc:"2112698829"`
 	M_loottableid            AzString         `crc:"550996983"`
 }
 
@@ -6456,12 +7745,12 @@ type Interact struct {
 	M_interactarc                 AzFloat32           `crc:"3682612365"`
 	M_interactnameentity          LocalEntityRef      `crc:"3160223359"`
 	M_interactonlyonquest         AzBool              `crc:"3637692053"`
-	M_interactoptionentities      AZStd__vector_62    `crc:"4069880689"`
+	M_interactoptionentities      AZStd__vector_31    `crc:"4069880689"`
 	M_interactrangesq             AzFloat32           `crc:"3616469144"`
 	M_interacttagstring           AzString            `crc:"3835220710"`
 	M_numberofinteractorsallowed  AzInt32             `crc:"1432995689"`
-	M_onendinteractionevents      AZStd__vector_80    `crc:"439270720"`
-	M_onstartinteractionevents    AZStd__vector_80    `crc:"3490710840"`
+	M_onendinteractionevents      AZStd__vector_44    `crc:"439270720"`
+	M_onstartinteractionevents    AZStd__vector_44    `crc:"3490710840"`
 	M_ownershipEntity             LocalEntityRef      `crc:"4082794647"`
 	M_requiredachievementoverride AzString            `crc:"2552356142"`
 	M_requiredinteractarc         AzBool              `crc:"3191483296"`
@@ -6480,9 +7769,57 @@ type InteractClientFacet struct {
 type InteractCondition struct {
 }
 
+type InteractOptionData struct {
+	Added_status_effects                                 AZStd__vector_27                                             `crc:"769600918"`
+	Additional_info_type                                 UiAdditionalInfoType                                         `crc:"3330247409"`
+	Align_to_interaction                                 AzBool                                                       `crc:"2368847937"`
+	Availability                                         UiInteractAvailabilityData                                   `crc:"1068999359"`
+	Blueprint_privilege_id                               UiInteractPrivilegeId                                        `crc:"1164783697"`
+	Check_pvp_flag_is_set                                AzBool                                                       `crc:"3508313137"`
+	Close_prompt_on_interaction                          AzBool                                                       `crc:"492659514"`
+	Committed_interaction_inactive_timeout               AzFloat32                                                    `crc:"353677924"`
+	Committed_interaction_inactive_timeout_notification  AzString                                                     `crc:"4055644036"`
+	Committed_interaction_max_usage_timeout              AzFloat32                                                    `crc:"178099431"`
+	Committed_interaction_max_usage_timeout_notification AzString                                                     `crc:"3239694650"`
+	Cooldown_time                                        AzInt32                                                      `crc:"1914179334"`
+	Delay_before_adding_removing_effect                  AzFloat32                                                    `crc:"1013431117"`
+	Delayed_interaction_data                             UiDelayedInteractionData                                     `crc:"3720050466"`
+	Display_name                                         AzString                                                     `crc:"2932597849"`
+	Display_priority                                     AzInt32                                                      `crc:"710309133"`
+	Excluded_status_effects                              AZStd__vector_27                                             `crc:"4094248640"`
+	Faction_required                                     AzBool                                                       `crc:"1240364474"`
+	Force_secondary_interact                             AzBool                                                       `crc:"3083297635"`
+	Hold_action_press_time                               AzFloat32                                                    `crc:"339372895"`
+	Interact_input_type                                  UiInteractInputType                                          `crc:"1071634594"`
+	Interact_option_category                             UiInteractOptionCategory                                     `crc:"4050445166"`
+	Interact_option_icon                                 AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"3461077153"`
+	Interact_privilege_ids                               AZStd__vector_35                                             `crc:"782619921"`
+	Is_committed_interaction                             AzBool                                                       `crc:"3297025439"`
+	Is_instant_cancel                                    AzBool                                                       `crc:"3297851574"`
+	Mannequin_fragment                                   AzString                                                     `crc:"713692408"`
+	Mannequin_tag                                        AzString                                                     `crc:"2777524544"`
+	Name                                                 AzString                                                     `crc:"1579384326"`
+	Only_show_if_bound_to_camp                           AzBool                                                       `crc:"2582384823"`
+	Remove_added_effects_on_interaction_end              AzBool                                                       `crc:"567694258"`
+	Remove_status_effects                                AZStd__vector_27                                             `crc:"685596330"`
+	Required_achievement_name                            AzString                                                     `crc:"3477447968"`
+	Required_currency                                    AzInt32                                                      `crc:"3708397484"`
+	Required_item_count                                  AzInt32                                                      `crc:"2763501689"`
+	Required_item_name                                   AzString                                                     `crc:"2216939570"`
+	Required_level                                       AzUInt32                                                     `crc:"3066914992"`
+	Required_status_effects                              AZStd__vector_27                                             `crc:"3169934611"`
+	Requires_confirmation                                AzBool                                                       `crc:"646577417"`
+	Requires_security_level_validation                   AzBool                                                       `crc:"1271378770"`
+	Set_ownership_on_interact                            AzBool                                                       `crc:"1291879958"`
+	Show_instanced_loot_item_count                       AzBool                                                       `crc:"2254758935"`
+	Siege_warfare_game_event_name                        AzString                                                     `crc:"983427649"`
+	Ui_additional_info_slice_path                        AzString                                                     `crc:"3625498448"`
+	Ui_interact_action                                   UiInteractActionType                                         `crc:"444573113"`
+}
+
 type InteractOptionEntityRef struct {
 	M_interactentityref LocalEntityRef   `crc:"569971483"`
-	M_interactoptions   AZStd__vector_20 `crc:"3480726622"`
+	M_interactoptions   AZStd__vector_87 `crc:"3480726622"`
 }
 
 type InteractOptionRef struct {
@@ -6510,8 +7847,8 @@ type InteractTeleportComponentServerFacet struct {
 }
 
 type InteractWithItemCostComponent struct {
-	BaseClass1        FacetedComponent  `crc:"3566360373"`
-	M_interactiontype AZStd__shared_ptr `crc:"3996810247"`
+	BaseClass1        FacetedComponent    `crc:"3566360373"`
+	M_interactiontype AZStd__shared_ptr_3 `crc:"3996810247"`
 }
 
 type InteractWithItemCostComponentClientFacet struct {
@@ -6617,7 +7954,7 @@ type InvasionAgentComponentServerFacet struct {
 	Allow_assignment_while_targeting AzBool            `crc:"921846269"`
 	BaseClass1                       ServerFacet       `crc:"3566360373"`
 	Consume_attack_slot              AzBool            `crc:"2299010857"`
-	Objective_priorities             AZStd__vector_110 `crc:"4104421104"`
+	Objective_priorities             AZStd__vector_156 `crc:"4104421104"`
 }
 
 type InvasionComponent struct {
@@ -6642,7 +7979,7 @@ type InvasionLaneProviderComponentClientFacet struct {
 
 type InvasionLaneProviderComponentServerFacet struct {
 	BaseClass1 ServerFacet      `crc:"3566360373"`
-	Lanes      AZStd__vector_92 `crc:"2327159929"`
+	Lanes      AZStd__vector_88 `crc:"2327159929"`
 }
 
 type InvasionObjectiveComponent struct {
@@ -6654,16 +7991,16 @@ type InvasionObjectiveComponentClientFacet struct {
 }
 
 type InvasionObjectiveComponentServerFacet struct {
-	BaseClass1             ServerFacet      `crc:"3566360373"`
-	M_attackercount        AzInt32          `crc:"2826682743"`
-	M_attackerpositiontype AzInt32          `crc:"371706844"`
-	M_faceobjective        AzBool           `crc:"2767893541"`
-	M_guardcount           AzInt32          `crc:"407471340"`
-	M_guardpositiontype    AzInt32          `crc:"1659819961"`
-	M_offsets              AZStd__vector_63 `crc:"3351993180"`
-	M_radius               AzFloat32        `crc:"1911504036"`
-	M_shapecomponententity EntityId         `crc:"1519676978"`
-	Type                   AzInt32          `crc:"2363381545"`
+	BaseClass1             ServerFacet       `crc:"3566360373"`
+	M_attackercount        AzInt32           `crc:"2826682743"`
+	M_attackerpositiontype AzInt32           `crc:"371706844"`
+	M_faceobjective        AzBool            `crc:"2767893541"`
+	M_guardcount           AzInt32           `crc:"407471340"`
+	M_guardpositiontype    AzInt32           `crc:"1659819961"`
+	M_offsets              AZStd__vector_135 `crc:"3351993180"`
+	M_radius               AzFloat32         `crc:"1911504036"`
+	M_shapecomponententity EntityId          `crc:"1519676978"`
+	Type                   AzInt32           `crc:"2363381545"`
 }
 
 type InvasionObjectiveOffset struct {
@@ -6742,6 +8079,12 @@ type ItemManagementComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type ItemRarityData struct {
+	Level_requirement_modifier AzInt32  `crc:"2570716436"`
+	Max_perk_count             AzInt32  `crc:"1577944187"`
+	Rarity_level_loc_string    AzString `crc:"3934681301"`
+}
+
 type ItemRepairComponent struct {
 	BaseClass1           FacetedComponent                                                                                               `crc:"3566360373"`
 	M_containercomponent LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__ContainerComponent__void__ `crc:"2206417410"`
@@ -6774,7 +8117,7 @@ type JavCameraControllerComponent struct {
 
 type JavCameraControllerComponentClientFacet struct {
 	BaseClass1     ClientFacet      `crc:"3566360373"`
-	M_pointcameras AZStd__vector_55 `crc:"1148884233"`
+	M_pointcameras AZStd__vector_71 `crc:"1148884233"`
 }
 
 type JavCameraControllerComponentServerFacet struct {
@@ -6796,6 +8139,22 @@ type JavSpectatorCameraComponentServerFacet struct {
 type Javelin__CutsceneEntityEvent struct {
 	M_cutscenename AzString  `crc:"3119648093"`
 	Volumeteleport EventData `crc:"3354416040"`
+}
+
+type Keyframe struct {
+	Editormetadata  Keyframe__EditorMetadata `crc:"939524208"`
+	Incominghandlex AzFloat32                `crc:"1530260119"`
+	Incominghandley AzFloat32                `crc:"741530113"`
+	Incomingtype    AzInt32                  `crc:"2486185424"`
+	Outgoinghandlex AzFloat32                `crc:"3343996505"`
+	Outgoinghandley AzFloat32                `crc:"2958452431"`
+	Time            AzFloat32                `crc:"1872009285"`
+	Value           AzFloat32                `crc:"494360628"`
+}
+
+type Keyframe__EditorMetadata struct {
+	Bezieredittype AzInt32 `crc:"3396004032"`
+	Selected       AzBool  `crc:"2561261446"`
 }
 
 type KillSpawnsAction struct {
@@ -6885,6 +8244,18 @@ type LevelMeterSettings struct {
 	M_resetlevel   AzFloat32 `crc:"4111241933"`
 	M_startactive  AzBool    `crc:"3618669148"`
 	M_triggerlevel AzFloat32 `crc:"1226222523"`
+}
+
+type LightClip struct {
+	Attenuationbulbsize Curve        `crc:"1017181632"`
+	BaseClass1          TimelineClip `crc:"3566360373"`
+	DiffuseMultiplier   Curve        `crc:"2877239407"`
+	Enabled             Curve        `crc:"1358543748"`
+	Fov                 Curve        `crc:"3893939681"`
+	Hsvcurve            Curve        `crc:"4151110311"`
+	Rgbcurve            Curve        `crc:"297877268"`
+	Specularmultiplier  Curve        `crc:"2553709546"`
+	Xyzcurve            Curve        `crc:"1483031737"`
 }
 
 type LightComponent struct {
@@ -6986,7 +8357,7 @@ type LimbIKSettings struct {
 	Contactraylength       AzFloat32        `crc:"1505176774"`
 	Enabled                AzBool           `crc:"1358543748"`
 	Fadeoutdistancerange   AzVec2           `crc:"3631173595"`
-	Limbs                  AZStd__vector_40 `crc:"33989640"`
+	Limbs                  AZStd__vector_38 `crc:"33989640"`
 	Rootjoint              AzString         `crc:"2265822507"`
 	Rootoffsetrange        AzVec2           `crc:"2741247920"`
 	Rootsmoothtime         AzFloat32        `crc:"1413624125"`
@@ -7150,7 +8521,7 @@ type LootDropComponent struct {
 
 type LootDropComponentClientFacet struct {
 	BaseClass1                ClientFacet      `crc:"3566360373"`
-	M_rarityparticleentityref AZStd__vector_55 `crc:"791772579"`
+	M_rarityparticleentityref AZStd__vector_71 `crc:"791772579"`
 	M_showpreview             AzBool           `crc:"2886889243"`
 }
 
@@ -7310,6 +8681,21 @@ type MaterialEffectComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type MaterialOverride struct {
+	Applytochildren                       AzBool                                    `crc:"1819744918"`
+	Applytoovercoat                       AzBool                                    `crc:"3020698934"`
+	BaseClass1                            TimelineClip                              `crc:"3566360373"`
+	M_materialparamscurves                UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D `crc:"130513483"`
+	M_runtimemateriallightingcurvename    UUID_D65E4F21_2DC2_5FF9_B67E_8A79EB8A0082 `crc:"1406925059"`
+	M_runtimemateriallightingparamscurves UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D `crc:"15781406"`
+	M_runtimematerialshadercurvenames     UUID_D65E4F21_2DC2_5FF9_B67E_8A79EB8A0082 `crc:"1695622346"`
+	M_runtimematerialshaderparamcurves    UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D `crc:"526830887"`
+	M_submaterialnames                    AZStd__vector_9                           `crc:"2770484494"`
+	Overridename                          AzString                                  `crc:"2475950705"`
+	Removeonend                           AzBool                                    `crc:"3058151673"`
+	Usenewoverridesystem                  AzBool                                    `crc:"4270572512"`
+}
+
 type MaterialOverrideComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -7318,7 +8704,7 @@ type MaterialOverrideComponentClientFacet struct {
 	BaseClass1              ClientFacet      `crc:"3566360373"`
 	M_entitytoswapmaton     LocalEntityRef   `crc:"3381879463"`
 	M_overridenameontrigger AzString         `crc:"302207896"`
-	M_overrides             AZStd__vector_38 `crc:"2503833922"`
+	M_overrides             AZStd__vector_30 `crc:"2503833922"`
 }
 
 type MaterialOverrideComponentServerFacet struct {
@@ -7332,8 +8718,8 @@ type MaterialOverrideInfo struct {
 
 type MaterialOverrideTriggerComponent struct {
 	BaseClass1                 FacetedComponent `crc:"3566360373"`
-	M_materialoverrideentities AZStd__vector_55 `crc:"1568003977"`
-	M_materialoverridenames    AZStd__vector_16 `crc:"2021810634"`
+	M_materialoverrideentities AZStd__vector_71 `crc:"1568003977"`
+	M_materialoverridenames    AZStd__vector_9  `crc:"2021810634"`
 }
 
 type MaterialOverrideTriggerComponentClientFacet struct {
@@ -7365,7 +8751,7 @@ type MeshComponentRenderNode struct {
 }
 
 type MeshMergeGroup struct {
-	Entities                 AZStd__vector_44            `crc:"1357669605"`
+	Entities                 AZStd__vector_169           `crc:"1357669605"`
 	Mesh_parameters          MeshMergeOverrideParameters `crc:"729313455"`
 	Name                     AzString                    `crc:"1579384326"`
 	Override_mesh_parameters AzBool                      `crc:"2254937968"`
@@ -7403,7 +8789,7 @@ type MeshRenderOptions struct {
 	FadeEnabled                AzBool           `crc:"3117586516"`
 	ForceMerge                 AzBool           `crc:"2649779212"`
 	LODRatio                   AzUInt32         `crc:"918508735"`
-	Lod_MinScreenPct           AZStd__vector_28 `crc:"4266203701"`
+	Lod_MinScreenPct           AZStd__vector_52 `crc:"4266203701"`
 	MaxViewDistance            AzFloat32        `crc:"2727632343"`
 	Opacity                    AzFloat32        `crc:"1140682086"`
 	PrimaryInHierarchy         AzBool           `crc:"3467382156"`
@@ -7430,6 +8816,21 @@ type MetaAchievementComponentClientFacet struct {
 
 type MetaAchievementComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type MilestoneCorrectionData struct {
+	Currentmilestoneversion AzInt32                                   `crc:"1949714812"`
+	Milestonecorrections    UUID_C2FD8C07_90D3_5D02_BAB7_B1FAC968C43F `crc:"243594993"`
+}
+
+type MilestoneCorrectionEntryData struct {
+	Alwayscheckmilestone     AzBool           `crc:"1524889013"`
+	Invalidterritories       AZStd__vector_26 `crc:"2993061633"`
+	Milestoneachievement     AzString         `crc:"1189208084"`
+	Milestoneplayerlevel     AzInt32          `crc:"3041358814"`
+	Milestoneversionadded    AzInt32          `crc:"4147804316"`
+	Relocation_territory_ids AZStd__vector_26 `crc:"1454235688"`
+	Teleportcontext          AzInt32          `crc:"545588966"`
 }
 
 type MinionVitalsProviderComponent struct {
@@ -7464,7 +8865,7 @@ type MomentaryOffenseComponentServerFacet struct {
 	M_checkobstructions   AzBool              `crc:"3781366074"`
 	M_damagetag           AzInt32             `crc:"1476261052"`
 	M_ownershipEntity     LocalEntityRef      `crc:"4082794647"`
-	M_shape               AZStd__shared_ptr_0 `crc:"2445754556"`
+	M_shape               AZStd__shared_ptr_4 `crc:"2445754556"`
 	M_snaptoterrainentity LocalEntityRef      `crc:"100548984"`
 	M_strFilter           AzString            `crc:"3961383120"`
 }
@@ -7487,7 +8888,7 @@ type MotionParameterSmoothingSettings struct {
 
 type MountComponent struct {
 	BaseClass1            FacetedComponent `crc:"3566360373"`
-	M_hitvolumestoreplace AZStd__vector_16 `crc:"1841551801"`
+	M_hitvolumestoreplace AZStd__vector_9  `crc:"1841551801"`
 	M_mountentity         LocalEntityRef   `crc:"1802541309"`
 }
 
@@ -7532,7 +8933,7 @@ type MusicalPerformanceIndicatorComponent struct {
 
 type MusicalPerformanceIndicatorComponentClientFacet struct {
 	BaseClass1          ClientFacet      `crc:"3566360373"`
-	M_indicatorentities AZStd__vector_55 `crc:"2162494414"`
+	M_indicatorentities AZStd__vector_71 `crc:"2162494414"`
 	M_localplayeronly   AzBool           `crc:"1520233680"`
 }
 
@@ -7552,7 +8953,7 @@ type MusicalPerformancePlayerComponentServerFacet struct {
 type MusicalPerformanceZoneComponent struct {
 	BaseClass1           FacetedComponent `crc:"3566360373"`
 	M_detectionvolumeref LocalEntityRef   `crc:"2992951648"`
-	M_exclusionzones     AZStd__vector_55 `crc:"4045949313"`
+	M_exclusionzones     AZStd__vector_71 `crc:"4045949313"`
 }
 
 type MusicalPerformanceZoneComponentClientFacet struct {
@@ -7626,7 +9027,7 @@ type NavActionConfiguration struct {
 }
 
 type NavConfiguration struct {
-	M_additionalnavabilities AZStd__vector_45          `crc:"2078496857"`
+	M_additionalnavabilities AZStd__vector_62          `crc:"2078496857"`
 	M_arrivalthreshold       AzFloat32                 `crc:"3640615157"`
 	M_linearacceleration     AzFloat32                 `crc:"3231128216"`
 	M_lineardeceleration     AzFloat32                 `crc:"2961287115"`
@@ -7695,13 +9096,13 @@ type NavigationLink struct {
 
 type NavigationObstacleMeshComponent struct {
 	BaseClass1            FacetedComponent    `crc:"3566360373"`
-	M_inlineshape         AZStd__shared_ptr_0 `crc:"27446549"`
+	M_inlineshape         AZStd__shared_ptr_4 `crc:"27446549"`
 	M_issliceencompassing AzBool              `crc:"205288749"`
 	M_meshsource          AzInt32             `crc:"1615692641"`
 	M_navarea             AzInt32             `crc:"1598066539"`
 	M_registerwithnavmesh AzBool              `crc:"1579572829"`
 	M_rnrshapeasset       AzAsset             `crc:"866224137"`
-	M_shapeentities       AZStd__vector_55    `crc:"1966469848"`
+	M_shapeentities       AZStd__vector_71    `crc:"1966469848"`
 	M_useconvexhull       AzBool              `crc:"2388394620"`
 }
 
@@ -7715,9 +9116,9 @@ type NavigationObstacleMeshComponentServerFacet struct {
 }
 
 type NavigationProfile struct {
-	M_areacosts    AZStd__vector_48 `crc:"1856809748"`
-	M_navabilities AZStd__vector_45 `crc:"825884362"`
-	M_navconfigs   AZStd__vector_78 `crc:"392305685"`
+	M_areacosts    AZStd__vector_119 `crc:"1856809748"`
+	M_navabilities AZStd__vector_62  `crc:"825884362"`
+	M_navconfigs   AZStd__vector_20  `crc:"392305685"`
 }
 
 type NetBindable struct {
@@ -7800,7 +9201,7 @@ type ObjectiveInteractorComponentServerFacet struct {
 type ObjectiveProviderComponent struct {
 	BaseClass1                   FacetedComponent `crc:"3566360373"`
 	M_disablepvpmissions         AzBool           `crc:"2499814755"`
-	M_editorprovidedmissiontypes AZStd__vector_16 `crc:"971419582"`
+	M_editorprovidedmissiontypes AZStd__vector_9  `crc:"971419582"`
 	M_iscommunitygoalboard       AzBool           `crc:"1205627541"`
 	M_useterritoryid             AzBool           `crc:"1740508863"`
 }
@@ -7886,21 +9287,21 @@ type OnEncounterBossSpawned struct {
 }
 
 type OnEncounterComplete struct {
-	BaseClass1        SlayerScriptData `crc:"3566360373"`
-	Statue01locations AZStd__vector_16 `crc:"3020820736"`
-	Statue02locations AZStd__vector_16 `crc:"1597614595"`
-	Statue03locations AZStd__vector_16 `crc:"2969289021"`
-	Statue04locations AZStd__vector_16 `crc:"1378343492"`
-	Statueassets      AZStd__vector_52 `crc:"12413206"`
+	BaseClass1        SlayerScriptData  `crc:"3566360373"`
+	Statue01locations AZStd__vector_9   `crc:"3020820736"`
+	Statue02locations AZStd__vector_9   `crc:"1597614595"`
+	Statue03locations AZStd__vector_9   `crc:"2969289021"`
+	Statue04locations AZStd__vector_9   `crc:"1378343492"`
+	Statueassets      AZStd__vector_118 `crc:"12413206"`
 }
 
 type OnEncounterStageStart struct {
 	BaseClass1            SlayerScriptData `crc:"3566360373"`
 	Lightningstrikeasset  AzAsset          `crc:"1742757970"`
-	Lightningtrappattern1 AZStd__vector_16 `crc:"3197817657"`
-	Lightningtrappattern2 AZStd__vector_16 `crc:"663978627"`
-	Lightningtrappattern3 AZStd__vector_16 `crc:"1351922197"`
-	Lightningtrappattern4 AZStd__vector_16 `crc:"3471845302"`
+	Lightningtrappattern1 AZStd__vector_9  `crc:"3197817657"`
+	Lightningtrappattern2 AZStd__vector_9  `crc:"663978627"`
+	Lightningtrappattern3 AZStd__vector_9  `crc:"1351922197"`
+	Lightningtrappattern4 AZStd__vector_9  `crc:"3471845302"`
 }
 
 type OnMovieEndEventTutorialStep struct {
@@ -7957,7 +9358,7 @@ type OutpostRushSummoningInteractionComponent struct {
 
 type OutpostRushSummoningInteractionComponentClientFacet struct {
 	BaseClass1            ClientFacet      `crc:"3566360373"`
-	M_onspawnactiveevents AZStd__vector_80 `crc:"3116709561"`
+	M_onspawnactiveevents AZStd__vector_44 `crc:"3116709561"`
 	M_spawnerentity       LocalEntityRef   `crc:"1987108324"`
 }
 
@@ -8009,8 +9410,8 @@ type OwnershipDataComponentServerFacet struct {
 }
 
 type OwnershipMessageComponent struct {
-	BaseClass1                 FacetedComponent `crc:"3566360373"`
-	M_handledownershipmessages AZStd__vector_65 `crc:"1716279203"`
+	BaseClass1                 FacetedComponent  `crc:"3566360373"`
+	M_handledownershipmessages AZStd__vector_166 `crc:"1716279203"`
 }
 
 type OwnershipMessageComponentClientFacet struct {
@@ -8084,12 +9485,12 @@ type Padding struct {
 type PaperdollComponent struct {
 	BaseClass1                    FacetedComponent                                                                                               `crc:"3566360373"`
 	M_customizablecharacterentity LocalEntityRef                                                                                                 `crc:"2983523463"`
-	M_initpaperdolldata           AZStd__vector_100                                                                                              `crc:"2957462649"`
+	M_initpaperdolldata           AZStd__vector_122                                                                                              `crc:"2957462649"`
 	M_inventorycontainercomponent LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__ContainerComponent__void__ `crc:"215791181"`
 	M_noequipmannequintag         AzString                                                                                                       `crc:"3493401077"`
 	M_onbreakentity               LocalEntityRef                                                                                                 `crc:"913709144"`
 	M_paperdollasset              AzAsset                                                                                                        `crc:"926407647"`
-	M_paperdollvisualslotmapping  AZStd__map_3                                                                                                   `crc:"2906172440"`
+	M_paperdollvisualslotmapping  AZStd__map                                                                                                     `crc:"2906172440"`
 	M_playercomponent             LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__PlayerComponent__void__    `crc:"1480395983"`
 	M_playertradeentity           LocalEntityRef                                                                                                 `crc:"3219306131"`
 	M_quickslotentity             LocalEntityRef                                                                                                 `crc:"2468144750"`
@@ -8103,6 +9504,10 @@ type PaperdollComponentClientFacet struct {
 
 type PaperdollComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type PaperdollSlotDatabase struct {
+	List_of_slots AZStd__vector_37 `crc:"3691179070"`
 }
 
 type Parameters struct {
@@ -8148,15 +9553,28 @@ type ParticipantTrackerComponentServerFacet struct {
 type ParticleComponent struct {
 	BaseClass1               AZ__Component           `crc:"3566360373"`
 	Load_Emitter_On_Activate AzBool                  `crc:"3425187045"`
-	MeshParticle             AZStd__vector_4         `crc:"627625052"`
+	MeshParticle             AZStd__vector_34        `crc:"627625052"`
 	Particle                 ParticleEmitterSettings `crc:"1445240801"`
 	ParticleLibraryAssetId   AssetId                 `crc:"1524142304"`
 }
 
+type ParticleEffect struct {
+	Angularoffset        AzVec3       `crc:"1104433100"`
+	BaseClass1           TimelineClip `crc:"3566360373"`
+	Effectname           AzString     `crc:"3378647027"`
+	Emitterfollows       AzBool       `crc:"3124131746"`
+	Ignorerotation       AzBool       `crc:"719969942"`
+	Killemitteronfinish  AzBool       `crc:"2092490231"`
+	Positionoffset       AzVec3       `crc:"1609745041"`
+	Pulseperiod          AzFloat32    `crc:"2964952367"`
+	Scale                AzFloat32    `crc:"3964020100"`
+	Stopemittingonfinish AzBool       `crc:"2521204585"`
+}
+
 type ParticleEmitBoneLayer struct {
-	Affectedindices AZStd__vector_75 `crc:"2943630492"`
-	Enable_layer    AzBool           `crc:"4272530338"`
-	Joint_name      AzString         `crc:"2628648795"`
+	Affectedindices AZStd__vector_133 `crc:"2943630492"`
+	Enable_layer    AzBool            `crc:"4272530338"`
+	Joint_name      AzString          `crc:"2628648795"`
 }
 
 type ParticleEmitterSettings struct {
@@ -8260,6 +9678,25 @@ type PerkConditionComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type PerkGenerationData struct {
+	Crafting_result_loot_bucket     AzString        `crc:"870384545"`
+	Crafting_result_loot_bucket_id  Crc32           `crc:"494296084"`
+	Perk_data_per_tier              AZStd__vector_0 `crc:"1491961985"`
+	Roll_perk_on_upgrade_gs         AzInt32         `crc:"2575727160"`
+	Roll_perk_on_upgrade_perk_count AzInt32         `crc:"1456878513"`
+	Roll_perk_on_upgrade_tier       AzInt32         `crc:"319487621"`
+}
+
+type PerkTierData struct {
+	Attribute_perk_bucket          AzString                                  `crc:"66926681"`
+	Attribute_perk_bucket_id       Crc32                                     `crc:"2383596859"`
+	Attribute_perk_probability     AzFloat32                                 `crc:"1546431026"`
+	Crafting_gear_score_perk_count UUID_98F0B819_838F_5548_B645_4CF0959F2D43 `crc:"2940970680"`
+	Gem_slot_probability           AzFloat32                                 `crc:"1378430394"`
+	General_gear_score_perk_count  UUID_98F0B819_838F_5548_B645_4CF0959F2D43 `crc:"4137708743"`
+	Max_perk_channel               AzInt32                                   `crc:"2728214075"`
+}
+
 type PersistentVariationData struct {
 	M_spawnedvariantname AzString `crc:"3975999464"`
 }
@@ -8274,15 +9711,15 @@ type PlacementObstructionComponent struct {
 	M_allowanynotallowed                      AzBool           `crc:"4284098803"`
 	M_completionobstructionfilternameoverride AzString         `crc:"2702344761"`
 	M_depletegatherables                      AzBool           `crc:"701226410"`
-	M_detectionentities                       AZStd__vector_55 `crc:"490352454"`
+	M_detectionentities                       AZStd__vector_71 `crc:"490352454"`
 	M_hlcdetectorname                         AzString         `crc:"3602185041"`
 	M_losobstructionfilternameoverride        AzString         `crc:"1805685599"`
 	M_maxverticalangletoplacingentity         AzFloat32        `crc:"1031039248"`
 	M_maxverticaldeltatoplacingentity         AzFloat32        `crc:"1689176873"`
 	M_removegatherables                       AzBool           `crc:"170792919"`
 	M_spawnpointentity                        LocalEntityRef   `crc:"1418258675"`
-	M_tagstodisallow                          AZStd__vector_16 `crc:"505883054"`
-	M_tagtoallow                              AZStd__vector_16 `crc:"286549390"`
+	M_tagstodisallow                          AZStd__vector_9  `crc:"505883054"`
+	M_tagtoallow                              AZStd__vector_9  `crc:"286549390"`
 	M_unallowtype                             AzInt32          `crc:"3617586250"`
 }
 
@@ -8343,8 +9780,143 @@ type PlayerArenaComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type PlayerAttributeData struct {
+	Ability_point_row_requirements                                           AZStd__vector_139                         `crc:"2545508799"`
+	Ability_points_required_in_tree_to_unlock_final_row                      AzInt32                                   `crc:"449510696"`
+	Allprojectpoolid                                                         EditCrc                                   `crc:"830663296"`
+	Alwaysavailabletownprojectid                                             EditCrc                                   `crc:"2571713759"`
+	Armor_mitigation_exponent                                                AzFloat32                                 `crc:"3127166134"`
+	Armor_rating_decimal_accuracy                                            AzInt32                                   `crc:"1514296702"`
+	Armor_set_rating_exponent                                                AzFloat32                                 `crc:"2564406730"`
+	Attribute_bias_exclusive_label                                           EditCrc                                   `crc:"2321104830"`
+	Attribute_chance_modifier                                                AzFloat32                                 `crc:"775543972"`
+	Attribute_exclusive_label_map                                            UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2 `crc:"3467641744"`
+	Azoth_currency                                                           AzString                                  `crc:"407522883"`
+	Azoth_currency_id                                                        Crc32                                     `crc:"3015906265"`
+	Base_amount_to_apply                                                     AzInt32                                   `crc:"3872903542"`
+	Base_apply_rate                                                          AzFloat32                                 `crc:"544118269"`
+	Base_damage_compound_increase                                            AzFloat32                                 `crc:"1040437940"`
+	Base_damage_gear_score_interval                                          AzUInt32                                  `crc:"2932050538"`
+	Base_deployable_limit                                                    AzInt32                                   `crc:"3953435712"`
+	Base_gather_durability_cost                                              AzFloat32                                 `crc:"4004614495"`
+	Base_xp_value_for_finding_lore                                           AzUInt32                                  `crc:"2184948075"`
+	Blocking_threat_mulitplier                                               AzFloat32                                 `crc:"1099214177"`
+	Broken_item_efficiency_data                                              AZStd__vector_80                          `crc:"3582040118"`
+	Camping_achievement_id                                                   AZStd__vector_142                         `crc:"2456218248"`
+	Camping_unlock_by_level                                                  AZStd__vector_26                          `crc:"859849246"`
+	Categorical_progression_rankup_game_event_id                             EditCrc                                   `crc:"3929721992"`
+	Chance_of_salvage_success                                                AzFloat32                                 `crc:"3325838676"`
+	Chat_max_message_size                                                    AzUInt32                                  `crc:"1147526063"`
+	Compound_increase_diminishing_multiplier                                 AzFloat32                                 `crc:"4228706248"`
+	Controllingcompanyhousecostmodifier                                      AzFloat32                                 `crc:"690734670"`
+	Controllingcompanytaxmodifier                                            AzFloat32                                 `crc:"1183396263"`
+	Controllingfactiongathermodifier                                         AzFloat32                                 `crc:"493663274"`
+	Controllingfactionluckmodifier                                           AzInt32                                   `crc:"2680451908"`
+	Craftingfeeratemax                                                       AzFloat32                                 `crc:"1742627026"`
+	Craftingfeeratemin                                                       AzFloat32                                 `crc:"1540579211"`
+	Diminishing_gear_score_threshold                                         AzUInt32                                  `crc:"1654436668"`
+	Drop_probability_falloff                                                 AzFloat32                                 `crc:"2072792132"`
+	Drop_probability_min                                                     AzFloat32                                 `crc:"1465196189"`
+	Durability_repair_cost_data                                              AZStd__vector_139                         `crc:"4176640140"`
+	Durability_to_coin_rate                                                  AzFloat32                                 `crc:"4276558014"`
+	Dynamic_poi_objective_gameeventid                                        EditCrc                                   `crc:"2135484126"`
+	Dynamic_poi_objective_itemids                                            AZStd__vector_2                           `crc:"4036203988"`
+	Dynamic_poi_objective_reward_modifier_ids                                AZStd__vector_2                           `crc:"2746046252"`
+	Elemental_armor_scale_factor                                             AzFloat32                                 `crc:"3864752996"`
+	Encumbrance_immobilization_modifier                                      AzFloat32                                 `crc:"3063667835"`
+	Encumbrance_max_limit_modifier                                           AzFloat32                                 `crc:"1629097626"`
+	Enemy_level_loot_tag                                                     EditCrc                                   `crc:"1501713786"`
+	Equipped_item_loot_tag                                                   EditCrc                                   `crc:"3606199992"`
+	Equipped_tag_ignore_classes                                              UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2 `crc:"1688526123"`
+	Final_starting_beach_achievement                                         EditCrc                                   `crc:"2058419845"`
+	First_house_flat_discount                                                AzUInt32                                  `crc:"1495088854"`
+	First_time_ffa_achievement                                               EditCrc                                   `crc:"3852206400"`
+	Fish_rarity_loot_tag                                                     EditCrc                                   `crc:"4121231104"`
+	Fish_size_loot_tag                                                       EditCrc                                   `crc:"1648700664"`
+	Fishing_fresh_water_loot_tag                                             EditCrc                                   `crc:"2715057642"`
+	Fishing_salt_water_loot_tag                                              EditCrc                                   `crc:"3884139696"`
+	Gear_score_rounding_interval                                             AzInt32                                   `crc:"3077216752"`
+	Gear_set_storage_excluded_paperdoll_slots                                UUID_9C719DD5_F8D3_59D3_B55B_627422922A43 `crc:"1091404389"`
+	Gem_slot_chance_modifier                                                 AzFloat32                                 `crc:"1196177737"`
+	Global_mod_loot_tag                                                      EditCrc                                   `crc:"2567042273"`
+	Instanced_ai_loot_clear_time_mins                                        AzInt32                                   `crc:"2012145171"`
+	Instanced_loot_chest_reset_time_mins                                     AzInt32                                   `crc:"3502766460"`
+	Instanced_slayerscript_state_reset_time_mins                             AzInt32                                   `crc:"1806419256"`
+	Inventory_durability_loss_ratio                                          AzFloat32                                 `crc:"2855985132"`
+	Item_rarity_data                                                         AZStd__vector_106                         `crc:"769099946"`
+	Kill_game_event_id                                                       EditCrc                                   `crc:"2666012534"`
+	Level_damage_multiplier                                                  AzFloat32                                 `crc:"1251230836"`
+	Level_loot_tag                                                           EditCrc                                   `crc:"2485241194"`
+	Loot_biasing_exception_item_classes                                      UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2 `crc:"2309037884"`
+	Loot_biasing_item_classes                                                UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2 `crc:"649808250"`
+	Loot_table_diverted_loot_tag                                             EditCrc                                   `crc:"1930234241"`
+	Max_ai_loot_receiver_count                                               AzInt32                                   `crc:"4029712458"`
+	Max_armor_mitigation                                                     AzFloat32                                 `crc:"129293126"`
+	Max_camp_respawn_distance_meters                                         AzInt32                                   `crc:"4043513367"`
+	Max_instanced_loot_chest_count                                           AzInt32                                   `crc:"3545799627"`
+	Max_instanced_slayerscript_state_count                                   AzInt32                                   `crc:"2548198547"`
+	Max_points_per_attribute                                                 AzUInt32                                  `crc:"4240139679"`
+	Max_pvp_respawn_extend_deaths                                            AzUInt32                                  `crc:"4081838422"`
+	Min_armor_mitigation                                                     AzFloat32                                 `crc:"785000030"`
+	Min_content_level_loot_tag                                               EditCrc                                   `crc:"1109938975"`
+	Min_enemy_content_level_loot_tag                                         EditCrc                                   `crc:"3943173529"`
+	Min_level_roll_gem_slot                                                  AzInt32                                   `crc:"36781581"`
+	Min_level_roll_perks                                                     AzInt32                                   `crc:"3869727889"`
+	Min_poi_content_level_loot_tag                                           EditCrc                                   `crc:"198007638"`
+	Min_possible_weapon_gear_score                                           AzUInt32                                  `crc:"1599705814"`
+	Minimum_ai_level_for_territory_standing                                  AzUInt32                                  `crc:"99919581"`
+	Minimum_salvage_quantity                                                 AzInt32                                   `crc:"1544845026"`
+	Number_of_entries_that_need_to_be_discovered_to_advance_to_the_next_step AzUInt32                                  `crc:"2460882875"`
+	Objective_gameeventid                                                    EditCrc                                   `crc:"3377791829"`
+	One_handed_gathering_distance                                            AzFloat32                                 `crc:"3236005074"`
+	Paperdoll_slot_unlocks_by_level                                          AZStd__vector_127                         `crc:"615778146"`
+	Paperdoll_slot_unlocks_by_tradeskill_rank                                UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286 `crc:"3448727571"`
+	Perk_chance_itemid                                                       AzString                                  `crc:"1084564535"`
+	Perk_chance_modifier                                                     AzFloat32                                 `crc:"3299387875"`
+	Perk_generation_data                                                     PerkGenerationData                        `crc:"3853421234"`
+	Physical_armor_scale_factor                                              AzFloat32                                 `crc:"2475629711"`
+	Player_age_display_string                                                AzString                                  `crc:"1065784067"`
+	Player_display_level_unlock_free_gear_sets                               AzInt32                                   `crc:"215894519"`
+	Poi_level_loot_tag                                                       EditCrc                                   `crc:"846282420"`
+	Post_ftue_achievement_id_unlocks                                         AZStd__vector_9                           `crc:"2201477537"`
+	Propertytaxratemax                                                       AzFloat32                                 `crc:"3459536558"`
+	Propertytaxratemin                                                       AzFloat32                                 `crc:"4063848951"`
+	Pvp_camp_respawn_cooldown_seconds                                        AzUInt32                                  `crc:"9917307"`
+	Pvp_death_extend_timeout_seconds                                         AzUInt32                                  `crc:"3486674766"`
+	Pvp_inventory_durability_loss_multiplier                                 AzFloat32                                 `crc:"2780560358"`
+	Pvp_paperdoll_durability_loss_multiplier                                 AzFloat32                                 `crc:"2010798859"`
+	Refiningfeeratemax                                                       AzFloat32                                 `crc:"2350428674"`
+	Refiningfeeratemin                                                       AzFloat32                                 `crc:"2954202459"`
+	Repair_max_durability_cost                                               AzFloat32                                 `crc:"2648225034"`
+	Repair_resource_modifier                                                 AzFloat32                                 `crc:"856481591"`
+	Rested_exp_max_percentage                                                AzFloat32                                 `crc:"2665704463"`
+	Rested_exp_modifier                                                      AzFloat32                                 `crc:"4038702296"`
+	Rested_exp_percentage_per_hour                                           AzFloat32                                 `crc:"961084086"`
+	Rested_exp_threshold_hours                                               AzUInt32                                  `crc:"2710447355"`
+	Round_gearscore_up_                                                      AzBool                                    `crc:"2104736165"`
+	Salvage_dust_modifier                                                    AzFloat32                                 `crc:"1047457124"`
+	Salvage_gold_tier_modifiers                                              AZStd__vector_52                          `crc:"1864432170"`
+	Salvage_item_gear_score_loot_tag                                         EditCrc                                   `crc:"3476169896"`
+	Salvage_item_rarity_loot_tag                                             EditCrc                                   `crc:"2119527783"`
+	Salvage_item_tier_loot_tag                                               EditCrc                                   `crc:"305498271"`
+	Salvage_max_percent                                                      AzFloat32                                 `crc:"2441712665"`
+	Salvage_min_percent                                                      AzFloat32                                 `crc:"1568993046"`
+	Settaxorfeecooldowninmin                                                 AzUInt32                                  `crc:"666278674"`
+	Stamina_cost_entry                                                       AzString                                  `crc:"4042830083"`
+	Status_effect_category_limit_crcs                                        AZStd__unordered_flat_map_0               `crc:"219012040"`
+	Status_effect_category_limits                                            AZStd__unordered_flat_map                 `crc:"2118208978"`
+	Structure_rotation_amount___deg__                                        AzFloat32                                 `crc:"918781310"`
+	Summer_fish_rarity_loot_tag                                              EditCrc                                   `crc:"1792141096"`
+	The_amount_of_xp_gained_per_step                                         AzUInt32                                  `crc:"3038743946"`
+	Tradingtaxratemax                                                        AzFloat32                                 `crc:"3355861281"`
+	Tradingtaxratemin                                                        AzFloat32                                 `crc:"4094385784"`
+	Two_handed_gathering_distance                                            AzFloat32                                 `crc:"1159889716"`
+	User_camera_max_sensitivity                                              AzFloat32                                 `crc:"3421740222"`
+	User_camera_min_sensitivity                                              AzFloat32                                 `crc:"3964205967"`
+}
+
 type PlayerAudioProxyComponent struct {
-	BaseClass1 AudioProxyComponent `crc:"3566360373"`
+	BaseClass1 AudioProxyComponent_0 `crc:"3566360373"`
 }
 
 type PlayerAudioProxyComponentClientFacet struct {
@@ -8355,17 +9927,43 @@ type PlayerAudioProxyComponentServerFacet struct {
 	BaseClass1 AudioProxyComponentServerFacet `crc:"3566360373"`
 }
 
+type PlayerBaseAttributes struct {
+	Additive_conversation_camera_movement_data AdditiveConversationCameraMovementData `crc:"3039288156"`
+	Contract_data                              ContractConfigData                     `crc:"3187984917"`
+	Daily_bonus_data                           DailyBonusData                         `crc:"2659883017"`
+	Event_credit_data                          EventCreditData                        `crc:"753202757"`
+	Faction_data                               FactionData                            `crc:"2007859480"`
+	Faction_influence_config_data              FactionInfluenceConfigData             `crc:"2509155371"`
+	Fishing_data                               FishingData                            `crc:"558631596"`
+	Gather_game_data                           GatherGameData                         `crc:"4135230148"`
+	Guaranteed_equipped_item_transfer_data     GuaranteedItemTransferData             `crc:"744594396"`
+	Guaranteed_inventory_item_transfer_data    GuaranteedItemTransferData             `crc:"505873121"`
+	Guild_siege_window_region_data             AZStd__unordered_map                   `crc:"2903805300"`
+	Guild_treasury_data                        GuildTreasuryData                      `crc:"3314965162"`
+	Milestone_correction_data                  MilestoneCorrectionData                `crc:"1629560584"`
+	Player_attribute_data                      PlayerAttributeData                    `crc:"328511021"`
+	Progression_validation_achievement_data    ProgressionValidationAchievementData   `crc:"1787730241"`
+	Remote_storage_item_transfer_fee_data      RemoteStorageItemTransferFeeData       `crc:"2538214813"`
+	Structure_attribute_data                   StructureAttributeData                 `crc:"566847629"`
+	Structure_placement_data                   StructurePlacementData                 `crc:"2108247309"`
+	Taskinteract_data                          TaskInteractData                       `crc:"151113793"`
+	Territory_bonus_data                       AZStd__vector_136                      `crc:"494259208"`
+	Valid_group_data                           ValidGroupData                         `crc:"95334090"`
+	War_color_data                             WarColorData                           `crc:"2344428650"`
+	War_data                                   WarData                                `crc:"3857362688"`
+}
+
 type PlayerComponent struct {
-	BaseClass1                          FacetedComponent `crc:"3566360373"`
-	M_componentstoremoveonremoteplayers AZStd__vector_0  `crc:"581765644"`
-	M_currencycomponententityid         EntityId         `crc:"978102918"`
-	M_incapacitatedentity               LocalEntityRef   `crc:"1273446073"`
-	M_inventoryentity                   LocalEntityRef   `crc:"1633200876"`
-	M_localplayerentity                 LocalEntityRef   `crc:"600287523"`
-	M_localsavedataentity               LocalEntityRef   `crc:"2408301869"`
-	M_phasingentity                     LocalEntityRef   `crc:"3299362980"`
-	M_playerhomeentity                  LocalEntityRef   `crc:"1898940863"`
-	M_remoteplayerentity                LocalEntityRef   `crc:"1186423286"`
+	BaseClass1                          FacetedComponent  `crc:"3566360373"`
+	M_componentstoremoveonremoteplayers AZStd__vector_148 `crc:"581765644"`
+	M_currencycomponententityid         EntityId          `crc:"978102918"`
+	M_incapacitatedentity               LocalEntityRef    `crc:"1273446073"`
+	M_inventoryentity                   LocalEntityRef    `crc:"1633200876"`
+	M_localplayerentity                 LocalEntityRef    `crc:"600287523"`
+	M_localsavedataentity               LocalEntityRef    `crc:"2408301869"`
+	M_phasingentity                     LocalEntityRef    `crc:"3299362980"`
+	M_playerhomeentity                  LocalEntityRef    `crc:"1898940863"`
+	M_remoteplayerentity                LocalEntityRef    `crc:"1186423286"`
 }
 
 type PlayerComponentClientFacet struct {
@@ -8493,8 +10091,8 @@ type PlayerInputFiltersComponent struct {
 }
 
 type PlayerInputFiltersComponentClientFacet struct {
-	BaseClass1 ClientFacet     `crc:"3566360373"`
-	M_filters  AZStd__vector_3 `crc:"574106564"`
+	BaseClass1 ClientFacet       `crc:"3566360373"`
+	M_filters  AZStd__vector_165 `crc:"574106564"`
 }
 
 type PlayerInputFiltersComponentServerFacet struct {
@@ -8551,7 +10149,7 @@ type PlayerSetting struct {
 
 type PlayerSettingsComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
-	M_settings AZStd__vector_71 `crc:"3927905981"`
+	M_settings AZStd__vector_28 `crc:"3927905981"`
 }
 
 type PlayerSettingsComponentClientFacet struct {
@@ -8659,8 +10257,8 @@ type PolygonPrism struct {
 }
 
 type PolygonPrismCommon struct {
-	PolygonPrism     AZStd__shared_ptr_4 `crc:"3602186294"`
-	Reduced_Vertices AZStd__vector_95    `crc:"4159449293"`
+	PolygonPrism     AZStd__shared_ptr_5 `crc:"3602186294"`
+	Reduced_Vertices AZStd__vector_110   `crc:"4159449293"`
 }
 
 type PolygonPrismShapeComponent struct {
@@ -8697,9 +10295,14 @@ type PositionalTicketingComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type PostEffectGroup struct {
+	BaseClass1 TimelineClip `crc:"3566360373"`
+	Groupname  AzString     `crc:"2430242693"`
+}
+
 type PrefabReferencerComponent struct {
-	BaseClass1       AZ__Component    `crc:"3566360373"`
-	Slice_asset_list AZStd__vector_52 `crc:"2191904823"`
+	BaseClass1       AZ__Component     `crc:"3566360373"`
+	Slice_asset_list AZStd__vector_118 `crc:"2191904823"`
 }
 
 type PrefabSpawnRandomizer struct {
@@ -8743,8 +10346,8 @@ type PrefabSpawnerComponent struct {
 	M_respawnAfterReload           AzBool           `crc:"923578743"`
 	M_showPrefab                   AzBool           `crc:"3949434785"`
 	M_sliceAsset                   AzAsset          `crc:"1745424384"`
-	M_sliceDestroyedEvents         AZStd__vector_80 `crc:"1140362140"`
-	M_sliceSpawnEvents             AZStd__vector_80 `crc:"1778404594"`
+	M_sliceDestroyedEvents         AZStd__vector_44 `crc:"1140362140"`
+	M_sliceSpawnEvents             AZStd__vector_44 `crc:"1778404594"`
 	M_sliceVariant                 AzString         `crc:"1900310493"`
 	M_spawnOnInitialize            AzBool           `crc:"4012373057"`
 	M_spawnOnTrigger               AzBool           `crc:"1076311605"`
@@ -8775,6 +10378,11 @@ type PrimitiveColliderConfig struct {
 	Surfacetypename AzString `crc:"2063204905"`
 }
 
+type ProgressionCategoryEntry struct {
+	Settlement_progression_category AzString         `crc:"1188522208"`
+	Settlement_progression_entries  AZStd__vector_14 `crc:"1770189871"`
+}
+
 type ProgressionComponent struct {
 	BaseClass1            FacetedComponent `crc:"3566360373"`
 	M_deathlosspercentage AzFloat32        `crc:"454415084"`
@@ -8798,6 +10406,32 @@ type ProgressionPointComponentClientFacet struct {
 
 type ProgressionPointComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type ProgressionSpawnerEntry struct {
+	Alternate_slice                       AzAsset                                                      `crc:"1867428434"`
+	Display_locstring                     AzString                                                     `crc:"457484292"`
+	Icon                                  AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"1704208859"`
+	Settlement_progression_category_level AzInt32                                                      `crc:"2587150535"`
+	Slice                                 AzAsset                                                      `crc:"1034844325"`
+}
+
+type ProgressionValidationAchievementData struct {
+	Azothstaffachievements           AZStd__vector_9 `crc:"2446250417"`
+	Azothstaffitemids                AZStd__vector_2 `crc:"613643383"`
+	Campingrankupachievements        AZStd__vector_9 `crc:"4108796123"`
+	Covenantrankupobjectiveids       AZStd__vector_2 `crc:"3518156637"`
+	Covenantrankuptrialachievements  AZStd__vector_9 `crc:"1799448611"`
+	Covenantsliceswapachievementid   EditCrc         `crc:"3319567435"`
+	Ftuecompletionachievementid      EditCrc         `crc:"4064418123"`
+	Ftueobjectiveids                 AZStd__vector_2 `crc:"1767721320"`
+	Heartgemslotachievements         AZStd__vector_2 `crc:"2505539791"`
+	Marauderrankupobjectiveids       AZStd__vector_2 `crc:"2660116930"`
+	Marauderrankuptrialachievements  AZStd__vector_9 `crc:"2442365240"`
+	Maraudersliceswapachievementid   EditCrc         `crc:"402713685"`
+	Syndicaterankupobjectiveids      AZStd__vector_2 `crc:"4281910622"`
+	Syndicaterankuptrialachievements AZStd__vector_9 `crc:"2767807981"`
+	Syndicatesliceswapachievementid  EditCrc         `crc:"3343172477"`
 }
 
 type ProjectileComponent struct {
@@ -8855,7 +10489,7 @@ type ProjectileSpawnerComponent struct {
 	M_projectilegravity           AzFloat32         `crc:"1524907889"`
 	M_rangedattackname            AzString          `crc:"2978171080"`
 	M_rangedattackprofile         AzString          `crc:"1168909111"`
-	M_rotationincrements          AZStd__vector_28  `crc:"1231566679"`
+	M_rotationincrements          AZStd__vector_52  `crc:"1231566679"`
 	M_targetoffset                AzVec3            `crc:"3492421598"`
 	M_triggerinteractoptionentity LocalEntityRef    `crc:"3323376991"`
 	M_useownerasinitialspawner    AzBool            `crc:"714780733"`
@@ -8882,6 +10516,11 @@ type PvPSpectatorCamControllerComponentClientFacet struct {
 
 type PvPSpectatorCamControllerComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type PvpValueEntry struct {
+	Kill_reward_modifier EditCrc   `crc:"1298536892"`
+	Value_threshold      AzFloat32 `crc:"2846552373"`
 }
 
 type QueryShapeAabb struct {
@@ -9000,7 +10639,7 @@ type RadialMeshComponentServerFacet struct {
 
 type RaidCutlassKeys00Data struct {
 	BaseClass1            SlayerScriptData `crc:"3566360373"`
-	Mushroominfectionlist AZStd__vector_16 `crc:"1096327269"`
+	Mushroominfectionlist AZStd__vector_9  `crc:"1096327269"`
 }
 
 type RaidCutlassKeys00FountainData struct {
@@ -9070,6 +10709,83 @@ type Range struct {
 	Start AzFloat32 `crc:"2675529103"`
 }
 
+type RangedAttackArcShotData struct {
+	M_distancelerpmax    AzFloat32 `crc:"421031554"`
+	M_distancelerpmin    AzFloat32 `crc:"622154203"`
+	M_gravityoverridemax AzFloat32 `crc:"4179167383"`
+	M_gravityoverridemin AzFloat32 `crc:"3306436558"`
+	M_lobheightmax       AzFloat32 `crc:"2756163744"`
+	M_lobheightmin       AzFloat32 `crc:"2555021305"`
+	M_usearctrajectories AzBool    `crc:"424937110"`
+}
+
+type RangedAttackData struct {
+	M_aimjoint                              AzString                `crc:"2276087708"`
+	M_applyrelativehorzaccel                AzBool                  `crc:"2483264414"`
+	M_arctrajectorysettings                 RangedAttackArcShotData `crc:"3518200802"`
+	M_bouncecountmax                        AzUInt32                `crc:"149149139"`
+	M_bouncefrictionparallel                AzFloat32               `crc:"65391009"`
+	M_bouncefrictionperpendicular           AzFloat32               `crc:"3592519222"`
+	M_bounceignorefilter                    AzString                `crc:"1277345658"`
+	M_characteroffset                       AzVec3                  `crc:"337995830"`
+	M_collidewithfilterstr                  AzString                `crc:"2341598499"`
+	M_combatsettingsid                      EditCrc                 `crc:"1841120080"`
+	M_destroyprojectileonblock              AzBool                  `crc:"3613547255"`
+	M_destroyprojectileonunsuccesfulhit     AzBool                  `crc:"3881174102"`
+	M_distanceaccuracycurve                 CurveConfiguration      `crc:"3365182517"`
+	M_distforprojectiledamagefalloffmax     AzFloat32               `crc:"3859316554"`
+	M_enabledistanceaccuracycurve           AzBool                  `crc:"1187796654"`
+	M_firefromcharacteroffset               AzBool                  `crc:"2703873069"`
+	M_firefromweaponslotalias               AzInt32                 `crc:"2976666546"`
+	M_heeddurationelapsedafterstuck         AzBool                  `crc:"3152045871"`
+	M_hitrate                               AzFloat32               `crc:"2725996813"`
+	M_ishitscan                             AzBool                  `crc:"348151863"`
+	M_maxrange                              AzFloat32               `crc:"3196303826"`
+	M_measurelifetimeholistically           AzBool                  `crc:"4086550918"`
+	M_predictedprojectileaccel              AzVec3                  `crc:"4000021826"`
+	M_predictedprojectilemeshasset          AzAsset                 `crc:"4003433268"`
+	M_predictedprojectilemeshoffset         AzVec3                  `crc:"445584235"`
+	M_predictedprojectilemeshrotationangles AzVec3                  `crc:"2952141145"`
+	M_predictedprojectilemeshscale          AzVec3                  `crc:"7795948"`
+	M_predictedprojectiletraileffect        AzString                `crc:"3564973269"`
+	M_projectileacceldelaydist              AzFloat32               `crc:"2877222294"`
+	M_projectiledamagefalloffdist           AzFloat32               `crc:"389255800"`
+	M_projectiledamagemaxfalloff            AzFloat32               `crc:"3593494228"`
+	M_projectilefireangleoffsetpitchdeg     AzFloat32               `crc:"2842770355"`
+	M_projectilefireangleoffsetpitchdegmax  AzFloat32               `crc:"1105120507"`
+	M_projectilefireangleoffsetpitchdegmin  AzFloat32               `crc:"2111042466"`
+	M_projectilefireangleoffsetyawdeg       AzFloat32               `crc:"187168362"`
+	M_projectilefireangleoffsetyawdegmax    AzFloat32               `crc:"1071292196"`
+	M_projectilefireangleoffsetyawdegmin    AzFloat32               `crc:"64462973"`
+	M_projectilehitscanrange                AzFloat32               `crc:"3747936508"`
+	M_projectilelifetimescale               AzFloat32               `crc:"1323794897"`
+	M_projectilepenetrationdepth            AzFloat32               `crc:"3274929270"`
+	M_projectileradius                      AzFloat32               `crc:"3261511770"`
+	M_projectilevisibilitydelayseconds      AzFloat32               `crc:"3913408710"`
+	M_sethomingoverridetargetonstuckto      AzBool                  `crc:"1811043357"`
+	M_soundradius                           AzFloat32               `crc:"3313156556"`
+	M_soundreactionfilterstr                AzString                `crc:"231409751"`
+	M_spreadshotconfig                      SpreadshotConfig        `crc:"3394950210"`
+	M_timeformaxscale                       AzFloat32               `crc:"1415611322"`
+	M_tracereffectsbyeffect                 AZStd__map_8            `crc:"147534055"`
+}
+
+type RangedAttackData_0 struct {
+	M_rangedattackdata AZStd__map_5 `crc:"1112786349"`
+}
+
+type RangedAttackDatabase struct {
+	M_rangedattackprofiles AZStd__map_3 `crc:"2750858791"`
+}
+
+type RankData struct {
+	Guildrankdata GuildRankData `crc:"2999919934"`
+}
+
+type RankDatabase struct {
+	Ranks AZStd__vector_21 `crc:"3420889108"`
+}
+
 type ReactionTrackingComponent struct {
 	BaseClass1                 FacetedComponent `crc:"3566360373"`
 	M_exitreactiondelayseconds AzFloat32        `crc:"2138787087"`
@@ -9102,26 +10818,46 @@ type ReadingInteractionComponent struct {
 
 type ReadingInteractionComponentClientFacet struct {
 	BaseClass1   ClientFacet      `crc:"3566360373"`
-	M_readevents AZStd__vector_80 `crc:"1138437407"`
+	M_readevents AZStd__vector_44 `crc:"1138437407"`
 }
 
 type ReadingInteractionComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type RefreshZoneConfiguration struct {
+	Backfillaiperplayer               AzFloat32 `crc:"4080939899"`
+	Backfilldelayduration             AzUInt64  `crc:"1785314101"`
+	Backfilllimiteddelayduration      AzUInt64  `crc:"18824894"`
+	Maxspawnsperspawner               AzUInt64  `crc:"3801006585"`
+	Maxtrackedplayerscaling           AzUInt64  `crc:"2314841311"`
+	Minbackfilldistance               AzFloat32 `crc:"332330842"`
+	Name                              AzString  `crc:"1579384326"`
+	Overridemaxlimitedrespawnduration AzFloat32 `crc:"500177306"`
+	Overridemaxrespawnduration        AzFloat32 `crc:"2569649226"`
+	Overrideminlimitedrespawnduration AzFloat32 `crc:"593875218"`
+	Overrideminrespawnduration        AzFloat32 `crc:"3398411438"`
+	Playercapacity                    AzUInt64  `crc:"2689904460"`
+	Shortcircuitduration              AzUInt64  `crc:"3219256171"`
+}
+
+type RefreshZoneConfigurationAsset struct {
+	Configs AZStd__vector_16 `crc:"1114208307"`
+}
+
 type RegionMetadataAsset struct {
-	Aispawnlocations     AZStd__vector_103                         `crc:"957080085"`
-	Encounterlocations   AZStd__vector_50                          `crc:"3482449647"`
-	Gatherablelocations  AZStd__vector_35                          `crc:"1603712462"`
+	Aispawnlocations     AZStd__vector                             `crc:"957080085"`
+	Encounterlocations   AZStd__vector_67                          `crc:"3482449647"`
+	Gatherablelocations  AZStd__vector_108                         `crc:"1603712462"`
 	Igcdata              UUID_CDD27E9C_1D94_52BC_9A97_A75DCCF349F6 `crc:"3298216008"`
 	Instancedscriptparts UUID_6C3DEDA3_D591_59B8_80FF_4148F8C2A5EC `crc:"2093378381"`
-	Loredata             AZStd__vector_15                          `crc:"68627993"`
-	Npcdata              AZStd__vector_42                          `crc:"534955237"`
-	Territorylandmarks   AZStd__vector_29                          `crc:"1848426379"`
+	Loredata             AZStd__vector_132                         `crc:"68627993"`
+	Npcdata              AZStd__vector_93                          `crc:"534955237"`
+	Territorylandmarks   AZStd__vector_121                         `crc:"1848426379"`
 }
 
 type RegionSliceDataLookup struct {
-	Slicemetadatamap AZStd__map_2 `crc:"2120764006"`
+	Slicemetadatamap AZStd__map_1 `crc:"2120764006"`
 }
 
 type RemoteServerContextRef struct {
@@ -9131,6 +10867,18 @@ type RemoteServerContextRef struct {
 type RemoteServerGDERef struct {
 	M_remoteservercontext RemoteServerContextRef `crc:"333318912"`
 	M_targetid            GDEID                  `crc:"2746942639"`
+}
+
+type RemoteStorageItemTransferFeeData struct {
+	Distance_interval_meters    AzFloat32         `crc:"844838315"`
+	Fee_multiplier_per_interval AzFloat32         `crc:"3268514947"`
+	Item_tier_base_fees         AZStd__vector_133 `crc:"448705596"`
+	Item_type_fee_multipliers   AZStd__vector_103 `crc:"2407878818"`
+}
+
+type RemoteStorageItemTypeMultiplierData struct {
+	Item_tier_base_fees       AzUInt8   `crc:"448705596"`
+	Item_type_fee_multipliers AzFloat32 `crc:"2407878818"`
 }
 
 type RemoteTypelessServerFacetRef struct {
@@ -9325,13 +11073,34 @@ type RtpcMeterSettings struct {
 }
 
 type RuinState struct {
-	M_events                           AZStd__vector_80 `crc:"420742580"`
-	M_eventsonvalidstatetransitiononly AZStd__vector_80 `crc:"4098362397"`
+	M_events                           AZStd__vector_44 `crc:"420742580"`
+	M_eventsonvalidstatetransitiononly AZStd__vector_44 `crc:"4098362397"`
 	M_selecteddamagetype               AzString         `crc:"111523104"`
 }
 
 type SBItemClass struct {
 	M_itemclasses AZStd__unordered_set_1 `crc:"518284474"`
+}
+
+type ScarColorData struct {
+	Color          AzColor  `crc:"1716930793"`
+	Skin_tone_name AzString `crc:"3474548050"`
+}
+
+type ScarData struct {
+	Decal_texture             AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"3673665743"`
+	Enabled                   AzBool                                                       `crc:"1358543748"`
+	Name                      AzString                                                     `crc:"1579384326"`
+	Normal_texture            AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"2386675189"`
+	Ui_female_selection_image AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"3594475221"`
+	Ui_male_selection_image   AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"4053733209"`
+}
+
+type ScarDatabase struct {
+	Scar_colors         AZStd__vector_109 `crc:"792421063"`
+	Scar_heal_intensity AzFloat32         `crc:"756726861"`
+	Scar_intensity      AzFloat32         `crc:"2714975600"`
+	Scar_styles         AZStd__vector_150 `crc:"1541364653"`
 }
 
 type ScheduleConstraintComponent struct {
@@ -9358,9 +11127,9 @@ type ScriptBindScriptEvent struct {
 }
 
 type ScriptPropertyGroup struct {
-	Groups     AZStd__vector_74  `crc:"4033689968"`
+	Groups     AZStd__vector_143 `crc:"4033689968"`
 	Name       AzString          `crc:"1579384326"`
-	Properties AZStd__vector_106 `crc:"2277716423"`
+	Properties AZStd__vector_131 `crc:"2277716423"`
 }
 
 type SeasonsRewardsComponentClientFacet struct {
@@ -9384,13 +11153,13 @@ type SeasonsRewardsTrackedStatComponentServerFacet struct {
 }
 
 type SequenceAgentComponent struct {
-	BaseClass1                 AZ__Component        `crc:"3566360373"`
-	SequenceComponentEntityIds AZStd__unordered_set `crc:"2727845823"`
+	BaseClass1                 AZ__Component          `crc:"3566360373"`
+	SequenceComponentEntityIds AZStd__unordered_set_2 `crc:"2727845823"`
 }
 
 type SequenceComponent struct {
 	BaseClass1 AZ__Component          `crc:"3566360373"`
-	Sequence   AZStd__intrusive_ptr_3 `crc:"1384568619"`
+	Sequence   AZStd__intrusive_ptr_4 `crc:"1384568619"`
 }
 
 type SerializableWaterQuadtree struct {
@@ -9426,7 +11195,11 @@ type SettlementComponentClientFacet struct {
 
 type SettlementComponentServerFacet struct {
 	BaseClass1            ServerFacet      `crc:"3566360373"`
-	M_progressionspawners AZStd__vector_79 `crc:"2355586823"`
+	M_progressionspawners AZStd__vector_56 `crc:"2355586823"`
+}
+
+type SettlementProgressionData struct {
+	Settlement_progression_categories AZStd__vector_39 `crc:"2439926458"`
 }
 
 type SettlementProgressionSpawnerEntry struct {
@@ -9463,6 +11236,11 @@ type ShapeLocationComponentServerFacet struct {
 	BaseClass1 AreaSpawnerLocationComponentServerFacet `crc:"3566360373"`
 }
 
+type ShowMesh struct {
+	Applytochildren AzBool       `crc:"1819744918"`
+	BaseClass1      TimelineClip `crc:"3566360373"`
+}
+
 type ShowOnMapUIComponent struct {
 	BaseClass1                   AZ__Component                                                `crc:"3566360373"`
 	Compass_icon_asset           AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"1941812755"`
@@ -9476,32 +11254,32 @@ type ShowOnMapUIComponent struct {
 }
 
 type ShowToastLargeTutorialStep struct {
-	BaseClass1        TutorialStep      `crc:"3566360373"`
-	M_msglines        AZStd__vector_102 `crc:"1623478948"`
-	M_playrevealsound AzBool            `crc:"3265026694"`
-	M_titlemsgstring  AzString          `crc:"3637948269"`
+	BaseClass1        TutorialStep     `crc:"3566360373"`
+	M_msglines        AZStd__vector_46 `crc:"1623478948"`
+	M_playrevealsound AzBool           `crc:"3265026694"`
+	M_titlemsgstring  AzString         `crc:"3637948269"`
 }
 
 type ShowToastTutorialStep struct {
-	BaseClass1        TutorialStep     `crc:"3566360373"`
-	M_candetectinput  AzBool           `crc:"846954486"`
-	M_closeoninput    AzBool           `crc:"3785836328"`
-	M_height          AzFloat32        `crc:"3219044337"`
-	M_keybindings     AZStd__vector_16 `crc:"621019147"`
-	M_keycategories   AZStd__vector_16 `crc:"497121262"`
-	M_msgstring       AzString         `crc:"1447438071"`
-	M_playrevealsound AzBool           `crc:"3265026694"`
-	M_position        AzInt32          `crc:"1232491149"`
-	M_returntohud     AzBool           `crc:"2826349804"`
-	M_separators      AZStd__vector_16 `crc:"1025432777"`
-	M_showtitle       AzBool           `crc:"4097146123"`
-	M_titlemsgstring  AzString         `crc:"3637948269"`
-	M_width           AzFloat32        `crc:"3236821579"`
+	BaseClass1        TutorialStep    `crc:"3566360373"`
+	M_candetectinput  AzBool          `crc:"846954486"`
+	M_closeoninput    AzBool          `crc:"3785836328"`
+	M_height          AzFloat32       `crc:"3219044337"`
+	M_keybindings     AZStd__vector_9 `crc:"621019147"`
+	M_keycategories   AZStd__vector_9 `crc:"497121262"`
+	M_msgstring       AzString        `crc:"1447438071"`
+	M_playrevealsound AzBool          `crc:"3265026694"`
+	M_position        AzInt32         `crc:"1232491149"`
+	M_returntohud     AzBool          `crc:"2826349804"`
+	M_separators      AZStd__vector_9 `crc:"1025432777"`
+	M_showtitle       AzBool          `crc:"4097146123"`
+	M_titlemsgstring  AzString        `crc:"3637948269"`
+	M_width           AzFloat32       `crc:"3236821579"`
 }
 
 type SiegeWarfareComponent struct {
 	BaseClass1   FacetedComponent `crc:"3566360373"`
-	M_fortspawns AZStd__vector_83 `crc:"455986496"`
+	M_fortspawns AZStd__vector_41 `crc:"455986496"`
 }
 
 type SiegeWarfareComponentClientFacet struct {
@@ -9510,10 +11288,10 @@ type SiegeWarfareComponentClientFacet struct {
 
 type SiegeWarfareComponentServerFacet struct {
 	BaseClass1                   ServerFacet      `crc:"3566360373"`
-	M_capturepointstatuseffects  AZStd__vector_19 `crc:"3462363722"`
+	M_capturepointstatuseffects  AZStd__vector_27 `crc:"3462363722"`
 	M_groupteleportmaxrange      AzFloat32        `crc:"2629385130"`
 	M_groupteleportminrange      AzFloat32        `crc:"2061079627"`
-	M_initialstatuseffects       AZStd__vector_19 `crc:"1909366757"`
+	M_initialstatuseffects       AZStd__vector_27 `crc:"1909366757"`
 	M_prewarbarrierspawnerentity LocalEntityRef   `crc:"334578797"`
 	M_siegewarfaredatasliceasset AzAsset          `crc:"1766725189"`
 	M_territorydetectorentity    LocalEntityRef   `crc:"3701741345"`
@@ -9554,8 +11332,8 @@ type SiegeWarfareVulnerableComponentClientFacet struct {
 type SiegeWarfareVulnerableComponentServerFacet struct {
 	BaseClass1             ServerFacet      `crc:"3566360373"`
 	M_buildableentity      LocalEntityRef   `crc:"2211471921"`
-	M_capturepointstoclaim AZStd__vector_99 `crc:"24463490"`
-	M_vulnerabletypes      AZStd__vector_70 `crc:"1888698001"`
+	M_capturepointstoclaim AZStd__vector_49 `crc:"24463490"`
+	M_vulnerabletypes      AZStd__vector_83 `crc:"1888698001"`
 }
 
 type SiegeWeaponComponent struct {
@@ -9575,7 +11353,7 @@ type SiegeWeaponComponentServerFacet struct {
 type SimpleAnimationComponent struct {
 	BaseClass1          AZ__Component `crc:"3566360373"`
 	Hide_Until_Animated AzBool        `crc:"3093163954"`
-	Playback_Entries    AZStd__list_0 `crc:"3767671280"`
+	Playback_Entries    AZStd__list_3 `crc:"3767671280"`
 }
 
 type SimpleAssetReferenceBase struct {
@@ -9591,11 +11369,11 @@ type SimpleMarkerComponent struct {
 	Deathsdoorwaricon         AzString         `crc:"97729634"`
 	Foregroundimage           EntityId         `crc:"2697852375"`
 	Groupmateicon             AzString         `crc:"1962203406"`
-	Groupmembercolors         AZStd__vector_5  `crc:"1369577423"`
-	Groupmembericons          AZStd__vector_16 `crc:"524393971"`
+	Groupmembercolors         AZStd__vector_77 `crc:"1369577423"`
+	Groupmembericons          AZStd__vector_9  `crc:"524393971"`
 	Guildmateicon             AzString         `crc:"3259909021"`
 	Neutralicon               AzString         `crc:"1820896096"`
-	Raidgroupicons            AZStd__vector_16 `crc:"3249974708"`
+	Raidgroupicons            AZStd__vector_9  `crc:"3249974708"`
 	Warfriendlyicon           AzString         `crc:"2926565741"`
 	Waricon                   AzString         `crc:"2966005836"`
 }
@@ -9605,14 +11383,33 @@ type SkinMeshAttachmentVisibilityInfo struct {
 	M_shouldhide AzBool   `crc:"4251572300"`
 }
 
+type SkinToneData struct {
+	Color              AzColor                                                       `crc:"1716930793"`
+	Head_skin_material AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"2749446832"`
+	Melanin            AzFloat32                                                     `crc:"2886736899"`
+	Name               AzString                                                      `crc:"1579384326"`
+	Skin_material      AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"777005807"`
+	Ui_selection_image AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_  `crc:"1688677023"`
+}
+
+type SkinToneDatabase struct {
+	Skin_tone_transform_table AZStd__list      `crc:"112760194"`
+	Skin_tones                AZStd__vector_68 `crc:"3483056286"`
+}
+
+type SkinToneTransformData struct {
+	Newname AzString `crc:"709487594"`
+	Oldname AzString `crc:"2356239556"`
+}
+
 type SkinnedMeshAttachmentVisibilityComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
 
 type SkinnedMeshAttachmentVisibilityComponentClientFacet struct {
-	BaseClass1                  ClientFacet      `crc:"3566360373"`
-	M_attachmentvisibilityinfos AZStd__vector_46 `crc:"760297319"`
-	M_skinnedmeshentityid       EntityId         `crc:"3943036971"`
+	BaseClass1                  ClientFacet       `crc:"3566360373"`
+	M_attachmentvisibilityinfos AZStd__vector_138 `crc:"760297319"`
+	M_skinnedmeshentityid       EntityId          `crc:"3943036971"`
 }
 
 type SkinnedMeshAttachmentVisibilityComponentServerFacet struct {
@@ -9641,12 +11438,12 @@ type SkinnedRenderOptions struct {
 	AcceptSnow                     AzBool           `crc:"790384418"`
 	AlwaysRender                   AzBool           `crc:"2254475573"`
 	CastDynamicShadows             AzBool           `crc:"1439128387"`
-	CurrentIndividualDrawCallStats AZStd__map_0     `crc:"2629435049"`
+	CurrentIndividualDrawCallStats AZStd__map_8     `crc:"2629435049"`
 	CurrentTotalDrawCallStats      AzString         `crc:"2257396708"`
 	DrawCallStatsFormat            AzString         `crc:"4036261861"`
 	EditorRefreshButton            AzBool           `crc:"1089247977"`
 	LODRatio                       AzUInt32         `crc:"918508735"`
-	Lod_MinScreenPct               AZStd__vector_28 `crc:"4266203701"`
+	Lod_MinScreenPct               AZStd__vector_52 `crc:"4266203701"`
 	MaxViewDistance                AzFloat32        `crc:"2727632343"`
 	MirrorPlane                    EntityId         `crc:"3515904652"`
 	Opacity                        AzFloat32        `crc:"1140682086"`
@@ -9702,9 +11499,9 @@ type SliceComponent struct {
 	BaseClass1              AZ__Component      `crc:"3566360373"`
 	DataFlagsForNewEntities DataFlagsPerEntity `crc:"2068331140"`
 	DependencyReloadMode    AzInt32            `crc:"2234944382"`
-	Entities                AZStd__vector_57   `crc:"1357669605"`
+	Entities                AZStd__vector_42   `crc:"1357669605"`
 	IsDynamic               AzBool             `crc:"3805372648"`
-	Prefabs                 AZStd__list_3      `crc:"2946726857"`
+	Prefabs                 AZStd__list_4      `crc:"2946726857"`
 	ShouldKeepInMemory      AzBool             `crc:"3418249602"`
 }
 
@@ -9731,14 +11528,14 @@ type SliceMetaData struct {
 	Islongdistancegde            AzBool                                    `crc:"3355496008"`
 	Isrequiredonserver           AzBool                                    `crc:"2854234492"`
 	Isstaticslice                AzBool                                    `crc:"1164191191"`
-	Meshes                       AZStd__vector_109                         `crc:"3132256148"`
+	Meshes                       AZStd__vector_168                         `crc:"3132256148"`
 	Meshoptionsbitset            AzUInt32                                  `crc:"2598679180"`
 	Phasingrestriction           AzUInt8                                   `crc:"549774964"`
 	Prioritizegdewhenmounted     AzBool                                    `crc:"3210990380"`
 	Skipmidrangeimpostors        AzBool                                    `crc:"172417028"`
 	Slicephysicalradius          AzFloat32                                 `crc:"2072551443"`
 	Slicetags                    AzUInt32                                  `crc:"654809487"`
-	Spawners                     AZStd__vector_113                         `crc:"1647299352"`
+	Spawners                     AZStd__vector_92                          `crc:"1647299352"`
 	Spawnininstances             AzBool                                    `crc:"1944499518"`
 	Usescustomdefinedspawnradius AzBool                                    `crc:"1226962615"`
 }
@@ -9764,15 +11561,15 @@ type SliceMetaDataSpawnerEntry struct {
 }
 
 type SlicePercentReference struct {
-	Percent  AzUInt32                                  `crc:"1639350329"`
-	Schedule UUID_3B429139_BF67_557B_B347_D0A61D4F47B1 `crc:"1513624059"`
-	Slice    AzAsset                                   `crc:"1034844325"`
-}
-
-type SlicePercentReference_0 struct {
 	M_cheduleid            Crc32    `crc:"1693303831"`
 	M_invertcheck          AzBool   `crc:"3869861114"`
 	M_selectedschedulename AzString `crc:"234830100"`
+}
+
+type SlicePercentReference_0 struct {
+	Percent  AzUInt32                                  `crc:"1639350329"`
+	Schedule UUID_3B429139_BF67_557B_B347_D0A61D4F47B1 `crc:"1513624059"`
+	Slice    AzAsset                                   `crc:"1034844325"`
 }
 
 type SliceSpawnedObjective struct {
@@ -9780,6 +11577,14 @@ type SliceSpawnedObjective struct {
 	M_requiredcount AzUInt32           `crc:"1246520888"`
 	M_trackedalias  AzAsset            `crc:"4270582029"`
 	M_trackedslice  AzAsset            `crc:"575273532"`
+}
+
+type SlotData struct {
+	Can_be_active                            AzBool  `crc:"2646216027"`
+	Can_be_sheathed                          AzBool  `crc:"1388375631"`
+	Counts_toward_equip_load                 AzBool  `crc:"4203991062"`
+	Counts_toward_equip_load_when_unsheathed AzBool  `crc:"1398239457"`
+	Slot_type                                AzInt32 `crc:"695569056"`
 }
 
 type SnapToTerrainComponent struct {
@@ -9837,6 +11642,15 @@ type SocialComponentServerFacet struct {
 	M_warrequesttimeoutseconds       AzFloat32      `crc:"3895362013"`
 }
 
+type SoundEffect struct {
+	Attachmentjoint     AzString     `crc:"950212643"`
+	Audioplaysout       AzBool       `crc:"3335546225"`
+	Audiotriggeronbegin AzString     `crc:"1693912784"`
+	Audiotriggeronend   AzString     `crc:"3041337910"`
+	BaseClass1          TimelineClip `crc:"3566360373"`
+	Obstructiontype     AzInt32      `crc:"459937433"`
+}
+
 type SpawnCapConstraintComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -9854,7 +11668,7 @@ type SpawnDefinition struct {
 	M_count          AzUInt32         `crc:"3375299334"`
 	M_sliceAsset     AzAsset          `crc:"1745424384"`
 	M_spawndelay     AzUInt32         `crc:"3095078921"`
-	M_spawnlocations AZStd__vector_55 `crc:"1886668030"`
+	M_spawnlocations AZStd__vector_71 `crc:"1886668030"`
 }
 
 type SpawnScalingSpecification struct {
@@ -9964,8 +11778,8 @@ type SpellAlignmentComponent struct {
 
 type SpellComponent struct {
 	BaseClass1                            FacetedComponent `crc:"3566360373"`
-	M_childentities                       AZStd__vector_55 `crc:"1360576610"`
-	M_eventstotriggeronattachedentitylost AZStd__vector_80 `crc:"3483958710"`
+	M_childentities                       AZStd__vector_71 `crc:"1360576610"`
+	M_eventstotriggeronattachedentitylost AZStd__vector_44 `crc:"3483958710"`
 	M_forwardownertospawnedspells         AzBool           `crc:"2913313086"`
 }
 
@@ -9982,8 +11796,8 @@ type SpellTargetIndicatorManagerComponent struct {
 }
 
 type SpellTargetIndicatorManagerComponentClientFacet struct {
-	BaseClass1             ClientFacet      `crc:"3566360373"`
-	M_indicatorsliceassets AZStd__vector_52 `crc:"3607373877"`
+	BaseClass1             ClientFacet       `crc:"3566360373"`
+	M_indicatorsliceassets AZStd__vector_118 `crc:"3607373877"`
 }
 
 type SpellTargetIndicatorManagerComponentServerFacet struct {
@@ -10005,11 +11819,11 @@ type Spline struct {
 }
 
 type SplineAttribute_AttributeType_ struct {
-	Elements AZStd__vector_28 `crc:"1145702237"`
+	Elements AZStd__vector_52 `crc:"1145702237"`
 }
 
 type SplineCommon struct {
-	Spline      AZStd__shared_ptr_3 `crc:"905336297"`
+	Spline      AZStd__shared_ptr_0 `crc:"905336297"`
 	Spline_Type AzUInt64            `crc:"1612105670"`
 }
 
@@ -10049,6 +11863,30 @@ type Spline__TrackSplineInterpolator_Vec2_ struct {
 	BaseClass1 BezierSplineVec2_0 `crc:"3566360373"`
 }
 
+type SpreadshotConfig struct {
+	M_customdata  SpreadshotConfigCustom  `crc:"2294676421"`
+	M_shotgundata SpreadshotConfigShotgun `crc:"3107951612"`
+	M_type        AzInt32                 `crc:"309423368"`
+}
+
+type SpreadshotConfigCustom struct {
+	M_shots AZStd__vector_116 `crc:"199302627"`
+}
+
+type SpreadshotConfigCustomShotData struct {
+	M_overridevfx AzString  `crc:"3254621209"`
+	M_pitch       AzFloat32 `crc:"1801978301"`
+	M_yaw         AzFloat32 `crc:"3712595635"`
+}
+
+type SpreadshotConfigShotgun struct {
+	M_discdistance      AzFloat32 `crc:"3314244905"`
+	M_discradius        AzFloat32 `crc:"480058988"`
+	M_numrings          AzInt32   `crc:"3253078138"`
+	M_numsectorsperring AzInt32   `crc:"476588164"`
+	M_numshotspersector AzInt32   `crc:"4021492345"`
+}
+
 type SpringboardDataSheetContainer struct {
 	Asset AzFramework__SimpleAssetReference_MB__DataSheetAsset_ `crc:"45046364"`
 }
@@ -10061,7 +11899,7 @@ type StaminaComponent struct {
 	M_characterattributeentity   LocalEntityRef                `crc:"1281295125"`
 	M_initcurrentstaminatomax    AzBool                        `crc:"1925994542"`
 	M_initmax                    AzFloat32                     `crc:"4189793607"`
-	M_listenerentities           AZStd__vector_55              `crc:"3615797800"`
+	M_listenerentities           AZStd__vector_71              `crc:"3615797800"`
 	M_maxwindedtime              AzFloat32                     `crc:"2183338446"`
 	M_min                        AzFloat32                     `crc:"1792319447"`
 	M_regenrate                  AzFloat32                     `crc:"805582609"`
@@ -10116,9 +11954,9 @@ type StatusEffectsComponentClientFacet struct {
 }
 
 type StatusEffectsComponentServerFacet struct {
-	BaseClass1               ServerFacet          `crc:"3566360373"`
-	M_areaafflictionentities AZStd__unordered_map `crc:"3220841884"`
-	M_initialstatuseffects   AZStd__vector_19     `crc:"1909366757"`
+	BaseClass1               ServerFacet            `crc:"3566360373"`
+	M_areaafflictionentities AZStd__unordered_map_5 `crc:"3220841884"`
+	M_initialstatuseffects   AZStd__vector_27       `crc:"1909366757"`
 }
 
 type StimulusComponent struct {
@@ -10134,6 +11972,10 @@ type StimulusComponentServerFacet struct {
 	M_stimulusdurations AzAsset     `crc:"2843862090"`
 }
 
+type StimulusConfigurationAsset struct {
+	Durations AZStd__array_1 `crc:"2162971195"`
+}
+
 type StopHighlightingUIElementTutorialStep struct {
 	BaseClass1      TutorialStep `crc:"3566360373"`
 	M_uielementname AzString     `crc:"626759445"`
@@ -10145,7 +11987,7 @@ type StorageComponent struct {
 	M_instancedlootentity   LocalEntityRef   `crc:"3981240909"`
 	M_isplayeruniquestorage AzBool           `crc:"1489623947"`
 	M_isteamuniquestorage   AzBool           `crc:"2662929641"`
-	M_teamcontainerentities AZStd__vector_55 `crc:"3032349568"`
+	M_teamcontainerentities AZStd__vector_71 `crc:"3032349568"`
 }
 
 type StorageComponentClientFacet struct {
@@ -10186,6 +12028,40 @@ type StringParameter struct {
 	M_value    AzString         `crc:"1367402320"`
 }
 
+type StructureAttributeData struct {
+	Demolish_max_percent  AzFloat32 `crc:"24073236"`
+	Demolish_min_percent  AzFloat32 `crc:"3445763867"`
+	Demolish_min_quantity AzInt32   `crc:"1245676413"`
+}
+
+type StructurePlacementData struct {
+	Completion_blocked_material_file_name               AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"1148941563"`
+	Completion_obstruction_filter                       AzString                                                      `crc:"1286380565"`
+	Grid_box_height                                     AzFloat32                                                     `crc:"2198625229"`
+	Grid_box_size                                       AzFloat32                                                     `crc:"3672493039"`
+	Grid_footprint_mesh_file_name                       AzAsset                                                       `crc:"1024710648"`
+	Invalid_placement_material_file_name                AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"802306774"`
+	Is_placed_sticky_factor                             AzFloat32                                                     `crc:"1322851488"`
+	Is_placing_sticky_factor                            AzFloat32                                                     `crc:"1703334181"`
+	Los_box_height                                      AzFloat32                                                     `crc:"689428822"`
+	Los_box_width                                       AzFloat32                                                     `crc:"2872065"`
+	Los_obstruction_filter                              AzString                                                      `crc:"2100630082"`
+	Max_build_distance_from_player                      AzFloat32                                                     `crc:"805199264"`
+	Max_build_pitch_percent                             AzFloat32                                                     `crc:"2393692645"`
+	Max_build_vertical_distance_from_player             AzFloat32                                                     `crc:"3763385354"`
+	Min_build_distance_from_player                      AzFloat32                                                     `crc:"2680244124"`
+	Min_build_pitch_percent                             AzFloat32                                                     `crc:"2318854351"`
+	Placement_obstruction_filter                        AzString                                                      `crc:"1189295819"`
+	Placement_obstruction_update_frequency_time_in_secs AzFloat32                                                     `crc:"942813393"`
+	Placing_settings                                    TerrainValidationData                                         `crc:"269075749"`
+	Snap_completion_blocked_material_file_name          AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"572582012"`
+	Snap_invalid_placement_material_file_name           AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"1920300812"`
+	Snap_point_mesh_file_name                           AzAsset                                                       `crc:"147139830"`
+	Snap_valid_placement_material_file_name             AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"1516429602"`
+	Snapped_to_settings                                 TerrainValidationData                                         `crc:"1619773478"`
+	Valid_placement_material_file_name                  AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"3056566804"`
+}
+
 type SurfaceAlignmentComponent struct {
 	BaseClass1          FacetedComponent `crc:"3566360373"`
 	M_applyonlyonclient AzBool           `crc:"968173954"`
@@ -10212,39 +12088,39 @@ type TAnimSplineTrack_Vec2__ struct {
 }
 
 type TAnimTrack_KeyType__IBoolKey__ struct {
-	Flags     AzInt32          `crc:"184893882"`
-	Keys      AZStd__vector_54 `crc:"3029222636"`
-	ParamType CAnimParamType   `crc:"2123125098"`
-	Range     Range            `crc:"2475121225"`
+	Flags     AzInt32           `crc:"184893882"`
+	Keys      AZStd__vector_152 `crc:"3029222636"`
+	ParamType CAnimParamType    `crc:"2123125098"`
+	Range     Range             `crc:"2475121225"`
 }
 
 type TAnimTrack_KeyType__ICharacterKey__ struct {
 	Flags     AzInt32           `crc:"184893882"`
-	Keys      AZStd__vector_108 `crc:"3029222636"`
+	Keys      AZStd__vector_134 `crc:"3029222636"`
 	ParamType CAnimParamType    `crc:"2123125098"`
 	Range     Range             `crc:"2475121225"`
 }
 
 type TAnimTrack_KeyType__IEventKey__ struct {
-	Flags     AzInt32          `crc:"184893882"`
-	Keys      AZStd__vector_96 `crc:"3029222636"`
-	ParamType CAnimParamType   `crc:"2123125098"`
-	Range     Range            `crc:"2475121225"`
+	Flags     AzInt32           `crc:"184893882"`
+	Keys      AZStd__vector_172 `crc:"3029222636"`
+	ParamType CAnimParamType    `crc:"2123125098"`
+	Range     Range             `crc:"2475121225"`
 }
 
 type TAnimTrack_KeyType__ISelectKey__ struct {
-	Flags     AzInt32          `crc:"184893882"`
-	Keys      AZStd__vector_34 `crc:"3029222636"`
-	ParamType CAnimParamType   `crc:"2123125098"`
-	Range     Range            `crc:"2475121225"`
+	Flags     AzInt32           `crc:"184893882"`
+	Keys      AZStd__vector_114 `crc:"3029222636"`
+	ParamType CAnimParamType    `crc:"2123125098"`
+	Range     Range             `crc:"2475121225"`
 }
 
 type TSplineBezierBasisVec2 struct {
-	Keys AZStd__vector_24 `crc:"3029222636"`
+	Keys AZStd__vector_112 `crc:"3029222636"`
 }
 
 type TSplineBezierBasisVec2_0 struct {
-	Keys AZStd__vector_76 `crc:"3029222636"`
+	Keys AZStd__vector_96 `crc:"3029222636"`
 }
 
 type TUiAnimSplineTrack_Vec2__ struct {
@@ -10257,7 +12133,7 @@ type TUiAnimSplineTrack_Vec2__ struct {
 
 type TagComponent struct {
 	BaseClass1 AZ__Component          `crc:"3566360373"`
-	Tags       AZStd__unordered_set_0 `crc:"1874629670"`
+	Tags       AZStd__unordered_set_3 `crc:"1874629670"`
 }
 
 type TagSlicesReference struct {
@@ -10265,9 +12141,16 @@ type TagSlicesReference struct {
 	Tag    AzUInt32                                  `crc:"59357059"`
 }
 
+type TargetSelectionLimits struct {
+	M_maxtargets                         AzInt32 `crc:"83219204"`
+	M_mintargets                         AzInt32 `crc:"100223408"`
+	M_targetselectionlimitsrangebehavior AzInt32 `crc:"1336820622"`
+	M_toptargetstoexclude                AzInt32 `crc:"4160127036"`
+}
+
 type TargetingComponent struct {
 	BaseClass1         FacetedComponent `crc:"3566360373"`
-	M_targethitvolumes AZStd__vector_16 `crc:"1957523138"`
+	M_targethitvolumes AZStd__vector_9  `crc:"1957523138"`
 	M_targetpriority   AzUInt32         `crc:"178020050"`
 }
 
@@ -10277,6 +12160,37 @@ type TargetingComponentClientFacet struct {
 
 type TargetingComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type TaskInteractData struct {
+	Destinationoverrideinteracttag AzString          `crc:"2381279395"`
+	Interacttagentries             AZStd__vector_147 `crc:"665791032"`
+}
+
+type TaskInteractEntryData struct {
+	Interact_tag  AzString        `crc:"950462249"`
+	Landmark_data AZStd__vector_9 `crc:"398190402"`
+	Landmark_type AzUInt8         `crc:"915817224"`
+}
+
+type TattooColorData struct {
+	Color    AzColor                                                      `crc:"1716930793"`
+	Enabled  AzBool                                                       `crc:"1358543748"`
+	Name     AzString                                                     `crc:"1579384326"`
+	Ui_image AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"2601500639"`
+}
+
+type TattooData struct {
+	Enabled                   AzBool                                                       `crc:"1358543748"`
+	Name                      AzString                                                     `crc:"1579384326"`
+	Tattoo_texture            AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"3722476650"`
+	Ui_female_selection_image AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"3594475221"`
+	Ui_male_selection_image   AzFramework__SimpleAssetReference_LmbrCentral__TextureAsset_ `crc:"4053733209"`
+}
+
+type TattooDatabase struct {
+	Tattoo_colors AZStd__vector_47  `crc:"1095226278"`
+	Tattoo_styles AZStd__vector_115 `crc:"899934924"`
 }
 
 type TeleportContributorsAction struct {
@@ -10296,7 +12210,7 @@ type TemporaryAffiliationComponentClientFacet struct {
 
 type TemporaryAffiliationComponentServerFacet struct {
 	BaseClass1                           ServerFacet  `crc:"3566360373"`
-	M_affiliationstoapplyoninstantiation AZStd__map_1 `crc:"1928271821"`
+	M_affiliationstoapplyoninstantiation AZStd__map_2 `crc:"1928271821"`
 	M_forceenablereplication             AzBool       `crc:"4155453471"`
 }
 
@@ -10366,7 +12280,15 @@ type TerritoryDetectorComponentClientFacet struct {
 type TerritoryDetectorComponentServerFacet struct {
 	BaseClass1           ServerFacet      `crc:"3566360373"`
 	M_ignoreguildupdates AzBool           `crc:"417165549"`
-	M_ownershipentities  AZStd__vector_55 `crc:"1606509132"`
+	M_ownershipentities  AZStd__vector_71 `crc:"1606509132"`
+}
+
+type TerritoryEntryData struct {
+	Initial_bonus        AzFloat32 `crc:"1842059367"`
+	Min_value            AzFloat32 `crc:"2213631082"`
+	Progression_point_id AzString  `crc:"4149114728"`
+	Reduction_modifier   AzFloat32 `crc:"2334332496"`
+	Territory_bonus_id   AzUInt8   `crc:"2880716389"`
 }
 
 type TerritoryGovernanceComponent struct {
@@ -10435,7 +12357,7 @@ type TerritoryLoreData struct {
 
 type TerritoryProgressionComponent struct {
 	BaseClass1            FacetedComponent `crc:"3566360373"`
-	M_availablecategories AZStd__vector_13 `crc:"3846876670"`
+	M_availablecategories AZStd__vector_63 `crc:"3846876670"`
 }
 
 type TerritoryProgressionComponentClientFacet struct {
@@ -10492,9 +12414,22 @@ type TimeOfDayPOIConfig struct {
 	TimeOfDayOverride    AzFloat32 `crc:"130198918"`
 }
 
+type Timeline struct {
+	Director       AzBool           `crc:"512807920"`
+	Editormetadata EditorMetadata_1 `crc:"939524208"`
+	Layers         AZStd__vector_58 `crc:"3867733328"`
+}
+
+type TimelineClip struct {
+	Editormetdata                 EditorMetadata `crc:"3168138435"`
+	EndTime                       AzFloat32      `crc:"1417561282"`
+	Id_newforcurveviewingundoredo AzUuid         `crc:"2055820354"`
+	StartTime                     AzFloat32      `crc:"781491737"`
+}
+
 type TimelineComponent struct {
-	BaseClass1  FacetedComponent  `crc:"3566360373"`
-	M_timelines AZStd__vector_101 `crc:"3779614232"`
+	BaseClass1  FacetedComponent `crc:"3566360373"`
+	M_timelines AZStd__vector_4  `crc:"3779614232"`
 }
 
 type TimelineComponentClientFacet struct {
@@ -10509,8 +12444,8 @@ type TimelineControllerComponent struct {
 	BaseClass1               FacetedComponent            `crc:"3566360373"`
 	Connecttonewcinematicbus AzString                    `crc:"2482839047"`
 	Interactentityid         EntityId                    `crc:"2414438791"`
-	Timelineeventmappings    AZStd__unordered_flat_map_0 `crc:"3198896181"`
-	Timelineeventmappingscrc AZStd__unordered_flat_map   `crc:"661004117"`
+	Timelineeventmappings    AZStd__unordered_flat_map_1 `crc:"3198896181"`
+	Timelineeventmappingscrc AZStd__unordered_flat_map_2 `crc:"661004117"`
 }
 
 type TimelineControllerComponentClientFacet struct {
@@ -10525,7 +12460,7 @@ type TimelineEntry struct {
 	Edit_only_layerentityassignments_autocorrected AzBool           `crc:"2862228004"`
 	Edit_only_layerentityassignments_statustext    AzString         `crc:"3568134324"`
 	Environment                                    AzInt32          `crc:"1176952354"`
-	Layerentityassignments                         AZStd__vector_33 `crc:"4121772956"`
+	Layerentityassignments                         AZStd__vector_57 `crc:"4121772956"`
 	Loop                                           AzBool           `crc:"2707365358"`
 	Name                                           AzString         `crc:"1579384326"`
 	Namecrc                                        Crc32            `crc:"1798626843"`
@@ -10534,6 +12469,27 @@ type TimelineEntry struct {
 	Runonactivate                                  AzBool           `crc:"211688088"`
 	Timelineasset                                  AzAsset          `crc:"1585635122"`
 	Timelineownerid                                EntityId         `crc:"326546476"`
+}
+
+type TimelineLayer struct {
+	Clips         AZStd__vector_53 `crc:"3363118052"`
+	Editormetdata EditorMetadata_0 `crc:"3168138435"`
+	Id            AzUuid           `crc:"3208210256"`
+	Ignore        AzBool           `crc:"227071714"`
+	Name          AzString         `crc:"1579384326"`
+	Namecrc       Crc32            `crc:"1798626843"`
+}
+
+type TimelinePause struct {
+	BaseClass1   TimelineClip `crc:"3566360373"`
+	Pause        AzBool       `crc:"3617231597"`
+	Timelinename AzString     `crc:"3234600125"`
+}
+
+type TimelineStart struct {
+	BaseClass1        TimelineClip `crc:"3566360373"`
+	Playfrombeginning AzBool       `crc:"347563068"`
+	Timelinename      AzString     `crc:"3234600125"`
 }
 
 type TippingPoolComponent struct {
@@ -10562,9 +12518,9 @@ type TrackableComponentServerFacet struct {
 
 type TradingPostComponent struct {
 	BaseClass1       FacetedComponent       `crc:"3566360373"`
-	M_buydata        AZStd__unordered_map_4 `crc:"4170251336"`
-	M_selldata       AZStd__unordered_map_4 `crc:"1047192882"`
-	M_sellquantities AZStd__unordered_map_4 `crc:"3873350859"`
+	M_buydata        AZStd__unordered_map_3 `crc:"4170251336"`
+	M_selldata       AZStd__unordered_map_3 `crc:"1047192882"`
+	M_sellquantities AZStd__unordered_map_3 `crc:"3873350859"`
 }
 
 type TradingPostComponentClientFacet struct {
@@ -10591,6 +12547,20 @@ type TransactionComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type Transform struct {
+	BaseClass1                                 TimelineClip `crc:"3566360373"`
+	Editonly_visualizerotationandscalecurve_hz AzUInt32     `crc:"974816370"`
+	Editonly_visualizetranslationcurve_radius  AzUInt32     `crc:"3306388857"`
+	Eulerrotationorder                         AzInt32      `crc:"4273733033"`
+	Quaternioncurve                            Curve        `crc:"2752516142"`
+	Rewindonfinish                             AzBool       `crc:"1069911259"`
+	Rotationcurve                              Curve        `crc:"1133831118"`
+	Scalecurve                                 Curve        `crc:"47143291"`
+	Snaptoterrain                              AzBool       `crc:"1604618687"`
+	Transformmode                              AzInt32      `crc:"3501121377"`
+	Translationcurve                           Curve        `crc:"664702519"`
+}
+
 type TransformComponent struct {
 	BaseClass1                    AZ__Component `crc:"3566360373"`
 	BaseClass2                    NetBindable   `crc:"1302005391"`
@@ -10615,8 +12585,8 @@ type TransformLinkChildComponentClientFacet struct {
 type TransformLinkChildComponentServerFacet struct {
 	BaseClass1                   ServerFacet      `crc:"3566360373"`
 	M_destroyselfwithparentdeath AzBool           `crc:"2120151481"`
-	M_parentdeathevents          AZStd__vector_80 `crc:"2353245037"`
-	M_parentdestroyevents        AZStd__vector_80 `crc:"1457940508"`
+	M_parentdeathevents          AZStd__vector_44 `crc:"2353245037"`
+	M_parentdestroyevents        AZStd__vector_44 `crc:"1457940508"`
 	M_shoulddestroywithparent    AzBool           `crc:"1466423128"`
 }
 
@@ -10753,17 +12723,17 @@ type TriggerActivatePlayerCutsceneComponent struct {
 }
 
 type TriggerAreaComponent struct {
-	ActivatedBy              AzInt32          `crc:"3750802879"`
-	BaseClass1               AZ__Component    `crc:"3566360373"`
-	BaseClass2               NetBindable      `crc:"1302005391"`
-	ExcludedTags             AZStd__vector_41 `crc:"4000862302"`
-	OnlyActiveForLocalPlayer AzBool           `crc:"463281331"`
-	RelevanceRadius          AzFloat32        `crc:"3834140424"`
-	RequiredTags             AZStd__vector_41 `crc:"4290311566"`
-	ResetTriggerOnRespawn    AzBool           `crc:"247247068"`
-	SpecificInteractEntities AZStd__vector_44 `crc:"96550024"`
-	StaticPosition           AzBool           `crc:"2883997978"`
-	TriggerOnce              AzBool           `crc:"974170244"`
+	ActivatedBy              AzInt32           `crc:"3750802879"`
+	BaseClass1               AZ__Component     `crc:"3566360373"`
+	BaseClass2               NetBindable       `crc:"1302005391"`
+	ExcludedTags             AZStd__vector_5   `crc:"4000862302"`
+	OnlyActiveForLocalPlayer AzBool            `crc:"463281331"`
+	RelevanceRadius          AzFloat32         `crc:"3834140424"`
+	RequiredTags             AZStd__vector_5   `crc:"4290311566"`
+	ResetTriggerOnRespawn    AzBool            `crc:"247247068"`
+	SpecificInteractEntities AZStd__vector_169 `crc:"96550024"`
+	StaticPosition           AzBool            `crc:"2883997978"`
+	TriggerOnce              AzBool            `crc:"974170244"`
 }
 
 type TriggerAreaDetectable struct {
@@ -10776,7 +12746,7 @@ type TriggerAreaDetectable struct {
 
 type TriggerAreaEntityComponent struct {
 	BaseClass1          FacetedComponent `crc:"3566360373"`
-	M_entitiestotrigger AZStd__vector_80 `crc:"68546803"`
+	M_entitiestotrigger AZStd__vector_44 `crc:"68546803"`
 }
 
 type TriggerAreaEntityComponentClientFacet struct {
@@ -10805,9 +12775,14 @@ type TriggerAreaPlayerCutsceneComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type TriggerEntity struct {
+	Applytoallchildren AzBool       `crc:"2471114906"`
+	BaseClass1         TimelineClip `crc:"3566360373"`
+}
+
 type TriggerEntityComponent struct {
 	BaseClass1          FacetedComponent `crc:"3566360373"`
-	M_entitiestotrigger AZStd__vector_80 `crc:"68546803"`
+	M_entitiestotrigger AZStd__vector_44 `crc:"68546803"`
 	M_triggername       AzString         `crc:"1957703009"`
 }
 
@@ -10829,13 +12804,13 @@ type TriggerPlayerCutsceneComponent struct {
 }
 
 type TriggerPlayerCutsceneComponentClientFacet struct {
-	BaseClass1               ClientFacet      `crc:"3566360373"`
-	M_despawndelay           AzFloat32        `crc:"1352967070"`
-	M_playcutsceneonload     AzBool           `crc:"3204798718"`
-	M_preloadcutscenename    AzString         `crc:"985518742"`
-	M_preloadentitypositions AZStd__vector_44 `crc:"507922871"`
-	M_sliceAsset             AzAsset          `crc:"1745424384"`
-	M_triggeronactivate      AzBool           `crc:"1961800188"`
+	BaseClass1               ClientFacet       `crc:"3566360373"`
+	M_despawndelay           AzFloat32         `crc:"1352967070"`
+	M_playcutsceneonload     AzBool            `crc:"3204798718"`
+	M_preloadcutscenename    AzString          `crc:"985518742"`
+	M_preloadentitypositions AZStd__vector_169 `crc:"507922871"`
+	M_sliceAsset             AzAsset           `crc:"1745424384"`
+	M_triggeronactivate      AzBool            `crc:"1961800188"`
 }
 
 type TriggerPlayerCutsceneComponentServerFacet struct {
@@ -10912,7 +12887,7 @@ type TutorialComponent struct {
 type TutorialComponentClientFacet struct {
 	BaseClass1      ClientFacet      `crc:"3566360373"`
 	M_autoreset     AzBool           `crc:"1615510754"`
-	M_tutorialsteps AZStd__vector_94 `crc:"30011589"`
+	M_tutorialsteps AZStd__vector_75 `crc:"30011589"`
 }
 
 type TutorialComponentServerFacet struct {
@@ -10929,8 +12904,8 @@ type TutorialToastBinding struct {
 }
 
 type TutorialToastMessageLine struct {
-	M_keybindings AZStd__vector_59 `crc:"621019147"`
-	M_msgtext     AzString         `crc:"2435388155"`
+	M_keybindings AZStd__vector_157 `crc:"621019147"`
+	M_msgtext     AzString          `crc:"2435388155"`
 }
 
 type TwitchComponent struct {
@@ -10980,6 +12955,18 @@ type UUID_12E435DD_B28E_5082_8E17_67F1BBC894B1 struct {
 	Element RotationAchievementEvent `crc:"1094737465"`
 }
 
+type UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8 struct {
+	Value1 AzInt32           `crc:"2725604442"`
+	Value2 AZStd__vector_139 `crc:"997998048"`
+}
+
+type UUID_16738E68_CBA3_4B1E_948C_D30E5C5189F6 struct {
+	BaseClass1     TimelineClip `crc:"3566360373"`
+	CRC_282353030  AzFloat32    `crc:"282353030"`
+	CRC_3194852418 AzFloat32    `crc:"3194852418"`
+	CRC_3772719300 AzString     `crc:"3772719300"`
+}
+
 type UUID_1937FE82_E3FC_4F21_9788_8BDFEC29A43B struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -11007,8 +12994,20 @@ type UUID_31D79E49_9CD5_51BF_8403_F9A16BEDECF5 struct {
 	Element CustomDataEntry `crc:"1094737465"`
 }
 
+type UUID_32737B9C_7A9F_547A_868D_79E601645FC8 struct {
+	M_valuecrc AzUInt32 `crc:"3965275927"`
+}
+
 type UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6 struct {
 	Element any `crc:"1094737465"`
+}
+
+type UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D struct {
+	Element []UUID_BD7E940E_6D84_5185_87C3_99D6C8DB63E0 `crc:"1094737465"`
+}
+
+type UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286 struct {
+	Element []UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677 `crc:"1094737465"`
 }
 
 type UUID_36675533_C431_4EAD_9883_846E3696BF99 struct {
@@ -11021,11 +13020,15 @@ type UUID_3B1D6FE2_1CA5_51ED_A0B2_99392B9AE7D1 struct {
 }
 
 type UUID_3B429139_BF67_557B_B347_D0A61D4F47B1 struct {
-	Element SlicePercentReference_0 `crc:"1094737465"`
+	Element SlicePercentReference `crc:"1094737465"`
 }
 
 type UUID_3C9D208A_2E62_51E2_8AA1_5B6BB7473A52 struct {
 	Element any `crc:"1094737465"`
+}
+
+type UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2 struct {
+	Element []UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66 `crc:"1094737465"`
 }
 
 type UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42 struct {
@@ -11058,12 +13061,21 @@ type UUID_5C2BE455_C7DE_5AC4_A834_88E740CFF639 struct {
 	Element LevelMeterSettings `crc:"1094737465"`
 }
 
+type UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66 struct {
+	Value1 AzInt32 `crc:"2725604442"`
+	Value2 EditCrc `crc:"997998048"`
+}
+
 type UUID_6434A20B_A21D_5575_AEC5_5A7319FBC3FB struct {
 	Element []MeshMergeGroup `crc:"1094737465"`
 }
 
 type UUID_65CDD55C_BE9B_5689_8E2C_A4117FF26F6E struct {
 	Element []UUID_D8B4529D_EDDB_525C_BA46_09A63951E5FD `crc:"1094737465"`
+}
+
+type UUID_661C1835_82E9_519E_852C_4586C3435B17 struct {
+	Element AzUInt8 `crc:"1094737465"`
 }
 
 type UUID_69C38C99_611D_49F8_AE99_F42D54777FA9 struct {
@@ -11077,6 +13089,10 @@ type UUID_6C3DEDA3_D591_59B8_80FF_4148F8C2A5EC struct {
 
 type UUID_6D152BFE_EC46_52D0_9F1A_24DD1151F86B struct {
 	Element []SlayerScriptDataContainer `crc:"1094737465"`
+}
+
+type UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2 struct {
+	Element []UUID_32737B9C_7A9F_547A_868D_79E601645FC8 `crc:"1094737465"`
 }
 
 type UUID_777E8FDA_6A1B_55FD_BAF9_8AFF3C0B7397 struct {
@@ -11098,8 +13114,21 @@ type UUID_877C4A33_39B5_51D7_948D_F97DB81372A1 struct {
 	Element []AssetId `crc:"1094737465"`
 }
 
+type UUID_9266A50C_9EAF_5EF7_9288_C88C54C28EFA struct {
+	Value1 AzString               `crc:"2725604442"`
+	Value2 WarDeployableLimitData `crc:"997998048"`
+}
+
 type UUID_945D6962_DF72_5875_861B_52D14D233D65 struct {
 	Element []QuickCourseSection `crc:"1094737465"`
+}
+
+type UUID_98F0B819_838F_5548_B645_4CF0959F2D43 struct {
+	Element []UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8 `crc:"1094737465"`
+}
+
+type UUID_9C719DD5_F8D3_59D3_B55B_627422922A43 struct {
+	Element []AzInt32 `crc:"1094737465"`
 }
 
 type UUID_9D2F173A_AE75_4A1E_8F6F_D476C587F313 struct {
@@ -11123,12 +13152,25 @@ type UUID_B6E08B3F_F4E1_50C2_8752_3CF3C4AB414A struct {
 	Element []LootLockEvent `crc:"1094737465"`
 }
 
+type UUID_BC2FD03C_7FA0_5D12_B681_C5266456E0EC struct {
+	Value1 AzInt32   `crc:"2725604442"`
+	Value2 AzFloat32 `crc:"997998048"`
+}
+
 type UUID_BD28477A_6D73_5D2E_B509_5FD32A06F475 struct {
 	Element OpacityAchievementEvent `crc:"1094737465"`
 }
 
+type UUID_BD7E940E_6D84_5185_87C3_99D6C8DB63E0 struct {
+	Element []Curve `crc:"1094737465"`
+}
+
 type UUID_BF40FF0C_C902_53C4_9B81_38881BB92E54 struct {
 	Element EntityLootLockEvent `crc:"1094737465"`
+}
+
+type UUID_C2FD8C07_90D3_5D02_BAB7_B1FAC968C43F struct {
+	Element []MilestoneCorrectionEntryData `crc:"1094737465"`
 }
 
 type UUID_CDADEE50_C32A_5AC5_9422_C61083EF25ED struct {
@@ -11136,6 +13178,10 @@ type UUID_CDADEE50_C32A_5AC5_9422_C61083EF25ED struct {
 
 type UUID_CDD27E9C_1D94_52BC_9A97_A75DCCF349F6 struct {
 	Element []IGCData `crc:"1094737465"`
+}
+
+type UUID_D65E4F21_2DC2_5FF9_B67E_8A79EB8A0082 struct {
+	Element []AZStd__vector_9 `crc:"1094737465"`
 }
 
 type UUID_D71FB08F_8229_5A55_A084_15787BDB9764 struct {
@@ -11151,13 +13197,24 @@ type UUID_DB52AACF_0A06_572D_8DC2_A36C84FE19C6 struct {
 	Value2 SliceMetaData     `crc:"997998048"`
 }
 
+type UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677 struct {
+	Value1 AzInt32  `crc:"2725604442"`
+	Value2 AzString `crc:"997998048"`
+	Value3 AzInt32  `crc:"1283132790"`
+}
+
 type UUID_E42047B1_C78D_5B68_8B27_DFBC3E14994A struct {
 	Value1 Crc32            `crc:"2725604442"`
-	Value2 AZStd__vector_80 `crc:"997998048"`
+	Value2 AZStd__vector_44 `crc:"997998048"`
 }
 
 type UUID_E876F68C_57D8_54F0_826C_9ADC5D082850 struct {
 	Element NavigationLink `crc:"1094737465"`
+}
+
+type UUID_EE7708E0_79E7_5085_A0F2_81EEF4527CBC struct {
+	Value1 Crc32                  `crc:"2725604442"`
+	Value2 WarDeployableLimitData `crc:"997998048"`
 }
 
 type UUID_F54891FA_D2F9_503D_9E59_3680D40B1262 struct {
@@ -11170,7 +13227,7 @@ type UUID_F6E6495E_59A8_5724_8DE1_D6B68162DB92 struct {
 
 type UUID_F7F30D6D_06D0_5533_ACB3_8FBE9D047904 struct {
 	Value1 AzString         `crc:"2725604442"`
-	Value2 AZStd__vector_80 `crc:"997998048"`
+	Value2 AZStd__vector_44 `crc:"997998048"`
 }
 
 type UUID_F8EAF34E_7A4A_436F_8A8A_141D8F3459A2 struct {
@@ -11188,7 +13245,15 @@ type UUID_FD14840B_21BD_5C50_9FAC_D20CE0B95474 struct {
 }
 
 type UUID_FDBD40B4_8A70_5B23_BCE7_A717BA039A86 struct {
-	Element []SlicePercentReference `crc:"1094737465"`
+	Element []SlicePercentReference_0 `crc:"1094737465"`
+}
+
+type UUID_FFA1E556_F423_5A4D_AE2C_8F30D28BE5FD struct {
+	Element []CollisionFilterColor `crc:"1094737465"`
+}
+
+type UiAdditionalInfoType struct {
+	Additional_info_type AzInt32 `crc:"3330247409"`
 }
 
 type UiAnimParamData struct {
@@ -11198,7 +13263,7 @@ type UiAnimParamData struct {
 }
 
 type UiAnimationSystem struct {
-	Sequences AZStd__vector_67 `crc:"3084955804"`
+	Sequences AZStd__vector_129 `crc:"3084955804"`
 }
 
 type UiButtonComponent struct {
@@ -11222,7 +13287,7 @@ type UiCanvasComponent struct {
 	Firsthoverelement             EntityId          `crc:"2299865029"`
 	Guidecolor                    AzColor           `crc:"580191134"`
 	Guideslocked                  AzBool            `crc:"2592886544"`
-	Horizontalguides              AZStd__vector_28  `crc:"4058670900"`
+	Horizontalguides              AZStd__vector_52  `crc:"4058670900"`
 	Ignorescrollhover             AzBool            `crc:"2232260798"`
 	Isalwaysallowinghover         AzBool            `crc:"2816887738"`
 	Isnavigationsupported         AzBool            `crc:"852018235"`
@@ -11236,10 +13301,10 @@ type UiCanvasComponent struct {
 	Rootelement                   EntityId          `crc:"2596885883"`
 	Snapdistance                  AzFloat32         `crc:"2643837222"`
 	Snaprotationdegrees           AzFloat32         `crc:"515247143"`
-	Textureatlases                AZStd__vector_116 `crc:"3996949054"`
+	Textureatlases                AZStd__vector_55  `crc:"3996949054"`
 	Tooltipdisplayelement         EntityId          `crc:"1346477502"`
 	Uniqueid                      AzUInt64          `crc:"1565510658"`
-	Verticalguides                AZStd__vector_28  `crc:"2998859328"`
+	Verticalguides                AZStd__vector_52  `crc:"2998859328"`
 }
 
 type UiCheckboxComponent struct {
@@ -11267,6 +13332,15 @@ type UiDamageNumberComponent struct {
 	Xp_clone_entity        EntityId      `crc:"503586872"`
 }
 
+type UiDatabase struct {
+	Unified_interact_data UnifiedInteractData `crc:"1321007992"`
+}
+
+type UiDelayedInteractionData struct {
+	Delay_mannequin_tag AzString  `crc:"1035636374"`
+	Delay_time          AzFloat32 `crc:"617336422"`
+}
+
 type UiDesaturatorComponent struct {
 	BaseClass1 AZ__Component `crc:"3566360373"`
 	Saturation AzFloat32     `crc:"707440008"`
@@ -11274,15 +13348,15 @@ type UiDesaturatorComponent struct {
 
 type UiDraggableComponent struct {
 	BaseClass1              UiInteractableComponent `crc:"3566360373"`
-	Draginvalidstateactions AZStd__vector_82        `crc:"4176905436"`
-	Dragnormalstateactions  AZStd__vector_82        `crc:"3070701489"`
-	Dragvalidstateactions   AZStd__vector_82        `crc:"3197770394"`
+	Draginvalidstateactions AZStd__vector_144       `crc:"4176905436"`
+	Dragnormalstateactions  AZStd__vector_144       `crc:"3070701489"`
+	Dragvalidstateactions   AZStd__vector_144       `crc:"3197770394"`
 }
 
 type UiDropTargetComponent struct {
 	BaseClass1              AZ__Component        `crc:"3566360373"`
-	Dropinvalidstateactions AZStd__vector_82     `crc:"716932570"`
-	Dropvalidstateactions   AZStd__vector_82     `crc:"3848952432"`
+	Dropinvalidstateactions AZStd__vector_144    `crc:"716932570"`
+	Dropvalidstateactions   AZStd__vector_144    `crc:"3848952432"`
 	Navigationsettings      UiNavigationSettings `crc:"3616493515"`
 	Ondropactionname        AzString             `crc:"3528984003"`
 }
@@ -11294,7 +13368,7 @@ type UiDropdownComponent struct {
 	Content                  EntityId                `crc:"4274335913"`
 	Expandedactionname       AzString                `crc:"3605384972"`
 	Expandedparent           EntityId                `crc:"691870920"`
-	Expandedstateactions     AZStd__vector_82        `crc:"3737127605"`
+	Expandedstateactions     AZStd__vector_144       `crc:"3737127605"`
 	Expandonhover            AzBool                  `crc:"1293091808"`
 	Iconelement              EntityId                `crc:"3763985305"`
 	Optionselectedactionname AzString                `crc:"2446551"`
@@ -11332,17 +13406,17 @@ type UiDynamicScrollBoxComponent struct {
 }
 
 type UiElementComponent struct {
-	BaseClass1               AZ__Component    `crc:"3566360373"`
-	Childentityidorder       AZStd__vector_21 `crc:"2558872974"`
-	Id                       AzUInt32         `crc:"3208210256"`
-	Ischildrenrendersortable AzBool           `crc:"1887602019"`
-	Isenabled                AzBool           `crc:"4186165720"`
-	Isexpandedineditor       AzBool           `crc:"2181817634"`
-	Isselectableineditor     AzBool           `crc:"3439704366"`
-	Isselectedineditor       AzBool           `crc:"863395305"`
-	Isvisibleineditor        AzBool           `crc:"628346556"`
-	Multithreadchildren      AzBool           `crc:"3339019719"`
-	Renderpriority           AzInt32          `crc:"102177511"`
+	BaseClass1               AZ__Component   `crc:"3566360373"`
+	Childentityidorder       AZStd__vector_3 `crc:"2558872974"`
+	Id                       AzUInt32        `crc:"3208210256"`
+	Ischildrenrendersortable AzBool          `crc:"1887602019"`
+	Isenabled                AzBool          `crc:"4186165720"`
+	Isexpandedineditor       AzBool          `crc:"2181817634"`
+	Isselectableineditor     AzBool          `crc:"3439704366"`
+	Isselectedineditor       AzBool          `crc:"863395305"`
+	Isvisibleineditor        AzBool          `crc:"628346556"`
+	Multithreadchildren      AzBool          `crc:"3339019719"`
+	Renderpriority           AzInt32         `crc:"102177511"`
 }
 
 type UiExitHoverEventComponent struct {
@@ -11405,23 +13479,43 @@ type UiImageRepeaterComponent struct {
 }
 
 type UiImageSequenceComponent struct {
-	Alpha                  AzFloat32        `crc:"3504355690"`
-	BaseClass1             AZ__Component    `crc:"3566360373"`
-	Blendmode              AzInt32          `crc:"580144170"`
-	Color                  AzColor          `crc:"1716930793"`
-	Imagelist              AZStd__vector_68 `crc:"1363751345"`
-	Imagesequencedirectory AzString         `crc:"3470817261"`
-	Imagetype              AzInt32          `crc:"2573180544"`
-	Index                  AzUInt32         `crc:"2155046657"`
+	Alpha                  AzFloat32         `crc:"3504355690"`
+	BaseClass1             AZ__Component     `crc:"3566360373"`
+	Blendmode              AzInt32           `crc:"580144170"`
+	Color                  AzColor           `crc:"1716930793"`
+	Imagelist              AZStd__vector_104 `crc:"1363751345"`
+	Imagesequencedirectory AzString          `crc:"3470817261"`
+	Imagetype              AzInt32           `crc:"2573180544"`
+	Index                  AzUInt32          `crc:"2155046657"`
+}
+
+type UiInteractActionType struct {
+	Interact_action_type AzUInt8 `crc:"3119429566"`
+}
+
+type UiInteractAvailabilityData struct {
+	Availability AzInt32 `crc:"1068999359"`
+}
+
+type UiInteractInputType struct {
+	Interact_input_type AzInt32 `crc:"1071634594"`
+}
+
+type UiInteractOptionCategory struct {
+	Ui_interact_option_category AzInt32 `crc:"1311854454"`
+}
+
+type UiInteractPrivilegeId struct {
+	Privileges_type AzUInt32 `crc:"2355413015"`
 }
 
 type UiInteractableComponent struct {
 	BaseClass1                     AZ__Component        `crc:"3566360373"`
 	CRC_390589540                  AzFloat32            `crc:"390589540"`
-	Disabledstateactions           AZStd__vector_82     `crc:"4247406732"`
+	Disabledstateactions           AZStd__vector_144    `crc:"4247406732"`
 	Hoverendactionname             AzString             `crc:"723728796"`
 	Hoverstartactionname           AzString             `crc:"4055209061"`
-	Hoverstateactions              AZStd__vector_82     `crc:"2477468393"`
+	Hoverstateactions              AZStd__vector_144    `crc:"2477468393"`
 	Isautoactivationenabled        AzBool               `crc:"2937196810"`
 	Isfrictionenabled              AzBool               `crc:"2019179519"`
 	Ishandlingevents               AzBool               `crc:"87483"`
@@ -11431,7 +13525,7 @@ type UiInteractableComponent struct {
 	Magnetismrangemodifier         AzFloat32            `crc:"2305746338"`
 	Navigationsettings             UiNavigationSettings `crc:"3616493515"`
 	Pressedactionname              AzString             `crc:"2295380832"`
-	Pressedstateactions            AZStd__vector_82     `crc:"1088472334"`
+	Pressedstateactions            AZStd__vector_144    `crc:"1088472334"`
 	Releasedactionname             AzString             `crc:"1209941854"`
 }
 
@@ -11452,12 +13546,12 @@ type UiInteractableStateSprite struct {
 }
 
 type UiJavelinCanvasComponent struct {
-	Actionmapoverrides AZStd__vector_16 `crc:"2729546375"`
-	BaseClass1         AZ__Component    `crc:"3566360373"`
-	Drawlayer          AzString         `crc:"283967172"`
-	Escapable          AzBool           `crc:"1851724330"`
-	Replaceable        AzBool           `crc:"1137319687"`
-	Requiresmouse      AzBool           `crc:"1769712501"`
+	Actionmapoverrides AZStd__vector_9 `crc:"2729546375"`
+	BaseClass1         AZ__Component   `crc:"3566360373"`
+	Drawlayer          AzString        `crc:"283967172"`
+	Escapable          AzBool          `crc:"1851724330"`
+	Replaceable        AzBool          `crc:"1137319687"`
+	Requiresmouse      AzBool          `crc:"1769712501"`
 }
 
 type UiLayoutCellComponent struct {
@@ -11684,7 +13778,7 @@ type UiSpline__TrackSplineInterpolator_Vec2_ struct {
 
 type UiTelemetryComponent struct {
 	BaseClass1               AZ__Component    `crc:"3566360373"`
-	Eventtypetranslationlist AZStd__vector_60 `crc:"968035420"`
+	Eventtypetranslationlist AZStd__vector_90 `crc:"968035420"`
 	Telemetryeventname       AzString         `crc:"2321632755"`
 }
 
@@ -11754,6 +13848,15 @@ type UiTriggerAreaEventComponent struct {
 	M_triggerentity LocalEntityRef `crc:"3606483925"`
 }
 
+type UnTriggerEntity struct {
+	Applytoallchildren AzBool       `crc:"2471114906"`
+	BaseClass1         TimelineClip `crc:"3566360373"`
+}
+
+type UnifiedInteractData struct {
+	Interact_options AZStd__vector_171 `crc:"1028193311"`
+}
+
 type UnifiedInteractOptionComponent struct {
 	Additional_info_root_entity        EntityId      `crc:"3117434055"`
 	BaseClass1                         AZ__Component `crc:"3566360373"`
@@ -11795,6 +13898,13 @@ type Us_west_2 struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
 
+type ValidGroupData struct {
+	Colors     AZStd__vector_77 `crc:"3267281823"`
+	Iconpaths  AZStd__vector_9  `crc:"1245030179"`
+	Names      AZStd__vector_9  `crc:"4063447360"`
+	Objectives AZStd__vector_9  `crc:"1823500652"`
+}
+
 type ValidateTerrainComponent struct {
 	BaseClass1             FacetedComponent      `crc:"3566360373"`
 	M_placingsettings      TerrainValidationData `crc:"2651380939"`
@@ -11822,7 +13932,7 @@ type VariationDataComponent struct {
 	BaseClass1                 FacetedComponent  `crc:"3566360373"`
 	M_debugvariant             AZStd__unique_ptr `crc:"395743834"`
 	M_selectedvariant          AzString          `crc:"3440270449"`
-	M_variantdata              AZStd__vector_7   `crc:"2933775849"`
+	M_variantdata              AZStd__vector_45  `crc:"2933775849"`
 	M_variationtableuniquename AzString          `crc:"156900612"`
 }
 
@@ -11846,9 +13956,9 @@ type VegetationAreaBlenderComponent struct {
 }
 
 type VegetationAreaBlenderConfig struct {
-	InheritBehavior   AzBool           `crc:"950186081"`
-	Operations        AZStd__vector_44 `crc:"672420680"`
-	PropagateBehavior AzBool           `crc:"2691616251"`
+	InheritBehavior   AzBool            `crc:"950186081"`
+	Operations        AZStd__vector_169 `crc:"672420680"`
+	PropagateBehavior AzBool            `crc:"2691616251"`
 }
 
 type VegetationAreaComponent struct {
@@ -11896,8 +14006,8 @@ type VegetationDescriptor struct {
 	AltitudeFilterOverrideEnabled   AzBool                                                        `crc:"2105618292"`
 	AutoMerge                       AzBool                                                        `crc:"2238658382"`
 	Bending                         AzFloat32                                                     `crc:"613742430"`
-	ExclusiveSurfaceFilterTags      AZStd__vector_107                                             `crc:"3493543756"`
-	InclusiveSurfaceFilterTags      AZStd__vector_107                                             `crc:"2622148582"`
+	ExclusiveSurfaceFilterTags      AZStd__vector_167                                             `crc:"3493543756"`
+	InclusiveSurfaceFilterTags      AZStd__vector_167                                             `crc:"2622148582"`
 	MaterialAsset                   AzFramework__SimpleAssetReference_LmbrCentral__MaterialAsset_ `crc:"199378802"`
 	MeshAsset                       AzAsset                                                       `crc:"780416578"`
 	PositionMax                     AzVec3                                                        `crc:"649316863"`
@@ -11915,9 +14025,9 @@ type VegetationDescriptor struct {
 	SurfaceAlignmentMax             AzFloat32                                                     `crc:"3311869770"`
 	SurfaceAlignmentMin             AzFloat32                                                     `crc:"4184481811"`
 	SurfaceAlignmentOverrideEnabled AzBool                                                        `crc:"317378570"`
-	SurfaceDepthTags                AZStd__vector_6                                               `crc:"3308508069"`
+	SurfaceDepthTags                AZStd__vector_161                                             `crc:"3308508069"`
 	SurfaceFilterOverrideMode       AzUInt8                                                       `crc:"673100748"`
-	SurfaceOffsetTags               AZStd__vector_88                                              `crc:"4061361467"`
+	SurfaceOffsetTags               AZStd__vector_25                                              `crc:"4061361467"`
 	UserData                        Any                                                           `crc:"193891090"`
 	Weight                          AzFloat32                                                     `crc:"130897217"`
 }
@@ -11928,7 +14038,7 @@ type VegetationDescriptorListComponent struct {
 }
 
 type VegetationDescriptorListConfig struct {
-	VegetationDescriptors AZStd__vector_27 `crc:"3785565574"`
+	VegetationDescriptors AZStd__vector_153 `crc:"3785565574"`
 }
 
 type VegetationDescriptorWeightSelectorComponent struct {
@@ -12021,7 +14131,7 @@ type VegetationMixedGradientComponent struct {
 }
 
 type VegetationMixedGradientConfig struct {
-	Layers AZStd__vector_25 `crc:"3867733328"`
+	Layers AZStd__vector_130 `crc:"3867733328"`
 }
 
 type VegetationMixedGradientLayer struct {
@@ -12152,9 +14262,9 @@ type VegetationSurfaceMaskFilterComponent struct {
 
 type VegetationSurfaceMaskFilterConfig struct {
 	AllowOverrides        AzBool            `crc:"2200201215"`
-	ExclusiveSurfaceMasks AZStd__vector_107 `crc:"2579424023"`
+	ExclusiveSurfaceMasks AZStd__vector_167 `crc:"2579424023"`
 	FilterStage           AzUInt8           `crc:"4150494219"`
-	InclusiveSurfaceMasks AZStd__vector_107 `crc:"3394295850"`
+	InclusiveSurfaceMasks AZStd__vector_167 `crc:"3394295850"`
 }
 
 type VegetationSurfaceSlopeFilterComponent struct {
@@ -12187,11 +14297,15 @@ type VegetationWaterDepthFilterConfig struct {
 }
 
 type VertexContainer_Vector2__ struct {
-	Vertices AZStd__vector_95 `crc:"1091746925"`
+	Vertices AZStd__vector_110 `crc:"1091746925"`
 }
 
 type VertexContainer_Vector3__ struct {
-	Vertices AZStd__vector_11 `crc:"1091746925"`
+	Vertices AZStd__vector_51 `crc:"1091746925"`
+}
+
+type VirtualAudioTriggerConfigAsset struct {
+	Triggers AZStd__vector_10 `crc:"248416589"`
 }
 
 type VisionPerceptionProfile struct {
@@ -12256,8 +14370,8 @@ type VoidDestroyerComponentClientFacet struct {
 
 type VoidDestroyerComponentServerFacet struct {
 	BaseClass1              ServerFacet      `crc:"3566360373"`
-	M_lefteyedestroyevents  AZStd__vector_80 `crc:"765966989"`
-	M_righteyedestroyevents AZStd__vector_80 `crc:"497372174"`
+	M_lefteyedestroyevents  AZStd__vector_44 `crc:"765966989"`
+	M_righteyedestroyevents AZStd__vector_44 `crc:"497372174"`
 }
 
 type VoidDestroyerEyeComponent struct {
@@ -12290,18 +14404,53 @@ type WarCampComponentClientFacet struct {
 }
 
 type WarCampComponentServerFacet struct {
-	BaseClass1                   ServerFacet      `crc:"3566360373"`
-	M_groupteleportmaxrange      AzFloat32        `crc:"2629385130"`
-	M_groupteleportminrange      AzFloat32        `crc:"2061079627"`
-	M_prewarbarrierspawnerentity LocalEntityRef   `crc:"334578797"`
-	M_territorydetectorentity    EntityId         `crc:"3701741345"`
-	M_warcampspawns              AZStd__vector_30 `crc:"2285806211"`
+	BaseClass1                   ServerFacet       `crc:"3566360373"`
+	M_groupteleportmaxrange      AzFloat32         `crc:"2629385130"`
+	M_groupteleportminrange      AzFloat32         `crc:"2061079627"`
+	M_prewarbarrierspawnerentity LocalEntityRef    `crc:"334578797"`
+	M_territorydetectorentity    EntityId          `crc:"3701741345"`
+	M_warcampspawns              AZStd__vector_160 `crc:"2285806211"`
 }
 
 type WarCampSpawn struct {
-	M_prefabspawner             LocalEntityRef   `crc:"780483735"`
-	M_raididassignmenttype      AzInt32          `crc:"2842723273"`
-	M_warcamptiersliceoverrides AZStd__vector_52 `crc:"982259194"`
+	M_prefabspawner             LocalEntityRef    `crc:"780483735"`
+	M_raididassignmenttype      AzInt32           `crc:"2842723273"`
+	M_warcamptiersliceoverrides AZStd__vector_118 `crc:"982259194"`
+}
+
+type WarColorData struct {
+	War_colors_map AZStd__map_0 `crc:"3026674073"`
+}
+
+type WarData struct {
+	Attacker_buildable_team_limits      AZStd__array           `crc:"3596243008"`
+	Attacker_war_count_modifier         AzFloat32              `crc:"4142739535"`
+	Base_upkeep_war_declaration_penalty AzFloat32              `crc:"2886498458"`
+	Claim_lock_duration_minutes         AzUInt32               `crc:"895498403"`
+	Conquest_window_duration_minutes    AzUInt32               `crc:"3387158422"`
+	Counter_attack_discount             AzFloat32              `crc:"481146367"`
+	Defender_war_count_modifier         AzFloat32              `crc:"1377055465"`
+	Deployable_limits                   AZStd__unordered_map_8 `crc:"4104536085"`
+	Deployable_limits_editable          AZStd__map_4           `crc:"4182249061"`
+	Destroyed_claim_ends_war            AzBool                 `crc:"2678740508"`
+	Invasion_conquest_duration_minutes  AzUInt32               `crc:"3717671318"`
+	Larger_guild_multiplier             AzFloat32              `crc:"951773832"`
+	Member_war_modifier_map             AZStd__map_9           `crc:"1561190745"`
+	Post_siege_status_effects           AZStd__vector_9        `crc:"2065455292"`
+	Post_siege_status_effects_crc       AZStd__vector_5        `crc:"385766670"`
+	Prewar_duration_minutes             AzUInt32               `crc:"1397780981"`
+	Require_defender_territory          AzBool                 `crc:"412312055"`
+	Reset_effect_categories             AZStd__vector_9        `crc:"1161784363"`
+	Reset_effect_categories_crc         AZStd__vector_5        `crc:"1791208341"`
+	Resolution_duration_minutes         AzUInt32               `crc:"2460341154"`
+	Resolution_phase_buffer_minutes     AzUInt32               `crc:"1803201159"`
+	Siege_window_cooldown_minutes       AzUInt32               `crc:"1897064112"`
+	Siege_window_rounding_hours         AzFloat32              `crc:"1452263726"`
+	War_conquest_duration_minutes       AzUInt32               `crc:"1848887180"`
+	War_cost                            AZStd__array           `crc:"1346357407"`
+	War_duration_minutes                AzUInt32               `crc:"50626577"`
+	War_extension_cost_modifier         AzFloat32              `crc:"3485977870"`
+	War_extension_max_cost_percentage   AzFloat32              `crc:"3315235806"`
 }
 
 type WarDataComponent struct {
@@ -12314,6 +14463,15 @@ type WarDataComponentClientFacet struct {
 
 type WarDataComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type WarDeployableLimitData struct {
+	M_attackerlimits AZStd__array_0         `crc:"993230549"`
+	M_buildableids   AZStd__unordered_set_3 `crc:"4213346667"`
+	M_buildablenames AZStd__vector_9        `crc:"35186015"`
+	M_defenderlimit  AzInt32                `crc:"263739262"`
+	M_displayname    AzString               `crc:"2766029973"`
+	M_id             Crc32                  `crc:"1896410336"`
 }
 
 type WarboardComponent struct {
@@ -12339,12 +14497,12 @@ type WaterLevelComponent struct {
 }
 
 type WaterLevelComponentClientFacet struct {
-	BaseClass1                    ClientFacet      `crc:"3566360373"`
-	M_gatheringstartremainingtime AzFloat32        `crc:"1455553014"`
-	M_islocalplayer               AzBool           `crc:"2760799168"`
-	M_unifiedinteractoptions      AZStd__vector_26 `crc:"1451165081"`
-	M_wasfocused                  AzBool           `crc:"3429460695"`
-	M_waterstatus                 AzInt32          `crc:"1695098970"`
+	BaseClass1                    ClientFacet       `crc:"3566360373"`
+	M_gatheringstartremainingtime AzFloat32         `crc:"1455553014"`
+	M_islocalplayer               AzBool            `crc:"2760799168"`
+	M_unifiedinteractoptions      AZStd__vector_117 `crc:"1451165081"`
+	M_wasfocused                  AzBool            `crc:"3429460695"`
+	M_waterstatus                 AzInt32           `crc:"1695098970"`
 }
 
 type WaterLevelComponentServerFacet struct {
@@ -12435,11 +14593,11 @@ type WeatherComponent struct {
 }
 
 type WeatherConfiguration struct {
-	Enabled            AzBool           `crc:"1358543748"`
-	Spawners           AZStd__vector_47 `crc:"1647299352"`
-	Windfadingdistance AzFloat32        `crc:"2779020502"`
-	Windradius         AzFloat32        `crc:"939119854"`
-	Windstrength       AzFloat32        `crc:"2107956339"`
+	Enabled            AzBool            `crc:"1358543748"`
+	Spawners           AZStd__vector_151 `crc:"1647299352"`
+	Windfadingdistance AzFloat32         `crc:"2779020502"`
+	Windradius         AzFloat32         `crc:"939119854"`
+	Windstrength       AzFloat32         `crc:"2107956339"`
 }
 
 type Wedge struct {

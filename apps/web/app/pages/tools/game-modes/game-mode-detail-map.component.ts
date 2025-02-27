@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core'
 import { GameModeData, GameModeMapData, VitalsBaseData } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/scanner'
+import { ScannedVital } from '@nw-data/generated'
 import { Feature, FeatureCollection, MultiPoint } from 'geojson'
 import { uniq } from 'lodash'
 import { injectNwData } from '~/data'

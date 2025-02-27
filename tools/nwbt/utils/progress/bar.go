@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
-	"nw-buddy/tools/utils/logging"
 	"time"
 
 	"github.com/vbauerster/mpb/v8"
@@ -43,10 +42,10 @@ func (it *progressBar) Close() {
 	it.prog.Wait()
 }
 func (it *progressBar) onStart() {
-	slog.SetDefault(logging.DefaultFileHandler())
+	// slog.SetDefault(logging.DefaultFileHandler())
 }
 func (it *progressBar) onEnd() {
-	slog.SetDefault(logging.DefaultTerminalHandler())
+	// slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
 func Bar(count int, title string) ProgressBar {

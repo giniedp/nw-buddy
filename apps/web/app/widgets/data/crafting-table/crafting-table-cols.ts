@@ -17,7 +17,7 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { ScannedStation } from '@nw-data/scanner'
+import { ScannedStation } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { CharacterStore } from '~/data'
 import { RangeFilter } from '~/ui/data/ag-grid'

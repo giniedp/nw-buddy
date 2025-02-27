@@ -13,11 +13,9 @@ import (
 	"strings"
 
 	"github.com/dustin/go-humanize"
-	"github.com/tidwall/pretty"
 )
 
 func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
-	//"**/coatlicue/nw_ori_sm_questisabella/regions/**/*.capitals.json", // 1362
 	files, err := fs.Glob(
 		"**/region.distribution",                     // 91
 		"**/coatlicue/**/regions/**/*.capitals.json", // 1362
@@ -57,38 +55,39 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 	os.MkdirAll(outDir, 0755)
 	gatherables, count := scan.CollateGatherables(res.Gatherables)
 	size := writeJson(gatherables, path.Join(outDir, "gatherables_metadata.json"))
-	slog.Info("Gatherables", "rows", len(gatherables), "positions", count, "size", humanize.Bytes(size))
+
+	stats.Add("Gatherables", "rows", len(gatherables), "positions", count, "size", humanize.Bytes(size))
 
 	houses, count := scan.CollateHouses(res.Houses)
 	size = writeJson(houses, path.Join(outDir, "houses_metadata.json"))
-	slog.Info("Houses", "rows", len(houses), "positions", count, "size", humanize.Bytes(size))
+	stats.Add("Houses", "rows", len(houses), "positions", count, "size", humanize.Bytes(size))
 
 	loreEntries, count := scan.CollateLoreNotes(res.Lorenotes)
 	size = writeJson(loreEntries, path.Join(outDir, "lore_metadata.json"))
-	slog.Info("LoreEntries", "rows", len(loreEntries), "positions", count, "size", humanize.Bytes(size))
+	stats.Add("LoreEntries", "rows", len(loreEntries), "positions", count, "size", humanize.Bytes(size))
 
 	npcs, count := scan.CollateNpcs(res.Npcs)
 	size = writeJson(npcs, path.Join(outDir, "npcs_metadata.json"))
-	slog.Info("Npcs", "rows", len(npcs), "positions", count, "size", humanize.Bytes(size))
+	stats.Add("Npcs", "rows", len(npcs), "positions", count, "size", humanize.Bytes(size))
 
 	stations, count := scan.CollateStations(res.Stations)
 	size = writeJson(stations, path.Join(outDir, "stations_metadata.json"))
-	slog.Info("Stations", "rows", len(stations), "positions", count, "size", humanize.Bytes(size))
+	stats.Add("Stations", "rows", len(stations), "positions", count, "size", humanize.Bytes(size))
 
 	structures, count := scan.CollateStructures(res.Structures)
 	size = writeJson(structures, path.Join(outDir, "structures_metadata.json"))
-	slog.Info("Structures", "rows", len(structures), "positions", count, "size", humanize.Bytes(size))
+	stats.Add("Structures", "rows", len(structures), "positions", count, "size", humanize.Bytes(size))
 
 	territories, count := scan.CollateTerritories(res.Territories)
 	size = writeJson(territories, path.Join(outDir, "territories_metadata.json"))
-	slog.Info("Territories", "rows", len(territories), "positions", count, "size", humanize.Bytes(size))
+	stats.Add("Territories", "rows", len(territories), "positions", count, "size", humanize.Bytes(size))
 
 	variants, count := scan.CollateVariants(res.Variants)
 	size = writeJson(variants.Variants, path.Join(outDir, "variations_metadata.json"))
-	slog.Info("Variants", "rows", len(variants.Variants), "positions", count, "size", humanize.Bytes(size))
+	stats.Add("Variants", "rows", len(variants.Variants), "positions", count, "size", humanize.Bytes(size))
 	for i, chunk := range variants.Chunks {
 		os.WriteFile(path.Join(outDir, fmt.Sprintf("variations_metadata.%d.chunk", i)), chunk, 0644)
-		slog.Info("Variants", "chunk", i, "size", humanize.Bytes(uint64(len(chunk))))
+		stats.Add("Variants", "chunk", i, "size", humanize.Bytes(uint64(len(chunk))))
 	}
 
 	baseLevels := getVitalLevels(tables)
@@ -96,17 +95,17 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 	models, vitals, count := scan.CollateVitals(res.Vitals, territories, zoneLevels, baseLevels)
 
 	size = writeJson(models, path.Join(outDir, "vitals_models_metadata.json"))
-	slog.Info("VitalsModels", "rows", len(models), "size", humanize.Bytes(size))
+	stats.Add("VitalsModels", "rows", len(models), "size", humanize.Bytes(size))
 
-	slog.Info("Vitals", "rows", len(vitals), "positions", count)
+	stats.Add("Vitals", "rows", len(vitals), "positions", count)
 	split := len(vitals) / 2
 
 	vitals1 := vitals[:split]
 	vitals2 := vitals[split:]
 	size = writeJson(vitals1, path.Join(outDir, "vitals_metadata1.json"))
-	slog.Info("Vitals", "split", 1, "rows", len(vitals1), "size", humanize.Bytes(size))
+	stats.Add("Vitals", "split", 1, "rows", len(vitals1), "size", humanize.Bytes(size))
 	size = writeJson(vitals2, path.Join(outDir, "vitals_metadata2.json"))
-	slog.Info("Vitals", "split", 2, "rows", len(vitals2), "size", humanize.Bytes(size))
+	stats.Add("Vitals", "split", 2, "rows", len(vitals2), "size", humanize.Bytes(size))
 
 }
 
@@ -116,12 +115,6 @@ func writeJson(value any, path string) uint64 {
 		slog.Error("failed to marshal json", "err", err)
 		return 0
 	}
-	bytes = pretty.PrettyOptions(bytes, &pretty.Options{
-		Width:    120,
-		Prefix:   "",
-		Indent:   "\t",
-		SortKeys: false,
-	})
 	err = os.WriteFile(path, bytes, 0644)
 	if err != nil {
 		slog.Error("failed to write json", "err", err)

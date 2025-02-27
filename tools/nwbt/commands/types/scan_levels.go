@@ -6,6 +6,7 @@ import (
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
+	"nw-buddy/tools/utils/progress"
 	"strings"
 )
 
@@ -19,7 +20,6 @@ func scanLevels(fs nwfs.Archive) (crc rtti.CrcTable, table rtti.UuidTable, err e
 	if len(files) == 0 {
 		return nil, nil, ErrNoLevelFiles
 	}
-	slog.Info(fmt.Sprintf("%d files", len(files)))
 
 	table = rtti.NewUuidTable()
 	crc = rtti.NewCrcTable()
@@ -27,7 +27,11 @@ func scanLevels(fs nwfs.Archive) (crc rtti.CrcTable, table rtti.UuidTable, err e
 		"AzFramework::SimpleAssetReference<LmbrCentral::MaterialDataAsset>": "AzFramework::SimpleAssetReference<LmbrCentral::MaterialAsset>",
 		"WaterOceanComponentData": "OceanSettings",
 	}
+	bar := progress.Bar(len(files), "Levels")
+	defer bar.Close()
 	for _, file := range files {
+		bar.Add(1)
+
 		data, err := file.Read()
 		if err != nil {
 			slog.Error(fmt.Sprintf("%v %s", err, file.Path()))

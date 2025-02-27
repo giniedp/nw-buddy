@@ -587,24 +587,22 @@ var RULES = []tx.Rule{
 }
 
 func transformImagePathColumn(ctx context.Context, key string, value any, row int) any {
-	var str string
-	if v, ok := value.(string); !ok {
-		return value
-	} else {
-		str = v
-	}
+	format := ".webp" // TODO: pass into context?
+	sheet, _ := datasheet.GetDocument(ctx)
+	valueStr, isString := value.(string)
 
-	format := ".webp"
-	sheet, ok := datasheet.GetDocument(ctx)
-	if !ok || sheet == nil {
-		return transformImagePathValue(str, format)
+	if sheet == nil {
+		if isString {
+			return transformImagePathValue(valueStr, format)
+		}
+		return value
 	}
 
 	if strings.EqualFold(sheet.Schema, "CraftingCategoryData") && strings.EqualFold(key, "ImagePath") {
-		if str == "" {
+		if valueStr == "" {
 			return value
 		}
-		return transformImagePathValue(path.Join("lyshineui", "images", str), format)
+		return transformImagePathValue(path.Join("lyshineui", "images", valueStr), format)
 	}
 
 	if strings.EqualFold(sheet.Schema, "MasterItemDefinitions") && (strings.EqualFold(key, "IconPath") || strings.EqualFold(key, "HiResIconPath")) {
@@ -617,23 +615,38 @@ func transformImagePathColumn(ctx context.Context, key string, value any, row in
 			return value
 		}
 
+		itemID, _ := sheet.GetValueStr(row, "ItemID")
 		iconM, _ := sheet.GetValueStr(row, "ArmorAppearanceM")
 		iconF, _ := sheet.GetValueStr(row, "ArmorAppearanceF")
 		iconWpn, _ := sheet.GetValueStr(row, "WeaponAppearanceOverride")
-		candidates := []string{
-			getAppearanceIcon(iconM, docs, key),
-			getAppearanceIcon(iconF, docs, key),
-			str,
-			getAppearanceIcon(iconWpn, docs, key),
+		candidates := make([]string, 0, 4)
+		candidates = utils.AppendUniqNoZero(candidates, getAppearanceIcon(strings.TrimSpace(iconM), docs, key))
+		candidates = utils.AppendUniqNoZero(candidates, getAppearanceIcon(strings.TrimSpace(iconF), docs, key))
+		candidates = utils.AppendUniqNoZero(candidates, strings.TrimSpace(valueStr))
+		candidates = utils.AppendUniqNoZero(candidates, getAppearanceIcon(strings.TrimSpace(iconWpn), docs, key))
+
+		if len(candidates) == 0 {
+			return ""
 		}
+
 		for _, icon := range candidates {
-			if file, ok := fs.Lookup(icon); ok {
-				return transformImagePathValue(file.Path(), format)
+			icon = nwfs.NormalizePath(icon)
+			if file, ok := fs.Lookup(strings.ToLower(icon)); ok {
+				return utils.ReplaceExt(file.Path(), format)
+			}
+			if file, ok := fs.Lookup(utils.ReplaceExt(strings.ToLower(icon), ".dds")); ok {
+				return utils.ReplaceExt(file.Path(), format)
 			}
 		}
+
+		slog.Debug("missing icon", "itemID", itemID, "column", key, "tried", candidates)
+		return ""
 	}
 
-	return transformImagePathValue(str, format)
+	if isString {
+		return transformImagePathValue(valueStr, format)
+	}
+	return value
 }
 
 func getAppearanceIcon(id string, tables []*datasheet.Document, key string) string {
@@ -654,7 +667,7 @@ func getAppearanceIcon(id string, tables []*datasheet.Document, key string) stri
 
 		for i, _ := range table.Rows {
 			idValue, _ := table.GetValueStr(i, idKey)
-			if strings.EqualFold(idValue, id) {
+			if !strings.EqualFold(idValue, id) {
 				continue
 			}
 			res, _ := table.GetValueStr(i, key)
@@ -671,8 +684,7 @@ func transformImagePathValue(value string, format string) string {
 	if format == "" {
 		format = ".webp"
 	}
-	value = strings.ToLower(value)
+	value = nwfs.NormalizePath(value)
 	value = utils.ReplaceExt(value, format)
-	value = strings.ReplaceAll(value, "\\", "/")
 	return value
 }

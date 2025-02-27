@@ -1,9 +1,9 @@
 package types
 
 import (
-	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/azcs"
+	"nw-buddy/tools/formats/dds"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/utils"
@@ -13,28 +13,31 @@ import (
 )
 
 func scanObjects(fs nwfs.Archive, uidTable rtti.UuidTable, crcTable rtti.CrcTable) (rtti.TypeTable, error) {
-	// patterns := []string{
-	// 	"**.dynamicslice",
-	// 	"**.slice.meta",
-	// 	"**.slicedata",
-	// 	"**.metadata",
-	// 	"**.chunks",
-	// 	"**.waterqt",
-	// 	"**.aliasasset",
-	// }
 
-	files := utils.Must(fs.Glob("**.{meta,dynamicuicanvas,waterqt,metadata,slicedata,chunks,dynamicslice,aliasasset,slice.meta}"))
+	files := utils.Must(fs.List())
 	counter := make(map[string]int)
 
-	bar := progress.Bar(len(files), "scanning")
+	bar := progress.Bar(len(files), "Object Streams")
 	table := rtti.NewTypeTable()
-
 	for _, file := range files {
 		bar.Add(1)
 
-		doc, err := azcs.Load(file)
+		if dds.IsDDS(file.Path()) || dds.IsDDSSplitPart(file.Path()) {
+			continue
+		}
+		data, err := file.Read()
 		if err != nil {
-			slog.Error(fmt.Sprintf("%v %s", err, file.Path()))
+			slog.Error("Can't read file", "file", file.Path(), "error", err)
+			continue
+		}
+
+		if !azcs.IsAzcs(data) {
+			continue
+		}
+
+		doc, err := azcs.Parse(data)
+		if err != nil {
+			slog.Error("Can't load file", "file", file.Path(), "error", err)
 			continue
 		}
 
@@ -71,9 +74,5 @@ func scanObjects(fs nwfs.Archive, uidTable rtti.UuidTable, crcTable rtti.CrcTabl
 		})
 	}
 	bar.Close()
-
-	for ext, count := range counter {
-		slog.Info(fmt.Sprintf("%s: %d", ext, count))
-	}
 	return table, nil
 }

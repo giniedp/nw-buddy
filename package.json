@@ -52,8 +52,9 @@
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
     "nw-functions": "ts-node ./tools/nw-functions.ts",
     "nw-buddy": "pnpm build:tools && env-cmd --silent  -f .env node ./tools/dist/tools/nw-buddy.js",
-    "nw-data-update": "pnpm nw-buddy unpack && pnpm nw-buddy convert && pnpm nw-buddy import",
-    "nw-quick-update": "pnpm nw-buddy extract -f **/*.datasheet **/*.loc.xml **/*.json && pnpm nw-buddy import \"locale,tables,code\"",
+    "nw-data-update": "pnpm nwbt pull",
+    "nw-data-update:legacy": "pnpm nw-buddy unpack && pnpm nw-buddy convert && pnpm nw-buddy import",
+    "nw-quick-update:legacy": "pnpm nw-buddy extract -f **/*.datasheet **/*.loc.xml **/*.json && pnpm nw-buddy import \"locale,tables,code\"",
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",
     "cap:android:run": "npx cap run android",
@@ -69,9 +70,9 @@
     "storybook:wait": "pnpm wait-on http://127.0.0.1:5200",
     "storybook:test": "pnpm test-storybook -c apps/storybook --url http://127.0.0.1:5200",
     "chromatic": "npx chromatic --storybook-build-dir dist/web-storybook",
-    "nwbt": "go run ./tools/nw-kit",
-    "nwbt:test": "go test ./tools/nw-kit/...",
-    "nwbt:generate": "go generate ./tools/nw-kit/..."
+    "nwbt": "go run ./tools/nwbt",
+    "nwbt:test": "go test ./tools/nwbt/...",
+    "nwbt:generate": "go generate ./tools/nwbt/..."
   },
   "devDependencies": {
     "@ag-grid-community/client-side-row-model": "31.3.2",

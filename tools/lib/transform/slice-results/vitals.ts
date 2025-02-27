@@ -4,7 +4,7 @@ import {
   ScannedVitalData,
   ScannedVitalModel,
   ScannedVitalModelData,
-} from '../../../../libs/nw-data/scanner'
+} from '../../../../libs/nw-data/generated'
 import { VitalScanRow } from '../../file-formats/slices/scan-for-vitals'
 import { sortBy } from 'lodash'
 

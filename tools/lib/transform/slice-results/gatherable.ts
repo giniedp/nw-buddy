@@ -1,5 +1,5 @@
 import { chain } from 'lodash'
-import { ScannedGatherable, ScannedGatherableData, ScannedGatherableSpawn } from '../../../../libs/nw-data/scanner'
+import { ScannedGatherable, ScannedGatherableData, ScannedGatherableSpawn } from '../../../../libs/nw-data/generated'
 import { GatherableScanRow } from '../../file-formats/slices/scan-slices'
 
 export interface GatherableIndex {

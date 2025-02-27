@@ -1,6 +1,6 @@
 import { chain, sortBy } from 'lodash'
 import { VariantScanRow } from 'tools/lib/file-formats/slices/scan-slices'
-import { ScannedVariation, ScannedVariationData, ScannedVariationSpawn } from '../../../../libs/nw-data/scanner'
+import { ScannedVariation, ScannedVariationData, ScannedVariationSpawn } from '../../../../libs/nw-data/generated'
 
 export interface VariationIndex {
   push(entry: VariantScanRow[]): void
