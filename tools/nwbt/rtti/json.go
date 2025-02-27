@@ -1,0 +1,79 @@
+package rtti
+
+import (
+	"fmt"
+	"log/slog"
+	"nw-buddy/tools/formats/azcs"
+	"nw-buddy/tools/rtti/nwt"
+	"nw-buddy/tools/utils"
+)
+
+func ObjectStreamToJSON(it *azcs.Object, crc CrcTable, ids UuidTable) (data []byte, err error) {
+	defer utils.HandleRecover(&err)
+
+	type ElementList = []any
+
+	res := make([]any, 0)
+	it.Walk(func(node *azcs.WalkNode) bool {
+
+		typeID := node.Element.Type2
+		if typeID == "" {
+			typeID = node.Element.Type
+		}
+		typeName := ids[typeID]
+		if typeName == "" {
+			typeName = typeID
+		}
+
+		var value any = nil
+		if _, ok := nwt.PRIMITIVES[typeID]; ok {
+			value, err = Load(node.Element)
+			if err != nil {
+				slog.Warn(fmt.Sprintf("error loading a primitive %v: %v", typeID, err))
+			}
+		} else {
+			rec := utils.NewRecord[any]()
+			rec.Set("__type", typeName)
+			if node.Depth == 0 {
+				res = append(res, rec)
+			}
+			node.Data = rec
+			value = rec
+		}
+
+		if node.Parent == nil {
+			return true
+		}
+
+		parentRec, ok := node.Parent.Data.(*utils.Record[any])
+		if !ok {
+			return true
+		}
+
+		name := crc.Get(node.Element.NameCrc)
+		if name == "" {
+			name = fmt.Sprintf("__crc_%v", node.Element.NameCrc)
+		}
+
+		current, ok := parentRec.Get(name)
+		if !ok {
+			parentRec.Set(name, value)
+			return true
+		}
+
+		if array, ok := current.([]any); ok {
+			parentRec.Set(name, append(array, value))
+		} else {
+			parentRec.Set(name, []any{current, value})
+		}
+
+		return true
+	})
+
+	if len(res) == 1 {
+		data, err = utils.MarshalJSON(res[0], "", "\t")
+	} else {
+		data, err = utils.MarshalJSON(res, "", "\t")
+	}
+	return
+}
