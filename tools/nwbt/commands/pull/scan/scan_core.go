@@ -105,16 +105,22 @@ func (ctx *Scanner) ScanSliceComponentForData(slice *nwt.SliceComponent, source 
 					data.StructureType = "TradingPost"
 				}
 			case nwt.StorageComponent:
-				if !v.M_isplayeruniquestorage {
-					break
+				ptr := v.BaseClass1.M_clientFacetPtr
+				if facet, ok := ptr.(nwt.StorageComponentClientFacet); ok && !bool(facet.M_showpreview) && bool(v.M_isplayeruniquestorage) {
+					data.StructureType = "Storage"
 				}
-				facet := v.BaseClass1.M_clientFacetPtr
-				switch f := facet.(type) {
-				case nwt.StorageComponentClientFacet:
-					if f.M_showpreview {
-						data.StructureType = "Storage"
-					}
-				}
+			case nwt.SettlementComponent:
+				// v.M_hasstorage
+				// v.M_isoutpost
+			case nwt.ShowOnMapUIComponent:
+				//
+			case nwt.SiegeWarfareComponent:
+				// for _, it := range v.M_fortspawns.Element {
+
+				// }
+				// if facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.SiegeWarfareComponentServerFacet); ok {
+				//   facet.M_prewarbarrierspawnerentity
+				// }
 			}
 		}
 		result = append(result, data)
