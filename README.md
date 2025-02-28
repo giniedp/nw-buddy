@@ -2,7 +2,13 @@
 
 # New World Buddy
 
-New World Buddy is a desktop application designed to be used while playing New World.
+New World Buddy is a web application that provides data and tools for the game [New World](https://newworld.com/).
+
+This is a private project. We are not affiliated by Amazon or Amazon Game Studios.
+
+All data and assets extracted using these tools are the intellectual property of AGS. Please respect the
+[Amazon Games Content Usage Policy](https://www.amazon.com/gp/help/customer/display.html?nodeId=GNX7GA7HXVL9V8XZ&pop-up=1).
+
 
 ## Features
 
@@ -14,21 +20,20 @@ New World Buddy is a desktop application designed to be used while playing New W
 - Armorsets overview and tracker
 - XP and Tradeskill tracker
 - Gearset builder
-- Umbral shard upgrade tool
 
 ## Links
 
 - website: https://www.nw-buddy.de/
 - github: https://github.com/giniedp/nw-buddy
-- releases: https://github.com/giniedp/nw-buddy/releases
 - discord permalink: https://discord.gg/PWxUwUagVX
 
 # Development
 
-This repository does not contain the ingame data. Ingame data must be extracted from a local New World installation during development.
+This repository does not contain the game data. Game data must be extracted from a local New World installation during development.
 
 The software and development stack is based on the following technologies:
 
+- golang
 - pnpm
 - Angular
 - Tailwind css (Daisy UI)
@@ -37,6 +42,8 @@ The software and development stack is based on the following technologies:
 For build commands, see package.json
 
 ## Quickstart
+
+- `node` runtime and `pnpm` package manager are required. See [.nvmrc](.nvmrc) for current version
 
 ```bash
 git clone git@github.com:giniedp/nw-buddy.git
@@ -51,44 +58,51 @@ pnpm nw-cdn download -v live
 pnpm dev:web
 ```
 
-## Game Data Extraction
+## Prepare dev environment
 
-You can download game data from CDN (see quickstart) and skip the extraction step.
+- make sure golang is installed. See  [go.work](go.work) for current version
+- if you use `vscode`, make sure the `go` extension is installed
+- make sure `.env` file exists, copy it from [.env.example](.env.example) and update `NW_GAME_LIVE` (and `NW_GAME_PTR`) variables
+- run `pnpm nwbt doctor` to check if game packages can be accessed and tools are available
 
-### Prerequirements
+Some missing tools can be ignored. All required tools are in the `./tools/bin` directory and should be available.
 
-- Review the [tools/bin](tools/bin) directory. Those binaries are used during data import.
-- Requirements of https://github.com/giniedp/nw-extract do apply.
-  - `oo2core_8_win64.dll` and `texconv.exe` are already in the tools/bin directory
-- Install [ImageMagick](https://imagemagick.org/), which is required to convert images
-- Copy `.env.example` to `.env` and adjust env variables as you need
-  - When working on PTR use the `NW_WORKSPACE=PTR` variable or switch to the `ptr` branch
+## Update game data for small patches
 
-### Unpack (optional)
+```bash
+pnpm nwbt pull
+```
 
-If you have already unpacked the game folder, adjust the `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` env variables accordingly and skip the rest of this step.
+This extracts and processes assets and datasheets. It also generates and updates front-end type definition files. Use a git diff tool to see what has changed.
+If there are breaking changes, `pnpm dev:web` should yell at you. Small patches are usually fine without further code changes.
 
-Run `pnpm nw-extract`. This will extract all the necessary game data to whatever `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` is set to.
+## Update for big patches
 
-### Convert (mandatory)
+Scan data for runtime type information
 
-This will read files from the unpacked game data folder, convert them and place the results in `tmp/nw-data/live` (or `tmp/nw-data/ptr`). The conversion includes:
+```bash
+pnpm nwbt types scan
+```
 
-- `.dds` -> `.png`
-- `.datasheet` -> `.json`
-- `.loc.xml` -> `.loc.json`
-- object stream conversion into `.json`
+This should update type information json files without changing source code files. Again, use git diff tools to see what has changed.
 
-### Import (mandatory)
+Now generate source code
 
-This will read files from the conversion folder and prepare them for runtime use, e.g.
+```bash
+pnpm nwbt types generate
+```
 
-- convert `.png` -> `.webp`
-- generate code and types from datatables
-- exctract only neccassary localization strings
-- and more (check code)
+This will generate golang source code and may break the `nwbt` tools. Fix golang errors to continue.
 
-The results are written to `dist/nw-data/live` (or `dist/nw-data/ptr`)
+```bash
+pnpm nwbt pull
+```
+
+This updates frontend data and generates types. Fix whatever needs to be fixed.
+
+## NWBT
+
+`pnpm nwbt --help` shows all available commands.
 
 ## Running dev server
 
