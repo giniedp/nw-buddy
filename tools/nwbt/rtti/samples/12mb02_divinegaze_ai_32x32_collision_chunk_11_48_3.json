@@ -1,6 +1,9 @@
 {
 	"__type": "AZ::Entity",
-	"id": 8238779001366180130,
+	"id": {
+		"__type": "EntityId",
+		"id": 8238779001366180130
+	},
 	"name": "SliceAssetEntity",
 	"isdependencyready": false,
 	"isruntimeactive": true,
@@ -17,7 +20,10 @@
 				"element": [
 					{
 						"__type": "AZ::Entity",
-						"id": 2041131326794466980,
+						"id": {
+							"__type": "EntityId",
+							"id": 2041131326794466980
+						},
 						"name": "12MB02_DivineGaze_AI_32x32_collision_chunk_11_48_3",
 						"isdependencyready": false,
 						"isruntimeactive": true,
@@ -35,37 +41,14 @@
 										"m_replicationindex": 0
 									},
 									"m_worldtm": {
-										"data": [
-											1,
-											0,
-											0,
-											0,
-											1,
-											0,
-											0,
-											0,
-											1,
-											0,
-											0,
-											0
-										]
+										"data": [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
 									},
-									"m_parentid": 4294967295,
+									"m_parentid": {
+										"__type": "EntityId",
+										"id": 4294967295
+									},
 									"m_localtm": {
-										"data": [
-											1,
-											0,
-											0,
-											0,
-											1,
-											0,
-											0,
-											0,
-											1,
-											0,
-											0,
-											0
-										]
+										"data": [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
 									},
 									"m_onnewparentkeepworldtm": true,
 									"m_isstatic": false
@@ -126,7 +109,10 @@
 					},
 					{
 						"__type": "AZ::Entity",
-						"id": 1798290653,
+						"id": {
+							"__type": "EntityId",
+							"id": 1798290653
+						},
 						"name": "Mesh_col",
 						"isdependencyready": false,
 						"isruntimeactive": true,
@@ -145,34 +131,37 @@
 									},
 									"m_worldtm": {
 										"data": [
-											-1.0958142,
-											0.0958699,
+											-1.0958142280578613,
+											0.09586989879608154,
 											0,
-											-0.0958699,
-											-1.0958142,
+											-0.09586989879608154,
+											-1.0958142280578613,
 											0,
 											0,
 											0,
-											1.1,
-											-13.524414,
-											-13.226807,
+											1.100000023841858,
+											-13.5244140625,
+											-13.226806640625,
 											0
 										]
 									},
-									"m_parentid": 2041131326794466980,
+									"m_parentid": {
+										"__type": "EntityId",
+										"id": 2041131326794466980
+									},
 									"m_localtm": {
 										"data": [
-											-1.0958142,
-											0.0958699,
+											-1.0958142280578613,
+											0.09586989879608154,
 											0,
-											-0.0958699,
-											-1.0958142,
+											-0.09586989879608154,
+											-1.0958142280578613,
 											0,
 											0,
 											0,
-											1.1,
-											-13.524414,
-											-13.226807,
+											1.100000023841858,
+											-13.5244140625,
+											-13.226806640625,
 											0
 										]
 									},
@@ -189,11 +178,7 @@
 										},
 										"m_replicationindex": 0
 									},
-									"m_center": [
-										0,
-										0,
-										0
-									],
+									"m_center": [0, 0, 0],
 									"m_collisiontype": 0,
 									"m_rnrasset": {
 										"guid": "00000000-0000-0000-0000-000000000000",
@@ -210,12 +195,15 @@
 									"m_collisionshape": {
 										"__type": "AZStd::shared_ptr"
 									},
-									"m_shapeentity": 4294967295,
+									"m_shapeentity": {
+										"__type": "EntityId",
+										"id": 4294967295
+									},
 									"m_setprismasset": false,
 									"m_isdynamic": false,
 									"m_mass": 1,
-									"m_lineardamping": 0.05,
-									"m_angulardamping": 0.15,
+									"m_lineardamping": 0.05000000074505806,
+									"m_angulardamping": 0.15000000596046448,
 									"m_sleepminenergy": 0.5,
 									"m_interactwithtriggers": false,
 									"m_strfilter": "Structure",
@@ -227,11 +215,7 @@
 									"m_converttoeditorgamerigidbodycomponent": false,
 									"m_configuration": {
 										"__type": "GameRigidBodyConfig",
-										"m_center": [
-											0,
-											0,
-											0
-										],
+										"m_center": [0, 0, 0],
 										"m_collisiontype": 0,
 										"m_rnrasset": {
 											"guid": "B709B946-F6AA-56B1-8639-838858168352",
@@ -250,11 +234,14 @@
 										},
 										"m_overridecollisionshapematerial": false,
 										"m_overridecollisionshapematerialname": "",
-										"m_shapeentity": 4294967295,
+										"m_shapeentity": {
+											"__type": "EntityId",
+											"id": 4294967295
+										},
 										"m_isdynamic": false,
 										"m_mass": 1,
-										"m_lineardamping": 0.05,
-										"m_angulardamping": 0.15,
+										"m_lineardamping": 0.05000000074505806,
+										"m_angulardamping": 0.15000000596046448,
 										"m_sleepminenergy": 0.5,
 										"m_interactwithtriggers": false,
 										"m_strfilter": "Structure",

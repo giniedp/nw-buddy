@@ -397,7 +397,7 @@ func TestLoad_QueryShapeBox(t *testing.T) {
 	v, err := rtti.Load(&el)
 	assert.NoError(t, err)
 	assert.IsType(t, nwt.QueryShapeBox{}, v)
-	assert.Equal(t, float32(1.0), v.(nwt.QueryShapeBox).M_box[0])
-	assert.Equal(t, float32(2.0), v.(nwt.QueryShapeBox).M_box[1])
-	assert.Equal(t, float32(3.0), v.(nwt.QueryShapeBox).M_box[2])
+	assert.Equal(t, nwt.AzFloat32(1.0), v.(nwt.QueryShapeBox).M_box[0])
+	assert.Equal(t, nwt.AzFloat32(2.0), v.(nwt.QueryShapeBox).M_box[1])
+	assert.Equal(t, nwt.AzFloat32(3.0), v.(nwt.QueryShapeBox).M_box[2])
 }
