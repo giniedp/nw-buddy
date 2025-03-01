@@ -2,7 +2,6 @@ package pull
 
 import (
 	"log/slog"
-	"math"
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
@@ -140,10 +139,10 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 	maxCraftGs := 0
 
 	for _, row := range expData.RowsAsJSON() {
-		maxGS = int(math.Max(float64(maxGS), float64(row.GetInt("MaxEquipGS"))))
-		maxLevel = int(math.Max(float64(maxLevel), float64(row.GetInt("MaxDisplayLevel"))))
-		maxTradeLevel = int(math.Max(float64(maxTradeLevel), float64(row.GetInt("MaxTradeskillLevel"))))
-		maxCraftGs = int(math.Max(float64(maxCraftGs), float64(row.GetInt("MaxCraftGS"))))
+		maxGS = max(maxGS, row.GetInt("MaxEquipGS"))
+		maxLevel = max(maxLevel, row.GetInt("MaxDisplayLevel"))
+		maxTradeLevel = max(maxTradeLevel, row.GetInt("MaxTradeskillLevel"))
+		maxCraftGs = max(maxCraftGs, row.GetInt("MaxCraftGS"))
 	}
 	constants.Store("NW_MAX_GEAR_SCORE", maxGS)
 	constants.Store("NW_MAX_CHARACTER_LEVEL", maxLevel)

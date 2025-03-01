@@ -2,7 +2,6 @@ package progress
 
 import (
 	"fmt"
-	"math"
 )
 
 type TasksConfig[T any, O any] struct {
@@ -25,8 +24,7 @@ func RunTasks[T any, O any](spec TasksConfig[T, O]) {
 	cOutput := make(chan *proxy)
 	cDone := make(chan ProgressMessage)
 
-	pc := int(math.Max(1.0, float64(spec.ProducerCount)))
-	for range pc {
+	for range max(1, spec.ProducerCount) {
 		go func() {
 			for task := range cInput {
 				out, err := spec.Producer(task)
@@ -35,8 +33,7 @@ func RunTasks[T any, O any](spec TasksConfig[T, O]) {
 		}()
 	}
 
-	cc := int(math.Max(1.0, float64(spec.ConsumerCount)))
-	for range cc {
+	for range max(1, spec.ConsumerCount) {
 		go func() {
 			for task := range cOutput {
 				if spec.Consumer == nil {

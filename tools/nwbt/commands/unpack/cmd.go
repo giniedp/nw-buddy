@@ -89,10 +89,7 @@ func run(ccmd *cobra.Command, args []string) {
 	}
 
 	unpackDir := flgUnpackDir
-	writerCount := flgWWC
-	if writerCount < 1 {
-		writerCount = 1
-	}
+	writerCount := max(flgWWC, 1)
 	readerCount := flgRWC
 	if readerCount < 1 {
 		readerCount = writerCount
