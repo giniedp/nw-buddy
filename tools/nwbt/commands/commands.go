@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"nw-buddy/tools/commands/cat"
 	"nw-buddy/tools/commands/doctor"
 	"nw-buddy/tools/commands/list"
 	"nw-buddy/tools/commands/pull"
@@ -36,4 +37,5 @@ func init() {
 	rootCmd.AddCommand(doctor.Cmd)
 	rootCmd.AddCommand(pull.Cmd)
 	rootCmd.AddCommand(list.Cmd)
+	rootCmd.AddCommand(cat.Cmd)
 }

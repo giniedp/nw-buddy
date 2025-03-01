@@ -1,10 +1,10 @@
-package list
+package cat
 
 import (
-	"log/slog"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -13,8 +13,8 @@ import (
 var flgGameDir string
 var flgRegex bool
 var Cmd = &cobra.Command{
-	Use:           "list",
-	Short:         "lists the file names",
+	Use:           "cat",
+	Short:         "concatenate files and print on the standard output",
 	Long:          ``,
 	Run:           run,
 	SilenceErrors: false,
@@ -31,9 +31,15 @@ func run(ccmd *cobra.Command, args []string) {
 		panic(err)
 	}
 	for _, file := range files {
-		slog.Info(file.Path())
+		data, err := file.Read()
+		if err != nil {
+			panic(err)
+		}
+		_, err = os.Stdout.Write(data)
+		if err != nil {
+			panic(err)
+		}
 	}
-	slog.Info("total files", "count", len(files))
 }
 
 func listFiles(args []string, regex bool) ([]nwfs.File, error) {

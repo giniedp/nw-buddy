@@ -28,8 +28,7 @@ var flgRWC int
 var flgWWC int
 var flgDryRun bool
 var flgDryLog string
-var flgGlobPattern string
-var flgRegxPattern string
+var flgRegex bool
 
 var flgFmtDatasheet string
 var flgFmtLocales string
@@ -66,8 +65,7 @@ func init() {
 	Cmd.Flags().IntVarP(&flgRWC, "wcr", "r", -1, "worker count for read and transform operations. If < 1 then it will be set to 'wcw' value")
 	Cmd.Flags().BoolVarP(&flgDryRun, "dry", "", false, "runs without writing to disk")
 	Cmd.Flags().StringVar(&flgDryLog, "dry-log", ".nwbt/dry.log", "the log file where dry run output will be written")
-	Cmd.Flags().StringVar(&flgGlobPattern, "glob", "", "file glob pattern. Ignored if --regex is set")
-	Cmd.Flags().StringVar(&flgRegxPattern, "regex", "", "regex pattern. If set, --glob is ignored")
+	Cmd.Flags().BoolVarP(&flgRegex, "reg", "e", false, "whether argument is a regular expression")
 
 	Cmd.Flags().StringVar(&flgFmtDatasheet, "x-datasheet", "", "transforms .datasheet files to given format. Possible values: json, csv")
 	Cmd.Flags().StringVar(&flgFmtObjects, "x-objects", "", "transforms object streams to to given format. Possible values: json")
@@ -104,10 +102,10 @@ func run(ccmd *cobra.Command, args []string) {
 		dryOut = utils.Must(os.OpenFile(flgDryLog, os.O_CREATE|os.O_TRUNC, 0666))
 	}
 
-	for w := 0; w < writerCount; w++ {
+	for range writerCount {
 		go readWorker(readChan, writeChan)
 	}
-	for w := 0; w < readerCount; w++ {
+	for range readerCount {
 		go writeWorker(writerOpts{
 			unpackDir: unpackDir,
 			tasks:     writeChan,
@@ -119,7 +117,10 @@ func run(ccmd *cobra.Command, args []string) {
 		}
 	}
 
-	files := listFiles()
+	files, err := listFiles(args, flgRegex)
+	if err != nil {
+		panic(err)
+	}
 	bar := progress.Group(len(files), "Unpacking", doneChan)
 	for _, entry := range files {
 		readChan <- Task{Input: entry}
@@ -135,23 +136,22 @@ func run(ccmd *cobra.Command, args []string) {
 	}
 }
 
-func listFiles() []nwfs.File {
+func listFiles(args []string, regex bool) ([]nwfs.File, error) {
 	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
-	var files []nwfs.File
-	if flgRegxPattern != "" {
-		flgRegxPattern = strings.ToLower(flgRegxPattern)
-		flgRegxPattern = strings.ReplaceAll(flgRegxPattern, "\\\\", "\\")
-		slog.Info("listing files with", "regex", flgRegxPattern)
-		files = utils.Must(fs.Match(strings.Split(flgRegxPattern, ";")...))
-	} else if flgGlobPattern != "" {
-		flgGlobPattern = strings.ToLower(flgGlobPattern)
-		slog.Info("listing files with", "glob", flgGlobPattern)
-		files = utils.Must(fs.Glob(strings.Split(flgGlobPattern, ";")...))
-	} else {
-		slog.Info("listing all files")
-		files = utils.Must(fs.List())
+	if len(args) == 0 {
+		return fs.List()
 	}
-	return files
+	if regex {
+		for i := range args {
+			args[i] = strings.ToLower(args[i])
+			args[i] = strings.ReplaceAll(args[i], "\\\\", "\\")
+		}
+		return fs.Match(args...)
+	}
+	for i := range args {
+		args[i] = strings.ToLower(args[i])
+	}
+	return fs.Glob(args...)
 }
 
 type Task struct {
