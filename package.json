@@ -72,7 +72,7 @@
     "chromatic": "npx chromatic --storybook-build-dir dist/web-storybook",
     "nwbt": "go run ./tools/nwbt",
     "nwbt:test": "go test ./tools/nwbt/...",
-    "nwbt:generate": "go generate ./tools/nwbt/..."
+    "nwbt:build": "go build -o ./tools/bin/nwbt.exe ./tools/nwbt"
   },
   "devDependencies": {
     "@ag-grid-community/client-side-row-model": "31.3.2",
