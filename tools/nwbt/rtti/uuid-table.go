@@ -1,7 +1,7 @@
 package rtti
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
 	"os"
 	"strings"
 )
@@ -41,14 +41,14 @@ func LoadUuIdTable(path string) (UuidTable, error) {
 	defer file.Close()
 
 	var table UuidTable
-	if err := utils.DecodeJSON(file, &table); err != nil {
+	if err := json.DecodeJSON(file, &table); err != nil {
 		return nil, err
 	}
 	return table, nil
 }
 
 func (it UuidTable) Save(path string) error {
-	data, err := utils.MarshalJSON(it, "", "\t")
+	data, err := json.MarshalJSON(it, "", "\t")
 	if err != nil {
 		return err
 	}

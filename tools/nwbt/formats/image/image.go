@@ -1,6 +1,7 @@
 package image
 
 import (
+	"fmt"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"os"
@@ -11,8 +12,14 @@ import (
 type Format string
 
 const (
-	PNG  Format = "png"
-	WEBP Format = "webp"
+	FormatPNG  Format = ".png"
+	FormatWEBP Format = ".webp"
+	FormatDDS  Format = ".dds"
+)
+
+var (
+	ErrUnsupportedInputFormat  = fmt.Errorf("unsupported input format")
+	ErrUnsupportedTargetFormat = fmt.Errorf("unsupported target format")
 )
 
 type convertConfig struct {
@@ -23,6 +30,14 @@ type convertConfig struct {
 }
 
 type ConvertOption func(*convertConfig)
+
+func getConfig(options []ConvertOption) *convertConfig {
+	config := &convertConfig{}
+	for _, option := range options {
+		option(config)
+	}
+	return config
+}
 
 func WithTempDir(tmpDir string) ConvertOption {
 	return func(c *convertConfig) {
@@ -48,8 +63,20 @@ func WithTarget(target string) ConvertOption {
 	}
 }
 
-func ConvertDDSFile(f nwfs.File, format Format, options ...ConvertOption) ([]byte, error) {
-	data, err := f.Read()
+func ConvertFile(file nwfs.File, targetFormat Format, options ...ConvertOption) ([]byte, error) {
+	ext := path.Ext(file.Path())
+	switch ext {
+	case ".dds":
+		return ConvertDDSFile(file, targetFormat, options...)
+	case ".png":
+		return ConvertPNGFile(file, targetFormat, options...)
+	default:
+		return nil, fmt.Errorf("%s %w", ext, ErrUnsupportedInputFormat)
+	}
+}
+
+func ConvertDDSFile(file nwfs.File, format Format, options ...ConvertOption) ([]byte, error) {
+	data, err := file.Read()
 	if err != nil {
 		return nil, err
 	}
@@ -59,15 +86,8 @@ func ConvertDDSFile(f nwfs.File, format Format, options ...ConvertOption) ([]byt
 func ConvertDDS(data []byte, format Format, options ...ConvertOption) (res []byte, err error) {
 	defer utils.HandleRecover(&err)
 
-	c := &convertConfig{}
-	for _, o := range options {
-		o(c)
-	}
-	if c.tmpDir == "" {
-		c.tmpDir = os.TempDir()
-	}
-
-	source := utils.Must(copyToTemp(data, ".dds", c.tmpDir))
+	config := getConfig(options)
+	source := utils.Must(copyToTemp(data, ".dds", config.tmpDir))
 	sourceDir := path.Dir(source)
 	targetPng := utils.ReplaceExt(source, ".png")
 	defer os.Remove(source)
@@ -80,10 +100,10 @@ func ConvertDDS(data []byte, format Format, options ...ConvertOption) (res []byt
 		Nologo:        true,
 		FeatureLevel:  "12.1",
 		Output:        sourceDir,
-		Silent:        c.silent,
+		Silent:        config.silent,
 	}
 
-	if c.normalMap {
+	if config.normalMap {
 		texOpts.Format = "rgba"
 		texOpts.ReconstructZ = true
 		texOpts.InvertY = true
@@ -94,8 +114,8 @@ func ConvertDDS(data []byte, format Format, options ...ConvertOption) (res []byt
 	if err != nil {
 		return nil, err
 	}
-	if format == PNG {
-		return moveOrRead(targetPng, c.target)
+	if format == FormatPNG {
+		return moveOrRead(targetPng, config.target)
 	}
 
 	targetWebp := utils.ReplaceExt(source, ".webp")
@@ -106,7 +126,42 @@ func ConvertDDS(data []byte, format Format, options ...ConvertOption) (res []byt
 		return nil, err
 	}
 
-	return moveOrRead(targetWebp, c.target)
+	return moveOrRead(targetWebp, config.target)
+}
+
+func ConvertPNGFile(source nwfs.File, targetFormat Format, options ...ConvertOption) ([]byte, error) {
+	data, err := source.Read()
+	if err != nil {
+		return nil, err
+	}
+
+	if path.Ext(source.Path()) != ".png" {
+		return nil, fmt.Errorf("unsupported source image format %s", path.Ext(source.Path()))
+	}
+
+	switch targetFormat {
+	case FormatPNG:
+		return data, nil
+	case FormatWEBP:
+		return ConvertPNG(data, targetFormat, options...)
+	default:
+		return nil, fmt.Errorf("unsupported target image format %s", targetFormat)
+	}
+}
+
+func ConvertPNG(data []byte, format Format, options ...ConvertOption) ([]byte, error) {
+	config := getConfig(options)
+
+	sourcePng := utils.Must(copyToTemp(data, ".png", config.tmpDir))
+	targetWebp := utils.ReplaceExt(sourcePng, ".webp")
+	defer os.Remove(targetWebp)
+
+	err := utils.Cwebp.Run(sourcePng, "-o", targetWebp)
+	if err != nil {
+		return nil, err
+	}
+
+	return moveOrRead(targetWebp, config.target)
 }
 
 func copyToTemp(data []byte, ext, dir string) (string, error) {

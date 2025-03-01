@@ -3,8 +3,8 @@ package catalog_test
 import (
 	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/nwfs"
-	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
+	"nw-buddy/tools/utils/json"
 	"os"
 	"testing"
 
@@ -21,7 +21,7 @@ func TestParse(t *testing.T) {
 	doc, err := catalog.Load(file)
 	assert.NoError(t, err)
 
-	data, err := utils.MarshalJSON(doc, "", "\t")
+	data, err := json.MarshalJSON(doc, "", "\t")
 	assert.NoError(t, err)
 
 	os.WriteFile("assetcatalog.json", data, 0644)

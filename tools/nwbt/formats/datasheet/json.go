@@ -1,40 +1,41 @@
 package datasheet
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/maps"
 	"reflect"
 	"strconv"
 )
 
 func (it *Document) ToJSON(format ...string) ([]byte, error) {
-	return utils.MarshalJSON(it.asJSON(), format...)
+	return json.MarshalJSON(it.asJSON(), format...)
 }
 
 func (it *Document) RowsToJSON(format ...string) ([]byte, error) {
-	return utils.MarshalJSON(it.RowsAsJSON(), format...)
+	return json.MarshalJSON(it.RowsAsJSON(), format...)
 }
 
 func (it *Document) asJSON() any {
-	res := utils.NewRecord[any]()
-	header := utils.NewRecord[any]()
-	header.Set("type", it.Schema)
-	header.Set("name", it.Table)
-	header.Set("fields", it.colsAsJSON())
-	res.Set("header", header)
-	res.Set("rows", it.RowsAsJSON())
+	res := maps.NewDict[any]()
+	header := maps.NewDict[any]()
+	header.Store("type", it.Schema)
+	header.Store("name", it.Table)
+	header.Store("fields", it.colsAsJSON())
+	res.Store("header", header)
+	res.Store("rows", it.RowsAsJSON())
 	return res
 }
 
 func (it *Document) colsAsJSON() any {
-	res := utils.NewRecord[string]()
+	res := maps.NewDict[string]()
 	for _, col := range it.Cols {
 		switch col.Type {
 		case StringType:
-			res.Set(col.Name, "string")
+			res.Store(col.Name, "string")
 		case NumberType:
-			res.Set(col.Name, "number")
+			res.Store(col.Name, "number")
 		case BoolType:
-			res.Set(col.Name, "boolean")
+			res.Store(col.Name, "boolean")
 		}
 	}
 	return res
@@ -45,7 +46,7 @@ func (it *Document) RowsAsJSON() JSONRows {
 
 	res := make(JSONRows, 0)
 	for _, row := range it.Rows {
-		r := utils.NewRecord[any]()
+		r := maps.NewSafeDict[any]()
 		for i := range it.Cols {
 			col := it.Cols[i].Name
 			val := row[i]
@@ -59,19 +60,19 @@ func (it *Document) RowsAsJSON() JSONRows {
 				if v == "" {
 					continue
 				}
-				r.Set(col, v)
+				r.Store(col, v)
 			case float32:
-				r.Set(col, v)
+				r.Store(col, v)
 			case float64:
-				r.Set(col, v)
+				r.Store(col, v)
 			case bool:
-				r.Set(col, v)
+				r.Store(col, v)
 			default:
 				rv := reflect.ValueOf(val)
 				if (rv.Kind() == reflect.Slice || rv.Kind() == reflect.Map) && rv.Len() == 0 {
 					continue
 				}
-				r.Set(col, val)
+				r.Store(col, val)
 			}
 		}
 		res = append(res, JSONRow{r})
@@ -81,11 +82,15 @@ func (it *Document) RowsAsJSON() JSONRows {
 
 type JSONRows []JSONRow
 type JSONRow struct {
-	*utils.Record[any]
+	m *maps.SafeDict[any]
 }
 
-func (r JSONRow) GetString(key string) string {
-	v, ok := r.Get(key)
+func (r *JSONRow) MarshalJSON() ([]byte, error) {
+	return r.m.MarshalJSON()
+}
+
+func (r *JSONRow) GetString(key string) string {
+	v, ok := r.m.Load(key)
 	if !ok {
 		return ""
 	}
@@ -95,8 +100,8 @@ func (r JSONRow) GetString(key string) string {
 	return ""
 }
 
-func (r JSONRow) GetInt(key string) int {
-	v, ok := r.Get(key)
+func (r *JSONRow) GetInt(key string) int {
+	v, ok := r.m.Load(key)
 	if !ok || v == nil {
 		return 0
 	}
@@ -113,8 +118,8 @@ func (r JSONRow) GetInt(key string) int {
 	}
 }
 
-func (r JSONRow) GetNumber(key string) float32 {
-	v, ok := r.Get(key)
+func (r *JSONRow) GetNumber(key string) float32 {
+	v, ok := r.m.Load(key)
 	if !ok || v == nil {
 		return 0
 	}

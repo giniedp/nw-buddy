@@ -3,6 +3,7 @@ package dds
 import (
 	"fmt"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 )
 
 type Header struct {
@@ -46,10 +47,10 @@ func (it *PixelFormat) IsDX10() bool {
 }
 
 func ParseHeader(data []byte) (res Header, err error) {
-	return readHeader(utils.NewByteReaderLE(data))
+	return readHeader(buf.NewReaderLE(data))
 }
 
-func readHeader(r *utils.ByteReader) (res Header, err error) {
+func readHeader(r *buf.Reader) (res Header, err error) {
 	defer utils.HandleRecover(&err)
 
 	magic := r.MustReadBytes(4)
@@ -85,7 +86,7 @@ func readHeader(r *utils.ByteReader) (res Header, err error) {
 	return res, nil
 }
 
-func readDX10Header(r *utils.ByteReader) (res DX10Header, err error) {
+func readDX10Header(r *buf.Reader) (res DX10Header, err error) {
 	defer utils.HandleRecover(&err)
 
 	res.DxgiFormat = r.MustReadUint32()

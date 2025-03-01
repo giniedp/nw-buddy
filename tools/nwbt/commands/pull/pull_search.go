@@ -5,20 +5,25 @@ import (
 	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/datasheet"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
+
+	"github.com/dustin/go-humanize"
 )
 
-func pullSearch(tables []*datasheet.Document, locales *utils.Record[*utils.Record[string]], outDir string) {
+func pullSearch(tables []*datasheet.Document, locales *maps.SafeDict[*maps.SafeDict[string]], outDir string) {
 
+	sizes := maps.NewSafeDict[int]()
+	counts := maps.NewSafeDict[int]()
 	progress.RunTasks(progress.TasksConfig[string, *Blob]{
 		Description:   "Search index",
 		Tasks:         locales.Keys(),
 		ProducerCount: int(flgWorkerCount),
 		Producer: func(locale string) (output *Blob, err error) {
-			dict, _ := locales.Get(locale)
+			dict, _ := locales.Load(locale)
 			index := &SearchIndex{
 				tables: tables,
 				dict:   dict,
@@ -41,7 +46,7 @@ func pullSearch(tables []*datasheet.Document, locales *utils.Record[*utils.Recor
 			buf.WriteRune('[')
 			for i, item := range index.rows {
 				buf.WriteRune('\n')
-				data, err := utils.MarshalJSON(item)
+				data, err := json.MarshalJSON(item)
 				if err != nil {
 					slog.Error("Failed to marshal search data", "err", err)
 					continue
@@ -58,16 +63,22 @@ func pullSearch(tables []*datasheet.Document, locales *utils.Record[*utils.Recor
 				Path: path.Join(outDir, locale+".json"),
 				Data: buf.Bytes(),
 			}
+			sizes.Store(locale, len(output.Data))
+			counts.Store(locale, len(index.rows))
 			return
 		},
 		ConsumerCount: 1,
 		Consumer:      writeBlob,
 	})
+
+	for lang, _ := range locales.Iter() {
+		stats.Add("Search "+lang, "count", counts.Get(lang), "size", humanize.Bytes(uint64(sizes.Get(lang))))
+	}
 }
 
 type SearchIndex struct {
 	tables []*datasheet.Document
-	dict   *utils.Record[string]
+	dict   *maps.SafeDict[string]
 
 	rows    []SearchItem
 	skipped int
@@ -97,7 +108,7 @@ func (it *SearchIndex) getLocalizedString(table *datasheet.Document, row int, co
 	key := it.getString(table, row, col)
 	key = strings.TrimPrefix(key, "@")
 	key = strings.ToLower(key)
-	value, _ := it.dict.Get(key)
+	value, _ := it.dict.Load(key)
 	return value
 }
 

@@ -3,7 +3,7 @@ package scan
 import (
 	"encoding/binary"
 	"math"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"strings"
 )
 
@@ -32,16 +32,16 @@ type VariantsResult struct {
 }
 
 func CollateVariants(rows []VariantEntry) (result VariantsResult, count int) {
-	index := utils.NewRecord[*utils.Record[*utils.Record[*ScannedVariationSpawn]]]()
+	index := maps.NewDict[*maps.Dict[*maps.Dict[*ScannedVariationSpawn]]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)
 		position := PositionFromV3(row.Position).Truncate()
 		recordID := strings.ToLower(row.VariantID)
 
 		node := index.
-			GetOrCreate(recordID, utils.NewRecord).
-			GetOrCreate(mapId, utils.NewRecord).
-			GetOrCreate(row.Encounter, func() *ScannedVariationSpawn {
+			LoadOrCreate(recordID, maps.NewDict).
+			LoadOrCreate(mapId, maps.NewDict).
+			LoadOrCreate(row.Encounter, func() *ScannedVariationSpawn {
 				return &ScannedVariationSpawn{
 					MapID:     mapId,
 					Encounter: row.Encounter,
@@ -51,11 +51,11 @@ func CollateVariants(rows []VariantEntry) (result VariantsResult, count int) {
 		node.positions = append(node.positions, position)
 	}
 
-	records := utils.NewRecord[*ScannedVariation]()
+	records := maps.NewDict[*ScannedVariation]()
 	chunks := ChunkIndex{}
 
 	for recordID, b1 := range index.SortedIter() {
-		node := records.GetOrCreate(recordID, func() *ScannedVariation {
+		node := records.LoadOrCreate(recordID, func() *ScannedVariation {
 			return &ScannedVariation{
 				VariantID: recordID,
 				Spawns:    make([]ScannedVariationSpawn, 0),

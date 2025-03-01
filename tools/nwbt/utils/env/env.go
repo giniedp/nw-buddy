@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"os"
 	"path"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -104,6 +106,17 @@ func TempDir() string {
 // UnpackDir returns the unpack directory by looking up the NW_UNPACK environment variable
 func UnpackDir() string {
 	return Get("NW_UNPACK", path.Join(TempDir(), "unpack"))
+}
+
+// PreferredWorkerCount for general purpose tasks
+func PreferredWorkerCount() int {
+	defaultMin := 4
+	defaultVal := int(math.Max(float64(defaultMin), float64(runtime.NumCPU()/2)))
+	strValue := os.Getenv("NW_WORKER_COUNT")
+	if value, err := strconv.Atoi(strValue); err != nil && value > 0 {
+		return value
+	}
+	return defaultVal
 }
 
 // PullDataDir returns the pull directory by looking up the NW_PULL_DATA environment variable

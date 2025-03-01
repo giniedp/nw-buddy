@@ -55,7 +55,7 @@ func processDDS(task *Task, format string) {
 		for i, img := range task.Output {
 			out, err := image.ConvertDDS(
 				img.Data,
-				image.PNG,
+				image.FormatPNG,
 				image.WithSilent(true),
 				image.WithTempDir(flgTempDir),
 				image.WithNormalMap(dds.IsNormalMap(img.Path)),
@@ -72,7 +72,7 @@ func processDDS(task *Task, format string) {
 		for i, img := range task.Output {
 			out, err := image.ConvertDDS(
 				img.Data,
-				image.WEBP,
+				image.FormatWEBP,
 				image.WithSilent(true),
 				image.WithTempDir(flgTempDir),
 				image.WithNormalMap(dds.IsNormalMap(img.Path)),

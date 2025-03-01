@@ -11,6 +11,12 @@ func Must[T any](obj T, err error) T {
 	return obj
 }
 
+func Must1[T any](err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func HandleRecover(err *error, msg ...string) {
 	if e := ToErr(*err, msg...); e != nil {
 		*err = e
@@ -22,7 +28,7 @@ func HandleRecover(err *error, msg ...string) {
 	}
 }
 
-func ToErr(err interface{}, msg ...string) error {
+func ToErr(err any, msg ...string) error {
 	if err == nil {
 		return nil
 	}
@@ -35,11 +41,5 @@ func ToErr(err interface{}, msg ...string) error {
 		return fmt.Errorf("%s%w", message, e)
 	default:
 		return fmt.Errorf("%s%v", message, e)
-	}
-}
-
-func PanicIfErr(err interface{}, msg ...string) {
-	if e := ToErr(err, msg...); e != nil {
-		panic(e)
 	}
 }

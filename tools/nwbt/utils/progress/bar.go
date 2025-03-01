@@ -32,20 +32,12 @@ func (it *progressBar) Detail(detail string) {
 	it.msg(detail)
 }
 func (it *progressBar) Wait() {
-	it.onEnd()
 	it.prog.Wait()
 }
 func (it *progressBar) Close() {
-	it.onEnd()
 	it.bar.SetTotal(int64(it.count), true)
 	time.Sleep(100 * time.Millisecond)
 	it.prog.Wait()
-}
-func (it *progressBar) onStart() {
-	// slog.SetDefault(logging.DefaultFileHandler())
-}
-func (it *progressBar) onEnd() {
-	// slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
 func Bar(count int, title string) ProgressBar {
@@ -73,7 +65,6 @@ func Bar(count int, title string) ProgressBar {
 		msg = v
 	}, 0}
 
-	progress.onStart()
 	return progress
 }
 

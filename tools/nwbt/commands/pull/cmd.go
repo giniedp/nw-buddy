@@ -8,9 +8,11 @@ import (
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
 	"nw-buddy/tools/utils/logging"
+	"nw-buddy/tools/utils/maps"
 	"os"
 	"path"
 	"slices"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -38,11 +40,11 @@ const (
 var tasks = []string{
 	TASK_TABLES,
 	TASK_LOCALE,
+	TASK_SEARCH,
 	TASK_TYPES,
 	TASK_SLICES,
 	TASK_SPELLS,
 	TASK_IMAGES,
-	TASK_SEARCH,
 	TASK_CONSTANTS,
 	TASK_HEIGHTMAP,
 }
@@ -62,7 +64,7 @@ func init() {
 	Cmd.Flags().StringVar(&flgOutDataDir, "out-data", env.PullDataDir(), "output directory for data")
 	Cmd.Flags().StringVar(&flgOutTypeDir, "out-types", env.PullTypesDir(), "output directory for types ")
 	Cmd.Flags().BoolVar(&flgUpdateImages, "update-images", false, "if true, existing images are ignored and re-processed")
-	Cmd.Flags().Uint32VarP(&flgWorkerCount, "workers", "w", 10, "number of workers to use for processing")
+	Cmd.Flags().Uint32VarP(&flgWorkerCount, "workers", "w", uint32(env.PreferredWorkerCount()), "number of workers to use for processing")
 }
 
 func args(cmd *cobra.Command, args []string) error {
@@ -80,6 +82,8 @@ func args(cmd *cobra.Command, args []string) error {
 }
 
 func run(ccmd *cobra.Command, args []string) {
+	startTime := time.Now()
+
 	if flgWorkerCount == 0 {
 		flgWorkerCount = 1
 	}
@@ -91,7 +95,7 @@ func run(ccmd *cobra.Command, args []string) {
 
 	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
 	var tables []*datasheet.Document
-	var locales *utils.Record[*utils.Record[string]]
+	var locales *maps.SafeDict[*maps.SafeDict[string]]
 	for _, task := range BuildTaskList(flgModes) {
 		switch task {
 		case TASK_TABLES:
@@ -131,6 +135,7 @@ func run(ccmd *cobra.Command, args []string) {
 	}
 	slog.SetDefault(logging.DefaultTerminalHandler())
 	stats.Print()
+	slog.Info("pull complete", "duration", time.Since(startTime))
 }
 
 type Blob struct {

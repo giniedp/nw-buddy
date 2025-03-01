@@ -1,11 +1,14 @@
 package loc
 
-import "nw-buddy/tools/utils"
+import (
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/maps"
+)
 
 func (it *Document) ToJSON(fmt ...string) ([]byte, error) {
-	rec := utils.NewRecord[string]()
+	rec := maps.NewDict[string]()
 	for _, entry := range it.Entries {
-		rec.Set(entry.Key, entry.Value)
+		rec.Store(entry.Key, entry.Value)
 	}
-	return utils.MarshalJSON(rec, fmt...)
+	return json.MarshalJSON(rec, fmt...)
 }

@@ -2,7 +2,7 @@ package distribution_test
 
 import (
 	"nw-buddy/tools/formats/distribution"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
 	"os"
 	"testing"
 
@@ -17,7 +17,7 @@ func TestRead(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, rec.Region[0], uint32(3))
 	assert.Equal(t, rec.Region[1], uint32(3))
-	json, err := utils.MarshalJSON(rec, "", "\t")
+	json, err := json.MarshalJSON(rec, "", "\t")
 	assert.NoError(t, err)
 	os.WriteFile("samples/region.json", json, 0644)
 }

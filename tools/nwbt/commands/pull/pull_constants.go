@@ -8,7 +8,9 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/maps"
+	"nw-buddy/tools/utils/str"
 	"os"
 	"path"
 	"strconv"
@@ -56,7 +58,7 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 		return
 	}
 
-	constants := utils.NewRecord[any]()
+	constants := maps.NewSafeDict[any]()
 	attr, ok := doc.(nwt.PlayerBaseAttributes)
 	if !ok {
 		slog.Error("playerbaseattributes.pbadb is not a PlayerBaseAttributes")
@@ -64,37 +66,37 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 	}
 
 	pad := attr.Player_attribute_data
-	constants.Set("NW_MIN_GEAR_SCORE", int(pad.Min_possible_weapon_gear_score))
-	constants.Set("NW_MIN_ARMOR_MITIGATION", float32(pad.Min_armor_mitigation))
-	constants.Set("NW_MAX_ARMOR_MITIGATION", float32(pad.Max_armor_mitigation))
-	constants.Set("NW_PHYSICAL_ARMOR_SCALE_FACTOR", float32(pad.Physical_armor_scale_factor))
-	constants.Set("NW_ELEMENTAL_ARMOR_SCALE_FACTOR", float32(pad.Elemental_armor_scale_factor))
-	constants.Set("NW_ARMOR_SET_RATING_EXPONENT", float32(pad.Armor_set_rating_exponent))
-	constants.Set("NW_ARMOR_MITIGATION_EXPONENT", float32(pad.Armor_mitigation_exponent))
-	constants.Set("NW_ARMOR_RATING_DECIMAL_ACCURACY", int(pad.Armor_rating_decimal_accuracy))
-	constants.Set("NW_BASE_DAMAGE_COMPOUND_INCREASE", float32(pad.Base_damage_compound_increase))
-	constants.Set("NW_COMPOUND_INCREASE_DIMINISHING_MULTIPLIER", float32(pad.Compound_increase_diminishing_multiplier))
-	constants.Set("NW_BASE_DAMAGE_GEAR_SCORE_INTERVAL", int(pad.Base_damage_gear_score_interval))
-	constants.Set("NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE", int(pad.Min_possible_weapon_gear_score))
-	constants.Set("NW_DIMINISHING_GEAR_SCORE_THRESHOLD", int(pad.Diminishing_gear_score_threshold))
-	constants.Set("NW_ROUND_GEARSCORE_UP", bool(pad.Round_gearscore_up_))
-	constants.Set("NW_GEAR_SCORE_ROUNDING_INTERVAL", int(pad.Gear_score_rounding_interval))
-	constants.Set("NW_MAX_POINTS_PER_ATTRIBUTE", int(pad.Max_points_per_attribute))
-	constants.Set("NW_LEVEL_DAMAGE_MULTIPLIER", float32(pad.Level_damage_multiplier))
+	constants.Store("NW_MIN_GEAR_SCORE", int(pad.Min_possible_weapon_gear_score))
+	constants.Store("NW_MIN_ARMOR_MITIGATION", float32(pad.Min_armor_mitigation))
+	constants.Store("NW_MAX_ARMOR_MITIGATION", float32(pad.Max_armor_mitigation))
+	constants.Store("NW_PHYSICAL_ARMOR_SCALE_FACTOR", float32(pad.Physical_armor_scale_factor))
+	constants.Store("NW_ELEMENTAL_ARMOR_SCALE_FACTOR", float32(pad.Elemental_armor_scale_factor))
+	constants.Store("NW_ARMOR_SET_RATING_EXPONENT", float32(pad.Armor_set_rating_exponent))
+	constants.Store("NW_ARMOR_MITIGATION_EXPONENT", float32(pad.Armor_mitigation_exponent))
+	constants.Store("NW_ARMOR_RATING_DECIMAL_ACCURACY", int(pad.Armor_rating_decimal_accuracy))
+	constants.Store("NW_BASE_DAMAGE_COMPOUND_INCREASE", float32(pad.Base_damage_compound_increase))
+	constants.Store("NW_COMPOUND_INCREASE_DIMINISHING_MULTIPLIER", float32(pad.Compound_increase_diminishing_multiplier))
+	constants.Store("NW_BASE_DAMAGE_GEAR_SCORE_INTERVAL", int(pad.Base_damage_gear_score_interval))
+	constants.Store("NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE", int(pad.Min_possible_weapon_gear_score))
+	constants.Store("NW_DIMINISHING_GEAR_SCORE_THRESHOLD", int(pad.Diminishing_gear_score_threshold))
+	constants.Store("NW_ROUND_GEARSCORE_UP", bool(pad.Round_gearscore_up_))
+	constants.Store("NW_GEAR_SCORE_ROUNDING_INTERVAL", int(pad.Gear_score_rounding_interval))
+	constants.Store("NW_MAX_POINTS_PER_ATTRIBUTE", int(pad.Max_points_per_attribute))
+	constants.Store("NW_LEVEL_DAMAGE_MULTIPLIER", float32(pad.Level_damage_multiplier))
 
-	constants.Set("NW_ITEM_RARITY_DATA", mapSlice(pad.Item_rarity_data.Element, func(rarity nwt.ItemRarityData) any {
+	constants.Store("NW_ITEM_RARITY_DATA", mapSlice(pad.Item_rarity_data.Element, func(rarity nwt.ItemRarityData) any {
 		return map[string]any{
 			"displayName":  string(rarity.Rarity_level_loc_string),
 			"maxPerkCount": int(rarity.Max_perk_count),
 		}
 	}))
 
-	constants.Set("NW_CRAFTING_RESULT_LOOT_BUCKET", string(pad.Perk_generation_data.Crafting_result_loot_bucket))
-	constants.Set("NW_ROLL_PERK_ON_UPGRADE_GS", int(pad.Perk_generation_data.Roll_perk_on_upgrade_gs))
-	constants.Set("NW_ROLL_PERK_ON_UPGRADE_TIER", int(pad.Perk_generation_data.Roll_perk_on_upgrade_tier))
-	constants.Set("NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT", int(pad.Perk_generation_data.Roll_perk_on_upgrade_perk_count))
+	constants.Store("NW_CRAFTING_RESULT_LOOT_BUCKET", string(pad.Perk_generation_data.Crafting_result_loot_bucket))
+	constants.Store("NW_ROLL_PERK_ON_UPGRADE_GS", int(pad.Perk_generation_data.Roll_perk_on_upgrade_gs))
+	constants.Store("NW_ROLL_PERK_ON_UPGRADE_TIER", int(pad.Perk_generation_data.Roll_perk_on_upgrade_tier))
+	constants.Store("NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT", int(pad.Perk_generation_data.Roll_perk_on_upgrade_perk_count))
 
-	constants.Set("NW_PERK_GENERATION_DATA", mapSlice(pad.Perk_generation_data.Perk_data_per_tier.Element, func(perk nwt.PerkTierData) any {
+	constants.Store("NW_PERK_GENERATION_DATA", mapSlice(pad.Perk_generation_data.Perk_data_per_tier.Element, func(perk nwt.PerkTierData) any {
 		return map[string]any{
 			"maxPerkChannel":           int(perk.Max_perk_channel),
 			"attributePerkProbability": float32(perk.Attribute_perk_probability),
@@ -120,15 +122,15 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 
 	for _, row := range encRows {
 		if row.GetString("ContainerTypeID") == "Player" {
-			constants.Set("NW_EQUIP_LOAD_RATIO_FAST", row.GetNumber("EquipLoadRatioFast"))
-			constants.Set("NW_EQUIP_LOAD_RATIO_NORMAL", row.GetNumber("EquipLoadRatioNormal"))
-			constants.Set("NW_EQUIP_LOAD_RATIO_SLOW", row.GetNumber("EquipLoadRatioSlow"))
-			constants.Set("NW_EQUIP_LOAD_DAMAGE_MULT_FAST", row.GetNumber("EquipLoadDamageMultFast"))
-			constants.Set("NW_EQUIP_LOAD_DAMAGE_MULT_NORMAL", row.GetNumber("EquipLoadDamageMultNormal"))
-			constants.Set("NW_EQUIP_LOAD_DAMAGE_MULT_SLOW", row.GetNumber("EquipLoadDamageMultSlow"))
-			constants.Set("NW_EQUIP_LOAD_HEAL_MULT_FAST", row.GetNumber("EquipLoadHealMultFast"))
-			constants.Set("NW_EQUIP_LOAD_HEAL_MULT_NORMAL", row.GetNumber("EquipLoadHealMultNormal"))
-			constants.Set("NW_EQUIP_LOAD_HEAL_MULT_SLOW", row.GetNumber("EquipLoadHealMultSlow"))
+			constants.Store("NW_EQUIP_LOAD_RATIO_FAST", row.GetNumber("EquipLoadRatioFast"))
+			constants.Store("NW_EQUIP_LOAD_RATIO_NORMAL", row.GetNumber("EquipLoadRatioNormal"))
+			constants.Store("NW_EQUIP_LOAD_RATIO_SLOW", row.GetNumber("EquipLoadRatioSlow"))
+			constants.Store("NW_EQUIP_LOAD_DAMAGE_MULT_FAST", row.GetNumber("EquipLoadDamageMultFast"))
+			constants.Store("NW_EQUIP_LOAD_DAMAGE_MULT_NORMAL", row.GetNumber("EquipLoadDamageMultNormal"))
+			constants.Store("NW_EQUIP_LOAD_DAMAGE_MULT_SLOW", row.GetNumber("EquipLoadDamageMultSlow"))
+			constants.Store("NW_EQUIP_LOAD_HEAL_MULT_FAST", row.GetNumber("EquipLoadHealMultFast"))
+			constants.Store("NW_EQUIP_LOAD_HEAL_MULT_NORMAL", row.GetNumber("EquipLoadHealMultNormal"))
+			constants.Store("NW_EQUIP_LOAD_HEAL_MULT_SLOW", row.GetNumber("EquipLoadHealMultSlow"))
 		}
 	}
 
@@ -143,12 +145,12 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 		maxTradeLevel = int(math.Max(float64(maxTradeLevel), float64(row.GetInt("MaxTradeskillLevel"))))
 		maxCraftGs = int(math.Max(float64(maxCraftGs), float64(row.GetInt("MaxCraftGS"))))
 	}
-	constants.Set("NW_MAX_GEAR_SCORE", maxGS)
-	constants.Set("NW_MAX_CHARACTER_LEVEL", maxLevel)
-	constants.Set("NW_MAX_TRADESKILL_LEVEL", maxTradeLevel)
-	constants.Set("NW_MAX_CRAFT_GEAR_SCORE", maxCraftGs)
+	constants.Store("NW_MAX_GEAR_SCORE", maxGS)
+	constants.Store("NW_MAX_CHARACTER_LEVEL", maxLevel)
+	constants.Store("NW_MAX_TRADESKILL_LEVEL", maxTradeLevel)
+	constants.Store("NW_MAX_CRAFT_GEAR_SCORE", maxCraftGs)
 
-	sb := utils.NewStringBuilder()
+	sb := str.NewBuilder()
 	for k, v := range constants.Iter() {
 		switch v := v.(type) {
 		case string:
@@ -160,7 +162,7 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 		case bool:
 			sb.Line("export const %s = %v", k, v)
 		default:
-			data, _ := utils.MarshalJSON(v, "", "\t")
+			data, _ := json.MarshalJSON(v, "", "\t")
 			sb.Line("export const %s = Object.freeze(%s)", k, string(data))
 		}
 	}

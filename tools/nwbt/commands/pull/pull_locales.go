@@ -4,15 +4,18 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/loc"
 	"nw-buddy/tools/nwfs"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
+
+	"github.com/dustin/go-humanize"
 )
 
-func pullLocales(fs nwfs.Archive, outDir string) *utils.Record[*utils.Record[string]] {
+func pullLocales(fs nwfs.Archive, outDir string) *maps.SafeDict[*maps.SafeDict[string]] {
 	groups := groupLocaleFiles(findLocaleFiles(fs))
-	locales := utils.NewRecord[*utils.Record[string]]()
+	locales := maps.NewSafeDict[*maps.SafeDict[string]]()
+	sizes := maps.NewSafeDict[int]()
 	progress.RunTasks(progress.TasksConfig[[]nwfs.File, *Blob]{
 		Description:   "Locales",
 		Tasks:         groups.Values(),
@@ -23,8 +26,9 @@ func pullLocales(fs nwfs.Archive, outDir string) *utils.Record[*utils.Record[str
 				Path: path.Join(outDir, lang+".json"),
 			}
 			dict := loadDictionary(files)
-			locales.Set(lang, dict)
-			output.Data, err = utils.MarshalJSON(dict.ToSortedMap(), "", "\t")
+			locales.Store(lang, dict)
+			output.Data, err = dict.MarshalJSON()
+			sizes.Store(lang, len(output.Data))
 			return
 		},
 		ConsumerCount: 1,
@@ -32,26 +36,26 @@ func pullLocales(fs nwfs.Archive, outDir string) *utils.Record[*utils.Record[str
 	})
 
 	for lang, dict := range locales.Iter() {
-		stats.Add(lang, "count", dict.Len())
+		stats.Add("Locale "+lang, "count", dict.Len(), "size", humanize.Bytes(uint64(sizes.Get(lang))))
 	}
 	return locales
 }
 
-func groupLocaleFiles(files []nwfs.File) *utils.Record[[]nwfs.File] {
-	groups := utils.NewRecord[[]nwfs.File]()
+func groupLocaleFiles(files []nwfs.File) *maps.SafeDict[[]nwfs.File] {
+	groups := maps.NewSafeDict[[]nwfs.File]()
 	for _, file := range files {
 		lang := path.Base(path.Dir(file.Path()))
-		if list, ok := groups.Get(lang); ok {
-			groups.Set(lang, append(list, file))
+		if list, ok := groups.Load(lang); ok {
+			groups.Store(lang, append(list, file))
 		} else {
-			groups.Set(lang, []nwfs.File{file})
+			groups.Store(lang, []nwfs.File{file})
 		}
 	}
 	return groups
 }
 
-func loadDictionary(files []nwfs.File) *utils.Record[string] {
-	dict := utils.NewRecord[string]()
+func loadDictionary(files []nwfs.File) *maps.SafeDict[string] {
+	dict := maps.NewSafeDict[string]()
 	for _, file := range files {
 		doc, err := loc.Load(file)
 		if err != nil {
@@ -59,22 +63,18 @@ func loadDictionary(files []nwfs.File) *utils.Record[string] {
 			continue
 		}
 		for _, entry := range doc.Entries {
-			if entry.Key == "" && entry.Value == "" {
-				continue
-			}
-			key := strings.ToLower(entry.Key)
-			value := strings.ToLower(entry.Value)
-			if value == "" {
+			if entry.Key == "" || entry.Value == "" {
 				continue
 			}
 
-			oldValue, hasValue := dict.Get(key)
-			if hasValue && !strings.EqualFold(oldValue, entry.Value) {
+			key := strings.ToLower(entry.Key)
+			oldValue, hadValue := dict.LoadOrStore(key, entry.Value)
+			if hadValue && !strings.EqualFold(oldValue, entry.Value) {
 				slog.Debug("Duplicate key found", "key", entry.Key, "value", oldValue, "value", entry.Value, "file", file.Path())
 				continue
 			}
-			dict.Set(key, entry.Value)
 		}
 	}
+	dict.Sort()
 	return dict
 }

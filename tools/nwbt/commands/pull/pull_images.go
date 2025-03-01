@@ -1,6 +1,7 @@
 package pull
 
 import (
+	"log/slog"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/formats/dds"
 	"nw-buddy/tools/formats/image"
@@ -8,16 +9,18 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
+	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
 	"regexp"
 	"strings"
+	"sync/atomic"
 )
 
 func pullImages(fs nwfs.Archive, outDir string, update bool) {
 
-	imageSet := utils.NewRecord[bool]()
+	images := maps.NewSafeSet[string]()
 	progress.RunTasks(progress.TasksConfig[nwfs.File, string]{
 		Description:   "img scan (tables)",
 		ProducerCount: int(flgWorkerCount),
@@ -31,7 +34,7 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 			for _, row := range sheet.Rows {
 				for _, cell := range row {
 					if img, ok := cell.(string); ok && isPossiblyImage(img) {
-						imageSet.Set(img, true)
+						images.Store(img)
 					}
 				}
 			}
@@ -50,56 +53,56 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 			}
 			for _, entry := range doc.Entries {
 				for _, img := range scanForHtmlImages(entry.Value) {
-					imageSet.Set(img, true)
+					images.Store(img)
 				}
 			}
 			return
 		},
 	})
 
-	images := imageSet.Keys()
 	tiles, _ := fs.Glob("lyshineui/worldtiles/**.dds")
 	for _, tile := range tiles {
-		images = append(images, tile.Path())
+		images.Store(tile.Path())
 	}
 
-	skipped := 0
-	missing := utils.NewRecord[bool]()
+	failed := int32(0)
+	skipped := int32(0)
+	missing := maps.NewSafeSet[string]()
 	progress.RunTasks(progress.TasksConfig[string, *Blob]{
 		Description:   "pull images",
 		ProducerCount: int(flgWorkerCount),
 		ConsumerCount: int(flgWorkerCount),
-		Tasks:         images,
-		Producer: func(img string) (output *Blob, err error) {
-			output = &Blob{Path: img}
+		Tasks:         images.Values(),
+		Producer: func(source string) (output *Blob, err error) {
+			output = &Blob{Path: source}
 
-			img = nwfs.NormalizePath(img)
-			f, ok := fs.Lookup(img)
-			if !ok {
-				img = utils.ReplaceExt(img, ".dds")
-				f, ok = fs.Lookup(img)
+			filePath := nwfs.NormalizePath(source)
+			file, found := fs.Lookup(filePath)
+			if !found {
+				filePath = utils.ReplaceExt(filePath, ".dds")
+				file, found = fs.Lookup(filePath)
 			}
-			if !ok {
-				missing.Set(img, true)
-				return
-			}
-			ext := path.Ext(img)
-			if ext != ".dds" {
+			if !found {
+				slog.Debug("Image not found", "file", source)
+				missing.Store(filePath)
 				return
 			}
 
-			output.Path = utils.ReplaceExt(path.Join(outDir, img), ".webp")
+			output.Path = utils.ReplaceExt(path.Join(outDir, filePath), ".webp")
 			if !update && utils.FileExists(output.Path) {
-				skipped++
+				atomic.AddInt32(&skipped, 1)
 				return
 			}
-			output.Data, err = image.ConvertDDSFile(
-				f,
-				image.WEBP,
+			output.Data, err = image.ConvertFile(
+				file,
+				image.FormatWEBP,
 				image.WithTempDir(env.TempDir()),
 				image.WithSilent(true),
-				image.WithNormalMap(dds.IsNormalMap(f.Path())),
+				image.WithNormalMap(dds.IsNormalMap(file.Path())),
 			)
+			if err != nil {
+				atomic.AddInt32(&failed, 1)
+			}
 			return
 		},
 		Consumer: func(value *Blob, e error) (msg string, err error) {
@@ -113,7 +116,7 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 		},
 	})
 
-	stats.Add("Images", "total", len(images), "skipped", skipped, "missed", missing.Len())
+	stats.Add("Images", "total", images.Len(), "skipped", skipped, "missed", missing.Len(), "failed", failed)
 }
 
 func isPossiblyImage(name string) bool {

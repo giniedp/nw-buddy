@@ -7,6 +7,8 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
@@ -20,7 +22,8 @@ type ScannedSpell struct {
 
 func pullSpells(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 	bar := progress.Bar(len(tables), "Scanning spells")
-	records := utils.NewRecord[ScannedSpell]()
+	records := maps.NewSyncDict[*ScannedSpell]()
+
 	for _, table := range tables {
 		bar.Add(1)
 		if table.Schema != "SpellData" {
@@ -39,7 +42,11 @@ func pullSpells(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 				if prefab == "" {
 					continue
 				}
-				if records.Has(prefab) {
+
+				record, hadValue := records.LoadOrStore(prefab, &ScannedSpell{
+					PrefabPath: prefab,
+				})
+				if hadValue {
 					continue
 				}
 
@@ -54,7 +61,6 @@ func pullSpells(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 					slog.Warn("spell slice not loaded", "path", slicePath, "err", err)
 					continue
 				}
-				effects := make([]string, 0)
 				for _, components := range scan.EntitiesOf(scan.FindSliceComponent(entity)) {
 					for _, component := range components {
 
@@ -68,24 +74,23 @@ func pullSpells(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 							continue
 						}
 						for _, effect := range facet.M_addstatuseffects.Element {
-							effects = utils.AppendUniqNoZero(effects, string(effect.M_effectid))
+							record.AreaStatusEffects = utils.AppendUniqNoZero(record.AreaStatusEffects, string(effect.M_effectid))
 						}
 					}
 				}
-				if len(effects) == 0 {
-					continue
-				}
-				records.Set(prefab, ScannedSpell{
-					PrefabPath:        prefab,
-					AreaStatusEffects: effects,
-				})
 			}
 		}
-
 	}
-	result := records.Values()
+
+	result := make([]*ScannedSpell, 0)
+	for _, value := range records.SortedValues() {
+		if len(value.AreaStatusEffects) > 0 {
+			result = append(result, value)
+		}
+	}
+
 	outPath := path.Join(outDir, "spells_metadata.json")
-	outData, err := utils.MarshalJSON(result, "", "\t")
+	outData, err := json.MarshalJSON(result, "", "\t")
 	if err != nil {
 		slog.Error("failed to marshal spells", "err", err)
 		return

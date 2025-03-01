@@ -6,13 +6,14 @@ import (
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
 )
 
 func pullTables(fs nwfs.Archive, outDir string) []*datasheet.Document {
-	result := utils.NewRecord[*datasheet.Document]()
+	result := maps.NewSyncDict[*datasheet.Document]()
 
 	progress.RunTasks(progress.TasksConfig[nwfs.File, string]{
 		Description:   "Datasheets (read)",
@@ -23,7 +24,7 @@ func pullTables(fs nwfs.Archive, outDir string) []*datasheet.Document {
 			if err != nil {
 				return
 			}
-			result.Set(file.Path(), &sheet)
+			result.Store(file.Path(), &sheet)
 			return
 		},
 	})

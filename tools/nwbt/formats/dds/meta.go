@@ -2,7 +2,7 @@ package dds
 
 import (
 	"nw-buddy/tools/nwfs"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 )
 
 type Meta struct {
@@ -21,7 +21,7 @@ func LoadMeta(f nwfs.File) (res *Meta, err error) {
 	res = &Meta{}
 	res.Data = data
 
-	r := utils.NewByteReaderLE(data)
+	r := buf.NewReaderLE(data)
 	header, err := readHeader(r)
 	if err != nil {
 		return nil, err

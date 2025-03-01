@@ -1,7 +1,8 @@
 package rtti
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/str"
 	"os"
 )
 
@@ -25,7 +26,7 @@ func (it CrcTable) Put(crc uint32, name string) {
 }
 
 func (it CrcTable) PutName(name string) {
-	crc := utils.Crc32FromString(name)
+	crc := str.Crc32(name)
 	it[crc] = name
 }
 
@@ -45,14 +46,14 @@ func LoadCrcTable(path string) (CrcTable, error) {
 	defer file.Close()
 
 	var it CrcTable
-	if err := utils.DecodeJSON(file, &it); err != nil {
+	if err := json.DecodeJSON(file, &it); err != nil {
 		return nil, err
 	}
 	return it, nil
 }
 
 func (it CrcTable) Save(path string) error {
-	data, err := utils.MarshalJSON(it, "", "\t")
+	data, err := json.MarshalJSON(it, "", "\t")
 	if err != nil {
 		return err
 	}

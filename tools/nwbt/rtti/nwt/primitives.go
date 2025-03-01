@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 	"nw-buddy/tools/formats/azcs"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 	"reflect"
 	"strconv"
 	"strings"
@@ -270,7 +270,7 @@ func (it *AzColor) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzAsset) Deserialize(el *azcs.Element) error {
-	r := utils.NewByteReaderBE(el.Data)
+	r := buf.NewReaderBE(el.Data)
 	b, err := r.ReadBytes(16)
 	if err != nil {
 		return fmt.Errorf("failed to read guid: %v", err)

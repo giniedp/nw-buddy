@@ -1,7 +1,7 @@
 package scan
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"strings"
 )
 
@@ -17,15 +17,15 @@ type ScannedHouse struct {
 }
 
 func CollateHouses(rows []HouseEntry) (result []ScannedHouseType, count int) {
-	index := utils.NewRecord[*utils.Record[*ScannedHouse]]()
+	index := maps.NewDict[*maps.Dict[*ScannedHouse]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)
 		position := PositionFromV3(row.Position).Truncate()
 		typeID := strings.ToLower(row.HouseID)
 
 		index.
-			GetOrCreate(typeID, utils.NewRecord).
-			GetOrCreate(mapId+"@"+position.Key(), func() *ScannedHouse {
+			LoadOrCreate(typeID, maps.NewDict).
+			LoadOrCreate(mapId+"@"+position.Key(), func() *ScannedHouse {
 				return &ScannedHouse{
 					MapID:       mapId,
 					HouseTypeID: row.HouseID,

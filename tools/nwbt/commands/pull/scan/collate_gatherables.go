@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"slices"
 	"strings"
 )
@@ -22,7 +22,8 @@ type ScannedGatherableSpawn struct {
 }
 
 func CollateGatherables(rows []GatherableEntry) (result []ScannedGatherable, count int) {
-	index := utils.NewRecord[*utils.Record[*utils.Record[*ScannedGatherableSpawn]]]()
+	index := maps.NewDict[*maps.Dict[*maps.Dict[*ScannedGatherableSpawn]]]()
+
 	for _, row := range rows {
 
 		recordID := strings.ToLower(row.GatherableID)
@@ -30,9 +31,9 @@ func CollateGatherables(rows []GatherableEntry) (result []ScannedGatherable, cou
 		position := PositionFromV3(row.Position).Truncate()
 
 		node := index.
-			GetOrCreate(recordID, utils.NewRecord).
-			GetOrCreate(mapId, utils.NewRecord).
-			GetOrCreate(row.Encounter, func() *ScannedGatherableSpawn {
+			LoadOrCreate(recordID, maps.NewDict).
+			LoadOrCreate(mapId, maps.NewDict).
+			LoadOrCreate(row.Encounter, func() *ScannedGatherableSpawn {
 				return &ScannedGatherableSpawn{
 					MapID:     mapId,
 					Encounter: row.Encounter,

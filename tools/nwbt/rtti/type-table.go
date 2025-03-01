@@ -1,7 +1,7 @@
 package rtti
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
 	"os"
 	"slices"
 	"strings"
@@ -77,14 +77,14 @@ func LoadTypeTable(path string) (TypeTable, error) {
 	defer file.Close()
 
 	var table TypeTable
-	if err := utils.DecodeJSON(file, &table); err != nil {
+	if err := json.DecodeJSON(file, &table); err != nil {
 		return nil, err
 	}
 	return table, nil
 }
 
 func (it TypeTable) SaveJson(file string) error {
-	data, err := utils.MarshalJSON(it, "", "\t")
+	data, err := json.MarshalJSON(it, "", "\t")
 	if err != nil {
 		return err
 	}

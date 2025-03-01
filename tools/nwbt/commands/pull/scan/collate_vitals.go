@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -50,14 +52,14 @@ func (it ModelMap) add(entry VitalsEntry) string {
 		return ""
 	}
 
-	data := utils.NewRecord[any]()
-	data.Set("id", "")
-	data.Set("cdf", strings.ToLower(entry.ModelFile))
-	data.Set("mtl", strings.ToLower(entry.MtlFile))
-	data.Set("adb", strings.ToLower(entry.AdbFile))
-	data.Set("tags", entry.Tags)
-	data.Set("vitalIds", []string{})
-	bytes, _ := utils.MarshalJSON(data)
+	data := maps.NewDict[any]()
+	data.Store("id", "")
+	data.Store("cdf", strings.ToLower(entry.ModelFile))
+	data.Store("mtl", strings.ToLower(entry.MtlFile))
+	data.Store("adb", strings.ToLower(entry.AdbFile))
+	data.Store("tags", entry.Tags)
+	data.Store("vitalIds", []string{})
+	bytes, _ := json.MarshalJSON(data)
 	sum := md5.Sum([]byte(strings.TrimSpace(string(bytes))))
 	hash := hex.EncodeToString(sum[:])
 	if row, ok := it[hash]; !ok {
@@ -81,7 +83,7 @@ func CollateVitals(
 	zoneLevels map[string]float32,
 	baseLevels map[string]float32,
 ) ([]ScannedVitalModel, []*ScannedVital, int) {
-	index := utils.NewRecord[*utils.Record[*utils.Record[*ScannedVitalSpawn]]]()
+	index := maps.NewDict[*maps.Dict[*maps.Dict[*ScannedVitalSpawn]]]()
 	modelsMap := make(ModelMap)
 
 	for _, row := range rows {
@@ -95,9 +97,9 @@ func CollateVitals(
 		modelHash := modelsMap.add(row)
 
 		node := index.
-			GetOrCreate(recordID, utils.NewRecord).
-			GetOrCreate(mapId, utils.NewRecord).
-			GetOrCreate(position.Key(), func() *ScannedVitalSpawn {
+			LoadOrCreate(recordID, maps.NewDict).
+			LoadOrCreate(mapId, maps.NewDict).
+			LoadOrCreate(position.Key(), func() *ScannedVitalSpawn {
 				return &ScannedVitalSpawn{
 					Position:    position,
 					Categories:  make([]string, 0),
@@ -140,9 +142,9 @@ func CollateVitals(
 		models = append(models, *model)
 	}
 
-	records := utils.NewRecord[*ScannedVital]()
+	records := maps.NewDict[*ScannedVital]()
 	for recordID, b1 := range index.SortedIter() {
-		record := records.GetOrCreate(recordID, func() *ScannedVital {
+		record := records.LoadOrCreate(recordID, func() *ScannedVital {
 			return &ScannedVital{
 				VitalsID:    recordID,
 				CatIDs:      make([]string, 0),

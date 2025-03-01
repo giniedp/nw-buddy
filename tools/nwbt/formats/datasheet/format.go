@@ -5,6 +5,7 @@ import (
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 )
 
 type FieldTypeID int
@@ -56,7 +57,7 @@ func Read(r io.Reader) (Document, error) {
 }
 
 func Parse(data []byte) (Document, error) {
-	r := utils.NewByteReaderLE(data)
+	r := buf.NewReaderLE(data)
 	r.MustReadBytes(4)      // signatrue
 	r.MustReadInt32()       // name crc
 	no := r.MustReadInt32() // name offset

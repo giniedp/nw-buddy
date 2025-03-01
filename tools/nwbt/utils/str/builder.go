@@ -1,4 +1,4 @@
-package utils
+package str
 
 import (
 	"bytes"
@@ -6,23 +6,23 @@ import (
 	"strings"
 )
 
-type StringBuilder struct {
+type Builder struct {
 	buf    bytes.Buffer
 	indent int
 }
 
-func NewStringBuilder() StringBuilder {
-	return StringBuilder{}
+func NewBuilder() Builder {
+	return Builder{}
 }
 
 // Append adds a string to the buffer ignoring indentation
-func (it *StringBuilder) Append(s string) *StringBuilder {
+func (it *Builder) Append(s string) *Builder {
 	it.buf.WriteString(s)
 	return it
 }
 
 // Line adds a string to the buffer with a newline character
-func (it *StringBuilder) Line(s string, a ...any) *StringBuilder {
+func (it *Builder) Line(s string, a ...any) *Builder {
 	if it.indent > 0 {
 		it.buf.WriteString(strings.Repeat("  ", it.indent))
 	}
@@ -35,16 +35,16 @@ func (it *StringBuilder) Line(s string, a ...any) *StringBuilder {
 	return it
 }
 
-func (it *StringBuilder) Indent() *StringBuilder {
+func (it *Builder) Indent() *Builder {
 	it.indent++
 	return it
 }
 
-func (it *StringBuilder) Unindent() *StringBuilder {
+func (it *Builder) Unindent() *Builder {
 	it.indent--
 	return it
 }
 
-func (it *StringBuilder) String() string {
+func (it *Builder) String() string {
 	return it.buf.String()
 }

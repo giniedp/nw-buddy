@@ -4,8 +4,8 @@ import (
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/crymath"
+	"nw-buddy/tools/utils/json"
 )
 
 type Document struct {
@@ -47,7 +47,7 @@ func Read(r io.Reader) (*Document, error) {
 
 func Parse(data []byte) (*Document, error) {
 	result := &Document{}
-	err := utils.UnmarshalJSON(data, result)
+	err := json.UnmarshalJSON(data, result)
 	return result, err
 }
 

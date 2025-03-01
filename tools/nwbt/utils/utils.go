@@ -1,22 +1,11 @@
 package utils
 
 import (
-	"log"
 	"os"
 	"path"
 	"slices"
 	"strings"
-	"time"
 )
-
-func TimeStart() time.Time {
-	return time.Now()
-}
-
-func TimeTrack(start time.Time, name string) {
-	elapsed := time.Since(start)
-	log.Printf("%s took %s", name, elapsed)
-}
 
 func ReplaceExt(filePath string, ext string) string {
 	return strings.TrimSuffix(filePath, path.Ext(filePath)) + ext

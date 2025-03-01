@@ -1,4 +1,4 @@
-package utils
+package json
 
 import (
 	"bytes"

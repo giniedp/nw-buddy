@@ -6,6 +6,7 @@ import (
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 	"strings"
 
 	"github.com/gofrs/uuid"
@@ -92,10 +93,10 @@ func Read(r io.Reader) (*Object, error) {
 }
 
 func Parse(data []byte) (res *Object, err error) {
-	return read(utils.NewByteReaderBE(data))
+	return read(buf.NewReaderBE(data))
 }
 
-func read(r *utils.ByteReader) (res *Object, err error) {
+func read(r *buf.Reader) (res *Object, err error) {
 	defer utils.HandleRecover(&err)
 
 	if r.MustReadByte() != 0 {
@@ -108,7 +109,7 @@ func read(r *utils.ByteReader) (res *Object, err error) {
 	return res, nil
 }
 
-func readElements(r *utils.ByteReader, o *Object) (res []*Element, err error) {
+func readElements(r *buf.Reader, o *Object) (res []*Element, err error) {
 	list := make([]*Element, 0)
 	for {
 		element, err := nextElement(r, o)
@@ -123,7 +124,7 @@ func readElements(r *utils.ByteReader, o *Object) (res []*Element, err error) {
 	return list, nil
 }
 
-func nextElement(r *utils.ByteReader, o *Object) (res *Element, err error) {
+func nextElement(r *buf.Reader, o *Object) (res *Element, err error) {
 	defer utils.HandleRecover(&err)
 
 	flags := Flags(r.MustReadByte())

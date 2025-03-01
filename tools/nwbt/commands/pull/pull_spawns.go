@@ -6,7 +6,7 @@ import (
 	"nw-buddy/tools/commands/pull/scan"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
@@ -110,7 +110,7 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 }
 
 func writeJson(value any, path string) uint64 {
-	bytes, err := utils.MarshalJSON(value, "", "\t")
+	bytes, err := json.MarshalJSON(value, "", "\t")
 	if err != nil {
 		slog.Error("failed to marshal json", "err", err)
 		return 0

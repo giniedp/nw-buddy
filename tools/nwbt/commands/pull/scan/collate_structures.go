@@ -1,7 +1,7 @@
 package scan
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"strings"
 )
 
@@ -18,7 +18,7 @@ type ScannedStructure struct {
 }
 
 func CollateStructures(rows []StructureEntry) (result []ScannedStructureType, count int) {
-	index := utils.NewRecord[*utils.Record[*ScannedStructure]]()
+	index := maps.NewDict[*maps.Dict[*ScannedStructure]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)
 		position := PositionFromV3(row.Position).Truncate()
@@ -26,8 +26,8 @@ func CollateStructures(rows []StructureEntry) (result []ScannedStructureType, co
 		name := strings.ToLower(row.Name)
 
 		index.
-			GetOrCreate(recordID, utils.NewRecord).
-			GetOrCreate(mapId+"@"+name+"@"+position.Key(), func() *ScannedStructure {
+			LoadOrCreate(recordID, maps.NewDict).
+			LoadOrCreate(mapId+"@"+name+"@"+position.Key(), func() *ScannedStructure {
 				return &ScannedStructure{
 					MapID:    mapId,
 					TypeID:   row.TypeID,

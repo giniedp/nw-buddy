@@ -17,9 +17,9 @@ import (
 type Scanner struct {
 	Archive     nwfs.Archive
 	Catalog     catalog.Document
-	objectCache map[string]any
-	sheetCache  map[string]datasheet.JSONRows
-	cache       map[string]any
+	objectCache sync.Map
+	sheetCache  sync.Map //map[string]datasheet.JSONRows
+	cache       sync.Map
 	mu          sync.RWMutex
 	results     ScanResults
 }
@@ -39,49 +39,50 @@ func NewScanner(archive nwfs.Archive) (*Scanner, error) {
 	}
 
 	return &Scanner{
-		Archive:     archive,
-		Catalog:     catalog,
-		objectCache: make(map[string]any),
-		sheetCache:  make(map[string]datasheet.JSONRows),
-		cache:       make(map[string]any),
+		Archive: archive,
+		Catalog: catalog,
+		// objectCache: make(map[string]any),
+		// sheetCache:  make(map[string]datasheet.JSONRows),
+		// cache:       make(map[string]any),
 	}, nil
 }
 
 func (it *Scanner) LoadAzcs(file nwfs.File) (any, error) {
-	it.mu.Lock()
-	defer it.mu.Unlock()
+	// it.mu.Lock()
+	// defer it.mu.Unlock()
 
 	key := file.Path()
-	if res, ok := it.objectCache[key]; ok {
+	if res, ok := it.objectCache.Load(key); ok {
 		return res, nil
 	}
 
 	node, err := LoadObject(file)
 	if err != nil {
 		slog.Debug(fmt.Sprintf("no root element in file '%s'", key))
-		it.objectCache[key] = nil
+		it.objectCache.Store(key, nil)
 	}
-	it.objectCache[key] = node
+	it.objectCache.Store(key, node)
 	return node, nil
 
 }
 
 func (it *Scanner) LoadDatasheet(file nwfs.File) (datasheet.JSONRows, error) {
-	it.mu.Lock()
-	defer it.mu.Unlock()
+	// it.mu.Lock()
+	// defer it.mu.Unlock()
 
 	key := file.Path()
-	if res, ok := it.sheetCache[key]; ok {
-		return res, nil
+	if res, ok := it.sheetCache.Load(key); ok {
+		return res.(datasheet.JSONRows), nil
 	}
 
 	sheet, err := datasheet.Load(file)
 	if err != nil {
-		it.sheetCache[key] = nil
+		it.sheetCache.Store(key, nil)
 		return nil, fmt.Errorf("scanner can't load datasheet '%s': %w", file.Path(), err)
 	}
-	it.sheetCache[key] = sheet.RowsAsJSON()
-	return it.sheetCache[key], nil
+	res := sheet.RowsAsJSON()
+	it.sheetCache.Store(key, res)
+	return res, nil
 }
 
 func (it *Scanner) LoadEntity(file nwfs.File) (*nwt.AZ__Entity, error) {

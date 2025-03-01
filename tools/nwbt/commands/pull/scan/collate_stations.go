@@ -1,7 +1,7 @@
 package scan
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"strings"
 )
 
@@ -18,7 +18,7 @@ type ScannedStation struct {
 }
 
 func CollateStations(rows []StationEntry) (result []ScannedStationType, count int) {
-	index := utils.NewRecord[*utils.Record[*ScannedStation]]()
+	index := maps.NewDict[*maps.Dict[*ScannedStation]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)
 		position := PositionFromV3(row.Position).Truncate()
@@ -26,8 +26,8 @@ func CollateStations(rows []StationEntry) (result []ScannedStationType, count in
 		name := strings.ToLower(row.Name)
 
 		index.
-			GetOrCreate(recordID, utils.NewRecord).
-			GetOrCreate(mapId+"@"+name+"@"+position.Key(), func() *ScannedStation {
+			LoadOrCreate(recordID, maps.NewDict).
+			LoadOrCreate(mapId+"@"+name+"@"+position.Key(), func() *ScannedStation {
 				return &ScannedStation{
 					MapID:     mapId,
 					StationID: row.StationID,

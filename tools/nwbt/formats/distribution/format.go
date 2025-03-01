@@ -4,6 +4,7 @@ import (
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 	"path"
 	"strconv"
 	"strings"
@@ -48,7 +49,7 @@ func Parse(data []byte, file string) (res *Document, err error) {
 		res.Region = [2]uint32{uint32(r1), uint32(r2)}
 	}
 
-	r := utils.NewByteReaderLE(data)
+	r := buf.NewReaderLE(data)
 	count := int(r.MustReadUint16())
 	if count > 0 {
 		res.Slices = readStringArray(r, count)
@@ -102,7 +103,7 @@ func Parse(data []byte, file string) (res *Document, err error) {
 	return res, nil
 }
 
-func readStringArray(r *utils.ByteReader, count int) []string {
+func readStringArray(r *buf.Reader, count int) []string {
 	res := make([]string, count)
 	for i := range count {
 		c := r.MustReadByte()

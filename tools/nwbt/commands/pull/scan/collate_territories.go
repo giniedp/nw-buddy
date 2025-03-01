@@ -1,7 +1,7 @@
 package scan
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"strings"
 )
 
@@ -19,11 +19,11 @@ type Polygon struct {
 }
 
 func CollateTerritories(rows []TerritoryEntry) (result []ScannedTerritory, count int) {
-	index := utils.NewRecord[*ScannedTerritory]()
+	index := maps.NewDict[*ScannedTerritory]()
 	for _, row := range rows {
 		recordID := strings.ToLower(row.TerritoryID)
 
-		node := index.GetOrCreate(recordID, func() *ScannedTerritory {
+		node := index.LoadOrCreate(recordID, func() *ScannedTerritory {
 			return &ScannedTerritory{
 				TerritoryID: recordID,
 				Geometry:    make([]Polygon, 0),

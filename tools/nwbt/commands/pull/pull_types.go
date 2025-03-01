@@ -5,6 +5,7 @@ import (
 	"nw-buddy/tools/commands/pull/ts"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/progress"
 	"nw-buddy/tools/utils/str"
 	"os"
@@ -38,7 +39,7 @@ func pullTypes(tables []*datasheet.Document, outDir string) {
 }
 
 func codeGenTableTypeInfos(types ts.TypeMap) string {
-	w := utils.NewStringBuilder()
+	w := str.NewBuilder()
 	for _, tKey := range types.SortedKeys() {
 		it := types[tKey]
 		w.Line("export const COLS_%s = {", strings.ToUpper(it.Name))
@@ -55,7 +56,7 @@ func codeGenTableTypeInfos(types ts.TypeMap) string {
 }
 
 func codeGenTableTypes(types ts.TypeMap) string {
-	w := utils.NewStringBuilder()
+	w := str.NewBuilder()
 	for _, tKey := range types.SortedKeys() {
 		it := types[tKey]
 		w.Line("export interface %s {", it.Name)
@@ -72,7 +73,7 @@ func codeGenTableTypes(types ts.TypeMap) string {
 }
 
 func codeGenEnumTypes(enums ts.EnumMap) string {
-	w := utils.NewStringBuilder()
+	w := str.NewBuilder()
 	for _, name := range enums.SortedKeys() {
 		w.Line("export type %s =", name)
 		w.Indent()
@@ -88,7 +89,7 @@ func codeGenEnumTypes(enums ts.EnumMap) string {
 }
 
 func codeGenIndex(types ts.TypeMap) string {
-	w := utils.NewStringBuilder()
+	w := str.NewBuilder()
 
 	w.Line("import type {")
 	w.Indent()
@@ -120,7 +121,7 @@ func codeGenIndex(types ts.TypeMap) string {
 			if len(files) == 1 {
 				w.Line(`  uri: "%s",`, files[0])
 			} else {
-				w.Line("  uri: %s", strings.TrimSpace(string(utils.Must(utils.MarshalJSON(files)))))
+				w.Line("  uri: %s", strings.TrimSpace(string(utils.Must(json.MarshalJSON(files)))))
 			}
 			w.Line("},")
 		}
@@ -148,7 +149,7 @@ func codeGenScanTypes() string {
 	types.AddReflect(reflect.TypeOf(SearchItem{}))
 	types.AddReflect(reflect.TypeOf(ScannedSpell{}))
 
-	w := utils.NewStringBuilder()
+	w := str.NewBuilder()
 	for _, tKey := range types.SortedKeys() {
 		it := types[tKey]
 		w.Line("export interface %s {", it.Name)

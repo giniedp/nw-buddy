@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 	"time"
 )
 
@@ -161,7 +162,7 @@ func isAzcs(data []byte) bool {
 func unAzcs(data []byte) (res []byte, err error) {
 	defer utils.HandleRecover(&err, "unAzcs")
 
-	r := utils.NewByteReaderBE(data)
+	r := buf.NewReaderBE(data)
 	siz := string(r.MustReadBytes(4))
 	if siz != "AZCS" {
 		return nil, fmt.Errorf("not an AZCS file")

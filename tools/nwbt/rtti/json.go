@@ -6,6 +6,8 @@ import (
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/maps"
 )
 
 func ObjectStreamToJSON(it *azcs.Object, crc CrcTable, ids UuidTable) (data []byte, err error) {
@@ -32,8 +34,8 @@ func ObjectStreamToJSON(it *azcs.Object, crc CrcTable, ids UuidTable) (data []by
 				slog.Warn(fmt.Sprintf("error loading a primitive %v: %v", typeID, err))
 			}
 		} else {
-			rec := utils.NewRecord[any]()
-			rec.Set("__type", typeName)
+			rec := maps.NewDict[any]()
+			rec.Store("__type", typeName)
 			if node.Depth == 0 {
 				res = append(res, rec)
 			}
@@ -45,7 +47,7 @@ func ObjectStreamToJSON(it *azcs.Object, crc CrcTable, ids UuidTable) (data []by
 			return true
 		}
 
-		parentRec, ok := node.Parent.Data.(*utils.Record[any])
+		parentRec, ok := node.Parent.Data.(*maps.Dict[any])
 		if !ok {
 			return true
 		}
@@ -55,25 +57,24 @@ func ObjectStreamToJSON(it *azcs.Object, crc CrcTable, ids UuidTable) (data []by
 			name = fmt.Sprintf("__crc_%v", node.Element.NameCrc)
 		}
 
-		current, ok := parentRec.Get(name)
+		current, ok := parentRec.LoadOrStore(name, value)
 		if !ok {
-			parentRec.Set(name, value)
 			return true
 		}
 
 		if array, ok := current.([]any); ok {
-			parentRec.Set(name, append(array, value))
+			parentRec.Store(name, append(array, value))
 		} else {
-			parentRec.Set(name, []any{current, value})
+			parentRec.Store(name, []any{current, value})
 		}
 
 		return true
 	})
 
 	if len(res) == 1 {
-		data, err = utils.MarshalJSON(res[0], "", "\t")
+		data, err = json.MarshalJSON(res[0], "", "\t")
 	} else {
-		data, err = utils.MarshalJSON(res, "", "\t")
+		data, err = json.MarshalJSON(res, "", "\t")
 	}
 	return
 }

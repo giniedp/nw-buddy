@@ -4,6 +4,7 @@ import (
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 )
 
 type Record struct {
@@ -31,7 +32,7 @@ func Read(r io.Reader) (*Record, error) {
 func Parse(data []byte) (res *Record, err error) {
 	defer utils.HandleRecover(&err)
 
-	r := utils.NewByteReaderLE(data)
+	r := buf.NewReaderLE(data)
 	res = &Record{}
 	res.Version = r.MustReadUint32()
 	count := r.MustReadUint32()
@@ -53,7 +54,7 @@ func Parse(data []byte) (res *Record, err error) {
 	return res, nil
 }
 
-func readString(r *utils.ByteReader) string {
+func readString(r *buf.Reader) string {
 	l := r.MustReadUint32()
 	return string(r.MustReadBytes(int(l)))
 }

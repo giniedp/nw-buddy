@@ -1,7 +1,7 @@
 package scan
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"strings"
 )
 
@@ -16,15 +16,15 @@ type ScannedNpcSpawn struct {
 }
 
 func CollateNpcs(rows []NpcEntry) (result []ScannedNpc, count int) {
-	index := utils.NewRecord[*utils.Record[*ScannedNpcSpawn]]()
+	index := maps.NewDict[*maps.Dict[*ScannedNpcSpawn]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)
 		position := PositionFromV3(row.Position).Truncate()
 		recordID := strings.ToLower(row.NpcID)
 
 		node := index.
-			GetOrCreate(recordID, utils.NewRecord).
-			GetOrCreate(mapId, func() *ScannedNpcSpawn {
+			LoadOrCreate(recordID, maps.NewDict).
+			LoadOrCreate(mapId, func() *ScannedNpcSpawn {
 				return &ScannedNpcSpawn{
 					MapID: mapId,
 				}

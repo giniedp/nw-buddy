@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"reflect"
 	"slices"
 	"strconv"
@@ -146,14 +147,14 @@ func ResolveTableTypes(tables []*datasheet.Document) TypeMap {
 }
 
 func FixTableTypes(tables []*datasheet.Document, types TypeMap) {
-	groups := utils.NewRecord[[]*datasheet.Document]()
+	groups := maps.NewDict[[]*datasheet.Document]()
 
 	for _, table := range tables {
 		tableName := getTableTypeName(table)
-		if list, ok := groups.Get(tableName); ok {
-			groups.Set(tableName, append(list, table))
+		if list, ok := groups.Load(tableName); ok {
+			groups.Store(tableName, append(list, table))
 		} else {
-			groups.Set(tableName, []*datasheet.Document{table})
+			groups.Store(tableName, []*datasheet.Document{table})
 		}
 	}
 

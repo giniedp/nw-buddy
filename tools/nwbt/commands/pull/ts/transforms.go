@@ -7,6 +7,7 @@ import (
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"path"
 	"strconv"
 	"strings"
@@ -421,7 +422,7 @@ var RULES = []tx.Rule{
 						return value
 					}
 
-					result := utils.NewRecord[float32]()
+					result := maps.NewDict[float32]()
 					if str == "" {
 						return result
 					}
@@ -437,7 +438,7 @@ var RULES = []tx.Rule{
 						if err != nil {
 							slog.Warn("failed to parse value limit", "value", kv[1], "error", err)
 						}
-						result.Set(kv[0], float32(limit))
+						result.Store(kv[0], float32(limit))
 					}
 					return result.ToMap()
 				},

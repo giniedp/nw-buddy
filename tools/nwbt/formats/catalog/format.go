@@ -4,6 +4,7 @@ import (
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/buf"
 	"path"
 
 	"github.com/gofrs/uuid"
@@ -48,13 +49,9 @@ func Read(r io.Reader) (Document, error) {
 }
 
 func Parse(data []byte) (res Document, err error) {
-	defer func() {
-		if e := utils.ToErr(recover()); e != nil {
-			err = e
-		}
-	}()
+	defer utils.HandleRecover(&err)
 
-	rr := utils.NewByteReaderLE(data)
+	rr := buf.NewReaderLE(data)
 	res = make(map[string]*Asset)
 
 	rr.MustReadBytes(4) // Signature

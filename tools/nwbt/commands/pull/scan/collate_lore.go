@@ -1,7 +1,7 @@
 package scan
 
 import (
-	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"strings"
 )
 
@@ -16,15 +16,15 @@ type ScannedLoreSpawn struct {
 }
 
 func CollateLoreNotes(rows []LorenoteEntry) (result []ScannedLore, count int) {
-	index := utils.NewRecord[*utils.Record[*ScannedLoreSpawn]]()
+	index := maps.NewDict[*maps.Dict[*ScannedLoreSpawn]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)
 		position := PositionFromV3(row.Position).Truncate()
 		recordID := strings.ToLower(row.LoreID)
 
 		node := index.
-			GetOrCreate(recordID, utils.NewRecord).
-			GetOrCreate(mapId, func() *ScannedLoreSpawn {
+			LoadOrCreate(recordID, maps.NewDict).
+			LoadOrCreate(mapId, func() *ScannedLoreSpawn {
 				return &ScannedLoreSpawn{
 					MapID: mapId,
 				}
