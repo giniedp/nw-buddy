@@ -16,6 +16,8 @@ import (
 	"regexp"
 	"strings"
 	"sync/atomic"
+
+	"github.com/dustin/go-humanize"
 )
 
 func pullImages(fs nwfs.Archive, outDir string, update bool) {
@@ -65,9 +67,11 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 		images.Store(tile.Path())
 	}
 
-	failed := int32(0)
-	skipped := int32(0)
-	missing := maps.NewSafeSet[string]()
+	failed := uint32(0)
+	skipped := uint32(0)
+	converted := uint32(0)
+	missing := uint32(0)
+	totalSize := uint64(0)
 	progress.RunTasks(progress.TasksConfig[string, *Blob]{
 		Description:   "pull images",
 		ProducerCount: int(flgWorkerCount),
@@ -76,22 +80,26 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 		Producer: func(source string) (output *Blob, err error) {
 			output = &Blob{Path: source}
 
-			filePath := nwfs.NormalizePath(source)
-			file, found := fs.Lookup(filePath)
+			path1 := nwfs.NormalizePath(source)
+			path2 := utils.ReplaceExt(path1, ".dds")
+
+			file, found := fs.Lookup(path1)
 			if !found {
-				filePath = utils.ReplaceExt(filePath, ".dds")
-				file, found = fs.Lookup(filePath)
+				file, found = fs.Lookup(path2)
 			}
 			if !found {
-				slog.Debug("Image not found", "file", source)
-				missing.Store(filePath)
+				slog.Debug("Image not found", "file", source, "tried", []string{path1, path2})
+				atomic.AddUint32(&missing, 1)
 				return
 			}
 
-			output.Path = utils.ReplaceExt(path.Join(outDir, filePath), ".webp")
-			if !update && utils.FileExists(output.Path) {
-				atomic.AddInt32(&skipped, 1)
-				return
+			output.Path = utils.ReplaceExt(path.Join(outDir, file.Path()), ".webp")
+			if !update {
+				if stat, e := os.Stat(output.Path); e == nil {
+					atomic.AddUint64(&totalSize, uint64(stat.Size()))
+					atomic.AddUint32(&skipped, 1)
+					return
+				}
 			}
 			output.Data, err = image.ConvertFile(
 				file,
@@ -101,7 +109,10 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 				image.WithNormalMap(dds.IsNormalMap(file.Path())),
 			)
 			if err != nil {
-				atomic.AddInt32(&failed, 1)
+				atomic.AddUint32(&failed, 1)
+				atomic.AddUint32(&converted, 1)
+			} else {
+				atomic.AddUint64(&totalSize, uint64(len(output.Data)))
 			}
 			return
 		},
@@ -116,7 +127,14 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 		},
 	})
 
-	stats.Add("Images", "total", images.Len(), "skipped", skipped, "missed", missing.Len(), "failed", failed)
+	stats.Add("Images",
+		"total", images.Len(),
+		"converted", converted,
+		"skipped", skipped,
+		"missing", missing,
+		"failed", failed,
+		"size", humanize.Bytes(totalSize),
+	)
 }
 
 func isPossiblyImage(name string) bool {

@@ -26,7 +26,7 @@ func RunTasks[T any, O any](spec TasksConfig[T, O]) {
 	cDone := make(chan ProgressMessage)
 
 	pc := int(math.Max(1.0, float64(spec.ProducerCount)))
-	for w := 0; w < pc; w++ {
+	for range pc {
 		go func() {
 			for task := range cInput {
 				out, err := spec.Producer(task)
@@ -36,7 +36,7 @@ func RunTasks[T any, O any](spec TasksConfig[T, O]) {
 	}
 
 	cc := int(math.Max(1.0, float64(spec.ConsumerCount)))
-	for w := 0; w < cc; w++ {
+	for range cc {
 		go func() {
 			for task := range cOutput {
 				if spec.Consumer == nil {

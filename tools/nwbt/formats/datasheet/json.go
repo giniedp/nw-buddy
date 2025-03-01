@@ -1,21 +1,18 @@
 package datasheet
 
 import (
+	"fmt"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/maps"
 	"reflect"
 	"strconv"
 )
 
+func (it *Document) MarshalJSON() ([]byte, error) {
+	return it.ToJSON()
+}
+
 func (it *Document) ToJSON(format ...string) ([]byte, error) {
-	return json.MarshalJSON(it.asJSON(), format...)
-}
-
-func (it *Document) RowsToJSON(format ...string) ([]byte, error) {
-	return json.MarshalJSON(it.RowsAsJSON(), format...)
-}
-
-func (it *Document) asJSON() any {
 	res := maps.NewDict[any]()
 	header := maps.NewDict[any]()
 	header.Store("type", it.Schema)
@@ -23,7 +20,11 @@ func (it *Document) asJSON() any {
 	header.Store("fields", it.colsAsJSON())
 	res.Store("header", header)
 	res.Store("rows", it.RowsAsJSON())
-	return res
+	return json.MarshalJSON(res, format...)
+}
+
+func (it *Document) RowsToJSON(format ...string) ([]byte, error) {
+	return json.MarshalJSON(it.RowsAsJSON(), format...)
 }
 
 func (it *Document) colsAsJSON() any {
@@ -89,17 +90,23 @@ func (r *JSONRow) MarshalJSON() ([]byte, error) {
 	return r.m.MarshalJSON()
 }
 
+// GetString returns the value of the key as a string.
+// If the value is a string, it is returned as is.
+// Otherwise it is formatted using fmt.Sprintf("%v", v).
 func (r *JSONRow) GetString(key string) string {
 	v, ok := r.m.Load(key)
-	if !ok {
+	if v == nil || !ok {
 		return ""
 	}
 	if str, ok := v.(string); ok {
 		return str
 	}
-	return ""
+	return fmt.Sprintf("%v", v)
 }
 
+// GetInt returns the value of the key as an int.
+// If the value is a float32, float64 or string, it is converted to an int.
+// Otherwise it returns 0.
 func (r *JSONRow) GetInt(key string) int {
 	v, ok := r.m.Load(key)
 	if !ok || v == nil {
@@ -118,6 +125,9 @@ func (r *JSONRow) GetInt(key string) int {
 	}
 }
 
+// GetNumber returns the value of the key as a float32.
+// If the value is a float32, float64 or string, it is converted to an float32.
+// Otherwise it returns 0.
 func (r *JSONRow) GetNumber(key string) float32 {
 	v, ok := r.m.Load(key)
 	if !ok || v == nil {

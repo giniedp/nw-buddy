@@ -1,33 +1,27 @@
 /// <reference lib="webworker" />
-import { ItemRarity } from '@nw-data/common'
+import { SearchItem } from '@nw-data/generated'
 import { expose } from 'comlink'
 
-export interface SearchRecord {
-  id: string
-  text: string
-  type: string
-  icon: string
-  tier: number
-  rarity: ItemRarity
-}
+export type SearchRecord = SearchItem
+
 export interface SearchQueryTasks {
-  search: (args: { text: string; lang: string, nwDataUrl: string }) => Promise<SearchRecord[]>
+  search: (args: { text: string; lang: string, nwDataUrl: string }) => Promise<SearchItem[]>
 }
 
 const index: Record<string, Promise<any>> = {}
 
-function fetchIndex({ lang, nwDataUrl }: { lang: string, nwDataUrl: string }): Promise<SearchRecord[]> {
+function fetchIndex({ lang, nwDataUrl }: { lang: string, nwDataUrl: string }): Promise<SearchItem[]> {
   if (!index[lang]) {
     index[lang] = fetch(`${nwDataUrl}/search/${lang}.json`)
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: SearchItem[]) => {
         return transformImageUrls(data, nwDataUrl)
       })
   }
   return index[lang]
 }
 
-function transformImageUrls(data: any, nwDataUrl: string) {
+function transformImageUrls(data: SearchItem[], nwDataUrl: string) {
   if (!Array.isArray(data)) {
     return data
   }

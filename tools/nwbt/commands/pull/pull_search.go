@@ -3,12 +3,12 @@ package pull
 import (
 	"bytes"
 	"fmt"
-	"log/slog"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/dustin/go-humanize"
@@ -42,26 +42,10 @@ func pullSearch(tables []*datasheet.Document, locales *maps.SafeDict[*maps.SafeD
 			index.indexWeaponAppearance()
 			index.indexTerritories()
 
-			var buf bytes.Buffer
-			buf.WriteRune('[')
-			for i, item := range index.rows {
-				buf.WriteRune('\n')
-				data, err := json.MarshalJSON(item)
-				if err != nil {
-					slog.Error("Failed to marshal search data", "err", err)
-					continue
-				}
-				buf.Write([]byte(strings.TrimSpace(string(data))))
-				if i < len(index.rows)-1 {
-					buf.WriteRune(',')
-				}
-			}
-			buf.WriteRune('\n')
-			buf.WriteRune(']')
-
+			data, err := index.MarshalJSON()
 			output = &Blob{
 				Path: path.Join(outDir, locale+".json"),
-				Data: buf.Bytes(),
+				Data: data,
 			}
 			sizes.Store(locale, len(output.Data))
 			counts.Store(locale, len(index.rows))
@@ -71,7 +55,7 @@ func pullSearch(tables []*datasheet.Document, locales *maps.SafeDict[*maps.SafeD
 		Consumer:      writeBlob,
 	})
 
-	for lang, _ := range locales.Iter() {
+	for lang := range locales.Iter() {
 		stats.Add("Search "+lang, "count", counts.Get(lang), "size", humanize.Bytes(uint64(sizes.Get(lang))))
 	}
 }
@@ -82,6 +66,25 @@ type SearchIndex struct {
 
 	rows    []SearchItem
 	skipped int
+}
+
+func (it *SearchIndex) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	buf.WriteRune('[')
+	for i, item := range it.rows {
+		if i > 0 {
+			buf.WriteRune(',')
+		}
+		buf.WriteRune('\n')
+		data, err := json.MarshalJSON(item)
+		if err != nil {
+			return nil, err
+		}
+		buf.Write([]byte(strings.TrimSpace(string(data))))
+	}
+	buf.WriteRune('\n')
+	buf.WriteRune(']')
+	return buf.Bytes(), nil
 }
 
 type SearchItem struct {
@@ -112,14 +115,6 @@ func (it *SearchIndex) getLocalizedString(table *datasheet.Document, row int, co
 	return value
 }
 
-// func (it *SearchIndex) getNumber(table *datasheet.Document, row int, col string) *float32 {
-//   v, err := table.GetValue(row, col)
-//   if err != nil {
-//     return nil
-//   }
-//   return fmt.Sprintf("%v", v)
-// }
-
 func (it *SearchIndex) add(item SearchItem) {
 	if item.Text == "" || item.ID == "" {
 		it.skipped++
@@ -134,16 +129,17 @@ func (it *SearchIndex) indexItems() {
 			continue
 		}
 		isNamed := table.Table == "MasterItemDefinitions_Named"
-		for row := range table.Rows {
+		rows := table.RowsAsJSON()
+		for ri, row := range rows {
 			it.add(SearchItem{
-				ID:    it.getString(table, row, "ItemID"),
-				Type:  "item",
-				Text:  it.getLocalizedString(table, row, "Name"),
-				Icon:  it.getString(table, row, "IconPath"),
-				Named: isNamed,
-				// Rarity TODO: get rarity
-				// Tier: table.TryGetInt(row, "Tier"),
-				// GS: table.TryGetString(row, "GearScore"),
+				ID:     row.GetString("ItemID"),
+				Type:   "item",
+				Text:   it.getLocalizedString(table, ri, "Name"),
+				Icon:   row.GetString("IconPath"),
+				Named:  isNamed,
+				Rarity: getItemRarity(row),
+				Tier:   row.GetInt("Tier"),
+				GS:     getItemGearScoreLabel(row),
 			})
 		}
 	}
@@ -154,14 +150,15 @@ func (it *SearchIndex) indexHousingItems() {
 		if table.Table != "HouseItems" && table.Table != "HouseItemsMTX" {
 			continue
 		}
-		for row := range table.Rows {
+		rows := table.RowsAsJSON()
+		for ri, row := range rows {
 			it.add(SearchItem{
-				ID:   it.getString(table, row, "HouseItemID"),
-				Type: "housing",
-				Text: it.getLocalizedString(table, row, "Name"),
-				Icon: it.getString(table, row, "IconPath"),
-				// tier: item.Tier,
-				// rarity: getItemRarity(item),
+				ID:     row.GetString("HouseItemID"),
+				Type:   "housing",
+				Text:   it.getLocalizedString(table, ri, "Name"),
+				Icon:   row.GetString("IconPath"),
+				Tier:   row.GetInt("Tier"),
+				Rarity: getItemRarity(row),
 			})
 		}
 	}
@@ -373,4 +370,67 @@ func (it *SearchIndex) indexTerritories() {
 			})
 		}
 	}
+}
+
+var rarities = map[string]string{
+	"0": "common",
+	"1": "uncommon",
+	"2": "rare",
+	"3": "epic",
+	"4": "legendary",
+	"5": "artifact",
+}
+
+func getItemRarity(row datasheet.JSONRow) string {
+	if value, ok := rarities[row.GetString("Rarity")]; ok {
+		return value
+	}
+	if row.GetString("ItemID") == "" {
+		return rarities["0"]
+	}
+	if strings.Contains(row.GetString("ItemClass"), "Artifact") {
+		return rarities["5"]
+	}
+	perkIds := []string{
+		row.GetString("Perk1"),
+		row.GetString("Perk2"),
+		row.GetString("Perk3"),
+		row.GetString("Perk4"),
+		row.GetString("Perk5"),
+	}
+	perkIds = slices.DeleteFunc(perkIds, func(id string) bool {
+		return id == ""
+	})
+	switch len(perkIds) {
+	case 0:
+		return rarities["0"]
+	case 1:
+		return rarities["0"]
+	case 2:
+		return rarities["1"]
+	case 3:
+		return rarities["2"]
+	case 4:
+		return rarities["3"]
+	default:
+		return rarities["4"]
+	}
+}
+
+func getItemGearScoreLabel(row datasheet.JSONRow) string {
+	if v := row.GetString("GearScoreOverride"); v != "" && v != "0" {
+		return v
+	}
+	minScore := row.GetString("MinGearScore")
+	maxScore := row.GetString("MaxGearScore")
+	if minScore != "" && minScore != "0" && maxScore != "" && maxScore != "0" {
+		return fmt.Sprintf("%s-%s", minScore, maxScore)
+	}
+	if maxScore != "" && maxScore != "0" {
+		return maxScore
+	}
+	if minScore != "" && minScore != "0" {
+		return minScore
+	}
+	return ""
 }
