@@ -46,8 +46,7 @@ var tasks = []string{
 	TASK_SPELLS,
 	TASK_IMAGES,
 	TASK_CONSTANTS,
-	// heightmaps are not finished yet
-	// TASK_HEIGHTMAP,
+	TASK_HEIGHTMAP,
 }
 
 var Cmd = &cobra.Command{
@@ -131,7 +130,7 @@ func run(ccmd *cobra.Command, args []string) {
 		case TASK_CONSTANTS:
 			pullConstants(fs, flgOutTypeDir)
 		case TASK_HEIGHTMAP:
-			pullHeightmaps(fs, env.TempDir())
+			pullHeightmaps(fs, path.Join(flgOutDataDir, "lyshineui", "worldtiles"))
 		}
 	}
 	slog.SetDefault(logging.DefaultTerminalHandler())

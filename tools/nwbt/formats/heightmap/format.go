@@ -1,16 +1,17 @@
 package heightmap
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
+	"image/png"
 	"log/slog"
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/env"
+	"os"
 	"path"
 	"regexp"
 	"strconv"
-
-	"github.com/Andeling/tiff"
 )
 
 //"github.com/rngoodner/gtiff"
@@ -75,31 +76,51 @@ func Load(file nwfs.File) (region Region, err error) {
 }
 
 func ParseHeightField(data []byte) ([]float32, error) {
-	r := bytes.NewReader(data)
-
-	d, err := tiff.NewDecoder(r)
+	f, err := os.CreateTemp(env.TempDir(), "*")
 	if err != nil {
 		return nil, err
 	}
-	iter := d.Iter()
-	for iter.Next() {
-		img := iter.Image()
-		width, height := img.WidthHeight()
-		switch img.DataType() {
-		case tiff.Uint16:
-			buf := make([]uint16, width*height)
-			if err := img.DecodeImage(buf); err != nil {
-				return nil, err
-			}
+	defer f.Close()
+	_, err = f.Write(data)
+	if err != nil {
+		return nil, err
+	}
+	f.Close()
 
-			out := make([]float32, len(buf))
-			for i, v := range buf {
-				out[i] = float32(v) / float32(65535)
-			}
-			return out, nil
+	tiffNam := f.Name()
+	pngName := f.Name() + ".png"
+	defer os.Remove(tiffNam)
+	defer os.Remove(pngName)
+
+	cmd := utils.Magick.Convert(f.Name(), f.Name()+".png")
+	err = cmd.Run()
+	if err != nil {
+		return nil, err
+	}
+
+	pngFile, err := os.Open(pngName)
+	if err != nil {
+		return nil, err
+	}
+	defer pngFile.Close()
+	img, err := png.Decode(pngFile)
+	if err != nil {
+		return nil, err
+	}
+
+	sizeX := img.Bounds().Size().X
+	sizeY := img.Bounds().Size().Y
+	out := make([]float32, sizeX*sizeY)
+	index := 0
+	for y := range sizeY {
+		for x := range sizeX {
+			r, _, _, _ := img.At(x, y).RGBA()
+			out[index] = float32(r)
+			index++
 		}
 	}
-	return nil, errors.New("no image found")
+
+	return out, nil
 }
 
 var metaRegexp = regexp.MustCompile(`/([^/]+)/regions/r_\+(\d{2})_\+(\d{2}).*`)

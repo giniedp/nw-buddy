@@ -9,6 +9,7 @@ import (
 	"math"
 	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"os"
@@ -18,7 +19,15 @@ import (
 const TILE_SIZE = 256
 
 func pullHeightmaps(fs nwfs.Archive, outDir string) {
-	files, _ := fs.Glob("**/coatlicue/nw_opr_004_trench/regions/**/region.heightmap")
+	if _, ok := utils.Magick.Check(); !ok {
+		slog.Error("Image Magick not found. Skipped heightmap generation.")
+		return
+	}
+
+	files, _ := fs.Glob(
+		"**/coatlicue/newworld_vitaeeterna/regions/**/region.heightmap",
+		"**/coatlicue/nw_opr_004_trench/regions/**/region.heightmap",
+	)
 
 	levels := maps.NewSyncDict[*maps.SafeSet[*heightmap.Region]]()
 	progress.RunTasks(progress.TasksConfig[nwfs.File, string]{
@@ -41,59 +50,79 @@ func pullHeightmaps(fs nwfs.Archive, outDir string) {
 			continue
 		}
 		terrain := heightmap.NewTerrain(list.Values())
-		mipLevels := generateMipmaps(terrain)
-		for tile := range generateTiles(mipLevels) {
-			name := fmt.Sprintf("%d/heightmap_l%d_y%03d_x%03d", tile.Mip, tile.Mip, tile.X, tile.Y)
-			file := path.Join(outDir, "lyshineui", "worldtiles", level, "heightmap", name+".png")
-			if err := writeTile(file, tile.Image); err != nil {
-				slog.Error("Failed to write tile ", "error", err)
-			}
-		}
+		mipLevels := compileMipmaps(terrain)
+
+		progress.RunTasks(progress.TasksConfig[Tile, string]{
+			Description:   level,
+			Tasks:         compileTiles(mipLevels),
+			ProducerCount: int(flgWorkerCount),
+			Producer: func(tile Tile) (string, error) {
+				return workTile(tile, level, outDir), nil
+			},
+		})
 	}
 }
 
-func generateMipmaps(terrain *heightmap.Terrain) []*heightmap.Terrain {
-	mipLevels := []*heightmap.Terrain{terrain}
-	current := terrain
-	for current.Width > TILE_SIZE {
-		current = current.Downsample()
-		mipLevels = append(mipLevels, current)
+func compileMipmaps(terrain *heightmap.Terrain) []*heightmap.Terrain {
+	mips := []*heightmap.Terrain{terrain}
+	for terrain.Width > TILE_SIZE {
+		terrain = terrain.Downsize()
+		mips = append(mips, terrain)
 	}
-	return mipLevels
+	return mips
+}
+
+func compileTiles(mipLevels []*heightmap.Terrain) []Tile {
+	tiles := []Tile{}
+	for i, mip := range mipLevels {
+		for tileX, tileY := range iterArea(0, 0, mip.Width/TILE_SIZE, mip.Height/TILE_SIZE) {
+			tiles = append(tiles, Tile{
+				Terrain: mip,
+				Mip:     i + 1,
+				X:       tileX * int(math.Pow(2, float64(i))),
+				Y:       tileY * int(math.Pow(2, float64(i))),
+				Area: Area{
+					X: tileX * TILE_SIZE,
+					Y: tileY * TILE_SIZE,
+					W: TILE_SIZE,
+					H: TILE_SIZE,
+				},
+			})
+		}
+	}
+	return tiles
 }
 
 type Tile struct {
-	Mip   int
-	X     int
-	Y     int
-	Image image.Image
+	Terrain *heightmap.Terrain
+	Area    Area
+	Mip     int
+	X       int
+	Y       int
 }
 
-func generateTiles(mipLevels []*heightmap.Terrain) iter.Seq[Tile] {
-	return func(yield func(Tile) bool) {
-		for i, mip := range mipLevels {
-			mipLevel := i + 1
-			step := int(math.Pow(2, float64(i)))
-			for tileX, tileY := range iterArea(0, 0, mip.Width/TILE_SIZE, mip.Height/TILE_SIZE) {
-				img := image.NewRGBA(image.Rect(0, 0, TILE_SIZE, TILE_SIZE))
-				for x, y := range iterArea(0, 0, TILE_SIZE, TILE_SIZE) {
-					tx := tileX*TILE_SIZE + x
-					ty := tileY*TILE_SIZE + y
-					h, _ := mip.HeightAt(tx, ty)
-					img.Set(x, TILE_SIZE-y-1, heightmap.EncodeHeightToR8G8B8(h))
-				}
-				tile := Tile{
-					Mip:   mipLevel,
-					X:     tileX * step,
-					Y:     tileY * step,
-					Image: img,
-				}
-				if !yield(tile) {
-					return
-				}
-			}
-		}
+type Area struct {
+	X int
+	Y int
+	W int
+	H int
+}
+
+func workTile(tile Tile, level string, outDir string) string {
+	img := image.NewRGBA(image.Rect(0, 0, tile.Area.W, tile.Area.H))
+	for x, y := range iterArea(0, 0, tile.Area.W, tile.Area.H) {
+		tx := tile.Area.X + x
+		ty := tile.Area.Y + y
+		h := tile.Terrain.GetSmoothHeightAt(tx, ty)
+		img.Set(x, TILE_SIZE-y-1, heightmap.EncodeHeightToR8G8B8(h))
 	}
+
+	name := fmt.Sprintf("%d/heightmap_l%d_y%03d_x%03d", tile.Mip, tile.Mip, tile.Y, tile.X)
+	file := path.Join(outDir, level, "heightmap", name+".png")
+	if err := writeTile(file, img); err != nil {
+		slog.Error("Failed to write tile ", "error", err)
+	}
+	return file
 }
 
 func iterArea(x, y, w, h int) iter.Seq2[int, int] {

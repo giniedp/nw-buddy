@@ -19,19 +19,20 @@ func NewTerrain(regions []*Region) (out *Terrain) {
 
 	out = &Terrain{}
 	for _, region := range regions {
-		maxX = max(maxX, region.X+1)
-		maxY = max(maxY, region.Y+1)
+		maxX = max(maxX, region.X)
+		maxY = max(maxY, region.Y)
 		out.RegionSize = region.Size
 	}
-	out.Regions = make([][]*Region, maxY)
-	for i := range maxY {
-		out.Regions[i] = make([]*Region, maxX)
+	out.RegionsX = nextPowerOf2(maxX + 1)
+	out.RegionsY = nextPowerOf2(maxY + 1)
+	out.Regions = make([][]*Region, out.RegionsY)
+	for i := range out.RegionsY {
+		out.Regions[i] = make([]*Region, out.RegionsX)
 	}
 	for _, region := range regions {
 		out.Regions[region.Y][region.X] = region
 	}
-	out.RegionsX = nextPowerOf2(maxX + 1)
-	out.RegionsY = nextPowerOf2(maxY + 1)
+
 	out.Width = out.RegionsX * out.RegionSize
 	out.Height = out.RegionsY * out.RegionSize
 	return
@@ -48,6 +49,9 @@ func (t *Terrain) HeightAt(x int, y int) (float32, bool) {
 		region := t.Regions[rY][rX]
 		x = x % t.RegionSize
 		y = y % t.RegionSize
+		if region == nil {
+			return 0, false
+		}
 		return region.HeightAt(x, y)
 	}
 	return 0, false
@@ -58,6 +62,9 @@ func (t *Terrain) SetHeightAt(x int, y int, height float32) {
 	rY := y / t.RegionSize
 	if rY < len(t.Regions) && rX < len(t.Regions[rY]) {
 		region := t.Regions[rY][rX]
+		if region == nil {
+			return
+		}
 		x = x % t.RegionSize
 		y = y % t.RegionSize
 		region.SetHeightAt(x, y, height)
@@ -82,9 +89,9 @@ func (r *Region) SetHeightAt(x int, y int, height float32) {
 
 var samples = [][2]int{
 	{0, 0},
-	// {1, 0},
-	// {0, 1},
-	// {1, 1},
+	{1, 0},
+	{0, 1},
+	{1, 1},
 }
 
 func (t *Terrain) GetSmoothHeightAt(x int, y int) float32 {
@@ -104,7 +111,7 @@ func (t *Terrain) GetSmoothHeightAt(x int, y int) float32 {
 
 const maxRegionSize = 2048
 
-func (t *Terrain) Downsample() (out *Terrain) {
+func (t *Terrain) Downsize() (out *Terrain) {
 	out = &Terrain{}
 	out.Width = t.Width / 2
 	out.Height = t.Height / 2

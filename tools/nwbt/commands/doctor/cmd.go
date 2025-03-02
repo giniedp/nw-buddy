@@ -29,6 +29,7 @@ func run(ccmd *cobra.Command, args []string) {
 	checkCwebp()
 	checkNvtt()
 	checkOodle()
+	checkMagick()
 	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
 	checkDubplicates(fs)
 }
@@ -62,7 +63,7 @@ func checkTexconv() {
 		slog.Info("Texconv found at", "path", p)
 		// slog.Info(strings.TrimSpace(utils.Texconv.Info()))
 	} else {
-		slog.Warn("Texconv not found int PATH")
+		slog.Warn("Texconv not found in PATH")
 		slog.Warn(strings.TrimSpace(utils.Texconv.Info()))
 	}
 }
@@ -72,7 +73,7 @@ func checkCwebp() {
 		slog.Info("Cwebp found at", "path", p)
 		// slog.Info(strings.TrimSpace(utils.Cwebp.Info()))
 	} else {
-		slog.Warn("Cwebp not found int PATH")
+		slog.Warn("Cwebp not found in PATH")
 		slog.Warn(strings.TrimSpace(utils.Cwebp.Info()))
 	}
 }
@@ -81,7 +82,7 @@ func checkNvtt() {
 		slog.Info("NVTT found at", "path", p)
 		// slog.Info(strings.TrimSpace(utils.Nvtt.Info()))
 	} else {
-		slog.Warn("NVTT not found int PATH")
+		slog.Warn("NVTT not found in PATH")
 		slog.Warn(strings.TrimSpace(utils.Nvtt.Info()))
 	}
 }
@@ -90,7 +91,17 @@ func checkOodle() {
 		slog.Info("Oodle found at", "path", p)
 		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
 	} else {
-		slog.Warn("Oodle not found int PATH")
+		slog.Warn("Oodle not found in PATH")
+		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
+	}
+}
+
+func checkMagick() {
+	if p, ok := utils.Magick.Check(); ok {
+		slog.Info("Image Magick found at", "path", p)
+		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
+	} else {
+		slog.Warn("Image Magick not found in PATH")
 		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
 	}
 }

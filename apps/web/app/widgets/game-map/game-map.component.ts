@@ -30,7 +30,7 @@ import {
   xyToLngLat,
   yToLat,
 } from './utils'
-const elevationScale = 0.125 // 2048 / 0xFFFF
+const elevationScale = 0.1
 @Component({
   standalone: true,
   selector: 'nwb-map',
