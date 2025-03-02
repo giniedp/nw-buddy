@@ -94,8 +94,9 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 	zoneLevels := getZoneLevelOverrides(tables)
 	models, vitals, count := scan.CollateVitals(res.Vitals, territories, zoneLevels, baseLevels)
 
-	size = writeJson(models, path.Join(outDir, "vitals_models_metadata.json"))
-	stats.Add("VitalsModels", "rows", len(models), "size", humanize.Bytes(size))
+	// size = writeJson(models, path.Join(outDir, "vitals_models_metadata.json"))
+	stats.Add("VitalsModels", "rows", len(models))
+	stats.Add("VitalsModels NOT WRITTEN. Legacy file is used until model processing is implemented")
 
 	stats.Add("Vitals", "rows", len(vitals), "positions", count)
 	split := len(vitals) / 2

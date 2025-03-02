@@ -3,6 +3,7 @@ package pull
 import (
 	"fmt"
 	"log/slog"
+	"nw-buddy/tools/constants"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
@@ -46,13 +47,19 @@ var tasks = []string{
 	TASK_SPELLS,
 	TASK_IMAGES,
 	TASK_CONSTANTS,
+}
+var optional = []string{
 	TASK_HEIGHTMAP,
 }
+
+var description = fmt.Sprintf("%s%s", constants.NW_BUDDY_BANNER, `
+Pulls data from .pak files specifically for nw-buddy purposes.
+`)
 
 var Cmd = &cobra.Command{
 	Use:           "pull",
 	Short:         "pulls data from .pak files specifically for nw-buddy purposes.",
-	Long:          ``,
+	Long:          description,
 	Run:           run,
 	SilenceErrors: false,
 	Args:          args,
@@ -69,11 +76,11 @@ func init() {
 
 func args(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
-		flgModes = tasks
+		flgModes = slices.Clone(tasks)
 		return nil
 	}
 	for _, arg := range args {
-		if !slices.Contains(tasks, arg) {
+		if !slices.Contains(tasks, arg) || !slices.Contains(optional, arg) {
 			return fmt.Errorf("invalid task name: %s", arg)
 		}
 		flgModes = append(flgModes, arg)
