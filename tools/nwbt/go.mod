@@ -13,7 +13,6 @@ require (
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/klauspost/compress v1.9.8 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -24,7 +23,6 @@ require (
 )
 
 require (
-	github.com/Andeling/tiff v0.0.0-20200203003012-f6e011e4b554
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ebitengine/purego v0.8.2
 	github.com/goccy/go-json v0.10.5
