@@ -1,0 +1,105 @@
+<Material MtlFlags="557312" vertModifType="0">
+ <SubMaterials>
+  <Material Name="s7_metal_shield" MtlFlags="524416" Shader="Illum" GenMask="2000CA011" StringGenMask="%NORMAL_MAP%SPECULAR_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%OVERLAY_MASK%EMISSIVE_DECAL%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.49693301,0.49693301,0.49693301,1" Specular="1,1,1,1" Opacity="1" Shininess="255" vertModifType="0" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/weapons/shields/roundshieldnagacorrupted/textures/wep_mel_shld_1h_roundshieldnagacorrupted_diff.dds" AssetId="{3BD88E0F-3B9F-58FF-BF1E-561C2D6B7BEB}:100000"/>
+    <Texture Map="Bumpmap" File="objects/weapons/shields/roundshieldnagacorrupted/textures/wep_mel_shld_1h_roundshieldnagacorrupted_ddna.dds" AssetId="{E932C87E-445E-5DDE-84C3-81825C26EA0F}:0"/>
+    <Texture Map="Specular" File="objects/weapons/shields/roundshieldnagacorrupted/textures/wep_mel_shld_1h_roundshieldnagacorrupted_spec.dds" AssetId="{471B7C90-ED87-50A3-8678-AD057AC185AA}:0"/>
+    <Texture Map="Custom" File="objects/weapons/shields/roundshieldnagacorrupted/textures/wep_mel_shld_1h_roundshieldnagacorrupted_mask.dds" AssetId="{9DC6144A-10B9-5FBB-87F2-DE7EDFBAE3E5}:0"/>
+    <Texture Map="Smoothness" File="objects/weapons/shields/roundshieldnagacorrupted/textures/wep_mel_shld_1h_roundshieldnagacorrupted_ddna.dds" AssetId="{E932C87E-445E-5DDE-84C3-81825C26EA0F}:0"/>
+   </Textures>
+   <PublicParams SSSIndex="0" Mask_G_Override="0" IndirectColor="0.25,0.25,0.25,0.25" Mask_A_Gloss="0" Mask_R="0" Mask_B="0" EmittanceMapGamma="1" Mask_R_Override="0" Mask_G="0" Mask_B_Color="0,0,0,0" Mask_R_Color="0,0,0,0" Mask_G_Color="0,0,0,0" Mask_A_SpecColor_Override="0" Mask_A_SpecColor="0,0,0,0" Mask_B_Override="0" Mask_A_GlossShift="0.5"/>
+  </Material>
+  <Material Name="s7_skull" MtlFlags="524416" Shader="Illum" GenMask="2000C0001" StringGenMask="%NORMAL_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.49102101,0.49102101,0.49102101,1" Specular="0.021219,0.021219,0.021219,1" Opacity="1" Shininess="255" vertModifType="0" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_skull_diff.dds" AssetId="{BD4DB7DC-72AD-501C-954D-13522B98512F}:100000"/>
+    <Texture Map="Bumpmap" File="objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_skull_ddna.dds" AssetId="{3EA89009-724E-522E-8F8F-8DCA3FD07B3B}:0"/>
+    <Texture Map="Smoothness" File="objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_skull_ddna.dds" AssetId="{3EA89009-724E-522E-8F8F-8DCA3FD07B3B}:0"/>
+   </Textures>
+   <PublicParams SSSIndex="0" IndirectColor="0.25,0.25,0.25,0" EmittanceMapGamma="1"/>
+  </Material>
+  <Material Name="s7_fissure_mat" MtlFlags="524416" Shader="Illum" GenMask="3000C4411" StringGenMask="%NORMAL_MAP%SPECULAR_MAP%DETAIL_MAPPING%EMITTANCE_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%COLOR_SAMPLER_OVERLAY_MASK%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.30498734,0.30498734,0.30498734,1" Specular="0.44520122,0.44520122,0.44520122,1" Emittance="1,0.0091340598,0.010960096,200" Opacity="1" Shininess="255" vertModifType="0" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/landmarks/rock_kit/textures/jav_lm_rock_02_dif.dds" AssetId="{1FFBCC75-E204-5CB3-A6B0-744ACA180EB9}:0">
+     <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TileU="6" TileV="6"/>
+    </Texture>
+    <Texture Map="Bumpmap" File="objects/landmarks/rock_kit/textures/jav_lm_rock_01_ddna.dds" AssetId="{88C27F4A-4791-50C2-B21D-2A075CA0B8F0}:0"/>
+    <Texture Map="Specular" File="objects/landmarks/rock_kit/textures/jav_lm_rock_01_spec.dds" AssetId="{63D8DA6E-582B-5159-9CF7-062FB38F6EF0}:0"/>
+    <Texture Map="Detail" File="objects/landmarks/corruption_fissure/texture/jav_lm_darkness_fissure_detail_01_detail.dds" AssetId="{D56A30B2-5FE3-55A6-9C75-ABCD0939FA7D}:0"/>
+    <Texture Map="Heightmap" File="objects/landmarks/rock_kit/textures/jav_lm_rock_01_height.dds" AssetId="{61AF405F-E2EC-53AF-B0FE-21B800DC206A}:0"/>
+    <Texture Map="Smoothness" File="objects/landmarks/rock_kit/textures/jav_lm_rock_01_ddna.dds" AssetId="{88C27F4A-4791-50C2-B21D-2A075CA0B8F0}:0"/>
+    <Texture Map="Emittance" File="objects/landmarks/corruption_fissure/texture/jav_lm_darkness_fissure_detail_01_glow.dds" AssetId="{8163B1E7-E1CB-51FD-A2A5-A84562F15807}:0"/>
+   </Textures>
+   <PublicParams SSSIndex="0" ColorMaskAlphaInf="0" DetailBumpScale="0.5" IndirectColor="0.25,0.25,0.25,0.25" DetailDiffuseScale="0.5" DetailGlossScale="0.5" EmittanceMapGamma="1" ColorMaskOverride="0" ColorMaskStrength="0"/>
+  </Material>
+  <Material Name="s_7_drips_a" MtlFlags="524450" Shader="Illum" GenMask="2004C0401" StringGenMask="%NORMAL_MAP%VERTCOLORS%EMITTANCE_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.49102089,0.49102089,0.49102089,1" Specular="0.021219011,0.021219011,0.021219011,1" Emittance="1,0.0018211621,0.020288564,100" Opacity="1" Shininess="255" AlphaTest="0.0099999998" vertModifType="2" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_drips_a_diff.dds" AssetId="{4F959664-4E29-52D6-B393-647B880DC54C}:100000">
+     <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TileV="0.75" OffsetV="0.5" TexMod_VOscillatorType="2" TexMod_VOscillatorRate="0.2" TexMod_VOscillatorPhase="0.5" TexMod_VOscillatorAmplitude="0.25" TexMod_WRotateRate="0.049438477" TexMod_WRotatePhase="1.9995117" TexMod_WRotateAmplitude="0.0054931641"/>
+    </Texture>
+    <Texture Map="Bumpmap" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_drips_a_ddna.dds" AssetId="{2376D268-44FA-52C5-9635-7E291B399FFA}:0"/>
+    <Texture Map="Decal" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_a_noise_diff.dds" AssetId="{28316413-D7B2-5512-A9D2-29FA3357AA52}:100000">
+     <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TileU="2" TileV="2" TexMod_VOscillatorType="2" TexMod_VOscillatorRate="0.050000001" TexMod_VOscillatorAmplitude="0.5"/>
+    </Texture>
+    <Texture Map="Smoothness" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_drips_a_ddna.dds" AssetId="{2376D268-44FA-52C5-9635-7E291B399FFA}:0"/>
+    <Texture Map="Emittance" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_c_em.dds" AssetId="{183B2BE0-8650-5391-9CBB-35356FD9B917}:0">
+     <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TexMod_UOscillatorType="2" TexMod_UOscillatorRate="0.30000001" TexMod_UOscillatorAmplitude="0.2"/>
+    </Texture>
+   </Textures>
+   <VertexDeform Type="2" DividerX="1" DividerY="0.0099999998" NoiseScale="1,1,1">
+    <WaveX Type="1" Amp="0.001" Level="0" Phase="0" Freq="0.25"/>
+   </VertexDeform>
+   <PublicParams SSSIndex="0" IndirectColor="0.25,0.25,0.25,0.25" EmittanceMapGamma="1"/>
+  </Material>
+  <Material Name="s7_drips_b" MtlFlags="524450" Shader="Illum" GenMask="2000C0401" StringGenMask="%NORMAL_MAP%EMITTANCE_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.49102089,0.49102089,0.49102089,1" Specular="0.021219011,0.021219011,0.021219011,1" Emittance="1,0.0021246891,0.013702084,30" Opacity="1" Shininess="255" AlphaTest="0.050000001" vertModifType="2" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_drips_a_diff.dds" AssetId="{4F959664-4E29-52D6-B393-647B880DC54C}:100000">
+     <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TileU="2" OffsetU="0.5" OffsetV="0.5" TexMod_VOscillatorType="2" TexMod_VOscillatorRate="0.25" TexMod_VOscillatorPhase="0.5" TexMod_VOscillatorAmplitude="0.40000001" TexMod_WRotateRate="0.049438477" TexMod_WRotatePhase="1.9995117" TexMod_WRotateAmplitude="0.0054931641"/>
+    </Texture>
+    <Texture Map="Bumpmap" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_a_ddna.dds" AssetId="{5DA1005E-F432-5E1B-BB94-8BE336CDBBBF}:0"/>
+    <Texture Map="Detail" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_a_detail.dds" AssetId="{DD61AADE-52C7-5D7A-9392-B08B24AAFDF6}:0">
+     <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TileU="5" TileV="5" TexMod_VOscillatorType="2" TexMod_VOscillatorRate="0.25" TexMod_VOscillatorPhase="0.5" TexMod_VOscillatorAmplitude="0.40000001"/>
+    </Texture>
+    <Texture Map="Decal" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_a_noise_diff.dds" AssetId="{28316413-D7B2-5512-A9D2-29FA3357AA52}:100000">
+     <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TileU="2" TileV="2" TexMod_VOscillatorType="2" TexMod_VOscillatorRate="1" TexMod_VOscillatorAmplitude="0.079999998" TexMod_WRotateAmplitude="0.0054931641"/>
+    </Texture>
+    <Texture Map="Smoothness" File="objects/landmarks/corruption/textures/jav_lm_crpt_corruption_a_ddna.dds" AssetId="{5DA1005E-F432-5E1B-BB94-8BE336CDBBBF}:0"/>
+   </Textures>
+   <VertexDeform Type="2" DividerX="0.60000002" DividerY="0.0099999998" NoiseScale="1,1,1">
+    <WaveX Type="1" Amp="0.0020000001" Level="0" Phase="0" Freq="1"/>
+   </VertexDeform>
+   <PublicParams SSSIndex="0" IndirectColor="0.25,0.25,0.25,0.25" EmittanceMapGamma="1"/>
+  </Material>
+  <Material Name="s7_roundshieldprimeval" MtlFlags="524416" Shader="Illum" GenMask="2000CA011" StringGenMask="%NORMAL_MAP%SPECULAR_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%OVERLAY_MASK%EMISSIVE_DECAL%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.49693301,0.49693301,0.49693301,1" Specular="1,1,1,1" Opacity="1" Shininess="255" vertModifType="0" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/housing/season_07/textures/s7_shld_roundshieldprimeval_diff.dds" AssetId="{904A5954-CF2A-59BB-AEDF-7C2A26298117}:100000"/>
+    <Texture Map="Bumpmap" File="objects/weapons/shields/roundshieldprimeval/textures/wep_mel_shld_1h_roundshieldprimeval_ddna.dds" AssetId="{1A643393-0A5E-553F-B17C-06A32F4580D8}:0"/>
+    <Texture Map="Specular" File="objects/housing/season_07/textures/s7_shld_roundshieldprimeval_spec.dds" AssetId="{C609CDB7-3A29-524B-8EB1-7141CF2886ED}:0"/>
+    <Texture Map="Custom" File="objects/weapons/shields/roundshieldprimeval/textures/wep_mel_shld_1h_roundshieldprimeval_mask.dds" AssetId="{26178DCF-D83E-5B38-A20B-E046A50EBD1F}:0"/>
+    <Texture Map="Smoothness" File="objects/weapons/shields/roundshieldprimeval/textures/wep_mel_shld_1h_roundshieldprimeval_ddna.dds" AssetId="{1A643393-0A5E-553F-B17C-06A32F4580D8}:0"/>
+   </Textures>
+   <PublicParams SSSIndex="0" Mask_G_Override="0" IndirectColor="0.25,0.25,0.25,0.25" Mask_A_Gloss="0" Mask_R="0" Mask_B="0" EmittanceMapGamma="1" Mask_R_Override="0" Mask_G="0" Mask_B_Color="0,0,0,0" Mask_R_Color="0,0,0,0" Mask_G_Color="0,0,0,0" Mask_A_SpecColor_Override="0" Mask_A_SpecColor="0,0,0,0" Mask_B_Override="0" Mask_A_GlossShift="0.5"/>
+  </Material>
+  <Material Name="s7_Skeleton_body" MtlFlags="524416" Shader="Illum" GenMask="2000C0001" StringGenMask="%NORMAL_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.49102101,0.49102101,0.49102101,1" Specular="0.021219,0.021219,0.021219,1" Opacity="1" Shininess="255" vertModifType="0" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_body_diff.dds" AssetId="{5C5C1E35-4144-56D8-80D9-42E09D6673B7}:100000"/>
+    <Texture Map="Bumpmap" File="objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_body_ddna.dds" AssetId="{EB746A05-20CD-5532-BB4E-0D4B9554629B}:0"/>
+    <Texture Map="Smoothness" File="objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_body_ddna.dds" AssetId="{EB746A05-20CD-5532-BB4E-0D4B9554629B}:0"/>
+   </Textures>
+   <PublicParams SSSIndex="0" IndirectColor="0.25,0.25,0.25,0" EmittanceMapGamma="1"/>
+  </Material>
+  <Material Name="s7_greataxeprimeval" MtlFlags="524416" Shader="Illum" GenMask="2000CA011" StringGenMask="%NORMAL_MAP%SPECULAR_MAP%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%OVERLAY_MASK%EMISSIVE_DECAL%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.49693301,0.49693301,0.49693301,1" Specular="1,1,1,1" Opacity="1" Shininess="255" vertModifType="0" LayerAct="1">
+   <Textures>
+    <Texture Map="Diffuse" File="objects/housing/season_07/textures/s7_axe_2h_greataxeprimeval_diff.dds" AssetId="{D9DFC796-B936-57D4-9F10-55DD4851D777}:100000"/>
+    <Texture Map="Bumpmap" File="objects/weapons/melee/axes/2h/greataxeprimeval/textures/wep_mel_axe_2h_greataxeprimeval_ddna.dds" AssetId="{8BE1E7D5-34A4-50FE-A11B-0483EC00D30E}:0"/>
+    <Texture Map="Specular" File="objects/housing/season_07/textures/s7_axe_2h_greataxeprimeval_spec.dds" AssetId="{D1A9C40F-E4BD-5E3C-8E6B-A224CBE1BDB8}:0"/>
+    <Texture Map="Custom" File="objects/weapons/melee/axes/2h/greataxeprimeval/textures/wep_mel_axe_2h_greataxeprimeval_mask.dds" AssetId="{82442346-FC3D-556C-8328-33EA94A0E9E8}:0"/>
+    <Texture Map="Smoothness" File="objects/weapons/melee/axes/2h/greataxeprimeval/textures/wep_mel_axe_2h_greataxeprimeval_ddna.dds" AssetId="{8BE1E7D5-34A4-50FE-A11B-0483EC00D30E}:0"/>
+   </Textures>
+   <PublicParams SSSIndex="0" Mask_G_Override="0" IndirectColor="0.25,0.25,0.25,0.25" Mask_A_Gloss="0" Mask_R="0" Mask_B="0" EmittanceMapGamma="1" Mask_R_Override="0" Mask_G="0" Mask_B_Color="0,0,0,0" Mask_R_Color="0,0,0,0" Mask_G_Color="0,0,0,0" Mask_A_SpecColor_Override="0" Mask_A_SpecColor="0,0,0,0" Mask_B_Override="0" Mask_A_GlossShift="0.5"/>
+  </Material>
+  <Material Name="col" MtlFlags="558208" Shader="Nodraw" GenMask="0" StringGenMask="" SurfaceType="mat_default" Diffuse="1,0,0,1" Specular="0,0,0,0.039215688" Opacity="1" Shininess="10" vertModifType="0" LayerAct="1">
+   <Textures />
+  </Material>
+ </SubMaterials>
+</Material>

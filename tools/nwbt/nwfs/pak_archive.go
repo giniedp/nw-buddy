@@ -2,6 +2,7 @@ package nwfs
 
 import (
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"nw-buddy/tools/formats/pak"
 	"nw-buddy/tools/utils/progress"
@@ -27,11 +28,39 @@ type pakArchive struct {
 
 type pakFile struct {
 	pak.Entry
-	fs *pakArchive
+	archive *pakArchive
+}
+
+func (it *pakFile) Stat() fs.FileInfo {
+	return it
 }
 
 func (it *pakFile) Archive() Archive {
-	return it.fs
+	return it.archive
+}
+
+func (it *pakFile) Name() string {
+	return path.Base(it.Path())
+}
+
+func (it *pakFile) Size() int64 {
+	return int64(it.UncompressedSize())
+}
+
+func (it *pakFile) Mode() os.FileMode {
+	return os.ModeIrregular
+}
+
+func (it *pakFile) IsDir() bool {
+	return false
+}
+
+func (it *pakFile) Sys() any {
+	return it.Entry
+}
+
+func (it *pakFile) String() string {
+	return it.Path()
 }
 
 // NewPakFS creates a new file system using pak files from the given game directory.
@@ -63,7 +92,7 @@ func (fs *pakArchive) init() error {
 		return err
 	}
 
-	bar := progress.Bar(len(files), "Initialize fs")
+	bar := progress.Bar(len(files), "Initialize archive")
 
 	fs.files = make([]File, 0)
 	for _, file := range files {
@@ -81,8 +110,8 @@ func (fs *pakArchive) init() error {
 		} else {
 			for _, entry := range entries {
 				file := &pakFile{
-					Entry: entry,
-					fs:    fs,
+					Entry:   entry,
+					archive: fs,
 				}
 				fs.files = append(fs.files, file)
 			}

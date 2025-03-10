@@ -4,13 +4,30 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/loc"
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/spf13/cobra"
 )
+
+var cmdPullLocales = &cobra.Command{
+	Use:   TASK_LOCALE,
+	Short: "Pulls locale files and converts them to JSON",
+	Long:  "",
+	Run:   runPullLocales,
+}
+
+func runPullLocales(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullLocales()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullLocales(fs nwfs.Archive, outDir string) *maps.SafeDict[*maps.SafeDict[string]] {
 	groups := groupLocaleFiles(findLocaleFiles(fs))
@@ -59,7 +76,7 @@ func loadDictionary(files []nwfs.File) *maps.SafeDict[string] {
 	for _, file := range files {
 		doc, err := loc.Load(file)
 		if err != nil {
-			slog.Error("Failed to load localization", "file", file, "err", err)
+			slog.Error("localization not loaded", "file", file, "err", err)
 			continue
 		}
 		for _, entry := range doc.Entries {

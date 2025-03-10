@@ -12,7 +12,6 @@ import (
 	"nw-buddy/tools/utils/maps"
 	"os"
 	"path"
-	"slices"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -21,7 +20,6 @@ import (
 var flgGameDir string
 var flgOutDataDir string
 var flgOutTypeDir string
-var flgModes []string
 var flgUpdateImages bool
 var flgWorkerCount uint32
 var stats = &Stats{}
@@ -48,9 +46,6 @@ var tasks = []string{
 	TASK_IMAGES,
 	TASK_CONSTANTS,
 }
-var optional = []string{
-	TASK_HEIGHTMAP,
-}
 
 var description = fmt.Sprintf("%s%s", constants.NW_BUDDY_BANNER, `
 Pulls data from .pak files specifically for nw-buddy purposes.
@@ -62,8 +57,6 @@ var Cmd = &cobra.Command{
 	Long:          description,
 	Run:           run,
 	SilenceErrors: false,
-	Args:          args,
-	ValidArgs:     tasks,
 }
 
 func init() {
@@ -72,77 +65,122 @@ func init() {
 	Cmd.Flags().StringVar(&flgOutTypeDir, "out-types", env.PullTypesDir(), "output directory for types ")
 	Cmd.Flags().BoolVar(&flgUpdateImages, "update-images", false, "if true, existing images are ignored and re-processed")
 	Cmd.Flags().Uint32VarP(&flgWorkerCount, "workers", "w", uint32(env.PreferredWorkerCount()), "number of workers to use for processing")
-}
 
-func args(cmd *cobra.Command, args []string) error {
-	if len(args) == 0 {
-		flgModes = slices.Clone(tasks)
-		return nil
-	}
-	for _, arg := range args {
-		if !slices.Contains(tasks, arg) || !slices.Contains(optional, arg) {
-			return fmt.Errorf("invalid task name: %s", arg)
-		}
-		flgModes = append(flgModes, arg)
-	}
-	return nil
+	Cmd.AddCommand(
+		cmdPullConstants,
+		cmdPullHeightmaps,
+		cmdPullImages,
+		cmdPullLocales,
+		cmdPullSearch,
+		cmdPullSpawns,
+		cmdPullSpells,
+		cmdPullTables,
+		cmdPullTypes,
+	)
 }
 
 func run(ccmd *cobra.Command, args []string) {
-	startTime := time.Now()
-
-	if flgWorkerCount == 0 {
-		flgWorkerCount = 1
+	if len(args) > 0 {
+		slog.Error("unknown arguments", "args", args)
+		return
 	}
-
+	ctx := NewPullContext()
 	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullTables()
+	ctx.PullLocales()
+	ctx.PullSpells()
+	ctx.PullSlices()
+	ctx.PullImages()
+	ctx.PullSearch()
+	ctx.PullTypes()
+	ctx.PullConstants()
+	// ctx.PullHeightmaps()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
-	os.MkdirAll(flgOutDataDir, os.ModePerm)
-	os.MkdirAll(env.TempDir(), os.ModePerm)
+type PullContext struct {
+	tables       []*datasheet.Document
+	locales      *maps.SafeDict[*maps.SafeDict[string]]
+	archive      nwfs.Archive
+	outDataDir   string
+	outTypeDir   string
+	updateImages bool
+	workerCount  uint32
+	startedAt    time.Time
+}
 
-	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
-	var tables []*datasheet.Document
-	var locales *maps.SafeDict[*maps.SafeDict[string]]
-	for _, task := range BuildTaskList(flgModes) {
-		switch task {
-		case TASK_TABLES:
-			tables = pullTables(fs, flgOutDataDir)
-		case TASK_SPELLS:
-			if tables == nil {
-				panic("tables should not be nil")
-			}
-			pullSpells(tables, fs, path.Join(flgOutDataDir, "generated"))
-		case TASK_SLICES:
-			if tables == nil {
-				panic("tables should not be nil")
-			}
-			pullSpawns(tables, fs, path.Join(flgOutDataDir, "generated"))
-		case TASK_LOCALE:
-			locales = pullLocales(fs, path.Join(flgOutDataDir, "localization"))
-		case TASK_IMAGES:
-			pullImages(fs, flgOutDataDir, flgUpdateImages)
-		case TASK_SEARCH:
-			if locales == nil {
-				panic("locales should not be nil")
-			}
-			if tables == nil {
-				panic("tables should not be nil")
-			}
-			pullSearch(tables, locales, path.Join(flgOutDataDir, "search"))
-		case TASK_TYPES:
-			if tables == nil {
-				panic("tables should not be nil")
-			}
-			pullTypes(tables, flgOutTypeDir)
-		case TASK_CONSTANTS:
-			pullConstants(fs, flgOutTypeDir)
-		case TASK_HEIGHTMAP:
-			pullHeightmaps(fs, path.Join(flgOutDataDir, "lyshineui", "worldtiles"))
-		}
+func NewPullContext() *PullContext {
+	ctx := &PullContext{}
+	ctx.archive = utils.Must(nwfs.NewPakFS(flgGameDir))
+	ctx.startedAt = time.Now()
+	ctx.outDataDir = flgOutDataDir
+	ctx.outTypeDir = flgOutTypeDir
+	ctx.updateImages = flgUpdateImages
+	ctx.workerCount = flgWorkerCount
+	if ctx.workerCount == 0 {
+		ctx.workerCount = 1
 	}
+	os.MkdirAll(ctx.outDataDir, os.ModePerm)
+	os.MkdirAll(env.TempDir(), os.ModePerm)
+	return ctx
+}
+
+func (ctx *PullContext) PullTables() {
+	ctx.tables = pullTables(ctx.archive, ctx.outDataDir)
+}
+
+func (ctx *PullContext) PullSpells() {
+	if ctx.tables == nil {
+		ctx.PullTables()
+	}
+	pullSpells(ctx.tables, ctx.archive, path.Join(ctx.outDataDir, "generated"))
+}
+
+func (ctx *PullContext) PullSlices() {
+	if ctx.tables == nil {
+		ctx.PullTables()
+	}
+	pullSpawns(ctx.tables, ctx.archive, path.Join(ctx.outDataDir, "generated"))
+}
+
+func (ctx *PullContext) PullLocales() {
+	ctx.locales = pullLocales(ctx.archive, path.Join(ctx.outDataDir, "localization"))
+}
+
+func (ctx *PullContext) PullImages() {
+	pullImages(ctx.archive, ctx.outDataDir, ctx.updateImages)
+}
+
+func (ctx *PullContext) PullSearch() {
+	if ctx.tables == nil {
+		ctx.PullTables()
+	}
+	if ctx.locales == nil {
+		ctx.PullLocales()
+	}
+	pullSearch(ctx.tables, ctx.locales, path.Join(ctx.outDataDir, "search"))
+}
+
+func (ctx *PullContext) PullTypes() {
+	if ctx.tables == nil {
+		ctx.PullTables()
+	}
+	pullTypes(ctx.tables, ctx.outTypeDir)
+}
+
+func (ctx *PullContext) PullConstants() {
+	pullConstants(ctx.archive, ctx.outTypeDir)
+}
+
+func (ctx *PullContext) PullHeightmaps() {
+	pullHeightmaps(ctx.archive, path.Join(ctx.outDataDir, "lyshineui", "worldtiles"))
+}
+
+func (ctx *PullContext) PrintStats() {
 	slog.SetDefault(logging.DefaultTerminalHandler())
 	stats.Print()
-	slog.Info("pull complete", "duration", time.Since(startTime))
+	slog.Info("pull complete", "duration", time.Since(ctx.startedAt))
 }
 
 type Blob struct {
@@ -170,52 +208,4 @@ func findLocaleFiles(fs nwfs.Archive) []nwfs.File {
 
 func findDatasheets(fs nwfs.Archive) []nwfs.File {
 	return utils.Must(fs.Glob("**.datasheet"))
-}
-
-func BuildTaskList(tasks []string) []string {
-	needsTables := []string{
-		TASK_SLICES,
-		TASK_TYPES,
-		TASK_SPELLS,
-		TASK_SEARCH,
-	}
-	needsLocale := []string{
-		TASK_SEARCH,
-	}
-
-	if !slices.Contains(tasks, TASK_TABLES) {
-		for _, task := range needsTables {
-			if slices.Contains(tasks, task) {
-				tasks = append(tasks, TASK_TABLES)
-				break
-			}
-		}
-	}
-
-	if !slices.Contains(tasks, TASK_LOCALE) {
-		for _, task := range needsLocale {
-			if slices.Contains(tasks, task) {
-				tasks = append(tasks, TASK_LOCALE)
-				break
-			}
-		}
-	}
-
-	slices.SortFunc(tasks, func(a, b string) int {
-		// TASK_TABLES and TASK_LOCALE should be done first, every thing else can be done in any order
-		if a == TASK_TABLES && b == TASK_LOCALE {
-			return -1
-		}
-		if a == TASK_LOCALE && b == TASK_TABLES {
-			return 1
-		}
-		if a == TASK_TABLES || a == TASK_LOCALE {
-			return -1
-		}
-		if b == TASK_TABLES || b == TASK_LOCALE {
-			return 1
-		}
-		return 0
-	})
-	return tasks
 }

@@ -9,28 +9,28 @@ import (
 )
 
 func TestFindSplits(t *testing.T) {
-	fs, err := nwfs.NewUnpackedFS("sample/fs")
-	assert.NoError(t, err, "creating OSFS")
+	fs, err := nwfs.NewUnpackedArchive("sample/fs")
+	assert.NoError(t, err)
 
 	files, err := fs.Glob("male_alchemist_calves_diff.dds")
 	assert.NoError(t, err)
-	assert.Equal(t, 1, len(files))
+	assert.Len(t, files, 1)
 
 	splits, err := dds.FindSplits(files[0])
 	assert.NoError(t, err)
-	assert.Equal(t, files[0], splits.Base.Header)
-	assert.Equal(t, 7, len(splits.Base.Files))
-	assert.Nil(t, splits.Alpha.Header)
-	assert.Nil(t, splits.Alpha.Files)
+	assert.Equal(t, files[0], splits.Base.Header, "first file should be base file")
+	assert.Len(t, splits.Base.Files, 7, "should have split files")
+	assert.Nil(t, splits.Alpha.Header, "shouldn't have alpha header")
+	assert.Nil(t, splits.Alpha.Files, "shouldn't have alpha files")
 
 	files, err = fs.Glob("male_alchemist_calves_ddna.dds")
 	assert.NoError(t, err)
-	assert.Equal(t, 1, len(files))
+	assert.Len(t, files, 1)
 
 	splits, err = dds.FindSplits(files[0])
 	assert.NoError(t, err)
 	assert.Equal(t, files[0], splits.Base.Header)
-	assert.Equal(t, 7, len(splits.Base.Files))
+	assert.Len(t, splits.Base.Files, 7)
 	assert.NotNil(t, splits.Alpha.Header)
-	assert.Equal(t, 7, len(splits.Alpha.Files))
+	assert.Len(t, splits.Alpha.Files, 7)
 }

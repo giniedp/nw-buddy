@@ -3,8 +3,10 @@ package pull
 import (
 	"bytes"
 	"fmt"
+	"log/slog"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"path"
@@ -12,7 +14,23 @@ import (
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/spf13/cobra"
 )
+
+var cmdPullSearch = &cobra.Command{
+	Use:   TASK_SEARCH,
+	Short: "Generates search index files",
+	Long:  "",
+	Run:   runPullSearch,
+}
+
+func runPullSearch(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullSearch()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullSearch(tables []*datasheet.Document, locales *maps.SafeDict[*maps.SafeDict[string]], outDir string) {
 

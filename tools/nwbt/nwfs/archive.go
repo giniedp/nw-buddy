@@ -2,6 +2,7 @@ package nwfs
 
 import (
 	"fmt"
+	"io/fs"
 	"nw-buddy/tools/utils/str"
 	"strings"
 	"sync"
@@ -21,6 +22,7 @@ type File interface {
 	Package() string
 	Path() string
 	Read() ([]byte, error)
+	Stat() fs.FileInfo
 }
 
 type baseFS struct {

@@ -1,0 +1,15 @@
+<Material MtlFlags="524544" vertModifType="0">
+ <SubMaterials>
+  <Material Name="male_alchemist_20_chest" MtlFlags="524418" Shader="Illum" GenMask="2000C8031" StringGenMask="%NORMAL_MAP%SPECULAR_MAP%FX_DISSOLVE%ALLOW_SILHOUETTE_POM%SUBSURFACE_SCATTERING%OVERLAY_MASK%ALLOW_SPECULAR_ANTIALIASING" SurfaceType="mat_default" Diffuse="0.48514995,0.48514995,0.48514995,1" Specular="1,1,1,1" Opacity="1" Shininess="255" AlphaTest="0.5" vertModifType="0" LayerAct="1">
+   <Textures>
+    <Texture Map="Bumpmap" File="objects/characters/player/male/alchemist/textures/male_alchemist_chest_ddna.dds"/>
+    <Texture Map="Specular" File="objects/characters/player/male/alchemist/textures/male_alchemist_chest_spec.dds"/>
+    <Texture Map="Smoothness" File="objects/characters/player/male/alchemist/textures/male_alchemist_chest_ddna.dds"/>
+    <Texture Map="Custom" File="objects/characters/player/male/alchemist/textures/male_alchemist_chest_mask.dds"/>
+    <Texture Map="Diffuse" File="objects/characters/player/male/alchemist/textures/male_alchemist_chest_diff.dds"/>
+   </Textures>
+   <PublicParams SSSIndex="0" DissolvePercentage="0" Mask_G_Override="0" IndirectColor="0.25,0.25,0.25,0.25" Mask_A_Gloss="0" Mask_R="0" Mask_B="0" EmittanceMapGamma="1" Mask_R_Override="0" Mask_G="0" Mask_B_Color="0,0,0,0" Mask_R_Color="0,0,0,0" Mask_G_Color="0,0,0,0" Mask_A_SpecColor_Override="0" DissolveEdgeThickness="0" Mask_A_SpecColor="0,0,0,0" DissolveColor="1,1,1,1" Mask_A_GlossShift="0" Mask_B_Override="0"/>
+  </Material>
+ </SubMaterials>
+ <PublicParams SSSIndex="0" IndirectColor="0.25,0.25,0.25,0.25" EmittanceMapGamma="1"/>
+</Material>

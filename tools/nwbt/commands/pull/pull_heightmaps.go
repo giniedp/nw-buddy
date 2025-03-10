@@ -10,13 +10,31 @@ import (
 	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
+
+	"github.com/spf13/cobra"
 )
 
 const TILE_SIZE = 256
+
+var cmdPullHeightmaps = &cobra.Command{
+	Use:   TASK_HEIGHTMAP,
+	Short: "Pulls heightmap files and generates tiles",
+	Long:  "",
+	Run:   runPullHeightmaps,
+}
+
+func runPullHeightmaps(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullHeightmaps()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullHeightmaps(fs nwfs.Archive, outDir string) {
 	if _, ok := utils.Magick.Check(); !ok {
@@ -120,7 +138,7 @@ func workTile(tile Tile, level string, outDir string) string {
 	name := fmt.Sprintf("%d/heightmap_l%d_y%03d_x%03d", tile.Mip, tile.Mip, tile.Y, tile.X)
 	file := path.Join(outDir, level, "heightmap", name+".png")
 	if err := writeTile(file, img); err != nil {
-		slog.Error("Failed to write tile ", "error", err)
+		slog.Error("tile not written", "file", file, "error", err)
 	}
 	return file
 }

@@ -1,0 +1,659 @@
+<Params>
+	<AnimationList>
+		<Animation name="$Include" path="objects/characters/npc/settlements/01_grace.chrparams"/>
+		<Animation name="$Include" path="objects/characters/npc/npc_gestures.chrparams"/>
+		<Animation name="$AnimEventDatabase" path="animations/Gameplay/Character/Player/male/TEMP_male.animevents"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Damned"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/CorruptedAcolyte"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Withered"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Risen"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/CorruptionEntity"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Broken"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Skeleton"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Priest"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/AncientGuardian"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/AngryEarth"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/GraveDigger"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/BlightFiend"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Anubian"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/CorruptedDynasty"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Evil_Knights"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/VarangianHealer"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Lost/Pikeman"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Anubian"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Lost/Archer"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/CorruptedSailor"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Imhotep"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Medea"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Player/male/RAxe"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Adiana"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/Lost/Umberto"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/CorruptedLegion/LegionSagittarii"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/DaichiSaito"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+		<Animation name="#filepath" path="animations/Gameplay/Character/Npc/SuperNatural/CorruptedYonas"/>
+		<Animation name="*" path="*/*.caf"/>
+		<Animation name="*" path="*/*.bspace"/>
+		<Animation name="*" path="*/*.comb"/>
+	</AnimationList>
+	<BBoxIncludeList>
+		<Joint name="Head"/>
+		<Joint name="Calf_left"/>
+		<Joint name="Calf_right"/>
+		<Joint name="Toe_left"/>
+		<Joint name="Toe_right"/>
+		<Joint name="Hand_left"/>
+		<Joint name="Hand_right"/>
+		<Joint name="Forearm_left"/>
+		<Joint name="Forearm_right"/>
+		<Joint name="Pelvis"/>
+	</BBoxIncludeList>
+	<BBoxExtensionList>
+		<Axis negX="0" negY="0" negZ="0" posX="0" posY="0" posZ="0"/>
+	</BBoxExtensionList>
+	<Lod>
+		<JointList level="1">
+			<Joint name="c_jaw_BND"/>
+			<Joint name="Xform"/>
+			<Joint name="Pelvis"/>
+			<Joint name="reference_aim"/>
+			<Joint name="grapple_bone"/>
+			<Joint name="Hips"/>
+			<Joint name="reference_look"/>
+			<Joint name="Spine"/>
+			<Joint name="Thigh_left"/>
+			<Joint name="Thigh_right"/>
+			<Joint name="Calf_left"/>
+			<Joint name="Thigh_left_mid"/>
+			<Joint name="Foot_left"/>
+			<Joint name="Calf_left_mid"/>
+			<Joint name="Toe_left"/>
+			<Joint name="Calf_right"/>
+			<Joint name="Thigh_right_mid"/>
+			<Joint name="Foot_right"/>
+			<Joint name="Calf_right_mid"/>
+			<Joint name="Toe_right"/>
+			<Joint name="Spine1"/>
+			<Joint name="c_spineTwist1_BND"/>
+			<Joint name="Spine2"/>
+			<Joint name="c_spineTwist3_BND"/>
+			<Joint name="Clavicle_right"/>
+			<Joint name="Clavicle_left"/>
+			<Joint name="Neck"/>
+			<Joint name="aim_direction"/>
+			<Joint name="aim_start"/>
+			<Joint name="c_spineTwist5_BND"/>
+			<Joint name="UpperArm_right"/>
+			<Joint name="Forearm_right"/>
+			<Joint name="MidArm_right"/>
+			<Joint name="Forearm_roll_right"/>
+			<Joint name="Hand_right"/>
+			<Joint name="Forearm_right_twist"/>
+			<Joint name="Hand_subPose_right"/>
+			<Joint name="right_thumb_1"/>
+			<Joint name="right_index_1"/>
+			<Joint name="right_middle_1"/>
+			<Joint name="right_ring_1"/>
+			<Joint name="right_pinky_base"/>
+			<Joint name="right_hand_attach"/>
+			<Joint name="right_thumb_2"/>
+			<Joint name="right_thumb_3"/>
+			<Joint name="right_index_2"/>
+			<Joint name="right_index_3"/>
+			<Joint name="right_middle_2"/>
+			<Joint name="right_middle_3"/>
+			<Joint name="right_ring_2"/>
+			<Joint name="right_ring_3"/>
+			<Joint name="right_pinky_1"/>
+			<Joint name="right_pinky_2"/>
+			<Joint name="right_pinky_3"/>
+			<Joint name="right_hand_IKblend"/>
+			<Joint name="right_hand_IKtarget"/>
+			<Joint name="UpperArm_left"/>
+			<Joint name="Forearm_left"/>
+			<Joint name="MidArm_left"/>
+			<Joint name="Forearm_roll_left"/>
+			<Joint name="Hand_left"/>
+			<Joint name="Forearm_left_twist"/>
+			<Joint name="Forearm_left_shieldAttach"/>
+			<Joint name="Hand_subPose_left"/>
+			<Joint name="left_thumb_1"/>
+			<Joint name="left_index_1"/>
+			<Joint name="left_middle_1"/>
+			<Joint name="left_ring_1"/>
+			<Joint name="left_pinky_base"/>
+			<Joint name="left_hand_attach"/>
+			<Joint name="left_thumb_2"/>
+			<Joint name="left_thumb_3"/>
+			<Joint name="left_index_2"/>
+			<Joint name="left_index_3"/>
+			<Joint name="left_middle_2"/>
+			<Joint name="left_middle_3"/>
+			<Joint name="left_ring_2"/>
+			<Joint name="left_ring_3"/>
+			<Joint name="left_pinky_1"/>
+			<Joint name="left_pinky_2"/>
+			<Joint name="left_pinky_3"/>
+			<Joint name="left_hand_IKblend"/>
+			<Joint name="left_hand_IKtarget"/>
+			<Joint name="Neck_Mid"/>
+			<Joint name="Head"/>
+			<Joint name="Look"/>
+			<Joint name="Hat"/>
+			<Joint name="bind_upper_face_a"/>
+			<Joint name="bind_lowe_face_a"/>
+			<Joint name="Eye_left_BND"/>
+			<Joint name="Eye_right_BND"/>
+			<Joint name="UpperEyeLid_left_BND"/>
+			<Joint name="UpperEyeLid_right_BND"/>
+			<Joint name="l_mid_brow_BND"/>
+			<Joint name="r_mid_brow_BND"/>
+			<Joint name="LowerEyeLid_left_BND"/>
+			<Joint name="LowerEyeLid_right_BND"/>
+			<Joint name="l_inner_brow_BND"/>
+			<Joint name="r_inner_brow_BND"/>
+			<Joint name="l_outer_brow_BND"/>
+			<Joint name="r_outer_brow_BND"/>
+			<Joint name="bind_cheek_b_left"/>
+			<Joint name="bind_cheek_a_left"/>
+			<Joint name="bind_nasolabial_a_left"/>
+			<Joint name="bind_nasolabial_b_left"/>
+			<Joint name="bind_marionette_b_left"/>
+			<Joint name="bind_marionette_a_left"/>
+			<Joint name="bind_lip_center_bttm"/>
+			<Joint name="bind_lip_a_left_bttm"/>
+			<Joint name="bind_lip_b_left_bttm"/>
+			<Joint name="bind_lip_b_left_top"/>
+			<Joint name="bind_lip_a_left_top"/>
+			<Joint name="bind_lip_left"/>
+			<Joint name="bind_lip_center_top"/>
+			<Joint name="bind_lip_a_right_top"/>
+			<Joint name="bind_lip_a_right_bttm"/>
+			<Joint name="bind_lip_b_right_bttm"/>
+			<Joint name="bind_lip_b_right_top"/>
+			<Joint name="bind_lip_right"/>
+			<Joint name="bind_marionette_b_right"/>
+			<Joint name="bind_nasolabial_b_right"/>
+			<Joint name="bind_cheek_b_right"/>
+			<Joint name="bind_marionette_a_right"/>
+			<Joint name="bind_nasolabial_a_right"/>
+			<Joint name="bind_cheek_a_right"/>
+			<Joint name="bind_jaw_center"/>
+			<Joint name="bind_nostril_left"/>
+			<Joint name="bind_nostril_right"/>
+			<Joint name="bind_tongue_1"/>
+			<Joint name="bind_tongue_2"/>
+			<Joint name="bind_tongue_3"/>
+		</JointList>
+		<JointList level="2">
+			<Joint name="Xform"/>
+			<Joint name="Pelvis"/>
+			<Joint name="reference_aim"/>
+			<Joint name="grapple_bone"/>
+			<Joint name="Hips"/>
+			<Joint name="reference_look"/>
+			<Joint name="Spine"/>
+			<Joint name="Thigh_left"/>
+			<Joint name="Thigh_right"/>
+			<Joint name="Calf_left"/>
+			<Joint name="Thigh_left_mid"/>
+			<Joint name="Foot_left"/>
+			<Joint name="Calf_left_mid"/>
+			<Joint name="Toe_left"/>
+			<Joint name="Calf_right"/>
+			<Joint name="Thigh_right_mid"/>
+			<Joint name="Foot_right"/>
+			<Joint name="Calf_right_mid"/>
+			<Joint name="Toe_right"/>
+			<Joint name="Spine1"/>
+			<Joint name="c_spineTwist1_BND"/>
+			<Joint name="Spine2"/>
+			<Joint name="c_spineTwist3_BND"/>
+			<Joint name="Clavicle_right"/>
+			<Joint name="Clavicle_left"/>
+			<Joint name="Neck"/>
+			<Joint name="aim_direction"/>
+			<Joint name="aim_start"/>
+			<Joint name="c_spineTwist5_BND"/>
+			<Joint name="UpperArm_right"/>
+			<Joint name="Forearm_right"/>
+			<Joint name="MidArm_right"/>
+			<Joint name="Forearm_roll_right"/>
+			<Joint name="Hand_right"/>
+			<Joint name="Forearm_right_twist"/>
+			<Joint name="Hand_subPose_right"/>
+			<Joint name="right_hand_attach"/>
+			<Joint name="right_hand_IKblend"/>
+			<Joint name="right_hand_IKtarget"/>
+			<Joint name="UpperArm_left"/>
+			<Joint name="Forearm_left"/>
+			<Joint name="MidArm_left"/>
+			<Joint name="Forearm_roll_left"/>
+			<Joint name="Hand_left"/>
+			<Joint name="Forearm_left_twist"/>
+			<Joint name="Forearm_left_shieldAttach"/>
+			<Joint name="Hand_subPose_left"/>
+			<Joint name="left_hand_attach"/>
+			<Joint name="left_hand_IKblend"/>
+			<Joint name="left_hand_IKtarget"/>
+			<Joint name="Neck_Mid"/>
+			<Joint name="Head"/>
+			<Joint name="Look"/>
+			<Joint name="Hat"/>
+			<Joint name="bind_upper_face_a"/>
+			<Joint name="bind_lowe_face_a"/>
+			<Joint name="Eye_left_BND"/>
+			<Joint name="Eye_right_BND"/>
+			<Joint name="UpperEyeLid_left_BND"/>
+			<Joint name="UpperEyeLid_right_BND"/>
+			<Joint name="l_mid_brow_BND"/>
+			<Joint name="r_mid_brow_BND"/>
+			<Joint name="LowerEyeLid_left_BND"/>
+			<Joint name="LowerEyeLid_right_BND"/>
+			<Joint name="l_inner_brow_BND"/>
+			<Joint name="r_inner_brow_BND"/>
+			<Joint name="l_outer_brow_BND"/>
+			<Joint name="r_outer_brow_BND"/>
+			<Joint name="bind_cheek_b_left"/>
+			<Joint name="bind_cheek_a_left"/>
+			<Joint name="bind_nasolabial_a_left"/>
+			<Joint name="bind_nasolabial_b_left"/>
+			<Joint name="bind_marionette_b_left"/>
+			<Joint name="bind_marionette_a_left"/>
+			<Joint name="bind_lip_center_bttm"/>
+			<Joint name="bind_lip_a_left_bttm"/>
+			<Joint name="bind_lip_b_left_bttm"/>
+			<Joint name="bind_lip_b_left_top"/>
+			<Joint name="bind_lip_a_left_top"/>
+			<Joint name="bind_lip_left"/>
+			<Joint name="bind_lip_center_top"/>
+			<Joint name="bind_lip_a_right_top"/>
+			<Joint name="bind_lip_a_right_bttm"/>
+			<Joint name="bind_lip_b_right_bttm"/>
+			<Joint name="bind_lip_b_right_top"/>
+			<Joint name="bind_lip_right"/>
+			<Joint name="bind_marionette_b_right"/>
+			<Joint name="bind_nasolabial_b_right"/>
+			<Joint name="bind_cheek_b_right"/>
+			<Joint name="bind_marionette_a_right"/>
+			<Joint name="bind_nasolabial_a_right"/>
+			<Joint name="bind_cheek_a_right"/>
+			<Joint name="bind_jaw_center"/>
+			<Joint name="bind_nostril_left"/>
+			<Joint name="bind_nostril_right"/>
+			<Joint name="bind_tongue_1"/>
+			<Joint name="bind_tongue_2"/>
+			<Joint name="bind_tongue_3"/>
+		</JointList>
+		<JointList level="3">
+			<Joint name="Xform"/>
+			<Joint name="Pelvis"/>
+			<Joint name="reference_aim"/>
+			<Joint name="grapple_bone"/>
+			<Joint name="Hips"/>
+			<Joint name="reference_look"/>
+			<Joint name="Spine"/>
+			<Joint name="Thigh_left"/>
+			<Joint name="Thigh_right"/>
+			<Joint name="Calf_left"/>
+			<Joint name="Thigh_left_mid"/>
+			<Joint name="Foot_left"/>
+			<Joint name="Calf_left_mid"/>
+			<Joint name="Toe_left"/>
+			<Joint name="Calf_right"/>
+			<Joint name="Thigh_right_mid"/>
+			<Joint name="Foot_right"/>
+			<Joint name="Calf_right_mid"/>
+			<Joint name="Toe_right"/>
+			<Joint name="Spine1"/>
+			<Joint name="c_spineTwist1_BND"/>
+			<Joint name="Spine2"/>
+			<Joint name="c_spineTwist3_BND"/>
+			<Joint name="Clavicle_right"/>
+			<Joint name="Clavicle_left"/>
+			<Joint name="Neck"/>
+			<Joint name="aim_direction"/>
+			<Joint name="aim_start"/>
+			<Joint name="c_spineTwist5_BND"/>
+			<Joint name="UpperArm_right"/>
+			<Joint name="Forearm_right"/>
+			<Joint name="MidArm_right"/>
+			<Joint name="Forearm_roll_right"/>
+			<Joint name="Hand_right"/>
+			<Joint name="Forearm_right_twist"/>
+			<Joint name="Hand_subPose_right"/>
+			<Joint name="right_hand_attach"/>
+			<Joint name="right_hand_IKblend"/>
+			<Joint name="right_hand_IKtarget"/>
+			<Joint name="UpperArm_left"/>
+			<Joint name="Forearm_left"/>
+			<Joint name="MidArm_left"/>
+			<Joint name="Forearm_roll_left"/>
+			<Joint name="Hand_left"/>
+			<Joint name="Forearm_left_twist"/>
+			<Joint name="Forearm_left_shieldAttach"/>
+			<Joint name="Hand_subPose_left"/>
+			<Joint name="left_hand_attach"/>
+			<Joint name="left_hand_IKblend"/>
+			<Joint name="left_hand_IKtarget"/>
+			<Joint name="Neck_Mid"/>
+			<Joint name="Head"/>
+			<Joint name="Look"/>
+			<Joint name="Hat"/>
+		</JointList>
+		<JointList level="4">
+			<Joint name="Xform"/>
+			<Joint name="Pelvis"/>
+			<Joint name="reference_aim"/>
+			<Joint name="grapple_bone"/>
+			<Joint name="Hips"/>
+			<Joint name="reference_look"/>
+			<Joint name="Spine"/>
+			<Joint name="Thigh_left"/>
+			<Joint name="Thigh_right"/>
+			<Joint name="Calf_left"/>
+			<Joint name="Thigh_left_mid"/>
+			<Joint name="Calf_right"/>
+			<Joint name="Thigh_right_mid"/>
+			<Joint name="Spine1"/>
+			<Joint name="c_spineTwist1_BND"/>
+			<Joint name="Spine2"/>
+			<Joint name="c_spineTwist3_BND"/>
+			<Joint name="Clavicle_right"/>
+			<Joint name="Clavicle_left"/>
+			<Joint name="Neck"/>
+			<Joint name="aim_direction"/>
+			<Joint name="aim_start"/>
+			<Joint name="c_spineTwist5_BND"/>
+			<Joint name="UpperArm_right"/>
+			<Joint name="Forearm_right"/>
+			<Joint name="MidArm_right"/>
+			<Joint name="Hand_right"/>
+			<Joint name="Hand_subPose_right"/>
+			<Joint name="right_hand_attach"/>
+			<Joint name="UpperArm_left"/>
+			<Joint name="Forearm_left"/>
+			<Joint name="MidArm_left"/>
+			<Joint name="Hand_left"/>
+			<Joint name="Forearm_left_shieldAttach"/>
+			<Joint name="Hand_subPose_left"/>
+			<Joint name="left_hand_attach"/>
+			<Joint name="Neck_Mid"/>
+			<Joint name="Head"/>
+			<Joint name="Look"/>
+			<Joint name="Hat"/>
+		</JointList>
+		<JointList level="5">
+			<Joint name="Xform"/>
+			<Joint name="Pelvis"/>
+			<Joint name="reference_aim"/>
+			<Joint name="grapple_bone"/>
+			<Joint name="Hips"/>
+			<Joint name="reference_look"/>
+			<Joint name="Spine"/>
+			<Joint name="Thigh_left"/>
+			<Joint name="Thigh_right"/>
+			<Joint name="Calf_left"/>
+			<Joint name="Thigh_left_mid"/>
+			<Joint name="Calf_right"/>
+			<Joint name="Thigh_right_mid"/>
+			<Joint name="Spine1"/>
+			<Joint name="c_spineTwist1_BND"/>
+			<Joint name="Spine2"/>
+			<Joint name="c_spineTwist3_BND"/>
+			<Joint name="Clavicle_right"/>
+			<Joint name="Clavicle_left"/>
+			<Joint name="Neck"/>
+			<Joint name="aim_direction"/>
+			<Joint name="aim_start"/>
+			<Joint name="c_spineTwist5_BND"/>
+			<Joint name="UpperArm_right"/>
+			<Joint name="Forearm_right"/>
+			<Joint name="MidArm_right"/>
+			<Joint name="Hand_right"/>
+			<Joint name="Hand_subPose_right"/>
+			<Joint name="right_hand_attach"/>
+			<Joint name="UpperArm_left"/>
+			<Joint name="Forearm_left"/>
+			<Joint name="MidArm_left"/>
+			<Joint name="Hand_left"/>
+			<Joint name="Forearm_left_shieldAttach"/>
+			<Joint name="Hand_subPose_left"/>
+			<Joint name="left_hand_attach"/>
+			<Joint name="Neck_Mid"/>
+			<Joint name="Head"/>
+			<Joint name="Look"/>
+			<Joint name="Hat"/>
+		</JointList>
+		<JointList level="6">
+			<Joint name="Xform"/>
+			<Joint name="Pelvis"/>
+			<Joint name="reference_aim"/>
+			<Joint name="Hips"/>
+			<Joint name="reference_look"/>
+			<Joint name="Spine"/>
+			<Joint name="Thigh_left"/>
+			<Joint name="Thigh_right"/>
+			<Joint name="Calf_left"/>
+			<Joint name="Calf_right"/>
+			<Joint name="Spine1"/>
+			<Joint name="Spine2"/>
+			<Joint name="Clavicle_right"/>
+			<Joint name="Clavicle_left"/>
+			<Joint name="Neck"/>
+			<Joint name="aim_direction"/>
+			<Joint name="aim_start"/>
+			<Joint name="UpperArm_right"/>
+			<Joint name="Forearm_right"/>
+			<Joint name="MidArm_right"/>
+			<Joint name="Hand_right"/>
+			<Joint name="Hand_subPose_right"/>
+			<Joint name="right_hand_attach"/>
+			<Joint name="UpperArm_left"/>
+			<Joint name="Forearm_left"/>
+			<Joint name="MidArm_left"/>
+			<Joint name="Hand_left"/>
+			<Joint name="Forearm_left_shieldAttach"/>
+			<Joint name="Hand_subPose_left"/>
+			<Joint name="left_hand_attach"/>
+			<Joint name="Neck_Mid"/>
+			<Joint name="Head"/>
+			<Joint name="Look"/>
+			<Joint name="Hat"/>
+		</JointList>
+	</Lod>
+	<IK_Definition>
+		<LimbIK_Definition>
+			<IK Solver="2BIK" Handle="RgtArm01" Root="UpperArm_right" EndEffector="Hand_right"/>
+			<IK Solver="2BIK" Handle="LftArm01" Root="UpperArm_left" EndEffector="Hand_left"/>
+			<IK Solver="2BIK" Handle="RgtLeg01" Root="Thigh_right" EndEffector="Foot_right"/>
+			<IK Solver="2BIK" Handle="LftLeg01" Root="Thigh_left" EndEffector="Foot_left"/>
+		</LimbIK_Definition>
+		<AimIK_Definition>
+			<DirectionalBlends>
+				<Joint AnimToken="aim_poses" ParameterJoint="aim_direction" StartJoint="aim_start" ReferenceJoint="reference_aim"/>
+			</DirectionalBlends>
+			<RotationList>
+				<Rotation Additive="1" Primary="1" JointName="Pelvis"/>
+				<Rotation Additive="1" Primary="1" JointName="Spine"/>
+				<Rotation Additive="1" Primary="1" JointName="Spine1"/>
+				<Rotation Additive="1" Primary="1" JointName="Spine2"/>
+				<Rotation Additive="1" Primary="1" JointName="aim_direction"/>
+				<Rotation Additive="1" Primary="0" JointName="Hips"/>
+				<Rotation Additive="1" Primary="0" JointName="Thigh_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Thigh_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Calf_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Foot_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Toe_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Calf_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Foot_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Toe_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Clavicle_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Clavicle_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Neck"/>
+				<Rotation Additive="1" Primary="0" JointName="UpperArm_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_right"/>
+				<Rotation Additive="1" Primary="0" JointName="MidArm_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_roll_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_subPose_right"/>
+				<Rotation Additive="1" Primary="0" JointName="right_hand_attach"/>
+				<Rotation Additive="1" Primary="0" JointName="UpperArm_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_left"/>
+				<Rotation Additive="1" Primary="0" JointName="MidArm_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_roll_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_subPose_left"/>
+				<Rotation Additive="1" Primary="0" JointName="left_hand_attach"/>
+				<Rotation Additive="1" Primary="0" JointName="Neck_Mid"/>
+				<Rotation Additive="1" Primary="0" JointName="Head"/>
+			</RotationList>
+			<PositionList>
+				<Position Additive="1" JointName="Pelvis"/>
+				<Position Additive="1" JointName="right_hand_attach"/>
+				<Position Additive="1" JointName="left_hand_attach"/>
+				<Position Additive="1" JointName="aim_direction"/>
+				<Position Additive="1" JointName="Spine"/>
+				<Position Additive="1" JointName="reference_look"/>
+			</PositionList>
+		</AimIK_Definition>
+		<LookIK_Definition>
+			<DirectionalBlends>
+				<Joint AnimToken="Look_Poses" ParameterJoint="Look" StartJoint="Look" ReferenceJoint="reference_look"/>
+			</DirectionalBlends>
+			<RotationList>
+				<Rotation Additive="1" Primary="1" JointName="Pelvis"/>
+				<Rotation Additive="1" Primary="1" JointName="Spine"/>
+				<Rotation Additive="1" Primary="1" JointName="Spine1"/>
+				<Rotation Additive="1" Primary="1" JointName="Spine2"/>
+				<Rotation Additive="1" Primary="1" JointName="Neck"/>
+				<Rotation Additive="1" Primary="1" JointName="Neck_Mid"/>
+				<Rotation Additive="1" Primary="1" JointName="Head"/>
+				<Rotation Additive="1" Primary="1" JointName="Look"/>
+				<Rotation Additive="1" Primary="0" JointName="Hips"/>
+				<Rotation Additive="1" Primary="0" JointName="Thigh_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Thigh_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Calf_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Foot_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Toe_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Calf_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Foot_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Toe_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Clavicle_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Clavicle_left"/>
+				<Rotation Additive="1" Primary="0" JointName="UpperArm_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_right"/>
+				<Rotation Additive="1" Primary="0" JointName="MidArm_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_roll_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_right"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_subPose_right"/>
+				<Rotation Additive="1" Primary="0" JointName="right_hand_attach"/>
+				<Rotation Additive="1" Primary="0" JointName="UpperArm_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_left"/>
+				<Rotation Additive="1" Primary="0" JointName="MidArm_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Forearm_roll_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_left"/>
+				<Rotation Additive="1" Primary="0" JointName="Hand_subPose_left"/>
+				<Rotation Additive="1" Primary="0" JointName="left_hand_attach"/>
+			</RotationList>
+			<PositionList>
+				<Position Additive="1" JointName="Pelvis"/>
+				<Position Additive="1" JointName="Look"/>
+			</PositionList>
+		</LookIK_Definition>
+		<Animation_Driven_IK_Targets>
+			<ADIKTarget Handle="LftArm01" Target="left_hand_IKtarget" Weight="left_hand_IKblend"/>
+			<ADIKTarget Handle="RgtArm01" Target="right_hand_IKtarget" Weight="right_hand_IKblend"/>
+		</Animation_Driven_IK_Targets>
+	</IK_Definition>
+</Params>
+

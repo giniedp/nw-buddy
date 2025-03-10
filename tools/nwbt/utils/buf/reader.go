@@ -102,6 +102,23 @@ func (r *Reader) ReadBytes(n int) ([]byte, error) {
 	return b, nil
 }
 
+func (r *Reader) ReadCString() (string, error) {
+	s, err := r.ReadUntilByte(0)
+	if err != nil {
+		return "", err
+	}
+	return string(s), nil
+}
+
+func (r *Reader) ReadCStringFixedBlock(n int) (string, error) {
+	s, err := r.ReadUntilByteWithJump(0, n)
+	if err != nil {
+		return "", err
+	}
+	return string(s), nil
+}
+
+// ReadUntilByte reads until the specified byte is found
 func (r *Reader) ReadUntilByte(b byte) ([]byte, error) {
 	i := r.pos
 	for i < len(r.data) && r.data[i] != b {
@@ -114,11 +131,13 @@ func (r *Reader) ReadUntilByte(b byte) ([]byte, error) {
 	return s, err
 }
 
-func (r *Reader) ReadUntilByteCapped(b byte, max int) ([]byte, error) {
+// ReadUntilByteWithLimit reads until the specified byte is found or the limit is reached
+// It stops where the string ends or the limit is reached
+func (r *Reader) ReadUntilByteWithLimit(b byte, end int) ([]byte, error) {
 	i := r.pos
 	for i < len(r.data) && r.data[i] != b {
 		i++
-		if i-r.pos >= max {
+		if i-r.pos >= end {
 			return r.ReadBytes(i - r.pos)
 		}
 	}
@@ -127,6 +146,18 @@ func (r *Reader) ReadUntilByteCapped(b byte, max int) ([]byte, error) {
 		r.pos++
 	}
 	return s, err
+}
+
+// ReadUntilByteWithJump reads until the specified byte is found or the limit is reached.
+// Ensures that the reader position is moved by the specified jump value
+func (r *Reader) ReadUntilByteWithJump(b byte, end int) ([]byte, error) {
+	p := r.Pos()
+	s, err := r.ReadUntilByteWithLimit(b, end)
+	if err != nil {
+		return nil, err
+	}
+	r.SeekAbsolute(p + end)
+	return s, nil
 }
 
 func (r *Reader) ReadByte() (byte, error) {

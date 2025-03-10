@@ -1,0 +1,23 @@
+<CharacterDefinition>
+ <Model File="objects/characters/player/male/player_male.chr"/>
+ <AttachmentList>
+  <Attachment Type="CA_SKIN" AName="male_leather_SetA_T5_calves" SerialNumber="610878C207F6" Binding="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_calves.skin" Material="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_calves_matgroup.mtl" Flags="0"/>
+  <Attachment Type="CA_SKIN" AName="male_leather_SetA_T5_thighs" SerialNumber="610878C207F7" Binding="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_thighs.skin" Material="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_thighs_matgroup.mtl" Flags="0"/>
+  <Attachment Type="CA_SKIN" AName="male_leather_SetA_T5_chest" SerialNumber="610878C207F8" Binding="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_chest.skin" Material="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_chest_matgroup.mtl" Flags="0"/>
+  <Attachment Type="CA_SKIN" AName="male_leather_SetA_T5_forearms" SerialNumber="610878C207F9" Binding="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_forearms.skin" Material="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_forearms_matgroup.mtl" Flags="0"/>
+  <Attachment Type="CA_SKIN" AName="male_leather_SetA_T5_helmet" SerialNumber="610878C207FA" Binding="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_helmet.skin" Material="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_helmet_matgroup.mtl" Flags="0"/>
+  <Attachment Type="CA_CLOTH" AName="male_leather_SetA_T5_cape" SerialNumber="610878C207FB" Binding="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_cape.cloth" Material="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_chest_matgroup.mtl" Flags="0"/>
+  <Attachment Type="CA_CLOTH" AName="male_leather_SetA_T5_skirt" SerialNumber="610878C207FC" Binding="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_skirt.cloth" Material="objects/characters/player/male/leather_SetA_T5/male_leather_SetA_T5_chest_matgroup.mtl" Flags="0"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="hip_cl_collider" SerialNumber="610878C207FD" RelRotation="0.99982977,0,0,0.018449564" RelPosition="-0.12088852,-0.061711773,5.364418e-07" BoneName="Hips" ProxyParams="0.14702703,-0.24324326,0,0.15783784"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="spine1_cl_collider" SerialNumber="610878C207FE" RelRotation="0.7070142,-0.011440241,0.011440241,0.7070142" RelPosition="-2.9802319e-08,2.6645353e-15,0.03322351" BoneName="Spine1" ProxyParams="0.14540541,0.17567571,0,0.14324325"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="spine2_cl_collider" SerialNumber="610878C207FF" RelRotation="0.70548689,-0.047835328,0.047835328,0.70548689" RelPosition="-4.470348e-08,3.5527137e-15,0.012987733" BoneName="Spine2" ProxyParams="0.21972972,-0.13513514,0,0.12432432"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="rarm_cl_collider" SerialNumber="610878C20800" RelRotation="-8.7422777e-08,-0,0.99999994,-0" RelPosition="0,0,0" BoneName="UpperArm_right" ProxyParams="0.25,0,0,0.079999998"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="rforearm_cl_collider" SerialNumber="610878C20801" RelRotation="-8.7422777e-08,-0,0.99999994,-0" RelPosition="0,0,0" BoneName="Forearm_right" ProxyParams="0.38,0,0,0.07"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="larm_cl_collider" SerialNumber="610878C20802" RelRotation="0.99999994,0,0,0" RelPosition="0,0,0" BoneName="UpperArm_left" ProxyParams="0.25,0,0,0.079999998"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="lforearm_cl_collider" SerialNumber="610878C20803" RelRotation="0.99999994,0,0,0" RelPosition="0,0,0" BoneName="Forearm_left" ProxyParams="0.38,0,0,0.07"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="rthigh_cl_collider" SerialNumber="610878C20804" RelRotation="-8.7422777e-08,0,0.99999994,-0" RelPosition="1.1617718e-07,0,-0.02" BoneName="Thigh_right" ProxyParams="0.5,0.5,0,0.11"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="rcalf_cl_collider" SerialNumber="610878C20805" RelRotation="-8.7422777e-08,-0,0.99999994,-0" RelPosition="0,0,0" BoneName="Calf_right" ProxyParams="0.5,0,0,0.1"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="lthigh_cl_collider" SerialNumber="610878C20806" RelRotation="0.99999994,0,0,0" RelPosition="0,0,0.02" BoneName="Thigh_left" ProxyParams="0.5,0.5,0,0.11"/>
+  <Attachment Type="CA_CLOTH_COLLISION" AName="lcalf_cl_collider" SerialNumber="610878C20807" RelRotation="0.99999994,0,0,0" RelPosition="0,0,0" BoneName="Calf_left" ProxyParams="0.5,0,0,0.1"/>
+ </AttachmentList>
+</CharacterDefinition>

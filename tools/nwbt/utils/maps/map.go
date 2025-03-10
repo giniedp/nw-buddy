@@ -34,6 +34,10 @@ func (r *Map[K, T]) Store(key K, value T) {
 	r.data[key] = value
 }
 
+func (r *Map[K, T]) Get(key K) T {
+	return r.data[key]
+}
+
 func (r *Map[K, T]) Load(key K) (T, bool) {
 	value, ok := r.data[key]
 	return value, ok

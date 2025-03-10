@@ -1,0 +1,101 @@
+package gltf
+
+import (
+	"log/slog"
+	"nw-buddy/tools/formats/cgf"
+	"slices"
+
+	"github.com/qmuntal/gltf"
+	"github.com/qmuntal/gltf/modeler"
+)
+
+func (c *Converter) ImportCgfAnimation(file *cgf.File) {
+	controllers := cgf.SelectChunks[cgf.ChunkController](file)
+	params, _ := cgf.SelectChunk[cgf.ChunkMotionParams](file)
+
+	animation := &gltf.Animation{}
+	defer func() {
+		if len(animation.Channels) > 0 {
+			c.Doc.Animations = append(c.Doc.Animations, animation)
+		}
+	}()
+
+	for _, controller := range controllers {
+		nodeIndex := slices.IndexFunc(c.Doc.Nodes, func(e *gltf.Node) bool {
+			if id, ok := extrasLoad[uint32](e.Extras, "controllerId"); ok {
+				return id == controller.ControllerId
+			}
+			return false
+		})
+		if nodeIndex == -1 {
+			slog.Warn("Node not found for controllerId", "controllerId", controller.ControllerId, "file", file.Source)
+			continue
+		}
+
+		if len(controller.RotationKeys) > 0 {
+			rotTimeKeys := slices.Clone(controller.RotationTimeKeys)
+			if params.TicksPerFrame != 0 && params.SecsPerTick != 0 {
+				for i := range rotTimeKeys {
+					rotTimeKeys[i] = rotTimeKeys[i] * params.SecsPerTick / float32(params.TicksPerFrame)
+				}
+			}
+			rotTimeAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, rotTimeKeys)
+
+			rotKeys := slices.Clone(controller.RotationKeys)
+			for i := range rotKeys {
+				rotKeys[i] = CryToGltfQuat(rotKeys[i])
+			}
+			rotAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, rotKeys)
+			rotSampler := &gltf.AnimationSampler{
+				Input:         rotTimeAccessor,
+				Output:        rotAccessor,
+				Interpolation: gltf.InterpolationLinear,
+			}
+			rotSamplerIndex := len(animation.Samplers)
+			animation.Samplers = append(animation.Samplers, rotSampler)
+			animation.Channels = append(animation.Channels, &gltf.AnimationChannel{
+				Sampler: rotSamplerIndex,
+				Target: gltf.AnimationChannelTarget{
+					Path: gltf.TRSRotation,
+					Node: gltf.Index(nodeIndex),
+				},
+				Extras: map[string]any{
+					"controllerId": controller.ControllerId,
+				},
+			})
+		}
+
+		if len(controller.PositionKeys) > 0 {
+			posTimeKeys := slices.Clone(controller.PositionTimeKeys)
+			if params.TicksPerFrame != 0 && params.SecsPerTick != 0 {
+				for i := range posTimeKeys {
+					posTimeKeys[i] = posTimeKeys[i] * params.SecsPerTick / float32(params.TicksPerFrame)
+				}
+			}
+			posTimeAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, posTimeKeys)
+
+			posKeys := slices.Clone(controller.PositionKeys)
+			for i := range posKeys {
+				posKeys[i] = CryToGltfVec3(posKeys[i])
+			}
+			posAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, posKeys)
+			posSampler := &gltf.AnimationSampler{
+				Input:         posTimeAccessor,
+				Output:        posAccessor,
+				Interpolation: gltf.InterpolationLinear,
+			}
+			posSamplerIndex := len(animation.Samplers)
+			animation.Samplers = append(animation.Samplers, posSampler)
+			animation.Channels = append(animation.Channels, &gltf.AnimationChannel{
+				Sampler: posSamplerIndex,
+				Target: gltf.AnimationChannelTarget{
+					Path: gltf.TRSTranslation,
+					Node: gltf.Index(nodeIndex),
+				},
+				Extras: map[string]any{
+					"controllerId": controller.ControllerId,
+				},
+			})
+		}
+	}
+}

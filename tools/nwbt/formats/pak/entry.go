@@ -54,6 +54,18 @@ func (file *Entry) ModTime() time.Time {
 	return file.zip.Modified
 }
 
+func (file *Entry) CompressedSize() uint64 {
+	return file.zip.CompressedSize64
+}
+
+func (file *Entry) UncompressedSize() uint64 {
+	return file.zip.UncompressedSize64
+}
+
+func (file *Entry) Crc32() uint32 {
+	return file.zip.CRC32
+}
+
 func (file *Entry) Inflate(lib utils.Oodle) (io.ReadCloser, error) {
 	var rc io.ReadCloser
 	var err error

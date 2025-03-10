@@ -8,12 +8,30 @@ import (
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
+
+var cmdPullSpells = &cobra.Command{
+	Use:   TASK_SPELLS,
+	Short: "Scans for spells and effects",
+	Long:  "",
+	Run:   runPullSpells,
+}
+
+func runPullSpells(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullSpells()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 type ScannedSpell struct {
 	PrefabPath        string

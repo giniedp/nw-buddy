@@ -77,7 +77,7 @@ func Parse(data []byte) (Document, error) {
 	readString := func(offset int) string {
 		restore := r.Pos()
 		r.SeekAbsolute(headerEnd + int(strOffset) + offset)
-		value := string(utils.Must(r.ReadUntilByte(0)))
+		value := utils.Must(r.ReadCString())
 		r.SeekAbsolute(restore)
 		return value
 	}

@@ -1,18 +1,37 @@
 package pull
 
 import (
+	"log/slog"
 	"nw-buddy/tools/commands/pull/scan"
 	"nw-buddy/tools/commands/pull/ts"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
 	"nw-buddy/tools/utils/str"
 	"os"
 	"path"
 	"reflect"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
+
+var cmdPullTypes = &cobra.Command{
+	Use:   TASK_TYPES,
+	Short: "Generates type definitions",
+	Long:  "",
+	Run:   runPullTypes,
+}
+
+func runPullTypes(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullTypes()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullTypes(tables []*datasheet.Document, outDir string) {
 	bar := progress.Bar(0, "Codegen")

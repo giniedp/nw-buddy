@@ -3,11 +3,12 @@ package commands
 import (
 	"fmt"
 	"nw-buddy/tools/commands/cat"
-	"nw-buddy/tools/commands/doctor"
 	"nw-buddy/tools/commands/list"
+	"nw-buddy/tools/commands/models"
 	"nw-buddy/tools/commands/pull"
 	"nw-buddy/tools/commands/types"
 	"nw-buddy/tools/commands/unpack"
+	"nw-buddy/tools/commands/vet"
 	"nw-buddy/tools/constants"
 
 	"github.com/spf13/cobra"
@@ -32,10 +33,11 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.AddCommand(unpack.Cmd)
-	rootCmd.AddCommand(types.Cmd)
-	rootCmd.AddCommand(doctor.Cmd)
-	rootCmd.AddCommand(pull.Cmd)
 	rootCmd.AddCommand(list.Cmd)
 	rootCmd.AddCommand(cat.Cmd)
+	rootCmd.AddCommand(pull.Cmd)
+	rootCmd.AddCommand(unpack.Cmd)
+	rootCmd.AddCommand(types.Cmd)
+	rootCmd.AddCommand(vet.Cmd)
+	rootCmd.AddCommand(models.Cmd)
 }

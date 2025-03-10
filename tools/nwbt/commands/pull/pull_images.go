@@ -9,6 +9,7 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"os"
@@ -18,7 +19,23 @@ import (
 	"sync/atomic"
 
 	"github.com/dustin/go-humanize"
+	"github.com/spf13/cobra"
 )
+
+var cmdPullImages = &cobra.Command{
+	Use:   TASK_IMAGES,
+	Short: "Pulls image files that are referenced by datasheets and locales",
+	Long:  "",
+	Run:   runPullImages,
+}
+
+func runPullImages(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullImages()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullImages(fs nwfs.Archive, outDir string, update bool) {
 

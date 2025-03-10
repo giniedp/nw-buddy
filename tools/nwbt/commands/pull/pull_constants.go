@@ -8,12 +8,30 @@ import (
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/str"
 	"os"
 	"path"
 	"strconv"
+
+	"github.com/spf13/cobra"
 )
+
+var cmdPullConstants = &cobra.Command{
+	Use:   "constants",
+	Short: "Pulls constants from the game files",
+	Long:  "",
+	Run:   runPullConstants,
+}
+
+func runPullConstants(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullConstants()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullConstants(fs nwfs.Archive, outDir string) {
 	attrFile, ok := fs.Lookup("sharedassets/genericassets/playerbaseattributes.pbadb")

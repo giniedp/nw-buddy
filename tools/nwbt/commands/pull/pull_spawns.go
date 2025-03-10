@@ -7,13 +7,30 @@ import (
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/spf13/cobra"
 )
+
+var cmdPullSpawns = &cobra.Command{
+	Use:   TASK_SLICES,
+	Short: "Pulls spawn data from the game files",
+	Long:  "",
+	Run:   runPullSpawns,
+}
+
+func runPullSpawns(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullSlices()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 	files, err := fs.Glob(

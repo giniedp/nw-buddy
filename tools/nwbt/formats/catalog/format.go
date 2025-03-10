@@ -10,6 +10,10 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+const (
+	CATALOG_PATH = "assetcatalog.catalog"
+)
+
 type Document = map[string]*Asset
 
 type Asset struct {
@@ -91,10 +95,10 @@ func Parse(data []byte) (res Document, err error) {
 		asset.Type = utils.Must(uuid.FromBytes(rr.MustReadBytes(16))).String()
 
 		rr.SeekAbsolute(int(pBlockDirs + ref.DirOffset))
-		dir := string(utils.Must(rr.ReadUntilByte(0)))
+		dir := utils.Must(rr.ReadCString())
 
 		rr.SeekAbsolute(int(pBlockFiles + ref.FileNameOffset))
-		file := string(utils.Must(rr.ReadUntilByte(0)))
+		file := utils.Must(rr.ReadCString())
 
 		asset.File = path.Join(dir, file)
 		res[asset.Uuid] = asset

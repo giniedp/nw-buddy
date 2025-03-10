@@ -8,9 +8,11 @@ import (
 )
 
 type Image struct {
-	IsNormalMap bool
 	Data        []byte // The main dds image data
 	Alpha       []byte // The attached alpha data (if any)
+	Width       int
+	Height      int
+	IsNormalMap bool
 }
 
 func Load(f nwfs.File) (*Image, error) {
@@ -23,9 +25,12 @@ func Load(f nwfs.File) (*Image, error) {
 		return nil, err
 	}
 
-	res := &Image{}
-	res.Data = meta.Data
-	res.IsNormalMap = IsNormalMap(f.Path())
+	res := &Image{
+		Data:        meta.Data,
+		Width:       int(meta.Header.Width),
+		Height:      int(meta.Header.Height),
+		IsNormalMap: IsNormalMap(f.Path()),
+	}
 
 	if len(splits.Base.Files) > 0 {
 		data, err := concat(meta, splits.Base)

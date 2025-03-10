@@ -9,7 +9,7 @@ import (
 )
 
 func TestLoadMeta(t *testing.T) {
-	fs, err := nwfs.NewUnpackedFS("sample/fs")
+	fs, err := nwfs.NewUnpackedArchive("sample/fs")
 	assert.NoError(t, err, "creating OSFS")
 
 	files, err := fs.Glob("male_alchemist_calves_diff.dds")

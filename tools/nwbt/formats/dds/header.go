@@ -64,12 +64,12 @@ func readHeader(r *buf.Reader) (res Header, err error) {
 	res.PitchOrLinearSize = r.MustReadUint32()
 	res.Depth = r.MustReadUint32()
 	res.MipMapCount = r.MustReadUint32()
-	for i := 0; i < 11; i++ {
+	for i := range 11 {
 		res.Reserved[i] = r.MustReadUint32()
 	}
 	res.PixelFormat.Size = r.MustReadUint32()
 	res.PixelFormat.Flags = r.MustReadUint32()
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		res.PixelFormat.FourCC[i] = r.MustReadByte()
 	}
 	res.PixelFormat.RGBBitCount = r.MustReadUint32()

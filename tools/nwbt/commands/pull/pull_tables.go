@@ -2,15 +2,34 @@ package pull
 
 import (
 	"context"
+	"log/slog"
 	"nw-buddy/tools/commands/pull/ts"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
+
+var cmdPullTables = &cobra.Command{
+	Use:   TASK_TABLES,
+	Short: "Pulls datasheets",
+	Long:  "",
+	Run:   runPullTables,
+}
+
+func runPullTables(ccmd *cobra.Command, args []string) {
+	ctx := NewPullContext()
+	slog.SetDefault(logging.DefaultFileHandler())
+	ctx.PullTables()
+	slog.SetDefault(logging.DefaultTerminalHandler())
+	ctx.PrintStats()
+}
 
 func pullTables(fs nwfs.Archive, outDir string) []*datasheet.Document {
 	result := maps.NewSyncDict[*datasheet.Document]()
