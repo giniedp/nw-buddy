@@ -126,9 +126,10 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 				image.WithNormalMap(dds.IsNormalMap(file.Path())),
 			)
 			if err != nil {
+				slog.Error("Image not converted", "file", source, "error", err)
 				atomic.AddUint32(&failed, 1)
-				atomic.AddUint32(&converted, 1)
 			} else {
+				atomic.AddUint32(&converted, 1)
 				atomic.AddUint64(&totalSize, uint64(len(output.Data)))
 			}
 			return
@@ -155,7 +156,7 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 }
 
 func isPossiblyImage(name string) bool {
-	if !strings.HasPrefix(name, "lyshineui") {
+	if !strings.HasPrefix(strings.ToLower(name), "lyshineui") {
 		return false
 	}
 	if strings.Contains(name, "{") && strings.Contains(name, "}") {
