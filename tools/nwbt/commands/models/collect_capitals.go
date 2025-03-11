@@ -35,6 +35,7 @@ func init() {
 	cmdCollectCapitals.Flags().StringVar(&flgLevel, "level", "ftue_v2", "The LEVEL_NAME in the coatlicue directory. Can be a glob expression.")
 	cmdCollectCapitals.Flags().StringVar(&flgRegion, "region", "**", "The REGION_NAME in the coatlicue directory. Can be a glob expression.")
 	cmdCollectCapitals.Flags().StringVar(&flgName, "name", "*", "The CAPITAL_NAME to process. Can be a glob expression.")
+	cmdCollectImpostors.Flags().StringVarP(&flgOutFile, "file", "f", "", "If set, all capitals are merged into a single file. ")
 }
 
 func runCollectCapitals(ccmd *cobra.Command, args []string) {
@@ -47,7 +48,7 @@ func runCollectCapitals(ccmd *cobra.Command, args []string) {
 }
 
 func (c *Collector) CollectCapitals(glob string) {
-
+	merge := flgOutFile != ""
 	files, _ := c.Archive.Glob(glob)
 	bar := progress.Bar(len(files), "capitals")
 	defer func() {
@@ -55,10 +56,13 @@ func (c *Collector) CollectCapitals(glob string) {
 		bar.Close()
 	}()
 
+	group := importer.AssetGroup{}
 	for _, file := range files {
 		bar.Detail(file.Path())
 		bar.Add(1)
-		group := importer.AssetGroup{}
+		if !merge {
+			group = importer.AssetGroup{}
+		}
 		if !strings.HasSuffix(file.Path(), ".capitals.json") {
 			continue
 		}
@@ -122,9 +126,14 @@ func (c *Collector) CollectCapitals(glob string) {
 
 			})
 		}
-		if len(group.Meshes) > 0 {
+		if !merge && len(group.Meshes) > 0 {
 			group.TargetFile = utils.ReplaceExt(file.Path(), "")
 			c.models.Store(file.Path(), group)
 		}
+	}
+
+	if merge && len(group.Meshes) > 0 {
+		group.TargetFile = utils.ReplaceExt(flgOutFile, "")
+		c.models.Store(flgOutFile, group)
 	}
 }
