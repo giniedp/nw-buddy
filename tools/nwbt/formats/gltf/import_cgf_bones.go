@@ -20,8 +20,8 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 		gltfBones[i], _ = d.NewNode()
 		gltfBones[i].Name = bone.BoneName
 		gltfBones[i].Extras = map[string]any{
-			"controllerId": int(bone.ControllerId),
-			"limbId":       int(bone.LimbId),
+			ExtraKeyControllerID: bone.ControllerId,
+			ExtraKeyLimbID:       bone.LimbId,
 		}
 		transforms[i] = CryToGltfMat4(Mat4Transpose(Mat4x4{
 			bone.BoneToWorld[0],

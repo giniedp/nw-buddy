@@ -5,57 +5,10 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
-	"os"
-	"path"
-	"slices"
 
 	"github.com/qmuntal/gltf"
 	"github.com/qmuntal/gltf/modeler"
 )
-
-type Document struct {
-	*gltf.Document
-	ImageLoader image.Loader
-}
-
-func (c *Document) Save(file string) error {
-	f, err := os.Create(file)
-	if err != nil {
-		return err
-	}
-	e := gltf.NewEncoder(f)
-	e.SetJSONIndent("", "\t")
-	e.AsBinary = path.Ext(file) == ".glb"
-	return e.Encode(c.Document)
-}
-
-func (c *Document) FindMaterialByRef(ref string) *gltf.Material {
-	index := slices.IndexFunc(c.Materials, func(it *gltf.Material) bool {
-		if lookup, ok := it.Extras.(map[string]any); ok {
-			if refId, ok := lookup["refId"].(string); ok {
-				return refId == ref
-			}
-		}
-		return false
-	})
-	if index == -1 {
-		return nil
-	}
-	return c.Materials[index]
-}
-
-func (c *Document) FindOrAddMaterial(material mtl.Material) *gltf.Material {
-	refId, _ := material.CalculateHash()
-	gltfMtl := c.FindMaterialByRef(refId)
-	if gltfMtl != nil {
-		return gltfMtl
-	}
-	gltfMtl = &gltf.Material{}
-	gltfMtl.Name = material.Name
-	gltfMtl.Extras = map[string]any{"refId": refId, "mtl": material}
-	c.Materials = append(c.Materials, gltfMtl)
-	return gltfMtl
-}
 
 func (c *Document) LoadTexture(texture *mtl.Texture) *gltf.Texture {
 	if texture == nil {

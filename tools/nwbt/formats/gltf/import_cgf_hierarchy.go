@@ -4,20 +4,19 @@ import (
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/utils/maps"
 	"slices"
+	"strings"
 
 	"github.com/qmuntal/gltf"
 )
 
-func (d *Document) ImportCgfHierarchy(file *cgf.File, handleObject func(node *gltf.Node, chunk cgf.Chunker)) []*gltf.Node {
+func (d *Document) ImportCgfHierarchy(cgfile *cgf.File, handleObject func(node *gltf.Node, chunk cgf.Chunker)) []*gltf.Node {
 	rootNodes := make([]*gltf.Node, 0)
 	nodeMap := newIdToNodeMap(d)
-	for _, chunk := range cgf.SelectChunks[cgf.ChunkNode](file) {
-		// TODO:
-		// const isLOD = chunk.name.match(/\$lod\d+/i)
-		// if (isLOD && chunk.objectId) {
-		//   console.log('LOD', chunk.name, chunk.objectId)
-		//   continue
-		// }
+	for _, chunk := range cgf.SelectChunks[cgf.ChunkNode](cgfile) {
+		if strings.Contains(chunk.Name, "$lod") {
+			continue
+		}
+
 		node, nodeIndex := nodeMap.lookup(chunk.ChunkHeader.Id)
 		if !Mat4IsIdentity(chunk.Transform) {
 			node.Matrix = Mat4ToFloat64(CryToGltfMat4(Mat4Transpose(chunk.Transform)))
@@ -28,7 +27,7 @@ func (d *Document) ImportCgfHierarchy(file *cgf.File, handleObject func(node *gl
 			parent, _ := nodeMap.lookup(chunk.ParentId)
 			parent.Children = append(parent.Children, nodeIndex)
 		}
-		if object, ok := cgf.FindChunk[cgf.Chunker](file, chunk.ObjectId); ok {
+		if object, ok := cgf.FindChunk[cgf.Chunker](cgfile, chunk.ObjectId); ok {
 			handleObject(node, object)
 		}
 	}

@@ -13,9 +13,8 @@ import (
 )
 
 func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset importer.GeometryAsset) (*cgf.File, []mtl.Material)) {
-	instanceRef := hashString(fmt.Sprintf("%s#%s", asset.GeometryFile, asset.MaterialFile))
-	reference := c.FindNodeInstance(instanceRef)
-	if reference != nil {
+	modelRefId := hashString(fmt.Sprintf("%s#%s", asset.GeometryFile, asset.MaterialFile))
+	if reference, _ := c.FindNodeByRefID(modelRefId); reference != nil {
 		node, _ := c.CopyNode(reference)
 		c.AddToSceneWithTransform(c.DefaultScene(), node, asset.Transform)
 		return
@@ -65,7 +64,7 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset 
 		c.AddChild(parent, rootNodes...)
 		rootNode = parent
 	}
-	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyInstanceRef, instanceRef)
+	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyRefID, modelRefId)
 	c.AddToSceneWithTransform(c.DefaultScene(), rootNode, asset.Transform)
 }
 

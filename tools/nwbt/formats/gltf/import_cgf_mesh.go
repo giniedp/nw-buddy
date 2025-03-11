@@ -1,6 +1,7 @@
 package gltf
 
 import (
+	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/utils"
@@ -15,13 +16,14 @@ import (
 )
 
 func (d *Document) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, materials []*gltf.Material) (*int, *gltf.Mesh) {
+
 	subsets, hasSubsets := cgf.FindChunk[cgf.ChunkMeshSubsets](cgfile, chunk.SubsetsChunkId)
 	if !hasSubsets {
 		return nil, nil
 	}
 
 	mesh := &gltf.Mesh{}
-	for _, subset := range subsets.Subsets {
+	for i, subset := range subsets.Subsets {
 		var material *gltf.Material
 		if subset.MaterialId >= 0 && len(materials) > 0 {
 			if int(subset.MaterialId) < len(materials) {
@@ -38,14 +40,22 @@ func (d *Document) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, material
 		if mtl != nil && mtl.CanBeSkipped() {
 			continue
 		}
-		primitive, err := convertPrimitive(d.Document, subset, chunk, cgfile)
-		if err != nil {
+
+		subRefId := subsetRefId(cgfile, chunk, i)
+		var primitive *gltf.Primitive
+		if found := d.FindPrimitiveByRef(subRefId); found != nil {
+			primitive = d.CopyPrimitive(found)
+		} else if prim, err := convertPrimitive(d.Document, subset, chunk, cgfile); err != nil {
 			slog.Warn("Failed to convert primitive", "err", err)
 			continue
+		} else {
+			primitive = prim
 		}
 		if primitive == nil {
 			continue
 		}
+		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeyRefID, subRefId)
+
 		index := slices.Index(d.Materials, material)
 		if index != -1 {
 			primitive.Material = gltf.Index(index)
@@ -58,6 +68,13 @@ func (d *Document) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, material
 	}
 
 	return d.AppendMesh(mesh), mesh
+}
+
+func subsetRefId(cgfile *cgf.File, chunk cgf.ChunkMesh, subset int) string {
+	if cgfile.Source == "" {
+		return ""
+	}
+	return hashString(fmt.Sprintf("%s_%d_%d_%d", cgfile.Source, chunk.Id, chunk.SubsetsChunkId, subset))
 }
 
 func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.ChunkMesh, cgFile *cgf.File) (out *gltf.Primitive, err error) {

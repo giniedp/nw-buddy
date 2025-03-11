@@ -21,12 +21,7 @@ func (c *Document) ImportCgfAnimation(file *cgf.File) {
 	}()
 
 	for _, controller := range controllers {
-		nodeIndex := slices.IndexFunc(c.Document.Nodes, func(e *gltf.Node) bool {
-			if id, ok := ExtrasLoad[uint32](e.Extras, "controllerId"); ok {
-				return id == controller.ControllerId
-			}
-			return false
-		})
+		_, nodeIndex := c.FindNodeByControllerId(controller.ControllerId)
 		if nodeIndex == -1 {
 			slog.Warn("Node not found for controllerId", "controllerId", controller.ControllerId, "file", file.Source)
 			continue
@@ -54,13 +49,11 @@ func (c *Document) ImportCgfAnimation(file *cgf.File) {
 			rotSamplerIndex := len(animation.Samplers)
 			animation.Samplers = append(animation.Samplers, rotSampler)
 			animation.Channels = append(animation.Channels, &gltf.AnimationChannel{
+				Extras:  ExtrasStore(nil, ExtraKeyControllerID, controller.ControllerId),
 				Sampler: rotSamplerIndex,
 				Target: gltf.AnimationChannelTarget{
 					Path: gltf.TRSRotation,
 					Node: gltf.Index(nodeIndex),
-				},
-				Extras: map[string]any{
-					"controllerId": controller.ControllerId,
 				},
 			})
 		}
@@ -87,13 +80,11 @@ func (c *Document) ImportCgfAnimation(file *cgf.File) {
 			posSamplerIndex := len(animation.Samplers)
 			animation.Samplers = append(animation.Samplers, posSampler)
 			animation.Channels = append(animation.Channels, &gltf.AnimationChannel{
+				Extras:  ExtrasStore(nil, ExtraKeyControllerID, controller.ControllerId),
 				Sampler: posSamplerIndex,
 				Target: gltf.AnimationChannelTarget{
 					Path: gltf.TRSTranslation,
 					Node: gltf.Index(nodeIndex),
-				},
-				Extras: map[string]any{
-					"controllerId": controller.ControllerId,
 				},
 			})
 		}

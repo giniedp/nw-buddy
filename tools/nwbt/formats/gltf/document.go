@@ -1,15 +1,38 @@
 package gltf
 
 import (
+	"nw-buddy/tools/formats/image"
+	"nw-buddy/tools/formats/mtl"
+	"os"
+	"path"
 	"slices"
+
+	"maps"
 
 	"github.com/qmuntal/gltf"
 )
 
 const (
-	ExtraKeyInstanceRef = "instanceRef"
-	ExtraKeyRef         = "ref"
+	ExtraKeyRefID        = "refId"
+	ExtraKeyControllerID = "controllerId"
+	ExtraKeyLimbID       = "limbId"
 )
+
+type Document struct {
+	*gltf.Document
+	ImageLoader image.Loader
+}
+
+func (c *Document) Save(file string) error {
+	f, err := os.Create(file)
+	if err != nil {
+		return err
+	}
+	e := gltf.NewEncoder(f)
+	e.SetJSONIndent("", "\t")
+	e.AsBinary = path.Ext(file) == ".glb"
+	return e.Encode(c.Document)
+}
 
 func NewDocument() *Document {
 	return &Document{
@@ -55,13 +78,22 @@ func (c *Document) NodeIndex(node *gltf.Node) int {
 	return slices.Index(c.Nodes, node)
 }
 
-func (d *Document) FindNodeInstance(instanceRef string) *gltf.Node {
-	for _, node := range d.Nodes {
-		if ref, ok := ExtrasLoad[string](node.Extras, ExtraKeyInstanceRef); ok && ref == instanceRef {
-			return node
+func (d *Document) FindNodeByRefID(instanceRef string) (*gltf.Node, int) {
+	for i, node := range d.Nodes {
+		if ref, ok := ExtrasLoad[string](node.Extras, ExtraKeyRefID); ok && ref == instanceRef {
+			return node, i
 		}
 	}
-	return nil
+	return nil, -1
+}
+
+func (d *Document) FindNodeByControllerId(controllerId uint32) (*gltf.Node, int) {
+	for i, node := range d.Nodes {
+		if ref, ok := ExtrasLoad[uint32](node.Extras, ExtraKeyControllerID); ok && ref == controllerId {
+			return node, i
+		}
+	}
+	return nil, -1
 }
 
 func (d *Document) AddToSceneWithTransform(scene *gltf.Scene, node *gltf.Node, transform [16]float32) {
@@ -93,6 +125,67 @@ func (d *Document) CopyNode(node *gltf.Node) (*gltf.Node, int) {
 		copy.Children = append(copy.Children, childIndex)
 	}
 	return copy, index
+}
+
+func (d *Document) FindPrimitiveByRef(refId string) *gltf.Primitive {
+	if refId == "" {
+		return nil
+	}
+	for _, mesh := range d.Meshes {
+		for _, prim := range mesh.Primitives {
+			if ref, ok := ExtrasLoad[string](prim.Extras, ExtraKeyRefID); ok && ref == refId {
+				return prim
+			}
+		}
+	}
+	return nil
+}
+
+func (d *Document) CopyPrimitive(prim *gltf.Primitive) *gltf.Primitive {
+	copy := &gltf.Primitive{}
+	copy.Attributes = copyPrimitiveAttributes(prim.Attributes)
+	copy.Indices = prim.Indices
+	copy.Material = prim.Material
+	copy.Mode = prim.Mode
+	copy.Targets = make([]gltf.PrimitiveAttributes, len(prim.Targets))
+	for i, target := range prim.Targets {
+		copy.Targets[i] = copyPrimitiveAttributes(target)
+	}
+	return copy
+}
+
+func copyPrimitiveAttributes(attrs gltf.PrimitiveAttributes) gltf.PrimitiveAttributes {
+	copy := make(gltf.PrimitiveAttributes)
+	maps.Copy(copy, attrs)
+	return copy
+}
+
+func (c *Document) FindMaterialByRef(ref string) *gltf.Material {
+	index := slices.IndexFunc(c.Materials, func(it *gltf.Material) bool {
+		if lookup, ok := it.Extras.(map[string]any); ok {
+			if refId, ok := lookup["refId"].(string); ok {
+				return refId == ref
+			}
+		}
+		return false
+	})
+	if index == -1 {
+		return nil
+	}
+	return c.Materials[index]
+}
+
+func (c *Document) FindOrAddMaterial(material mtl.Material) *gltf.Material {
+	refId, _ := material.CalculateHash()
+	gltfMtl := c.FindMaterialByRef(refId)
+	if gltfMtl != nil {
+		return gltfMtl
+	}
+	gltfMtl = &gltf.Material{}
+	gltfMtl.Name = material.Name
+	gltfMtl.Extras = map[string]any{"refId": refId, "mtl": material}
+	c.Materials = append(c.Materials, gltfMtl)
+	return gltfMtl
 }
 
 func ExtrasLoad[T any](data any, key string) (value T, ok bool) {
