@@ -1,0 +1,105 @@
+package models
+
+import (
+	"log/slog"
+	"nw-buddy/tools/formats/gltf"
+	"nw-buddy/tools/formats/gltf/importer"
+	"nw-buddy/tools/formats/impostors"
+	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/crymath"
+	"nw-buddy/tools/utils/logging"
+	"nw-buddy/tools/utils/progress"
+	"path"
+	"strings"
+
+	"github.com/spf13/cobra"
+)
+
+var cmdCollectImpostors = &cobra.Command{
+	Use:   "impostors",
+	Short: "Converts impostors.json files to gltf",
+	Long: strings.Trim(`
+  Walks the impostors.json files to collect the geometries into a single model.
+  Impostors are found a level directory like
+    - sharedassets/coatlicue/LEVEL_NAME/regions/REGION_NAME/impostors.json
+    - sharedassets/coatlicue/LEVEL_NAME/regions/REGION_NAME/poi_impostors.json`, "\n"),
+	Run: runCollectImpostors,
+	Example: strings.Trim(`
+  nwbt models impostors --level nw_opr_004_trench
+  nwbt models impostors --level nw_opr_004_trench --region r_+00_+00`, "\n"),
+}
+
+func init() {
+	cmdCollectImpostors.Flags().AddFlagSet(Cmd.Flags())
+	cmdCollectImpostors.Flags().StringVar(&flgLevel, "level", "nw_opr_004_trench", "The LEVEL_NAME in the coatlicue directory. Can be a glob expression.")
+	cmdCollectImpostors.Flags().StringVar(&flgRegion, "region", "**", "The REGION_NAME in the coatlicue directory. Can be a glob expression.")
+}
+
+func runCollectImpostors(ccmd *cobra.Command, args []string) {
+	glob := path.Join("**", "coatlicue", flgLevel, "regions", flgRegion, "*impostors.json")
+	slog.SetDefault(logging.DefaultFileHandler())
+	c := utils.Must(initCollector())
+	c.CollectImpostors(glob)
+	c.Convert(flgOutput)
+	slog.SetDefault(logging.DefaultTerminalHandler())
+}
+
+func (c *Collector) CollectImpostors(glob string) {
+
+	files, _ := c.Archive.Glob(glob)
+	bar := progress.Bar(len(files), "impostors")
+	defer func() {
+		bar.Detail("")
+		bar.Close()
+	}()
+
+	for _, file := range files {
+		bar.Detail(file.Path())
+		bar.Add(1)
+		group := importer.AssetGroup{}
+		if !strings.HasSuffix(file.Path(), "impostors.json") {
+			continue
+		}
+		doc, err := impostors.Load(file)
+		if err != nil {
+			slog.Error("impostors not loaded", "file", file.Path(), "error", err)
+			continue
+		}
+		for _, impostor := range doc.Impostors {
+			assetId := utils.ExtractUUID(impostor.MeshAssetID)
+			if assetId == "" {
+				continue
+			}
+			assetId = strings.ToLower(assetId)
+			asset, ok := c.Catalog[assetId]
+			if !ok {
+				slog.Error("asset not found", "asset", assetId)
+				continue
+			}
+			modelFile, ok := c.Archive.Lookup(nwfs.NormalizePath(asset.File))
+			if !ok {
+				slog.Error("asset file not found", "asset", assetId, "file", asset.File)
+			}
+			model, material := c.ResolveModelMaterialPair(modelFile.Path(), "")
+
+			transform := crymath.Mat4Identity()
+			transform[12] = float32(impostor.WorldPosition.X)
+			transform[13] = float32(impostor.WorldPosition.Y)
+
+			group.Meshes = append(group.Meshes, importer.GeometryAsset{
+				GeometryFile: model,
+				MaterialFile: material,
+				Entity: importer.Entity{
+					//Name:      string(node.Entity.Name),
+					Transform: gltf.CryToGltfMat4(transform),
+				},
+			})
+
+		}
+		if len(group.Meshes) > 0 {
+			group.TargetFile = utils.ReplaceExt(file.Path(), "")
+			c.models.Store(file.Path(), group)
+		}
+	}
+}

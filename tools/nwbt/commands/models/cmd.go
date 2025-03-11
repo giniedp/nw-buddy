@@ -48,6 +48,7 @@ func init() {
 		cmdCollectCostumes,
 		cmdCollectMounts,
 		cmdCollectWeapons,
+		cmdCollectImpostors,
 	)
 }
 
