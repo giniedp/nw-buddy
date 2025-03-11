@@ -5,13 +5,37 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/gltf/importer"
+	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/logging"
 	"path"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
+var cmdCollectArmor = &cobra.Command{
+	Use:   "armor",
+	Short: "Collects armor appearances",
+	Long:  "",
+	Run:   runCollectArmor,
+}
+
+func init() {
+	cmdCollectArmor.Flags().AddFlagSet(Cmd.Flags())
+}
+
+func runCollectArmor(ccmd *cobra.Command, args []string) {
+	slog.SetDefault(logging.DefaultFileHandler())
+	c := utils.Must(initCollector())
+	c.CollectApperancesArmor()
+	c.Convert(flgOutput)
+	slog.SetDefault(logging.DefaultTerminalHandler())
+}
+
 func (c *Collector) CollectApperancesArmor() {
-	for _, table := range c.tables {
+	for table := range c.EachDatasheet() {
 		if table.Schema != "ArmorAppearanceDefinitions" {
 			continue
 		}
@@ -31,40 +55,40 @@ func (c *Collector) CollectApperancesArmor() {
 			gender := strings.ToLower(row.GetString("Gender"))
 			genderChr := ""
 			if gender == "male" {
-				genderChr = CHR_MODEL_MALE
+				genderChr = game.CHR_MODEL_MALE
 			}
 			if gender == "female" {
-				genderChr = CHR_MODEL_FEMALE
+				genderChr = game.CHR_MODEL_FEMALE
 			}
 			if model == "" || material == "" {
 				// all items should have Skin1 and Material1
 				continue
 			}
 
-			attachments := getCloth(c.archive, cdfPath)
+			attachments := getCloth(c.Archive, cdfPath)
 			file := strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "Skin1")))
 			if !c.models.Has(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file
-				model, material := c.resolveModelMaterial(model, material)
+				model, material := c.ResolveModelMaterialPair(model, material)
 				if model != "" {
-					group.Meshes = append(group.Meshes, importer.MeshAsset{
-						ModelFile: model,
-						MtlFile:   material,
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: material,
 					})
 					if genderChr != "" {
-						group.Meshes = append(group.Meshes, importer.MeshAsset{
-							ModelFile:    genderChr,
-							MtlFile:      DEFAULT_MATERIAL,
+						group.Meshes = append(group.Meshes, importer.GeometryAsset{
+							GeometryFile: genderChr,
+							MaterialFile: game.DEFAULT_MATERIAL,
 							SkipGeometry: true, // we are only interested in skin
 						})
 					}
 					for _, attachment := range attachments {
-						model, material = c.resolveModelMaterial(attachment.Binding, attachment.Material)
+						model, material = c.ResolveModelMaterialPair(attachment.Binding, attachment.Material)
 						if model != "" {
-							group.Meshes = append(group.Meshes, importer.MeshAsset{
-								ModelFile: model,
-								MtlFile:   material,
+							group.Meshes = append(group.Meshes, importer.GeometryAsset{
+								GeometryFile: model,
+								MaterialFile: material,
 							})
 						}
 					}
@@ -78,25 +102,25 @@ func (c *Collector) CollectApperancesArmor() {
 			if !c.models.Has(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file
-				model, material := c.resolveModelMaterial(model, material)
+				model, material := c.ResolveModelMaterialPair(model, material)
 				if model != "" {
-					group.Meshes = append(group.Meshes, importer.MeshAsset{
-						ModelFile: model,
-						MtlFile:   material,
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: material,
 					})
 					if genderChr != "" {
-						group.Meshes = append(group.Meshes, importer.MeshAsset{
-							ModelFile:    genderChr,
-							MtlFile:      DEFAULT_MATERIAL,
+						group.Meshes = append(group.Meshes, importer.GeometryAsset{
+							GeometryFile: genderChr,
+							MaterialFile: game.DEFAULT_MATERIAL,
 							SkipGeometry: true, // we are only interested in skin
 						})
 					}
 					for _, attachment := range attachments {
-						model, material = c.resolveModelMaterial(attachment.Binding, attachment.Material)
+						model, material = c.ResolveModelMaterialPair(attachment.Binding, attachment.Material)
 						if model != "" {
-							group.Meshes = append(group.Meshes, importer.MeshAsset{
-								ModelFile: model,
-								MtlFile:   material,
+							group.Meshes = append(group.Meshes, importer.GeometryAsset{
+								GeometryFile: model,
+								MaterialFile: material,
 							})
 						}
 					}

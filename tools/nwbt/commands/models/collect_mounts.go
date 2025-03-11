@@ -2,14 +2,38 @@ package models
 
 import (
 	"fmt"
+	"log/slog"
 	"nw-buddy/tools/formats/gltf/importer"
+	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
+var cmdCollectMounts = &cobra.Command{
+	Use:   "mounts",
+	Short: "converts mounts",
+	Long:  "",
+	Run:   runCollectMounts,
+}
+
+func init() {
+	cmdCollectMounts.Flags().AddFlagSet(Cmd.Flags())
+}
+
+func runCollectMounts(ccmd *cobra.Command, args []string) {
+	slog.SetDefault(logging.DefaultFileHandler())
+	c := utils.Must(initCollector())
+	c.CollectMounts()
+	c.Convert(flgOutput)
+	slog.SetDefault(logging.DefaultTerminalHandler())
+}
+
 func (c *Collector) CollectMounts() {
-	for _, table := range c.tables {
+	for table := range c.EachDatasheet() {
 		if table.Schema != "MountData" {
 			continue
 		}
@@ -30,18 +54,18 @@ func (c *Collector) CollectMounts() {
 			if path.Ext(model) != ".cdf" {
 				continue
 			}
-			asset, err := c.resolveCdfAsset(model, false)
+			asset, err := c.ResolveCdfAsset(model, false)
 			if err != nil {
 				continue
 			}
 			group := importer.AssetGroup{}
 			group.TargetFile = file
-			for _, mesh := range asset.attachments {
-				model, mtl := c.resolveModelMaterial(mesh.Binding, mesh.Material, material)
+			for _, mesh := range asset.Attachments {
+				model, mtl := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material, material)
 				if model != "" {
-					group.Meshes = append(group.Meshes, importer.MeshAsset{
-						ModelFile: model,
-						MtlFile:   mtl,
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: mtl,
 					})
 				}
 			}

@@ -9,7 +9,7 @@ import (
 )
 
 func (c *Collector) CollectAppearancesWeapons() {
-	for _, table := range c.tables {
+	for table := range c.EachDatasheet() {
 		if table.Schema != "WeaponAppearanceDefinitions" {
 			continue
 		}
@@ -36,9 +36,9 @@ func (c *Collector) CollectAppearancesWeapons() {
 				if model != "" {
 					group := importer.AssetGroup{}
 					group.TargetFile = file
-					group.Meshes = append(group.Meshes, importer.MeshAsset{
-						ModelFile: model,
-						MtlFile:   material,
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: material,
 					})
 					c.models.Store(file, group)
 				}
@@ -51,9 +51,9 @@ func (c *Collector) CollectAppearancesWeapons() {
 				if model != "" {
 					group := importer.AssetGroup{}
 					group.TargetFile = file
-					group.Meshes = append(group.Meshes, importer.MeshAsset{
-						ModelFile: model,
-						MtlFile:   material,
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: material,
 					})
 					c.models.Store(file, group)
 				}
@@ -63,16 +63,16 @@ func (c *Collector) CollectAppearancesWeapons() {
 			if path.Ext(meshOverride) == ".cdf" {
 				file = strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
 				if !c.models.Has(file) {
-					asset, _ := c.resolveCdfAsset(meshOverride, false)
+					asset, _ := c.ResolveCdfAsset(meshOverride, false)
 					if asset != nil {
 						group := importer.AssetGroup{}
 						group.TargetFile = file
-						for _, mesh := range asset.attachments {
-							model, material := c.resolveModelMaterial(mesh.Binding, mesh.Material)
+						for _, mesh := range asset.Attachments {
+							model, material := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
 							if model != "" {
-								group.Meshes = append(group.Meshes, importer.MeshAsset{
-									ModelFile: model,
-									MtlFile:   material,
+								group.Meshes = append(group.Meshes, importer.GeometryAsset{
+									GeometryFile: model,
+									MaterialFile: material,
 								})
 							}
 						}
@@ -85,13 +85,13 @@ func (c *Collector) CollectAppearancesWeapons() {
 			if path.Ext(meshOverride) == ".cgf" {
 				file = strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
 				if !c.models.Has(file) {
-					model, material := c.resolveModelMaterial(meshOverride, "")
+					model, material := c.ResolveModelMaterialPair(meshOverride, "")
 					if model != "" {
 						group := importer.AssetGroup{}
 						group.TargetFile = file
-						group.Meshes = append(group.Meshes, importer.MeshAsset{
-							ModelFile: model,
-							MtlFile:   material,
+						group.Meshes = append(group.Meshes, importer.GeometryAsset{
+							GeometryFile: model,
+							MaterialFile: material,
 						})
 						c.models.Store(file, group)
 					}

@@ -63,7 +63,7 @@ pnpm dev:web
 - make sure golang is installed. See  [go.work](go.work) for current version
 - if you use `vscode`, make sure the `go` extension is installed
 - make sure `.env` file exists, copy it from [.env.example](.env.example) and update `NW_GAME_LIVE` (and `NW_GAME_PTR`) variables
-- run `pnpm nwbt doctor` to check if game packages can be accessed and tools are available
+- run `pnpm nwbt vet` to check if game packages can be accessed and tools are available
 
 Some missing tools can be ignored. All required tools are in the `./tools/bin` directory and should be available.
 

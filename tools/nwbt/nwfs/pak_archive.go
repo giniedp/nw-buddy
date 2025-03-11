@@ -92,7 +92,7 @@ func (fs *pakArchive) init() error {
 		return err
 	}
 
-	bar := progress.Bar(len(files), "Initialize archive")
+	bar := progress.Bar(len(files), "Loading Archive")
 
 	fs.files = make([]File, 0)
 	for _, file := range files {

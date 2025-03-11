@@ -19,7 +19,6 @@ type Scanner struct {
 	Catalog     catalog.Document
 	objectCache sync.Map
 	sheetCache  sync.Map //map[string]datasheet.JSONRows
-	cache       sync.Map
 	mu          sync.RWMutex
 	results     ScanResults
 }

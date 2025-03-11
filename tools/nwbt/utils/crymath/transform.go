@@ -1,16 +1,18 @@
 package crymath
 
-import "nw-buddy/tools/rtti/nwt"
+import (
+	"nw-buddy/tools/rtti/nwt"
+)
 
 type Transform interface {
-	// GetRotation returns a copy of the translation part of this transform
 	Translation() nwt.AzVec3
 	TransformPoint(nwt.AzVec3) nwt.AzVec3
+	ToMat4() Mat4x4
 }
 
 func TransformFromAzTransform(it nwt.AzTransform) Transform {
 	if len(it.Data) == 10 {
-		return TransformSRT(it.Data)
+		return TransformRST(it.Data)
 	}
 	if len(it.Data) == 12 {
 		return TransformMat(it.Data)
@@ -32,21 +34,29 @@ func (t TransformMat) TransformPoint(point nwt.AzVec3) nwt.AzVec3 {
 	}
 }
 
-type TransformSRT []nwt.AzFloat32
+func (t TransformMat) ToMat4() Mat4x4 {
+	return Mat4FromAzTransform(nwt.AzTransform{Data: t})
+}
 
-func (t TransformSRT) Rotation() nwt.AzQuat {
+type TransformRST []nwt.AzFloat32
+
+func (t TransformRST) Rotation() nwt.AzQuat {
 	return [4]nwt.AzFloat32{t[0], t[1], t[2], t[3]}
 }
 
-func (t TransformSRT) Scale() nwt.AzVec3 {
+func (t TransformRST) Scale() nwt.AzVec3 {
 	return [3]nwt.AzFloat32{t[4], t[5], t[6]}
 }
 
-func (t TransformSRT) Translation() nwt.AzVec3 {
+func (t TransformRST) Translation() nwt.AzVec3 {
 	return [3]nwt.AzFloat32{t[7], t[8], t[9]}
 }
 
-func (t TransformSRT) TransformPoint(point nwt.AzVec3) nwt.AzVec3 {
+func (t TransformRST) ToMat4() Mat4x4 {
+	return Mat4FromAzTransform(nwt.AzTransform{Data: t})
+}
+
+func (t TransformRST) TransformPoint(point nwt.AzVec3) nwt.AzVec3 {
 	x := t[0]
 	y := t[1]
 	z := t[2]
@@ -91,4 +101,42 @@ func IdentityTransform() Transform {
 		0, 0, 0, // translation
 	}
 	return TransformMat(srt)
+}
+
+func Mat4FromAzTransform(it nwt.AzTransform) Mat4x4 {
+	if len(it.Data) == 10 {
+		rotation := it.Data[0:4]
+		scale := it.Data[4:7]
+		translation := it.Data[7:10]
+		mat := Mat4FromQuaternion(Quat{
+			float32(rotation[0]), float32(rotation[1]), float32(rotation[2]), float32(rotation[3]),
+		})
+		mat[0] *= float32(scale[0])
+		mat[1] *= float32(scale[0])
+		mat[2] *= float32(scale[0])
+		mat[4] *= float32(scale[1])
+		mat[5] *= float32(scale[1])
+		mat[6] *= float32(scale[1])
+		mat[8] *= float32(scale[2])
+		mat[9] *= float32(scale[2])
+		mat[10] *= float32(scale[2])
+		mat[12] = float32(translation[0])
+		mat[13] = float32(translation[1])
+		mat[14] = float32(translation[2])
+		return mat
+	}
+	if len(it.Data) == 12 {
+		return [16]float32{
+			float32(it.Data[0]), float32(it.Data[1]), float32(it.Data[2]), 0,
+			float32(it.Data[3]), float32(it.Data[4]), float32(it.Data[5]), 0,
+			float32(it.Data[6]), float32(it.Data[7]), float32(it.Data[8]), 0,
+			float32(it.Data[9]), float32(it.Data[10]), float32(it.Data[11]), 1,
+		}
+	}
+	return [16]float32{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}
 }

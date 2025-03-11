@@ -17,52 +17,56 @@ import (
 	"github.com/qmuntal/gltf/ext/texturetransform"
 )
 
-func (c *Converter) ImportCgfMaterials() {
-	shadersToIgnore := []string{
-		"nodraw",
-		"geometrybeam",
-		"geometrybeamsimple",
-		"meshparticle",
-		"geometryfog",
-	}
+func (c *Document) ImportCgfMaterials() {
+	// shadersToIgnore := []string{
+	// 	"nodraw",
+	// }
 
-	for _, mesh := range c.Doc.Meshes {
-		toDetach := make([]*gltf.Primitive, 0)
-		for _, primitive := range mesh.Primitives {
-			if primitive.Material != nil {
-				material := c.Doc.Materials[*primitive.Material]
-				if slices.Contains(shadersToIgnore, strings.ToLower(material.Name)) {
-					toDetach = append(toDetach, primitive)
-				}
-			}
-		}
-		for len(toDetach) > 0 {
-			prim := toDetach[0]
-			fmt.Sprintln("Detaching primitive")
-			toDetach = toDetach[1:]
-			index := slices.Index(mesh.Primitives, prim)
-			mesh.Primitives = slices.Delete(mesh.Primitives, index, index+1)
-		}
-	}
+	// for _, mesh := range c.Document.Meshes {
+	// 	toDetach := make([]*gltf.Primitive, 0)
+	// 	for _, primitive := range mesh.Primitives {
+	// 		if primitive.Material != nil {
+	// 			material := c.Document.Materials[*primitive.Material]
+	// 			m := lookupMtl(material)
+	// 			if m == nil {
+	// 				continue
+	// 			}
+	// 			if slices.Contains(shadersToIgnore, strings.ToLower(m.Shader)) {
+	// 				toDetach = append(toDetach, primitive)
+	// 			}
+	// 		}
+	// 	}
+	// 	for len(toDetach) > 0 {
+	// 		prim := toDetach[0]
+	// 		fmt.Sprintln("Detaching primitive")
+	// 		toDetach = toDetach[1:]
+	// 		index := slices.Index(mesh.Primitives, prim)
+	// 		mesh.Primitives = slices.Delete(mesh.Primitives, index, index+1)
+	// 	}
+	// }
 
-	{
-		toDetach := make([]*gltf.Material, 0)
-		for _, material := range c.Doc.Materials {
-			if slices.Contains(shadersToIgnore, strings.ToLower(material.Name)) {
-				toDetach = append(toDetach, material)
-			}
-		}
-		for len(toDetach) > 0 {
-			mat := toDetach[0]
-			toDetach = toDetach[1:]
-			fmt.Sprintln("Detaching material", mat.Name)
-			index := slices.Index(c.Doc.Materials, mat)
-			c.Doc.Materials = slices.Delete(c.Doc.Materials, index, index+1)
-		}
-	}
+	// {
+	// 	toDetach := make([]*gltf.Material, 0)
+	// 	for _, material := range c.Materials {
+	// 		if slices.Contains(shadersToIgnore, strings.ToLower(material.Name)) {
+	// 			toDetach = append(toDetach, material)
+	// 		}
+	// 	}
+	// 	for len(toDetach) > 0 {
+	// 		mat := toDetach[0]
+	// 		toDetach = toDetach[1:]
+	// 		fmt.Sprintln("Detaching material", mat.Name)
+	// 		index := slices.Index(c.Materials, mat)
+	// 		c.Materials = slices.Delete(c.Materials, index, index+1)
+	// 	}
+	// }
 
-	for _, material := range c.Doc.Materials {
-		m := pluckMaterial(material)
+	for _, material := range c.Materials {
+		if !c.IsMaterialReferenced(material) {
+			continue
+		}
+
+		m := pluckMtl(material)
 		if m == nil {
 			continue
 		}
@@ -88,9 +92,14 @@ func (c *Converter) ImportCgfMaterials() {
 		// mapOpacitty := m.TextureWithMap(mtl.MtlMap_Opacity)
 		mapDecal := m.TextureByMapType(mtl.MtlMap_Decal)
 
-		isGlass := strings.EqualFold(m.Shader, "glass")
-		isHair := strings.EqualFold(m.Shader, "hair")
-		isFxTransp := strings.EqualFold(m.Shader, "Fxmeshadvancedtransp") // only isabella gaze has this shader
+		shader := strings.ToLower(m.Shader)
+		isGlass := shader == "glass"
+		isHair := shader == "hair"
+		isFxTransp := shader == "fxmeshadvancedtransp" // only isabella gaze has this shader
+		isGeometryFog := shader == "geometryfog"
+		isGeometryBeam := shader == "geometrybeam" || shader == "geometrybeamsimple"
+		isParticle := shader == "meshparticle"
+		isNoDraw := shader == "nodraw"
 
 		features := strings.Split(m.StringGenMask, "%")
 		// shaderOverlayMask := slices.Contains(features, "OVERLAY_MASK")
@@ -239,14 +248,14 @@ func (c *Converter) ImportCgfMaterials() {
 			}
 			material.PBRMetallicRoughness.MetallicFactor = &metallicFactor
 			material.PBRMetallicRoughness.BaseColorTexture = &gltf.TextureInfo{
-				Index: slices.Index(c.Doc.Textures, texDiffuse),
+				Index: slices.Index(c.Textures, texDiffuse),
 			}
 			if texTransform != nil {
 				addTexTransform(material.PBRMetallicRoughness.BaseColorTexture, *texTransform)
 			}
 		}
 		if texBumpmap != nil {
-			index := slices.Index(c.Doc.Textures, texBumpmap)
+			index := slices.Index(c.Textures, texBumpmap)
 			material.NormalTexture = &gltf.NormalTexture{
 				Index: &index,
 			}
@@ -262,7 +271,7 @@ func (c *Converter) ImportCgfMaterials() {
 				}
 			}
 			ext.SpecularGlossinessTexture = &gltf.TextureInfo{
-				Index: slices.Index(c.Doc.Textures, texSpecular),
+				Index: slices.Index(c.Textures, texSpecular),
 			}
 			if texTransform != nil {
 				addTexTransform(ext.DiffuseTexture, *texTransform)
@@ -291,8 +300,8 @@ func (c *Converter) ImportCgfMaterials() {
 			}
 
 			material.Extensions[specular.ExtensionName] = &ext
-			c.Doc.ExtensionsRequired = utils.AppendUniq(c.Doc.ExtensionsRequired, specular.ExtensionName)
-			c.Doc.ExtensionsUsed = utils.AppendUniq(c.Doc.ExtensionsUsed, specular.ExtensionName)
+			c.ExtensionsRequired = utils.AppendUniq(c.ExtensionsRequired, specular.ExtensionName)
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, specular.ExtensionName)
 
 			if material.PBRMetallicRoughness == nil {
 				material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{}
@@ -311,7 +320,7 @@ func (c *Converter) ImportCgfMaterials() {
 		if texEmissive != nil {
 			material.EmissiveFactor = [3]float64{1, 1, 1}
 			material.EmissiveTexture = &gltf.TextureInfo{
-				Index: slices.Index(c.Doc.Textures, texEmissive),
+				Index: slices.Index(c.Textures, texEmissive),
 			}
 		}
 
@@ -342,6 +351,9 @@ func (c *Converter) ImportCgfMaterials() {
 			material.AlphaMode = gltf.AlphaMask
 			material.DoubleSided = true
 		}
+		if isGeometryFog || isGeometryBeam || isParticle || isNoDraw {
+			mtlOpacity = 0.1
+		}
 		if mtlOpacity >= 0 && mtlOpacity < 1 {
 			opacity := float64(mtlOpacity)
 			if material.PBRMetallicRoughness == nil {
@@ -351,6 +363,7 @@ func (c *Converter) ImportCgfMaterials() {
 				material.PBRMetallicRoughness.BaseColorFactor = &[4]float64{1, 1, 1, 1}
 			}
 			material.PBRMetallicRoughness.BaseColorFactor[3] = opacity
+			material.AlphaCutoff = nil
 			material.AlphaMode = gltf.AlphaBlend
 			material.DoubleSided = true
 		}
@@ -372,7 +385,7 @@ func (c *Converter) ImportCgfMaterials() {
 			material.Extensions["KHR_materials_transmission"] = map[string]any{
 				"transmissionFactor": factor,
 			}
-			c.Doc.ExtensionsUsed = utils.AppendUniq(c.Doc.ExtensionsUsed, "KHR_materials_transmission")
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, "KHR_materials_transmission")
 		}
 
 		// if (shaderOverlayMask && texCustom && appearance != null) {
@@ -391,9 +404,16 @@ func (c *Converter) ImportCgfMaterials() {
 	}
 }
 
-func pluckMaterial(material *gltf.Material) *mtl.Material {
-	if mtl, ok := extrasLoad[mtl.Material](material.Extras, "mtl"); ok {
-		material.Extras = extrasDelete(material.Extras, "mtl")
+func lookupMtl(material *gltf.Material) *mtl.Material {
+	if mtl, ok := ExtrasLoad[mtl.Material](material.Extras, "mtl"); ok {
+		return &mtl
+	}
+	return nil
+}
+
+func pluckMtl(material *gltf.Material) *mtl.Material {
+	if mtl, ok := ExtrasLoad[mtl.Material](material.Extras, "mtl"); ok {
+		material.Extras = ExtrasDelete(material.Extras, "mtl")
 		return &mtl
 	}
 	return nil

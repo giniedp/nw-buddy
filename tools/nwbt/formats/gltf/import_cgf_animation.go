@@ -9,20 +9,20 @@ import (
 	"github.com/qmuntal/gltf/modeler"
 )
 
-func (c *Converter) ImportCgfAnimation(file *cgf.File) {
+func (c *Document) ImportCgfAnimation(file *cgf.File) {
 	controllers := cgf.SelectChunks[cgf.ChunkController](file)
 	params, _ := cgf.SelectChunk[cgf.ChunkMotionParams](file)
 
 	animation := &gltf.Animation{}
 	defer func() {
 		if len(animation.Channels) > 0 {
-			c.Doc.Animations = append(c.Doc.Animations, animation)
+			c.Document.Animations = append(c.Document.Animations, animation)
 		}
 	}()
 
 	for _, controller := range controllers {
-		nodeIndex := slices.IndexFunc(c.Doc.Nodes, func(e *gltf.Node) bool {
-			if id, ok := extrasLoad[uint32](e.Extras, "controllerId"); ok {
+		nodeIndex := slices.IndexFunc(c.Document.Nodes, func(e *gltf.Node) bool {
+			if id, ok := ExtrasLoad[uint32](e.Extras, "controllerId"); ok {
 				return id == controller.ControllerId
 			}
 			return false
@@ -39,13 +39,13 @@ func (c *Converter) ImportCgfAnimation(file *cgf.File) {
 					rotTimeKeys[i] = rotTimeKeys[i] * params.SecsPerTick / float32(params.TicksPerFrame)
 				}
 			}
-			rotTimeAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, rotTimeKeys)
+			rotTimeAccessor := modeler.WriteAccessor(c.Document, gltf.TargetNone, rotTimeKeys)
 
 			rotKeys := slices.Clone(controller.RotationKeys)
 			for i := range rotKeys {
 				rotKeys[i] = CryToGltfQuat(rotKeys[i])
 			}
-			rotAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, rotKeys)
+			rotAccessor := modeler.WriteAccessor(c.Document, gltf.TargetNone, rotKeys)
 			rotSampler := &gltf.AnimationSampler{
 				Input:         rotTimeAccessor,
 				Output:        rotAccessor,
@@ -72,13 +72,13 @@ func (c *Converter) ImportCgfAnimation(file *cgf.File) {
 					posTimeKeys[i] = posTimeKeys[i] * params.SecsPerTick / float32(params.TicksPerFrame)
 				}
 			}
-			posTimeAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, posTimeKeys)
+			posTimeAccessor := modeler.WriteAccessor(c.Document, gltf.TargetNone, posTimeKeys)
 
 			posKeys := slices.Clone(controller.PositionKeys)
 			for i := range posKeys {
 				posKeys[i] = CryToGltfVec3(posKeys[i])
 			}
-			posAccessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, posKeys)
+			posAccessor := modeler.WriteAccessor(c.Document, gltf.TargetNone, posKeys)
 			posSampler := &gltf.AnimationSampler{
 				Input:         posTimeAccessor,
 				Output:        posAccessor,

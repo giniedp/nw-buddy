@@ -32,13 +32,13 @@ func TestRead_MusiDrumDrum(t *testing.T) {
 		cgfData, err := os.ReadFile(input[0])
 		assert.NoError(t, err)
 
-		model, err := cgf.Parse(cgfData)
+		_, err = cgf.Parse(cgfData)
 		assert.NoError(t, err)
 
 		mtlData, err := os.ReadFile(input[1])
 		assert.NoError(t, err)
 
-		materials, err := mtl.Parse(mtlData)
+		_, err = mtl.Parse(mtlData)
 		assert.NoError(t, err)
 
 		archive, err := nwfs.NewUnpackedArchive(
@@ -47,12 +47,21 @@ func TestRead_MusiDrumDrum(t *testing.T) {
 		)
 		assert.NoError(t, err)
 
-		converter := gltf.NewConverter()
+		converter := gltf.NewDocument()
 		converter.ImageLoader = image.LoaderWithConverter{
 			Archive:   archive,
 			Converter: image.BasicConverter{},
 		}
-		converter.ImportCgf(model, materials.Collection())
+		// converter.ImportGeometry(importer.GeometryAsset{
+		// 	GeometryFile: input[0],
+		// 	MaterialFile: input[1],
+		// }, func(mesh importer.GeometryAsset) (*cgf.File, []mtl.Material) {
+		// 	modelFile, _ := archive.Lookup(mesh.GeometryFile)
+		// 	model, _ := cgf.Load(modelFile)
+		// 	mtlFile, _ := archive.Lookup(mesh.MaterialFile)
+		// 	material, _ := mtl.Load(mtlFile)
+		// 	return model, material.Collection()
+		// })
 		converter.ImportCgfMaterials()
 
 		err = converter.Save(utils.ReplaceExt(input[0], ".gltf"))

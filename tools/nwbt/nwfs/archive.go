@@ -129,5 +129,6 @@ func NormalizePath(filePath string) string {
 	for strings.Contains(filePath, "//") {
 		filePath = strings.ReplaceAll(filePath, "//", "/")
 	}
+	filePath = strings.TrimPrefix(filePath, "/")
 	return filePath
 }

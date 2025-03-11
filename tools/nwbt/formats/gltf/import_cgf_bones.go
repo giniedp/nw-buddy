@@ -8,7 +8,7 @@ import (
 	"github.com/qmuntal/gltf/modeler"
 )
 
-func (c *Converter) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones) (*int, error) {
+func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones) (*int, error) {
 	if len(chunk.Bones) == 0 {
 		return nil, nil
 	}
@@ -17,7 +17,7 @@ func (c *Converter) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones
 	transforms := make([]Mat4x4, len(chunk.Bones))
 	inverse := make([]Mat4x4, len(chunk.Bones))
 	for i, bone := range chunk.Bones {
-		gltfBones[i], _ = c.NewNode()
+		gltfBones[i], _ = d.NewNode()
 		gltfBones[i].Name = bone.BoneName
 		gltfBones[i].Extras = map[string]any{
 			"controllerId": int(bone.ControllerId),
@@ -66,15 +66,15 @@ func (c *Converter) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones
 		transform := transforms[i]
 
 		if bone.M_nOffsetParent == 0 {
-			scene := c.DefaultScene()
-			scene.Nodes = append(scene.Nodes, c.NodeIndex(gltfBone))
+			scene := d.DefaultScene()
+			scene.Nodes = append(scene.Nodes, d.NodeIndex(gltfBone))
 		} else {
 			parentIndex := i + int(bone.M_nOffsetParent)
 			if parentIndex >= len(chunk.Bones) || parentIndex < 0 {
 				return nil, fmt.Errorf("parent index out of bounds %d len %d i %d offset %d", parentIndex, len(chunk.Bones), i, int(bone.M_nOffsetParent))
 			}
 			gltfParent := gltfBones[parentIndex]
-			gltfParent.Children = append(gltfParent.Children, c.NodeIndex(gltfBone))
+			gltfParent.Children = append(gltfParent.Children, d.NodeIndex(gltfBone))
 			transform = Mat4Multiply(inverse[parentIndex], transform)
 		}
 		gltfBone.Matrix = Mat4ToFloat64(transform)
@@ -82,7 +82,7 @@ func (c *Converter) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones
 
 	joints := make([]int, 0)
 	for i := range chunk.Bones {
-		joints = append(joints, c.NodeIndex(gltfBones[i]))
+		joints = append(joints, d.NodeIndex(gltfBones[i]))
 	}
 	data := make([][4][4]float32, 0)
 	for _, mat := range inverse {
@@ -93,12 +93,12 @@ func (c *Converter) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones
 			{mat[12], mat[13], mat[14], mat[15]},
 		})
 	}
-	accessor := modeler.WriteAccessor(c.Doc, gltf.TargetNone, data)
+	accessor := modeler.WriteAccessor(d.Document, gltf.TargetNone, data)
 
-	c.Doc.Skins = append(c.Doc.Skins, &gltf.Skin{
+	d.Document.Skins = append(d.Skins, &gltf.Skin{
 		Joints:              joints,
 		InverseBindMatrices: gltf.Index(accessor),
 	})
 
-	return gltf.Index(len(c.Doc.Skins) - 1), nil
+	return gltf.Index(len(d.Skins) - 1), nil
 }

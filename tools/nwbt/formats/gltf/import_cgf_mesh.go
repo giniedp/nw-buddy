@@ -14,7 +14,7 @@ import (
 	"github.com/qmuntal/gltf/modeler"
 )
 
-func (c *Converter) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, materials []*gltf.Material) (*int, *gltf.Mesh) {
+func (d *Document) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, materials []*gltf.Material) (*int, *gltf.Mesh) {
 	subsets, hasSubsets := cgf.FindChunk[cgf.ChunkMeshSubsets](cgfile, chunk.SubsetsChunkId)
 	if !hasSubsets {
 		return nil, nil
@@ -34,7 +34,11 @@ func (c *Converter) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, materia
 		if material != nil && strings.Contains(strings.ToLower(material.Name), "shadow_proxy") {
 			continue
 		}
-		primitive, err := convertPrimitive(c.Doc, subset, chunk, cgfile)
+		mtl := lookupMtl(material)
+		if mtl != nil && mtl.CanBeSkipped() {
+			continue
+		}
+		primitive, err := convertPrimitive(d.Document, subset, chunk, cgfile)
 		if err != nil {
 			slog.Warn("Failed to convert primitive", "err", err)
 			continue
@@ -42,7 +46,7 @@ func (c *Converter) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, materia
 		if primitive == nil {
 			continue
 		}
-		index := slices.Index(c.Doc.Materials, material)
+		index := slices.Index(d.Materials, material)
 		if index != -1 {
 			primitive.Material = gltf.Index(index)
 		}
@@ -53,7 +57,7 @@ func (c *Converter) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, materia
 		return nil, nil
 	}
 
-	return c.AppendMesh(mesh), mesh
+	return d.AppendMesh(mesh), mesh
 }
 
 func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.ChunkMesh, cgFile *cgf.File) (out *gltf.Primitive, err error) {

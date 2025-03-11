@@ -5,7 +5,7 @@ import "nw-buddy/tools/utils/maps"
 type AssetGroup struct {
 	Appearance any
 	Animations []Animation
-	Meshes     []MeshAsset
+	Meshes     []GeometryAsset
 	Lights     []LightAsset
 	Cameras    []CameraAsset
 	Entities   []Entity
@@ -26,10 +26,10 @@ type Entity struct {
 	Meta      maps.Dict[any]
 }
 
-type MeshAsset struct {
+type GeometryAsset struct {
 	Entity
-	ModelFile    string
-	MtlFile      string
+	GeometryFile string
+	MaterialFile string
 	SkipSkin     bool
 	SkipGeometry bool
 }

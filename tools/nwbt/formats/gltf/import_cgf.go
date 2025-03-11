@@ -1,29 +1,44 @@
 package gltf
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/cgf"
+	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/formats/mtl"
-	"slices"
 
 	"github.com/qmuntal/gltf"
 )
 
-func (c *Converter) ImportCgf(cgfile *cgf.File, materials []mtl.Material) {
+func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset importer.GeometryAsset) (*cgf.File, []mtl.Material)) {
+	instanceRef := hashString(fmt.Sprintf("%s#%s", asset.GeometryFile, asset.MaterialFile))
+	reference := c.FindNodeInstance(instanceRef)
+	if reference != nil {
+		node, _ := c.CopyNode(reference)
+		c.AddToSceneWithTransform(c.DefaultScene(), node, asset.Transform)
+		return
+	}
+
+	model, materials := load(asset)
+	if model == nil {
+		return
+	}
 
 	var skin *int
 	var err error
-	if !c.IgnoreSkin {
-		bones := cgf.SelectChunks[cgf.ChunkCompiledBones](cgfile)
+	if !asset.SkipSkin {
+		bones := cgf.SelectChunks[cgf.ChunkCompiledBones](model)
 		if len(bones) > 0 {
-			skin, err = c.ImportCgfSkin(cgfile, bones[0])
+			skin, err = c.ImportCgfSkin(model, bones[0])
 			if err != nil {
-				slog.Warn("cgf skin not imported", "file", cgfile.Source, "err", err)
+				slog.Warn("cgf skin not imported", "file", model.Source, "err", err)
 			}
 		}
 	}
 
-	if c.IgnoreGeometry {
+	if asset.SkipGeometry {
 		return
 	}
 
@@ -33,16 +48,28 @@ func (c *Converter) ImportCgf(cgfile *cgf.File, materials []mtl.Material) {
 		gltfMaterials = append(gltfMaterials, gltfMtl)
 	}
 
-	rootNodes := c.ImportCgfHierarchy(cgfile, func(node *gltf.Node, chunk cgf.Chunker) {
+	rootNodes := c.ImportCgfHierarchy(model, func(node *gltf.Node, chunk cgf.Chunker) {
 		switch meshChunk := chunk.(type) {
 		case cgf.ChunkMesh:
-			node.Mesh, _ = c.ImportCgfMesh(meshChunk, cgfile, gltfMaterials)
+			node.Mesh, _ = c.ImportCgfMesh(meshChunk, model, gltfMaterials)
 			node.Skin = skin
 		}
 	})
-
-	scene := c.DefaultScene()
-	for _, rootNode := range rootNodes {
-		scene.Nodes = append(scene.Nodes, slices.Index(c.Doc.Nodes, rootNode))
+	if len(rootNodes) == 0 {
+		return
 	}
+
+	rootNode := rootNodes[0]
+	if len(rootNodes) > 1 {
+		parent, _ := c.NewNode()
+		c.AddChild(parent, rootNodes...)
+		rootNode = parent
+	}
+	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyInstanceRef, instanceRef)
+	c.AddToSceneWithTransform(c.DefaultScene(), rootNode, asset.Transform)
+}
+
+func hashString(s string) string {
+	sum := md5.Sum([]byte(s))
+	return hex.EncodeToString(sum[:])
 }

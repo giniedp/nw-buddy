@@ -2,14 +2,38 @@ package models
 
 import (
 	"fmt"
+	"log/slog"
 	"nw-buddy/tools/formats/gltf/importer"
+	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
+var cmdCollectWeapons = &cobra.Command{
+	Use:   "weapons",
+	Short: "converts weapons",
+	Long:  "",
+	Run:   runCollectWeapons,
+}
+
+func init() {
+	cmdCollectWeapons.Flags().AddFlagSet(Cmd.Flags())
+}
+
+func runCollectWeapons(ccmd *cobra.Command, args []string) {
+	slog.SetDefault(logging.DefaultFileHandler())
+	c := utils.Must(initCollector())
+	c.CollectWeapons()
+	c.Convert(flgOutput)
+	slog.SetDefault(logging.DefaultTerminalHandler())
+}
+
 func (c *Collector) CollectWeapons() {
-	for _, table := range c.tables {
+	for table := range c.EachDatasheet() {
 		if table.Schema != "WeaponItemDefinitions" {
 			continue
 		}
@@ -26,13 +50,13 @@ func (c *Collector) CollectWeapons() {
 			if !c.models.Has(file) {
 				model := row.GetString("SkinOverride1")
 				material := row.GetString("MaterialOverride1")
-				model, material = c.resolveModelMaterial(model, material)
+				model, material = c.ResolveModelMaterialPair(model, material)
 				if model != "" {
 					group := importer.AssetGroup{}
 					group.TargetFile = file
-					group.Meshes = append(group.Meshes, importer.MeshAsset{
-						ModelFile: model,
-						MtlFile:   material,
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: material,
 					})
 					c.models.Store(file, group)
 				}
@@ -42,13 +66,13 @@ func (c *Collector) CollectWeapons() {
 			if !c.models.Has(file) {
 				model := row.GetString("SkinOverride2")
 				material := row.GetString("MaterialOverride2")
-				model, material = c.resolveModelMaterial(model, material)
+				model, material = c.ResolveModelMaterialPair(model, material)
 				if model != "" {
 					group := importer.AssetGroup{}
 					group.TargetFile = file
-					group.Meshes = append(group.Meshes, importer.MeshAsset{
-						ModelFile: model,
-						MtlFile:   material,
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: material,
 					})
 					c.models.Store(file, group)
 				}

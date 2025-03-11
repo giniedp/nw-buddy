@@ -8,9 +8,9 @@ import (
 	"github.com/qmuntal/gltf"
 )
 
-func (c *Converter) ImportCgfHierarchy(file *cgf.File, handleObject func(node *gltf.Node, chunk cgf.Chunker)) []*gltf.Node {
+func (d *Document) ImportCgfHierarchy(file *cgf.File, handleObject func(node *gltf.Node, chunk cgf.Chunker)) []*gltf.Node {
 	rootNodes := make([]*gltf.Node, 0)
-	nodeMap := newIdToNodeMap(c)
+	nodeMap := newIdToNodeMap(d)
 	for _, chunk := range cgf.SelectChunks[cgf.ChunkNode](file) {
 		// TODO:
 		// const isLOD = chunk.name.match(/\$lod\d+/i)
@@ -36,11 +36,11 @@ func (c *Converter) ImportCgfHierarchy(file *cgf.File, handleObject func(node *g
 }
 
 type idToNodeMap struct {
-	converter *Converter
+	converter *Document
 	idToNode  *maps.Map[int32, *gltf.Node]
 }
 
-func newIdToNodeMap(converter *Converter) *idToNodeMap {
+func newIdToNodeMap(converter *Document) *idToNodeMap {
 	return &idToNodeMap{
 		converter: converter,
 		idToNode:  maps.NewMap[int32, *gltf.Node](),
@@ -52,5 +52,5 @@ func (n *idToNodeMap) lookup(id int32) (*gltf.Node, int) {
 	if !loaded {
 		n.converter.AppendNode(node)
 	}
-	return node, slices.Index(n.converter.Doc.Nodes, node)
+	return node, slices.Index(n.converter.Document.Nodes, node)
 }

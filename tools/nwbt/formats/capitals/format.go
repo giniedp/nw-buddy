@@ -79,5 +79,5 @@ func (doc *Capital) Transform() crymath.Transform {
 		data[9] = nwt.AzFloat32(doc.Position.Z)
 	}
 
-	return crymath.TransformSRT(data)
+	return crymath.TransformRST(data)
 }

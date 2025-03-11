@@ -37,25 +37,25 @@ func (e *Document) Collection() []Material {
 
 type Material struct {
 	XMLName  xml.Name      `xml:"Material" json:"-"`
-	Textures *Textures     `xml:"Textures" json:",omitempty"`
-	Params   *PublicParams `xml:"PublicParams" json:",omitempty"`
+	Textures *Textures     `xml:"Textures" json:",omitzero"`
+	Params   *PublicParams `xml:"PublicParams" json:",omitzero"`
 	MaterialAttrs
 }
 
 type MaterialAttrs struct {
-	AlphaTest     float32 `xml:"AlphaTest,attr" json:",omitempty"`
-	CloakAmount   float32 `xml:"CloakAmount,attr" json:",omitempty"`
-	Diffuse       string  `xml:"Diffuse,attr" json:",omitempty"`
-	Emissive      string  `xml:"Emissive,attr" json:",omitempty"`
-	Emittance     string  `xml:"Emittance,attr" json:",omitempty"`
-	GenMask       string  `xml:"GenMask,attr" json:",omitempty"`
-	MtlFlags      int     `xml:"MtlFlags,attr" json:",omitempty"`
-	Name          string  `xml:"Name,attr" json:",omitempty"`
-	Opacity       float32 `xml:"Opacity,attr" json:",omitempty"`
-	Shader        string  `xml:"Shader,attr" json:",omitempty"`
-	Shininess     float32 `xml:"Shininess,attr" json:",omitempty"`
-	Specular      string  `xml:"Specular,attr" json:",omitempty"`
-	StringGenMask string  `xml:"StringGenMask,attr" json:",omitempty"`
+	AlphaTest     float32 `xml:"AlphaTest,attr" json:",omitzero"`
+	CloakAmount   float32 `xml:"CloakAmount,attr" json:",omitzero"`
+	Diffuse       string  `xml:"Diffuse,attr" json:",omitzero"`
+	Emissive      string  `xml:"Emissive,attr" json:",omitzero"`
+	Emittance     string  `xml:"Emittance,attr" json:",omitzero"`
+	GenMask       string  `xml:"GenMask,attr" json:",omitzero"`
+	MtlFlags      int     `xml:"MtlFlags,attr" json:",omitzero"`
+	Name          string  `xml:"Name,attr" json:",omitzero"`
+	Opacity       float32 `xml:"Opacity,attr" json:",omitzero"`
+	Shader        string  `xml:"Shader,attr" json:",omitzero"`
+	Shininess     float32 `xml:"Shininess,attr" json:",omitzero"`
+	Specular      string  `xml:"Specular,attr" json:",omitzero"`
+	StringGenMask string  `xml:"StringGenMask,attr" json:",omitzero"`
 }
 
 func (e *Material) IterTextures() iter.Seq[Texture] {
@@ -109,24 +109,24 @@ func (it *PublicParams) Load(name string) (string, bool) {
 
 type SubMaterials struct {
 	XMLName  xml.Name   `xml:"SubMaterials" json:"-"`
-	Material []Material `xml:"Material" json:",omitempty"`
+	Material []Material `xml:"Material" json:",omitzero"`
 }
 
 type Textures struct {
 	XMLName xml.Name  `xml:"Textures" json:"-"`
-	Texture []Texture `xml:"Texture" json:",omitempty"`
+	Texture []Texture `xml:"Texture" json:",omitzero"`
 }
 
 type Texture struct {
 	XMLName xml.Name `xml:"Texture" json:"-"`
-	AssetId string   `xml:"AssetId,attr" json:",omitempty"`
-	File    string   `xml:"File,attr" json:",omitempty"`
-	Filter  float32  `xml:"Filter,attr" json:",omitempty"`
-	Map     MtlMap   `xml:"Map,attr" json:",omitempty"`
-	IsTileU bool     `xml:"IsTileU,attr" json:",omitempty"`
-	IsTileV bool     `xml:"IsTileV,attr" json:",omitempty"`
-	TexMod  TextMod  `xml:"TexMod,attr" json:",omitempty"`
-	TexType float32  `xml:"TexType,attr" json:",omitempty"`
+	AssetId string   `xml:"AssetId,attr" json:",omitzero"`
+	File    string   `xml:"File,attr" json:",omitzero"`
+	Filter  float32  `xml:"Filter,attr" json:",omitzero"`
+	Map     MtlMap   `xml:"Map,attr" json:",omitzero"`
+	IsTileU bool     `xml:"IsTileU,attr" json:",omitzero"`
+	IsTileV bool     `xml:"IsTileV,attr" json:",omitzero"`
+	TexMod  TextMod  `xml:"TexMod,attr" json:",omitzero"`
+	TexType float32  `xml:"TexType,attr" json:",omitzero"`
 }
 
 type MtlMap string
