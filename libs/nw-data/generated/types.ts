@@ -7364,6 +7364,7 @@ export interface SpellData {
   NumToSpawn: number
   NumToSpawnBeforeFail: number
   OverrideTargetForAiThreat: boolean
+  OwningStatusEffectId: string
   ProjPosOffsetX: number
   ProjPosOffsetY: number
   ProjPosOffsetZ: number
@@ -8552,6 +8553,7 @@ export interface VitalsBaseData {
   StaminaUpdateIfDead: number
   StaminaUpdateIfDeathsDoor: number
   StaminaUpperThreshold: number
+  VFXMustShow: boolean
   VitalsCategories: VitalsCategory[]
   VitalsID: string
   WKNArcane: number
@@ -9054,6 +9056,7 @@ export type CraftingCategory =
   | 'ArtisanCrafting'
   | 'Bags'
   | 'BasicCooking'
+  | 'BetaRewards'
   | 'Components'
   | 'Concoctions'
   | 'Conquerors'
