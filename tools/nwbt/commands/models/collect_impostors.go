@@ -80,6 +80,7 @@ func (c *Collector) CollectImpostors(glob string) {
 			modelFile, ok := c.Archive.Lookup(nwfs.NormalizePath(asset.File))
 			if !ok {
 				slog.Error("asset file not found", "asset", assetId, "file", asset.File)
+				continue
 			}
 			model, material := c.ResolveModelMaterialPair(modelFile.Path(), "")
 
