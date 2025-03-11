@@ -19,7 +19,7 @@ import (
 var flgGameDir string
 
 // var flgRegex bool
-var flgOutput string
+var flgOutDir string
 var flgTmpDir string
 var flgCacheDir string
 var flgTexSize uint
@@ -27,6 +27,7 @@ var flgBinary bool
 var flgLevel string
 var flgRegion string
 var flgName string
+var flgOutFile string
 
 var Cmd = &cobra.Command{
 	Use:           "models",
@@ -39,7 +40,7 @@ func init() {
 	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
 	Cmd.Flags().StringVarP(&flgTmpDir, "temp", "t", env.TempDir(), "temp directory")
 	Cmd.Flags().StringVarP(&flgCacheDir, "cache", "c", path.Join(env.TempDir(), "cache"), "image cache directory")
-	Cmd.Flags().StringVarP(&flgOutput, "output", "o", path.Join(env.TempDir(), "models"), "output directory")
+	Cmd.Flags().StringVarP(&flgOutDir, "output", "o", path.Join(env.TempDir(), "models"), "output directory")
 	Cmd.Flags().BoolVar(&flgBinary, "binary", false, "whether to output binary glb instead of gltf")
 	Cmd.Flags().UintVar(&flgTexSize, "tex-size", 0, "Maximum texture size")
 	Cmd.AddCommand(

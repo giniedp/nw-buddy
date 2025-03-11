@@ -25,7 +25,7 @@ func runCollectCostumes(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectCostumes()
-	c.Convert(flgOutput)
+	c.Convert(flgOutDir)
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 

@@ -42,7 +42,7 @@ func runCollectCapitals(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectCapitals(glob)
-	c.Convert(flgOutput)
+	c.Convert(flgOutDir)
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 

@@ -34,6 +34,8 @@ func init() {
 	cmdCollectImpostors.Flags().AddFlagSet(Cmd.Flags())
 	cmdCollectImpostors.Flags().StringVar(&flgLevel, "level", "nw_opr_004_trench", "The LEVEL_NAME in the coatlicue directory. Can be a glob expression.")
 	cmdCollectImpostors.Flags().StringVar(&flgRegion, "region", "**", "The REGION_NAME in the coatlicue directory. Can be a glob expression.")
+	cmdCollectImpostors.Flags().StringVarP(&flgOutFile, "file", "f", "", "If set, all impostors are merged into a single file. ")
+
 }
 
 func runCollectImpostors(ccmd *cobra.Command, args []string) {
@@ -41,12 +43,12 @@ func runCollectImpostors(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectImpostors(glob)
-	c.Convert(flgOutput)
+	c.Convert(flgOutDir)
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
 func (c *Collector) CollectImpostors(glob string) {
-
+	merge := flgOutFile != ""
 	files, _ := c.Archive.Glob(glob)
 	bar := progress.Bar(len(files), "impostors")
 	defer func() {
@@ -54,10 +56,16 @@ func (c *Collector) CollectImpostors(glob string) {
 		bar.Close()
 	}()
 
+	group := importer.AssetGroup{}
+
 	for _, file := range files {
 		bar.Detail(file.Path())
 		bar.Add(1)
-		group := importer.AssetGroup{}
+
+		if !merge {
+			group = importer.AssetGroup{}
+		}
+
 		if !strings.HasSuffix(file.Path(), "impostors.json") {
 			continue
 		}
@@ -98,9 +106,14 @@ func (c *Collector) CollectImpostors(glob string) {
 			})
 
 		}
-		if len(group.Meshes) > 0 {
+		if !merge && len(group.Meshes) > 0 {
 			group.TargetFile = utils.ReplaceExt(file.Path(), "")
 			c.models.Store(file.Path(), group)
 		}
+	}
+
+	if merge && len(group.Meshes) > 0 {
+		group.TargetFile = utils.ReplaceExt(flgOutFile, "")
+		c.models.Store(flgOutFile, group)
 	}
 }
