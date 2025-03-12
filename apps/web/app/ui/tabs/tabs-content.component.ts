@@ -3,7 +3,6 @@ import { Component, input } from '@angular/core'
 import { TabsComponent } from './tabs.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tabs-content',
   template: `
     @for (tab of tabs()?.tabs(); track $index) {

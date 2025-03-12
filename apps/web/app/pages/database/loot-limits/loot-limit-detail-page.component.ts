@@ -12,7 +12,6 @@ import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-limit-detail-page',
   templateUrl: './loot-limit-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -11,7 +11,6 @@ import { ModalService } from '~/ui/layout'
 import { AvatarDialogComponent } from './ui/avatar-dialog.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-avatar',
   templateUrl: './gear-cell-avatar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

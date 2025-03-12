@@ -15,7 +15,6 @@ import { LootGraphService } from './loot-graph.service'
 import { LootTagComponent } from './loot-tag.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-graph-grid-cell',
   template: `
     <nwb-item-header

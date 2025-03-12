@@ -11,7 +11,6 @@ import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { svgRepeat } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-artifacts-cell',
   templateUrl: './artifacts-cell.component.html',
   styleUrls: ['./artifacts-cell.component.scss'],

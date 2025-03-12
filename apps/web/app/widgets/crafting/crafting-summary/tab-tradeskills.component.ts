@@ -19,7 +19,6 @@ import { SummaryRow } from './types'
 import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuses-modal.component'
 
 @Component({
-  standalone: true,
   selector: 'tab-tradeskills',
   templateUrl: './tab-tradeskills.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

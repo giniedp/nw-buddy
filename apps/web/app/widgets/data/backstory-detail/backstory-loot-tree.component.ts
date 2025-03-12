@@ -5,7 +5,6 @@ import { BackstoryLootNodeComponent } from './backstory-loot-node.component'
 import { BackstoryLootTreeStore } from './backstory-loot-tree.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-backstory-loot-tree',
   templateUrl: './backstory-loot-tree.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

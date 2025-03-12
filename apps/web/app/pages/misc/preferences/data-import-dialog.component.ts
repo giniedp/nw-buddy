@@ -17,7 +17,6 @@ export interface DataImportDialogState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-data-import-dialog',
   templateUrl: './data-import-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

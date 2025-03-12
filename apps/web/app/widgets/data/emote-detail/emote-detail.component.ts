@@ -8,7 +8,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { EmotesDetailStore } from './emote-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-emote-detail',
   templateUrl: './emote-detail.component.html',
   exportAs: 'detail',

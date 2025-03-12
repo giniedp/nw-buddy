@@ -12,11 +12,18 @@ import { RunesRecord } from './types'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 
 @Component({
-  standalone: true,
   selector: 'nwb-runes-cell',
   templateUrl: './runes-cell.component.html',
   styleUrls: ['./runes-cell.component.scss'],
-  imports: [CommonModule, ItemDetailModule, NwModule, IconsModule, ItemTrackerModule, TooltipModule, CraftingCalculatorComponent],
+  imports: [
+    CommonModule,
+    ItemDetailModule,
+    NwModule,
+    IconsModule,
+    ItemTrackerModule,
+    TooltipModule,
+    CraftingCalculatorComponent,
+  ],
   host: {
     class: 'flex m-2',
   },

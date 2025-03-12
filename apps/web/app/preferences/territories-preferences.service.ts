@@ -40,8 +40,6 @@ export class TerritoriesPreferencesService {
   }
 
   public observe(id: number) {
-    return this.storage.observe<TerritoryPreferences>(String(id)).pipe(
-      map((it) => it.value)
-    )
+    return this.storage.observe<TerritoryPreferences>(String(id)).pipe(map((it) => it.value))
   }
 }

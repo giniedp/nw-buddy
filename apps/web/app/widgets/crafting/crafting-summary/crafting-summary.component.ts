@@ -18,7 +18,6 @@ import { CraftingStepWithAmount, SummaryRow } from './types'
 export type CraftingSummaryTab = 'resources' | 'skills' | 'standing'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-summary',
   templateUrl: './crafting-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

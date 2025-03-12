@@ -15,7 +15,6 @@ import { AgGrid, fromGridEvent } from '../../ag-grid'
 import { ExpressionFilter } from '../../ag-grid/expression-filter'
 
 @Component({
-  standalone: true,
   selector: 'nwb-table-grid-expression-panel',
   templateUrl: './table-grid-expression-panel.component.html',
   imports: [CommonModule, ExpressionTreeModule, FormsModule],

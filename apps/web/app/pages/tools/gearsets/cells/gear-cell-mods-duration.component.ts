@@ -13,7 +13,6 @@ import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-mods-duration',
   templateUrl: './gear-cell-mods-duration.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,11 +26,9 @@ import { FlashDirective } from './ui/flash.directive'
 export class GearCellModsDurationComponent {
   private mannequin = inject(Mannequin)
   protected rowCount = computed(() => this.mods()?.length)
-  protected mods = selectSignal(this.mannequin.modEffectReduction,
-    (mods) => {
-      return selectMods(mods)
-    },
-  )
+  protected mods = selectSignal(this.mannequin.modEffectReduction, (mods) => {
+    return selectMods(mods)
+  })
 
   protected seconds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 40]
 }

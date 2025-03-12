@@ -15,7 +15,6 @@ import { PlatformService } from '~/utils/services/platform.service'
 import { LootContextEditorComponent, LootModule } from '~/widgets/loot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-detail-page',
   templateUrl: './loot-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +39,7 @@ export class LootDetailPageComponent implements OnInit {
     switchMap((id) => this.db.lootTablesByLootTableId(id)),
     map((it) => (it ? Array.from(it.values()) : null)),
   )
-  protected parents = toSignal(this.parents$, { initialValue: []})
+  protected parents = toSignal(this.parents$, { initialValue: [] })
 
   protected get showLocked() {
     return this.hideLockedParam.value() !== 'true'

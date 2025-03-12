@@ -10,7 +10,6 @@ export type ConfirmDialogOptions = Pick<
 >
 
 @Component({
-  standalone: true,
   selector: 'nwb-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

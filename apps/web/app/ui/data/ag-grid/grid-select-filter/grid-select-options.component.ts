@@ -7,7 +7,6 @@ import { GridSelectFilterStore } from './grid-select-filter.store'
 import { GridSelectFilterOption } from './types'
 
 @Component({
-  standalone: true,
   selector: 'nwb-grid-select-options',
   template: `
     @if (virtualize) {

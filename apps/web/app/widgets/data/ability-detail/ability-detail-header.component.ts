@@ -4,7 +4,6 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { AbilityDetailStore } from './ability-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-ability-detail-header',
   template: `
     <nwb-item-header class="gap-2">

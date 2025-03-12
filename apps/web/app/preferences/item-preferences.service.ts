@@ -50,7 +50,7 @@ export class ItemPreferencesService {
       map((it) => ({
         id: it.key,
         meta: it.value,
-      }))
+      })),
     )
   }
 

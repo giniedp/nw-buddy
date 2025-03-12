@@ -10,7 +10,6 @@ import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgChevronLeft } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-detail-follow-up',
   templateUrl: './quest-detail-follow-up.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -9,7 +9,6 @@ import { PropertyGridDescriptorFn } from './property-grid-descriptor'
 import { PropertyGridEntry } from './property-grid-entry'
 
 @Component({
-  standalone: true,
   selector: 'nwb-property-grid',
   templateUrl: './property-grid.component.html',
   styleUrls: ['./property-grid.component.scss'],

@@ -7,7 +7,7 @@ import { signalStore, withState } from '@ngrx/signals'
 
 export interface ExpressionTreeState {
   root: ExpressionNode
-  knownFields: Array<{ id: string; isPath: boolean, label: string }>
+  knownFields: Array<{ id: string; isPath: boolean; label: string }>
 }
 
 export const GROUP_OPERATORS = ['and', 'or']
@@ -22,7 +22,7 @@ export class ExpressionTreeStore extends ComponentStore<ExpressionTreeState> {
 
   public readonly groupOperators$ = this.selectSignal(() => GROUP_OPERATORS.map((it) => ({ value: it, label: it })))
   public readonly fieldOperators$ = this.selectSignal(() =>
-    EXPRESSION_OPERATORS.map(({ id, label }) => ({ value: id, label: label }))
+    EXPRESSION_OPERATORS.map(({ id, label }) => ({ value: id, label: label })),
   )
   public readonly knowFields$ = this.selectSignal(({ knownFields }) => knownFields)
 

@@ -10,7 +10,6 @@ import { GearCellSlotsTrophiesComponent } from '../cells/gear-cell-slots-trophie
 import { GearCellSlotsTownBuffsComponent } from '../cells/gear-cell-slots-town-buffs.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-pane-main',
   templateUrl: './gearset-pane-main.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,8 +26,6 @@ import { GearCellSlotsTownBuffsComponent } from '../cells/gear-cell-slots-town-b
   providers: [PercentPipe, DecimalPipe],
 })
 export class GearsetPaneMainComponent {
-
   @Input()
   public disabled = false
-
 }

@@ -8,7 +8,6 @@ import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
 @Component({
-  standalone: true,
   selector: 'nwb-skill-tree-embed',
   templateUrl: './skill-tree-embed.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -9,7 +9,6 @@ import { MountTableRecord } from './mount-table-cols'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 
 @Component({
-  standalone: true,
   selector: 'nwb-mount-cell',
   template: `
     <picture class="block w-full h-full">

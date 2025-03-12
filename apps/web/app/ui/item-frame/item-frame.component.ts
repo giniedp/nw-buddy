@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { NwModule } from '~/nw'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-frame',
   template: `
     <div class="nw-item-frame-content flex flex-col flex-1">

@@ -6,11 +6,10 @@ import { GatherableDetailStore } from './gatherable-detail.store'
 import { RouterModule } from '@angular/router'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gatherable-detail-header',
   template: `
     <nwb-item-header class="gap-2">
-      <a [nwbItemIcon]="icon"  [nwLinkTooltip]="['gatherable', recordId]" class="w-[76px] h-[76px]"> </a>
+      <a [nwbItemIcon]="icon" [nwLinkTooltip]="['gatherable', recordId]" class="w-[76px] h-[76px]"> </a>
       <nwb-item-header-content
         class="z-10"
         [title]="name | nwText | nwTextBreak: ' - '"
@@ -49,5 +48,4 @@ export class GatherableDetailHeaderComponent {
     }
     return result.join(', ')
   }
-
 }

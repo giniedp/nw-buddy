@@ -8,7 +8,6 @@ import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-transmog-detail-page',
   templateUrl: './transmog-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

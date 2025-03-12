@@ -21,7 +21,6 @@ export type PromptDialogOptions<T extends string | number> = Pick<
 >
 
 @Component({
-  standalone: true,
   selector: 'nwb-prompt-dialog',
   templateUrl: './prompt-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

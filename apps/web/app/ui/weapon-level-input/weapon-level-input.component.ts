@@ -8,7 +8,6 @@ import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 
 @Component({
-  standalone: true,
   selector: 'nwb-weapon-level-input',
   templateUrl: './weapon-level-input.component.html',
   styleUrls: ['./weapon-level-input.component.scss'],
@@ -24,7 +23,7 @@ import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
       useExisting: WeaponLevelInputComponent,
     },
   ],
-  hostDirectives: [CdkOverlayOrigin]
+  hostDirectives: [CdkOverlayOrigin],
 })
 export class WeaponLevelInputComponent implements ControlValueAccessor {
   @Input()

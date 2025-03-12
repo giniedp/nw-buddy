@@ -13,7 +13,6 @@ import {
 import { LoreDetailMapStore } from './lore-detail-map.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-lore-detail-map',
   templateUrl: './lore-detail-map.component.html',
   imports: [

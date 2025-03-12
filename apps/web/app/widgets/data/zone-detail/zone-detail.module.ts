@@ -8,6 +8,6 @@ const components = [ZoneDetailComponent, ZoneDetailDirective, ZoneDetailMapCompo
   imports: [...components],
   exports: [...components],
 })
-export class ZoneDetailModule  {
+export class ZoneDetailModule {
   //
 }

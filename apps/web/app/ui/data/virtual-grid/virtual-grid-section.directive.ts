@@ -12,7 +12,7 @@ export interface VirtualGridSectionContext {
 export class VirtualGridSectionDirective {
   public static ngTemplateContextGuard(
     dir: VirtualGridSectionDirective,
-    ctx: unknown
+    ctx: unknown,
   ): ctx is VirtualGridSectionContext {
     return true
   }

@@ -15,7 +15,6 @@ import { CraftingCalculatorStore } from '../crafting-calculator.store'
 import { combineLatestOrEmpty } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'tab-resources',
   templateUrl: './tab-resources.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,7 +59,9 @@ export class TabResourcesComponent {
   }
 
   private resourceRows() {
-    return this.summary$.pipe(switchMap((rows) => combineLatestOrEmpty((rows || []).map((row) => this.resolveRow(row)))))
+    return this.summary$.pipe(
+      switchMap((rows) => combineLatestOrEmpty((rows || []).map((row) => this.resolveRow(row)))),
+    )
   }
 
   private resolveRow({ itemId, amount }: SummaryRow) {

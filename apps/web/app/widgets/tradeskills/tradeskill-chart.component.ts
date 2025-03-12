@@ -13,7 +13,6 @@ import { combineLatestOrEmpty } from '~/utils'
 const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()
 
 @Component({
-  standalone: true,
   selector: 'nwb-tradeskill-chart',
   templateUrl: './tradeskill-chart.component.html',
   styleUrls: ['./tradeskill-chart.component.scss'],

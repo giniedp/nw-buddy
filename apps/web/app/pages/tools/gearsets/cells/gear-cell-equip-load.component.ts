@@ -14,7 +14,6 @@ import { Mannequin } from '~/nw/mannequin'
 import { FlashDirective } from './ui/flash.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-equip-load',
   templateUrl: './gear-cell-equip-load.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

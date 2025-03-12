@@ -25,7 +25,6 @@ export interface GearsetSquareSlotState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-cell-slot',
   templateUrl: './gearset-cell-slot.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

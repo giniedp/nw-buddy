@@ -14,7 +14,6 @@ import { NwmpPriceImporterComponent } from './nwmp/price-importer-nwmp.component
 type ImporterType = 'json' | 'nwmp'
 
 @Component({
-  standalone: true,
   selector: 'nwb-price-importer',
   templateUrl: './price-importer.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -43,7 +43,7 @@ export class DiffToolService {
     return versions
   }
 
-  private transformUri(uri: string, format: string){
+  private transformUri(uri: string, format: string) {
     if (this.useFiles()) {
       return uri.replace(/^datatables\//, '')
     }
@@ -60,16 +60,16 @@ export class DiffToolService {
 }
 
 function getRepoParams(repoUrl: string) {
-    // https://github.com/giniedp/nw-buddy-data/tree/main/live/datatables
-    const pathname = new URL(repoUrl).pathname.split('/').filter((it) => !!it)
-    const user = pathname.shift()
-    const repo = pathname.shift()
-    pathname.shift()
-    const branch = pathname.shift()
-    return {
-      user,
-      repo,
-      branch,
-      path: pathname.join('/'),
-    }
+  // https://github.com/giniedp/nw-buddy-data/tree/main/live/datatables
+  const pathname = new URL(repoUrl).pathname.split('/').filter((it) => !!it)
+  const user = pathname.shift()
+  const repo = pathname.shift()
+  pathname.shift()
+  const branch = pathname.shift()
+  return {
+    user,
+    repo,
+    branch,
+    path: pathname.join('/'),
+  }
 }

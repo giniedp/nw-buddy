@@ -24,7 +24,6 @@ export interface NwmpImporterState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-price-importer-nwmp',
   templateUrl: './price-importer-nwmp.component.html',
   imports: [CommonModule, IconsModule, FormsModule, DataViewModule, DataGridModule],

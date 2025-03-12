@@ -4,7 +4,6 @@ import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail',
   templateUrl: './vital-detail.component.html',
   exportAs: 'vitalDetail',

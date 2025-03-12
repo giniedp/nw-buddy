@@ -19,7 +19,6 @@ import { DamageCalculatorStore, defenderAccessor, updateDefender } from '../dama
 import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-defender-stats-control',
   templateUrl: './defender-stats-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

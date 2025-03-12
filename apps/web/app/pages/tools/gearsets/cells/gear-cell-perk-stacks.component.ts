@@ -17,7 +17,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-perk-stacks',
   templateUrl: './gear-cell-perk-stacks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

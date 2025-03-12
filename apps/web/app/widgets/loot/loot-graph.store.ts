@@ -1,6 +1,6 @@
-import { computed } from "@angular/core"
-import { signalStore, withComputed, withState } from "@ngrx/signals"
-import { LootContext } from "~/nw/loot"
+import { computed } from '@angular/core'
+import { signalStore, withComputed, withState } from '@ngrx/signals'
+import { LootContext } from '~/nw/loot'
 
 export interface LootGraphState {
   tableIds: string[]
@@ -38,7 +38,7 @@ export const LootGraphStore = signalStore(
           tags: tags(),
           values: tagValues(),
         })
-      })
+      }),
     }
-  })
+  }),
 )

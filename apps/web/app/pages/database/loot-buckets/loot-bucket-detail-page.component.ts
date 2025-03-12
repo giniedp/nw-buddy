@@ -8,7 +8,6 @@ import { LootBucketDetailModule } from '~/widgets/data/loot-bucket-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-bucket-detail-page',
   templateUrl: './loot-bucket-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -10,7 +10,6 @@ import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-pvp-rank-detail-page',
   templateUrl: './pvp-rank-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

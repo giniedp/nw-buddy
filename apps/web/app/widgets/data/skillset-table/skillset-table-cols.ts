@@ -54,9 +54,9 @@ export function skillsetColSkills(util: SkillsetTableUtils) {
                 class: ['nw-icon', `bg-ability-${getAbilityCategoryTag(it)}`],
                 src: it.Icon,
               }),
-            ]
+            ],
           )
-        })
+        }),
       )
     }),
     //valueGetter: util.valueGetter(({ data }) => data.record.),

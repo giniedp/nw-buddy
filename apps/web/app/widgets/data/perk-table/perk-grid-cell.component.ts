@@ -14,7 +14,6 @@ import { PerkDetailStore } from '../perk-detail/perk-detail.store'
 import { PerkTableRecord } from './perk-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-grid-cell',
   template: `
     <nwb-item-header class="gap-2">

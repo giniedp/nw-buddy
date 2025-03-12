@@ -6,7 +6,6 @@ import { TooltipModule } from './ui/tooltip'
 import { LayoutModule } from './ui/layout'
 
 @Component({
-  standalone: true,
   selector: 'nwb-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],

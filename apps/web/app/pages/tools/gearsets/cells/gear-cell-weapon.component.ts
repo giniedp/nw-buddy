@@ -13,7 +13,6 @@ import { svgBurst, svgPeopleGroup } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-weapon',
   templateUrl: './gear-cell-weapon.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,32 +74,32 @@ export class GearCellWeaponComponent {
   protected weaponStdDamage = computed(() => {
     return {
       icon: damageTypeIcon(this.mannequin.modBaseDamage().Weapon.Type),
-      value: this.damage().weapon.stdFinal
+      value: this.damage().weapon.stdFinal,
     }
   })
   protected weaponCritDamage = computed(() => {
     return {
       icon: damageTypeIcon(this.mannequin.modBaseDamage().Weapon.Type),
-      value: this.damage().weapon.critFinal
+      value: this.damage().weapon.critFinal,
     }
   })
 
   protected affixStdDamage = computed(() => {
-    if(!this.isSplit()) {
+    if (!this.isSplit()) {
       return null
     }
     return {
       icon: damageTypeIcon(this.mannequin.modBaseDamage().Affix.Type),
-      value: this.damage().affix.stdFinal
+      value: this.damage().affix.stdFinal,
     }
   })
   protected affixCritDamage = computed(() => {
-    if(!this.isSplit()) {
+    if (!this.isSplit()) {
       return null
     }
     return {
       icon: damageTypeIcon(this.mannequin.modBaseDamage().Affix.Type),
-      value: this.damage().affix.critFinal
+      value: this.damage().affix.critFinal,
     }
   })
 
@@ -149,7 +148,6 @@ export class GearCellWeaponComponent {
         modDMG: this.mannequin.modDMG()?.byDamageType?.[modBase?.Weapon?.Type]?.value,
         modDMGAffix: this.mannequin.modDMG()?.byDamageType?.[modBase?.Affix?.Type]?.value,
         modDMGDot: 0,
-
       },
       defender: {
         isPlayer: false,
@@ -168,7 +166,7 @@ export class GearCellWeaponComponent {
         modWKN: 0,
         modWKNAffix: 0,
         modWKNDot: 0,
-      }
+      },
     })
   })
   protected async toggleWeapon() {

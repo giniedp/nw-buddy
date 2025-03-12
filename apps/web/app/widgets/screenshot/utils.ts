@@ -1,5 +1,5 @@
-import { toBlob, toCanvas } from "html-to-image"
-import { createEl } from "~/utils"
+import { toBlob, toCanvas } from 'html-to-image'
+import { createEl } from '~/utils'
 
 export function getScreenshotOverlay(document: Document) {
   const id = 'nwb-screenshot-root'
@@ -16,10 +16,11 @@ export function getScreenshotOverlay(document: Document) {
       },
       [
         createEl(document, 'span', {
-          class: 'btn loading loading-infinity absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50',
+          class:
+            'btn loading loading-infinity absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50',
           text: 'Capture',
         }),
-      ]
+      ],
     )
     document.body.appendChild(root)
   }
@@ -31,9 +32,9 @@ export async function renderScreenshot({
   overlay,
   isDetached,
 }: {
-  el: HTMLElement,
-  overlay: HTMLElement,
-  isDetached: boolean,
+  el: HTMLElement
+  overlay: HTMLElement
+  isDetached: boolean
 }) {
   const hasHeadElements = el.querySelectorAll('.screenshot-head').length > 0
   if (isDetached && hasHeadElements) {

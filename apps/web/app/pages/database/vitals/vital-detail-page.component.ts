@@ -21,13 +21,12 @@ import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.c
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { LoadingBarComponent } from '../../../widgets/loader/loading-bar.component'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
-import { TabComponent } from "../../../ui/tabs/tab.component";
+import { TabComponent } from '../../../ui/tabs/tab.component'
 import { TabsModule } from '~/ui/tabs'
 
 export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-page',
   templateUrl: './vital-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +44,7 @@ export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loo
     GatherableDetailModule,
     LoadingBarComponent,
     TabsModule,
-],
+  ],
   providers: [VitalDetailStore],
   host: {
     class: 'block',

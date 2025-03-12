@@ -6,14 +6,13 @@ import { CommonModule } from '@angular/common'
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 
 @Component({
-  standalone: true,
   selector: 'nwb-data-view-toggle,[nwbDataViewToggle]',
   templateUrl: './data-view-toggle.component.html',
   imports: [CommonModule, IconsModule, OverlayModule],
   hostDirectives: [CdkOverlayOrigin],
   host: {
     '[data-testid]': 'nwbDataViewToggle',
-  }
+  },
 })
 export class DataViewToggleComponent {
   @Input()
@@ -27,7 +26,10 @@ export class DataViewToggleComponent {
     return this.service.isTableActive() ? svgTableList : svgGrid
   })
 
-  public constructor(protected cdkOrigin: CdkOverlayOrigin, protected service: DataViewService<unknown>) {
+  public constructor(
+    protected cdkOrigin: CdkOverlayOrigin,
+    protected service: DataViewService<unknown>,
+  ) {
     //
   }
 

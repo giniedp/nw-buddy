@@ -25,7 +25,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillTreesPageStore } from './skill-trees-page.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-skill-trees-page',
   templateUrl: './skill-trees-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

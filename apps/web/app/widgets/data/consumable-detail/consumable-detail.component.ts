@@ -6,7 +6,6 @@ import { diffButtonCell } from '~/widgets/diff-tool'
 import { ConsumableDetailStore } from './consumable-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-consumable-detail',
   template: `
     <nwb-property-grid

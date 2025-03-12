@@ -12,7 +12,6 @@ import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 import { FlashDirective } from './ui/flash.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-attributes',
   templateUrl: './gear-cell-attributes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

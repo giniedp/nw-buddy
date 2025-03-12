@@ -10,7 +10,6 @@ import { PerkDetailStore } from './perk-detail.store'
 import { perkScalingCell } from './perk-scaling-cell.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-detail-properties',
   template: `
     <nwb-property-grid

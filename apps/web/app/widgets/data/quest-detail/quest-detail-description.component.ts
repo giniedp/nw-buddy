@@ -8,11 +8,8 @@ export interface Chat {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-detail-description',
-  template: `
-    <div [nwHtml]="description | nwText | nwTextBreak"></div>
-  `,
+  template: ` <div [nwHtml]="description | nwText | nwTextBreak"></div> `,
   imports: [NwModule],
   host: {
     class: 'block  text-nw-description italic',

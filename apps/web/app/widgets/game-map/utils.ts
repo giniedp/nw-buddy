@@ -81,7 +81,8 @@ export function decodeTileUrl(encodedUrl: string): TileAddress {
   return { mapId, x, y, z, type }
 }
 
-const oceanTile = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAALklEQVR42u3OMQEAAAQAMMJrQF5ieLYEy5reeJQCAgICAgICAgICAgICAgLfgQND2FXBysQXQQAAAABJRU5ErkJggg=='
+const oceanTile =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAALklEQVR42u3OMQEAAAQAMMJrQF5ieLYEy5reeJQCAgICAgICAgICAgICAgLfgQND2FXBysQXQQAAAABJRU5ErkJggg=='
 export function convertTileUrl({ encodedUrl, baseUrl }: { encodedUrl: string; baseUrl: string }) {
   const tile = decodeTileUrl(encodedUrl)
   const address = getTileAddress(tile)

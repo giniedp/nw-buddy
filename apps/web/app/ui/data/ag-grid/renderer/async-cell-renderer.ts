@@ -47,13 +47,13 @@ export class AsyncCellRenderer<T> implements ICellRendererComp<T> {
           } else {
             this.el.textContent = String(value)
           }
-        })
+        }),
       )
       .pipe(
         catchError((err) => {
           console.error(err)
           return NEVER
-        })
+        }),
       )
   }
 }

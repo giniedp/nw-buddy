@@ -11,7 +11,6 @@ import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { RecipeRecord, RecipesTableAdapter } from './adapter'
 
 @Component({
-  standalone: true,
   selector: 'nwb-recipes-page',
   templateUrl: './recipes-page.component.html',
   imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
@@ -40,7 +39,7 @@ export class RecipesPageComponent implements OnInit {
           learned: learned,
           percent: learned / total,
         }
-      })
+      }),
     )
 
   public constructor(
@@ -49,7 +48,7 @@ export class RecipesPageComponent implements OnInit {
     protected itemPref: ItemPreferencesService,
     route: ActivatedRoute,
     router: Router,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     head.updateMetadata({
       url: head.currentUrl,
@@ -61,8 +60,8 @@ export class RecipesPageComponent implements OnInit {
     this.service.loadCateory(
       merge(
         this.outlet.deactivateEvents.pipe(map(() => null)),
-        this.outlet.activateEvents.pipe(switchMap(() => observeRouteParam(this.outlet.activatedRoute, 'category')))
-      )
+        this.outlet.activateEvents.pipe(switchMap(() => observeRouteParam(this.outlet.activatedRoute, 'category'))),
+      ),
     )
   }
 }

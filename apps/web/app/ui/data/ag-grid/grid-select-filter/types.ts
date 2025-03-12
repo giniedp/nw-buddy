@@ -1,5 +1,5 @@
-import { IRowNode } from "@ag-grid-community/core"
-import type { valueMatcher } from "./filter"
+import { IRowNode } from '@ag-grid-community/core'
+import type { valueMatcher } from './filter'
 
 export interface GridSelectFilterParams<TData = any> {
   search?: boolean

@@ -6,9 +6,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
   standalone: true,
   selector: '[nwbMountDetail]',
   exportAs: 'mountDetail',
-  providers: [
-    MountDetailStore
-  ],
+  providers: [MountDetailStore],
 })
 export class MountDetailDirective {
   public store = inject(MountDetailStore)

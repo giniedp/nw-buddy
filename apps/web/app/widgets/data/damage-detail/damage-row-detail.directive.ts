@@ -5,15 +5,13 @@ import { DamageDetailStore } from './damage-row-detail.store'
   standalone: true,
   selector: '[nwbDamageRowDetail]',
   exportAs: 'damageRowDetail',
-  providers: [
-    DamageDetailStore
-  ],
+  providers: [DamageDetailStore],
 })
-export class DamageRowDetailDirective  {
+export class DamageRowDetailDirective {
   public store = inject(DamageDetailStore)
 
   @Input()
-  public set nwbDamageRowDetail(value: { table: string, rowId: string} ) {
+  public set nwbDamageRowDetail(value: { table: string; rowId: string }) {
     this.store.load(value)
   }
 }

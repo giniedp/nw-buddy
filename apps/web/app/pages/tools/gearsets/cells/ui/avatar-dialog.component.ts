@@ -24,7 +24,6 @@ export interface AvatarDialogResult {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-avatar-dialog',
   templateUrl: './avatar-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

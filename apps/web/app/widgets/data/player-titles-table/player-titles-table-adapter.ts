@@ -22,7 +22,6 @@ import {
 
 @Injectable()
 export class PlayerTitlesTableAdapter implements DataViewAdapter<PlayertitlesTableRecord> {
-
   private db = injectNwData()
   private config = injectDataViewAdapterOptions<PlayertitlesTableRecord>({ optional: true })
   private utils: TableGridUtils<PlayertitlesTableRecord> = inject(TableGridUtils)

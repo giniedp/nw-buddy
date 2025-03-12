@@ -9,7 +9,6 @@ import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 import { diffButtonCell } from '~/widgets/diff-tool'
 
 @Component({
-  standalone: true,
   selector: 'nwb-status-effect-category-detail',
   templateUrl: './status-effect-category-detail.component.html',
   exportAs: 'detail',

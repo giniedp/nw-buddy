@@ -34,7 +34,6 @@ export interface CurrentMutation {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-game-modes-page',
   templateUrl: './game-modes-page.component.html',
   styleUrls: ['./game-modes-page.component.scss'],

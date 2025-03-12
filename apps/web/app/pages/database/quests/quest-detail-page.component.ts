@@ -14,7 +14,6 @@ import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-detail-page',
   templateUrl: './quest-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

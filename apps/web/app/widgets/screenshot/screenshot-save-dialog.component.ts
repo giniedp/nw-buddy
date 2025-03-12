@@ -10,7 +10,6 @@ export interface ScreenshotSaveOption {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-screenshot-save-dialog',
   templateUrl: './screenshot-save-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

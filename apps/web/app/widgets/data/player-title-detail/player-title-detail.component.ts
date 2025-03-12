@@ -7,7 +7,6 @@ import { ModelViewerModule } from '~/widgets/model-viewer'
 import { PlayerTitleDetailStore } from './player-title-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-player-title-detail',
   templateUrl: './player-title-detail.component.html',
   exportAs: 'mountDetail',

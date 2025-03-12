@@ -10,6 +10,7 @@ import { NwTradeskillService } from '~/nw/tradeskill'
   styleUrls: ['./tradeskill-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [],
+  standalone: false,
 })
 export class NwTradeskillCircleComponent implements OnChanges {
   private char = inject(CharacterStore)

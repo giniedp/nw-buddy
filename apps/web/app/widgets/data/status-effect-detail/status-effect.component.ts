@@ -24,7 +24,6 @@ import { StatusEffectDetailStore } from './status-effect.store'
 import { diffButtonCell } from '~/widgets/diff-tool'
 
 @Component({
-  standalone: true,
   selector: 'nwb-status-effect-detail',
   templateUrl: './status-effect.component.html',
   exportAs: 'detail',

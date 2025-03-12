@@ -65,7 +65,7 @@ function buildGridOptions(util: TableGridUtils<JsonPriceItem>): GridOptions<Json
               isArtifact: isMasterItem(item) && isItemArtifact(item),
               isNamed: isMasterItem(item) && isItemNamed(item),
               rarity: getItemRarity(item),
-            })
+            }),
           )
         }),
       },

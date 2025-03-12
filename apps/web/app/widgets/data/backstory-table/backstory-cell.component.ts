@@ -13,7 +13,6 @@ import { BackstoryTableRecord } from './backstory-table-cols'
 import { IntersectionObserverModule } from '~/utils/intersection-observer'
 
 @Component({
-  standalone: true,
   selector: 'nwb-backstory-cell',
   templateUrl: './backstory-cell.component.html',
   imports: [

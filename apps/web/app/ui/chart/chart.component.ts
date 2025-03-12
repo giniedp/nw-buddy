@@ -30,10 +30,10 @@ export abstract class ChartSource {
     class: 'block',
   },
 })
-export class ChartComponent extends ComponentStore<{ config: ChartConfiguration}> implements OnInit {
+export class ChartComponent extends ComponentStore<{ config: ChartConfiguration }> implements OnInit {
   @Input()
   public set config(value: ChartConfiguration) {
-    this.patchState({ config: value})
+    this.patchState({ config: value })
   }
 
   @ViewChild('canvas', { static: true, read: ElementRef })
@@ -44,7 +44,7 @@ export class ChartComponent extends ComponentStore<{ config: ChartConfiguration}
 
   public constructor(
     @Optional()
-    private source: ChartSource
+    private source: ChartSource,
   ) {
     super({ config: null })
   }
@@ -57,14 +57,14 @@ export class ChartComponent extends ComponentStore<{ config: ChartConfiguration}
       .pipe(takeUntil(this.destroy$))
       .pipe(
         tap({
-          next: ({config}) => {
+          next: ({ config }) => {
             this.destroyChart()
             if (config) {
               this.createChart(config)
             }
           },
           finalize: () => this.destroyChart(),
-        })
+        }),
       )
       .subscribe()
   }

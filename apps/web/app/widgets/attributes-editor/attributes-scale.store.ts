@@ -158,7 +158,7 @@ function selectWeaponDamage({
     gearScore,
     weapon,
     weaponScale: affixScale,
-    damageCoef: 1 // skips the dmg coef for tooltip adjustments
+    damageCoef: 1, // skips the dmg coef for tooltip adjustments
   })
   const weaponDamage = getDamageForTooltip({
     attrSums,
@@ -166,7 +166,7 @@ function selectWeaponDamage({
     gearScore,
     weapon,
     weaponScale: weaponScale,
-    damageCoef: 1 // skips the dmg coef for tooltip adjustments
+    damageCoef: 1, // skips the dmg coef for tooltip adjustments
   })
   // console.log('weapon')
   // console.table({

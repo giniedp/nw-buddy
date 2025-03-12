@@ -7,15 +7,12 @@ import { MountDetailStore } from './mount-detail.store'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 
 @Component({
-  standalone: true,
   selector: 'nwb-mount-detail',
   templateUrl: './mount-detail.component.html',
   exportAs: 'mountDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, ModelViewerModule],
-  providers: [
-    MountDetailStore
-  ],
+  providers: [MountDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },

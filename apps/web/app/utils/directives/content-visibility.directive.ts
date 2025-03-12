@@ -16,7 +16,7 @@ export class ContentVisibilityDirective implements OnDestroy {
     private elRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
     private resize: ResizeObserverService,
-    zone: NgZone
+    zone: NgZone,
   ) {
     zone.runOutsideAngular(() => {
       this.renderer.setStyle(this.elRef.nativeElement, 'contentVisibility', 'auto')

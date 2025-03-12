@@ -5,6 +5,4 @@ import { AttributeCraftModsComponent } from './attr-craft-mods-table.component'
   imports: [AttributeCraftModsComponent],
   exports: [AttributeCraftModsComponent],
 })
-export class AttributeCraftModsModule {
-
-}
+export class AttributeCraftModsModule {}

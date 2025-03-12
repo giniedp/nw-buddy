@@ -51,7 +51,6 @@ export const CraftingStepStore = signalStore(
       collapseAll: () => {
         parent.collapseAll(state.step())
       },
-
     }
   }),
   withComputed(({ step }) => {
@@ -117,7 +116,7 @@ export const CraftingStepStore = signalStore(
           return null
         }
         return link.resourceLink({ type: 'recipe', id: recipe()?.RecipeID })
-      })
+      }),
     }
   }),
   withComputed(({ step, bonusDetail, amountMode, amount }) => {

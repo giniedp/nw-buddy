@@ -24,7 +24,6 @@ import { AppearanceDetailStore } from './appearance-detail.store'
 import { TabsModule } from '~/ui/tabs'
 
 @Component({
-  standalone: true,
   selector: 'nwb-appearance-detail',
   templateUrl: './appearance-detail.component.html',
   exportAs: 'detail',

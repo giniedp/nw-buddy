@@ -3,7 +3,6 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { NwModule } from '~/nw'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-stat',
   template: `
     <img [nwImage]="icon" *ngIf="icon" class="w-4 h-4" />

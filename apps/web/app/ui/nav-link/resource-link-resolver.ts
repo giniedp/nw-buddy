@@ -1,4 +1,1 @@
-
-export class ResourceLinkResolver {
-
-}
+export class ResourceLinkResolver {}

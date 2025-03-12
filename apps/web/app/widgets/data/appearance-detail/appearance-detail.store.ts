@@ -45,7 +45,7 @@ export const AppearanceDetailStore = signalStore(
     weaponAppearance: null,
     itemAppearance: null,
     itemAppearanceByName: [],
-    mountAppearance: null
+    mountAppearance: null,
   }),
   withStateLoader((state) => {
     const db = injectNwData()
@@ -82,25 +82,34 @@ export const AppearanceDetailStore = signalStore(
       },
     }
   }),
-  withComputed(({ mountAppearance, itemAppearance, itemAppearanceByName, instrumentAppearance, weaponAppearance, variant }) => {
-    const appearance = computed(() => {
-      const found = itemAppearanceByName()?.find((it) => isAppearanceOfGender(it, variant()))
-      return found || itemAppearance() || itemAppearanceByName()?.[0] || weaponAppearance() || instrumentAppearance() || mountAppearance()
-    })
-    return {
-      appearance,
-      appearanceId: computed(() => getAppearanceId(appearance())),
-      category: computed(() => getAppearanceCategory(appearance())),
-      icon: computed(() => appearance()?.IconPath || NW_FALLBACK_ICON),
-      name: computed(() => appearance()?.Name),
-      description: computed(() => appearance()?.Description),
-      variants: computed(() => {
-        return itemAppearanceByName()
-          ?.map(getAppearanceGender)
-          .filter((it) => !!it)
-      }),
-    }
-  }),
+  withComputed(
+    ({ mountAppearance, itemAppearance, itemAppearanceByName, instrumentAppearance, weaponAppearance, variant }) => {
+      const appearance = computed(() => {
+        const found = itemAppearanceByName()?.find((it) => isAppearanceOfGender(it, variant()))
+        return (
+          found ||
+          itemAppearance() ||
+          itemAppearanceByName()?.[0] ||
+          weaponAppearance() ||
+          instrumentAppearance() ||
+          mountAppearance()
+        )
+      })
+      return {
+        appearance,
+        appearanceId: computed(() => getAppearanceId(appearance())),
+        category: computed(() => getAppearanceCategory(appearance())),
+        icon: computed(() => appearance()?.IconPath || NW_FALLBACK_ICON),
+        name: computed(() => appearance()?.Name),
+        description: computed(() => appearance()?.Description),
+        variants: computed(() => {
+          return itemAppearanceByName()
+            ?.map(getAppearanceGender)
+            .filter((it) => !!it)
+        }),
+      }
+    },
+  ),
   withMethods((store) => {
     const modelService = inject(ModelsService)
     const transmogService = inject(TransmogService)

@@ -6,12 +6,18 @@ import { TablePreset } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgPen, svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, LayoutModule, ModalOpenOptions, ModalRef, ModalService, PromptDialogComponent } from '~/ui/layout'
+import {
+  ConfirmDialogComponent,
+  LayoutModule,
+  ModalOpenOptions,
+  ModalRef,
+  ModalService,
+  PromptDialogComponent,
+} from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SaveStateDialogStore } from './save-state-dialog.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-save-state-dialog',
   templateUrl: './save-state-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

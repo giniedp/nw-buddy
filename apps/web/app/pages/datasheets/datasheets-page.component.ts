@@ -10,7 +10,6 @@ import { DatasheetsTabbarComponent } from './datasheets-tabbar.component'
 import { DatasheetsStore } from './datasheets.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-datasheets-page',
   imports: [DatasheetsTabbarComponent, DatasheetsSidebarComponent, LayoutModule, CodeEditorModule, FormsModule],
   host: {

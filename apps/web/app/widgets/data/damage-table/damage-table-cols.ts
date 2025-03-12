@@ -49,8 +49,8 @@ export function damageSource(util: DamageTableUtils) {
     getQuickFilterText: ({ value }) => humanize(value),
     ...util.selectFilter({
       order: 'asc',
-      search: true
-    })
+      search: true,
+    }),
   })
 }
 export function damageColDamageType(util: DamageTableUtils) {
@@ -62,7 +62,7 @@ export function damageColDamageType(util: DamageTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -75,7 +75,7 @@ export function damageColAttackType(util: DamageTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -113,7 +113,7 @@ export function damageColCanCrit(util: DamageTableUtils) {
     field: 'CanCrit',
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -142,7 +142,7 @@ export function damageColAffixes(util: DamageTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 

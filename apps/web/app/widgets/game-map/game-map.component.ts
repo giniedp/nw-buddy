@@ -32,7 +32,6 @@ import {
 } from './utils'
 const elevationScale = 0.1
 @Component({
-  standalone: true,
   selector: 'nwb-map',
   template: `
     <div

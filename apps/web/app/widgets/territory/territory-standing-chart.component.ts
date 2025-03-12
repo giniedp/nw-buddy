@@ -7,7 +7,6 @@ import { NwModule } from '~/nw'
 import { ChartModule } from '~/ui/chart'
 
 @Component({
-  standalone: true,
   selector: 'nwb-territory-standing-chart',
   templateUrl: './territory-standing-chart.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

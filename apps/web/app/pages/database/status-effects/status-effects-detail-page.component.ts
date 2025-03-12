@@ -19,7 +19,6 @@ import { DamageRowDetailModule } from '~/widgets/data/damage-detail'
 import { SpellDetailModule } from '~/widgets/data/spell-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-status-effects-detail-page',
   templateUrl: './status-effects-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,7 +34,7 @@ import { SpellDetailModule } from '~/widgets/data/spell-detail'
     PerkDetailModule,
     ItemDetailModule,
     DamageRowDetailModule,
-    SpellDetailModule
+    SpellDetailModule,
   ],
   host: {
     class: 'block',
@@ -48,7 +47,7 @@ export class StatusEffectsDetailPageComponent {
     private route: ActivatedRoute,
     private i18n: TranslateService,
     private expr: NwExpressionService,
-    private head: HtmlHeadService
+    private head: HtmlHeadService,
   ) {
     //
   }
@@ -63,7 +62,7 @@ export class StatusEffectsDetailPageComponent {
         gearScore: NW_MAX_GEAR_SCORE_BASE,
         text: this.i18n.get(entity.Description),
         itemId: entity.StatusID,
-      })
+      }),
     )
     this.head.updateMetadata({
       title: [this.i18n.get(entity.DisplayName), 'Status Effect'].join(' - '),

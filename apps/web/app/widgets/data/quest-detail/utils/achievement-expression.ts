@@ -1,4 +1,3 @@
-
 export type AchievementToken = 'AND' | 'OR' | 'NOT' | 'value' | 'expression'
 
 export interface AchievementExpression {
@@ -13,11 +12,11 @@ export function parseAchievementExpression(chars: string): AchievementExpression
   }
   const result: AchievementExpression[] = []
   let cursor = 0
-  function consume(end: number)  {
+  function consume(end: number) {
     if (end > cursor) {
       result.push({
         type: 'value',
-        value: chars.slice(cursor, end).trim()
+        value: chars.slice(cursor, end).trim(),
       })
       cursor = end
     }
@@ -38,7 +37,7 @@ export function parseAchievementExpression(chars: string): AchievementExpression
       }
       case '&': {
         consume(i)
-        if (chars[i+1] !== '&') {
+        if (chars[i + 1] !== '&') {
           throw new Error('Invalid expression')
         }
         i = i + 1
@@ -48,7 +47,7 @@ export function parseAchievementExpression(chars: string): AchievementExpression
       }
       case '|': {
         consume(i)
-        if (chars[i+1] !== '|') {
+        if (chars[i + 1] !== '|') {
           throw new Error('Invalid expression')
         }
         i = i + 1
@@ -70,7 +69,7 @@ export function parseAchievementExpression(chars: string): AchievementExpression
   }
   return {
     type: 'expression',
-    expression: result
+    expression: result,
   }
 }
 

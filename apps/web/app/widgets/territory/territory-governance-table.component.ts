@@ -14,7 +14,6 @@ export interface StandingRow {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-territory-governance-table',
   templateUrl: './territory-governance-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -106,8 +106,8 @@ function getChildRouteParam(route: ActivatedRoute, param: string) {
 export function queryParamModel(
   param: string,
   options?: {
-    router?: Router;
-    route?: ActivatedRoute;
+    router?: Router
+    route?: ActivatedRoute
     injector?: Injector
   },
 ) {
@@ -141,8 +141,7 @@ export function queryParamModel(
         setter(value, {
           replaceUrl: true,
         })
-      }
-    }
+      },
+    },
   }
-
 }

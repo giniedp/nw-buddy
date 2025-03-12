@@ -12,7 +12,6 @@ import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-mods-dmg',
   templateUrl: './gear-cell-mods-dmg.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

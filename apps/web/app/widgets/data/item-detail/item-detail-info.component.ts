@@ -8,7 +8,6 @@ import { ItemDetailStore } from './item-detail.store'
 import { CraftingRecipeData } from '@nw-data/generated'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-info',
   templateUrl: './item-detail-info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

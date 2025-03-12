@@ -10,7 +10,6 @@ import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-detail',
   template: `
     <nwb-perk-detail-header />

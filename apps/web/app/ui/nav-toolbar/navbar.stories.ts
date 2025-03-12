@@ -12,13 +12,13 @@ import { CommonModule } from '@angular/common'
     <nwb-navbar>
       <ng-container *nwbNavbarMenu="let ctx">
         <li>
-          <a> Link 1 {{ ctx.isHorizontal ? 'Text' : ''}}</a>
+          <a> Link 1 {{ ctx.isHorizontal ? 'Text' : '' }}</a>
         </li>
         <li>
-          <a> Link 2 {{ ctx.isHorizontal ? 'Text' : ''}}</a>
+          <a> Link 2 {{ ctx.isHorizontal ? 'Text' : '' }}</a>
         </li>
         <li>
-          <a> Link 3 {{ ctx.isHorizontal ? 'Text' : ''}}</a>
+          <a> Link 3 {{ ctx.isHorizontal ? 'Text' : '' }}</a>
         </li>
       </ng-container>
       <ng-container *nwbNavbarButtons="let ctx">
@@ -28,11 +28,9 @@ import { CommonModule } from '@angular/common'
       </ng-container>
     </nwb-navbar>
   `,
-  imports: [CommonModule, NavbarModule]
+  imports: [CommonModule, NavbarModule],
 })
-export class StoryComponent {
-
-}
+export class StoryComponent {}
 export default {
   title: 'UI / nwb-navbar',
   component: StoryComponent,

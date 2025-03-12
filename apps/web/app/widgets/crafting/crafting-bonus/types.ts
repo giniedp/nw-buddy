@@ -1,4 +1,4 @@
-import { CraftingTradeskill } from "@nw-data/generated"
+import { CraftingTradeskill } from '@nw-data/generated'
 
 export type CraftingBuffType = 'gs' | 'yld' | 'exp'
 

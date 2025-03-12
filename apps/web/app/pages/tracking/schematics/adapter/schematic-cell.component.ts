@@ -13,7 +13,6 @@ import { svgRepeat } from '~/ui/icons/svg'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 
 @Component({
-  standalone: true,
   selector: 'nwb-schematic-cell',
   templateUrl: './schematic-cell.component.html',
   styleUrls: ['./schematic-cell.component.scss'],

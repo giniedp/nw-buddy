@@ -18,7 +18,6 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 import { MutaElementDetailModule } from '~/widgets/data/muta-element-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-muta-element-tile',
   templateUrl: './muta-element-tile.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

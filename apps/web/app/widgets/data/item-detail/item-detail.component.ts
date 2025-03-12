@@ -5,7 +5,6 @@ import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail',
   template: '<ng-content />',
   changeDetection: ChangeDetectionStrategy.OnPush,

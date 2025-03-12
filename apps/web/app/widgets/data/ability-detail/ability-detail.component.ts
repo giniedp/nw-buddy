@@ -10,7 +10,6 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 import { IconsModule } from '~/ui/icons'
 
 @Component({
-  standalone: true,
   selector: 'nwb-ability-detail',
   template: `
     <nwb-ability-detail-header />

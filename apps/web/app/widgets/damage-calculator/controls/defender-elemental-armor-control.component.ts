@@ -7,7 +7,6 @@ import { PrecisionInputComponent } from './precision-input.component'
 import { StackedValueControlComponent } from './stacked-value-control.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-defender-elemental-armor-control',
   templateUrl: './defender-elemental-armor-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-pane',
   template: `
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>

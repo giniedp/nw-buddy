@@ -17,7 +17,6 @@ import { apiResource } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-ingredient-picker',
   imports: [CdkMenuModule, NwModule, ItemDetailModule],
   templateUrl: './ingredient-picker.component.html',

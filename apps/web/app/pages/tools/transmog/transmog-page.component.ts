@@ -26,7 +26,6 @@ import { TransmogItem } from '~/widgets/data/transmog'
 import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from '~/widgets/data/transmog-table'
 
 @Component({
-  standalone: true,
   templateUrl: './transmog-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -50,7 +49,6 @@ import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from
     }),
     provideDataView({
       adapter: TransmogTableAdapter,
-
     }),
     QuicksearchService.provider({
       queryParam: 'search',

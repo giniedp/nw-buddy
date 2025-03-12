@@ -23,7 +23,6 @@ export interface GearImporterDialogState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-importer-dialog',
   templateUrl: './gear-importer-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

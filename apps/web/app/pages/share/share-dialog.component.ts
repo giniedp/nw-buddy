@@ -69,7 +69,6 @@ export interface ShareDialogState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-share-dialog',
   templateUrl: './share-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,7 +133,7 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
     private modalRef: ModalRef,
     private web3: ShareService,
     private cdRef: ChangeDetectorRef,
-    private platform: PlatformService
+    private platform: PlatformService,
   ) {
     super({ active: false, data: null })
 

@@ -42,7 +42,6 @@ export interface ModelViewerState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-model-viewer',
   templateUrl: './model-viewer.component.html',
   styleUrls: ['./model-viewer.component.scss'],

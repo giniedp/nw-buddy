@@ -6,7 +6,6 @@ import { NwModule } from '~/nw'
 import { GearCellSlotComponent } from './gear-cell-slot.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-slots-buffs',
   templateUrl: './gear-cell-slots-buffs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

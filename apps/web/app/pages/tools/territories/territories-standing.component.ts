@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { TerritoryModule } from '~/widgets/territory'
 
 @Component({
-  standalone: true,
   selector: 'nwb-territories-standing',
   templateUrl: './territories-standing.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

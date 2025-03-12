@@ -29,6 +29,7 @@ import { ItemMeta, ItemPreferencesService } from '~/preferences'
     '[class.hover:opacity-100]': 'isEmpty()',
     '[class.transition-opacity]': 'isEmpty()',
   },
+  standalone: false,
 })
 export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {
   private meta = inject(ItemPreferencesService)

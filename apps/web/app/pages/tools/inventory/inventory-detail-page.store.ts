@@ -78,5 +78,5 @@ export const ItemDetailPageStore = signalStore(
     return {
       isLoaded: computed(() => gearsetLoaded() && itemInstanceLoaded()),
     }
-  })
+  }),
 )

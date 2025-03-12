@@ -16,7 +16,6 @@ import { GearsetsListPageStore } from './gearsets-list-page.store'
 import { GearsetLoadoutItemComponent, GearsetLoadoutListComponent } from './loadout'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearsets-list-page',
   templateUrl: './gearsets-list-page.component.html',
   imports: [

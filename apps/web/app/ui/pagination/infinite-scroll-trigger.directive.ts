@@ -28,7 +28,7 @@ export class InfiniteScrollTrigger<T> implements OnInit, OnDestroy {
   public constructor(
     private parent: InfiniteScrollDirective<T>,
     private elRef: ElementRef<HTMLElement>,
-    private intersection: IntersectionObserverService
+    private intersection: IntersectionObserverService,
   ) {
     //
   }
@@ -43,7 +43,7 @@ export class InfiniteScrollTrigger<T> implements OnInit, OnDestroy {
         switchMap(({ canLoad, isLoading }) => {
           const isReady = canLoad && !isLoading
           return isReady ? this.intersection.observe(this.elRef.nativeElement) : EMPTY
-        })
+        }),
       )
       .pipe(filter((it) => it.isIntersecting))
       .pipe(takeUntil(this.destroy$))
@@ -68,7 +68,7 @@ export class InfiniteScrollTrigger<T> implements OnInit, OnDestroy {
           subscribe: () => this.isLoading$.next(true),
           complete: () => this.isLoading$.next(false),
           error: () => this.isLoading$.next(false),
-        })
+        }),
       )
       .subscribe()
   }

@@ -81,7 +81,6 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Quests', path: '/quests', svgIcon: svgLocationQuestion },
       { label: 'Vitals', path: '/vitals', svgIcon: svgSkull },
 
-
       { label: 'Loot Limits', path: '/loot-limits', svgIcon: svgTime, divider: true },
       { label: 'Loot Tables', path: '/loot-tables', svgIcon: svgSack },
       { label: 'Loot Buckets', path: '/loot-buckets', svgIcon: svgBucket },

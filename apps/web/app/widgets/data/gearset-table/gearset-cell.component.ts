@@ -10,7 +10,6 @@ import { GersetSquareSlotComponent } from './gearset-cell-slot.component'
 import { GearsetTableRecord } from './gearset-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-cell',
   templateUrl: './gearset-cell.component.html',
   styleUrls: ['./gearset-cell.component.scss'],

@@ -20,9 +20,9 @@ export default {
   ...storyControls<CraftingCalculatorComponent>((arg) => {
     arg.select('recipeId', {
       defaultValue: 'IngotT51',
-      options:['IngotT51', 'Artifact_Set1_HeavyHead']
+      options: ['IngotT51', 'Artifact_Set1_HeavyHead'],
     })
-  })
+  }),
 } satisfies Meta<CraftingCalculatorComponent>
 
 export const Example: StoryObj<CraftingCalculatorComponent> = {}

@@ -24,7 +24,7 @@ export const SAMPLES: { en: ScanSample[] } = {
     instrumentalitys_earring,
     rapier_legendary_mythril,
     hatchet_thunders_charge_str_con,
-    gloves_dex_con
+    gloves_dex_con,
   ],
 }
 

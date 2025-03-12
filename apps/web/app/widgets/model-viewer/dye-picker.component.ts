@@ -11,7 +11,6 @@ export interface DyePickerDialogData {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-dye-picker',
   templateUrl: './dye-picker.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

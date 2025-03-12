@@ -34,7 +34,6 @@ export class ToLCHPipe implements PipeTransform {
 const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
 
 @Component({
-  standalone: true,
   selector: 'nwb-map-filter-category',
   templateUrl: './filter-category.component.html',
   imports: [

@@ -18,7 +18,6 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 import { MutaCurseDetailModule } from '~/widgets/data/muta-curse-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-muta-curse-tile',
   templateUrl: './muta-curse-tile.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +39,6 @@ export class MutaCurseTileComponent {
 
   @Input()
   public options: Array<{ label: string; value: string; icon: string; object: CurseMutationStaticData }>
-
 
   @HostBinding('style.background-color')
   protected get backgroundColor() {

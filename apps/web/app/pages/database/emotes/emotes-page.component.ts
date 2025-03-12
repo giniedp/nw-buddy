@@ -18,7 +18,6 @@ import { ItemTableRecord } from '~/widgets/data/item-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-emotes-page',
   templateUrl: './emotes-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

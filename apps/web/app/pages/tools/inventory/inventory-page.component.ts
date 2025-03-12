@@ -30,7 +30,6 @@ import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-inventory-page',
   templateUrl: './inventory-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

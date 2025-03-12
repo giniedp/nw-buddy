@@ -19,7 +19,7 @@ export interface SplitFrameOptions {
     '[class.flex-column]': 'isHorizontal()',
   },
   template: `
-    <ng-content/>
+    <ng-content />
     @for (child of children; track i; let i = $index; let isLast = $last) {
       @if (!isLast) {
         <nwb-split-gutter

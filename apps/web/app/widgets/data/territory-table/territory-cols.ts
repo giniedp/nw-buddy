@@ -51,7 +51,7 @@ export function territoryColLootTags(util: TerritoryUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 export function territoryColRecommendedLevel(util: TerritoryUtils) {

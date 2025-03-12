@@ -8,7 +8,10 @@ import { LayoutService } from './layout.service'
   selector: '[nwbMenu]',
 })
 export class MenuConnectorDirective implements OnInit, OnDestroy {
-  public constructor(private menu: IonMenu, private service: LayoutService) {
+  public constructor(
+    private menu: IonMenu,
+    private service: LayoutService,
+  ) {
     //
   }
 
@@ -26,7 +29,10 @@ export class MenuConnectorDirective implements OnInit, OnDestroy {
   selector: '[nwbMenuClose]',
 })
 export class MenuCloseDirective {
-  public constructor(private menu: IonMenu, private service: LayoutService) {
+  public constructor(
+    private menu: IonMenu,
+    private service: LayoutService,
+  ) {
     //
   }
 

@@ -40,7 +40,6 @@ import { DamageOutputComponent } from './damage-output.component'
 import { DamageResultsComponent } from './damage-results.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-damage-calculator',
   templateUrl: './damage-calculator.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

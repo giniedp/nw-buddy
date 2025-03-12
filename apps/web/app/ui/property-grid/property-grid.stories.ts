@@ -4,8 +4,6 @@ import { AppTestingModule } from '~/test'
 import { PropertyGridComponent } from './property-grid.component'
 import { PropertyGridModule } from './property-grid.module'
 
-
-
 export default {
   title: 'UI / nwb-property-grid',
   component: PropertyGridComponent,
@@ -18,9 +16,7 @@ export default {
       imports: [PropertyGridModule],
     }),
   ],
-  args: {
-
-  }
+  args: {},
 } satisfies Meta<PropertyGridComponent>
 
 export const Example: StoryObj<PropertyGridComponent> = {
@@ -31,6 +27,6 @@ export const Example: StoryObj<PropertyGridComponent> = {
       number: 42,
       object: {},
       array: ['foo', 'bar', 1, false],
-    }
+    },
   },
 }

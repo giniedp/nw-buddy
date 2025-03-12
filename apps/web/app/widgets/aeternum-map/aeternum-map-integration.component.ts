@@ -8,7 +8,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { AeternumMapComponent } from './aeternum-map.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-aeternum-map-integration',
   templateUrl: './aeternum-map-integration.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,7 +17,6 @@ import { AeternumMapComponent } from './aeternum-map.component'
   },
 })
 export class AeternumMapIntegrationComponent {
-
   protected mapIcon = svgMap
   protected mapActive = false
   protected mapCollapsed = false

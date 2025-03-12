@@ -30,7 +30,6 @@ import { GEARSET_TAGS } from '../gearsets/tags'
 import { SkillTreeDetailStore } from './skill-tree-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-skill-tree-detail',
   templateUrl: './skill-tree-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

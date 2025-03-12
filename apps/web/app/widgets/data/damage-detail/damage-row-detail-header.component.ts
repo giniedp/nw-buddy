@@ -5,7 +5,6 @@ import { humanize } from '~/utils'
 import { DamageDetailStore } from './damage-row-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-damage-row-detail-header',
   template: `
     <nwb-item-header class="gap-2">

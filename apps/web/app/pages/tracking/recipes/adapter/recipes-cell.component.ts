@@ -12,7 +12,6 @@ import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { RecipeRecord } from './types'
 
 @Component({
-  standalone: true,
   selector: 'nwb-recipes-cell',
   templateUrl: './recipes-cell.component.html',
   styleUrls: ['./recipes-cell.component.scss'],

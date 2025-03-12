@@ -16,7 +16,6 @@ import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { LayoutModule } from '../layout'
 
 @Component({
-  standalone: true,
   selector: 'nwb-level-input',
   templateUrl: './level-input.component.html',
   styleUrls: ['./level-input.component.scss'],
@@ -32,7 +31,7 @@ import { LayoutModule } from '../layout'
       useExisting: LevelInputComponent,
     },
   ],
-  hostDirectives: [CdkOverlayOrigin]
+  hostDirectives: [CdkOverlayOrigin],
 })
 export class LevelInputComponent implements ControlValueAccessor {
   @Input()

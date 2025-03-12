@@ -36,7 +36,7 @@ export function armorsetColTier(util: ArmorsetGridUtils) {
     width: 60,
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -72,9 +72,9 @@ export function armorsetColPerks(util: ArmorsetGridUtils) {
             util.elItemIcon({
               class: ['w-8 h-8 transition-all translate-x-0 hover:translate-x-1'],
               icon: perk?.IconPath || NW_FALLBACK_ICON,
-            })
+            }),
           )
-        })
+        }),
       )
     }),
   })
@@ -102,7 +102,7 @@ export function armorsetColItem(util: ArmorsetGridUtils, index: number) {
           rarity: getItemRarity(item),
           isNamed: isItemNamed(item),
           isArtifact: isItemArtifact(item),
-        })
+        }),
       )
     }),
   })
@@ -149,7 +149,7 @@ export function armorsetColItemTrack(util: ArmorsetGridUtils, index: number) {
               {
                 class: value ? '' : 'text-error-content',
               },
-              name
+              name,
             ),
             m('div.flex.flex-row.gap-1', [
               m(ItemMarkerCell, {
@@ -166,7 +166,7 @@ export function armorsetColItemTrack(util: ArmorsetGridUtils, index: number) {
                 disabled: true,
               }),
             ]),
-          ]
+          ],
         )
       },
     }),

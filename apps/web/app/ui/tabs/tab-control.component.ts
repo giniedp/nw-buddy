@@ -4,7 +4,6 @@ import { svgChevronLeft, svgChevronRight } from '../icons/svg'
 import { TabsHostComponent } from './tabs-host.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tab-left,nwb-tab-right',
   template: ` <nwb-icon [icon]="usedIcon()" class="w-4 h-4" /> `,
   host: {

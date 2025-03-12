@@ -8,7 +8,6 @@ import { injectRouteParam, observeRouteParam } from '~/utils'
 import { BackstoryDetailModule } from '~/widgets/data/backstory-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-backstories-detail-page',
   templateUrl: './backstories-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

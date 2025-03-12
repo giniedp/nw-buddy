@@ -23,7 +23,6 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { animate, state, style, transition, trigger } from '@angular/animations'
 
 @Component({
-  standalone: true,
   selector: 'nwb-skill-tree',
   templateUrl: './skill-tree.component.html',
   styleUrls: ['./skill-tree.component.scss'],

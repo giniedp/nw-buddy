@@ -5,9 +5,7 @@ import { ZoneDetailStore } from './zone-detail.store'
   standalone: true,
   selector: '[nwbZoneDetail]',
   exportAs: 'zoneDetail',
-  providers: [
-    ZoneDetailStore,
-  ],
+  providers: [ZoneDetailStore],
 })
 export class ZoneDetailDirective {
   public store = inject(ZoneDetailStore)

@@ -6,7 +6,6 @@ import { TabComponent } from './tab.component'
 import { TabsStore } from './tabs.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tabs',
   template: ` <ng-content /> `,
   host: {

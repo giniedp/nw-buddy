@@ -8,7 +8,6 @@ import { TerritoriesService } from '~/nw/territories'
 
 @Component({
   selector: 'nwb-territory-standing',
-  standalone: true,
   templateUrl: './territory-standing.component.html',
   exportAs: 'nwbTerritoryStanding',
   imports: [FormsModule, CommonModule, NwModule],

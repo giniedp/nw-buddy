@@ -11,7 +11,6 @@ import {
 } from '../transmog'
 
 @Component({
-  standalone: true,
   selector: 'nwb-transmog-tile,a[nwbTransmogTile]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

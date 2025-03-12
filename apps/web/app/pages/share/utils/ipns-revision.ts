@@ -9,7 +9,7 @@ export async function udpateIpnsRevision(privateKeyAsBase64: string, value: stri
 }
 
 export async function createIpnsRevision(
-  privateKeyAsBase64?: string
+  privateKeyAsBase64?: string,
 ): Promise<{ key: string; name: w3name.WritableName; revision: w3name.Revision }> {
   if (!privateKeyAsBase64) {
     const name = await w3name.create()

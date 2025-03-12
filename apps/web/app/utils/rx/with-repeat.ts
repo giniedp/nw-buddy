@@ -4,7 +4,7 @@ export function withRepeat<T>(repeater$: Observable<unknown>) {
   return switchMap((value: T) => {
     return repeater$.pipe(
       map(() => value),
-      startWith(value)
+      startWith(value),
     )
   })
 }

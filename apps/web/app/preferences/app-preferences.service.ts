@@ -33,7 +33,10 @@ export class AppPreferencesService {
     this.appMenu = storage.storageProperty('menu', null)
     this.highQualityModels = storage.storageProperty('highQualityModels', false)
     this.gitAccessToken = storage.storageProperty('gitAccessToken', null)
-    this.nwDataRepo = storage.storageProperty('nwDataRepo', 'https://github.com/giniedp/nw-buddy-data/tree/main/live/datatables')
+    this.nwDataRepo = storage.storageProperty(
+      'nwDataRepo',
+      'https://github.com/giniedp/nw-buddy-data/tree/main/live/datatables',
+    )
     this.nwDataRepoPreset = storage.storageProperty('nwDataRepoPreset', '')
     this.nwDataRepoFormat = storage.storageProperty('nwDataRepoFormat', 'json')
     this.nwDataRepoUseTags = storage.storageProperty('nwDataRepoUseTags', true)

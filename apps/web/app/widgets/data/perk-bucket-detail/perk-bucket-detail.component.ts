@@ -7,7 +7,6 @@ import { PerkDetailModule } from '../perk-detail'
 import { PerkBucketDetailStore } from './perk-bucket-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-bucket-detail',
   templateUrl: './perk-bucket-detail.component.html',
   imports: [CommonModule, NwModule, PerkDetailModule, RouterModule, ItemFrameModule],

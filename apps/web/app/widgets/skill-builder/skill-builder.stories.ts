@@ -14,15 +14,15 @@ export default {
   tags: ['autodocs'],
   decorators: [
     applicationConfig({
-      providers: [importProvidersFrom(AppTestingModule)]
+      providers: [importProvidersFrom(AppTestingModule)],
     }),
     moduleMetadata({
-      imports: [SkillTreeModule]
-    })
+      imports: [SkillTreeModule],
+    }),
   ],
   ...storyControls<SkillBuilderComponent>((arg) => {
     arg.select('weaponTag', {
-      options: NW_WEAPON_TYPES.map((it) => it.WeaponTag)
+      options: NW_WEAPON_TYPES.map((it) => it.WeaponTag),
     })
     arg.boolean('disabled')
   }),

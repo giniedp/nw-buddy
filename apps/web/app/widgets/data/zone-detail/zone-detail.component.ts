@@ -6,7 +6,6 @@ import { ZoneDetailHeaderComponent } from './zone-detail-header.component'
 import { ZoneDetailStore } from './zone-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-zone-detail',
   template: `
     <nwb-zone-detail-header />

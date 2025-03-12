@@ -15,7 +15,6 @@ export function iconCell({ value, size }: ComponentInputs<IconCellComponent>): P
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-text-cell',
   template: `
     @if (value()) {

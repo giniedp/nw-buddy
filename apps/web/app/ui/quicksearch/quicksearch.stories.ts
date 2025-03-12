@@ -4,7 +4,6 @@ import { AppTestingModule } from '~/test'
 import { QuicksearchInputComponent } from './quicksearch-input.component'
 import { QuicksearchModule } from './quicksearch.module'
 
-
 export default {
   title: 'UI / nwb-quicksearch-input',
   component: QuicksearchInputComponent,
@@ -17,13 +16,9 @@ export default {
       imports: [QuicksearchModule],
     }),
   ],
-  args: {
-
-  }
+  args: {},
 } satisfies Meta
 
 export const Example: StoryObj = {
-  args: {
-
-  },
+  args: {},
 }

@@ -19,9 +19,9 @@ export default {
   ],
   render: () => {
     return {
-      template: `<nwb-chips-input [ngModel]="['foo', 'bar', 'baz']" placeholder="type here"></nwb-chips-input>`
+      template: `<nwb-chips-input [ngModel]="['foo', 'bar', 'baz']" placeholder="type here"></nwb-chips-input>`,
     }
-  }
+  },
 } satisfies Meta
 
 export const Example: StoryObj = {}

@@ -44,7 +44,6 @@ export interface SelectionChangeEvent<T> {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-table-grid',
   exportAs: 'tableGrid',
   templateUrl: './table-grid.component.html',

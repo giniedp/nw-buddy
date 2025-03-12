@@ -13,7 +13,6 @@ import { InventoryTableRecord } from './inventory-table-cols'
 import { categorizeInventoryItem } from './utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-inventory-cell',
   template: `
     <nwb-item-detail

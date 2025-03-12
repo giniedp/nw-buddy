@@ -24,7 +24,6 @@ export interface AchievementResource {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-required-achievement-token',
   template: `
     @switch (token()?.type) {

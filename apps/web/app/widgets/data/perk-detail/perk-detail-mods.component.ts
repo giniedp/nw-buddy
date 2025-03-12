@@ -5,7 +5,6 @@ import { selectSignal } from '~/utils'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-detail-mods',
   template: `
     @for (item of mods(); track $index) {

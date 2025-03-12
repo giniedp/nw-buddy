@@ -12,7 +12,6 @@ import { TerritoryStandingComponent } from './territory-standing.component'
 
 @Component({
   selector: 'nwb-territory-card',
-  standalone: true,
   templateUrl: './territory-card.component.html',
   imports: [CommonModule, NwModule, TerritoryStandingComponent, FormsModule, ChipsInputModule],
   host: {

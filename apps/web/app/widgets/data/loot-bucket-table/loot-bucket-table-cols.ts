@@ -116,7 +116,6 @@ export function lootBucketColOdds(util: LootBucketTableUtils) {
   })
 }
 
-
 export function lootBucketColTags(util: LootBucketTableUtils) {
   return util.colDef<string[]>({
     colId: 'tags',
@@ -132,7 +131,7 @@ export function lootBucketColTags(util: LootBucketTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 

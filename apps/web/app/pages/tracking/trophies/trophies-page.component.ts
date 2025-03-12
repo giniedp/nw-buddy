@@ -12,7 +12,6 @@ import { TrophiesRecord, TrophiesTableAdapter } from './adapter'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 
 @Component({
-  standalone: true,
   selector: 'nwb-trophies-page',
   templateUrl: './trophies-page.component.html',
   imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, CraftingCalculatorComponent],
@@ -38,14 +37,14 @@ export class RunesPageComponent implements OnInit {
           learned: learned,
           percent: learned / total,
         }
-      })
+      }),
     )
 
   public constructor(
     protected service: DataViewService<TrophiesRecord>,
     protected search: QuicksearchService,
     protected itemPref: ItemPreferencesService,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     head.updateMetadata({
       url: head.currentUrl,

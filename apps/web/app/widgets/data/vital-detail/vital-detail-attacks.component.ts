@@ -26,7 +26,6 @@ import { StatusEffectDetailModule } from '../status-effect-detail'
 import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-attacks',
   templateUrl: './vital-detail-attacks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

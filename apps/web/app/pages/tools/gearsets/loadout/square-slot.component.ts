@@ -25,7 +25,6 @@ export interface GearsetSquareSlotState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-square-slot',
   templateUrl: './square-slot.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

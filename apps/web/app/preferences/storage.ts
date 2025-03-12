@@ -11,7 +11,11 @@ export interface StorageNode<T = any> {
 }
 
 export class StorageProperty<T> {
-  public constructor(private storage: StorageNode, private key: string, private defaultValue?: T) {
+  public constructor(
+    private storage: StorageNode,
+    private key: string,
+    private defaultValue?: T,
+  ) {
     //
   }
 
@@ -131,7 +135,7 @@ export class StorageApiNode implements StorageNode {
       startWith({
         key: key,
         value: this.get(key),
-      })
+      }),
     )
   }
 
@@ -146,7 +150,10 @@ export class StorageApiNode implements StorageNode {
 }
 
 export class StorageScopeNode implements StorageNode {
-  public constructor(private node: StorageNode, private scope: string) {
+  public constructor(
+    private node: StorageNode,
+    private scope: string,
+  ) {
     //
   }
 
@@ -194,7 +201,7 @@ export class StorageScopeNode implements StorageNode {
         map((it) => ({
           key,
           value: it.value,
-        }))
+        })),
       )
       .pipe(distinctUntilChanged(isEqual))
   }
@@ -205,8 +212,10 @@ export class StorageScopeNode implements StorageNode {
 }
 
 export class StorageObjectNode implements StorageNode {
-
-  public constructor(private node: StorageNode, private scope: string) {
+  public constructor(
+    private node: StorageNode,
+    private scope: string,
+  ) {
     //
   }
 
@@ -256,7 +265,7 @@ export class StorageObjectNode implements StorageNode {
         map(() => ({
           key,
           value: this.get(key),
-        }))
+        })),
       )
       .pipe(distinctUntilChanged(isEqual))
   }

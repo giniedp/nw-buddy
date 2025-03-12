@@ -20,11 +20,11 @@ export default {
   args: {
     width: 32,
     height: 32,
-  }
+  },
 } satisfies Meta<SvgIconComponent>
 
 export const Example: StoryObj<SvgIconComponent> = {
   args: {
-    icon: svgBars
+    icon: svgBars,
   },
 }

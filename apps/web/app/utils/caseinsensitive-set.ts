@@ -7,14 +7,14 @@ function transformKey<T>(key: T) {
 
 export class CaseInsensitiveSet<T> extends Set<T> {
   public override add(key: T): this {
-    return super.add(transformKey(key));
+    return super.add(transformKey(key))
   }
 
   public override delete(key: T) {
-    return super.delete(transformKey(key));
+    return super.delete(transformKey(key))
   }
 
   public override has(key: T): boolean {
-    return super.has(transformKey(key));
+    return super.has(transformKey(key))
   }
 }

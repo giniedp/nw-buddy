@@ -1,10 +1,10 @@
-import { selectLayout } from "./virtual-grid.store"
+import { selectLayout } from './virtual-grid.store'
 
 describe('VirtualGridStore', () => {
   describe('selectLayout', () => {
     const table: Array<{
-      input: Parameters<typeof selectLayout>[0],
-      output: ReturnType<typeof selectLayout>,
+      input: Parameters<typeof selectLayout>[0]
+      output: ReturnType<typeof selectLayout>
     }> = [
       {
         input: { size: 100, itemWidth: null, colCount: null },

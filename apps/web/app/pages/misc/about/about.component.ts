@@ -7,7 +7,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-about-page',
   templateUrl: './about.component.html',
   imports: [CommonModule, TooltipModule, RouterModule, NwModule],

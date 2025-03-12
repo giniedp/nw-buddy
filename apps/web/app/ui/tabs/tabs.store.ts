@@ -11,7 +11,7 @@ export const TabsStore = signalStore(
     return {
       activate: (value: any) => {
         patchState(state, { active: value })
-      }
+      },
     }
-  })
+  }),
 )

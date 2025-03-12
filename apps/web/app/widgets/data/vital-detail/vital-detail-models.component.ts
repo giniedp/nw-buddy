@@ -6,7 +6,6 @@ import { VitalDetailStore } from './vital-detail.store'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-models',
   templateUrl: './vital-detail-models.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,5 +19,4 @@ export class VitalDetailModelsComponent {
   private service = inject(ModelsService)
 
   protected models = toSignal(this.service.byVitalsId(toObservable(this.store.vitalId)))
-
 }

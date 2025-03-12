@@ -251,6 +251,6 @@ export const BONUS_SAMPLES = [
   {
     recipe: 'procedural_potionhealtht1',
     selection: { AlchemyMedicinal: 'halibutviscerat1' },
-    expect: 0.50,
+    expect: 0.5,
   },
 ]

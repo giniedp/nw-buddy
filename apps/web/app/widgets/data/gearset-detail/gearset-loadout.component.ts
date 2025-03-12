@@ -6,7 +6,6 @@ import { NwModule } from '~/nw'
 import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-loadout',
   templateUrl: './gearset-loadout.component.html',
   styleUrls: ['./gearset-loadout.component.scss'],

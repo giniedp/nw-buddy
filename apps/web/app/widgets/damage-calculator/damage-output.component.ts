@@ -6,7 +6,6 @@ import { DamageCalculatorStore } from './damage-calculator.store'
 import { FloorPipe } from './pipes/floor.pipe'
 
 @Component({
-  standalone: true,
   selector: 'nwb-damage-output',
   templateUrl: './damage-output.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,5 +19,4 @@ export class DamageOutputComponent {
   protected get trace() {
     return this.store.output().trace
   }
-
 }

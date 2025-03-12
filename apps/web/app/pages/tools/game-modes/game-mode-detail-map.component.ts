@@ -8,7 +8,6 @@ import { apiResource, eqCaseInsensitive, stringToColor } from '~/utils'
 import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widgets/game-map'
 
 @Component({
-  standalone: true,
   selector: 'nwb-game-mode-detail-map',
   template: `
     @if (mapId()) {

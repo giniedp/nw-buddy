@@ -84,7 +84,7 @@ export class Pagination<T> {
           return {
             ...this.state$.value,
           }
-        })
+        }),
       )
   }
 }

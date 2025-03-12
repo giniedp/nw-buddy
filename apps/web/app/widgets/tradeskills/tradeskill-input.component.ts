@@ -8,7 +8,6 @@ import { TradeskillLevelInputModule } from '~/ui/tradeskill-level-input'
 import { shareReplayRefCount } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tradeskill-input',
   templateUrl: './tradeskill-input.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

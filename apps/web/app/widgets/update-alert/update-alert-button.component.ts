@@ -7,7 +7,6 @@ import { VersionService } from './version.service'
 import { injectWindow } from '~/utils/injection/window'
 
 @Component({
-  standalone: true,
   selector: 'nwb-update-alert-button',
   templateUrl: './update-alert-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

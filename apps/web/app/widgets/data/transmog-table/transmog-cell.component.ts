@@ -14,7 +14,7 @@ const TRANSMOG_CELL_OPTIONS = new InjectionToken<TransmogCellOptions>('TRANSMOG_
   factory: (): TransmogCellOptions => {
     return {
       navigate: false,
-      tooltips: false
+      tooltips: false,
     }
   },
 })
@@ -29,7 +29,6 @@ export function provideTransmogCellOptions(value: TransmogCellOptions) {
     provide: TRANSMOG_CELL_OPTIONS,
     useValue: value,
   }
-
 }
 
 export function injectTransmogCellOptions(): TransmogCellOptions {
@@ -37,7 +36,6 @@ export function injectTransmogCellOptions(): TransmogCellOptions {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-transmog-cell',
   template: `
     <a

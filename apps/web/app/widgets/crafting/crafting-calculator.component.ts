@@ -21,7 +21,6 @@ import { CraftingPerkSlot } from './loader/load-recipe'
 import { AmountMode } from './types'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-calculator',
   templateUrl: './crafting-calculator.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

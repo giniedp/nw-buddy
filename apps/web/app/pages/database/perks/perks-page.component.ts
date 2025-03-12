@@ -31,7 +31,6 @@ import { PerkTableAdapter, PerkTableRecord } from '~/widgets/data/perk-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perks-page',
   templateUrl: './perks-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,7 +91,6 @@ export class PerksPageComponent {
     public ctx: NwTextContextService,
     protected service: DataViewService<PerkTableRecord>,
     head: HtmlHeadService,
-
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({

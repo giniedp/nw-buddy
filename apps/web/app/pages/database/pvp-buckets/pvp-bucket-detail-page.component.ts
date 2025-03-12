@@ -16,7 +16,6 @@ import { MetaAchievementDetailModule } from '~/widgets/data/meta-achievement-det
 import { LootModule } from '~/widgets/loot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-pvp-bucket-detail-page',
   templateUrl: './pvp-bucket-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

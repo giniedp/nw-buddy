@@ -9,7 +9,6 @@ import { ActivatedRoute } from '@angular/router'
 import { map } from 'rxjs'
 
 @Component({
-  standalone: true,
   selector: 'nwb-schematics-tracking',
   templateUrl: './schematics-tracking.component.html',
   styleUrls: ['./schematics-tracking.component.scss'],
@@ -26,13 +25,13 @@ export class SchematicsTrackingComponent {
         return SchematicCellComponent.buildGridOptions()
       }
       return SchematicCellComponent.buildGridOptionsWeapons()
-    })
+    }),
   )
 
   public constructor(
     private route: ActivatedRoute,
     protected service: DataViewService<SchematicRecord>,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     head.updateMetadata({
       title: 'Schematics Recipes',

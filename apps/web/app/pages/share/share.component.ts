@@ -16,7 +16,6 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
 import { ShareService } from './share.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-share-page',
   templateUrl: './share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

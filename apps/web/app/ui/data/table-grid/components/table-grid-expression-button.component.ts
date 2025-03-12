@@ -9,7 +9,6 @@ import { svgFunction } from '~/ui/icons/svg'
 import { TableGridExpressionPanelComponent } from './table-grid-expression-panel.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-table-grid-expression-button,button[nwbTableExpressionButton]]',
   templateUrl: './table-grid-expression-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

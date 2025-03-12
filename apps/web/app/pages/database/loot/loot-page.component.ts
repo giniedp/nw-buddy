@@ -24,7 +24,6 @@ import { LootTableAdapter } from '~/widgets/data/loot-table-grid'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-page',
   templateUrl: './loot-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,7 +60,6 @@ export class LootPageComponent {
   protected persistKey = 'loot-table'
   protected categoryParam = 'c'
   protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
-
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

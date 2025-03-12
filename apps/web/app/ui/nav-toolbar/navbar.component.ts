@@ -46,7 +46,6 @@ export class NavbarButtonsDirective {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-navbar',
   templateUrl: './navbar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

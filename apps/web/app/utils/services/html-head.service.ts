@@ -63,7 +63,7 @@ export class HtmlHeadService {
         { property: 'twitter:description', content: description },
         { property: 'twitter:url', content: url },
         { property: 'twitter:image', content: image },
-      ]
+      ],
     })
   }
   public setMetadata(update: PageMetadata) {

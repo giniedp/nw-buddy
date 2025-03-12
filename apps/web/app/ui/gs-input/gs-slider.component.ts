@@ -9,7 +9,6 @@ interface Bar {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-gs-slider',
   template: `
     <input

@@ -11,7 +11,7 @@ export interface CreateElementOptions<T extends keyof HTMLElementTagNameMap> {
 
 export function createElement<T extends keyof HTMLElementTagNameMap>(
   document: Document,
-  input: CreateElementOptions<T>
+  input: CreateElementOptions<T>,
 ) {
   const el = document.createElement(input.tag)
   if (input.classList) {
@@ -59,7 +59,7 @@ export function createEl<T extends ElementTag>(
   document: Document,
   tagName: TagName<T>,
   attr: ElementProps<T>,
-  children?: ElementChildren
+  children?: ElementChildren,
 ) {
   const tokens = tagName.split('.')
   const tag = tokens.shift() as T

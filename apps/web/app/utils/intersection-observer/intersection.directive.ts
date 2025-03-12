@@ -25,6 +25,7 @@ import { IntersectionObserverResult, IntersectionObserverService } from './inter
 
 @Directive({
   selector: '[nwbIntxnOptions],[nwbIntxnRoot],[nwbIntxnMargin],[nwbIntxnThreshold],[nwbIntxnTarget]',
+  standalone: false,
 })
 export class IntersectionOptionsDirective implements OnChanges, OnDestroy {
   @Input('nwbIntxnOptions')
@@ -110,7 +111,7 @@ export abstract class ItersectionBaseDirective {
     return combineLatest([config$, target$]).pipe(
       switchMap(([config, element]) => {
         return this.service.observe(element, config)
-      })
+      }),
     )
   }
   protected config() {
@@ -130,13 +131,14 @@ export abstract class ItersectionBaseDirective {
           return it.parentElement
         }
         return null
-      })
+      }),
     )
   }
 }
 
 @Directive({
   selector: '[nwbIntxnChange]',
+  standalone: false,
 })
 export class IntersectionChangeDirective extends ItersectionBaseDirective implements OnInit, OnDestroy {
   @Output('nwbIntxnChange')
@@ -149,7 +151,7 @@ export class IntersectionChangeDirective extends ItersectionBaseDirective implem
     protected base: IntersectionOptionsDirective,
     protected elRef: ElementRef<HTMLElement>,
     protected service: IntersectionObserverService,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     super()
   }
@@ -172,6 +174,7 @@ export class IntersectionChangeDirective extends ItersectionBaseDirective implem
 
 @Directive({
   selector: '[nwbIntxnEnter]',
+  standalone: false,
 })
 export class IntersectionEnterDirective extends ItersectionBaseDirective implements OnInit, OnDestroy {
   @Output('nwbIntxnEnter')
@@ -184,7 +187,7 @@ export class IntersectionEnterDirective extends ItersectionBaseDirective impleme
     protected base: IntersectionOptionsDirective,
     protected elRef: ElementRef<HTMLElement>,
     protected service: IntersectionObserverService,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     super()
   }
@@ -209,6 +212,7 @@ export class IntersectionEnterDirective extends ItersectionBaseDirective impleme
 
 @Directive({
   selector: '[nwbIntxnLeave]',
+  standalone: false,
 })
 export class IntersectionLeaveDirective extends ItersectionBaseDirective implements OnInit, OnDestroy {
   @Output('nwbIntxnLeave')
@@ -221,7 +225,7 @@ export class IntersectionLeaveDirective extends ItersectionBaseDirective impleme
     protected base: IntersectionOptionsDirective,
     protected elRef: ElementRef<HTMLElement>,
     protected service: IntersectionObserverService,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     super()
   }
@@ -246,6 +250,7 @@ export class IntersectionLeaveDirective extends ItersectionBaseDirective impleme
 @Directive({
   selector: '[nwbIntxn]',
   exportAs: 'nwbIntxn',
+  standalone: false,
 })
 export class IntersectionDirective extends ItersectionBaseDirective implements OnInit, OnDestroy {
   public isSupported: boolean
@@ -260,7 +265,7 @@ export class IntersectionDirective extends ItersectionBaseDirective implements O
     protected elRef: ElementRef<HTMLElement>,
     protected service: IntersectionObserverService,
     private zone: NgZone,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {
     super()
   }
@@ -286,6 +291,7 @@ export class IntersectionDirective extends ItersectionBaseDirective implements O
 
 @Directive({
   selector: '[nwbIntxnClasses]',
+  standalone: false,
 })
 export class IntersectionClassesDirective extends ItersectionBaseDirective implements OnInit, OnDestroy {
   public isSupported: boolean = this.service.isSupported
@@ -300,7 +306,7 @@ export class IntersectionClassesDirective extends ItersectionBaseDirective imple
     protected elRef: ElementRef<HTMLElement>,
     protected service: IntersectionObserverService,
     private renderer: Renderer2,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     super()
     this.updateClasses()
@@ -344,6 +350,7 @@ export class IntersectionClassesDirective extends ItersectionBaseDirective imple
 
 @Directive({
   selector: '[nwbIsIntersecting]',
+  standalone: false,
 })
 export class IsIntersectingDirective extends ItersectionBaseDirective implements OnInit, OnDestroy {
   @Input('nwbIsIntersecting')
@@ -360,7 +367,7 @@ export class IsIntersectingDirective extends ItersectionBaseDirective implements
     private cdRef: ChangeDetectorRef,
     private vcRef: ViewContainerRef,
     private tpl: TemplateRef<unknown>,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     super()
   }
@@ -395,6 +402,7 @@ export class IsIntersectingDirective extends ItersectionBaseDirective implements
 
 @Directive({
   selector: '[nwbDidIntersect]',
+  standalone: false,
 })
 export class DidIntersectDirective extends ItersectionBaseDirective implements OnInit, OnDestroy {
   public value: boolean = false
@@ -408,7 +416,7 @@ export class DidIntersectDirective extends ItersectionBaseDirective implements O
     private cdRef: ChangeDetectorRef,
     private vcRef: ViewContainerRef,
     private tpl: TemplateRef<unknown>,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     super()
   }

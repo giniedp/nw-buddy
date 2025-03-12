@@ -17,7 +17,6 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-detail-page',
   templateUrl: './crafting-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,7 +29,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ScreenshotModule,
     LayoutModule,
     TabsModule,
-    TooltipModule
+    TooltipModule,
   ],
   host: {
     class: 'block',

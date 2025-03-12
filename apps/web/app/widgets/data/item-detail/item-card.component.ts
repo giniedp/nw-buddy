@@ -17,7 +17,6 @@ import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-card',
   templateUrl: './item-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

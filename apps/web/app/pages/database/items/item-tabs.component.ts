@@ -43,7 +43,6 @@ export interface ItemTab {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-page-tabs',
   templateUrl: './item-tabs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

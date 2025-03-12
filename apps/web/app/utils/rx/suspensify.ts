@@ -1,61 +1,51 @@
-import {
-  MonoTypeOperatorFunction,
-  Observable,
-  ObservableNotification,
-  OperatorFunction,
-  ReplaySubject,
-} from 'rxjs';
-import { debounce, map, materialize, scan, startWith } from 'rxjs/operators';
+import { MonoTypeOperatorFunction, Observable, ObservableNotification, OperatorFunction, ReplaySubject } from 'rxjs'
+import { debounce, map, materialize, scan, startWith } from 'rxjs/operators'
 
 export interface SuspenseLax<T> {
-  finalized: boolean;
-  hasError: boolean;
-  hasValue: boolean;
-  pending: boolean;
+  finalized: boolean
+  hasError: boolean
+  hasValue: boolean
+  pending: boolean
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: undefined | any;
-  value: undefined | T;
+  error: undefined | any
+  value: undefined | T
 }
 
 export interface SuspensePending {
-  finalized: false;
-  hasError: false;
-  hasValue: false;
-  pending: true;
+  finalized: false
+  hasError: false
+  hasValue: false
+  pending: true
 }
 
 export interface SuspenseWithValue<T> {
-  finalized: boolean;
-  hasError: false;
-  hasValue: true;
-  pending: false;
-  value: T;
+  finalized: boolean
+  hasError: false
+  hasValue: true
+  pending: false
+  value: T
 }
 
 export interface SuspenseWithError {
-  finalized: true;
-  hasError: true;
-  hasValue: false;
-  pending: false;
-  error: unknown;
+  finalized: true
+  hasError: true
+  hasValue: false
+  pending: false
+  error: unknown
 }
 
 export interface SuspenseEmpty {
-  finalized: true;
-  hasError: false;
-  hasValue: false;
-  pending: false;
+  finalized: true
+  hasError: false
+  hasValue: false
+  pending: false
 }
 
-export type Suspense<T> =
-  | SuspensePending
-  | SuspenseWithValue<T>
-  | SuspenseWithError
-  | SuspenseEmpty;
+export type Suspense<T> = SuspensePending | SuspenseWithValue<T> | SuspenseWithError | SuspenseEmpty
 
 export interface SuspensifyOptions {
-  strict?: boolean;
+  strict?: boolean
 }
 
 /**
@@ -65,20 +55,14 @@ export interface SuspensifyOptions {
  *
  * @returns Observable<SuspenseLax<T> | SuspenseStrict<T>>
  */
-export function suspensify<T>(options: {
-  strict: false;
-}): OperatorFunction<T, SuspenseLax<T>>;
-export function suspensify<T>(options?: {
-  strict: true;
-}): OperatorFunction<T, Suspense<T>>;
-export function suspensify<T>({
-  strict = true,
-}: SuspensifyOptions = {}): OperatorFunction<T, SuspenseLax<T> | Suspense<T>> {
+export function suspensify<T>(options: { strict: false }): OperatorFunction<T, SuspenseLax<T>>
+export function suspensify<T>(options?: { strict: true }): OperatorFunction<T, Suspense<T>>
+export function suspensify<T>({ strict = true }: SuspensifyOptions = {}): OperatorFunction<
+  T,
+  SuspenseLax<T> | Suspense<T>
+> {
   return (source$: Observable<T>): Observable<Suspense<T>> => {
-    const strictSuspense$ = source$.pipe(
-      _suspensify(),
-      _coalesceFirstEmittedValue()
-    );
+    const strictSuspense$ = source$.pipe(_suspensify(), _coalesceFirstEmittedValue())
     return strict
       ? strictSuspense$
       : (strictSuspense$.pipe(
@@ -86,10 +70,10 @@ export function suspensify<T>({
             error: undefined,
             value: undefined,
             ...strictSuspense,
-          }))
+          })),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ) as any);
-  };
+        ) as any)
+  }
 }
 
 /**
@@ -103,32 +87,32 @@ export const pending: SuspensePending = {
   hasError: false,
   hasValue: false,
   pending: true,
-};
+}
 
 function _coalesceFirstEmittedValue<T>(): MonoTypeOperatorFunction<T> {
   return (source$: Observable<T>): Observable<T> => {
     return new Observable<T>((observer) => {
-      const isReadySubject = new ReplaySubject<unknown>(1);
+      const isReadySubject = new ReplaySubject<unknown>(1)
 
       const subscription = source$
         .pipe(
           /* Wait for all synchronous processing to be done. */
-          debounce(() => isReadySubject)
+          debounce(() => isReadySubject),
         )
-        .subscribe(observer);
+        .subscribe(observer)
 
       /* Sync emitted values have been processed now.
        * Mark source as ready and emit last computed state. */
-      isReadySubject.next(undefined);
+      isReadySubject.next(undefined)
 
-      return () => subscription.unsubscribe();
-    });
-  };
+      return () => subscription.unsubscribe()
+    })
+  }
 }
 
 /* Use values as types for better type checking. */
-const TRUE = true as const;
-const FALSE = false as const;
+const TRUE = true as const
+const FALSE = false as const
 
 function _suspensify<T>(): OperatorFunction<T, Suspense<T>> {
   return (source$: Observable<T>): Observable<Suspense<T>> => {
@@ -144,7 +128,7 @@ function _suspensify<T>(): OperatorFunction<T, Suspense<T>> {
               hasValue: TRUE,
               value: notification.value,
               pending: FALSE,
-            };
+            }
           /* Error. */
           case 'E':
             return {
@@ -153,17 +137,17 @@ function _suspensify<T>(): OperatorFunction<T, Suspense<T>> {
               hasValue: FALSE,
               pending: FALSE,
               error: notification.error,
-            };
+            }
           /* Complete. */
           case 'C':
             return {
               ...state,
               finalized: TRUE,
               pending: FALSE,
-            };
+            }
         }
       }, pending),
-      startWith(pending)
-    );
-  };
+      startWith(pending),
+    )
+  }
 }

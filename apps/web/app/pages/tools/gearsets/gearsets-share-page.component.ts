@@ -14,7 +14,6 @@ import { GearsetHostDirective } from './gearset/gearset-host.directive'
 import { GearsetSliderComponent } from './gearset/gearset-slider.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearsets-share-page',
   templateUrl: './gearsets-share-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

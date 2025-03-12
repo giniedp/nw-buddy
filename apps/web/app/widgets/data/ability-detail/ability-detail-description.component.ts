@@ -3,7 +3,6 @@ import { NwModule } from '~/nw'
 import { AbilityDetailStore } from './ability-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-ability-detail-description',
   template: `
     @if (store.description() | nwText | nwTextBreak; as description) {

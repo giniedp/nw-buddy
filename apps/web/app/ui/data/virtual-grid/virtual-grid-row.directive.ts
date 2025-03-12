@@ -29,7 +29,7 @@ export interface VirtualGridRowContext<T> {
 export class VirtualGridRowDirective<T> {
   public static ngTemplateContextGuard<T>(
     dir: VirtualGridRowDirective<T>,
-    ctx: unknown
+    ctx: unknown,
   ): ctx is VirtualGridRowContext<T> {
     return true
   }
@@ -41,7 +41,7 @@ export class VirtualGridRowDirective<T> {
 
   public constructor(
     public readonly template: TemplateRef<VirtualGridRowContext<T>>,
-    private store: VirtualGridStore<T>
+    private store: VirtualGridStore<T>,
   ) {
     //
   }

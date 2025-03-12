@@ -13,7 +13,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { PlatformService } from '~/utils/services/platform.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-damage-calculator-page',
   templateUrl: './damage-calculator-page.component.html',
   host: {
@@ -28,7 +27,7 @@ import { PlatformService } from '~/utils/services/platform.service'
     IonSegmentButton,
     IonToast,
     ScreenshotModule,
-    TooltipModule
+    TooltipModule,
   ],
 })
 export class DamageCalculatorPageComponent {

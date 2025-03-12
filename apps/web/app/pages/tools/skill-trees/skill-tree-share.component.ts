@@ -11,7 +11,6 @@ import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
 @Component({
-  standalone: true,
   selector: 'nwb-skill-tree-share',
   templateUrl: './skill-tree-share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

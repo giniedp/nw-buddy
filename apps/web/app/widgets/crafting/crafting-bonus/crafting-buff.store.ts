@@ -60,7 +60,7 @@ export const CraftingBuffStore = signalStore(
       },
       setSkillLevel: (skill: string, value: number) => {
         char.setProgresssionLevel(skill, value)
-      }
+      },
     }
   }),
   withMethods(({ buffs }) => {

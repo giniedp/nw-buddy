@@ -10,7 +10,6 @@ import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-game-event-detail-page',
   templateUrl: './game-event-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

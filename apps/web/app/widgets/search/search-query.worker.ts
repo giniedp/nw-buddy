@@ -5,12 +5,12 @@ import { expose } from 'comlink'
 export type SearchRecord = SearchItem
 
 export interface SearchQueryTasks {
-  search: (args: { text: string; lang: string, nwDataUrl: string }) => Promise<SearchItem[]>
+  search: (args: { text: string; lang: string; nwDataUrl: string }) => Promise<SearchItem[]>
 }
 
 const index: Record<string, Promise<any>> = {}
 
-function fetchIndex({ lang, nwDataUrl }: { lang: string, nwDataUrl: string }): Promise<SearchItem[]> {
+function fetchIndex({ lang, nwDataUrl }: { lang: string; nwDataUrl: string }): Promise<SearchItem[]> {
   if (!index[lang]) {
     index[lang] = fetch(`${nwDataUrl}/search/${lang}.json`)
       .then((res) => res.json())
@@ -39,7 +39,7 @@ function transformImageUrls(data: SearchItem[], nwDataUrl: string) {
 const api: SearchQueryTasks = {
   search: async ({ text, lang, nwDataUrl }) => {
     text = text.toLocaleLowerCase()
-    const records = await fetchIndex({lang, nwDataUrl}).catch(console.error)
+    const records = await fetchIndex({ lang, nwDataUrl }).catch(console.error)
     if (!records) {
       return []
     }

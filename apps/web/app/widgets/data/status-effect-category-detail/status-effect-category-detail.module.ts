@@ -3,7 +3,11 @@ import { StatusEffectCategoryDetailComponent } from './status-effect-category-de
 import { StatusEffectCategoryDetailDirective } from './status-effect-category-detail.directive'
 import { StatusEffectLimitsTableComponent } from './status-effect-limits-table.component'
 
-const components = [StatusEffectCategoryDetailComponent, StatusEffectCategoryDetailDirective, StatusEffectLimitsTableComponent]
+const components = [
+  StatusEffectCategoryDetailComponent,
+  StatusEffectCategoryDetailDirective,
+  StatusEffectLimitsTableComponent,
+]
 @NgModule({
   imports: [...components],
   exports: [...components],

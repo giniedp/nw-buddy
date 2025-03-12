@@ -9,7 +9,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { apiResource } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-xp-unlock-line',
   templateUrl: './xp-unlock-line.component.html',
   styleUrl: './xp-unlock-line.component.scss',

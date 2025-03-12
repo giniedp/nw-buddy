@@ -11,7 +11,6 @@ import { injectQueryParam, injectRouteParam } from '~/utils'
 import { XpTableModule } from '~/widgets/xp-table'
 
 @Component({
-  standalone: true,
   selector: 'nwb-level-xp-page',
   templateUrl: './level-xp.component.html',
   imports: [

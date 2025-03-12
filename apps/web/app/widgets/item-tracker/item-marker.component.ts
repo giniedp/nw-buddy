@@ -23,6 +23,7 @@ import { ItemPreferencesService } from '~/preferences'
   host: {
     class: 'flex flex-row',
   },
+  standalone: false,
 })
 export class ItemMarkerComponent {
   private meta = inject(ItemPreferencesService)

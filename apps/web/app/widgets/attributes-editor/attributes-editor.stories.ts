@@ -25,7 +25,7 @@ export default {
       defaultValue: NW_MAX_CHARACTER_LEVEL,
     })
     arg.boolean('freeMode')
-  })
+  }),
 } satisfies Meta<AttributesEditorComponent>
 
 export const Example: StoryObj<AttributesEditorComponent> = {}

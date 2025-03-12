@@ -8,7 +8,6 @@ import { NwModule } from '~/nw'
 import { humanize, selectSignal } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-link',
   template: `
     @for (row of rows(); track $index) {
@@ -52,7 +51,6 @@ export class QuestLinkComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-prev',
   template: `
     @for (row of data(); track $index) {
@@ -75,7 +73,6 @@ export class QuestPrevComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-next',
   template: `
     @for (row of data(); track $index) {
@@ -97,7 +94,6 @@ export class QuestNextComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-tree',
   template: `
     <!-- @if (left) {

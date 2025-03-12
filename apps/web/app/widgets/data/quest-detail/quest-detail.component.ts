@@ -23,7 +23,6 @@ export interface QuestDetailTab {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-detail',
   templateUrl: './quest-detail.component.html',
   exportAs: 'questDetail',

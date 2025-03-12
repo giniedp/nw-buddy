@@ -25,10 +25,10 @@ export function pickPerkForItem({
   injector,
   record,
   slotKey,
-  craftOnly
+  craftOnly,
 }: {
   db: NwData
-  injector: Injector,
+  injector: Injector
   record: ItemInstance
   slotKey: string
   craftOnly: boolean
@@ -58,7 +58,7 @@ export function pickPerkForItem({
           exclusiveLabels,
           selectedPerkid: selection,
           slotKey,
-          craftOnly
+          craftOnly,
         })
           // cancelled selection
           .pipe(filter((it) => it !== undefined))
@@ -74,7 +74,7 @@ export function pickPerkForItem({
 export function openPerksPicker(options: {
   db: NwData
   item: MasterItemDefinitions
-  injector: Injector,
+  injector: Injector
   selectedPerkid: string
   slotKey: string
   exclusiveLabels: string[]
@@ -89,7 +89,7 @@ export function openPerksPicker(options: {
       dataView: {
         adapter: PerkTableAdapter,
         source: getAplicablePerksSource(options),
-        filter: !options.craftOnly ? null : (it) => !!it.$items?.length
+        filter: !options.craftOnly ? null : (it) => !!it.$items?.length,
       },
     }),
   )

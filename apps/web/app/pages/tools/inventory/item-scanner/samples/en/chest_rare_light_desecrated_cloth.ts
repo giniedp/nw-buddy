@@ -1,4 +1,4 @@
-import type { ScanSample } from "../../types";
+import type { ScanSample } from '../../types'
 
 export default {
   file: 'chest_rare_light_desecrated_cloth.png',

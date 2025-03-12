@@ -32,7 +32,6 @@ import { GearsetHostDirective } from './gearset/gearset-host.directive'
 import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearsets-detail-page',
   templateUrl: './gearsets-detail-page.component.html',
   imports: [

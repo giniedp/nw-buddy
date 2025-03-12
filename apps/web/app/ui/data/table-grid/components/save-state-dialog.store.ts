@@ -15,7 +15,7 @@ export class SaveStateDialogStore extends ComponentStore<{
   public readonly entries$ = this.selectSignal(({ entries }) => entries)
   public readonly selection$ = this.selectSignal(({ selection }) => selection)
   public readonly selectedData$ = this.selectSignal(
-    toSignal(this.db.observeByid(this.select(({ selection }) => selection)))
+    toSignal(this.db.observeByid(this.select(({ selection }) => selection))),
   )
 
   public constructor(private db: TablePresetDB) {
@@ -35,7 +35,7 @@ export class SaveStateDialogStore extends ComponentStore<{
       map(({ entries, key }) => {
         entries = entries?.filter((it) => eqCaseInsensitive(it.key, key))
         this.patchState({ entries })
-      })
+      }),
     )
   })
 

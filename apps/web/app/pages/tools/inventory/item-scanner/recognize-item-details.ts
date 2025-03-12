@@ -1,7 +1,6 @@
 import { TranslateFn } from './types'
 
 export async function recognizeItemDetails(lines: string[], tl8: TranslateFn) {
-
   // clean lines from disturbing colons
   lines = cleanFromTooltipHints(lines, [
     tl8('ui_stat_magnify_tooltip'),
@@ -29,9 +28,7 @@ export async function recognizeItemDetails(lines: string[], tl8: TranslateFn) {
 
   const gearScore: number = findGearScore(lines)
   // attributes names from text like "+26 Dexterity"
-  const attrNames = lines
-    .map((it) => it.match(/\+\s*\d+\s*(\w+)?/)?.[1])
-    .filter((it) => !!it && !it.includes('%'))
+  const attrNames = lines.map((it) => it.match(/\+\s*\d+\s*(\w+)?/)?.[1]).filter((it) => !!it && !it.includes('%'))
 
   // perk names usually follow the pattern: "name: description"
   const perkNames = lines

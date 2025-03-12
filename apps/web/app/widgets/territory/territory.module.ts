@@ -5,7 +5,10 @@ import { TerritoryStandingChartComponent } from './territory-standing-chart.comp
 import { TerritoryStandingTableComponent } from './territory-standing-table.component'
 
 const COMPONENTS = [
-  TerritoryCardCoponent, TerritoryStandingChartComponent, TerritoryStandingTableComponent, TerritoryGovernanceTableComponent
+  TerritoryCardCoponent,
+  TerritoryStandingChartComponent,
+  TerritoryStandingTableComponent,
+  TerritoryGovernanceTableComponent,
 ]
 @NgModule({
   imports: [...COMPONENTS],

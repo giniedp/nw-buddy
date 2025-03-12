@@ -7,6 +7,7 @@ import { selectStream } from '~/utils'
 @Directive({
   selector: '[nwbItemMarker]',
   exportAs: 'itemMarker',
+  standalone: false,
 })
 export class ItemMarkerDirective {
   public itemId = input.required<string>({ alias: 'nwbItemMarker' })

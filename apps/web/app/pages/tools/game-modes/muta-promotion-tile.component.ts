@@ -20,7 +20,6 @@ import { MutaPromotionDetailModule } from '~/widgets/data/muta-promotion-detail'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-muta-promotion-tile',
   templateUrl: './muta-promotion-tile.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +30,6 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
   },
 })
 export class MutaPromotionTileComponent {
-
   protected cdkOrigin = inject(CdkOverlayOrigin)
   protected tip = inject(TooltipDirective)
 

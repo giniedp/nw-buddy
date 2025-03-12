@@ -32,7 +32,6 @@ import { SkillTreeModule } from '~/widgets/skill-builder'
 import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-pane-skill',
   templateUrl: './gearset-pane-skill.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

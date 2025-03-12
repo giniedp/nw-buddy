@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, forwardRef, HostBinding, HostListen
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tree-node-toggle',
   templateUrl: './tree-node-toggle.component.html',
   styleUrls: ['./tree-node-toggle.component.scss'],

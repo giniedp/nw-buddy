@@ -6,7 +6,7 @@ export function storyControls<TArgs>(fn: (b: StoryControlsBuilder<TArgs>) => unk
   const args = Object.fromEntries(
     Object.entries(argTypes).map(([key, spec]) => {
       return [key, (spec as any).defaultValue]
-    })
+    }),
   )
   return {
     argTypes,

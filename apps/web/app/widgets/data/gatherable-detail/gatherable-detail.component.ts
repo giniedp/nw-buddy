@@ -8,7 +8,6 @@ import { GatherableDetailMapComponent } from './gatherable-detail-map.component'
 import { GatherableDetailStore } from './gatherable-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gatherable-detail',
   template: '<ng-content/>',
   exportAs: 'detail',

@@ -1,4 +1,3 @@
-
 export function imageFileFromPaste(e: ClipboardEvent) {
   return imageFromDataTransfer(e.clipboardData)
 }

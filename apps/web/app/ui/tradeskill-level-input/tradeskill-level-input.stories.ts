@@ -6,7 +6,6 @@ import { TradeskillLevelInputComponent } from './tradeskill-level-input.componen
 import { TradeskillLevelInputModule } from './tradeskill-level-input.module'
 import { NW_TRADESKILLS_INFOS } from '~/nw/tradeskill'
 
-
 type StoryArgs = Pick<TradeskillLevelInputComponent, 'icon' | 'label' | 'maxLevel' | 'minWidth'>
 
 export default {
@@ -15,7 +14,6 @@ export default {
   tags: ['autodocs'],
   decorators: [
     applicationConfig({
-
       providers: [importProvidersFrom(AppTestingModule)],
     }),
     moduleMetadata({
@@ -35,7 +33,7 @@ export default {
           value: it.Icon,
           label: it.ID,
         }
-      })
+      }),
     })
     b.number('minWidth', {
       defaultValue: 200,

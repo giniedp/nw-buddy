@@ -1,4 +1,4 @@
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string"
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
 
 export function decompressQueryParam<T>(value: string): T | null {
   if (!value) {

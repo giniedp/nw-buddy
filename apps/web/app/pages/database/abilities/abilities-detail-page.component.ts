@@ -20,7 +20,6 @@ import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-abilities-detail-page',
   templateUrl: './abilities-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

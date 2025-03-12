@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 
 @Component({
-  standalone: true,
   selector: 'nwb-backstory-loot-node',
   templateUrl: './backstory-loot-node.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

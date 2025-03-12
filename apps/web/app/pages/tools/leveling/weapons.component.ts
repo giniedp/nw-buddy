@@ -9,7 +9,6 @@ import { WeaponLevelInputModule } from '~/ui/weapon-level-input'
 import { WeaponChartComponent } from './weapon-chart.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-weapons-page',
   templateUrl: './weapons.component.html',
   styleUrls: ['./weapons.component.scss'],

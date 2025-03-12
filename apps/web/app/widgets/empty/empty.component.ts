@@ -1,12 +1,10 @@
-import { Component } from "@angular/core"
+import { Component } from '@angular/core'
 
 @Component({
   standalone: true,
   template: '',
   host: {
-    class: 'hidden'
-  }
+    class: 'hidden',
+  },
 })
-export class EmptyComponent {
-
-}
+export class EmptyComponent {}

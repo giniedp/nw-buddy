@@ -4,7 +4,6 @@ import { NwTextContextService } from '~/nw/expression'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-detail-description',
   template: `
     @if (description(); as text) {
@@ -12,7 +11,7 @@ import { PerkDetailStore } from './perk-detail.store'
         <div [nwHtml]="text | nwText: textContext() | nwTextBreak" class="text-nw-description italic"></div>
       }
 
-      @if ( classGsBonus(); as bonus) {
+      @if (classGsBonus(); as bonus) {
         <div>
           On {{ bonus.itemClass }}:
           <div [nwHtml]="text | nwText: textContextClass() | nwTextBreak" class="text-nw-description italic"></div>
@@ -36,6 +35,4 @@ export class PerkDetailDescriptionComponent {
   protected context = inject(NwTextContextService)
   protected textContext = this.store.textContext
   protected textContextClass = this.store.textContextClass
-
-
 }

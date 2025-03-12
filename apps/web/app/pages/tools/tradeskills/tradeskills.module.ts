@@ -6,8 +6,8 @@ import { TradeskillsComponent } from './tradeskills.component'
 const routes: Routes = [
   {
     path: '',
-    component: TradeskillsComponent
-  }
+    component: TradeskillsComponent,
+  },
 ]
 @NgModule({
   imports: [RouterModule.forChild(routes)],

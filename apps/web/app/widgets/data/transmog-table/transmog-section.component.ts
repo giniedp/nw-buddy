@@ -8,7 +8,6 @@ import { TransmogRecord } from './types'
 import { TRANSMOG_CATEGORIES } from '../transmog'
 
 @Component({
-  standalone: true,
   selector: 'nwb-transmog-section',
   template: `
     <h3 class="text-3xl uppercase relative font-caslon text-nw-description p-4">

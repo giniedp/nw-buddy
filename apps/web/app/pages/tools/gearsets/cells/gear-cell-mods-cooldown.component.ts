@@ -24,7 +24,6 @@ export interface CooldownRow {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-mods-cooldown',
   templateUrl: './gear-cell-mods-cooldown.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

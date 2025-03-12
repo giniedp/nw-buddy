@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms'
 import { IconsModule } from '~/ui/icons'
 
 @Component({
-  standalone: true,
   selector: 'nwb-npc-detail-map',
   templateUrl: './npc-detail-map.component.html',
   imports: [IconsModule, FormsModule],

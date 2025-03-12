@@ -57,14 +57,12 @@ export const VitalDetailStore = signalStore(
           vital,
           metadata,
           modifier: await db.vitalsModifiersById(vital?.CreatureType),
-          categories: await Promise.all(
-            [
-              ...(vital.VitalsCategories || []).map((it) => db.vitalsCategoriesById(it)),
-              ...(metadata?.catIDs || []).map((it) => db.vitalsCategoriesById(it)),
-            ]
-          )
-          .then((it) => it.filter((it) => !!it))
-          .then((it) => uniqBy(it, (it) => it.VitalsCategoryID)),
+          categories: await Promise.all([
+            ...(vital.VitalsCategories || []).map((it) => db.vitalsCategoriesById(it)),
+            ...(metadata?.catIDs || []).map((it) => db.vitalsCategoriesById(it)),
+          ])
+            .then((it) => it.filter((it) => !!it))
+            .then((it) => uniqBy(it, (it) => it.VitalsCategoryID)),
           dungeons: await Promise.all(
             getVitalDungeons(vital, await db.gameModesMapsAll(), await db.vitalsMetadataByIdMap()).map(async (it) =>
               db.gameModesById(it.GameModeId),
@@ -113,7 +111,12 @@ export const VitalDetailStore = signalStore(
       combatCategories: computed(() => getVitalCategoryInfo(vital())),
       aliasNames: computed(() => {
         return categories()
-          .filter((it) => !it?.GroupVitalsCategoryId && it.VitalsCategoryID !== "Named" && it.VitalsCategoryID !== vital()?.DisplayName)
+          .filter(
+            (it) =>
+              !it?.GroupVitalsCategoryId &&
+              it.VitalsCategoryID !== 'Named' &&
+              it.VitalsCategoryID !== vital()?.DisplayName,
+          )
           .map((it) => it.DisplayName?.trim())
           .filter((it) => !!it)
       }),

@@ -2,7 +2,6 @@ import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common'
 import { Component, Injector, Input, TemplateRef, Type } from '@angular/core'
 
 @Component({
-  standalone: true,
   template: `
     @if (component) {
       <ng-component

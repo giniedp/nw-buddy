@@ -20,7 +20,6 @@ export interface SkillBuildValue {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-skill-builder',
   templateUrl: './skill-builder.component.html',
   styleUrls: ['./skill-builder.component.scss'],

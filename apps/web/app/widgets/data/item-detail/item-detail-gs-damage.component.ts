@@ -17,7 +17,6 @@ import { ItemDetailStore } from './item-detail.store'
 import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-gs-damage',
   template: `
     @for (row of rows(); track $index) {
@@ -32,10 +31,7 @@ import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
     class: 'block',
   },
   imports: [CommonModule, IconsModule, NwModule],
-  animations: [
-    IS_HIDDEN_ANIM,
-    IN_OUT_ANIM,
-  ]
+  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailGsDamage {
   private db = injectNwData()

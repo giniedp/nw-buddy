@@ -16,7 +16,6 @@ import { shareReplayRefCount } from '~/utils'
 import { AttributeState, AttributesStore } from './attributes.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-attributes-editor',
   templateUrl: './attributes-editor.component.html',
   styleUrls: ['./attributes-editor.component.scss'],
@@ -86,7 +85,6 @@ export class AttributesEditorComponent {
   public get freeMode() {
     return this.store.unlocked()
   }
-
 
   public assignedChanged = outputFromObservable(
     toObservable(this.store.assigned).pipe(distinctUntilChanged((a, b) => isEqual(a, b))),

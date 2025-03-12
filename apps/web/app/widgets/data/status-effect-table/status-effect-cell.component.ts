@@ -11,7 +11,6 @@ import { StatusEffectTableRecord } from './status-effect-table-cols'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-cell',
   template: `
     <nwb-item-header class="gap-2">
@@ -20,7 +19,7 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
       </picture>
       <nwb-item-header-content
         class="z-10"
-        [title]="name | nwText | nwTextBreak : ' - '"
+        [title]="name | nwText | nwTextBreak: ' - '"
         [text1]="source"
         [text2]="'Status Effect'"
       />
@@ -73,7 +72,10 @@ export class StatusEffectCellComponent implements VirtualGridCellComponent<Statu
     return this.data?.['$source']
   }
 
-  public constructor(protected grid: VirtualGridComponent<StatusEffectTableRecord>, private tip: TooltipDirective) {
+  public constructor(
+    protected grid: VirtualGridComponent<StatusEffectTableRecord>,
+    private tip: TooltipDirective,
+  ) {
     //
   }
 

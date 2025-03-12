@@ -11,7 +11,6 @@ import { IconsModule } from '~/ui/icons'
 import { svgFilter, svgTableCells } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-table-grid-panel-button,button[nwbGridPanelButton]]',
   templateUrl: './table-grid-panel-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

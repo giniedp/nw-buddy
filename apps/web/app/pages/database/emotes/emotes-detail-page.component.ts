@@ -8,7 +8,6 @@ import { observeRouteParam } from '~/utils'
 import { EmoteDetailModule } from '~/widgets/data/emote-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-emotes-detail-page',
   templateUrl: './emotes-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

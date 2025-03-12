@@ -8,7 +8,6 @@ import { TableGridActionButton, TableGridPanelComponent } from '../table-grid'
 import { DataViewService } from './data-view.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-data-view-options-menu,[nwbDataViewOptionsMenu]',
   templateUrl: './data-view-options-menu.component.html',
   imports: [CommonModule, IconsModule, OverlayModule, TableGridPanelComponent],
@@ -27,7 +26,10 @@ export class DataViewOptionsMenuComponent {
   protected isPanelOpen = false
   protected icon = svgEllipsisVertical
   protected showIndicator$ = gridHasAnyFilterPresent(this.service.agGrid$)
-  public constructor(protected cdkOrigin: CdkOverlayOrigin, protected service: DataViewService<unknown>) {
+  public constructor(
+    protected cdkOrigin: CdkOverlayOrigin,
+    protected service: DataViewService<unknown>,
+  ) {
     //
   }
 

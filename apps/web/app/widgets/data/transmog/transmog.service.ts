@@ -29,7 +29,7 @@ export class TransmogService {
       itemAppearances: this.db.armorAppearancesAll(),
       weaponAppearances: this.db.weaponAppearancesAll(),
       instrumentAppearances: this.db.instrumentAppearancesAll(),
-      mountAttachnetAppearances: this.db.mountAttachmentsAppearancesAll()
+      mountAttachnetAppearances: this.db.mountAttachmentsAppearancesAll(),
     },
     (data) => selectAppearances(data),
   )

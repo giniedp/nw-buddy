@@ -1,5 +1,5 @@
 import { APP_BASE_HREF } from '@angular/common'
-import { CommonEngine, CommonEngineRenderOptions } from '@angular/ssr'
+import { CommonEngine, CommonEngineRenderOptions } from '@angular/ssr/node'
 import type { RequestHandler } from 'express'
 
 export const ssrAngular = (options: CommonEngineRenderOptions): RequestHandler => {

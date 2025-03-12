@@ -30,7 +30,6 @@ import { ItemDetailModelViewerComponent } from './ui/item-detail-model-viewer.co
 import { ItemDetailSalvageInfoComponent } from './ui/item-detail-salvage-info.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-page',
   templateUrl: './item-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

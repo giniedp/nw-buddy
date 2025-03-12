@@ -11,7 +11,6 @@ export function valueCell(options: ComponentInputs<ValueCellComponent>): Propert
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-value-cell',
   template: `
     @if (isNumber && numberFormat()) {

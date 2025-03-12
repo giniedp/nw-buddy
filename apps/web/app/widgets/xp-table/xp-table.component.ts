@@ -21,7 +21,6 @@ export interface LevelingRow {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-xp-table',
   templateUrl: './xp-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

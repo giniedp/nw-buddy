@@ -18,7 +18,6 @@ const DEFAULT_CLASS = [
 ]
 
 @Component({
-  standalone: true,
   selector: 'nwb-tooltip',
   styleUrls: ['./tooltip.component.scss'],
   template: `

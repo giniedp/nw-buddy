@@ -19,7 +19,6 @@ import { SummaryRow } from './types'
 import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuses-modal.component'
 
 @Component({
-  standalone: true,
   selector: 'tab-standing',
   templateUrl: './tab-standing.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

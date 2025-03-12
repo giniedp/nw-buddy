@@ -18,7 +18,6 @@ import { WeaponDefinitionTableAdapter } from '~/widgets/data/weapon-definitions-
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-weapon-definitions-page',
   templateUrl: './weapon-definitions-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

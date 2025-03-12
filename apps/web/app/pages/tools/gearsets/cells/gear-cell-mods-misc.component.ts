@@ -9,7 +9,6 @@ import { FlashDirective } from './ui/flash.directive'
 import { ModifierTipComponent } from './ui/modifier-tip.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-mods-misc',
   templateUrl: './gear-cell-mods-misc.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

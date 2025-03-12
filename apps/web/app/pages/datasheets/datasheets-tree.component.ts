@@ -6,7 +6,6 @@ import { DatasheetsStore } from './datasheets.store'
 import { RouterLink } from '@angular/router'
 
 @Component({
-  standalone: true,
   selector: 'details[nwbFileTree],ul[nwbFileTree]',
   imports: [IconsModule, RouterLink],
   template: `

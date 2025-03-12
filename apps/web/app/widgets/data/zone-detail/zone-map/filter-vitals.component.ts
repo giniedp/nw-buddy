@@ -38,7 +38,6 @@ import { PoiTagPickerAdapter } from './picker/poi-tag-picker.adapter'
 import { ZoneMapStore } from './zone-map.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-map-filter-vitals',
   templateUrl: './filter-vitals.component.html',
   host: {

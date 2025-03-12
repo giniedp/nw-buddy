@@ -14,7 +14,6 @@ export interface Chat {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-detail-conversation',
   template: `
     @if (npcs()?.length) {

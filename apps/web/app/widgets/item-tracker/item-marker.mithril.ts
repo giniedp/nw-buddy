@@ -68,7 +68,7 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
               bgClass,
               isChecked ? '' : 'opacity-25',
               attrs.disabled ? '' : 'hover:scale-125',
-              attrs.disabled ? '' : 'cursor-pointer'
+              attrs.disabled ? '' : 'cursor-pointer',
             ].join(' '),
             onclick: () => {
               if (!attrs.disabled) {
@@ -76,7 +76,7 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
               }
             },
           })
-        })
+        }),
       )
     },
   }

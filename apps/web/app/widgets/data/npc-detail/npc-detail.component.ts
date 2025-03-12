@@ -6,7 +6,6 @@ import { NpcDetailMapComponent } from './npc-detail-map.component'
 import { NpcDetailStore } from './npc-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-npc-detail',
   templateUrl: './npc-detail.component.html',
   imports: [ItemFrameModule, NwModule, CommonModule, NpcDetailMapComponent],

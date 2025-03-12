@@ -7,7 +7,6 @@ import { ItemDetailModule } from '../item-detail'
 import { LootBucketDetailStore } from './loot-bucket-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-bucket-detail',
   templateUrl: './loot-bucket-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

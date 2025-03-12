@@ -17,7 +17,6 @@ import { PriceImporterModule } from '~/widgets/price-importer/price-importer.mod
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-items-page',
   templateUrl: './items-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,7 +65,7 @@ export class ItemsPageComponent {
     protected service: DataViewService<ItemTableRecord>,
     protected search: QuicksearchService,
     head: HtmlHeadService,
-    zone: NgZone
+    zone: NgZone,
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({

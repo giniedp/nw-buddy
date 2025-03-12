@@ -5,7 +5,6 @@ import { Datasheet, TreeNode } from './types'
 import { DatasheetsStore } from './datasheets.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-datasheets-sidebar',
   host: {
     class: 'ion-page',

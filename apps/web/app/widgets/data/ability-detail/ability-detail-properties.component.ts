@@ -11,7 +11,6 @@ import { AbilityDetailStore } from './ability-detail.store'
 import { diffButtonCell } from '~/widgets/diff-tool'
 
 @Component({
-  standalone: true,
   selector: 'nwb-ability-detail-properties',
   template: `
     <nwb-property-grid

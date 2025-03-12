@@ -11,7 +11,6 @@ import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { svgRepeat } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-music-cell',
   templateUrl: './music-cell.component.html',
   styleUrls: ['./music-cell.component.scss'],

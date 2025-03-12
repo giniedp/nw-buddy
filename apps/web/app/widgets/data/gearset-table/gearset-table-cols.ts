@@ -40,7 +40,7 @@ export function gearsetColGearScore(util: GearsetTableUtils) {
     filter: true,
     width: 100,
     field: 'gearScore',
-    getQuickFilterText: () => ''
+    getQuickFilterText: () => '',
   })
 }
 
@@ -68,7 +68,7 @@ export function gearsetColSlots(util: GearsetTableUtils) {
             isNamed: isItemNamed(sData.item),
             rarity: sData.rarity,
           })
-        }).filter((it) => !!it)
+        }).filter((it) => !!it),
       )
     }),
   })

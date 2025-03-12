@@ -84,33 +84,45 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
         effectMap: this.db.statusEffectsByIdMap(),
         abilitiesMap: this.db.abilitiesByIdMap(),
       }).pipe(
-        map(({ vitals, vitalsMeta, dungeonsMap, dungeonMaps, categories, territoriesMap, buffMap, effectMap, abilitiesMap }) => {
-          return vitals.map((vital): VitalTableRecord => {
-            const familyInfo = getVitalFamilyInfo(vital)
-            const combatInfo = getVitalCategoryInfo(vital)
-            const metadata = vitalsMeta.get(vital.VitalsID)
-            const zones = metadata?.territories?.map((id) => territoriesMap.get(id)).filter((it) => !!it)
-            const $categories: VitalsCategoryData[] = [
-              ...(metadata?.catIDs || []).map((it) => categories.get(it)).filter((it) => !!it),
-              ...(vital.VitalsCategories || []).map((it) => categories.get(it)).filter((it) => !!it),
-            ].filter((it) => !!it)
-            return {
-              ...vital,
-              $dungeons: getVitalDungeons(vital, dungeonMaps, vitalsMeta).map((it) => dungeonsMap.get(it.GameModeId)),
-              $categories: uniqBy($categories, (it) => it.VitalsCategoryID),
-              $familyInfo: familyInfo,
-              $combatInfo: combatInfo,
-              $metadata: vitalsMeta.get(vital.VitalsID),
-              $zones: zones,
-              $buffs: collectVitalBuffs({
-                bucketIds: (vital.BuffBuckets || '').split(','),
-                buffMap: buffMap,
-                effectMap: effectMap,
-                abilitiesMap: abilitiesMap,
-              }),
-            }
-          })
-        }),
+        map(
+          ({
+            vitals,
+            vitalsMeta,
+            dungeonsMap,
+            dungeonMaps,
+            categories,
+            territoriesMap,
+            buffMap,
+            effectMap,
+            abilitiesMap,
+          }) => {
+            return vitals.map((vital): VitalTableRecord => {
+              const familyInfo = getVitalFamilyInfo(vital)
+              const combatInfo = getVitalCategoryInfo(vital)
+              const metadata = vitalsMeta.get(vital.VitalsID)
+              const zones = metadata?.territories?.map((id) => territoriesMap.get(id)).filter((it) => !!it)
+              const $categories: VitalsCategoryData[] = [
+                ...(metadata?.catIDs || []).map((it) => categories.get(it)).filter((it) => !!it),
+                ...(vital.VitalsCategories || []).map((it) => categories.get(it)).filter((it) => !!it),
+              ].filter((it) => !!it)
+              return {
+                ...vital,
+                $dungeons: getVitalDungeons(vital, dungeonMaps, vitalsMeta).map((it) => dungeonsMap.get(it.GameModeId)),
+                $categories: uniqBy($categories, (it) => it.VitalsCategoryID),
+                $familyInfo: familyInfo,
+                $combatInfo: combatInfo,
+                $metadata: vitalsMeta.get(vital.VitalsID),
+                $zones: zones,
+                $buffs: collectVitalBuffs({
+                  bucketIds: (vital.BuffBuckets || '').split(','),
+                  buffMap: buffMap,
+                  effectMap: effectMap,
+                  abilitiesMap: abilitiesMap,
+                }),
+              }
+            })
+          },
+        ),
       )
     )
   }

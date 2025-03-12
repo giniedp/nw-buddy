@@ -4,7 +4,6 @@ import { injectIsBrowser } from './utils/injection/platform'
 
 @Component({
   selector: 'nw-buddy-frame',
-  standalone: true,
   template: `<router-outlet />`,
   imports: [RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -5,7 +5,6 @@ import { GameMapHost } from './game-map-host'
 import { GameMapService } from './game-map.service'
 
 @Component({
-  standalone: true,
   selector: 'game-map-coords',
   template: `
     @if (active()) {

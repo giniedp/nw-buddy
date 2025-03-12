@@ -24,9 +24,7 @@ describe('item-scanner / recognize', async () => {
     beforeAll(async () => {
       TestBed.configureTestingModule({
         imports: [AppTestingModule],
-        providers: [
-          provideExperimentalZonelessChangeDetection()
-        ],
+        providers: [provideExperimentalZonelessChangeDetection()],
         teardown: { destroyAfterEach: false },
       })
       db = TestBed.runInInjectionContext(() => injectNwData())

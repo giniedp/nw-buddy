@@ -5,7 +5,6 @@ import { IonMenu } from '@ionic/angular/standalone'
 
 @Injectable({ providedIn: 'root' })
 export class LayoutService {
-
   public get isHandset() {
     return this.breakpoint.isMatched(Breakpoints.Handset)
   }

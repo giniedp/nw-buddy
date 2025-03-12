@@ -25,7 +25,6 @@ import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-status-effects-page',
   templateUrl: './status-effects-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

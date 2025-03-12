@@ -7,7 +7,7 @@ import {
   getItemRarityLabel,
   getItemRarityWeight,
   getItemTierAsRoman,
-  getUIHousingCategoryLabel
+  getUIHousingCategoryLabel,
 } from '@nw-data/common'
 import { HouseItems } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -40,7 +40,7 @@ export function housingColIcon(util: HousingTableUtils) {
           class: ['transition-all translate-x-0 hover:translate-x-1'],
           icon: getItemIconPath(data) || NW_FALLBACK_ICON,
           rarity: getItemRarity(data),
-        })
+        }),
       )
     }),
   })
@@ -78,14 +78,16 @@ export function housingColRarity(util: HousingTableUtils) {
       order: 'asc',
       getOptions: ({ data }) => {
         const value = getItemRarity(data)
-        return [{
-          id: value,
-          label: util.i18n.get(getItemRarityLabel(value)),
-          order: getItemRarityWeight(value),
-          class: ['text-rarity-' + value],
-        }]
+        return [
+          {
+            id: value,
+            label: util.i18n.get(getItemRarityLabel(value)),
+            order: getItemRarityWeight(value),
+            class: ['text-rarity-' + value],
+          },
+        ]
       },
-    })
+    }),
   })
 }
 
@@ -98,8 +100,8 @@ export function housingColTier(util: HousingTableUtils) {
     valueFormatter: ({ value }) => getItemTierAsRoman(value),
     getQuickFilterText: () => '',
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 
@@ -170,8 +172,8 @@ export function housingColHousingTag1Placed(util: HousingTableUtils) {
     getQuickFilterText: ({ value }) => humanize(value),
     width: 150,
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 
@@ -184,8 +186,8 @@ export function housingColUiHousingCategory(util: HousingTableUtils) {
     getQuickFilterText: ({ value }) => util.i18n.get(getUIHousingCategoryLabel(value)),
     width: 150,
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 
@@ -199,7 +201,7 @@ export function housingColHowToObtain(util: HousingTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -213,6 +215,6 @@ export function housingColHousingTags(util: HousingTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }

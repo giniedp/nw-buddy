@@ -9,7 +9,6 @@ import { ActivatedRoute } from '@angular/router'
 import { map } from 'rxjs'
 
 @Component({
-  standalone: true,
   selector: 'nwb-recipes-tracking',
   templateUrl: './recipes-tracking.component.html',
   styleUrls: ['./recipes-tracking.component.scss'],
@@ -20,7 +19,10 @@ import { map } from 'rxjs'
   },
 })
 export class RecipesTrackingComponent {
-  public constructor(private route: ActivatedRoute, protected service: DataViewService<RecipeRecord>) {
+  public constructor(
+    private route: ActivatedRoute,
+    protected service: DataViewService<RecipeRecord>,
+  ) {
     //
   }
 }

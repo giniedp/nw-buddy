@@ -15,7 +15,6 @@ import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-preferences-page',
   templateUrl: './preferences.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

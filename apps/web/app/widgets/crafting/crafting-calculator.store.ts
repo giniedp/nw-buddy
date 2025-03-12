@@ -139,7 +139,7 @@ export const CraftingCalculatorStore = signalStore(
         patchState(state, {
           tree: await solveRecipeTree(db, tree),
         })
-      }
+      },
     }
   }),
   withComputed(({ tree, recipe, item, slots }) => {

@@ -23,7 +23,6 @@ import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.st
 import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-offender-stats-control',
   templateUrl: './offender-stats-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,10 +51,13 @@ export class OffenderStatsControlComponent {
   protected level = offenderAccessor(this.store, 'level')
   protected isPvp = this.store.defenderIsPlayer
   protected pvpScale = computed(() => {
-    return 1 + getPvPScaling({
-      attackerLevel: this.store.offender.level(),
-      defenderLevel: this.store.defender.level(),
-    })
+    return (
+      1 +
+      getPvPScaling({
+        attackerLevel: this.store.offender.level(),
+        defenderLevel: this.store.defender.level(),
+      })
+    )
   })
   protected gearScore = offenderAccessor(this.store, 'gearScore')
   protected attrs = offenderAccessor(this.store, 'attributePoints')

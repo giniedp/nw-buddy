@@ -79,14 +79,7 @@ function getSubType(lootTable: ParsedLootTable) {
   return ''
 }
 
-type LoggingType =
-  | 'Banana'
-  | 'Cactus'
-  | 'Mycodendra'
-  | 'Ironwood'
-  | 'Runewood'
-  | 'Wyrdwood'
-  | 'Tree'
+type LoggingType = 'Banana' | 'Cactus' | 'Mycodendra' | 'Ironwood' | 'Runewood' | 'Wyrdwood' | 'Tree'
 
 interface LoggingData {
   itemID: string

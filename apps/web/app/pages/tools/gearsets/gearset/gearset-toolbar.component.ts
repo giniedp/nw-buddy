@@ -67,7 +67,6 @@ export const GEARSET_TAGS = [
 ]
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-toolbar',
   templateUrl: './gearset-toolbar.component.html',
   imports: [

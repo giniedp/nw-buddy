@@ -15,7 +15,6 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-xp-level-info',
   templateUrl: './xp-level-info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

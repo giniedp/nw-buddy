@@ -14,7 +14,6 @@ export interface AttributeEditorValue {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-attributes-editor-dialog',
   templateUrl: './attributes-editor-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -57,7 +57,7 @@ export function questColTitle(util: QuestTableUtils) {
         css.push('text-gray-400')
       }
       return css
-    }
+    },
   })
 }
 export function questColDescription(util: QuestTableUtils) {
@@ -80,7 +80,7 @@ export function questColType(util: QuestTableUtils) {
     width: 350,
     ...util.selectFilter({
       search: true,
-    })
+    }),
   })
 }
 export function questColPlayerPrompt(util: QuestTableUtils) {

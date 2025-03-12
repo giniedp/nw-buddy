@@ -7,7 +7,6 @@ import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MetaAchievementDetailStore } from './meta-achievement-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-meta-achievement-detail',
   templateUrl: './meta-achievement-detail.component.html',
   exportAs: 'mountDetail',

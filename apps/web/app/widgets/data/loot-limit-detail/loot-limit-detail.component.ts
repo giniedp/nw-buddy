@@ -6,7 +6,6 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { LootLimitDetailStore } from './loot-limit-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-limit-detail',
   templateUrl: './loot-limit-detail.component.html',
   exportAs: 'detail',

@@ -13,7 +13,6 @@ import { LootModule } from '~/widgets/loot'
 import { ItemDetailSalvageInfoComponent } from '../items/ui/item-detail-salvage-info.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-season-pass-detail-page',
   templateUrl: './season-pass-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

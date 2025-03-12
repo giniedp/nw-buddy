@@ -1,4 +1,10 @@
-import { ColDef, IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams, IRowNode } from '@ag-grid-community/core'
+import {
+  ColDef,
+  IAfterGuiAttachedParams,
+  IDoesFilterPassParams,
+  IFilterParams,
+  IRowNode,
+} from '@ag-grid-community/core'
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
@@ -13,7 +19,6 @@ import { GridSelectPanelComponent } from './grid-select-panel.component'
 import { GridSelectFilterOption, GridSelectFilterParams } from './types'
 
 @Component({
-  standalone: true,
   template: '<nwb-grid-select-panel/>',
   imports: [CommonModule, FormsModule, GridSelectPanelComponent],
   providers: [GridSelectFilterStore],
@@ -99,13 +104,13 @@ export class GridSelectFilter<T> implements IFilterAngularComp {
   }
 
   protected extractOptionsFromNode(node: IRowNode): GridSelectFilterOption[] {
-    const value =  this.getValue(node, node.data)
+    const value = this.getValue(node, node.data)
     if (Array.isArray(value)) {
       return value.map((it) => {
         return {
           id: valueToId(it),
           label: it == null ? '- not set -' : humanize(it),
-          class: it == null ? ['italic'] : null
+          class: it == null ? ['italic'] : null,
         }
       })
     }

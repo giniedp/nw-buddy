@@ -25,7 +25,6 @@ export interface EffectSlotState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-slot-effect',
   templateUrl: './gear-cell-slot-effect.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

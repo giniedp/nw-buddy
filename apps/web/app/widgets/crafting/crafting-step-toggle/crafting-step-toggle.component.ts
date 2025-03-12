@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, forwardRef, HostBinding, HostListen
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-step-toggle',
   templateUrl: './crafting-step-toggle.component.html',
   styleUrls: ['./crafting-step-toggle.component.scss'],

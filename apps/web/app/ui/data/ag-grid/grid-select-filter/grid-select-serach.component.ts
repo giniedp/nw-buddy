@@ -7,7 +7,6 @@ import { svgMagnifyingGlass, svgXmark } from '~/ui/icons/svg'
 import { GridSelectFilterStore } from './grid-select-filter.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-grid-select-search',
   template: `
     <input

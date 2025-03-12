@@ -10,7 +10,6 @@ import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.st
 import { StackedValueControlComponent } from './stacked-value-control.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-offender-mods-control',
   templateUrl: './offender-mods-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

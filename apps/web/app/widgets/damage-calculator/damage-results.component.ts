@@ -6,7 +6,6 @@ import { DamageCalculatorStore } from './damage-calculator.store'
 import { FloorPipe } from './pipes/floor.pipe'
 
 @Component({
-  standalone: true,
   selector: 'nwb-damage-results',
   templateUrl: './damage-results.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,7 +18,7 @@ export class DamageResultsComponent {
   protected store = inject(DamageCalculatorStore)
 
   protected get dotOutput() {
-    if (!this.store.offenderDotIsActive()){
+    if (!this.store.offenderDotIsActive()) {
       return null
     }
     return this.store.output().dot

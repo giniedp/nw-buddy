@@ -10,7 +10,6 @@ import { injectRouteParam } from '~/utils'
 import { LoreItemDetailMapComponent, LoreDetailStore } from '~/widgets/data/lore-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-lore-detail-page',
   templateUrl: './lore-detail-page.component.html',
   styleUrl: './lore-detail-page.component.scss',
@@ -19,7 +18,7 @@ import { LoreItemDetailMapComponent, LoreDetailStore } from '~/widgets/data/lore
   providers: [LoreDetailStore],
   host: {
     class: 'ion-page',
-  }
+  },
 })
 export class LoreDetailPageComponent {
   protected store = inject(LoreDetailStore)

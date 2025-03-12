@@ -6,7 +6,6 @@ import { ModifierSource } from '~/nw/mannequin/modifier'
 import { humanize } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-modifier-source-label',
   template: `
     <img [nwImage]="icon" class="w-6 h-6" *ngIf="icon" />

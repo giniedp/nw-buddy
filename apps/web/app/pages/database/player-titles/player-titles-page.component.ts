@@ -25,7 +25,6 @@ import { PlayerTitlesTableAdapter } from '~/widgets/data/player-titles-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-player-titles-page',
   templateUrl: './player-titles-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

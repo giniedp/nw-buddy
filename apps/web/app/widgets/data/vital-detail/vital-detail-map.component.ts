@@ -8,7 +8,6 @@ import { GameMapComponent, GameMapCoordsComponent, GameMapLayerDirective } from 
 import { VitalDetailMapStore, VitalMapFeature, VitalMapFeatureProperties } from './vital-detail-map.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-map',
   templateUrl: './vital-detail-map.component.html',
   imports: [

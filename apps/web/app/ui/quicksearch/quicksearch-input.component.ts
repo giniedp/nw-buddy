@@ -22,7 +22,6 @@ import { animate, style, transition, trigger } from '@angular/animations'
 import { WINDOW } from '~/utils/injection/window'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quicksearch-input',
   exportAs: 'quickSearch',
   templateUrl: './quicksearch-input.component.html',

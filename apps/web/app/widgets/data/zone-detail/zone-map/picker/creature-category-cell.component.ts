@@ -10,7 +10,6 @@ export interface CreatureCategoryRecord {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-creature-category-cell',
   template: ` {{ data?.DisplayName }} `,
   imports: [NwModule],

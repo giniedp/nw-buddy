@@ -9,7 +9,6 @@ import { diffButtonCell } from '~/widgets/diff-tool'
 import { SpellDetailStore } from './spell-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-spell-detail',
   templateUrl: './spell-detail.component.html',
   exportAs: 'detail',

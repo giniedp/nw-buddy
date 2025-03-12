@@ -3,7 +3,6 @@ import { GatherableDetailStore } from './gatherable-detail.store'
 import { NwModule } from '~/nw'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gatherable-detail-stats',
   template: `
     @if (store.restriction(); as text) {

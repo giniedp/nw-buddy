@@ -7,14 +7,14 @@ function transformKey<T>(key: T) {
 
 export class CaseInsensitiveMap<T, U> extends Map<T, U> {
   public override set(key: T, value: U): this {
-    return super.set(transformKey(key), value);
+    return super.set(transformKey(key), value)
   }
 
   public override get(key: T): U | undefined {
-    return super.get(transformKey(key));
+    return super.get(transformKey(key))
   }
 
   public override has(key: T): boolean {
-    return super.has(transformKey(key));
+    return super.has(transformKey(key))
   }
 }

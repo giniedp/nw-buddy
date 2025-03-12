@@ -27,7 +27,6 @@ import { ZoneTableAdapter } from '~/widgets/data/zone-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-zones-page',
   templateUrl: './zones-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -8,7 +8,6 @@ import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MutaCurseDetailStore } from './muta-curse-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-muta-curse-detail',
   templateUrl: './muta-curse-detail.component.html',
   exportAs: 'curseDetail',

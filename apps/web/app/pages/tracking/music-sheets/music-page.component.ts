@@ -12,7 +12,6 @@ import { MusicRecord, RecipesTableAdapter } from './adapter'
 import { NwModule } from '~/nw'
 
 @Component({
-  standalone: true,
   selector: 'nwb-music-page',
   templateUrl: './music-page.component.html',
   imports: [CommonModule, NwModule, RouterModule, DataViewModule, VirtualGridModule],
@@ -41,7 +40,7 @@ export class MusicPageComponent implements OnInit {
           learned: learned,
           percent: learned / total,
         }
-      })
+      }),
     )
 
   public constructor(
@@ -50,7 +49,7 @@ export class MusicPageComponent implements OnInit {
     protected itemPref: ItemPreferencesService,
     route: ActivatedRoute,
     router: Router,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     head.updateMetadata({
       url: head.currentUrl,
@@ -62,8 +61,8 @@ export class MusicPageComponent implements OnInit {
     this.service.loadCateory(
       merge(
         this.outlet.deactivateEvents.pipe(map(() => null)),
-        this.outlet.activateEvents.pipe(switchMap(() => observeRouteParam(this.outlet.activatedRoute, 'category')))
-      )
+        this.outlet.activateEvents.pipe(switchMap(() => observeRouteParam(this.outlet.activatedRoute, 'category'))),
+      ),
     )
   }
 }

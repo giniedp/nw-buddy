@@ -39,7 +39,6 @@ export interface ItemPerkSlot {
   editable?: boolean
 }
 
-
 export interface PerkSlotExplained extends ItemPerkSlot {
   key: string
   perkId?: string

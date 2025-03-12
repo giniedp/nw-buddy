@@ -129,7 +129,7 @@ export class TableGridPersistenceService {
   }
   private fromQueryParams() {
     const param = this.getQueryParam()
-    const state = decompressQueryParam<{ columns: any, filter: any }>(param)
+    const state = decompressQueryParam<{ columns: any; filter: any }>(param)
     return {
       columns: state?.columns as ColumnState[],
       filter: state?.filter,

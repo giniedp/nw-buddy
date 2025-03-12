@@ -25,7 +25,6 @@ import { SeasonPassTableAdapter } from '~/widgets/data/season-pass-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-season-pass-page',
   templateUrl: './season-pass-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

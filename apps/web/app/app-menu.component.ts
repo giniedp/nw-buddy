@@ -16,16 +16,15 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
 import { injectCurrentUrl } from './utils/injection/current-url'
 import { LocaleService } from './i18n'
 
-@Pipe({ name: 'linkWithLocale' })
+@Pipe({
+  name: 'linkWithLocale',
+  standalone: false,
+})
 export class LinkWithLocale implements PipeTransform {
-  transform(value: any, ...args: any[]) {
-
-  }
+  transform(value: any, ...args: any[]) {}
 }
 
-
 @Component({
-  standalone: true,
   selector: 'app-menu',
   templateUrl: './app-menu.component.html',
   imports: [
@@ -106,5 +105,4 @@ export class AppMenuComponent {
   protected handleSegmentChange(event: SegmentCustomEvent) {
     patchState(this.state, { active: event.detail.value as any })
   }
-
 }

@@ -10,7 +10,6 @@ import { ArmorWeightTableAdapter } from './armor-weight-adapter'
 import { ArmorWeightSet, ArmorWeightsStore } from './armor-weights.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-armor-weights-page',
   templateUrl: './armor-weights-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

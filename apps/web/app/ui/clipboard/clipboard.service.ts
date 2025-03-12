@@ -4,7 +4,6 @@ import { saveAs } from 'file-saver'
 
 @Injectable({ providedIn: 'root' })
 export class ClipboardService {
-
   private window = inject(DOCUMENT).defaultView
 
   public get isSupported() {
@@ -37,13 +36,11 @@ export class ClipboardService {
   }
 }
 
-
 async function writeFile(fileHandle, contents: Blob) {
   const writable = await fileHandle.createWritable()
   await writable.write(contents)
   await writable.close()
 }
-
 
 async function verifyPermission(fileHandle) {
   const options = {

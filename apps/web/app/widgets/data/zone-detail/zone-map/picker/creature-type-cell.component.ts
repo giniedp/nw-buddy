@@ -17,7 +17,7 @@ export interface CreatureTypeRecord {
   host: {
     class: 'btn btn-block justify-start text-left rounded-none',
     '[class.text-primary]': 'selected',
-  }
+  },
 })
 export class CreatureTypeCellComponent implements VirtualGridCellComponent<CreatureTypeRecord> {
   public static buildGridOptions(): VirtualGridOptions<CreatureTypeRecord> {

@@ -42,7 +42,6 @@ export interface TableGridActionButton {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-table-grid-panel',
   templateUrl: './table-grid-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -156,40 +155,48 @@ export class TableGridPanelComponent {
   }
 
   protected setAllHidden(hidden: boolean) {
-    const state = this.state().columns().map((it) => {
-      it.hide = hidden
-      return it
-    })
+    const state = this.state()
+      .columns()
+      .map((it) => {
+        it.hide = hidden
+        return it
+      })
     this.submitState(state)
   }
 
   protected toggleHide(id: string) {
-    const state = this.state().columns().map((it) => {
-      if (it.colId === id) {
-        it.hide = !it.hide
-      }
-      return it
-    })
+    const state = this.state()
+      .columns()
+      .map((it) => {
+        if (it.colId === id) {
+          it.hide = !it.hide
+        }
+        return it
+      })
     this.submitState(state)
   }
 
   protected togglePinLeft(id: string) {
-    const state = this.state().columns().map((it) => {
-      if (it.colId === id) {
-        it.pinned = it.pinned === 'left' ? false : 'left'
-      }
-      return it
-    })
+    const state = this.state()
+      .columns()
+      .map((it) => {
+        if (it.colId === id) {
+          it.pinned = it.pinned === 'left' ? false : 'left'
+        }
+        return it
+      })
     this.submitState(state)
   }
 
   protected togglePinRight(id: string) {
-    const state = this.state().columns().map((it) => {
-      if (it.colId === id) {
-        it.pinned = it.pinned === 'right' ? false : 'right'
-      }
-      return it
-    })
+    const state = this.state()
+      .columns()
+      .map((it) => {
+        if (it.colId === id) {
+          it.pinned = it.pinned === 'right' ? false : 'right'
+        }
+        return it
+      })
     this.submitState(state)
   }
 

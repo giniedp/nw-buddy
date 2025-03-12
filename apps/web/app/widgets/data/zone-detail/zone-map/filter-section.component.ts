@@ -9,7 +9,6 @@ import { FilterDataSet } from './data/types'
 import { MapFilterCategoryComponent } from './filter-category.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-map-filter-section',
   template: `
     <details [attr.open]="open() || !!search() ? 'open' : null">
@@ -41,7 +40,7 @@ import { MapFilterCategoryComponent } from './filter-category.component'
   imports: [NwModule, MapFilterCategoryComponent, IconsModule],
   host: {
     class: 'block',
-    '[class.hidden]': '!matchSearch()'
+    '[class.hidden]': '!matchSearch()',
   },
 })
 export class MapFilterSectionComponent {

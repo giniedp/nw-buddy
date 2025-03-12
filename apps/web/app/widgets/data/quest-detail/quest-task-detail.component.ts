@@ -3,7 +3,6 @@ import { QuestTaskDetailStore } from './quest-task-detail.store'
 import { QuestTaskTreeComponent } from './quest-task-tree.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-task-detail',
   template: ` <nwb-quest-task-tree [task]="task" [children]="children" /> `,
   providers: [QuestTaskDetailStore],

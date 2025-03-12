@@ -10,7 +10,6 @@ import { CraftingChanceMenuComponent } from './crafting-bonus'
 import { PriceImporterModule } from '../price-importer/price-importer.module'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-calculator-header',
   templateUrl: './crafting-calculator-header.component.html',
   imports: [
@@ -32,7 +31,6 @@ export class CraftingCalculatorHeaderComponent {
   protected recipeLevel = computed(() => this.store.recipe()?.RecipeLevel)
   protected skillLevel = this.store.tradeskillLevel
   protected canCraft = this.store.canCraft
-
 
   protected iconImporter = svgDollarSign
   protected iconMode = svgPercent

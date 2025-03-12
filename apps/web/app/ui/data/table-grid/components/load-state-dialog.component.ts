@@ -9,7 +9,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { SaveStateDialogStore } from './save-state-dialog.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-load-state-dialog',
   templateUrl: './load-state-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

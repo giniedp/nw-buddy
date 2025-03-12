@@ -6,7 +6,6 @@ import { NwModule } from '~/nw'
 import { GearsetLoadoutItemComponent } from './loadout-item.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-loadout-list',
   templateUrl: './loadout-list.component.html',
   styleUrls: ['./loadout-list.component.scss'],

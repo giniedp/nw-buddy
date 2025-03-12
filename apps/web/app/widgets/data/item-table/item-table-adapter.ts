@@ -1,7 +1,12 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getItemId, getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
-import { COLS_CONSUMABLEITEMDEFINITIONS, COLS_MASTERITEMDEFINITIONS, CategoricalProgressionData, MasterItemDefinitions } from '@nw-data/generated'
+import {
+  COLS_CONSUMABLEITEMDEFINITIONS,
+  COLS_MASTERITEMDEFINITIONS,
+  CategoricalProgressionData,
+  MasterItemDefinitions,
+} from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'

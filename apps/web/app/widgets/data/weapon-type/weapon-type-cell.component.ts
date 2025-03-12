@@ -16,7 +16,6 @@ import { ItemDetailModule } from '../item-detail'
 import { WeaponTypeTableRecord } from './weapon-type-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-view',
   template: `
     <nwb-item-header class="gap-2">
@@ -25,7 +24,7 @@ import { WeaponTypeTableRecord } from './weapon-type-table-cols'
       </picture>
       <nwb-item-header-content
         class="z-10"
-        [title]="name | nwText | nwTextBreak : ' - '"
+        [title]="name | nwText | nwTextBreak: ' - '"
         [text1]="damageType | nwText"
         [text2]="category | nwText"
       />
@@ -79,7 +78,7 @@ export class WeaponTypeCellComponent implements VirtualGridCellComponent<WeaponT
   }
   public constructor(
     protected grid: VirtualGridComponent<WeaponTypeTableRecord>,
-    protected service: NwWeaponTypesService
+    protected service: NwWeaponTypesService,
   ) {
     //
   }

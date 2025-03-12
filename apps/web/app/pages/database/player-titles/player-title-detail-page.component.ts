@@ -15,7 +15,6 @@ import { PlayerTitleDetailModule } from '~/widgets/data/player-title-detail'
 import { LootModule } from '~/widgets/loot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-player-title-detail-page',
   templateUrl: './player-title-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

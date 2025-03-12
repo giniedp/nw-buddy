@@ -12,7 +12,6 @@ import { MetaAchievementDetailModule } from '~/widgets/data/meta-achievement-det
 import { LootModule } from '~/widgets/loot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-weapon-definition-detail-page',
   templateUrl: './weapon-definition-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

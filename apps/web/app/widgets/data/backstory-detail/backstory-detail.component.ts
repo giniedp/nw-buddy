@@ -15,7 +15,6 @@ const BACKGROUND_IMAGES = {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-backstory-detail',
   templateUrl: './backstory-detail.component.html',
   exportAs: 'detail',

@@ -13,7 +13,8 @@ export class AngularFrameworkOverrides extends VanillaFrameworkOverrides {
   constructor(private _ngZone: NgZone) {
     super('angular')
 
-    this.isRunningWithinTestZone = (this.window as any)?.AG_GRID_UNDER_TEST ?? !!(this.window as any)?.Zone?.AsyncTestZoneSpec
+    this.isRunningWithinTestZone =
+      (this.window as any)?.AG_GRID_UNDER_TEST ?? !!(this.window as any)?.Zone?.AsyncTestZoneSpec
 
     if (!this._ngZone) {
       this.runOutside = (callback) => callback()

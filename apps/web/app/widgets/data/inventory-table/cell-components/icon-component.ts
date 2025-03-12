@@ -8,7 +8,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '../../item-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-icon',
   template: `
     <nwb-item-icon

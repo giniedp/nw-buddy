@@ -35,7 +35,7 @@ export function selectBackstoryProps(backstory: BackstoryDefinition) {
   if (!backstory) {
     return null
   }
-  const result: Array<{ icon: string; value: number, label: string }> = []
+  const result: Array<{ icon: string; value: number; label: string }> = []
   if (backstory.Currency) {
     result.push({
       icon: 'assets/icons/rewards/coin.png',

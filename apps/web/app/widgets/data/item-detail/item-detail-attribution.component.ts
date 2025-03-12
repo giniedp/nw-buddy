@@ -6,7 +6,6 @@ import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-attribution',
   template: `
     @if (!isHidden()) {

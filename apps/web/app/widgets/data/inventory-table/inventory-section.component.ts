@@ -8,7 +8,6 @@ import { InventoryTableRecord } from './inventory-table-cols'
 import { INVENTORY_CATEOGRIES } from './utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-inventory-section',
   template: `
     <h3 class="text-3xl uppercase relative font-caslon text-nw-description p-4">

@@ -10,7 +10,6 @@ import { DamageRowDetailModule } from '~/widgets/data/damage-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-damage-detail-page',
   templateUrl: './damage-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

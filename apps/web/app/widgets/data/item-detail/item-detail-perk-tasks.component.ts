@@ -22,7 +22,6 @@ export interface PerkTask {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-perk-tasks',
   templateUrl: './item-detail-perk-tasks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

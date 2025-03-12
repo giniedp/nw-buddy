@@ -1,6 +1,12 @@
 import { Component, computed, HostBinding, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { getFirstItemClassOf, getItemRarity, getItemSetFamilyName, getItemVersionString, isItemNamed } from '@nw-data/common'
+import {
+  getFirstItemClassOf,
+  getItemRarity,
+  getItemSetFamilyName,
+  getItemVersionString,
+  isItemNamed,
+} from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
@@ -11,7 +17,6 @@ import { ItemDetailStore } from './item-detail.store'
 import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-set-items',
   template: `
     @for (group of groups(); track group.label) {

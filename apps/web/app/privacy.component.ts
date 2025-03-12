@@ -5,7 +5,6 @@ import { environment } from '../environments/environment'
 import { TooltipModule } from './ui/tooltip'
 
 @Component({
-  standalone: true,
   selector: 'nwb-privacy',
   templateUrl: './privacy.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,7 +14,6 @@ import { TooltipModule } from './ui/tooltip'
   },
 })
 export class PrivacyComponent {
-
   protected isWeb = environment.environment === 'WEB'
   public constructor() {
     //

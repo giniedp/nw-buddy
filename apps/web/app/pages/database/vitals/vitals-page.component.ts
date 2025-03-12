@@ -20,7 +20,6 @@ import { VitalTableAdapter, VitalTableRecord } from '~/widgets/data/vital-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vitals-page',
   templateUrl: './vitals-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

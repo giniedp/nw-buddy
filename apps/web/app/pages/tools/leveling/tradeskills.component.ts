@@ -9,7 +9,6 @@ import { injectRouteParam, selectSignal } from '~/utils'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tradeskills-page',
   templateUrl: './tradeskills.component.html',
   styleUrls: ['./tradeskills.component.scss'],

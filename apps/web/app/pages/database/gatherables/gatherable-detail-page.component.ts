@@ -15,7 +15,6 @@ import { GatherableDetailStore } from '~/widgets/data/gatherable-detail/gatherab
 import { LootModule } from '~/widgets/loot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gatherable-detail-page',
   templateUrl: './gatherable-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

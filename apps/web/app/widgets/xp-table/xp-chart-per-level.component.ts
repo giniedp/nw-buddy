@@ -6,7 +6,6 @@ import { ChartComponent } from '~/ui/chart'
 import { apiResource } from '~/utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-xp-chart-per-level',
   template: `<nwb-chart [config]="config()" class="bg-base-100 rounded-md p-2" />`,
   changeDetection: ChangeDetectionStrategy.OnPush,

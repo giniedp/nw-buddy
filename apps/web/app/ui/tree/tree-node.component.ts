@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tree-node',
   templateUrl: './tree-node.component.html',
   styleUrls: ['./tree-node.component.scss'],

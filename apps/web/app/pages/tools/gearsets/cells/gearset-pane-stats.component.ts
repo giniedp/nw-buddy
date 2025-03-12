@@ -12,7 +12,6 @@ import { GearCellPerkStacksComponent } from '../cells/gear-cell-perk-stacks.comp
 import { GearCellWeaponComponent } from '../cells/gear-cell-weapon.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-pane-stats',
   templateUrl: './gearset-pane-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

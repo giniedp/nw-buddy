@@ -95,7 +95,7 @@ export function setValueData<T>(state: SelectFilterGroup<T>, value: T, data: any
       if (isValue(child) && child.value === value) {
         return {
           ...child,
-          data
+          data,
         }
       }
       return child

@@ -6,7 +6,6 @@ import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 import { extractLimits } from './utils'
 
 @Component({
-  standalone: true,
   selector: 'nwb-status-effect-limits-table',
   template: `
     @if (store.table(); as table) {

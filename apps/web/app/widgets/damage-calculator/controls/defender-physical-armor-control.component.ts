@@ -6,7 +6,6 @@ import { DamageCalculatorStore, defenderAccessor } from '../damage-calculator.st
 import { StackedValueControlComponent } from './stacked-value-control.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-defender-physical-armor-control',
   templateUrl: './defender-physical-armor-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

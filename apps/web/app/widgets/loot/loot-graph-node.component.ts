@@ -50,7 +50,6 @@ export interface LootGraphNodeState<T = LootNode> {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-graph-node',
   templateUrl: './loot-graph-node.component.html',
   styleUrls: ['./loot-graph-node.component.scss'],

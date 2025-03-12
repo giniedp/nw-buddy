@@ -23,7 +23,6 @@ export interface DataViewCategoryMenuState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-data-view-category-menu,button[nwbDataCateogryMenu]',
   templateUrl: './data-view-category-menu.component.html',
   imports: [CommonModule, OverlayModule, IconsModule, NwModule, RouterModule],

@@ -15,7 +15,6 @@ import { SkillTreeStore } from '~/widgets/skill-builder/skill-tree.store'
 import { SkillsetTableRecord } from './skillset-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-skillset-cell',
   templateUrl: './skillset-cell.component.html',
   styleUrl: './skillset-cell.component.scss',

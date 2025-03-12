@@ -32,10 +32,10 @@ export class IntersectionObserverService {
                 this.subjects.delete(el)
                 this.observer.unobserve(el)
               },
-            })
+            }),
           )
           .pipe(switchMap(() => this.subjects.get(el)))
-          .pipe(shareReplayRefCount(1))
+          .pipe(shareReplayRefCount(1)),
       )
     }
     return this.observers.get(el)

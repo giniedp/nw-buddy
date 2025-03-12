@@ -14,7 +14,6 @@ import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-stats',
   exportAs: 'itemDetailStats',
   templateUrl: 'item-detail-stats.component.html',

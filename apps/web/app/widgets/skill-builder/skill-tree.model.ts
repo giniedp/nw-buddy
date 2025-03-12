@@ -104,7 +104,7 @@ export function buildGrid(abilities: AbilityData[]) {
         ability: ability,
         parentId: getAbilityParent(ability, abilities),
         type: getAbilityCategoryTag(ability),
-        parentLabel: null
+        parentLabel: null,
       }
     })
   })
@@ -270,7 +270,7 @@ function connect(
   grid: SkillTreeGrid,
   start: SkillTreeCell,
   end: SkillTreeCell,
-  propagate: { unlocked: boolean; invalid: boolean }
+  propagate: { unlocked: boolean; invalid: boolean },
 ) {
   if (!start || !end) {
     return

@@ -25,7 +25,6 @@ import { PriceImporterModule } from '~/widgets/price-importer/price-importer.mod
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-housing-page',
   templateUrl: './housing-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

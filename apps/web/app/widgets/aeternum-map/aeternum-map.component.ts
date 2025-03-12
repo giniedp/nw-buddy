@@ -21,22 +21,21 @@ import { svgArrowsLeftRight, svgCompress, svgExpand, svgXmark } from '~/ui/icons
 import { LayoutModule } from '~/ui/layout'
 
 @Component({
-  standalone: true,
   selector: 'nwb-aeternum-map',
   template: `
     <div class="mb-1 flex flex-row gap-1 justify-center sticky top-0 w-full h-0 overflow-visible">
-      @if(!isExpanded && isFloating){
+      @if (!isExpanded && isFloating) {
         <button class="btn btn-circle btn-primary btn-sm" (click)="togglePosition()">
-          <nwb-icon [icon]="iconArrows" class="w-4 h-4"/>
+          <nwb-icon [icon]="iconArrows" class="w-4 h-4" />
         </button>
       }
-      @if(isFloating) {
+      @if (isFloating) {
         <button class="btn btn-circle btn-primary btn-sm" (click)="toggleExpand()">
-          <nwb-icon [icon]="isExpanded ? iconCollapse : iconExpand" class="w-4 h-4"/>
+          <nwb-icon [icon]="isExpanded ? iconCollapse : iconExpand" class="w-4 h-4" />
         </button>
       }
       <button class="btn btn-circle btn-error btn-sm" (click)="close.emit()">
-        <nwb-icon [icon]="iconClose" class="w-4 h-4"/>
+        <nwb-icon [icon]="iconClose" class="w-4 h-4" />
       </button>
     </div>
     <iframe src="https://aeternum-map.gg" class="flex-1"></iframe>
@@ -52,7 +51,6 @@ import { LayoutModule } from '~/ui/layout'
   },
 })
 export class AeternumMapComponent implements OnInit, OnDestroy {
-
   protected isFloating = true
   protected isExpanded = false
   protected isLeft = false
@@ -71,7 +69,11 @@ export class AeternumMapComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>()
 
-  public constructor(private bp: BreakpointObserver, private cdRef: ChangeDetectorRef, private router: Router) {
+  public constructor(
+    private bp: BreakpointObserver,
+    private cdRef: ChangeDetectorRef,
+    private router: Router,
+  ) {
     //
   }
 

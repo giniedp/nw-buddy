@@ -11,7 +11,6 @@ import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { RunesRecord, RunesTableAdapter } from './adapter'
 
 @Component({
-  standalone: true,
   selector: 'nwb-runes-page',
   templateUrl: './runes-page.component.html',
   imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
@@ -37,14 +36,14 @@ export class RunesPageComponent implements OnInit {
           learned: learned,
           percent: learned / total,
         }
-      })
+      }),
     )
 
   public constructor(
     protected service: DataViewService<RunesRecord>,
     protected search: QuicksearchService,
     protected itemPref: ItemPreferencesService,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     head.updateMetadata({
       url: head.currentUrl,

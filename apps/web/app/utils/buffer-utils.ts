@@ -1,4 +1,3 @@
-
 export async function bufferToBase64(buffer: ArrayBuffer) {
   const blob = new Blob([buffer], { type: 'application/octet-stream' })
   return new Promise<string>((resolve) => {
@@ -13,6 +12,5 @@ export async function bufferToBase64(buffer: ArrayBuffer) {
 }
 
 export async function base64ToBuffer(data: string): Promise<ArrayBuffer> {
-  return fetch(`data:application/octet-stream;base64,${data}`)
-    .then((res) => res.arrayBuffer())
+  return fetch(`data:application/octet-stream;base64,${data}`).then((res) => res.arrayBuffer())
 }

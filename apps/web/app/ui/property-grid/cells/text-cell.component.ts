@@ -12,7 +12,6 @@ export function textCell(options: ComponentInputs<TextCellComponent>): PropertyG
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-text-cell',
   template: `{{ value() }}`,
   host: {

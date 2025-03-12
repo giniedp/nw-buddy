@@ -17,7 +17,6 @@ export function perkScalingCell(options: ComponentInputs<PerkScalingCellComponen
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-scaling-cell',
   template: `
     <nwb-icon [icon]="iconInfo" class="cursor-help w-3 h-3" [popover]="tplInfo" />

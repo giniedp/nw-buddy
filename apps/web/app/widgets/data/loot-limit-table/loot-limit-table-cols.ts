@@ -42,7 +42,7 @@ export function lootLimitColIcon(util: LootLimitTableUtils) {
           isArtifact: isMasterItem(data.$item) && isItemArtifact(data.$item),
           isNamed: isMasterItem(data.$item) && isItemNamed(data.$item),
           rarity: getItemRarity(data.$item),
-        })
+        }),
       )
     }),
   })

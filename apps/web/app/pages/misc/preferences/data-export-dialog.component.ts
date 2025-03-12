@@ -25,7 +25,6 @@ export interface DataExportDialogState {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-data-export-dialog',
   templateUrl: './data-export-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

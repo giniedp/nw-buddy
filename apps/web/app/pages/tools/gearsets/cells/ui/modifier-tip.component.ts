@@ -6,7 +6,6 @@ import { ModifierSourceLabelComponent } from './modifier-source-label.component'
 import { sumBy } from 'lodash'
 
 @Component({
-  standalone: true,
   selector: 'nwb-modifier-tip',
   templateUrl: './modifier-tip.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

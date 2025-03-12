@@ -24,7 +24,6 @@ import { PvpStoreTableAdapter } from '~/widgets/data/pvp-store-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-pvp-buckets-page',
   templateUrl: './pvp-buckets-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -7,7 +7,6 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { MutaPromotionDetailStore } from './muta-promotion-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-muta-promotion-detail',
   templateUrl: './muta-promotion-detail.component.html',
   exportAs: 'promotionDetail',

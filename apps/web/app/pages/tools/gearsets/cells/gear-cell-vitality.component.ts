@@ -8,7 +8,6 @@ import { ModifierTipComponent } from './ui/modifier-tip.component'
 import { FlashDirective } from './ui/flash.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-vitality',
   templateUrl: './gear-cell-vitality.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

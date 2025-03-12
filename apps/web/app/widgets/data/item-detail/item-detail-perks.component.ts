@@ -16,7 +16,6 @@ import { ItemEditorEventsService } from './item-editor-events.service'
 import { PerkSlotExplained } from './selectors'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-perks',
   templateUrl: './item-detail-perks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -13,7 +13,6 @@ export interface Tab {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-bucket-detail-tabs',
   templateUrl: './perk-bucket-detail-tabs.component.html',
   imports: [CommonModule, PerkBucketDetailPerksComponent],

@@ -1,2 +1,1 @@
-export * from './grid-select-filter.component';
-
+export * from './grid-select-filter.component'

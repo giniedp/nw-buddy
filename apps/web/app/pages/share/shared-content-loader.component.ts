@@ -11,7 +11,6 @@ import { ShareService, UploadContent } from './share.service'
 import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
-  standalone: true,
   selector: 'nwb-shared-content-loader',
   templateUrl: './shared-content-loader.component.html',
   imports: [CommonModule, IconsModule, RouterModule],

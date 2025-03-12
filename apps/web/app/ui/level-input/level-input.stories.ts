@@ -4,7 +4,6 @@ import { AppTestingModule } from '~/test'
 import { LevelInputComponent } from './level-input.component'
 import { LevelInputModule } from './level-input.module'
 
-
 export default {
   title: 'UI / Forms / nwb-level-input',
   component: LevelInputComponent,
@@ -18,12 +17,10 @@ export default {
     }),
   ],
   args: {
-    width: 100
-  }
+    width: 100,
+  },
 } satisfies Meta<LevelInputComponent>
 
 export const Example: StoryObj<LevelInputComponent> = {
-  args: {
-
-  },
+  args: {},
 }

@@ -12,7 +12,6 @@ export function linkCell(options: ComponentInputs<LinkCellComponent>): PropertyG
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-link-cell',
   template: `
     @if (externLink()) {

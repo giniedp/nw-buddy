@@ -334,5 +334,5 @@ export const NW_MAPS = [
     id: 'nw_raid_cutlasskeys_00',
     name: 'raid_cutlasskeys00_title',
     bounds: null,
-  }
+  },
 ]

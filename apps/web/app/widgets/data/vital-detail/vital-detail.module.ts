@@ -18,7 +18,7 @@ const components = [
   VitalDetailBuffsComponent,
   VitalDetailModelsComponent,
   VitalDetailStatsComponent,
-  VitalDetailMapComponent
+  VitalDetailMapComponent,
 ]
 @NgModule({
   imports: [...components],

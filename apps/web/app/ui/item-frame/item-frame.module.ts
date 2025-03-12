@@ -16,7 +16,7 @@ const COMPONENTS = [
   ItemIconFrameComponent,
   ItemGsComponent,
   ItemStatComponent,
-  ItemPerkComponent
+  ItemPerkComponent,
 ]
 
 @NgModule({

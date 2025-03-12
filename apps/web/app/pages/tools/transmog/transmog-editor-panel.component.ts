@@ -18,7 +18,6 @@ import { DyePickerComponent } from '~/widgets/model-viewer/dye-picker.component'
 import { TransmogEditorStore, TransmogSlotName } from './transmog-editor-page.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-transmog-editor-panel',
   templateUrl: './transmog-editor-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

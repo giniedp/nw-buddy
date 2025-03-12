@@ -31,7 +31,6 @@ import { LootContextEditorState, LootContextEditorStore } from './loot-context-e
 import { LootTagComponent } from './loot-tag.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-context-editor',
   exportAs: 'contextEditor',
   templateUrl: './loot-context-editor.component.html',

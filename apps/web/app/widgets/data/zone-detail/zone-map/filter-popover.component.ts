@@ -4,7 +4,6 @@ import { LootModule } from '~/widgets/loot'
 import { FilterDataSet } from './data/types'
 
 @Component({
-  standalone: true,
   selector: 'nwb-map-filter-popover',
   template: `
     @if (variants().length) {

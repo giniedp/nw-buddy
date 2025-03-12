@@ -16,7 +16,6 @@ import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-npcs-detail-page',
   templateUrl: './npcs-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

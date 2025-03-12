@@ -16,7 +16,6 @@ import { EmptyComponent } from '~/widgets/empty'
 import { VitalTableRecord } from './vital-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-grid-cell',
   template: `
     @if (familyIcon; as icon) {

@@ -25,7 +25,7 @@ export class VirtualGridQuickfilterDirective {
             return of('')
           }
           return selectStream(search.query$).pipe(debounceTime(500))
-        })
+        }),
       )
       .pipe(distinctUntilChanged())
       .pipe(tap((query) => store.patchState({ quickfilter: query })))

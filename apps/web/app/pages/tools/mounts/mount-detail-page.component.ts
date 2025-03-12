@@ -8,7 +8,6 @@ import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { MountDetailModule } from '~/widgets/data/mount-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-mount-detail-page',
   templateUrl: './mount-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

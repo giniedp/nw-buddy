@@ -9,7 +9,6 @@ export interface Chat {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-detail-destination',
   template: `
     @for (npc of destination(); track $index; let first = $first) {

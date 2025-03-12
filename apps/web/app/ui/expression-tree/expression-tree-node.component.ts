@@ -8,7 +8,6 @@ import { CONDITION_DEFAULT_OPERATOR, ExpressionTreeStore, GROUP_DEFAULT_OPERATOR
 import { ExpressionNode, isCondition, isGroup } from './types'
 
 @Component({
-  standalone: true,
   selector: 'nwb-expression-tree-node',
   templateUrl: './expression-tree-node.component.html',
   styleUrls: ['./expression-tree-node.component.scss'],

@@ -22,7 +22,10 @@ export class TradeskillsComponent {
 
   public selected: string
 
-  public constructor(private service: NwTradeskillService, head: HtmlHeadService) {
+  public constructor(
+    private service: NwTradeskillService,
+    head: HtmlHeadService,
+  ) {
     head.updateMetadata({
       title: 'Trade Skills',
       description: 'Trade skill progression settings',

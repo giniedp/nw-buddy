@@ -7,7 +7,6 @@ import { diffButtonCell } from '~/widgets/diff-tool'
 import { ZoneDetailStore } from './zone-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-zone-detail-content',
   template: `
     @if (store.image(); as img) {

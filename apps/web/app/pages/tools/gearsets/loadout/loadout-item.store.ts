@@ -1,11 +1,7 @@
-import { Injectable } from "@angular/core";
-import { ComponentStore } from "@ngrx/component-store";
+import { Injectable } from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
 
-export interface GearsetLoadoutItemState {
-
-}
+export interface GearsetLoadoutItemState {}
 
 @Injectable()
-export class GearsetLoadoutItemStore extends ComponentStore<GearsetLoadoutItemState> {
-
-}
+export class GearsetLoadoutItemStore extends ComponentStore<GearsetLoadoutItemState> {}

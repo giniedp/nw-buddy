@@ -17,7 +17,6 @@ import { IngredientPickerComponent } from './ingredient-picker.component'
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-step',
   templateUrl: './crafting-step.component.html',
   styleUrls: ['./crafting-step.component.scss'],
@@ -33,7 +32,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
     ItemFrameModule,
     RouterModule,
     TreeNodeToggleComponent,
-    IngredientPickerComponent
+    IngredientPickerComponent,
   ],
   providers: [CraftingStepStore],
   animations: [
@@ -73,7 +72,7 @@ export class CraftingStepComponent {
     this.store.patchState({ amountMode: value })
   }
 
-  public totalCraft = outputFromObservable(toObservable(this.store.amountGross) )
+  public totalCraft = outputFromObservable(toObservable(this.store.amountGross))
 
   protected setExpand(value: boolean) {
     this.store.setExpand(value)

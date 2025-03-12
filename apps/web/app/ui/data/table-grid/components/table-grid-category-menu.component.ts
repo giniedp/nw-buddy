@@ -10,7 +10,6 @@ import { DataTableCategory } from '../types'
 import { svgChevronLeft } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-table-grid-category-menu,button[nwbGridCateogryMenu]',
   templateUrl: './table-grid-category-menu.component.html',
   imports: [CommonModule, OverlayModule, IconsModule, NwModule, RouterModule],

@@ -12,7 +12,6 @@ export interface TagsInputPaneState {
   selection: string[]
 }
 @Component({
-  standalone: true,
   selector: 'nwb-chips-input-pane',
   templateUrl: './chips-input-pane.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

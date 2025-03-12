@@ -4,7 +4,6 @@ import { getItemRarity, isItemNamed, isMasterItem, ItemRarity } from '@nw-data/c
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-header',
   template: `
     <div class="nw-item-header-bg"></div>

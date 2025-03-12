@@ -17,7 +17,6 @@ import { MountTableAdapter, MountTableRecord } from '~/widgets/data/mount-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   templateUrl: './mounts-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -32,7 +31,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ScreenshotModule,
     TooltipModule,
     VirtualGridModule,
-
     ItemFrameModule,
     IconsModule,
   ],

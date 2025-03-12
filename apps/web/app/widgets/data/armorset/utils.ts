@@ -8,7 +8,7 @@ export function findSets(
   items: MasterItemDefinitions[],
   source: string,
   perksMap: Map<string, PerkData>,
-  i18n: TranslateService
+  i18n: TranslateService,
 ): ArmorsetGroup[] {
   const groups1 = groupBy(items, (item) => {
     const family = getItemSetFamilyName(item)
@@ -97,7 +97,7 @@ const FAMILY_OGNORE_TOKENS = new RegExp(
     //
     'Masque',
   ].join('|')})`,
-  'gi'
+  'gi',
 )
 
 export function getGearsetFamilyName(item: MasterItemDefinitions) {

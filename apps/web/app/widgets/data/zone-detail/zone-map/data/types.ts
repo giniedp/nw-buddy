@@ -100,7 +100,6 @@ export interface VitalsFeatureProperties {
   color: string
 }
 
-
 export type HouseFeatureCollection = FeatureCollection<MultiPoint, HouseFeatureProperties>
 export type HouseFeature = Feature<MultiPoint, HouseFeatureProperties>
 export interface HouseFeatureProperties {

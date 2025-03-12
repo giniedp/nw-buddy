@@ -70,7 +70,7 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
               showInput = !attrs.disabled && !showInput
             },
           },
-          isEmpty ? (attrs.disabled ? '' : emptyText) : result
+          isEmpty ? (attrs.disabled ? '' : emptyText) : result,
         )
       }
       return m('input.input.input-ghost.input-xs.rounded-none.px-0.w-full', {

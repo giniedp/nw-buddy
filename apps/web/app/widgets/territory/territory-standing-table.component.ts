@@ -21,7 +21,6 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-territory-standing-table',
   templateUrl: './territory-standing-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

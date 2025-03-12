@@ -11,7 +11,6 @@ const LINE1COLOR = {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-scaling-per-gs-graph',
   template: ` <nwb-chart [config]="chartConfig()" class="w-full h-full" /> `,
   imports: [ChartModule],
@@ -72,8 +71,8 @@ export class PerkScalingPerGsGraphComponent {
                   return `Weapon GS: ${gs - bonus}`
                 }
                 return null
-              }
-            }
+              },
+            },
           },
         },
         hover: {
@@ -105,7 +104,7 @@ export class PerkScalingPerGsGraphComponent {
               }
               const type = gsType(it.dataIndex)
               return type === 3 ? 3 : 1
-            }
+            },
           },
           {
             label: 'Scaling per GS',

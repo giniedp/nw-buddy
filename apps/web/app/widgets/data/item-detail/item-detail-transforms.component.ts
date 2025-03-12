@@ -9,7 +9,6 @@ import { ItemDetailDirective } from './item-detail.directive'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-transforms',
   template: `
     @if (toItemId(); as itemId) {

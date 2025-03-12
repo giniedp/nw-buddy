@@ -8,7 +8,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { DyePickerComponent } from './dye-picker.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-dye-panel',
   templateUrl: './dye-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

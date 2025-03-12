@@ -13,7 +13,7 @@ import {
   Output,
   Type,
   inject,
-  viewChild
+  viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { asyncScheduler, combineLatest, debounceTime, filter, map, skip, subscribeOn } from 'rxjs'
@@ -28,7 +28,6 @@ import { VirtualGridSectionDirective } from './virtual-grid-section.directive'
 import { VirtualGridStore } from './virtual-grid.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-virtual-grid',
   styleUrls: ['./virtual-grid.component.scss'],
   templateUrl: './virtual-grid.component.html',

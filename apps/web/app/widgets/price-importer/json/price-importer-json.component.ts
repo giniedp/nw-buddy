@@ -23,7 +23,6 @@ export interface JsonImporterState {
   hasError?: boolean
 }
 @Component({
-  standalone: true,
   selector: 'nwb-price-importer-json',
   templateUrl: './price-importer-json.component.html',
   imports: [CommonModule, FormsModule, DataViewModule, DataGridModule, IconsModule],

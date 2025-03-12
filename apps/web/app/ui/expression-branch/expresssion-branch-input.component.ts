@@ -59,7 +59,6 @@ export class ExpressionBranchValueDirective {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-expresssion-branch-input',
   templateUrl: './expresssion-branch-input.component.html',
   providers: [

@@ -1,13 +1,9 @@
-import { NgModule } from "@angular/core"
-import { SvgIconComponent } from "./icon.component"
+import { NgModule } from '@angular/core'
+import { SvgIconComponent } from './icon.component'
 
-const components = [
-  SvgIconComponent
-]
+const components = [SvgIconComponent]
 @NgModule({
   imports: [components],
-  exports: [components]
+  exports: [components],
 })
-export class IconsModule {
-
-}
+export class IconsModule {}

@@ -1,4 +1,4 @@
-import { ImageLike, useTesseract } from "~/utils/use-tesseract"
+import { ImageLike, useTesseract } from '~/utils/use-tesseract'
 
 export async function recognizeTextFromImage(image: ImageLike, options?: { minConfidence?: number }) {
   const processedImage = await processAndTransformImage(image)

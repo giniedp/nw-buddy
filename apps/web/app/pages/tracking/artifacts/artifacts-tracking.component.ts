@@ -7,7 +7,6 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { ArtifactRecord } from './adapter'
 
 @Component({
-  standalone: true,
   selector: 'nwb-artifacts-tracking',
   templateUrl: './artifacts-tracking.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,7 +16,10 @@ import { ArtifactRecord } from './adapter'
   },
 })
 export class ArtifactsTrackingComponent {
-  public constructor(private route: ActivatedRoute, protected service: DataViewService<ArtifactRecord>) {
+  public constructor(
+    private route: ActivatedRoute,
+    protected service: DataViewService<ArtifactRecord>,
+  ) {
     //
   }
 }

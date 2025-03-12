@@ -18,7 +18,6 @@ import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-zones-detail-page',
   templateUrl: './zones-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +36,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   ],
   providers: [],
   host: {
-    class: 'ion-page'
+    class: 'ion-page',
   },
 })
 export class ZoneDetailPageComponent {

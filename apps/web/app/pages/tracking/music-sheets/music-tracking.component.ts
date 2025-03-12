@@ -7,7 +7,6 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { MusicRecord } from './adapter'
 
 @Component({
-  standalone: true,
   selector: 'nwb-music-tracking',
   templateUrl: './music-tracking.component.html',
   styleUrls: ['./music-tracking.component.scss'],
@@ -18,7 +17,10 @@ import { MusicRecord } from './adapter'
   },
 })
 export class MusicTrackingComponent {
-  public constructor(private route: ActivatedRoute, protected service: DataViewService<MusicRecord>) {
+  public constructor(
+    private route: ActivatedRoute,
+    protected service: DataViewService<MusicRecord>,
+  ) {
     //
   }
 }

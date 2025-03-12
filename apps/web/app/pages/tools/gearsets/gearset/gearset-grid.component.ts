@@ -1,6 +1,17 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild, computed, effect, inject, viewChild, viewChildren } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  ViewChild,
+  computed,
+  effect,
+  inject,
+  viewChild,
+  viewChildren,
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
@@ -19,11 +30,9 @@ import { GearsetToolbarComponent } from './gearset-toolbar.component'
 import { NwModule } from '~/nw'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-grid',
   templateUrl: './gearset-grid.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-
   imports: [
     CommonModule,
     NwModule,

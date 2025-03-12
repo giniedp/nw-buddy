@@ -4,7 +4,6 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { patchPrecision } from '@nw-data/common'
 
 @Component({
-  standalone: true,
   selector: 'nwb-precision-input',
   template: `
     <ng-content selector="[start]" />
@@ -73,7 +72,7 @@ export class PrecisionInputComponent implements ControlValueAccessor {
   @Input()
   public stepAlt: number = null
 
-  @ViewChild('input', { read: ElementRef})
+  @ViewChild('input', { read: ElementRef })
   protected input: ElementRef<HTMLInputElement>
 
   protected onChange = (value: number) => {}
@@ -88,7 +87,7 @@ export class PrecisionInputComponent implements ControlValueAccessor {
     if (this.min !== null) {
       this.value = Math.max(this.min, this.value)
     }
-    if(this.max !== null) {
+    if (this.max !== null) {
       this.value = Math.min(this.max, this.value)
     }
     this.commit()

@@ -1,9 +1,4 @@
-import {
-  ItemRarity,
-  getAffixMODs,
-  getItemRarityLabel,
-  getItemTierAsRoman
-} from '@nw-data/common'
+import { ItemRarity, getAffixMODs, getItemRarityLabel, getItemTierAsRoman } from '@nw-data/common'
 import { ItemInstanceRow } from '~/data'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -92,7 +87,7 @@ export function inventoryColPerks(util: InventoryTableUtils) {
             util.elImg({
               class: ['w-7', 'h-7', 'nw-icon'],
               src: perk?.IconPath,
-            })
+            }),
           )
         }),
       ])
@@ -125,7 +120,7 @@ export function inventoryColRarity(util: InventoryTableUtils) {
     width: 80,
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function inventoryColTier(util: InventoryTableUtils) {
@@ -138,7 +133,7 @@ export function inventoryColTier(util: InventoryTableUtils) {
     valueFormatter: ({ value }) => getItemTierAsRoman(value),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function inventoryColGearScore(util: InventoryTableUtils) {
@@ -177,7 +172,7 @@ export function inventoryColAttributeMods(util: InventoryTableUtils) {
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function inventoryColItemType(util: InventoryTableUtils) {
@@ -188,7 +183,7 @@ export function inventoryColItemType(util: InventoryTableUtils) {
     width: 100,
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function inventoryColItemClass(util: InventoryTableUtils) {
@@ -207,7 +202,7 @@ export function inventoryColActions(
   util: InventoryTableUtils,
   options: {
     destroyAction: (e: Event, data: InventoryTableRecord) => void
-  }
+  },
 ) {
   return util.colDef({
     colId: 'actions',
@@ -224,7 +219,7 @@ export function inventoryColActions(
               onclick: (e) => options.destroyAction(e, data),
             },
           },
-          [util.el('span.w-4.h-4', { html: svgTrashCan })]
+          [util.el('span.w-4.h-4', { html: svgTrashCan })],
         ),
       ])
     }),

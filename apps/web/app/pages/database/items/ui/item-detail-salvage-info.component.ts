@@ -9,7 +9,6 @@ import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from '~/widgets/data/item-detail/animatio
 import { LootModule } from '~/widgets/loot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-salvage-info',
   template: `
     @if (salvageInfo(); as salvage) {

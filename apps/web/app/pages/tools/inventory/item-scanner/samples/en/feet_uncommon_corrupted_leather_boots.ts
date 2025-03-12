@@ -1,4 +1,4 @@
-import type { ScanSample } from "../../types";
+import type { ScanSample } from '../../types'
 
 export default {
   file: 'feet_uncommon_corrupted_leather_boots.png',

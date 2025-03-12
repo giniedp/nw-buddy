@@ -181,7 +181,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
     this.tooltipActive$.next(false)
   }
 
-  @HostListener ('click', ['$event'])
+  @HostListener('click', ['$event'])
   protected handleClick(event: MouseEvent) {
     if (this.preventClick) {
       event.preventDefault()

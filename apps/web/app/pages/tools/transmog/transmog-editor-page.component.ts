@@ -38,7 +38,6 @@ import { FormsModule } from '@angular/forms'
 import { ModelsService } from '~/widgets/model-viewer'
 
 @Component({
-  standalone: true,
   selector: 'nwb-transmog-editor-page',
   templateUrl: './transmog-editor-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,7 +50,7 @@ import { ModelsService } from '~/widgets/model-viewer'
     LayoutModule,
     TooltipModule,
     IconsModule,
-    FormsModule
+    FormsModule,
   ],
   host: {
     class: 'ion-page relative h-full',
@@ -266,7 +265,6 @@ export class TransmogEditorPageComponent implements OnDestroy {
     effect(
       () => {
         this.viewer.setTimeOfDay(this.timeOfDay())
-
       },
       {
         injector: this.injector,

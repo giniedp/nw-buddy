@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { Component, Input, TemplateRef } from '@angular/core'
 
 @Component({
-  standalone: true,
   selector: 'nwb-popover',
   template: ` <ng-container [ngTemplateOutlet]="content" /> `,
   imports: [CommonModule],

@@ -3,6 +3,6 @@ import { ChartComponent } from './chart.component'
 
 @NgModule({
   imports: [ChartComponent],
-  exports: [ChartComponent]
+  exports: [ChartComponent],
 })
 export class ChartModule {}

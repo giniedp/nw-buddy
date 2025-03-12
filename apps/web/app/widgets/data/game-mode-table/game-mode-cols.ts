@@ -64,7 +64,7 @@ export function gameModeColLootTags(util: GameModeUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 

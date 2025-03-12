@@ -24,7 +24,6 @@ import { PriceImporterModule } from '~/widgets/price-importer/price-importer.mod
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-npcs-page',
   templateUrl: './npcs-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,7 +61,6 @@ export class NpcsPageComponent {
   protected persistKey = 'npcs-table'
   protected categoryParam = 'c'
   protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
-
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

@@ -19,7 +19,6 @@ import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.st
 import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-offender-conversion-control',
   templateUrl: './offender-conversion-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

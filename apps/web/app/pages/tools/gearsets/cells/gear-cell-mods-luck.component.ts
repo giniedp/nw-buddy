@@ -9,7 +9,6 @@ import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-mods-luck',
   templateUrl: './gear-cell-mods-luck.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,18 +22,15 @@ import { FlashDirective } from './ui/flash.directive'
 export class GearCellModsLuckComponent {
   private mannequin = inject(Mannequin)
   protected rowCount = computed(() => this.rows()?.length)
-  protected rows = selectSignal(
-    this.mannequin.modROL,
-    (stats) => {
-      return Object.entries(stats || {})
-        .map(([key, entry]) => {
-          return {
-            category: key,
-            source: entry.source,
-            value: entry.value,
-          }
-        })
-        .filter((it) => !!it.value)
-    },
-  )
+  protected rows = selectSignal(this.mannequin.modROL, (stats) => {
+    return Object.entries(stats || {})
+      .map(([key, entry]) => {
+        return {
+          category: key,
+          source: entry.source,
+          value: entry.value,
+        }
+      })
+      .filter((it) => !!it.value)
+  })
 }

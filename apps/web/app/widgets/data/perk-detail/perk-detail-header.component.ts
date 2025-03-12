@@ -8,7 +8,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perk-detail-header',
   template: `
     <nwb-item-header class="gap-2">

@@ -31,9 +31,9 @@ export default {
       options: NW_WEAPON_TYPES.map((it) => {
         return {
           label: it.UIName,
-          value: it.IconPath
+          value: it.IconPath,
         }
-      })
+      }),
     })
   }),
 } satisfies Meta<StoryArgs>

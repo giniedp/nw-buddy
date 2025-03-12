@@ -13,7 +13,6 @@ import { GameMapComponent, GameMapCoordsComponent, GameMapLayerDirective } from 
 import { GatherableDetailMapStore } from './gatherable-detail-map.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gatherable-detail-map',
   templateUrl: './gatherable-detail-map.component.html',
   imports: [

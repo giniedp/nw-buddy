@@ -28,7 +28,6 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-form',
   templateUrl: './gearset-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -6,7 +6,6 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { EntitlementDetailStore } from './entitlement-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-entitlement-detail',
   templateUrl: './entitlement-detail.component.html',
   exportAs: 'detail',

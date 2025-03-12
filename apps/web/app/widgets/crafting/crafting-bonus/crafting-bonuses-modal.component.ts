@@ -3,7 +3,6 @@ import { LayoutModule, ModalService } from '~/ui/layout'
 import { CraftingChanceMenuComponent } from './crafting-bonuses.component'
 
 @Component({
-  standalone: true,
   selector: 'crafting-bonuses-modal',
   template: `
     <ion-header class="bg-base-300">
@@ -18,16 +17,16 @@ import { CraftingChanceMenuComponent } from './crafting-bonuses.component'
   `,
   imports: [LayoutModule, CraftingChanceMenuComponent],
   host: {
-    class: 'ion-page'
-  }
+    class: 'ion-page',
+  },
 })
 export class CraftingBonusesModalComponent {
   public static open(modal: ModalService, group: string) {
     modal.open({
       content: CraftingBonusesModalComponent,
       inputs: {
-        group: group as any
-      }
+        group: group as any,
+      },
     })
   }
   public group = input<any>()

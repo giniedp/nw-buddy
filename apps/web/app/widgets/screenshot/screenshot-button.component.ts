@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms'
 import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-screenshot-button,[nwbScreenshotBtn]',
   templateUrl: './screenshot-button.component.html',
   imports: [CommonModule, FormsModule, OverlayModule],

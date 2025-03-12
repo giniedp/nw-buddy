@@ -15,7 +15,6 @@ import { InventoryPickerService } from './inventory-picker.service'
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from '@nw-data/common'
 
 @Component({
-  standalone: true,
   selector: 'nwb-inventory-detail',
   templateUrl: './inventory-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

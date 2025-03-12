@@ -7,12 +7,11 @@ export function tagsCell(options: ComponentInputs<TagsCellComponent>): PropertyG
   return {
     value: String(options.value),
     component: TagsCellComponent,
-    componentInputs: options
+    componentInputs: options,
   }
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-tags-cell',
   template: `
     @for (tag of tags(); track $index) {

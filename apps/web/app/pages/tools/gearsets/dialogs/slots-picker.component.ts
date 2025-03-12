@@ -5,7 +5,6 @@ import { NwModule } from '~/nw'
 import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 
 @Component({
-  standalone: true,
   selector: 'nwb-slots-picker',
   template: `
     <ion-header>

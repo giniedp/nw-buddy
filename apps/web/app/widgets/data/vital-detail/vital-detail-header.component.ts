@@ -11,7 +11,6 @@ import { selectSignal } from '~/utils'
 import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-header',
   templateUrl: './vital-detail-header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

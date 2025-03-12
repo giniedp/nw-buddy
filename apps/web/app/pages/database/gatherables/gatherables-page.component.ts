@@ -21,7 +21,6 @@ import { PriceImporterModule } from '~/widgets/price-importer/price-importer.mod
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gatherables-page',
   templateUrl: './gatherables-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

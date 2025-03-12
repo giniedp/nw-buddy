@@ -8,7 +8,6 @@ import { GameEventDetailRewardsComponent } from './game-event-detail-rewards.com
 import { GameEventDetailStore } from './game-event-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-game-event-detail',
   templateUrl: './game-event-detail.component.html',
   exportAs: 'detail',

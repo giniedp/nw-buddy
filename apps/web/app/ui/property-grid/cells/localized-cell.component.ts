@@ -14,7 +14,6 @@ export function localizedCell(options: ComponentInputs<LocalizedCellComponent>):
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-text-cell',
   template: `
     <nwb-icon [icon]="iconInfo" class="cursor-help w-3 h-3" [tooltip]="tplInfo" />

@@ -7,7 +7,6 @@ import { LayoutModule, ModalService } from '~/ui/layout'
 import { ComponentInputs, PropertyGridCell } from '~/ui/property-grid'
 import { DiffToolStore } from './diff-tool.store'
 @Component({
-  standalone: true,
   selector: 'nwb-diff-button',
   template: `
     <nwb-icon [icon]="icon" class="w-4 h-4" />

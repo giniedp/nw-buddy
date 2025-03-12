@@ -7,5 +7,4 @@ export function getVariantColor(gatherable: GatherableRecord, variation: Gathera
   if (!gatherable.GatherableID.toLowerCase().includes('loot')) {
     return null
   }
-
 }

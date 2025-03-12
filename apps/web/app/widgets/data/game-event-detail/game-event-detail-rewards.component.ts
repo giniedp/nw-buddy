@@ -5,7 +5,6 @@ import { NwModule } from '~/nw'
 import { GameEventReward } from './selectors'
 
 @Component({
-  standalone: true,
   selector: 'nwb-game-event-detail-rewards',
   template: `
     @for (item of rewards; track $index) {

@@ -1,6 +1,15 @@
 import { computed } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { SelectFilterGroup, SelectFilterValue, evaluateFilter, isValue, setValueData, toggleValue, toggleValueNegation, valueMatcher } from './filter'
+import {
+  SelectFilterGroup,
+  SelectFilterValue,
+  evaluateFilter,
+  isValue,
+  setValueData,
+  toggleValue,
+  toggleValueNegation,
+  valueMatcher,
+} from './filter'
 import { GridSelectFilterOption } from './types'
 
 export interface GridSelectFilterState {
@@ -139,6 +148,9 @@ function clone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj))
 }
 
-function findFilterForOption(model: SelectFilterGroup<string | number>, option: GridSelectFilterOption): SelectFilterValue<string | number> {
+function findFilterForOption(
+  model: SelectFilterGroup<string | number>,
+  option: GridSelectFilterOption,
+): SelectFilterValue<string | number> {
   return model?.children?.find((it) => isValue(it) && it.value === option.id) as any
 }

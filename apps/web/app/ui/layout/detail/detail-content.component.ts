@@ -1,11 +1,21 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, contentChild, TemplateRef, input, inject, effect, Input, OnDestroy, signal } from '@angular/core'
+import {
+  Component,
+  ChangeDetectionStrategy,
+  contentChild,
+  TemplateRef,
+  input,
+  inject,
+  effect,
+  Input,
+  OnDestroy,
+  signal,
+} from '@angular/core'
 import { ModalController } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
 import { injectIsBrowser } from '~/utils/injection/platform'
 
 @Component({
-  standalone: true,
   selector: 'nwb-detail-content',
   templateUrl: './detail-content.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,7 +25,6 @@ import { injectIsBrowser } from '~/utils/injection/platform'
   },
 })
 export class DetailContentComponent implements OnDestroy {
-
   @Input()
   public template: TemplateRef<any>
   public isOpen = input(false)
@@ -31,7 +40,7 @@ export class DetailContentComponent implements OnDestroy {
   public constructor() {
     if (this.isBrowser) {
       effect(() => {
-        if(this.isOpen()) {
+        if (this.isOpen()) {
           this.openModal()
         } else {
           this.closeModal()
@@ -47,7 +56,7 @@ export class DetailContentComponent implements OnDestroy {
   private async openModal() {
     this.closeModal()
 
-    const modal = this.modal = await this.ctrl.create({
+    const modal = (this.modal = await this.ctrl.create({
       backdropBreakpoint: this.backdropBreakpoint(),
       backdropDismiss: this.backdropDismiss(),
       initialBreakpoint: this.initialBreakpoint(),
@@ -56,8 +65,8 @@ export class DetailContentComponent implements OnDestroy {
       component: ContentWrapper,
       componentProps: {
         template: this.template,
-      }
-    })
+      },
+    }))
     if (this.isOpen()) {
       modal.present()
     } else {
@@ -82,10 +91,7 @@ export class DetailContentComponent implements OnDestroy {
 }
 
 @Component({
-  standalone: true,
-  template: `
-    <ng-container [ngTemplateOutlet]="template"/>
-  `,
+  template: ` <ng-container [ngTemplateOutlet]="template" /> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
@@ -93,7 +99,6 @@ export class DetailContentComponent implements OnDestroy {
   },
 })
 export class ContentWrapper {
-
   @Input()
   public template: TemplateRef<any>
 }

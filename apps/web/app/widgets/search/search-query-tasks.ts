@@ -7,7 +7,7 @@ export type { SearchQueryTasks as ItemsTableTasks } from './search-query.worker'
 export const SEARCH_QUERY_TASKS = new InjectionToken<SearchQueryTasks>('SEARCH_QUERY_TASKS', {
   providedIn: 'root',
   factory: () => {
-    if (isPlatformServer(inject(PLATFORM_ID)) ) {
+    if (isPlatformServer(inject(PLATFORM_ID))) {
       return null
     }
     const worker = new Worker(new URL('./search-query.worker', import.meta.url))

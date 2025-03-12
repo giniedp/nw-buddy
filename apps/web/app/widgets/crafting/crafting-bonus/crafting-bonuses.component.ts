@@ -24,7 +24,6 @@ import { CraftingBuffStore } from './crafting-buff.store'
 import { CraftingBuffGroup } from './types'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-bonuses',
   templateUrl: './crafting-bonuses.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

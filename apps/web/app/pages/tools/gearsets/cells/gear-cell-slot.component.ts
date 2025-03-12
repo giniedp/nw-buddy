@@ -28,7 +28,6 @@ import { GearImporterDialogComponent } from '../../inventory/gear-importer-dialo
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-slot',
   templateUrl: './gear-cell-slot.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

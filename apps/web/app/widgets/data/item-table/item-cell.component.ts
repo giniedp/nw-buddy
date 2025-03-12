@@ -10,7 +10,6 @@ import { ItemDetailModule } from '../item-detail'
 import { ItemTableRecord } from './item-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-cell',
   template: `
     <nwb-item-detail-header

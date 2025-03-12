@@ -6,7 +6,6 @@ import { ZoneMapStore } from './zone-map.store'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 
 @Component({
-  standalone: true,
   selector: 'nwb-map-filter-segment',
   template: `
     @if (rows()?.length) {

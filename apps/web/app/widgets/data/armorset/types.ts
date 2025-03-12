@@ -1,4 +1,4 @@
-import { MasterItemDefinitions, PerkData } from "@nw-data/generated"
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 
 export interface ArmorsetGroup {
   key: string

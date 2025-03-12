@@ -5,8 +5,7 @@ import { NwModule } from '~/nw'
 @Component({
   standalone: true,
   selector: 'nwb-grid-select-state',
-  template: `
-  `,
+  template: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule],
   host: {

@@ -20,7 +20,6 @@ import { ItemDetailSalvageInfoComponent } from '../items/ui/item-detail-salvage-
 import { ItemDetailModelViewerComponent } from '../items/ui/item-detail-model-viewer.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-housing-detail-page',
   templateUrl: './housing-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

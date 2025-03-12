@@ -26,7 +26,6 @@ import { SearchResultsPanelComponent } from './search-results-panel.component'
 import { environment } from 'apps/web/environments'
 
 @Component({
-  standalone: true,
   selector: 'nwb-global-search-input',
   exportAs: 'quickSearch',
   templateUrl: './global-search-input.component.html',
@@ -68,7 +67,7 @@ export class GlobalSearchInputComponent
     private api: SearchQueryTasks,
     private locale: LocaleService,
     protected cdkOrigin: CdkOverlayOrigin,
-    private elRef: ElementRef<HTMLElement>
+    private elRef: ElementRef<HTMLElement>,
   ) {
     super({ query: '', isPanelOpen: true, isLoading: false, results: [] })
   }
@@ -83,7 +82,7 @@ export class GlobalSearchInputComponent
       .pipe(
         tap((value) => {
           this.patchState({ isLoading: true, isPanelOpen: !!value })
-        })
+        }),
       )
       .pipe(debounceTime(500))
       .pipe(switchMap((value) => this.search(value)))

@@ -10,7 +10,7 @@ export function gridHasAnyFilterPresent(grid$: Observable<AgGrid>) {
         return of(false)
       }
       return grid.api.isAnyFilterPresent()
-    })
+    }),
   )
 }
 
@@ -21,7 +21,7 @@ export function gridHasQuickFilterPresent(grid$: Observable<AgGrid>) {
         return of(false)
       }
       return grid.api.isQuickFilterPresent()
-    })
+    }),
   )
 }
 
@@ -30,7 +30,7 @@ export function gridDisplayRowCount(grid$: Observable<AgGrid>) {
     grid$,
     fromGridEvent(grid$, 'rowDataUpdated'),
     fromGridEvent(grid$, 'firstDataRendered'),
-    fromGridEvent(grid$, 'filterChanged')
+    fromGridEvent(grid$, 'filterChanged'),
   ).pipe(
     subscribeOn(asyncScheduler),
     debounceTime(100),
@@ -39,12 +39,14 @@ export function gridDisplayRowCount(grid$: Observable<AgGrid>) {
         return 0
       }
       return grid.api.getDisplayedRowCount()
-    })
+    }),
   )
 }
 
 export function gridGetPinnedTopRows(api: GridApi) {
-  return Array.from({ length: api.getPinnedTopRowCount() }).map((_, i) => api.getPinnedTopRow(i)).filter((it) => !!it)
+  return Array.from({ length: api.getPinnedTopRowCount() })
+    .map((_, i) => api.getPinnedTopRow(i))
+    .filter((it) => !!it)
 }
 
 export function gridGetPinnedTopData(api: GridApi) {
@@ -52,7 +54,9 @@ export function gridGetPinnedTopData(api: GridApi) {
 }
 
 export function gridGetPinnedBottomRows(api: GridApi) {
-  return Array.from({ length: api.getPinnedBottomRowCount() }).map((_, i) => api.getPinnedBottomRow(i)).filter((it) => !!it)
+  return Array.from({ length: api.getPinnedBottomRowCount() })
+    .map((_, i) => api.getPinnedBottomRow(i))
+    .filter((it) => !!it)
 }
 
 export function gridGetPinnedBottomData(api: GridApi) {

@@ -1,13 +1,7 @@
-import {
-  MasterItemDefinitions,
-  ArmorAppearanceDefinitions,
-  WeaponAppearanceDefinitions,
-} from '@nw-data/generated'
+import { MasterItemDefinitions, ArmorAppearanceDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { eqCaseInsensitive } from '~/utils'
 
-export type TransmogAppearance =
-  | ArmorAppearanceDefinitions
-  | WeaponAppearanceDefinitions
+export type TransmogAppearance = ArmorAppearanceDefinitions | WeaponAppearanceDefinitions
 
 export type TransmogGender = 'male' | 'female'
 
@@ -90,7 +84,7 @@ export function getAppearanceModelFile(it: TransmogAppearance) {
       (it as WeaponAppearanceDefinitions).SkinOverride1 ||
       (it as WeaponAppearanceDefinitions).SkinOverride2 ||
       (it as WeaponAppearanceDefinitions).MeshOverride ||
-      ''
+      '',
   )
 }
 

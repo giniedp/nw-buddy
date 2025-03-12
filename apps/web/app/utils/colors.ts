@@ -10,7 +10,7 @@ export function stringToColor(value: string) {
 }
 
 export function stringToHue(value: string) {
-  return crc32(value) / 0xffffffff * 360
+  return (crc32(value) / 0xffffffff) * 360
 }
 
 export function stringToHSL(value: string, s = 100, l = 50) {

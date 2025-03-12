@@ -5,7 +5,6 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { ZoneDetailStore } from './zone-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-zone-detail-header',
   template: `
     <nwb-item-header class="gap-2 flex-none">

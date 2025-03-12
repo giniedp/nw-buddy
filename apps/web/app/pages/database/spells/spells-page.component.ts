@@ -25,7 +25,6 @@ import { SpellTableAdapter } from '~/widgets/data/spell-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-spells-page',
   templateUrl: './spells-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

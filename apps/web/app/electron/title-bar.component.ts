@@ -5,7 +5,6 @@ import { ElectronService } from './electron.service'
 import { CommonModule } from '@angular/common'
 
 @Component({
-  standalone: true,
   selector: 'nwb-title-bar',
   templateUrl: './title-bar.component.html',
   styleUrls: ['./title-bar.component.scss'],

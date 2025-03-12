@@ -14,7 +14,6 @@ import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.st
 import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-offender-attack-control',
   templateUrl: './offender-attack-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

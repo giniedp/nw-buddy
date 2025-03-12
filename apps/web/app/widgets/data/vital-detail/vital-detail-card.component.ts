@@ -18,7 +18,6 @@ export interface VitalDetailTab {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-card',
   templateUrl: './vital-detail-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

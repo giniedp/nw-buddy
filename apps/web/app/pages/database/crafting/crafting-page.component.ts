@@ -26,7 +26,6 @@ import { PriceImporterModule } from '~/widgets/price-importer/price-importer.mod
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-crafting-page',
   templateUrl: './crafting-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

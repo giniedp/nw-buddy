@@ -9,7 +9,6 @@ import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-defender-mods-control',
   templateUrl: './defender-mods-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

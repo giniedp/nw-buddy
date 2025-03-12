@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router'
 import { ItemRarity } from '@nw-data/common'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-header-content',
   templateUrl: './item-header-content.component.html',
   imports: [CommonModule, RouterModule],

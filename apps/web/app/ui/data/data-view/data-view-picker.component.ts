@@ -50,7 +50,6 @@ export interface DataViewPickerOptions<T = unknown> {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-data-view-picker',
   templateUrl: './data-view-picker.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

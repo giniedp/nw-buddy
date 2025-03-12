@@ -15,7 +15,6 @@ import { VitalDetailStore } from './vital-detail.store'
 import { SMOOTH_SWAP_ANIMATION } from '~/ui/animation'
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-buffs',
   templateUrl: './vital-detail-buffs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

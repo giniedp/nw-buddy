@@ -5,7 +5,6 @@ import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from '~/widgets/data/item-detail/animatio
 import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-model-viewer',
   imports: [ModelViewerModule],
   animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],

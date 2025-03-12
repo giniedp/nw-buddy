@@ -106,4 +106,3 @@ export class ModalRef<T = unknown> {
     this.close$.next(res)
   }
 }
-

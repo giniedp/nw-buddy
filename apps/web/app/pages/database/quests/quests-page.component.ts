@@ -24,7 +24,6 @@ import { QuestTableAdapter } from '~/widgets/data/quest-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quests-page',
   templateUrl: './quests-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -23,7 +23,7 @@ export class InfiniteScrollDirective<T> {
     combineLatest({
       perPage: this.perPage$,
       items: this.items$,
-    })
+    }),
   )
     .pipe(
       map(({ perPage, items }) => {
@@ -40,7 +40,7 @@ export class InfiniteScrollDirective<T> {
             }
           },
         })
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
 

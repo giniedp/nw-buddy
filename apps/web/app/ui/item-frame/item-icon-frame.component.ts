@@ -5,7 +5,6 @@ import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-icon,a[nwbItemIcon]',
   template: `
     @if (!borderless()) {
@@ -37,7 +36,7 @@ import { NwModule } from '~/nw'
     '[class.nw-item-icon-mask]': '!solid()',
     '[class.named]': 'isNamed()',
     '[class.rounded-full]': 'rounded()',
-    '[class.overflow-clip]': 'rounded()'
+    '[class.overflow-clip]': 'rounded()',
   },
   animations: [
     trigger('inOut', [

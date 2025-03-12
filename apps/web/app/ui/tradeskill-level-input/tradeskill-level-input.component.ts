@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, HostListener, Input, ViewChild, inject } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  Input,
+  ViewChild,
+  inject,
+} from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { InputSliderComponent } from '../input-slider'
@@ -8,7 +17,6 @@ import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { NW_MAX_TRADESKILL_LEVEL } from '@nw-data/common'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tradeskill-level-input',
   templateUrl: './tradeskill-level-input.component.html',
   styleUrls: ['./tradeskill-level-input.component.scss'],
@@ -20,14 +28,13 @@ import { NW_MAX_TRADESKILL_LEVEL } from '@nw-data/common'
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      multi:true,
-      useExisting: TradeskillLevelInputComponent
-    }
+      multi: true,
+      useExisting: TradeskillLevelInputComponent,
+    },
   ],
-  hostDirectives: [CdkOverlayOrigin]
+  hostDirectives: [CdkOverlayOrigin],
 })
 export class TradeskillLevelInputComponent implements ControlValueAccessor {
-
   @Input()
   public icon: string
 

@@ -8,7 +8,6 @@ import { HtmlHeadService, injectUrlParams } from '~/utils'
 import { TerritoryModule } from '~/widgets/territory'
 
 @Component({
-  standalone: true,
   selector: 'nwb-territories-page',
   templateUrl: './territories.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

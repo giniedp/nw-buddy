@@ -13,11 +13,8 @@ import { TooltipModule } from '~/ui/tooltip'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 
 @Component({
-  standalone: true,
   selector: 'nwb-data-view-pin,[nwbDataViewPin]',
-  template: `
-    <nwb-icon [icon]="svgPin" class="w-5 h-5 transition-transform" [class.rotate-45]="!isPinned$()"/>
-  `,
+  template: ` <nwb-icon [icon]="svgPin" class="w-5 h-5 transition-transform" [class.rotate-45]="!isPinned$()" /> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, IconsModule, TooltipModule],
   hostDirectives: [TooltipDirective],
@@ -40,21 +37,24 @@ export class DataViewPinComponent {
         pinned: this.pinnedItems$,
         item: this.selectedItem$,
       },
-      ({ pinned, item }) => selectPinnedState(pinned, item)
+      ({ pinned, item }) => selectPinnedState(pinned, item),
     ),
     {
       initialValue: false,
-    }
+    },
   )
 
   protected isEnabled$ = toSignal(
     selectStream(this.selectedItem$, (item) => !!item),
-    { initialValue: false }
+    { initialValue: false },
   )
 
   protected svgPin = svgThumbtack
 
-  public constructor(protected service: DataViewService<unknown>, protected tip: TooltipDirective) {
+  public constructor(
+    protected service: DataViewService<unknown>,
+    protected tip: TooltipDirective,
+  ) {
     tip.tooltipContext = 'Pin/Unpin selected item'
   }
 
@@ -67,7 +67,10 @@ export class DataViewPinComponent {
     const pinned = await firstValueFrom(this.pinnedItems$)
     const grid = await firstValueFrom(this.grid$)
     if (this.isPinned$()) {
-      grid.api.setGridOption('pinnedTopRowData', (pinned || []).filter((it) => it !== item))
+      grid.api.setGridOption(
+        'pinnedTopRowData',
+        (pinned || []).filter((it) => it !== item),
+      )
     } else {
       grid.api.setGridOption('pinnedTopRowData', [...(pinned || []), item])
     }

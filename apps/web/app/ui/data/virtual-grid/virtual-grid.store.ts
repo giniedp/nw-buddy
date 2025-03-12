@@ -95,9 +95,11 @@ export class VirtualGridStore<T> extends ComponentStore<VirtualGridState<T>> {
   public ngOnInit(): void {}
 
   public withSize = this.effect<number>((size) => {
-    return size.pipe(map((value) => {
-      this.patchState({ size: value })
-    }))
+    return size.pipe(
+      map((value) => {
+        this.patchState({ size: value })
+      }),
+    )
   })
 }
 
@@ -167,7 +169,7 @@ export function selectLayout({
 
   return {
     size: size,
-    cols: cols
+    cols: cols,
   }
 }
 

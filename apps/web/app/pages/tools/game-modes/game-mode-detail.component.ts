@@ -92,7 +92,6 @@ export interface Tab {
   externUrl?: SafeUrl
 }
 @Component({
-  standalone: true,
   selector: 'nwb-game-mode-detail',
   templateUrl: './game-mode-detail.component.html',
   styleUrls: ['./game-mode-detail.component.scss'],

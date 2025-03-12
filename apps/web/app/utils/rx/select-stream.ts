@@ -1,6 +1,15 @@
-import { Observable, ObservableInput, ObservedValueOf, combineLatest, distinctUntilChanged, isObservable, map, shareReplay } from "rxjs"
-import { debounceSync } from "./debounce-sync"
-import { ValueEqualityFn } from "@angular/core"
+import {
+  Observable,
+  ObservableInput,
+  ObservedValueOf,
+  combineLatest,
+  distinctUntilChanged,
+  isObservable,
+  map,
+  shareReplay,
+} from 'rxjs'
+import { debounceSync } from './debounce-sync'
+import { ValueEqualityFn } from '@angular/core'
 
 export interface SelectConfig<T = unknown> {
   debounce?: boolean

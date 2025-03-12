@@ -6,7 +6,6 @@ import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from '@nw-data/common'
 import { GsSliderComponent } from './gs-slider.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gs-input',
   template: `
     <input
@@ -38,7 +37,7 @@ import { GsSliderComponent } from './gs-slider.component'
       [cdkConnectedOverlayPositions]="[
         { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
         { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
-        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 }
+        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 },
       ]"
       [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
       (overlayOutsideClick)="onOutsideClick()"

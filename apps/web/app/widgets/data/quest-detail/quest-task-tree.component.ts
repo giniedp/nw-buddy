@@ -11,7 +11,6 @@ import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { TaskTree } from './quest-task-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-task-tree',
   template: `
     @if (description(); as text) {

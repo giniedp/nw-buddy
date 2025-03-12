@@ -15,7 +15,6 @@ import { EmptyComponent } from '~/widgets/empty'
 import { HousingTableRecord } from './housing-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-view',
   template: `
     <nwb-item-detail-header

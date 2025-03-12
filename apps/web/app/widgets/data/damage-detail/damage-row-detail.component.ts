@@ -24,7 +24,6 @@ import { DamageRowDetailHeaderComponent } from './damage-row-detail-header.compo
 import { DamageDetailStore } from './damage-row-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-damage-row-detail',
   templateUrl: './damage-row-detail.component.html',
   exportAs: 'detail',

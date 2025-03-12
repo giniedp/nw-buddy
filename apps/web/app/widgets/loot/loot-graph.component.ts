@@ -12,7 +12,6 @@ import { LootGraphService } from './loot-graph.service'
 import { LootGraphStore } from './loot-graph.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-graph',
   templateUrl: './loot-graph.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

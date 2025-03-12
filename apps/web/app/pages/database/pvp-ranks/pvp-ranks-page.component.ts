@@ -23,7 +23,6 @@ import { PvpRankTableAdapter } from '~/widgets/data/pvp-rank-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
-  standalone: true,
   selector: 'nwb-pvp-ranks-page',
   templateUrl: './pvp-ranks-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,7 +58,6 @@ export class PvpRanksPageComponent {
   protected persistKey = 'pvp-ranks-table'
   protected categoryParam = 'c'
   protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
-
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

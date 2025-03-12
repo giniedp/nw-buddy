@@ -18,10 +18,12 @@ export function selectLoreTree<T>(lore: LoreData, loreItems: LoreData[], meta?: 
   return {
     lore: lore,
     meta: meta?.(lore),
-    children: !lore ? [] : loreItems
-      .filter((it) => eqCaseInsensitive(it.ParentID, lore.LoreID))
-      .map((it) => selectLoreTree(it, loreItems, meta))
-      .sort((a, b) => a.lore.Order - b.lore.Order),
+    children: !lore
+      ? []
+      : loreItems
+          .filter((it) => eqCaseInsensitive(it.ParentID, lore.LoreID))
+          .map((it) => selectLoreTree(it, loreItems, meta))
+          .sort((a, b) => a.lore.Order - b.lore.Order),
   }
 }
 

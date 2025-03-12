@@ -1,4 +1,4 @@
-import { eqCaseInsensitive } from "~/utils"
+import { eqCaseInsensitive } from '~/utils'
 
 const CONDITION_TAGS = [
   'Level',
@@ -15,5 +15,5 @@ export function isConditionTag(tag: string) {
 }
 
 export function includesConditionTag(tags: string[]) {
-  return tags?.length> 0 && tags.some(isConditionTag)
+  return tags?.length > 0 && tags.some(isConditionTag)
 }

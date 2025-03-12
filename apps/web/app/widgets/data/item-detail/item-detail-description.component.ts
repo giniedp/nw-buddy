@@ -5,11 +5,14 @@ import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-description',
   template: `
     @if (!isHidden()) {
-      <div [@inOut] class="text-nw-description italic" [nwHtml]="description() | nwText:{ itemId: store.recordId() } | nwTextBreak"></div>
+      <div
+        [@inOut]
+        class="text-nw-description italic"
+        [nwHtml]="description() | nwText: { itemId: store.recordId() } | nwTextBreak"
+      ></div>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

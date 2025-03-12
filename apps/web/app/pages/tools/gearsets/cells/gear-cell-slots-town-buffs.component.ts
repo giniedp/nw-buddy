@@ -7,7 +7,6 @@ import { GearCellSlotComponent } from './gear-cell-slot.component'
 import { GearCellSlotEffectComponent } from './gear-cell-slot-effect.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-slots-town-buffs',
   templateUrl: './gear-cell-slots-town-buffs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +42,7 @@ export class GearCellSlotsTownBuffsComponent {
     return this.store.gearset()
   }
 
-  protected handleEffectChange(data: Array<{ id: string; stack: number}>) {
+  protected handleEffectChange(data: Array<{ id: string; stack: number }>) {
     this.store.updateStatusEffects(data)
   }
 }

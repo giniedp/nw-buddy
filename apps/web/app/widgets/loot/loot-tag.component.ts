@@ -5,7 +5,6 @@ import { IconsModule } from '~/ui/icons'
 import { svgCheck, svgPlus } from '~/ui/icons/svg'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-tag',
   templateUrl: './loot-tag.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

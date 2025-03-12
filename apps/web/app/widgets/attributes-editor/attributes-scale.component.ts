@@ -11,7 +11,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { AttributesScalingStore } from './attributes-scale.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-attributes-scale',
   template: ` <nwb-chart [config]="config$ | async" class="bg-base-100 rounded-md p-2" /> `,
   changeDetection: ChangeDetectionStrategy.OnPush,

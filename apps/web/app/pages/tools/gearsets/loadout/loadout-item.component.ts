@@ -6,7 +6,6 @@ import { NwModule } from '~/nw'
 import { GersetSquareSlotComponent } from './square-slot.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-loadout-item',
   templateUrl: './loadout-item.component.html',
   styleUrls: ['./loadout-item.component.scss'],
@@ -24,7 +23,8 @@ export class GearsetLoadoutItemComponent {
   }
   public get gearsetId() {
     return this.store.gearset()?.id
-  }k
+  }
+  k
 
   @Input()
   public set gearset(value: GearsetRecord) {
@@ -42,7 +42,6 @@ export class GearsetLoadoutItemComponent {
 
   @Output()
   public createClicked = new EventEmitter<void>()
-
 
   protected get gearScore() {
     return this.store.gearScore()

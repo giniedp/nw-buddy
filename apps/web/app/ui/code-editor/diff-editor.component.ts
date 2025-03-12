@@ -55,7 +55,7 @@ export class DiffEditorComponent implements OnInit, OnDestroy {
         automaticLayout: true,
         renderSideBySide: false,
         hideUnchangedRegions: {
-          enabled: true
+          enabled: true,
         },
       }),
     )

@@ -4,7 +4,6 @@ import { TabsContentComponent } from './tabs-content.component'
 import { TabsComponent } from './tabs.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-tabs-host',
   template: `
     <div class="tabs-header-start">

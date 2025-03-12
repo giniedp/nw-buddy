@@ -20,7 +20,6 @@ import { ItemTableRecord } from '~/widgets/data/item-table'
 import { LootLimitTableAdapter } from '~/widgets/data/loot-limit-table'
 
 @Component({
-  standalone: true,
   selector: 'nwb-loot-limits-page',
   templateUrl: './loot-limits-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,7 +52,6 @@ export class LootLimitsPageComponent {
   protected persistKey = 'loot-limits-table'
   protected categoryParam = 'c'
   protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
-
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

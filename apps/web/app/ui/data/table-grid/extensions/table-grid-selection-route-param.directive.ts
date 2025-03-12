@@ -10,7 +10,6 @@ import { TableGridStore } from '../table-grid.store'
   selector: 'nwb-table-grid[selectionRouteParam]',
 })
 export class DataGridSelectionRouteParamDirective {
-
   public selectionRouteParam = input<string>(null)
   private selectionRouteParam$ = toObservable(this.selectionRouteParam)
   private selection$ = toObservable(this.store.selection)

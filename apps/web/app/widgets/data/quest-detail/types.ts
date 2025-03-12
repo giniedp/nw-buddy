@@ -1,4 +1,4 @@
-import { Objectives } from "@nw-data/generated"
+import { Objectives } from '@nw-data/generated'
 
 export interface FollowUpQuest {
   quest: Objectives

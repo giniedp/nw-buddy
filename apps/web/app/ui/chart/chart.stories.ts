@@ -18,8 +18,6 @@ export default {
       imports: [ChartModule, FormsModule],
     }),
   ],
-
-
 } satisfies Meta
 
 export const Example: StoryObj<ChartComponent> = {
@@ -30,17 +28,17 @@ export const Example: StoryObj<ChartComponent> = {
         responsive: true,
       },
       data: {
-        labels: Array.from({ length: 7}, (_, i) => `Day ${i + 1}`),
+        labels: Array.from({ length: 7 }, (_, i) => `Day ${i + 1}`),
         datasets: [
           {
             label: 'Dataset',
-            data: Array.from({ length: 7}, () => Math.random() * 50),
+            data: Array.from({ length: 7 }, () => Math.random() * 50),
             pointStyle: 'circle',
             pointRadius: 10,
-            pointHoverRadius: 15
-          }
-        ]
+            pointHoverRadius: 15,
+          },
+        ],
       },
-    }
-  }
+    },
+  },
 }

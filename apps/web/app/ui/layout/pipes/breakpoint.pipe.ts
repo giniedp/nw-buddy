@@ -12,11 +12,9 @@ export class BreakpointPipe implements PipeTransform {
   }
 
   public transform(value: string): Observable<boolean> {
-    return this.breakpointObserver
-      .observe(value)
-      .pipe(
-        map((state) => state.matches),
-        startWith(this.breakpointObserver.isMatched(value))
-      )
+    return this.breakpointObserver.observe(value).pipe(
+      map((state) => state.matches),
+      startWith(this.breakpointObserver.isMatched(value)),
+    )
   }
 }

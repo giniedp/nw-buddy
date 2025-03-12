@@ -4,7 +4,12 @@ import { DataViewToggleComponent } from './data-view-toggle.component'
 import { DataViewOptionsMenuComponent } from './data-view-options-menu.component'
 import { DataViewPinComponent } from './data-view-pin.component'
 
-const COMPONENTS = [DataViewCategoryMenuComponent, DataViewToggleComponent, DataViewOptionsMenuComponent, DataViewPinComponent]
+const COMPONENTS = [
+  DataViewCategoryMenuComponent,
+  DataViewToggleComponent,
+  DataViewOptionsMenuComponent,
+  DataViewPinComponent,
+]
 
 @NgModule({
   imports: [...COMPONENTS],

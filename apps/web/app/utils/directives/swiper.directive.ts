@@ -6,7 +6,7 @@ import { SwiperOptions } from 'swiper/types/swiper-options'
 @Directive({
   standalone: true,
   selector: '[nwbSwiper]',
-  exportAs: 'nwbSwiper'
+  exportAs: 'nwbSwiper',
 })
 export class SwiperDirective implements OnInit, OnDestroy {
   @Input()

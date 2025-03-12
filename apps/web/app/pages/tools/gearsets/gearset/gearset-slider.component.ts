@@ -21,7 +21,6 @@ import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-slider',
   templateUrl: './gearset-slider.component.html',
   styleUrl: './gearset-slider.component.scss',

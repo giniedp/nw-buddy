@@ -16,7 +16,6 @@ import { svgLocationDot, svgLocationDotSlash } from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
 
 @Component({
-  standalone: true,
   selector: 'nwb-lore-item-cell',
   templateUrl: './lore-item-cell.component.html',
   styleUrl: './lore-item-cell.component.scss',

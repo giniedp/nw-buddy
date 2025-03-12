@@ -37,7 +37,7 @@ export class ExpressionFilter implements IFilterComp {
       'p-2',
       'flex',
       'flex-col',
-      'gap-2'
+      'gap-2',
     )
   }
 

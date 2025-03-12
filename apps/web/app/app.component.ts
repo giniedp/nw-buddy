@@ -38,7 +38,6 @@ import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
 console.debug('environment', environment)
 @Component({
-  standalone: true,
   selector: 'nw-buddy-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
@@ -179,7 +178,7 @@ export class AppComponent {
     private router: Router,
     private elRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     this.bindLanguage()
     this.bindWatermark()

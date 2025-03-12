@@ -24,7 +24,7 @@ export class CmsContentService {
       .pipe(
         map((res) => {
           return fromMarkdown(res, {})
-        })
+        }),
       )
   }
 }

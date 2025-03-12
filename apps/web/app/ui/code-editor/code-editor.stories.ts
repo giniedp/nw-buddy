@@ -5,7 +5,6 @@ import { CodeEditorComponent } from './code-editor.component'
 import { CodeEditorModule } from './code-editor.module'
 import { storyControls } from '~/test/story-utils'
 
-
 export default {
   title: 'UI / nwb-code-editor',
   component: CodeEditorComponent,
@@ -19,10 +18,8 @@ export default {
     }),
   ],
   args: {
-    minHeight: 200
-  }
+    minHeight: 200,
+  },
 } satisfies Meta<CodeEditorComponent>
 
-export const Example: StoryObj<CodeEditorComponent> = {
-
-}
+export const Example: StoryObj<CodeEditorComponent> = {}

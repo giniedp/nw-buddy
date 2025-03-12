@@ -12,7 +12,6 @@ import { shareReplayRefCount } from '~/utils'
 import { TerritoryModule } from '~/widgets/territory'
 
 @Component({
-  standalone: true,
   selector: 'nwb-territories-list',
   templateUrl: './territories-list.component.html',
   styleUrls: ['./territories-list.component.scss'],

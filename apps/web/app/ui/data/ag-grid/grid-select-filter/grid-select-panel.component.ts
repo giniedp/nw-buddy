@@ -11,7 +11,6 @@ import { GridSelectSearchComponent } from './grid-select-serach.component'
 import { GridSelectFilterOption } from './types'
 
 @Component({
-  standalone: true,
   selector: 'nwb-grid-select-panel',
   template: `
     <div class="flex flex-col gap-[2px] px-2 pt-2">

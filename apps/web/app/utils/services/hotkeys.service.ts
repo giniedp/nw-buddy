@@ -10,7 +10,6 @@ export type Options = {
 
 @Injectable({ providedIn: 'root' })
 export class Hotkeys {
-
   public constructor(
     private eventManager: EventManager,
     @Inject(DOCUMENT)
@@ -21,7 +20,7 @@ export class Hotkeys {
 
   observe(options: Partial<Options>) {
     const keys = options.keys
-    const element = options.element || this.document as any
+    const element = options.element || (this.document as any)
     const event = `keydown.${keys}`
 
     return new Observable((observer) => {

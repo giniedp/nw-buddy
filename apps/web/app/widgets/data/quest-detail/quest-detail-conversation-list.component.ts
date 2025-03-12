@@ -3,7 +3,6 @@ import { QuestDetailConversationComponent } from './quest-detail-conversation.co
 import { QuestDetailStore } from './quest-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-quest-detail-conversation-list',
   template: `
     @for (item of conversations(); track $index) {

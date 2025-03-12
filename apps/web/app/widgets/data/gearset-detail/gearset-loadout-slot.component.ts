@@ -33,7 +33,6 @@ export abstract class LoadoutSlotEventHandler {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-gearset-loadout-slot',
   templateUrl: './gearset-loadout-slot.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

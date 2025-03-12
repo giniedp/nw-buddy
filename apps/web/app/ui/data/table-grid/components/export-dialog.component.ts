@@ -11,7 +11,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { SaveStateDialogStore } from './save-state-dialog.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-export-dialog',
   templateUrl: './export-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -21,7 +21,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { DiffButtonComponent } from '../../../widgets/diff-tool/diff-button.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-perks-detail-page',
   templateUrl: './perks-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

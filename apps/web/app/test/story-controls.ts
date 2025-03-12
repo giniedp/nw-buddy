@@ -21,7 +21,7 @@ export type EnumArgType<T> =
     }
 
 function convertOptions<T>(
-  options: Array<T> | Array<{ label: string; value: T }> | Record<string, T>
+  options: Array<T> | Array<{ label: string; value: T }> | Record<string, T>,
 ): Array<{ label: string; value: T }> {
   if (!options) {
     return []

@@ -19,7 +19,6 @@ import { DamageRowDetailModule } from '~/widgets/data/damage-detail'
 import { SpellDetailModule } from '~/widgets/data/spell-detail'
 
 @Component({
-  standalone: true,
   selector: 'nwb-spells-detail-page',
   templateUrl: './spells-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,7 +34,7 @@ import { SpellDetailModule } from '~/widgets/data/spell-detail'
     PerkDetailModule,
     ItemDetailModule,
     DamageRowDetailModule,
-    SpellDetailModule
+    SpellDetailModule,
   ],
   host: {
     class: 'block',
@@ -47,7 +46,7 @@ export class SpellsDetailPageComponent {
   public constructor(
     private route: ActivatedRoute,
     private i18n: TranslateService,
-    private head: HtmlHeadService
+    private head: HtmlHeadService,
   ) {
     //
   }

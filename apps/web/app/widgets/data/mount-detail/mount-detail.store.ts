@@ -23,11 +23,12 @@ export const MountDetailStore = signalStore(
     const db = injectNwData()
     const ms = inject(ModelsService)
     return {
-      load: (id: string) => combineLatest({
-        mountId: of(id),
-        mount: db.mountsById(id),
-        models: ms.byMountId(of(id))
-      })
+      load: (id: string) =>
+        combineLatest({
+          mountId: of(id),
+          mount: db.mountsById(id),
+          models: ms.byMountId(of(id)),
+        }),
     }
   }),
   withComputed(({ mount }) => {

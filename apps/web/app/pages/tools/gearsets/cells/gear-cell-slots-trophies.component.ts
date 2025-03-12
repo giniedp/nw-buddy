@@ -6,7 +6,6 @@ import { NwModule } from '~/nw'
 import { GearCellSlotComponent } from './gear-cell-slot.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-gear-cell-slots-trophies',
   templateUrl: './gear-cell-slots-trophies.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

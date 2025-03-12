@@ -11,7 +11,6 @@ import { EmptyComponent } from '~/widgets/empty'
 import { NpcTableRecord } from './npc-table-cols'
 
 @Component({
-  standalone: true,
   selector: 'nwb-npc-grid-cell',
   template: `
     <nwb-item-header class="gap-2">

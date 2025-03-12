@@ -23,7 +23,6 @@ export interface DamageEffectiveness {
 }
 
 @Component({
-  standalone: true,
   selector: 'nwb-vital-detail-stats',
   templateUrl: './vital-detail-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

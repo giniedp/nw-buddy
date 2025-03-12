@@ -21,7 +21,6 @@ import { gameMapOptionsForMapIds } from '~/widgets/game-map/utils'
 import { TranslateService } from '~/i18n'
 
 @Component({
-  standalone: true,
   selector: 'nwb-zone-map',
   templateUrl: './zone-map.component.html',
   imports: [

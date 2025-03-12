@@ -14,7 +14,6 @@ export interface AppTab {
 }
 
 @Component({
-  standalone: true,
   selector: 'nw-buddy-electron',
   templateUrl: './electron.component.html',
   styleUrl: './electron.component.scss',

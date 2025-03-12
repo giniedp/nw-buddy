@@ -7,7 +7,6 @@ import { ModalService } from '~/ui/layout'
 import { PriceImporterComponent } from './price-importer.component'
 
 @Component({
-  standalone: true,
   selector: 'nwb-price-importer-button,[nwbPriceImporterButton]',
   templateUrl: './price-importer-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

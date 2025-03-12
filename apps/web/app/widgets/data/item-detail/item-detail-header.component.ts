@@ -8,7 +8,6 @@ import { ItemTrackerModule } from '../../item-tracker'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
-  standalone: true,
   selector: 'nwb-item-detail-header',
   templateUrl: './item-detail-header.component.html',
   styleUrls: ['./item-detail-header.component.scss'],
@@ -58,7 +57,7 @@ export class ItemDetailHeaderComponent {
     }
     return null
   })
-  protected showSkeleton = computed(() => !this.store.record() && this.store.isLoading() || !this.store.isLoaded())
+  protected showSkeleton = computed(() => (!this.store.record() && this.store.isLoading()) || !this.store.isLoaded())
   protected showMissing = computed(() => !this.store.record() && !this.store.isLoading() && this.store.isLoaded())
 
   protected enableGsTracker = computed(() => {

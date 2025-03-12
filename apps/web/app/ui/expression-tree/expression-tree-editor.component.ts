@@ -9,7 +9,6 @@ import { ExpressionGroup } from './types'
 import { isEqual } from 'lodash'
 
 @Component({
-  standalone: true,
   selector: 'nwb-expression-tree-editor',
   templateUrl: './expression-tree-editor.component.html',
   providers: [
@@ -20,7 +19,6 @@ import { isEqual } from 'lodash'
       useExisting: ExpressionTreeEditorComponent,
     },
   ],
-
   imports: [CommonModule, ExpressionTreeNodeComponent],
 })
 export class ExpressionTreeEditorComponent implements ControlValueAccessor {
@@ -28,7 +26,7 @@ export class ExpressionTreeEditorComponent implements ControlValueAccessor {
   protected readonly root$ = this.store.root$
 
   @Input()
-  public set knownFields(value: Array<{ id: string; isPath: boolean, label: string }>) {
+  public set knownFields(value: Array<{ id: string; isPath: boolean; label: string }>) {
     this.store.patchState({ knownFields: value })
   }
 

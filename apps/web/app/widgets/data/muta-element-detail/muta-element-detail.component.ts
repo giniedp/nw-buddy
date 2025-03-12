@@ -8,7 +8,6 @@ import { MutaElementDetailStore } from './muta-element-detail.store'
 import { StatusEffectData } from '@nw-data/generated'
 
 @Component({
-  standalone: true,
   selector: 'nwb-muta-element-detail',
   templateUrl: './muta-element-detail.component.html',
   exportAs: 'elementDetail',
