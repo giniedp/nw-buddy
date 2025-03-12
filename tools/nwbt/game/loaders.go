@@ -3,6 +3,8 @@ package game
 import (
 	"fmt"
 	"log/slog"
+	"nw-buddy/tools/formats/adb"
+	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
@@ -132,4 +134,33 @@ func (it *Assets) LookupFileByAsset(azAsset nwt.AzAsset) (nwfs.File, error) {
 	}
 
 	return nil, fmt.Errorf("asset does not exist in archive: %v", asset)
+}
+
+func (c *Assets) ResolveCdfAsset(model string) (*cdf.Document, error) {
+	// result := &CdfAsset{}
+	model = nwfs.NormalizePath(model)
+	file, ok := c.Archive.Lookup(model)
+	if !ok {
+		return nil, fmt.Errorf("file not found: %s", model)
+	}
+
+	doc, err := cdf.Load(file)
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
+
+func (c *Assets) LoadAdbDocument(filePath string) (*adb.Document, error) {
+	filePath = nwfs.NormalizePath(filePath)
+	file, ok := c.Archive.Lookup(filePath)
+	if !ok {
+		return nil, fmt.Errorf("file not found: %s", filePath)
+	}
+
+	doc, err := adb.Load(file)
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
 }

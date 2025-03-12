@@ -1,0 +1,16 @@
+<CombinedBlendSpace>
+ <Dimensions>
+  <Param Name="DesiredFacing" ParaScale="1" ChooseBlendSpace="1" Locked="1"/>
+ </Dimensions>
+ <AdditionalExtraction>
+  <Param Name="TravelAngle"/>
+  <Param Name="TurnSpeed"/>
+  <Param Name="MoveSpeed"/>
+ </AdditionalExtraction>
+ <BlendSpaces>
+  <BlendSpace AName="animations/Gameplay/Character/Npc/Natural/Mammoth/blendSpaces/mammoth_combat_turn_blend_l.bspace"/>
+  <BlendSpace AName="animations/Gameplay/Character/Npc/Natural/Mammoth/blendSpaces/mammoth_combat_turn_blend_r.bspace"/>
+ </BlendSpaces>
+ <MotionCombination />
+ <JointList />
+</CombinedBlendSpace>

@@ -3,9 +3,29 @@ package adb
 import (
 	"encoding/xml"
 	"iter"
+	"nw-buddy/tools/formats/bspace"
+	"nw-buddy/tools/formats/comb"
+	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
+	"path"
+	"strings"
 )
+
+func Load(file nwfs.File) (*Document, error) {
+	data, err := file.Read()
+	if err != nil {
+		return nil, err
+	}
+	return Parse(data)
+}
+
+func Parse(data []byte) (*Document, error) {
+	var document Document
+	err := xml.Unmarshal(data, &document)
+	return &document, err
+}
 
 type Document struct {
 	XMLName           xml.Name          `xml:"AnimDB"`
@@ -114,26 +134,22 @@ type ProceduralParam struct {
 type FragmentBlendList struct {
 }
 
-func Load(file nwfs.File) (*Document, error) {
-	data, err := file.Read()
-	if err != nil {
-		return nil, err
-	}
-	return Parse(data)
+type AnimationAction struct {
+	Name      string
+	Fragments []AnimationActionFragment
 }
 
-func Parse(data []byte) (*Document, error) {
-	var document Document
-	err := xml.Unmarshal(data, &document)
-	return &document, err
+type AnimationActionFragment struct {
+	Tags       []string
+	Animations []string
+	DamageIds  []string
 }
 
-func (doc *Document) GetActions() {
-	// const actions: Array<AnimationAction> = []
-	for _, fragments := range doc.FragmentList.Iter() {
-
-		// const fragments: AnimationActionFragment[] = []
-		for _, fragment := range fragments {
+func (doc *Document) GetActions() []AnimationAction {
+	actions := make([]AnimationAction, 0)
+	for actionName, fragList := range doc.FragmentList.Iter() {
+		fragments := make([]AnimationActionFragment, 0)
+		for _, fragment := range fragList {
 			animationIds := make([]string, 0)
 			damageIds := make([]string, 0)
 			for _, layer := range fragment.AnimLayer {
@@ -148,16 +164,78 @@ func (doc *Document) GetActions() {
 					}
 				}
 			}
-			// fragments.push({
-			//   tags: fragment.Tags,
-			//   animations: uniq(animations),
-			//   damageIds: uniq(damageIds),
-			// })
+			fragments = append(fragments, AnimationActionFragment{
+				Tags:       strings.Split(fragment.Tags, "+"),
+				Animations: animationIds,
+				DamageIds:  damageIds,
+			})
 		}
-		// actions.push({
-		//   name: actionName,
-		//   fragments: fragments,
-		// })
+		actions = append(actions, AnimationAction{
+			Name:      actionName,
+			Fragments: fragments,
+		})
 	}
-	// return actions
+	return actions
+}
+
+// func (doc *Document) GetTaggedActions() {
+// 	for _, action := range doc.GetActions() {
+// 		action.Fragments
+// 	}
+// }
+
+type AnimationFile struct {
+	Name   string
+	File   string
+	Bspace *bspace.ParaGroup
+	Comb   *comb.Document
+}
+
+func (doc *Document) SelectModelAnimations(files []AnimationFile) []importer.Animation {
+	return SelectModelAnimations(doc.GetActions(), files)
+}
+
+func SelectModelAnimations(actions []AnimationAction, files []AnimationFile) []importer.Animation {
+	groups := maps.NewDict[*importer.Animation]()
+	collect := func(file, action string, damageIds []string) {
+		group, _ := groups.LoadOrStore(file, &importer.Animation{
+			File: file,
+			Name: utils.ReplaceExt(path.Base(file), ""),
+		})
+		group.DamageIds = utils.AppendUniqNoZero(group.DamageIds, damageIds...)
+		group.Actions = utils.AppendUniqNoZero(group.Actions, action)
+	}
+
+	for _, action := range actions {
+		for _, fragment := range action.Fragments {
+			animations := make([]AnimationFile, 0)
+
+			for _, animation := range files {
+				for _, name := range fragment.Animations {
+					if animation.Name == name {
+						animations = append(animations, animation)
+					}
+				}
+			}
+
+			for _, animation := range animations {
+				if animation.Bspace != nil {
+
+				} else if animation.Comb != nil {
+
+				} else {
+					collect(animation.File, action.Name, fragment.DamageIds)
+				}
+			}
+		}
+	}
+	result := make([]importer.Animation, 0)
+	for _, group := range result {
+		group.Meta = map[string]any{
+			"actions":   group.Actions,
+			"damageIds": group.DamageIds,
+		}
+		result = append(result, group)
+	}
+	return result
 }

@@ -2,6 +2,10 @@ package chrparams
 
 import (
 	"encoding/xml"
+	"log/slog"
+	"nw-buddy/tools/formats/adb"
+	"nw-buddy/tools/formats/bspace"
+	"nw-buddy/tools/formats/comb"
 	"nw-buddy/tools/nwfs"
 	"path"
 	"strings"
@@ -84,4 +88,48 @@ func (it *Document) AnimationIncludePaths() []string {
 		}
 	}
 	return result
+}
+
+func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFile, error) {
+	patterns := it.AnimationGlobPaths()
+	files, err := archive.Glob(patterns...)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]adb.AnimationFile, 0)
+	for _, file := range files {
+		switch path.Ext(file.Path()) {
+		case ".caf":
+			result = append(result, adb.AnimationFile{
+				Name: path.Base(file.Path()),
+				File: file.Path(),
+			})
+		case ".bspace":
+			doc, err := bspace.Load(file)
+			if err != nil {
+				slog.Warn("bspace document not loaded", "file", file.Path(), "err", err)
+				continue
+			}
+			result = append(result, adb.AnimationFile{
+				Name:   path.Base(file.Path()),
+				File:   file.Path(),
+				Bspace: doc,
+			})
+		case ".comb":
+			doc, err := comb.Load(file)
+			if err != nil {
+				slog.Warn("comb document not loaded", "file", file.Path(), "err", err)
+				continue
+			}
+			result = append(result, adb.AnimationFile{
+				Name: path.Base(file.Path()),
+				File: file.Path(),
+				Comb: doc,
+			})
+		}
+	}
+
+	return result, nil
+
 }

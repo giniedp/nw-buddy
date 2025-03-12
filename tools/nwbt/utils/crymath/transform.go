@@ -87,9 +87,9 @@ func (t TransformRST) TransformPoint(point nwt.AzVec3) nwt.AzVec3 {
 	rz := vx*(xz2-wy2) + vy*(yz2+wx2) + vz*(1.0-xx2-yy2)
 
 	return [3]nwt.AzFloat32{
-		rx + t[7],
-		ry + t[8],
-		rz + t[9],
+		rx*t[4] + t[7],
+		ry*t[5] + t[8],
+		rz*t[6] + t[9],
 	}
 }
 

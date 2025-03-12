@@ -63,11 +63,11 @@ func (c *Collector) CollectAppearancesWeapons() {
 			if path.Ext(meshOverride) == ".cdf" {
 				file = strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
 				if !c.models.Has(file) {
-					asset, _ := c.ResolveCdfAsset(meshOverride, false)
-					if asset != nil {
+					cdf, _ := c.ResolveCdfAsset(meshOverride)
+					if cdf != nil {
 						group := importer.AssetGroup{}
 						group.TargetFile = file
-						for _, mesh := range asset.Attachments {
+						for _, mesh := range cdf.SkinsOrCloth() {
 							model, material := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
 							if model != "" {
 								group.Meshes = append(group.Meshes, importer.GeometryAsset{

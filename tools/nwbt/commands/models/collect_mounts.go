@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"log/slog"
+	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/logging"
@@ -18,6 +19,13 @@ var cmdCollectMounts = &cobra.Command{
 	Short: "converts mounts",
 	Long:  "",
 	Run:   runCollectMounts,
+}
+
+var mountAdbFiles = map[string]string{
+	"Horse":      "animations/mannequin/adb/mounts/mount_horse_anims.adb",
+	"Sabretooth": "animations/mannequin/adb/mounts/mount_cat_anims.adb",
+	"DireWolf":   "animations/mannequin/adb/mounts/mount_wolf_anims.adb",
+	"Bear":       "animations/mannequin/adb/mounts/mount_bear_anims.adb",
 }
 
 func init() {
@@ -47,20 +55,23 @@ func (c *Collector) CollectMounts() {
 			bar.Detail(id)
 
 			model := row.GetString("Mesh")
-			// mountType := row.GetString("MountType")
+			mountType := row.GetString("MountType")
 			material := row.GetString("Material")
 			file := strings.ToLower(path.Join("mounts", id))
+			adbFile := mountAdbFiles[mountType]
 
 			if path.Ext(model) != ".cdf" {
 				continue
 			}
-			asset, err := c.ResolveCdfAsset(model, false)
+			cdf, err := c.ResolveCdfAsset(model)
 			if err != nil {
 				continue
 			}
+
 			group := importer.AssetGroup{}
 			group.TargetFile = file
-			for _, mesh := range asset.Attachments {
+			group.Animations = c.getAnimations(cdf, adbFile)
+			for _, mesh := range cdf.SkinsOrCloth() {
 				model, mtl := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material, material)
 				if model != "" {
 					group.Meshes = append(group.Meshes, importer.GeometryAsset{
@@ -78,4 +89,19 @@ func (c *Collector) CollectMounts() {
 		bar.Detail(fmt.Sprintf("%d models", c.models.Len()-countStart))
 		bar.Close()
 	}
+}
+
+func (c *Collector) getAnimations(cdf *cdf.Document, adbFile string) []importer.Animation {
+	if adbFile == "" {
+		return nil
+	}
+	adb, err := c.LoadAdbDocument(adbFile)
+	if err != nil {
+		return nil
+	}
+	anims, err := cdf.LoadAnimationFiles(c.Archive)
+	if err != nil {
+		return nil
+	}
+	return adb.SelectModelAnimations(anims)
 }

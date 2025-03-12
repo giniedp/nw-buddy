@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/cgf"
@@ -142,32 +141,14 @@ func (c *Assets) ResolveModelMaterialPair(model, material string, fallback ...st
 	return modelOut, materialOut
 }
 
-type CdfAsset struct {
-	File        string
-	Model       string
-	Animations  []string
-	Attachments []cdf.Attachment
-}
-
-func (c *Assets) ResolveCdfAsset(model string, animations bool) (*CdfAsset, error) {
-	result := &CdfAsset{}
-	model = nwfs.NormalizePath(model)
-	file, ok := c.Archive.Lookup(model)
-	if !ok {
-		return nil, fmt.Errorf("file not found: %s", model)
-	}
-
-	doc, err := cdf.Load(file)
+func (c *Assets) ResolveCdfAnimations(cdf cdf.Document) {
+	animations, err := cdf.LoadAnimationFiles(c.Archive)
 	if err != nil {
-		return nil, err
+		slog.Error("animation files not loaded", "error", err)
+		return
+	}
+	if len(animations) == 0 {
+		return
 	}
 
-	result.File = file.Path()
-	result.Model = doc.Model.File
-	result.Animations = make([]string, 0)
-	if animations {
-		// TODO: Implement this
-	}
-	result.Attachments = doc.SkinsOrCloth()
-	return result, nil
 }

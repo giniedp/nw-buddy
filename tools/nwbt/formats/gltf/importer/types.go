@@ -17,7 +17,7 @@ type Animation struct {
 	Name      string
 	DamageIds []string
 	Actions   []string
-	Meta      maps.Dict[any]
+	Meta      map[string]any
 }
 
 type Entity struct {
