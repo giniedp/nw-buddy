@@ -1,4 +1,3 @@
-
 export interface CharacterRecord {
   /**
    * ID in database
@@ -36,5 +35,4 @@ export interface CharacterRecord {
    * Active crafting buffs (effect or perk or faction buff IDs)
    */
   effectStacks: Record<string, number>
-
 }

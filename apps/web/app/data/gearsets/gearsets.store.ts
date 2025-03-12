@@ -6,7 +6,6 @@ import { ItemInstance } from '../items/types'
 import { GearsetRecord } from './types'
 import { withGearsetsRows } from './with-gearsets'
 
-
 export interface GearsetRowSlot {
   slot: EquipSlot
   instance: ItemInstance

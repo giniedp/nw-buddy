@@ -50,19 +50,21 @@ export function withGearsetToMannequin() {
       return {
         connectToMannequin: (mannequin: Mannequin) => {
           const patch = toSignal(src$, { injector: injector })
-          effect(() => {
-            const data = patch()
-            if (data) {
-              patchState(mannequin.state, data)
-            }
-          }, {
-            injector: injector,
-            allowSignalWrites: true
-          })
+          effect(
+            () => {
+              const data = patch()
+              if (data) {
+                patchState(mannequin.state, data)
+              }
+            },
+            {
+              injector: injector,
+              allowSignalWrites: true,
+            },
+          )
         },
       }
     }),
-
   )
 }
 
@@ -88,7 +90,7 @@ function resolveSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
 
 function resolveItemInstance(db: ItemInstancesDB, idOrInstance: string | ItemInstance) {
   if (typeof idOrInstance === 'string') {
-    return db.observeByid(idOrInstance)// live((t) => t.get(idOrInstance))
+    return db.observeByid(idOrInstance) // live((t) => t.get(idOrInstance))
   }
   return of(idOrInstance)
 }

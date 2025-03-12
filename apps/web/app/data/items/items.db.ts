@@ -8,5 +8,4 @@ import { ItemInstanceRecord } from './types'
 export class ItemInstancesDB extends DBTable<ItemInstanceRecord> {
   public readonly db = injectAppDB()
   public readonly table = this.db.table<ItemInstanceRecord>(DBT_ITEMS)
-
 }

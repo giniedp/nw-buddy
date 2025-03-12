@@ -7,7 +7,6 @@ import { CharacterRecord } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class CharactersDB extends DBTable<CharacterRecord> {
-
   public readonly db = injectAppDB()
   public readonly table = this.db.table<CharacterRecord>(DBT_CHARACTERS)
 

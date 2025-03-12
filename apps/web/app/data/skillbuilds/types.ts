@@ -1,5 +1,5 @@
-import { AttributeRef } from "@nw-data/common"
-import { AbilityData } from "@nw-data/generated"
+import { AttributeRef } from '@nw-data/common'
+import { AbilityData } from '@nw-data/generated'
 
 export interface SkillSet {
   /**

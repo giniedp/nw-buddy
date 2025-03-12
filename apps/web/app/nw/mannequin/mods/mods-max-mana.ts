@@ -1,5 +1,5 @@
-import { ModifierResult, eachModifier, modifierAdd } from "../modifier"
-import { ActiveMods } from "../types"
+import { ModifierResult, eachModifier, modifierAdd } from '../modifier'
+import { ActiveMods } from '../types'
 
 export function selectModMaxMana(mods: ActiveMods) {
   const result: ModifierResult = {

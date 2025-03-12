@@ -76,7 +76,10 @@ export class AppDbDexieTable<T extends { id: string }> extends AppDbTable<T> {
   }
 
   public async keys(): Promise<string[]> {
-    return this.table.toCollection().keys().then((list) => list as string[])
+    return this.table
+      .toCollection()
+      .keys()
+      .then((list) => list as string[])
   }
 
   public list(): Promise<T[]> {

@@ -31,8 +31,6 @@ export type LootBucketConditionNames =
 
 export type LootTableConditionNames = 'Level' | 'EnemyLevel' | 'MinPOIContLevel'
 
-
-
 export class LootContext {
   /**
    * Tags in this context

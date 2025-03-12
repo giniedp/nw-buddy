@@ -9,10 +9,7 @@ describe('Mannequin', () => {
   beforeAll(async () => {
     TestBed.configureTestingModule({
       imports: [AppTestingModule],
-      providers: [
-        Mannequin,
-        provideExperimentalZonelessChangeDetection()
-      ],
+      providers: [Mannequin, provideExperimentalZonelessChangeDetection()],
     })
     mannequin = TestBed.inject(Mannequin)
     console.log(performance.now())

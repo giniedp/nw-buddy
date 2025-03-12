@@ -22,7 +22,7 @@ export function territoriesTags(source$: Observable<TerritoryDefinition[]>) {
           }
         }),
       ]
-    })
+    }),
   )
 }
 
@@ -39,7 +39,7 @@ export function poiTags(source$: Observable<TerritoryDefinition[]>) {
           }
         }),
       ]
-    })
+    }),
   )
 }
 
@@ -56,7 +56,7 @@ export function gameModesTags(source$: Observable<GameModeData[]>, mutated?: boo
           }
         }),
       ]
-    })
+    }),
   )
 }
 
@@ -73,7 +73,7 @@ export function mutaDifficultyTags(source$: Observable<MutationDifficultyStaticD
           }
         }),
       ]
-    })
+    }),
   )
 }
 
@@ -88,6 +88,6 @@ export function mutaElementalTags() {
           tags: [it],
         }
       })
-    })
+    }),
   )
 }

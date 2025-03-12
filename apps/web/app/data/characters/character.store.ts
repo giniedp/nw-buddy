@@ -136,7 +136,7 @@ export const CharacterStore = signalStore(
       },
       observeProgressionLevel,
       observeTradeskillLevel,
-      observeWeaponLevel
+      observeWeaponLevel,
     }
   }),
 )

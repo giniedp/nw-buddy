@@ -52,19 +52,19 @@ export const LINKS = [
   {
     name: 'New World Guide',
     url: 'https://new-world.guide/',
-    description: 'New World Guide database is most complete database with everything for NW player. Here you can find information about items, quests, monsters, maps, crafting, guides and more',
-    image: 'https://new-world.guide/static/tw.webp'
+    description:
+      'New World Guide database is most complete database with everything for NW player. Here you can find information about items, quests, monsters, maps, crafting, guides and more',
+    image: 'https://new-world.guide/static/tw.webp',
   },
   {
     name: '5 Con Club',
     url: 'https://www.5con.club/',
     image: 'https://www.5con.club/5CC.png',
-    describe: 'Con is just a substitute for skill.'
-  }
+    describe: 'Con is just a substitute for skill.',
+  },
 ]
 
 @Component({
-  standalone: true,
   selector: 'nwb-links-page',
   templateUrl: './links.component.html',
   imports: [CommonModule],

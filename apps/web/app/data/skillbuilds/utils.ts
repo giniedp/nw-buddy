@@ -1,5 +1,5 @@
-import { AbilityData } from "@nw-data/generated"
-import { SkillBuildRow, SkillSetRecord } from "./types"
+import { AbilityData } from '@nw-data/generated'
+import { SkillBuildRow, SkillSetRecord } from './types'
 
 export function buildSkillSetRows(records: SkillSetRecord[], abilities: Map<string, AbilityData>): SkillBuildRow[] {
   if (!records || !abilities) {

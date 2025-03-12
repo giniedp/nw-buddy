@@ -1,5 +1,5 @@
-import { ItemRarity, PerkBucket } from "@nw-data/common"
-import { AffixStatData, MasterItemDefinitions, PerkData } from "@nw-data/generated"
+import { ItemRarity, PerkBucket } from '@nw-data/common'
+import { AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
 
 export interface ItemInstance {
   /**

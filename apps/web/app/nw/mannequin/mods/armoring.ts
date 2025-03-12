@@ -3,10 +3,7 @@ import { modifierAdd, modifierResult } from '../modifier'
 import { ActiveMods, DbSlice, MannequinState } from '../types'
 import { categorySum } from './category-sum'
 
-export function selectPhysicalRatingBase(
-  { items, weapons, armors }: DbSlice,
-  { equippedItems }: MannequinState,
-) {
+export function selectPhysicalRatingBase({ items, weapons, armors }: DbSlice, { equippedItems }: MannequinState) {
   let armorRating = 0
   let weaponRating = 0
   for (const { itemId, gearScore } of equippedItems) {
@@ -23,10 +20,7 @@ export function selectPhysicalRatingBase(
   }
 }
 
-export function selectElementalRatingBase(
-  { items, weapons, armors }: DbSlice,
-  { equippedItems }: MannequinState,
-) {
+export function selectElementalRatingBase({ items, weapons, armors }: DbSlice, { equippedItems }: MannequinState) {
   let armorRating = 0
   let weaponRating = 0
   for (const { itemId, gearScore } of equippedItems) {

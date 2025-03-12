@@ -13,9 +13,7 @@ describe('nw-expression.service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule],
-      providers: [
-        provideExperimentalZonelessChangeDetection()
-      ],
+      providers: [provideExperimentalZonelessChangeDetection()],
     })
     service = TestBed.inject(NwExpressionService)
     db = TestBed.runInInjectionContext(injectNwData)

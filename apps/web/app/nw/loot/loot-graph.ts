@@ -84,7 +84,7 @@ export function buildLootGraph({
 
 function buildTableNode(value: LootTable, parent: LootNode, row: LootTableRow, track: any): LootTableNode {
   const node: LootTableNode = {
-    trackId: `${track}-${value.LootTableID}` ,
+    trackId: `${track}-${value.LootTableID}`,
     type: 'table',
     data: value,
     row: row,
@@ -101,7 +101,7 @@ function buildTableNode(value: LootTable, parent: LootNode, row: LootTableRow, t
 
 function buildTableItemNode(value: LootTableRow, parent: LootNode, track: any): LootTableItemNode {
   const node: LootTableItemNode = {
-    trackId: `${track}-${value.LootBucketID || value.LootTableID || value.ItemID}` ,
+    trackId: `${track}-${value.LootBucketID || value.LootTableID || value.ItemID}`,
     type: 'table-item',
     row: value,
     prob: getProb(value),
@@ -135,7 +135,7 @@ function buildBucketNode(value: LootBucketRow, parent: LootNode, row: LootTableR
 
 function buildBucketRowNode(value: LootBucketRow, parent: LootNode, track: any): LootBucketRowNode {
   const node: LootBucketRowNode = {
-    trackId: `${track}-${String(value.Row)}` ,
+    trackId: `${track}-${String(value.Row)}`,
     type: 'bucket-row',
     data: value,
     parent: parent,

@@ -1,7 +1,7 @@
-import { getDamageTypes, getDamageTypesOfCategory } from "@nw-data/common"
-import { ModifierKey, ModifierResult, eachModifier, modifierAdd, modifierResult } from "../modifier"
-import { ActiveMods } from "../types"
-import { DamageType } from "@nw-data/generated"
+import { getDamageTypes, getDamageTypesOfCategory } from '@nw-data/common'
+import { ModifierKey, ModifierResult, eachModifier, modifierAdd, modifierResult } from '../modifier'
+import { ActiveMods } from '../types'
+import { DamageType } from '@nw-data/generated'
 
 export function selectModsBaseDamage(mods: ActiveMods) {
   return sumDamageTypes('BaseDamage', mods)

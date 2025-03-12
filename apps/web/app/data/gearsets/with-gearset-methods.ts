@@ -53,7 +53,7 @@ export function withGearsetMethods() {
                 perks: {
                   ...(data.perks || {}),
                   ...(patchValue.perks || {}),
-                }
+                },
               })
               return
             }
@@ -69,7 +69,7 @@ export function withGearsetMethods() {
             perks: {
               ...(previous?.perks || {}),
               ...(patchValue?.perks || {}),
-            }
+            },
           }
           gearDB.update(record.id, record)
         },

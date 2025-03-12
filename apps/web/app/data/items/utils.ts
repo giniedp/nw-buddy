@@ -3,12 +3,15 @@ import { AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generat
 import { ItemInstanceRecord, ItemInstanceRow } from './types'
 import { sortBy } from 'lodash'
 
-export function buildItemInstanceRows(records: ItemInstanceRecord[], data: {
-  items: Map<string, MasterItemDefinitions>
-  perks: Map<string, PerkData>
-  buckets: Map<string, PerkBucket>
-  affixes: Map<string, AffixStatData>
-}): ItemInstanceRow[] {
+export function buildItemInstanceRows(
+  records: ItemInstanceRecord[],
+  data: {
+    items: Map<string, MasterItemDefinitions>
+    perks: Map<string, PerkData>
+    buckets: Map<string, PerkBucket>
+    affixes: Map<string, AffixStatData>
+  },
+): ItemInstanceRow[] {
   if (!records || !data) {
     return null
   }

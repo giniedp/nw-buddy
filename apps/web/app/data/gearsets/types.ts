@@ -1,6 +1,6 @@
-import { AttributeRef, EquipSlotId } from "@nw-data/common"
-import { ItemInstance } from "../items/types"
-import { SkillSet } from "../skillbuilds/types"
+import { AttributeRef, EquipSlotId } from '@nw-data/common'
+import { ItemInstance } from '../items/types'
+import { SkillSet } from '../skillbuilds/types'
 
 export type GearsetCreateMode = 'link' | 'copy'
 export type GearsetSkillSlot = 'primary' | 'secondary'
@@ -56,9 +56,9 @@ export interface GearsetRecord {
   /**
    * Status effects enforced on this build
    */
-  enforceEffects?: Array<{ id: string, stack: number }>
+  enforceEffects?: Array<{ id: string; stack: number }>
   /**
    * Abilities enforced on this build
    */
-  enforceAbilities?: Array<{ id: string, stack: number }>
+  enforceAbilities?: Array<{ id: string; stack: number }>
 }

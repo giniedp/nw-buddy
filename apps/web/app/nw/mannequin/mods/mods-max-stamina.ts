@@ -1,5 +1,5 @@
-import { ModifierResult, eachModifier, modifierAdd } from "../modifier"
-import { ActiveMods } from "../types"
+import { ModifierResult, eachModifier, modifierAdd } from '../modifier'
+import { ActiveMods } from '../types'
 
 export function selectModMaxStamina(mods: ActiveMods) {
   const result: ModifierResult = {

@@ -14,7 +14,7 @@ export function selectModsABS({ effectCategories }: DbSlice, mods: ActiveMods) {
 function sumCategory(
   key: ModifierKey<number>,
   mods: ActiveMods,
-  categories: Map<string, StatusEffectCategoryData>
+  categories: Map<string, StatusEffectCategoryData>,
 ): ModifierResult {
   return categorySum({
     key: key,

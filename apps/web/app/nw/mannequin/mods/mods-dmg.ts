@@ -14,7 +14,7 @@ export function selectModsDMG({ effectCategories }: DbSlice, mods: ActiveMods) {
 function sumCategory(
   key: ModifierKey<number>,
   mods: ActiveMods,
-  categories: Map<string, StatusEffectCategoryData>
+  categories: Map<string, StatusEffectCategoryData>,
 ): ModifierResult {
   return categorySum({
     key: key,
@@ -38,7 +38,7 @@ function sumVitalsCategory(mods: ActiveMods) {
           scale: scale,
           value: Number(value),
           source: source,
-          limit: Number.POSITIVE_INFINITY
+          limit: Number.POSITIVE_INFINITY,
         })
       }
     }
@@ -49,7 +49,7 @@ function sumVitalsCategory(mods: ActiveMods) {
         scale: scale,
         value: value,
         source: source,
-        limit: Number.POSITIVE_INFINITY
+        limit: Number.POSITIVE_INFINITY,
       })
     }
   }

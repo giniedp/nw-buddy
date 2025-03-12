@@ -1,4 +1,4 @@
-import { CharacterRecord } from "./types";
+import { CharacterRecord } from './types'
 
 interface DeprecatedFields {
   /**

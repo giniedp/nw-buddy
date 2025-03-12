@@ -1,4 +1,4 @@
-import { InjectionToken, inject, ExperimentalPendingTasks } from '@angular/core'
+import { InjectionToken, inject, PendingTasks } from '@angular/core'
 import { NwData, isWorkerSupported, nwData, nwDataWorker } from '@nw-data/db'
 import { environment } from 'apps/web/environments'
 import { CaseInsensitiveMap } from '~/utils'
@@ -19,7 +19,7 @@ function createNwData(): NwData {
   // so that SSR engine knows when rendering is done
   // https://angular.dev/api/core/PendingTasks
   // https://angular.dev/guide/experimental/zoneless#pendingtasks-for-server-side-rendering-ssr
-  const tasks = inject(ExperimentalPendingTasks)
+  const tasks = inject(PendingTasks)
   const runTask = async <T>(fn: () => Promise<T>) => {
     const cleanup = tasks.add()
     try {

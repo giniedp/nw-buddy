@@ -111,4 +111,3 @@ export function selectModAmmo({ ammo }: ActiveWeapon) {
   }
   return result
 }
-

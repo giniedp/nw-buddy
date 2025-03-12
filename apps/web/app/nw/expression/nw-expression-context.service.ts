@@ -23,7 +23,7 @@ export class NwTextContextService extends ComponentStore<NwExpressionContext> {
   public constructor(
     @Optional()
     @SkipSelf()
-    parent: NwTextContextService
+    parent: NwTextContextService,
   ) {
     super({
       charLevel: NW_MAX_CHARACTER_LEVEL,
@@ -53,7 +53,7 @@ export class NwTextContextService extends ComponentStore<NwExpressionContext> {
           ...state,
           ...options,
         }
-      })
+      }),
     )
   }
 }

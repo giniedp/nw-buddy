@@ -1,15 +1,15 @@
-import { base64ToBuffer, bufferToBase64 } from "~/utils/buffer-utils"
+import { base64ToBuffer, bufferToBase64 } from '~/utils/buffer-utils'
 
 export const TYPED_ARRAYS = {
-  'Int8Array': Int8Array,
-  'Uint8Array': Uint8Array,
-  'Uint8ClampedArray': Uint8ClampedArray,
-  'Int16Array': Int16Array,
-  'Uint16Array': Uint16Array,
-  'Int32Array': Int32Array,
-  'Uint32Array': Uint32Array,
-  'Float32Array': Float32Array,
-  'Float64Array': Float64Array
+  Int8Array: Int8Array,
+  Uint8Array: Uint8Array,
+  Uint8ClampedArray: Uint8ClampedArray,
+  Int16Array: Int16Array,
+  Uint16Array: Uint16Array,
+  Int32Array: Int32Array,
+  Uint32Array: Uint32Array,
+  Float32Array: Float32Array,
+  Float64Array: Float64Array,
 } as const
 
 export interface EncodedBuffer {
@@ -94,7 +94,7 @@ async function encodeBuffer(it: ArrayBuffer | ArrayBufferView): Promise<EncodedB
   if (it instanceof ArrayBuffer) {
     return {
       _type: 'ArrayBuffer',
-      _data: await bufferToBase64(it)
+      _data: await bufferToBase64(it),
     }
   }
   for (const [typeName, type] of Object.entries(TYPED_ARRAYS)) {
@@ -103,7 +103,7 @@ async function encodeBuffer(it: ArrayBuffer | ArrayBufferView): Promise<EncodedB
       const data = await bufferToBase64(buffer as ArrayBuffer)
       return {
         _type: typeName as any,
-        _data: data
+        _data: data,
       }
     }
   }

@@ -1,4 +1,4 @@
-import { DamageType } from "@nw-data/generated";
+import { DamageType } from '@nw-data/generated'
 
 export function byDamageType<T>(getter: (type: DamageType) => T) {
   return {

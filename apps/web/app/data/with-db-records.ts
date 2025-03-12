@@ -42,7 +42,7 @@ export function withDbRecords<T extends { id: string }>(table: Type<DBTable<T>>)
     }),
     withComputed(({ records }) => {
       return {
-        filteredRecords: computed(() => records())
+        filteredRecords: computed(() => records()),
       }
     }),
   )

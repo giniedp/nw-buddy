@@ -1,7 +1,6 @@
-
 export interface TreeNode {
   name: string
-  folders: TreeNode[],
+  folders: TreeNode[]
   files: Datasheet[]
 }
 

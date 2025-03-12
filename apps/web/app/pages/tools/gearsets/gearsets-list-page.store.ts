@@ -24,7 +24,7 @@ export const GearsetsListPageStore = signalStore(
             return (a.name || '').localeCompare(b.name || '')
           }),
         ]
-      })
+      }),
     }
-  })
+  }),
 )
