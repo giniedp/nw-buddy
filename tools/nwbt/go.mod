@@ -12,6 +12,7 @@ require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
@@ -31,6 +32,7 @@ require (
 	github.com/goccy/go-json v0.10.5
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/goreleaser/fileglob v1.3.0
+	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
 	github.com/qmuntal/gltf v0.28.0

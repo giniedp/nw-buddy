@@ -6,6 +6,7 @@ import (
 	"nw-buddy/tools/commands/list"
 	"nw-buddy/tools/commands/models"
 	"nw-buddy/tools/commands/pull"
+	"nw-buddy/tools/commands/serve"
 	"nw-buddy/tools/commands/types"
 	"nw-buddy/tools/commands/unpack"
 	"nw-buddy/tools/commands/vet"
@@ -40,4 +41,5 @@ func init() {
 	rootCmd.AddCommand(types.Cmd)
 	rootCmd.AddCommand(vet.Cmd)
 	rootCmd.AddCommand(models.Cmd)
+	rootCmd.AddCommand(serve.Cmd)
 }
