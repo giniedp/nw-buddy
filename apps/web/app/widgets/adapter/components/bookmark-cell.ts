@@ -60,7 +60,7 @@ export class BookmarkCell<T> implements ICellRendererComp<T> {
               e.preventDefault()
               this.toggle(item.index)
             }
-            item.el = el
+            item.el = el as HTMLElement
           },
         }
       }),

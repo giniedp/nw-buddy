@@ -1,5 +1,5 @@
 import { computed, inject } from '@angular/core'
-import { signalStoreFeature, withComputed } from '@ngrx/signals'
+import { signalStoreFeature, withComputed, withProps } from '@ngrx/signals'
 import {
   EQUIP_SLOTS,
   EquipSlot,
@@ -65,7 +65,7 @@ export function withGearsetsRows() {
         instances: tableIndexBy(() => itemsDB.observeAll(), 'id'),
       }
     }),
-    withComputed(({ filteredRecords, nwData, nwDataIsLoaded }) => {
+    withProps(({ filteredRecords, nwData, nwDataIsLoaded }) => {
       return {
         rows: computed(() => {
           if (!nwDataIsLoaded()) {

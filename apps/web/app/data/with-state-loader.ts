@@ -23,7 +23,7 @@ export type WithResourceConfig<P, R> = {
 }
 
 export type WithResourceMethods<P, R> = {
-  load: ((input?: P | Signal<P> | Observable<P>) => Unsubscribable) & Unsubscribable
+  load: ((input?: P | Signal<P> | Observable<P>) => any)
   loadDone: (data: R) => void
   loadError: (err: any) => void
   refresh: () => void
@@ -38,13 +38,13 @@ export type WithResourceComputed = {
 
 export function withStateLoader<Input extends SignalStoreFeatureResult, P>(
   factory: (
-    store: Prettify<StateSignals<Input['state']> & Input['computed'] & Input['methods']>,
+    store: Prettify<StateSignals<Input['state']> & Input['props'] & Input['methods']>,
   ) => WithResourceConfig<P, Input['state']>,
 ): SignalStoreFeature<
   Input,
   {
     state: WithResourceState
-    computed: WithResourceComputed
+    props: WithResourceComputed
     methods: WithResourceMethods<P, Input['state']>
   }
 > {

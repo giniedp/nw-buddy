@@ -179,7 +179,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
     const { createTransmogViewer } = await import('~/widgets/model-viewer/viewer')
     this.viewer = createTransmogViewer(canvas)
     this.resize
-      .observe(canvas)
+      .observe(canvas as any as Element)
       .pipe(takeUntilDestroyed(this.dref))
       .subscribe(() => {
         this.viewer.resize()

@@ -30,7 +30,7 @@ export class NwExpressionService {
   private evaluate(token: string, context: NwExpressionContext & { text: string }): Observable<string | number> {
     if (token in context && context[token] != null) {
       const value = context[token]
-      return isObservable(value) ? value : of(value)
+      return isObservable(value) ? value as Observable<string | number> : of(value)
     }
 
     if (token.includes('.')) {

@@ -1,5 +1,5 @@
 import { Signal, computed } from '@angular/core'
-import { patchState, signalStoreFeature, type, withComputed, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStoreFeature, type, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { map, pipe } from 'rxjs'
 
@@ -16,7 +16,7 @@ export function withFilterByTags<T extends TaggedRecord>() {
       state: type<{
         records: T[]
       }>(),
-      computed: type<{
+      props: type<{
         filteredRecords: Signal<T[]>
       }>(),
     },
@@ -39,7 +39,7 @@ export function withFilterByTags<T extends TaggedRecord>() {
         ),
       }
     }),
-    withComputed(({ records, filteredRecords, activeFilterTags }) => {
+    withProps(({ records, filteredRecords, activeFilterTags }) => {
       return {
         filterTags: computed(() => selectTags(records(), activeFilterTags())),
         filteredRecords: computed(() => filteredByTags(filteredRecords(), activeFilterTags())),

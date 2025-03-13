@@ -1,5 +1,5 @@
 import { Type, computed, inject } from '@angular/core'
-import { patchState, signalStoreFeature, withComputed, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStoreFeature, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { map, pipe, switchMap } from 'rxjs'
 import { DBTable } from './db-table'
@@ -40,7 +40,7 @@ export function withDbRecords<T extends { id: string }>(table: Type<DBTable<T>>)
         },
       }
     }),
-    withComputed(({ records }) => {
+    withProps(({ records }) => {
       return {
         filteredRecords: computed(() => records()),
       }

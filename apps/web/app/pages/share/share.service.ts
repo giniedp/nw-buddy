@@ -67,7 +67,7 @@ export class ShareService {
       inputs: {
         title: 'Import',
         body: 'Paste a shared URL or Content ID here',
-        value: '',
+        value: '' as string,
         placeholder: 'URL or CID',
         positive: 'Import',
         negative: 'Cancel',
