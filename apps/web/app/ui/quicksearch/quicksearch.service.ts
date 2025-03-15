@@ -1,7 +1,7 @@
-import { Inject, Injectable, InjectionToken, Optional, Self, StaticProvider } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Injectable, InjectionToken, StaticProvider, inject } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
-import { ComponentStore } from '@ngrx/component-store'
+import { patchState, signalState } from '@ngrx/signals'
 import { tap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 
@@ -22,7 +22,7 @@ export interface QuicksearchState {
 @Injectable({
   providedIn: 'root',
 })
-export class QuicksearchService extends ComponentStore<QuicksearchState> {
+export class QuicksearchService {
   public static provider(options: QuicksearchOptions): StaticProvider[] {
     return [
       {
@@ -35,27 +35,32 @@ export class QuicksearchService extends ComponentStore<QuicksearchState> {
     ]
   }
 
-  public readonly active$ = this.select((it) => it.active)
-  public readonly active = toSignal(this.active$)
-  public readonly query$ = this.select((it) => it.value)
+  private router = inject(Router)
+  private options = inject(QUICK_SEARCH_OPTIONS, {
+    self: true,
+    optional: true,
+  })
+  private state = signalState({
+    active: false,
+    value: getQueryParam(this.router, this.options),
+  })
+  public active = this.state.active
+  public value = this.state.value
+  public readonly active$ = toObservable(this.active)
+  public readonly value$ = toObservable(this.value)
+  public readonly query$ = this.value$
     .pipe(
       tap({
-        subscribe: () => setTimeout(() => this.patchState({ active: true, value: this.getQueryParam() })),
+        subscribe: () => setTimeout(() => patchState(this.state, { active: true, value: this.getQueryParam() })),
         next: (value) => this.setQueryParam(value),
-        unsubscribe: () => this.patchState({ active: false, value: '' }),
+        unsubscribe: () => patchState(this.state, { active: false, value: '' }),
       }),
     )
     .pipe(shareReplayRefCount(1))
   public readonly query = toSignal(this.query$)
 
-  public constructor(
-    @Inject(QUICK_SEARCH_OPTIONS)
-    @Optional()
-    @Self()
-    private options: QuicksearchOptions,
-    private router: Router,
-  ) {
-    super({ value: getQueryParam(router, options), active: false })
+  public submit(value: string) {
+    patchState(this.state, { value })
   }
 
   private getQueryParam() {

@@ -34,7 +34,7 @@ export class VirtualGridQuickfilterDirective {
 
     store.quickfilter$
       .pipe(distinctUntilChanged())
-      .pipe(tap((text) => search.patchState({ value: text })))
+      .pipe(tap((text) => search.submit(text)))
       .pipe(takeUntilDestroyed())
       .subscribe()
   }

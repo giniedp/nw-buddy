@@ -1,24 +1,25 @@
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
+  effect,
+  inject,
+  input,
+  viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { Subject, combineLatest, merge, takeUntil } from 'rxjs'
+import { combineLatest, merge } from 'rxjs'
 import { Hotkeys } from '~/utils'
 import { imageFileFromPaste } from '~/utils/image-file-from-paste'
 import { useTesseract } from '~/utils/use-tesseract'
 import { IconsModule } from '../icons'
 import { svgMagnifyingGlass, svgXmark } from '../icons/svg'
 import { QuicksearchService } from './quicksearch.service'
+import { animate, style, transition, trigger } from '@angular/animations'
+import { WINDOW } from '~/utils/injection/window'
 
 @Component({
   standalone: true,
@@ -31,38 +32,45 @@ import { QuicksearchService } from './quicksearch.service'
   host: {
     class: 'relative',
   },
+  animations: [
+    trigger('fade', [
+      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
+      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class QuicksearchInputComponent {
-  @ViewChild('input')
-  public input: ElementRef<HTMLInputElement>
+  private search = inject(QuicksearchService)
+  private keys = inject(Hotkeys)
+  private isMobile = inject(WINDOW).window.matchMedia('(max-width: 767px)').matches
 
-  @Input()
-  public placeholder: string = 'Search'
+  public input = viewChild<ElementRef<HTMLInputElement>>('input')
 
-  @Input()
-  public bordered: boolean = false
+  public placeholder = input<string>('Search')
+  public bordered = input<boolean>(true)
+  public autofocus = input<boolean>(false)
 
-  @Input()
-  public set autofocus(value: boolean) {
-    if (value) {
-      setTimeout(() => this.input.nativeElement.focus(), 100)
-    }
-  }
-  public readonly value$ = this.search.query$
+  protected active = this.search.active
+  protected value = this.search.query
 
   protected svgSearch = svgMagnifyingGlass
   protected svgXmark = svgXmark
-  protected vm$ = combineLatest({
-    active: this.search.active$,
-    value: this.search.query$,
-  })
 
-  public constructor(private search: QuicksearchService, private keys: Hotkeys) {
-    merge(this.keys.observe({ keys: '/' }), this.keys.observe({ keys: ':' }))
+  public constructor() {
+    merge(this.keys.observe({ keys: 'control.k' }))
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
-        this.input.nativeElement.focus()
+        this.input().nativeElement.focus()
       })
+    if (!this.isMobile) {
+      effect(() => {
+        if (this.active() && this.autofocus() && this.input()) {
+          setTimeout(() => {
+            this.input().nativeElement.focus()
+          })
+        }
+      })
+    }
   }
 
   @HostListener('paste', ['$event'])
@@ -79,6 +87,6 @@ export class QuicksearchInputComponent {
   }
 
   protected submit(value: string) {
-    this.search.patchState({ value: value })
+    this.search.submit(value)
   }
 }

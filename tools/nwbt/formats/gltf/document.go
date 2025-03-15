@@ -1,6 +1,7 @@
 package gltf
 
 import (
+	"io"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
 	"os"
@@ -28,9 +29,14 @@ func (c *Document) Save(file string) error {
 	if err != nil {
 		return err
 	}
+	defer f.Close()
+	return c.Encode(f, path.Ext(file) == ".glb")
+}
+
+func (c *Document) Encode(f io.Writer, binary bool) error {
 	e := gltf.NewEncoder(f)
 	e.SetJSONIndent("", "\t")
-	e.AsBinary = path.Ext(file) == ".glb"
+	e.AsBinary = binary
 	return e.Encode(c.Document)
 }
 

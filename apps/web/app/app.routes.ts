@@ -108,6 +108,7 @@ const PAGE_ROUTES: Routes = [
     ],
   },
   { path: 'datasheets', loadChildren: () => import('./pages/datasheets').then((m) => m.ROUTES) },
+  { path: 'assets', loadChildren: () => import('./pages/assets').then((m) => m.ROUTES) },
 ]
 
 export const APP_ROUTES: Routes = [
