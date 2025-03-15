@@ -1,54 +1,85 @@
-import { Component, ElementRef, HostListener, inject, input, output, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  output,
+  untracked,
+  viewChild,
+} from '@angular/core'
 import { IconsModule } from '~/ui/icons'
 import { svgFileCode, svgFolderOpen } from '~/ui/icons/svg'
 
-import { TreeNode } from './types'
+import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling'
+import { FileTreeNode, FileTreeStore } from './file-tree.store'
 
 @Component({
   standalone: true,
-  selector: 'details[nwbFileTree],ul[nwbFileTree]',
-  imports: [IconsModule],
-
+  selector: 'nwb-file-tree',
+  imports: [IconsModule, ScrollingModule],
+  providers: [FileTreeStore],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'block h-full',
+  },
   template: `
-    @if (node().name; as name) {
-      <summary>
-        <nwb-icon [icon]="folderIcon" class="w-4 h-4" />
-        {{ name }}
-      </summary>
-    }
-    @if (isOpen()) {
-      <ul>
-        @for (folder of node().folders; track folder.name) {
-          <li>
-            <details [nwbFileTree]="folder" class="w-full overflow-hidden" (selected)="selected.emit($event)"></details>
-          </li>
-        }
-        @for (file of node().files; track file.name) {
-          <li class="w-full overflow-hidden">
-            <a (click)="selected.emit(file.data)">
-              <nwb-icon [icon]="fileIcon" class="w-4 h-4" />
-              {{ file.name }}
-            </a>
-          </li>
-        }
-      </ul>
-    }
+    <cdk-virtual-scroll-viewport itemSize="24" class="h-full">
+      <div
+        *cdkVirtualFor="let item of store.flatlist(); trackBy: trackBy"
+        [style.paddingLeft.px]="item.depth * 10"
+        class="whitespace-nowrap overflow-hidden h-6"
+        [class.text-primary]="item.id === active()"
+      >
+        <nwb-icon [icon]="item.isDir ? folderIcon : fileIcon" class="w-4 h-4" />
+        <a (click)="handleClick(item)" (keydown.space)="handleClick(item); (false)" class="cursor-pointer" tabindex="0">
+          {{ item.name }}
+        </a>
+      </div>
+    </cdk-virtual-scroll-viewport>
   `,
 })
-export class FileTreeComponent<T> {
-  public node = input<TreeNode<T>>(null, { alias: 'nwbFileTree' })
+export class FileTreeComponent {
+  protected store = inject(FileTreeStore)
+  public files = input<string[]>()
   public search = input<string>('')
-  protected el = inject<ElementRef<HTMLDetailsElement>>(ElementRef).nativeElement
-  protected isOpen = signal(this.el.tagName !== 'DETAILS')
+  public selected = output<string>()
+  public selection = input<string>()
+  protected active = linkedSignal(() => this.selection())
+  protected displayFiles = computed(() => {
+    if (!this.search()) {
+      return this.files()
+    }
+    return this.files().filter((f) => f.includes(this.search()))
+  })
+
   protected folderIcon = svgFolderOpen
   protected fileIcon = svgFileCode
+  protected trackBy = (i: number, item: FileTreeNode) => item.id
+  protected viewport = viewChild(CdkVirtualScrollViewport)
 
-  public selected = output<T>()
+  public constructor() {
+    effect(() => {
+      const files = this.displayFiles()
+      untracked(() => {
+        this.store.load(files)
+        this.viewport().checkViewportSize()
+        const index = this.store.select(this.selection())
+        if (index >= 0) {
+          this.viewport().scrollToIndex(index)
+        }
+      })
+    })
+  }
 
-  @HostListener('toggle', ['$event'])
-  protected onToggle(e: ToggleEvent) {
-    if (e.target === this.el) {
-      this.isOpen.set(this.el.open)
+  protected handleClick(item: FileTreeNode) {
+    if (item.isDir) {
+      this.store.toggle(item.id)
+    } else {
+      this.active.set(item.id)
+      this.selected.emit(item.id)
     }
   }
 }

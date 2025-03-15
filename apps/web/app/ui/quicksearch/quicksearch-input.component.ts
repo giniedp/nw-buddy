@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -11,15 +12,14 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { combineLatest, merge } from 'rxjs'
+import { merge } from 'rxjs'
 import { Hotkeys } from '~/utils'
 import { imageFileFromPaste } from '~/utils/image-file-from-paste'
+import { WINDOW } from '~/utils/injection/window'
 import { useTesseract } from '~/utils/use-tesseract'
 import { IconsModule } from '../icons'
 import { svgMagnifyingGlass, svgXmark } from '../icons/svg'
 import { QuicksearchService } from './quicksearch.service'
-import { animate, style, transition, trigger } from '@angular/animations'
-import { WINDOW } from '~/utils/injection/window'
 
 @Component({
   selector: 'nwb-quicksearch-input',

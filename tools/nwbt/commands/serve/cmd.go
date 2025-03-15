@@ -68,7 +68,6 @@ func run(cmd *cobra.Command, args []string) {
 	crcTable = utils.Must(rtti.LoadCrcTable(flgCrcFile))
 	uuidTable = utils.Must(rtti.LoadUuIdTable(flgUuidFile))
 	r := mux.NewRouter()
-	r.PathPrefix("/raw").Handler(http.StripPrefix("/raw", RawFileServer(assets.Archive)))
 	r.PathPrefix("/list").Handler(http.StripPrefix("/list", ListServer(assets.Archive)))
 	r.PathPrefix("/file").Handler(http.StripPrefix("/file", FileServer(assets)))
 
@@ -80,13 +79,6 @@ func run(cmd *cobra.Command, args []string) {
 
 	slog.Info("serving on", "address", addr)
 	log.Fatal(srv.ListenAndServe())
-}
-
-func RawFileServer(archive nwfs.Archive) http.HandlerFunc {
-	fs := &nwfs.FS{Archive: archive}
-	return func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFileFS(w, r, fs, r.URL.Path)
-	}
 }
 
 func ListServer(archive nwfs.Archive) http.HandlerFunc {
@@ -117,32 +109,27 @@ func FileServer(assets *game.Assets) http.HandlerFunc {
 	archive := assets.Archive
 	return func(w http.ResponseWriter, r *http.Request) {
 		filePath := nwfs.NormalizePath(r.URL.Path)
+		targetType := r.URL.Query().Get("format")
 
 		file, ok := archive.Lookup(filePath)
-		if ok {
-			slog.Info("serving file", "path", filePath)
+		if !ok {
+			slog.Error("file not found", "path", filePath)
+			http.Error(w, "file not found", http.StatusNotFound)
+		}
+
+		if targetType == "" {
+			slog.Info("serving", "path", filePath)
 			serveFile(file, w)
 			return
 		}
 
-		targetType := path.Ext(filePath)
-		fileGlob := utils.ReplaceExt(filePath, "*")
-		list, err := archive.Glob(fileGlob)
-		slog.Info("looking for", "file", filePath, "glob", fileGlob, "targetType", targetType, "found", len(list))
-		for _, file := range list {
-			slog.Info("found", "file", file.Path())
+		if !strings.HasPrefix(targetType, ".") {
+			targetType = "." + targetType
 		}
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if len(list) == 0 {
-			http.Error(w, "file not found", http.StatusNotFound)
-			return
-		}
-		file = list[0]
+		slog.Info("convert", "path", filePath, "format", targetType)
 		data, err := convertFile(assets, file, targetType)
 		if err != nil {
+			slog.Error("conversion failed", "path", filePath, "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -156,6 +143,7 @@ func serveContent(data []byte, ext string, w http.ResponseWriter) {
 	} else {
 		w.Header().Set("Content-Type", http.DetectContentType(data))
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(data)
 }
 
@@ -258,12 +246,12 @@ func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, err
 	c := models.NewCollector(assets)
 	group := importer.AssetGroup{}
 	model := file.Path()
-	asset, err := c.ResolveCdfAsset(model, false)
+	asset, err := c.ResolveCdfAsset(model)
 	if err != nil {
 		return nil, err
 	}
 	if asset != nil {
-		for _, mesh := range asset.Attachments {
+		for _, mesh := range asset.SkinsOrCloth() {
 			model, material := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
 			if model != "" {
 				group.Meshes = append(group.Meshes, importer.GeometryAsset{
