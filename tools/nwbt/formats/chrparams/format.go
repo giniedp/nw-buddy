@@ -7,6 +7,7 @@ import (
 	"nw-buddy/tools/formats/bspace"
 	"nw-buddy/tools/formats/comb"
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/utils"
 	"path"
 	"strings"
 )
@@ -102,7 +103,7 @@ func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFil
 		switch path.Ext(file.Path()) {
 		case ".caf":
 			result = append(result, adb.AnimationFile{
-				Name: path.Base(file.Path()),
+				Name: utils.ReplaceExt(path.Base(file.Path()), ""),
 				File: file.Path(),
 			})
 		case ".bspace":
@@ -112,7 +113,7 @@ func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFil
 				continue
 			}
 			result = append(result, adb.AnimationFile{
-				Name:   path.Base(file.Path()),
+				Name:   utils.ReplaceExt(path.Base(file.Path()), ""),
 				File:   file.Path(),
 				Bspace: doc,
 			})
@@ -123,7 +124,7 @@ func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFil
 				continue
 			}
 			result = append(result, adb.AnimationFile{
-				Name: path.Base(file.Path()),
+				Name: utils.ReplaceExt(path.Base(file.Path()), ""),
 				File: file.Path(),
 				Comb: doc,
 			})

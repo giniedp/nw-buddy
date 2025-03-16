@@ -84,7 +84,6 @@ func run(cmd *cobra.Command, args []string) {
 func ListServer(archive nwfs.Archive) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		pattern := nwfs.NormalizePath(r.URL.Path)
-		slog.Info("listing", "path", pattern)
 		list, err := archive.Glob(pattern)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -110,7 +109,6 @@ func FileServer(assets *game.Assets) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		filePath := nwfs.NormalizePath(r.URL.Path)
 		if file, ok := archive.Lookup(filePath); ok {
-			slog.Info("serving", "path", filePath)
 			serveFile(file, w)
 			return
 		}
@@ -281,18 +279,15 @@ func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, err
 	if err != nil {
 		return nil, err
 	}
-	if asset != nil {
-		for _, mesh := range asset.SkinsOrCloth() {
-			model, material := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
-			if model != "" {
-				group.Meshes = append(group.Meshes, importer.GeometryAsset{
-					GeometryFile: model,
-					MaterialFile: material,
-				})
-			}
+	for _, mesh := range asset.SkinsOrCloth() {
+		model, material := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
+		if model != "" {
+			group.Meshes = append(group.Meshes, importer.GeometryAsset{
+				GeometryFile: model,
+				MaterialFile: material,
+			})
 		}
 	}
-
 	return convertGltf(c, group, target == ".glb")
 }
 

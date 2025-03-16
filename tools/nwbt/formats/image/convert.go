@@ -28,7 +28,7 @@ type convertConfig struct {
 	silent    bool
 	normalMap bool
 	target    string
-	maxSize   uint32
+	maxSize   uint
 }
 
 type ConvertOption func(*convertConfig)
@@ -65,7 +65,7 @@ func WithTarget(target string) ConvertOption {
 	}
 }
 
-func WithMaxSize(maxSize uint32) ConvertOption {
+func WithMaxSize(maxSize uint) ConvertOption {
 	return func(c *convertConfig) {
 		c.maxSize = maxSize
 	}
@@ -119,13 +119,13 @@ func ConvertDDS(data []byte, target Format, options ...ConvertOption) (res []byt
 
 	if config.maxSize > 0 {
 		h, _ := dds.ParseHeader(data)
-		if h.Width > config.maxSize {
+		if h.Width > uint32(config.maxSize) {
 			aspect := float64(h.Height) / float64(h.Width)
-			texOpts.Width = config.maxSize
+			texOpts.Width = uint32(config.maxSize)
 			texOpts.Height = uint32(float64(config.maxSize) * aspect)
-		} else if h.Height > config.maxSize {
+		} else if h.Height > uint32(config.maxSize) {
 			aspect := float64(h.Width) / float64(h.Height)
-			texOpts.Height = config.maxSize
+			texOpts.Height = uint32(config.maxSize)
 			texOpts.Width = uint32(float64(config.maxSize) * aspect)
 		}
 	}

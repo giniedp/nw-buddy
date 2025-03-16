@@ -258,6 +258,53 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 				default:
 					slog.Warn("Unsupported color size", "size", stream.ElementSize)
 				}
+			case cgf.STREAM_TYPE_BONEMAPPING:
+				r := buf.NewReaderLE(stream.Data)
+				r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
+				switch stream.ElementSize {
+				case 8:
+					joints := make([][4]uint8, subset.NumVertices)
+					weights := make([][4]uint8, subset.NumVertices)
+					for i := range subset.NumVertices {
+						joints[i] = [4]uint8{
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+						}
+						weights[i] = [4]uint8{
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+						}
+					}
+					out.Attributes["JOINTS_0"] = modeler.WriteJoints(doc, joints)
+					out.Attributes["WEIGHTS_0"] = modeler.WriteWeights(doc, weights)
+				case 12:
+					joints := make([][4]uint16, subset.NumVertices)
+					weights := make([][4]uint8, subset.NumVertices)
+					for i := range subset.NumVertices {
+						joints[i] = [4]uint16{
+							r.MustReadUint16(),
+							r.MustReadUint16(),
+							r.MustReadUint16(),
+							r.MustReadUint16(),
+						}
+						weights[i] = [4]uint8{
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+							r.MustReadUint8(),
+						}
+					}
+					out.Attributes["JOINTS_0"] = modeler.WriteJoints(doc, joints)
+					out.Attributes["WEIGHTS_0"] = modeler.WriteWeights(doc, weights)
+				default:
+					slog.Warn("Unsupported bone size", "size", stream.ElementSize)
+				}
+			default:
+				slog.Warn("Unsupported stream type", "type", stream.StreamType)
 			}
 		}
 	}

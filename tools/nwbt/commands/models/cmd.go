@@ -83,12 +83,15 @@ func (c *Collector) Convert(outDir string) {
 					Format:  ".png",
 					TempDir: flgTmpDir,
 					Silent:  true,
-					MaxSize: 1024,
+					MaxSize: flgTexSize,
 				},
 			}
 
 			for _, mesh := range group.Meshes {
 				document.ImportGeometry(mesh, c.LoadAsset)
+			}
+			for _, anim := range group.Animations {
+				document.ImportCgfAnimation(anim, c.LoadAnimation)
 			}
 			document.ImportCgfMaterials()
 
@@ -109,6 +112,20 @@ func (c *Collector) Convert(outDir string) {
 		ConsumerCount: 10,
 	})
 
+}
+
+func (c *Collector) LoadAnimation(anim importer.Animation) *cgf.File {
+	mfile, ok := c.Archive.Lookup(anim.File)
+	if !ok {
+		slog.Warn("Animation file not found", "file", anim.File)
+		return nil
+	}
+	doc, err := cgf.Load(mfile)
+	if err != nil {
+		slog.Warn("Animation not loaded", "file", anim.File, "err", err)
+		return nil
+	}
+	return doc
 }
 
 func (c *Collector) LoadAsset(mesh importer.GeometryAsset) (*cgf.File, []mtl.Material) {

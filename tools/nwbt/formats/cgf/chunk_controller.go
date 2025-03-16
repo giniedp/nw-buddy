@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	RegisterChunkReader(ChunkType_Controller, 0x0800, ReadChunkController)
+	RegisterChunkReader(ChunkType_Controller, 0x0831, ReadChunkController)
 }
 
 type ChunkController struct {

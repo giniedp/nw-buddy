@@ -13,7 +13,7 @@ type Converter interface {
 type BasicConverter struct {
 	Format  Format // target image format
 	TempDir string // temporary directory to be used during conversion
-	MaxSize uint32 // maximum image width and height
+	MaxSize uint   // maximum image width and height
 	Silent  bool   // suppress conversion output
 }
 

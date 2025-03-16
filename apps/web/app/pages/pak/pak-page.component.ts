@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core'
+import { Component, computed, inject, linkedSignal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CodeEditorModule } from '~/ui/code-editor'
 import { LayoutModule } from '~/ui/layout'
@@ -6,7 +6,6 @@ import { LayoutModule } from '~/ui/layout'
 import { httpResource } from '@angular/common/http'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
-import { IonButton, IonButtons } from '@ionic/angular/standalone'
 import { map } from 'rxjs'
 import { ItemModelInfo, ModelViewerModule } from '~/widgets/model-viewer'
 import { PakSidebarComponent } from './pak-sidebar.component'
@@ -15,7 +14,7 @@ import { PakService } from './pak.service'
 @Component({
   standalone: true,
   selector: 'nwb-assets-page',
-  imports: [PakSidebarComponent, LayoutModule, CodeEditorModule, FormsModule, IonButton, IonButtons, ModelViewerModule],
+  imports: [PakSidebarComponent, LayoutModule, CodeEditorModule, FormsModule, ModelViewerModule],
   host: {
     class: 'ion-page flex flex-row',
   },
@@ -28,26 +27,33 @@ import { PakService } from './pak.service'
         <ion-header class="bg-base-300">
           <ion-toolbar>
             <ion-title>Pak Browser</ion-title>
-            <ion-buttons collapse="true" slot="end">
-
-            </ion-buttons>
+            @if (showModelButton) {
+              <div slot="end" class="join">
+                <button class="join-item btn btn-ghost" (click)="showModel.set(false)">TXT</button>
+                <button class="join-item btn btn-ghost" (click)="showModel.set(true)">3D</button>
+              </div>
+            }
           </ion-toolbar>
         </ion-header>
         @if (stat(); as stat) {
           <ion-content [scrollY]="false">
-            @if (stat.textUrl) {
-              <nwb-code-editor
-                class="ion-page"
-                [ngModel]="textContent.value()"
-                [language]="stat.textType"
-                [disabled]="true"
-              />
-            } @else if (stat.imageUrl) {
-              <picture class="ion-page">
-                <img [src]="stat.imageUrl" class="object-scale-down" />
-              </picture>
-            } @else if (modelContent()) {
-              <nwb-model-viewer class="h-full" [models]="modelContent()" />
+            @switch (previewType()) {
+              @case ('3D') {
+                <nwb-model-viewer class="h-full" [models]="modelContent()" />
+              }
+              @case ('TXT') {
+                <nwb-code-editor
+                  class="ion-page"
+                  [ngModel]="textContent.value()"
+                  [language]="stat.textType"
+                  [disabled]="true"
+                />
+              }
+              @case ('IMG') {
+                <picture class="ion-page">
+                  <img [src]="stat.imageUrl" class="object-scale-down" />
+                </picture>
+              }
             }
           </ion-content>
         }
@@ -77,5 +83,31 @@ export class PakPageComponent {
         appearance: null,
       },
     ]
+  })
+  protected showModelButton = computed(() => {
+    const stat = this.stat()
+    return !!stat && !!stat.modelUrl && !!stat.textUrl
+  })
+  protected showModel = linkedSignal(() => {
+    const stat = this.stat()
+    return !!stat && !!stat.modelUrl && !stat.textUrl
+  })
+  protected previewType = computed(() => {
+    if (this.showModelButton()) {
+      if (this.showModel()) {
+        return '3D'
+      }
+      return 'TXT'
+    }
+    if (this.stat()?.imageUrl) {
+      return 'IMG'
+    }
+    if (this.stat()?.textUrl) {
+      return 'TXT'
+    }
+    if (this.stat()?.modelUrl) {
+      return '3D'
+    }
+    return null
   })
 }

@@ -212,7 +212,7 @@ func SelectModelAnimations(actions []AnimationAction, files []AnimationFile) []i
 
 			for _, animation := range files {
 				for _, name := range fragment.Animations {
-					if animation.Name == name {
+					if strings.EqualFold(animation.Name, name) {
 						animations = append(animations, animation)
 					}
 				}
@@ -220,7 +220,28 @@ func SelectModelAnimations(actions []AnimationAction, files []AnimationFile) []i
 
 			for _, animation := range animations {
 				if animation.Bspace != nil {
-
+				bspace:
+					for _, example := range animation.Bspace.ExampleList.Examples {
+						if _, ok := animation.Bspace.ExampleSetPara(example, "TravelAngle"); ok {
+							// angle animation
+							continue
+						}
+						if _, ok := animation.Bspace.ExampleSetPara(example, "TravelSlope"); ok {
+							// slope animation
+							continue
+						}
+						if _, ok := animation.Bspace.ExampleSetPara(example, "TurnSpeed"); ok {
+							// turn animation
+							continue
+						}
+						// assume this is a basic animation without turn or travel blends
+						for _, file := range files {
+							if strings.EqualFold(file.Name, example.Name) {
+								collect(file.File, action.Name, fragment.DamageIds)
+								break bspace
+							}
+						}
+					}
 				} else if animation.Comb != nil {
 
 				} else {
@@ -230,12 +251,12 @@ func SelectModelAnimations(actions []AnimationAction, files []AnimationFile) []i
 		}
 	}
 	result := make([]importer.Animation, 0)
-	for _, group := range result {
+	for _, group := range groups.Values() {
 		group.Meta = map[string]any{
 			"actions":   group.Actions,
 			"damageIds": group.DamageIds,
 		}
-		result = append(result, group)
+		result = append(result, *group)
 	}
 	return result
 }

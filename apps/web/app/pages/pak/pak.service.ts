@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core'
 
-const imageTypes = ['dds', 'png']
-const modelTypes = ['cgf', 'cdf', 'skin']
-const jsonTypes = ['dynamicslice', 'meta', 'chunks', 'waterqt', 'timeline']
-const textTypes = ['json', 'xml', 'cfg', 'mtl', 'ext']
+const toImageTypes = ['dds', 'png', 'tif']
+const toModelTypes = ['cgf', 'cdf', 'skin']
+const toJsonTypes = ['dynamicslice', 'meta', 'chunks', 'waterqt', 'timeline', 'datasheet']
+const textTypes = ['json', 'xml', 'cfg', 'mtl', 'ext', 'cdf', 'chrparams', 'animevents', 'bspace', 'comb', 'adb']
 const textTypeMap = {
   mtl: 'xml',
+  cdf: 'xml',
+  chrparams: 'xml',
+  animevents: 'xml',
+  bspace: 'xml',
+  comb: 'xml',
+  adb: 'xml',
 }
 
 export interface FileStat {
@@ -31,14 +37,14 @@ export class PakService {
       stat.textUrl = this.fileUrl(file)
       stat.textType = textTypeMap[ext] || ext
     }
-    if (jsonTypes.includes(ext)) {
+    if (toJsonTypes.includes(ext)) {
       stat.textUrl = this.fileUrl(file, 'json')
       stat.textType = 'json'
     }
-    if (modelTypes.includes(ext)) {
+    if (toModelTypes.includes(ext)) {
       stat.modelUrl = this.fileUrl(file, 'glb')
     }
-    if (imageTypes.includes(ext)) {
+    if (toImageTypes.includes(ext)) {
       stat.imageUrl = this.fileUrl(file, 'png')
     }
     return stat

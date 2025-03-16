@@ -34,7 +34,7 @@ type Dimensions struct {
 
 type Param struct {
 	XMLName xml.Name `xml:"Param" json:"-"`
-	Name    string   `xml:"AName,attr"`
+	Name    string   `xml:"Name,attr"`
 	Min     float32  `xml:"Min,attr"`
 	Max     float32  `xml:"Max,attr"`
 }
@@ -75,4 +75,14 @@ func (e *Example) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 	d.Skip()
 	return nil
+}
+
+func (g *ParaGroup) ExampleSetPara(ex Example, param string) (string, bool) {
+	for i, p := range g.Dimensions.Param {
+		if strings.EqualFold(p.Name, param) {
+			v, ok := ex.Setter[i]
+			return v, ok
+		}
+	}
+	return "", false
 }

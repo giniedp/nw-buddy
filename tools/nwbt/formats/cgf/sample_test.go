@@ -68,3 +68,14 @@ func TestRead_MusiDrumDrum(t *testing.T) {
 		assert.NoError(t, err)
 	}
 }
+
+func TestRead_HorseIdle(t *testing.T) {
+	cgfData, err := os.ReadFile("sample/horse_idle.caf")
+	assert.NoError(t, err)
+
+	doc, err := cgf.Parse(cgfData)
+	assert.NoError(t, err)
+
+	ctrl := cgf.SelectChunks[cgf.ChunkController](doc)
+	assert.Len(t, ctrl, 52)
+}

@@ -3,29 +3,41 @@ package gltf
 import (
 	"log/slog"
 	"nw-buddy/tools/formats/cgf"
+	"nw-buddy/tools/formats/gltf/importer"
 	"slices"
 
 	"github.com/qmuntal/gltf"
 	"github.com/qmuntal/gltf/modeler"
 )
 
-func (c *Document) ImportCgfAnimation(file *cgf.File) {
+func (c *Document) ImportCgfAnimation(asset importer.Animation, load func(asset importer.Animation) *cgf.File) {
+	file := load(asset)
+	if file == nil {
+		return
+	}
+
 	controllers := cgf.SelectChunks[cgf.ChunkController](file)
 	params, _ := cgf.SelectChunk[cgf.ChunkMotionParams](file)
 
-	animation := &gltf.Animation{}
+	animation := &gltf.Animation{
+		Name: asset.Name,
+	}
+	// slog.Info("Importing animation", "file", file.Source, "name", asset.Name, "controllers", len(controllers))
 	defer func() {
 		if len(animation.Channels) > 0 {
 			c.Document.Animations = append(c.Document.Animations, animation)
+		} else {
+			slog.Warn("Animation not imported", "file", file.Source)
 		}
 	}()
 
 	for _, controller := range controllers {
 		_, nodeIndex := c.FindNodeByControllerId(controller.ControllerId)
 		if nodeIndex == -1 {
-			slog.Warn("Node not found for controllerId", "controllerId", controller.ControllerId, "file", file.Source)
+			//slog.Warn("Node not found for controllerId", "controllerId", controller.ControllerId, "file", file.Source)
 			continue
 		}
+		// slog.Info("Node found for controllerId", "controllerId", controller.ControllerId, "file", file.Source)
 
 		if len(controller.RotationKeys) > 0 {
 			rotTimeKeys := slices.Clone(controller.RotationTimeKeys)

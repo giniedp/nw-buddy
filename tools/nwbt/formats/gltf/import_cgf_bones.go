@@ -2,6 +2,7 @@ package gltf
 
 import (
 	"fmt"
+	"log/slog"
 	"nw-buddy/tools/formats/cgf"
 
 	"github.com/qmuntal/gltf"
@@ -10,6 +11,7 @@ import (
 
 func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones) (*int, error) {
 	if len(chunk.Bones) == 0 {
+		slog.Debug("no bones", "file", cgfile.Source)
 		return nil, nil
 	}
 
@@ -87,10 +89,10 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 	data := make([][4][4]float32, 0)
 	for _, mat := range inverse {
 		data = append(data, [4][4]float32{
-			{mat[0], mat[1], mat[2], mat[3]},
-			{mat[4], mat[5], mat[6], mat[7]},
-			{mat[8], mat[9], mat[10], mat[11]},
-			{mat[12], mat[13], mat[14], mat[15]},
+			{mat[0], mat[4], mat[8], mat[12]},
+			{mat[1], mat[5], mat[9], mat[13]},
+			{mat[2], mat[6], mat[10], mat[14]},
+			{mat[3], mat[7], mat[11], mat[15]},
 		})
 	}
 	accessor := modeler.WriteAccessor(d.Document, gltf.TargetNone, data)

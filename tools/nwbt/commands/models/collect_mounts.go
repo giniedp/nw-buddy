@@ -97,10 +97,12 @@ func (c *Collector) getAnimations(cdf *cdf.Document, adbFile string) []importer.
 	}
 	adb, err := c.LoadAdbDocument(adbFile)
 	if err != nil {
+		slog.Warn("ADB not loaded", "file", adbFile, "err", err)
 		return nil
 	}
 	anims, err := cdf.LoadAnimationFiles(c.Archive)
 	if err != nil {
+		slog.Warn("Animations not loaded", "err", err)
 		return nil
 	}
 	return adb.SelectModelAnimations(anims)
