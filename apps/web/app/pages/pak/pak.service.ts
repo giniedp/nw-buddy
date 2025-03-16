@@ -50,7 +50,7 @@ export class PakService {
 
   public fileUrl(file: string, format?: string) {
     if (format) {
-      file = `${file}?format=${format}`
+      file = `${file}.${format}`
     }
     return this.assetUrl(`file/${file}`)
   }

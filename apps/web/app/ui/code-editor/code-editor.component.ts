@@ -95,7 +95,8 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
     if (!editor) {
       return
     }
-    editor.setValue(this.value())
+
+    editor.setValue(this.value() || '')
     editor.updateOptions({
       readOnly: this.readonly(),
       theme: this.theme(),

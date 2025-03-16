@@ -49,7 +49,7 @@ export class FileTreeComponent {
   public selection = input<string>()
   protected active = linkedSignal(() => this.selection())
   protected displayFiles = computed(() => {
-    if (!this.search()) {
+    if (!this.search() || !this.files()) {
       return this.files()
     }
     return this.files().filter((f) => f.includes(this.search()))

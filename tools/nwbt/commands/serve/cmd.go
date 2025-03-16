@@ -21,9 +21,11 @@ import (
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
 	"nw-buddy/tools/utils/json"
+	"os"
 	"path"
 	"strings"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 )
@@ -71,14 +73,12 @@ func run(cmd *cobra.Command, args []string) {
 	r.PathPrefix("/list").Handler(http.StripPrefix("/list", ListServer(assets.Archive)))
 	r.PathPrefix("/file").Handler(http.StripPrefix("/file", FileServer(assets)))
 
-	addr := fmt.Sprintf("%s:%d", flgHost, flgPort)
-	srv := &http.Server{
-		Handler: r,
-		Addr:    addr,
-	}
+	h := handlers.LoggingHandler(os.Stdout, r)
+	h = handlers.RecoveryHandler()(h)
 
+	addr := fmt.Sprintf("%s:%d", flgHost, flgPort)
 	slog.Info("serving on", "address", addr)
-	log.Fatal(srv.ListenAndServe())
+	log.Fatal(http.ListenAndServe(addr, h))
 }
 
 func ListServer(archive nwfs.Archive) http.HandlerFunc {
@@ -109,23 +109,21 @@ func FileServer(assets *game.Assets) http.HandlerFunc {
 	archive := assets.Archive
 	return func(w http.ResponseWriter, r *http.Request) {
 		filePath := nwfs.NormalizePath(r.URL.Path)
-		targetType := r.URL.Query().Get("format")
-
-		file, ok := archive.Lookup(filePath)
-		if !ok {
-			slog.Error("file not found", "path", filePath)
-			http.Error(w, "file not found", http.StatusNotFound)
-		}
-
-		if targetType == "" {
+		if file, ok := archive.Lookup(filePath); ok {
 			slog.Info("serving", "path", filePath)
 			serveFile(file, w)
 			return
 		}
 
-		if !strings.HasPrefix(targetType, ".") {
-			targetType = "." + targetType
+		targetType := path.Ext(filePath)
+		filePath = strings.TrimSuffix(filePath, targetType)
+		file, ok := archive.Lookup(filePath)
+		if !ok {
+			slog.Error("file not found", "path", filePath)
+			http.Error(w, "file not found", http.StatusNotFound)
+			return
 		}
+
 		slog.Info("convert", "path", filePath, "format", targetType)
 		data, err := convertFile(assets, file, targetType)
 		if err != nil {
@@ -164,6 +162,8 @@ func convertFile(assets *game.Assets, file nwfs.File, target string) ([]byte, er
 	case ".datasheet":
 		return convertDatasheet(file, target)
 	case ".dds":
+		return convertDDS(file, target)
+	case ".tif":
 		return convertDDS(file, target)
 	case ".cgf":
 		return convertCGF(assets, file, target)
@@ -230,6 +230,37 @@ func convertDDS(file nwfs.File, target string) ([]byte, error) {
 	}
 }
 
+func convertTIF(file nwfs.File, target string) ([]byte, error) {
+	img, err := dds.Load(file)
+	if err != nil {
+		return nil, err
+	}
+	if img == nil || img.Data == nil {
+		return nil, fmt.Errorf("failed to load dds")
+	}
+	switch target {
+	case "":
+		return img.Data, nil
+	case ".png":
+		return image.ConvertDDS(
+			img.Data,
+			image.FormatPNG,
+			image.WithSilent(true),
+			image.WithTempDir(flgTempDir),
+			image.WithNormalMap(dds.IsNormalMap(file.Path())),
+		)
+	case ".webp":
+		return image.ConvertDDS(
+			img.Data,
+			image.FormatWEBP,
+			image.WithSilent(true),
+			image.WithTempDir(flgTempDir),
+			image.WithNormalMap(dds.IsNormalMap(file.Path())),
+		)
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+}
 func convertCGF(assets *game.Assets, file nwfs.File, target string) ([]byte, error) {
 	c := models.NewCollector(assets)
 	group := importer.AssetGroup{}

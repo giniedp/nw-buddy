@@ -1,6 +1,5 @@
 import { computed, effect } from '@angular/core'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
-import { listRecordVersions } from 'libs/nw-data/db/diff/list-versions'
 
 export interface FileTreeState {
   files: string[]
@@ -86,6 +85,9 @@ export const FileTreeStore = signalStore(
         update()
       },
       select: (id: string): number => {
+        if (!id) {
+          return -1
+        }
         const tokens = id.split('/')
         while (tokens.length) {
           const parentId = tokens.join('/')

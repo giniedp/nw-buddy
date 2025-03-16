@@ -29,9 +29,7 @@ import { PakService } from './pak.service'
           <ion-toolbar>
             <ion-title>Pak Browser</ion-title>
             <ion-buttons collapse="true" slot="end">
-              <!-- <ion-button>Text</ion-button>
-              <ion-button>Model</ion-button>
-              <ion-button>Image</ion-button> -->
+
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
@@ -49,7 +47,7 @@ import { PakService } from './pak.service'
                 <img [src]="stat.imageUrl" class="object-scale-down" />
               </picture>
             } @else if (modelContent()) {
-              <nwb-model-viewer class="ion-page" [models]="modelContent()" />
+              <nwb-model-viewer class="h-full" [models]="modelContent()" />
             }
           </ion-content>
         }
