@@ -71,8 +71,15 @@ func (c *Document) ImportCgfMaterials() {
 			continue
 		}
 
-		if material.Extensions == nil {
-			material.Extensions = gltf.Extensions{}
+		// gltf defaults
+		material.Extensions = gltf.Extensions{}
+		material.AlphaMode = gltf.AlphaOpaque
+		material.AlphaCutoff = gltf.Float(0.5)
+		material.DoubleSided = false
+		material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{
+			BaseColorFactor: float4(1, 1, 1, 1),
+			MetallicFactor:  gltf.Float(1),
+			RoughnessFactor: gltf.Float(1),
 		}
 
 		mtlDiffuse := mtl.ParamColor(m.Diffuse)
@@ -118,9 +125,7 @@ func (c *Document) ImportCgfMaterials() {
 		//   appearance = null
 		// }
 
-		// Bumpmap and Smoothness are the same texture
-		// - rgb -> Bumpmap
-		// - a -> Smoothness
+		// HINT: Bumpmap and Smoothness are usually the same texture source
 		if mapSmoothness == nil && mapBumpmap != nil {
 			mapSmoothness = mapBumpmap
 		}
@@ -174,11 +179,12 @@ func (c *Document) ImportCgfMaterials() {
 				if smoothImg.Alpha == nil {
 					return nil, fmt.Errorf("smoothImg.Alpha is nil")
 				}
-				return image.MixPngImages(specBytes, smoothImg.Alpha, func(spec, smooth color.Color) color.Color {
-					r, g, b, _ := spec.RGBA()
-					_, _, _, a := smooth.RGBA()
-					return color.RGBA{
-						uint8(r), uint8(g), uint8(b), uint8(a),
+				return image.MixPngImages(specBytes, smoothImg.Alpha, func(spec, smooth color.NRGBA) color.NRGBA {
+					return color.NRGBA{
+						spec.R,
+						spec.G,
+						spec.B,
+						smooth.R, // HINT: don't read the alpha channel. Its a grayscale image, hence just access .R
 					}
 				})
 			})
@@ -201,14 +207,12 @@ func (c *Document) ImportCgfMaterials() {
 				if err != nil {
 					return nil, err
 				}
-				return image.MixPngImages(emitImg.Data, decalImg.Data, func(emit, decal color.Color) color.Color {
-					r1, g1, b1, a1 := emit.RGBA()
-					r2, g2, b2, a2 := decal.RGBA()
-					return color.RGBA{
-						uint8(float32(uint8(r1)) / 255.0 * float32(uint8(r2))),
-						uint8(float32(uint8(g1)) / 255.0 * float32(uint8(g2))),
-						uint8(float32(uint8(b1)) / 255.0 * float32(uint8(b2))),
-						uint8(float32(uint8(a1)) / 255.0 * float32(uint8(a2))),
+				return image.MixPngImages(emitImg.Data, decalImg.Data, func(emit, decal color.NRGBA) color.NRGBA {
+					return color.NRGBA{
+						uint8(float32(emit.R) / 255.0 * float32(decal.R)),
+						uint8(float32(emit.G) / 255.0 * float32(decal.G)),
+						uint8(float32(emit.B) / 255.0 * float32(decal.B)),
+						uint8(float32(emit.A) / 255.0 * float32(decal.A)),
 					}
 				})
 			})
@@ -226,94 +230,85 @@ func (c *Document) ImportCgfMaterials() {
 		texTransform := getTexTransform(m)
 
 		if len(mtlDiffuse) >= 3 {
-			diffuse := [4]float64{
+			factor := [4]float64{
 				float64(mtlDiffuse[0]),
 				float64(mtlDiffuse[1]),
 				float64(mtlDiffuse[2]),
+				1,
 			}
 			if len(mtlDiffuse) == 4 {
-				diffuse[3] = float64(mtlDiffuse[3])
-			} else {
-				diffuse[3] = 1
+				factor[3] = float64(mtlDiffuse[3])
 			}
-			if material.PBRMetallicRoughness == nil {
-				material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{}
-			}
-			material.PBRMetallicRoughness.BaseColorFactor = &diffuse
+			material.PBRMetallicRoughness.BaseColorFactor = &factor
 		}
 		if texDiffuse != nil {
-			metallicFactor := float64(0)
-			if material.PBRMetallicRoughness == nil {
-				material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{}
-			}
-			material.PBRMetallicRoughness.MetallicFactor = &metallicFactor
+			material.PBRMetallicRoughness.MetallicFactor = nil
 			material.PBRMetallicRoughness.BaseColorTexture = &gltf.TextureInfo{
-				Index: slices.Index(c.Textures, texDiffuse),
+				Index:      slices.Index(c.Textures, texDiffuse),
+				Extensions: gltf.Extensions{},
 			}
 			if texTransform != nil {
-				addTexTransform(material.PBRMetallicRoughness.BaseColorTexture, *texTransform)
+				material.PBRMetallicRoughness.BaseColorTexture.Extensions[texturetransform.ExtensionName] = &texTransform
 			}
 		}
 		if texBumpmap != nil {
-			index := slices.Index(c.Textures, texBumpmap)
 			material.NormalTexture = &gltf.NormalTexture{
-				Index: &index,
+				Index:      gltf.Index(slices.Index(c.Textures, texBumpmap)),
+				Scale:      gltf.Float(1),
+				Extensions: gltf.Extensions{},
 			}
-			// if (texTransformProps) {
-			//   material.getNormalTextureInfo().setExtension(KHRTextureTransform.EXTENSION_NAME, texTransformProps)
-			// }
+			if texTransform != nil {
+				material.NormalTexture.Extensions[texturetransform.ExtensionName] = &texTransform
+			}
 		}
 		if texSpecular != nil && !isGlass && !isHair {
-			ext := specular.PBRSpecularGlossiness{}
-			if material.PBRMetallicRoughness != nil && material.PBRMetallicRoughness.BaseColorTexture != nil {
+			ext := specular.PBRSpecularGlossiness{
+				DiffuseFactor:    float4(1, 1, 1, 1),
+				SpecularFactor:   float3(1, 1, 1),
+				GlossinessFactor: gltf.Float(1),
+			}
+			if material.PBRMetallicRoughness.BaseColorTexture != nil {
 				ext.DiffuseTexture = &gltf.TextureInfo{
-					Index: material.PBRMetallicRoughness.BaseColorTexture.Index,
+					Index:      material.PBRMetallicRoughness.BaseColorTexture.Index,
+					Extensions: gltf.Extensions{},
+				}
+				if texTransform != nil {
+					ext.DiffuseTexture.Extensions[texturetransform.ExtensionName] = &texTransform
 				}
 			}
 			ext.SpecularGlossinessTexture = &gltf.TextureInfo{
-				Index: slices.Index(c.Textures, texSpecular),
+				Index:      slices.Index(c.Textures, texSpecular),
+				Extensions: gltf.Extensions{},
 			}
 			if texTransform != nil {
-				addTexTransform(ext.DiffuseTexture, *texTransform)
-				addTexTransform(ext.SpecularGlossinessTexture, *texTransform)
+				ext.SpecularGlossinessTexture.Extensions[texturetransform.ExtensionName] = &texTransform
 			}
 			if len(mtlSpecular) >= 3 {
-				specular := [3]float64{
-					float64(mtlSpecular[0]),
-					float64(mtlSpecular[1]),
-					float64(mtlSpecular[2]),
-				}
-				ext.SpecularFactor = &specular
+				ext.SpecularFactor = float3(float64(mtlSpecular[0]), float64(mtlSpecular[1]), float64(mtlSpecular[2]))
 			}
 			if len(mtlDiffuse) >= 3 {
-				diffuse := [4]float64{
+				factor := float4(
 					float64(mtlDiffuse[0]),
 					float64(mtlDiffuse[1]),
 					float64(mtlDiffuse[2]),
-				}
+					1,
+				)
 				if len(mtlDiffuse) == 4 {
-					diffuse[3] = float64(mtlDiffuse[3])
-				} else {
-					diffuse[3] = 1
+					factor[3] = float64(mtlDiffuse[3])
 				}
-				ext.DiffuseFactor = &diffuse
+				ext.DiffuseFactor = factor
 			}
 
 			material.Extensions[specular.ExtensionName] = &ext
 			c.ExtensionsRequired = utils.AppendUniq(c.ExtensionsRequired, specular.ExtensionName)
 			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, specular.ExtensionName)
 
-			if material.PBRMetallicRoughness == nil {
-				material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{}
-			}
+			// need to remove the pbrMetallicRoughness, otherwise playcanvas would pick that up instead
 			material.PBRMetallicRoughness.BaseColorFactor = nil
 			material.PBRMetallicRoughness.BaseColorTexture = nil
-			factor := float64(1)
-			material.PBRMetallicRoughness.MetallicFactor = &factor
-
+			material.PBRMetallicRoughness.MetallicFactor = gltf.Float(0)
 			if mtlShininess >= 0 {
-				factor := float64(1.0 - mtlShininess/255)
-				material.PBRMetallicRoughness.RoughnessFactor = &factor
+				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(float64(1.0 - mtlShininess/255))
 			}
 		}
 
@@ -325,23 +320,18 @@ func (c *Document) ImportCgfMaterials() {
 		}
 
 		if (isFxTransp || texEmissive != nil) && !shaderEmissiveDecal && len(mtlEmittance) >= 4 {
-			value := [3]float64{
-				float64(mtlEmittance[0]),
-				float64(mtlEmittance[1]),
-				float64(mtlEmittance[2]),
-			}
 			scale := math.Log(1+float64(mtlEmittance[3])) / 10
-			value[0] *= scale
-			value[1] *= scale
-			value[2] *= scale
-			material.EmissiveFactor = value
+			material.EmissiveFactor = [3]float64{
+				float64(mtlEmittance[0]) * scale,
+				float64(mtlEmittance[1]) * scale,
+				float64(mtlEmittance[2]) * scale,
+			}
 		} else if len(mtlEmittance) >= 3 {
-			value := [3]float64{
+			material.EmissiveFactor = [3]float64{
 				float64(mtlEmittance[0]),
 				float64(mtlEmittance[1]),
 				float64(mtlEmittance[2]),
 			}
-			material.EmissiveFactor = value
 		}
 
 		material.AlphaMode = gltf.AlphaOpaque
@@ -400,8 +390,8 @@ func (c *Document) ImportCgfMaterials() {
 		//   props.setMaskTexture(texCustom)
 		//   material.setExtension(NwMaterialExtension.EXTENSION_NAME, props)
 		// }
-
 	}
+
 }
 
 func lookupMtl(material *gltf.Material) *mtl.Material {
@@ -430,24 +420,34 @@ func getTexTransform(m *mtl.Material) *texturetransform.TextureTranform {
 	}
 
 	texTransform := texturetransform.TextureTranform{
-		Scale: [2]float64{1, 1},
+		Scale:  [2]float64{1, 1},
+		Offset: [2]float64{0, 0},
 	}
 	if m.Params.Has("SOURCE_2D_TILE_X") {
-		v1, _ := strconv.ParseFloat(m.Params.Get("SOURCE_2D_TILE_X"), 32)
-		v2, _ := strconv.ParseFloat(m.Params.Get("SOURCE_2D_TILE_Y"), 32)
-		texTransform.Scale = [2]float64{v1, v2}
+		if v1, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_TILE_X"), 32); err == nil {
+			texTransform.Scale[0] = v1
+		}
+		if v2, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_TILE_Y"), 32); err == nil {
+			texTransform.Scale[1] = v2
+		}
 	}
 	if m.Params.Has("SOURCE_2D_PHASE_X") {
-		v1, _ := strconv.ParseFloat(m.Params.Get("SOURCE_2D_PHASE_X"), 32)
-		v2, _ := strconv.ParseFloat(m.Params.Get("SOURCE_2D_PHASE_Y"), 32)
-		texTransform.Offset = [2]float64{v1, v2}
+		if v1, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_PHASE_X"), 32); err == nil {
+			texTransform.Offset[0] = v1
+		}
+		if v2, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_PHASE_Y"), 32); err == nil {
+			texTransform.Offset[1] = v2
+		}
 	}
 	return &texTransform
 }
 
-func addTexTransform(info *gltf.TextureInfo, transform texturetransform.TextureTranform) {
-	if info.Extensions == nil {
-		info.Extensions = gltf.Extensions{}
-	}
-	info.Extensions[texturetransform.ExtensionName] = &transform
+func float4(r, g, b, a float64) *[4]float64 {
+	res := [4]float64{r, g, b, a}
+	return &res
+}
+
+func float3(r, g, b float64) *[3]float64 {
+	res := [3]float64{r, g, b}
+	return &res
 }
