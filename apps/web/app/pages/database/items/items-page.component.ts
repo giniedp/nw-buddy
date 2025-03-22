@@ -9,6 +9,7 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
@@ -33,6 +34,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     VirtualGridModule,
     PriceImporterModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
   host: {
     class: 'ion-page',

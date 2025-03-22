@@ -10,6 +10,7 @@ import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
@@ -32,7 +33,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     VirtualGridModule,
     ItemFrameModule,
-    IconsModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
   host: {
     class: 'ion-page',

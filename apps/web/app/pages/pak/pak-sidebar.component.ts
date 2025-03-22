@@ -23,7 +23,7 @@ import { PakService } from './pak.service'
   ],
   template: `
     <ion-header class="bg-base-300">
-      <ion-toolbar>
+      <ion-toolbar class="px-2">
         <nwb-quicksearch-input />
       </ion-toolbar>
     </ion-header>

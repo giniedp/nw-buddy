@@ -4,7 +4,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
-import { firstValueFrom } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
@@ -16,16 +15,9 @@ import { svgFunction, svgGrid, svgTableList } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
-import {
-  HtmlHeadService,
-  eqCaseInsensitive,
-  injectBreakpoint,
-  injectChildRouteParam,
-  injectQueryParam,
-  injectRouteParam,
-  selectSignal,
-} from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { PerkTableAdapter, PerkTableRecord } from '~/widgets/data/perk-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -50,6 +42,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     VirtualGridModule,
     DataViewModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
   host: {
     class: 'ion-page',

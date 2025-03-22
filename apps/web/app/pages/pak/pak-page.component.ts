@@ -10,19 +10,21 @@ import { map } from 'rxjs'
 import { ModelItemInfo, ModelViewerModule } from '~/widgets/model-viewer'
 import { PakSidebarComponent } from './pak-sidebar.component'
 import { PakService } from './pak.service'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 
 @Component({
   standalone: true,
   selector: 'nwb-assets-page',
-  imports: [PakSidebarComponent, LayoutModule, CodeEditorModule, FormsModule, ModelViewerModule],
+  imports: [PakSidebarComponent, LayoutModule, CodeEditorModule, FormsModule, ModelViewerModule, SplitPaneDirective, SplitGutterComponent],
   host: {
     class: 'ion-page flex flex-row',
   },
   template: `
     <ion-split-pane contentId="editor">
-      <ion-menu contentId="editor" class="w-96 order-2">
-        <nwb-assets-sidebar class="w-96 ion-page h-full" />
+      <ion-menu contentId="editor" class="min-w-96 max-w-screen-md order-3" [nwbSplitPane]="gutter" >
+        <nwb-assets-sidebar class="ion-page" />
       </ion-menu>
+      <nwb-split-gutter class="order-2" #gutter="gutter" />
       <div class="ion-page order-1" id="editor">
         <ion-header class="bg-base-300">
           <ion-toolbar>

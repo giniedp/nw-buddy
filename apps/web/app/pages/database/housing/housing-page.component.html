@@ -13,9 +13,13 @@
       <span class="flex-1"></span>
       <div class="join">
         <button class="join-item btn btn-square btn-ghost" [nwbScreenshotBtn]></button>
-        <button class="join-item btn btn-square btn-ghost" [nwbPriceImporterButton] [tooltip]="'Open price importer'"></button>
+        <button
+          class="join-item btn btn-square btn-ghost"
+          [nwbPriceImporterButton]
+          [tooltip]="'Open price importer'"
+        ></button>
         <button class="join-item btn btn-square btn-ghost" [nwbDataViewPin]></button>
-        @if(service.canToggleMode()) {
+        @if (service.canToggleMode()) {
           <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
         }
         <button
@@ -27,13 +31,19 @@
       </div>
     </div>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
 <ion-content [scrollY]="false">
-  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px;">
-    <div class="ion-page order-2" id="main">
+  <ion-split-pane [when]="showSidebar()" contentId="main">
+    <ion-menu contentId="main" class="order-3 min-w-80 max-w-screen-lg" [nwbSplitPane]="gutter" [width]="500">
+      @if (showSidebar()) {
+        <ng-container [ngTemplateOutlet]="tplDetail" />
+      }
+    </ion-menu>
+    <nwb-split-gutter class="order-2" #gutter="gutter" [class.hidden]="!showSidebar()" />
+    <div class="ion-page order-1" id="main">
       @if (service.isGridActive()) {
         <nwb-virtual-grid
           [enableQuickfilter]="true"
@@ -55,11 +65,6 @@
         />
       }
     </div>
-    <ion-menu contentId="main" class="order-2">
-      @if (showSidebar()) {
-        <ng-container [ngTemplateOutlet]="tplDetail" />
-      }
-    </ion-menu>
   </ion-split-pane>
   <nwb-detail-content
     [isOpen]="showModal()"
@@ -72,11 +77,7 @@
 </ion-content>
 
 <ng-template #tplDetail>
-  <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
-    [class.bg-base-300]="true"
-  >
+  <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
     <router-outlet />
   </ion-content>
 </ng-template>
