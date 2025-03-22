@@ -7,6 +7,7 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"path"
+	"slices"
 )
 
 func Load(file nwfs.File) (*Document, error) {
@@ -53,10 +54,22 @@ type Attachment struct {
 	ProxyParams  string   `xml:"ProxyParams,attr"`
 }
 
-func (it *Document) SkinsOrCloth() []Attachment {
+func (it *Document) SkinAndClothAttachments() []Attachment {
+	return it.AttachmentsByType("CA_CLOTH", "CA_SKIN")
+}
+
+func (it *Document) ClothAttachments() []Attachment {
+	return it.AttachmentsByType("CA_CLOTH")
+}
+
+func (it *Document) SkinAttachments() []Attachment {
+	return it.AttachmentsByType("CA_SKIN")
+}
+
+func (it *Document) AttachmentsByType(types ...string) []Attachment {
 	result := make([]Attachment, 0)
 	for _, att := range it.AttachmentList.Attachment {
-		if att.Type == "CA_CLOTH" || att.Type == "CA_SKIN" {
+		if slices.Contains(types, att.Type) {
 			result = append(result, att)
 		}
 	}

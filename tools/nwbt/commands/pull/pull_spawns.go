@@ -3,8 +3,8 @@ package pull
 import (
 	"fmt"
 	"log/slog"
-	"nw-buddy/tools/commands/pull/scan"
 	"nw-buddy/tools/formats/datasheet"
+	"nw-buddy/tools/game/scanner"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/logging"
@@ -32,8 +32,8 @@ func runPullSpawns(ccmd *cobra.Command, args []string) {
 	ctx.PrintStats()
 }
 
-func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
-	files, err := fs.Glob(
+func pullSpawns(ctx *PullContext, outDir string) {
+	files, err := ctx.Archive.Glob(
 		"**/region.distribution",                     // 91
 		"**/coatlicue/**/regions/**/*.capitals.json", // 1362
 		"**.dynamicslice",                            // 196350
@@ -45,7 +45,7 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 		return
 	}
 
-	scanner, err := scan.NewScanner(fs)
+	scn, err := scanner.NewScanner(ctx.Assets)
 	if err != nil {
 		slog.Error("failed to create scanner", "err", err)
 		return
@@ -56,7 +56,7 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 		Tasks:         files,
 		ProducerCount: int(flgWorkerCount),
 		Producer: func(file nwfs.File) (output string, err error) {
-			scanner.Scan(file)
+			scn.Scan(file)
 			output = file.Path()
 			return
 		},
@@ -67,39 +67,39 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 			return
 		},
 	})
-	res := scanner.Results()
+	res := scn.Results()
 
 	os.MkdirAll(outDir, 0755)
-	gatherables, count := scan.CollateGatherables(res.Gatherables)
+	gatherables, count := scanner.CollateGatherables(res.Gatherables)
 	size := writeJson(gatherables, path.Join(outDir, "gatherables_metadata.json"))
 
 	stats.Add("Gatherables", "rows", len(gatherables), "positions", count, "size", humanize.Bytes(size))
 
-	houses, count := scan.CollateHouses(res.Houses)
+	houses, count := scanner.CollateHouses(res.Houses)
 	size = writeJson(houses, path.Join(outDir, "houses_metadata.json"))
 	stats.Add("Houses", "rows", len(houses), "positions", count, "size", humanize.Bytes(size))
 
-	loreEntries, count := scan.CollateLoreNotes(res.Lorenotes)
+	loreEntries, count := scanner.CollateLoreNotes(res.Lorenotes)
 	size = writeJson(loreEntries, path.Join(outDir, "lore_metadata.json"))
 	stats.Add("LoreEntries", "rows", len(loreEntries), "positions", count, "size", humanize.Bytes(size))
 
-	npcs, count := scan.CollateNpcs(res.Npcs)
+	npcs, count := scanner.CollateNpcs(res.Npcs)
 	size = writeJson(npcs, path.Join(outDir, "npcs_metadata.json"))
 	stats.Add("Npcs", "rows", len(npcs), "positions", count, "size", humanize.Bytes(size))
 
-	stations, count := scan.CollateStations(res.Stations)
+	stations, count := scanner.CollateStations(res.Stations)
 	size = writeJson(stations, path.Join(outDir, "stations_metadata.json"))
 	stats.Add("Stations", "rows", len(stations), "positions", count, "size", humanize.Bytes(size))
 
-	structures, count := scan.CollateStructures(res.Structures)
+	structures, count := scanner.CollateStructures(res.Structures)
 	size = writeJson(structures, path.Join(outDir, "structures_metadata.json"))
 	stats.Add("Structures", "rows", len(structures), "positions", count, "size", humanize.Bytes(size))
 
-	territories, count := scan.CollateTerritories(res.Territories)
+	territories, count := scanner.CollateTerritories(res.Territories)
 	size = writeJson(territories, path.Join(outDir, "territories_metadata.json"))
 	stats.Add("Territories", "rows", len(territories), "positions", count, "size", humanize.Bytes(size))
 
-	variants, count := scan.CollateVariants(res.Variants)
+	variants, count := scanner.CollateVariants(res.Variants)
 	size = writeJson(variants.Variants, path.Join(outDir, "variations_metadata.json"))
 	stats.Add("Variants", "rows", len(variants.Variants), "positions", count, "size", humanize.Bytes(size))
 	for i, chunk := range variants.Chunks {
@@ -107,13 +107,12 @@ func pullSpawns(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 		stats.Add("Variants", "chunk", i, "size", humanize.Bytes(uint64(len(chunk))))
 	}
 
-	baseLevels := getVitalLevels(tables)
-	zoneLevels := getZoneLevelOverrides(tables)
-	models, vitals, count := scan.CollateVitals(res.Vitals, territories, zoneLevels, baseLevels)
+	baseLevels := getVitalLevels(ctx.tables)
+	zoneLevels := getZoneLevelOverrides(ctx.tables)
+	models, vitals, count := scanner.CollateVitals(res.Vitals, territories, zoneLevels, baseLevels)
 
-	// size = writeJson(models, path.Join(outDir, "vitals_models_metadata.json"))
-	stats.Add("VitalsModels", "rows", len(models))
-	stats.Add("VitalsModels NOT WRITTEN. Legacy file is used until model processing is implemented")
+	size = writeJson(models, path.Join(outDir, "vitals_models_metadata.json"))
+	stats.Add("VitalsModels", "rows", len(models), "size", humanize.Bytes(size))
 
 	stats.Add("Vitals", "rows", len(vitals), "positions", count)
 	split := len(vitals) / 2

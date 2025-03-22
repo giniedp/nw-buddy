@@ -5,9 +5,12 @@ import (
 	"image/color"
 	"log/slog"
 	"math"
+	"nw-buddy/tools/formats/gltf/nwmaterial"
+	"nw-buddy/tools/formats/gltf/transmission"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
 	"nw-buddy/tools/utils"
+	"path"
 	"slices"
 	"strconv"
 	"strings"
@@ -18,49 +21,6 @@ import (
 )
 
 func (c *Document) ImportCgfMaterials() {
-	// shadersToIgnore := []string{
-	// 	"nodraw",
-	// }
-
-	// for _, mesh := range c.Document.Meshes {
-	// 	toDetach := make([]*gltf.Primitive, 0)
-	// 	for _, primitive := range mesh.Primitives {
-	// 		if primitive.Material != nil {
-	// 			material := c.Document.Materials[*primitive.Material]
-	// 			m := lookupMtl(material)
-	// 			if m == nil {
-	// 				continue
-	// 			}
-	// 			if slices.Contains(shadersToIgnore, strings.ToLower(m.Shader)) {
-	// 				toDetach = append(toDetach, primitive)
-	// 			}
-	// 		}
-	// 	}
-	// 	for len(toDetach) > 0 {
-	// 		prim := toDetach[0]
-	// 		fmt.Sprintln("Detaching primitive")
-	// 		toDetach = toDetach[1:]
-	// 		index := slices.Index(mesh.Primitives, prim)
-	// 		mesh.Primitives = slices.Delete(mesh.Primitives, index, index+1)
-	// 	}
-	// }
-
-	// {
-	// 	toDetach := make([]*gltf.Material, 0)
-	// 	for _, material := range c.Materials {
-	// 		if slices.Contains(shadersToIgnore, strings.ToLower(material.Name)) {
-	// 			toDetach = append(toDetach, material)
-	// 		}
-	// 	}
-	// 	for len(toDetach) > 0 {
-	// 		mat := toDetach[0]
-	// 		toDetach = toDetach[1:]
-	// 		fmt.Sprintln("Detaching material", mat.Name)
-	// 		index := slices.Index(c.Materials, mat)
-	// 		c.Materials = slices.Delete(c.Materials, index, index+1)
-	// 	}
-	// }
-
 	for _, material := range c.Materials {
 		if !c.IsMaterialReferenced(material) {
 			continue
@@ -109,21 +69,10 @@ func (c *Document) ImportCgfMaterials() {
 		isNoDraw := shader == "nodraw"
 
 		features := strings.Split(m.StringGenMask, "%")
-		// shaderOverlayMask := slices.Contains(features, "OVERLAY_MASK")
+		shaderOverlayMask := slices.Contains(features, "OVERLAY_MASK")
 		shaderEmittanceMap := slices.Contains(features, "EMITTANCE_MAP")
 		shaderEmissiveDecal := slices.Contains(features, "EMISSIVE_DECAL")
 		shaderTintColorMap := slices.Contains(features, "TINT_COLOR_MAP")
-
-		// TODO
-		// if (givenAppearance || givenAppearance === false) {
-		//   // armor items, mounts, weapons have a custom appearance definitions
-		//   appearance = givenAppearance
-		// } else if (shaderOverlayMask) {
-		//   // resolve appearance params from the material
-		//   appearance = mtlParamsToAppearance(mtl)
-		// } else {
-		//   appearance = null
-		// }
 
 		// HINT: Bumpmap and Smoothness are usually the same texture source
 		if mapSmoothness == nil && mapBumpmap != nil {
@@ -142,10 +91,10 @@ func (c *Document) ImportCgfMaterials() {
 			mapDecal = nil
 		}
 
-		//var texCustom *gltf.Texture
-		// if mapCustom != nil {
-		// 	texCustom = c.LoadTexture(mapCustom)
-		// }
+		var texCustom *gltf.Texture
+		if mapCustom != nil {
+			texCustom = c.LoadTexture(mapCustom)
+		}
 		var texDiffuse *gltf.Texture
 		if mapDiffuse != nil {
 			texDiffuse = c.LoadTexture(mapDiffuse)
@@ -160,7 +109,7 @@ func (c *Document) ImportCgfMaterials() {
 			texSpecular = c.LoadTexture(mapSpecular)
 		}
 		if texSpecular != nil && mapSmoothness != nil {
-			key := fmt.Sprintf("%s-%s-%s", texSpecular.Name, mapSmoothness.File, mapSmoothness.AssetId)
+			key := buildTexturePath(texSpecular, mapSmoothness.File, mapSmoothness.AssetId)
 			tex, err := c.LoadTextureFunc(key, func() ([]byte, error) {
 				specBytes, err := c.ReadTextureImage(texSpecular)
 				if err != nil {
@@ -169,15 +118,17 @@ func (c *Document) ImportCgfMaterials() {
 				if specBytes == nil {
 					return nil, fmt.Errorf("specBytes is nil")
 				}
-				smoothImg, err := c.LoadTextureImage(mapSmoothness)
+				smoothImg, err := c.LoadImage(mapSmoothness)
 				if err != nil {
 					return nil, err
 				}
 				if smoothImg == nil {
-					return nil, fmt.Errorf("smoothImg is nil")
+					slog.Warn("smoothImg is nil", "file", key)
+					return specBytes, nil
 				}
 				if smoothImg.Alpha == nil {
-					return nil, fmt.Errorf("smoothImg.Alpha is nil")
+					slog.Warn("smoothImg.Alpha is nil", "file", key)
+					return specBytes, nil
 				}
 				return image.MixPngImages(specBytes, smoothImg.Alpha, func(spec, smooth color.NRGBA) color.NRGBA {
 					return color.NRGBA{
@@ -189,7 +140,7 @@ func (c *Document) ImportCgfMaterials() {
 				})
 			})
 			if err != nil {
-				slog.Warn("Failed to combine spce+smooth", "file", key, "err", err)
+				slog.Warn("Can't combine spce+smooth", "file", key, "err", err)
 			} else {
 				texSpecular = tex
 			}
@@ -197,13 +148,13 @@ func (c *Document) ImportCgfMaterials() {
 
 		var texEmissive *gltf.Texture
 		if shaderEmissiveDecal && mapEmittance != nil && mapDecal != nil {
-			key := fmt.Sprintf("%s-%s", mapEmittance.File, mapDecal.File)
+			key := mapEmittance.File + "_" + hashString(path.Join(mapDecal.File, mapDecal.AssetId))
 			tex, err := c.LoadTextureFunc(key, func() ([]byte, error) {
-				emitImg, err := c.LoadTextureImage(mapEmittance)
+				emitImg, err := c.LoadImage(mapEmittance)
 				if err != nil {
 					return nil, err
 				}
-				decalImg, err := c.LoadTextureImage(mapDecal)
+				decalImg, err := c.LoadImage(mapDecal)
 				if err != nil {
 					return nil, err
 				}
@@ -217,7 +168,7 @@ func (c *Document) ImportCgfMaterials() {
 				})
 			})
 			if err != nil {
-				slog.Warn("Failed to combine emit+decal", "file", key, "err", err)
+				slog.Warn("Can't combine emit+decal", "file", key, "err", err)
 			} else {
 				texEmissive = tex
 			}
@@ -359,42 +310,33 @@ func (c *Document) ImportCgfMaterials() {
 		}
 
 		if isGlass {
-			//   "extensions": {
-			//     "KHR_materials_transmission": {
-			//       "transmissionFactor": 0.8,
-			//       "transmissionTexture": {
-			//         "index": 0
-			//       }
-			//     }
-			//  }
 			factor := mtlOpacity
 			if factor == 0 {
 				factor = 1
 			}
 			material.DoubleSided = true
-			material.Extensions["KHR_materials_transmission"] = map[string]any{
-				"transmissionFactor": factor,
+			material.Extensions[transmission.ExtensionName] = transmission.Extension{
+				Factor: float64(factor),
 			}
-			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, "KHR_materials_transmission")
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, transmission.ExtensionName)
 		}
 
-		// if (shaderOverlayMask && texCustom && appearance != null) {
-		//   const extension = doc.createExtension(NwMaterialExtension)
-		//   extension.setRequired(false)
-		//   const props = extension.createProps()
-		//   if (typeof appearance === 'object') {
-		//     props.setParams({
-		//       ...appearance,
-		//     })
-		//   }
-		//   props.setMaskTexture(texCustom)
-		//   material.setExtension(NwMaterialExtension.EXTENSION_NAME, props)
-		// }
+		if shaderOverlayMask && texCustom != nil {
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, nwmaterial.ExtensionName)
+			material.Extensions[nwmaterial.ExtensionName] = nwmaterial.Extension{
+				Params: nwmaterial.AppearanceFromMtl(m),
+				MaskTexture: &gltf.TextureInfo{
+					Index: slices.Index(c.Textures, texCustom),
+				},
+			}
+		}
 	}
-
 }
 
 func lookupMtl(material *gltf.Material) *mtl.Material {
+	if material == nil {
+		return nil
+	}
 	if mtl, ok := ExtrasLoad[mtl.Material](material.Extras, "mtl"); ok {
 		return &mtl
 	}
@@ -410,9 +352,6 @@ func pluckMtl(material *gltf.Material) *mtl.Material {
 }
 
 func getTexTransform(m *mtl.Material) *texturetransform.TextureTranform {
-	if m.Params == nil {
-		return nil
-	}
 	hasTile := m.Params.Has("SOURCE_2D_TILE_X")
 	hasPhase := m.Params.Has("SOURCE_2D_PHASE_X")
 	if !hasTile && !hasPhase {
@@ -450,4 +389,15 @@ func float4(r, g, b, a float64) *[4]float64 {
 func float3(r, g, b float64) *[3]float64 {
 	res := [3]float64{r, g, b}
 	return &res
+}
+
+func buildTexturePath(tex *gltf.Texture, affix ...string) string {
+	result, ok := ExtrasLoad[string](tex.Extras, ExtraKeySource)
+	if !ok {
+		result, ok = ExtrasLoad[string](tex.Extras, ExtraKeyRefID)
+	}
+	if !ok {
+		result = tex.Name
+	}
+	return result + "_" + hashString(path.Join(affix...))
 }

@@ -1,6 +1,7 @@
 package gltf
 
 import (
+	"fmt"
 	"io"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
@@ -17,14 +18,33 @@ const (
 	ExtraKeyRefID        = "refId"
 	ExtraKeyControllerID = "controllerId"
 	ExtraKeyLimbID       = "limbId"
+	ExtraKeySource       = "source"
+	ExtraKeyInverse      = "inverse"
 )
 
 type Document struct {
 	*gltf.Document
-	ImageLoader image.Loader
+	TargetFile     string
+	ImageLoader    image.Loader
+	ResourceLinker ResourceLinker
 }
 
-func (c *Document) Save(file string) error {
+func NewDocument() *Document {
+	return &Document{
+		Document: gltf.NewDocument(),
+	}
+}
+
+func (c *Document) Save() error {
+	file := c.TargetFile
+	if file == "" {
+		return fmt.Errorf("no target file specified")
+	}
+	outDir := path.Dir(file)
+	if err := os.MkdirAll(outDir, os.ModePerm); err != nil {
+		return err
+	}
+
 	f, err := os.Create(file)
 	if err != nil {
 		return err
@@ -38,12 +58,6 @@ func (c *Document) Encode(f io.Writer, binary bool) error {
 	e.SetJSONIndent("", "\t")
 	e.AsBinary = binary
 	return e.Encode(c.Document)
-}
-
-func NewDocument() *Document {
-	return &Document{
-		Document: gltf.NewDocument(),
-	}
 }
 
 func (d *Document) DefaultScene() *gltf.Scene {
@@ -68,10 +82,14 @@ func (c *Document) AppendNode(node *gltf.Node) int {
 	return slices.Index(c.Document.Nodes, node)
 }
 
-func (d *Document) AddChild(parent *gltf.Node, child ...*gltf.Node) {
+func (d *Document) NodeAddChild(parent *gltf.Node, child ...*gltf.Node) {
 	for _, c := range child {
 		parent.Children = append(parent.Children, slices.Index(d.Nodes, c))
 	}
+}
+
+func (d *Document) NodeHasChild(parent *gltf.Node, child *gltf.Node) bool {
+	return slices.Contains(parent.Children, d.NodeIndex(child))
 }
 
 func (c *Document) NewNode() (*gltf.Node, int) {
@@ -82,6 +100,16 @@ func (c *Document) NewNode() (*gltf.Node, int) {
 
 func (c *Document) NodeIndex(node *gltf.Node) int {
 	return slices.Index(c.Nodes, node)
+}
+
+func (d *Document) NodeParent(node *gltf.Node) *gltf.Node {
+	index := d.NodeIndex(node)
+	for _, n := range d.Nodes {
+		if slices.Index(n.Children, index) != -1 {
+			return n
+		}
+	}
+	return nil
 }
 
 func (d *Document) FindNodeByRefID(instanceRef string) (*gltf.Node, int) {
@@ -105,7 +133,7 @@ func (d *Document) FindNodeByControllerId(controllerId uint32) (*gltf.Node, int)
 func (d *Document) AddToSceneWithTransform(scene *gltf.Scene, node *gltf.Node, transform [16]float32) {
 	parent, _ := d.NewNode()
 	parent.Matrix = Mat4ToFloat64(transform)
-	d.AddChild(parent, node)
+	d.NodeAddChild(parent, node)
 	d.AddToScene(scene, parent)
 }
 

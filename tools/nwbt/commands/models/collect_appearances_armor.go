@@ -7,39 +7,19 @@ import (
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
-	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/logging"
+	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
-
-	"github.com/spf13/cobra"
 )
 
-var cmdCollectArmor = &cobra.Command{
-	Use:   "armor",
-	Short: "Collects armor appearances",
-	Long:  "",
-	Run:   runCollectArmor,
-}
-
-func init() {
-	cmdCollectArmor.Flags().AddFlagSet(Cmd.Flags())
-}
-
-func runCollectArmor(ccmd *cobra.Command, args []string) {
-	slog.SetDefault(logging.DefaultFileHandler())
-	c := utils.Must(initCollector())
-	c.CollectApperancesArmor()
-	c.Convert(flgOutDir)
-	slog.SetDefault(logging.DefaultTerminalHandler())
-}
-
-func (c *Collector) CollectApperancesArmor() {
+func (c *Collector) CollectAppearancesArmor(ids ...string) {
 	for table := range c.EachDatasheet() {
 		if table.Schema != "ArmorAppearanceDefinitions" {
 			continue
 		}
+		bar := progress.Bar(len(table.Rows), table.Table)
 		data := table.RowsAsJSON()
+		countStart := c.models.Len()
 
 		// Skin1 and Material1 is the primary model/material pair for the appearance. All items have this.
 		// Skin2 is filler geometry, adds a naked skin if the item is not fully covered
@@ -47,8 +27,15 @@ func (c *Collector) CollectApperancesArmor() {
 		// AppearanceCDF is on chest pieces only but contains full gearset character. This is where Skirt and Cape geometry is to find.
 
 		for _, row := range data {
-			scope := "itemappearances"
+			scope := "armorappearances"
 			id := row.GetString("ItemID")
+			bar.Add(1)
+			bar.Detail(id)
+
+			if !matchFilter(ids, id) {
+				continue
+			}
+
 			model := row.GetString("Skin1")
 			material := row.GetString("Material1")
 			cdfPath := row.GetString("AppearanceCDF")
@@ -66,8 +53,8 @@ func (c *Collector) CollectApperancesArmor() {
 			}
 
 			attachments := getCloth(c.Archive, cdfPath)
-			file := strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "Skin1")))
-			if !c.models.Has(file) {
+			file := c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "Skin1")))
+			if c.shouldProcess(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file
 				model, material := c.ResolveModelMaterialPair(model, material)
@@ -98,8 +85,8 @@ func (c *Collector) CollectApperancesArmor() {
 
 			model = row.GetString("ShortsleeveChestSkin")
 			material = row.GetString("Material1")
-			file = strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "ShortsleeveChestSkin")))
-			if !c.models.Has(file) {
+			file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "ShortsleeveChestSkin")))
+			if c.shouldProcess(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file
 				model, material := c.ResolveModelMaterialPair(model, material)
@@ -128,6 +115,9 @@ func (c *Collector) CollectApperancesArmor() {
 				}
 			}
 		}
+
+		bar.Detail(fmt.Sprintf("%d models", c.models.Len()-countStart))
+		bar.Close()
 	}
 }
 
@@ -135,7 +125,7 @@ func getCloth(archive nwfs.Archive, cdfPath string) []cdf.Attachment {
 	if cdfPath == "" {
 		return nil
 	}
-	cdfFile, ok := archive.Lookup(nwfs.NormalizePath(cdfPath))
+	cdfFile, ok := archive.Lookup(cdfPath)
 	if !ok {
 		return nil
 	}
@@ -144,5 +134,6 @@ func getCloth(archive nwfs.Archive, cdfPath string) []cdf.Attachment {
 		slog.Warn("cdf not loaded", "file", cdfFile.Path(), "err", err)
 		return nil
 	}
-	return cdfDoc.SkinsOrCloth()
+
+	return cdfDoc.ClothAttachments()
 }

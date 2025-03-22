@@ -61,7 +61,7 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset 
 	rootNode := rootNodes[0]
 	if len(rootNodes) > 1 {
 		parent, _ := c.NewNode()
-		c.AddChild(parent, rootNodes...)
+		c.NodeAddChild(parent, rootNodes...)
 		rootNode = parent
 	}
 	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyRefID, modelRefId)

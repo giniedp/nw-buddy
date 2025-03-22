@@ -3,4 +3,4 @@ export * from './create-transmog-viewer'
 export * from './nw-material-extension'
 export * from './nw-material-plugin'
 export * from './nw-material-update'
-export type { DefaultViewer } from 'babylonjs-viewer'
+

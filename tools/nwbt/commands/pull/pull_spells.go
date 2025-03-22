@@ -2,8 +2,8 @@ package pull
 
 import (
 	"log/slog"
-	"nw-buddy/tools/commands/pull/scan"
 	"nw-buddy/tools/formats/datasheet"
+	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
@@ -13,7 +13,6 @@ import (
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -68,18 +67,18 @@ func pullSpells(tables []*datasheet.Document, fs nwfs.Archive, outDir string) {
 					continue
 				}
 
-				slicePath := strings.ToLower(path.Join("slices", prefab+".dynamicslice"))
+				slicePath := path.Join("slices", prefab+".dynamicslice")
 				file, ok := fs.Lookup(slicePath)
 				if !ok {
 					slog.Debug("spell slice not found", "path", slicePath)
 					continue
 				}
-				entity, err := scan.LoadAzEntity(file)
+				entity, err := game.LoadAzEntity(file)
 				if err != nil {
 					slog.Warn("spell slice not loaded", "path", slicePath, "err", err)
 					continue
 				}
-				for _, components := range scan.EntitiesOf(scan.FindSliceComponent(entity)) {
+				for _, components := range game.EntitiesOf(game.FindSliceComponent(entity)) {
 					for _, component := range components {
 
 						ec, ok := component.(nwt.AreaStatusEffectComponent)

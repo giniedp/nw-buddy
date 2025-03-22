@@ -1,6 +1,5 @@
-import { BABYLON } from 'babylonjs-viewer'
 import { NwMaterialPlugin } from './nw-material-plugin'
-
+import type { AbstractMesh, PBRMaterial } from '@babylonjs/core'
 export interface NwMaterialParams {
   MaskRDyeOverride: number
   MaskRDye: number
@@ -49,7 +48,7 @@ export function updateNwMaterial({
   glossShift,
   debugMask,
 }: {
-  meshes: BABYLON.AbstractMesh[]
+  meshes: AbstractMesh[]
   appearance?: NwMaterialParams
   dyeR?: number
   dyeROverride?: number
@@ -129,7 +128,7 @@ export function updateNwMaterial({
     mtl.nwMaskGlossShift = glossShift ?? appearance.MaskAGlossShift ?? 0.5
     mtl.nwMaskGloss = appearance.MaskAGloss ?? 0
 
-    const pbr = mesh.material as BABYLON.PBRMaterial
+    const pbr = mesh.material as PBRMaterial
     if (pbr.emissiveTexture) {
       const emCol = parseColor(appearance.EmissiveColor)
       if (!appearance.EmissiveIntensity && !(emCol.r || emCol.g || emCol.b)) {

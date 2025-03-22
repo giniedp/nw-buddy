@@ -41,6 +41,7 @@ func (d *baseFS) initSuffix() {
 }
 
 func (d *baseFS) Lookup(path string) (File, bool) {
+	path = NormalizePath(path)
 	if d.index == nil {
 		d.lock.Lock()
 		d.index = make(map[string]File)

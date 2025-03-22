@@ -36,9 +36,9 @@ func (e *Document) Collection() []Material {
 }
 
 type Material struct {
-	XMLName  xml.Name      `xml:"Material" json:"-"`
-	Textures *Textures     `xml:"Textures" json:",omitzero"`
-	Params   *PublicParams `xml:"PublicParams" json:",omitzero"`
+	XMLName  xml.Name     `xml:"Material" json:"-"`
+	Textures Textures     `xml:"Textures" json:",omitzero"`
+	Params   PublicParams `xml:"PublicParams" json:",omitzero"`
 	MaterialAttrs
 }
 
@@ -60,11 +60,9 @@ type MaterialAttrs struct {
 
 func (e *Material) IterTextures() iter.Seq[Texture] {
 	return func(yield func(Texture) bool) {
-		if e.Textures != nil {
-			for _, texture := range e.Textures.Texture {
-				if !yield(texture) {
-					break
-				}
+		for _, texture := range e.Textures.Texture {
+			if !yield(texture) {
+				break
 			}
 		}
 	}
@@ -84,6 +82,9 @@ type PublicParams struct {
 }
 
 func (e *PublicParams) Len() int {
+	if e.params == nil {
+		return 0
+	}
 	return e.params.Len()
 }
 func (e *PublicParams) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -96,14 +97,23 @@ func (e *PublicParams) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 }
 
 func (it *PublicParams) Has(name string) bool {
+	if it.params == nil {
+		return false
+	}
 	return it.params.Has(name)
 }
 
 func (it *PublicParams) Get(name string) string {
+	if it.params == nil {
+		return ""
+	}
 	return it.params.Get(name)
 }
 
 func (it *PublicParams) Load(name string) (string, bool) {
+	if it.params == nil {
+		return "", false
+	}
 	return it.params.Load(name)
 }
 

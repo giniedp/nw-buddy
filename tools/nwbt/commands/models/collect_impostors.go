@@ -5,7 +5,6 @@ import (
 	"nw-buddy/tools/formats/gltf"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/formats/impostors"
-	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/crymath"
 	"nw-buddy/tools/utils/logging"
@@ -43,7 +42,7 @@ func runCollectImpostors(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectImpostors(glob)
-	c.Convert(flgOutDir)
+	c.Convert()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -85,7 +84,7 @@ func (c *Collector) CollectImpostors(glob string) {
 				slog.Error("asset not found", "asset", assetId)
 				continue
 			}
-			modelFile, ok := c.Archive.Lookup(nwfs.NormalizePath(asset.File))
+			modelFile, ok := c.Archive.Lookup(asset.File)
 			if !ok {
 				slog.Error("asset file not found", "asset", assetId, "file", asset.File)
 				continue
@@ -107,8 +106,8 @@ func (c *Collector) CollectImpostors(glob string) {
 
 		}
 		if !merge && len(group.Meshes) > 0 {
-			group.TargetFile = utils.ReplaceExt(file.Path(), "")
-			c.models.Store(file.Path(), group)
+			group.TargetFile = c.targetPath(utils.ReplaceExt(file.Path(), ""))
+			c.models.Store(group.TargetFile, group)
 		}
 	}
 

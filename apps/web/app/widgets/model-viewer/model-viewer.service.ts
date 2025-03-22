@@ -1,12 +1,20 @@
-import { Injectable, inject } from '@angular/core'
-import { ArmorAppearanceDefinitions, HouseItems, WeaponAppearanceDefinitions } from '@nw-data/generated'
+import { Injectable } from '@angular/core'
+import { ArmorAppearanceDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { Observable, combineLatest, from, map, of, switchMap } from 'rxjs'
-import { environment } from '~/../environments'
 import { injectNwData } from '~/data'
-import { AppPreferencesService } from '~/preferences'
 import { humanize } from '~/utils'
+import {
+  costumeModelUri,
+  femaleModelUri,
+  housingItemModelUri,
+  itemAppearanceModelUri,
+  maleModelUri,
+  mountModelUri,
+  vitalModelUri,
+  weaponAppearanceModelUri,
+} from './utils/get-model-uri'
 
-export interface ItemModelInfo {
+export interface ModelItemInfo {
   name: string
   itemId: string
   label: string
@@ -18,33 +26,25 @@ export interface ItemModelInfo {
 @Injectable({ providedIn: 'root' })
 export class ModelsService {
   private db = injectNwData()
-  private preferences = inject(AppPreferencesService)
 
-  private get cdnHost() {
-    if (this.preferences.highQualityModels.get()) {
-      return environment.modelsUrlHigh
-    }
-    return environment.modelsUrlMid
-  }
-
-  public playerMaleModel(): ItemModelInfo {
+  public playerMaleModel(): ModelItemInfo {
     return {
       name: 'Player',
       itemClass: [],
       itemId: null,
       label: 'Player',
-      url: `${this.cdnHost || ''}/objects/characters/player/male/player_male.glb`.toString().toLowerCase(),
+      url: maleModelUri(),
       appearance: null,
     }
   }
 
-  public playerFemaleModel(): ItemModelInfo {
+  public playerFemaleModel(): ModelItemInfo {
     return {
       name: 'Player',
       itemClass: [],
       itemId: null,
       label: 'Player',
-      url: `${this.cdnHost || ''}/objects/characters/player/female/player_female.glb`.toString().toLowerCase(),
+      url: femaleModelUri(),
       appearance: null,
     }
   }
@@ -85,8 +85,9 @@ export class ModelsService {
   public byHousingItemId(itemId$: Observable<string>) {
     return itemId$.pipe(
       switchMap((id) => this.db.housingItemsById(id)),
-      map((item): ItemModelInfo => {
-        if (!item?.PrefabPath) {
+      map((item): ModelItemInfo => {
+        const uri = housingItemModelUri(item)
+        if (!uri) {
           return null
         }
         return {
@@ -94,7 +95,7 @@ export class ModelsService {
           itemClass: item['HousingTag1 Placed'].filter((it) => !!it),
           itemId: item.HouseItemID,
           label: item.Name,
-          url: `${this.cdnHost || ''}/${item.PrefabPath}.glb`.toString().toLowerCase(),
+          url: uri,
           appearance: null,
         }
       }),
@@ -150,15 +151,15 @@ export class ModelsService {
       )
       .pipe(
         map(({ meta, modelsMap, vital }) => {
-          const models = meta?.models?.map((it) => modelsMap.get(it))?.filter((it) => !!it)
+          const models = meta?.models?.map((it) => vitalModelUri(it, modelsMap))?.filter((it) => !!it)
           if (!models?.length) {
             return null
           }
-          return models.map((model, i): ItemModelInfo => {
+          return models.map((model, i): ModelItemInfo => {
             return {
               name: vital?.DisplayName,
               label: `Model ${i + 1}`,
-              url: `${this.cdnHost || ''}/vitals/${model.id}.glb`.toLowerCase(),
+              url: model,
               itemClass: [],
               itemId: meta.vitalsID,
               appearance: null,
@@ -170,15 +171,16 @@ export class ModelsService {
 
   public byMountId(mountId$: Observable<string>) {
     return mountId$.pipe(switchMap((id) => this.db.mountsById(id))).pipe(
-      map((mount): ItemModelInfo[] => {
-        if (!mount?.Mesh) {
+      map((mount): ModelItemInfo[] => {
+        const uri = mountModelUri(mount)
+        if (!uri) {
           return null
         }
         return [
           {
             name: mount.DisplayName,
             label: `Model`,
-            url: `${this.cdnHost || ''}/mounts/${mount.MountId}.glb`.toLowerCase(),
+            url: uri,
             itemClass: [],
             itemId: mount.MountId,
             appearance: mount,
@@ -190,15 +192,16 @@ export class ModelsService {
 
   public byCostumeId(costumeId$: Observable<string>) {
     return costumeId$.pipe(switchMap((id) => this.db.costumeChangesById(id))).pipe(
-      map((value): ItemModelInfo[] => {
-        if (!value?.CostumeChangeMesh) {
+      map((value): ModelItemInfo[] => {
+        const uri = costumeModelUri(value)
+        if (!uri) {
           return null
         }
         return [
           {
             name: humanize(value.CostumeChangeId),
             label: `Model`,
-            url: `${this.cdnHost || ''}/costumechanges/${value.CostumeChangeId}.glb`.toLowerCase(),
+            url: uri,
             itemClass: [],
             itemId: value.CostumeChangeId,
             appearance: null,
@@ -229,13 +232,13 @@ export class ModelsService {
     // )
   }
 
-  private selectItemModels(item: ArmorAppearanceDefinitions): ItemModelInfo[] {
-    const result: ItemModelInfo[] = []
+  private selectItemModels(item: ArmorAppearanceDefinitions): ModelItemInfo[] {
+    const result: ModelItemInfo[] = []
     if (item?.Skin1) {
       result.push({
         name: item.Name,
         itemId: item.ItemID,
-        url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-Skin1.glb`.toLowerCase(),
+        url: itemAppearanceModelUri(item, 'Skin1'),
         label: 'Skin1',
         itemClass: [...(item.ItemClass || [])],
         appearance: item,
@@ -245,7 +248,7 @@ export class ModelsService {
       result.push({
         name: item.Name,
         itemId: item.ItemID,
-        url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-ShortsleeveChestSkin.glb`.toLowerCase(),
+        url: itemAppearanceModelUri(item, 'ShortsleeveChestSkin'),
         label: 'Shortsleeve Chest Skin',
         itemClass: [...(item.ItemClass || [])],
         appearance: item,
@@ -256,15 +259,15 @@ export class ModelsService {
 
   private selectWeaponModels(
     item: WeaponAppearanceDefinitions, // | ItemdefinitionsWeaponappearancesMountattachments,
-  ): ItemModelInfo[] {
-    const result: ItemModelInfo[] = []
+  ): ModelItemInfo[] {
+    const result: ModelItemInfo[] = []
     if (!item?.MeshOverride) {
       return result
     }
     result.push({
       name: item.Name,
       itemId: item.WeaponAppearanceID,
-      url: `${this.cdnHost || ''}/${item.MeshOverride}.glb`.toLowerCase(),
+      url: weaponAppearanceModelUri(item, 'MeshOverride'),
       label: 'Model',
       itemClass: [...(item.ItemClass || [])],
       appearance: item,
@@ -272,15 +275,15 @@ export class ModelsService {
     return result
   }
 
-  private selectInstrumentModels(item: WeaponAppearanceDefinitions): ItemModelInfo[] {
-    const result: ItemModelInfo[] = []
+  private selectInstrumentModels(item: WeaponAppearanceDefinitions): ModelItemInfo[] {
+    const result: ModelItemInfo[] = []
     if (!item?.MeshOverride) {
       return result
     }
     result.push({
       name: item.Name,
       itemId: item.WeaponAppearanceID,
-      url: `${this.cdnHost || ''}/${item.MeshOverride}.glb`.toLowerCase(),
+      url: weaponAppearanceModelUri(item, 'MeshOverride'),
       label: 'Model',
       itemClass: [...(item.ItemClass || [])],
       appearance: item,
@@ -288,23 +291,19 @@ export class ModelsService {
     return result
   }
 
-  private selectMountAttachmentsModels(item: WeaponAppearanceDefinitions): ItemModelInfo[] {
-    const result: ItemModelInfo[] = []
+  private selectMountAttachmentsModels(item: WeaponAppearanceDefinitions): ModelItemInfo[] {
+    const result: ModelItemInfo[] = []
     if (!item) {
       return result
     }
-    // result.push({
-    //   name: item.Name,
-    //   itemId: item.WeaponAppearanceID,
-    //   url: `${this.cdnHost || ''}/weaponappearances/${item.WeaponAppearanceID}-${key}.glb`.toLowerCase(),
-    //   label: 'Model',
-    //   itemClass: [...(item.ItemClass || [])],
-    //   appearance: item,
-    // })
+    result.push({
+      name: item.Name,
+      itemId: item.WeaponAppearanceID,
+      url: weaponAppearanceModelUri(item, 'MeshOverride'),
+      label: 'Model',
+      itemClass: [...(item.ItemClass || [])],
+      appearance: item,
+    })
     return result
   }
-}
-
-function housingItemModelPath(item: HouseItems) {
-  return `${item.PrefabPath}.dynamicslice.glb`.toLowerCase()
 }

@@ -1,6 +1,5 @@
-import 'babylonjs'
-import 'babylonjs-loaders'
-import { BABYLON, GLTF2 } from 'babylonjs-viewer'
+import { GLTF2 } from '@babylonjs/loaders'
+import { BaseTexture, Mesh, Material } from '@babylonjs/core'
 
 const NAME = 'NwMaterialExtension'
 const EXTENSION_NAME = 'EXT_nw_material'
@@ -9,7 +8,7 @@ interface ExtensionData {
   maskTexture: GLTF2.ITextureInfo
 }
 
-GLTF2.GLTFLoader.RegisterExtension(NAME, (loader) => {
+GLTF2.registerGLTFExtension(NAME, false, (loader) => {
   return new NwMaterialExtension(loader)
 })
 
@@ -18,10 +17,10 @@ function getExtensionData(material: GLTF2.IMaterial): ExtensionData {
 }
 
 export class NwMaterialExtension implements GLTF2.IGLTFLoaderExtension {
-  public static getMaskTexture(object: any): BABYLON.BaseTexture | null {
+  public static getMaskTexture(object: any): BaseTexture | null {
     return object?.maskTexture
   }
-  public static setMaskTexture(object: any, texture: BABYLON.BaseTexture | null) {
+  public static setMaskTexture(object: any, texture: BaseTexture | null) {
     object.maskTexture = texture
   }
 
@@ -47,14 +46,14 @@ export class NwMaterialExtension implements GLTF2.IGLTFLoaderExtension {
   async _loadMaterialAsync?(
     context: string,
     material: GLTF2.IMaterial,
-    babylonMesh: BABYLON.Mesh | null,
+    babylonMesh: Mesh | null,
     babylonDrawMode: number,
-    assign: (babylonMaterial: BABYLON.Material) => void,
-  ): Promise<BABYLON.Material> {
+    assign: (babylonMaterial: Material) => void,
+  ): Promise<Material> {
     const ext = getExtensionData(material)
     const params = ext?.params
     let maskTextureInfo = ext?.maskTexture as GLTF2.ITextureInfo
-    let maskTexture: BABYLON.BaseTexture | null
+    let maskTexture: BaseTexture | null
 
     // HACK:
     //   calling loadTextureInfoAsync here produces an infinite loop, yet i can not find a way to load a texture otherwise

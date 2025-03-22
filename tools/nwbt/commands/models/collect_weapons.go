@@ -8,14 +8,13 @@ import (
 	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
 	"path"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 var cmdCollectWeapons = &cobra.Command{
 	Use:   "weapons",
-	Short: "converts weapons",
+	Short: "scans datasheets for WeaponItemDefinitions and collects weapon models",
 	Long:  "",
 	Run:   runCollectWeapons,
 }
@@ -28,7 +27,7 @@ func runCollectWeapons(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectWeapons()
-	c.Convert(flgOutDir)
+	c.Convert()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -46,8 +45,8 @@ func (c *Collector) CollectWeapons() {
 			bar.Add(1)
 			bar.Detail(id)
 
-			file := strings.ToLower(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride1")))
-			if !c.models.Has(file) {
+			file := c.targetPath(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride1")))
+			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride1")
 				material := row.GetString("MaterialOverride1")
 				model, material = c.ResolveModelMaterialPair(model, material)
@@ -58,12 +57,12 @@ func (c *Collector) CollectWeapons() {
 						GeometryFile: model,
 						MaterialFile: material,
 					})
-					c.models.Store(file, group)
+					c.models.Store(group.TargetFile, group)
 				}
 			}
 
-			file = strings.ToLower(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride2")))
-			if !c.models.Has(file) {
+			file = c.targetPath(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride2")))
+			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride2")
 				material := row.GetString("MaterialOverride2")
 				model, material = c.ResolveModelMaterialPair(model, material)
@@ -74,10 +73,9 @@ func (c *Collector) CollectWeapons() {
 						GeometryFile: model,
 						MaterialFile: material,
 					})
-					c.models.Store(file, group)
+					c.models.Store(group.TargetFile, group)
 				}
 			}
-
 		}
 
 		bar.Detail(fmt.Sprintf("%d models", c.models.Len()-countStart))

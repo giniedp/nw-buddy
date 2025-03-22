@@ -1,148 +1,186 @@
 <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col z-50 pointer-events-none">
-  <div class="p-3" *ngIf="!isSuported$()">
-    <div class="alert shadow-lg my-2 bg-base-100">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        class="stroke-error flex-shrink-0 w-6 h-6 self-start"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        ></path>
-      </svg>
-      <div>
-        <h3 class="font-bold">Error</h3>
-        <div class="text-xs">WebGL is not supported by this browser</div>
+  @if (!isSuported()) {
+    <div class="p-3">
+      <div class="alert shadow-lg my-2 bg-base-100">
+        <nwb-icon [icon]="errorIcon" class="text-error flex-shrink-0 w-6 h-6 self-start" />
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">WebGL is not supported by this browser</div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="p-3" *ngIf="hasError$()">
-    <div class="alert shadow-lg my-2 bg-base-100">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        class="stroke-error flex-shrink-0 w-6 h-6 self-start"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        ></path>
-      </svg>
-      <div>
-        <h3 class="font-bold">Error</h3>
-        <div class="text-xs">Failed to load model</div>
+  }
+  @if (hasError()) {
+    <div class="p-3">
+      <div class="alert shadow-lg my-2 bg-base-100">
+        <nwb-icon [icon]="errorIcon" class="text-error flex-shrink-0 w-6 h-6 self-start" />
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">Failed to load model</div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="p-3" *ngIf="isEmpty$()">
-    <div class="alert shadow-lg my-2 bg-base-100">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        class="stroke-error flex-shrink-0 w-6 h-6 self-start"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        ></path>
-      </svg>
-      <div>
-        <h3 class="font-bold">Error</h3>
-        <div class="text-xs">No models found</div>
+  }
+  @if (isEmpty()) {
+    <div class="p-3">
+      <div class="alert shadow-lg my-2 bg-base-100">
+        <nwb-icon [icon]="errorIcon" class="text-error flex-shrink-0 w-6 h-6 self-start" />
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">No models found</div>
+        </div>
       </div>
     </div>
-  </div>
+  }
 </div>
 
-<div
-  class="bg-gradient-to-b from-base-300 to-black absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
-  *ngIf="isLoading$()"
-  @fade
->
-  <picture class="block aspect-square w-40 h-40 relative">
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
-      [nwImage]="'assets/loaders/basicscreenrune1.png'"
-    />
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-      [nwImage]="'assets/loaders/basicscreenrune3.png'"
-    />
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-      [nwImage]="'assets/loaders/basicscreenrune2.png'"
-    />
-    <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
-      [nwImage]="'assets/loaders/nwlogo.png'"
-    />
-  </picture>
-</div>
-
-<div
-  class="flex flex-col items-end gap-1 absolute top-2 right-2 z-40"
-  *ngIf="isSuported$() && hasLoaded$() && !isEmpty$()"
->
-  <div class="flex flex-row gap-1">
-    <ng-container *ngIf="!isLoading$() && !hasError$()">
-      <button class="btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="toggleMode()">
-        <span class="swap swap-rotate" [class.swap-active]="mode$() === 'light'">
-          <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on"/>
-          <nwb-icon [icon]="iconMoon" class="w-4 h-4 swap-off"/>
-        </span>
-      </button>
-      <button class="btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="capturePhoto()">
-        <nwb-icon [icon]="iconCamera" class="w-4 h-4"/>
-      </button>
-      <button class="btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="toggleFullscreen()">
-        <nwb-icon [icon]="iconFullscreen" class="w-4 h-4"/>
-      </button>
-    </ng-container>
-    <button class="btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="closeDialog()" *ngIf="canClose$()">
-      <nwb-icon [icon]="iconClose" class="w-4 h-4"/>
-    </button>
-  </div>
-  <button
-    *ngFor="let item of buttons$(); trackBy: trackByIndex"
-    class="btn btn-ghost btn-sm"
-    [class.text-primary]="item.active"
-    style="text-shadow: 1px 1px 2px black"
-    (click)="show(item.index)"
+@if (isLoading()) {
+  <div
+    class="bg-gradient-to-b from-base-300 to-black absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
+    @fade
   >
-    {{ item.label }}
-  </button>
-</div>
+    <picture class="block aspect-square w-40 h-40 relative">
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+        [nwImage]="'assets/loaders/basicscreenrune1.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        [nwImage]="'assets/loaders/basicscreenrune3.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        [nwImage]="'assets/loaders/basicscreenrune2.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
+        [nwImage]="'assets/loaders/nwlogo.png'"
+      />
+    </picture>
+    <div class="absolute left-0 right-0 bottom-0 text-center pb-4 font-bold">{{ progress() }}</div>
+  </div>
+}
 
-<div *ngIf="store.canDye$()" class="absolute bottom-2 right-2 left-2 flex items-center justify-center z-10">
-  <nwb-dye-panel
-    [dyeColors]="store.dyeColors$()"
-    [dyeR]="store.dyeR$()"
-    [dyeG]="store.dyeG$()"
-    [dyeB]="store.dyeB$()"
-    [dyeA]="store.dyeA$()"
-    [debug]="store.dyeDebug$()"
-    (dyeRChange)="store.patchState({ dyeR: $event })"
-    (dyeGChange)="store.patchState({ dyeG: $event })"
-    (dyeBChange)="store.patchState({ dyeB: $event })"
-    (dyeAChange)="store.patchState({ dyeA: $event })"
-    (debugChange)="store.patchState({ dyeDebug: $event })"
-    [dyeRDisabled]="store.dyeRDisabled$()"
-    [dyeGDisabled]="store.dyeGDisabled$()"
-    [dyeBDisabled]="store.dyeBDisabled$()"
-    [dyeADisabled]="store.dyeADisabled$()"
-  ></nwb-dye-panel>
-</div>
+@if (isSuported() && hasLoaded() && !isEmpty()) {
+  <div
+    class="flex flex-col items-end gap-1 absolute top-2 right-2 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+  >
+    <div class="flex flex-row gap-1">
+      @if (!isLoading() && !hasError()) {
+        @if (store.animations()?.length) {
+          <div class="join">
+            <button class="join-item btn btn-square btn-ghost btn-sm" (click)="toggleAnimation()">
+              <span class="swap swap-rotate" [class.swap-active]="isAnimating()">
+                <nwb-icon [icon]="iconPause" class="w-4 h-4 swap-on" />
+                <nwb-icon [icon]="iconPlay" class="w-4 h-4 swap-off" />
+              </span>
+            </button>
+            <button
+              class="join-item btn btn-square btn-ghost btn-sm"
+              [cdkMenuTriggerFor]="tplMenuAnim"
+            >
+              <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+            </button>
+            <ng-template #tplMenuAnim>
+              <ul
+                cdkMenu
+                class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 w-80 rounded-md max-h-96 shadow-md overflow-y-auto"
+              >
+                @for (name of store.animations(); track $index; let i = $index) {
+                  <li cdkMenuItem>
+                    <a
+                      [class.active]="name === store.animation()"
+                      [class.text-primary]="name === store.animation()"
+                      (click)="store.setAnimation(name)"
+                    >
+                      {{ name }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            </ng-template>
+          </div>
+        }
 
-<div #viewerHost class="w-full h-full z-0"></div>
+        <div class="join">
+          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="toggleMode()">
+            <span class="swap swap-rotate" [class.swap-active]="mode() === 'light'">
+              <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on" />
+              <nwb-icon [icon]="iconMoon" class="w-4 h-4 swap-off" />
+            </span>
+          </button>
+          <button class="join-item btn btn-square btn-ghost btn-sm" [cdkMenuTriggerFor]="tplMenuEnv">
+            <nwb-icon [icon]="iconEnv" class="w-4 h-4" />
+          </button>
+          <ng-template #tplMenuEnv>
+            <ul
+              cdkMenu
+              class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 w-80 rounded-md max-h-96 shadow-md overflow-y-auto"
+            >
+              @for (name of store.environments(); track $index; let i = $index) {
+                <li cdkMenuItem>
+                  <a
+                    [class.active]="i === store.environmentIndex()"
+                    [class.text-primary]="i === store.environmentIndex()"
+                    (click)="store.setEnvironment(name)"
+                  >
+                    env {{ i + 1 }}
+                  </a>
+                </li>
+              }
+            </ul>
+          </ng-template>
+        </div>
+
+        <div class="join">
+          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="capturePhoto()">
+            <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
+          </button>
+          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="toggleFullscreen()">
+            <nwb-icon [icon]="iconFullscreen" class="w-4 h-4" />
+          </button>
+        </div>
+      }
+      @if (canClose()) {
+        <button class="btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="closeDialog()">
+          <nwb-icon [icon]="iconClose" class="w-4 h-4" />
+        </button>
+      }
+    </div>
+    @for (item of buttons(); track $index) {
+      <button
+        class="btn btn-ghost btn-sm"
+        [class.text-primary]="item.active"
+        style="text-shadow: 1px 1px 2px black"
+        (click)="show(item.index)"
+      >
+        {{ item.label }}
+      </button>
+    }
+  </div>
+}
+
+@if (store.canDye()) {
+  <div
+    class="absolute bottom-2 right-2 left-2 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+  >
+    <nwb-dye-panel
+      [dyeColors]="store.dyeColors()"
+      [dyeR]="store.dyeR()"
+      [dyeG]="store.dyeG()"
+      [dyeB]="store.dyeB()"
+      [dyeA]="store.dyeA()"
+      [debug]="store.dyeDebug()"
+      (dyeRChange)="store.setDyeR($event)"
+      (dyeGChange)="store.setDyeG($event)"
+      (dyeBChange)="store.setDyeB($event)"
+      (dyeAChange)="store.setDyeA($event)"
+      (debugChange)="store.setDebug($event)"
+      [dyeRDisabled]="store.dyeRDisabled()"
+      [dyeGDisabled]="store.dyeGDisabled()"
+      [dyeBDisabled]="store.dyeBDisabled()"
+      [dyeADisabled]="store.dyeADisabled()"
+    />
+  </div>
+}
+<canvas #canvas class="w-full h-full z-0"></canvas>

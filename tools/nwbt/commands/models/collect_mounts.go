@@ -9,14 +9,13 @@ import (
 	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
 	"path"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 var cmdCollectMounts = &cobra.Command{
 	Use:   "mounts",
-	Short: "converts mounts",
+	Short: "scans datasheets for MountData and collects mount models with animations",
 	Long:  "",
 	Run:   runCollectMounts,
 }
@@ -30,17 +29,18 @@ var mountAdbFiles = map[string]string{
 
 func init() {
 	cmdCollectMounts.Flags().AddFlagSet(Cmd.Flags())
+	cmdCollectMounts.Flags().StringVar(&flgIds, "ids", "", "comma separated list of ids to process")
 }
 
 func runCollectMounts(ccmd *cobra.Command, args []string) {
-	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
-	c.CollectMounts()
-	c.Convert(flgOutDir)
+	slog.SetDefault(logging.DefaultFileHandler())
+	c.CollectMounts(getCommaSeparatedList(flgIds)...)
+	c.Convert()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
-func (c *Collector) CollectMounts() {
+func (c *Collector) CollectMounts(ids ...string) {
 	for table := range c.EachDatasheet() {
 		if table.Schema != "MountData" {
 			continue
@@ -54,10 +54,17 @@ func (c *Collector) CollectMounts() {
 			bar.Add(1)
 			bar.Detail(id)
 
+			if !matchFilter(ids, id) {
+				continue
+			}
+			file := c.targetPath(path.Join("mounts", id))
+			if !c.shouldProcess(file) {
+				continue
+			}
+
 			model := row.GetString("Mesh")
 			mountType := row.GetString("MountType")
 			material := row.GetString("Material")
-			file := strings.ToLower(path.Join("mounts", id))
 			adbFile := mountAdbFiles[mountType]
 
 			if path.Ext(model) != ".cdf" {
@@ -69,9 +76,8 @@ func (c *Collector) CollectMounts() {
 			}
 
 			group := importer.AssetGroup{}
-			group.TargetFile = file
 			group.Animations = c.getAnimations(cdf, adbFile)
-			for _, mesh := range cdf.SkinsOrCloth() {
+			for _, mesh := range cdf.SkinAndClothAttachments() {
 				model, mtl := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material, material)
 				if model != "" {
 					group.Meshes = append(group.Meshes, importer.GeometryAsset{
@@ -82,7 +88,7 @@ func (c *Collector) CollectMounts() {
 			}
 			if len(group.Meshes) > 0 {
 				group.TargetFile = file
-				c.models.Store(file, group)
+				c.models.Store(group.TargetFile, group)
 			}
 		}
 

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/constants"
 	"nw-buddy/tools/formats/datasheet"
+	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
@@ -35,17 +36,6 @@ const (
 	TASK_TYPES     = "types"
 	TASK_CONSTANTS = "constants"
 )
-
-var tasks = []string{
-	TASK_TABLES,
-	TASK_LOCALE,
-	TASK_SEARCH,
-	TASK_TYPES,
-	TASK_SLICES,
-	TASK_SPELLS,
-	TASK_IMAGES,
-	TASK_CONSTANTS,
-}
 
 var description = fmt.Sprintf("%s%s", constants.NW_BUDDY_BANNER, `
 Pulls data from .pak files specifically for nw-buddy purposes.
@@ -100,9 +90,9 @@ func run(ccmd *cobra.Command, args []string) {
 }
 
 type PullContext struct {
+	*game.Assets
 	tables       []*datasheet.Document
 	locales      *maps.SafeDict[*maps.SafeDict[string]]
-	archive      nwfs.Archive
 	outDataDir   string
 	outTypeDir   string
 	updateImages bool
@@ -111,8 +101,9 @@ type PullContext struct {
 }
 
 func NewPullContext() *PullContext {
+	assets, _ := game.InitPackedAssets(flgGameDir)
 	ctx := &PullContext{}
-	ctx.archive = utils.Must(nwfs.NewPakFS(flgGameDir))
+	ctx.Assets = assets
 	ctx.startedAt = time.Now()
 	ctx.outDataDir = flgOutDataDir
 	ctx.outTypeDir = flgOutTypeDir
@@ -127,29 +118,29 @@ func NewPullContext() *PullContext {
 }
 
 func (ctx *PullContext) PullTables() {
-	ctx.tables = pullTables(ctx.archive, ctx.outDataDir)
+	ctx.tables = pullTables(ctx.Archive, ctx.outDataDir)
 }
 
 func (ctx *PullContext) PullSpells() {
 	if ctx.tables == nil {
 		ctx.PullTables()
 	}
-	pullSpells(ctx.tables, ctx.archive, path.Join(ctx.outDataDir, "generated"))
+	pullSpells(ctx.tables, ctx.Archive, path.Join(ctx.outDataDir, "generated"))
 }
 
 func (ctx *PullContext) PullSlices() {
 	if ctx.tables == nil {
 		ctx.PullTables()
 	}
-	pullSpawns(ctx.tables, ctx.archive, path.Join(ctx.outDataDir, "generated"))
+	pullSpawns(ctx, path.Join(ctx.outDataDir, "generated"))
 }
 
 func (ctx *PullContext) PullLocales() {
-	ctx.locales = pullLocales(ctx.archive, path.Join(ctx.outDataDir, "localization"))
+	ctx.locales = pullLocales(ctx.Archive, path.Join(ctx.outDataDir, "localization"))
 }
 
 func (ctx *PullContext) PullImages() {
-	pullImages(ctx.archive, ctx.outDataDir, ctx.updateImages)
+	pullImages(ctx.Archive, ctx.outDataDir, ctx.updateImages)
 }
 
 func (ctx *PullContext) PullSearch() {
@@ -170,11 +161,11 @@ func (ctx *PullContext) PullTypes() {
 }
 
 func (ctx *PullContext) PullConstants() {
-	pullConstants(ctx.archive, ctx.outTypeDir)
+	pullConstants(ctx.Archive, ctx.outTypeDir)
 }
 
 func (ctx *PullContext) PullHeightmaps() {
-	pullHeightmaps(ctx.archive, path.Join(ctx.outDataDir, "lyshineui", "worldtiles"))
+	pullHeightmaps(ctx.Archive, path.Join(ctx.outDataDir, "lyshineui", "worldtiles"))
 }
 
 func (ctx *PullContext) PrintStats() {

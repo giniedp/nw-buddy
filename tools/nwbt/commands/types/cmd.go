@@ -49,7 +49,7 @@ func init() {
 }
 
 func runScan(ccmd *cobra.Command, args []string) {
-	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
+	fs := utils.Must(nwfs.NewPackedArchive(flgGameDir))
 
 	uidTable := rtti.NewUuidTable()
 	crcTable := rtti.NewCrcTable()

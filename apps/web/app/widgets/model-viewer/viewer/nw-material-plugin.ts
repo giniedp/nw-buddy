@@ -1,24 +1,33 @@
-import 'babylonjs'
-import { BABYLON } from 'babylonjs-viewer'
-import type { IColor3Like } from 'babylonjs/Maths/math.like'
 import { NwMaterialExtension } from './nw-material-extension'
+import {
+  Material,
+  MaterialPluginBase,
+  IColor3Like,
+  MaterialDefines,
+  Scene,
+  AbstractMesh,
+  UniformBuffer,
+  Engine,
+  SubMesh,
+  RegisterMaterialPlugin,
+} from '@babylonjs/core'
 
 const NAME = 'NwMaterialPlugin'
 
 export function registerNwMaterialPlugin() {
-  BABYLON.RegisterMaterialPlugin(NAME, (material) => {
+  RegisterMaterialPlugin(NAME, (material) => {
     const instance = new NwMaterialPlugin(material)
     NwMaterialPlugin.setPlugin(material, instance)
     return instance
   })
 }
 
-export class NwMaterialPlugin extends BABYLON.MaterialPluginBase {
-  public static getPlugin(material: BABYLON.Material | null): NwMaterialPlugin | null {
+export class NwMaterialPlugin extends MaterialPluginBase {
+  public static getPlugin(material: Material | null): NwMaterialPlugin | null {
     return (material as any)?.[NAME] || null
   }
 
-  public static setPlugin(material: BABYLON.Material, plugin: NwMaterialPlugin) {
+  public static setPlugin(material: Material, plugin: NwMaterialPlugin) {
     Object.assign(material, {
       [NAME]: plugin,
     })
@@ -72,7 +81,7 @@ export class NwMaterialPlugin extends BABYLON.MaterialPluginBase {
   private _isEnabled = false
   private _debugMask = false
 
-  public constructor(material: BABYLON.Material) {
+  public constructor(material: Material) {
     super(material, 'NwOverlayMask', 200, {
       NW_OVERLAY_MASK: false,
       NW_OVERLAY_DEBUG: false,
@@ -84,7 +93,7 @@ export class NwMaterialPlugin extends BABYLON.MaterialPluginBase {
     return NAME
   }
 
-  public override prepareDefines(defines: BABYLON.MaterialDefines, scene: BABYLON.Scene, mesh: BABYLON.AbstractMesh) {
+  public override prepareDefines(defines: MaterialDefines, scene: Scene, mesh: AbstractMesh) {
     defines['NW_OVERLAY_MASK'] = this._isEnabled
     defines['NW_OVERLAY_DEBUG'] = this._debugMask
     defines['WORLD_UBO'] = this._isEnabled
@@ -117,12 +126,7 @@ export class NwMaterialPlugin extends BABYLON.MaterialPluginBase {
     samplers.push('nwMaskTexture')
   }
 
-  public override bindForSubMesh(
-    uniformBuffer: BABYLON.UniformBuffer,
-    scene: BABYLON.Scene,
-    engine: BABYLON.Engine,
-    subMesh: BABYLON.SubMesh,
-  ) {
+  public override bindForSubMesh(uniformBuffer: UniformBuffer, scene: Scene, engine: Engine, subMesh: SubMesh) {
     if (this._isEnabled) {
       uniformBuffer.updateColor4(
         'nwMaskRGBA',

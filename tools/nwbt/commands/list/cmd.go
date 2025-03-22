@@ -36,12 +36,13 @@ var Cmd = &cobra.Command{
 
 func init() {
 	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
-	Cmd.Flags().BoolVarP(&flgRegex, "reg", "e", false, "if set, arguments are treated as regex")
+	Cmd.Flags().BoolVarP(&flgRegex, "regex", "e", false, "if set, arguments are treated as regular expressions")
 	Cmd.Flags().BoolVar(&flgPrintCsv, "csv", false, "print list as csv")
 	Cmd.Flags().BoolVar(&flgPrintTree, "tree", false, "print as file tree")
 	Cmd.Flags().IntVarP(&flgMaxDepth, "depth", "d", 0, "max tree depth (only for --tree)")
 	Cmd.Flags().IntVarP(&flgMaxEntries, "entries", "n", 0, "max entries per folder (only for --tree)")
 	Cmd.Flags().StringVarP(&flgOutFile, "out", "o", "", "ouput file")
+	Cmd.MarkFlagsMutuallyExclusive("csv", "tree")
 }
 
 func run(ccmd *cobra.Command, args []string) {
@@ -65,7 +66,7 @@ func run(ccmd *cobra.Command, args []string) {
 }
 
 func listFiles(args []string, regex bool) ([]nwfs.File, error) {
-	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
+	fs := utils.Must(nwfs.NewPackedArchive(flgGameDir))
 	if len(args) == 0 {
 		return fs.List()
 	}

@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
+	"nw-buddy/tools/utils"
+	"strings"
 
 	"github.com/qmuntal/gltf"
 	"github.com/qmuntal/gltf/modeler"
@@ -17,56 +19,89 @@ func (c *Document) LoadTexture(texture *mtl.Texture) *gltf.Texture {
 	if c.ImageLoader == nil {
 		return nil
 	}
-	candidates := []string{texture.File, texture.AssetId}
-	for _, file := range candidates {
-		if file == "" {
-			continue
-		}
-		tex, err := c.LoadTextureFunc(file, func() ([]byte, error) {
-			img, err := c.ImageLoader.LoadImage(file)
+	candidates := make([]string, 0)
+	candidates = utils.AppendUniqNoZero(candidates, texture.File)
+	candidates = utils.AppendUniqNoZero(candidates, texture.AssetId)
+	if texture.File != "" {
+		candidates = utils.AppendUniqNoZero(candidates, utils.ReplaceExt(texture.File, ".dds"))
+	}
+	errors := make([]error, 0)
+	for _, fileOrAsset := range candidates {
+		var source string
+		tex, err := c.LoadTextureFunc(fileOrAsset, func() ([]byte, error) {
+			img, err := c.ImageLoader.LoadImage(fileOrAsset)
 			if err != nil {
 				return nil, err
 			}
+			source = img.Source
 			return img.Data, nil
 		})
-		if err != nil {
-			slog.Warn("texture image not loaded", "file", file, "err", err)
-		} else if tex != nil {
+		if tex != nil && source != "" {
+			tex.Extras = ExtrasStore(tex.Extras, ExtraKeySource, source)
+		}
+		if tex != nil {
 			return tex
 		}
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+	if len(errors) > 0 {
+		slog.Warn("texture image not loaded", "tried", candidates, "errors", errors)
 	}
 	return nil
 }
 
-func (c *Document) LoadTextureFunc(key string, loader func() ([]byte, error)) (*gltf.Texture, error) {
-	if key == "" {
+func (c *Document) LoadTextureFunc(ref string, loader func() ([]byte, error)) (*gltf.Texture, error) {
+	if ref == "" {
 		return nil, nil
 	}
+	if c.ResourceLinker != nil {
+		ref = toPngRef(ref)
+	}
+
 	for _, texture := range c.Textures {
-		k, _ := ExtrasLoad[string](texture.Extras, "textureKey")
-		if key == k {
+		if k, _ := ExtrasLoad[string](texture.Extras, ExtraKeyRefID); k == ref {
 			return texture, nil
 		}
 	}
 
-	img, err := loader()
+	imageData, err := loader()
 	if err != nil {
 		return nil, err
 	}
-	index, err := modeler.WriteImage(c.Document, key, "image/png", bytes.NewBuffer(img))
-	if err != nil {
-		return nil, err
+
+	var texIndex int = -1
+	if c.ResourceLinker == nil {
+		if index, err := modeler.WriteImage(c.Document, ref, "image/png", bytes.NewBuffer(imageData)); err != nil {
+			return nil, err
+		} else {
+			texIndex = index
+		}
+	} else {
+		imageUri, err := c.ResourceLinker.WriteLinkedResource(c.TargetFile, ref, imageData)
+		if err != nil {
+			return nil, err
+		}
+		c.Images = append(c.Images, &gltf.Image{
+			URI:      imageUri,
+			MimeType: "image/png",
+		})
+		texIndex = len(c.Images) - 1
 	}
+
 	texture := &gltf.Texture{
-		Name:   key,
-		Source: gltf.Index(index),
-		Extras: ExtrasStore(make(map[string]any), "textureKey", key),
+		Name:   ref,
+		Source: gltf.Index(texIndex),
+		Extras: map[string]any{
+			ExtraKeyRefID: ref,
+		},
 	}
 	c.Textures = append(c.Textures, texture)
 	return texture, nil
 }
 
-func (c *Document) LoadTextureImage(texture *mtl.Texture) (*image.LoadedImage, error) {
+func (c *Document) LoadImage(texture *mtl.Texture) (*image.LoadedImage, error) {
 	candidates := []string{texture.File, texture.AssetId}
 	for _, file := range candidates {
 		if file == "" {
@@ -88,13 +123,26 @@ func (c *Document) ReadTextureImage(t *gltf.Texture) ([]byte, error) {
 	}
 
 	img := c.Images[*t.Source]
-	if img == nil || img.BufferView == nil {
+	if img == nil {
+		return nil, nil
+	}
+	if img.BufferView != nil {
+		if view := c.BufferViews[*img.BufferView]; view != nil {
+			return modeler.ReadBufferView(c.Document, view)
+		}
 		return nil, nil
 	}
 
-	view := c.BufferViews[*img.BufferView]
-	if view == nil {
-		return nil, nil
+	if img.URI != "" && c.ResourceLinker != nil {
+		return c.ResourceLinker.ReadLinkedResource(c.TargetFile, img.URI)
 	}
-	return modeler.ReadBufferView(c.Document, view)
+	return nil, nil
+}
+
+func toPngRef(ref string) string {
+	ref = strings.ReplaceAll(ref, ":", "")
+	if strings.HasSuffix(ref, ".dds") || strings.HasSuffix(ref, ".tif") {
+		ref = utils.ReplaceExt(ref, "")
+	}
+	return ref + ".png"
 }

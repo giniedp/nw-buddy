@@ -5,7 +5,10 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/adb"
 	"nw-buddy/tools/formats/cdf"
+	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/datasheet"
+	"nw-buddy/tools/formats/gltf/importer"
+	"nw-buddy/tools/formats/mtl"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
@@ -107,12 +110,12 @@ func (it *Assets) LookupFileByAsset(azAsset nwt.AzAsset) (nwfs.File, error) {
 	if azAsset.Hint != "" {
 		// hint seems to be most reliable for our use case
 
-		file, ok := it.Archive.Lookup(strings.ToLower(azAsset.Hint))
+		file, ok := it.Archive.Lookup(azAsset.Hint)
 		if ok {
 			return file, nil
 		}
 		if path.Ext(azAsset.Hint) == ".slice" {
-			file, ok = it.Archive.Lookup(strings.ToLower(utils.ReplaceExt(azAsset.Hint, ".dynamicslice")))
+			file, ok = it.Archive.Lookup(utils.ReplaceExt(azAsset.Hint, ".dynamicslice"))
 			if ok {
 				return file, nil
 			}
@@ -137,8 +140,6 @@ func (it *Assets) LookupFileByAsset(azAsset nwt.AzAsset) (nwfs.File, error) {
 }
 
 func (c *Assets) ResolveCdfAsset(model string) (*cdf.Document, error) {
-	// result := &CdfAsset{}
-	model = nwfs.NormalizePath(model)
 	file, ok := c.Archive.Lookup(model)
 	if !ok {
 		return nil, fmt.Errorf("file not found: %s", model)
@@ -152,7 +153,6 @@ func (c *Assets) ResolveCdfAsset(model string) (*cdf.Document, error) {
 }
 
 func (c *Assets) LoadAdbDocument(filePath string) (*adb.Document, error) {
-	filePath = nwfs.NormalizePath(filePath)
 	file, ok := c.Archive.Lookup(filePath)
 	if !ok {
 		return nil, fmt.Errorf("file not found: %s", filePath)
@@ -163,4 +163,43 @@ func (c *Assets) LoadAdbDocument(filePath string) (*adb.Document, error) {
 		return nil, err
 	}
 	return doc, nil
+}
+
+func (c *Assets) LoadAnimation(anim importer.Animation) *cgf.File {
+	mfile, ok := c.Archive.Lookup(anim.File)
+	if !ok {
+		slog.Warn("Animation file not found", "file", anim.File)
+		return nil
+	}
+	doc, err := cgf.Load(mfile)
+	if err != nil {
+		slog.Warn("Animation not loaded", "file", anim.File, "err", err)
+		return nil
+	}
+	return doc
+}
+
+func (c *Assets) LoadAsset(mesh importer.GeometryAsset) (*cgf.File, []mtl.Material) {
+	modelFile, ok := c.Archive.Lookup(mesh.GeometryFile)
+	if !ok {
+		slog.Warn("Model file not found", "file", mesh.GeometryFile)
+		return nil, nil
+	}
+	model, err := cgf.Load(modelFile)
+	if err != nil {
+		slog.Warn("Model not loaded", "file", mesh.GeometryFile, "err", err)
+		return nil, nil
+	}
+	mtlFile, ok := c.Archive.Lookup(mesh.MaterialFile)
+	if !ok {
+		slog.Warn("Material not found", "material", mesh.MaterialFile, "model", mesh.GeometryFile, "name", mesh.Name)
+		return nil, nil
+	}
+	material, err := mtl.Load(mtlFile)
+	if err != nil {
+		slog.Warn("Material not loaded", "file", mesh.MaterialFile, "err", err)
+		return nil, nil
+	}
+	materials := material.Collection()
+	return model, materials
 }

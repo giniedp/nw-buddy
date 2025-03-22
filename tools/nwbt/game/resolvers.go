@@ -5,7 +5,6 @@ import (
 	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/cloth"
-	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"path"
 	"strings"
@@ -21,7 +20,6 @@ func (c *Assets) ResolveCgf(file string) string {
 	if file == "" {
 		return ""
 	}
-	file = nwfs.NormalizePath(file)
 	f, exists := c.Archive.Lookup(file)
 	if !exists {
 		return ""
@@ -29,8 +27,7 @@ func (c *Assets) ResolveCgf(file string) string {
 
 	switch path.Ext(file) {
 	case ".cloth":
-		ref, _ := cloth.TryResolveGeometryReference(f)
-		if ref != "" {
+		if ref, _ := cloth.TryResolveGeometryReference(f); ref != "" {
 			return ref
 		}
 		slog.Debug("No skin found in cloth", "file", file)
@@ -47,7 +44,6 @@ func (c *Assets) ResolveMtl(file string, fallback ...string) string {
 	files := []string{file}
 	files = append(files, fallback...)
 	for _, file := range files {
-		file = nwfs.NormalizePath(file)
 		if file == "" {
 			continue
 		}
@@ -75,7 +71,6 @@ func (c *Assets) ResolveMtlFromCgf(model string) string {
 	if model == "" {
 		return ""
 	}
-	model = nwfs.NormalizePath(model)
 	f, exists := c.Archive.Lookup(model)
 	if !exists {
 		return ""
@@ -97,18 +92,24 @@ func (c *Assets) ResolveMtlFromCgf(model string) string {
 		}
 
 		uuid := utils.ExtractUUID(name)
-		if uuid != "" {
-			asset := c.Catalog[strings.ToLower(uuid)]
-			if asset != nil {
+		switch uuid {
+		case "":
+			// skip
+		case "00000000-0000-0000-0000-000000000000":
+			return ""
+		default:
+			if asset := c.Catalog[strings.ToLower(uuid)]; asset != nil {
 				return asset.File
 			}
+			slog.Debug("material not found", "tried", uuid)
+			return ""
 		}
 
 		candidates := []string{
-			nwfs.NormalizePath(name),
-			nwfs.NormalizePath(utils.ReplaceExt(name, ".mtl")),
-			nwfs.NormalizePath(path.Join(path.Dir(model), name)),
-			nwfs.NormalizePath(path.Join(path.Dir(model), utils.ReplaceExt(name, ".mtl"))),
+			name,
+			utils.ReplaceExt(name, ".mtl"),
+			path.Join(path.Dir(model), name),
+			path.Join(path.Dir(model), utils.ReplaceExt(name, ".mtl")),
 		}
 		for _, material := range candidates {
 			if _, exists := c.Archive.Lookup(material); exists {
@@ -132,10 +133,10 @@ func (c *Assets) ResolveModelMaterialPair(model, material string, fallback ...st
 	}
 	materialOut := c.ResolveMtl(material, fallback...)
 	if materialOut == "" {
-		materialOut = c.ResolveMtlFromCgf(model)
+		materialOut = c.ResolveMtlFromCgf(modelOut)
 	}
 	if materialOut == "" {
-		slog.Warn("material not resolved", "file", material, "model", model)
+		slog.Warn("material not resolved, use fallback material", "file", material, "model", model)
 		materialOut = DEFAULT_MATERIAL
 	}
 	return modelOut, materialOut

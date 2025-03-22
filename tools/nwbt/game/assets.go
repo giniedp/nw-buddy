@@ -19,7 +19,7 @@ type Assets struct {
 }
 
 func InitPackedAssets(gameDir string) (*Assets, error) {
-	archive, err := nwfs.NewPakFS(gameDir)
+	archive, err := nwfs.NewPackedArchive(gameDir)
 	if err != nil {
 		return nil, err
 	}

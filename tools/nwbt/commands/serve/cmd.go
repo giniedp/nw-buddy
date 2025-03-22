@@ -7,7 +7,6 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"nw-buddy/tools/commands/models"
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/formats/dds"
@@ -30,14 +29,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var flgGameDir string
-var flgTmpDir string
-var flgCacheDir string
-var flgHost string
-var flgPort uint
-var flgCrcFile string
-var flgUuidFile string
-var flgTempDir string
+type Flags struct {
+	GameDir   string
+	TempDir   string
+	CacheDir  string
+	ModelsDir string
+	Host      string
+	Port      uint
+	CrcFile   string
+	UuidFile  string
+}
+
+var flg Flags
 
 var Cmd = &cobra.Command{
 	Use:           "serve",
@@ -49,34 +52,35 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
-	Cmd.Flags().StringVarP(&flgTmpDir, "temp", "t", env.TempDir(), "temp directory")
-	Cmd.Flags().StringVarP(&flgCacheDir, "cache", "c", path.Join(env.TempDir(), "cache"), "image cache directory")
-	Cmd.Flags().StringVar(&flgHost, "host", "0.0.0.0", "host to listen on")
-	Cmd.Flags().UintVar(&flgPort, "port", 8000, "port to listen on")
-	Cmd.Flags().StringVar(&flgCrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
-	Cmd.Flags().StringVar(&flgUuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
-	Cmd.Flags().StringVar(&flgTempDir, "tmp-dir", ".nwbt/tmp", "temporary directory, used for image conversion")
+	Cmd.Flags().StringVarP(&flg.GameDir, "game", "g", env.GameDir(), "game root directory")
+	Cmd.Flags().StringVarP(&flg.TempDir, "temp", "t", env.TempDir(), "temporary directory for image conversion")
+	Cmd.Flags().StringVarP(&flg.CacheDir, "cache", "c", env.CacheDir(), "image cache directory")
+	Cmd.Flags().StringVar(&flg.ModelsDir, "models", env.ModelsDir(), "models directory to serve")
+	Cmd.Flags().StringVar(&flg.Host, "host", "0.0.0.0", "host to listen on")
+	Cmd.Flags().UintVar(&flg.Port, "port", 8000, "port to listen on")
+	Cmd.Flags().StringVar(&flg.CrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
+	Cmd.Flags().StringVar(&flg.UuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
 }
 
 var crcTable rtti.CrcTable
 var uuidTable rtti.UuidTable
 
 func run(cmd *cobra.Command, args []string) {
-	assets, err := game.InitPackedAssets(flgGameDir)
+	assets, err := game.InitPackedAssets(flg.GameDir)
 	if err != nil {
-		log.Fatal("failed to initialize assets", "error", err)
+		log.Fatal("assets not initialized", "error", err)
 	}
-	crcTable = utils.Must(rtti.LoadCrcTable(flgCrcFile))
-	uuidTable = utils.Must(rtti.LoadUuIdTable(flgUuidFile))
+	crcTable = utils.Must(rtti.LoadCrcTable(flg.CrcFile))
+	uuidTable = utils.Must(rtti.LoadUuIdTable(flg.UuidFile))
 	r := mux.NewRouter()
 	r.PathPrefix("/list").Handler(http.StripPrefix("/list", ListServer(assets.Archive)))
 	r.PathPrefix("/file").Handler(http.StripPrefix("/file", FileServer(assets)))
-
+	r.PathPrefix("/models").Handler(http.StripPrefix("/models", http.FileServer(http.Dir(flg.ModelsDir))))
 	h := handlers.LoggingHandler(os.Stdout, r)
+	h = handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(h)
 	h = handlers.RecoveryHandler()(h)
 
-	addr := fmt.Sprintf("%s:%d", flgHost, flgPort)
+	addr := fmt.Sprintf("%s:%d", flg.Host, flg.Port)
 	slog.Info("serving on", "address", addr)
 	log.Fatal(http.ListenAndServe(addr, h))
 }
@@ -98,7 +102,6 @@ func ListServer(archive nwfs.Archive) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(content)
 	}
@@ -139,7 +142,6 @@ func serveContent(data []byte, ext string, w http.ResponseWriter) {
 	} else {
 		w.Header().Set("Content-Type", http.DetectContentType(data))
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(data)
 }
 
@@ -212,7 +214,7 @@ func convertDDS(file nwfs.File, target string) ([]byte, error) {
 			img.Data,
 			image.FormatPNG,
 			image.WithSilent(true),
-			image.WithTempDir(flgTempDir),
+			image.WithTempDir(flg.TempDir),
 			image.WithNormalMap(dds.IsNormalMap(file.Path())),
 		)
 	case ".webp":
@@ -220,7 +222,7 @@ func convertDDS(file nwfs.File, target string) ([]byte, error) {
 			img.Data,
 			image.FormatWEBP,
 			image.WithSilent(true),
-			image.WithTempDir(flgTempDir),
+			image.WithTempDir(flg.TempDir),
 			image.WithNormalMap(dds.IsNormalMap(file.Path())),
 		)
 	default:
@@ -244,7 +246,7 @@ func convertTIF(file nwfs.File, target string) ([]byte, error) {
 			img.Data,
 			image.FormatPNG,
 			image.WithSilent(true),
-			image.WithTempDir(flgTempDir),
+			image.WithTempDir(flg.TempDir),
 			image.WithNormalMap(dds.IsNormalMap(file.Path())),
 		)
 	case ".webp":
@@ -252,7 +254,7 @@ func convertTIF(file nwfs.File, target string) ([]byte, error) {
 			img.Data,
 			image.FormatWEBP,
 			image.WithSilent(true),
-			image.WithTempDir(flgTempDir),
+			image.WithTempDir(flg.TempDir),
 			image.WithNormalMap(dds.IsNormalMap(file.Path())),
 		)
 	default:
@@ -260,27 +262,25 @@ func convertTIF(file nwfs.File, target string) ([]byte, error) {
 	}
 }
 func convertCGF(assets *game.Assets, file nwfs.File, target string) ([]byte, error) {
-	c := models.NewCollector(assets)
 	group := importer.AssetGroup{}
 	model := file.Path()
-	model, material := c.ResolveModelMaterialPair(model, "")
+	model, material := assets.ResolveModelMaterialPair(model, "")
 	group.Meshes = append(group.Meshes, importer.GeometryAsset{
 		GeometryFile: model,
 		MaterialFile: material,
 	})
-	return convertGltf(c, group, target == ".glb")
+	return convertGltf(assets, group, target == ".glb")
 }
 
 func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, error) {
-	c := models.NewCollector(assets)
 	group := importer.AssetGroup{}
 	model := file.Path()
-	asset, err := c.ResolveCdfAsset(model)
+	asset, err := assets.ResolveCdfAsset(model)
 	if err != nil {
 		return nil, err
 	}
-	for _, mesh := range asset.SkinsOrCloth() {
-		model, material := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
+	for _, mesh := range asset.SkinAndClothAttachments() {
+		model, material := assets.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
 		if model != "" {
 			group.Meshes = append(group.Meshes, importer.GeometryAsset{
 				GeometryFile: model,
@@ -288,24 +288,23 @@ func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, err
 			})
 		}
 	}
-	return convertGltf(c, group, target == ".glb")
+	return convertGltf(assets, group, target == ".glb")
 }
 
-func convertGltf(c *models.Collector, group importer.AssetGroup, binary bool) ([]byte, error) {
+func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([]byte, error) {
 	document := gltf.NewDocument()
 	document.ImageLoader = image.LoaderWithConverter{
-		Archive:  c.Archive,
-		Catalog:  c.Catalog,
-		CacheDir: flgCacheDir,
+		Archive: assets.Archive,
+		Catalog: assets.Catalog,
+		Cache:   image.NewCache(flg.CacheDir, ".png"),
 		Converter: image.BasicConverter{
 			Format:  ".png",
-			TempDir: flgTmpDir,
+			TempDir: flg.TempDir,
 			Silent:  true,
-			// MaxSize: 1024,
 		},
 	}
 	for _, mesh := range group.Meshes {
-		document.ImportGeometry(mesh, c.LoadAsset)
+		document.ImportGeometry(mesh, assets.LoadAsset)
 	}
 	document.ImportCgfMaterials()
 	var b bytes.Buffer

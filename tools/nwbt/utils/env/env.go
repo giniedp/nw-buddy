@@ -96,15 +96,24 @@ func GameDir() string {
 	return Get("NW_GAME", "")
 }
 
+func nwbtDir() string {
+	return path.Join(WorkDir(), ".nwbt")
+}
+
 // TempDir returns the temp directory by looking up the NW_TEMP environment variable
 // if not set, it defaults to ".nwbt"
 func TempDir() string {
-	return Get("NW_TEMP", path.Join(WorkDir(), ".nwbt"))
+	return Get("NW_TEMP", path.Join(nwbtDir(), "temp"))
 }
 
 // UnpackDir returns the unpack directory by looking up the NW_UNPACK environment variable
 func UnpackDir() string {
-	return Get("NW_UNPACK", path.Join(TempDir(), "unpack"))
+	return Get("NW_UNPACK", path.Join(nwbtDir(), "unpack"))
+}
+
+// ModelsDir returns the models directory by looking up the NW_MODELS environment variable
+func ModelsDir() string {
+	return Get("NW_MODELS", path.Join(nwbtDir(), "models"))
 }
 
 // PreferredWorkerCount for general purpose tasks
@@ -120,7 +129,7 @@ func PreferredWorkerCount() int {
 
 // PullDataDir returns the pull directory by looking up the NW_PULL_DATA environment variable
 func PullDataDir() string {
-	fallback := path.Join(TempDir(), "pull")
+	fallback := path.Join(nwbtDir(), "pull")
 	if projectVersion != "" {
 		fallback = path.Join(WorkDir(), "dist", "nw-data", strings.ToLower(WorkspaceName()))
 	}
@@ -129,7 +138,7 @@ func PullDataDir() string {
 
 // PullDir returns the pull directory by looking up the NW_PULL_TYPES environment variable
 func PullTypesDir() string {
-	fallback := path.Join(TempDir(), "pull")
+	fallback := path.Join(nwbtDir(), "pull")
 	if projectVersion != "" {
 		fallback = path.Join(WorkDir(), "libs", "nw-data", "generated")
 	}
@@ -138,7 +147,7 @@ func PullTypesDir() string {
 
 // CacheDir returns the cache directory by looking up the NW_CACHE environment variable
 func CacheDir() string {
-	return Get("NW_CACHE_DIR", path.Join(TempDir(), "cache"))
+	return Get("NW_CACHE_DIR", path.Join(nwbtDir(), "cache"))
 }
 
 // LumberyardDir returns the lumberyard directory by looking up the LUMBERYARD_DIR environment variable
@@ -152,7 +161,7 @@ func Logfile() string {
 	if testing.Testing() {
 		fallback = "test.log"
 	}
-	return path.Join(TempDir(), fallback)
+	return path.Join(nwbtDir(), fallback)
 }
 
 func readPackageJsonVersion(file string) string {

@@ -63,8 +63,9 @@ func TestRead_MusiDrumDrum(t *testing.T) {
 		// 	return model, material.Collection()
 		// })
 		converter.ImportCgfMaterials()
+		converter.TargetFile = utils.ReplaceExt(input[0], ".gltf")
 
-		err = converter.Save(utils.ReplaceExt(input[0], ".gltf"))
+		err = converter.Save()
 		assert.NoError(t, err)
 	}
 }

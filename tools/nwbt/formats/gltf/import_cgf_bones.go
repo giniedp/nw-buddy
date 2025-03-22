@@ -2,10 +2,12 @@ package gltf
 
 import (
 	"fmt"
+	"iter"
 	"log/slog"
 	"nw-buddy/tools/formats/cgf"
 
 	"github.com/qmuntal/gltf"
+	"github.com/qmuntal/gltf/binary"
 	"github.com/qmuntal/gltf/modeler"
 )
 
@@ -19,12 +21,6 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 	transforms := make([]Mat4x4, len(chunk.Bones))
 	inverse := make([]Mat4x4, len(chunk.Bones))
 	for i, bone := range chunk.Bones {
-		gltfBones[i], _ = d.NewNode()
-		gltfBones[i].Name = bone.BoneName
-		gltfBones[i].Extras = map[string]any{
-			ExtraKeyControllerID: bone.ControllerId,
-			ExtraKeyLimbID:       bone.LimbId,
-		}
 		transforms[i] = CryToGltfMat4(Mat4Transpose(Mat4x4{
 			bone.BoneToWorld[0],
 			bone.BoneToWorld[1],
@@ -61,6 +57,13 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 			0,
 			1,
 		}))
+		gltfBones[i], _ = d.NewNode()
+		gltfBones[i].Name = bone.BoneName
+		gltfBones[i].Extras = map[string]any{
+			ExtraKeyControllerID: bone.ControllerId,
+			ExtraKeyLimbID:       bone.LimbId,
+			ExtraKeyInverse:      inverse[i],
+		}
 	}
 
 	for i, bone := range chunk.Bones {
@@ -86,6 +89,7 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 	for i := range chunk.Bones {
 		joints = append(joints, d.NodeIndex(gltfBones[i]))
 	}
+
 	data := make([][4][4]float32, 0)
 	for _, mat := range inverse {
 		data = append(data, [4][4]float32{
@@ -103,4 +107,142 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 	})
 
 	return gltf.Index(len(d.Skins) - 1), nil
+}
+
+func (d *Document) MergeSkins() {
+	if len(d.Skins) <= 1 {
+		return
+	}
+
+	newSkinIndex := len(d.Skins)
+	newSkin := &gltf.Skin{}
+	d.Skins = append(d.Skins, newSkin)
+
+	for _, oldSkin := range d.Skins {
+		for _, i := range oldSkin.Joints {
+			joint := d.Nodes[i]
+			newNode := d.jointCopy(joint, newSkin)
+			if parent := d.NodeParent(joint); parent != nil {
+				newParent := d.jointCopy(parent, newSkin)
+				if !d.NodeHasChild(newParent, newNode) {
+					d.NodeAddChild(newParent, newNode)
+				}
+			}
+		}
+	}
+
+	data := make([][4][4]float32, 0)
+	for node := range d.EachSkinNode(newSkin) {
+		if d.NodeParent(node) == nil {
+			scene := d.DefaultScene()
+			scene.Nodes = append(scene.Nodes, d.NodeIndex(node))
+		}
+		mat, _ := ExtrasLoad[Mat4x4](node.Extras, ExtraKeyInverse)
+		data = append(data, [4][4]float32{
+			{mat[0], mat[4], mat[8], mat[12]},
+			{mat[1], mat[5], mat[9], mat[13]},
+			{mat[2], mat[6], mat[10], mat[14]},
+			{mat[3], mat[7], mat[11], mat[15]},
+		})
+	}
+	accessor := modeler.WriteAccessor(d.Document, gltf.TargetNone, data)
+	newSkin.InverseBindMatrices = gltf.Index(accessor)
+
+	for _, node := range d.Nodes {
+		if node.Skin == nil || node.Mesh == nil {
+			continue
+		}
+		oldSkin := d.Skins[*node.Skin]
+		node.Skin = gltf.Index(newSkinIndex)
+
+		mesh := d.Meshes[*node.Mesh]
+		for _, primitive := range mesh.Primitives {
+			attr, ok := primitive.Attributes["JOINTS_0"]
+			if !ok {
+				continue
+			}
+			acc := d.Accessors[attr]
+			view := d.BufferViews[*acc.BufferView]
+			buf := d.Buffers[view.Buffer]
+			pos := view.ByteOffset
+
+			switch acc.ComponentType {
+			case gltf.ComponentUbyte:
+				tmp := make([][4]uint8, acc.Count)
+				binary.Read(buf.Data[pos:], view.ByteStride, tmp)
+				for i, v := range tmp {
+					for j, oldIndex := range v {
+						joint := oldSkin.Joints[oldIndex]
+						node := d.Nodes[joint]
+						controllerId, _ := ExtrasLoad[uint32](node.Extras, ExtraKeyControllerID)
+						newIndex := d.jointIndexOfControllerId(newSkin, controllerId)
+						tmp[i][j] = uint8(newIndex)
+					}
+				}
+				binary.Write(buf.Data[pos:], view.ByteStride, tmp)
+			case gltf.ComponentUshort:
+				tmp := make([][4]uint16, acc.Count)
+				binary.Read(buf.Data[pos:], view.ByteStride, tmp)
+				for i, v := range tmp {
+					for j, oldIndex := range v {
+						joint := oldSkin.Joints[oldIndex]
+						node := d.Nodes[joint]
+						controllerId, _ := ExtrasLoad[uint32](node.Extras, ExtraKeyControllerID)
+						newIndex := d.jointIndexOfControllerId(newSkin, controllerId)
+						tmp[i][j] = uint16(newIndex)
+					}
+				}
+				binary.Write(buf.Data[pos:], view.ByteStride, tmp)
+			default:
+				panic("unsupported component type")
+			}
+		}
+	}
+
+	for i, skin := range d.Skins {
+		if i == newSkinIndex {
+			continue
+		}
+		for node := range d.EachSkinNode(skin) {
+			node.Extras = ExtrasDelete(node.Extras, ExtraKeyControllerID)
+		}
+	}
+}
+
+func (d *Document) jointCopy(joint *gltf.Node, newSkin *gltf.Skin) *gltf.Node {
+	controllerId, _ := ExtrasLoad[uint32](joint.Extras, ExtraKeyControllerID)
+	inverse, _ := ExtrasLoad[Mat4x4](joint.Extras, ExtraKeyInverse)
+	for node := range d.EachSkinNode(newSkin) {
+		if ci, _ := ExtrasLoad[uint32](node.Extras, ExtraKeyControllerID); ci == controllerId {
+			return node
+		}
+	}
+
+	result, i := d.NewNode()
+	result.Name = joint.Name
+	result.Matrix = joint.Matrix
+	result.Extras = ExtrasStore(result.Extras, ExtraKeyControllerID, controllerId)
+	result.Extras = ExtrasStore(result.Extras, ExtraKeyInverse, inverse)
+	newSkin.Joints = append(newSkin.Joints, i)
+	return result
+}
+
+func (d *Document) EachSkinNode(skin *gltf.Skin) iter.Seq[*gltf.Node] {
+	return func(yield func(*gltf.Node) bool) {
+		for _, i := range skin.Joints {
+			if !yield(d.Nodes[i]) {
+				break
+			}
+		}
+	}
+}
+
+func (d *Document) jointIndexOfControllerId(skin *gltf.Skin, controllerId uint32) int {
+	for i, joint := range skin.Joints {
+		node := d.Nodes[joint]
+		if ci, _ := ExtrasLoad[uint32](node.Extras, ExtraKeyControllerID); ci == controllerId {
+			return i
+		}
+	}
+	return -1
 }

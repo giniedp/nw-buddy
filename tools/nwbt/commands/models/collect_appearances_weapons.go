@@ -5,10 +5,9 @@ import (
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/utils/progress"
 	"path"
-	"strings"
 )
 
-func (c *Collector) CollectAppearancesWeapons() {
+func (c *Collector) CollectAppearancesWeapons(ids ...string) {
 	for table := range c.EachDatasheet() {
 		if table.Schema != "WeaponAppearanceDefinitions" {
 			continue
@@ -21,16 +20,13 @@ func (c *Collector) CollectAppearancesWeapons() {
 			bar.Add(1)
 			bar.Detail(id)
 
-			scope := "weapons"
-			if strings.Contains(strings.ToLower(table.Table), "instrument") {
-				scope = "instruments"
-			}
-			if strings.Contains(strings.ToLower(table.Table), "mounts") {
-				scope = "mounts"
+			if !matchFilter(ids, id) {
+				continue
 			}
 
-			file := strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride1")))
-			if !c.models.Has(file) {
+			scope := "weaponappearances"
+			file := c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride1")))
+			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride1")
 				material := row.GetString("MaterialOverride1")
 				if model != "" {
@@ -44,8 +40,8 @@ func (c *Collector) CollectAppearancesWeapons() {
 				}
 			}
 
-			file = strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride2")))
-			if !c.models.Has(file) {
+			file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride2")))
+			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride2")
 				material := row.GetString("MaterialOverride2")
 				if model != "" {
@@ -61,13 +57,12 @@ func (c *Collector) CollectAppearancesWeapons() {
 
 			meshOverride := row.GetString("MeshOverride")
 			if path.Ext(meshOverride) == ".cdf" {
-				file = strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
-				if !c.models.Has(file) {
+				file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
+				if c.shouldProcess(file) {
 					cdf, _ := c.ResolveCdfAsset(meshOverride)
 					if cdf != nil {
-						group := importer.AssetGroup{}
-						group.TargetFile = file
-						for _, mesh := range cdf.SkinsOrCloth() {
+						group := importer.AssetGroup{TargetFile: file}
+						for _, mesh := range cdf.SkinAndClothAttachments() {
 							model, material := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
 							if model != "" {
 								group.Meshes = append(group.Meshes, importer.GeometryAsset{
@@ -83,12 +78,11 @@ func (c *Collector) CollectAppearancesWeapons() {
 				}
 			}
 			if path.Ext(meshOverride) == ".cgf" {
-				file = strings.ToLower(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
-				if !c.models.Has(file) {
+				file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
+				if c.shouldProcess(file) {
 					model, material := c.ResolveModelMaterialPair(meshOverride, "")
 					if model != "" {
-						group := importer.AssetGroup{}
-						group.TargetFile = file
+						group := importer.AssetGroup{TargetFile: file}
 						group.Meshes = append(group.Meshes, importer.GeometryAsset{
 							GeometryFile: model,
 							MaterialFile: material,

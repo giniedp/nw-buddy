@@ -7,7 +7,7 @@ import { httpResource } from '@angular/common/http'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { map } from 'rxjs'
-import { ItemModelInfo, ModelViewerModule } from '~/widgets/model-viewer'
+import { ModelItemInfo, ModelViewerModule } from '~/widgets/model-viewer'
 import { PakSidebarComponent } from './pak-sidebar.component'
 import { PakService } from './pak.service'
 
@@ -68,7 +68,7 @@ export class PakPageComponent {
   protected stat = computed(() => this.service.fileStats(this.file()))
 
   protected textContent = httpResource.text(() => this.stat()?.textUrl)
-  protected modelContent = computed((): ItemModelInfo[] => {
+  protected modelContent = computed((): ModelItemInfo[] => {
     const modelUrl = this.stat()?.modelUrl
     if (!modelUrl) {
       return null

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, input, model, output } from '@angular/core'
 import { DyeColorData } from '@nw-data/generated'
 import { filter } from 'rxjs'
 import { NwModule } from '~/nw'
@@ -11,45 +11,31 @@ import { DyePickerComponent } from './dye-picker.component'
   selector: 'nwb-dye-panel',
   templateUrl: './dye-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DyePickerComponent, TooltipModule],
+  imports: [CommonModule, NwModule, TooltipModule],
   host: {
     class: 'flex flex-row gap-1 padding-2',
   },
 })
 export class DyePanelComponent {
-  @Input()
-  public dyeColors: DyeColorData[]
+  private elRef = inject(ElementRef)
+  public dyeColors = input<DyeColorData[]>([])
 
-  @Input()
-  public dyeR: DyeColorData
-  @Input()
-  public dyeG: DyeColorData
-  @Input()
-  public dyeB: DyeColorData
-  @Input()
-  public dyeA: DyeColorData
-  @Input()
-  public debug: boolean
+  public dyeR = model<DyeColorData>(null)
+  public dyeG = model<DyeColorData>(null)
+  public dyeB = model<DyeColorData>(null)
+  public dyeA = model<DyeColorData>(null)
+  public debug = model<boolean>(false)
 
-  @Output()
-  public dyeRChange = new EventEmitter<DyeColorData>()
-  @Output()
-  public dyeGChange = new EventEmitter<DyeColorData>()
-  @Output()
-  public dyeBChange = new EventEmitter<DyeColorData>()
-  @Output()
-  public dyeAChange = new EventEmitter<DyeColorData>()
-  @Output()
-  public debugChange = new EventEmitter<boolean>()
+  public dyeRChange = output<DyeColorData>()
+  public dyeGChange = output<DyeColorData>()
+  public dyeBChange = output<DyeColorData>()
+  public dyeAChange = output<DyeColorData>()
+  public debugChange = output<boolean>()
 
-  @Input()
-  public dyeRDisabled: boolean
-  @Input()
-  public dyeGDisabled: boolean
-  @Input()
-  public dyeBDisabled: boolean
-  @Input()
-  public dyeADisabled: boolean
+  public dyeRDisabled = input<boolean>(false)
+  public dyeGDisabled = input<boolean>(false)
+  public dyeBDisabled = input<boolean>(false)
+  public dyeADisabled = input<boolean>(false)
 
   public constructor(
     private modal: ModalService,
@@ -61,13 +47,13 @@ export class DyePanelComponent {
   protected pickR() {
     DyePickerComponent.open(this.modal, {
       inputs: {
-        colors: this.dyeColors,
-        color: this.dyeR,
+        colors: this.dyeColors(),
+        color: this.dyeR(),
       },
     })
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
-        this.dyeR = value
+        this.dyeR.set(value)
         this.dyeRChange.emit(value)
         this.cdRef.markForCheck()
       })
@@ -76,13 +62,13 @@ export class DyePanelComponent {
   protected pickG() {
     DyePickerComponent.open(this.modal, {
       inputs: {
-        colors: this.dyeColors,
-        color: this.dyeG,
+        colors: this.dyeColors(),
+        color: this.dyeG(),
       },
     })
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
-        this.dyeG = value
+        this.dyeG.set(value)
         this.dyeGChange.emit(value)
         this.cdRef.markForCheck()
       })
@@ -91,13 +77,13 @@ export class DyePanelComponent {
   protected pickB() {
     DyePickerComponent.open(this.modal, {
       inputs: {
-        colors: this.dyeColors,
-        color: this.dyeB,
+        colors: this.dyeColors(),
+        color: this.dyeB(),
       },
     })
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
-        this.dyeB = value
+        this.dyeB.set(value)
         this.dyeBChange.emit(value)
         this.cdRef.markForCheck()
       })
@@ -106,20 +92,20 @@ export class DyePanelComponent {
   protected pickA() {
     DyePickerComponent.open(this.modal, {
       inputs: {
-        colors: this.dyeColors,
-        color: this.dyeA,
+        colors: this.dyeColors(),
+        color: this.dyeA(),
       },
     })
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
-        this.dyeA = value
+        this.dyeA.set(value)
         this.dyeAChange.emit(value)
         this.cdRef.markForCheck()
       })
   }
 
   protected toggleDebug() {
-    this.debug = !this.debug
-    this.debugChange.emit(this.debug)
+    this.debug.set(!this.debug())
+    this.debugChange.emit(this.debug())
   }
 }

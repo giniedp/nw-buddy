@@ -43,7 +43,7 @@ func runCollectCapitals(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectCapitals(glob)
-	c.Convert(flgOutDir)
+	c.Convert()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -127,13 +127,13 @@ func (c *Collector) CollectCapitals(glob string) {
 			})
 		}
 		if !merge && len(group.Meshes) > 0 {
-			group.TargetFile = utils.ReplaceExt(file.Path(), "")
-			c.models.Store(file.Path(), group)
+			group.TargetFile = c.targetPath(utils.ReplaceExt(file.Path(), ""))
+			c.models.Store(group.TargetFile, group)
 		}
 	}
 
 	if merge && len(group.Meshes) > 0 {
-		group.TargetFile = utils.ReplaceExt(flgOutFile, "")
-		c.models.Store(flgOutFile, group)
+		group.TargetFile = c.targetPath(utils.ReplaceExt(flgOutFile, ""))
+		c.models.Store(group.TargetFile, group)
 	}
 }

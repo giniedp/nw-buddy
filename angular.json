@@ -219,6 +219,11 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "disableHostCheck": true,
+            "host": "0.0.0.0",
+            "proxyConfig": "angular.proxy.js"
+          },
           "configurations": {
             "dev": {
               "buildTarget": "nw-buddy:build:dev"

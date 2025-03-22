@@ -1,7 +1,7 @@
 import { inject } from '@angular/core'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { MountData } from '@nw-data/generated'
-import { ItemModelInfo, ModelsService } from '~/widgets/model-viewer'
+import { ModelItemInfo, ModelsService } from '~/widgets/model-viewer'
 import { computed } from '@angular/core'
 import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { combineLatest, of } from 'rxjs'
@@ -10,7 +10,7 @@ import { injectNwData, withStateLoader } from '~/data'
 export interface MountDetailState {
   mountId: string
   mount: MountData
-  models: ItemModelInfo[]
+  models: ModelItemInfo[]
 }
 
 export const MountDetailStore = signalStore(

@@ -12,7 +12,7 @@ import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
     @if (!isHidden()) {
       @if (viewerActive()) {
         <div class="aspect-square rounded-md overflow-clip" @inOut>
-          <nwb-model-viewer [models]="models()" [hideFloor]="true" class="w-full h-full" />
+          <nwb-model-viewer [models]="models()" class="w-full h-full" />
         </div>
       }
       <button

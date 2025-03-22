@@ -63,8 +63,8 @@ func (it *pakFile) String() string {
 	return it.Path()
 }
 
-// NewPakFS creates a new file system using pak files from the given game directory.
-func NewPakFS(gameDir string) (Archive, error) {
+// NewPackedArchive creates a new file system using pak files from the given game directory.
+func NewPackedArchive(gameDir string) (Archive, error) {
 	gameDir = path.Clean(gameDir)
 	if !strings.HasSuffix(gameDir, "assets") {
 		gameDir = path.Join(gameDir, "assets")
@@ -92,7 +92,7 @@ func (fs *pakArchive) init() error {
 		return err
 	}
 
-	bar := progress.Bar(len(files), "Loading Archive")
+	bar := progress.Bar(len(files), "Loading archive")
 
 	fs.files = make([]File, 0)
 	for _, file := range files {

@@ -22,7 +22,7 @@ var Cmd = &cobra.Command{
 
 func init() {
 	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
-	Cmd.Flags().BoolVarP(&flgRegex, "reg", "e", false, "whether argument is a regular expression")
+	Cmd.Flags().BoolVarP(&flgRegex, "regex", "e", false, "if set, arguments are treated as regular expressions")
 }
 
 func run(ccmd *cobra.Command, args []string) {
@@ -43,7 +43,7 @@ func run(ccmd *cobra.Command, args []string) {
 }
 
 func listFiles(args []string, regex bool) ([]nwfs.File, error) {
-	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
+	fs := utils.Must(nwfs.NewPackedArchive(flgGameDir))
 	if len(args) == 0 {
 		return fs.List()
 	}

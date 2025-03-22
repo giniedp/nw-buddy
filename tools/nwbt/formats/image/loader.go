@@ -8,9 +8,7 @@ import (
 	"nw-buddy/tools/formats/dds"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
-	"os"
 	"path"
-	"regexp"
 	"strings"
 )
 
@@ -31,7 +29,7 @@ type LoaderWithConverter struct {
 	Archive   nwfs.Archive
 	Catalog   catalog.Document
 	Converter Converter
-	CacheDir  string
+	Cache     Cache
 }
 
 func NewLoader(archive nwfs.Archive) Loader {
@@ -41,14 +39,16 @@ func NewLoader(archive nwfs.Archive) Loader {
 }
 
 func (r LoaderWithConverter) LoadImage(image string) (*LoadedImage, error) {
-	file, err := r.findImageFile(image)
+	file, err := r.findFile(image)
 	if err != nil {
 		return nil, err
 	}
-	if cached, ok := r.loadFromCache(file); ok {
-		return cached, nil
+	if r.Cache != nil {
+		if cached, ok := r.Cache.Load(file); ok {
+			return cached, nil
+		}
 	}
-	loaded, err := r.loadFromFile(file)
+	loaded, err := r.load(file)
 	if err != nil {
 		return nil, err
 	}
@@ -58,26 +58,25 @@ func (r LoaderWithConverter) LoadImage(image string) (*LoadedImage, error) {
 			return nil, err
 		}
 	}
-	r.saveToCache(file, loaded)
+	if r.Cache != nil {
+		r.Cache.Save(file, loaded)
+	}
 	return loaded, nil
 }
 
-var uuidReg = regexp.MustCompile(`([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})`)
 var (
 	ErrImageNotFound       = fmt.Errorf("image not found")
 	ErrCatalogNotAvailable = fmt.Errorf("catalog is not available")
 	ErrAssetNotFound       = fmt.Errorf("asset not found")
 )
 
-func (r LoaderWithConverter) findImageFile(imageOrUuid string) (nwfs.File, error) {
+func (r LoaderWithConverter) findFile(imageOrUuid string) (nwfs.File, error) {
 	file := imageOrUuid
-	match := uuidReg.FindStringSubmatch(file)
-	if len(match) == 2 {
+	if uuid := utils.ExtractUUID(file); uuid != "" {
 		if r.Catalog == nil {
 			return nil, ErrCatalogNotAvailable
 		}
-		uuid := strings.ToLower(match[1])
-		asset := r.Catalog[uuid]
+		asset := r.Catalog[strings.ToLower(uuid)]
 		if asset == nil {
 			return nil, fmt.Errorf("%w: %s", ErrAssetNotFound, uuid)
 		}
@@ -93,7 +92,7 @@ func (r LoaderWithConverter) findImageFile(imageOrUuid string) (nwfs.File, error
 	return nil, fmt.Errorf("%w: %s", ErrImageNotFound, imageOrUuid)
 }
 
-func (r LoaderWithConverter) loadFromFile(file nwfs.File) (*LoadedImage, error) {
+func (r LoaderWithConverter) load(file nwfs.File) (*LoadedImage, error) {
 	res := &LoadedImage{}
 	res.Source = file.Path()
 	res.Format = Format(path.Ext(file.Path()))
@@ -130,63 +129,4 @@ func (r LoaderWithConverter) loadFromFile(file nwfs.File) (*LoadedImage, error) 
 		res.Data = data
 		return res, nil
 	}
-}
-
-func (r LoaderWithConverter) getCachePath(file string) string {
-	file = path.Join(r.CacheDir, file)
-	if r.Converter != nil {
-		file = utils.ReplaceExt(file, string(r.Converter.TargetFormat()))
-	}
-	return file
-}
-
-func (r LoaderWithConverter) loadFromCache(file nwfs.File) (*LoadedImage, bool) {
-	if file == nil || r.CacheDir == "" {
-		return nil, false
-	}
-	cachePath := r.getCachePath(file.Path())
-	if _, err := os.Stat(cachePath); err != nil {
-		return nil, false
-	}
-	data, err := os.ReadFile(cachePath)
-	if err != nil {
-		return nil, false
-	}
-	res := &LoadedImage{}
-	res.Source = file.Path()
-	res.Format = Format(path.Ext(file.Path()))
-	res.Data = data
-	cachePath = utils.ReplaceExt(cachePath, ".a"+path.Ext(cachePath))
-	if _, err := os.Stat(cachePath); err != nil {
-		return res, true
-	}
-	res.Alpha, _ = os.ReadFile(cachePath)
-	return res, true
-}
-
-func (r LoaderWithConverter) saveToCache(file nwfs.File, image *LoadedImage) {
-	if image == nil || r.CacheDir == "" {
-		return
-	}
-	outPath := r.getCachePath(file.Path())
-	outDir := path.Dir(outPath)
-	outName := path.Base(outPath)
-	outNameA := utils.ReplaceExt(outName, ".a"+path.Ext(outName))
-	os.MkdirAll(outDir, os.ModePerm)
-
-	if image.Alpha != nil {
-		tmpFileA, _ := os.CreateTemp(outDir, outNameA+"*")
-		tmpPath := tmpFileA.Name()
-		tmpFileA.Write(image.Alpha)
-		tmpFileA.Close()
-		os.Rename(tmpPath, path.Join(outDir, outNameA))
-	}
-
-	tmpFile, _ := os.CreateTemp(outDir, outName+"*")
-	tmpPath := tmpFile.Name()
-	tmpFile.Write(image.Data)
-	tmpFile.Close()
-
-	os.Rename(tmpPath, path.Join(outDir, outName))
-
 }

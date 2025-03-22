@@ -90,10 +90,8 @@ export class TransmogEditorPageComponent implements OnDestroy {
   protected showSidebar = computed(() => this.isLargeContent())
   protected showModal = computed(() => !this.isLargeContent())
 
-  private modelPlayerMale = this.modelService.playerMaleModel().url
-  private modelPlayerFemale = this.modelService.playerFemaleModel().url
-  //private modelScene = location.origin + '/assets/models/questadiana.glb'
-  //private modelScene = location.origin + '/assets/models/deviceroom.glb'
+  private modelPlayerMale = 'https://cdn.nw-buddy.de/models-1k/objects/characters/player/male/player_male.glb'
+  private modelPlayerFemale = 'https://cdn.nw-buddy.de/models-1k/objects/characters/player/female/player_female.glb'
   private modelScene = location.origin + '/assets/models/frontend.glb'
 
   protected slots = computed(() => {

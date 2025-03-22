@@ -64,7 +64,7 @@
   @if (costumeModels(); as models) {
     <div class="flex flex-col gap-2">
       <div *ngIf="viewerActive" class="aspect-square rounded-md overflow-clip">
-        <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
+        <nwb-model-viewer [models]="models" class="w-full h-full"></nwb-model-viewer>
       </div>
       <button
         class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"

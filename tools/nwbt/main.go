@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"nw-buddy/tools/commands"
-	"nw-buddy/tools/utils/env"
 	"nw-buddy/tools/utils/logging"
 	"os"
 	"runtime/debug"
@@ -12,7 +11,6 @@ import (
 
 func init() {
 	slog.SetDefault(logging.DefaultTerminalHandler())
-	env.PrintStatus()
 }
 
 func main() {
@@ -24,8 +22,7 @@ func main() {
 		}
 	}()
 
-	err := commands.Execute()
-	if err != nil {
+	if err := commands.Execute(); err != nil {
 		panic(err)
 	}
 }

@@ -25,17 +25,19 @@ func init() {
 }
 
 func run(ccmd *cobra.Command, args []string) {
+	env.PrintStatus()
 	checkTexconv()
 	checkCwebp()
 	checkNvtt()
 	checkOodle()
 	checkMagick()
-	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
+	checkKtx()
+	fs := utils.Must(nwfs.NewPackedArchive(flgGameDir))
 	checkDubplicates(fs)
 }
 
 func checkDubplicates(fs nwfs.Archive) {
-	slog.Info("Checking for duplicate file paths in pak files")
+
 	dubCounter := make(map[string][]nwfs.File)
 	files := utils.Must(fs.List())
 	for _, entry := range files {
@@ -54,44 +56,53 @@ func checkDubplicates(fs nwfs.Archive) {
 		}
 	}
 	if !hasDubs {
-		slog.Info("\tOK")
+		slog.Info("No duplicate file paths in pak files")
 	}
 }
 
 func checkTexconv() {
 	if p, ok := utils.Texconv.Check(); ok {
-		slog.Info("Texconv found at", "path", p)
+		slog.Info("Texconv\tfound at", "path", p)
 		// slog.Info(strings.TrimSpace(utils.Texconv.Info()))
 	} else {
-		slog.Warn("Texconv not found in PATH")
+		slog.Warn("Texconv\tnot found in PATH")
 		slog.Warn(strings.TrimSpace(utils.Texconv.Info()))
 	}
 }
 
 func checkCwebp() {
 	if p, ok := utils.Cwebp.Check(); ok {
-		slog.Info("Cwebp found at", "path", p)
+		slog.Info("Cwebp\tfound at", "path", p)
 		// slog.Info(strings.TrimSpace(utils.Cwebp.Info()))
 	} else {
-		slog.Warn("Cwebp not found in PATH")
+		slog.Warn("Cwebp\tnot found in PATH")
 		slog.Warn(strings.TrimSpace(utils.Cwebp.Info()))
 	}
 }
 func checkNvtt() {
 	if p, ok := utils.Nvtt.Check(); ok {
-		slog.Info("NVTT found at", "path", p)
+		slog.Info("NVTT\tfound at", "path", p)
 		// slog.Info(strings.TrimSpace(utils.Nvtt.Info()))
 	} else {
-		slog.Warn("NVTT not found in PATH")
+		slog.Warn("NVTT\tnot found in PATH")
 		slog.Warn(strings.TrimSpace(utils.Nvtt.Info()))
+	}
+}
+func checkKtx() {
+	if p, ok := utils.Ktx.Check(); ok {
+		slog.Info("ktx\tfound at", "path", p)
+		// slog.Info(strings.TrimSpace(utils.Ktx.Info()))
+	} else {
+		slog.Warn("ktx\tnot found in PATH")
+		slog.Warn(strings.TrimSpace(utils.Ktx.Info()))
 	}
 }
 func checkOodle() {
 	if p, ok := utils.OodleLib.Check(); ok {
-		slog.Info("Oodle found at", "path", p)
+		slog.Info("Oodle\tfound at", "path", p)
 		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
 	} else {
-		slog.Warn("Oodle not found in PATH")
+		slog.Warn("Oodle\tnot found in PATH")
 		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
 	}
 }

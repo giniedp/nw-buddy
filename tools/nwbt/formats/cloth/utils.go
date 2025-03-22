@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-var RxGeometryReference = regexp.MustCompile(`/objects[\/\\].*\.(skin|cgf)/gi`)
+var RxGeometryReference = regexp.MustCompile(`objects[\/\\].*\.(skin|cgf)`)
 
 func TryResolveGeometryReference(file nwfs.File) (string, error) {
 	data, err := file.Read()

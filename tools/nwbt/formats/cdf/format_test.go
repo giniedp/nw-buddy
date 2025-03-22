@@ -19,5 +19,5 @@ func TestLoad(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.EqualValues(t, "objects/characters/player/male/player_male.chr", doc.Model.File)
-	assert.Len(t, doc.SkinsOrCloth(), 7)
+	assert.Len(t, doc.SkinAndClothAttachments(), 7)
 }

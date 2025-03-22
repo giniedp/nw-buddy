@@ -26,7 +26,6 @@ const nwWorkspace =  process.env.NW_WORKSPACE || (isPtr ? 'PTR' : 'LIVE')
 
 const config = {
   IS_CI: isCI,
-  NW_MODELS_DIR: process.env.NW_MODELS_DIR,
   NW_WORKSPACE: nwWorkspace,
   BRANCH_NAME: branchName,
   CDN_URL: process.env.CDN_URL,

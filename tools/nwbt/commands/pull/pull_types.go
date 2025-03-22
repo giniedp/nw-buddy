@@ -2,9 +2,9 @@ package pull
 
 import (
 	"log/slog"
-	"nw-buddy/tools/commands/pull/scan"
 	"nw-buddy/tools/commands/pull/ts"
 	"nw-buddy/tools/formats/datasheet"
+	"nw-buddy/tools/game/scanner"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/logging"
@@ -155,16 +155,16 @@ func codeGenIndex(types ts.TypeMap) string {
 
 func codeGenScanTypes() string {
 	types := make(ts.TypeMap)
-	types.AddReflect(reflect.TypeOf(scan.ScannedGatherable{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedHouseType{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedLore{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedNpc{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedStationType{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedStructureType{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedTerritory{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedVariation{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedVital{}))
-	types.AddReflect(reflect.TypeOf(scan.ScannedVitalModel{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedGatherable{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedHouseType{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedLore{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedNpc{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedStationType{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedStructureType{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedTerritory{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedVariation{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedVital{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedVitalModel{}))
 	types.AddReflect(reflect.TypeOf(SearchItem{}))
 	types.AddReflect(reflect.TypeOf(ScannedSpell{}))
 

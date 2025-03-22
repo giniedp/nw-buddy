@@ -7,7 +7,7 @@
 <ion-content class="ion-p-4">
   <div class="flex flex-row gap-2 flex-wrap">
     <button [tooltip]="'Clears current color'" class="btn btn-square btn-ghost" (click)="commit(null)">&times;</button>
-    @for (color of colors; track $index) {
+    @for (color of colors(); track $index) {
       <button
         [tooltip]="tplTip"
         [tooltipClass]="'p-2'"

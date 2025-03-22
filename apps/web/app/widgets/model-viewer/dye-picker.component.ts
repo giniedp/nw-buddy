@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
 import { DyeColorData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
@@ -25,18 +25,11 @@ export class DyePickerComponent {
     options.content = DyePickerComponent
     return modal.open<DyePickerComponent, DyeColorData>(options)
   }
+  private modalRef = inject(ModalRef<DyeColorData>)
+  public colors = input<DyeColorData[]>()
+  public color = input<DyeColorData>()
 
-  @Input()
-  public colors: DyeColorData[]
-
-  @Input()
-  public color: DyeColorData
-
-  public constructor(private modalRef: ModalRef<DyeColorData>) {
-    //
-  }
-
-  protected commit(color = this.color) {
+  protected commit(color = this.color()) {
     this.modalRef.close(color)
   }
 

@@ -27,7 +27,7 @@ func (c *Document) ImportCgfAnimation(asset importer.Animation, load func(asset 
 		if len(animation.Channels) > 0 {
 			c.Document.Animations = append(c.Document.Animations, animation)
 		} else {
-			slog.Warn("Animation not imported", "file", file.Source)
+			slog.Warn("animation not imported", "file", file.Source)
 		}
 	}()
 

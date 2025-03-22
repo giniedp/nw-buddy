@@ -137,7 +137,7 @@ func run(ccmd *cobra.Command, args []string) {
 }
 
 func listFiles(args []string, regex bool) ([]nwfs.File, error) {
-	fs := utils.Must(nwfs.NewPakFS(flgGameDir))
+	fs := utils.Must(nwfs.NewPackedArchive(flgGameDir))
 	if len(args) == 0 {
 		return fs.List()
 	}

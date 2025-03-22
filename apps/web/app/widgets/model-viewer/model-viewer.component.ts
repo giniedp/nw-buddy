@@ -3,55 +3,79 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Input,
-  NO_ERRORS_SCHEMA,
   NgZone,
   OnDestroy,
-  OnInit,
-  Optional,
-  Output,
-  ViewChild,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  untracked,
+  viewChild,
 } from '@angular/core'
-import { ArmorAppearanceDefinitions, MountData } from '@nw-data/generated'
-import { Subject, catchError, firstValueFrom, from, of, switchMap, takeUntil, tap } from 'rxjs'
-import { injectNwData } from '~/data'
+import { ArmorAppearanceDefinitions } from '@nw-data/generated'
+import { catchError, from, of, switchMap, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCamera, svgCircleExclamation, svgExpand, svgMoon, svgSun, svgXmark } from '~/ui/icons/svg'
+import {
+  svgCamera,
+  svgCircleExclamation,
+  svgExpand,
+  svgFilms,
+  svgGlobeSnow,
+  svgMoon,
+  svgPause,
+  svgPlay,
+  svgStop,
+  svgSun,
+  svgXmark,
+} from '~/ui/icons/svg'
 import { TranslateService } from '../../i18n'
 import { ScreenshotModule, ScreenshotService } from '../screenshot'
-import { ItemModelInfo } from './model-viewer.service'
+import { ModelItemInfo } from './model-viewer.service'
 
 import { animate, style, transition, trigger } from '@angular/animations'
-import { ViewerModel } from 'babylonjs-viewer'
-import { ModalRef } from '~/ui/layout'
+import { Overlay } from '@angular/cdk/overlay'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { FormsModule } from '@angular/forms'
+import { TransformNode, Vector3 } from '@babylonjs/core'
+import { ViewerDetails } from '@babylonjs/viewer'
+import { environment } from 'apps/web/environments'
+import { LayoutModule, ModalRef } from '~/ui/layout'
 import { injectDocument } from '~/utils/injection/document'
 import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
-import { supportsWebGL } from './utils/webgl-support'
-import type { DefaultViewer } from './viewer'
+import { Model, NwMaterialExtension, Viewer, createViewer, updateNwMaterial, viewerCaptureImage } from './viewer'
 
 export interface ModelViewerState {
-  models: ItemModelInfo[]
+  models: ModelItemInfo[]
   index: number
   isLoaded?: boolean
   isModal?: boolean
-  viewer?: DefaultViewer
+  viewer?: Viewer
   appearance: ArmorAppearanceDefinitions
 }
 
 @Component({
   selector: 'nwb-model-viewer',
   templateUrl: './model-viewer.component.html',
-  styleUrls: ['./model-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, ScreenshotModule, DyePanelComponent],
-  providers: [ModelViewerStore],
+  imports: [
+    CommonModule,
+    NwModule,
+    IconsModule,
+    ScreenshotModule,
+    DyePanelComponent,
+    FormsModule,
+    IconsModule,
+    LayoutModule,
+  ],
+
+  providers: [ModelViewerStore, Overlay],
   host: {
-    class: 'layout-col bg-gradient-to-b from-base-300 to-black relative z-0',
+    class: 'layout-col bg-gradient-to-b from-base-300 to-black relative z-0 group',
   },
-  schemas: [NO_ERRORS_SCHEMA],
   animations: [
     trigger('fade', [
       transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
@@ -59,40 +83,31 @@ export interface ModelViewerState {
     ]),
   ],
 })
-export class ModelViewerComponent implements OnInit, OnDestroy {
-  @Input()
-  public set models(value: ItemModelInfo[]) {
-    this.store.patchState({ models: value })
-  }
+export class ModelViewerComponent implements OnDestroy {
+  private modalRef = inject(ModalRef, { optional: true })
+  private elRef = inject<ElementRef<HTMLElement>>(ElementRef)
+  private zone = inject(NgZone)
+  private screenshots = inject(ScreenshotService)
+  private i18n = inject(TranslateService)
+  protected store = inject(ModelViewerStore)
+  protected errorIcon = svgCircleExclamation
+  public readonly models = input<ModelItemInfo[]>()
+  public readonly close = output()
 
-  @Input()
-  public set canClose(value: boolean) {
-    this.store.patchState({ canClose: value })
-  }
+  protected canvas = viewChild<string, ElementRef<HTMLCanvasElement>>('canvas', { read: ElementRef })
+  protected isSuported = this.store.isSupported
+  protected isEmpty = this.store.isEmpty
+  protected canDye = this.store.canDye
+  protected buttons = this.store.buttons
+  protected mode = this.store.mode
 
-  @Input()
-  public set enableDye(value: boolean) {
-    this.store.patchState({ enableDye: value })
-  }
-
-  @Input()
-  public hideFloor: boolean = false
-
-  @Output()
-  public readonly close = new Subject<void>()
-
-  @ViewChild('viewerHost', { static: true })
-  protected viewerHost: ElementRef<HTMLElement>
-
-  protected isSuported$ = this.store.isSupported$
-  protected isLoading$ = this.store.isLoading$
-  protected isEmpty$ = this.store.isEmpty$
-  protected hasLoaded$ = this.store.hasLoaded$
-  protected hasError$ = this.store.hasError$
-  protected canClose$ = this.store.canClose$
-  protected canDye$ = this.store.canDye$
-  protected buttons$ = this.store.buttons$
-  protected mode$ = this.store.mode$
+  protected isLoading = signal(false)
+  protected hasLoaded = signal(false)
+  protected hasError = signal(false)
+  protected progress = signal<string>('')
+  protected canClose = signal(!!this.modalRef)
+  protected model = signal<Model>(null)
+  protected isAnimating = signal(false)
 
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
@@ -100,66 +115,86 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   protected iconError = svgCircleExclamation
   protected iconSun = svgSun
   protected iconMoon = svgMoon
+  protected iconPlay = svgPlay
+  protected iconPause = svgPause
+  protected iconStop = svgStop
+  protected iconEnv = svgGlobeSnow
+  protected iconMore = svgFilms
 
-  private viewer: DefaultViewer
-  private model: ViewerModel
+  private viewer = signal<Viewer>(null)
+  private viewerDetails = signal<ViewerDetails>(null)
   private document = injectDocument()
-  protected trackByIndex = (i: number) => i
-  private db = injectNwData()
-  public constructor(
-    @Optional()
-    private ref: ModalRef,
-    private elRef: ElementRef<HTMLElement>,
-    private zone: NgZone,
-    private screenshots: ScreenshotService,
-    private i18n: TranslateService,
-    protected store: ModelViewerStore,
-  ) {
-    this.store.patchState({
-      canClose: !!ref,
-      isSupported: supportsWebGL(),
-    })
-  }
 
-  public async ngOnInit() {
-    this.store.model$
+  public constructor() {
+    effect(() => {
+      const models = this.models()
+      untracked(() => this.store.setModels(models))
+    })
+    effect(() => {
+      const viewer = this.viewer()
+      const mode = this.mode()
+      const environment = this.store.environment()
+      untracked(() => updateMode(viewer, mode, environment))
+    })
+    effect(() => {
+      const viewer = this.viewer()
+      const model = this.model()
+      const data = this.store.model()
+      untracked(() => updateRotation(viewer, model, data))
+    })
+    effect(() => {
+      const animations = this.model()?.assetContainer?.animationGroups?.map((it) => it.name) || []
+      untracked(() => this.store.setAnimations([...animations]))
+    })
+    effect(() => {
+      const index = this.store.animationIndex()
+      const viewer = this.viewer()
+      if (viewer) {
+        viewer.selectedAnimation = index
+      }
+    })
+    this.bindAppearance()
+    this.bindDyeState()
+
+    toObservable(this.store.model)
       .pipe(
         switchMap((data) => {
-          this.disposeViewer()
-          this.store.patchState({ isLoading: true, hasError: false })
+          this.isLoading.set(true)
+          this.hasError.set(false)
           return from(this.showModel(data)).pipe(
             tap(() => {
-              this.store.patchState({ isLoading: false, hasError: false, hasLoaded: true })
+              this.isLoading.set(false)
+              this.hasError.set(false)
+              this.hasLoaded.set(true)
             }),
             catchError(() => {
-              this.store.patchState({ isLoading: false, hasError: true, hasLoaded: true })
+              this.isLoading.set(false)
+              this.hasError.set(true)
+              this.hasLoaded.set(true)
               this.disposeViewer()
               return of(null)
             }),
           )
         }),
       )
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe()
-
-    this.store.state$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
-      if (this.model) {
-        this.updateDye(this.model)
-      }
-    })
   }
 
   public ngOnDestroy(): void {
-    this.viewer?.dispose()
-    this.viewer = null
+    this.viewer()?.dispose()
+    this.viewer.set(null)
   }
 
   protected show(index: number) {
-    this.store.patchState({ index: index })
+    this.store.setIndex(index)
   }
 
+  protected isFullscreen() {
+    return !!this.document.fullscreenElement
+  }
   protected toggleFullscreen() {
-    if (this.document.fullscreenElement) {
+    if (this.isFullscreen()) {
       this.document.exitFullscreen()
     } else {
       this.elRef.nativeElement.requestFullscreen()
@@ -167,164 +202,191 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   }
 
   protected exitFullscreen() {
-    if (this.document.fullscreenElement) {
+    if (this.isFullscreen()) {
       this.document.exitFullscreen()
     }
   }
 
-  protected closeDialog() {
-    this.ref?.close()
-    this.close.next()
+  protected toggleAnimation() {
+    this.viewer().toggleAnimation()
   }
 
-  private async showModel(data: ItemModelInfo) {
+  protected closeDialog() {
+    this.modalRef?.close()
+    this.close.emit()
+  }
+
+  private async showModel(data: ModelItemInfo) {
     if (!data?.url) {
-      return null
+      return
     }
     const viewer = await this.getViewer()
     if (!viewer) {
       return null
     }
-
-    const rotation = await getItemRotation(data?.itemClass)
-    viewer.sceneManager.clearScene(true, false)
-
-    return viewer
-      .loadModel({
-        url: data.url,
-        rotationOffsetAngle: 0,
-        rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
-        entryAnimation: null,
-      })
-      .then((model) => {
-        this.model = model
-        this.detectDyeFeature(model, data.appearance)
-      })
+    await viewer.loadModel(data.url.replace(/^\//, ''), {
+      rootUrl: environment.modelsUrl + '/',
+      animationAutoPlay: true,
+      onProgress: (it) => {
+        if (it.lengthComputable) {
+          this.progress.set(`${Math.round((it.loaded / it.total) * 100)}%`)
+        } else {
+          this.progress.set('')
+        }
+      },
+    })
+    this.model.set(this.viewerDetails()?.model)
   }
 
   private async getViewer() {
-    if (this.viewer) {
-      return this.viewer
+    if (this.viewer()) {
+      return this.viewer()
     }
-    if (!this.store.isSupported$()) {
+    if (!this.store.isSupported()) {
       return null
     }
-
-    const { createViewer, registerNwMaterialPlugin } = await import('./viewer')
-    registerNwMaterialPlugin()
-    this.viewer = await createViewer({
-      element: this.viewerHost.nativeElement,
+    await createViewer({
+      element: this.canvas().nativeElement,
       zone: this.zone,
-      mode: this.mode$(),
-      onModelLoaded: (model) => {
-        // console.log('modelLoaded', model)
-      },
-      onModelError: (err) => {
-        // console.log('modelError', err)
+      mode: this.mode(),
+      onInitialized: (details) => {
+        this.viewerDetails.set(details)
+        this.model.set(details.model)
       },
     })
-      .then((viewer) => {
-        // console.log('viewerLoaded', viewer)
-        return viewer
+      .then(async (viewer) => {
+        this.isAnimating.set(viewer.isAnimationPlaying)
+        viewer.onIsAnimationPlayingChanged.add(() => {
+          this.isAnimating.set(viewer.isAnimationPlaying)
+        })
+        await viewer.loadEnvironment('auto', {
+          skybox: true,
+          lighting: true,
+        })
+
+        this.viewer.set(viewer)
       })
       .catch((err) => {
-        // console.log('viewerError', err)
+        console.error(err)
         return null
       })
-    return this.viewer
+    return this.viewer()
   }
 
   private disposeViewer() {
-    this.viewer?.dispose()
-    this.viewer = null
-    this.model = null
-    this.viewerHost.nativeElement.innerHTML = ''
-  }
-
-  protected toggleDebug() {
-    this.viewer.sceneManager.scene.debugLayer.show({})
+    this.viewer()?.dispose()
+    this.viewer.set(null)
+    this.model.set(null)
   }
 
   protected async capturePhoto() {
-    const model = await firstValueFrom(this.store.model$)
+    const viewer = this.viewer()
+    const model = this.store.model()
     const name = await this.i18n.getAsync(model.name)
-    const data = await this.viewer.takeScreenshot()
-    this.exitFullscreen()
+    const data = this.isFullscreen()
+      ? await viewerCaptureImage(viewer, window.innerWidth)
+      : await viewerCaptureImage(viewer, 2000)
     const blob = await fetch(data).then((res) => res.blob())
+    this.exitFullscreen()
     this.screenshots.saveBlobWithDialog(blob, name)
   }
 
   protected async toggleMode() {
-    this.store.patchState({ mode: this.mode$() === 'dark' ? 'light' : 'dark' })
-    if (this.viewer) {
-      const { viewerUpdateMode } = await import('./viewer')
-      viewerUpdateMode(this.viewer, this.mode$())
-    }
+    this.store.toggleMode()
   }
 
-  private async detectDyeFeature(model: ViewerModel, appearance: any) {
-    const { NwMaterialExtension } = await import('./viewer')
-    appearance =
-      appearance || model.meshes.map((mesh) => NwMaterialExtension.getAppearance(mesh.material)).find((it) => !!it)
-    if (!appearance) {
-      this.store.patchState({
-        appearance: null,
-        dyeColors: null,
+  private async bindAppearance() {
+    effect(() => {
+      const model = this.model()
+      const appearance = this.store.model()?.appearance
+      if (!model) {
+        return
+      }
+      untracked(() => {
+        this.store.setAppearance(
+          appearance ||
+            model.assetContainer.meshes
+              .map((mesh) => NwMaterialExtension.getAppearance(mesh.material))
+              .find((it) => !!it),
+        )
       })
-      return
-    }
-    const itemType = (appearance as MountData).MountId ? 'MountDye' : 'Dye'
-    const items = await this.db
-      .itemsByItemTypeMap()
-      .then((it) => it.get(itemType))
-      .then((it) => it || [])
-      .then((list) => list.map((it) => Number(it.ItemID.match(/\d+/)[0])))
-    const colors = await this.db.dyeColorsAll().then((list) => {
-      return list.filter((it) => items.includes(it.Index))
-    })
-    this.store.patchState({
-      enableDye: !!appearance,
-      appearance: appearance,
-      dyeColors: colors,
-      dyeR: null,
-      dyeG: null,
-      dyeB: null,
-      dyeA: null,
     })
   }
 
-  private async updateDye(model: ViewerModel) {
-    const { updateNwMaterial } = await import('./viewer')
+  private async bindDyeState() {
+    effect(() => {
+      const model = this.model()
+      if (!model) {
+        return
+      }
 
-    const dyeR = this.store.dyeR$()
-    const dyeG = this.store.dyeG$()
-    const dyeB = this.store.dyeB$()
-    const dyeA = this.store.dyeA$()
-
-    const appearance = this.store.appearance$()
-    updateNwMaterial({
-      meshes: model.meshes,
-      appearance: appearance
-        ? {
-            ...appearance,
-            MaskAGloss: Number(appearance.MaskAGloss) || 0,
-          }
-        : null,
-      dyeR: dyeR?.ColorAmount,
-      dyeROverride: dyeR?.ColorOverride,
-      dyeRColor: dyeR?.Color,
-      dyeG: dyeG?.ColorAmount,
-      dyeGOverride: dyeG?.ColorOverride,
-      dyeGColor: dyeG?.Color,
-      dyeB: dyeB?.ColorAmount,
-      dyeBOverride: dyeB?.ColorOverride,
-      dyeBColor: dyeB?.Color,
-      dyeA: dyeA?.SpecAmount,
-      //dyeAOverride: dyeA?.SpecOverride,
-      dyeAColor: dyeA?.SpecColor,
-      glossShift: dyeA?.MaskGlossShift,
-
-      debugMask: this.store.dyeDebug$(),
+      const dyeR = this.store.dyeR()
+      const dyeG = this.store.dyeG()
+      const dyeB = this.store.dyeB()
+      const dyeA = this.store.dyeA()
+      const appearance = this.store.appearance()
+      const debugMask = this.store.dyeDebug()
+      untracked(() => {
+        updateNwMaterial({
+          meshes: model.assetContainer.meshes,
+          appearance: appearance
+            ? {
+                ...appearance,
+                MaskAGloss: Number(appearance.MaskAGloss) || 0,
+              }
+            : null,
+          dyeR: dyeR?.ColorAmount,
+          dyeROverride: dyeR?.ColorOverride,
+          dyeRColor: dyeR?.Color,
+          dyeG: dyeG?.ColorAmount,
+          dyeGOverride: dyeG?.ColorOverride,
+          dyeGColor: dyeG?.Color,
+          dyeB: dyeB?.ColorAmount,
+          dyeBOverride: dyeB?.ColorOverride,
+          dyeBColor: dyeB?.Color,
+          dyeA: dyeA?.SpecAmount,
+          //dyeAOverride: dyeA?.SpecOverride,
+          dyeAColor: dyeA?.SpecColor,
+          glossShift: dyeA?.MaskGlossShift,
+          debugMask: debugMask,
+        })
+      })
     })
   }
+}
+
+function updateMode(viewer: Viewer, mode: 'dark' | 'light', environment: string) {
+  if (!viewer) {
+    return
+  }
+
+  if (mode === 'dark') {
+    viewer.loadEnvironment(environment, { lighting: true })
+    viewer.loadEnvironment(undefined, { skybox: true })
+  } else {
+    viewer.loadEnvironment(environment, { skybox: true, lighting: true })
+  }
+  viewer.environmentConfig = {
+    rotation: 1.85,
+    blur: 0.5,
+  }
+}
+
+function updateRotation(viewer: Viewer, model: Model, data: ModelItemInfo) {
+  if (!model || !viewer) {
+    return
+  }
+  const rotation = getItemRotation(data?.itemClass)
+
+  const root = new TransformNode('root')
+  for (const node of model.assetContainer.rootNodes) {
+    node.parent = root
+  }
+  root.rotationQuaternion = rotation
+  setTimeout(() => {
+    model.resetWorldBounds()
+    const center = model.getWorldBounds().center
+    const camera = viewer['_camera']
+    camera.target = new Vector3(center[0], center[1], center[2])
+  })
 }

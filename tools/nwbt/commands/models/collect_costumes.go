@@ -8,28 +8,31 @@ import (
 	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
 	"path"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 var cmdCollectCostumes = &cobra.Command{
 	Use:   "costumes",
-	Short: "converts costumes",
+	Short: "scans datasheets for CostumeChangeData and collects cdf models",
 	Long:  "",
 	Run:   runCollectCostumes,
 }
 
-func runCollectCostumes(ccmd *cobra.Command, args []string) {
+func init() {
+	cmdCollectCostumes.Flags().StringVar(&flgIds, "ids", "", "comma separated list of ids to process")
+}
 
+func runCollectCostumes(ccmd *cobra.Command, args []string) {
+	ids := getCommaSeparatedList(flgIds)
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
-	c.CollectCostumes()
-	c.Convert(flgOutDir)
+	c.CollectCostumes(ids...)
+	c.Convert()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
-func (c *Collector) CollectCostumes() {
+func (c *Collector) CollectCostumes(ids ...string) {
 	for table := range c.EachDatasheet() {
 		if table.Schema != "CostumeChangeData" {
 			continue
@@ -43,9 +46,15 @@ func (c *Collector) CollectCostumes() {
 			bar.Add(1)
 			bar.Detail(id)
 
-			model := row.GetString("CostumeChangeMesh")
-			file := strings.ToLower(path.Join("costumechanges", id))
+			if !matchFilter(ids, id) {
+				continue
+			}
+			file := c.targetPath(path.Join("costumechanges", id))
+			if !c.shouldProcess(file) {
+				continue
+			}
 
+			model := row.GetString("CostumeChangeMesh")
 			if path.Ext(model) != ".cdf" {
 				continue
 			}
@@ -54,8 +63,7 @@ func (c *Collector) CollectCostumes() {
 				continue
 			}
 			group := importer.AssetGroup{}
-			group.TargetFile = file
-			for _, mesh := range cdf.SkinsOrCloth() {
+			for _, mesh := range cdf.SkinAndClothAttachments() {
 				model, mtl := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
 				if model != "" {
 					group.Meshes = append(group.Meshes, importer.GeometryAsset{
@@ -66,7 +74,7 @@ func (c *Collector) CollectCostumes() {
 			}
 			if len(group.Meshes) > 0 {
 				group.TargetFile = file
-				c.models.Store(file, group)
+				c.models.Store(group.TargetFile, group)
 			}
 		}
 

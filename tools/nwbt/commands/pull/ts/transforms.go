@@ -631,11 +631,10 @@ func transformImagePathColumn(ctx context.Context, key string, value any, row in
 		}
 
 		for _, icon := range candidates {
-			icon = nwfs.NormalizePath(icon)
-			if file, ok := fs.Lookup(strings.ToLower(icon)); ok {
+			if file, ok := fs.Lookup(icon); ok {
 				return utils.ReplaceExt(file.Path(), format)
 			}
-			if file, ok := fs.Lookup(utils.ReplaceExt(strings.ToLower(icon), ".dds")); ok {
+			if file, ok := fs.Lookup(utils.ReplaceExt(icon, ".dds")); ok {
 				return utils.ReplaceExt(file.Path(), format)
 			}
 		}

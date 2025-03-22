@@ -186,6 +186,9 @@ func ConvertPNG(data []byte, target Format, options ...ConvertOption) ([]byte, e
 }
 
 func copyToTemp(data []byte, ext, dir string) (string, error) {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return "", err
+	}
 	file, err := os.CreateTemp(dir, "*"+ext)
 	if err != nil {
 		return "", err

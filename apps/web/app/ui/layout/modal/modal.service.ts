@@ -1,4 +1,4 @@
-import { Injectable, Injector, TemplateRef, Type, inject } from '@angular/core'
+import { Injectable, Injector, InputSignal, ModelSignal, TemplateRef, Type, inject } from '@angular/core'
 import { LoadingController, LoadingOptions, ModalController, ModalOptions } from '@ionic/angular/standalone'
 import { Subject, from } from 'rxjs'
 import { ModalComponent } from './modal.component'
@@ -20,11 +20,15 @@ export type ModalSize =
   | 'y-auto'
 export interface ModalOpenOptions<T> extends Omit<ModalOptions, 'component' | 'componentProps'> {
   content?: TemplateRef<T> | Type<T>
-  inputs?: Partial<T>
+  inputs?: Partial<ComponentInputs<T>>
   context?: T
   injector?: Injector
   size?: ModalSize | ModalSize[]
 }
+
+export type ComponentInputs<C> = Partial<{
+  [P in keyof C]: C[P] extends InputSignal<infer T> ? T : C[P] extends ModelSignal<infer T> ? T : C[P]
+}>
 
 @Injectable({ providedIn: 'root' })
 export class ModalService {

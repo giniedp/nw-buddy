@@ -1,18 +1,40 @@
 import { DyeColorData } from '@nw-data/generated'
-import 'babylonjs'
-import { BABYLON } from 'babylonjs-viewer'
+import {
+  Skeleton,
+  ISceneLoaderAsyncResult,
+  Engine,
+  Scene,
+  Color4,
+  ArcRotateCamera,
+  Vector3,
+  CubeTexture,
+  DefaultRenderingPipeline,
+  SceneLoader,
+  Tags,
+  Quaternion,
+  IShadowLight,
+  ShadowGenerator,
+  PointLight,
+  AbstractMesh,
+  Tools,
+  Scalar,
+  Color3,
+  ImportMeshAsync,
+  LoadAssetContainerAsync,
+} from '@babylonjs/core'
 import { NwMaterialExtension } from './nw-material-extension'
 import { registerNwMaterialPlugin } from './nw-material-plugin'
 import { updateNwMaterial } from './nw-material-update'
+import { environment } from 'apps/web/environments'
 
 export type TransmogModelSlot = 'level' | 'player' | 'head' | 'chest' | 'hands' | 'legs' | 'feet'
 export type TransmogViewer = ReturnType<typeof createTransmogViewer>
 export interface TransmogViewerContext {
-  playerSkeleton: BABYLON.Skeleton
+  playerSkeleton: Skeleton
   models: Record<TransmogModelSlot, TransmogViewerModel>
   timeOfDay: number
 }
-export interface TransmogViewerModel extends BABYLON.ISceneLoaderAsyncResult {
+export interface TransmogViewerModel extends ISceneLoaderAsyncResult {
   slot: TransmogModelSlot
 }
 
@@ -111,16 +133,16 @@ const LIGHT_CONFIG = {
 } as const
 
 function createScene(canvas: HTMLCanvasElement) {
-  const engine = new BABYLON.Engine(canvas, true)
-  const scene = new BABYLON.Scene(engine)
-  scene.clearColor = new BABYLON.Color4(0, 0, 0, 1)
+  const engine = new Engine(canvas, true)
+  const scene = new Scene(engine)
+  scene.clearColor = new Color4(0, 0, 0, 1)
 
-  const camera = new BABYLON.ArcRotateCamera(
+  const camera = new ArcRotateCamera(
     'camera',
     (245 * Math.PI) / 180,
     (75 * Math.PI) / 180,
     2,
-    new BABYLON.Vector3(0, 1, 0),
+    new Vector3(0, 1, 0),
     scene,
   )
   camera.minZ = 0.1
@@ -128,12 +150,12 @@ function createScene(canvas: HTMLCanvasElement) {
   camera.wheelPrecision = 100
   camera.lowerRadiusLimit = 0.25
   camera.upperRadiusLimit = 2.5
-  camera.panningAxis = new BABYLON.Vector3(0, 1, 0)
+  camera.panningAxis = new Vector3(0, 1, 0)
   camera.panningDistanceLimit = 0.8
-  camera.panningOriginTarget = new BABYLON.Vector3(0, 1, 0)
+  camera.panningOriginTarget = new Vector3(0, 1, 0)
   camera.attachControl(canvas, true)
 
-  const envHdri = BABYLON.CubeTexture.CreateFromPrefilteredData(
+  const envHdri = CubeTexture.CreateFromPrefilteredData(
     'https://playground.babylonjs.com/textures/environment.env',
     scene,
   )
@@ -142,7 +164,7 @@ function createScene(canvas: HTMLCanvasElement) {
   scene.environmentTexture = envHdri
   scene.environmentIntensity = LIGHT_CONFIG.Ibl.intensity
 
-  const pipeline = new BABYLON.DefaultRenderingPipeline('fx', true, scene, [camera], true)
+  const pipeline = new DefaultRenderingPipeline('fx', true, scene, [camera], true)
   pipeline.fxaaEnabled = true
   pipeline.bloomEnabled = true
   pipeline.imageProcessingEnabled = true
@@ -155,7 +177,7 @@ function createScene(canvas: HTMLCanvasElement) {
   pipeline.glowLayer.intensity = 0.25
 
   scene.registerBeforeRender(() => {
-    pipeline.depthOfField.focusDistance = BABYLON.Vector3.Distance(camera.position, camera.target) * 1000
+    pipeline.depthOfField.focusDistance = Vector3.Distance(camera.position, camera.target) * 1000
     pipeline.depthOfField.focalLength = 50
   })
 
@@ -171,7 +193,7 @@ function createScene(canvas: HTMLCanvasElement) {
   }
 }
 
-function getContext(scene: BABYLON.Scene): TransmogViewerContext {
+function getContext(scene: Scene): TransmogViewerContext {
   return scene.getOrAddExternalDataWithFactory('transmog', (): TransmogViewerContext => {
     return {
       playerSkeleton: null,
@@ -189,7 +211,7 @@ function getContext(scene: BABYLON.Scene): TransmogViewerContext {
   })
 }
 
-async function loadModel(scene: BABYLON.Scene, url: string, slot: TransmogModelSlot) {
+async function loadModel(scene: Scene, url: string, slot: TransmogModelSlot) {
   unloadModel(scene, slot)
   if (!url) {
     return
@@ -199,14 +221,24 @@ async function loadModel(scene: BABYLON.Scene, url: string, slot: TransmogModelS
   const isPlayer = slot === 'player'
   const isLevel = slot === 'level'
   const isGear = !isPlayer && !isLevel
-  const result = await BABYLON.SceneLoader.ImportMeshAsync(undefined, '', url, scene)
+
+  let baseUrl = environment.modelsUrl + '/'
+  if (isLevel || isPlayer) {
+    baseUrl = ''
+  } else {
+    url = url.replace(/^\//, '')
+  }
+
+  const result = await ImportMeshAsync(url, scene, {
+    rootUrl: baseUrl,
+  })
   context.models[slot] = {
     slot,
     ...result,
   }
 
   for (const mesh of result.meshes) {
-    BABYLON.Tags.AddTagsTo(mesh, slot)
+    Tags.AddTagsTo(mesh, slot)
     if (mesh.name?.toLowerCase()?.includes('shadowproxy')) {
       mesh.setEnabled(false)
     }
@@ -239,7 +271,7 @@ async function loadModel(scene: BABYLON.Scene, url: string, slot: TransmogModelS
 
   if (isPlayer) {
     context.playerSkeleton = result.skeletons[0]
-    const camera = scene.activeCamera as BABYLON.ArcRotateCamera
+    const camera = scene.activeCamera as ArcRotateCamera
     camera.focusOn(result.meshes, true)
     camera.panningOriginTarget.set(camera.target.x, camera.panningOriginTarget.y, camera.target.z)
     camera.target.set(camera.target.x, camera.target.y + 0.25, camera.target.z)
@@ -256,7 +288,7 @@ async function loadModel(scene: BABYLON.Scene, url: string, slot: TransmogModelS
   updatePositions(scene)
 }
 
-function unloadModel(scene: BABYLON.Scene, slot: TransmogModelSlot) {
+function unloadModel(scene: Scene, slot: TransmogModelSlot) {
   const context = getContext(scene)
   const model = context.models[slot]
   if (!model) {
@@ -275,14 +307,14 @@ function unloadModel(scene: BABYLON.Scene, slot: TransmogModelSlot) {
   }
 }
 
-const rotation = BABYLON.Quaternion.Identity()
-function updatePositions(scene: BABYLON.Scene) {
+const rotation = Quaternion.Identity()
+function updatePositions(scene: Scene) {
   const context = getContext(scene)
   if (!context.models.player) {
     return
   }
   const position = context.models.player.meshes[0].position
-  BABYLON.Quaternion.RotationAxisToRef(BABYLON.Vector3.Up(), 0, rotation)
+  Quaternion.RotationAxisToRef(Vector3.Up(), 0, rotation)
 
   for (const model of Object.values(context.models)) {
     if (!model || model.slot === 'level') {
@@ -296,9 +328,9 @@ function updatePositions(scene: BABYLON.Scene) {
   }
 }
 
-function createShadowGenerator(light: BABYLON.IShadowLight) {
-  const result = new BABYLON.ShadowGenerator(1024, light)
-  if (light instanceof BABYLON.PointLight) {
+function createShadowGenerator(light: IShadowLight) {
+  const result = new ShadowGenerator(1024, light)
+  if (light instanceof PointLight) {
     result.usePoissonSampling = true
     result.transparencyShadow = true
   } else {
@@ -307,12 +339,12 @@ function createShadowGenerator(light: BABYLON.IShadowLight) {
   return result
 }
 
-function addShadowCaster(scene: BABYLON.Scene, meshes: BABYLON.AbstractMesh[]) {
+function addShadowCaster(scene: Scene, meshes: AbstractMesh[]) {
   if (!meshes || !meshes.length) {
     return
   }
   for (const light of scene.lights) {
-    const shadow = light.getShadowGenerator() as BABYLON.ShadowGenerator
+    const shadow = light.getShadowGenerator() as ShadowGenerator
     if (!shadow) {
       continue
     }
@@ -323,12 +355,12 @@ function addShadowCaster(scene: BABYLON.Scene, meshes: BABYLON.AbstractMesh[]) {
   }
 }
 
-function removeShadowCaster(scene: BABYLON.Scene, meshes: BABYLON.AbstractMesh[]) {
+function removeShadowCaster(scene: Scene, meshes: AbstractMesh[]) {
   if (!meshes || !meshes.length) {
     return
   }
   for (const light of scene.lights) {
-    const shadow = light.getShadowGenerator() as BABYLON.ShadowGenerator
+    const shadow = light.getShadowGenerator() as ShadowGenerator
     if (!shadow) {
       continue
     }
@@ -338,7 +370,7 @@ function removeShadowCaster(scene: BABYLON.Scene, meshes: BABYLON.AbstractMesh[]
   }
 }
 
-async function captureScreenshot(scene: BABYLON.Scene, canvas: HTMLCanvasElement) {
+async function captureScreenshot(scene: Scene, canvas: HTMLCanvasElement) {
   const engine = scene.getEngine()
   let width = canvas.clientWidth
   let height = canvas.clientHeight
@@ -350,14 +382,14 @@ async function captureScreenshot(scene: BABYLON.Scene, canvas: HTMLCanvasElement
 
   return new Promise<string>((resolve, reject) => {
     try {
-      BABYLON.Tools.CreateScreenshot(engine, scene.cameras[0], { width, height }, resolve)
+      Tools.CreateScreenshot(engine, scene.cameras[0], { width, height }, resolve)
     } catch (e) {
       reject(e)
     }
   })
 }
 
-function bindCandleLightFlicker(scene: BABYLON.Scene) {
+function bindCandleLightFlicker(scene: Scene) {
   const intensityMin = 0.5
   const intensityMax = 0.75
   const updateMin = 100
@@ -368,12 +400,12 @@ function bindCandleLightFlicker(scene: BABYLON.Scene) {
   let intensity = intensityMin
 
   scene.registerBeforeRender(() => {
-    const light = scene.getLightByName('CandleLight') as BABYLON.PointLight
+    const light = scene.getLightByName('CandleLight') as PointLight
     if (!light) {
       return
     }
 
-    light.intensity = BABYLON.Scalar.Lerp(light.intensity, intensity, scene.getEngine().getTimeStep() / tweenTime)
+    light.intensity = Scalar.Lerp(light.intensity, intensity, scene.getEngine().getTimeStep() / tweenTime)
     const step = scene.getEngine().getTimeStep()
     nextUpdate -= step
     if (nextUpdate > 0) {
@@ -385,7 +417,7 @@ function bindCandleLightFlicker(scene: BABYLON.Scene) {
   })
 }
 
-function bindGlowLayerPulse(scene: BABYLON.Scene, pipeline: BABYLON.DefaultRenderingPipeline) {
+function bindGlowLayerPulse(scene: Scene, pipeline: DefaultRenderingPipeline) {
   const intensityMin = 0.25
   const intensityMax = 0.5
   const periodTime = 3000
@@ -395,7 +427,7 @@ function bindGlowLayerPulse(scene: BABYLON.Scene, pipeline: BABYLON.DefaultRende
     while (time > periodTime) {
       time -= periodTime
     }
-    pipeline.glowLayer.intensity = BABYLON.Scalar.Lerp(
+    pipeline.glowLayer.intensity = Scalar.Lerp(
       intensityMin,
       intensityMax,
       0.5 + Math.sin((time / periodTime) * Math.PI * 2) / 2,
@@ -403,7 +435,7 @@ function bindGlowLayerPulse(scene: BABYLON.Scene, pipeline: BABYLON.DefaultRende
   })
 }
 
-function bindCameraCenter(scene: BABYLON.Scene, camera: BABYLON.ArcRotateCamera) {
+function bindCameraCenter(scene: Scene, camera: ArcRotateCamera) {
   const tweenTime = 1000
   scene.registerBeforeRender(() => {
     const context = getContext(scene)
@@ -414,40 +446,40 @@ function bindCameraCenter(scene: BABYLON.Scene, camera: BABYLON.ArcRotateCamera)
     const target = camera.target
     const step = scene.getEngine().getTimeStep()
     camera.target.set(
-      BABYLON.Scalar.Lerp(target.x, position.x, step / tweenTime),
+      Scalar.Lerp(target.x, position.x, step / tweenTime),
       camera.target.y,
-      BABYLON.Scalar.Lerp(target.z, position.z, step / tweenTime),
+      Scalar.Lerp(target.z, position.z, step / tweenTime),
     )
   })
 }
 
-function bindTimeOfDay(scene: BABYLON.Scene) {
+function bindTimeOfDay(scene: Scene) {
   const context = getContext(scene)
   const tweenTime = 1000
   const minIntensity = 0.001
   const maxIntensity = 0.75
-  const minSky = BABYLON.Color3.FromHexString('#000000')
-  const maxSky = BABYLON.Color3.FromHexString('#87ceeb')
+  const minSky = Color3.FromHexString('#000000')
+  const maxSky = Color3.FromHexString('#87ceeb')
 
   let targetIntensity = 0
-  let targetSky = BABYLON.Color3.Black()
+  let targetSky = Color3.Black()
   scene.registerBeforeRender(() => {
     const step = scene.getEngine().getTimeStep()
     const target = Math.max(0.001, Math.min(1, context.timeOfDay))
 
-    targetIntensity = BABYLON.Scalar.Lerp(minIntensity, maxIntensity, target)
-    BABYLON.Color3.LerpToRef(minSky, maxSky, target, targetSky)
+    targetIntensity = Scalar.Lerp(minIntensity, maxIntensity, target)
+    Color3.LerpToRef(minSky, maxSky, target, targetSky)
 
-    scene.environmentIntensity = BABYLON.Scalar.Lerp(scene.environmentIntensity, targetIntensity, step / tweenTime)
-    scene.clearColor.r = BABYLON.Scalar.Lerp(scene.clearColor.r, targetSky.r, step / tweenTime)
-    scene.clearColor.g = BABYLON.Scalar.Lerp(scene.clearColor.g, targetSky.g, step / tweenTime)
-    scene.clearColor.b = BABYLON.Scalar.Lerp(scene.clearColor.b, targetSky.b, step / tweenTime)
+    scene.environmentIntensity = Scalar.Lerp(scene.environmentIntensity, targetIntensity, step / tweenTime)
+    scene.clearColor.r = Scalar.Lerp(scene.clearColor.r, targetSky.r, step / tweenTime)
+    scene.clearColor.g = Scalar.Lerp(scene.clearColor.g, targetSky.g, step / tweenTime)
+    scene.clearColor.b = Scalar.Lerp(scene.clearColor.b, targetSky.b, step / tweenTime)
     scene.clearColor.a = 1
   })
 }
 
 function updateAppearance(
-  scene: BABYLON.Scene,
+  scene: Scene,
   tag: string,
   options: {
     dyeR: DyeColorData | null

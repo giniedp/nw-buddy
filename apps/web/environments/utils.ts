@@ -9,9 +9,7 @@ export interface Environment extends EnvVars {
   version: string
   cdnUrl: string
   deployUrl: string
-  modelsUrlLow: string
-  modelsUrlMid: string
-  modelsUrlHigh: string
+  modelsUrl: string
   nwDataUrl: string
   nwImagesUrl: string
   nwTilesUrl: string
@@ -19,19 +17,10 @@ export interface Environment extends EnvVars {
 
 export type BaseUrl = 'cdnUrl' | 'deployUrl'
 
-function getModelsUrl(env: EnvVars, baseUrl: BaseUrl, version: string) {
-  return normalizePath(`${env[baseUrl]}/${version}`)
+export function getModelsUrl(env: EnvVars, baseUrl: BaseUrl) {
+  return normalizePath(`${env[baseUrl]}/models`)
 }
 
-export function getModelsUrlLowRes(env: EnvVars, baseUrl: BaseUrl) {
-  return getModelsUrl(env, baseUrl, 'models-512')
-}
-export function getModelsUrlMidRes(env: EnvVars, baseUrl: BaseUrl) {
-  return getModelsUrl(env, baseUrl, 'models-1k')
-}
-export function getModelsUrlHiRes(env: EnvVars, baseUrl: BaseUrl) {
-  return getModelsUrl(env, baseUrl, 'models-2k')
-}
 export function getNwDataUrl(env: EnvVars, baseUrl: BaseUrl) {
   const version = baseUrl === 'cdnUrl' ? env.branchname : null
   const nwDataPath = normalizePath(`nw-data/${version || ''}`)
