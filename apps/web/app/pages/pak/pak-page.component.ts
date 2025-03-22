@@ -27,7 +27,7 @@ import { PakService } from './pak.service'
         <ion-header class="bg-base-300">
           <ion-toolbar>
             <ion-title>Pak Browser</ion-title>
-            @if (showModelButton) {
+            @if (showModelButton()) {
               <div slot="end" class="join">
                 <button class="join-item btn btn-ghost" (click)="showModel.set(false)">TXT</button>
                 <button class="join-item btn btn-ghost" (click)="showModel.set(true)">3D</button>

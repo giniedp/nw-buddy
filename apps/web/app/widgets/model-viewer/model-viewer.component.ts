@@ -47,6 +47,7 @@ import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { Model, NwMaterialExtension, Viewer, createViewer, updateNwMaterial, viewerCaptureImage } from './viewer'
+import { getModelUrl } from './utils/get-model-url'
 
 export interface ModelViewerState {
   models: ModelItemInfo[]
@@ -224,8 +225,9 @@ export class ModelViewerComponent implements OnDestroy {
     if (!viewer) {
       return null
     }
-    await viewer.loadModel(data.url.replace(/^\//, ''), {
-      rootUrl: environment.modelsUrl + '/',
+    const { rootUrl, modelUrl } = getModelUrl(data.url)
+    await viewer.loadModel(modelUrl, {
+      rootUrl: rootUrl,
       animationAutoPlay: true,
       onProgress: (it) => {
         if (it.lengthComputable) {

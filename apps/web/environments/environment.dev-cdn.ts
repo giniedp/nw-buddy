@@ -6,6 +6,7 @@ export const environment: Environment = {
   production: false,
   standalone: false,
   environment: 'DEV',
+  nwbtUrl: '/nwbt',
   modelsUrl: getModelsUrl(env, 'cdnUrl'),
   nwDataUrl: getNwDataUrl(env, 'deployUrl'),
   nwImagesUrl: getNwDataUrl(env, 'cdnUrl'),

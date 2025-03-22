@@ -7,6 +7,7 @@ export interface Environment extends EnvVars {
   workspace: string
   isPTR: boolean
   version: string
+  nwbtUrl: string
   cdnUrl: string
   deployUrl: string
   modelsUrl: string

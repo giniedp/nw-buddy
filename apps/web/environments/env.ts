@@ -38,4 +38,10 @@ export const env = {
    * A watermark image URL
    */
   watermarkImageUrl: '',
+  /**
+   * New world buddy tools url
+   * @remarks
+   * only for local development
+   */
+  nwbtUrl: ''
 }

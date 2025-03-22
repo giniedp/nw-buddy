@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { environment } from 'apps/web/environments'
 
 const toImageTypes = ['dds', 'png', 'tif']
 const toModelTypes = ['cgf', 'cdf', 'skin']
@@ -51,7 +52,7 @@ export class PakService {
   }
 
   public assetUrl(asset: string) {
-    return `http://localhost:8000/${asset}`
+    return `${environment.nwbtUrl}/${asset}`
   }
 
   public fileUrl(file: string, format?: string) {

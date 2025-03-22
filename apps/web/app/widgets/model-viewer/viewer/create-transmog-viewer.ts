@@ -26,6 +26,7 @@ import { NwMaterialExtension } from './nw-material-extension'
 import { registerNwMaterialPlugin } from './nw-material-plugin'
 import { updateNwMaterial } from './nw-material-update'
 import { environment } from 'apps/web/environments'
+import { getModelUrl } from '../utils/get-model-url'
 
 export type TransmogModelSlot = 'level' | 'player' | 'head' | 'chest' | 'hands' | 'legs' | 'feet'
 export type TransmogViewer = ReturnType<typeof createTransmogViewer>
@@ -222,16 +223,14 @@ async function loadModel(scene: Scene, url: string, slot: TransmogModelSlot) {
   const isLevel = slot === 'level'
   const isGear = !isPlayer && !isLevel
 
-  let baseUrl = environment.modelsUrl + '/'
-  if (isLevel || isPlayer) {
-    baseUrl = ''
-  } else {
-    url = url.replace(/^\//, '')
+  let rootUrl = ''
+  if (!isLevel && !isPlayer) {
+    const source = getModelUrl(url)
+    rootUrl = source.rootUrl
+    url = source.modelUrl
   }
 
-  const result = await ImportMeshAsync(url, scene, {
-    rootUrl: baseUrl,
-  })
+  const result = await ImportMeshAsync(url, scene, { rootUrl })
   context.models[slot] = {
     slot,
     ...result,
