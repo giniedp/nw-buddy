@@ -1,55 +1,73 @@
-import { DestroyRef, Directive, input, inject, effect, untracked, ElementRef, signal, linkedSignal } from '@angular/core'
+import { Directive, effect, ElementRef, inject, input, linkedSignal, untracked } from '@angular/core'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { EMPTY, fromEvent, map, merge, switchMap, takeUntil } from 'rxjs'
+import { PreferencesService } from '~/preferences'
 import { SplitGutterComponent } from './split-gutter.component'
-import { fromEvent, switchMap, merge, map, takeUntil } from 'rxjs'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { tapDebug } from '~/utils'
 
 @Directive({
   selector: '[nwbSplitPane]',
   host: {
-    '[style.flex-basis.px]': 'basis()'
-  }
+    '[style.flex-basis.px]': 'basis()',
+  },
 })
 export class SplitPaneDirective {
+  private preferences = inject(PreferencesService).session.storageScope('nwb-split')
   private elRef = inject<ElementRef<HTMLElement>>(ElementRef)
-  private dRef = inject(DestroyRef)
 
   public gutter = input<SplitGutterComponent>(null, { alias: 'nwbSplitPane' })
-  public width = input<number>(null)
+  public width = input<number>(null, { alias: 'nwbSplitPaneWidth' })
+  public storeKey = input<string>(null, { alias: 'nwbSplitPaneKey' })
   protected basis = linkedSignal(this.width)
+  private gutter$ = toObservable(this.gutter).pipe(
+    switchMap((gutter) => {
+      return gutter ? gutter.start : EMPTY
+    }),
+    switchMap((start) => {
+      const elementBox = this.elRef.nativeElement.getBoundingClientRect()
+      const gutterBox = this.gutter().elRef.nativeElement.getBoundingClientRect()
+      const move$ = fromEvent<MouseEvent>(document, 'mousemove')
+      const cancel$ = merge(fromEvent(document, 'mouseup'), fromEvent(document, 'mouseleave'))
+      return move$.pipe(
+        map((end) => ({ start, end, gutterBox, elementBox })),
+        takeUntil(cancel$),
+      )
+    }),
+    map(({ start, end, gutterBox, elementBox }) => {
+      let delta = start.clientX - end.clientX
+      if (gutterBox.left > elementBox.left) {
+        delta = -delta
+      }
+      return Math.max(0, elementBox.width + delta)
+    }),
+  )
 
   public constructor() {
+    this.gutter$.pipe(takeUntilDestroyed()).subscribe((value) => {
+      this.storeValue(value)
+    })
     effect(() => {
-      const gutter = this.gutter()
-      untracked(() => this.bindGutter(gutter))
+      const key = this.storeKey()
+      untracked(() => this.loadValue(key))
     })
   }
 
-  private bindGutter(gutter: SplitGutterComponent) {
-    if (!gutter) {
+  private loadValue(key: string) {
+    if (!key) {
       return
     }
+    const value = this.preferences.get<number>(key)
+    if (typeof value !== 'number') {
+      return
+    }
+    this.basis.set(value)
+  }
 
-    gutter.start
-      .pipe(
-        switchMap((start) => {
-          const elementBox = this.elRef.nativeElement.getBoundingClientRect()
-          const gutterBox = gutter.elRef.nativeElement.getBoundingClientRect()
-          const move$ = fromEvent<MouseEvent>(document, 'mousemove')
-          const cancel$ = merge(fromEvent(document, 'mouseup'), fromEvent(document, 'mouseleave'))
-          return move$.pipe(
-            map((end) => ({ start, end, gutterBox, elementBox })),
-            takeUntil(cancel$),
-          )
-        }),
-        takeUntilDestroyed(this.dRef),
-      )
-      .subscribe(({ start, end, gutterBox, elementBox }) => {
-        let delta = start.clientX - end.clientX
-        if (gutterBox.left > elementBox.left) {
-          delta = -delta
-        }
-        this.basis.set(Math.max(0, elementBox.width + delta))
-      })
+  private storeValue(value: number) {
+    this.basis.set(value)
+    const key = this.storeKey()
+    if (!key) {
+      return
+    }
+    this.preferences.set(key, value)
   }
 }

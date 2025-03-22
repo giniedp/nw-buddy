@@ -12,6 +12,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
 import {
   HtmlHeadService,
@@ -41,6 +42,8 @@ import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from
     RouterModule,
     TooltipModule,
     VirtualGridModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
   providers: [
     provideTransmogCellOptions({

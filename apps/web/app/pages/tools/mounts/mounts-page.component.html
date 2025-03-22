@@ -26,13 +26,19 @@
       </div>
     </div>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
 <ion-content [scrollY]="false">
   <ion-split-pane [when]="showSidebar()" contentId="main">
-    <ion-menu contentId="main" class="order-3 min-w-80 max-w-screen-md" [nwbSplitPane]="gutter" [width]="400" >
+    <ion-menu
+      contentId="main"
+      class="order-3 min-w-80 max-w-screen-md"
+      [nwbSplitPane]="gutter"
+      [nwbSplitPaneWidth]="420"
+      [nwbSplitPaneKey]="'detail-sm'"
+    >
       @if (showSidebar()) {
         <ng-container [ngTemplateOutlet]="tplDetail" />
       }

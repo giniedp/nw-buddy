@@ -37,7 +37,7 @@
 </ion-header>
 <ion-content [scrollY]="false">
   <ion-split-pane [when]="showSidebar()" contentId="main">
-    <ion-menu contentId="main" class="order-3 min-w-80 max-w-screen-lg" [nwbSplitPane]="gutter" [width]="500">
+    <ion-menu contentId="main" class="order-3 min-w-80 max-w-screen-lg" [nwbSplitPane]="gutter" [nwbSplitPaneWidth]="420" [nwbSplitPaneKey]="'detail-sm'">
       @if (showSidebar()) {
         <ng-container [ngTemplateOutlet]="tplDetail" />
       }
