@@ -1,7 +1,9 @@
 package pull
 
 import (
+	"context"
 	"log/slog"
+	"nw-buddy/tools/commands/pull/ts"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/formats/dds"
 	"nw-buddy/tools/formats/image"
@@ -39,6 +41,21 @@ func runPullImages(ccmd *cobra.Command, args []string) {
 
 func pullImages(fs nwfs.Archive, outDir string, update bool) {
 
+	loadedSheets := maps.NewSyncDict[*datasheet.Document]()
+	progress.RunTasks(progress.TasksConfig[nwfs.File, string]{
+		Description:   "Datasheets (read)",
+		Tasks:         findDatasheets(fs),
+		ProducerCount: 1,
+		Producer: func(file nwfs.File) (output string, err error) {
+			sheet, err := datasheet.Load(file)
+			if err != nil {
+				return
+			}
+			loadedSheets.Store(file.Path(), &sheet)
+			return
+		},
+	})
+
 	images := maps.NewSafeSet[string]()
 	progress.RunTasks(progress.TasksConfig[nwfs.File, string]{
 		Description:   "img scan (tables)",
@@ -48,6 +65,13 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 			msg = file.Path()
 			sheet, err := datasheet.Load(file)
 			if err != nil {
+				return
+			}
+			ctx := context.Background()
+			ctx = nwfs.WithArchive(ctx, fs)
+			ctx = datasheet.WithDocument(ctx, &sheet)
+			ctx = datasheet.WithDocumentList(ctx, loadedSheets.Values())
+			if err = ts.TransformTable(&sheet, ctx); err != nil {
 				return
 			}
 			for _, row := range sheet.Rows {
@@ -97,8 +121,8 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 		Producer: func(source string) (output *Blob, err error) {
 			output = &Blob{Path: source}
 
-			path1 := nwfs.NormalizePath(source)
-			path2 := utils.ReplaceExt(path1, ".dds")
+			path1 := utils.ReplaceExt(nwfs.NormalizePath(source), ".png")
+			path2 := utils.ReplaceExt(nwfs.NormalizePath(source), ".dds")
 
 			file, found := fs.Lookup(path1)
 			if !found {
@@ -156,7 +180,7 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 }
 
 func isPossiblyImage(name string) bool {
-	if !strings.HasPrefix(strings.ToLower(name), "lyshineui") {
+	if !strings.HasPrefix(strings.ToLower(name), "lyshineui") || strings.HasPrefix(strings.ToLower(name), "lyshineui/video") {
 		return false
 	}
 	if strings.Contains(name, "{") && strings.Contains(name, "}") {
