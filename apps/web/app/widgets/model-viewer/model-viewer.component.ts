@@ -5,6 +5,7 @@ import {
   ElementRef,
   NgZone,
   OnDestroy,
+  computed,
   effect,
   inject,
   input,
@@ -18,8 +19,10 @@ import { catchError, from, of, switchMap, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import {
+  svgBars,
   svgCamera,
   svgCircleExclamation,
+  svgCubes,
   svgExpand,
   svgFilms,
   svgGlobeSnow,
@@ -99,7 +102,7 @@ export class ModelViewerComponent implements OnDestroy {
   protected canDye = this.store.canDye
   protected buttons = this.store.buttons
   protected mode = this.store.mode
-
+  protected isLight = computed(() => this.mode() === 'light')
   protected isLoading = signal(false)
   protected hasLoaded = signal(false)
   protected hasError = signal(false)
@@ -118,7 +121,9 @@ export class ModelViewerComponent implements OnDestroy {
   protected iconPause = svgPause
   protected iconStop = svgStop
   protected iconEnv = svgGlobeSnow
-  protected iconMore = svgFilms
+  protected iconFilms = svgFilms
+  protected iconMore = svgBars
+  protected iconEmpty = svgCubes
 
   private viewer = signal<Viewer>(null)
   private viewerDetails = signal<ViewerDetails>(null)
@@ -132,8 +137,12 @@ export class ModelViewerComponent implements OnDestroy {
     effect(() => {
       const viewer = this.viewer()
       const mode = this.mode()
+      untracked(() => updateMode(viewer, mode))
+    })
+    effect(() => {
+      const viewer = this.viewer()
       const environment = this.store.environment()
-      untracked(() => updateMode(viewer, mode, environment))
+      untracked(() => updateEnv(viewer, environment))
     })
     effect(() => {
       const viewer = this.viewer()
@@ -158,6 +167,13 @@ export class ModelViewerComponent implements OnDestroy {
     toObservable(this.store.model)
       .pipe(
         switchMap((data) => {
+          if (!data) {
+            this.hasError.set(false)
+            this.hasLoaded.set(false)
+            this.isLoading.set(false)
+            this.disposeViewer()
+            return of(null)
+          }
           this.isLoading.set(true)
           this.hasError.set(false)
           return from(this.showModel(data)).pipe(
@@ -166,7 +182,8 @@ export class ModelViewerComponent implements OnDestroy {
               this.hasError.set(false)
               this.hasLoaded.set(true)
             }),
-            catchError(() => {
+            catchError((err) => {
+              console.error(err)
               this.isLoading.set(false)
               this.hasError.set(true)
               this.hasLoaded.set(true)
@@ -348,20 +365,26 @@ export class ModelViewerComponent implements OnDestroy {
   }
 }
 
-function updateMode(viewer: Viewer, mode: 'dark' | 'light', environment: string) {
+function updateMode(viewer: Viewer, mode: 'dark' | 'light') {
   if (!viewer) {
     return
-  }
-
-  if (mode === 'dark') {
-    viewer.loadEnvironment(environment, { lighting: true })
-    viewer.loadEnvironment(undefined, { skybox: true })
-  } else {
-    viewer.loadEnvironment(environment, { skybox: true, lighting: true })
   }
   viewer.environmentConfig = {
     rotation: 1.85,
     blur: 0.5,
+    visible: mode === 'light',
+  }
+}
+
+async function updateEnv(viewer: Viewer, env: string) {
+  if (!viewer) {
+    return
+  }
+  const wasVisible = !!viewer.environmentConfig?.visible
+  await viewer.loadEnvironment(env, { lighting: true, skybox: true })
+  viewer.environmentConfig = {
+    ...viewer.environmentConfig,
+    visible: wasVisible,
   }
 }
 

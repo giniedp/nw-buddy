@@ -1,4 +1,11 @@
 <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col z-50 pointer-events-none">
+  @if (isEmpty()) {
+    <div
+      class="absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
+    >
+      <nwb-icon [icon]="iconEmpty" class="flex-shrink-0 w-20 h-20 opacity-10" />
+    </div>
+  }
   @if (!isSuported()) {
     <div class="p-3">
       <div class="alert shadow-lg my-2 bg-base-100">
@@ -17,17 +24,6 @@
         <div>
           <h3 class="font-bold">Error</h3>
           <div class="text-xs">Failed to load model</div>
-        </div>
-      </div>
-    </div>
-  }
-  @if (isEmpty()) {
-    <div class="p-3">
-      <div class="alert shadow-lg my-2 bg-base-100">
-        <nwb-icon [icon]="errorIcon" class="text-error flex-shrink-0 w-6 h-6 self-start" />
-        <div>
-          <h3 class="font-bold">Error</h3>
-          <div class="text-xs">No models found</div>
         </div>
       </div>
     </div>
@@ -63,64 +59,95 @@
 
 @if (isSuported() && hasLoaded() && !isEmpty()) {
   <div
-    class="flex flex-col items-end gap-1 absolute top-2 right-2 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+    class="flex flex-col items-end gap-1 absolute top-2 right-2 z-40 group-hover:opacity-100 transition-opacity duration-100"
   >
     <div class="flex flex-row gap-1">
       @if (!isLoading() && !hasError()) {
-        @if (store.animations()?.length) {
-          <div class="join">
-            <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="toggleAnimation()">
+        <div class="join">
+          @if (store.animations()?.length) {
+            <button
+              class="join-item btn btn-square btn-sm drop-shadow"
+              [class.btn-ghost]="!isLight()"
+              (click)="toggleAnimation()"
+            >
               <span class="swap swap-rotate" [class.swap-active]="isAnimating()">
                 <nwb-icon [icon]="iconPause" class="w-4 h-4 swap-on" />
                 <nwb-icon [icon]="iconPlay" class="w-4 h-4 swap-off" />
               </span>
             </button>
-            <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" [cdkMenuTriggerFor]="tplMenuAnim">
-              <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+            <button
+              class="join-item btn btn-square btn-sm drop-shadow"
+              [class.btn-ghost]="!isLight()"
+              [cdkMenuTriggerFor]="tplMenuAnim"
+            >
+              <nwb-icon [icon]="iconFilms" class="w-4 h-4" />
             </button>
             <ng-template #tplMenuAnim>
               <ul
                 cdkMenu
-                class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 w-80 rounded-md max-h-96 shadow-md overflow-y-auto"
+                class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 min-w-64 rounded-md max-h-96 shadow-md overflow-y-auto"
               >
                 @for (name of store.animations(); track $index; let i = $index) {
                   <li cdkMenuItem>
-                    <a
-                      [class.active]="name === store.animation()"
-                      [class.text-primary]="name === store.animation()"
-                      (click)="store.setAnimation(name)"
-                    >
+                    <a [class.text-primary]="name === store.animation()" (click)="store.setAnimation(name)">
                       {{ name }}
                     </a>
                   </li>
                 }
               </ul>
             </ng-template>
-          </div>
-        }
+          }
+          @if (buttons()?.length) {
+            <button
+              class="join-item btn btn-square btn-sm drop-shadow"
+              [class.btn-ghost]="!isLight()"
+              [cdkMenuTriggerFor]="tplModels"
+            >
+              <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+            </button>
+            <ng-template #tplModels>
+              <ul
+                cdkMenu
+                class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 min-w-64 rounded-md max-h-96 shadow-md overflow-y-auto"
+              >
+                @for (item of buttons(); track $index) {
+                  <li>
+                    <a [class.text-primary]="item.active" (click)="show(item.index)">
+                      {{ item.label }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            </ng-template>
+          }
+        </div>
 
         <div class="join">
-          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="toggleMode()">
+          <button
+            class="join-item btn btn-square btn-sm drop-shadow"
+            [class.btn-ghost]="!isLight()"
+            (click)="toggleMode()"
+          >
             <span class="swap swap-rotate" [class.swap-active]="mode() === 'light'">
               <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on" />
               <nwb-icon [icon]="iconMoon" class="w-4 h-4 swap-off" />
             </span>
           </button>
-          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" [cdkMenuTriggerFor]="tplMenuEnv">
+          <button
+            class="join-item btn btn-square btn-sm drop-shadow"
+            [class.btn-ghost]="!isLight()"
+            [cdkMenuTriggerFor]="tplMenuEnv"
+          >
             <nwb-icon [icon]="iconEnv" class="w-4 h-4" />
           </button>
           <ng-template #tplMenuEnv>
             <ul
               cdkMenu
-              class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 w-80 rounded-md max-h-96 shadow-md overflow-y-auto"
+              class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 min-w-40 rounded-md max-h-96 shadow-md overflow-y-auto"
             >
               @for (name of store.environments(); track $index; let i = $index) {
                 <li cdkMenuItem>
-                  <a
-                    [class.active]="i === store.environmentIndex()"
-                    [class.text-primary]="i === store.environmentIndex()"
-                    (click)="store.setEnvironment(name)"
-                  >
+                  <a [class.text-primary]="i === store.environmentIndex()" (click)="store.setEnvironment(name)">
                     env {{ i + 1 }}
                   </a>
                 </li>
@@ -130,30 +157,28 @@
         </div>
 
         <div class="join">
-          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="capturePhoto()">
+          <button
+            class="join-item btn btn-square btn-sm drop-shadow"
+            [class.btn-ghost]="!isLight()"
+            (click)="capturePhoto()"
+          >
             <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
           </button>
-          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="toggleFullscreen()">
+          <button
+            class="join-item btn btn-square btn-sm drop-shadow"
+            [class.btn-ghost]="!isLight()"
+            (click)="toggleFullscreen()"
+          >
             <nwb-icon [icon]="iconFullscreen" class="w-4 h-4" />
           </button>
         </div>
       }
       @if (canClose()) {
-        <button class="btn btn-square btn-ghost btn-sm drop-shadow" (click)="closeDialog()">
+        <button class="btn btn-square btn-sm drop-shadow" [class.btn-ghost]="!isLight()" (click)="closeDialog()">
           <nwb-icon [icon]="iconClose" class="w-4 h-4" />
         </button>
       }
     </div>
-    @for (item of buttons(); track $index) {
-      <button
-        class="btn btn-ghost btn-sm"
-        [class.text-primary]="item.active"
-        style="text-shadow: 1px 1px 2px black"
-        (click)="show(item.index)"
-      >
-        {{ item.label }}
-      </button>
-    }
   </div>
 }
 
@@ -180,4 +205,4 @@
     />
   </div>
 }
-<canvas #canvas class="w-full h-full z-0"></canvas>
+<canvas #canvas class="w-full h-full z-0" [class.opacity-0]="isEmpty()"></canvas>
