@@ -40,14 +40,12 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { TransformNode, Vector3 } from '@babylonjs/core'
 import { ViewerDetails } from '@babylonjs/viewer'
-import { environment } from 'apps/web/environments'
-import { LayoutModule, ModalRef } from '~/ui/layout'
-import { injectDocument } from '~/utils/injection/document'
+import { FullscreenService, LayoutModule, ModalRef } from '~/ui/layout'
 import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
-import { Model, NwMaterialExtension, Viewer, createViewer, updateNwMaterial, viewerCaptureImage } from './viewer'
 import { getModelUrl } from './utils/get-model-url'
+import { Model, NwMaterialExtension, Viewer, createViewer, updateNwMaterial, viewerCaptureImage } from './viewer'
 
 export interface ModelViewerState {
   models: ModelItemInfo[]
@@ -124,7 +122,7 @@ export class ModelViewerComponent implements OnDestroy {
 
   private viewer = signal<Viewer>(null)
   private viewerDetails = signal<ViewerDetails>(null)
-  private document = injectDocument()
+  private fullscreen = inject(FullscreenService)
 
   public constructor() {
     effect(() => {
@@ -192,20 +190,14 @@ export class ModelViewerComponent implements OnDestroy {
   }
 
   protected isFullscreen() {
-    return !!this.document.fullscreenElement
+    return this.fullscreen.isActive()
   }
   protected toggleFullscreen() {
-    if (this.isFullscreen()) {
-      this.document.exitFullscreen()
-    } else {
-      this.elRef.nativeElement.requestFullscreen()
-    }
+    this.fullscreen.toggle(this.elRef.nativeElement)
   }
 
   protected exitFullscreen() {
-    if (this.isFullscreen()) {
-      this.document.exitFullscreen()
-    }
+    this.fullscreen.exit()
   }
 
   protected toggleAnimation() {
@@ -289,7 +281,6 @@ export class ModelViewerComponent implements OnDestroy {
       ? await viewerCaptureImage(viewer, window.innerWidth)
       : await viewerCaptureImage(viewer, 2000)
     const blob = await fetch(data).then((res) => res.blob())
-    this.exitFullscreen()
     this.screenshots.saveBlobWithDialog(blob, name)
   }
 

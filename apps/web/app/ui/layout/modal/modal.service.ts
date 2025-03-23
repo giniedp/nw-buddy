@@ -1,9 +1,11 @@
 import { Injectable, Injector, InputSignal, ModelSignal, TemplateRef, Type, inject } from '@angular/core'
 import { LoadingController, LoadingOptions, ModalController, ModalOptions } from '@ionic/angular/standalone'
-import { Subject, from } from 'rxjs'
+import { Subject, from, takeUntil } from 'rxjs'
 import { ModalComponent } from './modal.component'
+import { FullscreenService } from '../fullscreen.service'
 
 export type ModalSize =
+  | 'auto'
   | 'fill'
   | 'xs'
   | 'sm'
@@ -47,6 +49,7 @@ export class ModalService {
       ],
       parent: options.injector || this.injector,
     })
+    const fullscreen = injector.get(FullscreenService)
     const ctrl = injector.get(ModalController)
     const props = {
       content: options.content,
@@ -64,12 +67,24 @@ export class ModalService {
     delete options.injector
     delete options.size
 
-    const modal = ctrl.create({
-      ...options,
-      cssClass: cssClass,
-      component: ModalComponent,
-      componentProps: props,
-    })
+    const modal = ctrl
+      .create({
+        ...options,
+        cssClass: cssClass,
+        component: ModalComponent,
+        componentProps: props,
+      })
+      .then((it) => {
+        const host = it.parentElement
+        fullscreen.change$.pipe(takeUntil(close$)).subscribe((fs) => {
+          if (fs.active && fs.element instanceof HTMLElement) {
+            fs.element.appendChild(it)
+          } else {
+            host.appendChild(it)
+          }
+        })
+        return it
+      })
 
     close$.subscribe((data) => modal.then((it) => it.dismiss(data)))
     const onDismiss = modal.then((it) => it.onDidDismiss<R>())

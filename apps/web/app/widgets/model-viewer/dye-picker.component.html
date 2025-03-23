@@ -1,43 +1,66 @@
 <ion-header>
   <ion-toolbar class="ion-color ion-color-black rounded-t-md">
-    <ion-title>Dye Color Picker</ion-title>
-    <button type="button" slot="end" class="btn btn-ghost btn-circle mr-1" [nwbModalClose]>&times;</button>
+    <ion-title>Pick a dye</ion-title>
+    <nwb-quicksearch-input slot="end" [autofocus]="true" class="mr-1" />
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-p-4">
-  <div class="flex flex-row gap-2 flex-wrap">
-    <button [tooltip]="'Clears current color'" class="btn btn-square btn-ghost" (click)="commit(null)">&times;</button>
-    @for (color of colors(); track $index) {
-      <button
-        [tooltip]="tplTip"
-        [tooltipClass]="'p-2'"
-        class="btn btn-square"
-        [style.background-color]="color.Color"
-        (click)="commit(color)"
-      >
-        <ng-template #tplTip>
-          <div class="flex flex-col gap-1">
-            <h4 class="font-bold">{{ color.Name }} - {{ color.Category }}</h4>
-            <div class="flex flex-row gap-1">
-              <span
-                class="inline-block w-4 h-4 rounded-sm"
-                [style.background-color]="color.Color"
-                [style.opacity]="color.ColorAmount"
-              ></span>
-              <span>Color</span>
+<ion-content class="ion-p-4 overflow-y-auto font-nimbus">
+  @for (group of groups(); track $index) {
+    <div class="text-lg font-bold uppercase py-2">{{ group.category }}</div>
+    <div class="grid grid-auto-fill-[100px] gap-2 mb-4">
+      @for (color of group.colors; track $index) {
+        <button
+          [tooltip]="tplTip"
+          class="btn"
+          [style.background-color]="color.Color"
+          (dblclick)="commit(color)"
+          (click)="select(color)"
+          [class.outline]="isSelected(color)"
+          [class.outline-primary]="isSelected(color)"
+        >
+          <span class="shadow-black text-shadow-sm">
+            {{ color.Name }}
+          </span>
+          <ng-template #tplTip>
+            <div class="w-80" [nwbItemDetail]="color.item?.DyeItemId">
+              @if (color.item) {
+                <nwb-item-detail-header />
+              }
+              <div class="p-2 flex flex-col gap-1">
+                @if (!color.item) {
+                  <h4 class="font-bold">{{ color.Name }}</h4>
+                }
+                <div class="flex flex-row gap-1">
+                  <span
+                    class="inline-block w-4 h-4 rounded-sm"
+                    [style.background-color]="color.Color"
+                    [style.opacity]="color.ColorAmount"
+                  ></span>
+                  <span>Color</span>
+                </div>
+                <div class="flex flex-row gap-1">
+                  <span
+                    class="inline-block w-4 h-4 rounded-sm"
+                    [style.background-color]="color.SpecColor"
+                    [style.opacity]="color.SpecAmount"
+                  ></span>
+                  <span>Tint</span>
+                </div>
+                <div class="grid grid-cols-2"></div>
+              </div>
             </div>
-            <div class="flex flex-row gap-1">
-              <span
-                class="inline-block w-4 h-4 rounded-sm"
-                [style.background-color]="color.SpecColor"
-                [style.opacity]="color.SpecAmount"
-              ></span>
-              <span>Tint</span>
-            </div>
-            <div class="grid grid-cols-2"></div>
-          </div>
-        </ng-template>
-      </button>
-    }
-  </div>
+          </ng-template>
+        </button>
+      }
+    </div>
+  }
 </ion-content>
+<ion-footer class="rounded-b-md">
+  <ion-toolbar class="ion-color ion-color-base-300">
+    <div class="join px-1 w-full sm:w-auto" slot="end">
+      <button class="join-item flex-1 btn btn-ghost sm:min-w-28" (click)="cancel()">Cancel</button>
+      <button class="join-item flex-1 btn btn-ghost sm:min-w-28" (click)="select(null)">Clear selection</button>
+      <button class="join-item flex-1 btn btn-ghost text-primary sm:min-w-28" (click)="commit()">OK</button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

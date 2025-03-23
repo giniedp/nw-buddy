@@ -239,7 +239,7 @@ export class ModelsService {
         name: item.Name,
         itemId: item.ItemID,
         url: itemAppearanceModelUri(item, 'Skin1'),
-        label: 'Skin1',
+        label: item.Gender || 'Skin',
         itemClass: [...(item.ItemClass || [])],
         appearance: item,
       })
@@ -249,7 +249,7 @@ export class ModelsService {
         name: item.Name,
         itemId: item.ItemID,
         url: itemAppearanceModelUri(item, 'ShortsleeveChestSkin'),
-        label: 'Shortsleeve Chest Skin',
+        label: [item.Gender, 'Short sleeve'].filter((it) => !!it).join(' '),
         itemClass: [...(item.ItemClass || [])],
         appearance: item,
       })

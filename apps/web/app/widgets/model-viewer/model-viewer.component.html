@@ -69,16 +69,13 @@
       @if (!isLoading() && !hasError()) {
         @if (store.animations()?.length) {
           <div class="join">
-            <button class="join-item btn btn-square btn-ghost btn-sm" (click)="toggleAnimation()">
+            <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="toggleAnimation()">
               <span class="swap swap-rotate" [class.swap-active]="isAnimating()">
                 <nwb-icon [icon]="iconPause" class="w-4 h-4 swap-on" />
                 <nwb-icon [icon]="iconPlay" class="w-4 h-4 swap-off" />
               </span>
             </button>
-            <button
-              class="join-item btn btn-square btn-ghost btn-sm"
-              [cdkMenuTriggerFor]="tplMenuAnim"
-            >
+            <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" [cdkMenuTriggerFor]="tplMenuAnim">
               <nwb-icon [icon]="iconMore" class="w-4 h-4" />
             </button>
             <ng-template #tplMenuAnim>
@@ -103,13 +100,13 @@
         }
 
         <div class="join">
-          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="toggleMode()">
+          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="toggleMode()">
             <span class="swap swap-rotate" [class.swap-active]="mode() === 'light'">
               <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on" />
               <nwb-icon [icon]="iconMoon" class="w-4 h-4 swap-off" />
             </span>
           </button>
-          <button class="join-item btn btn-square btn-ghost btn-sm" [cdkMenuTriggerFor]="tplMenuEnv">
+          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" [cdkMenuTriggerFor]="tplMenuEnv">
             <nwb-icon [icon]="iconEnv" class="w-4 h-4" />
           </button>
           <ng-template #tplMenuEnv>
@@ -133,16 +130,16 @@
         </div>
 
         <div class="join">
-          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="capturePhoto()">
+          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="capturePhoto()">
             <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
           </button>
-          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="toggleFullscreen()">
+          <button class="join-item btn btn-square btn-ghost btn-sm drop-shadow" (click)="toggleFullscreen()">
             <nwb-icon [icon]="iconFullscreen" class="w-4 h-4" />
           </button>
         </div>
       }
       @if (canClose()) {
-        <button class="btn btn-square btn-ghost btn-sm drop-shadow-md" (click)="closeDialog()">
+        <button class="btn btn-square btn-ghost btn-sm drop-shadow" (click)="closeDialog()">
           <nwb-icon [icon]="iconClose" class="w-4 h-4" />
         </button>
       }

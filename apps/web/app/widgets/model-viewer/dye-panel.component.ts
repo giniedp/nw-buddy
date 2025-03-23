@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, input, model, output } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, input, model, output } from '@angular/core'
 import { DyeColorData } from '@nw-data/generated'
 import { filter } from 'rxjs'
 import { NwModule } from '~/nw'
@@ -17,7 +17,6 @@ import { DyePickerComponent } from './dye-picker.component'
   },
 })
 export class DyePanelComponent {
-  private elRef = inject(ElementRef)
   public dyeColors = input<DyeColorData[]>([])
 
   public dyeR = model<DyeColorData>(null)

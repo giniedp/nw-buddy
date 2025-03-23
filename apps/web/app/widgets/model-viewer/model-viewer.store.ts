@@ -63,6 +63,7 @@ export const ModelViewerStore = signalStore(
         if (!models() || models().length <= 1) {
           return []
         }
+        console.log(models())
         return models().map((it, i) => {
           return {
             index: i,
