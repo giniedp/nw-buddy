@@ -151,27 +151,31 @@ program
     const target = options.target
     const client = createClient()
 
-    const glbObjects = await Promise.resolve(options)
+    const fileList = await Promise.resolve(options)
       .then((it) => (it.force ? [] : listObjects(client)))
-      .then((list) => list.filter((it) => it.Key.endsWith('.glb')))
       .then((list) => list.map((it) => normalizeKey(it.Key)))
       .then((list) => new Set(list))
 
-    const glbFiles = await glob(path.join(source, '**/*.glb')).then((list) => {
+      // application/octet-stream
+    const files = await glob(path.join(source, '**/*')).then((list) => {
       return list.map((file) => {
         const extname = path.extname(file).toLowerCase()
+        let contentType = 'application/octet-stream'
+        if (extname == '.gltf') {
+          contentType = 'model/gltf+json'
+        } else if (extname == '.glb') {
+          contentType = 'model/gltf-binary'
+        }
         return {
           file: file,
           key: normalizeKey(path.join(target, path.relative(source, file))),
-          contentType: extname == '.gltf' ? 'model/gltf+json' : 'model/gltf-binary',
+          contentType: contentType,
           md5: true,
         }
       })
     })
-    const toUpload = glbFiles.filter((it) => {
-      return !glbObjects.has(it.key)
-    })
-    logger.info('found', glbFiles.length, '.glb files', 'to upload', toUpload.length)
+    const toUpload = files.filter((it) => !fileList.has(it.key))
+    logger.info('found', files.length, 'files', 'to upload', toUpload.length)
     if (options.dryRun) {
       logger.debug(toUpload.slice(0, 10))
       return
@@ -351,7 +355,9 @@ async function uploadFiles({
         upload.on('httpUploadProgress', (progress) => {
           //
         })
-        await upload.done()
+        await upload.done().catch((err) => {
+          console.error('upload error', key, err)
+        })
       }
       b2.update(batch.length, { name: 'done' })
     }),
@@ -400,6 +406,6 @@ function normalizeKey(key: string) {
 function calculateHash(filePath: string) {
   const hash = createHash('sha256')
   const fileData = fs.readFileSync(filePath)
-  hash.update(fileData)
+  hash.update(fileData as any)
   return hash.digest('hex')
 }
