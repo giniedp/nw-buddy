@@ -1,7 +1,10 @@
-import { Component, computed, inject, input } from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { ActivatedRoute, Router } from '@angular/router'
+import { debounceTime } from 'rxjs'
+import { FileTreeComponent } from '~/ui/file-tree'
 import { LayoutModule } from '~/ui/layout'
-import { DatasheetsTreeComponent } from './datasheets-tree.component'
-import { Datasheet, TreeNode } from './types'
+import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { DatasheetsStore } from './datasheets.store'
 
 @Component({
@@ -9,49 +12,36 @@ import { DatasheetsStore } from './datasheets.store'
   host: {
     class: 'ion-page',
   },
-  imports: [LayoutModule, DatasheetsTreeComponent],
+  imports: [LayoutModule, FileTreeComponent, QuicksearchModule],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Datasheets</ion-title>
+    <ion-header class="bg-base-300">
+      <ion-toolbar class="px-2">
+        <nwb-quicksearch-input />
       </ion-toolbar>
     </ion-header>
-    <ul class="menu menu-compact menu-xs flex-nowrap overflow-auto font-mono" [nwbFileTree]="root()"></ul>
+    <nwb-file-tree
+      class="h-full font-mono pt-4 pl-4 pb-4"
+      [files]="files()"
+      [search]="search()"
+      [selection]="selection()"
+      (selected)="handleFileSelection($event)"
+    />
   `,
 })
 export class DatasheetsSidebarComponent {
   protected store = inject(DatasheetsStore)
-  public files = input<Datasheet[], Datasheet[]>(null, {
-    transform: (files) => {
-      return [...(files || [])].sort((a, b) => a.id.localeCompare(b.id))
-    },
-  })
-  protected root = computed(() => toTree(this.files()))
-}
+  protected search = toSignal(inject(QuicksearchService).query$.pipe(debounceTime(1000)))
+  protected files = this.store.files
 
-function toTree(files: Datasheet[]): TreeNode {
-  const root = {
-    name: '',
-    folders: [],
-    files: [],
+  private router = inject(Router)
+  private route = inject(ActivatedRoute)
+
+  protected selection = signal(this.route.snapshot.queryParams['file'])
+  protected handleFileSelection(file: string) {
+    this.router.navigate(['.'], {
+      queryParams: { file: file },
+      queryParamsHandling: 'merge',
+      relativeTo: this.route,
+    })
   }
-  for (const file of files) {
-    const tokens = file.id.split('/')
-    tokens.pop() // remove the file name
-    let folder = root
-    for (const dir of tokens) {
-      let child = folder.folders.find((f) => f.name === dir)
-      if (!child) {
-        child = {
-          name: dir,
-          folders: [],
-          files: [],
-        }
-        folder.folders.push(child)
-      }
-      folder = child
-    }
-    folder.files.push(file)
-  }
-  return root
 }

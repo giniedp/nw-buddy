@@ -7,6 +7,7 @@ import { injectNwData } from '~/data'
 import { Datasheet, Tab, TreeNode } from './types'
 
 export interface DatasheetsState {
+  files: string[]
   datasheets: Datasheet[]
   tabs: Tab[]
   selectedId: string
@@ -15,7 +16,8 @@ export interface DatasheetsState {
 export const DatasheetsStore = signalStore(
   { providedIn: 'root' },
   withState<DatasheetsState>({
-    datasheets: listFiles(),
+    files: listFiles(),
+    datasheets: listSheets(),
     tabs: [],
     selectedId: '',
   }),
@@ -63,6 +65,23 @@ export const DatasheetsStore = signalStore(
 )
 
 function listFiles() {
+  const files: string[] = []
+  for (const [name, group] of Object.entries(DATASHEETS)) {
+    for (const [type, { uri }] of Object.entries(group)) {
+      const urls = Array.isArray(uri) ? uri : [uri]
+      for (const url of urls) {
+        files.push(
+          url
+            .replace(/^datatables[\/\\]/, '')
+            .replaceAll(/[\\/]+/g, '/')
+            .toLowerCase(),
+        )
+      }
+    }
+  }
+  return files
+}
+function listSheets() {
   const files: Datasheet[] = []
   for (const [name, group] of Object.entries(DATASHEETS)) {
     for (const [type, { uri }] of Object.entries(group)) {
@@ -83,31 +102,4 @@ function listFiles() {
     }
   }
   return files
-}
-
-function toTree(files: Datasheet[]): TreeNode {
-  const root = {
-    name: '',
-    folders: [],
-    files: [],
-  }
-  for (const file of files) {
-    const tokens = file.id.split('/')
-    tokens.pop() // remove the file name
-    let folder = root
-    for (const dir of tokens) {
-      let child = folder.folders.find((f) => f.name === dir)
-      if (!child) {
-        child = {
-          name: dir,
-          folders: [],
-          files: [],
-        }
-        folder.folders.push(child)
-      }
-      folder = child
-    }
-    folder.files.push(file)
-  }
-  return root
 }

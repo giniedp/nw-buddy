@@ -5,6 +5,7 @@ import {
   svgBurst,
   svgChair,
   svgClipboard,
+  svgCode,
   svgCrosshairsSimple,
   svgDatabase,
   svgDiamond,
@@ -97,6 +98,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Emotes', path: '/emotes', svgIcon: svgMasksTheater },
       { label: 'Season Pass', path: '/season-pass', icon: 'assets/icons/menu/season.png' },
       { label: 'Backstories - PTR Testing', path: '/backstories', icon: 'assets/icons/menu/backstories.png' },
+      { label: 'Datasheets', path: '/datasheets', svgIcon: svgCode },
     ],
   },
   {

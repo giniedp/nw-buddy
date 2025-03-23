@@ -28,7 +28,7 @@ import { PakService } from './pak.service'
       </ion-toolbar>
     </ion-header>
     <nwb-file-tree
-      class="h-full"
+      class="h-full font-mono px-2"
       [files]="files.value()"
       [search]="search()"
       [selection]="selection()"

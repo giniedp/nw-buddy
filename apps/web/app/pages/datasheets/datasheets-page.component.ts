@@ -5,27 +5,33 @@ import { ActivatedRoute } from '@angular/router'
 import { map } from 'rxjs'
 import { CodeEditorModule } from '~/ui/code-editor'
 import { LayoutModule } from '~/ui/layout'
-import { DatasheetsSidebarComponent } from './datasheets-sidebar.component'
-import { DatasheetsTabbarComponent } from './datasheets-tabbar.component'
-import { DatasheetsStore } from './datasheets.store'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
+import { DatasheetsSidebarComponent } from './datasheets-sidebar.component'
+import { DatasheetsStore } from './datasheets.store'
 
 @Component({
   selector: 'nwb-datasheets-page',
-  imports: [DatasheetsTabbarComponent, DatasheetsSidebarComponent, LayoutModule, CodeEditorModule, FormsModule, SplitGutterComponent, SplitPaneDirective],
+  imports: [
+    DatasheetsSidebarComponent,
+    LayoutModule,
+    CodeEditorModule,
+    FormsModule,
+    SplitGutterComponent,
+    SplitPaneDirective,
+  ],
   host: {
     class: 'ion-page flex flex-row',
   },
   template: `
     <ion-split-pane contentId="editor">
-      <ion-menu contentId="editor" class="min-w-80 max-w-screen-sm" [nwbSplitPane]="gutter" >
-        <nwb-datasheets-sidebar class="w-full" [files]="files()" />
+      <ion-menu contentId="editor" class="order-3" [nwbSplitPane]="gutter" [nwbSplitPaneWidth]="420">
+        <nwb-datasheets-sidebar class="w-full" />
       </ion-menu>
-      <nwb-split-gutter #gutter="gutter" />
-      <div class="ion-page" id="editor">
+      <nwb-split-gutter class="order-2" #gutter="gutter" />
+      <div class="ion-page order-1" id="editor">
         <ion-header>
           <ion-toolbar>
-            <ion-title>Header</ion-title>
+            <ion-title>Datasheets</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-content [scrollY]="false">
@@ -33,7 +39,6 @@ import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
             <nwb-code-editor class="h-full w-full" [ngModel]="sheet.content" [language]="'json'" [disabled]="true" />
           }
         </ion-content>
-        <!-- <ion-footer></ion-footer> -->
       </div>
     </ion-split-pane>
   `,

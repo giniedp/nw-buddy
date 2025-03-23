@@ -1,12 +1,16 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
+  HostListener,
   inject,
+  Injector,
   input,
   linkedSignal,
   output,
+  runInInjectionContext,
   untracked,
   viewChild,
 } from '@angular/core'
@@ -26,17 +30,20 @@ import { FileTreeNode, FileTreeStore } from './file-tree.store'
     class: 'block h-full',
   },
   template: `
-    <cdk-virtual-scroll-viewport itemSize="24" class="h-full">
+    <cdk-virtual-scroll-viewport itemSize="24" class="h-full" (scrolledIndexChange)="viewport().checkViewportSize()">
       <div
         *cdkVirtualFor="let item of store.flatlist(); trackBy: trackBy"
         [style.paddingLeft.px]="item.depth * 10"
-        class="whitespace-nowrap overflow-hidden h-6"
+        class="whitespace-nowrap overflow-hidden h-6 cursor-pointer group"
         [class.text-primary]="item.id === active()"
+        (click)="handleClick(item)"
+        (keydown.space)="handleClick(item); (false)"
+        tabindex="0"
       >
         <nwb-icon [icon]="item.isDir ? folderIcon : fileIcon" class="w-4 h-4" />
-        <a (click)="handleClick(item)" (keydown.space)="handleClick(item); (false)" class="cursor-pointer" tabindex="0">
+        <span class="opacity-80 group-hover:opacity-100">
           {{ item.name }}
-        </a>
+        </span>
       </div>
     </cdk-virtual-scroll-viewport>
   `,
@@ -65,11 +72,14 @@ export class FileTreeComponent {
       const files = this.displayFiles()
       untracked(() => {
         this.store.load(files)
-        this.viewport().checkViewportSize()
         const index = this.store.select(this.selection())
         if (index >= 0) {
           this.viewport().scrollToIndex(index)
         }
+        setTimeout(() => {
+          this.viewport().checkViewportSize()
+        })
+
       })
     })
   }
