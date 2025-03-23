@@ -20,7 +20,7 @@ export interface BackstoryItemInstance {
 
 export function getBackstoryItems(record: BackstoryDefinition) {
   const result: BackstoryItem[] = []
-  for (const token of record.InventoryItem || []) {
+  for (const token of record?.InventoryItem || []) {
     const item = decodeBackstoryItem(token)
     if (item) {
       result.push(item)
