@@ -1,52 +1,56 @@
 <ion-header>
   <ion-toolbar class="ion-color ion-color-black rounded-t-md">
-    <ion-title>{{ title }}</ion-title>
+    <ion-title>{{ title() }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-p-4">
   <div class="h-full flex flex-col gap-4 items-center justify-center">
-    @if (isHtml) {
-      <div [innerHTML]="body"></div>
+    @if (isHtml()) {
+      <div [innerHTML]="body()"></div>
     } @else {
-      <p>{{ body }}</p>
+      <p>{{ body() }}</p>
     }
 
-    @if (inputType === 'number') {
-      <input
-        [(ngModel)]="value"
-        [type]="inputType"
-        [min]="min"
-        [max]="max"
-        [placeholder]="placeholder"
-        class="input input-bordered w-full max-w-60"
-      />
-    } @else if (inputType === 'textarea') {
-      <textarea
-        [(ngModel)]="value"
-        [placeholder]="placeholder"
-        rows="20"
-        class="input input-bordered w-full h-96"
-      ></textarea>
-    } @else {
-      <input
-        [(ngModel)]="value"
-        [type]="inputType || 'text'"
-        [placeholder]="placeholder"
-        class="input input-bordered w-full max-w-60"
-      />
+    @switch (inputType()) {
+      @case ('number') {
+        <input
+          [(ngModel)]="value"
+          [type]="inputType()"
+          [min]="min()"
+          [max]="max()"
+          [placeholder]="placeholder()"
+          class="input input-bordered w-full max-w-60"
+        />
+      }
+      @case ('textarea') {
+        <textarea
+          [(ngModel)]="value"
+          [placeholder]="placeholder()"
+          rows="20"
+          class="input input-bordered w-full h-96"
+        ></textarea>
+      }
+      @default {
+        <input
+          [(ngModel)]="value"
+          [type]="inputType() || 'text'"
+          [placeholder]="placeholder()"
+          class="input input-bordered w-full max-w-60"
+        />
+      }
     }
   </div>
 </ion-content>
 <ion-footer class="rounded-b-md">
   <ion-toolbar class="ion-color ion-color-base-300">
     <div slot="end" class="join px-1 w-full">
-      @if (negative) {
-        <button class="join-item flex-1 btn btn-ghost" (click)="abort()">{{ negative }}</button>
+      @if (negative()) {
+        <button class="join-item flex-1 btn btn-ghost" (click)="abort()">{{ negative() }}</button>
       }
-      @if (neutral) {
-        <button class="join-item flex-1 btn btn-ghost" (click)="close()">{{ neutral }}</button>
+      @if (neutral()) {
+        <button class="join-item flex-1 btn btn-ghost" (click)="close()">{{ neutral() }}</button>
       }
-      <button class="join-item flex-1 btn btn-ghost text-primary" (click)="submit()">{{ positive }}</button>
+      <button class="join-item flex-1 btn btn-ghost text-primary" (click)="submit()">{{ positive() }}</button>
     </div>
   </ion-toolbar>
 </ion-footer>

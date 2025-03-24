@@ -56,7 +56,7 @@ export class ModalService {
       inputs: options.inputs,
       context: options.context,
       injector: options.injector,
-    } satisfies Partial<ModalComponent>
+    } satisfies ComponentInputs<ModalComponent>
 
     let size = options.size ?? []
     size = Array.isArray(size) ? size : [size]

@@ -1,48 +1,43 @@
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common'
-import { Component, Injector, Input, TemplateRef, Type } from '@angular/core'
+import { Component, Injector, TemplateRef, Type, input } from '@angular/core'
 
 @Component({
   template: `
     @if (component) {
       <ng-component
         [ngComponentOutlet]="component"
-        [ngComponentOutletInjector]="injector"
-        [ngComponentOutletInputs]="inputs"
+        [ngComponentOutletInjector]="injector()"
+        [ngComponentOutletInputs]="inputs()"
       />
     }
     @if (template) {
       <ng-component
         [ngTemplateOutlet]="template"
-        [ngTemplateOutletInjector]="injector"
-        [ngTemplateOutletContext]="context"
+        [ngTemplateOutletInjector]="injector()"
+        [ngTemplateOutletContext]="context()"
       />
     }
   `,
   imports: [NgTemplateOutlet, NgComponentOutlet],
 })
 export class ModalComponent {
-  @Input()
-  public content: Type<any> | TemplateRef<any> = null
-
-  @Input()
-  public inputs: Record<string, any> = null
-
-  @Input()
-  public context: any
-
-  @Input()
-  public injector: Injector = null
+  public content = input<Type<any> | TemplateRef<any>>(null)
+  public inputs = input<Record<string, any>>(null)
+  public context = input<any>(undefined)
+  public injector = input<Injector>(null)
 
   protected get component() {
-    if (this.content instanceof TemplateRef) {
+    const content = this.content()
+    if (content instanceof TemplateRef) {
       return null
     }
-    return this.content
+    return content
   }
 
   protected get template() {
-    if (this.content instanceof TemplateRef) {
-      return this.content
+    const content = this.content()
+    if (content instanceof TemplateRef) {
+      return content
     }
     return null
   }

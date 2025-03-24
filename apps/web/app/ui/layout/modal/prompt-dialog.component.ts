@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, Optional } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input, model } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone'
 import { IonContentDirective } from '../ion-content.directive'
@@ -39,46 +39,22 @@ export class PromptDialogComponent<T extends string | number> {
     return modal.open<PromptDialogComponent<T>, T>(options)
   }
 
-  @Input()
-  public title: string
+  public readonly title = input<string>(undefined)
+  public readonly body = input<string>(undefined)
+  public readonly isHtml = input<boolean>(undefined)
+  public readonly placeholder = input<string>(undefined)
+  public readonly positive = input<string>(undefined)
+  public readonly negative = input<string>(undefined)
+  public readonly neutral = input<string>(undefined)
+  public readonly inputType = input<'textarea' | 'text' | 'number' | 'password'>(undefined)
+  public readonly min = input<number>(undefined)
+  public readonly max = input<number>(undefined)
+  public readonly value = model<T>(undefined)
 
-  @Input()
-  public body: string
-
-  @Input()
-  public isHtml: boolean
-
-  @Input()
-  public placeholder: string
-
-  @Input()
-  public positive: string
-
-  @Input()
-  public negative: string
-
-  @Input()
-  public neutral: string
-
-  @Input()
-  public inputType: 'textarea' | 'text' | 'number' | 'password'
-
-  @Input()
-  public min: number
-
-  @Input()
-  public max: number
-
-  @Input()
-  public value: T
-
-  public constructor(
-    @Optional()
-    private dialog: ModalRef<T>,
-  ) {}
+  private dialog = inject<ModalRef<T>>(ModalRef, { optional: true })
 
   public submit() {
-    this.dialog?.close(this.value)
+    this.dialog?.close(this.value())
   }
 
   public abort() {

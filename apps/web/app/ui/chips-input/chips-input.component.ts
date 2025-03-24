@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, input, signal, viewChild } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 
 @Component({
@@ -19,32 +19,22 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
   ],
 })
 export class ChipsInputComponent implements ControlValueAccessor {
-  @Input()
-  public placeholder: string = ''
+  public readonly placeholder = input<string>('')
+  public readonly separator = input<string[]>([',', 'Enter'])
+  readonly input = viewChild<ElementRef<HTMLInputElement>>('input')
 
-  @Input()
-  public separator: string[] = [',', 'Enter']
-
-  @ViewChild('input')
-  protected input: ElementRef<HTMLInputElement>
   protected get inputEl() {
-    return this.input.nativeElement
+    return this.input().nativeElement
   }
 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
   protected touched = false
   protected disabled = false
-  protected value: string[]
-  protected trackByIndex = (i: number) => i
-
-  public constructor(private cdRef: ChangeDetectorRef) {
-    //
-  }
+  protected value = signal<string[]>(null)
 
   public writeValue(value: any): void {
-    this.value = Array.isArray(value) ? value : null
-    this.cdRef.markForCheck()
+    this.value.set(Array.isArray(value) ? value : null)
   }
 
   public registerOnChange(fn: any): void {
@@ -58,7 +48,7 @@ export class ChipsInputComponent implements ControlValueAccessor {
   }
 
   protected onInputKey(e: KeyboardEvent) {
-    if (this.separator.includes(e.key)) {
+    if (this.separator().includes(e.key)) {
       e.preventDefault()
       this.commitValue()
     }
@@ -74,14 +64,14 @@ export class ChipsInputComponent implements ControlValueAccessor {
     if (!value) {
       return
     }
-    this.value = [...(this.value || []), value]
-    this.onChange(this.value)
+    this.value.set([...(this.value() || []), value])
+    this.onChange(this.value())
   }
 
   protected removeChip(chip: string, i: number) {
-    const value = [...(this.value || [])]
+    const value = [...(this.value() || [])]
     value.splice(i, 1)
-    this.value = value
-    this.onChange(this.value)
+    this.value.set(value)
+    this.onChange(this.value())
   }
 }

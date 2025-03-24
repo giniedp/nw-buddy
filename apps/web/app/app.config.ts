@@ -19,6 +19,7 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideIonicAngular({
+      useSetInputAPI: true,
       rippleEffect: false,
       mode: 'md',
       platform: {

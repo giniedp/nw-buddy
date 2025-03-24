@@ -67,20 +67,32 @@
       cdkConnectedOverlay
       [cdkConnectedOverlayOrigin]="gsTarget"
       [cdkConnectedOverlayOpen]="!!gsTarget"
-      [cdkConnectedOverlayHasBackdrop]="false"
-      [cdkConnectedOverlayPanelClass]="['w-80', 'p-2', 'rounded-md', 'bg-base-300', 'bg-opacity-75']"
+      [cdkConnectedOverlayHasBackdrop]="true"
+      [cdkConnectedOverlayPanelClass]="['w-80']"
+      [cdkConnectedOverlayPositions]="[{ overlayX: 'start', overlayY: 'top', originX: 'start', originY: 'top' }]"
       (overlayOutsideClick)="closeGsEditor()"
       (backdropClick)="closeGsEditor()"
       (detach)="closeGsEditor()"
     >
-      <nwb-gs-slider
-        [bars]="true"
-        [values]="true"
-        [ngModel]="gsValue || store.instance().gearScore"
-        (ngModelChange)="updateGearScore($event)"
-        (wheel)="stepGearScore($event)"
-        class="w-full"
-      />
+      <div class="flex flex-col gap-1 w-full">
+        <div class="input input-ghost border-0 bg-black flex items-center gap-1 pl-0">
+          <img src="/assets/icons/item/icon_gearscore.png" class="w-10 h-10 aspect-square relative top-[-2px]" />
+          <input
+            [ngModel]="gsValue || store.instance().gearScore"
+            (ngModelChange)="updateGearScore($event)"
+            (wheel)="stepGearScore($event)"
+            class="w-full font-caslon text-5xl text-primary"
+          />
+        </div>
+        <nwb-gs-slider
+          [bars]="true"
+          [values]="true"
+          [ngModel]="gsValue || store.instance().gearScore"
+          (ngModelChange)="updateGearScore($event)"
+          (wheel)="stepGearScore($event)"
+          class="w-full bg-black bg-opacity-80 p-1 rounded-md"
+        />
+      </div>
     </ng-template>
   </nwb-item-card>
 }

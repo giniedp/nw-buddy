@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { ComponentStore } from '@ngrx/component-store'
 import { uniq } from 'lodash'
 import { NwModule } from '~/nw'
 import { eqCaseInsensitive } from '~/utils'
@@ -27,34 +26,31 @@ export interface TagsInputPaneState {
     class: 'layout-content',
   },
 })
-export class ChipsInputPaneComponent extends ComponentStore<TagsInputPaneState> implements ControlValueAccessor {
-  @Input()
-  public set tags(value: string[]) {
-    this.patchState({ preset: value })
-  }
+export class ChipsInputPaneComponent implements ControlValueAccessor {
+  public tags = input<string[]>([])
+  public placeholder = input<string>(undefined)
 
-  @Input()
-  public placeholder: string
+  protected selection = signal<string[]>([])
+  protected paneTags = computed(() => {
+    return selectPaneTags({
+      preset: this.tags(),
+      selection: this.selection(),
+    })
+  })
+  protected inputTags = computed(() => {
+    return selectInputTags({
+      preset: this.tags(),
+      selection: this.selection(),
+    })
+  })
 
-  protected readonly paneTags$ = this.select(selectPaneTags)
-  protected readonly inputTags$ = this.select(selectInputTags)
-  protected trackByIndex = (i: number) => i
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
   protected touched = false
   protected disabled = false
 
-  public constructor() {
-    super({
-      selection: [],
-      preset: [],
-    })
-  }
-
   public writeValue(value: any): void {
-    this.patchState({
-      selection: Array.isArray(value) ? value : [],
-    })
+    this.selection.set(Array.isArray(value) ? value : [])
   }
 
   public registerOnChange(fn: any): void {
@@ -68,33 +64,32 @@ export class ChipsInputPaneComponent extends ComponentStore<TagsInputPaneState> 
   }
 
   protected toggleTag(value: string) {
-    const selection = [...(this.get().selection || [])]
+    const selection = [...(this.selection() || [])]
     const index = selection.findIndex((it) => eqCaseInsensitive(it, value))
     if (index >= 0) {
       selection.splice(index, 1)
     } else {
       selection.push(value)
     }
-    this.patchState({
-      selection: selection,
-    })
+    this.selection.set(selection)
     this.commitValue()
   }
 
   protected updateInputTags(values: string[]) {
     const paneTags =
-      selectPaneTags(this.get())
+      selectPaneTags({
+        preset: this.tags(),
+        selection: this.selection(),
+      })
         .filter((it) => it.checked)
         .map((it) => it.value) || []
     const inputTags = values || []
-    this.patchState({
-      selection: uniq([...paneTags, ...inputTags]),
-    })
+    this.selection.set(uniq([...paneTags, ...inputTags]))
     this.commitValue()
   }
 
   protected commitValue() {
-    this.onChange(this.get().selection || [])
+    this.onChange(this.selection() || [])
   }
 }
 

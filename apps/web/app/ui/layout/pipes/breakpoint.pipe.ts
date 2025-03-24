@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout'
-import { Pipe, PipeTransform } from '@angular/core'
+import { inject, Pipe, PipeTransform } from '@angular/core'
 import { Observable, map, startWith } from 'rxjs'
 
 @Pipe({
@@ -7,9 +7,7 @@ import { Observable, map, startWith } from 'rxjs'
   standalone: true,
 })
 export class BreakpointPipe implements PipeTransform {
-  public constructor(private breakpointObserver: BreakpointObserver) {
-    //
-  }
+  private breakpointObserver = inject(BreakpointObserver)
 
   public transform(value: string): Observable<boolean> {
     return this.breakpointObserver.observe(value).pipe(

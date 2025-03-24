@@ -79,7 +79,6 @@ export class FileTreeComponent {
         setTimeout(() => {
           this.viewport().checkViewportSize()
         })
-
       })
     })
   }

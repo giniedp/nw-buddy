@@ -1,4 +1,4 @@
-import { Directive, HostListener, Input, inject } from '@angular/core'
+import { Directive, HostListener, inject, input } from '@angular/core'
 import { ModalRef, ModalService } from './modal.service'
 
 @Directive({
@@ -6,18 +6,15 @@ import { ModalRef, ModalService } from './modal.service'
   selector: '[nwbModalClose]',
 })
 export class ModalCloseDirective<T> {
-  @Input()
-  public nwbModalClose: T
+  public readonly nwbModalClose = input<T>(undefined)
 
-  private ref = inject(ModalRef<T>, {
-    optional: true,
-  })
+  private ref = inject(ModalRef<T>, { optional: true })
   private service = inject(ModalService)
 
   @HostListener('click')
   public handleClick() {
     if (this.ref) {
-      this.ref.close(this.nwbModalClose)
+      this.ref.close(this.nwbModalClose())
     } else {
       this.service.close()
     }

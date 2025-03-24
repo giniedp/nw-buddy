@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, OnChanges, input, signal, viewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { sumBy } from 'lodash'
 
 interface Bar {
   flex: number
@@ -13,31 +12,31 @@ interface Bar {
   template: `
     <input
       type="range"
-      [min]="min"
-      [max]="max"
-      [step]="step"
-      [value]="value"
+      [min]="min()"
+      [max]="max()"
+      [step]="step()"
+      [value]="value()"
       (change)="change()"
       (input)="change()"
       [class.w-full]="true"
       [class.range]="true"
-      [class.range-xs]="size === 'xs'"
-      [class.range-sm]="size === 'sm'"
-      [class.range-md]="size === 'md'"
-      [class.range-lg]="size === 'lg'"
-      [class.range-primary]="color === 'primary'"
-      [class.range-secondary]="color === 'secondary'"
-      [disabled]="disabled"
+      [class.range-xs]="size() === 'xs'"
+      [class.range-sm]="size() === 'sm'"
+      [class.range-md]="size() === 'md'"
+      [class.range-lg]="size() === 'lg'"
+      [class.range-primary]="color() === 'primary'"
+      [class.range-secondary]="color() === 'secondary'"
+      [disabled]="disabled()"
       #input
     />
-    @if (bars || values) {
+    @if (bars() || values()) {
       <div class="w-full flex text-xs px-2">
         @for (bar of barNodes; track $index) {
           <span [style.flex]="bar.flex" class="w-[1px] flex flex-col gap-1">
-            @if (bar.value != null && bars) {
+            @if (bar.value != null && bars()) {
               <span> | </span>
             }
-            @if (values) {
+            @if (values()) {
               <span class="w-full flex justify-center">{{ bar.value }}</span>
             }
           </span>
@@ -59,46 +58,25 @@ interface Bar {
   ],
 })
 export class InputSliderComponent implements ControlValueAccessor, OnChanges {
-  @Input()
-  public min: number = 0
-
-  @Input()
-  public max: number = 100
-
-  @Input()
-  public step: number
-
-  @Input()
-  public bars: boolean
-
-  @Input()
-  public values: boolean
-
-  @Input()
-  public barsStep: number = 10
-
-  @Input()
-  public size: 'xs' | 'sm' | 'md' | 'lg' = 'md'
-
-  @Input()
-  public color: 'primary' | 'secondary'
-
-  @ViewChild('input', { static: true, read: ElementRef })
-  protected input: ElementRef<HTMLInputElement>
+  public readonly min = input<number>(0)
+  public readonly max = input<number>(100)
+  public readonly step = input<number>(undefined)
+  public readonly bars = input<boolean>(undefined)
+  public readonly values = input<boolean>(undefined)
+  public readonly barsStep = input<number>(10)
+  public readonly size = input<'xs' | 'sm' | 'md' | 'lg'>('md')
+  public readonly color = input<'primary' | 'secondary'>(undefined)
+  readonly input = viewChild('input', { read: ElementRef })
 
   protected barNodes: Bar[] = []
-  protected trackByIndex = (i: number) => i
+  protected readonly touched = signal(false)
+  protected readonly disabled = signal(false)
+  protected readonly value = signal<number>(null)
 
-  public constructor() {
-    //
-  }
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
-  protected touched = false
-  protected disabled = false
-  protected value: number
   public writeValue(value: any): void {
-    this.value = value
+    this.value.set(value)
   }
   public registerOnChange(fn: any): void {
     this.onChange = fn
@@ -107,13 +85,13 @@ export class InputSliderComponent implements ControlValueAccessor, OnChanges {
     this.onTouched = fn
   }
   public setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled
+    this.disabled.set(isDisabled)
   }
 
   public ngOnChanges(): void {
-    const min = this.min
-    const max = this.max
-    const step = this.barsStep
+    const min = this.min()
+    const max = this.max()
+    const step = this.barsStep()
     const bars: Bar[] = []
 
     for (let i = min; i <= max; i++) {
@@ -136,10 +114,10 @@ export class InputSliderComponent implements ControlValueAccessor, OnChanges {
   }
 
   protected change() {
-    const newValue = this.input.nativeElement.valueAsNumber
-    if (this.value !== newValue) {
-      this.value = newValue
-      this.onChange(newValue)
+    const value = this.input().nativeElement.valueAsNumber
+    if (this.value() !== value) {
+      this.value.set(value)
+      this.onChange(value)
     }
   }
 }

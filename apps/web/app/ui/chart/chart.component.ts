@@ -1,27 +1,19 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   ElementRef,
-  Injectable,
-  Input,
-  OnInit,
-  Optional,
-  ViewChild,
+  input,
+  OnDestroy,
+  untracked,
+  viewChild,
 } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
 import { Chart, ChartConfiguration, registerables } from 'chart.js'
-import { Observable, map, takeUntil, tap } from 'rxjs'
 import { injectIsBrowser } from '~/utils/injection/platform'
 
 Chart.register(...registerables)
 
-@Injectable()
-export abstract class ChartSource {
-  abstract config: Observable<ChartConfiguration>
-}
-
 @Component({
-  standalone: true,
   selector: 'nwb-chart',
   exportAs: 'chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,54 +22,37 @@ export abstract class ChartSource {
     class: 'block',
   },
 })
-export class ChartComponent extends ComponentStore<{ config: ChartConfiguration }> implements OnInit {
-  @Input()
-  public set config(value: ChartConfiguration) {
-    this.patchState({ config: value })
-  }
-
-  @ViewChild('canvas', { static: true, read: ElementRef })
-  public canvas: ElementRef<HTMLCanvasElement>
+export class ChartComponent implements OnDestroy {
+  public config = input<ChartConfiguration>()
 
   private chart: Chart
+  private canvas = viewChild('canvas', { read: ElementRef })
   private isBrowser = injectIsBrowser()
 
-  public constructor(
-    @Optional()
-    private source: ChartSource,
-  ) {
-    super({ config: null })
-  }
-
-  public ngOnInit(): void {
-    if (this.source) {
-      this.patchState(this.source.config.pipe(map((config) => ({ config }))))
-    }
-    this.state$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(
-        tap({
-          next: ({ config }) => {
-            this.destroyChart()
-            if (config) {
-              this.createChart(config)
-            }
-          },
-          finalize: () => this.destroyChart(),
-        }),
-      )
-      .subscribe()
-  }
-
-  private destroyChart() {
-    this.chart?.destroy()
-    this.chart = null
+  public constructor() {
+    effect(() => {
+      const config = this.config()
+      untracked(() => this.createChart(config))
+    })
   }
 
   private createChart(config: ChartConfiguration) {
-    if (this.isBrowser) {
-      this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), config)
+    if (!this.isBrowser) {
+      return
+    }
+    if (this.chart) {
+      this.chart.destroy()
+    }
+    if (config) {
+      this.chart = new Chart(this.canvas().nativeElement.getContext('2d'), config)
       this.chart.update()
+    }
+  }
+
+  public ngOnDestroy() {
+    if (this.chart) {
+      this.chart.destroy()
+      this.chart = null
     }
   }
 }

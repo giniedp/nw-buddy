@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostBinding, input, Input } from '@angular/core'
-import { getItemRarity, isItemNamed, isMasterItem, ItemRarity } from '@nw-data/common'
-import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
+import { ItemRarity } from '@nw-data/common'
 
 @Component({
   selector: 'nwb-item-header',

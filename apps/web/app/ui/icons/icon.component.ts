@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, ElementRef, HostBinding, inject, input } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -20,16 +20,9 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input } fr
   },
 })
 export class SvgIconComponent {
-  @Input()
-  public set icon(value: string) {
-    if (!value) {
-      this.elRef.nativeElement.innerHTML = ''
-    } else if (isSvg(value)) {
-      this.elRef.nativeElement.innerHTML = value
-    } else {
-      this.elRef.nativeElement.innerHTML = `<img src="${value}"/>`
-    }
-  }
+  private elRef = inject<ElementRef<HTMLElement>>(ElementRef)
+
+  public icon = input<string>()
 
   @HostBinding('style.width.px')
   public width: number = null
@@ -37,9 +30,17 @@ export class SvgIconComponent {
   @HostBinding('style.height.px')
   public height: number = null
 
-  public constructor(private elRef: ElementRef<HTMLElement>) {
-    //
-  }
+  #fx = effect(() => {
+    const value = this.icon()
+    const el = this.elRef.nativeElement
+    if (!value) {
+      el.innerHTML = ''
+    } else if (isSvg(value)) {
+      el.innerHTML = value
+    } else {
+      el.innerHTML = `<img src="${value}"/>`
+    }
+  })
 }
 
 function isSvg(value: string): boolean {
