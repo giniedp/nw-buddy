@@ -122,6 +122,9 @@ func (d *Document) MergeSkins() {
 		for _, i := range oldSkin.Joints {
 			joint := d.Nodes[i]
 			newNode := d.jointCopy(joint, newSkin)
+			if parent := d.NodeParent(newNode); parent != nil {
+				continue
+			}
 			if parent := d.NodeParent(joint); parent != nil {
 				newParent := d.jointCopy(parent, newSkin)
 				if !d.NodeHasChild(newParent, newNode) {
