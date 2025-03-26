@@ -170,8 +170,6 @@ func (c *Collector) Convert() {
 
 			if err := document.Save(); err != nil {
 				slog.Warn("Model not saved", "err", err)
-			} else {
-				slog.Info("Model saved", "file", document.TargetFile)
 			}
 			return "", nil
 		},
@@ -216,7 +214,7 @@ func (c *Collector) TransformImages() error {
 			case ".ktx2":
 				output := utils.ReplaceExt(input, format)
 				toktx := utils.Ktx
-				args := []string{"create"}
+				args := []string{"create", "--threads", "1"}
 				if strings.Contains(input, "_ddn.") || strings.Contains(input, "_ddna.") {
 					args = append(args, toktx.PresetNormalMap()...)
 				} else if strings.Contains(input, "_spec.") {
@@ -231,7 +229,7 @@ func (c *Collector) TransformImages() error {
 			}
 			return input, nil
 		},
-		ConsumerCount: int(c.flags.WorkerCount),
+		ConsumerCount: 1,
 		Consumer: func(input string, e error) (string, error) {
 			if e == nil {
 				return input, os.Remove(input)
