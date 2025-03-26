@@ -16,6 +16,7 @@ type ScannedNpcSpawn struct {
 }
 
 func CollateNpcs(rows []NpcEntry) (result []ScannedNpc, count int) {
+	result = make([]ScannedNpc, 0)
 	index := maps.NewDict[*maps.Dict[*ScannedNpcSpawn]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)

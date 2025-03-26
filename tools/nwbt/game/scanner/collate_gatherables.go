@@ -22,6 +22,7 @@ type ScannedGatherableSpawn struct {
 }
 
 func CollateGatherables(rows []GatherableEntry) (result []ScannedGatherable, count int) {
+	result = make([]ScannedGatherable, 0)
 	index := maps.NewDict[*maps.Dict[*maps.Dict[*ScannedGatherableSpawn]]]()
 
 	for _, row := range rows {

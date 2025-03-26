@@ -32,6 +32,10 @@ type VariantsResult struct {
 }
 
 func CollateVariants(rows []VariantEntry) (result VariantsResult, count int) {
+	result = VariantsResult{
+		Chunks:   make([][]byte, 0),
+		Variants: make([]*ScannedVariation, 0),
+	}
 	index := maps.NewDict[*maps.Dict[*maps.Dict[*ScannedVariationSpawn]]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)

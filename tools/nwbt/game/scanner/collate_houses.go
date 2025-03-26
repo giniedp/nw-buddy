@@ -17,6 +17,7 @@ type ScannedHouse struct {
 }
 
 func CollateHouses(rows []HouseEntry) (result []ScannedHouseType, count int) {
+	result = make([]ScannedHouseType, 0)
 	index := maps.NewDict[*maps.Dict[*ScannedHouse]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)

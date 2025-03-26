@@ -19,6 +19,7 @@ type Polygon struct {
 }
 
 func CollateTerritories(rows []TerritoryEntry) (result []ScannedTerritory, count int) {
+	result = make([]ScannedTerritory, 0)
 	index := maps.NewDict[*ScannedTerritory]()
 	for _, row := range rows {
 		recordID := strings.ToLower(row.TerritoryID)

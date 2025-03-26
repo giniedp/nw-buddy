@@ -18,6 +18,7 @@ type ScannedStation struct {
 }
 
 func CollateStations(rows []StationEntry) (result []ScannedStationType, count int) {
+	result = make([]ScannedStationType, 0)
 	index := maps.NewDict[*maps.Dict[*ScannedStation]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)

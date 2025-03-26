@@ -61,6 +61,9 @@ export class NwDataLoader implements DataLoader {
   }
 
   private transformDatasheet(data: any) {
+    if (!data) {
+      data = []
+    }
     if (!Array.isArray(data)) {
       return data
     }

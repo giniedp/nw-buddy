@@ -18,6 +18,7 @@ type ScannedStructure struct {
 }
 
 func CollateStructures(rows []StructureEntry) (result []ScannedStructureType, count int) {
+	result = make([]ScannedStructureType, 0)
 	index := maps.NewDict[*maps.Dict[*ScannedStructure]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)

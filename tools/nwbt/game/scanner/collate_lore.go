@@ -16,6 +16,7 @@ type ScannedLoreSpawn struct {
 }
 
 func CollateLoreNotes(rows []LorenoteEntry) (result []ScannedLore, count int) {
+	result = make([]ScannedLore, 0)
 	index := maps.NewDict[*maps.Dict[*ScannedLoreSpawn]]()
 	for _, row := range rows {
 		mapId := strings.ToLower(row.MapID)
