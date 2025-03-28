@@ -20,9 +20,7 @@ import {
   environment,
   BRANCH_NAME
 } from '../env'
-import { glob, writeJSONFile } from './lib/utils/file-utils'
-import { logger } from './lib/utils/logger'
-import { useProgressBar } from './lib/utils/progress'
+import { glob, writeJSONFile } from './utils'
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,
@@ -45,26 +43,22 @@ program
     const zipUrl = `${CDN_URL}/nw-data/${options.version}.zip?cache=${Date.now()}`
     const zipFile = environment.nwDataDir(options.version) + '.zip'
     const zipDir = path.dirname(zipFile)
-    logger.log(options)
-    logger.log('[DOWNLOAD]', zipUrl)
+    console.log(options)
+    console.log('[DOWNLOAD]', zipUrl)
 
     if (!fs.existsSync(zipDir)) {
-      logger.log('Create dir', zipDir)
+      console.log('Create dir', zipDir)
       fs.mkdirSync(zipDir, { recursive: true })
     }
     if (fs.existsSync(zipFile)) {
-      logger.log('Remove existing file', zipFile)
+      console.log('Remove existing file', zipFile)
       fs.unlinkSync(zipFile)
     }
 
-    await useProgressBar({ label: 'Downloading' }, async (bar) => {
-      await download(zipUrl, zipFile, (downloaded, total) => {
-        bar.setTotal(total)
-        bar.update(downloaded, { name: zipFile })
-      })
-    })
+    console.log('Downloading to', zipFile)
+    await download(zipUrl, zipFile)
 
-    logger.log('Unzipping to', zipDir)
+    console.log('Unzipping to', zipDir)
     await unzip(zipFile, zipDir)
     // fs.unlinkSync(zipFile)
 
@@ -83,14 +77,12 @@ program
     'Version name to use for upload (default is the branch name)',
     BRANCH_NAME,
   )
-  .option('-u, --update', 'Whether to update the zip file before upload', false)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)
   .action(async (data) => {
     const options = z
       .object({
         version: z.string(),
         workspace: z.string(),
-        update: z.boolean(),
         files: z.boolean(),
       })
       .parse(data)
@@ -107,10 +99,8 @@ program
       },
     ]
 
-    if (!fs.existsSync(zipFile) || options.update) {
-      console.log('[ZIP]', zipDir, '->', zipFile)
-      await createBundle(zipDir, zipFile)
-    }
+    console.log('[ZIP]', zipDir, '->', zipFile)
+    await createBundle(zipDir, zipFile)
 
     if (options.files) {
       await glob(path.join(zipDir, '**', '*')).then((files) => {
@@ -145,7 +135,7 @@ program
         dryRun: z.boolean(),
       })
       .parse(opts)
-    logger.info('Uploading models', options)
+    console.info('Uploading models', options)
 
     const source = options.directory
     const target = options.target
@@ -175,9 +165,9 @@ program
       })
     })
     const toUpload = files.filter((it) => !fileList.has(it.key))
-    logger.info('found', files.length, 'files', 'to upload', toUpload.length)
+    console.info('found', files.length, 'files', 'to upload', toUpload.length)
     if (options.dryRun) {
-      logger.debug(toUpload.slice(0, 10))
+      console.debug(toUpload.slice(0, 10))
       return
     }
     await uploadFiles({

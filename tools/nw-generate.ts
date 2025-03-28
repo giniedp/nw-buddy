@@ -14,9 +14,7 @@ import {
   PACKAGE_VERSION,
   environment,
 } from '../env'
-import { tsFromSliceFiles } from './lib/file-formats/slices/generate-slice-types'
-import { useProgressBar } from './lib/utils'
-import { glob, readJSONFile, writeUTF8File } from './lib/utils/file-utils'
+import { glob, readJSONFile } from './utils'
 
 program
   .command('icons')
@@ -44,26 +42,6 @@ program
       const lines = names.map((name) => `export * from './${name}'`)
       fs.writeFileSync(tsFile, lines.join('\n'))
     }
-  })
-
-program
-  .command('slice-types')
-  .description('Generates typescript types from dynamicslice.json files.')
-  .action(async () => {
-    const rootDir = environment.nwConvertDir('live')
-    const files = await glob(path.join(rootDir, '**', '*.dynamicslice.json'))
-    const code = await useProgressBar('Scanning', async (bar) => {
-      bar.start(files.length, 0, { log: '' })
-      return await tsFromSliceFiles(files, (file, index) => {
-        bar.update(index, { log: path.relative(rootDir, file) })
-      })
-    })
-    await writeUTF8File(code, {
-      target: environment.tmpDir('slice-types.ts'),
-      createDir: true,
-    })
-
-    //await inspectModels()
   })
 
 program
