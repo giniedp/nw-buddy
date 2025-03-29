@@ -1,7 +1,7 @@
 <div class="skill-tree-title text-lg uppercase text-center font-serif text-nw-description nw-bg-title bg-bottom pt-4">
-  {{ title$ | async | nwText }} - <span class="font-caslon">{{ value?.length || 0 }}</span>
+  {{ title() | nwText }} - <span class="font-caslon">{{ value?.length || 0 }}</span>
 </div>
-<div class="skill-tree-content grid p-3 relative" [class]="colsClass | async">
+<div class="skill-tree-content grid p-3 relative" [class]="colsClass()">
   @for (row of rows(); track $index) {
     @for (cell of row; track $index) {
       @if (!cell.ability) {

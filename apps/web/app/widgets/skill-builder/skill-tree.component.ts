@@ -1,26 +1,27 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
-import { isEqual, transform } from 'lodash'
 import {
-  BehaviorSubject,
-  ReplaySubject,
-  combineLatest,
-  defer,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  takeUntil,
-} from 'rxjs'
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  OnInit,
+  signal,
+  untracked,
+} from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { isEqual } from 'lodash'
+import { combineLatest, distinctUntilChanged, switchMap, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SkillTreeCell } from './skill-tree.model'
 import { SkillTreeStore } from './skill-tree.store'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { animate, state, style, transition, trigger } from '@angular/animations'
 
 @Component({
   selector: 'nwb-skill-tree',
@@ -46,83 +47,56 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     ]),
   ],
 })
-export class SkillTreeComponent implements ControlValueAccessor, OnInit {
-  @Input()
-  public set weaponTag(value: string) {
-    this.weapon$.next(value)
-  }
-  @Input()
-  public set treeID(value: number) {
-    this.treeID$.next(value)
-  }
-  @Input()
-  public set value(value: string[]) {
-    this.resultValue = value
-    this.value$.next(value)
-  }
-  public get value() {
-    return this.resultValue
-  }
+export class SkillTreeComponent implements ControlValueAccessor {
+  private store = inject(SkillTreeStore)
+  private weaponTypes = inject(NwWeaponTypesService)
+  public readonly weaponTag = input<string>()
+  public readonly treeID = input<number>()
+  public readonly points = input<number>()
+  public readonly value = signal<string[]>([])
+  public readonly disabled = model<boolean>()
 
-  @Input()
-  public set points(value: number) {
-    this.points$.next(value)
-  }
-
-  @Input()
-  public disabled = false
-
-  protected rows = toSignal(this.store.rows$)
-  protected spent$ = this.store.selection$.pipe(map((it) => it?.length || 0))
-  protected colsClass = this.store.numCols$.pipe(map((it) => `grid-cols-${it}`))
-  protected weaponType$ = defer(() => this.weapon$).pipe(switchMap((tag) => this.weaponTypes.forWeaponTag(tag)))
-  protected title$ = defer(() =>
-    combineLatest({
-      type: this.weaponType$,
-      id: this.treeID$,
-    }),
-  ).pipe(map(({ type, id }) => (id === 0 ? type?.Tree1Name : type?.Tree2Name)))
-
-  private resultValue: string[]
-  private weapon$ = new ReplaySubject<string>(1)
-  private treeID$ = new ReplaySubject<number>(1)
-  private value$ = new ReplaySubject<string[]>(1)
-  private points$ = new BehaviorSubject<number>(NW_MAX_WEAPON_LEVEL - 1)
+  protected rows = this.store.rows
+  protected spent = this.store.spent
+  protected colsClass = computed(() => `grid-cols-${this.store.numCols()}`)
+  protected weaponType = toSignal(
+    toObservable(this.weaponTag).pipe(switchMap((tag) => this.weaponTypes.forWeaponTag(tag))),
+  )
+  protected title = computed(() => {
+    const type = this.weaponType()
+    const id = this.treeID()
+    return id === 0 ? type?.Tree1Name : type?.Tree2Name
+  })
 
   protected touched = false
   protected trackByIndex = (i: number) => i
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
 
-  public constructor(
-    private store: SkillTreeStore,
-    private weaponTypes: NwWeaponTypesService,
-  ) {
-    //
-  }
-
-  public ngOnInit(): void {
-    this.store.loadTree(
-      combineLatest({
-        weapon: this.weapon$,
-        tree: this.treeID$,
-        points: this.points$,
-        selection: this.value$,
-      }),
-    )
-
-    this.store.whenLoaded$
-      .pipe(switchMap(() => this.store.selection$))
-      .pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
-      .pipe(takeUntil(this.store.destroy$))
-      .subscribe((value) => {
-        this.onChange?.(value)
-        this.resultValue = value
+  public constructor() {
+    effect(() => {
+      const value = this.store.selection()
+      const loaded = this.store.isLoaded()
+      untracked(() => {
+        if (loaded) {
+          this.value.set(value)
+          this.onChange(value)
+        }
       })
+    })
+    effect(() => {
+      const value = this.points()
+      untracked(() => this.store.setPoints(value))
+    })
+    effect(() => {
+      const weaponTag = this.weaponTag()
+      const treeId = this.treeID()
+      untracked(() => this.store.load({ weaponTag, treeId }))
+    })
   }
 
   public writeValue(value: string[]): void {
-    this.value = value
+    this.store.setSelection(value)
   }
 
   public registerOnChange(fn: any): void {
@@ -134,11 +108,11 @@ export class SkillTreeComponent implements ControlValueAccessor, OnInit {
   }
 
   public setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled
+    this.disabled.set(isDisabled)
   }
 
   protected toggle(cell: SkillTreeCell) {
-    if (this.disabled) {
+    if (this.disabled()) {
       return
     }
     if (cell.checked) {
