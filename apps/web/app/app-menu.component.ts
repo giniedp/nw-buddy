@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Pipe, PipeTransform, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { DomSanitizer } from '@angular/platform-browser'
 import { RouterModule } from '@angular/router'
@@ -8,21 +8,13 @@ import { patchState, signalState } from '@ngrx/signals'
 import { map } from 'rxjs'
 import { NW_BUDDY_LIVE, NW_BUDDY_PTR, environment } from '../environments'
 import { APP_MENU } from './app-menu'
+import { LocaleService } from './i18n'
 import { NwLinkService, NwModule } from './nw'
 import { IconsModule } from './ui/icons'
 import { svgChevronLeft } from './ui/icons/svg'
 import { LayoutModule } from './ui/layout'
 import { MenuCloseDirective } from './ui/layout/menu.directive'
 import { injectCurrentUrl } from './utils/injection/current-url'
-import { LocaleService } from './i18n'
-
-@Pipe({
-  name: 'linkWithLocale',
-  standalone: false,
-})
-export class LinkWithLocale implements PipeTransform {
-  transform(value: any, ...args: any[]) {}
-}
 
 @Component({
   selector: 'app-menu',

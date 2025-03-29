@@ -1,42 +1,43 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, defer, map, switchMap } from 'rxjs'
+import { combineLatest, map, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwTradeskillService } from '~/nw/tradeskill'
 import { TradeskillLevelInputModule } from '~/ui/tradeskill-level-input'
-import { shareReplayRefCount } from '~/utils'
 
 @Component({
   selector: 'nwb-tradeskill-input',
-  templateUrl: './tradeskill-input.component.html',
+  template: `
+    <nwb-tradeskill-level-input
+      [ngModel]="level()"
+      (ngModelChange)="updateLevel(skill().ID, $event)"
+      [icon]="skill().Icon"
+      [label]="skill().Name"
+      [maxLevel]="skill().MaxLevel"
+    />
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TradeskillLevelInputModule],
+  imports: [FormsModule, TradeskillLevelInputModule],
   host: {
     class: 'contents',
   },
 })
 export class TradeskillInputComponent {
   private service = inject(NwTradeskillService)
-  private char = inject(CharacterStore)
+  private character = inject(CharacterStore)
 
-  @Input()
-  public set tradeskill(value: string) {
-    this.id$.next(value)
-  }
+  public tradeskill = input<string>()
+  private skill$ = combineLatest({
+    skills: this.service.skillsMap,
+    id: toObservable(this.tradeskill),
+  }).pipe(map(({ skills, id }) => skills.get(id)))
+  private level$ = this.skill$.pipe(switchMap((it) => this.character.observeTradeskillLevel(it.ID)))
 
-  private id$ = new BehaviorSubject<string>(null)
-  protected readonly tradeskill$ = defer(() =>
-    combineLatest({
-      skills: this.service.skillsMap,
-      id: this.id$,
-    }),
-  )
-    .pipe(map(({ skills, id }) => skills.get(id)))
-    .pipe(shareReplayRefCount(1))
-  protected level$ = this.tradeskill$.pipe(switchMap((it) => this.char.observeTradeskillLevel(it.ID)))
+  protected skill = toSignal(this.skill$)
+  protected level = toSignal(this.level$)
 
   protected updateLevel(id: string, level: number) {
-    this.char.setTradeskillLevel(id, level)
+    this.character.setTradeskillLevel(id, level)
   }
 }

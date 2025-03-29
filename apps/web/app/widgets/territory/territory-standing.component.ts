@@ -1,52 +1,40 @@
-import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, inject, input } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { TerritoryDefinition } from '@nw-data/generated'
-import { BehaviorSubject, defer, switchMap } from 'rxjs'
+import { switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { TerritoriesService } from '~/nw/territories'
 
 @Component({
   selector: 'nwb-territory-standing',
-  templateUrl: './territory-standing.component.html',
+  template: `
+    <img
+      [nwImage]="'assets/icons/territories/icon_territorystanding.png'"
+      class="object-cover absolute top-0 left-0 w-full h-full pointer-events-none scale-125"
+    />
+    <input
+      [disabled]="readonly() || !territoryId()"
+      [ngModel]="value()"
+      (ngModelChange)="setValue($event)"
+      type="number"
+      min="0"
+      placeholder="0"
+      class="input bg-transparent h-full w-full p-0 text-center text-2xl appearance-none relative z-10 text-base-100 font-medium transition-all outline outline-4 outline-transparent focus:outline-primary hover:outline-primary"
+    />
+  `,
   exportAs: 'nwbTerritoryStanding',
-  imports: [FormsModule, CommonModule, NwModule],
+  imports: [FormsModule, NwModule],
   host: {
     class: 'inline-block w-16 h-16 relative',
   },
 })
 export class TerritoryStandingComponent {
-  @Input()
-  public set territory(value: TerritoryDefinition) {
-    this.territoryId = value?.TerritoryID
-  }
+  private service = inject(TerritoriesService)
+  public territoryId = input<number>()
+  public readonly = input<boolean>()
 
-  @Input()
-  public set territoryId(value: number) {
-    this.territoryId$.next(value)
-  }
-  public get territoryId() {
-    return this.territoryId$.value
-  }
-
-  @Input()
-  public set readonly(value: boolean) {
-    this.isReadonly = value
-  }
-  public get readonly() {
-    return this.isReadonly || !this.territoryId
-  }
-
-  protected value = defer(() => this.territoryId$).pipe(switchMap((id) => this.service.getStanding(id)))
-
-  private isReadonly: boolean = false
-  private territoryId$ = new BehaviorSubject<number>(null)
-
-  public constructor(private service: TerritoriesService) {
-    //
-  }
-
+  protected value = toSignal(toObservable(this.territoryId).pipe(switchMap((id) => this.service.getStanding(id))))
   protected setValue(value: number) {
-    this.service.setStanding(this.territoryId$.value, value)
+    this.service.setStanding(this.territoryId(), value)
   }
 }

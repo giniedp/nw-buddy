@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, inject, output } from '@angular/core'
+import { Component, computed, inject, output, resource } from '@angular/core'
 import { groupBy } from 'lodash'
 import { CharacterStore, injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircle, svgCircleCheck } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { apiResource } from '~/utils'
 
 @Component({
   selector: 'nwb-xp-unlock-line',
@@ -25,7 +24,7 @@ export class XpUnlockLineComponent {
 
   protected level = this.character.level
 
-  protected resource = apiResource({
+  protected resource = resource({
     loader: () => this.db.milestoneRewardsAll(),
   })
   protected data = computed(() => {

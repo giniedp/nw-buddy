@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, resource } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { CharacterStore, injectNwData } from '~/data'
-import { apiResource } from '~/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -29,7 +28,7 @@ export class XpLevelInfoComponent {
 
   private level = this.character.level
 
-  private resource = apiResource({
+  private resource = resource({
     loader: () => this.db.xpLevels(),
   })
 

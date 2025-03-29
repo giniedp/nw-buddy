@@ -1,43 +1,32 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <figure class="mb-[-150px] relative">
-    <img [nwImage]="vm.background" class="z-10 w-full" width="540" height="260" />
-    <div class="absolute top-0 left-0 right-0 bottom-0 from-transparent to-base-300 bg-gradient-to-b z-20"></div>
-  </figure>
-  <div class="px-4 z-30 relative" style="text-shadow: 1px 1px 2px black">
-    <div [nwText]="vm.name" class="font-bold text-lg"></div>
-    <div *ngIf="vm.level; let level">Recommended Level: {{ level }}</div>
-
-    <div class="flex flex-row ml-[-5px] mt-2" *ngIf="vm.hasFort">
-      <nwb-territory-standing [territoryId]="vm.id"></nwb-territory-standing>
-      <div [nwText]="vm.standingTitle" class="text-sm ml-2"></div>
+<figure class="mb-[-150px] relative">
+  <img [nwImage]="background()" class="z-10 w-full" width="540" height="260" />
+  <div class="absolute top-0 left-0 right-0 bottom-0 from-transparent to-base-300 bg-gradient-to-b z-20"></div>
+</figure>
+<div class="px-4 z-30 relative" style="text-shadow: 1px 1px 2px black">
+  <div class="font-bold text-lg">{{ name() | nwText }}</div>
+  @if (level()) {
+    <div>Recommended Level: {{ level() }}</div>
+  }
+  @if (hasFort()) {
+    <div class="flex flex-row ml-[-5px] mt-2">
+      <nwb-territory-standing [territoryId]="territoryId()" />
+      <div class="text-sm ml-2">
+        {{ standingTitle() | nwText }}
+      </div>
     </div>
-  </div>
+  }
+</div>
 
-  <div class="flex-1"></div>
-  <div class="px-4 my-4 z-30 relative">
-    <nwb-chips-input
-      [placeholder]="'Tags, ...'"
-      [ngModel]="vm.tags"
-      (ngModelChange)="writeTags(vm.id, $event)"
-    ></nwb-chips-input>
-    <textarea
-      placeholder="Notes"
-      class="
-        mt-2
-        w-full
-        resize-none
-        px-2
-        py-1
-        textarea textarea-ghost
-        leading-5
-        placeholder-gray-500 placeholder-opacity-30
-        hover:placeholder-opacity-100
-      "
-      rows="3"
-      maxlength="250"
-      [ngModel]="vm.notes"
-      (ngModelChange)="writeNotes(vm.id, $event)"
-      [ngModelOptions]="{ updateOn: 'blur' }"
-    ></textarea>
-  </div>
-</ng-container>
+<div class="flex-1"></div>
+<div class="px-4 my-4 z-30 relative">
+  <nwb-chips-input [placeholder]="'Tags, ...'" [ngModel]="tags()" (ngModelChange)="writeTags(territoryId(), $event)" />
+  <textarea
+    placeholder="Notes"
+    class="mt-2 w-full resize-none px-2 py-1 textarea textarea-ghost leading-5 placeholder-gray-500 placeholder-opacity-30 hover:placeholder-opacity-100"
+    rows="3"
+    maxlength="250"
+    [ngModel]="notes()"
+    (ngModelChange)="writeNotes(territoryId(), $event)"
+    [ngModelOptions]="{ updateOn: 'blur' }"
+  ></textarea>
+</div>

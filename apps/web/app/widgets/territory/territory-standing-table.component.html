@@ -1,6 +1,6 @@
 <table class="table table-compact w-full">
   <thead>
-    <tr >
+    <tr>
       <th>Level</th>
       <td class="text-right">XP</td>
       <td class="text-right">XP (total)</td>
@@ -9,13 +9,14 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let row of data | async; let i = index">
-      <th>{{ row.Level | number }}</th>
-      <td class="text-right">{{ row.XPToLevel | number }}</td>
-      <td class="text-right">{{ row.XPTotal | number }}</td>
-      <td class="text-right" [nwText]="row.Title"></td>
-      <td class="text-right">{{ row.XPReward | number }}</td>
-    </tr>
+    @for (row of data.value(); track $index; let i = $index) {
+      <tr>
+        <th>{{ row.Level | number }}</th>
+        <td class="text-right">{{ row.XPToLevel | number }}</td>
+        <td class="text-right">{{ row.XPTotal | number }}</td>
+        <td class="text-right" [nwText]="row.Title"></td>
+        <td class="text-right">{{ row.XPReward | number }}</td>
+      </tr>
+    }
   </tbody>
 </table>
-

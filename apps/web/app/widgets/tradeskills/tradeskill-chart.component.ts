@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ChartConfiguration } from 'chart.js'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, defer, distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs'
+import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -14,103 +14,50 @@ const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a'
 
 @Component({
   selector: 'nwb-tradeskill-chart',
-  templateUrl: './tradeskill-chart.component.html',
-  styleUrls: ['./tradeskill-chart.component.scss'],
+  template: `
+    @if (config(); as config) {
+      <nwb-chart [config]="config" class="bg-base-100 rounded-md p-2" />
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ChartModule, NwModule],
+  imports: [ChartModule, NwModule],
+  host: {
+    class: 'block',
+  },
 })
 export class TradeskillChartComponent {
-  private char = inject(CharacterStore)
+  private character = inject(CharacterStore)
+  private service = inject(NwTradeskillService)
+  private i18n = inject(TranslateService)
 
-  @Input()
-  public set category(value: string) {
-    this.category$.next(value)
-  }
-
-  public readonly chartConfig = defer(() =>
-    combineLatest({
-      skills: this.skillInfo$,
-      tables: this.skillTable$,
-      levels: this.skillLevel$,
+  public category = input<string>()
+  private category$ = toObservable(this.category)
+  private skillInfo$ = this.category$.pipe(
+    switchMap((it) => this.service.skillsByCategory(it)),
+    switchMap((skills) => {
+      return combineLatestOrEmpty(
+        skills.map((it) => {
+          return this.i18n.observe(it.Name).pipe(
+            map((name) => {
+              return {
+                ...it,
+                Name: name,
+              }
+            }),
+          )
+        }),
+      )
     }),
-  ).pipe(
-    map(({ skills, tables, levels }): ChartConfiguration => {
-      return {
-        type: 'line',
-        options: {
-          animation: false,
-          elements: {
-            point: {
-              hoverRadius: (context) => {
-                if (levels[context.datasetIndex] === context.dataIndex) {
-                  return 10
-                }
-                return 5
-              },
-              radius: (context) => {
-                if (levels[context.datasetIndex] === context.dataIndex) {
-                  return 8
-                }
-                return 3
-              },
-            },
-          },
-          hover: {
-            mode: 'index',
-            intersect: false,
-          },
-          plugins: {
-            tooltip: {
-              mode: 'index',
-              intersect: false,
-            },
-          },
-        },
-        data: {
-          labels: tables[0].map((it) => String(it.Level)),
-          datasets: tables.map((table, i) => {
-            return {
-              label: skills[i].Name,
-              data: table.map((it) => it.MaximumInfluence),
-              backgroundColor: COLORS[i % COLORS.length],
-            }
-          }),
-        },
-      }
+    distinctUntilChanged<NwTradeskillInfo[]>(isEqual),
+    shareReplay({
+      refCount: true,
+      bufferSize: 1,
     }),
   )
 
-  private category$ = new BehaviorSubject<string>(null)
-
-  private skillInfo$ = defer(() => this.category$)
-    .pipe(switchMap((it) => this.service.skillsByCategory(it)))
-    .pipe(
-      switchMap((skills) => {
-        return combineLatest(
-          skills.map((it) => {
-            return this.i18n.observe(it.Name).pipe(
-              map((name) => {
-                return {
-                  ...it,
-                  Name: name,
-                }
-              }),
-            )
-          }),
-        )
-      }),
-    )
-    .pipe(distinctUntilChanged<NwTradeskillInfo[]>(isEqual))
-    .pipe(
-      shareReplay({
-        refCount: true,
-        bufferSize: 1,
-      }),
-    )
-
-  private skillTable$ = defer(() => this.skillInfo$).pipe(
+  private skillTable$ = this.skillInfo$.pipe(
     switchMap((skills) => {
-      return combineLatest(
+      return combineLatestOrEmpty(
         skills.map((skill) => {
           return this.service.skillTableByName(skill.ID).pipe(map((it) => it.filter((i) => i.Level <= skill.MaxLevel)))
         }),
@@ -118,16 +65,63 @@ export class TradeskillChartComponent {
     }),
   )
 
-  private skillLevel$ = defer(() => this.skillInfo$).pipe(
+  private skillLevel$ = this.skillInfo$.pipe(
     switchMap((skills) => {
-      return combineLatestOrEmpty(skills.map((skill) => this.char.observeTradeskillLevel(skill.ID)))
+      return combineLatestOrEmpty(skills.map((skill) => this.character.observeTradeskillLevel(skill.ID)))
     }),
   )
 
-  public constructor(
-    private service: NwTradeskillService,
-    private i18n: TranslateService,
-  ) {
-    //
-  }
+  private skillInfo = toSignal(this.skillInfo$)
+  private skillTable = toSignal(this.skillTable$)
+  private skillLevel = toSignal(this.skillLevel$)
+  protected config = computed((): ChartConfiguration => {
+    const skills = this.skillInfo()
+    const tables = this.skillTable()
+    const levels = this.skillLevel()
+    if (!skills || !tables || !levels) {
+      return null
+    }
+    return {
+      type: 'line',
+      options: {
+        animation: false,
+        elements: {
+          point: {
+            hoverRadius: (context) => {
+              if (levels[context.datasetIndex] === context.dataIndex) {
+                return 10
+              }
+              return 5
+            },
+            radius: (context) => {
+              if (levels[context.datasetIndex] === context.dataIndex) {
+                return 8
+              }
+              return 3
+            },
+          },
+        },
+        hover: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+          },
+        },
+      },
+      data: {
+        labels: tables[0]?.map((it) => String(it.Level)),
+        datasets: tables.map((table, i) => {
+          return {
+            label: skills[i].Name,
+            data: table.map((it) => it.MaximumInfluence),
+            backgroundColor: COLORS[i % COLORS.length],
+          }
+        }),
+      },
+    }
+  })
 }

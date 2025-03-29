@@ -4,15 +4,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  NgZone,
   Renderer2,
   RendererStyleFlags2,
   computed,
-  effect,
   inject,
 } from '@angular/core'
 import { Router, RouterModule, UrlSegment } from '@angular/router'
-import { from, interval, map, of, switchMap, take } from 'rxjs'
+import { map, of, switchMap } from 'rxjs'
 import { TranslateService } from './i18n'
 
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
@@ -178,24 +176,9 @@ export class AppComponent {
     private router: Router,
     private elRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
-    private zone: NgZone,
   ) {
     this.bindLanguage()
     this.bindWatermark()
-
-    let time = performance.now()
-    // zone.runOutsideAngular(() => {
-    //   return interval(10).pipe(take(100)).subscribe(() => {
-    //     const now = performance.now()
-    //     console.log('tick', Math.floor(now - time))
-    //     time = now
-    //   })
-    // })
-    // effect(() => console.log(this.items()))
-
-    // this.db.
-    // this.db.itemsAll().then((it) => console.log('items', it))
-    // this.db.itemsById('artifact_set1_heavylegs').then((it) => console.log('artifact_set1_heavylegs', it))
   }
 
   private removeLoader() {

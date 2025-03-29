@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, resource } from '@angular/core'
 import { DATASHEETS } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { apiResource } from '~/utils'
 
 export interface StandingRow {
   Level: number
@@ -25,10 +24,10 @@ export interface StandingRow {
 })
 export class TerritoryGovernanceTableComponent {
   private db = injectNwData()
-  protected data = apiResource({
+  protected data = resource({
     loader: () => this.db.loadDatasheet(DATASHEETS.TerritoryUpkeepDefinition.TerritoryUpkeep),
   })
-  protected territoriesMap = apiResource({
+  protected territoriesMap = resource({
     loader: () => this.db.territoriesByIdMap(),
   })
   protected territories = computed(() => {

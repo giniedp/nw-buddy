@@ -1,16 +1,11 @@
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { NwModule } from '~/nw'
-import { ChartModule } from '~/ui/chart'
-import { FormsModule } from '@angular/forms'
-import { TradeskillInputComponent } from './tradeskill-input.component'
 import { TradeskillChartComponent } from './tradeskill-chart.component'
+import { TradeskillInputComponent } from './tradeskill-input.component'
 import { NwTradeskillCircleComponent } from './tradeskill-progress.component'
 
-const COMPONENTS = [TradeskillChartComponent, TradeskillInputComponent]
+const COMPONENTS = [TradeskillChartComponent, TradeskillInputComponent, NwTradeskillCircleComponent]
 @NgModule({
-  imports: [CommonModule, NwModule, ChartModule, FormsModule, ...COMPONENTS],
-  declarations: [NwTradeskillCircleComponent],
-  exports: [NwTradeskillCircleComponent, ...COMPONENTS],
+  imports: [...COMPONENTS],
+  exports: [...COMPONENTS],
 })
 export class TradeskillsModule {}

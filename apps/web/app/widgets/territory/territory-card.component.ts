@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, computed, inject, input } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { territoryHasFort } from '@nw-data/common'
 import { TerritoryDefinition } from '@nw-data/generated'
-import { BehaviorSubject, combineLatest, defer, map, startWith } from 'rxjs'
 import { NwModule } from '~/nw'
 import { TerritoriesService } from '~/nw/territories'
 import { ChipsInputModule } from '~/ui/chips-input'
-import { shareReplayRefCount } from '~/utils'
 import { TerritoryStandingComponent } from './territory-standing.component'
 
 @Component({
@@ -19,47 +18,23 @@ import { TerritoryStandingComponent } from './territory-standing.component'
   },
 })
 export class TerritoryCardCoponent {
-  @Input()
-  public set territory(value: TerritoryDefinition) {
-    this.territoryId = value?.TerritoryID
-  }
-
-  @Input()
-  public set territoryId(value: number) {
-    this.territoryId$.next(value)
-  }
-  public get territoryId() {
-    return this.territoryId$.value
-  }
-
-  protected vm$ = defer(() =>
-    combineLatest({
-      id: this.territoryId$,
-      territory: this.territory$,
-      standing: this.service.getStanding(this.territoryId$),
-      standingTitle: this.service.getStandingTitle(this.territoryId$),
-      notes: this.service.getNotes(this.territoryId$),
-      tags: this.service.getTags(this.territoryId$),
-      name: this.territory$.pipe(map((it) => it?.NameLocalizationKey)),
-      background: this.territory$.pipe(map((it) => this.service.image(it, 'territory'))),
-      hasFort: this.territory$.pipe(map((it) => territoryHasFort(it))),
-      level: this.territory$.pipe(
-        map((it) => {
-          if (it.RecommendedLevel || it.MaximumLevel) {
-            return [it.RecommendedLevel, it.MaximumLevel].join(' - ')
-          }
-          return null
-        }),
-      ),
-    }),
-  ).pipe(startWith(null))
-
-  protected territoryId$ = new BehaviorSubject<number>(null)
-  protected territory$ = defer(() => this.service.getTerritory(this.territoryId$)).pipe(shareReplayRefCount(1))
-
-  public constructor(private service: TerritoriesService) {
-    //
-  }
+  private service = inject(TerritoriesService)
+  public territory = input<TerritoryDefinition>()
+  public territoryId = computed(() => this.territory()?.TerritoryID)
+  protected standing = toSignal(this.service.getStanding(toObservable(this.territoryId)))
+  protected standingTitle = toSignal(this.service.getStandingTitle(toObservable(this.territoryId)))
+  protected notes = toSignal(this.service.getNotes(toObservable(this.territoryId)))
+  protected tags = toSignal(this.service.getTags(toObservable(this.territoryId)))
+  protected name = computed(() => this.territory()?.NameLocalizationKey)
+  protected background = computed(() => this.service.image(this.territory(), 'territory'))
+  protected hasFort = computed(() => territoryHasFort(this.territory()))
+  protected level = computed(() => {
+    const territory = this.territory()
+    if (territory.RecommendedLevel || territory.MaximumLevel) {
+      return [territory.RecommendedLevel, territory.MaximumLevel].join(' - ')
+    }
+    return null
+  })
 
   protected writeNotes(id: number, note: string) {
     this.service.setNotes(id, note)

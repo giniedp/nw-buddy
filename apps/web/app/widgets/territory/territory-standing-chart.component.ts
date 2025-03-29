@@ -1,40 +1,40 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, resource } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
-import { from, map } from 'rxjs'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { ChartModule } from '~/ui/chart'
 
 @Component({
   selector: 'nwb-territory-standing-chart',
-  templateUrl: './territory-standing-chart.component.html',
+  template: `<nwb-chart [config]="config()" class="bg-base-100 rounded-md p-2" />`,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ChartModule],
+  imports: [NwModule, ChartModule],
   host: {
     class: 'block',
   },
 })
 export class TerritoryStandingChartComponent {
   private db = injectNwData()
-  protected config$ = from(this.db.categoricalRankTerritoryStanding()).pipe(
-    map((data): ChartConfiguration => {
-      return {
-        type: 'line',
-        options: {
-          backgroundColor: '#FFF',
-        },
-        data: {
-          labels: data.map((it) => it.Rank),
-          datasets: [
-            {
-              label: 'XP per level',
-              data: data.map((it) => it.InfluenceCost),
-              backgroundColor: '#ffa600',
-            },
-          ],
-        },
-      }
-    }),
-  )
+  private data = resource({
+    loader: () => this.db.categoricalRankTerritoryStanding(),
+  })
+  protected config = computed((): ChartConfiguration => {
+    const data = this.data.value() || []
+    return {
+      type: 'line',
+      options: {
+        backgroundColor: '#FFF',
+      },
+      data: {
+        labels: data.map((it) => it.Rank),
+        datasets: [
+          {
+            label: 'XP per level',
+            data: data.map((it) => it.InfluenceCost),
+            backgroundColor: '#ffa600',
+          },
+        ],
+      },
+    }
+  })
 }

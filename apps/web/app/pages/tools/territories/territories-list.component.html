@@ -4,7 +4,7 @@
       *ngFor="let item of territories$ | async; trackBy: trackById"
       [territory]="item"
       class="flex-1 select-none"
-    ></nwb-territory-card>
+    />
   </div>
 </div>
-<router-outlet></router-outlet>
+<router-outlet/>

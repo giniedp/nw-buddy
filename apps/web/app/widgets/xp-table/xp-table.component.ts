@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, resource } from '@angular/core'
 import { injectNwData } from '~/data'
-import { apiResource } from '~/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -31,11 +30,11 @@ export interface LevelingRow {
 })
 export class XpTableComponent {
   private db = injectNwData()
-  private resource = apiResource({
+  private resource = resource({
     loader: () => this.db.xpLevels(),
   })
   protected data = computed(() => {
-    const data = this.resource?.value() || []
+    const data = this.resource.value() || []
     return data.map((row, i): LevelingRow => {
       return {
         Level: row['Level Number'] + 1,

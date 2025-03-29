@@ -3,7 +3,7 @@ import { Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 
 @Component({
-  template: '<router-outlet></router-outlet>',
+  template: '<router-outlet/>',
   host: {
     class: 'layout-col',
   },

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { from, map } from 'rxjs'
+import { ChangeDetectionStrategy, Component, resource } from '@angular/core'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 
@@ -32,8 +31,9 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
 })
 export class TerritoryStandingTableComponent {
   private db = injectNwData()
-  public data = from(this.db.categoricalRankTerritoryStanding()).pipe(
-    map((data) => {
+  public data = resource({
+    loader: async () => {
+      const data = await this.db.categoricalRankTerritoryStanding()
       return data.map((node, i): StandingRow => {
         return {
           Level: node.Rank,
@@ -43,6 +43,6 @@ export class TerritoryStandingTableComponent {
           XPReward: node.XpReward,
         }
       })
-    }),
-  )
+    },
+  })
 }

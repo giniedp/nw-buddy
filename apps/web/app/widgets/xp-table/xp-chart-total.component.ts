@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, resource } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { CharacterStore, injectNwData } from '~/data'
 import { ChartComponent } from '~/ui/chart'
-import { apiResource } from '~/utils'
 
 @Component({
   selector: 'nwb-xp-chart-total',
@@ -20,7 +19,7 @@ export class XpChartTotalComponent {
 
   private level = this.character.level
 
-  private resource = apiResource({
+  private resource = resource({
     loader: () => this.db.xpLevels(),
   })
 
