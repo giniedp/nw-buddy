@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import { MUTATIONS_API_KEY } from '../env'
-import { glob } from './lib/utils/file-utils'
+import { glob } from './utils'
 import fs from 'node:fs'
 program
   .command('transform')
