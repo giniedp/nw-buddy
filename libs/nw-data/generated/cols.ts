@@ -284,7 +284,7 @@ export const COLS_ABILITYDATA = {
 }
 
 export const COLS_ACHIEVEMENTDATA = {
-  '15886': 'string',
+  '16128': 'string',
   AchievementID: 'string',
   AchievementIndex: 'number',
   'AchivementsIndex &gt; 32000 will require a code change!': 'string',
