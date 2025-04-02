@@ -3,7 +3,6 @@ package models
 import (
 	"log/slog"
 	"nw-buddy/tools/formats/gltf/importer"
-	"nw-buddy/tools/game"
 	"nw-buddy/tools/game/scanner"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
@@ -35,12 +34,12 @@ func runCollectVitals(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectVitals(flgVitalsFile, getCommaSeparatedList(flgIds)...)
-	c.Convert()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
-func (c *Collector) CollectVitals(file string, ids ...string) {
-	data, err := os.ReadFile(file)
+func (c *Collector) CollectVitals(indexFile string, ids ...string) {
+	data, err := os.ReadFile(indexFile)
 	if err != nil {
 		slog.Error("failed to read vitals file", "err", err)
 		return
@@ -64,53 +63,35 @@ func (c *Collector) CollectVitals(file string, ids ...string) {
 			continue
 		}
 
-		file := c.targetPath(path.Join("vitals", entry.Id))
-		if !c.shouldProcess(file) {
+		targetFile := c.outputPath(path.Join("vitals", entry.Id))
+		if !c.shouldProcess(targetFile) {
 			continue
 		}
 
 		model := entry.Cdf
 		material := entry.Mtl
-		adbFile := entry.Adb
 
-		group := importer.AssetGroup{}
 		if path.Ext(model) == ".cdf" {
 			cdf, err := c.ResolveCdfAsset(model)
 			if err != nil {
 				slog.Warn("failed to resolve cdf asset", "file", model, "err", err)
 				continue
 			}
-
-			cgfFile := c.ResolveCgf(cdf.Model.File)
-			if cgfFile != "" {
-				group.Animations = c.getAnimations(cdf, adbFile)
-				group.Meshes = append(group.Meshes, importer.GeometryAsset{
-					GeometryFile: cgfFile,
-					MaterialFile: game.DEFAULT_MATERIAL,
-					SkipGeometry: true,
-				})
-			}
-			for _, mesh := range cdf.SkinAndClothAttachments() {
-				if model, mtl := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material, material); model != "" {
-					group.Meshes = append(group.Meshes, importer.GeometryAsset{
-						GeometryFile: model,
-						MaterialFile: mtl,
-					})
-				}
-			}
+			c.CollectCdf(cdf, material, targetFile)
 		} else {
+			group := importer.AssetGroup{}
 			if model, material = c.ResolveModelMaterialPair(model, material); model != "" {
 				group.Meshes = append(group.Meshes, importer.GeometryAsset{
 					GeometryFile: model,
 					MaterialFile: material,
 				})
 			}
+			if len(group.Meshes) > 0 {
+				group.TargetFile = targetFile
+				c.models.Store(group.TargetFile, group)
+			}
 		}
 
-		if len(group.Meshes) > 0 {
-			group.TargetFile = file
-			c.models.Store(group.TargetFile, group)
-		}
 	}
 	bar.Close()
 }

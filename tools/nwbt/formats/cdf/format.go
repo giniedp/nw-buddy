@@ -93,5 +93,5 @@ func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFil
 	if err != nil {
 		return nil, err
 	}
-	return params.LoadAnimationFiles(archive)
+	return params.LoadAnimationList(archive)
 }

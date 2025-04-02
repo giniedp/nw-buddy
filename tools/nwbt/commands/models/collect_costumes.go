@@ -28,7 +28,7 @@ func runCollectCostumes(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectCostumes(ids...)
-	c.Convert()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -49,7 +49,7 @@ func (c *Collector) CollectCostumes(ids ...string) {
 			if !matchFilter(ids, id) {
 				continue
 			}
-			file := c.targetPath(path.Join("costumechanges", id))
+			file := c.outputPath(path.Join("costumechanges", id))
 			if !c.shouldProcess(file) {
 				continue
 			}

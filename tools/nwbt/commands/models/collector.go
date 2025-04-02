@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/game"
+	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/maps"
 	"path"
@@ -14,8 +15,9 @@ import (
 
 type Collector struct {
 	*game.Assets
-	models *maps.Dict[importer.AssetGroup]
-	flags  Flags
+	models    *maps.Dict[importer.AssetGroup]
+	timelines *maps.Dict[nwfs.File]
+	flags     Flags
 }
 
 func NewCollector(assets *game.Assets, flags Flags) *Collector {
@@ -41,19 +43,24 @@ func NewCollector(assets *game.Assets, flags Flags) *Collector {
 		}
 	}
 	return &Collector{
-		Assets: assets,
-		models: maps.NewDict[importer.AssetGroup](),
-		flags:  flags,
+		Assets:    assets,
+		models:    maps.NewDict[importer.AssetGroup](),
+		timelines: maps.NewDict[nwfs.File](),
+		flags:     flags,
 	}
 }
 
-func (c *Collector) targetPath(file string) string {
+func (c *Collector) outputPath(file string) string {
+	return path.Join(c.flags.OutputDir, c.assetPath(file))
+}
+
+func (c *Collector) assetPath(file string) string {
 	if c.flags.Binary {
 		file += ".glb"
 	} else {
 		file += ".gltf"
 	}
-	return path.Join(c.flags.OutputDir, strings.ToLower(file))
+	return strings.ToLower(file)
 }
 
 func (c *Collector) shouldProcess(file string) bool {
@@ -64,6 +71,22 @@ func (c *Collector) shouldProcess(file string) bool {
 		return false
 	}
 	return true
+}
+
+func (c *Collector) addTimelineFile(timelineFile string) {
+	timelineFile = nwfs.NormalizePath(timelineFile)
+	if timelineFile == "" {
+		return
+	}
+	candidates := []string{timelineFile}
+	candidates = utils.AppendUniqNoZero(candidates, utils.ReplaceExt(timelineFile, ".timeline"))
+	for _, candidate := range candidates {
+		if file, ok := c.Archive.Lookup(candidate); ok && file != nil {
+			c.timelines.LoadOrStore(timelineFile, file)
+			return
+		}
+	}
+	slog.Warn("timeline not found", "tried", candidates)
 }
 
 func getCommaSeparatedList(value string) []string {

@@ -12,6 +12,8 @@ import (
 
 const (
 	DEFAULT_MATERIAL = "materials/references/base_colors/purple_trans_glowing.mtl"
+	CDF_MODEL_MALE   = "objects/characters/player/male/player_male.cdf"
+	CDF_MODEL_FEMALE = "objects/characters/player/female/player_female.cdf"
 	CHR_MODEL_MALE   = "objects/characters/player/male/player_male.chr"
 	CHR_MODEL_FEMALE = "objects/characters/player/female/player_female.chr"
 )

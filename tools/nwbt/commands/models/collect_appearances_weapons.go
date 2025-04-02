@@ -25,7 +25,7 @@ func (c *Collector) CollectAppearancesWeapons(ids ...string) {
 			}
 
 			scope := "weaponappearances"
-			file := c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride1")))
+			file := c.outputPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride1")))
 			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride1")
 				material := row.GetString("MaterialOverride1")
@@ -40,7 +40,7 @@ func (c *Collector) CollectAppearancesWeapons(ids ...string) {
 				}
 			}
 
-			file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride2")))
+			file = c.outputPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "SkinOverride2")))
 			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride2")
 				material := row.GetString("MaterialOverride2")
@@ -57,7 +57,7 @@ func (c *Collector) CollectAppearancesWeapons(ids ...string) {
 
 			meshOverride := row.GetString("MeshOverride")
 			if path.Ext(meshOverride) == ".cdf" {
-				file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
+				file = c.outputPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
 				if c.shouldProcess(file) {
 					cdf, _ := c.ResolveCdfAsset(meshOverride)
 					if cdf != nil {
@@ -78,7 +78,7 @@ func (c *Collector) CollectAppearancesWeapons(ids ...string) {
 				}
 			}
 			if path.Ext(meshOverride) == ".cgf" {
-				file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
+				file = c.outputPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "MeshOverride")))
 				if c.shouldProcess(file) {
 					model, material := c.ResolveModelMaterialPair(meshOverride, "")
 					if model != "" {

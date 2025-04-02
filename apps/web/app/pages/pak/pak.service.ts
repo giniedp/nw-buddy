@@ -4,7 +4,7 @@ import { environment } from 'apps/web/environments'
 const toImageTypes = ['dds', 'png', 'tif']
 const toModelTypes = ['cgf', 'cdf', 'skin']
 const toJsonTypes = ['dynamicslice', 'meta', 'chunks', 'waterqt', 'timeline', 'datasheet']
-const textTypes = ['json', 'xml', 'cfg', 'mtl', 'ext', 'cdf', 'chrparams', 'animevents', 'bspace', 'comb', 'adb']
+const textTypes = ['json', 'xml', 'cfg', 'mtl', 'ext', 'cdf', 'chrparams', 'animevents', 'bspace', 'comb', 'adb', 'grid', 'actionlist']
 const textTypeMap = {
   mtl: 'xml',
   cdf: 'xml',
@@ -13,6 +13,8 @@ const textTypeMap = {
   bspace: 'xml',
   comb: 'xml',
   adb: 'xml',
+  grid: 'xml',
+  actionlist: 'xml',
 }
 
 export interface FileStat {

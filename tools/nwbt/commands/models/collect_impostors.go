@@ -42,7 +42,7 @@ func runCollectImpostors(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectImpostors(glob)
-	c.Convert()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -106,7 +106,7 @@ func (c *Collector) CollectImpostors(glob string) {
 
 		}
 		if !merge && len(group.Meshes) > 0 {
-			group.TargetFile = c.targetPath(utils.ReplaceExt(file.Path(), ""))
+			group.TargetFile = c.outputPath(utils.ReplaceExt(file.Path(), ""))
 			c.models.Store(group.TargetFile, group)
 		}
 	}

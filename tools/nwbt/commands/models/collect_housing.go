@@ -34,7 +34,7 @@ func runCollectHousing(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectHousing(ids...)
-	c.Convert()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -61,7 +61,7 @@ func (c *Collector) CollectHousing(ids ...string) {
 				continue
 			}
 			slicePath := nwfs.NormalizePath(path.Join("slices", prefabPath))
-			file := c.targetPath(slicePath)
+			file := c.outputPath(slicePath)
 			if !c.shouldProcess(file) {
 				continue
 			}

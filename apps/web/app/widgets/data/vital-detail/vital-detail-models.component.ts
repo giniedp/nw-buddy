@@ -1,22 +1,19 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NwModule } from '~/nw'
-import { ModelViewerModule, ModelsService } from '~/widgets/model-viewer'
+import { GameViewerCharacterDirective, GameViewerComponent } from '~/widgets/game-viewer'
+import { ModelViewerModule } from '~/widgets/model-viewer'
 import { VitalDetailStore } from './vital-detail.store'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'nwb-vital-detail-models',
-  templateUrl: './vital-detail-models.component.html',
+  template: ` <nw-game-viewer [nwGameViewerVital]="store.vitalId()" class="block aspect-square relative" /> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ModelViewerModule],
+  imports: [CommonModule, NwModule, ModelViewerModule, GameViewerComponent, GameViewerCharacterDirective],
   host: {
     class: 'block',
   },
 })
 export class VitalDetailModelsComponent {
-  private store = inject(VitalDetailStore)
-  private service = inject(ModelsService)
-
-  protected models = toSignal(this.service.byVitalsId(toObservable(this.store.vitalId)))
+  protected store = inject(VitalDetailStore)
 }

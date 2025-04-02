@@ -50,6 +50,7 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset 
 	rootNodes := c.ImportCgfHierarchy(model, func(node *gltf.Node, chunk cgf.Chunker) {
 		switch meshChunk := chunk.(type) {
 		case cgf.ChunkMesh:
+			node.Name = asset.Name
 			node.Mesh, _ = c.ImportCgfMesh(meshChunk, model, gltfMaterials)
 			node.Skin = skin
 		}

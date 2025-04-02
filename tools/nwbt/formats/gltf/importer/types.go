@@ -1,29 +1,24 @@
 package importer
 
-import "nw-buddy/tools/utils/maps"
-
 type AssetGroup struct {
-	Appearance any
+	TargetFile string
 	Animations []Animation
 	Meshes     []GeometryAsset
 	Lights     []LightAsset
 	Cameras    []CameraAsset
 	Entities   []Entity
-	TargetFile string
+	Extra      map[string]any
 }
 
 type Animation struct {
-	File      string
-	Name      string
-	DamageIds []string
-	Actions   []string
-	Meta      map[string]any
+	File string `json:"file"`
+	Name string `json:"name"`
 }
 
 type Entity struct {
 	Name      string
 	Transform [16]float32
-	Meta      maps.Dict[any]
+	Extra     map[string]any
 }
 
 type GeometryAsset struct {

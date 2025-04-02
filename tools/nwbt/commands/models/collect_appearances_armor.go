@@ -53,7 +53,7 @@ func (c *Collector) CollectAppearancesArmor(ids ...string) {
 			}
 
 			attachments := getCloth(c.Archive, cdfPath)
-			file := c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "Skin1")))
+			file := c.outputPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "Skin1")))
 			if c.shouldProcess(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file
@@ -85,7 +85,7 @@ func (c *Collector) CollectAppearancesArmor(ids ...string) {
 
 			model = row.GetString("ShortsleeveChestSkin")
 			material = row.GetString("Material1")
-			file = c.targetPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "ShortsleeveChestSkin")))
+			file = c.outputPath(path.Join(scope, fmt.Sprintf("%s-%s", id, "ShortsleeveChestSkin")))
 			if c.shouldProcess(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file

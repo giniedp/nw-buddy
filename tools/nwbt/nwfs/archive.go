@@ -3,6 +3,7 @@ package nwfs
 import (
 	"fmt"
 	"io/fs"
+	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/str"
 	"strings"
 	"sync"
@@ -26,10 +27,11 @@ type File interface {
 }
 
 type baseFS struct {
-	files []File
-	index map[string]File
-	lock  sync.RWMutex
-	sa    *str.SuffixArray
+	files      []File
+	index      map[string]File
+	lock       sync.RWMutex
+	sa         *str.SuffixArray
+	globChache *maps.SafeMap[string, []File]
 }
 
 func (d *baseFS) initSuffix() {
@@ -94,10 +96,19 @@ func (d *baseFS) List(match ...func(string) bool) ([]File, error) {
 func (d *baseFS) Glob(patterns ...string) (result []File, err error) {
 	d.lock.RLock()
 	defer d.lock.RUnlock()
+	if d.globChache == nil {
+		d.globChache = maps.NewSafeMap[string, []File]()
+	}
+	key := strings.Join(patterns, ",")
+	if cached, ok := d.globChache.Load(key); ok {
+		return cached, nil
+	}
 	if match, err := CompileGlob(patterns...); err != nil {
 		return nil, err
 	} else {
-		return d.list(match)
+		result, err := d.list(match)
+		d.globChache.Store(key, result)
+		return result, err
 	}
 }
 

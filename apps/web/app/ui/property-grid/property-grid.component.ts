@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { TooltipModule } from '../tooltip'
 import { valueCell } from './cells'
-import { PropertyGridCell, PropertyGridCellContext, PropertyGridCellDirective } from './property-grid-cell.directive'
+import { PropertyGridCell, PropertyGridCellContext } from './property-grid-cell.directive'
 import { PropertyGridDescriptorFn } from './property-grid-descriptor'
 import { PropertyGridEntry } from './property-grid-entry'
 
@@ -12,7 +12,7 @@ import { PropertyGridEntry } from './property-grid-entry'
   selector: 'nwb-property-grid',
   templateUrl: './property-grid.component.html',
   styleUrls: ['./property-grid.component.scss'],
-  imports: [NwModule, CommonModule, RouterModule, TooltipModule, PropertyGridCellDirective],
+  imports: [NwModule, CommonModule, RouterModule, TooltipModule],
   providers: [DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

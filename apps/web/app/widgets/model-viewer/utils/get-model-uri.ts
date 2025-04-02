@@ -30,6 +30,10 @@ export function prefabModelUri(prefabPath: string) {
 
 export function vitalModelUri(vitalId: string, registry: Map<string, ScannedVitalModel>) {
   const id = registry.get(vitalId)?.id
+  return vitalModelUriById(id)
+}
+
+export function vitalModelUriById(id: string) {
   if (!id) {
     return null
   }

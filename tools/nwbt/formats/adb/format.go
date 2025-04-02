@@ -3,13 +3,10 @@ package adb
 import (
 	"encoding/xml"
 	"iter"
-	"nw-buddy/tools/formats/bspace"
-	"nw-buddy/tools/formats/comb"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/maps"
-	"path"
 	"strings"
 )
 
@@ -178,17 +175,18 @@ func (doc *Document) GetActions() []AnimationAction {
 	return actions
 }
 
-// func (doc *Document) GetTaggedActions() {
-// 	for _, action := range doc.GetActions() {
-// 		action.Fragments
-// 	}
-// }
+type AnimationFileType string
+
+const (
+	Bspace AnimationFileType = "bspace"
+	Comb   AnimationFileType = "comb"
+	Caf    AnimationFileType = "caf"
+)
 
 type AnimationFile struct {
-	Name   string
-	File   string
-	Bspace *bspace.ParaGroup
-	Comb   *comb.Document
+	Name string            `json:"name"`
+	File string            `json:"file"`
+	Type AnimationFileType `json:"type"`
 }
 
 func (doc *Document) SelectModelAnimations(files []AnimationFile) []importer.Animation {
@@ -197,14 +195,6 @@ func (doc *Document) SelectModelAnimations(files []AnimationFile) []importer.Ani
 
 func SelectModelAnimations(actions []AnimationAction, files []AnimationFile) []importer.Animation {
 	groups := maps.NewDict[*importer.Animation]()
-	collect := func(file, action string, damageIds []string) {
-		group, _ := groups.LoadOrStore(file, &importer.Animation{
-			File: file,
-			Name: utils.ReplaceExt(path.Base(file), ""),
-		})
-		group.DamageIds = utils.AppendUniqNoZero(group.DamageIds, damageIds...)
-		group.Actions = utils.AppendUniqNoZero(group.Actions, action)
-	}
 
 	for _, action := range actions {
 		for _, fragment := range action.Fragments {
@@ -219,43 +209,47 @@ func SelectModelAnimations(actions []AnimationAction, files []AnimationFile) []i
 			}
 
 			for _, animation := range animations {
-				if animation.Bspace != nil {
-				bspace:
-					for _, example := range animation.Bspace.ExampleList.Examples {
-						if _, ok := animation.Bspace.ExampleSetPara(example, "TravelAngle"); ok {
-							// angle animation
-							continue
-						}
-						if _, ok := animation.Bspace.ExampleSetPara(example, "TravelSlope"); ok {
-							// slope animation
-							continue
-						}
-						if _, ok := animation.Bspace.ExampleSetPara(example, "TurnSpeed"); ok {
-							// turn animation
-							continue
-						}
-						// assume this is a basic animation without turn or travel blends
-						for _, file := range files {
-							if strings.EqualFold(file.Name, example.Name) {
-								collect(file.File, action.Name, fragment.DamageIds)
-								break bspace
-							}
-						}
-					}
-				} else if animation.Comb != nil {
-
-				} else {
-					collect(animation.File, action.Name, fragment.DamageIds)
+				switch animation.Type {
+				case Bspace:
+				// 	doc, err := bspace.Load(animation.File)
+				// bspace:
+				// 	for _, example := range animation.Bspace.ExampleList.Examples {
+				// 		if _, ok := animation.Bspace.ExampleSetPara(example, "TravelAngle"); ok {
+				// 			// angle animation
+				// 			continue
+				// 		}
+				// 		if _, ok := animation.Bspace.ExampleSetPara(example, "TravelSlope"); ok {
+				// 			// slope animation
+				// 			continue
+				// 		}
+				// 		if _, ok := animation.Bspace.ExampleSetPara(example, "TurnSpeed"); ok {
+				// 			// turn animation
+				// 			continue
+				// 		}
+				// 		// assume this is a basic animation without turn or travel blends
+				// 		for _, file := range files {
+				// 			if strings.EqualFold(file.Name, example.Name) {
+				// 				groups.LoadOrStore(animation.File, &importer.Animation{
+				// 					File: animation.File,
+				// 					Name: animation.Name,
+				// 				})
+				// 				break bspace
+				// 			}
+				// 		}
+				// }
+				case Comb:
+					// const doc, err = comb.Load(animation.File)
+				case Caf:
+					groups.LoadOrStore(animation.File, &importer.Animation{
+						File: animation.File,
+						Name: animation.Name,
+					})
 				}
 			}
 		}
 	}
 	result := make([]importer.Animation, 0)
 	for _, group := range groups.Values() {
-		group.Meta = map[string]any{
-			"actions":   group.Actions,
-			"damageIds": group.DamageIds,
-		}
 		result = append(result, *group)
 	}
 	return result

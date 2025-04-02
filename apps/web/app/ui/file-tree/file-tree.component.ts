@@ -59,7 +59,8 @@ export class FileTreeComponent {
     if (!this.search() || !this.files()) {
       return this.files()
     }
-    return this.files().filter((f) => f.includes(this.search()))
+    const query = this.search().toLowerCase()
+    return this.files().filter((f) => f.includes(query))
   })
 
   protected folderIcon = svgFolderOpen

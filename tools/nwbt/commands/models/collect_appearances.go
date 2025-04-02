@@ -26,6 +26,6 @@ func runCollectAppearances(ccmd *cobra.Command, args []string) {
 	c := utils.Must(initCollector())
 	c.CollectAppearancesArmor(ids...)
 	c.CollectAppearancesWeapons(ids...)
-	c.Convert()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }

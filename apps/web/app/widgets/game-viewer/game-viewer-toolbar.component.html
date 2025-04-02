@@ -1,0 +1,75 @@
+@if (character(); as char) {
+  <div class="join">
+    @if (char.actions?.length) {
+      <button
+        class="btn btn-square btn-sm drop-shadow"
+        [class.btn-ghost]="!skyboxEnabled()"
+        [cdkMenuTriggerFor]="tplActions"
+      >
+        <nwb-icon [icon]="iconFilms" class="w-4 h-4 swap-on" />
+      </button>
+      <ng-template #tplActions>
+        <div
+          cdkMenu
+          class="bg-base-300 bg-opacity-90 border border-base-200 w-screen h-screen max-w-[600px] max-h-[1000px] rounded-md shadow-md"
+        >
+          <nwb-character-action-browser
+            [actions]="char.actions"
+            [tags]="char.tags"
+            (fragmentClicked)="char.executeFragment($event)"
+          />
+        </div>
+      </ng-template>
+    }
+  </div>
+}
+<div class="join">
+  <button
+    class="join-item btn btn-square btn-sm drop-shadow"
+    [class.btn-ghost]="!skyboxEnabled()"
+    (click)="viewer().setSkyboxEnabled(!skyboxEnabled())"
+  >
+    <span class="swap swap-rotate" [class.swap-active]="skyboxEnabled()">
+      <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on" />
+      <nwb-icon [icon]="iconMoon" class="w-4 h-4 swap-off" />
+    </span>
+  </button>
+  <button
+    class="join-item btn btn-square btn-sm drop-shadow"
+    [class.btn-ghost]="!skyboxEnabled()"
+    [cdkMenuTriggerFor]="tplMenuEnv"
+  >
+    <nwb-icon [icon]="iconEnv" class="w-4 h-4" />
+  </button>
+  <ng-template #tplMenuEnv>
+    <ul
+      cdkMenu
+      class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 min-w-40 rounded-md max-h-96 shadow-md overflow-y-auto relative top-1"
+    >
+      @for (option of envOptions(); track $index; let i = $index) {
+        <li cdkMenuItem>
+          <a [class.text-primary]="option.value === envMapUrl()" (click)="viewer().setEnvMapUrl(option.value)">
+            {{ option.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  </ng-template>
+</div>
+
+<div class="join">
+  <button
+    class="join-item btn btn-square btn-sm drop-shadow"
+    [class.btn-ghost]="!skyboxEnabled()"
+    (click)="capturePhoto()"
+  >
+    <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
+  </button>
+  <button
+    class="join-item btn btn-square btn-sm drop-shadow"
+    [class.btn-ghost]="!skyboxEnabled()"
+    (click)="toggleFullscreen()"
+  >
+    <nwb-icon [icon]="iconFullscreen" class="w-4 h-4" />
+  </button>
+</div>

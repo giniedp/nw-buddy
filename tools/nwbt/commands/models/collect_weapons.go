@@ -27,7 +27,7 @@ func runCollectWeapons(ccmd *cobra.Command, args []string) {
 	slog.SetDefault(logging.DefaultFileHandler())
 	c := utils.Must(initCollector())
 	c.CollectWeapons()
-	c.Convert()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -45,7 +45,7 @@ func (c *Collector) CollectWeapons() {
 			bar.Add(1)
 			bar.Detail(id)
 
-			file := c.targetPath(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride1")))
+			file := c.outputPath(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride1")))
 			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride1")
 				material := row.GetString("MaterialOverride1")
@@ -61,7 +61,7 @@ func (c *Collector) CollectWeapons() {
 				}
 			}
 
-			file = c.targetPath(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride2")))
+			file = c.outputPath(path.Join("weapons", fmt.Sprintf("%s-%s", id, "SkinOverride2")))
 			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride2")
 				material := row.GetString("MaterialOverride2")

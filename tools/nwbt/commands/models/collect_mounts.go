@@ -36,7 +36,7 @@ func runCollectMounts(ccmd *cobra.Command, args []string) {
 	c := utils.Must(initCollector())
 	slog.SetDefault(logging.DefaultFileHandler())
 	c.CollectMounts(getCommaSeparatedList(flgIds)...)
-	c.Convert()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -57,7 +57,7 @@ func (c *Collector) CollectMounts(ids ...string) {
 			if !matchFilter(ids, id) {
 				continue
 			}
-			file := c.targetPath(path.Join("mounts", id))
+			file := c.outputPath(path.Join("mounts", id))
 			if !c.shouldProcess(file) {
 				continue
 			}

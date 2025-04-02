@@ -26,6 +26,7 @@
     "allowJs": true,
     "paths": {
       "~/*": ["apps/web/app/*"],
+      "@nw-viewer": ["libs/nw-viewer"],
       "@nw-data/db": ["libs/nw-data/db"],
       "@nw-data/common": ["libs/nw-data/common"],
       "@nw-data/generated": ["libs/nw-data/generated"],

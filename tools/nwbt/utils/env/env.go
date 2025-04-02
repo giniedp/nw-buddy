@@ -96,24 +96,24 @@ func GameDir() string {
 	return Get("NW_GAME", "")
 }
 
-func nwbtDir() string {
+func NwbtDir() string {
 	return path.Join(WorkDir(), ".nwbt")
 }
 
 // TempDir returns the temp directory by looking up the NW_TEMP environment variable
 // if not set, it defaults to ".nwbt"
 func TempDir() string {
-	return Get("NW_TEMP", path.Join(nwbtDir(), "temp"))
+	return Get("NW_TEMP", path.Join(NwbtDir(), "temp"))
 }
 
 // UnpackDir returns the unpack directory by looking up the NW_UNPACK environment variable
 func UnpackDir() string {
-	return Get("NW_UNPACK", path.Join(nwbtDir(), "unpack"))
+	return Get("NW_UNPACK", path.Join(NwbtDir(), "unpack"))
 }
 
 // ModelsDir returns the models directory by looking up the NW_MODELS environment variable
 func ModelsDir() string {
-	return Get("NW_MODELS", path.Join(nwbtDir(), "models"))
+	return Get("NW_MODELS", path.Join(NwbtDir(), "models"))
 }
 
 // PreferredWorkerCount for general purpose tasks
@@ -129,7 +129,7 @@ func PreferredWorkerCount() int {
 
 // PullDataDir returns the pull directory by looking up the NW_PULL_DATA environment variable
 func PullDataDir() string {
-	fallback := path.Join(nwbtDir(), "pull")
+	fallback := path.Join(NwbtDir(), "pull")
 	if projectVersion != "" {
 		fallback = path.Join(WorkDir(), "dist", "nw-data", strings.ToLower(WorkspaceName()))
 	}
@@ -138,7 +138,7 @@ func PullDataDir() string {
 
 // PullDir returns the pull directory by looking up the NW_PULL_TYPES environment variable
 func PullTypesDir() string {
-	fallback := path.Join(nwbtDir(), "pull")
+	fallback := path.Join(NwbtDir(), "pull")
 	if projectVersion != "" {
 		fallback = path.Join(WorkDir(), "libs", "nw-data", "generated")
 	}
@@ -147,7 +147,7 @@ func PullTypesDir() string {
 
 // CacheDir returns the cache directory by looking up the NW_CACHE environment variable
 func CacheDir() string {
-	return Get("NW_CACHE_DIR", path.Join(nwbtDir(), "cache"))
+	return Get("NW_CACHE_DIR", path.Join(NwbtDir(), "cache"))
 }
 
 // LumberyardDir returns the lumberyard directory by looking up the LUMBERYARD_DIR environment variable
@@ -161,7 +161,7 @@ func Logfile() string {
 	if testing.Testing() {
 		fallback = "test.log"
 	}
-	return path.Join(nwbtDir(), fallback)
+	return path.Join(NwbtDir(), fallback)
 }
 
 func readPackageJsonVersion(file string) string {

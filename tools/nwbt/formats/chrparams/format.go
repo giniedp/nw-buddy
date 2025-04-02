@@ -4,10 +4,9 @@ import (
 	"encoding/xml"
 	"log/slog"
 	"nw-buddy/tools/formats/adb"
-	"nw-buddy/tools/formats/bspace"
-	"nw-buddy/tools/formats/comb"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/maps"
 	"path"
 	"strings"
 )
@@ -91,43 +90,66 @@ func (it *Document) AnimationIncludePaths() []string {
 	return result
 }
 
-func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFile, error) {
-	patterns := it.AnimationGlobPaths()
-	files, err := archive.Glob(patterns...)
-	if err != nil {
-		return nil, err
+func (it *Document) LoadAnimationList(archive nwfs.Archive) ([]adb.AnimationFile, error) {
+	included := maps.NewDict[*Document]()
+	documents := []*Document{}
+	toProcess := []*Document{it}
+
+	for len(toProcess) > 0 {
+		current := toProcess[0]
+		toProcess = toProcess[1:]
+		documents = append(documents, current)
+
+		filePath := current.AnimationIncludePaths()
+		for _, filePath := range filePath {
+			filePath = nwfs.NormalizePath(filePath)
+			if included.Has(filePath) {
+				continue
+			}
+			file, ok := archive.Lookup(filePath)
+			if !ok {
+				slog.Warn("Animation include not found", "file", filePath)
+				continue
+			}
+			doc, err := Load(file)
+			if err != nil {
+				slog.Warn("Animation include not loaded", "file", filePath, "err", err)
+				continue
+			}
+			included.Store(filePath, doc)
+			toProcess = append(toProcess, doc)
+		}
 	}
 
 	result := make([]adb.AnimationFile, 0)
-	for _, file := range files {
-		switch path.Ext(file.Path()) {
-		case ".caf":
-			result = append(result, adb.AnimationFile{
-				Name: utils.ReplaceExt(path.Base(file.Path()), ""),
-				File: file.Path(),
-			})
-		case ".bspace":
-			doc, err := bspace.Load(file)
-			if err != nil {
-				slog.Warn("bspace document not loaded", "file", file.Path(), "err", err)
-				continue
+	for _, doc := range documents {
+		patterns := doc.AnimationGlobPaths()
+		files, err := archive.Glob(patterns...)
+		if err != nil {
+			slog.Warn("failed to glob animation files", "err", err)
+			continue
+		}
+		for _, file := range files {
+			switch path.Ext(file.Path()) {
+			case ".caf":
+				result = append(result, adb.AnimationFile{
+					Name: utils.ReplaceExt(path.Base(file.Path()), ""),
+					File: file.Path(),
+					Type: adb.Caf,
+				})
+			case ".bspace":
+				result = append(result, adb.AnimationFile{
+					Name: utils.ReplaceExt(path.Base(file.Path()), ""),
+					File: file.Path(),
+					Type: adb.Bspace,
+				})
+			case ".comb":
+				result = append(result, adb.AnimationFile{
+					Name: utils.ReplaceExt(path.Base(file.Path()), ""),
+					File: file.Path(),
+					Type: adb.Comb,
+				})
 			}
-			result = append(result, adb.AnimationFile{
-				Name:   utils.ReplaceExt(path.Base(file.Path()), ""),
-				File:   file.Path(),
-				Bspace: doc,
-			})
-		case ".comb":
-			doc, err := comb.Load(file)
-			if err != nil {
-				slog.Warn("comb document not loaded", "file", file.Path(), "err", err)
-				continue
-			}
-			result = append(result, adb.AnimationFile{
-				Name: utils.ReplaceExt(path.Base(file.Path()), ""),
-				File: file.Path(),
-				Comb: doc,
-			})
 		}
 	}
 

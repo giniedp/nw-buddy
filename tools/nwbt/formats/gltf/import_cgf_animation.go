@@ -22,22 +22,23 @@ func (c *Document) ImportCgfAnimation(asset importer.Animation, load func(asset 
 	animation := &gltf.Animation{
 		Name: asset.Name,
 	}
-	// slog.Info("Importing animation", "file", file.Source, "name", asset.Name, "controllers", len(controllers))
+
 	defer func() {
 		if len(animation.Channels) > 0 {
 			c.Document.Animations = append(c.Document.Animations, animation)
 		} else {
-			slog.Warn("animation not imported", "file", file.Source)
+			slog.Warn("animation not imported, no channels in", "file", file.Source)
 		}
 	}()
 
 	for _, controller := range controllers {
 		_, nodeIndex := c.FindNodeByControllerId(controller.ControllerId)
 		if nodeIndex == -1 {
-			//slog.Warn("Node not found for controllerId", "controllerId", controller.ControllerId, "file", file.Source)
-			continue
+			node, _ := c.NewNode()
+			node.Extras = ExtrasStore(nil, ExtraKeyControllerID, controller.ControllerId)
+			c.AddToScene(c.DefaultScene(), node)
+			nodeIndex = c.NodeIndex(node)
 		}
-		// slog.Info("Node found for controllerId", "controllerId", controller.ControllerId, "file", file.Source)
 
 		if len(controller.RotationKeys) > 0 {
 			rotTimeKeys := slices.Clone(controller.RotationTimeKeys)

@@ -60,11 +60,11 @@ const (
 func init() {
 	Cmd.Flags().StringVarP(&flgGameDir, "game-dir", "g", env.GameDir(), "game root directory")
 	Cmd.Flags().StringVarP(&flgUnpackDir, "out-dir", "o", env.UnpackDir(), "directory to unpack to")
-	Cmd.Flags().StringVar(&flgTempDir, "tmp-dir", ".nwbt/tmp", "temporary directory, used for image conversion")
+	Cmd.Flags().StringVar(&flgTempDir, "tmp-dir", env.TempDir(), "temporary directory, used for image conversion")
 	Cmd.Flags().IntVarP(&flgWWC, "wcw", "w", 10, "worker count for write operations")
 	Cmd.Flags().IntVarP(&flgRWC, "wcr", "r", -1, "worker count for read and transform operations. If < 1 then it will be set to 'wcw' value")
 	Cmd.Flags().BoolVarP(&flgDryRun, "dry", "", false, "runs without writing to disk")
-	Cmd.Flags().StringVar(&flgDryLog, "dry-log", ".nwbt/dry.log", "the log file where dry run output will be written")
+	Cmd.Flags().StringVar(&flgDryLog, "dry-log", path.Join(env.NwbtDir(), "dry.log"), "the log file where dry run output will be written")
 	Cmd.Flags().BoolVarP(&flgRegex, "reg", "e", false, "whether argument is a regular expression")
 
 	Cmd.Flags().StringVar(&flgFmtDatasheet, "x-datasheet", "", "transforms .datasheet files to given format. Possible values: json, csv")

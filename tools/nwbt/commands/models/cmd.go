@@ -3,10 +3,12 @@ package models
 import (
 	"fmt"
 	"log/slog"
+	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/formats/gltf"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/game"
+	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
 	"nw-buddy/tools/utils/logging"
@@ -32,6 +34,8 @@ type Flags struct {
 	RelativeUri  bool
 	WorkerCount  uint
 	SkipExisting bool
+	CrcFile      string
+	UuidFile     string
 }
 
 var flg Flags
@@ -67,6 +71,9 @@ func init() {
 	Cmd.Flags().BoolVar(&flg.RelativeUri, "relative", false, "When linking resources (embed is false), relative uris are written in the gltf file")
 	Cmd.Flags().BoolVar(&flg.SkipExisting, "skip", false, "Whether to skip existing files")
 	Cmd.Flags().UintVarP(&flg.WorkerCount, "workers", "w", uint(env.PreferredWorkerCount()), "number of workers to use for processing")
+
+	Cmd.Flags().StringVar(&flg.CrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
+	Cmd.Flags().StringVar(&flg.UuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
 	Cmd.AddCommand(
 		cmdCollectAppearances,
 		cmdCollectCapitals,
@@ -76,6 +83,8 @@ func init() {
 		cmdCollectMounts,
 		cmdCollectVitals,
 		cmdCollectWeapons,
+		cmdCollectCharacter,
+		cmdCollectNpcs,
 	)
 }
 
@@ -89,7 +98,9 @@ func run(ccmd *cobra.Command, args []string) {
 	c.CollectMounts()
 	c.CollectHousing()
 	c.CollectVitals(vitalsFile)
-	c.Convert()
+	c.CollectNpcs()
+	c.CollectCharacter()
+	c.Process()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 }
 
@@ -104,11 +115,32 @@ func initCollector() (*Collector, error) {
 	return NewCollector(assets, flg), nil
 }
 
-func (c *Collector) Convert() {
-	models := c.models.Values()
-	if len(models) == 0 {
+func (c *Collector) Process() {
+	c.ProcessAdbFiles()
+	c.ProcessTimelines()
+	c.ProcessModels()
+	c.ProcessTextures()
+}
+
+func (c *Collector) ProcessModels() {
+	assets := c.models.Values()
+	if len(assets) == 0 {
 		return
 	}
+	models := make([]importer.AssetGroup, 0)
+	animations := make([]importer.AssetGroup, 0)
+	for _, group := range assets {
+		if len(group.Animations) > 0 && len(group.Meshes) == 0 {
+			animations = append(animations, group)
+		} else {
+			models = append(models, group)
+		}
+	}
+	c.processAassets("Converting animations", animations)
+	c.processAassets("Converting models", models)
+}
+
+func (c *Collector) processAassets(description string, models []importer.AssetGroup) {
 	imageLoader := image.LoaderWithConverter{
 		Archive: c.Archive,
 		Catalog: c.Catalog,
@@ -125,13 +157,14 @@ func (c *Collector) Convert() {
 	if c.flags.Embed {
 		linker = nil
 	}
-
 	progress.RunTasks(progress.TasksConfig[importer.AssetGroup, string]{
-		Description:   "Converting models",
+		Description:   description,
 		Tasks:         models,
 		ProducerCount: int(c.flags.WorkerCount),
 		Producer: func(group importer.AssetGroup) (string, error) {
 			document := gltf.NewDocument()
+			document.Extras = group.Extra
+			document.Asset.Generator = "New World Buddy Tools"
 			document.ImageLoader = imageLoader
 			document.ResourceLinker = linker
 			document.TargetFile = group.TargetFile
@@ -142,7 +175,9 @@ func (c *Collector) Convert() {
 			for _, mesh := range group.Meshes {
 				document.ImportGeometry(mesh, c.LoadAsset)
 			}
-			document.MergeSkins()
+			if len(group.Animations) > 0 {
+				document.MergeSkins()
+			}
 			for _, anim := range group.Animations {
 				document.ImportCgfAnimation(anim, c.LoadAnimation)
 			}
@@ -175,11 +210,56 @@ func (c *Collector) Convert() {
 		},
 		ConsumerCount: int(c.flags.WorkerCount),
 	})
-
-	c.TransformImages()
 }
 
-func (c *Collector) TransformImages() error {
+func (c *Collector) ProcessAdbFiles() {
+	files, _ := c.Archive.Glob("**.adb")
+	bar := progress.Bar(len(files), "Copying adb files")
+	for _, file := range files {
+		bar.Add(1)
+		data, _ := file.Read()
+		outPath := path.Join(c.flags.OutputDir, file.Path())
+		utils.WriteFile(outPath, data)
+	}
+	bar.Close()
+}
+
+func (c *Collector) ProcessTimelines() {
+	files := c.timelines.Values()
+	if len(files) == 0 {
+		return
+	}
+	crcTable, err := rtti.LoadCrcTable(flg.CrcFile)
+	if err != nil {
+		slog.Warn("failed to load crc table", "file", flg.CrcFile, "err", err)
+		return
+	}
+	uuidTable, err := rtti.LoadUuIdTable(flg.UuidFile)
+	if err != nil {
+		slog.Warn("failed to load uuid table", "file", flg.UuidFile, "err", err)
+		return
+	}
+
+	bar := progress.Bar(len(files), "Copying timelines")
+	for _, file := range files {
+		bar.Add(1)
+		object, err := azcs.Load(file)
+		if err != nil {
+			slog.Warn("failed to load timeline", "file", file.Path(), "err", err)
+			continue
+		}
+		data, err := rtti.ObjectStreamToJSON(object, crcTable, uuidTable)
+		if err != nil {
+			slog.Warn("failed to convert timeline", "file", file.Path(), "err", err)
+			continue
+		}
+
+		outPath := path.Join(c.flags.OutputDir, file.Path()+".json")
+		utils.WriteFile(outPath, data)
+	}
+}
+
+func (c *Collector) ProcessTextures() error {
 	format := ".png"
 	if c.flags.Webp {
 		format = ".webp"
