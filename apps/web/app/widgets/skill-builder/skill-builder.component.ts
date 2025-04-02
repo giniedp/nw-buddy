@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject, Injector, model, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, Injector, linkedSignal, model, signal } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { patchState, signalState } from '@ngrx/signals'
@@ -14,6 +14,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { openWeaponTypePicker } from '../data/weapon-type'
 import { SkillTreeComponent } from './skill-tree.component'
 
+let trackId = 0
 export interface SkillBuildValue {
   weapon: string
   tree1: string[]
@@ -41,19 +42,36 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   private weaponTypes = inject(NwWeaponTypesService)
   private injector = inject(Injector)
   private character = inject(CharacterStore)
-  private state = signalState<SkillBuildValue>({
+  private value = signal<SkillBuildValue>({
     weapon: null,
     tree1: [],
     tree2: [],
   })
+  private state = linkedSignal(() => this.value())
+  private weaponTag = computed(() => this.value().weapon)
+  protected trees = computed(() => {
+    return [
+      {
+        trackId: trackId++,
+        id: 0,
+        weaponTag: this.value().weapon,
+        value: computed(() => this.state().tree1),
+        points: computed(() => this.points().points1),
+      },
+      {
+        trackId: trackId++,
+        id: 1,
+        weaponTag: this.value().weapon,
+        value: computed(() => this.state().tree2),
+        points: computed(() => this.points().points2),
+      }
+    ]
+  })
 
-  public readonly weaponTag = this.state.weapon
-  public readonly tree1 = this.state.tree1
-  public readonly tree2 = this.state.tree2
   public readonly disabled = model<boolean>()
 
-  protected tree1Spent = computed(() => this.state.tree1()?.length || 0)
-  protected tree2Spent = computed(() => this.state.tree2()?.length || 0)
+  protected tree1Spent = computed(() => this.state().tree1?.length || 0)
+  protected tree2Spent = computed(() => this.state().tree2?.length || 0)
   protected weaponType$ = toObservable(this.weaponTag).pipe(switchMap((it) => this.weaponTypes.forWeaponTag(it)))
   protected weaponLevel$ = this.weaponType$.pipe(
     switchMap((it) => {
@@ -93,7 +111,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   protected onTouched = () => {}
 
   public writeValue(value: SkillBuildValue): void {
-    patchState(this.state, value || { weapon: null, tree1: [], tree2: [] })
+    this.value.set(value || { weapon: null, tree1: [], tree2: [] })
   }
 
   public registerOnChange(fn: any): void {
@@ -109,7 +127,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   }
 
   protected updateTree(treeId: number, tree: string[]) {
-    const value = this.getValue()
+    const value = { ...this.getValue() }
     if (treeId === 0) {
       value.tree1 = tree
     }
@@ -130,7 +148,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   protected commit(value: SkillBuildValue) {
     const old = this.state()
     if (!isEqual(value, old)) {
-      patchState(this.state, value)
+      this.state.set(value)
       this.onChange(value)
     }
   }

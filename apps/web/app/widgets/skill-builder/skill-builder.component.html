@@ -19,23 +19,16 @@
     </picture>
   </div>
   <div class="grid grid-cols-1 @[500px]:grid-cols-2">
-    <nwb-skill-tree
-      class="rounded-md"
-      [points]="points().points1"
-      [weaponTag]="weaponTag()"
-      [treeID]="0"
-      [ngModel]="tree1()"
-      (ngModelChange)="updateTree(0, $event)"
-      [disabled]="disabled()"
-    />
-    <nwb-skill-tree
-      class="rounded-md"
-      [points]="points().points2"
-      [weaponTag]="weaponTag()"
-      [treeID]="1"
-      [ngModel]="tree2()"
-      (ngModelChange)="updateTree(1, $event)"
-      [disabled]="disabled()"
-    />
+    @for (tree of trees(); track tree.trackId) {
+      <nwb-skill-tree
+        class="rounded-md"
+        [points]="tree.points()"
+        [weaponTag]="tree.weaponTag"
+        [treeID]="tree.id"
+        [ngModel]="tree.value()"
+        (ngModelChange)="updateTree(tree.id, $event)"
+        [disabled]="disabled()"
+      />
+    }
   </div>
 }
