@@ -15,7 +15,7 @@ import { ItemRarity } from '@nw-data/common'
 export class ItemHeaderContentComponent {
   public showSkeleton = input<boolean>()
   public isNamed = input<boolean>()
-  public rarity = input<ItemRarity>()
+  public rarity = input<string>()
   public title = input<string>()
   public titleLink = input<string | any[]>()
   public text1 = input<string>()

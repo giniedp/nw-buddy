@@ -28,7 +28,7 @@ import { ItemRarity } from '@nw-data/common'
   },
 })
 export class ItemHeaderComponent {
-  public rarity = input<ItemRarity>('common')
+  public rarity = input<string>('common')
   public isNamed = input<boolean>(false)
   public isPadded = input<boolean>(true)
   public isRow = input<boolean>(true)

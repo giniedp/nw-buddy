@@ -107,6 +107,9 @@ export class NwTradeskillService {
       finalXp: 0,
       aptitude: 0,
     }
+    if (!skill || !levels?.length) {
+      return result
+    }
     for (const level of levels) {
       if (level.Level < startLevel) {
         result.finalLevel = level.Level + 1

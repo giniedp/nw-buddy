@@ -47,7 +47,7 @@ import { NwModule } from '~/nw'
 })
 export class ItemIconFrameComponent {
   public icon = input<string | MasterItemDefinitions | HouseItems>(null, { alias: 'nwbItemIcon' })
-  public rarity = input<ItemRarity>()
+  public rarity = input<string>()
   public solid = input<boolean>(false)
   public isNamed = input<boolean>()
   public cover = input<boolean>(false)
