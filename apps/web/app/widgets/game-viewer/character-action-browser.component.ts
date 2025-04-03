@@ -56,7 +56,7 @@ export class TypeSafeCdkVirtualForDirective<T> {
         class="whitespace-nowrap overflow-hidden h-8"
       >
         @if (item.fragment) {
-          <button class="btn btn-ghost btn-sm btn-block justify-start rounded-none" (click)="handleClick(item)">
+          <button class="btn btn-ghost btn-sm btn-block justify-start rounded-none" (click)="handleClick(item)" [disabled]="!item.playable">
             @if (item.looping) {
               <span class="badge badge-info italic bg-opacity-25">looping</span>
             }
@@ -80,7 +80,7 @@ export class TypeSafeCdkVirtualForDirective<T> {
           </button>
         } @else {
           <div class=" flex flex-row items-center gap-1 px-2">
-            <span class="font-bold text-lg">
+            <span class="font-bold text-lg" [class.text-error]="!item.playable">
               {{ item.name }}
             </span>
             <span class="flex-1"> </span>
@@ -158,7 +158,7 @@ export class CharacterActionBrowserComponent {
   }
 
   protected handleClick(item: ActionDisplayItem) {
-    if (item.fragment) {
+    if (item.fragment && item.playable) {
       this.fragmentClicked.emit(item.fragment)
     }
   }
@@ -178,6 +178,7 @@ export interface ActionDisplayItem {
   fragment: AdbFragment
   looping?: boolean
   checked?: boolean
+  playable?: boolean
 }
 
 export interface ActionDisplayTag {
@@ -195,6 +196,7 @@ function collectItems(actions: AdbAction[], tags: string[]) {
       name: humanize(action.name),
       tags: [],
       fragment: null,
+      playable: action.valid,
     })
     const parent = result[result.length - 1]
     let fragIds = 0
@@ -210,6 +212,7 @@ function collectItems(actions: AdbAction[], tags: string[]) {
         }),
         fragment: fragment,
         looping: fragment.animLayers?.some((it) => it.sequence.some((it) => it.loop)),
+        playable: action.valid,
       })
       const child = result[result.length - 1]
       child.checked = child.tags.every((tag) => tag.checked)

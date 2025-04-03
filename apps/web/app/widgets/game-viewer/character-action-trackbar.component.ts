@@ -55,6 +55,7 @@ import { AdbFragment, ProceduralBar, ProceduralLayer } from './nw-adb'
           [max]="info.duration * 1000"
           [value]="info.time * 1000"
           (input)="onProgressChange($event)"
+          (dblclick)="onDblClick($event)"
           class="range range-xs"
         />
       }
@@ -80,6 +81,9 @@ export class CharacterActionTrackbarComponent {
     this.character()?.goToTime(value)
   }
 
+  protected onDblClick(event: Event) {
+    this.character()?.executeFragment(this.fragment())
+  }
   protected isActive(layer: ProceduralLayer, bar: ProceduralBar, time: number) {
     if (!bar?.type || !bar.type.startsWith('CAGE')) {
       return false
