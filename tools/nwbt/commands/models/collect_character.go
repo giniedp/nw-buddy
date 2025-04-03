@@ -42,7 +42,7 @@ func (c *Collector) CollectCharacter() {
 			slog.Warn("failed to resolve cdf asset", "file", model, "err", err)
 			return
 		}
-		c.CollectCdf(cdf, "", model)
+		c.CollectCdf(cdf, "", c.outputPath(model))
 	}
 }
 
