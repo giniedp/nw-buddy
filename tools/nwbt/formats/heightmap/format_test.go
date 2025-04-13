@@ -1,6 +1,7 @@
 package heightmap_test
 
 import (
+	"errors"
 	"image"
 	"image/png"
 	"nw-buddy/tools/formats/heightmap"
@@ -38,4 +39,16 @@ func TestParseHeightField(t *testing.T) {
 	assert.NoError(t, err)
 	err = png.Encode(f, img)
 	assert.NoError(t, err)
+}
+
+func TestNativeTiff(t *testing.T) {
+	data, err := os.ReadFile("samples/region.heightmap")
+	assert.NoError(t, err)
+	data, err = ConvertTiffToPng(data)
+	assert.NoError(t, err)
+	// TODO: verify the output PNG file
+}
+
+func ConvertTiffToPng(data []byte) ([]byte, error) {
+	return nil, errors.New("not implemented")
 }
