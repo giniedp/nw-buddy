@@ -10,6 +10,7 @@ import (
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils/crymath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -172,4 +173,17 @@ func ParseMapIdFromPath(filePath string) string {
 		return match[1]
 	}
 	return ""
+}
+
+var regionRegex = regexp.MustCompile(`r_\+(\d{2})_\+(\d{2})`)
+
+func ParseRegionLocation(regionName string) *[2]int {
+	// r_+00_+00
+	match := regionRegex.FindStringSubmatch(regionName)
+	if len(match) != 3 {
+		return nil
+	}
+	x, _ := strconv.Atoi(match[1])
+	y, _ := strconv.Atoi(match[2])
+	return &[2]int{x, y}
 }

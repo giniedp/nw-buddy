@@ -131,7 +131,7 @@ func workTile(tile Tile, level string, outDir string) string {
 	for x, y := range iterArea(0, 0, tile.Area.W, tile.Area.H) {
 		tx := tile.Area.X + x
 		ty := tile.Area.Y + y
-		h := tile.Terrain.GetSmoothHeightAt(tx, ty)
+		h := tile.Terrain.SmoothHeightAt(tx, ty)
 		img.Set(x, TILE_SIZE-y-1, heightmap.EncodeHeightToR8G8B8(h))
 	}
 

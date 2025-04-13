@@ -34,6 +34,7 @@ type Flags struct {
 	RelativeUri  bool
 	WorkerCount  uint
 	SkipExisting bool
+	Animations   bool
 	CrcFile      string
 	UuidFile     string
 }
@@ -67,6 +68,7 @@ func init() {
 	Cmd.Flags().BoolVar(&flg.Ktx2, "ktx", false, "Textures are converted to ktx2")
 	Cmd.MarkFlagsMutuallyExclusive("webp", "ktx")
 
+	Cmd.Flags().BoolVar(&flg.Animations, "animations", false, "Whether animations should be processed")
 	Cmd.Flags().BoolVar(&flg.Embed, "embed", false, "Whether to embed textures in the gltf file")
 	Cmd.Flags().BoolVar(&flg.RelativeUri, "relative", false, "When linking resources (embed is false), relative uris are written in the gltf file")
 	Cmd.Flags().BoolVar(&flg.SkipExisting, "skip", false, "Whether to skip existing files")
@@ -141,6 +143,9 @@ func (c *Collector) ProcessModels() {
 }
 
 func (c *Collector) processAassets(description string, models []importer.AssetGroup) {
+	if len(models) == 0 {
+		return
+	}
 	imageLoader := image.LoaderWithConverter{
 		Archive: c.Archive,
 		Catalog: c.Catalog,
@@ -166,7 +171,7 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 			document.Extras = group.Extra
 			document.Asset.Generator = "New World Buddy Tools"
 			document.ImageLoader = imageLoader
-			document.ResourceLinker = linker
+			document.ImageLinker = linker
 			document.TargetFile = group.TargetFile
 			if c.flags.SkipExisting && utils.FileExists(document.TargetFile) {
 				return "", nil

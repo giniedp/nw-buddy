@@ -1,38 +1,66 @@
-import { computed, ElementRef, Injectable, signal } from '@angular/core'
+import { ElementRef, Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { NEVER, of, switchMap } from 'rxjs'
-import { selectSignal } from '~/utils'
-import { NwViewer } from './nw-viewer'
-import { NwViewerCharacter } from './nw-character'
-import { computeAssetBoundingInfo, reframeCamera } from './utils'
-import { Vector3 } from '@babylonjs/core'
+import { Engine } from '@babylonjs/core'
+import { AdbAction, AdbFragment, AdbPlayerState } from '@nw-viewer/adb'
+import { SkyboxComponent } from '@nw-viewer/components/skybox-component'
+import { GameHost, GameSystem, GameSystemType } from '@nw-viewer/ecs'
+import { ContentProvider } from '@nw-viewer/services/content-provider'
+import { EngineProvider } from '@nw-viewer/services/engine-provider'
+import { LevelProvider } from '@nw-viewer/services/level-provider'
+import { LightingProvider } from '@nw-viewer/services/lighting-provider'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { environment } from 'apps/web/environments'
+import { filter, map } from 'rxjs'
 
 @Injectable()
-export class GameViewerService {
+export class GameSystemService {
   public readonly host = signal<ElementRef<HTMLElement> | null>(null)
-  public readonly viewer = signal<NwViewer | null>(null)
-  public readonly viewer$ = toObservable(this.viewer).pipe(switchMap((viewer) => (viewer ? of(viewer) : NEVER)))
+  public readonly game = signal<GameHost>(null)
+  public readonly adbPlayerState = signal<AdbPlayerState>(null)
+  public readonly adbActions = signal<AdbAction[]>(null)
+  public readonly adbTags = signal<string[]>(null)
+  public readonly adbFragment = signal<AdbFragment>(null)
 
-  public readonly character = signal<NwViewerCharacter | null>(null)
+  private game$ = toObservable(this.game).pipe(filter((it) => !!it))
 
-  public readonly scene = computed(() => this.viewer()?.scene)
-
-  public setViewer(viewer: NwViewer, host: ElementRef<HTMLElement>) {
-    this.viewer.set(viewer)
+  public create(host: ElementRef<HTMLElement>, canvas: HTMLCanvasElement) {
     this.host.set(host)
+    this.game.set(createGame(canvas))
   }
 
-  public setCharacter(character: NwViewerCharacter) {
-    this.character.set(character)
+  public service<T extends GameSystem>(type: GameSystemType<T>) {
+    return this.game$.pipe(map((game) => game.system(type)))
   }
+}
 
-  public focusCharacter() {
-    const character = this.character()
-    const viewer = this.viewer()
-    if (!character || !character) {
-      return
-    }
-    const bounds = computeAssetBoundingInfo(character.asset)
-    reframeCamera(viewer.camera, bounds, true)
-  }
+export function createGame(canvas: HTMLCanvasElement) {
+  const engine = new Engine(canvas, true, {
+    preserveDrawingBuffer: true,
+    depth: true,
+    alpha: true,
+    antialias: true,
+    adaptToDeviceRatio: true,
+  })
+
+  const game = new GameHost()
+  game
+    .addSystems(
+      new EngineProvider(engine),
+      new SceneProvider(),
+      new LightingProvider(),
+      new ContentProvider({
+        rootUrl: environment.modelsUrl,
+        nwbtUrl: environment.nwbtUrl,
+      }),
+      new LevelProvider(),
+    )
+    .initialize()
+
+  const root = game.createEntity()
+  root.addComponent(new SkyboxComponent())
+  // root.addComponent(new CameraComponent())
+  root.initialize(game)
+  root.activate()
+
+  return game
 }

@@ -1,0 +1,4 @@
+export const REGION_SIZE = 2048
+export const SEGMENT_SIZE = 128
+export const REGION_VISIBILITY = 4 * SEGMENT_SIZE
+export const SEGMENT_VISIBILITY = 4 * SEGMENT_SIZE

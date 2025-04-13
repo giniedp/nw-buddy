@@ -1,15 +1,22 @@
-import { Directive, effect, inject, input, linkedSignal, resource } from '@angular/core'
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
-import { Scene } from '@babylonjs/core'
-import { combineLatest, Observable, of, switchMap } from 'rxjs'
+import { Directive, effect, inject, input, linkedSignal, resource, signal, untracked } from '@angular/core'
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { combineLatest, map, of, switchMap, tap } from 'rxjs'
 import { injectNwData } from '~/data'
 import { shareReplayRefCount } from '~/utils'
 import { vitalModelUriById } from '../model-viewer/utils/get-model-uri'
 import { getModelUrl } from '../model-viewer/utils/get-model-url'
-import { GameViewerService } from './game-viewer.service'
-import { NwCharacterOptions, NwViewerCharacter } from './nw-character'
+import { ActionlistComponent } from '@nw-viewer/components/actionlist-component'
+import { SkinnedMeshComponent } from '@nw-viewer/components/skinned-mesh-component'
+import { GameEntity, GameHost } from '@nw-viewer/ecs'
+import { GameSystemService } from './game-viewer.service'
 
-export type GameViewerCharacterOptions = NwCharacterOptions | { vitalId: string } | { npcId: string }
+export type GameViewerCharacterOptions = { vitalId: string } | { npcId: string } | CharacterViewerEntityOptions
+export interface CharacterViewerEntityOptions {
+  rootUrl: string
+  url: string
+  adbUrl: string
+  tags: string[]
+}
 
 @Directive({
   selector: '[nwGameViewerCharacter],[nwGameViewerVital],[nwGameViewerNpc]',
@@ -17,19 +24,28 @@ export type GameViewerCharacterOptions = NwCharacterOptions | { vitalId: string 
 })
 export class GameViewerCharacterDirective {
   private db = injectNwData()
-  private service = inject(GameViewerService)
+  private service = inject(GameSystemService)
+  private entity = signal<GameEntity>(null)
 
   public npcId = input<string>(undefined, { alias: 'nwGameViewerNpc' })
   public vitalId = input<string>(undefined, { alias: 'nwGameViewerVital' })
-  public options = input<NwCharacterOptions>(null, { alias: 'nwGameViewerCharacter' })
+  public options = input<CharacterViewerEntityOptions>(null, { alias: 'nwGameViewerCharacter' })
   public autofocus = input<boolean>(true)
 
   private selectedOptions = linkedSignal(this.options)
 
   protected character$ = combineLatest({
-    scene: toObservable(this.service.scene),
+    game: toObservable(this.service.game),
     options: toObservable(this.selectedOptions),
-  }).pipe(switchMap(({ scene, options }) => loadCharacter(scene, options)))
+  }).pipe(
+    tap({ next: () => this.disposeEntity() }),
+    map(({ game, options }) => createEntity(game, options)),
+    shareReplayRefCount(1),
+  )
+  protected actionlist$ = this.character$.pipe(map((entity) => entity?.component(ActionlistComponent)))
+  protected actionlist = toSignal(this.actionlist$)
+  protected actions = toSignal(this.actionlist$.pipe(switchMap((list) => (list ? list.actions$ : of([])))))
+  protected state = toSignal(this.actionlist$.pipe(switchMap((list) => (list ? list.playerState$ : of(null)))))
 
   private vitalOptionsList = resource({
     request: this.vitalId,
@@ -44,7 +60,7 @@ export class GameViewerCharacterDirective {
       const models = await Promise.all(meta.models.map((id) => this.db.vitalsModelsMetadataById(id)))
       return models
         .filter((it) => !!it)
-        .map((model): NwCharacterOptions => {
+        .map((model) => {
           const uri = vitalModelUriById(model.id)
           const { rootUrl, modelUrl } = getModelUrl(uri)
           return {
@@ -58,47 +74,62 @@ export class GameViewerCharacterDirective {
   })
 
   public constructor() {
-    this.character$.pipe(takeUntilDestroyed()).subscribe((character) => {
-      if (character) {
-        character.enable()
-        character.executeActionByName('Idle', true)
-      }
-      this.service.setCharacter(character)
-      if (this.autofocus()) {
-        this.service.focusCharacter()
-      }
-    })
     effect(() => {
-      const list = this.vitalOptionsList.value()
-      if (!list) {
-        return
-      }
-      this.selectedOptions.set(list[0])
+      const options = this.vitalOptionsList.value()?.[0]
+      untracked(() => {
+        this.selectedOptions.set(options)
+      })
+    })
+
+    this.character$.pipe(takeUntilDestroyed()).subscribe((entity) => {
+      this.entity.set(entity)
+    })
+
+    // propagate the actionlist to the service
+    effect(() => {
+      const actions = this.actions()
+      untracked(() => this.service.adbActions.set(actions || []))
+    })
+
+    // propagate the player state to the service
+    effect(() => {
+      const state = this.state()
+      untracked(() => this.service.adbPlayerState.set(state || null))
+    })
+
+    //
+    effect(() => {
+      const fragment = this.service.adbFragment()
+      const actionlist = this.actionlist()
+      untracked(() => actionlist?.playFragment(fragment))
     })
   }
+
+  private disposeEntity() {
+    const entity = this.entity()
+    if (entity) {
+      entity.destroy()
+      this.entity.set(null)
+    }
+  }
 }
 
-function loadCharacter(scene: Scene, options: NwCharacterOptions) {
-  if (!scene || !options) {
-    return of(null)
+function createEntity(game: GameHost, options: CharacterViewerEntityOptions) {
+  if (!options || !game) {
+    return null
   }
-  return new Observable<NwViewerCharacter>((subscriber) => {
-    const character = new NwViewerCharacter(scene, options)
-    character.loaded
-      .then(() => subscriber.next(character))
-      .catch((err) => {
-        subscriber.error(err)
-        subscriber.next(null)
-      })
-    return () => disposeCharacter(character)
-  }).pipe(shareReplayRefCount(1))
-}
-
-async function disposeCharacter(character: NwViewerCharacter) {
-  if (!character) {
-    return
-  }
-  await character.loaded
-  await character.disable()
-  character.dispose()
+  return game
+    .createEntity()
+    .addComponents(
+      new SkinnedMeshComponent({
+        url: options.url,
+        rootUrl: options.rootUrl,
+      }),
+      new ActionlistComponent({
+        animationDatabase: options.adbUrl,
+        defaultTags: options.tags,
+      }),
+    )
+    .initialize(game)
+    .activate()
 }

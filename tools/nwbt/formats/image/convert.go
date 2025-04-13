@@ -18,6 +18,19 @@ const (
 	FormatDDS  Format = ".dds"
 )
 
+func (f *Format) MimeType() string {
+	switch *f {
+	case FormatPNG:
+		return "image/png"
+	case FormatWEBP:
+		return "image/webp"
+	case FormatDDS:
+		return "image/vnd-ms.dds"
+	default:
+		return ""
+	}
+}
+
 var (
 	ErrUnsupportedInputFormat  = fmt.Errorf("unsupported input format")
 	ErrUnsupportedTargetFormat = fmt.Errorf("unsupported target format")
@@ -94,6 +107,9 @@ func ConvertDDSFile(file nwfs.File, target Format, options ...ConvertOption) ([]
 func ConvertDDS(data []byte, target Format, options ...ConvertOption) (res []byte, err error) {
 	defer utils.HandleRecover(&err)
 
+	if target == FormatDDS {
+		return data, nil
+	}
 	config := getConfig(options)
 	source := utils.Must(copyToTemp(data, ".dds", config.tmpDir))
 	sourceDir := path.Dir(source)

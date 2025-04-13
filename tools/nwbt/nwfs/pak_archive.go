@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"nw-buddy/tools/formats/pak"
+	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/progress"
 	"os"
 	"path"
@@ -29,6 +30,10 @@ type pakArchive struct {
 type pakFile struct {
 	pak.Entry
 	archive *pakArchive
+}
+
+func (it *pakFile) MarshalJSON() ([]byte, error) {
+	return json.MarshalJSON(it.Path())
 }
 
 func (it *pakFile) Stat() fs.FileInfo {

@@ -1,6 +1,8 @@
 package heightmap
 
 import (
+	"image"
+	"iter"
 	"math"
 )
 
@@ -12,6 +14,10 @@ type Terrain struct {
 	Width      int
 	Height     int
 }
+
+const (
+	TILE_SIZE = 256
+)
 
 func NewTerrain(regions []*Region) (out *Terrain) {
 	maxX := 0
@@ -94,7 +100,7 @@ var samples = [][2]int{
 	{1, 1},
 }
 
-func (t *Terrain) GetSmoothHeightAt(x int, y int) float32 {
+func (t *Terrain) SmoothHeightAt(x int, y int) float32 {
 	var sum float64
 	var count float64
 	for _, sample := range samples {
@@ -142,8 +148,101 @@ func (t *Terrain) Downsize() (out *Terrain) {
 
 	for y := range out.Height {
 		for x := range out.Width {
-			out.SetHeightAt(x, y, t.GetSmoothHeightAt(x*2, y*2))
+			out.SetHeightAt(x, y, t.SmoothHeightAt(x*2, y*2))
 		}
 	}
 	return
+}
+
+type Mipmaps struct {
+	Levels   []*Terrain
+	TileSize int
+}
+
+func (t *Terrain) MipmapsDefaultSize() Mipmaps {
+	return t.Mipmaps(TILE_SIZE)
+}
+
+func (t *Terrain) Mipmaps(tileSize int) Mipmaps {
+	levels := []*Terrain{t}
+	for t.Width > tileSize {
+		t = t.Downsize()
+		levels = append(levels, t)
+	}
+	return Mipmaps{
+		Levels:   levels,
+		TileSize: tileSize,
+	}
+}
+
+func (mips Mipmaps) Tiles() []Tile {
+	tiles := []Tile{}
+	for i, mip := range mips.Levels {
+		for tileX, tileY := range iterArea(0, 0, mip.Width/mips.TileSize, mip.Height/mips.TileSize) {
+			x := tileX * int(math.Pow(2, float64(i)))
+			y := tileY * int(math.Pow(2, float64(i)))
+			tiles = append(tiles, mips.TileAt(i+1, x, y))
+		}
+	}
+	return tiles
+}
+
+func (mips Mipmaps) TileAt(level, x, y int) Tile {
+	tileX := x / int(math.Pow(2, float64(level-1)))
+	tileY := y / int(math.Pow(2, float64(level-1)))
+	tileSize := mips.TileSize
+	return Tile{
+		Level: level,
+		X:     x,
+		Y:     y,
+		Area: Area{
+			X: tileX * tileSize,
+			Y: tileY * tileSize,
+			W: tileSize,
+			H: tileSize,
+		},
+	}
+}
+
+func (mips Mipmaps) TileHeightmap(tile Tile) image.Image {
+	level := tile.Level - 1
+	if level < 0 || level >= len(mips.Levels) {
+		return nil
+	}
+	mip := mips.Levels[tile.Level-1]
+	tileSize := mips.TileSize
+	img := image.NewNRGBA(image.Rect(0, 0, tile.Area.W, tile.Area.H))
+	for x, y := range iterArea(0, 0, tile.Area.W, tile.Area.H) {
+		tx := tile.Area.X + x
+		ty := tile.Area.Y + y
+		h, _ := mip.HeightAt(tx, ty) // GetSmoothHeightAt(tx, ty)
+		img.Set(x, tileSize-y-1, EncodeHeightToR8G8B8(h))
+	}
+	return img
+}
+
+func iterArea(x, y, w, h int) iter.Seq2[int, int] {
+	return func(yield func(int, int) bool) {
+		for i := y; i < y+h; i++ {
+			for j := x; j < x+w; j++ {
+				if !yield(j, i) {
+					return
+				}
+			}
+		}
+	}
+}
+
+type Tile struct {
+	Area  Area
+	Level int
+	X     int
+	Y     int
+}
+
+type Area struct {
+	X int
+	Y int
+	W int
+	H int
 }

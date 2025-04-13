@@ -1,33 +1,34 @@
-@if (character(); as char) {
+<button class="btn btn-square btn-sm drop-shadow" [class.btn-ghost]="!skyboxEnabled()" (click)="toggleDebugView()">
+  <nwb-icon [icon]="iconCubes" class="w-4 h-4" />
+</button>
+@if (adbActions()?.length) {
   <div class="join">
-    @if (char.actions?.length) {
-      <button
-        class="btn btn-square btn-sm drop-shadow"
-        [class.btn-ghost]="!skyboxEnabled()"
-        [cdkMenuTriggerFor]="tplActions"
+    <button
+      class="btn btn-square btn-sm drop-shadow"
+      [class.btn-ghost]="!skyboxEnabled()"
+      [cdkMenuTriggerFor]="tplActions"
+    >
+      <nwb-icon [icon]="iconFilms" class="w-4 h-4 swap-on" />
+    </button>
+    <ng-template #tplActions>
+      <div
+        cdkMenu
+        class="bg-base-300 bg-opacity-90 border border-base-200 w-screen h-screen max-w-[600px] max-h-[1000px] rounded-md shadow-md"
       >
-        <nwb-icon [icon]="iconFilms" class="w-4 h-4 swap-on" />
-      </button>
-      <ng-template #tplActions>
-        <div
-          cdkMenu
-          class="bg-base-300 bg-opacity-90 border border-base-200 w-screen h-screen max-w-[600px] max-h-[1000px] rounded-md shadow-md"
-        >
-          <nwb-character-action-browser
-            [actions]="char.actions"
-            [tags]="char.tags"
-            (fragmentClicked)="char.executeFragment($event)"
-          />
-        </div>
-      </ng-template>
-    }
+        <nwb-character-action-browser
+          [actions]="adbActions()"
+          [tags]="adbTags()"
+          (fragmentClicked)="handleFragmentClicked($event)"
+        />
+      </div>
+    </ng-template>
   </div>
 }
 <div class="join">
   <button
     class="join-item btn btn-square btn-sm drop-shadow"
     [class.btn-ghost]="!skyboxEnabled()"
-    (click)="viewer().setSkyboxEnabled(!skyboxEnabled())"
+    (click)="lighting().setSkyboxEnabled(!skyboxEnabled())"
   >
     <span class="swap swap-rotate" [class.swap-active]="skyboxEnabled()">
       <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on" />
@@ -48,7 +49,7 @@
     >
       @for (option of envOptions(); track $index; let i = $index) {
         <li cdkMenuItem>
-          <a [class.text-primary]="option.value === envMapUrl()" (click)="viewer().setEnvMapUrl(option.value)">
+          <a [class.text-primary]="option.value === envMapUrl()" (click)="lighting().load(option.value)">
             {{ option.label }}
           </a>
         </li>

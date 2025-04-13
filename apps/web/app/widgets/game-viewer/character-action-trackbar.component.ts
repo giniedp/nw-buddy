@@ -1,10 +1,8 @@
-import { Component, computed, input } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { of, switchMap } from 'rxjs'
+import { Component, computed, inject } from '@angular/core'
+import type { ProceduralBar, ProceduralLayer } from '@nw-viewer/adb'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
-import { NwViewerCharacter } from './nw-character'
-import { AdbFragment, ProceduralBar, ProceduralLayer } from './nw-adb'
+import { GameSystemService } from './game-viewer.service'
 
 @Component({
   selector: 'nwb-character-action-trackbar',
@@ -14,7 +12,7 @@ import { AdbFragment, ProceduralBar, ProceduralLayer } from './nw-adb'
         @for (layer of fragment.procLayers; track $index; let layerFirst = $first, layerLast = $last) {
           <div class="flex flex-row overflow-visible">
             @for (bar of layer.sequence; track $index; let barFirst = $first, barLast = $last) {
-              @let active = isActive(layer, bar, animationInfo()?.time);
+              @let active = isActive(layer, bar, state()?.time);
               <div
                 class="btn btn-xs border-none w-auto rounded-none bg-opacity-75 p-0 cursor-help outline-primary transition-all no-animation "
                 [style.flex-basis.%]="bar.basis"
@@ -48,7 +46,7 @@ import { AdbFragment, ProceduralBar, ProceduralLayer } from './nw-adb'
           [style.transform]="'translateX(' + progress() * 100 + '%)'"
         ></div>
       </div>
-      @if (animationInfo(); as info) {
+      @if (state(); as info) {
         <input
           type="range"
           min="0"
@@ -67,22 +65,20 @@ import { AdbFragment, ProceduralBar, ProceduralLayer } from './nw-adb'
   },
 })
 export class CharacterActionTrackbarComponent {
-  public character = input<NwViewerCharacter>()
-  protected character$ = toObservable(this.character)
-  protected fragment$ = this.character$.pipe(switchMap((it) => it?.fragmentStart$ || of(null)))
-  protected fragment = toSignal(this.fragment$)
-  protected animationInfo$ = this.character$.pipe(switchMap((it) => it?.animationInfo$ || of(null)))
-  protected animationInfo = toSignal(this.animationInfo$)
-  protected progress = computed(() => this.animationInfo()?.progress || 0)
+  protected service = inject(GameSystemService)
+
+  protected fragment = this.service.adbFragment
+  protected state = this.service.adbPlayerState
+  protected progress = computed(() => this.state()?.progress || 0)
 
   protected onProgressChange(event: Event) {
     const target = event.target as HTMLInputElement
     const value = parseFloat(target.value) / 1000
-    this.character()?.goToTime(value)
+    // this.character()?.goToTime(value)
   }
 
   protected onDblClick(event: Event) {
-    this.character()?.executeFragment(this.fragment())
+    // this.character()?.executeFragment(this.fragment())
   }
   protected isActive(layer: ProceduralLayer, bar: ProceduralBar, time: number) {
     if (!bar?.type || !bar.type.startsWith('CAGE')) {

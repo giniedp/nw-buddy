@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "ng lint",
     "tauri": "tauri",
-    "dev": "concurrently -n WEB,NWBT -c red,green -k -s first \"pnpm dev:web\" \"pnpm nwbt serve\"",
+    "dev": "concurrently -n WEB,NWBT -c red,green -k -s first \"pnpm dev:web\" \"pnpm nwbt serve --texture-size 1024\"",
     "dev:electron": "npm-run-all -p electron:serve dev:web",
     "dev:web": "pnpm nw-generate env -c dev && ng serve -c dev",
     "dev:web-cdn": "pnpm nw-generate env -c dev-cdn && ng serve -c dev-cdn",

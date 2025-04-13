@@ -112,6 +112,10 @@ const PAGE_ROUTES: Routes = [
   },
   { path: 'datasheets', loadChildren: () => import('./pages/datasheets').then((m) => m.ROUTES) },
   { path: 'pak', loadChildren: () => import('./pages/pak').then((m) => m.ROUTES) },
+  {
+    path: 'levels',
+    loadChildren: () => import('./pages/levels').then((m) => m.ROUTES),
+  },
 ]
 
 export const APP_ROUTES: Routes = [

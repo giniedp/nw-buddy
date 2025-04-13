@@ -1,6 +1,11 @@
 import { Component, inject, signal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { CreateScreenshotAsync } from '@babylonjs/core'
-import { switchMap } from 'rxjs'
+import { Inspector } from '@babylonjs/inspector'
+import { AdbFragment } from '@nw-viewer/adb'
+import { LightingProvider } from '@nw-viewer/services/lighting-provider'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { of, switchMap } from 'rxjs'
 import { IconsModule } from '~/ui/icons'
 import {
   svgBars,
@@ -18,13 +23,12 @@ import {
   svgXmark,
 } from '~/ui/icons/svg'
 import { FullscreenService, LayoutModule } from '~/ui/layout'
-import { selectSignal } from '~/utils'
 import { ScreenshotService } from '../screenshot'
 import { CharacterActionBrowserComponent } from './character-action-browser.component'
-import { GameViewerService } from './game-viewer.service'
+import { GameSystemService } from './game-viewer.service'
 
 @Component({
-  selector: 'nw-game-viewer-toolbar',
+  selector: 'nwb-game-viewer-toolbar',
   templateUrl: './game-viewer-toolbar.component.html',
   host: {
     class: 'flex flex-row gap-2',
@@ -34,7 +38,7 @@ import { GameViewerService } from './game-viewer.service'
 export class GameViewerToolbarComponent {
   protected fullscreen = inject(FullscreenService)
   protected screenshots = inject(ScreenshotService)
-  protected service = inject(GameViewerService)
+  protected service = inject(GameSystemService)
   protected envOptions = signal([
     { value: 'https://assets.babylonjs.com/textures/parking.env', label: 'parking' },
     { value: 'https://assets.babylonjs.com/textures/country.env', label: 'country' },
@@ -42,13 +46,15 @@ export class GameViewerToolbarComponent {
     { value: 'https://assets.babylonjs.com/textures/night.env', label: 'night' },
   ])
 
-  protected character = this.service.character
+  protected lighting$ = this.service.service(LightingProvider)
+  protected envMapUrl$ = this.lighting$.pipe(switchMap((it) => it.envUrl$ || of(null)))
+  protected skyboxEnabled$ = this.lighting$.pipe(switchMap((it) => it.skybox$ || of(false)))
 
-  protected viewer = this.service.viewer
-  protected viewer$ = this.service.viewer$
-
-  protected readonly skyboxEnabled = selectSignal(this.viewer$.pipe(switchMap((it) => it.skyboxEnabled$)))
-  protected readonly envMapUrl = selectSignal(this.viewer$.pipe(switchMap((it) => it.envMapUrl$)))
+  protected lighting = toSignal(this.lighting$)
+  protected envMapUrl = toSignal(this.envMapUrl$)
+  protected skyboxEnabled = toSignal(this.skyboxEnabled$)
+  protected adbActions = this.service.adbActions
+  protected adbTags = this.service.adbTags
 
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
@@ -62,17 +68,35 @@ export class GameViewerToolbarComponent {
   protected iconEnv = svgGlobeSnow
   protected iconFilms = svgFilms
   protected iconMore = svgBars
-  protected iconEmpty = svgCubes
+  protected iconCubes = svgCubes
 
   protected toggleFullscreen() {
     this.fullscreen.toggle(this.service.host().nativeElement)
   }
 
+  protected handleFragmentClicked(fragment: AdbFragment) {
+    this.service.adbFragment.set(fragment)
+  }
+
   protected async capturePhoto() {
-    const viewer = this.viewer()
+    const game = this.service.game()
+    const scene = game.system(SceneProvider).main
+    const engine = scene.getEngine()
     const size = this.fullscreen.isActive() ? window.innerWidth : 2000
-    const data = await CreateScreenshotAsync(viewer.engine, viewer.camera, size)
+    const data = await CreateScreenshotAsync(engine, scene.activeCamera, size)
     const blob = await fetch(data).then((res) => res.blob())
     this.screenshots.saveBlobWithDialog(blob)
+  }
+
+  protected toggleDebugView() {
+    if (Inspector.IsVisible) {
+      Inspector.Hide()
+      return
+    }
+    const scene = this.service.game().system(SceneProvider).main
+    Inspector.Show(scene, {
+      globalRoot: this.service.host().nativeElement.querySelector('#inspector'),
+      embedMode: true,
+    })
   }
 }

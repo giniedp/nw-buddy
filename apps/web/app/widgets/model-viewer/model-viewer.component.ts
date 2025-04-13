@@ -234,7 +234,13 @@ export class ModelViewerComponent implements OnDestroy {
     if (!viewer) {
       return null
     }
-    const { rootUrl, modelUrl } = getModelUrl(data.url)
+    let rootUrl = data.rootUrl
+    let modelUrl = data.url
+    if (!data.rootUrl) {
+      const url = getModelUrl(data.url)
+      rootUrl = url.rootUrl
+      modelUrl = url.modelUrl
+    }
     await viewer.loadModel(modelUrl, {
       rootUrl: rootUrl,
       animationAutoPlay: true,

@@ -1,0 +1,60 @@
+<nwb-game-viewer
+  class="w-full h-full"
+  [nwbGameLevel]="level()"
+  [nwbGameLevelTest]="false"
+  [nwbGameCamera]="'free'"
+  [nwbGameCameraPosition]="cameraPosition()"
+  (nwbGameCameraPositionChange)="handleCameraPositionChange($event)"
+  #camera="camera"
+>
+  <div class="absolute top-0 left-0 px-2 py-1 text-white flex flex-col">
+    <details class="dropdown drop-shadow-sm">
+      <summary class="btn btn-sm btn-ghost mb-1">Level {{ level() | nwHumanize }}</summary>
+      <ul class="menu menu-sm dropdown-content bg-base-100 z-[1] w-60 p-2 shadow">
+        @for (name of levels.value(); track $index) {
+          <li>
+            <a [routerLink]="['/levels', name]">{{ name | nwHumanize }}</a>
+          </li>
+        }
+      </ul>
+    </details>
+
+    <button class="btn btn-sm btn-ghost font-mono" (click)="cameraDialog.open = true">
+      x:{{ camera.position()?.x | number: '1.0-0' }}
+      y:{{ camera.position()?.y | number: '1.0-0' }}
+      z:{{ camera.position()?.z | number: '1.0-0' }}
+    </button>
+
+    <dialog class="modal" #cameraDialog>
+      <div class="modal-box">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <h3 class="text-lg font-bold">Set camera position</h3>
+        <div class="flex flex-row gap-2">
+          <label class="input grow overflow-hidden flex items-center gap-2">
+            X:
+            <input type="number" class="max-w-full" placeholder="X" [ngModel]="camera.position()?.x" #x />
+          </label>
+          <label class="input grow overflow-hidden flex items-center gap-2">
+            Y:
+            <input type="number" class="max-w-full" placeholder="X" [ngModel]="camera.position()?.y" #y />
+          </label>
+          <label class="input grow overflow-hidden flex items-center gap-2">
+            Z:
+            <input type="number" class="max-w-full" placeholder="X" [ngModel]="camera.position()?.z" #z />
+          </label>
+        </div>
+
+        <div class="modal-action">
+          <button
+            class="btn"
+            (click)="cameraPosition.set([x.valueAsNumber, y.valueAsNumber, z.valueAsNumber]); cameraDialog.open = false"
+          >
+            Teleport
+          </button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</nwb-game-viewer>

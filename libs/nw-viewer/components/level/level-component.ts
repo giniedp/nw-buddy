@@ -1,0 +1,125 @@
+import { Scene, Vector3 } from '@babylonjs/core'
+import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
+import { LevelData, RegionMetadata } from '../../level/types'
+import { SceneProvider } from '../../services/scene-provider'
+import { DebugMeshComponent } from '../debug-mesh-component'
+import { RegionComponent } from '../region'
+import { TerrainComponent } from '../terrain/terrain-component'
+import { TransformComponent } from '../transform-component'
+import { REGION_VISIBILITY, SEGMENT_SIZE } from './constants'
+
+export class LevelComponent implements GameComponent {
+  private data: LevelData
+  private scene: Scene
+  private regions = new GameEntityCollection()
+  private terrain: GameEntity
+  private regionSize: number
+  private transform: TransformComponent
+
+  public entity: GameEntity
+
+  public constructor(data: LevelData) {
+    this.data = data
+    this.regionSize = data.meta.tracts.regionSize
+  }
+
+  public initialize(entity: GameEntity): void {
+    // HINT: level component is instantiated by LevelProvider
+    // do not import LevelProvider to avoid circular dependency
+
+    this.entity = entity
+    this.scene = entity.game.system(SceneProvider).main
+    this.transform = entity.component(TransformComponent)
+
+    this.createTerrainEntity()
+    for (const data of this.data.regions) {
+      this.createRegionEntity(data)
+    }
+
+    this.terrain?.initialize(this.entity.game)
+    this.regions.initialize(this.entity.game)
+    console.log('level initialized', this)
+  }
+
+  public activate(): void {
+    this.scene.getEngine().runRenderLoop(this.update)
+    this.terrain?.activate()
+  }
+
+  public deactivate(): void {
+    this.scene.getEngine().stopRenderLoop(this.update)
+    this.regions.deactivate()
+    this.terrain?.deactivate()
+  }
+
+  public destroy(): void {
+    this.regions.destroy()
+    this.terrain?.destroy()
+  }
+
+  private update = () => {
+    const camera = this.scene.activeCamera
+    const cx = camera.position.x
+    const cy = camera.position.z
+
+    for (const item of this.regions.entities) {
+      const region = item.component(RegionComponent)
+      const enableAt = this.regionSize * 0.5 + REGION_VISIBILITY
+      const disableAt = this.regionSize * 0.5 + REGION_VISIBILITY + SEGMENT_SIZE
+      const dx = Math.abs(region.centerX - cx)
+      const dy = Math.abs(region.centerY - cy)
+
+      if (item.active && (dx >= disableAt || dy >= disableAt)) {
+        item.deactivate()
+      } else if (!item.active && dx <= enableAt && dy <= enableAt) {
+        item.activate()
+      }
+    }
+  }
+
+  private createTerrainEntity() {
+    if (!!this.entity.optionalComponent(TerrainComponent)) {
+      return null
+    }
+    if (!this.data.heightmap?.mipCount) {
+      return null
+    }
+    this.terrain = this.entity.game.createEntity()
+    this.terrain.addComponents(
+      new TransformComponent({
+        transform: this.transform.createChild('terrain'),
+      }),
+      new TerrainComponent(this.data.heightmap),
+    )
+  }
+
+  private createRegionEntity(region: RegionMetadata) {
+    const location = this.data.meta.regions.find((el) => el.name === region.name).location
+    if (!location) {
+      console.warn(`No location found for region:`, region.name)
+      return
+    }
+    const regionSize = region.mapSettings.regionSize
+    const cx = (location[0] + 0.5) * regionSize
+    const cy = (location[1] + 0.5) * regionSize
+
+    this.regions.create().addComponents(
+      new TransformComponent({
+        // keep region transform at level origin, regardless of region location
+        // this only acts as a "folder" node and should not affect the region assets
+        transform: this.transform.createChild(region.name),
+      }),
+      new RegionComponent({
+        ...region,
+        centerX: cx,
+        centerY: cy,
+      }),
+      new DebugMeshComponent({
+        position: new Vector3(cx, 0, cy),
+        size: region.mapSettings.regionSize,
+        type: 'ground',
+        name: region.name,
+      }),
+    )
+  }
+}

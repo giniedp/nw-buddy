@@ -5,7 +5,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgPause, svgPlay, svgPlus, svgTags } from '~/ui/icons/svg'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { humanize } from '~/utils'
-import { AdbAction, AdbFragment } from './nw-adb'
+import type { AdbAction, AdbFragment } from '@nw-viewer/adb'
 
 @Directive({
   selector: '[cdkVirtualFor]',
@@ -56,7 +56,11 @@ export class TypeSafeCdkVirtualForDirective<T> {
         class="whitespace-nowrap overflow-hidden h-8"
       >
         @if (item.fragment) {
-          <button class="btn btn-ghost btn-sm btn-block justify-start rounded-none" (click)="handleClick(item)" [disabled]="!item.playable">
+          <button
+            class="btn btn-ghost btn-sm btn-block justify-start rounded-none"
+            (click)="handleClick(item)"
+            [disabled]="!item.playable"
+          >
             @if (item.looping) {
               <span class="badge badge-info italic bg-opacity-25">looping</span>
             }

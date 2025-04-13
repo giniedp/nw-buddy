@@ -41,6 +41,7 @@ require (
 	github.com/tidwall/pretty v1.2.1
 	github.com/vbauerster/mpb/v8 v8.9.2
 	github.com/x448/float16 v0.8.4
+	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/image v0.25.0
 	golang.org/x/sys v0.30.0
 	golang.org/x/text v0.23.0
