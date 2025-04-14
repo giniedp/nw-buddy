@@ -88,10 +88,13 @@ importers:
         version: 8.1.0
       '@babylonjs/inspector':
         specifier: 8.1.0
-        version: 8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui-editor@8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20))(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@babylonjs/loaders@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@babylonjs/materials@8.1.0(@babylonjs/core@8.1.0))(@babylonjs/serializers@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20)
+        version: 8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui-editor@8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20))(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@babylonjs/loaders@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@babylonjs/materials@8.2.0(@babylonjs/core@8.1.0))(@babylonjs/serializers@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20)
       '@babylonjs/loaders':
         specifier: 8.1.0
         version: 8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0)
+      '@babylonjs/materials':
+        specifier: 8.2.0
+        version: 8.2.0(@babylonjs/core@8.1.0)
       '@babylonjs/viewer':
         specifier: 8.1.0
         version: 8.1.0(@babylonjs/core@8.1.0)(@babylonjs/loaders@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))
@@ -1515,8 +1518,8 @@ packages:
       '@babylonjs/core': ^8.0.0
       babylonjs-gltf2interface: ^8.0.0
 
-  '@babylonjs/materials@8.1.0':
-    resolution: {integrity: sha512-0dA8mocOQONeBzHYm1cBgrcqV2uHPxP008Sb/UWHFVbToD5GES0XvfNkxmmD3Uw7H+OpR0eUBxwPWjqHxZwvkA==}
+  '@babylonjs/materials@8.2.0':
+    resolution: {integrity: sha512-Z7/GSBxsfZ0i4dhOQmdM54NAL/LL6OKOUgIflIHxR6tZlgyPa3naNkS7qXZCUXfNbHpxcVc4/CUAvi67WFLB6w==}
     peerDependencies:
       '@babylonjs/core': ^8.0.0
 
@@ -5865,10 +5868,6 @@ packages:
 
   dotenv-expand@5.1.0:
     resolution: {integrity: sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA==}
-
-  dotenv@16.4.5:
-    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
-    engines: {node: '>=12'}
 
   dotenv@16.4.7:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
@@ -12390,13 +12389,13 @@ snapshots:
     dependencies:
       '@babylonjs/core': 8.1.0
 
-  '@babylonjs/inspector@8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui-editor@8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20))(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@babylonjs/loaders@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@babylonjs/materials@8.1.0(@babylonjs/core@8.1.0))(@babylonjs/serializers@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20)':
+  '@babylonjs/inspector@8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui-editor@8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20))(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@babylonjs/loaders@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@babylonjs/materials@8.2.0(@babylonjs/core@8.1.0))(@babylonjs/serializers@8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20)':
     dependencies:
       '@babylonjs/core': 8.1.0
       '@babylonjs/gui': 8.1.0(@babylonjs/core@8.1.0)
       '@babylonjs/gui-editor': 8.1.0(@babylonjs/core@8.1.0)(@babylonjs/gui@8.1.0(@babylonjs/core@8.1.0))(@types/react-dom@19.1.1(@types/react@18.3.20))(@types/react@18.3.20)
       '@babylonjs/loaders': 8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0)
-      '@babylonjs/materials': 8.1.0(@babylonjs/core@8.1.0)
+      '@babylonjs/materials': 8.2.0(@babylonjs/core@8.1.0)
       '@babylonjs/serializers': 8.1.0(@babylonjs/core@8.1.0)(babylonjs-gltf2interface@8.1.0)
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-regular-svg-icons': 6.7.2
@@ -12409,7 +12408,7 @@ snapshots:
       '@babylonjs/core': 8.1.0
       babylonjs-gltf2interface: 8.1.0
 
-  '@babylonjs/materials@8.1.0(@babylonjs/core@8.1.0)':
+  '@babylonjs/materials@8.2.0(@babylonjs/core@8.1.0)':
     dependencies:
       '@babylonjs/core': 8.1.0
 
@@ -12641,7 +12640,7 @@ snapshots:
 
   '@electron/universal@2.0.1':
     dependencies:
-      '@electron/asar': 3.2.18
+      '@electron/asar': 3.4.0
       '@malept/cross-spawn-promise': 2.0.0
       debug: 4.4.0
       dir-compare: 4.2.0
@@ -15813,7 +15812,7 @@ snapshots:
       config-file-ts: 0.2.8-rc1
       debug: 4.4.0
       dmg-builder: 24.13.3(electron-builder-squirrel-windows@26.0.12(dmg-builder@24.13.3))
-      dotenv: 16.4.5
+      dotenv: 16.4.7
       dotenv-expand: 11.0.7
       ejs: 3.1.10
       electron-builder-squirrel-windows: 26.0.12(dmg-builder@24.13.3)
@@ -17198,11 +17197,9 @@ snapshots:
 
   dotenv-expand@11.0.7:
     dependencies:
-      dotenv: 16.4.5
+      dotenv: 16.4.7
 
   dotenv-expand@5.1.0: {}
-
-  dotenv@16.4.5: {}
 
   dotenv@16.4.7: {}
 

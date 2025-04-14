@@ -4,6 +4,7 @@ import { Engine } from '@babylonjs/core'
 import { AdbAction, AdbFragment, AdbPlayerState } from '@nw-viewer/adb'
 import { SkyboxComponent } from '@nw-viewer/components/skybox-component'
 import { GameHost, GameSystem, GameSystemType } from '@nw-viewer/ecs'
+import { DebugShapeProvider } from '@nw-viewer/services/debug-shapes'
 import { ContentProvider } from '@nw-viewer/services/content-provider'
 import { EngineProvider } from '@nw-viewer/services/engine-provider'
 import { LevelProvider } from '@nw-viewer/services/level-provider'
@@ -48,6 +49,7 @@ export function createGame(canvas: HTMLCanvasElement) {
       new EngineProvider(engine),
       new SceneProvider(),
       new LightingProvider(),
+      new DebugShapeProvider(),
       new ContentProvider({
         rootUrl: environment.modelsUrl,
         nwbtUrl: environment.nwbtUrl,

@@ -1,4 +1,4 @@
-import { Matrix } from '@babylonjs/core'
+import { Color4, Matrix } from '@babylonjs/core'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
 import { Capital, Impostor } from '../../level/types'
 import { cryToGltfMat4, mat4FromAzTransform } from '../../math/mat4'
@@ -16,13 +16,22 @@ export interface RegionSegmentOptions {
   impostors: Impostor[]
   capitals: Capital[]
 }
-
+type ActivytState = 'inactive' | 'ready' | 'active'
 export class RegionSegmentComponent implements GameComponent {
   public entity: GameEntity
   private transform: TransformComponent
   private engine: EngineProvider
+  private state: ActivytState = 'inactive'
+  private indicator: DebugMeshComponent
+  private colorInactive = new Color4(0.25, 0.25, 0.25, 0.2)
+  private colorActive = new Color4(0.25, 0.25, 0.25, 0.5)
+
   private impostors = new GameEntityCollection()
   private capitals = new GameEntityCollection()
+  private capitalIndicators = new GameEntityCollection()
+  private capitalColorInactive = new Color4(1, 0, 1, 0.5)
+  private capitalColorActive = new Color4(1, 1, 1, 0.5)
+
   private data: RegionSegmentOptions
   private scene: SceneProvider
   public readonly centerX: number
@@ -39,6 +48,7 @@ export class RegionSegmentComponent implements GameComponent {
     this.transform = this.entity.component(TransformComponent)
     this.scene = entity.game.system(SceneProvider)
     this.engine = entity.game.system(EngineProvider)
+    this.indicator = entity.optionalComponent(DebugMeshComponent)
 
     if (this.data.impostors) {
       for (const impostor of this.data.impostors) {
@@ -51,43 +61,90 @@ export class RegionSegmentComponent implements GameComponent {
       }
     }
 
+    if (this.impostors.length() > 0) {
+      this.colorInactive.g = 0.5
+      this.colorActive.g = 0.5
+    }
+    if (this.capitals.length() > 0) {
+      this.colorInactive.b = 0.5
+      this.colorActive.b = 0.5
+    }
+
     this.impostors.initialize(entity.game)
     this.capitals.initialize(entity.game)
+    this.capitalIndicators.initialize(entity.game)
   }
 
   public activate(): void {
+    this.indicator?.setColor(this.colorInactive)
     this.scene.main.getEngine().onBeginFrameObservable.add(this.update)
-    this.impostors.activate()
+    this.capitalIndicators.activate()
   }
 
   public deactivate(): void {
     this.scene.main.getEngine().onBeginFrameObservable.removeCallback(this.update)
     this.impostors.deactivate()
     this.capitals.deactivate()
+    this.capitalIndicators.deactivate()
   }
 
   public destroy(): void {
     this.impostors.destroy()
     this.capitals.destroy()
+    this.capitalIndicators.destroy()
   }
 
   private update = () => {
+    this.updateSegmentActivity()
+    this.updateCapitals()
+  }
+
+  private updateSegmentActivity() {
+    const viewDistance = this.engine.viewDistance
     const camera = this.scene.main.activeCamera
     const cx = camera.position.x
     const cy = camera.position.z
 
-    const enableAt = 2 * SEGMENT_SIZE
-    const disableAt = 3 * SEGMENT_SIZE
+    const enableAt = viewDistance - SEGMENT_SIZE
+    const disableAt = viewDistance
 
-    for (const entity of this.capitals.entities) {
+    const active = this.state === 'active'
+    const dx = Math.abs(this.centerX - cx)
+    const dy = Math.abs(this.centerY - cy)
+    if (active && (dx >= disableAt || dy >= disableAt)) {
+      this.state = 'inactive'
+      this.indicator?.setColor(this.colorInactive)
+      this.impostors.deactivate()
+    }
+    if (!active && dx <= enableAt && dy <= enableAt) {
+      this.state = 'active'
+      this.indicator?.setColor(this.colorActive)
+      this.impostors.activate()
+    }
+  }
+
+  private updateCapitals() {
+    const camera = this.scene.main.activeCamera
+    const cx = camera.position.x
+    const cy = camera.position.z
+
+    const enableAt = 1 * SEGMENT_SIZE
+    const disableAt = enableAt + SEGMENT_SIZE
+
+    for (let i = 0; i < this.capitals.length(); i++) {
+      const entity = this.capitals.entities[i]
+      const indicator = this.capitalIndicators.entities[i].optionalComponent(DebugMeshComponent)
       const transform = entity.component(TransformComponent)
       const dx = Math.abs(transform.node.position.x - cx)
       const dy = Math.abs(transform.node.position.z - cy)
       if (entity.active && (dx >= disableAt || dy >= disableAt)) {
         entity.deactivate()
+        indicator?.setColor(this.capitalColorInactive)
       }
       if (!entity.active && dx <= enableAt && dy <= enableAt) {
         entity.activate()
+        indicator?.setColor(this.capitalColorActive)
+        //console.log('capital', entity.name, 'activated', this)
       }
     }
   }
@@ -119,14 +176,22 @@ export class RegionSegmentComponent implements GameComponent {
           matrix: getCapitalTransformMatrix(capital),
         }),
       }),
+      new SliceAssetComponent({
+        sliceName: capital.sliceName,
+        slcieAssetId: capital.sliceAssetId,
+      }),
+    )
+    this.capitalIndicators.create().addComponents(
+      new TransformComponent({
+        transform: this.transform.createChild(entity.name, {
+          matrix: getCapitalTransformMatrix(capital),
+        }),
+      }),
       new DebugMeshComponent({
         name: entity.name,
         type: 'sphere',
         size: capital.footprint?.radius || 1,
-      }),
-      new SliceAssetComponent({
-        sliceName: capital.sliceName,
-        slcieAssetId: capital.sliceAssetId,
+        color: this.capitalColorInactive,
       }),
     )
   }

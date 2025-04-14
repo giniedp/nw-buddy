@@ -1,8 +1,9 @@
-import { InstantiatedEntries, Matrix, TransformNode } from '@babylonjs/core'
+import { InstantiatedEntries, Matrix, Mesh, TransformNode } from '@babylonjs/core'
 import { filter, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { GameComponent, GameEntity } from '../ecs'
 import { ContentProvider, ContentSource, GltfAsset } from '../services/content-provider'
 import { TransformComponent } from './transform-component'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
 
 export type StaticMeshComponentOptions = ContentSource & {
   instances?: Matrix[]
@@ -11,12 +12,16 @@ export type StaticMeshComponentOptions = ContentSource & {
 export class StaticMeshComponent implements GameComponent {
   private content: ContentProvider
   private transform: TransformComponent
+  private scene: SceneProvider
+
   private disable$ = new Subject<void>()
   private active = false
   private options: StaticMeshComponentOptions
   private options$ = new ReplaySubject<StaticMeshComponentOptions>(1)
   private url$ = this.options$.pipe(switchMap((options) => this.content.resolveModelUrl(options)))
   private models: InstantiatedEntries[] = []
+  private meshes: Mesh[] = []
+
   public entity: GameEntity
 
   public constructor(options?: StaticMeshComponentOptions) {
@@ -29,6 +34,7 @@ export class StaticMeshComponent implements GameComponent {
     this.entity = entity
     this.content = entity.game.system(ContentProvider)
     this.transform = entity.component(TransformComponent)
+    this.scene = entity.game.system(SceneProvider)
   }
 
   public activate(): void {
@@ -50,6 +56,10 @@ export class StaticMeshComponent implements GameComponent {
       model.dispose()
     }
     this.models = []
+    for (const mesh of this.meshes) {
+      mesh.dispose()
+    }
+    this.meshes = []
   }
 
   public destroy(): void {
@@ -73,21 +83,21 @@ export class StaticMeshComponent implements GameComponent {
           node.parent = this.transform.node
         }
       }
-      return
-    }
-    for (const matrix of this.options.instances) {
-      const instance = asset.container.instantiateModelsToScene()
-      const transform = this.transform.createChild('', {
-        matrix,
-        isAbsolute: false,
-      })
-      for (const node of instance.rootNodes) {
-        if (node instanceof TransformNode) {
-          node.parent = transform
-        }
+    } else {
+      const instances = this.options.instances
+      const matricesData = new Float32Array(16 * instances.length)
+      for (let i = 0; i < instances.length; i++) {
+        instances[i].copyToArray(matricesData, i * 16)
       }
-      // console.log('instance', instance, transform)
-      this.models.push(instance)
+      for (const mesh of asset.container.meshes) {
+        const clone = new Mesh(mesh.name, asset.container.scene, {
+          source: mesh as Mesh,
+        })
+        clone.parent = this.transform.node
+        clone.thinInstanceSetBuffer('matrix', matricesData, 16)
+        this.meshes.push(clone)
+      }
     }
+    this.scene.onMeshesUpdated()
   }
 }

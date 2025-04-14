@@ -128,6 +128,11 @@ export class ClipmapComponent implements GameComponent {
     for (const mesh of this.meshes.trims) {
       mesh.dispose()
     }
+    for (const tile of this.tiles) {
+      tile.mesh.dispose()
+      tile.material.dispose()
+    }
+    this.tiles.length = 0
     this.meshes = null
   }
 
@@ -278,6 +283,7 @@ export class ClipmapComponent implements GameComponent {
       tile.texture.dispose()
       tile.texture = null
       tile.intersection = IntersectionType.Disjoint
+      tile.mesh.parent = null
       tile.mesh.setEnabled(false)
       tile.mesh.material.dispose()
       tile.mesh.dispose()

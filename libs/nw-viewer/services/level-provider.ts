@@ -1,4 +1,4 @@
-import { Matrix, TransformNode } from '@babylonjs/core'
+import { Matrix, Observable, TransformNode } from '@babylonjs/core'
 import { DebugMeshComponent } from '@nw-viewer/components/debug-mesh-component'
 import { LevelComponent } from '../components/level'
 import { createChildTransform, TransformComponent } from '../components/transform-component'
@@ -9,7 +9,8 @@ import { SceneProvider } from './scene-provider'
 export class LevelProvider implements GameSystem {
   private entities = new GameEntityCollection()
   public game: GameHost
-  public terrainDisabled = false
+  public terrainEnabled = true
+  public terrainEnabledObserver = new Observable<boolean>()
 
   public initialize(game: GameHost): void {
     this.game = game
@@ -19,8 +20,12 @@ export class LevelProvider implements GameSystem {
     this.unloadLevel()
   }
 
-  public disableTerrain() {
-    this.terrainDisabled
+  public setTerrainEnabled(value: boolean) {
+    if (this.terrainEnabled === value) {
+      return
+    }
+    this.terrainEnabled = value
+    this.terrainEnabledObserver.notifyObservers(value)
   }
 
   public loadLevel(data: LevelData) {

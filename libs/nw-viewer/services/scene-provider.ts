@@ -79,6 +79,10 @@ export class SceneProvider implements GameSystem {
   public showInspector() {
     Inspector.Show(this.main, { embedMode: true })
   }
+
+  public onMeshesUpdated() {
+    // this.main.createOrUpdateSelectionOctree(64, 8)
+  }
 }
 
 function createScene(engine: AbstractEngine) {

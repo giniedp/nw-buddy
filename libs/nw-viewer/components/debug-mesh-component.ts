@@ -1,12 +1,13 @@
-import { Color4, InstancedMesh, IVector3Like } from '@babylonjs/core'
+import { Color4, IVector3Like, Matrix, TransformNode } from '@babylonjs/core'
 import { GameComponent, GameEntity } from '../ecs'
-import { ContentProvider, DebugShapeType } from '../services/content-provider'
+import { DebugShapeProvider, DebugShapeRef, DebugShapeType } from '../services/debug-shapes'
 import { TransformComponent } from './transform-component'
 
 export interface DebugMeshComponentOptions {
   name: string
   type: DebugShapeType
   size: number
+  color?: Color4,
   position?: IVector3Like
   meta?: any
 }
@@ -23,44 +24,76 @@ const COLORS = [
 
 export class DebugMeshComponent implements GameComponent {
   private options: DebugMeshComponentOptions
-  private content: ContentProvider
-  private instance: InstancedMesh
+  private provider: DebugShapeProvider
+  private instance: DebugShapeRef
   private transform: TransformComponent
+  private matrix: Matrix
+  private color: Color4
+
   public entity: GameEntity
 
   public constructor(options: DebugMeshComponentOptions) {
     this.options = options
+    this.color = options.color || null
   }
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.content = entity.system(ContentProvider)
+    this.provider = entity.system(DebugShapeProvider)
     this.transform = entity.optionalComponent(TransformComponent)
+    this.matrix = Matrix.Identity()
   }
 
   public activate(): void {
-    const i = Math.floor(Math.log2(this.options.size)) % COLORS.length
-    const color = COLORS[i]
-    this.instance = this.content.debugShape(this.options.type).createInstance('')
+    if (!this.color) {
+      const i = Math.floor(Math.log2(this.options.size)) % COLORS.length
+      this.color = COLORS[i]
+    }
 
-    this.instance.setEnabled(true)
-    //this.instance.updateColor(color, false)
-    if (this.options.size) {
-      this.instance.scaling.setAll(this.options.size)
-    }
-    if (this.options.position) {
-      this.instance.position.set(this.options.position.x, this.options.position.y, this.options.position.z)
-    }
+    this.instance = this.provider.createInstance(this.options.type)
+    this.instance.updateColor(this.color)
+    updateTransform(this.transform?.node, this.matrix, this.options)
+    this.instance.updateTransform(this.matrix)
+
     if (this.transform) {
-      this.instance.parent = this.transform.node
+      this.transform.node.onAfterWorldMatrixUpdateObservable.add(this.update)
+    }
+  }
+
+  public setColor(color: Color4) {
+    this.color = color
+    if (this.instance) {
+      this.instance.updateColor(color)
     }
   }
 
   public deactivate(): void {
-    this.instance.setEnabled(false)
-    this.instance.dispose()
+    if (this.transform) {
+      this.transform.node.onAfterWorldMatrixUpdateObservable.removeCallback(this.update)
+    }
+    this.instance.destroy()
     this.instance = null
   }
 
   public destroy(): void {}
+
+  private update = (node: TransformNode) => {
+    updateTransform(node, this.matrix, this.options)
+    this.instance.updateTransform(this.matrix)
+  }
+}
+
+function updateTransform(node: TransformNode, matrix: Matrix, options: DebugMeshComponentOptions) {
+  Matrix.IdentityToRef(matrix)
+  if (options) {
+    if (options.size) {
+      Matrix.ScalingToRef(options.size, options.size, options.size, matrix)
+    }
+    if (options.position) {
+      matrix.setTranslationFromFloats(options.position.x, options.position.y, options.position.z)
+    }
+  }
+  if (node) {
+    matrix.multiplyToRef(node.getWorldMatrix(), matrix)
+  }
 }

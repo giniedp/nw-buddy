@@ -1,13 +1,4 @@
-import {
-  AssetContainer,
-  CreateBox,
-  CreateCylinder,
-  CreateGround,
-  CreateSphere,
-  LoadAssetContainerAsync,
-  Mesh,
-  StandardMaterial,
-} from '@babylonjs/core'
+import { AssetContainer, LoadAssetContainerAsync } from '@babylonjs/core'
 import '@babylonjs/loaders'
 import { IGLTFLoaderData } from '@babylonjs/loaders'
 import { Observable } from 'rxjs'
@@ -40,7 +31,6 @@ export class ContentProvider implements GameSystem {
   private resolvedAssets = new Map<string, Promise<ContentSourceUrl>>()
   private loadedSlices = new Map<string, Promise<any>>()
   private options: ContentServiceOptions
-  private shapes = new Map<DebugShapeType, Mesh>()
   public game: GameHost
 
   public get rootUrl() {
@@ -61,14 +51,10 @@ export class ContentProvider implements GameSystem {
   public initialize(game: GameHost): void {
     this.game = game
     this.scene = game.system(SceneProvider)
-    this.createDebugShapes()
   }
 
   public destroy(): void {
-    for (const shape of this.shapes.values()) {
-      shape.dispose()
-    }
-    this.shapes.clear()
+    //
   }
 
   /**
@@ -116,10 +102,6 @@ export class ContentProvider implements GameSystem {
         container: asset,
       }
     })
-  }
-
-  public debugShape(type: DebugShapeType): Mesh {
-    return this.shapes.get(type)
   }
 
   public async resolveModelUrl(options: ContentSourceUrl | ContentSourceAssetId): Promise<ContentSourceUrl> {
@@ -203,33 +185,6 @@ export class ContentProvider implements GameSystem {
       )
     }
     return this.loadedSlices.get(url)
-  }
-
-  private createDebugShapes() {
-    const material = new StandardMaterial('debug-material', this.scene.main)
-    material.wireframe = true
-    material.emissiveColor.set(1, 0, 1)
-    material.diffuseColor.set(1, 0, 1)
-
-    let shape = CreateBox('debug-box', { size: 1 }, this.scene.main)
-    shape.material = material.clone('')
-    shape.setEnabled(false)
-    this.shapes.set('box', shape)
-
-    shape = CreateSphere('debug-sphere', { diameter: 1, segments: 8 }, this.scene.main)
-    shape.material = material.clone('')
-    shape.setEnabled(false)
-    this.shapes.set('sphere', shape)
-
-    shape = CreateGround('debug-ground', { width: 1, height: 1 }, this.scene.main)
-    shape.material = material.clone('')
-    shape.setEnabled(false)
-    this.shapes.set('ground', shape)
-
-    shape = CreateCylinder('debug-cylinder', { diameter: 1, height: 1, tessellation: 6 }, this.scene.main)
-    shape.material = material.clone('')
-    shape.setEnabled(false)
-    this.shapes.set('cylinder', shape)
   }
 }
 

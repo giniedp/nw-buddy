@@ -10,6 +10,7 @@ import { GameSystemService } from './game-viewer.service'
     <div class="flex-1 relative h-full w-full">
       <div class="absolute top-0 right-0 p-2">
         <nwb-game-viewer-toolbar #toolbar />
+        <ng-content select="[slot='toolbar']"/>
       </div>
       <div class="flex flex-col items-center absolute bottom-0 left-0 right-0 p-2 pointer-events-none">
         <nwb-character-action-trackbar class="w-full max-w-[800px] pointer-events-auto" />

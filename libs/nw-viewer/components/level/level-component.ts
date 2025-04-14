@@ -6,21 +6,18 @@ import { DebugMeshComponent } from '../debug-mesh-component'
 import { RegionComponent } from '../region'
 import { TerrainComponent } from '../terrain/terrain-component'
 import { TransformComponent } from '../transform-component'
-import { REGION_VISIBILITY, SEGMENT_SIZE } from './constants'
 
 export class LevelComponent implements GameComponent {
   private data: LevelData
   private scene: Scene
   private regions = new GameEntityCollection()
   private terrain: GameEntity
-  private regionSize: number
   private transform: TransformComponent
 
   public entity: GameEntity
 
   public constructor(data: LevelData) {
     this.data = data
-    this.regionSize = data.meta.tracts.regionSize
   }
 
   public initialize(entity: GameEntity): void {
@@ -43,6 +40,7 @@ export class LevelComponent implements GameComponent {
 
   public activate(): void {
     this.scene.getEngine().runRenderLoop(this.update)
+    this.regions.activate()
     this.terrain?.activate()
   }
 
@@ -58,23 +56,7 @@ export class LevelComponent implements GameComponent {
   }
 
   private update = () => {
-    const camera = this.scene.activeCamera
-    const cx = camera.position.x
-    const cy = camera.position.z
-
-    for (const item of this.regions.entities) {
-      const region = item.component(RegionComponent)
-      const enableAt = this.regionSize * 0.5 + REGION_VISIBILITY
-      const disableAt = this.regionSize * 0.5 + REGION_VISIBILITY + SEGMENT_SIZE
-      const dx = Math.abs(region.centerX - cx)
-      const dy = Math.abs(region.centerY - cy)
-
-      if (item.active && (dx >= disableAt || dy >= disableAt)) {
-        item.deactivate()
-      } else if (!item.active && dx <= enableAt && dy <= enableAt) {
-        item.activate()
-      }
-    }
+    //
   }
 
   private createTerrainEntity() {
@@ -116,7 +98,7 @@ export class LevelComponent implements GameComponent {
       }),
       new DebugMeshComponent({
         position: new Vector3(cx, 0, cy),
-        size: region.mapSettings.regionSize,
+        size: region.mapSettings.regionSize * 0.99,
         type: 'ground',
         name: region.name,
       }),

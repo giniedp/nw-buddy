@@ -96,6 +96,7 @@
     "@babylonjs/core": "8.1.0",
     "@babylonjs/inspector": "8.1.0",
     "@babylonjs/loaders": "8.1.0",
+    "@babylonjs/materials": "8.2.0",
     "@babylonjs/viewer": "8.1.0",
     "@capacitor/android": "6.1.2",
     "@capacitor/cli": "6.1.2",

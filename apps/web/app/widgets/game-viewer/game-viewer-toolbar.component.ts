@@ -31,7 +31,7 @@ import { GameSystemService } from './game-viewer.service'
   selector: 'nwb-game-viewer-toolbar',
   templateUrl: './game-viewer-toolbar.component.html',
   host: {
-    class: 'flex flex-row gap-2',
+    class: 'flex flex-row items-center justify-end gap-2',
   },
   imports: [IconsModule, LayoutModule, CharacterActionBrowserComponent],
 })

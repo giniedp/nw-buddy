@@ -1,10 +1,10 @@
-import { Scene } from '@babylonjs/core'
+import { Color4, Scene } from '@babylonjs/core'
 import { EngineProvider } from '@nw-viewer/services/engine-provider'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
 import { Capital, Impostor, RegionMetadata } from '../../level/types'
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
-import { SEGMENT_SIZE } from '../level/constants'
+import { REGION_VISIBILITY, SEGMENT_SIZE } from '../level/constants'
 import { TransformComponent } from '../transform-component'
 import { RegionSegmentComponent } from './region-segment'
 
@@ -13,12 +13,17 @@ export interface RegionOptions extends RegionMetadata {
   centerY: number
 }
 
+type ActivytState = 'active' | 'inactive'
 export class RegionComponent implements GameComponent {
   private data: RegionMetadata
   private scene: Scene
   private engine: EngineProvider
   private segments = new GameEntityCollection()
   private transform: TransformComponent
+  private state: ActivytState = 'inactive'
+  private indicator: DebugMeshComponent
+  private colorInactive = new Color4(0.25, 0.25, 0.25, 0.25)
+  private colorActive = new Color4(0.25, 0.25, 0.25, 0.5)
 
   public entity: GameEntity
   public centerX: number
@@ -39,18 +44,19 @@ export class RegionComponent implements GameComponent {
     this.scene = entity.game.system(SceneProvider).main
     this.engine = entity.game.system(EngineProvider)
     this.transform = entity.component(TransformComponent)
+    this.indicator = entity.optionalComponent(DebugMeshComponent)
     const count = this.data.mapSettings.regionSize / SEGMENT_SIZE
     for (let y = 0; y < count; y++) {
       for (let x = 0; x < count; x++) {
         this.createSegment(x, y)
       }
     }
+    this.indicator?.setColor(this.colorInactive)
     this.segments.initialize(entity.game)
   }
 
   private createSegment(x: number, y: number) {
     const index = this.segments.length()
-    const segment = this.segments.create()
     const impostors: Impostor[] = []
     const capitals: Capital[] = []
 
@@ -94,7 +100,7 @@ export class RegionComponent implements GameComponent {
     const centerY = originY + 0.5 * SEGMENT_SIZE
 
     const segmentName = `segment ${String(index).padStart(3, '0')}`
-    segment.addComponents(
+    this.segments.create().addComponents(
       new TransformComponent({
         transform: this.transform.createChild(segmentName),
         // just a "folder" transform, not affecting the segment assets
@@ -106,12 +112,12 @@ export class RegionComponent implements GameComponent {
         centerY: centerY,
       }),
       new DebugMeshComponent({
-        size: SEGMENT_SIZE,
+        size: SEGMENT_SIZE * 0.99,
         type: 'ground',
         name: segmentName + ' outline',
         position: {
           x: centerX,
-          y: 0,
+          y: 0.1,
           z: centerY,
         },
       }),
@@ -120,7 +126,6 @@ export class RegionComponent implements GameComponent {
 
   public activate(): void {
     this.scene.getEngine().onBeginFrameObservable.add(this.update)
-    console.log('activate region', this.data.name, this)
   }
 
   public deactivate(): void {
@@ -133,24 +138,29 @@ export class RegionComponent implements GameComponent {
   }
 
   private update = () => {
-    const viewDistance = this.engine.viewDistance
+    this.updateRegionActivity()
+  }
+
+  private updateRegionActivity() {
     const camera = this.scene.activeCamera
     const cx = camera.position.x
     const cy = camera.position.z
 
-    const enableAt = viewDistance - SEGMENT_SIZE
-    const disableAt = viewDistance
+    const regionSize = this.data.mapSettings.regionSize
+    const enableAt = regionSize * 0.5 + REGION_VISIBILITY
+    const disableAt = regionSize * 0.5 + REGION_VISIBILITY + SEGMENT_SIZE
+    const dx = Math.abs(this.centerX - cx)
+    const dy = Math.abs(this.centerY - cy)
 
-    for (const entity of this.segments.entities) {
-      const segment = entity.component(RegionSegmentComponent)
-      const dx = Math.abs(segment.centerX - cx)
-      const dy = Math.abs(segment.centerY - cy)
-      if (entity.active && (dx >= disableAt || dy >= disableAt)) {
-        entity.deactivate()
-      }
-      if (!entity.active && dx <= enableAt && dy <= enableAt) {
-        entity.activate()
-      }
+    const active = this.state === 'active'
+    if (active && (dx >= disableAt || dy >= disableAt)) {
+      this.state = 'inactive'
+      this.segments.deactivate()
+      this.indicator?.setColor(this.colorInactive)
+    } else if (!active && dx <= enableAt && dy <= enableAt) {
+      this.state = 'active'
+      this.segments.activate()
+      this.indicator?.setColor(this.colorActive)
     }
   }
 }

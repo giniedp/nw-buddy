@@ -92,6 +92,7 @@ export class SliceAssetComponent implements GameComponent {
     for (const azEntity of azVectorElements(slice.entities)) {
       let azTransform: AzGameTransformComponent = null
       for (const azComponent of azVectorElements(azEntity.components)) {
+        // console.log(azComponent.__type, azComponent)
         switch (azComponent.__type) {
           case 'GameTransformComponent': {
             if (isAzGameTransformComponent(azComponent)) {
@@ -100,7 +101,7 @@ export class SliceAssetComponent implements GameComponent {
             break
           }
           case 'PointSpawnerComponent': {
-            // console.log('PointSpawnerComponent', azComponent)
+            //console.log('PointSpawnerComponent', azComponent)
             // references aliasasset to span one (of multiple) configured assets
             break
           }
@@ -109,7 +110,7 @@ export class SliceAssetComponent implements GameComponent {
             break
           }
           case 'AreaSpawnerComponent': {
-            console.log('AreaSpawnerComponent', azComponent)
+            //console.log('AreaSpawnerComponent', azComponent)
             break
           }
           case 'PrefabSpawnerComponent': {
