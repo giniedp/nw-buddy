@@ -82,7 +82,8 @@ func Load(file nwfs.File) ([]float32, error) {
 	if err != nil {
 		return nil, err
 	}
-	return LoadFromTiff(data)
+	// return LoadFromTiff(data)
+	return LoadFromTiffOld(data)
 }
 
 func LoadFromTiff(data []byte) ([]float32, error) {
