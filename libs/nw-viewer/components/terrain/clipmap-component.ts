@@ -1,6 +1,6 @@
 import { Mesh, RenderTargetTexture, Texture } from '@babylonjs/core'
 import { GameComponent, GameEntity } from '../../ecs'
-import { HeightmapMetadata } from '../../level/types'
+import { HeightmapMetadata } from '../level/types'
 import { IntersectionType } from '../../math'
 import { ContentProvider } from '../../services/content-provider'
 import { SceneProvider } from '../../services/scene-provider'
@@ -20,6 +20,7 @@ export interface ClipmapTile {
   z: number
   intersection: IntersectionType
   texture?: Texture
+  texture2?: Texture
 
   tx: number
   ty: number
@@ -42,6 +43,7 @@ export class ClipmapComponent implements GameComponent {
   private content: ContentProvider
   private heightmap: RenderTargetTexture
   private heightmapSize: number
+  private groundmap: RenderTargetTexture
   private needsUpdate: boolean = true
   private bounds: number[] = [0, 0, 0, 0]
 
@@ -71,6 +73,18 @@ export class ClipmapComponent implements GameComponent {
       {
         generateDepthBuffer: false,
         samplingMode: Texture.NEAREST_NEAREST,
+      },
+    )
+    this.groundmap = new RenderTargetTexture(
+      `groundmap-${this.clip.index}`,
+      {
+        width: 1024,
+        height: 1024,
+      },
+      this.scene.main,
+      {
+        generateDepthBuffer: false,
+        samplingMode: Texture.LINEAR_LINEAR,
       },
     )
   }
@@ -173,6 +187,7 @@ export class ClipmapComponent implements GameComponent {
       this.updateHeightmap()
       this.meshes.material.params.setHeightmap(this.heightmap)
       this.meshes.material.params.setHeightmapTexel(1 / this.heightmapSize)
+      this.meshes.material.params.setGroundmap(this.groundmap)
     }
   }
 
@@ -241,8 +256,15 @@ export class ClipmapComponent implements GameComponent {
     if (tile.texture) {
       return
     }
-    const url = `${this.content.nwbtUrl}/level/${this.data.name}/heightmap/${tile.z}_${tile.y * this.clip.density}_${tile.x * this.clip.density}.png`
+    ;('newworld_vitaeeterna/.webp')
+    const addrY = tile.y * this.clip.density
+    const addrX = tile.x * this.clip.density
+    const url = `${this.content.nwbtUrl}/level/${this.data.name}/heightmap/${tile.z}_${addrY}_${addrX}.png`
     tile.texture = new Texture(url, this.scene.main, true, false, Texture.NEAREST_NEAREST, () => {
+      this.needsUpdate = true
+    })
+    const url2 = `http://localhost:4200/nw-data/lyshineui/worldtiles/${this.data.name}/map_l${tile.z}_y${String(addrY).padStart(3, '0')}_x${String(addrX).padStart(3, '0')}.webp`
+    tile.texture2 = new Texture(url2, this.scene.main, true, false, Texture.LINEAR_LINEAR, () => {
       this.needsUpdate = true
     })
   }
@@ -250,6 +272,7 @@ export class ClipmapComponent implements GameComponent {
   private toRemove: ClipmapTile[] = []
   private updateHeightmap() {
     this.heightmap.renderList.length = 0
+    this.groundmap.renderList.length = 0
     this.toRemove.length = 0
     for (const tile of this.tiles) {
       if (tile.texture && !tile.intersection) {
@@ -270,6 +293,19 @@ export class ClipmapComponent implements GameComponent {
     }
     this.heightmap.activeCamera = this.scene.screenQuadCamera
     this.heightmap.render(false, false)
+
+    for (const tile of this.tiles) {
+      if (!tile.intersection || !tile.texture) {
+        continue
+      }
+
+      this.groundmap.renderList.push(tile.mesh)
+      tile.material.params.setTexture(tile.texture2)
+      tile.mesh.material = tile.material
+    }
+    this.groundmap.activeCamera = this.scene.screenQuadCamera
+    this.groundmap.render(false, false)
+
     for (const item of this.heightmap.renderList) {
       item.setEnabled(false)
     }
@@ -282,6 +318,8 @@ export class ClipmapComponent implements GameComponent {
       }
       tile.texture.dispose()
       tile.texture = null
+      tile.texture2.dispose()
+      tile.texture2 = null
       tile.intersection = IntersectionType.Disjoint
       tile.mesh.parent = null
       tile.mesh.setEnabled(false)

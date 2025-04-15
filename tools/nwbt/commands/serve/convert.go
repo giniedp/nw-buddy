@@ -25,16 +25,19 @@ func convertFile(assets *game.Assets, file nwfs.File, target string, query url.V
 		return file.Read()
 	}
 
-	switch path.Ext(file.Path()) {
+	filePath := file.Path()
+	if dds.IsDDSSplitPart(filePath) {
+		return convertDDS(assets, file, target, query)
+	}
+
+	switch path.Ext(filePath) {
 	case ".datasheet":
 		return convertDatasheet(file, target)
 	case ".dds":
 		return convertDDS(assets, file, target, query)
 	case ".tif":
 		return convertDDS(assets, file, target, query)
-	case ".cgf":
-		return convertCGF(assets, file, target)
-	case ".skin":
+	case ".cgf", ".skin":
 		return convertCGF(assets, file, target)
 	case ".cdf":
 		return convertCDF(assets, file, target)

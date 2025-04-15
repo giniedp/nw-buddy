@@ -1,9 +1,9 @@
 import { Scene, Vector3 } from '@babylonjs/core'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
-import { LevelData, RegionMetadata } from '../../level/types'
+import { LevelData, RegionMetadata } from './types'
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
-import { RegionComponent } from '../region'
+import { RegionComponent } from './region-component'
 import { TerrainComponent } from '../terrain/terrain-component'
 import { TransformComponent } from '../transform-component'
 
@@ -97,7 +97,7 @@ export class LevelComponent implements GameComponent {
         centerY: cy,
       }),
       new DebugMeshComponent({
-        position: new Vector3(cx, 0, cy),
+        position: new Vector3(cx, 0.05, cy),
         size: region.mapSettings.regionSize * 0.99,
         type: 'ground',
         name: region.name,

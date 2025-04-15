@@ -74,7 +74,8 @@ func scanLumberyard(inputDir string) (crc rtti.CrcTable, table rtti.UuidTable, e
 			slog.Error(fmt.Sprintf("%v %s", err, file))
 			continue
 		}
-		obj.Walk(func(el, parent *azcs.XmlElement, index, depth int) bool {
+		obj.Walk(func(node *azcs.WalkXmlNode) bool {
+			el := node.Element
 			crc.PutName(el.Field)
 
 			name := el.Name

@@ -89,6 +89,7 @@ const FRAGMENT_SHADER = /* wgsl */ `
   varying vec3 vWorldPos;
   varying float vBlend;
   uniform sampler2D heightmap;
+  uniform sampler2D groundmap;
 
   void main() {
     // gl_FragColor = vec4(vBlend, vBlend, vBlend, 1.0);
@@ -97,9 +98,9 @@ const FRAGMENT_SHADER = /* wgsl */ `
     // gl_FragColor = vec4(mix(vColor.rgb, vec3(0.5, 0.5, 1.0), vBlend), 1.0);
 
     //vec3 color = texture(heightmap, vUV).xyz;
-
-    //gl_FragColor.rgb = color;
-    gl_FragColor.rgb = mix(vNormal, vColor.rgb, 0.85);
+    vec3 color = texture(groundmap, vUV).xyz;
+    gl_FragColor.rgb = color;
+    //gl_FragColor.rgb = mix(vNormal, vColor.rgb, 0.85);
     gl_FragColor.a = 1.0;
   }
 `
@@ -130,6 +131,9 @@ export class ClipmapMaterial extends ShaderMaterial {
     },
     setHeightmapTexel: (value: number) => {
       this.setFloat('heightmapTexel', value)
+    },
+    setGroundmap: (value: Texture) => {
+      this.setTexture('groundmap', value)
     },
   }
   public constructor(name: string, scene: Scene) {

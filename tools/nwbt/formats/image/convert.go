@@ -85,13 +85,18 @@ func WithMaxSize(maxSize uint) ConvertOption {
 }
 
 func ConvertFile(file nwfs.File, targetFormat Format, options ...ConvertOption) ([]byte, error) {
-	ext := path.Ext(file.Path())
+	filePath := file.Path()
+	ext := path.Ext(filePath)
 	switch ext {
 	case ".dds":
 		return ConvertDDSFile(file, targetFormat, options...)
 	case ".png":
 		return ConvertPNGFile(file, targetFormat, options...)
 	default:
+		// TODO: can we convert split part here? need access to the header file
+		// if dds.IsDDSSplitPart(filePath) {
+		// 	return ConvertDDSFile(file, targetFormat, options...)
+		// }
 		return nil, fmt.Errorf("%s %w", ext, ErrUnsupportedInputFormat)
 	}
 }

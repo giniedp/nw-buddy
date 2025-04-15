@@ -1,12 +1,14 @@
 import { Color4, Scene } from '@babylonjs/core'
 import { EngineProvider } from '@nw-viewer/services/engine-provider'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
-import { Capital, Impostor, RegionMetadata } from '../../level/types'
+
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
-import { REGION_VISIBILITY, SEGMENT_SIZE } from '../level/constants'
+
 import { TransformComponent } from '../transform-component'
+import { REGION_VISIBILITY, SEGMENT_SIZE } from './constants'
 import { RegionSegmentComponent } from './region-segment'
+import { Capital, Impostor, RegionMetadata } from './types'
 
 export interface RegionOptions extends RegionMetadata {
   centerX: number

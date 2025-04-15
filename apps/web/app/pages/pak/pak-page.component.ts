@@ -60,8 +60,13 @@ import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
                 />
               }
               @case ('IMG') {
-                <picture class="ion-page">
-                  <img [src]="source.baseUrl + source.imagePath" class="object-scale-down" />
+                <picture class="block relative">
+                  <img [src]="source.baseUrl + source.imagePath" class="object-scale-down" #img />
+                  @if (img.naturalWidth) {
+                    <span class="absolute top-0 left-0 p-2 font-mono">
+                      {{ img.naturalWidth }}x{{ img.naturalHeight }}
+                    </span>
+                  }
                 </picture>
               }
             }
@@ -79,10 +84,10 @@ export class PakPageComponent {
 
   protected textContent = httpResource.text(() => {
     const source = this.source()
-    if (!source) {
-      return null
+    if (source?.textPath) {
+      return source.baseUrl + source.textPath
     }
-    return source.baseUrl + source.textPath
+    return undefined
   })
 
   protected modelContent = computed((): ModelItemInfo[] => {
@@ -98,7 +103,7 @@ export class PakPageComponent {
         url: path,
         itemClass: null,
         appearance: null,
-        rootUrl: this.source().baseUrl
+        rootUrl: this.source().baseUrl,
       },
     ]
   })

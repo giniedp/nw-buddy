@@ -1,6 +1,6 @@
 import { LevelProvider } from '@nw-viewer/services/level-provider'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
-import { HeightmapMetadata } from '../../level/types'
+import { HeightmapMetadata } from '../level/types'
 import { TransformComponent } from '../transform-component'
 import { ClipmapComponent } from './clipmap-component'
 
@@ -19,7 +19,6 @@ export class TerrainComponent implements GameComponent {
     this.entity = entity
     this.transform = this.entity.component(TransformComponent)
     this.level = this.entity.game.system(LevelProvider)
-
   }
 
   public activate(): void {
@@ -33,8 +32,7 @@ export class TerrainComponent implements GameComponent {
     this.entities.destroy()
   }
 
-  public destroy(): void {
-  }
+  public destroy(): void {}
 
   private updateTerrain = () => {
     if (!this.level.terrainEnabled) {

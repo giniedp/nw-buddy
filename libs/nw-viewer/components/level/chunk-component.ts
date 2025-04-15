@@ -1,12 +1,13 @@
 import { Matrix, TransformNode } from '@babylonjs/core'
-import { cryToGltfMat4, mat4FromAzTransform } from '../math/mat4'
-import { GameComponent, GameEntity } from '../ecs'
-import { Chunk } from '../level/types'
-import { ContentProvider, ContentSourceUrl } from '../services/content-provider'
-import { SceneProvider } from '../services/scene-provider'
-import { DebugMeshComponent } from './debug-mesh-component'
-import { StaticMeshComponent } from './static-mesh-component'
-import { TransformComponent } from './transform-component'
+import { GameComponent, GameEntity } from '../../ecs'
+import { cryToGltfMat4, mat4FromAzTransform } from '../../math/mat4'
+
+import { ContentProvider, ContentSourceUrl } from '../../services/content-provider'
+import { SceneProvider } from '../../services/scene-provider'
+import { DebugMeshComponent } from './../debug-mesh-component'
+import { StaticMeshComponent } from './../static-mesh-component'
+import { TransformComponent } from './../transform-component'
+import { Chunk } from './types'
 
 export class ChunkComponent implements GameComponent {
   public entity: GameEntity

@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -49,8 +50,8 @@ func init() {
 	Cmd.Flags().StringVarP(&flg.CacheDir, "cache", "c", env.CacheDir(), "image cache directory")
 	Cmd.Flags().StringVar(&flg.ModelsDir, "models", env.ModelsDir(), "models directory to serve")
 	Cmd.Flags().UintVar(&flg.TextureSize, "texture-size", 2048, "texture size to use for conversion")
-	Cmd.Flags().StringVar(&flg.Host, "host", "0.0.0.0", "host to listen on")
-	Cmd.Flags().UintVar(&flg.Port, "port", 8000, "port to listen on")
+	Cmd.Flags().StringVar(&flg.Host, "host", env.ToolsHost(), "host to listen on")
+	Cmd.Flags().UintVar(&flg.Port, "port", env.ToolsPort(), "port to listen on")
 	Cmd.Flags().StringVar(&flg.CrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
 	Cmd.Flags().StringVar(&flg.UuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
 }
@@ -78,6 +79,7 @@ func run(cmd *cobra.Command, args []string) {
 	r.HandleFunc("/level", GetLevelNamesHandler(assets))
 	r.HandleFunc("/level/{level}", GetLevelHandler(assets))
 	r.HandleFunc("/level/{level}/region/{region}", GetLevelRegionHandler(assets))
+	r.HandleFunc("/level/{level}/entities", GetLevelEntitiesHandler(assets))
 
 	heightmapHandler := GetLevelHeightmapHandler(assets)
 	r.HandleFunc("/level/{level}/heightmap", heightmapHandler)
@@ -98,16 +100,16 @@ func serveJson(object any, w http.ResponseWriter) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	serveContent(data, w, "application/json")
 }
 
-func serveContent(data []byte, ext string, w http.ResponseWriter) {
-	if ext == ".json" {
-		w.Header().Set("Content-Type", "application/json")
+func serveContent(data []byte, w http.ResponseWriter, contentType string) {
+	if contentType != "" {
+		w.Header().Set("Content-Type", contentType)
 	} else {
-		w.Header().Set("Content-Type", http.DetectContentType(data))
+		http.DetectContentType(data)
 	}
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(data)))
 	w.Write(data)
 }
 
@@ -117,5 +119,12 @@ func serveFile(file nwfs.File, w http.ResponseWriter) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	serveContent(data, path.Ext(file.Path()), w)
+	serveContent(data, w, contentTypeByExtension(path.Ext(file.Path())))
+}
+
+func contentTypeByExtension(ext string) string {
+	if res := mimetype.Lookup(ext); res != nil {
+		return res.String()
+	}
+	return ""
 }

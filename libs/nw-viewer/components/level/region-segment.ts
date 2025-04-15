@@ -1,14 +1,15 @@
 import { Color4, Matrix } from '@babylonjs/core'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
-import { Capital, Impostor } from '../../level/types'
 import { cryToGltfMat4, mat4FromAzTransform } from '../../math/mat4'
 import { EngineProvider } from '../../services/engine-provider'
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
-import { SEGMENT_SIZE } from '../level'
+
 import { SliceAssetComponent } from '../slice/slice-asset-component'
 import { StaticMeshComponent } from '../static-mesh-component'
 import { TransformComponent } from '../transform-component'
+import { SEGMENT_SIZE } from './constants'
+import { Capital, Impostor } from './types'
 
 export interface RegionSegmentOptions {
   centerX: number

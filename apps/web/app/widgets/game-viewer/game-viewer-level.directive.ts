@@ -1,5 +1,5 @@
 import { computed, Directive, effect, inject, input, resource, untracked } from '@angular/core'
-import { loadLevelData } from '@nw-viewer/level/loader'
+import { loadLevelData } from '@nw-viewer/components/level'
 import { LevelProvider } from '@nw-viewer/services/level-provider'
 import { environment } from 'apps/web/environments'
 import { GameSystemService } from './game-viewer.service'

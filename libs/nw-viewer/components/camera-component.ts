@@ -18,15 +18,15 @@ export class CameraComponent implements GameComponent {
   }
 
   public activate(): void {
-    const position = new Vector3(9535, 1024, 9330)
+    const position = new Vector3(0, 0, 0)
     this.freeCamera = new FreeCamera('FreeCamera', position.clone(), this.scene)
     this.flyCam = new FlyCamera('FlyCamera', position.clone(), this.scene)
 
     this.camera = new ArcRotateCamera('Camera', 0, 0, 10, Vector3.Zero(), this.scene)
     const camera = this.camera
 
-    camera.setTarget(new Vector3(7168, 2, 7168))
-    camera.setPosition(new Vector3(7168, 2, 7178))
+    camera.setTarget(new Vector3(0, 0, 0))
+    camera.setPosition(new Vector3(0, 0, 1))
     camera.minZ = 0.01
     camera.lowerRadiusLimit = 1
     camera.upperRadiusLimit = 1000

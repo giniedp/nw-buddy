@@ -1,9 +1,9 @@
 import { Matrix, Observable, TransformNode } from '@babylonjs/core'
 import { DebugMeshComponent } from '@nw-viewer/components/debug-mesh-component'
-import { LevelComponent } from '../components/level'
+import { LevelComponent, LevelData } from '../components/level'
 import { createChildTransform, TransformComponent } from '../components/transform-component'
 import { GameEntityCollection, GameHost, GameSystem } from '../ecs'
-import { LevelData } from '../level/types'
+
 import { SceneProvider } from './scene-provider'
 
 export class LevelProvider implements GameSystem {

@@ -7,20 +7,10 @@ export interface DebugMeshComponentOptions {
   name: string
   type: DebugShapeType
   size: number
-  color?: Color4,
+  color?: Color4
   position?: IVector3Like
   meta?: any
 }
-
-const COLORS = [
-  new Color4(0, 0, 1, 1),
-  new Color4(0, 1, 0, 1),
-  new Color4(0, 1, 1, 1),
-  new Color4(1, 0, 0, 1),
-  new Color4(1, 0, 1, 1),
-  new Color4(1, 1, 0, 1),
-  new Color4(1, 1, 1, 1),
-]
 
 export class DebugMeshComponent implements GameComponent {
   private options: DebugMeshComponentOptions
@@ -34,7 +24,7 @@ export class DebugMeshComponent implements GameComponent {
 
   public constructor(options: DebugMeshComponentOptions) {
     this.options = options
-    this.color = options.color || null
+    this.color = options.color || new Color4(1, 1, 1, 1)
   }
 
   public initialize(entity: GameEntity): void {
@@ -45,11 +35,6 @@ export class DebugMeshComponent implements GameComponent {
   }
 
   public activate(): void {
-    if (!this.color) {
-      const i = Math.floor(Math.log2(this.options.size)) % COLORS.length
-      this.color = COLORS[i]
-    }
-
     this.instance = this.provider.createInstance(this.options.type)
     this.instance.updateColor(this.color)
     updateTransform(this.transform?.node, this.matrix, this.options)

@@ -19,6 +19,12 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+
+	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/tools v0.30.0 // indirect
+
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
@@ -26,6 +32,7 @@ require (
 require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ebitengine/purego v0.8.2
+	github.com/gabriel-vasile/mimetype v1.4.8
 	github.com/goccy/go-json v0.10.5
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/goreleaser/fileglob v1.3.0

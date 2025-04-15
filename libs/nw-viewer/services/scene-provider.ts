@@ -59,6 +59,7 @@ export class SceneProvider implements GameSystem {
 
       this.main.activeCamera = this.arcRotateCamera
     }
+    //this.main.performancePriority = ScenePerformancePriority.Aggressive
     this.engine.runRenderLoop(this.onRenderLoot)
   }
 

@@ -34,8 +34,12 @@ export class PakService {
   public fileSource(file: string) {
     if (!file) {
       return null
+    const basename = file.split('/').pop()
+    const tokens = basename.split('.')
+    let ext = tokens.pop()
+    if (ext.match(/^[0-9]+$/)) {
+      ext = tokens.pop()
     }
-    const ext = file.split('.').pop()
     const stat: FileSource = {
       baseUrl: this.assetUrl('file/'),
       path: file,

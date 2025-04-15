@@ -61,7 +61,7 @@ func ListLevelNames(archive nwfs.Archive) []string {
 	return result
 }
 
-func LoadLevel(archive nwfs.Archive, name string) LevelMetadata {
+func LoadLevelMetadata(archive nwfs.Archive, name string) LevelMetadata {
 	level := LevelMetadata{Name: name}
 
 	levelDir := levelPath(name)
@@ -87,6 +87,10 @@ func LoadLevel(archive nwfs.Archive, name string) LevelMetadata {
 		} else if err := json.UnmarshalJSON(data, &level.WorldArea); err != nil {
 			slog.Error("world not parsed", "level", name, "error", err)
 		}
+	}
+
+	if file, ok := archive.Lookup(path.Join("levels", name, "mission0.entities_xml")); ok {
+		level.MissionEntitiesFile = &file
 	}
 
 	regionsPattern := path.Join(levelDir, "regions", "*", "mapsettings.json")

@@ -1,12 +1,15 @@
 package serve
 
 import (
+	"bytes"
 	"image/png"
 	"log/slog"
 	"net/http"
+	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/maps"
 	"strconv"
@@ -27,7 +30,7 @@ func GetLevelHandler(assets *game.Assets) http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
-		level := game.LoadLevel(assets.Archive, levelName)
+		level := game.LoadLevelMetadata(assets.Archive, levelName)
 		if level.Name == "" {
 			http.NotFound(w, r)
 			return
@@ -37,8 +40,7 @@ func GetLevelHandler(assets *game.Assets) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(content)
+		serveContent(content, w, "application/json")
 	}
 }
 
@@ -58,8 +60,32 @@ func GetLevelRegionHandler(assets *game.Assets) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(content)
+		serveContent(content, w, "application/json")
+	}
+}
+
+func GetLevelEntitiesHandler(assets *game.Assets) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		levelName := nwfs.NormalizePath(vars["level"])
+
+		level := game.LoadLevelMetadata(assets.Archive, levelName)
+		if level.Name == "" || level.MissionEntitiesFile == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		obj, err := azcs.LoadXml(*level.MissionEntitiesFile)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		content, err := rtti.ObjectStreamXmlToJSON(obj, uuidTable)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		serveContent(content, w, "application/json")
 	}
 }
 
@@ -116,7 +142,8 @@ func GetLevelHeightmapHandler(assets *game.Assets) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "image/png")
-		png.Encode(w, img)
+		buf := &bytes.Buffer{}
+		png.Encode(buf, img)
+		serveContent(buf.Bytes(), w, "image/png")
 	}
 }

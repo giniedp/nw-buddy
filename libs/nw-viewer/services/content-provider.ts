@@ -1,4 +1,4 @@
-import { AssetContainer, LoadAssetContainerAsync } from '@babylonjs/core'
+import { AssetContainer, LoadAssetContainerAsync, Mesh } from '@babylonjs/core'
 import '@babylonjs/loaders'
 import { IGLTFLoaderData } from '@babylonjs/loaders'
 import { Observable } from 'rxjs'
@@ -96,12 +96,14 @@ export class ContentProvider implements GameSystem {
           onParsed: (data) => (gltf = data),
         },
       },
-    }).then((asset) => {
-      return {
-        document: gltf,
-        container: asset,
-      }
     })
+      .then(onAssetContainerLoaded)
+      .then((asset) => {
+        return {
+          document: gltf,
+          container: asset,
+        }
+      })
   }
 
   public async resolveModelUrl(options: ContentSourceUrl | ContentSourceAssetId): Promise<ContentSourceUrl> {
@@ -211,4 +213,15 @@ function extName(url: string) {
     return null
   }
   return url.substring(index)
+}
+
+function onAssetContainerLoaded(asset: AssetContainer) {
+  if (asset) {
+    for (const mesh of asset.meshes) {
+      mesh.cullingStrategy = Mesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+      // mesh.isPickable = false
+      // mesh.freezeWorldMatrix()
+    }
+  }
+  return asset
 }
