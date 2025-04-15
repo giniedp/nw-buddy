@@ -169,7 +169,7 @@ func LoadLevelTerrain(archive nwfs.Archive, levelName string) *heightmap.Terrain
 		go func() {
 			for index := range wInput {
 				file := files[index]
-				region, err := heightmap.Load(file)
+				region, err := heightmap.LoadRegion(file)
 				if err != nil {
 					slog.Error("heightmap not loaded", "level", levelName, "region", file.Path(), "error", err)
 					continue

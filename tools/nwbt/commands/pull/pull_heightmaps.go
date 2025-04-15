@@ -53,7 +53,7 @@ func pullHeightmaps(fs nwfs.Archive, outDir string) {
 		Tasks:         files,
 		ProducerCount: int(flgWorkerCount),
 		Producer: func(file nwfs.File) (string, error) {
-			region, err := heightmap.Load(file)
+			region, err := heightmap.LoadRegion(file)
 			if err != nil {
 				return file.Path(), err
 			}
