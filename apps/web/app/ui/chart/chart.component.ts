@@ -17,7 +17,7 @@ Chart.register(...registerables)
   selector: 'nwb-chart',
   exportAs: 'chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<canvas #canvas></canvas>`,
+  template: `<canvas #canvas class="w-full"></canvas>`,
   host: {
     class: 'block',
   },
@@ -44,6 +44,12 @@ export class ChartComponent implements OnDestroy {
       this.chart.destroy()
     }
     if (config) {
+      if (config.options.maintainAspectRatio == null) {
+        config.options.maintainAspectRatio = false
+      }
+      if (config.options.aspectRatio == null) {
+        config.options.aspectRatio = 16 / 9
+      }
       this.chart = new Chart(this.canvas().nativeElement.getContext('2d'), config)
       this.chart.update()
     }

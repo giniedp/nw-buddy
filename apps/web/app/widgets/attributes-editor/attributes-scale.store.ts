@@ -213,6 +213,9 @@ function selectChartConfig({
     type: 'line',
     options: {
       animation: false,
+      responsive: true,
+      aspectRatio: 16 / 9,
+      maintainAspectRatio: false,
       elements: {
         point: {
           hoverRadius: (context) => {
@@ -224,6 +227,18 @@ function selectChartConfig({
         },
       },
       scales: {
+        x: {
+          ticks: {
+            callback: (value) => {
+              value = Number(value)
+              const snapped = Math.floor(value / 25) * 25
+              if (value == snapped) {
+                return value
+              }
+              return undefined
+            },
+          }
+        },
         y: {
           position: 'left',
         },
