@@ -92,16 +92,19 @@ const FRAGMENT_SHADER = /* wgsl */ `
   uniform sampler2D groundmap;
 
   void main() {
+    if (vWorldPos.y <= 0.0) {
+      discard;
+    }
+
     // gl_FragColor = vec4(vBlend, vBlend, vBlend, 1.0);
     //gl_FragColor = vec4(vUV.x, vUV.y, 0.0, 1.0);
     // gl_FragColor = vec4(mix(vColor.rgb, vec3(vUV.x, vUV.y, 1.0), vBlend), 1.0);
     // gl_FragColor = vec4(mix(vColor.rgb, vec3(0.5, 0.5, 1.0), vBlend), 1.0);
 
     //vec3 color = texture(heightmap, vUV).xyz;
-    vec3 color = texture(groundmap, vUV).xyz;
-    gl_FragColor.rgb = color;
-    //gl_FragColor.rgb = mix(vNormal, vColor.rgb, 0.85);
-    gl_FragColor.a = 1.0;
+    gl_FragColor = texture(groundmap, vUV);
+    // gl_FragColor.rgb = mix(vNormal, vColor.rgb, 0.85);
+    // gl_FragColor.a = 1.0;
   }
 `
 const SHADER_SOURCE: IShaderPath = {
