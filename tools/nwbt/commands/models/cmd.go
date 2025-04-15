@@ -85,6 +85,7 @@ func init() {
 		cmdCollectWeapons,
 		cmdCollectCharacter,
 		cmdCollectNpcs,
+		cmdCollectFiles,
 	)
 }
 
@@ -136,8 +137,12 @@ func (c *Collector) ProcessModels() {
 			models = append(models, group)
 		}
 	}
-	c.processAassets("Converting animations", animations)
-	c.processAassets("Converting models", models)
+	if len(animations) > 0 {
+		c.processAassets("Converting animations", animations)
+	}
+	if len(models) > 0 {
+		c.processAassets("Converting models", models)
+	}
 }
 
 func (c *Collector) processAassets(description string, models []importer.AssetGroup) {
