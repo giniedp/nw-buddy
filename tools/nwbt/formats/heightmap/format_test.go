@@ -1,14 +1,17 @@
 package heightmap_test
 
 import (
+	"bytes"
 	"errors"
 	"image"
 	"image/png"
 	"nw-buddy/tools/formats/heightmap"
+	"nw-buddy/tools/utils/tiff"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestReadPathMetadata(t *testing.T) {
@@ -44,11 +47,34 @@ func TestParseHeightField(t *testing.T) {
 func TestNativeTiff(t *testing.T) {
 	data, err := os.ReadFile("samples/region.heightmap")
 	assert.NoError(t, err)
-	data, err = ConvertTiffToPng(data)
+	pngData, err := ConvertTiffToPng(data)
+
+	// Assert that the conversion succeeded
 	assert.NoError(t, err)
-	// TODO: verify the output PNG file
+	assert.NotNil(t, pngData)
+
+	// Add assertion to compare pngData with reference file
+	expectedPngBytes, err := os.ReadFile("samples/region-16bit.png")
+	require.NoError(t, err, "Failed to read reference PNG file samples/region-16bit.png")
+	if !assert.Equal(t, expectedPngBytes, pngData, "Generated PNG data does not match reference file samples/region-16bit.png") {
+		// Write the generated PNG to a file for inspection if the assertion fails
+		_ = os.MkdirAll("samples", 0755) // Ensure the samples directory exists
+		err = os.WriteFile("samples/generated_region.png", pngData, 0644)
+		require.NoError(t, err, "Failed to write generated PNG file")
+		t.Log("Generated PNG data written to samples/generated_region.png for inspection")
+	}
 }
 
 func ConvertTiffToPng(data []byte) ([]byte, error) {
-	return nil, errors.New("not implemented")
+	img, _, err := tiff.Decode(bytes.NewReader(data), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var pngBuf bytes.Buffer
+	err = png.Encode(&pngBuf, img)
+	if err != nil {
+		return nil, errors.New("failed to encode PNG: " + err.Error())
+	}
+	return pngBuf.Bytes(), nil
 }
