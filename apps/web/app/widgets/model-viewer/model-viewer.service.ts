@@ -244,16 +244,16 @@ export class ModelsService {
         appearance: item,
       })
     }
-    if (item?.ShortsleeveChestSkin) {
-      result.push({
-        name: item.Name,
-        itemId: item.ItemID,
-        url: itemAppearanceModelUri(item, 'ShortsleeveChestSkin'),
-        label: [item.Gender, 'Short sleeve'].filter((it) => !!it).join(' '),
-        itemClass: [...(item.ItemClass || [])],
-        appearance: item,
-      })
-    }
+    // if (item?.ShortsleeveChestSkin) {
+    //   result.push({
+    //     name: item.Name,
+    //     itemId: item.ItemID,
+    //     url: itemAppearanceModelUri(item, 'ShortsleeveChestSkin'),
+    //     label: [item.Gender, 'Short sleeve'].filter((it) => !!it).join(' '),
+    //     itemClass: [...(item.ItemClass || [])],
+    //     appearance: item,
+    //   })
+    // }
     return result
   }
 

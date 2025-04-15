@@ -563,17 +563,13 @@ export interface ArmorAppearanceDefinitions {
   ADyeSlotDisabled: string
   AppearanceCDF: string
   AppearanceName: string
-  AttachmentOffsets: string
   BDyeSlotDisabled: string
   Description: string
   EmissiveColor: string
   EmissiveIntensity: number
-  ForceHideForearms: string
-  ForceShortsleeves: number
   GDyeSlotDisabled: string
   Gender: string
   HairChop: string
-  HandsNoForearmsSkin: string
   HiResIconPath: string
   HideFacialHair: number
   HideHair: number
@@ -587,7 +583,6 @@ export interface ArmorAppearanceDefinitions {
   ItemID: string
   'Left/On': string
   LeftHandOnlySkin: string
-  LeftSleeveOnlyChestSkin: string
   Mask1: string
   Mask2: string
   MaskAGloss: string
@@ -617,11 +612,10 @@ export interface ArmorAppearanceDefinitions {
   RDyeSlotDisabled: string
   'Right/Off': string
   RightHandOnlySkin: string
-  RightSleeveOnlyChestSkin: string
-  ShortsleeveChestSkin: string
   ShowBaseModelOnly: number
   Skin1: string
   Skin2: string
+  SkinColorDyeSlot: string
 }
 
 export interface ArmorItemDefinitions {
@@ -4307,8 +4301,8 @@ export interface LootBucketData {
   Quantity171: number
   Quantity172: number
   Quantity173: number
-  Quantity174: unknown
-  Quantity175: unknown
+  Quantity174: number
+  Quantity175: number
   Quantity176: number
   Quantity177: number
   Quantity18: number | string
@@ -4328,7 +4322,7 @@ export interface LootBucketData {
   Quantity205: number
   Quantity206: number
   Quantity207: number
-  Quantity208: unknown
+  Quantity208: number
   Quantity209: number
   Quantity21: number | string
   Quantity210: number
@@ -4438,7 +4432,7 @@ export interface LootBucketData {
   Quantity305: number
   Quantity306: number
   Quantity307: number
-  Quantity308: unknown
+  Quantity308: number
   Quantity309: number
   Quantity31: number
   Quantity310: number
@@ -9917,6 +9911,7 @@ export type LootTag =
   | 'Protector'
   | 'Putris'
   | 'Qebui'
+  | 'RabbitSeason'
   | 'Rafik'
   | 'RaidBoss_BonusNamed'
   | 'RainbowChameleon'

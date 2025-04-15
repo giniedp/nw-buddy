@@ -54,7 +54,7 @@ export function costumeModelUri(item: CostumeChangeData) {
   return normalizeUri(`/costumechanges/${item.CostumeChangeId}.glb`)
 }
 
-export function itemAppearanceModelUri(item: ArmorAppearanceDefinitions, key: keyof Pick<ArmorAppearanceDefinitions, 'Skin1' | 'ShortsleeveChestSkin'>) {
+export function itemAppearanceModelUri(item: ArmorAppearanceDefinitions, key: keyof Pick<ArmorAppearanceDefinitions, 'Skin1'>) {
   if (!item?.[key]) {
     return null
   }
