@@ -34,6 +34,7 @@ export class PakService {
   public fileSource(file: string) {
     if (!file) {
       return null
+    }
     const basename = file.split('/').pop()
     const tokens = basename.split('.')
     let ext = tokens.pop()
