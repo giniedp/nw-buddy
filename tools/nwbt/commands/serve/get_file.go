@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
@@ -18,8 +19,7 @@ func GetFileHandler(assets *game.Assets) http.HandlerFunc {
 	g := new(singleflight.Group)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		cacheKey := path.Join(flg.CacheDir, "server", r.URL.String())
-		cacheKey = strings.ReplaceAll(cacheKey, "?", "_")
+		cacheKey := path.Join(flg.CacheDir, "server", getCacheKey(r))
 
 		res, err, _ := g.Do(cacheKey, func() (any, error) {
 			ext := path.Ext(r.URL.Path)
@@ -61,6 +61,13 @@ func GetFileHandler(assets *game.Assets) http.HandlerFunc {
 	}
 }
 
+func getCacheKey(r *http.Request) string {
+	urlPath := r.URL.Path
+	ext := path.Ext(urlPath)
+	query := url.QueryEscape(r.URL.RawQuery)
+	return utils.ReplaceExt(urlPath, query+ext)
+}
+
 type contentResult struct {
 	code        int
 	content     []byte
@@ -71,8 +78,13 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 	result := contentResult{code: http.StatusInternalServerError}
 
 	archive := assets.Archive
-	filePath := nwfs.NormalizePath(r.URL.Path)
-	uuid := utils.ExtractUUID(filePath)
+	query := r.URL.Query()
+	queryPath := nwfs.NormalizePath(r.URL.Path)
+	queryType := path.Ext(queryPath)
+	queryConvert := query.Get("merge") == "true" || query.Get("size") != ""
+	uuid := utils.ExtractUUID(queryPath)
+
+	filePath := queryPath
 	if uuid != "" {
 		asset := assets.Catalog[strings.ToLower(uuid)]
 		if asset != nil {
@@ -81,10 +93,7 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 	}
 
 	file, ok := archive.Lookup(filePath)
-	targetType := path.Ext(filePath)
-
-	query := r.URL.Query()
-	if ok && !query.Has("merge") {
+	if ok && !queryConvert {
 		data, err := file.Read()
 		if err != nil {
 			return result, err
@@ -96,11 +105,11 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 	}
 
 	if !ok {
-		filePath = strings.TrimSuffix(filePath, targetType)
+		filePath = strings.TrimSuffix(filePath, queryType)
 		file, ok = archive.Lookup(filePath)
 	}
 
-	if !ok && targetType == ".png" {
+	if !ok && queryType == ".png" {
 		file, ok = archive.Lookup(filePath + ".dds")
 	}
 
@@ -110,7 +119,7 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 		return result, errors.New("file not found")
 	}
 
-	data, err := convertFile(assets, file, targetType, query)
+	data, err := convertFile(assets, file, queryType, query)
 	if err != nil {
 		slog.Error("conversion failed", "path", filePath, "error", err)
 		return result, err
@@ -118,6 +127,6 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 
 	result.code = http.StatusOK
 	result.content = data
-	result.contentType = contentTypeByExtension(targetType)
+	result.contentType = contentTypeByExtension(queryType)
 	return result, nil
 }

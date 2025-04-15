@@ -82,11 +82,11 @@ func convertDDS(assets *game.Assets, file nwfs.File, target string, query url.Va
 	case ".png", ".webp":
 		format := image.Format(target)
 		size, _ := strconv.Atoi(query.Get("size"))
-		cacheDir := imageCacheDir(flg.CacheDir, uint(size))
+		//cacheDir := imageCacheDir(flg.CacheDir, uint(size))
 		loader := image.LoaderWithConverter{
 			Archive: assets.Archive,
 			Catalog: assets.Catalog,
-			Cache:   image.NewCache(cacheDir, string(format)),
+			//Cache:   image.NewCache(cacheDir, string(format)),
 			Converter: image.BasicConverter{
 				Format:  format,
 				TempDir: flg.TempDir,
@@ -141,15 +141,19 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([
 
 	linker := gltf.NewResourceLinker(cacheDir)
 	linker.SetRelativeMode(false)
+	// instruction to merge DDS faces
+	queryParam := "merge=true"
+	// instruction to resize DDS images
 	if flg.TextureSize > 0 {
-		linker.SetQueryParam(fmt.Sprintf("size=%d", flg.TextureSize))
+		queryParam = fmt.Sprintf("%s&size=%d", queryParam, flg.TextureSize)
 	}
+	linker.SetQueryParam(queryParam)
 
 	document.ImageLinker = linker
 	document.ImageLoader = image.LoaderWithConverter{
 		Archive: assets.Archive,
 		Catalog: assets.Catalog,
-		Cache:   image.NewCache(cacheDir, ".png"),
+		//Cache:   image.NewCache(cacheDir, ".png"),
 		Converter: image.BasicConverter{
 			Format:  ".png",
 			TempDir: flg.TempDir,
