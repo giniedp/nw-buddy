@@ -2,13 +2,14 @@ package heightmap_test
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"image"
 	"image/png"
 	"nw-buddy/tools/formats/heightmap"
-	"nw-buddy/tools/utils/tiff"
 	"os"
 	"testing"
+
+	"golang.org/x/image/tiff"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -53,28 +54,38 @@ func TestNativeTiff(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, pngData)
 
-	// Add assertion to compare pngData with reference file
-	expectedPngBytes, err := os.ReadFile("samples/region-16bit.png")
-	require.NoError(t, err, "Failed to read reference PNG file samples/region-16bit.png")
-	if !assert.Equal(t, expectedPngBytes, pngData, "Generated PNG data does not match reference file samples/region-16bit.png") {
+	// Compare pngData with the expected grayscale reference file
+	expectedGrayscalePng := "samples/region-16bit-gray.png"
+	expectedPngBytes, err := os.ReadFile(expectedGrayscalePng)
+	require.NoError(t, err, "Failed to read reference grayscale PNG file %s", expectedGrayscalePng)
+	if !assert.Equal(t, expectedPngBytes, pngData, "Generated PNG data does not match reference file %s", expectedGrayscalePng) {
 		// Write the generated PNG to a file for inspection if the assertion fails
 		_ = os.MkdirAll("samples", 0755) // Ensure the samples directory exists
-		err = os.WriteFile("samples/generated_region.png", pngData, 0644)
-		require.NoError(t, err, "Failed to write generated PNG file")
-		t.Log("Generated PNG data written to samples/generated_region.png for inspection")
+		generatedPngFile := "samples/generated_region_grayscale.png"
+		err = os.WriteFile(generatedPngFile, pngData, 0644)
+		require.NoError(t, err, "Failed to write generated grayscale PNG file %s", generatedPngFile)
+		t.Logf("Generated grayscale PNG data written to %s for inspection", generatedPngFile)
 	}
 }
 
 func ConvertTiffToPng(data []byte) ([]byte, error) {
-	img, _, err := tiff.Decode(bytes.NewReader(data), nil)
+	// Attempt to force grayscale in-place if applicable
+	_, err := heightmap.ForceGrayscaleIfRGBSPP1(data)
 	if err != nil {
-		return nil, err
+		// If forcing grayscale fails (e.g., unexpected tag format), return the error
+		return nil, fmt.Errorf("failed during ForceGrayscaleIfRGBSPP1 check: %w", err)
+	}
+
+	// Decode using the standard library decoder. The data might have been modified.
+	img, err := tiff.Decode(bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode TIFF: %w", err)
 	}
 
 	var pngBuf bytes.Buffer
 	err = png.Encode(&pngBuf, img)
 	if err != nil {
-		return nil, errors.New("failed to encode PNG: " + err.Error())
+		return nil, fmt.Errorf("failed to encode PNG: %w", err)
 	}
 	return pngBuf.Bytes(), nil
 }
