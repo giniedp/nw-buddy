@@ -10,9 +10,11 @@ import { IconsModule } from '~/ui/icons'
 import {
   svgBars,
   svgCamera,
+  svgCameraViewfinder,
   svgCircleExclamation,
   svgCubes,
   svgExpand,
+  svgFilm,
   svgFilms,
   svgGlobeSnow,
   svgMoon,
@@ -25,7 +27,8 @@ import {
 import { FullscreenService, LayoutModule } from '~/ui/layout'
 import { ScreenshotService } from '../screenshot'
 import { CharacterActionBrowserComponent } from './character-action-browser.component'
-import { GameSystemService } from './game-viewer.service'
+import { GameViewerService } from './game-viewer.service'
+import { GameViewerCharacterDirective } from './game-viewer-character.directive'
 
 @Component({
   selector: 'nwb-game-viewer-toolbar',
@@ -33,12 +36,14 @@ import { GameSystemService } from './game-viewer.service'
   host: {
     class: 'flex flex-row items-center justify-end gap-2',
   },
-  imports: [IconsModule, LayoutModule, CharacterActionBrowserComponent],
+  imports: [IconsModule, LayoutModule],
 })
 export class GameViewerToolbarComponent {
+  private charViewer = inject(GameViewerCharacterDirective, { optional: true })
+
   protected fullscreen = inject(FullscreenService)
   protected screenshots = inject(ScreenshotService)
-  protected service = inject(GameSystemService)
+  protected service = inject(GameViewerService)
   protected envOptions = signal([
     { value: 'https://assets.babylonjs.com/textures/parking.env', label: 'parking' },
     { value: 'https://assets.babylonjs.com/textures/country.env', label: 'country' },
@@ -55,6 +60,7 @@ export class GameViewerToolbarComponent {
   protected skyboxEnabled = toSignal(this.skyboxEnabled$)
   protected adbActions = this.service.adbActions
   protected adbTags = this.service.adbTags
+  protected canReframe = !!this.charViewer
 
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
@@ -66,21 +72,18 @@ export class GameViewerToolbarComponent {
   protected iconPause = svgPause
   protected iconStop = svgStop
   protected iconEnv = svgGlobeSnow
-  protected iconFilms = svgFilms
+  protected iconFilms = svgFilm
   protected iconMore = svgBars
   protected iconCubes = svgCubes
+  protected iconReframe = svgCameraViewfinder
 
   protected toggleFullscreen() {
     this.fullscreen.toggle(this.service.host().nativeElement)
   }
 
-  protected handleFragmentClicked(fragment: AdbFragment) {
-    this.service.adbFragment.set(fragment)
-  }
-
   protected async capturePhoto() {
     const game = this.service.game()
-    const scene = game.system(SceneProvider).main
+    const scene = game.get(SceneProvider).main
     const engine = scene.getEngine()
     const size = this.fullscreen.isActive() ? window.innerWidth : 2000
     const data = await CreateScreenshotAsync(engine, scene.activeCamera, size)
@@ -93,10 +96,14 @@ export class GameViewerToolbarComponent {
       Inspector.Hide()
       return
     }
-    const scene = this.service.game().system(SceneProvider).main
+    const scene = this.service.game().get(SceneProvider).main
     Inspector.Show(scene, {
       globalRoot: this.service.host().nativeElement.querySelector('#inspector'),
       embedMode: true,
     })
+  }
+
+  protected reframeCamera() {
+    this.charViewer.reframeCamera()
   }
 }

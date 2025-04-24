@@ -1,14 +1,15 @@
-import { Directive, effect, inject, input, linkedSignal, resource, signal, untracked } from '@angular/core'
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { combineLatest, map, of, switchMap, tap } from 'rxjs'
-import { injectNwData } from '~/data'
-import { shareReplayRefCount } from '~/utils'
-import { vitalModelUriById } from '../model-viewer/utils/get-model-uri'
-import { getModelUrl } from '../model-viewer/utils/get-model-url'
+import { computed, Directive, effect, inject, input, resource, signal, untracked } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
+import { NwData } from '@nw-data/db'
 import { ActionlistComponent } from '@nw-viewer/components/actionlist-component'
 import { SkinnedMeshComponent } from '@nw-viewer/components/skinned-mesh-component'
-import { GameEntity, GameHost } from '@nw-viewer/ecs'
-import { GameSystemService } from './game-viewer.service'
+import { GameEntity, GameServiceContainer } from '@nw-viewer/ecs'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { fromBObservable, reduceMeshesExtendsToBoundingInfo, reframeCamera } from '@nw-viewer/utils'
+import { injectNwData } from '~/data'
+import { vitalModelUriById } from '../model-viewer/utils/get-model-uri'
+import { getModelUrl } from '../model-viewer/utils/get-model-url'
+import { GameViewerService } from './game-viewer.service'
 
 export type GameViewerCharacterOptions = { vitalId: string } | { npcId: string } | CharacterViewerEntityOptions
 export interface CharacterViewerEntityOptions {
@@ -24,97 +25,103 @@ export interface CharacterViewerEntityOptions {
 })
 export class GameViewerCharacterDirective {
   private db = injectNwData()
-  private service = inject(GameSystemService)
-  private entity = signal<GameEntity>(null)
+  private service = inject(GameViewerService)
 
   public npcId = input<string>(undefined, { alias: 'nwGameViewerNpc' })
   public vitalId = input<string>(undefined, { alias: 'nwGameViewerVital' })
   public options = input<CharacterViewerEntityOptions>(null, { alias: 'nwGameViewerCharacter' })
-  public autofocus = input<boolean>(true)
 
-  private selectedOptions = linkedSignal(this.options)
+  private activeOptions = computed(() => {
+    if (this.vitalId()) {
+      return this.vitalOptionsList.value()?.[0]
+    }
+    if (this.npcId()) {
+      // TODO: implement options by npcId
+    }
+    return this.options()
+  })
 
-  protected character$ = combineLatest({
-    game: toObservable(this.service.game),
-    options: toObservable(this.selectedOptions),
-  }).pipe(
-    tap({ next: () => this.disposeEntity() }),
-    map(({ game, options }) => createEntity(game, options)),
-    shareReplayRefCount(1),
-  )
-  protected actionlist$ = this.character$.pipe(map((entity) => entity?.component(ActionlistComponent)))
-  protected actionlist = toSignal(this.actionlist$)
-  protected actions = toSignal(this.actionlist$.pipe(switchMap((list) => (list ? list.actions$ : of([])))))
-  protected state = toSignal(this.actionlist$.pipe(switchMap((list) => (list ? list.playerState$ : of(null)))))
+  protected entity = signal<GameEntity>(null)
+
+  protected modelComponent = computed(() => this.entity()?.component(SkinnedMeshComponent))
+  protected modelResource = rxResource({
+    request: this.modelComponent,
+    loader: ({ request }) => fromBObservable(request?.onDataLoaded),
+  })
+  protected modelData = this.modelResource.value
+
+  protected actionComponent = computed(() => this.entity()?.component(ActionlistComponent))
+  protected actionData = rxResource({
+    request: this.actionComponent,
+    loader: ({ request }) => fromBObservable(request?.onDataLoaded),
+  }).value
 
   private vitalOptionsList = resource({
     request: this.vitalId,
-    loader: async ({ request }) => {
-      if (request === undefined) {
-        return undefined
-      }
-      const meta = await this.db.vitalsMetadataById(request)
-      if (!meta) {
-        return []
-      }
-      const models = await Promise.all(meta.models.map((id) => this.db.vitalsModelsMetadataById(id)))
-      return models
-        .filter((it) => !!it)
-        .map((model) => {
-          const uri = vitalModelUriById(model.id)
-          const { rootUrl, modelUrl } = getModelUrl(uri)
-          return {
-            rootUrl,
-            url: modelUrl,
-            adbUrl: model.adb,
-            tags: model.tags,
-          }
-        })
-    },
+    loader: async ({ request }) => loadVitalsOptions(request, this.db),
   })
 
   public constructor() {
-    effect(() => {
-      const options = this.vitalOptionsList.value()?.[0]
-      untracked(() => {
-        this.selectedOptions.set(options)
-      })
-    })
-
-    this.character$.pipe(takeUntilDestroyed()).subscribe((entity) => {
+    effect((onCleanup) => {
+      const game = this.service.game()
+      const options = this.activeOptions()
+      if (!game || !options) {
+        return null
+      }
+      const entity = createEntity(game, options)
+      onCleanup(() => entity.destroy())
       this.entity.set(entity)
     })
 
     // propagate the actionlist to the service
     effect(() => {
-      const actions = this.actions()
-      untracked(() => this.service.adbActions.set(actions || []))
+      const actionlist = this.actionComponent()
+      const data = this.actionData()
+      untracked(() => {
+        this.service.adbPlayer.set(actionlist?.player)
+        this.service.adbActions.set(data?.actions || [])
+        this.service.adbTags.set(data?.tags || [])
+      })
     })
 
-    // propagate the player state to the service
+    // reframe camera when model has changed
     effect(() => {
-      const state = this.state()
-      untracked(() => this.service.adbPlayerState.set(state || null))
+      const data = this.modelData()
+      untracked(() => {
+        this.service.isLoading.set(false)
+        this.service.isEmpty.set(!data?.model)
+        this.reframeCamera()
+      })
     })
 
-    //
     effect(() => {
-      const fragment = this.service.adbFragment()
-      const actionlist = this.actionlist()
-      untracked(() => actionlist?.playFragment(fragment))
+      const loading = this.vitalOptionsList.isLoading()
+      const value = this.vitalOptionsList.value()
+
+      untracked(() => {
+        if (loading) {
+          this.service.isLoading.set(loading)
+        }
+        if (!loading && !value?.length) {
+          this.service.isLoading.set(false)
+          this.service.isEmpty.set(true)
+        }
+      })
     })
   }
 
-  private disposeEntity() {
-    const entity = this.entity()
-    if (entity) {
-      entity.destroy()
-      this.entity.set(null)
+  public reframeCamera() {
+    if (!this.modelComponent()?.instance) {
+      return
     }
+    const extents = this.modelComponent().computeMaxExtents()
+    const bounding = reduceMeshesExtendsToBoundingInfo(extents)
+    const camera = this.service.game().get(SceneProvider).arcRotateCamera
+    reframeCamera(camera, bounding)
   }
 }
 
-function createEntity(game: GameHost, options: CharacterViewerEntityOptions) {
+function createEntity(game: GameServiceContainer, options: CharacterViewerEntityOptions) {
   if (!options || !game) {
     return null
   }
@@ -132,4 +139,27 @@ function createEntity(game: GameHost, options: CharacterViewerEntityOptions) {
     )
     .initialize(game)
     .activate()
+}
+
+async function loadVitalsOptions(vitalsId: string, db: NwData) {
+  if (vitalsId === undefined) {
+    return undefined
+  }
+  const meta = await db.vitalsMetadataById(vitalsId)
+  if (!meta) {
+    return []
+  }
+  const models = await Promise.all(meta.models.map((id) => db.vitalsModelsMetadataById(id)))
+  return models
+    .filter((it) => !!it)
+    .map((model) => {
+      const uri = vitalModelUriById(model.id)
+      const { rootUrl, modelUrl } = getModelUrl(uri)
+      return {
+        rootUrl,
+        url: modelUrl,
+        adbUrl: model.adb,
+        tags: model.tags,
+      }
+    })
 }

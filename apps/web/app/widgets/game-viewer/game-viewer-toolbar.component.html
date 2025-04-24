@@ -1,32 +1,39 @@
-<button class="btn btn-square btn-sm drop-shadow" [class.btn-ghost]="!skyboxEnabled()" (click)="toggleDebugView()">
+<button
+  class="btn btn-square btn-sm drop-shadow tooltip"
+  [class.btn-ghost]="!skyboxEnabled()"
+  (click)="toggleDebugView()"
+  data-tip="Toggle debug inspector"
+>
   <nwb-icon [icon]="iconCubes" class="w-4 h-4" />
 </button>
+
+@if (canReframe) {
+  <button
+    class="btn btn-square btn-sm drop-shadow tooltip"
+    [class.btn-ghost]="!skyboxEnabled()"
+    (click)="reframeCamera()"
+    data-tip="Reframe camera"
+  >
+    <nwb-icon [icon]="iconReframe" class="w-4 h-4" />
+  </button>
+}
+
 @if (adbActions()?.length) {
   <div class="join">
     <button
-      class="btn btn-square btn-sm drop-shadow"
+      class="btn btn-square btn-sm drop-shadow tooltip"
+      data-tip="Open action browser"
       [class.btn-ghost]="!skyboxEnabled()"
-      [cdkMenuTriggerFor]="tplActions"
+      (click)="service.showTagBrowser.set(!service.showTagBrowser())"
     >
       <nwb-icon [icon]="iconFilms" class="w-4 h-4 swap-on" />
     </button>
-    <ng-template #tplActions>
-      <div
-        cdkMenu
-        class="bg-base-300 bg-opacity-90 border border-base-200 w-screen h-screen max-w-[600px] max-h-[1000px] rounded-md shadow-md"
-      >
-        <nwb-character-action-browser
-          [actions]="adbActions()"
-          [tags]="adbTags()"
-          (fragmentClicked)="handleFragmentClicked($event)"
-        />
-      </div>
-    </ng-template>
   </div>
 }
 <div class="join">
   <button
-    class="join-item btn btn-square btn-sm drop-shadow"
+    class="join-item btn btn-square btn-sm drop-shadow tooltip"
+    data-tip="Toggle skybox"
     [class.btn-ghost]="!skyboxEnabled()"
     (click)="lighting().setSkyboxEnabled(!skyboxEnabled())"
   >
@@ -36,7 +43,8 @@
     </span>
   </button>
   <button
-    class="join-item btn btn-square btn-sm drop-shadow"
+    class="join-item btn btn-square btn-sm drop-shadow tooltip"
+    data-tip="Change environment lighting"
     [class.btn-ghost]="!skyboxEnabled()"
     [cdkMenuTriggerFor]="tplMenuEnv"
   >
@@ -60,14 +68,16 @@
 
 <div class="join">
   <button
-    class="join-item btn btn-square btn-sm drop-shadow"
+    class="join-item btn btn-square btn-sm drop-shadow tooltip tooltip-left"
+    data-tip="Capture screenshot"
     [class.btn-ghost]="!skyboxEnabled()"
     (click)="capturePhoto()"
   >
     <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
   </button>
   <button
-    class="join-item btn btn-square btn-sm drop-shadow"
+    class="join-item btn btn-square btn-sm drop-shadow tooltip tooltip-left"
+    data-tip="Toggle fullscreen"
     [class.btn-ghost]="!skyboxEnabled()"
     (click)="toggleFullscreen()"
   >

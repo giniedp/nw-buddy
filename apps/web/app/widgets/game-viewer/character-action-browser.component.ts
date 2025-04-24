@@ -2,7 +2,7 @@ import { CdkVirtualForOfContext, CdkVirtualScrollViewport, ScrollingModule } fro
 import { Component, computed, Directive, effect, inject, Input, input, output, signal, viewChild } from '@angular/core'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgPause, svgPlay, svgPlus, svgTags } from '~/ui/icons/svg'
+import { svgCircleExclamation, svgFilm, svgInfo, svgInfoCircle, svgPause, svgPlay, svgPlus, svgTags, svgXmark } from '~/ui/icons/svg'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { humanize } from '~/utils'
 import type { AdbAction, AdbFragment } from '@nw-viewer/adb'
@@ -58,11 +58,16 @@ export class TypeSafeCdkVirtualForDirective<T> {
         @if (item.fragment) {
           <button
             class="btn btn-ghost btn-sm btn-block justify-start rounded-none"
-            (click)="handleClick(item)"
-            [disabled]="!item.playable"
+            (click)="item.playable ? handleClick(item) : null"
           >
-            @if (item.looping) {
-              <span class="badge badge-info italic bg-opacity-25">looping</span>
+            @if (item.playable) {
+              <nwb-icon [icon]="playIcon" class="w-4 h-4 text-success" />
+            } @else {
+              <nwb-icon
+                [icon]="errorIcon"
+                class="w-4 h-4 tooltip tooltip-error tooltip-right text-error"
+                data-tip="Currently not playable"
+              />
             }
             @for (tag of item.tags; track $index) {
               <span
@@ -107,7 +112,7 @@ export class TypeSafeCdkVirtualForDirective<T> {
   imports: [NwModule, QuicksearchModule, IconsModule, ScrollingModule, TypeSafeCdkVirtualForDirective],
   providers: [QuicksearchService.provider({})],
   host: {
-    class: 'flex flex-col h-full',
+    class: 'flex flex-col',
   },
 })
 export class CharacterActionBrowserComponent {
@@ -119,6 +124,8 @@ export class CharacterActionBrowserComponent {
   protected playIcon = svgPlay
   protected pauseIcon = svgPause
   protected plusIcon = svgPlus
+  protected errorIcon = svgInfoCircle
+  protected filmIcon = svgFilm
   public tags = input<string[], string[]>([], {
     transform: (value) => value || [],
   })

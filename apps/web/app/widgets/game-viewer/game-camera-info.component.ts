@@ -4,7 +4,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { SceneProvider } from '@nw-viewer/services/scene-provider'
 import { fromBObservable } from '@nw-viewer/utils'
 import { map, switchMap } from 'rxjs'
-import { GameSystemService } from './game-viewer.service'
+import { GameViewerService } from './game-viewer.service'
 
 @Component({
   selector: 'nwb-game-camera-info',
@@ -12,9 +12,9 @@ import { GameSystemService } from './game-viewer.service'
   imports: [CommonModule],
 })
 export class GameCameraInfoComponent {
-  private service = inject(GameSystemService)
+  private service = inject(GameViewerService)
   private game = this.service.game
-  private scene = computed(() => this.game()?.system(SceneProvider))
+  private scene = computed(() => this.game()?.get(SceneProvider))
   private cameraPosition$ = toObservable(this.scene).pipe(
     switchMap((it) => fromBObservable(it.main.onActiveCameraChanged)),
     switchMap((it) => fromBObservable(it.activeCamera.onViewMatrixChangedObservable)),

@@ -1,36 +1,23 @@
-import { computed, Directive, effect, inject, input, resource, untracked } from '@angular/core'
-import { loadLevelData } from '@nw-viewer/components/level'
-import { LevelProvider } from '@nw-viewer/services/level-provider'
-import { environment } from 'apps/web/environments'
-import { GameSystemService } from './game-viewer.service'
+import { computed, Directive, effect, inject, input, untracked } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { filter, startWith, switchMap } from 'rxjs'
+import { LevelProvider } from '@nw-viewer/services/level-provider'
 import { fromBObservable } from '@nw-viewer/utils'
+import { filter, startWith, switchMap } from 'rxjs'
+import { GameViewerService } from './game-viewer.service'
 
 @Directive({
   selector: '[nwbGameLevel]',
   exportAs: 'level',
 })
 export class GameViewerLevelDirective {
-  private service = inject(GameSystemService)
+  private service = inject(GameViewerService)
   private game = this.service.game
-  private levelProvider = computed(() => this.game()?.system(LevelProvider))
+  private levelProvider = computed(() => this.game()?.get(LevelProvider))
   private levelProvider$ = toObservable(this.levelProvider)
 
   public nwbGameLevel = input<string>(null, { alias: 'nwbGameLevel' })
   public nwbGameLevelTest = input<boolean>(null, { alias: 'nwbGameLevelTest' })
   public nwbGameLevelTerrain = input<boolean>(null, { alias: 'nwbGameLevelTerrain' })
-
-  public levelData = resource({
-    request: () => this.nwbGameLevel(),
-    loader: async ({ request }) => {
-      return loadLevelData({
-        fetch: fetch.bind(window),
-        rootUrl: environment.nwbtUrl,
-        levelName: request,
-      })
-    },
-  })
 
   public terrainEnabled = toSignal(
     this.levelProvider$.pipe(
@@ -42,13 +29,13 @@ export class GameViewerLevelDirective {
   public constructor() {
     effect(() => {
       const level = this.levelProvider()
-      const data = this.levelData.value()
+      const name = this.nwbGameLevel()
       const test = this.nwbGameLevelTest()
       untracked(() => {
         if (test) {
           level.loadTestLevel()
         } else {
-          level.loadLevel(data)
+          level.loadLevel(name)
         }
       })
     })

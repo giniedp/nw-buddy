@@ -1,8 +1,11 @@
 import { Component, computed, inject } from '@angular/core'
+import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import type { ProceduralBar, ProceduralLayer } from '@nw-viewer/adb'
+import { NEVER, switchMap } from 'rxjs'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
-import { GameSystemService } from './game-viewer.service'
+import { tapDebug } from '~/utils'
+import { GameViewerService } from './game-viewer.service'
 
 @Component({
   selector: 'nwb-character-action-trackbar',
@@ -65,21 +68,32 @@ import { GameSystemService } from './game-viewer.service'
   },
 })
 export class CharacterActionTrackbarComponent {
-  protected service = inject(GameSystemService)
+  protected service = inject(GameViewerService)
 
-  protected fragment = this.service.adbFragment
-  protected state = this.service.adbPlayerState
+  private player = this.service.adbPlayer
+
+  protected fragment = rxResource({
+    request: this.player,
+    loader: ({ request }) => request?.fragment$,
+  }).value
+
+  protected state = rxResource({
+    request: this.player,
+    loader: ({ request }) => request?.playbackState$,
+  }).value
+
   protected progress = computed(() => this.state()?.progress || 0)
 
   protected onProgressChange(event: Event) {
     const target = event.target as HTMLInputElement
     const value = parseFloat(target.value) / 1000
-    // this.character()?.goToTime(value)
+    this.player()?.goToTime(value)
   }
 
   protected onDblClick(event: Event) {
-    // this.character()?.executeFragment(this.fragment())
+    this.player().executeFragment(this.player().fragment)
   }
+
   protected isActive(layer: ProceduralLayer, bar: ProceduralBar, time: number) {
     if (!bar?.type || !bar.type.startsWith('CAGE')) {
       return false
