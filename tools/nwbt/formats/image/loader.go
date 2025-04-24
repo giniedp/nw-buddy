@@ -97,6 +97,12 @@ func (r LoaderWithConverter) load(file nwfs.File) (*LoadedImage, error) {
 	res.Source = file.Path()
 	res.Format = Format(path.Ext(file.Path()))
 
+	if dds.IsDDSSplitPart(res.Source) {
+		file, _ = r.Archive.Lookup(utils.ReplaceExt(file.Path(), ""))
+		res.Source = file.Path()
+		res.Format = FormatDDS
+	}
+
 	switch res.Format {
 	case FormatDDS:
 		img, err := dds.Load(file)

@@ -20,6 +20,7 @@ export interface ModelItemInfo {
   label: string
   itemClass: string[]
   url: string
+  rootUrl?: string
   appearance: any
 }
 

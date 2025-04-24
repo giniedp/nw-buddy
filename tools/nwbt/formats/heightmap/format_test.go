@@ -1,9 +1,12 @@
 package heightmap_test
 
 import (
+	"bytes"
 	"image"
 	"image/png"
 	"nw-buddy/tools/formats/heightmap"
+	"nw-buddy/tools/formats/tiff"
+	"nw-buddy/tools/utils"
 	"os"
 	"testing"
 
@@ -19,7 +22,7 @@ func TestReadPathMetadata(t *testing.T) {
 func TestParseHeightField(t *testing.T) {
 	data, err := os.ReadFile("samples/region.heightmap")
 	assert.NoError(t, err)
-	region, err := heightmap.ParseHeightField(data)
+	region, err := heightmap.LoadFromTiffOld(data)
 	assert.NoError(t, err)
 	assert.Equal(t, 2048*2048, len(region))
 
@@ -38,4 +41,39 @@ func TestParseHeightField(t *testing.T) {
 	assert.NoError(t, err)
 	err = png.Encode(f, img)
 	assert.NoError(t, err)
+}
+
+func TestNativeTiff(t *testing.T) {
+	data, err := os.ReadFile("samples/region.heightmap")
+	assert.NoError(t, err)
+
+	img, err := tiff.DecodeWithPhotometricPatch(data)
+	// Assert that the conversion succeeded
+	assert.NoError(t, err)
+
+	var pngBuf bytes.Buffer
+	err = png.Encode(&pngBuf, img)
+	assert.NoError(t, err)
+	pngData := pngBuf.Bytes()
+	assert.NotNil(t, pngData)
+
+	expectedBytes, err := os.ReadFile("samples/region-16bit-gray.png")
+	assert.NoError(t, err)
+	assert.Equal(t, expectedBytes, pngData)
+	err = utils.WriteFile("samples/generated_region_grayscale.png", pngData)
+	assert.NoError(t, err)
+}
+
+func TestLoad(t *testing.T) {
+	files := []string{
+		"samples/region.heightmap",
+		"samples/r_+03_+02/region.heightmap",
+		"samples/r_+03_+05/region.heightmap",
+	}
+	for _, file := range files {
+		data, err := os.ReadFile(file)
+		assert.NoError(t, err, "Failed to read file: %s", file)
+		_, err = heightmap.LoadFromTiff(data)
+		assert.NoError(t, err, "Failed to load heightmap from file: %s", file)
+	}
 }

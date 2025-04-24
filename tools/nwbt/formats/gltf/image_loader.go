@@ -56,8 +56,23 @@ func (c *Document) LoadTextureFunc(ref string, loader func() ([]byte, error)) (*
 	if ref == "" {
 		return nil, nil
 	}
-	if c.ResourceLinker != nil {
-		ref = toPngRef(ref)
+
+	mimeType := "image/png"
+	if c.ImageLinker == nil {
+		// image will be embedded in the gltf file
+		// assumed to be converted to png
+		// no file reference needed
+	} else {
+		if conv, ok := c.ImageLoader.(image.LoaderWithConverter); ok {
+			// specific conversion is active
+			format := conv.Converter.TargetFormat()
+			mimeType = format.MimeType()
+			ref = toFormatRef(ref, format)
+		} else {
+			// image will be linked to the gltf file
+			// assumed to be converted to png
+			ref = toFormatRef(ref, ".png")
+		}
 	}
 
 	for _, texture := range c.Textures {
@@ -72,20 +87,21 @@ func (c *Document) LoadTextureFunc(ref string, loader func() ([]byte, error)) (*
 	}
 
 	var texIndex int = -1
-	if c.ResourceLinker == nil {
-		if index, err := modeler.WriteImage(c.Document, ref, "image/png", bytes.NewBuffer(imageData)); err != nil {
+	if c.ImageLinker == nil {
+		//
+		if index, err := modeler.WriteImage(c.Document, ref, mimeType, bytes.NewBuffer(imageData)); err != nil {
 			return nil, err
 		} else {
 			texIndex = index
 		}
 	} else {
-		imageUri, err := c.ResourceLinker.WriteLinkedResource(c.TargetFile, ref, imageData)
+		imageUri, err := c.ImageLinker.WriteLinkedResource(c.TargetFile, ref, imageData)
 		if err != nil {
 			return nil, err
 		}
 		c.Images = append(c.Images, &gltf.Image{
 			URI:      imageUri,
-			MimeType: "image/png",
+			MimeType: mimeType,
 		})
 		texIndex = len(c.Images) - 1
 	}
@@ -133,16 +149,16 @@ func (c *Document) ReadTextureImage(t *gltf.Texture) ([]byte, error) {
 		return nil, nil
 	}
 
-	if img.URI != "" && c.ResourceLinker != nil {
-		return c.ResourceLinker.ReadLinkedResource(c.TargetFile, img.URI)
+	if img.URI != "" && c.ImageLinker != nil {
+		return c.ImageLinker.ReadLinkedResource(c.TargetFile, img.URI)
 	}
 	return nil, nil
 }
 
-func toPngRef(ref string) string {
+func toFormatRef(ref string, format image.Format) string {
 	ref = strings.ReplaceAll(ref, ":", "")
 	if strings.HasSuffix(ref, ".dds") || strings.HasSuffix(ref, ".tif") {
 		ref = utils.ReplaceExt(ref, "")
 	}
-	return ref + ".png"
+	return ref + string(format)
 }

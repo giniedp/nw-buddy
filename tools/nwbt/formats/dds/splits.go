@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"nw-buddy/tools/nwfs"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -45,6 +46,16 @@ func IsDDS(file string) bool {
 
 func IsDDSSplitPart(file string) bool {
 	return IsDDS(strings.TrimSuffix(file, path.Ext(file)))
+}
+
+func DDSSplitPart(file string) (bool, uint) {
+	ext := path.Ext(file)
+	if !IsDDSSplitPart(file) {
+		return false, 0
+	}
+	ext = strings.TrimLeft(ext, ".")
+	face, _ := strconv.Atoi(ext)
+	return true, uint(face)
 }
 
 func IsNormalMap(file string) bool {

@@ -1,38 +1,70 @@
-import { computed, ElementRef, Injectable, signal } from '@angular/core'
+import { ElementRef, Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { NEVER, of, switchMap } from 'rxjs'
-import { selectSignal } from '~/utils'
-import { NwViewer } from './nw-viewer'
-import { NwViewerCharacter } from './nw-character'
-import { computeAssetBoundingInfo, reframeCamera } from './utils'
-import { Vector3 } from '@babylonjs/core'
+import { Engine } from '@babylonjs/core'
+import { AdbAction, AdbFragment, AdbPlayerState } from '@nw-viewer/adb'
+import { AdbPlayer } from '@nw-viewer/adb/player'
+import { SkyboxComponent } from '@nw-viewer/components/skybox-component'
+import { GameService, GameServiceContainer, GameServiceType } from '@nw-viewer/ecs'
+import { ContentProvider } from '@nw-viewer/services/content-provider'
+import { DebugShapeProvider } from '@nw-viewer/services/debug-shapes'
+import { EngineProvider } from '@nw-viewer/services/engine-provider'
+import { LevelProvider } from '@nw-viewer/services/level-provider'
+import { LightingProvider } from '@nw-viewer/services/lighting-provider'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { environment } from 'apps/web/environments'
+import { filter, map } from 'rxjs'
 
 @Injectable()
 export class GameViewerService {
+  public readonly isLoading = signal(false)
+  public readonly isEmpty = signal(false)
+  public readonly hasError = signal(false)
   public readonly host = signal<ElementRef<HTMLElement> | null>(null)
-  public readonly viewer = signal<NwViewer | null>(null)
-  public readonly viewer$ = toObservable(this.viewer).pipe(switchMap((viewer) => (viewer ? of(viewer) : NEVER)))
+  public readonly game = signal<GameServiceContainer>(null)
+  public readonly adbPlayer = signal<AdbPlayer>(null)
+  public readonly adbActions = signal<AdbAction[]>(null)
+  public readonly adbTags = signal<string[]>(null)
+  public readonly showTagBrowser = signal(false)
 
-  public readonly character = signal<NwViewerCharacter | null>(null)
+  private game$ = toObservable(this.game).pipe(filter((it) => !!it))
 
-  public readonly scene = computed(() => this.viewer()?.scene)
-
-  public setViewer(viewer: NwViewer, host: ElementRef<HTMLElement>) {
-    this.viewer.set(viewer)
+  public create(host: ElementRef<HTMLElement>, canvas: HTMLCanvasElement) {
     this.host.set(host)
+    this.game.set(createGame(canvas))
   }
 
-  public setCharacter(character: NwViewerCharacter) {
-    this.character.set(character)
+  public service<T extends GameService>(type: GameServiceType<T>) {
+    return this.game$.pipe(map((game) => game.get(type)))
   }
+}
 
-  public focusCharacter() {
-    const character = this.character()
-    const viewer = this.viewer()
-    if (!character || !character) {
-      return
-    }
-    const bounds = computeAssetBoundingInfo(character.asset)
-    reframeCamera(viewer.camera, bounds, true)
-  }
+export function createGame(canvas: HTMLCanvasElement) {
+  const engine = new Engine(canvas, true, {
+    preserveDrawingBuffer: true,
+    depth: true,
+    alpha: true,
+    antialias: true,
+    adaptToDeviceRatio: true,
+  })
+
+  const game = new GameServiceContainer(null)
+    .add(new EngineProvider(engine))
+    .add(new SceneProvider())
+    .add(new LightingProvider())
+    .add(new DebugShapeProvider())
+    .add(
+      new ContentProvider({
+        rootUrl: environment.modelsUrl,
+        nwbtUrl: environment.nwbtUrl,
+      }),
+    )
+    .add(new LevelProvider())
+    .initialize()
+
+  const root = game.createEntity()
+  root.addComponent(new SkyboxComponent())
+  root.initialize(game)
+  root.activate()
+
+  return game
 }

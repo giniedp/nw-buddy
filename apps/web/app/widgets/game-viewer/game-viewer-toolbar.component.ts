@@ -1,13 +1,20 @@
 import { Component, inject, signal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { CreateScreenshotAsync } from '@babylonjs/core'
-import { switchMap } from 'rxjs'
+import { Inspector } from '@babylonjs/inspector'
+import { AdbFragment } from '@nw-viewer/adb'
+import { LightingProvider } from '@nw-viewer/services/lighting-provider'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { of, switchMap } from 'rxjs'
 import { IconsModule } from '~/ui/icons'
 import {
   svgBars,
   svgCamera,
+  svgCameraViewfinder,
   svgCircleExclamation,
   svgCubes,
   svgExpand,
+  svgFilm,
   svgFilms,
   svgGlobeSnow,
   svgMoon,
@@ -18,20 +25,22 @@ import {
   svgXmark,
 } from '~/ui/icons/svg'
 import { FullscreenService, LayoutModule } from '~/ui/layout'
-import { selectSignal } from '~/utils'
 import { ScreenshotService } from '../screenshot'
 import { CharacterActionBrowserComponent } from './character-action-browser.component'
 import { GameViewerService } from './game-viewer.service'
+import { GameViewerCharacterDirective } from './game-viewer-character.directive'
 
 @Component({
-  selector: 'nw-game-viewer-toolbar',
+  selector: 'nwb-game-viewer-toolbar',
   templateUrl: './game-viewer-toolbar.component.html',
   host: {
-    class: 'flex flex-row gap-2',
+    class: 'flex flex-row items-center justify-end gap-2',
   },
-  imports: [IconsModule, LayoutModule, CharacterActionBrowserComponent],
+  imports: [IconsModule, LayoutModule],
 })
 export class GameViewerToolbarComponent {
+  private charViewer = inject(GameViewerCharacterDirective, { optional: true })
+
   protected fullscreen = inject(FullscreenService)
   protected screenshots = inject(ScreenshotService)
   protected service = inject(GameViewerService)
@@ -42,13 +51,16 @@ export class GameViewerToolbarComponent {
     { value: 'https://assets.babylonjs.com/textures/night.env', label: 'night' },
   ])
 
-  protected character = this.service.character
+  protected lighting$ = this.service.service(LightingProvider)
+  protected envMapUrl$ = this.lighting$.pipe(switchMap((it) => it.envUrl$ || of(null)))
+  protected skyboxEnabled$ = this.lighting$.pipe(switchMap((it) => it.skybox$ || of(false)))
 
-  protected viewer = this.service.viewer
-  protected viewer$ = this.service.viewer$
-
-  protected readonly skyboxEnabled = selectSignal(this.viewer$.pipe(switchMap((it) => it.skyboxEnabled$)))
-  protected readonly envMapUrl = selectSignal(this.viewer$.pipe(switchMap((it) => it.envMapUrl$)))
+  protected lighting = toSignal(this.lighting$)
+  protected envMapUrl = toSignal(this.envMapUrl$)
+  protected skyboxEnabled = toSignal(this.skyboxEnabled$)
+  protected adbActions = this.service.adbActions
+  protected adbTags = this.service.adbTags
+  protected canReframe = !!this.charViewer
 
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
@@ -60,19 +72,38 @@ export class GameViewerToolbarComponent {
   protected iconPause = svgPause
   protected iconStop = svgStop
   protected iconEnv = svgGlobeSnow
-  protected iconFilms = svgFilms
+  protected iconFilms = svgFilm
   protected iconMore = svgBars
-  protected iconEmpty = svgCubes
+  protected iconCubes = svgCubes
+  protected iconReframe = svgCameraViewfinder
 
   protected toggleFullscreen() {
     this.fullscreen.toggle(this.service.host().nativeElement)
   }
 
   protected async capturePhoto() {
-    const viewer = this.viewer()
+    const game = this.service.game()
+    const scene = game.get(SceneProvider).main
+    const engine = scene.getEngine()
     const size = this.fullscreen.isActive() ? window.innerWidth : 2000
-    const data = await CreateScreenshotAsync(viewer.engine, viewer.camera, size)
+    const data = await CreateScreenshotAsync(engine, scene.activeCamera, size)
     const blob = await fetch(data).then((res) => res.blob())
     this.screenshots.saveBlobWithDialog(blob)
+  }
+
+  protected toggleDebugView() {
+    if (Inspector.IsVisible) {
+      Inspector.Hide()
+      return
+    }
+    const scene = this.service.game().get(SceneProvider).main
+    Inspector.Show(scene, {
+      globalRoot: this.service.host().nativeElement.querySelector('#inspector'),
+      embedMode: true,
+    })
+  }
+
+  protected reframeCamera() {
+    this.charViewer.reframeCamera()
   }
 }

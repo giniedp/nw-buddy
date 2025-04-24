@@ -47,12 +47,17 @@ func (c *Collector) CollectCharacter() {
 }
 
 func (c *Collector) CollectCdf(cdf *cdf.Document, material string, targetFile string) {
-	animations, _ := c.CollectAnimations(cdf)
+	var animations []adb.AnimationFile
+	if c.flags.Animations {
+		animations, _ = c.CollectAnimations(cdf)
+	}
+
 	group := importer.AssetGroup{
 		Extra: map[string]any{
 			"animationList": animations,
 		},
 	}
+
 	for _, attachment := range cdf.SkinAndClothAttachments() {
 		if model, mtl := c.ResolveModelMaterialPair(attachment.Binding, attachment.Material, material); model != "" {
 			group.Meshes = append(group.Meshes, importer.GeometryAsset{

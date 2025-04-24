@@ -217,7 +217,7 @@ func writeWorker(opts writerOpts) {
 
 func processTask(task *Task) {
 	if dds.IsDDSSplitPart(task.Input.Path()) && flgFmtDDS != "" {
-		// skio dds parts (.dds.1, .dds.a etc.)
+		// skip dds parts (.dds.1, .dds.a etc.)
 		// they will be automatically merged into the .dds file below
 		return
 	}

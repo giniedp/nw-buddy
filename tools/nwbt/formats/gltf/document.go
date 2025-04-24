@@ -24,9 +24,9 @@ const (
 
 type Document struct {
 	*gltf.Document
-	TargetFile     string
-	ImageLoader    image.Loader
-	ResourceLinker ResourceLinker
+	TargetFile  string
+	ImageLoader image.Loader
+	ImageLinker ImageLinker
 }
 
 func NewDocument() *Document {

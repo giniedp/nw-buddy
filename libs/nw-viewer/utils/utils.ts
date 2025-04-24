@@ -3,7 +3,13 @@ import { ArcRotateCamera, AssetContainer, computeMaxExtents, FramingBehavior, Ve
 import { Observable as BJSObservable } from '@babylonjs/core/Misc/observable'
 import { Observable } from 'rxjs'
 
-export function fromBjsObservable<T>(bjsObservable: BJSObservable<T>): Observable<T> {
+/**
+ * Converts a Babylon.js Observable to an RxJS Observable.
+ */
+export function fromBObservable<T>(bjsObservable: BJSObservable<T> | null): Observable<T> | null {
+  if (!bjsObservable) {
+    return null
+  }
   return new Observable<T>((subscriber) => {
     const handler = bjsObservable.add((value) => subscriber.next(value))
     return () => bjsObservable.remove(handler)
@@ -17,7 +23,11 @@ export function toBjsSignal<T>(
     requireSync?: false
   },
 ) {
-  return toSignal<T>(fromBjsObservable(bjsObservable), options)
+  return toSignal<T>(fromBObservable(bjsObservable), options)
+}
+
+export function extractUuid(value: string) {
+  return value.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/)?.[1]
 }
 
 export interface BoundingInfo {
@@ -34,7 +44,9 @@ export function computeAssetBoundingInfo(asset: AssetContainer): BoundingInfo {
   return reduceMeshesExtendsToBoundingInfo(extents)
 }
 
-export function reduceMeshesExtendsToBoundingInfo(maxExtents: Array<{ minimum: Vector3; maximum: Vector3 }>): BoundingInfo {
+export function reduceMeshesExtendsToBoundingInfo(
+  maxExtents: Array<{ minimum: Vector3; maximum: Vector3 }>,
+): BoundingInfo {
   const min = new Vector3(
     Math.min(...maxExtents.map((e) => e.minimum.x)),
     Math.min(...maxExtents.map((e) => e.minimum.y)),
@@ -65,7 +77,6 @@ export function reframeCamera(camera: ArcRotateCamera, boundingInfo: BoundingInf
   framingBehavior.framingTime = 0
   framingBehavior.elevationReturnTime = -1
 
-
   camera.useAutoRotationBehavior = false
   camera.useBouncingBehavior = true
 
@@ -74,7 +85,7 @@ export function reframeCamera(camera: ArcRotateCamera, boundingInfo: BoundingInf
   const currentRadius = camera.radius
   const currentTarget = camera.target
 
-  const goalAlpha = currentAlpha// Math.PI / 2
+  const goalAlpha = currentAlpha // Math.PI / 2
   const goalBeta = Math.PI / 2.4
   let goalRadius = 1
   let goalTarget = currentTarget

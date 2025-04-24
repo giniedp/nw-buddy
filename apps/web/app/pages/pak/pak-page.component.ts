@@ -15,13 +15,21 @@ import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 @Component({
   standalone: true,
   selector: 'nwb-assets-page',
-  imports: [PakSidebarComponent, LayoutModule, CodeEditorModule, FormsModule, ModelViewerModule, SplitPaneDirective, SplitGutterComponent],
+  imports: [
+    PakSidebarComponent,
+    LayoutModule,
+    CodeEditorModule,
+    FormsModule,
+    ModelViewerModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
+  ],
   host: {
     class: 'ion-page flex flex-row',
   },
   template: `
     <ion-split-pane contentId="editor">
-      <ion-menu contentId="editor" class="min-w-96 max-w-screen-md order-3" [nwbSplitPane]="gutter" >
+      <ion-menu contentId="editor" class="min-w-96 max-w-screen-md order-3" [nwbSplitPane]="gutter">
         <nwb-assets-sidebar class="ion-page" />
       </ion-menu>
       <nwb-split-gutter class="order-2" #gutter="gutter" />
@@ -37,7 +45,7 @@ import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
             }
           </ion-toolbar>
         </ion-header>
-        @if (stat(); as stat) {
+        @if (source(); as source) {
           <ion-content [scrollY]="false">
             @switch (previewType()) {
               @case ('3D') {
@@ -47,13 +55,18 @@ import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
                 <nwb-code-editor
                   class="ion-page"
                   [ngModel]="textContent.value()"
-                  [language]="stat.textType"
+                  [language]="source.textType"
                   [disabled]="true"
                 />
               }
               @case ('IMG') {
-                <picture class="ion-page">
-                  <img [src]="stat.imageUrl" class="object-scale-down" />
+                <picture class="block relative">
+                  <img [src]="source.baseUrl + source.imagePath" class="object-scale-down" #img />
+                  @if (img.naturalWidth) {
+                    <span class="absolute top-0 left-0 p-2 font-mono">
+                      {{ img.naturalWidth }}x{{ img.naturalHeight }}
+                    </span>
+                  }
                 </picture>
               }
             }
@@ -67,12 +80,19 @@ export class PakPageComponent {
   private service = inject(PakService)
   private route = inject(ActivatedRoute)
   private file = toSignal(this.route.queryParams.pipe(map((params) => params['file'] as string)))
-  protected stat = computed(() => this.service.fileStats(this.file()))
+  protected source = computed(() => this.service.fileSource(this.file()))
 
-  protected textContent = httpResource.text(() => this.stat()?.textUrl)
+  protected textContent = httpResource.text(() => {
+    const source = this.source()
+    if (source?.textPath) {
+      return source.baseUrl + source.textPath
+    }
+    return undefined
+  })
+
   protected modelContent = computed((): ModelItemInfo[] => {
-    const modelUrl = this.stat()?.modelUrl
-    if (!modelUrl) {
+    const path = this.source()?.modelPath
+    if (!path) {
       return null
     }
     return [
@@ -80,19 +100,20 @@ export class PakPageComponent {
         itemId: null,
         label: null,
         name: null,
-        url: modelUrl,
+        url: path,
         itemClass: null,
         appearance: null,
+        rootUrl: this.source().baseUrl,
       },
     ]
   })
   protected showModelButton = computed(() => {
-    const stat = this.stat()
-    return !!stat && !!stat.modelUrl && !!stat.textUrl
+    const stat = this.source()
+    return !!stat && !!stat.modelPath && !!stat.textPath
   })
   protected showModel = linkedSignal(() => {
-    const stat = this.stat()
-    return !!stat && !!stat.modelUrl && !stat.textUrl
+    const stat = this.source()
+    return !!stat && !!stat.modelPath && !stat.textPath
   })
   protected previewType = computed(() => {
     if (this.showModelButton()) {
@@ -101,13 +122,13 @@ export class PakPageComponent {
       }
       return 'TXT'
     }
-    if (this.stat()?.imageUrl) {
+    if (this.source()?.imagePath) {
       return 'IMG'
     }
-    if (this.stat()?.textUrl) {
+    if (this.source()?.textPath) {
       return 'TXT'
     }
-    if (this.stat()?.modelUrl) {
+    if (this.source()?.modelPath) {
       return '3D'
     }
     return null
