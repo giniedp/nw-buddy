@@ -118,7 +118,7 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 			"maxPerkChannel":           int(perk.Max_perk_channel),
 			"attributePerkProbability": float32(perk.Attribute_perk_probability),
 			"generalGearScorePerkCount": mapSlice(perk.General_gear_score_perk_count.Element, func(it nwt.UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8) any {
-				return mapSlice(it.Value2.Element, func(e nwt.AZStd__pair_7) any {
+				return mapSlice(it.Value2.Element, func(e nwt.AZStd__pair_5) any {
 					return map[string]any{
 						"v1": int(e.Value1),
 						"v2": int(e.Value2),
@@ -126,7 +126,7 @@ func pullConstants(fs nwfs.Archive, outDir string) {
 				})
 			}),
 			"craftingGearScorePerkCount": mapSlice(perk.Crafting_gear_score_perk_count.Element, func(it nwt.UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8) any {
-				return mapSlice(it.Value2.Element, func(e nwt.AZStd__pair_7) any {
+				return mapSlice(it.Value2.Element, func(e nwt.AZStd__pair_5) any {
 					return map[string]any{
 						"v1": int(e.Value1),
 						"v2": int(e.Value2),

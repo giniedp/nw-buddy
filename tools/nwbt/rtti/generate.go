@@ -22,6 +22,26 @@ func (it *Member) getCleanName() string {
 	return clean(it.Name)
 }
 
+func (it *Type) getElementTypeName(table TypeTable) string {
+	if len(it.Members) != 1 {
+		return ""
+	}
+	for _, member := range it.Members {
+		if !strings.EqualFold(member.Name, "Element") {
+			return ""
+		}
+		if len(member.TypeIDs) > 1 || member.TypeID == "" {
+			// want only unique element type ID
+			return ""
+		}
+		if !table.Has(member.TypeID) {
+			return ""
+		}
+		return table[member.TypeID].getCleanName()
+	}
+	return ""
+}
+
 func (it TypeTable) GenerateCode() string {
 	buildIndex := str.NewBuilder()
 	buildTypes := str.NewBuilder()
@@ -31,7 +51,12 @@ func (it TypeTable) GenerateCode() string {
 		types = append(types, t)
 	}
 	sort.Slice(types, func(i, j int) bool {
-		return types[i].getCleanName() < types[j].getCleanName()
+		nameA := types[i].getCleanName()
+		nameB := types[j].getCleanName()
+		if nameA == nameB {
+			return types[i].ID < types[j].ID
+		}
+		return nameA < nameB
 	})
 
 	tracker := make(map[string]int)
@@ -44,7 +69,11 @@ func (it TypeTable) GenerateCode() string {
 		if _, ok := nwt.PRIMITIVES[t.ID]; ok {
 			continue
 		}
+
 		name := t.getCleanName()
+		if elementName := t.getElementTypeName(it); elementName != "" {
+			name = strings.TrimRight(name, "_") + "_" + elementName
+		}
 		// add counter suffix to avoid collisions
 		if count, ok := tracker[name]; ok {
 			tracker[name] = count + 1

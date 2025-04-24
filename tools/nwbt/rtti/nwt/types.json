@@ -709,9 +709,7 @@
 				"Crc32": 861718850,
 				"Name": "m_data",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
-				"TypeIDs": [
-					"72039442-EB38-4D42-A1AD-CB68F7E0EEF6"
-				],
+				"TypeIDs": ["72039442-EB38-4D42-A1AD-CB68F7E0EEF6"],
 				"Array": false
 			}
 		}
@@ -8866,9 +8864,7 @@
 				"Crc32": 2218521579,
 				"Name": "quadtreenodes",
 				"TypeID": "54626338-CFA6-51E7-BD07-CF779D5A1C9B",
-				"TypeIDs": [
-					"6106BF95-5ACD-5071-8D0E-4F846C2138AD"
-				],
+				"TypeIDs": ["6106BF95-5ACD-5071-8D0E-4F846C2138AD"],
 				"Array": false
 			},
 			"3404125817": {
@@ -12341,9 +12337,7 @@
 				"Crc32": 1094737465,
 				"Name": "element",
 				"TypeID": "13110165-49E7-4CB2-836B-AE61F19FAA1A",
-				"TypeIDs": [
-					"782226AB-905D-438C-912E-37184345DA6B"
-				],
+				"TypeIDs": ["782226AB-905D-438C-912E-37184345DA6B"],
 				"Array": false
 			}
 		}
@@ -20039,10 +20033,7 @@
 				"Crc32": 1094737465,
 				"Name": "element",
 				"TypeID": "ABCD5D45-CC47-4C17-8D21-9471032618F6",
-				"TypeIDs": [
-					"D7978A94-592F-4E1A-86EF-E34A819A55FB",
-					"89294558-CF45-4AA8-9EAA-A1D81BAB92A7"
-				],
+				"TypeIDs": ["D7978A94-592F-4E1A-86EF-E34A819A55FB", "89294558-CF45-4AA8-9EAA-A1D81BAB92A7"],
 				"Array": true
 			}
 		}
@@ -37609,9 +37600,7 @@
 				"Crc32": 1094737465,
 				"Name": "element",
 				"TypeID": "41996A3D-446A-48A9-AC29-14D89E67594E",
-				"TypeIDs": [
-					"CF33E3AA-E48A-464D-B319-ECD8D0BAD687"
-				],
+				"TypeIDs": ["CF33E3AA-E48A-464D-B319-ECD8D0BAD687"],
 				"Array": false
 			}
 		}
@@ -38298,6 +38287,13 @@
 			"1213786559": {
 				"Crc32": 1213786559,
 				"Name": "Kill On Deactivate",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1344276656": {
+				"Crc32": 1344276656,
+				"Name": "force highest contextual priority",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -40408,6 +40404,13 @@
 			"3095477305": {
 				"Crc32": 3095477305,
 				"Name": "m_invert",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3197126425": {
+				"Crc32": 3197126425,
+				"Name": "m_forcedespawn",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -50995,10 +50998,7 @@
 				"Crc32": 1094737465,
 				"Name": "element",
 				"TypeID": "DD80E118-12C9-4F69-848B-4EA5DAA2E0EC",
-				"TypeIDs": [
-					"C1A48956-5CBC-4124-AB49-61FFEEE9139A",
-					"B4AD0E71-92D8-4888-AB89-5C3B4A30759A"
-				],
+				"TypeIDs": ["C1A48956-5CBC-4124-AB49-61FFEEE9139A", "B4AD0E71-92D8-4888-AB89-5C3B4A30759A"],
 				"Array": false
 			}
 		}
@@ -54027,10 +54027,7 @@
 				"Crc32": 1094737465,
 				"Name": "element",
 				"TypeID": "34D99A39-8620-4BE1-BB47-8832899930E2",
-				"TypeIDs": [
-					"A6A15FE5-75F6-4EED-9DAE-5A68753B2163",
-					"A055E767-9233-42A9-BE91-66204D442CF2"
-				],
+				"TypeIDs": ["A6A15FE5-75F6-4EED-9DAE-5A68753B2163", "A055E767-9233-42A9-BE91-66204D442CF2"],
 				"Array": false
 			}
 		}
