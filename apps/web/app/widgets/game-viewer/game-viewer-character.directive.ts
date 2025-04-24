@@ -86,21 +86,27 @@ export class GameViewerCharacterDirective {
 
     // reframe camera when model has changed
     effect(() => {
-      const data = this.modelData()
+      const loading = this.modelResource.isLoading()
+      const model = this.modelResource.value()?.model
+      if (loading) {
+        return
+      }
       untracked(() => {
         this.service.isLoading.set(false)
-        this.service.isEmpty.set(!data?.model)
-        this.reframeCamera()
+        this.service.isEmpty.set(!model)
+        if (model) {
+          this.reframeCamera()
+        }
       })
     })
 
     effect(() => {
       const loading = this.vitalOptionsList.isLoading()
       const value = this.vitalOptionsList.value()
-
       untracked(() => {
         if (loading) {
           this.service.isLoading.set(loading)
+          this.service.isEmpty.set(false)
         }
         if (!loading && !value?.length) {
           this.service.isLoading.set(false)

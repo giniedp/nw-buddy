@@ -1,9 +1,9 @@
 import { NgZone } from '@angular/core'
 
-import { Viewer, ViewerDetails, createViewerForCanvas } from '@babylonjs/viewer'
-export type { Viewer, Model } from '@babylonjs/viewer'
-import { CreateScreenshotAsync, CreateScreenshotWithResizeAsync } from '@babylonjs/core'
+import { CreateScreenshotAsync } from '@babylonjs/core'
+import { CreateViewerForCanvas, Viewer, ViewerDetails } from '@babylonjs/viewer'
 import { registerNwMaterialPlugin } from './nw-material-plugin'
+export type { Model, Viewer } from '@babylonjs/viewer'
 
 export async function createViewer(options: {
   element: HTMLCanvasElement
@@ -15,7 +15,7 @@ export async function createViewer(options: {
   const canvas = options.element
   const zone = options.zone
   return zone.runOutsideAngular(async () => {
-    const viewer = await createViewerForCanvas(canvas, {
+    const viewer = await CreateViewerForCanvas(canvas, {
       engine: 'WebGL', // must be webgl, nw material plugin does not work with webgpu yet
       antialias: true,
       adaptToDeviceRatio: true,

@@ -243,7 +243,6 @@ export class ModelViewerComponent implements OnDestroy {
     }
     await viewer.loadModel(modelUrl, {
       rootUrl: rootUrl,
-      animationAutoPlay: true,
       onProgress: (it) => {
         if (it.lengthComputable) {
           this.progress.set(`${Math.round((it.loaded / it.total) * 100)}%`)
