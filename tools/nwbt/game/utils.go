@@ -19,14 +19,14 @@ func LoadObjectStream(file nwfs.File) (any, error) {
 		return nil, fmt.Errorf("can't read file '%s': %w", file.Path(), err)
 	}
 
-	if strings.EqualFold("<ObjectStream", string(data[:15])) {
+	if strings.HasPrefix(string(data), "<ObjectStream") {
 		doc, err := azcs.ParseXml(data)
 		if err != nil {
-			return nil, fmt.Errorf("can't parse file '%s': %w", file.Path(), err)
+			return nil, fmt.Errorf("can't parse xml file '%s': %w", file.Path(), err)
 		}
 		node, err := rtti.LoadXml(doc.Elements[0])
 		if err != nil {
-			return nil, fmt.Errorf("can't load file '%s': %w", file.Path(), err)
+			return nil, fmt.Errorf("can't load xml file '%s': %w", file.Path(), err)
 		}
 		return node, nil
 	}
