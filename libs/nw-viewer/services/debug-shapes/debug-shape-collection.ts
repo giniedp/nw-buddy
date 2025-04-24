@@ -29,7 +29,9 @@ export class DebugShapeCollection {
   private count = 0
   private indexMap = new Map<DebugShapeRef, number>()
   private refMap = new Map<number, DebugShapeRef>()
-  private dirty = false
+
+  private transformChanged = false
+  private colorChanged = false
 
   public get instanceCount() {
     return this.count
@@ -57,7 +59,8 @@ export class DebugShapeCollection {
     this.indexMap.set(ref, this.count)
     this.refMap.set(this.count, ref)
     this.count++
-    this.dirty = true
+    this.transformChanged = true
+    this.colorChanged = true
     return ref
   }
 
@@ -67,7 +70,7 @@ export class DebugShapeCollection {
       return false
     }
     matrix.copyToArray(this.matricesData, index * 16)
-    this.dirty = true
+    this.transformChanged = true
     return true
   }
 
@@ -77,7 +80,7 @@ export class DebugShapeCollection {
       return false
     }
     color.toArray(this.colorData, index * 4)
-    this.dirty = true
+    this.colorChanged = true
     return true
   }
 
@@ -91,7 +94,8 @@ export class DebugShapeCollection {
     const lastIndex = this.count - 1
     if (index === lastIndex) {
       this.count--
-      this.dirty = true
+      this.transformChanged = true
+      this.colorChanged = true
       this.refMap.delete(index)
       return
     }
@@ -102,16 +106,19 @@ export class DebugShapeCollection {
     this.indexMap.set(lastRef, index)
     this.refMap.set(index, lastRef)
     this.count--
-    this.dirty = true
+    this.transformChanged = true
+    this.colorChanged = true
   }
 
   public update() {
-    if (!this.dirty) {
-      return
+    if (this.transformChanged) {
+      this.mesh.thinInstanceSetBuffer('matrix', this.matricesData.subarray(0, this.count * 16), 16)
+      this.mesh.thinInstanceRefreshBoundingInfo(true)
     }
-    this.dirty = false
-
-    this.mesh.thinInstanceSetBuffer('matrix', this.matricesData.subarray(0, this.count * 16), 16)
-    this.mesh.thinInstanceSetBuffer('color', this.colorData.subarray(0, this.count * 4), 4)
+    if (this.colorChanged) {
+      this.mesh.thinInstanceSetBuffer('color', this.colorData.subarray(0, this.count * 4), 4)
+    }
+    this.transformChanged = false
+    this.colorChanged = false
   }
 }

@@ -1,17 +1,20 @@
 import { Mesh, RenderTargetTexture, Texture } from '@babylonjs/core'
 import { GameComponent, GameEntity } from '../../ecs'
-import { HeightmapMetadata } from '../level/types'
 import { IntersectionType } from '../../math'
 import { ContentProvider } from '../../services/content-provider'
 import { SceneProvider } from '../../services/scene-provider'
 import { TransformComponent } from '../transform-component'
-import { Clipmap, ClipMeshes, createClipmapMeshes } from './clipmap'
+import { Clipmap } from './clipmap'
+import { ClipmapGeometry, clipmapGeometry } from './clipmap-geometry'
 import { ClipmapUpdateMaterial } from './clipmap-update-shader'
 
 export interface ClipmapComponentOptions {
   index: number
   size: number
-  data: HeightmapMetadata
+  levelName: string
+  tileSize: number
+  mountainHeight: number
+  previous: ClipmapComponent
 }
 
 export interface ClipmapTile {
@@ -33,11 +36,14 @@ export interface ClipmapTile {
 
 export class ClipmapComponent implements GameComponent {
   public entity: GameEntity
-  private data: HeightmapMetadata
+  private levelName: string
+  private tileSize: number
+  private mountainHeight: number
+
   private scene: SceneProvider
   private transform: TransformComponent
   private clip: Clipmap
-  private meshes: ClipMeshes
+  private geometry: ClipmapGeometry
 
   private tiles: ClipmapTile[] = []
   private content: ContentProvider
@@ -46,9 +52,13 @@ export class ClipmapComponent implements GameComponent {
   private groundmap: RenderTargetTexture
   private needsUpdate: boolean = true
   private bounds: number[] = [0, 0, 0, 0]
-
+  private previous: ClipmapComponent
   public constructor(options: ClipmapComponentOptions) {
-    this.data = options.data
+    this.tileSize = options.tileSize
+    this.levelName = options.levelName
+    this.mountainHeight = options.mountainHeight
+    this.previous = options.previous
+
     this.clip = new Clipmap({
       index: options.index,
       vertexPerSide: Math.pow(2, options.size) - 1,
@@ -57,10 +67,10 @@ export class ClipmapComponent implements GameComponent {
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.scene = this.entity.system(SceneProvider)
-    this.content = this.entity.system(ContentProvider)
+    this.scene = this.entity.service(SceneProvider)
+    this.content = this.entity.service(ContentProvider)
     this.transform = this.entity.component(TransformComponent)
-    this.meshes = createClipmapMeshes(this.scene.main, this.clip.clipsize)
+    this.geometry = clipmapGeometry(this.scene.main, this.clip.clipsize)
 
     this.heightmapSize = this.clip.clipsize + 1
     this.heightmap = new RenderTargetTexture(
@@ -72,7 +82,7 @@ export class ClipmapComponent implements GameComponent {
       this.scene.main,
       {
         generateDepthBuffer: false,
-        samplingMode: Texture.NEAREST_NEAREST,
+        samplingMode: Texture.LINEAR_LINEAR,
       },
     )
     this.groundmap = new RenderTargetTexture(
@@ -91,19 +101,19 @@ export class ClipmapComponent implements GameComponent {
 
   public activate(): void {
     this.scene.main.onBeforeRenderObservable.add(this.update)
-    for (const mesh of this.meshes.center) {
+    for (const mesh of this.geometry.center) {
       mesh.parent = this.transform.node
       mesh.setEnabled(true)
     }
-    for (const mesh of this.meshes.blocks) {
+    for (const mesh of this.geometry.blocks) {
       mesh.parent = this.transform.node
       mesh.setEnabled(true)
     }
-    for (const mesh of this.meshes.fixups) {
+    for (const mesh of this.geometry.fixups) {
       mesh.parent = this.transform.node
       mesh.setEnabled(true)
     }
-    for (const mesh of this.meshes.trims) {
+    for (const mesh of this.geometry.trims) {
       mesh.parent = this.transform.node
       mesh.setEnabled(true)
     }
@@ -111,35 +121,35 @@ export class ClipmapComponent implements GameComponent {
 
   public deactivate(): void {
     this.scene.main.onBeforeRenderObservable.removeCallback(this.update)
-    for (const mesh of this.meshes.center) {
+    for (const mesh of this.geometry.center) {
       mesh.parent = null
       mesh.setEnabled(false)
     }
-    for (const mesh of this.meshes.blocks) {
+    for (const mesh of this.geometry.blocks) {
       mesh.parent = null
       mesh.setEnabled(false)
     }
-    for (const mesh of this.meshes.fixups) {
+    for (const mesh of this.geometry.fixups) {
       mesh.parent = null
       mesh.setEnabled(false)
     }
-    for (const mesh of this.meshes.trims) {
+    for (const mesh of this.geometry.trims) {
       mesh.parent = null
       mesh.setEnabled(false)
     }
   }
 
   public destroy(): void {
-    for (const mesh of this.meshes.center) {
+    for (const mesh of this.geometry.center) {
       mesh.dispose()
     }
-    for (const mesh of this.meshes.blocks) {
+    for (const mesh of this.geometry.blocks) {
       mesh.dispose()
     }
-    for (const mesh of this.meshes.fixups) {
+    for (const mesh of this.geometry.fixups) {
       mesh.dispose()
     }
-    for (const mesh of this.meshes.trims) {
+    for (const mesh of this.geometry.trims) {
       mesh.dispose()
     }
     for (const tile of this.tiles) {
@@ -147,52 +157,57 @@ export class ClipmapComponent implements GameComponent {
       tile.material.dispose()
     }
     this.tiles.length = 0
-    this.meshes = null
+    this.geometry = null
   }
 
   private update = () => {
     const position = this.scene.main.activeCamera.position
-    this.clip.updatePosition(position)
+    this.clip.update(position)
     this.needsUpdate = this.needsUpdate || this.clip.delta.lengthSquared() > 0
 
-    this.transform.node.position.set(this.clip.origin.x, 0, this.clip.origin.y)
+    this.transform.node.position.set(this.clip.center.x, 0, this.clip.center.y)
     this.transform.node.scaling.setAll(this.clip.density)
 
-    for (const mesh of this.meshes.center) {
+    for (const mesh of this.geometry.center) {
       mesh.setEnabled(this.clip.index === 0)
     }
     if (this.clip.index === 0) {
-      this.meshes.trims[0].setEnabled(true)
-      this.meshes.trims[1].setEnabled(true)
-      this.meshes.trims[2].setEnabled(true)
-      this.meshes.trims[3].setEnabled(true)
+      this.geometry.trims[0].setEnabled(true)
+      this.geometry.trims[1].setEnabled(true)
+      this.geometry.trims[2].setEnabled(true)
+      this.geometry.trims[3].setEnabled(true)
     } else {
       const xIsEven = Math.floor(position.x / this.clip.density) % 2 === 0
       const zIsEven = Math.floor(position.z / this.clip.density) % 2 === 0
-      this.meshes.trims[0].setEnabled(!zIsEven)
-      this.meshes.trims[1].setEnabled(xIsEven)
-      this.meshes.trims[2].setEnabled(zIsEven)
-      this.meshes.trims[3].setEnabled(!xIsEven)
+      this.geometry.trims[0].setEnabled(!zIsEven)
+      this.geometry.trims[1].setEnabled(xIsEven)
+      this.geometry.trims[2].setEnabled(zIsEven)
+      this.geometry.trims[3].setEnabled(!xIsEven)
     }
 
-    this.meshes.material.params.setClipSize(this.clip.clipsize)
-    this.meshes.material.params.setClipDensity(this.clip.density)
-    this.meshes.material.params.setClipCenter(this.clip.center)
-    this.meshes.material.params.setClipOrigin(this.clip.origin)
-    this.meshes.material.params.setEyePosition(position)
+    this.geometry.material.params.setClipSize(this.clip.clipsize)
+    this.geometry.material.params.setClipDensity(this.clip.density)
+    this.geometry.material.params.setClipCenter(this.clip.center)
+    this.geometry.material.params.setClipOrigin(this.clip.origin)
+    this.geometry.material.params.setCoarseCenter(this.previous?.clip?.center || this.clip.center)
+    this.geometry.material.params.setCoarseOrigin(this.previous?.clip?.origin || this.clip.origin)
+    this.geometry.material.params.setEyePosition(position)
+
 
     if (this.needsUpdate) {
       this.needsUpdate = false
       this.detectTiles()
+      this.geometry.material.params.setHeightmap(this.heightmap)
+      this.geometry.material.params.setCoarseMap(this.previous?.heightmap)
+      this.geometry.material.params.setHeightmapTexel(1 / this.heightmapSize)
+      this.geometry.material.params.setGroundmap(this.groundmap)
+      this.geometry.material.params.setMountainHeight(this.mountainHeight)
       this.updateHeightmap()
-      this.meshes.material.params.setHeightmap(this.heightmap)
-      this.meshes.material.params.setHeightmapTexel(1 / this.heightmapSize)
-      this.meshes.material.params.setGroundmap(this.groundmap)
     }
   }
 
   private detectTiles() {
-    const tileSize = this.data.tileSize * this.clip.density
+    const tileSize = this.tileSize * this.clip.density
     const clipSize = this.heightmapSize * this.clip.density
     this.bounds = this.bounds || []
     this.bounds[0] = this.clip.origin.x
@@ -259,11 +274,11 @@ export class ClipmapComponent implements GameComponent {
     ;('newworld_vitaeeterna/.webp')
     const addrY = tile.y * this.clip.density
     const addrX = tile.x * this.clip.density
-    const url = `${this.content.nwbtUrl}/level/${this.data.name}/heightmap/${tile.z}_${addrY}_${addrX}.png`
+    const url = `${this.content.nwbtUrl}/level/${this.levelName}/heightmap/${tile.z}_${addrY}_${addrX}.png`
     tile.texture = new Texture(url, this.scene.main, true, false, Texture.NEAREST_NEAREST, () => {
       this.needsUpdate = true
     })
-    const url2 = `http://localhost:4200/nw-data/lyshineui/worldtiles/${this.data.name}/map_l${tile.z}_y${String(addrY).padStart(3, '0')}_x${String(addrX).padStart(3, '0')}.webp`
+    const url2 = `http://localhost:4200/nw-data/lyshineui/worldtiles/${this.levelName}/map_l${tile.z}_y${String(addrY).padStart(3, '0')}_x${String(addrX).padStart(3, '0')}.webp`
     tile.texture2 = new Texture(url2, this.scene.main, true, false, Texture.LINEAR_LINEAR, () => {
       this.needsUpdate = true
     })
@@ -316,9 +331,9 @@ export class ClipmapComponent implements GameComponent {
       if (index >= 0) {
         this.tiles.splice(index, 1)
       }
-      tile.texture.dispose()
+      tile.texture?.dispose()
       tile.texture = null
-      tile.texture2.dispose()
+      tile.texture2?.dispose()
       tile.texture2 = null
       tile.intersection = IntersectionType.Disjoint
       tile.mesh.parent = null

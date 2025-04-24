@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net/http"
 	"nw-buddy/tools/game"
-	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
@@ -18,7 +17,6 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
-	_ "go.uber.org/automaxprocs"
 )
 
 type Flags struct {
@@ -76,14 +74,8 @@ func run(cmd *cobra.Command, args []string) {
 
 	r.HandleFunc("/catalog", GetCatalogHandler(assets))
 	r.HandleFunc("/catalog/{assetId}", GetCatalogAssetHandler(assets))
-	r.HandleFunc("/level", GetLevelNamesHandler(assets))
-	r.HandleFunc("/level/{level}", GetLevelHandler(assets))
-	r.HandleFunc("/level/{level}/region/{region}", GetLevelRegionHandler(assets))
-	r.HandleFunc("/level/{level}/entities", GetLevelEntitiesHandler(assets))
 
-	heightmapHandler := GetLevelHeightmapHandler(assets)
-	r.HandleFunc("/level/{level}/heightmap", heightmapHandler)
-	r.HandleFunc("/level/{level}/heightmap/{z}_{y}_{x}.png", heightmapHandler)
+	LevelsRouter(r.PathPrefix("/level").Subrouter(), assets)
 
 	h := handlers.LoggingHandler(os.Stdout, r)
 	h = handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(h)
@@ -111,15 +103,6 @@ func serveContent(data []byte, w http.ResponseWriter, contentType string) {
 	}
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(data)))
 	w.Write(data)
-}
-
-func serveFile(file nwfs.File, w http.ResponseWriter) {
-	data, err := file.Read()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	serveContent(data, w, contentTypeByExtension(path.Ext(file.Path())))
 }
 
 func contentTypeByExtension(ext string) string {

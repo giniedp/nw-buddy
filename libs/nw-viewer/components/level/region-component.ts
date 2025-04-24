@@ -1,32 +1,41 @@
-import { Color4, Scene } from '@babylonjs/core'
+import { Color4, Matrix, Scene, Vector3 } from '@babylonjs/core'
 import { EngineProvider } from '@nw-viewer/services/engine-provider'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
 
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
 
+import { fetchTypedRequest, getRegionEntitiesUrl, getRegionInfoUrl, ImpostorInfo, RegionInfo } from '@nw-serve'
+import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
+import { ContentProvider } from '@nw-viewer/services/content-provider'
 import { TransformComponent } from '../transform-component'
 import { REGION_VISIBILITY, SEGMENT_SIZE } from './constants'
-import { RegionSegmentComponent } from './region-segment'
-import { Capital, Impostor, RegionMetadata } from './types'
+import { CapitalWitEntities as CapitalWitEntities, RegionSegmentComponent } from './region-segment'
 
-export interface RegionOptions extends RegionMetadata {
+export interface RegionOptions {
+  levelName: string
+  regionName: string
+  regionSize: number
   centerX: number
   centerY: number
 }
 
-type ActivytState = 'active' | 'inactive'
 export class RegionComponent implements GameComponent {
-  private data: RegionMetadata
+  // private data: RegionMetadata
   private scene: Scene
   private engine: EngineProvider
+  private content: ContentProvider
   private segments = new GameEntityCollection()
   private transform: TransformComponent
-  private state: ActivytState = 'inactive'
+  private isVisible: boolean
+  private isLoaded: boolean
   private indicator: DebugMeshComponent
   private colorInactive = new Color4(0.25, 0.25, 0.25, 0.25)
   private colorActive = new Color4(0.25, 0.25, 0.25, 0.5)
 
+  private levelName: string
+  private regionName: string
+  private regionSize: number
   public entity: GameEntity
   public centerX: number
   public centerY: number
@@ -34,96 +43,24 @@ export class RegionComponent implements GameComponent {
   public originY: number
 
   public constructor(data: RegionOptions) {
-    this.data = data
+    this.levelName = data.levelName
+    this.regionName = data.regionName
+    this.regionSize = data.regionSize
     this.centerX = data.centerX
     this.centerY = data.centerY
-    this.originX = this.centerX - 0.5 * this.data.mapSettings.regionSize
-    this.originY = this.centerY - 0.5 * this.data.mapSettings.regionSize
+    this.originX = this.centerX - 0.5 * data.regionSize
+    this.originY = this.centerY - 0.5 * data.regionSize
   }
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.scene = entity.game.system(SceneProvider).main
-    this.engine = entity.game.system(EngineProvider)
+    this.scene = entity.service(SceneProvider).main
+    this.engine = entity.service(EngineProvider)
+    this.content = entity.service(ContentProvider)
     this.transform = entity.component(TransformComponent)
-    this.indicator = entity.optionalComponent(DebugMeshComponent)
-    const count = this.data.mapSettings.regionSize / SEGMENT_SIZE
-    for (let y = 0; y < count; y++) {
-      for (let x = 0; x < count; x++) {
-        this.createSegment(x, y)
-      }
-    }
+    this.indicator = entity.component(DebugMeshComponent, true)
+
     this.indicator?.setColor(this.colorInactive)
-    this.segments.initialize(entity.game)
-  }
-
-  private createSegment(x: number, y: number) {
-    const index = this.segments.length()
-    const impostors: Impostor[] = []
-    const capitals: Capital[] = []
-
-    const originX = this.originX + x * SEGMENT_SIZE
-    const originY = this.originY + y * SEGMENT_SIZE
-
-    if (this.data.impostors) {
-      for (const impostor of this.data.impostors) {
-        if (impostor.worldPosition.x < originX || impostor.worldPosition.x > originX + SEGMENT_SIZE) {
-          continue
-        }
-        if (impostor.worldPosition.y < originY || impostor.worldPosition.y > originY + SEGMENT_SIZE) {
-          continue
-        }
-        impostors.push(impostor)
-      }
-    }
-    if (this.data.poiImpostors) {
-      for (const impostor of this.data.poiImpostors) {
-        if (impostor.worldPosition.x < originX || impostor.worldPosition.x > originX + SEGMENT_SIZE) {
-          continue
-        }
-        if (impostor.worldPosition.y < originY || impostor.worldPosition.y > originY + SEGMENT_SIZE) {
-          continue
-        }
-        impostors.push(impostor)
-      }
-    }
-    if (this.data.capitals) {
-      for (const capital of this.data.capitals) {
-        if (capital.worldPosition.x < originX || capital.worldPosition.x > originX + SEGMENT_SIZE) {
-          continue
-        }
-        if (capital.worldPosition.y < originY || capital.worldPosition.y > originY + SEGMENT_SIZE) {
-          continue
-        }
-        capitals.push(capital)
-      }
-    }
-    const centerX = originX + 0.5 * SEGMENT_SIZE
-    const centerY = originY + 0.5 * SEGMENT_SIZE
-
-    const segmentName = `segment ${String(index).padStart(3, '0')}`
-    this.segments.create().addComponents(
-      new TransformComponent({
-        transform: this.transform.createChild(segmentName),
-        // just a "folder" transform, not affecting the segment assets
-      }),
-      new RegionSegmentComponent({
-        impostors: impostors,
-        capitals: capitals,
-        centerX: centerX,
-        centerY: centerY,
-      }),
-      new DebugMeshComponent({
-        size: SEGMENT_SIZE * 0.99,
-        type: 'ground',
-        name: segmentName + ' outline',
-        position: {
-          x: centerX,
-          y: 0.1,
-          z: centerY,
-        },
-      }),
-    )
   }
 
   public activate(): void {
@@ -148,21 +85,129 @@ export class RegionComponent implements GameComponent {
     const cx = camera.position.x
     const cy = camera.position.z
 
-    const regionSize = this.data.mapSettings.regionSize
+    const regionSize = this.regionSize
     const enableAt = regionSize * 0.5 + REGION_VISIBILITY
     const disableAt = regionSize * 0.5 + REGION_VISIBILITY + SEGMENT_SIZE
     const dx = Math.abs(this.centerX - cx)
     const dy = Math.abs(this.centerY - cy)
 
-    const active = this.state === 'active'
-    if (active && (dx >= disableAt || dy >= disableAt)) {
-      this.state = 'inactive'
+    if (this.isVisible && (dx >= disableAt || dy >= disableAt)) {
+      this.isVisible = false
       this.segments.deactivate()
       this.indicator?.setColor(this.colorInactive)
-    } else if (!active && dx <= enableAt && dy <= enableAt) {
-      this.state = 'active'
+    } else if (!this.isVisible && dx <= enableAt && dy <= enableAt) {
+      this.isVisible = true
       this.segments.activate()
       this.indicator?.setColor(this.colorActive)
     }
+    if (this.isVisible && !this.isLoaded) {
+      this.isLoaded = true
+      this.load()
+    }
+  }
+
+  private async load() {
+    const baseUrl = this.content.nwbtUrl
+    const request = getRegionInfoUrl(this.levelName, this.regionName)
+    const data = await fetchTypedRequest(baseUrl, request)
+    const entities = await fetchTypedRequest(baseUrl, getRegionEntitiesUrl(this.levelName, this.regionName))
+    this.segments.clear()
+
+    const capitals: CapitalWitEntities[] = []
+    for (const capital of data.capitals || []) {
+      capitals.push({
+        ...capital,
+        matrix: Matrix.FromArray(cryToGltfMat4(capital.transform)),
+        entities: entities[capital.id] || [],
+      })
+    }
+
+    const count = this.regionSize / SEGMENT_SIZE
+    for (let y = 0; y < count; y++) {
+      for (let x = 0; x < count; x++) {
+        this.createSegment(x, y, data, capitals)
+      }
+    }
+    this.segments.initialize(this.entity.game)
+    if (this.isVisible) {
+      this.segments.activate()
+    }
+  }
+
+  private createSegment(x: number, y: number, data: RegionInfo, capitalsTx: CapitalWitEntities[]) {
+    const index = this.segments.length()
+    const impostors: ImpostorInfo[] = []
+    const capitals: CapitalWitEntities[] = []
+
+    const originX = this.originX + x * SEGMENT_SIZE
+    const originY = this.originY + y * SEGMENT_SIZE
+
+    for (const impostor of data.impostors || []) {
+      const position = impostor?.position
+      if (!position) {
+        continue
+      }
+      if (position[0] < originX || position[0] >= originX + SEGMENT_SIZE) {
+        continue
+      }
+      if (position[1] < originY || position[1] >= originY + SEGMENT_SIZE) {
+        continue
+      }
+      impostors.push(impostor)
+    }
+
+    for (const impostor of data.poiImpostors || []) {
+      const position = impostor?.position
+      if (!position) {
+        continue
+      }
+      if (position[0] < originX || position[0] >= originX + SEGMENT_SIZE) {
+        continue
+      }
+      if (position[1] < originY || position[1] >= originY + SEGMENT_SIZE) {
+        continue
+      }
+      impostors.push(impostor)
+    }
+    const position = new Vector3()
+    for (const capital of capitalsTx || []) {
+      capital.matrix.getTranslationToRef(position)
+      if (position.x < originX || position.x >= originX + SEGMENT_SIZE) {
+        continue
+      }
+      if (position.z < originY || position.z >= originY + SEGMENT_SIZE) {
+        continue
+      }
+      capitals.push(capital)
+    }
+
+    const centerX = originX + 0.5 * SEGMENT_SIZE
+    const centerY = originY + 0.5 * SEGMENT_SIZE
+
+    const segmentName = `segment ${String(index).padStart(3, '0')}`
+    this.segments.create().addComponents(
+      new TransformComponent({
+        transform: this.transform.createChild(segmentName),
+        // just a "folder" transform, not affecting the segment assets
+      }),
+      new RegionSegmentComponent({
+        level: this.levelName,
+        region: this.regionName,
+        impostors: impostors,
+        capitals: capitals,
+        centerX: centerX,
+        centerY: centerY,
+      }),
+      new DebugMeshComponent({
+        size: SEGMENT_SIZE * 0.99,
+        type: 'ground',
+        name: segmentName + ' outline',
+        position: {
+          x: centerX,
+          y: 0.1,
+          z: centerY,
+        },
+      }),
+    )
   }
 }

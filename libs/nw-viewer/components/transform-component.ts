@@ -5,15 +5,12 @@ import { SceneProvider } from '../services/scene-provider'
 export interface TransformComponentOptions {
   name?: string
   transform?: TransformNode
-  matrix?: Matrix
-  keepWorldTransform?: boolean
 }
 
 export class TransformComponent implements GameComponent {
   private name: string
   private transform: TransformNode
-  private keepWorldTransform: boolean
-  public matrix: Matrix
+
   public entity: GameEntity
   public get node() {
     return this.transform
@@ -22,18 +19,13 @@ export class TransformComponent implements GameComponent {
   public constructor(options?: TransformComponentOptions) {
     this.name = options?.name || ''
     this.transform = options?.transform
-    this.matrix = options?.matrix
-    this.keepWorldTransform = options?.keepWorldTransform || false
   }
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
     if (!this.transform) {
-      const scene = entity.game.system(SceneProvider).main
+      const scene = entity.service(SceneProvider).main
       this.transform = new TransformNode(this.name, scene)
-    }
-    if (this.matrix) {
-      this.matrix.decomposeToTransformNode(this.transform)
     }
   }
 

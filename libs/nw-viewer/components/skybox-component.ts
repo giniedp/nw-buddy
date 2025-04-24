@@ -32,8 +32,8 @@ export class SkyboxComponent implements GameComponent {
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.scene = entity.game.system(SceneProvider).main
-    this.lighting = entity.game.system(LightingProvider)
+    this.scene = entity.service(SceneProvider).main
+    this.lighting = entity.service(LightingProvider)
     this.mesh = createSkybox(this.scene)
   }
 
@@ -90,6 +90,8 @@ function createSkybox(scene: Scene): Mesh {
     mesh.material = material
     mesh.isPickable = false
     mesh.infiniteDistance = true
+    mesh.alwaysSelectAsActiveMesh = true
+    mesh.refreshBoundingInfo()
 
     return mesh
   } finally {

@@ -1,11 +1,8 @@
-import { AbstractEngine, Engine } from '@babylonjs/core'
-import { defer } from 'rxjs'
-import { GameHost, GameSystem } from '../ecs'
-import { fromBObservable } from '../utils'
-import { ObservablesKeysOf, ObservableValue } from './types'
+import { AbstractEngine } from '@babylonjs/core'
+import { GameService, GameServiceContainer } from '../ecs'
 
-export class EngineProvider implements GameSystem {
-  public game: GameHost
+export class EngineProvider implements GameService {
+  public game: GameServiceContainer
   public engine: AbstractEngine
 
   public viewDistance = 800
@@ -18,7 +15,7 @@ export class EngineProvider implements GameSystem {
     this.engine = engine
   }
 
-  public initialize(game: GameHost): void {
+  public initialize(game: GameServiceContainer): void {
     this.game = game
     this.resize.observe(this.engine.getRenderingCanvas())
     this.engine.onBeginFrameObservable.add(this.onBeginFrame)
@@ -35,9 +32,4 @@ export class EngineProvider implements GameSystem {
       this.engine.resize()
     }
   }
-
-  public event<K extends ObservablesKeysOf<AbstractEngine>>(event: K) {
-    return defer(() => fromBObservable<ObservableValue<K, AbstractEngine>>(this.engine[event]))
-  }
-
 }

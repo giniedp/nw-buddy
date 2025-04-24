@@ -1,24 +1,25 @@
 import { LevelProvider } from '@nw-viewer/services/level-provider'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
-import { HeightmapMetadata } from '../level/types'
+
+import { TerrainInfo } from '@nw-serve'
 import { TransformComponent } from '../transform-component'
 import { ClipmapComponent } from './clipmap-component'
 
 export class TerrainComponent implements GameComponent {
   public entity: GameEntity
-  private data: HeightmapMetadata
+  private data: TerrainInfo
   private transform: TransformComponent
   private level: LevelProvider
 
   private entities = new GameEntityCollection()
-  public constructor(data: HeightmapMetadata) {
+  public constructor(data: TerrainInfo) {
     this.data = data
   }
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
     this.transform = this.entity.component(TransformComponent)
-    this.level = this.entity.game.system(LevelProvider)
+    this.level = this.entity.service(LevelProvider)
   }
 
   public activate(): void {
@@ -47,8 +48,8 @@ export class TerrainComponent implements GameComponent {
   }
 
   private createClimpaps() {
-    const mipCount = this.data.mipCount
-    for (let i = 0; i < mipCount; i++) {
+    let prev: ClipmapComponent
+    for (let i = this.data.mipCount - 1; i >= 0; i--) {
       const clip = this.entities.create()
       clip.name = `clipmap ${i}`
       clip.addComponent(
@@ -58,14 +59,17 @@ export class TerrainComponent implements GameComponent {
           transform: this.transform.createChild(clip.name),
         }),
       )
-      clip.addComponent(
-        new ClipmapComponent({
-          index: i,
-          data: this.data,
-          // 2^8 is 256, which is exactly the tile width
-          size: 8, // TODO: needs review, doesn't work with anything else
-        }),
-      )
+      let clipmap = new ClipmapComponent({
+        index: i,
+        levelName: this.data.level,
+        tileSize: this.data.tileSize,
+        mountainHeight: this.data.mountainHeight || 0,
+        // 2^8 is 256, which is exactly the tile width
+        size: 8, // TODO: needs review, doesn't work with anything else
+        previous: prev,
+      })
+      prev = clipmap
+      clip.addComponent(clipmap)
     }
     this.entities.initialize(this.entity.game)
   }

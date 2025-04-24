@@ -1,12 +1,12 @@
-import { AnimationGroup, AssetContainer, InstantiatedEntries, Node, TransformNode } from '@babylonjs/core'
+import { AnimationGroup, AssetContainer, Node, TransformNode } from '@babylonjs/core'
 import { BehaviorSubject } from 'rxjs'
-import { GameHost } from '../ecs'
+import { GameServiceContainer } from '../ecs'
 import { ContentProvider, GltfAsset } from '../services/content-provider'
 import { AdbFragment, AdbPlayerState, AnimationLayer } from './types'
 import { compileAnimation, compileProcLayers, getFragmentState, goToFragmentTime } from './utils'
 
 export interface AdbPlayerOptions {
-  game: GameHost
+  game: GameServiceContainer
 }
 
 export class AdbPlayer {
@@ -19,11 +19,11 @@ export class AdbPlayer {
     time: 0,
     duration: 0,
   })
-  private target: InstantiatedEntries
-  private game: GameHost
+  private target: Node[]
+  private game: GameServiceContainer
 
   public playbackState$ = this.#state$.asObservable()
-  public fragment$ = this.#fragment$.asObservable()
+  public fragment$ = this.#fragment$
   public get fragment() {
     return this.#fragment$.value
   }
@@ -31,7 +31,7 @@ export class AdbPlayer {
     this.executeFragment(value)
   }
 
-  public async reset(game: GameHost, target: InstantiatedEntries) {
+  public async reset(game: GameServiceContainer, target: Node[]) {
     this.game = game
     this.target = target
     const animations = this.#loadingAssets
@@ -103,8 +103,8 @@ export class AdbPlayer {
   }
 
   private async loadAnimationAsset(file: string) {
-    const service = this.game.system(ContentProvider)
-    return (this.#loadingAssets[file] ||= service.loadAsset(file, service.rootUrl))
+    const content = this.game.get(ContentProvider)
+    return (this.#loadingAssets[file] ||= content.loadAsset(file, content.rootUrl))
   }
 
   public goToTime(time: number) {
@@ -127,12 +127,12 @@ function stopFragment(fragment: AdbFragment) {
   }
 }
 
-function buildAnimationGroup(name: string, animationAsset: AssetContainer, characterAsset: InstantiatedEntries) {
+function buildAnimationGroup(name: string, animationAsset: AssetContainer, target: Node[]) {
   const oldGroup = animationAsset?.animationGroups[0]
   if (!oldGroup) {
     return null
   }
-  const transformNodes = getTransformNodes(characterAsset.rootNodes)
+  const transformNodes = getTransformNodes(target)
   const scene = transformNodes[0].getScene()
   const newGroup = new AnimationGroup(name, scene, 1, oldGroup.playOrder)
   newGroup['_from'] = oldGroup.from

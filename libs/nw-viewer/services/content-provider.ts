@@ -1,10 +1,11 @@
 import { AssetContainer, LoadAssetContainerAsync, Mesh } from '@babylonjs/core'
 import '@babylonjs/loaders'
 import { IGLTFLoaderData } from '@babylonjs/loaders'
+import PQueue from 'p-queue'
 import { Observable } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
-import { GameHost, GameSystem } from '../ecs'
-import { extractUuid } from '../utils'
+import { GameService, GameServiceContainer } from '../ecs'
+import { ShareTexturesExtension } from './content'
 import { SceneProvider } from './scene-provider'
 
 export interface GltfAsset {
@@ -12,45 +13,47 @@ export interface GltfAsset {
   container: AssetContainer
 }
 
-export type ContentSource = ContentSourceUrl | ContentSourceAssetId
+export interface ContentServiceOptions {
+  rootUrl: string
+  nwbtUrl: string
+}
 
-export interface ContentSourceUrl {
+export interface ModelSource {
   url: string
   rootUrl?: string
 }
 
-export interface ContentSourceAssetId {
-  assetId: string
-}
-
-export type DebugShapeType = 'box' | 'sphere' | 'cylinder' | 'ground'
-
-export class ContentProvider implements GameSystem {
+ShareTexturesExtension.register()
+export class ContentProvider implements GameService {
   private scene: SceneProvider
   private loadedAssets = new Map<string, Observable<GltfAsset>>()
-  private resolvedAssets = new Map<string, Promise<ContentSourceUrl>>()
-  private loadedSlices = new Map<string, Promise<any>>()
-  private options: ContentServiceOptions
-  public game: GameHost
 
-  public get rootUrl() {
-    return this.options.rootUrl
-  }
+  private textures = {}
+  private queue = new PQueue({
+    concurrency: 6,
+    autoStart: true,
+  })
 
-  public get nwbtUrl() {
-    return this.options.nwbtUrl
-  }
+  public game: GameServiceContainer
+
+  public rootUrl: string
+  public nwbtUrl: string
 
   public get nwbtFileUrl() {
     return `${this.nwbtUrl}/file/`
   }
+
   public constructor(options: ContentServiceOptions) {
-    this.options = options
+    this.nwbtUrl = options.nwbtUrl
+    this.rootUrl = options.rootUrl
+    if (this.rootUrl && !this.rootUrl.endsWith('/')) {
+      this.rootUrl = this.rootUrl + '/'
+    }
   }
 
-  public initialize(game: GameHost): void {
+  public initialize(game: GameServiceContainer): void {
     this.game = game
-    this.scene = game.system(SceneProvider)
+    this.scene = game.get(SceneProvider)
   }
 
   public destroy(): void {
@@ -58,47 +61,52 @@ export class ContentProvider implements GameSystem {
   }
 
   /**
-   * Loads an asset and caches it. Subsequent calls with the same URL will return the same cached asset.
+   * Loads an asset by using cache. Subsequent calls with the same URL will return the same asset instance.
    * Asset is automatically disposed when all observers are unsubscribed.
    */
   public streamAsset(url: string, rootUrl?: string) {
     rootUrl = rootUrl || this.rootUrl
     const key = [url, rootUrl].join('/')
     if (!this.loadedAssets.has(key)) {
-      this.loadedAssets.set(
-        key,
-        resource<GltfAsset>({
-          load: async () => this.loadAsset(url, rootUrl),
-          unload: (asset) => {
-            if (asset) {
-              asset.container.dispose()
-            }
-          },
-          error: (err) => {
-            console.error('Failed to load asset', err)
-            return null
-          },
-        }).pipe(shareReplayRefCount(1)),
-      )
+      this.loadedAssets.set(key, this.createStream(url, rootUrl))
     }
     return this.loadedAssets.get(key)
   }
 
   /**
-   * Loads an asset and returns it. Asset is not cached and must be disposed manually.
+   * Loads an asset without caching. Asset must be disposed by caller.
    */
-  public async loadAsset(url: string, rootUrl?: string) {
+  public async loadAsset(url: string, rootUrl?: string, abort?: AbortController) {
+    if (!url) {
+      return null
+    }
     let gltf: IGLTFLoaderData
-    return LoadAssetContainerAsync(url, this.scene.main, {
-      rootUrl: rootUrl,
-      pluginOptions: {
-        gltf: {
-          onParsed: (data) => (gltf = data),
+    return this.queue
+      .add(
+        () => {
+          return LoadAssetContainerAsync(url, this.scene.main, {
+            rootUrl: rootUrl,
+            pluginOptions: {
+              gltf: {
+                onParsed: (data) => {
+                  gltf = data
+                },
+                extensionOptions: {
+                  ...ShareTexturesExtension.options({
+                    enabled: true,
+                    textures: this.textures,
+                  }),
+                },
+              },
+            },
+          })
         },
-      },
-    })
+        {
+          signal: abort?.signal,
+        },
+      )
       .then(onAssetContainerLoaded)
-      .then((asset) => {
+      .then((asset): GltfAsset => {
         return {
           document: gltf,
           container: asset,
@@ -106,105 +114,55 @@ export class ContentProvider implements GameSystem {
       })
   }
 
-  public async resolveModelUrl(options: ContentSourceUrl | ContentSourceAssetId): Promise<ContentSourceUrl> {
-    if ('url' in options) {
-      return options
-    }
-    const result = await this.resolveAssetId(options.assetId)
-    if (!result?.url) {
+  public modelSource(url: string, material: string, rootUrl: string): ModelSource | null {
+    if (!url) {
       return null
     }
-    const ext = extName(result.url)
-    if (ext === '.cgf' || ext === '.cdf') {
-      return {
-        url: result.url + '.glb?link-textures=true',
-        rootUrl: result.rootUrl,
+    switch (extName(url)) {
+      case '.gltf':
+      case '.glb':
+        rootUrl ||= this.rootUrl
+        break
+      case '.cgf':
+      case '.cdf':
+        rootUrl ||= this.nwbtFileUrl
+        url = url + '.glb'
+        break
+      default:
+        console.warn('Unknown model type', url)
+        return null
+    }
+    if (!rootUrl.endsWith('/')) {
+      rootUrl = rootUrl + '/'
+    }
+    if (url.startsWith('/')) {
+      url = url.substring(1)
+    }
+    if (material) {
+      url += `?material=${material}`
+    }
+    return {
+      url: url,
+      rootUrl: rootUrl,
+    }
+  }
+
+  private createStream(url: string, rootUrl: string) {
+    return new Observable<GltfAsset>((sub) => {
+      const abort = new AbortController()
+      const value = this.loadAsset(url, rootUrl, abort).catch((err): GltfAsset => {
+        if (err !== 'cancelled') {
+          console.error('Failed to load asset', err)
+        }
+        return null
+      })
+      value.then((value) => sub.next(value))
+      return () => {
+        abort.abort('cancelled')
+        value.then((asset) => asset?.container?.dispose())
       }
-    }
-    console.warn('Unknown model type', result.url, ext)
-    return null
+    }).pipe(shareReplayRefCount(1))
   }
-
-  public async resolveAssetId(
-    id: string,
-    options?: {
-      hint?: string
-      name?: string
-    },
-  ): Promise<ContentSourceUrl> {
-    id = extractUuid(id).toLowerCase()
-    if (id === '00000000-0000-0000-0000-000000000000') {
-      return null
-    }
-    let query: string[] = []
-    if (options?.name) {
-      query.push(`name=${options.name}`)
-    }
-    if (options?.hint) {
-      query.push(`hint=${options.hint}`)
-    }
-
-    let url = id
-    if (query.length) {
-      url += '?' + query.join('&')
-    }
-
-    if (!this.resolvedAssets.has(url)) {
-      this.resolvedAssets.set(
-        url,
-        fetch(`${this.nwbtUrl}/catalog/${url}`)
-          .then((res) => {
-            if (res.status < 200 || res.status >= 300) {
-              throw new Error(`Failed to load asset id ${url}: ${res.status} ${res.statusText}`)
-            }
-            return res.json()
-          })
-          .then((res): ContentSourceUrl => {
-            return {
-              url: res.file,
-              rootUrl: `${this.nwbtUrl}/file/`,
-            }
-          })
-          .catch((err) => {
-            console.error('Failed to load asset', err)
-            return null
-          }),
-      )
-    }
-    return this.resolvedAssets.get(url)
-  }
-
-  public async fetchJson(url: string): Promise<any> {
-    if (!this.loadedSlices.has(url)) {
-      this.loadedSlices.set(
-        url,
-        fetch(url)
-          .then((res) => res.json())
-          .catch((err) => {
-            console.error('Failed to load JSON', err)
-            return null
-          }),
-      )
-    }
-    return this.loadedSlices.get(url)
-  }
-}
-
-export interface ContentServiceOptions {
-  rootUrl: string
-  nwbtUrl: string
-}
-
-export function resource<T>(options: {
-  load: () => Promise<T>
-  unload: (value: T) => void
-  error?: (err: Error) => T | null
-}) {
-  return new Observable<T>((sub) => {
-    const value = options.load().catch((err) => options?.error?.(err) ?? null)
-    value.then((value) => sub.next(value))
-    return () => value.then(options.unload)
-  })
 }
 
 function extName(url: string) {

@@ -3,8 +3,37 @@ import { environment } from 'apps/web/environments'
 
 const toImageTypes = ['dds', 'png', 'tif']
 const toModelTypes = ['cgf', 'cdf', 'skin']
-const toJsonTypes = ['dynamicslice', 'meta', 'chunks', 'waterqt', 'timeline', 'datasheet', 'slicedata', 'aliasasset', 'metadata']
-const textTypes = ['json', 'xml', 'txt', 'cfg', 'mtl', 'ext', 'cdf', 'chrparams', 'animevents', 'bspace', 'comb', 'adb', 'grid', 'actionlist', 'entities_xml']
+const toJsonTypes = [
+  'dynamicslice',
+  'meta',
+  'chunks',
+  'waterqt',
+  'timeline',
+  'datasheet',
+  'slicedata',
+  'aliasasset',
+  'metadata',
+]
+const textTypes = [
+  'json',
+  'xml',
+  'txt',
+  'cfg',
+  'mtl',
+  'ext',
+  'cdf',
+  'chrparams',
+  'animevents',
+  'bspace',
+  'comb',
+  'adb',
+  'grid',
+  'actionlist',
+  'entities_xml',
+  'worldmat',
+  'regionmat',
+  'surfacemap'
+]
 const textTypeMap = {
   mtl: 'xml',
   cdf: 'xml',
@@ -15,7 +44,10 @@ const textTypeMap = {
   adb: 'xml',
   grid: 'xml',
   actionlist: 'xml',
-  entities_xml: 'xml'
+  entities_xml: 'xml',
+  worldmat: 'xml',
+  regionmat: 'xml',
+  surfacemap: 'xml',
 }
 
 export interface FileSource {

@@ -1,11 +1,8 @@
-import { IVector3Like, IVector4Like, Matrix, Quaternion, Vector3 } from '@babylonjs/core'
-
 export function cryToGltfMat4(mat: number[]): number[] {
-  // M':   swapped matrix
-  // T:    swap matrix = new Matrix4x4(-1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1)
-  // T^-1: inverse of swap matrix (= T, for this specific configuration)
-  // M' = T @ M @ T^-1 = <what's below>
-
+  // 1 0 0 0
+  // 0 0 1 0
+  // 0 1 0 0
+  // 0 0 0 1
   // prettier-ignore
   return [
 		mat[0], mat[2], mat[1], mat[3],
@@ -86,23 +83,4 @@ export function mat4FromQuaternion(q: number[]): number[] {
   m[14] = 0
   m[15] = 1
   return m
-}
-
-export function cryToGltfVec3(v: IVector3Like, out?: IVector3Like): IVector3Like {
-  out = out || { x: 0, y: 0, z: 0 }
-  out.x = -v.x
-  out.y = v.z
-  out.z = v.y
-  return out
-}
-
-export function cryToGltfVec4<T extends IVector4Like>(v: IVector4Like, out: T): T
-export function cryToGltfVec4(v: IVector4Like): IVector4Like
-export function cryToGltfVec4<T extends IVector4Like>(v: IVector4Like, out?: T): T {
-  out = out || ({ x: 0, y: 0, z: 0, w: 0 } as any)
-  out.x = -v.x
-  out.y = v.z
-  out.z = v.y
-  out.w = v.w
-  return out
 }

@@ -38,7 +38,7 @@ func convertFile(assets *game.Assets, file nwfs.File, target string, query url.V
 	case ".tif":
 		return convertDDS(assets, file, target, query)
 	case ".cgf", ".skin":
-		return convertCGF(assets, file, target)
+		return convertCGF(assets, file, target, query)
 	case ".cdf":
 		return convertCDF(assets, file, target)
 	case ".xml":
@@ -105,10 +105,11 @@ func convertDDS(assets *game.Assets, file nwfs.File, target string, query url.Va
 	}
 }
 
-func convertCGF(assets *game.Assets, file nwfs.File, target string) ([]byte, error) {
+func convertCGF(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
 	group := importer.AssetGroup{}
 	model := file.Path()
-	model, material := assets.ResolveModelMaterialPair(model, "")
+	material := query.Get("material")
+	model, material = assets.ResolveModelMaterialPair(model, material)
 	group.Meshes = append(group.Meshes, importer.GeometryAsset{
 		GeometryFile: model,
 		MaterialFile: material,

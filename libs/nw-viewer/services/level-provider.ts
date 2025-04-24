@@ -1,19 +1,30 @@
 import { Matrix, Observable, TransformNode } from '@babylonjs/core'
 import { DebugMeshComponent } from '@nw-viewer/components/debug-mesh-component'
-import { LevelComponent, LevelData } from '../components/level'
+import { LevelComponent } from '../components/level'
 import { createChildTransform, TransformComponent } from '../components/transform-component'
-import { GameEntityCollection, GameHost, GameSystem } from '../ecs'
+import { GameEntityCollection, GameService, GameServiceContainer } from '../ecs'
 
+import { fetchTypedRequest, getHeightmapInfoUrl, getLevelInfoUrl, getLevelMissionUrl, LevelInfo } from '@nw-serve'
+import { QuadTreeComponent, QuadTreeOptions } from '@nw-viewer/components/quad-tree-component'
+import { StaticMeshComponent } from '@nw-viewer/components/static-mesh-component'
+import { ContentProvider } from './content-provider'
 import { SceneProvider } from './scene-provider'
 
-export class LevelProvider implements GameSystem {
+export class LevelProvider implements GameService {
   private entities = new GameEntityCollection()
-  public game: GameHost
+  private content: ContentProvider
+
+  private scene: SceneProvider
+  public game: GameServiceContainer
   public terrainEnabled = true
   public terrainEnabledObserver = new Observable<boolean>()
 
-  public initialize(game: GameHost): void {
+  public initialize(game: GameServiceContainer): void {
     this.game = game
+    this.content = game.get(ContentProvider)
+    this.scene = game.get(SceneProvider)
+    this.scene.main.onMeshImportedObservable
+    this.scene.main.onMeshRemovedObservable
   }
 
   public destroy(): void {
@@ -28,14 +39,36 @@ export class LevelProvider implements GameSystem {
     this.terrainEnabledObserver.notifyObservers(value)
   }
 
-  public loadLevel(data: LevelData) {
+  public async loadLevel(name: string) {
     this.unloadLevel()
-    if (!data) {
+    if (!name) {
       return
     }
+    const baseUrl = this.content.nwbtUrl
+    const levelUrl = getLevelInfoUrl(name)
+    const heightmapUrl = getHeightmapInfoUrl(name)
+    const missionUrl = getLevelMissionUrl(name)
+
+    const levelInfo = await fetchTypedRequest(baseUrl, levelUrl)
+    const heightmapInfo = await fetchTypedRequest(baseUrl, heightmapUrl).catch((err) => {
+      console.error('failed to load heightmap', err)
+      return null
+    })
+    const missionInfo = await fetchTypedRequest(baseUrl, missionUrl).catch((err) => {
+      console.error('failed to load mission', err)
+      return null
+    })
+
     const entity = this.entities.create()
-    entity.addComponent(new TransformComponent({ name: `level - ${data.meta.name}` }))
-    entity.addComponent(new LevelComponent(data))
+    entity.addComponent(new TransformComponent({ name: `level - ${name}` }))
+    entity.addComponent(new QuadTreeComponent(quadTreeOptions(levelInfo)))
+    entity.addComponent(
+      new LevelComponent({
+        level: levelInfo,
+        heightmap: heightmapInfo,
+        mission: missionInfo,
+      }),
+    )
     this.entities.initialize(this.game)
     this.entities.activate()
   }
@@ -46,58 +79,35 @@ export class LevelProvider implements GameSystem {
   public loadTestLevel() {
     this.unloadLevel()
 
-    const scene = this.game.system(SceneProvider).main
+    const scene = this.game.get(SceneProvider).main
     const root = new TransformNode('root', scene)
-    root.position.set(0, 2, 5)
+    root.position.set(0, 0, 0)
+
+    const model = '/objects/nature/veg_bushes/bushes_jungle/swisscheese/jav_jgl_swisscheese_a.cgf'
 
     const transform = createChildTransform(root, 'mid', {
       matrix: Matrix.Translation(0, 0, 10),
     })
 
-    this.entities.create().addComponents(
-      new DebugMeshComponent({ name: 'e1', type: 'sphere', size: 1 }),
-      new TransformComponent({
-        transform: createChildTransform(transform, 'e1', {
-          matrix: Matrix.Translation(0, 0, 0),
-        }),
-      }),
-    )
+    const t = createChildTransform(transform, 'e1', {
+      matrix: Matrix.Translation(0, 3, 0),
+    })
+    const m = t.getWorldMatrix()
+    const mi = m.invertToRef(new Matrix())
+
+    const instances = [Matrix.Translation(5, 0, 0), Matrix.Translation(-5, 0, 0)]
+    // for (const instance of instances) {
+    //   mi.multiplyToRef(instance, instance)
+    // }
 
     this.entities.create().addComponents(
-      new DebugMeshComponent({ name: 'e1', type: 'sphere', size: 1 }),
       new TransformComponent({
-        transform: createChildTransform(transform, 'e1', {
-          matrix: Matrix.Translation(2, 0, 0),
-        }),
+        transform: t,
       }),
-    )
-
-    this.entities.create().addComponents(
       new DebugMeshComponent({ name: 'e1', type: 'sphere', size: 1 }),
-      new TransformComponent({
-        transform: createChildTransform(transform, 'e1', {
-          matrix: Matrix.Translation(-2, 0, 0),
-        }),
-      }),
-    )
-
-    this.entities.create().addComponents(
-      new DebugMeshComponent({ name: 'e1', type: 'sphere', size: 1 }),
-      new TransformComponent({
-        transform: createChildTransform(transform, 'e1', {
-          matrix: Matrix.Translation(0, 0, 0),
-          isAbsolute: true,
-        }),
-      }),
-    )
-
-    this.entities.create().addComponents(
-      new DebugMeshComponent({ name: 'e1', type: 'sphere', size: 1 }),
-      new TransformComponent({
-        transform: createChildTransform(transform, 'e1', {
-          matrix: Matrix.Translation(2, 0, 0),
-          isAbsolute: true,
-        }),
+      new StaticMeshComponent({
+        model,
+        instances: instances,
       }),
     )
 
@@ -108,5 +118,22 @@ export class LevelProvider implements GameSystem {
   private unloadLevel() {
     this.entities.deactivate()
     this.entities.destroy()
+  }
+}
+
+function quadTreeOptions(info: LevelInfo): QuadTreeOptions {
+  if (!info.regions?.length) {
+    return null
+  }
+  const min = { x: 0, y: 0 }
+  const max = { x: 0, y: 0 }
+  for (const region of info.regions) {
+    max.x = Math.max(max.x, (1 + region.location[0]) * info.regionSize)
+    max.y = Math.max(max.y, (1 + region.location[1]) * info.regionSize)
+  }
+  return {
+    min,
+    max,
+    leafSize: 64,
   }
 }

@@ -38,7 +38,11 @@ const source: IShaderPath = {
 export class ClipmapUpdateMaterial extends ShaderMaterial {
   public readonly params = {
     setTexture: (value: Texture) => {
-      this.setTexture('texture1', value)
+      if  (value) {
+        this.setTexture('texture1', value)
+      } else {
+        this.removeTexture('texture1')
+      }
     },
   }
 

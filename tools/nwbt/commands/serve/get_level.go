@@ -3,119 +3,183 @@ package serve
 import (
 	"bytes"
 	"image/png"
-	"log/slog"
 	"net/http"
-	"nw-buddy/tools/formats/azcs"
-	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
-	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/utils/json"
-	"nw-buddy/tools/utils/maps"
 	"strconv"
-	"time"
 
 	"github.com/gorilla/mux"
 )
 
-func GetLevelNamesHandler(assets *game.Assets) http.HandlerFunc {
+func LevelsRouter(r *mux.Router, assets *game.Assets) {
+	levels := game.NewLevelCollection(assets)
+
+	r.HandleFunc("", GetLevelNamesFunc(assets))
+	r.HandleFunc("/{level}", getLevelInfoFunc(levels))
+	r.HandleFunc("/{level}/mission", getLevelMissionEntitiesFunc(levels))
+
+	r.HandleFunc("/{level}/heightmap", getLevelHeitmapInfoFunc(levels))
+	r.HandleFunc("/{level}/heightmap/{z}_{y}_{x}.png", getLevelHeitmapTileFunc(levels))
+
+	r.HandleFunc("/{level}/region/{region}", getLevelRegionInfoFunc(levels))
+	r.HandleFunc("/{level}/region/{region}/capital", getLevelRegionEntitiesFunc(levels))
+	r.HandleFunc("/{level}/region/{region}/capital/{capital}", getLevelRegionCapitalEntitiesFunc(levels))
+}
+
+func GetLevelNamesFunc(assets *game.Assets) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		result := game.ListLevelNames(assets.Archive)
 		serveJson(result, w)
 	}
 }
 
-func GetLevelHandler(assets *game.Assets) http.HandlerFunc {
+func getLevelInfoFunc(collection game.LevelCollection) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
-		level := game.LoadLevelMetadata(assets.Archive, levelName)
-		if level.Name == "" {
+		level := collection.Level(levelName)
+		if level == nil {
 			http.NotFound(w, r)
 			return
 		}
-		content, err := json.MarshalJSON(level, "", "\t")
-		if err != nil {
+
+		info := level.Info()
+		if data, err := json.MarshalJSON(info, "", "\t"); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		} else {
+			serveContent(data, w, "application/json")
 		}
-		serveContent(content, w, "application/json")
 	}
 }
 
-func GetLevelRegionHandler(assets *game.Assets) http.HandlerFunc {
+func getLevelMissionEntitiesFunc(collection game.LevelCollection) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		levelName := nwfs.NormalizePath(vars["level"])
+		level := collection.Level(levelName)
+		if level == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		result := level.MissionEntities()
+		if data, err := json.MarshalJSON(result, "", "\t"); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			serveContent(data, w, "application/json")
+		}
+	}
+}
+
+func getLevelRegionInfoFunc(collection game.LevelCollection) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
 		regionName := nwfs.NormalizePath(vars["region"])
-
-		result := game.LoadLevelRegion(assets.Archive, levelName, regionName)
-		if result.Name == "" {
+		level := collection.Level(levelName)
+		if level == nil {
 			http.NotFound(w, r)
 			return
 		}
-		content, err := json.MarshalJSON(result, "", "\t")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		region := level.Region(regionName)
+		if region == nil {
+			http.NotFound(w, r)
 			return
 		}
-		serveContent(content, w, "application/json")
+
+		info := region.Info()
+		if data, err := json.MarshalJSON(info, "", "\t"); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			serveContent(data, w, "application/json")
+		}
 	}
 }
 
-func GetLevelEntitiesHandler(assets *game.Assets) http.HandlerFunc {
+func getLevelRegionEntitiesFunc(collection game.LevelCollection) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
-
-		level := game.LoadLevelMetadata(assets.Archive, levelName)
-		if level.Name == "" || level.MissionEntitiesFile == nil {
+		regionName := nwfs.NormalizePath(vars["region"])
+		level := collection.Level(levelName)
+		if level == nil {
+			http.NotFound(w, r)
+			return
+		}
+		region := level.Region(regionName)
+		if region == nil {
 			http.NotFound(w, r)
 			return
 		}
 
-		obj, err := azcs.LoadXml(*level.MissionEntitiesFile)
-		if err != nil {
+		result := region.Entities()
+		if data, err := json.MarshalJSON(result, "", "\t"); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			serveContent(data, w, "application/json")
 		}
-
-		content, err := rtti.ObjectStreamXmlToJSON(obj, uuidTable)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		serveContent(content, w, "application/json")
 	}
 }
 
-func GetLevelHeightmapHandler(assets *game.Assets) http.HandlerFunc {
-	maps := maps.NewSafeDict[heightmap.Mipmaps]()
+func getLevelRegionCapitalEntitiesFunc(collection game.LevelCollection) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		levelName := nwfs.NormalizePath(vars["level"])
+		regionName := nwfs.NormalizePath(vars["region"])
+		capitalId := nwfs.NormalizePath(vars["capital"])
+		level := collection.Level(levelName)
+		if level == nil {
+			http.NotFound(w, r)
+			return
+		}
+		region := level.Region(regionName)
+		if region == nil {
+			http.NotFound(w, r)
+			return
+		}
+		capital := region.Capital(capitalId)
+		if capital == nil {
+			http.NotFound(w, r)
+			return
+		}
+		result := capital.Entities()
+		if data, err := json.MarshalJSON(result, "", "\t"); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			serveContent(data, w, "application/json")
+		}
+	}
+}
+
+func getLevelHeitmapInfoFunc(collection game.LevelCollection) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		levelName := vars["level"]
+		level := collection.Level(levelName)
+		if level == nil {
+			http.NotFound(w, r)
+			return
+		}
+		result := level.TerrainInfo()
+		if data, err := json.MarshalJSON(result, "", "\t"); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			serveContent(data, w, "application/json")
+		}
+	}
+}
+
+func getLevelHeitmapTileFunc(collection game.LevelCollection) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := vars["level"]
 		varZ := vars["z"]
 		varX := vars["x"]
 		varY := vars["y"]
-		mips, _ := maps.LoadOrStoreFn(levelName, func() heightmap.Mipmaps {
-			startAt := time.Now()
-			slog.Info("Loading level terrain", "level", levelName)
-			terrain := game.LoadLevelTerrain(assets.Archive, levelName)
-			slog.Info("Loaded level terrain", "level", levelName, "duration", time.Since(startAt).Milliseconds())
-			return terrain.MipmapsDefaultSize()
-		})
-
-		if varZ == "" {
-			serveJson(map[string]any{
-				"name":       levelName,
-				"tileSize":   mips.TileSize,
-				"mipCount":   len(mips.Levels),
-				"width":      mips.Levels[0].Width,
-				"height":     mips.Levels[0].Height,
-				"regionsX":   mips.Levels[0].RegionsX,
-				"regionsY":   mips.Levels[0].RegionsY,
-				"regionSize": mips.Levels[0].RegionSize,
-			}, w)
+		level := collection.Level(levelName)
+		if level == nil {
+			http.NotFound(w, r)
 			return
 		}
 
@@ -135,6 +199,7 @@ func GetLevelHeightmapHandler(assets *game.Assets) http.HandlerFunc {
 			return
 		}
 
+		mips := level.Terrain()
 		tile := mips.TileAt(z, x, y)
 		img := mips.TileHeightmap(tile)
 		if img == nil {

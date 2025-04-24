@@ -7,21 +7,25 @@ import {
   ImageProcessingConfiguration,
   Mesh,
   Scene,
+  SSAO2RenderingPipeline,
+  TAARenderingPipeline,
   Vector3,
   VertexData,
 } from '@babylonjs/core'
 import { Inspector } from '@babylonjs/inspector'
 import { defer } from 'rxjs'
-import { GameHost, GameSystem } from '../ecs'
+import { GameService, GameServiceContainer } from '../ecs'
 import { createScreenQuad, createScreenQuadCamera } from '../graphics'
 import { fromBObservable } from '../utils'
 import { EngineProvider } from './engine-provider'
 import { ObservablesKeysOf, ObservableValue } from './types'
 
-export class SceneProvider implements GameSystem {
-  public game: GameHost
+export class SceneProvider implements GameService {
+  public game: GameServiceContainer
   public main: Scene
   public engine: AbstractEngine
+  private ssao: SSAO2RenderingPipeline
+  private taa: TAARenderingPipeline
 
   public arcRotateCamera: ArcRotateCamera
   public freeCamera: FreeCamera
@@ -30,13 +34,20 @@ export class SceneProvider implements GameSystem {
   public screenQuad: VertexData
   public screenQuadMesh: Mesh
 
-  public initialize(game: GameHost) {
+  public initialize(game: GameServiceContainer) {
     this.game = game
-    this.engine = game.system(EngineProvider).engine
+    this.engine = game.get(EngineProvider).engine
     if (!this.main) {
       const scene = createScene(this.engine)
       this.main = scene
-      this.arcRotateCamera = new ArcRotateCamera('ArcRotateCamera', 0, 0, 10, Vector3.Zero(), this.main)
+      this.arcRotateCamera = new ArcRotateCamera(
+        'ArcRotateCamera',
+        Math.PI / 3,
+        Math.PI / 3,
+        10,
+        Vector3.Zero(),
+        this.main,
+      )
       this.freeCamera = new FreeCamera('FreeCamera', Vector3.Zero(), this.main)
       this.flyCamera = new FlyCamera('FlyCamera', Vector3.Zero(), this.main)
 
@@ -51,7 +62,6 @@ export class SceneProvider implements GameSystem {
       this.arcRotateCamera.upperRadiusLimit = 1000
       this.arcRotateCamera.wheelPrecision = 20
 
-      this.freeCamera.attachControl(true)
       this.freeCamera.keysUp = [87] // W
       this.freeCamera.keysDown = [83] // S
       this.freeCamera.keysLeft = [65] // A
@@ -59,18 +69,24 @@ export class SceneProvider implements GameSystem {
 
       this.main.activeCamera = this.arcRotateCamera
     }
+
     //this.main.performancePriority = ScenePerformancePriority.Aggressive
-    this.engine.runRenderLoop(this.onRenderLoot)
+    this.engine.runRenderLoop(this.onRenderLoop)
+    console.log('SceneProvider initialized')
   }
 
-  private onRenderLoot = () => {
+  private onRenderLoop = () => {
     this.main.render()
   }
 
   public destroy(): void {
-    this.engine.stopRenderLoop(this.onRenderLoot)
+    this.engine.stopRenderLoop(this.onRenderLoop)
     this.main.dispose()
     this.main = null
+    this.ssao?.dispose()
+    this.ssao = null
+    this.taa?.dispose()
+    this.taa = null
   }
 
   public event<K extends ObservablesKeysOf<Scene>>(event: K) {
@@ -79,10 +95,6 @@ export class SceneProvider implements GameSystem {
 
   public showInspector() {
     Inspector.Show(this.main, { embedMode: true })
-  }
-
-  public onMeshesUpdated() {
-    // this.main.createOrUpdateSelectionOctree(64, 8)
   }
 }
 
@@ -94,5 +106,12 @@ function createScene(engine: AbstractEngine) {
   scene.imageProcessingConfiguration.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_KHR_PBR_NEUTRAL
   scene.imageProcessingConfiguration.exposure = 1.0
   scene.imageProcessingConfiguration.contrast = 1.0
+
+  let camera: Camera
+  scene.onActiveCameraChanged.add(() => {
+    camera?.detachControl()
+    camera = scene.activeCamera
+    setTimeout(() => camera?.attachControl(true))
+  })
   return scene
 }

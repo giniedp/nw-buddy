@@ -1,29 +1,31 @@
-import { InstantiatedEntries, TransformNode } from '@babylonjs/core'
-import { BehaviorSubject, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { computeMaxExtents, InstantiatedEntries, Mesh, Node, Observable, TransformNode } from '@babylonjs/core'
+import { filter, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { AnimationFile } from '../adb'
 import { GameComponent, GameEntity } from '../ecs'
-import { ContentProvider, ContentSource, GltfAsset } from '../services/content-provider'
+import { ContentProvider, GltfAsset } from '../services/content-provider'
+import { TransformComponent } from './transform-component'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
 
-export type SkinnedMeshComponentOptions = ContentSource & {
-  position?: { x: number; y: number; z: number }
+export type SkinnedMeshComponentOptions = {
+  url: string
+  rootUrl?: string
 }
 
 export class SkinnedMeshComponent implements GameComponent {
-  #instance$ = new BehaviorSubject<InstantiatedEntries>(null)
-  #animationList$ = new BehaviorSubject<AnimationFile[]>(null)
-
+  private scene: SceneProvider
   private content: ContentProvider
+  private transform: TransformComponent
   private disable$ = new Subject<void>()
-  private options: SkinnedMeshComponentOptions
   private options$ = new ReplaySubject<SkinnedMeshComponentOptions>(1)
-  private url$ = this.options$.pipe(switchMap((options) => this.content.resolveModelUrl(options)))
+  private meshes: Mesh[] = []
 
+  public instance: InstantiatedEntries
+  public animationList: AnimationFile[]
   public entity: GameEntity
-
-  public instance$ = this.#instance$.asObservable()
-  public animationList$ = this.#animationList$.asObservable()
+  public readonly onDataLoaded = new Observable<{ model: InstantiatedEntries; adb: AnimationFile[] }>()
 
   public constructor(options?: SkinnedMeshComponentOptions) {
+    this.onDataLoaded.notifyIfTriggered = true
     if (options) {
       this.setOptions(options)
     }
@@ -31,24 +33,31 @@ export class SkinnedMeshComponent implements GameComponent {
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.content = entity.game.system(ContentProvider)
+    this.scene = entity.service(SceneProvider)
+    this.content = entity.service(ContentProvider)
+    this.transform = entity.component(TransformComponent, true)
   }
 
   public activate(): void {
-    this.url$
-      .pipe(switchMap(({ url, rootUrl }) => this.content.streamAsset(url, rootUrl)))
-      .pipe(takeUntil(this.disable$))
-      .subscribe({
-        next: (asset) => this.onAssetLoaded(asset),
-        complete: () => {
-          this.#instance$.value?.dispose()
-          this.#instance$.next(null)
-        },
+    this.scene.main.onBeforeRenderObservable.add(this.update)
+    this.options$
+      .pipe(
+        map((it) => this.content.modelSource(it.url, null, it.rootUrl)),
+        filter((it) => !!it),
+        switchMap(({ url, rootUrl }) => this.content.streamAsset(url, rootUrl)),
+        takeUntil(this.disable$),
+      )
+      .subscribe((asset) => {
+        this.onAssetLoaded(asset)
       })
   }
 
   public deactivate(): void {
+    this.onDataLoaded.cleanLastNotifiedState()
+    this.scene.main.onBeforeRenderObservable.removeCallback(this.update)
     this.disable$.next()
+    this.instance?.dispose()
+    this.instance = null
   }
 
   public destroy(): void {
@@ -56,34 +65,62 @@ export class SkinnedMeshComponent implements GameComponent {
   }
 
   public setOptions(options: SkinnedMeshComponentOptions): void {
-    this.options = options
     this.options$.next(options)
   }
 
   private onAssetLoaded(asset: GltfAsset): void {
-    if (!asset) {
-      this.#instance$.next(null)
-      this.#animationList$.next(null)
-      return
+    this.instance?.dispose()
+    this.instance = null
+    this.animationList = null
+
+    if (asset) {
+      const instance = asset.container.instantiateModelsToScene((name) => name, false, {
+        doNotInstantiate: false,
+      })
+      const animationList = asset.document.json['extras']?.['animationList'] || []
+      for (const node of instance.rootNodes) {
+        if (this.transform) {
+          node.parent = this.transform.node
+        }
+        this.meshes = getMeshes(node, this.meshes)
+      }
+      this.instance = instance
+      this.animationList = animationList
     }
 
-    const instance = asset.container.instantiateModelsToScene()
-    const animationList = asset.document.json['extras']?.['animationList'] || []
-    if (this.options.position) {
-      placeInstance(instance, this.options.position)
+    this.refreshBoundingInfo()
+    this.onDataLoaded.notifyObservers({
+      model: this.instance,
+      adb: this.animationList,
+    })
+  }
+
+  public refreshBoundingInfo() {
+    if (!this.meshes?.length) {
+      return
     }
-    this.#instance$.next(instance)
-    this.#animationList$.next(animationList)
+    for (const mesh of this.meshes) {
+      mesh.refreshBoundingInfo(true, true)
+    }
+  }
+
+  public computeMaxExtents() {
+    return computeMaxExtents(this.meshes)
+  }
+
+  private update = () => {
+    this.refreshBoundingInfo()
   }
 }
 
-function placeInstance(instance: InstantiatedEntries, position: { x: number; y: number; z: number }): void {
-  if (!position || !instance) {
-    return
+function getMeshes(node: Node, list: Mesh[]): Mesh[] {
+  if (node instanceof Mesh) {
+    list.push(node)
   }
-  for (const node of instance.rootNodes) {
-    if (node instanceof TransformNode) {
-      node.position.set(position.x, position.y, position.z)
+  if (node instanceof TransformNode) {
+    for (const child of node.getChildren()) {
+      getMeshes(child, list)
     }
   }
+  return list
 }

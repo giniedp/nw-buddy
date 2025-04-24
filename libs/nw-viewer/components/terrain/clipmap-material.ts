@@ -19,14 +19,19 @@ const VERTEX_SHADER = /* wgsl */ `
   uniform mat4 projection;
 
   uniform vec3 eyePosition;
+  uniform vec2 coarseCenter;
+  uniform vec2 coarseOrigin;
+  uniform float coarseBlend;
   uniform vec2 clipCenter;
   uniform vec2 clipOrigin;
   uniform float clipSize;
   uniform float clipDensity;
+  uniform float mountainHeight;
   uniform sampler2D heightmap;
+  uniform sampler2D coarsemap;
   uniform float heightmapTexel;
 
-  varying vec2 vUV;
+  varying vec4 vUV;
   varying vec3 vColor;
   varying vec3 vNormal;
   varying vec3 vWorldPos;
@@ -61,11 +66,8 @@ const VERTEX_SHADER = /* wgsl */ `
     vec3 rgb = color.rgb * 255.0;
     // Reconstruct the 24-bit integer value
     float value = rgb.r * 65536.0 + rgb.g * 256.0 + rgb.b;
-    // Convert back to height in range [0.0, 65535.0]
-    value = value * (65535.0 / 16777215.0);
-    // convert to [0.0, 2048.0]
-    value = value * (2048.0 / 65535.0);
-    return value;
+    // Convert back to height in range [0.0, mountainHeight]
+    return value * (mountainHeight / 16777215.0);
   }
 
   void main() {
@@ -74,22 +76,28 @@ const VERTEX_SHADER = /* wgsl */ `
     vWorldPos = (world * p).xyz;
     vBlend = calculateBlend(vWorldPos.xz, clipSize, clipDensity, eyePosition.xz);
     vColor = color.rgb;
-    vUV = ((vWorldPos.xz - clipOrigin.xy) / clipDensity) * heightmapTexel;// + 0.5 * heightmapTexel;
-    vWorldPos.y = decodeHeight(texture(heightmap, vUV).xyz);
-    vNormal = calculateNormal(vUV, 2048.0);
+    vUV.xy = ((vWorldPos.xz - clipOrigin.xy) / clipDensity) * heightmapTexel + 0.5 * heightmapTexel;
+    vUV.zw = ((vWorldPos.xz - coarseOrigin.xy) / (clipDensity * 2.0)) * heightmapTexel + 0.5 * heightmapTexel;
+    float h1 = decodeHeight(texture(heightmap, vUV.xy).xyz);
+    float h2 = decodeHeight(texture(coarsemap, vUV.zw).xyz);
+
+    vWorldPos.y = mix(h1, h2, vBlend * coarseBlend);
+    vNormal = calculateNormal(vUV.xy, 2048.0);
     gl_Position = projection * view * vec4(vWorldPos, 1.0);
   }
 `
 const FRAGMENT_SHADER = /* wgsl */ `
   precision highp float;
 
-  varying vec2 vUV;
+  varying vec4 vUV;
   varying vec3 vColor;
   varying vec3 vNormal;
   varying vec3 vWorldPos;
   varying float vBlend;
   uniform sampler2D heightmap;
+  uniform sampler2D coarsemap;
   uniform sampler2D groundmap;
+  uniform float clipDensity;
 
   void main() {
     if (vWorldPos.y <= 0.0) {
@@ -101,10 +109,9 @@ const FRAGMENT_SHADER = /* wgsl */ `
     // gl_FragColor = vec4(mix(vColor.rgb, vec3(vUV.x, vUV.y, 1.0), vBlend), 1.0);
     // gl_FragColor = vec4(mix(vColor.rgb, vec3(0.5, 0.5, 1.0), vBlend), 1.0);
 
-    //vec3 color = texture(heightmap, vUV).xyz;
-    gl_FragColor = texture(groundmap, vUV);
-    // gl_FragColor.rgb = mix(vNormal, vColor.rgb, 0.85);
-    // gl_FragColor.a = 1.0;
+    //gl_FragColor.rgb = texture(heightmap, vUV.xy).xyz;
+    gl_FragColor = texture(groundmap, vUV.xy);
+    gl_FragColor.a = 1.0;
   }
 `
 const SHADER_SOURCE: IShaderPath = {
@@ -123,6 +130,12 @@ export class ClipmapMaterial extends ShaderMaterial {
     setClipCenter: (value: IVector2Like) => {
       this.setVector2('clipCenter', value)
     },
+    setCoarseCenter: (value: IVector2Like) => {
+      this.setVector2('coarseCenter', value)
+    },
+    setCoarseOrigin: (value: IVector2Like) => {
+      this.setVector2('coarseOrigin', value)
+    },
     setClipOrigin: (value: IVector2Like) => {
       this.setVector2('clipOrigin', value)
     },
@@ -135,17 +148,45 @@ export class ClipmapMaterial extends ShaderMaterial {
     setHeightmapTexel: (value: number) => {
       this.setFloat('heightmapTexel', value)
     },
+    setCoarseMap: (value: Texture) => {
+      if (value) {
+        this.setTexture('coarsemap', value)
+        this.setFloat('coarseBlend', 1.0)
+      } else {
+        this.removeTexture('coarsemap')
+        this.setFloat('coarseBlend', 0.0)
+      }
+    },
     setGroundmap: (value: Texture) => {
       this.setTexture('groundmap', value)
+    },
+    setMountainHeight: (value: number) => {
+      this.setFloat('mountainHeight', value)
     },
   }
   public constructor(name: string, scene: Scene) {
     super(name, scene, SHADER_SOURCE, {
       attributes: ['position', 'normal', 'color'],
-      uniforms: ['world', 'view', 'projection', 'clipCenter', 'clipOrigin', 'clipSize', 'clipDensity', 'eyePosition'],
+      uniforms: [
+        'world',
+        'view',
+        'projection',
+        'clipCenter',
+        'clipOrigin',
+        'clipSize',
+        'clipDensity',
+        'eyePosition',
+        'coarseCenter',
+        'coarseOrigin',
+        'coarseBlend',
+        'mountainHeight',
+        'heightmapTexel',
+      ],
+      samplers: ['heightmap', 'coarsemap', 'groundmap'],
     })
     this.pointSampler.samplingMode = Texture.NEAREST_SAMPLINGMODE
     this.pointSampler.wrapU = Texture.CLAMP_ADDRESSMODE
     this.pointSampler.wrapV = Texture.CLAMP_ADDRESSMODE
+    // this.wireframe = true
   }
 }

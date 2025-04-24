@@ -1,12 +1,12 @@
 import type { GameComponent, GameComponentType } from './game-component'
-import type { GameHost } from './game-host'
-import type { GameSystem, GameSystemType } from './game-system'
+import type { GameService, GameServiceContainer, GameServiceQueryOptions, GameServiceType } from './game-service'
 
 export class GameEntity {
   public id: number
   public name: string
-  public game: GameHost
+  public game: GameServiceContainer
   private componentByType = new Map<any, GameComponent>()
+  private typeByComponent = new Map<GameComponent, any>()
   // all known components that are controlled by this entity
   private components: GameComponent[] = []
   // components that are not initialized yet
@@ -28,11 +28,17 @@ export class GameEntity {
     return this.isActive
   }
 
+  public get destroyed() {
+    return this.isDestoryed
+  }
+
   /**
-   * Initializes this entity and binds all components to it.
+   * Initializes this entity by calling initialize on all components.
+   * This can be called only once in the lifetime of the entity.
+   *
    * @throws Error if the entity is already initialized.
    */
-  public initialize(game: GameHost): this {
+  public initialize(game: GameServiceContainer): this {
     if (this.isInitialized) {
       throw new Error('Entity is already initialized')
     }
@@ -73,13 +79,36 @@ export class GameEntity {
     return this
   }
 
-  public destroy() {
+  /**
+   * Deactivates this entity and destroys all components.
+   */
+  public destroy(): this {
     this.deactivate()
     for (const component of this.components) {
       destroyComponent(component)
     }
+    this.isDestoryed = true
+    return this
   }
 
+  /**
+   * Checks whether the component is already added to the entity.
+   */
+  public contains(component: GameComponent): boolean {
+    return this.components.includes(component)
+  }
+
+  /**
+   * Checks whether the entity has a component of the given type.
+   */
+  public has<T extends GameComponent>(type: GameComponentType<T>): boolean {
+    return this.componentByType.has(type)
+  }
+
+  /**
+   * Adds multiple components to the entity and registers them in the 'by type' lookup registry.
+   * @see addComponent
+   */
   public addComponents(...components: GameComponent[]): this {
     for (const component of components) {
       this.addComponent(component)
@@ -87,23 +116,42 @@ export class GameEntity {
     return this
   }
 
-  public addComponent(component: GameComponent): this
-  public addComponent<T extends GameComponent>(type: GameComponentType<T>, component: T): this
-  public addComponent(typeOrInstance: any, instance?: any): this {
-    const component = instance ? instance : typeOrInstance
-    const type = instance ? typeOrInstance : component.constructor
+  /**
+   * Adds a component to the entity and registers it in the 'by type' lookup registry.
+   * - Only one component of a given type can be added and registered at the entity.
+   * - Multiple components of the same type can only be added by explicitly setting the type to `null`.
+   *
+   * If a given component is an instance of a class, the type parameter is optional and will be inferred from its constructor.
+   *
+   * If a given component is a plain object, the type parameter must be provided.
+   *
+   * @param component The component to add
+   * @param type The type to associate the component with. Use `null` to bypass the lookup registry and add multiple instances of same type.
+   * @throws Error if the component is already added to the entity
+   * @throws Error if the component type is already registered
+   */
+  public addComponent<T extends GameComponent>(component: GameComponent, type?: GameComponentType<T> | null): this {
+    if (type == undefined && component.constructor) {
+      if (component.constructor === Object) {
+        throw new Error('Plain objects must have an explicit type provided when added as components')
+      }
+      type = component.constructor as GameComponentType<T>
+    }
 
     if (this.isActive) {
       throw new Error('Cannot add component while entity is enabled')
     }
-    if (this.components.some((it) => it === component)) {
+    if (this.components.includes(component)) {
       console.warn('Component already added to entity', component)
       return this
     }
-    if (this.componentByType.has(type)) {
-      throw new Error(`Component of type ${type} already exists`)
+    if (type) {
+      if (this.componentByType.has(type)) {
+        throw new Error(`Component of type ${type} already exists`)
+      }
+      this.componentByType.set(type, component)
+      this.typeByComponent.set(component, type)
     }
-    this.componentByType.set(type, component)
     this.components.push(component)
     if (!this.isInitialized) {
       this.toInitialize.push(component)
@@ -118,6 +166,9 @@ export class GameEntity {
     return this
   }
 
+  /**
+   * Removes a component from the entity. Removes its reference from the 'by type' lookup registry.
+   */
   public removeComponent(component: GameComponent) {
     if (this.isActive) {
       throw new Error('Cannot remove component while entity is enabled')
@@ -126,7 +177,9 @@ export class GameEntity {
     removeFromArray(this.toInitialize, component)
     removeFromArray(this.toActivate, component)
     if ('constructor' in component) {
-      this.componentByType.delete(component.constructor)
+      if (component === this.componentByType.get(component.constructor)) {
+        this.componentByType.delete(component.constructor)
+      }
     }
     component.entity = null
   }
@@ -135,29 +188,21 @@ export class GameEntity {
    * Looks up a component by type on the entity
    * @throws Error if the component is not found
    */
-  public component<T extends GameComponent>(type: GameComponentType<T>): T {
+  public component<T extends GameComponent>(type: GameComponentType<T>, optional?: boolean): T {
     if (this.componentByType.has(type)) {
       return this.componentByType.get(type) as T
+    }
+    if (optional) {
+      return null
     }
     throw new Error(`Component of type ${getTypeName(type)} not found`)
-  }
-
-  /**
-   * Looks up a component by type on the entity
-   * Does not throw an error if the component is not found
-   */
-  public optionalComponent<T extends GameComponent>(type: GameComponentType<T>): T | null {
-    if (this.componentByType.has(type)) {
-      return this.componentByType.get(type) as T
-    }
-    return null
   }
 
   /**
    * Looks up a component by predicate on the entity
    * Does not throw an error if the component is not found
    */
-  public componentBy(predicate: (it: GameComponent) => boolean): GameComponent | null {
+  public find(predicate: (it: GameComponent) => boolean): GameComponent | null {
     for (const component of this.components) {
       if (predicate(component)) {
         return component
@@ -167,10 +212,10 @@ export class GameEntity {
   }
 
   /**
-   * Looks up a system by type on the game host
+   * Looks up a service by type on the game host
    */
-  public system<T extends GameSystem>(type: GameSystemType<T>): T {
-    return this.game.system(type)
+  public service<T extends GameService>(type: GameServiceType<T>, options?: GameServiceQueryOptions): T {
+    return this.game.get(type, options)
   }
 }
 
@@ -219,57 +264,6 @@ function destroyComponent(component: GameComponent) {
     return false
   }
   return true
-}
-
-export class GameEntityCollection {
-  public readonly entities: GameEntity[] = []
-
-  public add(entity: GameEntity) {
-    this.entities.push(entity)
-  }
-
-  public remove(entity: GameEntity) {
-    removeFromArray(this.entities, entity)
-  }
-
-  public clear() {
-    this.entities.length = 0
-  }
-
-  public length() {
-    return this.entities.length
-  }
-
-  public initialize(game: GameHost) {
-    for (const entity of this.entities) {
-      entity.initialize(game)
-    }
-  }
-
-  public activate() {
-    for (const entity of this.entities) {
-      entity.activate()
-    }
-  }
-
-  public deactivate() {
-    for (const entity of this.entities) {
-      entity.deactivate()
-    }
-  }
-
-  public destroy() {
-    for (const entity of this.entities) {
-      entity.destroy()
-    }
-    this.clear()
-  }
-
-  public create() {
-    const entity = new GameEntity()
-    this.add(entity)
-    return entity
-  }
 }
 
 function getTypeName(type: any): string {

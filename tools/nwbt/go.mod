@@ -38,6 +38,7 @@ require (
 	github.com/goreleaser/fileglob v1.3.0
 	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/mux v1.8.1
+	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
 	github.com/qmuntal/gltf v0.28.0
 	github.com/spf13/cobra v1.8.1

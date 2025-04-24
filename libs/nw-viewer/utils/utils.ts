@@ -6,7 +6,10 @@ import { Observable } from 'rxjs'
 /**
  * Converts a Babylon.js Observable to an RxJS Observable.
  */
-export function fromBObservable<T>(bjsObservable: BJSObservable<T>): Observable<T> {
+export function fromBObservable<T>(bjsObservable: BJSObservable<T> | null): Observable<T> | null {
+  if (!bjsObservable) {
+    return null
+  }
   return new Observable<T>((subscriber) => {
     const handler = bjsObservable.add((value) => subscriber.next(value))
     return () => bjsObservable.remove(handler)

@@ -22,7 +22,7 @@ func (it *Assets) LoadAzcs(file nwfs.File) (any, error) {
 		return res, nil
 	}
 
-	node, err := LoadObject(file)
+	node, err := LoadObjectStream(file)
 	if err != nil {
 		slog.Debug(fmt.Sprintf("no root element in file '%s'", key))
 		it.objectCache.Store(key, nil)
@@ -88,6 +88,21 @@ func (it *Assets) LoadAliasAsset(file nwfs.File) (*nwt.AliasAsset, error) {
 	return nil, nil
 }
 
+func (it *Assets) LookupFileByUuid(uuid string) (nwfs.File, error) {
+	if uuid == "" || uuid == "00000000-0000-0000-0000-000000000000" {
+		return nil, nil
+	}
+	asset := it.Catalog[strings.ToLower(uuid)]
+	if asset == nil {
+		return nil, fmt.Errorf("asset id does not exist in catalog: %v", uuid)
+	}
+	file, ok := it.Archive.Lookup(asset.File)
+	if ok {
+		return file, nil
+	}
+	return nil, fmt.Errorf("asset does not exist in archive: %v", asset)
+}
+
 func (it *Assets) LookupFileByAssetId(id nwt.AssetId) (nwfs.File, error) {
 	uuid := string(id.Guid)
 	if uuid == "" || uuid == "00000000-0000-0000-0000-000000000000" {
@@ -114,6 +129,46 @@ func (it *Assets) LookupFileByAsset(azAsset nwt.AzAsset) (nwfs.File, error) {
 		if ok {
 			return file, nil
 		}
+		if path.Ext(azAsset.Hint) == ".slice" {
+			file, ok = it.Archive.Lookup(utils.ReplaceExt(azAsset.Hint, ".dynamicslice"))
+			if ok {
+				return file, nil
+			}
+		}
+	}
+
+	if uuid == "" || uuid == "00000000-0000-0000-0000-000000000000" {
+		return nil, nil
+	}
+
+	asset := it.Catalog[strings.ToLower(uuid)]
+	if asset == nil {
+		return nil, fmt.Errorf("asset id does not exist in catalog: %v", azAsset)
+	}
+
+	file, ok := it.Archive.Lookup(asset.File)
+	if ok {
+		return file, nil
+	}
+
+	return nil, fmt.Errorf("asset does not exist in archive: %v", asset)
+}
+
+func (it *Assets) LookupFileByAsset2(azAsset nwt.AzAsset, parent nwfs.File) (nwfs.File, error) {
+	uuid := string(azAsset.Guid)
+
+	if azAsset.Hint != "" {
+		// hint seems to be most reliable for our use case
+
+		file, ok := it.Archive.Lookup(azAsset.Hint)
+		if ok {
+			return file, nil
+		}
+		file, ok = it.Archive.Lookup(path.Join(path.Dir(parent.Path()), azAsset.Hint))
+		if ok {
+			return file, nil
+		}
+
 		if path.Ext(azAsset.Hint) == ".slice" {
 			file, ok = it.Archive.Lookup(utils.ReplaceExt(azAsset.Hint, ".dynamicslice"))
 			if ok {
@@ -202,4 +257,8 @@ func (c *Assets) LoadAsset(mesh importer.GeometryAsset) (*cgf.File, []mtl.Materi
 	}
 	materials := material.Collection()
 	return model, materials
+}
+
+func (c *Assets) LoadLevel(name string) LevelLoader {
+	return NewLevelLoader(c, name)
 }

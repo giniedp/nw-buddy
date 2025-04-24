@@ -29,8 +29,8 @@ export class DebugMeshComponent implements GameComponent {
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.provider = entity.system(DebugShapeProvider)
-    this.transform = entity.optionalComponent(TransformComponent)
+    this.provider = entity.service(DebugShapeProvider)
+    this.transform = entity.component(TransformComponent, true)
     this.matrix = Matrix.Identity()
   }
 

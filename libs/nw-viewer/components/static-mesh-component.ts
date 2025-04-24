@@ -1,12 +1,15 @@
-import { InstantiatedEntries, Matrix, Mesh, TransformNode } from '@babylonjs/core'
-import { filter, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { GameComponent, GameEntity } from '../ecs'
-import { ContentProvider, ContentSource, GltfAsset } from '../services/content-provider'
-import { TransformComponent } from './transform-component'
+import { AbstractMesh, InstancedMesh, InstantiatedEntries, Material, Matrix, Mesh, Node, TransformNode } from '@babylonjs/core'
 import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { filter, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { GameComponent, GameEntity } from '../ecs'
+import { ContentProvider, GltfAsset } from '../services/content-provider'
+import { TransformComponent } from './transform-component'
 
-export type StaticMeshComponentOptions = ContentSource & {
+export type StaticMeshComponentOptions = {
+  model: string
+  material?: string
   instances?: Matrix[]
+  mtl?: Material
 }
 
 export class StaticMeshComponent implements GameComponent {
@@ -18,9 +21,8 @@ export class StaticMeshComponent implements GameComponent {
   private active = false
   private options: StaticMeshComponentOptions
   private options$ = new ReplaySubject<StaticMeshComponentOptions>(1)
-  private url$ = this.options$.pipe(switchMap((options) => this.content.resolveModelUrl(options)))
-  private models: InstantiatedEntries[] = []
-  private meshes: Mesh[] = []
+
+  private meshes: AbstractMesh[] = []
 
   public entity: GameEntity
 
@@ -32,30 +34,30 @@ export class StaticMeshComponent implements GameComponent {
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.content = entity.game.system(ContentProvider)
     this.transform = entity.component(TransformComponent)
-    this.scene = entity.game.system(SceneProvider)
+    this.content = entity.service(ContentProvider)
+    this.scene = entity.service(SceneProvider)
   }
 
   public activate(): void {
     this.active = true
-    this.url$
+    this.options$
       .pipe(
+        filter((it) => !!it?.model),
+        map((it) => this.content.modelSource(it.model, it.material, null)),
         filter((it) => !!it),
-        switchMap(({ url, rootUrl }) => this.content.streamAsset(url, rootUrl)),
-        filter((asset) => !!asset),
+        switchMap((it) => this.content.streamAsset(it.url, it.rootUrl)),
+        filter((it) => !!it),
         takeUntil(this.disable$),
       )
-      .subscribe((asset) => this.onAssetLoaded(asset))
+      .subscribe((asset) => {
+        this.onAssetLoaded(asset)
+      })
   }
 
   public deactivate(): void {
     this.active = false
     this.disable$.next()
-    for (const model of this.models) {
-      model.dispose()
-    }
-    this.models = []
     for (const mesh of this.meshes) {
       mesh.dispose()
     }
@@ -76,12 +78,16 @@ export class StaticMeshComponent implements GameComponent {
       return
     }
     if (!this.options.instances?.length) {
-      const instance = asset.container.instantiateModelsToScene()
-      this.models.push(instance)
-      for (const node of instance.rootNodes) {
-        if (node instanceof TransformNode) {
-          node.parent = this.transform.node
+      for (const mesh of asset.container.meshes) {
+        const m = mesh as Mesh
+        if (!m.geometry) {
+          continue
         }
+        const instance = m.createInstance(mesh.name)
+        instance.parent = this.transform.createChild(mesh.name, {
+          matrix: mesh.getWorldMatrix().clone(),
+        })
+        this.meshes.push(instance)
       }
     } else {
       const instances = this.options.instances
@@ -98,6 +104,20 @@ export class StaticMeshComponent implements GameComponent {
         this.meshes.push(clone)
       }
     }
-    this.scene.onMeshesUpdated()
+    freezeMeshes(this.meshes)
+  }
+}
+
+function freezeMeshes(nodes: Node[]) {
+  if (!nodes) {
+    return
+  }
+  for (const node of nodes) {
+    if (node instanceof AbstractMesh) {
+      node.computeWorldMatrix()
+      node.freezeWorldMatrix()
+      node.freezeWorldMatrix()
+    }
+    freezeMeshes(node.getChildren())
   }
 }

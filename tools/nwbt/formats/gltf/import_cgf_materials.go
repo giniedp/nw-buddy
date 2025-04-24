@@ -43,21 +43,29 @@ func (c *Document) ImportCgfMaterialsBasic() {
 		}
 
 		mtlDiffuse := mtl.ParamColor(m.Diffuse)
-
+		//mtlSpecular := mtl.ParamColor(m.Specular)
+		//mtlEmittance := mtl.ParamColor(m.Emittance)
 		mtlOpacity := m.Opacity
 		mtlAlphaTest := m.AlphaTest
+		//mtlShininess := m.Shininess
 
 		mapDiffuse := m.TextureByMapType(mtl.MtlMap_Diffuse)
 		mapBumpmap := m.TextureByMapType(mtl.MtlMap_Bumpmap)
-		// mapDiffuse = nil
-		mapBumpmap = nil
+		//mapSmoothness := m.TextureByMapType(mtl.MtlMap_Smoothness)
+		//mapSpecular := m.TextureByMapType(mtl.MtlMap_Specular)
+		//mapEmittance := m.TextureByMapType(mtl.MtlMap_Emittance)
 
 		shader := strings.ToLower(m.Shader)
-
+		isGlass := shader == "glass"
+		//isHair := shader == "hair"
 		isGeometryFog := shader == "geometryfog"
 		isGeometryBeam := shader == "geometrybeam" || shader == "geometrybeamsimple"
 		isParticle := shader == "meshparticle"
 		isNoDraw := shader == "nodraw"
+
+		// if mapSmoothness == nil && mapBumpmap != nil {
+		// 	mapSmoothness = mapBumpmap
+		// }
 
 		var texDiffuse *gltf.Texture
 		if mapDiffuse != nil {
@@ -67,6 +75,10 @@ func (c *Document) ImportCgfMaterialsBasic() {
 		if mapBumpmap != nil {
 			texBumpmap = c.LoadTexture(mapBumpmap)
 		}
+		// var texSpecular *gltf.Texture
+		// if mapSpecular != nil {
+		// 	texSpecular = c.LoadTexture(mapSpecular)
+		// }
 
 		texTransform := getTexTransform(m)
 
@@ -102,6 +114,56 @@ func (c *Document) ImportCgfMaterialsBasic() {
 				material.NormalTexture.Extensions[texturetransform.ExtensionName] = &texTransform
 			}
 		}
+		// if texSpecular != nil && !isGlass && !isHair {
+		// 	ext := specular.PBRSpecularGlossiness{
+		// 		DiffuseFactor:    float4(1, 1, 1, 1),
+		// 		SpecularFactor:   float3(1, 1, 1),
+		// 		GlossinessFactor: gltf.Float(1),
+		// 	}
+		// 	if material.PBRMetallicRoughness.BaseColorTexture != nil {
+		// 		ext.DiffuseTexture = &gltf.TextureInfo{
+		// 			Index:      material.PBRMetallicRoughness.BaseColorTexture.Index,
+		// 			Extensions: gltf.Extensions{},
+		// 		}
+		// 		if texTransform != nil {
+		// 			ext.DiffuseTexture.Extensions[texturetransform.ExtensionName] = &texTransform
+		// 		}
+		// 	}
+		// 	ext.SpecularGlossinessTexture = &gltf.TextureInfo{
+		// 		Index:      slices.Index(c.Textures, texSpecular),
+		// 		Extensions: gltf.Extensions{},
+		// 	}
+		// 	if texTransform != nil {
+		// 		ext.SpecularGlossinessTexture.Extensions[texturetransform.ExtensionName] = &texTransform
+		// 	}
+		// 	if len(mtlSpecular) >= 3 {
+		// 		ext.SpecularFactor = float3(float64(mtlSpecular[0]), float64(mtlSpecular[1]), float64(mtlSpecular[2]))
+		// 	}
+		// 	if len(mtlDiffuse) >= 3 {
+		// 		factor := float4(
+		// 			float64(mtlDiffuse[0]),
+		// 			float64(mtlDiffuse[1]),
+		// 			float64(mtlDiffuse[2]),
+		// 			1,
+		// 		)
+		// 		if len(mtlDiffuse) == 4 {
+		// 			factor[3] = float64(mtlDiffuse[3])
+		// 		}
+		// 		ext.DiffuseFactor = factor
+		// 	}
+
+		// 	material.Extensions[specular.ExtensionName] = &ext
+		// 	c.ExtensionsRequired = utils.AppendUniq(c.ExtensionsRequired, specular.ExtensionName)
+		// 	c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, specular.ExtensionName)
+
+		// 	// need to remove the pbrMetallicRoughness, otherwise playcanvas would pick that up instead
+		// 	material.PBRMetallicRoughness.BaseColorFactor = nil
+		// 	material.PBRMetallicRoughness.BaseColorTexture = nil
+		// 	material.PBRMetallicRoughness.MetallicFactor = gltf.Float(0)
+		// 	if mtlShininess >= 0 {
+		// 		material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(float64(1.0 - mtlShininess/255))
+		// 	}
+		// }
 
 		material.AlphaMode = gltf.AlphaOpaque
 		if mtlAlphaTest >= 0 {
@@ -125,6 +187,17 @@ func (c *Document) ImportCgfMaterialsBasic() {
 			material.AlphaCutoff = nil
 			material.AlphaMode = gltf.AlphaBlend
 			material.DoubleSided = true
+		}
+		if isGlass {
+			factor := mtlOpacity
+			if factor == 0 {
+				factor = 1
+			}
+			material.DoubleSided = true
+			material.Extensions[transmission.ExtensionName] = transmission.Extension{
+				Factor: float64(factor),
+			}
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, transmission.ExtensionName)
 		}
 	}
 }

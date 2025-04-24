@@ -1,44 +1,67 @@
-import { Color4, Matrix } from '@babylonjs/core'
+import { BoundingInfo, Color4, Matrix, TransformNode, Vector3 } from '@babylonjs/core'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
-import { cryToGltfMat4, mat4FromAzTransform } from '../../math/mat4'
-import { EngineProvider } from '../../services/engine-provider'
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
 
-import { SliceAssetComponent } from '../slice/slice-asset-component'
+import { CapitalInfo, EntityInfo, ImpostorInfo } from '@nw-serve'
 import { StaticMeshComponent } from '../static-mesh-component'
-import { TransformComponent } from '../transform-component'
-import { SEGMENT_SIZE } from './constants'
-import { Capital, Impostor } from './types'
+import { createChildTransform, TransformComponent } from '../transform-component'
+import { CapitalComponent } from './capital-component'
+import {
+  LOAD_CAPITALS_AT,
+  LOAD_IMPOSTORS_AT,
+  SEGMENT_SIZE,
+  SHOW_CAPITALS_AT,
+  SHOW_IMPOSTORS_AT,
+  ENABLE_IMPOSTORS,
+  UNLOAD_AT,
+  ENABLE_CAPITAL_INDICATOR,
+} from './constants'
+
+export type CapitalWitEntities = CapitalInfo & {
+  matrix: Matrix
+  entities: EntityInfo[]
+}
 
 export interface RegionSegmentOptions {
+  level: string
+  region: string
   centerX: number
   centerY: number
-  impostors: Impostor[]
-  capitals: Capital[]
+  impostors: ImpostorInfo[]
+  capitals: CapitalWitEntities[]
 }
-type ActivytState = 'inactive' | 'ready' | 'active'
+
 export class RegionSegmentComponent implements GameComponent {
   public entity: GameEntity
   private transform: TransformComponent
-  private engine: EngineProvider
-  private state: ActivytState = 'inactive'
+  private level: string
+  private region: string
+
+  private capitalsLayer: TransformNode
+  private capitalsLoaded: boolean = false
+  private capitalsShown: boolean = false
+
+  private impostorsLayer: TransformNode
+  private impostorsLoaded: boolean = false
+  private impostorsShown: boolean = false
+
   private indicator: DebugMeshComponent
-  private colorInactive = new Color4(0.25, 0.25, 0.25, 0.2)
-  private colorActive = new Color4(0.25, 0.25, 0.25, 0.5)
+  private color = new Color4(0.25, 0.25, 0.25, 0.2)
 
   private impostors = new GameEntityCollection()
   private capitals = new GameEntityCollection()
   private capitalIndicators = new GameEntityCollection()
-  private capitalColorInactive = new Color4(1, 0, 1, 0.5)
-  private capitalColorActive = new Color4(1, 1, 1, 0.5)
 
   private data: RegionSegmentOptions
   private scene: SceneProvider
+
   public readonly centerX: number
   public readonly centerY: number
 
   public constructor(data: RegionSegmentOptions) {
+    this.level = data.level
+    this.region = data.region
     this.centerX = data.centerX
     this.centerY = data.centerY
     this.data = data
@@ -47,9 +70,14 @@ export class RegionSegmentComponent implements GameComponent {
   public initialize(entity: GameEntity): void {
     this.entity = entity
     this.transform = this.entity.component(TransformComponent)
-    this.scene = entity.game.system(SceneProvider)
-    this.engine = entity.game.system(EngineProvider)
-    this.indicator = entity.optionalComponent(DebugMeshComponent)
+    this.capitalsLayer = this.transform.createChild('capitals')
+    this.impostorsLayer = this.transform.createChild('impostors')
+    this.capitalsLayer.setEnabled(false)
+    this.impostorsLayer.setEnabled(false)
+
+    this.transform.node.setEnabled(false)
+    this.scene = entity.service(SceneProvider)
+    this.indicator = entity.component(DebugMeshComponent, true)
 
     if (this.data.impostors) {
       for (const impostor of this.data.impostors) {
@@ -63,12 +91,12 @@ export class RegionSegmentComponent implements GameComponent {
     }
 
     if (this.impostors.length() > 0) {
-      this.colorInactive.g = 0.5
-      this.colorActive.g = 0.5
+      this.color.g = 0.5
+      this.color.g = 0.5
     }
     if (this.capitals.length() > 0) {
-      this.colorInactive.b = 0.5
-      this.colorActive.b = 0.5
+      this.color.b = 0.5
+      this.color.b = 0.5
     }
 
     this.impostors.initialize(entity.game)
@@ -77,7 +105,7 @@ export class RegionSegmentComponent implements GameComponent {
   }
 
   public activate(): void {
-    this.indicator?.setColor(this.colorInactive)
+    this.indicator?.setColor(this.color)
     this.scene.main.getEngine().onBeginFrameObservable.add(this.update)
     this.capitalIndicators.activate()
   }
@@ -96,134 +124,130 @@ export class RegionSegmentComponent implements GameComponent {
   }
 
   private update = () => {
-    this.updateSegmentActivity()
-    this.updateCapitals()
+    this.updateSegmentState()
   }
 
-  private updateSegmentActivity() {
-    const viewDistance = this.engine.viewDistance
+  private updateSegmentState() {
     const camera = this.scene.main.activeCamera
     const cx = camera.position.x
     const cy = camera.position.z
-
-    const enableAt = viewDistance - SEGMENT_SIZE
-    const disableAt = viewDistance
-
-    const active = this.state === 'active'
     const dx = Math.abs(this.centerX - cx)
     const dy = Math.abs(this.centerY - cy)
-    if (active && (dx >= disableAt || dy >= disableAt)) {
-      this.state = 'inactive'
-      this.indicator?.setColor(this.colorInactive)
+    const d2 = dx * dx + dy * dy
+
+    const unloadAt = UNLOAD_AT * UNLOAD_AT
+    const loadCapitalsAt = LOAD_CAPITALS_AT * LOAD_CAPITALS_AT
+    const loadImpostorsAt = LOAD_IMPOSTORS_AT * LOAD_IMPOSTORS_AT
+
+    const showCapitalsAt = SHOW_CAPITALS_AT * SHOW_CAPITALS_AT
+    const showImpostorsAt = SHOW_IMPOSTORS_AT * SHOW_IMPOSTORS_AT
+
+    let alpha = this.color.a
+    if ((this.capitalsLoaded || this.impostorsLoaded) && d2 >= unloadAt) {
+      this.capitalsLoaded = false
+      this.impostorsLoaded = false
       this.impostors.deactivate()
+      this.capitals.deactivate()
     }
-    if (!active && dx <= enableAt && dy <= enableAt) {
-      this.state = 'active'
-      this.indicator?.setColor(this.colorActive)
+    if (!this.impostorsLoaded && d2 <= loadImpostorsAt) {
+      this.impostorsLoaded = true
       this.impostors.activate()
     }
-  }
+    if (!this.capitalsLoaded && d2 <= loadCapitalsAt) {
+      this.capitalsLoaded = true
+      this.capitals.activate()
+    }
 
-  private updateCapitals() {
-    const camera = this.scene.main.activeCamera
-    const cx = camera.position.x
-    const cy = camera.position.z
+    if (this.impostorsShown && d2 >= showImpostorsAt) {
+      this.impostorsShown = false
+      this.impostorsLayer.setEnabled(false)
+    }
+    if (!this.impostorsShown && d2 <= showImpostorsAt) {
+      this.impostorsShown = true
+      this.impostorsLayer.setEnabled(true)
+    }
 
-    const enableAt = 1 * SEGMENT_SIZE
-    const disableAt = enableAt + SEGMENT_SIZE
+    if (this.capitalsShown && d2 >= showCapitalsAt) {
+      this.capitalsShown = false
+      this.capitalsLayer.setEnabled(false)
+    }
+    if (!this.capitalsShown && d2 <= showCapitalsAt) {
+      this.capitalsShown = true
+      this.capitalsLayer.setEnabled(true)
+    }
 
-    for (let i = 0; i < this.capitals.length(); i++) {
-      const entity = this.capitals.entities[i]
-      const indicator = this.capitalIndicators.entities[i].optionalComponent(DebugMeshComponent)
-      const transform = entity.component(TransformComponent)
-      const dx = Math.abs(transform.node.position.x - cx)
-      const dy = Math.abs(transform.node.position.z - cy)
-      if (entity.active && (dx >= disableAt || dy >= disableAt)) {
-        entity.deactivate()
-        indicator?.setColor(this.capitalColorInactive)
-      }
-      if (!entity.active && dx <= enableAt && dy <= enableAt) {
-        entity.activate()
-        indicator?.setColor(this.capitalColorActive)
-        //console.log('capital', entity.name, 'activated', this)
-      }
+    if (this.impostorsShown && this.capitalsShown) {
+      this.impostorsShown = false
+      this.impostorsLayer.setEnabled(false)
+    }
+
+    if (!this.capitalsLoaded && !this.impostorsLoaded) {
+      alpha = 0.2
+    }
+    if (!this.capitalsLoaded && this.impostorsLoaded) {
+      alpha = 0.4
+    }
+    if (this.impostorsShown) {
+      alpha = 0.6
+    }
+    if (this.capitalsLoaded) {
+      alpha = 0.8
+    }
+    if (this.capitalsShown) {
+      alpha = 1.0
+    }
+    if (alpha != this.color.a) {
+      this.color.a = alpha
+      this.indicator?.setColor(this.color)
     }
   }
 
-  private createImpostorEntity(impostor: Impostor): GameEntity {
-    const index = this.impostors.length()
-    const entity = this.impostors.create()
-    entity.name = `impostor ${String(index).padStart(3, '0')} ${impostor.meshAssetId}`
+  private createImpostorEntity(impostor: ImpostorInfo) {
+    if (!ENABLE_IMPOSTORS || !impostor.model) {
+      return
+    }
+    const baseName = impostor.model.split('/').pop()
+    const entity = this.impostors.create(baseName)
     entity.addComponents(
       new TransformComponent({
-        transform: this.transform.createChild(entity.name, {
-          matrix: Matrix.Translation(impostor.worldPosition.x, 0, impostor.worldPosition.y),
+        transform: createChildTransform(this.impostorsLayer, baseName, {
+          matrix: Matrix.Translation(impostor.position[0], 0, impostor.position[1]),
         }),
       }),
       new StaticMeshComponent({
-        assetId: impostor.meshAssetId,
+        model: impostor.model,
       }),
     )
-    return entity
   }
 
-  private createCapitalEntity(capital: Capital) {
+  private createCapitalEntity(capital: CapitalWitEntities) {
     const index = this.capitals.length()
-    const entity = this.capitals.create()
-    entity.name = `capital ${index} ${capital.id}`
-    entity.addComponents(
-      new TransformComponent({
-        transform: this.transform.createChild(entity.name, {
-          matrix: getCapitalTransformMatrix(capital),
-        }),
-      }),
-      new SliceAssetComponent({
-        sliceName: capital.sliceName,
-        slcieAssetId: capital.sliceAssetId,
-      }),
-    )
-    this.capitalIndicators.create().addComponents(
-      new TransformComponent({
-        transform: this.transform.createChild(entity.name, {
-          matrix: getCapitalTransformMatrix(capital),
-        }),
-      }),
-      new DebugMeshComponent({
-        name: entity.name,
-        type: 'sphere',
-        size: capital.footprint?.radius || 1,
-        color: this.capitalColorInactive,
-      }),
-    )
-  }
-}
 
-function getCapitalTransformMatrix(capital: Capital) {
-  const data: number[] = [
-    // Rotation
-    0, 0, 0, 1,
-    // Scale
-    1, 1, 1,
-    // Translation
-    0, 0, 0,
-  ]
-  if (capital.rotation) {
-    data[0] = capital.rotation.x
-    data[1] = capital.rotation.y
-    data[2] = capital.rotation.z
-    if (capital.rotation.w) {
-      data[3] = capital.rotation.w
+    const entityName = `${this.transform.node.name} - capital ${index} ${capital.id}`
+
+    this.capitals.create(entityName).addComponents(
+      new TransformComponent({
+        transform: createChildTransform(this.capitalsLayer, entityName, {
+          matrix: capital.matrix,
+        }),
+      }),
+      new CapitalComponent(capital),
+    )
+
+    if (ENABLE_CAPITAL_INDICATOR) {
+      this.capitalIndicators.create().addComponents(
+        new TransformComponent({
+          transform: createChildTransform(this.capitalsLayer, entityName, {
+            matrix: capital.matrix,
+          }),
+        }),
+        new DebugMeshComponent({
+          name: entityName,
+          type: 'sphere',
+          size: capital.radius || 1,
+          color: new Color4(1, 0.5, 1, 1),
+        }),
+      )
     }
   }
-  if (capital.scale && capital.scale != 0) {
-    data[4] = capital.scale
-    data[5] = capital.scale
-    data[6] = capital.scale
-  }
-  if (capital.worldPosition) {
-    data[7] = capital.worldPosition.x
-    data[8] = capital.worldPosition.y
-    data[9] = capital.worldPosition.z
-  }
-  return Matrix.FromArray(cryToGltfMat4(mat4FromAzTransform(data)))
 }

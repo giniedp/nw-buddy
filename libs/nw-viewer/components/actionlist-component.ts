@@ -1,4 +1,7 @@
-import { BehaviorSubject, catchError, of, Subject, switchMap, takeUntil } from 'rxjs'
+import { Observable } from '@babylonjs/core'
+import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { fromBObservable } from '@nw-viewer/utils'
+import { catchError, map, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { AdbAction, AdbFragment, loadAdbActions } from '../adb'
 import { AdbPlayer } from '../adb/player'
 import { GameComponent, GameEntity } from '../ecs'
@@ -14,55 +17,66 @@ export interface ActionlistComponentOptions {
 }
 
 export class ActionlistComponent implements GameComponent {
-  #disable$ = new Subject<void>()
-  #actions$ = new BehaviorSubject<AdbAction[]>(null)
-  private player = new AdbPlayer()
-  private modelComponent: SkinnedMeshComponent
-  private contentComponent: ContentProvider
+  private deactivate$ = new Subject<void>()
+
+  private model: SkinnedMeshComponent
+  private content: ContentProvider
+  private scene: SceneProvider
+  private actions: AdbAction[] = []
 
   public entity: GameEntity
-  public actions$ = this.#actions$.asObservable()
-  public playerState$ = this.player.playbackState$
-  public fragment$ = this.player.fragment$
 
-  public constructor(private options: ActionlistComponentOptions) {
-    //
+  public readonly player = new AdbPlayer()
+  public readonly defaultTags: string[]
+  public readonly animationDatabase: string
+  public readonly onDataLoaded = new Observable<{ tags: string[]; actions: AdbAction[] }>()
+
+  public constructor(options: ActionlistComponentOptions) {
+    this.defaultTags = options.defaultTags || []
+    this.animationDatabase = options.animationDatabase
+    this.onDataLoaded.notifyIfTriggered = true
   }
 
   public initialize(entity: GameEntity): void {
     this.entity = entity
-    this.modelComponent = this.entity.component(SkinnedMeshComponent)
-    this.contentComponent = this.entity.system(ContentProvider)
+    this.model = this.entity.component(SkinnedMeshComponent)
+    this.content = this.entity.service(ContentProvider)
+    this.scene = this.entity.service(SceneProvider)
   }
 
   public activate(): void {
-    this.modelComponent.animationList$
+    this.scene.main.onBeforeRenderObservable.add(this.update)
+    fromBObservable(this.model.onDataLoaded)
       .pipe(
+        map((it) => it.adb),
         switchMap((list) => {
-          if (!list?.length || !this.options.animationDatabase) {
-            return of([])
+          if (!list?.length || !this.animationDatabase) {
+            return of<AdbAction[]>([])
           }
           return loadAdbActions({
-            url: this.options.animationDatabase,
-            rootUrl: this.contentComponent.rootUrl,
+            url: this.animationDatabase,
+            rootUrl: this.content.rootUrl,
             files: list,
           })
         }),
         catchError((error) => {
           console.error('Error loading action list', error)
-          return of(null)
+          return of<AdbAction[]>([])
         }),
-        takeUntil(this.#disable$),
+        takeUntil(this.deactivate$),
       )
-      .subscribe(this.#actions$)
-
-    this.modelComponent.instance$.pipe(takeUntil(this.#disable$)).subscribe((model) => {
-      this.player.reset(this.entity.game, model)
-    })
+      .subscribe((actions) => {
+        this.actions = actions || []
+        this.player.reset(this.entity.game, this.model.instance.rootNodes)
+        this.onDataLoaded.notifyObservers({ tags: this.defaultTags, actions: this.actions })
+        this.playIdleAnimation()
+      })
   }
 
   public deactivate(): void {
-    this.#disable$.next()
+    this.onDataLoaded.cleanLastNotifiedState()
+    this.scene.main.onBeforeRenderObservable.removeCallback(this.update)
+    this.deactivate$.next()
   }
 
   public destroy(): void {
@@ -71,5 +85,18 @@ export class ActionlistComponent implements GameComponent {
 
   public playFragment(fragment: AdbFragment) {
     this.player.executeFragment(fragment)
+  }
+
+  public playIdleAnimation() {
+    const action = this.actions?.find((it) => /idle/gi.test(it.name))
+    if (!action) {
+      return
+    }
+    const fragment = action.fragments[action.fragments.length - 1]
+    this.player.executeFragment(fragment)
+  }
+
+  private update = () => {
+    this.player.update()
   }
 }

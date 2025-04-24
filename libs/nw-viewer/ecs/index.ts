@@ -1,5 +1,5 @@
 export * from './game-component'
 export * from './game-entity'
-export * from './game-system'
-export * from './game-host'
+export * from './game-entity-collection'
+export * from './game-service'
 export * from './types'
