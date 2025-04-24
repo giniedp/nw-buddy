@@ -1,6 +1,7 @@
 package gltf
 
 import (
+	"net/url"
 	"nw-buddy/tools/utils"
 	"os"
 	"path"
@@ -9,7 +10,7 @@ import (
 	"sync"
 )
 
-type ResourceLinker interface {
+type ImageLinker interface {
 	// The directory where the resources are stored
 	OutputDirectory() string
 	// Set the directory where the resources are stored
@@ -18,6 +19,8 @@ type ResourceLinker interface {
 	RelativeMode() bool
 	// Set whether to use relative URIs
 	SetRelativeMode(relative bool)
+	// Sets the query parameter to be appended to the URI when writing linked resources
+	SetQueryParam(param string)
 	// Read a file from the output directory
 	Read(uri string) ([]byte, error)
 	// Write a file to the output directory
@@ -35,7 +38,7 @@ type ResourceLinker interface {
 	WriteLinkedResource(assetPath string, uri string, data []byte) (string, error)
 }
 
-func NewResourceLinker(dir string) ResourceLinker {
+func NewResourceLinker(dir string) ImageLinker {
 	return &resourceLinker{
 		dir:      dir,
 		relative: true,
@@ -47,6 +50,7 @@ type resourceLinker struct {
 	dir      string
 	relative bool
 	mu       *sync.Mutex
+	query    string
 }
 
 func (r *resourceLinker) OutputDirectory() string {
@@ -65,6 +69,10 @@ func (r *resourceLinker) SetRelativeMode(relative bool) {
 	r.relative = relative
 }
 
+func (r *resourceLinker) SetQueryParam(query string) {
+	r.query = query
+}
+
 func (r *resourceLinker) ToOutputURI(resource string, relativeUri string) string {
 	if relativeUri == "" {
 		return ""
@@ -75,6 +83,7 @@ func (r *resourceLinker) ToOutputURI(resource string, relativeUri string) string
 	absoluteUri := path.Join(resource, relativeUri)
 	result, _ := filepath.Rel(r.dir, absoluteUri)
 	result = strings.ReplaceAll(result, "\\", "/")
+
 	return result
 }
 
@@ -95,6 +104,9 @@ func (r *resourceLinker) ReadLinkedResource(assetPath string, uri string) ([]byt
 	if r.relative {
 		uri = r.ToOutputURI(assetPath, uri)
 	}
+	if u, err := url.Parse(uri); err != nil {
+		uri = u.Path
+	}
 	return r.Read(uri)
 }
 
@@ -103,7 +115,11 @@ func (r *resourceLinker) WriteLinkedResource(assetPath string, uri string, data 
 		uri = r.ToAssetURI(assetPath, uri)
 	}
 	uri = strings.ToLower(uri)
-	return uri, r.Write(uri, data)
+	err := r.Write(uri, data)
+	if r.query != "" {
+		uri = uri + "?" + r.query
+	}
+	return uri, err
 }
 
 func (r *resourceLinker) Read(file string) ([]byte, error) {

@@ -1,7 +1,10 @@
 package progress
 
 import (
+	"context"
 	"fmt"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type TasksConfig[T any, O any] struct {
@@ -55,4 +58,23 @@ func RunTasks[T any, O any](spec TasksConfig[T, O]) {
 	close(cInput)
 	close(cOutput)
 	close(cDone)
+}
+
+func Concurrent[T any](worker uint, tasks []T, handler func(input T, index int) error) error {
+	if len(tasks) == 0 {
+		return nil
+	}
+	group, ctx := errgroup.WithContext(context.Background())
+	group.SetLimit(int(worker))
+	for i, task := range tasks {
+		group.Go(func() error {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			default:
+				return handler(task, i)
+			}
+		})
+	}
+	return group.Wait()
 }

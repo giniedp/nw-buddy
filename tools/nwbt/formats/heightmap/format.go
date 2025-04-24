@@ -3,8 +3,10 @@ package heightmap
 import (
 	"encoding/json"
 	"errors"
+	"image"
 	"image/png"
 	"log/slog"
+	"nw-buddy/tools/formats/tiff"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
@@ -41,7 +43,7 @@ type MapSettings struct {
 	RegionType     int `json:"regionType"`
 }
 
-func Load(file nwfs.File) (region Region, err error) {
+func LoadRegion(file nwfs.File) (region Region, err error) {
 	settingsFile, ok := file.Archive().Lookup(path.Join(path.Dir(file.Path()), "mapsettings.json"))
 	if !ok {
 		err = ErrMapSettingsNotFound
@@ -62,12 +64,12 @@ func Load(file nwfs.File) (region Region, err error) {
 		err = ErrMetdataNotLoaded
 		return
 	}
-	data, err := file.Read()
+
+	region.File = file.Path()
+	region.Data, err = Load(file)
 	if err != nil {
 		return
 	}
-	region.File = file.Path()
-	region.Data, err = ParseHeightField(data)
 	expectedSize := region.Size * region.Size
 	if len(region.Data) != expectedSize {
 		slog.Warn("heightmap data size mismatch", "expected", expectedSize, "actual", len(region.Data), "size", region.Size, "file", file.Path())
@@ -75,7 +77,24 @@ func Load(file nwfs.File) (region Region, err error) {
 	return
 }
 
-func ParseHeightField(data []byte) ([]float32, error) {
+func Load(file nwfs.File) ([]float32, error) {
+	data, err := file.Read()
+	if err != nil {
+		return nil, err
+	}
+	// return LoadFromTiff(data)
+	return LoadFromTiffOld(data)
+}
+
+func LoadFromTiff(data []byte) ([]float32, error) {
+	img, err := tiff.DecodeWithPhotometricPatch(data)
+	if err != nil {
+		return nil, err
+	}
+	return LoadFromImage(img)
+}
+
+func LoadFromTiffOld(data []byte) ([]float32, error) {
 	f, err := os.CreateTemp(env.TempDir(), "*")
 	if err != nil {
 		return nil, err
@@ -107,7 +126,10 @@ func ParseHeightField(data []byte) ([]float32, error) {
 	if err != nil {
 		return nil, err
 	}
+	return LoadFromImage(img)
+}
 
+func LoadFromImage(img image.Image) ([]float32, error) {
 	sizeX := img.Bounds().Size().X
 	sizeY := img.Bounds().Size().Y
 	out := make([]float32, sizeX*sizeY)

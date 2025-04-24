@@ -15,7 +15,7 @@ type Image struct {
 	IsNormalMap bool
 }
 
-func Load(f nwfs.File) (*Image, error) {
+func Load(f nwfs.File, faces ...uint) (*Image, error) {
 	meta, err := LoadMeta(f)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func Load(f nwfs.File) (*Image, error) {
 	}
 
 	if len(splits.Base.Files) > 0 {
-		data, err := concat(meta, splits.Base)
+		data, err := concat(meta, splits.Base, faces...)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +44,7 @@ func Load(f nwfs.File) (*Image, error) {
 		if err != nil {
 			return nil, err
 		}
-		data, err := concat(meta, splits.Alpha)
+		data, err := concat(meta, splits.Alpha, faces...)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +54,7 @@ func Load(f nwfs.File) (*Image, error) {
 	return res, nil
 }
 
-func concat(meta *Meta, split SplitFile) ([]byte, error) {
+func concat(meta *Meta, split SplitFile, faces ...uint) ([]byte, error) {
 	if len(split.Files) == 0 {
 		return meta.Data, nil
 	}
@@ -63,6 +63,10 @@ func concat(meta *Meta, split SplitFile) ([]byte, error) {
 	})
 
 	var buf bytes.Buffer
+	if len(faces) > 0 {
+		// TODO: convert only the requested faces
+	}
+
 	// header
 	buf.Write(meta.Data[:meta.HeaderSize])
 	// mips (largest to smallest)

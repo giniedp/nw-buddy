@@ -5,8 +5,6 @@ import (
 	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils/progress"
-	"path"
-	"strings"
 	"sync"
 )
 
@@ -60,24 +58,4 @@ func (it *Assets) FindPrefabPathForAmmoId(ammoId string) string {
 		}
 	}
 	return ""
-}
-
-func (ctx *Assets) ResolveDynamicSliceNameToFile(sliceName string) nwfs.File {
-	if sliceName == "" || sliceName == "<PLOT>" {
-		return nil
-	}
-	sliceName = strings.ToLower(sliceName)
-	sliceName = strings.ReplaceAll(sliceName, "\\", "/")
-	sliceName = strings.ReplaceAll(sliceName, "//", "/")
-
-	fileName := sliceName
-	if path.Ext(fileName) == "" {
-		fileName += ".dynamicslice"
-	}
-
-	file, ok := ctx.Archive.LookupBySuffix(fileName)
-	if !ok {
-		slog.Debug("slice not resolved", "name", sliceName, "file", fileName)
-	}
-	return file
 }

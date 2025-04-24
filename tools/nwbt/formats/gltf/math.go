@@ -4,26 +4,19 @@ type Mat4x4 = [16]float32
 type Vec3 = [3]float32
 type Quat = [4]float32
 
-const (
-	_x = 0
-	_y = 1
-	_z = 2
-	_w = 3
-)
-
 func CryToGltfVec3(v Vec3) Vec3 {
-	return Vec3{-v[_x], v[_z], v[_y]}
+	return Vec3{-v[0], v[2], v[1]}
 }
 
 func CryToGltfQuat(v Quat) Quat {
-	return Quat{-v[_x], v[_z], v[_y], v[_w]}
+	return Quat{-v[0], v[2], v[1], v[3]}
 }
 
 func CryToGltfMat4(mat Mat4x4) Mat4x4 {
-	// M':   swapped matrix
-	// T:    swap matrix = new Matrix4x4(-1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1)
-	// T^-1: inverse of swap matrix (= T, for this specific configuration)
-	// M' = T @ M @ T^-1 = <what's below>
+	// 1 0 0 0
+	// 0 0 1 0
+	// 0 1 0 0
+	// 0 0 0 1
 	return Mat4x4{
 		mat[0], -mat[2], -mat[1], -mat[3],
 		-mat[8], mat[10], mat[9], mat[11],

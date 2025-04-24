@@ -74,6 +74,7 @@ func (c *Collector) CollectImpostors(glob string) {
 			continue
 		}
 		for _, impostor := range doc.Impostors {
+
 			assetId := utils.ExtractUUID(impostor.MeshAssetID)
 			if assetId == "" {
 				continue

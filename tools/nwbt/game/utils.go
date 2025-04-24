@@ -3,34 +3,38 @@ package game
 import (
 	"fmt"
 	"iter"
-	"log/slog"
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils/crymath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
-func LoadObject(file nwfs.File) (any, error) {
+func LoadObjectStream(file nwfs.File) (any, error) {
 	data, err := file.Read()
 	if err != nil {
 		return nil, fmt.Errorf("can't read file '%s': %w", file.Path(), err)
+	}
+
+	if strings.EqualFold("<ObjectStream", string(data[:15])) {
+		doc, err := azcs.ParseXml(data)
+		if err != nil {
+			return nil, fmt.Errorf("can't parse file '%s': %w", file.Path(), err)
+		}
+		node, err := rtti.LoadXml(doc.Elements[0])
+		if err != nil {
+			return nil, fmt.Errorf("can't load file '%s': %w", file.Path(), err)
+		}
+		return node, nil
 	}
 
 	doc, err := azcs.Parse(data)
 	if err != nil {
 		return nil, fmt.Errorf("can't parse file '%s': %w", file.Path(), err)
 	}
-
-	if len(doc.Elements) == 0 {
-		return nil, fmt.Errorf("no root element in file '%s'", file.Path())
-	}
-	if len(doc.Elements) > 1 {
-		slog.Debug(fmt.Sprintf("multiple root elements in file '%s'", file.Path()))
-	}
-
 	node, err := rtti.Load(doc.Elements[0])
 	if err != nil {
 		return nil, fmt.Errorf("can't load file '%s': %w", file.Path(), err)
@@ -39,7 +43,7 @@ func LoadObject(file nwfs.File) (any, error) {
 }
 
 func LoadAzEntity(file nwfs.File) (*nwt.AZ__Entity, error) {
-	node, err := LoadObject(file)
+	node, err := LoadObjectStream(file)
 	if node == nil || err != nil {
 		return nil, err
 	}
@@ -172,4 +176,17 @@ func ParseMapIdFromPath(filePath string) string {
 		return match[1]
 	}
 	return ""
+}
+
+var regionRegex = regexp.MustCompile(`r_\+(\d{2})_\+(\d{2})`)
+
+func ParseRegionLocation(regionName string) *[2]int {
+	// r_+00_+00
+	match := regionRegex.FindStringSubmatch(regionName)
+	if len(match) != 3 {
+		return nil
+	}
+	x, _ := strconv.Atoi(match[1])
+	y, _ := strconv.Atoi(match[2])
+	return &[2]int{x, y}
 }

@@ -5,6 +5,7 @@ import (
 	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/cloth"
+	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"path"
 	"strings"
@@ -28,12 +29,23 @@ func (c *Assets) ResolveCgf(file string) string {
 	}
 
 	switch path.Ext(file) {
+	case ".cgf", ".skin":
+		return file
+	case ".rnr":
+		cgfPath := utils.ReplaceExt(file, ".cgf")
+		if _, exists := c.Archive.Lookup(cgfPath); exists {
+			return cgfPath
+		}
+		slog.Debug("No .cgf found for .rnr", "file", file)
+		//return ""
 	case ".cloth":
 		if ref, _ := cloth.TryResolveGeometryReference(f); ref != "" {
 			return ref
 		}
 		slog.Debug("No skin found in cloth", "file", file)
 		return ""
+	default:
+		slog.Warn("Unsupported file type", "file", file, "type", path.Ext(file))
 	}
 
 	return file
@@ -154,4 +166,24 @@ func (c *Assets) ResolveCdfAnimations(cdf cdf.Document) {
 		return
 	}
 
+}
+
+func (ctx *Assets) ResolveDynamicSliceNameToFile(sliceName string) nwfs.File {
+	if sliceName == "" || sliceName == "<PLOT>" {
+		return nil
+	}
+	sliceName = strings.ToLower(sliceName)
+	sliceName = strings.ReplaceAll(sliceName, "\\", "/")
+	sliceName = strings.ReplaceAll(sliceName, "//", "/")
+
+	fileName := sliceName
+	if path.Ext(fileName) == "" {
+		fileName += ".dynamicslice"
+	}
+
+	file, ok := ctx.Archive.LookupBySuffix(fileName)
+	if !ok {
+		slog.Debug("slice not resolved", "name", sliceName, "file", fileName)
+	}
+	return file
 }

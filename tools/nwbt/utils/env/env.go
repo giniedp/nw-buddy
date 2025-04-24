@@ -155,6 +155,21 @@ func LumberyardDir() string {
 	return Get("LUMBERYARD_DIR", "")
 }
 
+// ToolsHost returns the tools host by looking up the NW_TOOLS_HOST environment variable
+func ToolsHost() string {
+	return Get("NW_TOOLS_HOST", "0.0.0.0")
+}
+
+// ToolsPort returns the tools port by looking up the NW_TOOLS_PORT environment variable
+func ToolsPort() uint {
+	strPort := Get("NW_TOOLS_PORT", "8000")
+	if port, err := strconv.Atoi(strPort); err != nil {
+		return 8000
+	} else {
+		return uint(port)
+	}
+}
+
 // Logfile returns the log file path
 func Logfile() string {
 	fallback := "nwbt.log"

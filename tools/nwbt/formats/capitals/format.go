@@ -13,13 +13,14 @@ type Document struct {
 }
 
 type Capital struct {
-	ID           string   `json:"id"`
-	Position     *Vector  `json:"worldPosition"`
-	Rotation     *Vector  `json:"rotation"`
-	Scale        *float32 `json:"scale"`
-	SliceName    string   `json:"sliceName"`
-	SliceAssetID string   `json:"sliceAssetId"`
-	VariantName  string   `json:"variantName"`
+	ID           string     `json:"id"`
+	Position     *Vector    `json:"worldPosition"`
+	Rotation     *Vector    `json:"rotation"`
+	Scale        *float32   `json:"scale"`
+	Footprint    *Footprint `json:"footprint"`
+	SliceName    string     `json:"sliceName"`
+	SliceAssetID string     `json:"sliceAssetId"`
+	VariantName  string     `json:"variantName"`
 }
 
 type Vector struct {
@@ -27,6 +28,12 @@ type Vector struct {
 	Y float32  `json:"y"`
 	Z float32  `json:"z"`
 	W *float32 `json:"w,omitempty"`
+}
+
+type Footprint struct {
+	Type   string  `json:"type"`
+	Id     string  `json:"id"`
+	Radius float32 `json:"radius"`
 }
 
 func Load(f nwfs.File) (*Document, error) {
