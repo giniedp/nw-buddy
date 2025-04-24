@@ -25,8 +25,8 @@ type EntityNode struct {
 	Transform  crymath.Mat4x4
 }
 
-func (it *EntityNode) WalkAsset(asset nwt.AzAsset) {
-	it.Walker.WalkAsset(it, asset)
+func (it *EntityNode) WalkAsset(asset nwt.AzAsset) bool {
+	return it.Walker.WalkAsset(it, asset)
 }
 
 func (it *EntityNode) Walk(file nwfs.File) {
@@ -43,23 +43,23 @@ func (it *EntityNode) isCircle(file nwfs.File) bool {
 	return false
 }
 
-func (it *EntityWalker) WalkAsset(parent *EntityNode, asset nwt.AzAsset) {
+func (it *EntityWalker) WalkAsset(parent *EntityNode, asset nwt.AzAsset) bool {
 	file, err := it.Assets.LookupFileByAsset(asset)
 	if err != nil {
-		return
+		return false
 	}
 	if file == nil {
-		return
+		return false
 	}
 	if parent != nil && parent.isCircle(file) {
-		return
+		return false
 	}
 
 	switch path.Ext(file.Path()) {
 	case ".slice":
 		file, ok := it.Assets.Archive.Lookup(utils.ReplaceExt(file.Path(), ".dynamicslice"))
 		if !ok {
-			return
+			return false
 		}
 		it.Walk(parent, file)
 	case ".dynamicslice":
@@ -77,11 +77,11 @@ func (it *EntityWalker) WalkAsset(parent *EntityNode, asset nwt.AzAsset) {
 		alias, err := it.Assets.LoadAliasAsset(file)
 		if err != nil {
 			slog.Error(".aliasasset not loaded", "error", err)
-			return
+			return false
 		}
 		if alias == nil {
 			slog.Warn(".aliasasset not loaded", "file", file.Path())
-			return
+			return false
 		}
 		for _, tag := range alias.Tags.Element {
 			for _, slice := range tag.Slices.Element {
@@ -89,6 +89,7 @@ func (it *EntityWalker) WalkAsset(parent *EntityNode, asset nwt.AzAsset) {
 			}
 		}
 	}
+	return true
 }
 
 func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {

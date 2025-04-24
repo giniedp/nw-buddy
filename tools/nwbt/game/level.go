@@ -647,7 +647,7 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4
 				result = append(result, EntityInfo{
 					ID:        uint(node.Entity.Id.Id),
 					Name:      string(node.Entity.Name),
-					File:      file.Path(),
+					File:      node.File.Path(),
 					Transform: transform,
 					Model:     model,
 					Material:  material,
@@ -689,11 +689,13 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4
 					Material:  material,
 				})
 			case nwt.PrefabSpawnerComponent:
-				node.WalkAsset(v.M_aliasAsset)
-				node.WalkAsset(v.M_sliceAsset)
+				if !node.WalkAsset(v.M_aliasAsset) {
+					node.WalkAsset(v.M_sliceAsset)
+				}
 			case nwt.PointSpawnerComponent:
-				node.WalkAsset(v.BaseClass1.M_aliasAsset)
-				node.WalkAsset(v.BaseClass1.M_sliceAsset)
+				if !node.WalkAsset(v.BaseClass1.M_aliasAsset) {
+					node.WalkAsset(v.BaseClass1.M_sliceAsset)
+				}
 			case nwt.AreaSpawnerComponent:
 			// 	node.WalkAsset(v.BaseClass1.M_aliasAsset)
 			default:
