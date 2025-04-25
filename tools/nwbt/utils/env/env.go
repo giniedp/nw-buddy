@@ -147,7 +147,7 @@ func PullTypesDir() string {
 
 // CacheDir returns the cache directory by looking up the NW_CACHE environment variable
 func CacheDir() string {
-	return Get("NW_CACHE_DIR", path.Join(NwbtDir(), "cache"))
+	return Get("NW_CACHE", path.Join(NwbtDir(), "cache"))
 }
 
 // LumberyardDir returns the lumberyard directory by looking up the LUMBERYARD_DIR environment variable
