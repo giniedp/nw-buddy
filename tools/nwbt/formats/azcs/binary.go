@@ -72,7 +72,7 @@ type Element struct {
 	Elements []*Element
 }
 
-func IsAzcs(data []byte) bool {
+func IsBinaryObjectStream(data []byte) bool {
 	return len(data) >= len(magicV1) && bytes.HasPrefix(data, magicV1) || bytes.HasPrefix(data, magicV2) || bytes.HasPrefix(data, magicV3)
 }
 

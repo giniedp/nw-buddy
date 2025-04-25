@@ -1,6 +1,7 @@
 package azcs
 
 import (
+	"bytes"
 	"encoding/xml"
 	"io"
 	"nw-buddy/tools/nwfs"
@@ -21,6 +22,11 @@ type XmlElement struct {
 	Field    string        `xml:"field,attr"`
 	Version  string        `xml:"version,attr"`
 	Elements []*XmlElement `xml:"Class"`
+}
+
+func IsXmlObjectStream(data []byte) bool {
+	// <ObjectStream
+	return bytes.HasPrefix(data, []byte("<ObjectStream"))
 }
 
 func LoadXml(f nwfs.File) (*XmlObject, error) {

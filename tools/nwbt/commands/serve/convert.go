@@ -199,7 +199,7 @@ func convertAny(file nwfs.File, target string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if azcs.IsAzcs(data) {
+	if azcs.IsBinaryObjectStream(data) {
 		return convertAzcs(data, target)
 	}
 

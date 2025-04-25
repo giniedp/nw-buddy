@@ -16,7 +16,7 @@ func processAny(task *Task) {
 	if err != nil {
 		return
 	}
-	if azcs.IsAzcs(data) {
+	if azcs.IsBinaryObjectStream(data) {
 		err = processAzcs(output, flgFmtObjects)
 		output.Error = err
 		task.Error = err

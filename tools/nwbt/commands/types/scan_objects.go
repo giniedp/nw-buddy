@@ -17,7 +17,7 @@ func scanObjects(fs nwfs.Archive, uidTable rtti.UuidTable, crcTable rtti.CrcTabl
 	files := utils.Must(fs.List())
 	counter := make(map[string]int)
 
-	bar := progress.Bar(len(files), "Object Streams")
+	bar := progress.Bar(len(files), "Binary Object Streams")
 	table := rtti.NewTypeTable()
 	for _, file := range files {
 		bar.Add(1)
@@ -31,7 +31,7 @@ func scanObjects(fs nwfs.Archive, uidTable rtti.UuidTable, crcTable rtti.CrcTabl
 			continue
 		}
 
-		if !azcs.IsAzcs(data) {
+		if !azcs.IsBinaryObjectStream(data) {
 			continue
 		}
 

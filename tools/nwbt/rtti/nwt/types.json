@@ -26641,7 +26641,7 @@
 		"Members": {
 			"2053629800": {
 				"Crc32": 2053629800,
-				"Name": "left",
+				"Name": "Left",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -26662,7 +26662,7 @@
 			},
 			"517545930": {
 				"Crc32": 517545930,
-				"Name": "top",
+				"Name": "Top",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -33315,7 +33315,7 @@
 		"Members": {
 			"3867733328": {
 				"Crc32": 3867733328,
-				"Name": "layers",
+				"Name": "Layers",
 				"TypeID": "77CD140E-4E9E-52B7-A2F0-23B1E4D05F3A",
 				"TypeIDs": [],
 				"Array": false
@@ -36342,7 +36342,7 @@
 			},
 			"1336418461": {
 				"Crc32": 1336418461,
-				"Name": "restitution",
+				"Name": "Restitution",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -36384,7 +36384,7 @@
 			},
 			"302782475": {
 				"Crc32": 302782475,
-				"Name": "friction",
+				"Name": "Friction",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -50273,7 +50273,7 @@
 		"Members": {
 			"2053629800": {
 				"Crc32": 2053629800,
-				"Name": "left",
+				"Name": "Left",
 				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
@@ -50294,7 +50294,7 @@
 			},
 			"517545930": {
 				"Crc32": 517545930,
-				"Name": "top",
+				"Name": "Top",
 				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
@@ -56265,7 +56265,7 @@
 		"Members": {
 			"2053629800": {
 				"Crc32": 2053629800,
-				"Name": "left",
+				"Name": "Left",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -56286,7 +56286,7 @@
 			},
 			"517545930": {
 				"Crc32": 517545930,
-				"Name": "top",
+				"Name": "Top",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -57876,7 +57876,7 @@
 		"Members": {
 			"3867733328": {
 				"Crc32": 3867733328,
-				"Name": "layers",
+				"Name": "Layers",
 				"TypeID": "8BD98C9A-AE86-5CBD-8697-F0EB31C6A44B",
 				"TypeIDs": [],
 				"Array": false
