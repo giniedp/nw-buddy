@@ -109,6 +109,11 @@ function createScene(engine: AbstractEngine) {
 
   let camera: Camera
   scene.onActiveCameraChanged.add(() => {
+    if (scene.activeCamera?.name === 'ScreenQuadCamera' || camera === scene.activeCamera) {
+      // WTF: why babylon switches scene camera when that camera is rendering something else aside from the scene (a render target)
+      return
+    }
+
     camera?.detachControl()
     camera = scene.activeCamera
     setTimeout(() => camera?.attachControl(true))

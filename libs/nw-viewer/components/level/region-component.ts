@@ -1,5 +1,4 @@
 import { Color4, Matrix, Scene, Vector3 } from '@babylonjs/core'
-import { EngineProvider } from '@nw-viewer/services/engine-provider'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
 
 import { SceneProvider } from '../../services/scene-provider'
@@ -10,7 +9,7 @@ import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
 import { ContentProvider } from '@nw-viewer/services/content-provider'
 import { TransformComponent } from '../transform-component'
 import { REGION_VISIBILITY, SEGMENT_SIZE } from './constants'
-import { CapitalWitEntities as CapitalWitEntities, RegionSegmentComponent } from './region-segment'
+import { CapitalWitEntities, RegionSegmentComponent } from './region-segment'
 
 export interface RegionOptions {
   levelName: string
@@ -23,7 +22,6 @@ export interface RegionOptions {
 export class RegionComponent implements GameComponent {
   // private data: RegionMetadata
   private scene: Scene
-  private engine: EngineProvider
   private content: ContentProvider
   private segments = new GameEntityCollection()
   private transform: TransformComponent
@@ -55,7 +53,6 @@ export class RegionComponent implements GameComponent {
   public initialize(entity: GameEntity): void {
     this.entity = entity
     this.scene = entity.service(SceneProvider).main
-    this.engine = entity.service(EngineProvider)
     this.content = entity.service(ContentProvider)
     this.transform = entity.component(TransformComponent)
     this.indicator = entity.component(DebugMeshComponent, true)

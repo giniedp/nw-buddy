@@ -294,6 +294,7 @@ type EntityInfo struct {
 	Material  string           `json:"material"`
 	Transform crymath.Mat4x4   `json:"transform"`
 	Instances []crymath.Mat4x4 `json:"instances"`
+	Debug     any              `json:"debug"`
 }
 
 type TerrainInfo struct {
@@ -683,7 +684,7 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4
 				result = append(result, EntityInfo{
 					ID:        uint(node.Entity.Id.Id),
 					Name:      string(node.Entity.Name),
-					File:      file.Path(),
+					File:      node.File.Path(),
 					Transform: transform,
 					Model:     model,
 					Material:  material,
@@ -697,7 +698,7 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4
 					node.WalkAsset(v.BaseClass1.M_sliceAsset)
 				}
 			case nwt.AreaSpawnerComponent:
-			// 	node.WalkAsset(v.BaseClass1.M_aliasAsset)
+				// 	node.WalkAsset(v.BaseClass1.M_aliasAsset)
 			default:
 				break
 			}

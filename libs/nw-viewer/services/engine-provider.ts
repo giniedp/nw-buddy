@@ -5,7 +5,6 @@ export class EngineProvider implements GameService {
   public game: GameServiceContainer
   public engine: AbstractEngine
 
-  public viewDistance = 800
   private resizeNeeded = false
   private resize = new ResizeObserver(() => {
     this.resizeNeeded = true
