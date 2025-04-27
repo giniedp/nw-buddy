@@ -3,7 +3,7 @@ export const REGION_VISIBILITY = 4 * SEGMENT_SIZE
 export const SEGMENT_VISIBILITY = 4 * SEGMENT_SIZE
 export const ENABLE_IMPOSTORS = true
 export const ENABLE_CAPITAL_INDICATOR = true
-export const ENABLE_ENTITY_INDICATOR = true
+export const ENABLE_ENTITY_INDICATOR = false
 
 export const SHOW_CAPITALS_AT = 2 * SEGMENT_SIZE
 export const LOAD_CAPITALS_AT = 3 * SEGMENT_SIZE

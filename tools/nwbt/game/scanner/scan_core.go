@@ -8,7 +8,7 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/crymath"
+	"nw-buddy/tools/utils/math/transform"
 	"path"
 	"slices"
 )
@@ -131,7 +131,7 @@ func (ctx *Scanner) ScanSliceComponentForData(slice *nwt.SliceComponent, source 
 
 type spawnFtueIsland struct {
 	entity    *nwt.AZ__Entity
-	transform crymath.Transform
+	transform transform.Node
 }
 
 func (ctx *Scanner) ScanSliceComponentForFtueIslandSpawner(slice *nwt.SliceComponent, source nwfs.File) []spawnFtueIsland {
@@ -158,14 +158,14 @@ func (ctx *Scanner) ScanSliceComponentForFtueIslandSpawner(slice *nwt.SliceCompo
 type spawnArea struct {
 	entity    *nwt.AZ__Entity
 	asset     nwt.AzAsset
-	locations []crymath.Transform
+	locations []transform.Node
 }
 
 func (ctx *Scanner) ScanSliceComponentForAreaSpawner(slice *nwt.SliceComponent, source nwfs.File) []spawnArea {
 	result := make([]spawnArea, 0)
 	for entity, components := range game.EntitiesOf(slice) {
 		assets := make([]nwt.AzAsset, 0)
-		locations := make([]crymath.Transform, 0)
+		locations := make([]transform.Node, 0)
 		for _, component := range components {
 			spawner, ok := component.(nwt.AreaSpawnerComponent)
 			if !ok {
@@ -199,7 +199,7 @@ func (ctx *Scanner) ScanSliceComponentForAreaSpawner(slice *nwt.SliceComponent, 
 type spawnPoint struct {
 	entity    *nwt.AZ__Entity
 	asset     nwt.AzAsset
-	transform crymath.Transform
+	transform transform.Node
 }
 
 func (ctx *Scanner) ScanSliceComponentForPointSpawner(slice *nwt.SliceComponent, source nwfs.File) []spawnPoint {
@@ -228,14 +228,14 @@ func (ctx *Scanner) ScanSliceComponentForPointSpawner(slice *nwt.SliceComponent,
 type spawnEncounter struct {
 	entity    *nwt.AZ__Entity
 	asset     nwt.AzAsset
-	transform crymath.Transform
-	locations []crymath.Transform
+	transform transform.Node
+	locations []transform.Node
 }
 
 func (ctx *Scanner) ScanSliceComponentForEncounterSpawner(slice *nwt.SliceComponent, source nwfs.File) []spawnEncounter {
 	result := make([]spawnEncounter, 0)
 	for entity, components := range game.EntitiesOf(slice) {
-		transform := game.FindTransform(entity)
+		eTransform := game.FindTransform(entity)
 		for _, component := range components {
 			encounter, ok := component.(nwt.EncounterComponent)
 			if !ok {
@@ -245,7 +245,7 @@ func (ctx *Scanner) ScanSliceComponentForEncounterSpawner(slice *nwt.SliceCompon
 				assets := make([]nwt.AzAsset, 0)
 				assets = utils.AppendUniqNoZero(assets, spawn.M_sliceAsset)
 				assets = utils.AppendUniqNoZero(assets, spawn.M_aliasAsset)
-				locations := make([]crymath.Transform, 0)
+				locations := make([]transform.Node, 0)
 				for _, loc := range spawn.M_spawnlocations.Element {
 					entity := game.FindEntityById(slice, loc.EntityId.Id)
 					if transform := game.FindTransform(entity); transform != nil {
@@ -257,7 +257,7 @@ func (ctx *Scanner) ScanSliceComponentForEncounterSpawner(slice *nwt.SliceCompon
 						entity:    entity,
 						asset:     asset,
 						locations: locations,
-						transform: transform,
+						transform: eTransform,
 					})
 				}
 			}
@@ -269,7 +269,7 @@ func (ctx *Scanner) ScanSliceComponentForEncounterSpawner(slice *nwt.SliceCompon
 type spawnPrefab struct {
 	entity    *nwt.AZ__Entity
 	asset     nwt.AzAsset
-	transform crymath.Transform
+	transform transform.Node
 	variantId string
 }
 
@@ -302,7 +302,7 @@ type spawnProjectile struct {
 	entity    *nwt.AZ__Entity
 	asset     *nwt.AzAsset
 	prefab    string
-	transform crymath.Transform
+	transform transform.Node
 	ammoId    string
 }
 
@@ -533,7 +533,7 @@ func (ctx *Scanner) scanFileForSpawnersUntracked(sliceFile nwfs.File, stack []st
 		for _, spawner := range ctx.ScanSliceComponentForPointSpawner(comp, sliceFile) {
 			if spawner.transform == nil {
 				slog.Debug("PointSpawner transform is nil", "file", sliceFile.Path())
-				spawner.transform = crymath.IdentityTransform()
+				spawner.transform = transform.Identity()
 			}
 			for item := range ctx.ScanAssetForSpawners(spawner.asset, stack) {
 				if encounterType != "" {
@@ -575,7 +575,7 @@ func (ctx *Scanner) scanFileForSpawnersUntracked(sliceFile nwfs.File, stack []st
 			if spawn.asset != nil {
 				list = ctx.ScanAssetForSpawners(*spawn.asset, stack)
 			} else if spawn.prefab != "" {
-				file := ctx.ResolveDynamicSliceNameToFile(spawn.prefab)
+				file := ctx.ResolveDynamicSliceByName(spawn.prefab)
 				list = ctx.ScanFileForSpawners(file, stack)
 			}
 			if list == nil {
@@ -639,7 +639,7 @@ func (ctx *Scanner) scanFileForSpawnersUntracked(sliceFile nwfs.File, stack []st
 		}
 		// #endregion
 
-		identity := crymath.IdentityTransform()
+		identity := transform.Identity()
 		for _, item := range unconsumed {
 			position := identity.Translation()
 			if item.Transform != nil {

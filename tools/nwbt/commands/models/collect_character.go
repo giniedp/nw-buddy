@@ -37,7 +37,7 @@ func (c *Collector) CollectCharacter() {
 		game.CDF_MODEL_FEMALE,
 	}
 	for _, model := range models {
-		cdf, err := c.ResolveCdfAsset(model)
+		cdf, err := c.LoadCdf(model)
 		if err != nil {
 			slog.Warn("failed to resolve cdf asset", "file", model, "err", err)
 			return
@@ -59,7 +59,7 @@ func (c *Collector) CollectCdf(cdf *cdf.Document, material string, targetFile st
 	}
 
 	for _, attachment := range cdf.SkinAndClothAttachments() {
-		if model, mtl := c.ResolveModelMaterialPair(attachment.Binding, attachment.Material, material); model != "" {
+		if model, mtl := c.ResolveCgfAndMtl(attachment.Binding, attachment.Material, material); model != "" {
 			group.Meshes = append(group.Meshes, importer.GeometryAsset{
 				Entity: importer.Entity{
 					Name: attachment.AName,

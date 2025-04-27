@@ -17,8 +17,10 @@ import {
   UNLOAD_AT,
   ENABLE_CAPITAL_INDICATOR,
 } from './constants'
+import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
 
 export type CapitalWitEntities = CapitalInfo & {
+  layer?: TransformNode
   matrix: Matrix
   entities: EntityInfo[]
 }
@@ -30,6 +32,7 @@ export interface RegionSegmentOptions {
   centerY: number
   impostors: ImpostorInfo[]
   capitals: CapitalWitEntities[]
+  distribution: EntityInfo[]
 }
 
 export class RegionSegmentComponent implements GameComponent {
@@ -52,6 +55,7 @@ export class RegionSegmentComponent implements GameComponent {
   private impostors = new GameEntityCollection()
   private capitals = new GameEntityCollection()
   private capitalIndicators = new GameEntityCollection()
+  private distribution = new GameEntityCollection()
 
   private data: RegionSegmentOptions
   private scene: SceneProvider
@@ -89,6 +93,11 @@ export class RegionSegmentComponent implements GameComponent {
         this.createCapitalEntity(capital)
       }
     }
+    if (this.data.distribution) {
+      for (const item of this.data.distribution) {
+        this.createDistributionEntity(item)
+      }
+    }
 
     if (this.impostors.length() > 0) {
       this.color.g = 0.5
@@ -101,6 +110,7 @@ export class RegionSegmentComponent implements GameComponent {
 
     this.impostors.initialize(entity.game)
     this.capitals.initialize(entity.game)
+    this.distribution.initialize(entity.game)
     this.capitalIndicators.initialize(entity.game)
   }
 
@@ -114,12 +124,14 @@ export class RegionSegmentComponent implements GameComponent {
     this.scene.main.getEngine().onBeginFrameObservable.removeCallback(this.update)
     this.impostors.deactivate()
     this.capitals.deactivate()
+    this.distribution.deactivate()
     this.capitalIndicators.deactivate()
   }
 
   public destroy(): void {
     this.impostors.destroy()
     this.capitals.destroy()
+    this.distribution.destroy()
     this.capitalIndicators.destroy()
   }
 
@@ -148,6 +160,7 @@ export class RegionSegmentComponent implements GameComponent {
       this.impostorsLoaded = false
       this.impostors.deactivate()
       this.capitals.deactivate()
+      this.distribution.deactivate()
     }
     if (!this.impostorsLoaded && d2 <= loadImpostorsAt) {
       this.impostorsLoaded = true
@@ -156,6 +169,7 @@ export class RegionSegmentComponent implements GameComponent {
     if (!this.capitalsLoaded && d2 <= loadCapitalsAt) {
       this.capitalsLoaded = true
       this.capitals.activate()
+      this.distribution.activate()
     }
 
     if (this.impostorsShown && d2 >= showImpostorsAt) {
@@ -170,10 +184,12 @@ export class RegionSegmentComponent implements GameComponent {
     if (this.capitalsShown && d2 >= showCapitalsAt) {
       this.capitalsShown = false
       this.capitalsLayer.setEnabled(false)
+
     }
     if (!this.capitalsShown && d2 <= showCapitalsAt) {
       this.capitalsShown = true
       this.capitalsLayer.setEnabled(true)
+      this.distribution
     }
 
     if (this.impostorsShown && this.capitalsShown) {
@@ -249,5 +265,21 @@ export class RegionSegmentComponent implements GameComponent {
         }),
       )
     }
+  }
+
+  private createDistributionEntity(item: EntityInfo) {
+    const entityName = `${this.transform.node.name} - ${item.name} - ${item.id}`
+    this.distribution.create(entityName).addComponents(
+      new TransformComponent({
+        transform: createChildTransform(this.capitalsLayer, entityName, {
+          matrix: Matrix.FromArray(cryToGltfMat4(item.transform)),
+        }),
+      }),
+      new StaticMeshComponent({
+        model: item.model,
+        material: item.material,
+        instances: item.instances?.map((it) => Matrix.FromArray(cryToGltfMat4(it))),
+      }),
+    )
   }
 }

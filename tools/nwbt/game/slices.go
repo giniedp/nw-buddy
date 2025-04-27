@@ -2,11 +2,10 @@ package game
 
 import (
 	"log/slog"
-	"nw-buddy/tools/formats/gltf"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/crymath"
+	"nw-buddy/tools/utils/math/mat4"
 	"path"
 )
 
@@ -22,7 +21,7 @@ type EntityNode struct {
 	Entity     *nwt.AZ__Entity
 	Walker     *EntityWalker
 	Components []any
-	Transform  crymath.Mat4x4
+	Transform  mat4.Data
 }
 
 func (it *EntityNode) WalkAsset(asset nwt.AzAsset) bool {
@@ -104,7 +103,7 @@ func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
 	for entity := range EntitiesOf(component) {
 		transform := FindTransformMat4(entity)
 		if parent != nil {
-			transform = gltf.Mat4Multiply(parent.Transform, transform)
+			transform = mat4.Multiply(parent.Transform, transform)
 		}
 		it.Visit(&EntityNode{
 			File:       file,
@@ -120,6 +119,85 @@ func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
 
 func (it *Assets) WalkSlice(file nwfs.File, visit func(node *EntityNode)) {
 	walker := &EntityWalker{
+		Assets: it,
+		Visit:  visit,
+	}
+	walker.Walk(nil, file)
+}
+
+type MetaDataWalker struct {
+	Assets *Assets
+	Visit  func(node *MetaDataNode)
+}
+
+type MetaDataNode struct {
+	File      nwfs.File
+	Parent    *MetaDataNode
+	MetaData  *nwt.SliceMetaData
+	Transform mat4.Data
+}
+
+func (it *MetaDataWalker) Walk(parent *MetaDataNode, file nwfs.File) {
+	if path.Ext(file.Path()) != ".dynamicslice" {
+		slog.Warn("not a dynamicslice file", "file", file.Path())
+		return
+	}
+
+	metaFile, _ := it.Assets.Archive.Lookup(utils.ReplaceExt(file.Path(), ".slice.meta"))
+	if metaFile == nil {
+		slog.Warn("slice meta file not found", "file", file.Path())
+		return
+	}
+
+	data, err := it.Assets.LoadObjectStream(metaFile)
+	if err != nil {
+		slog.Error("slice meta not loaded", "error", err, "file", file.Path())
+		return
+	}
+
+	meta, ok := data.(nwt.SliceMetaData)
+	if !ok {
+		slog.Error("slice meta not loaded", "file", file.Path())
+		return
+	}
+
+	transform := mat4.Identity()
+	if parent != nil {
+		transform = mat4.Multiply(parent.Transform, transform)
+	}
+	it.Visit(&MetaDataNode{
+		File:      file,
+		Parent:    parent,
+		MetaData:  &meta,
+		Transform: transform,
+	})
+
+	for _, element := range meta.Spawners.Element {
+		spawnFile := it.Assets.ResolveDynamicSliceByName(string(element.Slicename))
+		if spawnFile == nil {
+			spawnFile, err = it.Assets.LookupFileByAsset2(nwt.AzAsset{
+				Guid: string(element.Sliceassetid.Guid),
+				Hint: string(element.Slicename),
+			}, file)
+			if err != nil {
+				slog.Error("slice asset not loaded", "error", err, "file", file.Path())
+			}
+		}
+		if spawnFile == nil {
+			continue
+		}
+
+		it.Walk(&MetaDataNode{
+			File:      file,
+			Parent:    parent,
+			MetaData:  &meta,
+			Transform: mat4.Multiply(transform, mat4.FromAzTransform(element.Worldtm)),
+		}, spawnFile)
+	}
+}
+
+func (it *Assets) WalkSliceMeta(file nwfs.File, visit func(node *MetaDataNode)) {
+	walker := &MetaDataWalker{
 		Assets: it,
 		Visit:  visit,
 	}

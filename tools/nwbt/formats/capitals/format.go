@@ -4,8 +4,8 @@ import (
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils/crymath"
 	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/math/transform"
 )
 
 type Document struct {
@@ -58,7 +58,7 @@ func Parse(data []byte) (*Document, error) {
 	return result, err
 }
 
-func (doc *Capital) Transform() crymath.Transform {
+func (doc *Capital) Transform() transform.Node {
 	data := []nwt.AzFloat32{
 		// Rotation
 		0, 0, 0, 1,
@@ -86,5 +86,5 @@ func (doc *Capital) Transform() crymath.Transform {
 		data[9] = nwt.AzFloat32(doc.Position.Z)
 	}
 
-	return crymath.TransformRST(data)
+	return transform.RST(data)
 }

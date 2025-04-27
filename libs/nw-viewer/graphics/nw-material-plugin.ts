@@ -1,35 +1,37 @@
-import { NwMaterialExtension } from './nw-material-extension'
 import {
-  Material,
-  MaterialPluginBase,
-  IColor3Like,
-  MaterialDefines,
-  Scene,
   AbstractMesh,
-  UniformBuffer,
+  BaseTexture,
   Engine,
-  SubMesh,
+  IColor3Like,
+  Material,
+  MaterialDefines,
+  MaterialPluginBase,
   RegisterMaterialPlugin,
+  Scene,
+  ShaderLanguage,
+  SubMesh,
+  UniformBuffer,
 } from '@babylonjs/core'
+import { NwMaterialExtension } from './nw-material-extension'
 
-const NAME = 'NwMaterialPlugin'
-
-export function registerNwMaterialPlugin() {
-  RegisterMaterialPlugin(NAME, (material) => {
-    const instance = new NwMaterialPlugin(material)
-    NwMaterialPlugin.setPlugin(material, instance)
-    return instance
-  })
-}
-
+export const NW_MATERIAL_PLUGIN_NAME = 'NwMaterialPlugin'
 export class NwMaterialPlugin extends MaterialPluginBase {
+  public static register() {
+    NwMaterialExtension.register()
+    RegisterMaterialPlugin(NW_MATERIAL_PLUGIN_NAME, (material) => {
+      const instance = new NwMaterialPlugin(material)
+      NwMaterialPlugin.setPlugin(material, instance)
+      return instance
+    })
+  }
+
   public static getPlugin(material: Material | null): NwMaterialPlugin | null {
-    return (material as any)?.[NAME] || null
+    return (material as any)?.[NW_MATERIAL_PLUGIN_NAME] || null
   }
 
   public static setPlugin(material: Material, plugin: NwMaterialPlugin) {
     Object.assign(material, {
-      [NAME]: plugin,
+      [NW_MATERIAL_PLUGIN_NAME]: plugin,
     })
   }
 
@@ -55,51 +57,106 @@ export class NwMaterialPlugin extends MaterialPluginBase {
     return NwMaterialExtension.getMaskTexture(this._material)
   }
 
-  public get isEnabled() {
-    return this._isEnabled
+  public get nwSmoothTexture() {
+    return NwMaterialExtension.getSmoothTexture(this._material)
   }
-  public set isEnabled(enabled) {
-    if (this._isEnabled === enabled) {
-      return
+
+  public get isMaskEnabled() {
+    return !!this._isMaskEnabled
+  }
+  public set isMaskEnabled(enabled) {
+    if (this._isMaskEnabled !== enabled) {
+      this._isMaskEnabled = enabled
+      this.handleChange()
     }
-    this._isEnabled = enabled
-    this.markAllDefinesAsDirty()
-    this._enable(this._isEnabled)
   }
 
   public get debugMask() {
-    return this._debugMask
+    return !!this._isMaskDebug
   }
   public set debugMask(value) {
-    if (this._debugMask === value) {
-      return
+    if (this._isMaskDebug !== value) {
+      this._isMaskDebug = value
+      this.handleChange()
     }
-    this._debugMask = value
-    this.markAllDefinesAsDirty()
   }
 
-  private _isEnabled = false
-  private _debugMask = false
+  public get isSmoothEnabled() {
+    return !!this._isSmoothEnabled
+  }
+  public set isSmoothEnabled(enabled) {
+    if (this._isSmoothEnabled !== enabled) {
+      this._isSmoothEnabled = enabled
+      this.handleChange()
+    }
+  }
+
+  private _isMaskDebug: boolean = null
+  private _isMaskEnabled: boolean = null
+  private _isSmoothEnabled: boolean = null
 
   public constructor(material: Material) {
-    super(material, 'NwOverlayMask', 200, {
-      NW_OVERLAY_MASK: false,
-      NW_OVERLAY_DEBUG: false,
-      WORLD_UBO: false,
-    })
+    super(
+      material,
+      'NwOverlayMask',
+      200,
+      {
+        NW_SMOOTH_MAP: false,
+        NW_OVERLAY_MASK: false,
+        NW_OVERLAY_DEBUG: false,
+        WORLD_UBO: false,
+      },
+      true,
+    )
+  }
+
+  public handleChange() {
+    this.markAllDefinesAsDirty()
+    this._enable(this.isMaskEnabled || this.isSmoothEnabled)
+  }
+
+  public onLoaded() {
+    this._isMaskEnabled = !!this.nwMaskTexture
+    this._isSmoothEnabled = !!this.nwSmoothTexture
+    this._isMaskDebug = false
+    this.handleChange()
   }
 
   public override getClassName() {
-    return NAME
+    return NW_MATERIAL_PLUGIN_NAME
+  }
+
+  public override isCompatible(shaderLanguage: ShaderLanguage): boolean {
+    return shaderLanguage === ShaderLanguage.GLSL
+  }
+
+  public override hasTexture(texture: BaseTexture): boolean {
+    if (this.nwMaskTexture === texture) {
+      return true
+    }
+    if (this.nwSmoothTexture === texture) {
+      return true
+    }
+    return false
+  }
+
+  public override getActiveTextures(activeTextures: BaseTexture[]): void {
+    if (this.nwMaskTexture) {
+      activeTextures.push(this.nwMaskTexture)
+    }
+    if (this.nwSmoothTexture) {
+      activeTextures.push(this.nwSmoothTexture)
+    }
   }
 
   public override prepareDefines(defines: MaterialDefines, scene: Scene, mesh: AbstractMesh) {
-    defines['NW_OVERLAY_MASK'] = this._isEnabled
-    defines['NW_OVERLAY_DEBUG'] = this._debugMask
-    defines['WORLD_UBO'] = this._isEnabled
+    defines['NW_SMOOTH_MAP'] = this.isSmoothEnabled
+    defines['NW_OVERLAY_MASK'] = this.isMaskEnabled
+    defines['NW_OVERLAY_DEBUG'] = this.debugMask
+    defines['WORLD_UBO'] = this.isMaskEnabled || this.isSmoothEnabled
   }
 
-  public override getUniforms() {
+  public override getUniforms(lang: ShaderLanguage) {
     return {
       ubo: [
         { name: 'nwMaskRGBA', size: 4, type: 'vec4' },
@@ -118,16 +175,19 @@ export class NwMaterialPlugin extends MaterialPluginBase {
           uniform vec4 nwMaskASpec;
           uniform vec2 nwMaskGloss;
         #endif
+        #ifdef NW_SMOOTH_MAP
+          // smooth map
+        #endif
         `,
     }
   }
 
   public override getSamplers(samplers: string[]) {
-    samplers.push('nwMaskTexture')
+    samplers.push('nwMaskTexture', 'nwSmoothTexture')
   }
 
   public override bindForSubMesh(uniformBuffer: UniformBuffer, scene: Scene, engine: Engine, subMesh: SubMesh) {
-    if (this._isEnabled) {
+    if (this.isMaskEnabled) {
       uniformBuffer.updateColor4(
         'nwMaskRGBA',
         {
@@ -146,6 +206,7 @@ export class NwMaterialPlugin extends MaterialPluginBase {
     } else {
       uniformBuffer.setTexture('nwMaskTexture', null)
     }
+    uniformBuffer.setTexture('nwSmoothTexture', this.nwSmoothTexture || null)
   }
 
   public override getCustomCode(shaderType: string) {
@@ -153,15 +214,16 @@ export class NwMaterialPlugin extends MaterialPluginBase {
       return null
     }
     return {
-      CUSTOM_FRAGMENT_DEFINITIONS: `
+      CUSTOM_FRAGMENT_DEFINITIONS: /*glsl*/ `
         uniform sampler2D nwMaskTexture;
+        uniform sampler2D nwSmoothTexture;
         vec3 overlayBlend(vec3 luminance, vec3 color) {
           vec3 c0 = 2.0f * luminance * color;
           vec3 c1 = 1.0f - 2.0f * (1.0f - luminance) * (1.0f - color);
           return mix(c0, c1, step(vec3(0.5f, 0.5f, 0.5f), luminance));
         }
       `,
-      CUSTOM_FRAGMENT_UPDATE_ALBEDO: `
+      CUSTOM_FRAGMENT_UPDATE_ALBEDO: /*glsl*/ `
         #ifdef NW_OVERLAY_MASK
 
           vec4 nwMask = texture2D(nwMaskTexture, vMainUV1) * nwMaskRGBA.a;
@@ -180,8 +242,11 @@ export class NwMaterialPlugin extends MaterialPluginBase {
           surfaceAlbedo.rgb = nwMask.rgb * 0.5 + vec3(0.5, 0.0, 0.5) * nwMask.a;
           #endif
         #endif
+        // #ifdef NW_SMOOTH_MAP
+        //   surfaceAlbedo.rgb = texture2D(nwSmoothTexture, vMainUV1).rgb;
+        // #endif
       `,
-      '!float\\smicroSurface=reflectivityOut.microSurface;': `
+      '!float\\smicroSurface=reflectivityOut.microSurface;': /*glsl*/ `
         #ifdef NW_OVERLAY_MASK
           vec4 nwMask = texture2D(nwMaskTexture, vMainUV1) * nwMaskRGBA.a;
           reflectivityOut.surfaceReflectivityColor = mix(reflectivityOut.surfaceReflectivityColor, nwMaskASpec.rgb, nwMask.a * nwMaskASpec.a) ;
@@ -194,6 +259,13 @@ export class NwMaterialPlugin extends MaterialPluginBase {
         #endif
         float microSurface=reflectivityOut.microSurface;
       `,
+      '!vec4\\ssurfaceMetallicOrReflectivityColorMap=texture(reflectivitySampler,vReflectivityUV+uvOffset);': /*glsl*/ `
+        vec4 surfaceMetallicOrReflectivityColorMap=texture(reflectivitySampler,vReflectivityUV+uvOffset);
+        #ifdef NW_SMOOTH_MAP
+          surfaceMetallicOrReflectivityColorMap.a = texture(nwSmoothTexture, vReflectivityUV+uvOffset).r;
+        #endif
+      `,
+      //
     }
   }
 }

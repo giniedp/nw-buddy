@@ -2,12 +2,12 @@ package models
 
 import (
 	"log/slog"
-	"nw-buddy/tools/formats/gltf"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/formats/impostors"
 	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/crymath"
 	"nw-buddy/tools/utils/logging"
+	"nw-buddy/tools/utils/math"
+	"nw-buddy/tools/utils/math/mat4"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
@@ -90,9 +90,9 @@ func (c *Collector) CollectImpostors(glob string) {
 				slog.Error("asset file not found", "asset", assetId, "file", asset.File)
 				continue
 			}
-			model, material := c.ResolveModelMaterialPair(modelFile.Path(), "")
+			model, material := c.ResolveCgfAndMtl(modelFile.Path(), "")
 
-			transform := crymath.Mat4Identity()
+			transform := mat4.Identity()
 			transform[12] = float32(impostor.WorldPosition.X)
 			transform[13] = float32(impostor.WorldPosition.Y)
 
@@ -101,7 +101,7 @@ func (c *Collector) CollectImpostors(glob string) {
 				MaterialFile: material,
 				Entity: importer.Entity{
 					//Name:      string(node.Entity.Name),
-					Transform: gltf.CryToGltfMat4(transform),
+					Transform: math.CryToGltfMat4(transform),
 				},
 			})
 

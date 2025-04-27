@@ -57,7 +57,7 @@ func (c *Collector) CollectAppearancesArmor(ids ...string) {
 			if c.shouldProcess(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file
-				model, material := c.ResolveModelMaterialPair(model, material)
+				model, material := c.ResolveCgfAndMtl(model, material)
 				if model != "" {
 					group.Meshes = append(group.Meshes, importer.GeometryAsset{
 						GeometryFile: model,
@@ -71,7 +71,7 @@ func (c *Collector) CollectAppearancesArmor(ids ...string) {
 						})
 					}
 					for _, attachment := range attachments {
-						model, material = c.ResolveModelMaterialPair(attachment.Binding, attachment.Material)
+						model, material = c.ResolveCgfAndMtl(attachment.Binding, attachment.Material)
 						if model != "" {
 							group.Meshes = append(group.Meshes, importer.GeometryAsset{
 								GeometryFile: model,
@@ -89,7 +89,7 @@ func (c *Collector) CollectAppearancesArmor(ids ...string) {
 			if c.shouldProcess(file) {
 				group := importer.AssetGroup{}
 				group.TargetFile = file
-				model, material := c.ResolveModelMaterialPair(model, material)
+				model, material := c.ResolveCgfAndMtl(model, material)
 				if model != "" {
 					group.Meshes = append(group.Meshes, importer.GeometryAsset{
 						GeometryFile: model,
@@ -103,7 +103,7 @@ func (c *Collector) CollectAppearancesArmor(ids ...string) {
 						})
 					}
 					for _, attachment := range attachments {
-						model, material = c.ResolveModelMaterialPair(attachment.Binding, attachment.Material)
+						model, material = c.ResolveCgfAndMtl(attachment.Binding, attachment.Material)
 						if model != "" {
 							group.Meshes = append(group.Meshes, importer.GeometryAsset{
 								GeometryFile: model,

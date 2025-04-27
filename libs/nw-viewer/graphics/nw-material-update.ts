@@ -63,7 +63,7 @@ export function updateNwMaterial({
   dyeAOverride?: number
   dyeAColor?: string
   glossShift?: number
-  debugMask: boolean
+  debugMask?: boolean
 }) {
   for (const mesh of meshes) {
     const mtl = NwMaterialPlugin.getPlugin(mesh.material)
@@ -72,11 +72,11 @@ export function updateNwMaterial({
     }
 
     if (!appearance) {
-      mtl.isEnabled = false
+      mtl.isMaskEnabled = false
       return
     }
 
-    mtl.isEnabled = true
+    mtl.isMaskEnabled = true
     mtl.debugMask = debugMask
 
     const maskR = getMaskSettings({

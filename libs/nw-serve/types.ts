@@ -18,12 +18,27 @@ export interface RegionInfo {
   cellResolution: number
   poiImpostors: ImpostorInfo[]
   impostors: ImpostorInfo[]
-  capitals: CapitalInfo[]
+  capitals: CapitalLayerInfo[]
 }
 
 export interface ImpostorInfo {
   position: [number, number]
   model: string
+}
+
+export interface DistributionInfo {
+  slices: Record<string, EntityInfo[]>
+  segments: Record<string, DistributionSlice[]>
+}
+
+export interface DistributionSlice {
+  slice: string
+  positions: number[][]
+}
+
+export interface CapitalLayerInfo {
+  name: string
+  capitals: CapitalInfo[]
 }
 
 export interface CapitalInfo {
@@ -41,6 +56,16 @@ export interface EntityInfo {
   model: string
   material: string
   instances: number[][]
+  light: LightInfo
+}
+
+export interface LightInfo {
+  type: number
+  color: [number, number, number, number]
+  diffuseIntensity: number
+  specularIntensity: number
+  pointDistance: number
+  pointAttenuation: number
 }
 
 export interface TerrainInfo {

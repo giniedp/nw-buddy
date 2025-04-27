@@ -4,20 +4,26 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"image/png"
 	"net/url"
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/formats/dds"
+	"nw-buddy/tools/formats/distribution"
 	"nw-buddy/tools/formats/gltf"
 	"nw-buddy/tools/formats/gltf/importer"
+	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/loc"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
+	"nw-buddy/tools/utils/json"
 	"path"
 	"strconv"
 	"strings"
+
+	"golang.org/x/image/tiff"
 )
 
 func convertFile(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
@@ -36,11 +42,15 @@ func convertFile(assets *game.Assets, file nwfs.File, target string, query url.V
 	case ".dds":
 		return convertDDS(assets, file, target, query)
 	case ".tif":
-		return convertDDS(assets, file, target, query)
+		return convertTif(assets, file, target, query)
+	case ".heightmap":
+		return convertHeightmap(file, target)
 	case ".cgf", ".skin":
 		return convertCGF(assets, file, target, query)
 	case ".cdf":
 		return convertCDF(assets, file, target)
+	case ".distribution":
+		return convertDistribution(file, target)
 	case ".xml":
 		if strings.HasSuffix(file.Path(), ".loc.xml") {
 			return convertLocale(file, target)
@@ -68,6 +78,30 @@ func convertDatasheet(file nwfs.File, target string) ([]byte, error) {
 	}
 }
 
+func convertTif(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
+	switch target {
+	case "", ".tif":
+		return file.Read()
+	case ".png":
+		data, err := file.Read()
+		if err != nil {
+			return nil, err
+		}
+		img, err := tiff.Decode(bytes.NewReader(data))
+		if err != nil {
+			return nil, err
+		}
+		buf := &bytes.Buffer{}
+		err = png.Encode(buf, img)
+		if err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+}
+
 func convertDDS(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
 	switch target {
 	case "", ".dds":
@@ -75,10 +109,13 @@ func convertDDS(assets *game.Assets, file nwfs.File, target string, query url.Va
 		if err != nil {
 			return nil, err
 		}
-		if img == nil || img.Data == nil {
-			return nil, fmt.Errorf("failed to load dds")
+		if dds.IsDDSAlpha(file.Path()) && img.Alpha != nil {
+			return img.Alpha, nil
 		}
-		return img.Data, nil
+		if !dds.IsDDSAlpha(file.Path()) && img.Data != nil {
+			return img.Data, nil
+		}
+		return nil, fmt.Errorf("failed to load dds")
 	case ".png", ".webp":
 		format := image.Format(target)
 		size, _ := strconv.Atoi(query.Get("size"))
@@ -96,10 +133,31 @@ func convertDDS(assets *game.Assets, file nwfs.File, target string, query url.Va
 		}
 		if img, err := loader.LoadImage(file.Path()); err != nil {
 			return nil, err
+		} else if dds.IsDDSAlpha(file.Path()) {
+			return img.Alpha, nil
 		} else {
 			return img.Data, nil
 		}
-	// 	)
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+}
+
+func convertHeightmap(file nwfs.File, target string) ([]byte, error) {
+	switch target {
+	case "", ".heightmap":
+		return file.Read()
+	case ".png":
+		img, err := heightmap.LoadImage(file)
+		if err != nil {
+			return nil, err
+		}
+		buf := &bytes.Buffer{}
+		err = png.Encode(buf, img)
+		if err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	default:
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}
@@ -109,7 +167,7 @@ func convertCGF(assets *game.Assets, file nwfs.File, target string, query url.Va
 	group := importer.AssetGroup{}
 	model := file.Path()
 	material := query.Get("material")
-	model, material = assets.ResolveModelMaterialPair(model, material)
+	model, material = assets.ResolveCgfAndMtl(model, material)
 	group.Meshes = append(group.Meshes, importer.GeometryAsset{
 		GeometryFile: model,
 		MaterialFile: material,
@@ -120,12 +178,12 @@ func convertCGF(assets *game.Assets, file nwfs.File, target string, query url.Va
 func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, error) {
 	group := importer.AssetGroup{}
 	model := file.Path()
-	asset, err := assets.ResolveCdfAsset(model)
+	asset, err := assets.LoadCdf(model)
 	if err != nil {
 		return nil, err
 	}
 	for _, mesh := range asset.SkinAndClothAttachments() {
-		model, material := assets.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
+		model, material := assets.ResolveCgfAndMtl(mesh.Binding, mesh.Material)
 		if model != "" {
 			group.Meshes = append(group.Meshes, importer.GeometryAsset{
 				GeometryFile: model,
@@ -165,7 +223,7 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([
 	for _, mesh := range group.Meshes {
 		document.ImportGeometry(mesh, assets.LoadAsset)
 	}
-	document.ImportCgfMaterialsBasic()
+	document.ImportCgfMaterials(false)
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	if err := document.Encode(w, binary); err != nil {
@@ -189,6 +247,19 @@ func convertLocale(file nwfs.File, target string) ([]byte, error) {
 			return nil, err
 		}
 		return record.ToJSON("", " ")
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+}
+
+func convertDistribution(file nwfs.File, target string) ([]byte, error) {
+	switch target {
+	case ".json":
+		doc, err := distribution.Load(file)
+		if err != nil {
+			return nil, err
+		}
+		return json.MarshalJSON(doc, "", "\t")
 	default:
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}

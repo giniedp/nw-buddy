@@ -49,7 +49,7 @@ func (c *Collector) CollectWeapons() {
 			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride1")
 				material := row.GetString("MaterialOverride1")
-				model, material = c.ResolveModelMaterialPair(model, material)
+				model, material = c.ResolveCgfAndMtl(model, material)
 				if model != "" {
 					group := importer.AssetGroup{}
 					group.TargetFile = file
@@ -65,7 +65,7 @@ func (c *Collector) CollectWeapons() {
 			if c.shouldProcess(file) {
 				model := row.GetString("SkinOverride2")
 				material := row.GetString("MaterialOverride2")
-				model, material = c.ResolveModelMaterialPair(model, material)
+				model, material = c.ResolveCgfAndMtl(model, material)
 				if model != "" {
 					group := importer.AssetGroup{}
 					group.TargetFile = file

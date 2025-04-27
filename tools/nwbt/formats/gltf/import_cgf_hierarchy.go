@@ -3,6 +3,8 @@ package gltf
 import (
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/utils/maps"
+	"nw-buddy/tools/utils/math"
+	"nw-buddy/tools/utils/math/mat4"
 	"slices"
 	"strings"
 
@@ -18,8 +20,8 @@ func (d *Document) ImportCgfHierarchy(cgfile *cgf.File, handleObject func(node *
 		}
 
 		node, nodeIndex := nodeMap.lookup(chunk.ChunkHeader.Id)
-		if !Mat4IsIdentity(chunk.Transform) {
-			node.Matrix = Mat4ToFloat64(CryToGltfMat4(Mat4Transpose(chunk.Transform)))
+		if !mat4.IsIdentity(chunk.Transform) {
+			node.Matrix = mat4.ToFloat64(math.CryToGltfMat4(mat4.Transpose(chunk.Transform)))
 		}
 		if chunk.ParentId == -1 {
 			rootNodes = append(rootNodes, node)

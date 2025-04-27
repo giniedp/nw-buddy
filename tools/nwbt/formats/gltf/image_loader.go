@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
+	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"strings"
 
@@ -12,43 +13,45 @@ import (
 	"github.com/qmuntal/gltf/modeler"
 )
 
-func (c *Document) LoadTexture(texture *mtl.Texture) *gltf.Texture {
+func (c *Document) LoadTexture(texture *mtl.Texture, alpha ...bool) *gltf.Texture {
 	if texture == nil {
 		return nil
 	}
 	if c.ImageLoader == nil {
 		return nil
 	}
-	candidates := make([]string, 0)
-	candidates = utils.AppendUniqNoZero(candidates, texture.File)
-	candidates = utils.AppendUniqNoZero(candidates, texture.AssetId)
-	if texture.File != "" {
-		candidates = utils.AppendUniqNoZero(candidates, utils.ReplaceExt(texture.File, ".dds"))
+
+	file := resolveFile(c.ImageLoader, texture.File, texture.AssetId)
+	if file == nil {
+		return nil
 	}
-	errors := make([]error, 0)
-	for _, fileOrAsset := range candidates {
-		var source string
-		tex, err := c.LoadTextureFunc(fileOrAsset, func() ([]byte, error) {
-			img, err := c.ImageLoader.LoadImage(fileOrAsset)
-			if err != nil {
-				return nil, err
-			}
-			source = img.Source
-			return img.Data, nil
-		})
-		if tex != nil && source != "" {
-			tex.Extras = ExtrasStore(tex.Extras, ExtraKeySource, source)
-		}
-		if tex != nil {
-			return tex
-		}
+
+	if len(alpha) > 0 && alpha[0] {
+		file = resolveFile(c.ImageLoader, utils.ReplaceExt(file.Path(), ".dds.a"))
+	}
+	if file == nil {
+		return nil
+	}
+
+	var source string
+	tex, err := c.LoadTextureFunc(file.Path(), func() ([]byte, error) {
+		img, err := c.ImageLoader.LoadImage(file.Path())
 		if err != nil {
-			errors = append(errors, err)
+			return nil, err
 		}
+		source = img.Source
+		return img.Data, nil
+	})
+	if tex != nil && source != "" {
+		tex.Extras = ExtrasStore(tex.Extras, ExtraKeySource, source)
 	}
-	if len(errors) > 0 {
-		slog.Warn("texture image not loaded", "tried", candidates, "errors", errors)
+	if tex != nil {
+		return tex
 	}
+	if err != nil {
+		slog.Warn("texture image not loaded", "file", file.Path(), "error", err)
+	}
+
 	return nil
 }
 
@@ -161,4 +164,18 @@ func toFormatRef(ref string, format image.Format) string {
 		ref = utils.ReplaceExt(ref, "")
 	}
 	return ref + string(format)
+}
+
+func resolveFile(loader image.Loader, file ...string) nwfs.File {
+	for _, tex := range file {
+		if tex == "" {
+			continue
+		}
+		if file, _ := loader.ResolveFile(tex); file != nil {
+			return file
+		} else {
+			slog.Warn("texture image not found", "file", tex)
+		}
+	}
+	return nil
 }

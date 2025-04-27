@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/gltf/importer"
+	"nw-buddy/tools/utils/math"
 	"slices"
 
 	"github.com/qmuntal/gltf"
@@ -51,7 +52,7 @@ func (c *Document) ImportCgfAnimation(asset importer.Animation, load func(asset 
 
 			rotKeys := slices.Clone(controller.RotationKeys)
 			for i := range rotKeys {
-				rotKeys[i] = CryToGltfQuat(rotKeys[i])
+				rotKeys[i] = math.CryToGltfQuat(rotKeys[i])
 			}
 			rotAccessor := modeler.WriteAccessor(c.Document, gltf.TargetNone, rotKeys)
 			rotSampler := &gltf.AnimationSampler{
@@ -82,7 +83,7 @@ func (c *Document) ImportCgfAnimation(asset importer.Animation, load func(asset 
 
 			posKeys := slices.Clone(controller.PositionKeys)
 			for i := range posKeys {
-				posKeys[i] = CryToGltfVec3(posKeys[i])
+				posKeys[i] = math.CryToGltfVec3(posKeys[i])
 			}
 			posAccessor := modeler.WriteAccessor(c.Document, gltf.TargetNone, posKeys)
 			posSampler := &gltf.AnimationSampler{

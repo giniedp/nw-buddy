@@ -5,6 +5,7 @@ import (
 	"io"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
+	"nw-buddy/tools/utils/math/mat4"
 	"os"
 	"path"
 	"slices"
@@ -132,7 +133,7 @@ func (d *Document) FindNodeByControllerId(controllerId uint32) (*gltf.Node, int)
 
 func (d *Document) AddToSceneWithTransform(scene *gltf.Scene, node *gltf.Node, transform [16]float32) {
 	parent, _ := d.NewNode()
-	parent.Matrix = Mat4ToFloat64(transform)
+	parent.Matrix = mat4.ToFloat64(transform)
 	d.NodeAddChild(parent, node)
 	d.AddToScene(scene, parent)
 }

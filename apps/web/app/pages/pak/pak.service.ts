@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { environment } from 'apps/web/environments'
 
-const toImageTypes = ['dds', 'png', 'tif']
+const toImageTypes = ['dds', 'png', 'tif', 'a', '1a', '2a', '3a', '4a', '5a', '6a', '7a', 'heightmap']
 const toModelTypes = ['cgf', 'cdf', 'skin']
 const toJsonTypes = [
   'dynamicslice',
@@ -13,6 +13,7 @@ const toJsonTypes = [
   'slicedata',
   'aliasasset',
   'metadata',
+  'distribution'
 ]
 const textTypes = [
   'json',

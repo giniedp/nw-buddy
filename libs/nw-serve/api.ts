@@ -1,4 +1,4 @@
-import { EntityInfo, LevelInfo, RegionInfo, TerrainInfo } from './types'
+import { DistributionInfo, EntityInfo, LevelInfo, RegionInfo, TerrainInfo } from './types'
 
 export type TypedRequest<T> = {
   url: string
@@ -52,8 +52,12 @@ export function getHeightmapInfoUrl(levelName: string): TypedRequest<TerrainInfo
   return { url: `/level/${levelName}/heightmap` }
 }
 
-export function getRegionEntitiesUrl(levelName: string, regionName: string): TypedRequest<Record<string, EntityInfo[]>> {
+export function getRegionEntitiesUrl(levelName: string, regionName: string): TypedRequest<Record<string, Record<string, EntityInfo[]>>> {
   return { url: `/level/${levelName}/region/${regionName}/capital` }
+}
+
+export function getRegionDistributionUrl(levelName: string, regionName: string): TypedRequest<DistributionInfo> {
+  return { url: `/level/${levelName}/region/${regionName}/distribution` }
 }
 
 export function getCapitalEntities(

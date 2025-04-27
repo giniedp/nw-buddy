@@ -5,6 +5,7 @@ import { GameComponent, GameEntity } from '../ecs'
 import { ContentProvider, GltfAsset } from '../services/content-provider'
 import { TransformComponent } from './transform-component'
 import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { updateNwMaterial } from '@nw-viewer/graphics'
 
 export type SkinnedMeshComponentOptions = {
   url: string

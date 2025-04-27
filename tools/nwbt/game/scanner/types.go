@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils/crymath"
+	"nw-buddy/tools/utils/math/transform"
 )
 
 // func NewScanContext() context.Context {
@@ -13,7 +13,7 @@ import (
 type SliceData struct {
 	Entity         *nwt.AZ__Entity
 	Name           string
-	Transform      crymath.Transform
+	Transform      transform.Node
 	VitalsID       string
 	NpcID          string
 	CategoryID     string

@@ -43,12 +43,13 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { TransformNode, Vector3 } from '@babylonjs/core'
 import { ViewerDetails } from '@babylonjs/viewer'
+import { NwMaterialExtension, updateNwMaterial } from '@nw-viewer/graphics'
 import { FullscreenService, LayoutModule, ModalRef } from '~/ui/layout'
 import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { getModelUrl } from './utils/get-model-url'
-import { Model, NwMaterialExtension, Viewer, createViewer, updateNwMaterial, viewerCaptureImage } from './viewer'
+import { Model, Viewer, createViewer, viewerCaptureImage } from './viewer'
 
 export interface ModelViewerState {
   models: ModelItemInfo[]

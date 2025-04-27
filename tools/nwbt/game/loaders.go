@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-func (it *Assets) LoadAzcs(file nwfs.File) (any, error) {
+func (it *Assets) LoadObjectStream(file nwfs.File) (any, error) {
 	key := file.Path()
 	if res, ok := it.objectCache.Load(key); ok {
 		return res, nil
@@ -48,7 +48,7 @@ func (it *Assets) LoadDatasheet(file nwfs.File) (*datasheet.Document, error) {
 }
 
 func (it *Assets) LoadEntity(file nwfs.File) (*nwt.AZ__Entity, error) {
-	node, err := it.LoadAzcs(file)
+	node, err := it.LoadObjectStream(file)
 	if node == nil || err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (it *Assets) LoadSliceComponent(file nwfs.File) (*nwt.SliceComponent, error
 }
 
 func (it *Assets) LoadRegionSliceData(file nwfs.File) (*nwt.RegionSliceDataLookup, error) {
-	node, err := it.LoadAzcs(file)
+	node, err := it.LoadObjectStream(file)
 	if node == nil || err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (it *Assets) LoadRegionSliceData(file nwfs.File) (*nwt.RegionSliceDataLooku
 }
 
 func (it *Assets) LoadAliasAsset(file nwfs.File) (*nwt.AliasAsset, error) {
-	node, err := it.LoadAzcs(file)
+	node, err := it.LoadObjectStream(file)
 	if node == nil || err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func (it *Assets) LookupFileByAsset2(azAsset nwt.AzAsset, parent nwfs.File) (nwf
 	return nil, fmt.Errorf("asset does not exist in archive: %v", asset)
 }
 
-func (c *Assets) ResolveCdfAsset(model string) (*cdf.Document, error) {
+func (c *Assets) LoadCdf(model string) (*cdf.Document, error) {
 	file, ok := c.Archive.Lookup(model)
 	if !ok {
 		return nil, fmt.Errorf("file not found: %s", model)
@@ -207,7 +207,7 @@ func (c *Assets) ResolveCdfAsset(model string) (*cdf.Document, error) {
 	return doc, nil
 }
 
-func (c *Assets) LoadAdbDocument(filePath string) (*adb.Document, error) {
+func (c *Assets) LoadAdb(filePath string) (*adb.Document, error) {
 	file, ok := c.Archive.Lookup(filePath)
 	if !ok {
 		return nil, fmt.Errorf("file not found: %s", filePath)

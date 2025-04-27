@@ -30,6 +30,7 @@ type GeometryAsset struct {
 }
 
 type LightAsset struct {
+	Entity
 	Type           int
 	Color          [3]float32
 	Intensity      float32

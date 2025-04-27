@@ -16,14 +16,14 @@ import (
 )
 
 func GetFileHandler(assets *game.Assets) http.HandlerFunc {
-	g := new(singleflight.Group)
+	execGroup := new(singleflight.Group)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		cacheKey := path.Join(flg.CacheDir, "server", getCacheKey(r))
 
-		res, err, _ := g.Do(cacheKey, func() (any, error) {
+		res, err, _ := execGroup.Do(cacheKey, func() (any, error) {
 			ext := path.Ext(r.URL.Path)
-			shouldcache := ext == ".glb" || ext == ".png"
+			shouldcache := false // ext == ".glb" || ext == ".png"
 			if shouldcache && utils.FileExists(cacheKey) {
 				data, err := os.ReadFile(cacheKey)
 				if err != nil {
@@ -81,7 +81,7 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 	query := r.URL.Query()
 	queryPath := nwfs.NormalizePath(r.URL.Path)
 	queryType := path.Ext(queryPath)
-	queryConvert := query.Get("merge") == "true" || query.Get("size") != ""
+	queryIsImage := queryType == ".png" || queryType == ".webp" || queryType == ".dds"
 	uuid := utils.ExtractUUID(queryPath)
 
 	filePath := queryPath
@@ -92,8 +92,11 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 		}
 	}
 
-	file, ok := archive.Lookup(filePath)
-	if ok && !queryConvert {
+	tried := []string{filePath}
+	file, exists := archive.Lookup(filePath)
+	if exists && !queryIsImage {
+		// the exact file is found and does not need image processing
+		// simply read and serve the data
 		data, err := file.Read()
 		if err != nil {
 			return result, err
@@ -104,17 +107,24 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 		return result, nil
 	}
 
-	if !ok {
+	if !exists {
+		// happens when a file was queried with a conversion type, e.g.: file.cgf.glb
+		// strip the conversion type and try again
 		filePath = strings.TrimSuffix(filePath, queryType)
-		file, ok = archive.Lookup(filePath)
+		file, exists = archive.Lookup(filePath)
+		tried = append(tried, filePath)
 	}
 
-	if !ok && queryType == ".png" {
-		file, ok = archive.Lookup(filePath + ".dds")
+	if !exists && queryIsImage {
+		// images are sometimes referenced as `.png` but are actually `.dds` files
+		// try to load the file as a `.dds` file
+		filePath = utils.ReplaceExt(filePath, ".dds")
+		file, exists = archive.Lookup(filePath)
+		tried = append(tried, filePath)
 	}
 
-	if !ok {
-		slog.Error("file not found", "path", filePath)
+	if !exists {
+		slog.Error("file not found", "path", queryPath, "tried", tried)
 		result.code = http.StatusNotFound
 		return result, errors.New("file not found")
 	}

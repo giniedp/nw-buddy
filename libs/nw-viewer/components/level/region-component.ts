@@ -4,7 +4,15 @@ import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
 
-import { fetchTypedRequest, getRegionEntitiesUrl, getRegionInfoUrl, ImpostorInfo, RegionInfo } from '@nw-serve'
+import {
+  EntityInfo,
+  fetchTypedRequest,
+  getRegionDistributionUrl,
+  getRegionEntitiesUrl,
+  getRegionInfoUrl,
+  ImpostorInfo,
+  RegionInfo,
+} from '@nw-serve'
 import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
 import { ContentProvider } from '@nw-viewer/services/content-provider'
 import { TransformComponent } from '../transform-component'
@@ -108,21 +116,28 @@ export class RegionComponent implements GameComponent {
     const request = getRegionInfoUrl(this.levelName, this.regionName)
     const data = await fetchTypedRequest(baseUrl, request)
     const entities = await fetchTypedRequest(baseUrl, getRegionEntitiesUrl(this.levelName, this.regionName))
+    //const distribution = await fetchTypedRequest(baseUrl, getRegionDistributionUrl(this.levelName, this.regionName))
     this.segments.clear()
 
     const capitals: CapitalWitEntities[] = []
-    for (const capital of data.capitals || []) {
-      capitals.push({
-        ...capital,
-        matrix: Matrix.FromArray(cryToGltfMat4(capital.transform)),
-        entities: entities[capital.id] || [],
-      })
+    for (const layer of data.capitals || []) {
+      for (const capital of layer.capitals || []) {
+        const capEntities = entities?.[layer.name]?.[capital.id] || []
+        if (capEntities.length === 0) {
+          continue
+        }
+        capitals.push({
+          ...capital,
+          matrix: Matrix.FromArray(cryToGltfMat4(capital.transform)),
+          entities: capEntities,
+        })
+      }
     }
 
     const count = this.regionSize / SEGMENT_SIZE
     for (let y = 0; y < count; y++) {
       for (let x = 0; x < count; x++) {
-        this.createSegment(x, y, data, capitals)
+        this.createSegment(x, y, data, capitals)//, distribution[`${x}_${y}`] || [])
       }
     }
     this.segments.initialize(this.entity.game)
@@ -131,7 +146,13 @@ export class RegionComponent implements GameComponent {
     }
   }
 
-  private createSegment(x: number, y: number, data: RegionInfo, capitalsTx: CapitalWitEntities[]) {
+  private createSegment(
+    x: number,
+    y: number,
+    data: RegionInfo,
+    capitalsTx: CapitalWitEntities[],
+    distribution?: EntityInfo[],
+  ) {
     const index = this.segments.length()
     const impostors: ImpostorInfo[] = []
     const capitals: CapitalWitEntities[] = []
@@ -192,6 +213,7 @@ export class RegionComponent implements GameComponent {
         region: this.regionName,
         impostors: impostors,
         capitals: capitals,
+        distribution: distribution,
         centerX: centerX,
         centerY: centerY,
       }),

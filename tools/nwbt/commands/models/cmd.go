@@ -191,7 +191,11 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 			for _, anim := range group.Animations {
 				document.ImportCgfAnimation(anim, c.LoadAnimation)
 			}
-			document.ImportCgfMaterials()
+			if len(group.Lights) > 0 {
+				document.ImportCgfLights(group.Lights)
+			}
+
+			document.ImportCgfMaterials(true)
 			document.Clean()
 
 			imageFormat := ""

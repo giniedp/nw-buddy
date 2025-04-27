@@ -72,7 +72,7 @@ func (c *Collector) CollectVitals(indexFile string, ids ...string) {
 		material := entry.Mtl
 
 		if path.Ext(model) == ".cdf" {
-			cdf, err := c.ResolveCdfAsset(model)
+			cdf, err := c.LoadCdf(model)
 			if err != nil {
 				slog.Warn("failed to resolve cdf asset", "file", model, "err", err)
 				continue
@@ -80,7 +80,7 @@ func (c *Collector) CollectVitals(indexFile string, ids ...string) {
 			c.CollectCdf(cdf, material, targetFile)
 		} else {
 			group := importer.AssetGroup{}
-			if model, material = c.ResolveModelMaterialPair(model, material); model != "" {
+			if model, material = c.ResolveCgfAndMtl(model, material); model != "" {
 				group.Meshes = append(group.Meshes, importer.GeometryAsset{
 					GeometryFile: model,
 					MaterialFile: material,

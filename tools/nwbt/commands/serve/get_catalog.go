@@ -43,7 +43,7 @@ func GetCatalogAssetHandler(assets *game.Assets) http.HandlerFunc {
 		}
 
 		if byName != "" {
-			file := assets.ResolveDynamicSliceNameToFile(byName)
+			file := assets.ResolveDynamicSliceByName(byName)
 			if file != nil {
 				serveJson(catalog.Asset{
 					Uuid: assetId,

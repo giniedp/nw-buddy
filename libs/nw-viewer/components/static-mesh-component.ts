@@ -1,9 +1,19 @@
-import { AbstractMesh, InstancedMesh, InstantiatedEntries, Material, Matrix, Mesh, Node, TransformNode } from '@babylonjs/core'
+import {
+  AbstractMesh,
+  InstancedMesh,
+  InstantiatedEntries,
+  Material,
+  Matrix,
+  Mesh,
+  Node,
+  TransformNode,
+} from '@babylonjs/core'
 import { SceneProvider } from '@nw-viewer/services/scene-provider'
 import { filter, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { GameComponent, GameEntity } from '../ecs'
 import { ContentProvider, GltfAsset } from '../services/content-provider'
 import { TransformComponent } from './transform-component'
+import { DebugMeshComponent } from './debug-mesh-component'
 
 export type StaticMeshComponentOptions = {
   model: string
@@ -21,6 +31,7 @@ export class StaticMeshComponent implements GameComponent {
   private active = false
   private options: StaticMeshComponentOptions
   private options$ = new ReplaySubject<StaticMeshComponentOptions>(1)
+  private debug: DebugMeshComponent
 
   private meshes: AbstractMesh[] = []
 
@@ -37,6 +48,7 @@ export class StaticMeshComponent implements GameComponent {
     this.transform = entity.component(TransformComponent)
     this.content = entity.service(ContentProvider)
     this.scene = entity.service(SceneProvider)
+    this.debug = entity.component(DebugMeshComponent, true)
   }
 
   public activate(): void {

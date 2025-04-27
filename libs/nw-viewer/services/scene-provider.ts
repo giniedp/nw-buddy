@@ -2,10 +2,18 @@ import {
   AbstractEngine,
   ArcRotateCamera,
   Camera,
+  Color3,
+  Color4,
   FlyCamera,
   FreeCamera,
+  GPUPicker,
+  HighlightLayer,
   ImageProcessingConfiguration,
+  InstancedMesh,
   Mesh,
+  Node,
+  PointerEventTypes,
+  PointerInfo,
   Scene,
   SSAO2RenderingPipeline,
   TAARenderingPipeline,
@@ -33,50 +41,60 @@ export class SceneProvider implements GameService {
   public screenQuadCamera: Camera
   public screenQuad: VertexData
   public screenQuadMesh: Mesh
+  public highlight: HighlightLayer
 
   public initialize(game: GameServiceContainer) {
     this.game = game
     this.engine = game.get(EngineProvider).engine
-    if (!this.main) {
-      const scene = createScene(this.engine)
-      this.main = scene
-      this.arcRotateCamera = new ArcRotateCamera(
-        'ArcRotateCamera',
-        Math.PI / 3,
-        Math.PI / 3,
-        10,
-        Vector3.Zero(),
-        this.main,
-      )
-      this.freeCamera = new FreeCamera('FreeCamera', Vector3.Zero(), this.main)
-      this.flyCamera = new FlyCamera('FlyCamera', Vector3.Zero(), this.main)
 
-      this.screenQuadCamera = createScreenQuadCamera(this.main)
-      this.screenQuad = createScreenQuad(this.main)
-      this.screenQuadMesh = new Mesh('ScreenQuad', this.main)
-      this.screenQuadMesh.setEnabled(false)
-      this.screenQuad.applyToMesh(this.screenQuadMesh, true)
+    this.main = createScene(this.engine)
+    this.highlight = new HighlightLayer('highlight', this.main)
+    this.highlight.blurHorizontalSize = 2
+    this.highlight.blurVerticalSize = 2
+    this.highlight.innerGlow = false
 
-      this.arcRotateCamera.minZ = 0.01
-      this.arcRotateCamera.lowerRadiusLimit = 1
-      this.arcRotateCamera.upperRadiusLimit = 1000
-      this.arcRotateCamera.wheelPrecision = 20
+    this.arcRotateCamera = new ArcRotateCamera(
+      'ArcRotateCamera',
+      Math.PI / 3,
+      Math.PI / 3,
+      10,
+      Vector3.Zero(),
+      this.main,
+    )
+    this.freeCamera = new FreeCamera('FreeCamera', Vector3.Zero(), this.main)
+    this.flyCamera = new FlyCamera('FlyCamera', Vector3.Zero(), this.main)
 
-      this.freeCamera.keysUp = [87] // W
-      this.freeCamera.keysDown = [83] // S
-      this.freeCamera.keysLeft = [65] // A
-      this.freeCamera.keysRight = [68] // D
+    this.screenQuadCamera = createScreenQuadCamera(this.main)
+    this.screenQuad = createScreenQuad(this.main)
+    this.screenQuadMesh = new Mesh('ScreenQuad', this.main)
+    this.screenQuadMesh.setEnabled(false)
+    this.screenQuad.applyToMesh(this.screenQuadMesh, true)
 
-      this.main.activeCamera = this.arcRotateCamera
-    }
+    this.arcRotateCamera.minZ = 0.01
+    this.arcRotateCamera.lowerRadiusLimit = 1
+    this.arcRotateCamera.upperRadiusLimit = 1000
+    this.arcRotateCamera.wheelPrecision = 20
+
+    this.freeCamera.keysUp = [87] // W
+    this.freeCamera.keysDown = [83] // S
+    this.freeCamera.keysLeft = [65] // A
+    this.freeCamera.keysRight = [68] // D
+
+    this.main.activeCamera = this.arcRotateCamera
 
     //this.main.performancePriority = ScenePerformancePriority.Aggressive
     this.engine.runRenderLoop(this.onRenderLoop)
+
+    this.main.onPointerObservable.add(this.onPointerObservable)
     console.log('SceneProvider initialized')
   }
 
   private onRenderLoop = () => {
     this.main.render()
+  }
+
+  private onPointerObservable = (pointer: PointerInfo) => {
+    this.handleMeshPicking(pointer)
   }
 
   public destroy(): void {
@@ -96,6 +114,42 @@ export class SceneProvider implements GameService {
   public showInspector() {
     Inspector.Show(this.main, { embedMode: true })
   }
+
+  private handleMeshPicking(pointer: PointerInfo) {
+    if (!(pointer.type & PointerEventTypes.POINTERDOUBLETAP)) {
+      return
+    }
+    this.highlight.removeAllMeshes()
+    const info = this.main.pick(pointer.event.offsetX, pointer.event.offsetY)
+
+    let mesh: Mesh
+    let node: Node
+    if (info.pickedMesh instanceof Mesh) {
+      mesh = info.pickedMesh
+      node = mesh
+    } else if (info.pickedMesh instanceof InstancedMesh) {
+      mesh = info.pickedMesh.sourceMesh
+      node = info.pickedMesh.parent
+    } else {
+      console.log('unhandled pick', info)
+    }
+    if (mesh) {
+      this.highlight.addMesh(mesh, new Color3(1, 0, 1), false)
+      console.log('picked', {
+        mesh,
+        node,
+      })
+      logNameChain(node)
+    }
+  }
+}
+
+function logNameChain(node: Node) {
+  if (!node) {
+    return
+  }
+  console.log(node.name)
+  logNameChain(node.parent)
 }
 
 function createScene(engine: AbstractEngine) {

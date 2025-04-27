@@ -23,6 +23,7 @@ type LoadedImage struct {
 
 type Loader interface {
 	LoadImage(imageOrUUID string) (*LoadedImage, error)
+	ResolveFile(imageOrUUID string) (nwfs.File, error)
 }
 
 type LoaderWithConverter struct {
@@ -39,7 +40,7 @@ func NewLoader(archive nwfs.Archive) Loader {
 }
 
 func (r LoaderWithConverter) LoadImage(image string) (*LoadedImage, error) {
-	file, err := r.findFile(image)
+	file, err := r.ResolveFile(image)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +71,7 @@ var (
 	ErrAssetNotFound       = fmt.Errorf("asset not found")
 )
 
-func (r LoaderWithConverter) findFile(imageOrUuid string) (nwfs.File, error) {
+func (r LoaderWithConverter) ResolveFile(imageOrUuid string) (nwfs.File, error) {
 	file := imageOrUuid
 	if uuid := utils.ExtractUUID(file); uuid != "" {
 		if r.Catalog == nil {

@@ -32,7 +32,7 @@ func (ctx *Scanner) ScanCapitalFile(rootFile nwfs.File) iter.Seq[SpawnNode] {
 				}
 			} else if capital.SliceName != "" {
 				transform := capital.Transform()
-				file := ctx.ResolveDynamicSliceNameToFile(capital.SliceName)
+				file := ctx.ResolveDynamicSliceByName(capital.SliceName)
 				for entry := range ctx.ScanFileForSpawners(file, make([]string, 0)) {
 					entry.Position = transform.TransformPoint(entry.Position)
 					entry.Trace = append(entry.Trace,

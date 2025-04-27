@@ -20,17 +20,13 @@ func (ctx *Scanner) ScanDistributionFile(file nwfs.File) iter.Seq[DistributionOu
 			slog.Error("distribution not loaded", "file", file.Path(), "err", err)
 			return
 		}
-		areaSize := float32(2048)
-		maxValue := float32(0xFFFF)
-
 		for i := range rec.Positions {
 			position := rec.Positions[i]
 			index := rec.Indices[i]
 			sliceName := rec.Slices[index]
 			variantId := rec.Variants[index]
 
-			x := (float32(rec.Region[0]) + float32(position[0])/maxValue) * areaSize
-			y := (float32(rec.Region[1]) + float32(position[1])/maxValue) * areaSize
+			x, y, _, _ := distribution.ConvertPosition(rec.Region, position)
 
 			if variantId != "" {
 				item := DistributionOutput{
@@ -47,7 +43,7 @@ func (ctx *Scanner) ScanDistributionFile(file nwfs.File) iter.Seq[DistributionOu
 			if sliceName == "" {
 				continue
 			}
-			sliceFile := ctx.ResolveDynamicSliceNameToFile(sliceName)
+			sliceFile := ctx.ResolveDynamicSliceByName(sliceName)
 			if sliceFile == nil {
 				continue
 			}

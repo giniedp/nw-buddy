@@ -111,3 +111,16 @@ func readStringArray(r *buf.Reader, count int) []string {
 	}
 	return res
 }
+
+func ConvertPosition(region [2]uint32, position [2]uint16) (float32, float32, float32, float32) {
+	areaSize := float32(2048)
+	maxValue := float32(0xFFFF)
+	rx := float32(region[0]) * areaSize
+	ry := float32(region[1]) * areaSize
+
+	px := (float32(position[0]) / maxValue) * areaSize
+	py := (float32(position[1]) / maxValue) * areaSize
+	x := rx + px
+	y := ry + py
+	return x, y, px, py
+}

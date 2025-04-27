@@ -11,6 +11,7 @@ import { ModelItemInfo, ModelViewerModule } from '~/widgets/model-viewer'
 import { PakSidebarComponent } from './pak-sidebar.component'
 import { PakService } from './pak.service'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
+import { GameViewerModule } from '~/widgets/game-viewer'
 
 @Component({
   standalone: true,
@@ -23,6 +24,7 @@ import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
     ModelViewerModule,
     SplitPaneDirective,
     SplitGutterComponent,
+    GameViewerModule,
   ],
   host: {
     class: 'ion-page flex flex-row',
@@ -49,7 +51,15 @@ import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
           <ion-content [scrollY]="false">
             @switch (previewType()) {
               @case ('3D') {
-                <nwb-model-viewer class="h-full" [models]="modelContent()" />
+                <nwb-game-viewer
+                  class="h-full"
+                  [nwGameViewerCharacter]="{
+                    url: modelContent()[0].url,
+                    rootUrl: modelContent()[0].rootUrl,
+                    adbUrl: null,
+                    tags: [],
+                  }"
+                />
               }
               @case ('TXT') {
                 <nwb-code-editor

@@ -5,6 +5,8 @@ import (
 	"iter"
 	"log/slog"
 	"nw-buddy/tools/formats/cgf"
+	"nw-buddy/tools/utils/math"
+	"nw-buddy/tools/utils/math/mat4"
 
 	"github.com/qmuntal/gltf"
 	"github.com/qmuntal/gltf/binary"
@@ -18,10 +20,10 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 	}
 
 	gltfBones := make([]*gltf.Node, len(chunk.Bones))
-	transforms := make([]Mat4x4, len(chunk.Bones))
-	inverse := make([]Mat4x4, len(chunk.Bones))
+	transforms := make([]mat4.Data, len(chunk.Bones))
+	inverse := make([]mat4.Data, len(chunk.Bones))
 	for i, bone := range chunk.Bones {
-		transforms[i] = CryToGltfMat4(Mat4Transpose(Mat4x4{
+		transforms[i] = math.CryToGltfMat4(mat4.Transpose(mat4.Data{
 			bone.BoneToWorld[0],
 			bone.BoneToWorld[1],
 			bone.BoneToWorld[2],
@@ -39,7 +41,7 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 			0,
 			1,
 		}))
-		inverse[i] = CryToGltfMat4(Mat4Transpose(Mat4x4{
+		inverse[i] = math.CryToGltfMat4(mat4.Transpose(mat4.Data{
 			bone.WorldToBone[0],
 			bone.WorldToBone[1],
 			bone.WorldToBone[2],
@@ -80,9 +82,9 @@ func (d *Document) ImportCgfSkin(cgfile *cgf.File, chunk cgf.ChunkCompiledBones)
 			}
 			gltfParent := gltfBones[parentIndex]
 			gltfParent.Children = append(gltfParent.Children, d.NodeIndex(gltfBone))
-			transform = Mat4Multiply(inverse[parentIndex], transform)
+			transform = mat4.Multiply(inverse[parentIndex], transform)
 		}
-		gltfBone.Matrix = Mat4ToFloat64(transform)
+		gltfBone.Matrix = mat4.ToFloat64(transform)
 	}
 
 	joints := make([]int, 0)
@@ -140,7 +142,7 @@ func (d *Document) MergeSkins() {
 			scene := d.DefaultScene()
 			scene.Nodes = append(scene.Nodes, d.NodeIndex(node))
 		}
-		mat, _ := ExtrasLoad[Mat4x4](node.Extras, ExtraKeyInverse)
+		mat, _ := ExtrasLoad[mat4.Data](node.Extras, ExtraKeyInverse)
 		data = append(data, [4][4]float32{
 			{mat[0], mat[4], mat[8], mat[12]},
 			{mat[1], mat[5], mat[9], mat[13]},
@@ -214,7 +216,7 @@ func (d *Document) MergeSkins() {
 
 func (d *Document) jointCopy(joint *gltf.Node, newSkin *gltf.Skin) *gltf.Node {
 	controllerId, _ := ExtrasLoad[uint32](joint.Extras, ExtraKeyControllerID)
-	inverse, _ := ExtrasLoad[Mat4x4](joint.Extras, ExtraKeyInverse)
+	inverse, _ := ExtrasLoad[mat4.Data](joint.Extras, ExtraKeyInverse)
 	for node := range d.EachSkinNode(newSkin) {
 		if ci, _ := ExtrasLoad[uint32](node.Extras, ExtraKeyControllerID); ci == controllerId {
 			return node

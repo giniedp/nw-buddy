@@ -1,14 +1,16 @@
-package crymath
+package mat4
 
-type Mat4x4 = [16]float32
-type Vec3 = [3]float32
-type Quat = [4]float32
+import (
+	"nw-buddy/tools/rtti/nwt"
+)
 
-func Mat4FromQuaternion(q Quat) Mat4x4 {
-	x := q[0]
-	y := q[1]
-	z := q[2]
-	w := q[3]
+type Data = [16]float32
+
+func FromQuat(q [4]float32) Data {
+	return FromXYZW(q[0], q[1], q[2], q[3])
+}
+
+func FromXYZW(x, y, z, w float32) Data {
 
 	xx := x * x
 	xy := x * y
@@ -45,15 +47,15 @@ func Mat4FromQuaternion(q Quat) Mat4x4 {
 	return m
 }
 
-func Mat4ToFloat64(m Mat4x4) (out [16]float64) {
+func ToFloat64(m Data) (out [16]float64) {
 	for i, v := range m {
 		out[i] = float64(v)
 	}
 	return
 }
 
-func Mat4Transpose(m Mat4x4) Mat4x4 {
-	return Mat4x4{
+func Transpose(m Data) Data {
+	return Data{
 		m[0], m[4], m[8], m[12],
 		m[1], m[5], m[9], m[13],
 		m[2], m[6], m[10], m[14],
@@ -61,8 +63,8 @@ func Mat4Transpose(m Mat4x4) Mat4x4 {
 	}
 }
 
-func Mat4Identity() Mat4x4 {
-	return Mat4x4{
+func Identity() Data {
+	return Data{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -70,14 +72,15 @@ func Mat4Identity() Mat4x4 {
 	}
 }
 
-func Mat4IsIdentity(m Mat4x4) bool {
-	return m == Mat4Identity()
+func IsIdentity(m Data) bool {
+	return m == Identity()
 }
 
-func Mat4Concat(a, b Mat4x4) Mat4x4 {
-	return Mat4Multiply(b, a)
+func Concat(a, b Data) Data {
+	return Multiply(b, a)
 }
-func Mat4Multiply(a, b Mat4x4) (out Mat4x4) {
+
+func Multiply(a, b Data) (out Data) {
 	a00 := a[0]
 	a01 := a[1]
 	a02 := a[2]
@@ -129,4 +132,44 @@ func Mat4Multiply(a, b Mat4x4) (out Mat4x4) {
 	out[14] = b30*a02 + b31*a12 + b32*a22 + b33*a32
 	out[15] = b30*a03 + b31*a13 + b32*a23 + b33*a33
 	return out
+}
+
+func FromAzTransform(it nwt.AzTransform) Data {
+	return FromAzTransformData(it.Data)
+}
+
+func FromAzTransformData(data []nwt.AzFloat32) Data {
+	if len(data) == 10 {
+		rotation := data[0:4]
+		scale := data[4:7]
+		translation := data[7:10]
+		mat := FromXYZW(float32(rotation[0]), float32(rotation[1]), float32(rotation[2]), float32(rotation[3]))
+		mat[0] *= float32(scale[0])
+		mat[1] *= float32(scale[0])
+		mat[2] *= float32(scale[0])
+		mat[4] *= float32(scale[1])
+		mat[5] *= float32(scale[1])
+		mat[6] *= float32(scale[1])
+		mat[8] *= float32(scale[2])
+		mat[9] *= float32(scale[2])
+		mat[10] *= float32(scale[2])
+		mat[12] = float32(translation[0])
+		mat[13] = float32(translation[1])
+		mat[14] = float32(translation[2])
+		return mat
+	}
+	if len(data) == 12 {
+		return [16]float32{
+			float32(data[0]), float32(data[1]), float32(data[2]), 0,
+			float32(data[3]), float32(data[4]), float32(data[5]), 0,
+			float32(data[6]), float32(data[7]), float32(data[8]), 0,
+			float32(data[9]), float32(data[10]), float32(data[11]), 1,
+		}
+	}
+	return [16]float32{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}
 }

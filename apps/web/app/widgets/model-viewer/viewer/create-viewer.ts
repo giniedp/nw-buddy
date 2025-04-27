@@ -2,7 +2,8 @@ import { NgZone } from '@angular/core'
 
 import { CreateScreenshotAsync } from '@babylonjs/core'
 import { CreateViewerForCanvas, Viewer, ViewerDetails } from '@babylonjs/viewer'
-import { registerNwMaterialPlugin } from './nw-material-plugin'
+import { NwMaterialPlugin } from '@nw-viewer/graphics'
+
 export type { Model, Viewer } from '@babylonjs/viewer'
 
 export async function createViewer(options: {
@@ -11,7 +12,7 @@ export async function createViewer(options: {
   mode?: 'dark' | 'light'
   onInitialized?: (details: ViewerDetails) => void
 }): Promise<Viewer> {
-  registerNwMaterialPlugin()
+  NwMaterialPlugin.register()
   const canvas = options.element
   const zone = options.zone
   return zone.runOutsideAngular(async () => {

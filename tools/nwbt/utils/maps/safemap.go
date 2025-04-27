@@ -202,3 +202,9 @@ func (r *SafeDict[T]) SortedIter() iter.Seq2[string, T] {
 		}
 	}
 }
+
+func (r *SafeDict[T]) Write(fn func()) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	fn()
+}

@@ -22,7 +22,7 @@ func TestReadPathMetadata(t *testing.T) {
 func TestParseHeightField(t *testing.T) {
 	data, err := os.ReadFile("samples/region.heightmap")
 	assert.NoError(t, err)
-	region, err := heightmap.LoadFromTiffOld(data)
+	region, err := heightmap.LoadFieldOld(data)
 	assert.NoError(t, err)
 	assert.Equal(t, 2048*2048, len(region))
 

@@ -58,13 +58,13 @@ func (c *Collector) CollectCostumes(ids ...string) {
 			if path.Ext(model) != ".cdf" {
 				continue
 			}
-			cdf, err := c.ResolveCdfAsset(model)
+			cdf, err := c.LoadCdf(model)
 			if err != nil {
 				continue
 			}
 			group := importer.AssetGroup{}
 			for _, mesh := range cdf.SkinAndClothAttachments() {
-				model, mtl := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material)
+				model, mtl := c.ResolveCgfAndMtl(mesh.Binding, mesh.Material)
 				if model != "" {
 					group.Meshes = append(group.Meshes, importer.GeometryAsset{
 						GeometryFile: model,

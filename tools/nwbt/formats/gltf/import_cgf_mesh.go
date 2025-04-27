@@ -6,6 +6,7 @@ import (
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/buf"
+	"nw-buddy/tools/utils/math"
 	"slices"
 	"strings"
 
@@ -123,7 +124,7 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 				case 12:
 					vertices := make([][3]float32, subset.NumVertices)
 					for i := range vertices {
-						vertices[i] = CryToGltfVec3([3]float32{
+						vertices[i] = math.CryToGltfVec3([3]float32{
 							r.MustReadFloat32(),
 							r.MustReadFloat32(),
 							r.MustReadFloat32(),
@@ -133,7 +134,7 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 				case 8:
 					vertices := make([][3]float32, subset.NumVertices)
 					for i := range subset.NumVertices {
-						vertices[i] = CryToGltfVec3([3]float32{
+						vertices[i] = math.CryToGltfVec3([3]float32{
 							float16.Float16(r.MustReadUint16()).Float32(),
 							float16.Float16(r.MustReadUint16()).Float32(),
 							float16.Float16(r.MustReadUint16()).Float32(),
@@ -151,7 +152,7 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 				case 12:
 					vertices := make([][3]float32, subset.NumVertices)
 					for i := range subset.NumVertices {
-						vertices[i] = CryToGltfVec3([3]float32{
+						vertices[i] = math.CryToGltfVec3([3]float32{
 							r.MustReadFloat32(),
 							r.MustReadFloat32(),
 							r.MustReadFloat32(),
@@ -163,7 +164,7 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 					r.SeekRelative(8 * int(subset.FirstVertex))
 					vertices := make([][3]float32, subset.NumVertices)
 					for i := range subset.NumVertices {
-						vertices[i] = CryToGltfVec3([3]float32{
+						vertices[i] = math.CryToGltfVec3([3]float32{
 							float16.Float16(r.MustReadUint16()).Float32(),
 							float16.Float16(r.MustReadUint16()).Float32(),
 							float16.Float16(r.MustReadUint16()).Float32(),
@@ -182,13 +183,13 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 					tangents := make([][4]float32, subset.NumVertices)
 					normals := make([][3]float32, subset.NumVertices)
 					for i := range subset.NumVertices {
-						t := CryToGltfQuat([4]float32{
+						t := math.CryToGltfQuat([4]float32{
 							float32(r.MustReadInt16()) / 32767.0,
 							float32(r.MustReadInt16()) / 32767.0,
 							float32(r.MustReadInt16()) / 32767.0,
 							float32(r.MustReadInt16()) / 32767.0,
 						})
-						b := CryToGltfQuat([4]float32{
+						b := math.CryToGltfQuat([4]float32{
 							float32(r.MustReadInt16()) / 32767.0,
 							float32(r.MustReadInt16()) / 32767.0,
 							float32(r.MustReadInt16()) / 32767.0,

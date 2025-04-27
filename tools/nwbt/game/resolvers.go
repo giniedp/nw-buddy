@@ -2,7 +2,6 @@ package game
 
 import (
 	"log/slog"
-	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/cloth"
 	"nw-buddy/tools/nwfs"
@@ -37,7 +36,6 @@ func (c *Assets) ResolveCgf(file string) string {
 			return cgfPath
 		}
 		slog.Debug("No .cgf found for .rnr", "file", file)
-		//return ""
 	case ".cloth":
 		if ref, _ := cloth.TryResolveGeometryReference(f); ref != "" {
 			return ref
@@ -136,7 +134,7 @@ func (c *Assets) ResolveMtlFromCgf(model string) string {
 	return ""
 }
 
-func (c *Assets) ResolveModelMaterialPair(model, material string, fallback ...string) (string, string) {
+func (c *Assets) ResolveCgfAndMtl(model, material string, materialFallback ...string) (string, string) {
 	if model == "" {
 		return "", ""
 	}
@@ -145,7 +143,7 @@ func (c *Assets) ResolveModelMaterialPair(model, material string, fallback ...st
 		slog.Warn("model not resolved", "file", model)
 		return "", ""
 	}
-	materialOut := c.ResolveMtl(material, fallback...)
+	materialOut := c.ResolveMtl(material, materialFallback...)
 	if materialOut == "" {
 		materialOut = c.ResolveMtlFromCgf(modelOut)
 	}
@@ -156,19 +154,7 @@ func (c *Assets) ResolveModelMaterialPair(model, material string, fallback ...st
 	return modelOut, materialOut
 }
 
-func (c *Assets) ResolveCdfAnimations(cdf cdf.Document) {
-	animations, err := cdf.LoadAnimationFiles(c.Archive)
-	if err != nil {
-		slog.Error("animation files not loaded", "error", err)
-		return
-	}
-	if len(animations) == 0 {
-		return
-	}
-
-}
-
-func (ctx *Assets) ResolveDynamicSliceNameToFile(sliceName string) nwfs.File {
+func (ctx *Assets) ResolveDynamicSliceByName(sliceName string) nwfs.File {
 	if sliceName == "" || sliceName == "<PLOT>" {
 		return nil
 	}

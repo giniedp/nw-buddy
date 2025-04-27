@@ -83,7 +83,15 @@ func Load(file nwfs.File) ([]float32, error) {
 		return nil, err
 	}
 	// return LoadFromTiff(data)
-	return LoadFromTiffOld(data)
+	return LoadFieldOld(data)
+}
+
+func LoadImage(file nwfs.File) (image.Image, error) {
+	data, err := file.Read()
+	if err != nil {
+		return nil, err
+	}
+	return ConvertImageOld(data)
 }
 
 func LoadFromTiff(data []byte) ([]float32, error) {
@@ -94,7 +102,15 @@ func LoadFromTiff(data []byte) ([]float32, error) {
 	return LoadFromImage(img)
 }
 
-func LoadFromTiffOld(data []byte) ([]float32, error) {
+func LoadFieldOld(data []byte) ([]float32, error) {
+	img, err := ConvertImageOld(data)
+	if err != nil {
+		return nil, err
+	}
+	return LoadFromImage(img)
+}
+
+func ConvertImageOld(data []byte) (image.Image, error) {
 	f, err := os.CreateTemp(env.TempDir(), "*")
 	if err != nil {
 		return nil, err
@@ -122,11 +138,7 @@ func LoadFromTiffOld(data []byte) ([]float32, error) {
 		return nil, err
 	}
 	defer pngFile.Close()
-	img, err := png.Decode(pngFile)
-	if err != nil {
-		return nil, err
-	}
-	return LoadFromImage(img)
+	return png.Decode(pngFile)
 }
 
 func LoadFromImage(img image.Image) ([]float32, error) {

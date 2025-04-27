@@ -1,9 +1,12 @@
 package game
 
 import (
+	"fmt"
 	"log/slog"
+
+	m "math"
 	"nw-buddy/tools/formats/capitals"
-	"nw-buddy/tools/formats/gltf"
+	"nw-buddy/tools/formats/distribution"
 	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/formats/impostors"
 	"nw-buddy/tools/formats/localmappings"
@@ -13,13 +16,14 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/crymath"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/maps"
+	"nw-buddy/tools/utils/math/mat4"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -45,13 +49,18 @@ type RegionDefinition struct {
 	MapSettings   mapsettings.Document
 	Impostors     []impostors.Impostor
 	PoiImpostors  []impostors.Impostor
-	Capitals      []capitals.Capital
+	Capitals      []CapitalLayerDefinition
 	Chunks        nwfs.File
 	Distribution  nwfs.File
 	Heightmap     nwfs.File
 	Metadata      nwfs.File
 	Slicedata     nwfs.File
 	Tractmap      nwfs.File
+}
+
+type CapitalLayerDefinition struct {
+	Name     string
+	Capitals []capitals.Capital
 }
 
 func levelsPath(name string, paths ...string) string {
@@ -199,7 +208,10 @@ func LoadLevelRegionDefinition(archive nwfs.Archive, levelName, regionName strin
 	if caps, err := archive.Glob(path.Join(regionDir, "capitals", "**.capitals.json")); err == nil {
 		for _, cap := range caps {
 			if doc, err := capitals.Load(cap); err == nil {
-				region.Capitals = append(region.Capitals, doc.Capitals...)
+				region.Capitals = append(region.Capitals, CapitalLayerDefinition{
+					Name:     strings.TrimPrefix(cap.Path(), path.Join(regionDir, "capitals")+"/"),
+					Capitals: doc.Capitals,
+				})
 			}
 		}
 	}
@@ -264,9 +276,10 @@ type RegionInfo struct {
 	CellResolution int                `json:"cellResolution"`
 	SegmentSize    int                `json:"segmentSize"`
 	Segments       []SegmentReference `json:"segments"`
-	Capitals       []*CapitalInfo     `json:"capitals"`
-	PoiImpostors   []*ImpostorInfo    `json:"poiImpostors"`
-	Impostors      []*ImpostorInfo    `json:"impostors"`
+	Capitals       []CapitalLayerInfo `json:"capitals"`
+	PoiImpostors   []ImpostorInfo     `json:"poiImpostors"`
+	Impostors      []ImpostorInfo     `json:"impostors"`
+	Distribution   string             `json:"distribution"`
 }
 type SegmentReference struct {
 	ID       int     `json:"id"`
@@ -278,23 +291,38 @@ type ImpostorInfo struct {
 	Model    string     `json:"model"`
 }
 
+type CapitalLayerInfo struct {
+	Name     string        `json:"name"`
+	Capitals []CapitalInfo `json:"capitals"`
+}
+
 type CapitalInfo struct {
-	ID        string         `json:"id"`
-	Transform crymath.Mat4x4 `json:"transform"`
-	Radius    float32        `json:"radius"`
-	Slice     string         `json:"slice"`
-	Entities  []EntityInfo   `json:"entities"`
+	ID        string       `json:"id"`
+	Transform mat4.Data    `json:"transform"`
+	Radius    float32      `json:"radius"`
+	Slice     string       `json:"slice"`
+	Entities  []EntityInfo `json:"entities"`
 }
 
 type EntityInfo struct {
-	ID        uint             `json:"id"`
-	Name      string           `json:"name"`
-	File      string           `json:"file"`
-	Model     string           `json:"model"`
-	Material  string           `json:"material"`
-	Transform crymath.Mat4x4   `json:"transform"`
-	Instances []crymath.Mat4x4 `json:"instances"`
-	Debug     any              `json:"debug"`
+	ID        uint        `json:"id"`
+	Name      string      `json:"name"`
+	File      string      `json:"file"`
+	Transform mat4.Data   `json:"transform"`
+	Model     string      `json:"model,omitempty"`
+	Material  string      `json:"material,omitempty"`
+	Instances []mat4.Data `json:"instances,omitempty"`
+	Light     *LightInfo  `json:"light,omitempty"`
+	Options   any         `json:"options"`
+}
+
+type LightInfo struct {
+	Type              uint             `json:"type"`
+	Color             [4]nwt.AzFloat32 `json:"color"`
+	DiffuseIntensity  float32          `json:"diffuseIntensity"`
+	SpecularIntensity float32          `json:"specularIntensity"`
+	PointDistance     float32          `json:"pointDistance"`
+	PointAttenuation  float32          `json:"pointAttenuation"`
 }
 
 type TerrainInfo struct {
@@ -309,6 +337,16 @@ type TerrainInfo struct {
 	OceanLevel     float32 `json:"oceanLevel"`
 	MountainHeight float32 `json:"mountainHeight"`
 	GroundMaterial string  `json:"groundMaterial"`
+}
+
+type DistributionInfo struct {
+	Slices   map[string][]EntityInfo        `json:"slices"`
+	Segments map[string][]DistributionSlice `json:"segments"`
+}
+
+type DistributionSlice struct {
+	Slice     string       `json:"slice"`
+	Positions [][2]float32 `json:"positions"`
 }
 
 func LoadLevelInfo(assets *Assets, name string) *LevelInfo {
@@ -339,8 +377,11 @@ func LoadLevelRegionInfo(assets *Assets, levelName string, regionName string) *R
 	region.Size = meta.MapSettings.RegionSize
 	region.CellResolution = meta.MapSettings.CellResolution
 	region.SegmentSize = SegmentSize
+	if meta.Distribution != nil {
+		region.Distribution = meta.Distribution.Path()
+	}
 
-	region.PoiImpostors = make([]*ImpostorInfo, len(meta.PoiImpostors))
+	region.PoiImpostors = make([]ImpostorInfo, len(meta.PoiImpostors))
 	progress.Concurrent(workerCount, meta.PoiImpostors, func(imp impostors.Impostor, i int) error {
 		uuid := utils.ExtractUUID(imp.MeshAssetID)
 		file, err := assets.LookupFileByUuid(uuid)
@@ -348,7 +389,7 @@ func LoadLevelRegionInfo(assets *Assets, levelName string, regionName string) *R
 			slog.Error("impostor not loaded", "level", levelName, "region", regionName, "error", err)
 		}
 		if file != nil {
-			region.PoiImpostors[i] = &ImpostorInfo{
+			region.PoiImpostors[i] = ImpostorInfo{
 				Position: [2]float64{imp.WorldPosition.X, imp.WorldPosition.Y},
 				Model:    file.Path(),
 			}
@@ -356,7 +397,7 @@ func LoadLevelRegionInfo(assets *Assets, levelName string, regionName string) *R
 		return nil
 	})
 
-	region.Impostors = make([]*ImpostorInfo, len(meta.Impostors))
+	region.Impostors = make([]ImpostorInfo, len(meta.Impostors))
 	progress.Concurrent(workerCount, meta.Impostors, func(imp impostors.Impostor, i int) error {
 		uuid := utils.ExtractUUID(imp.MeshAssetID)
 		file, err := assets.LookupFileByUuid(uuid)
@@ -364,7 +405,7 @@ func LoadLevelRegionInfo(assets *Assets, levelName string, regionName string) *R
 			slog.Error("impostor not loaded", "level", levelName, "region", regionName, "error", err)
 		}
 		if file != nil {
-			region.Impostors[i] = &ImpostorInfo{
+			region.Impostors[i] = ImpostorInfo{
 				Position: [2]float64{imp.WorldPosition.X, imp.WorldPosition.Y},
 				Model:    file.Path(),
 			}
@@ -384,25 +425,31 @@ func LoadLevelRegionInfo(assets *Assets, levelName string, regionName string) *R
 		}
 	}
 
-	region.Capitals = make([]*CapitalInfo, len(meta.Capitals))
-	progress.Concurrent(workerCount, meta.Capitals, func(cap capitals.Capital, i int) error {
-		file := assets.ResolveDynamicSliceNameToFile(cap.SliceName)
-		cap.Transform()
-		result := &CapitalInfo{
-			ID:        cap.ID,
-			Transform: cap.Transform().ToMat4(),
+	region.Capitals = make([]CapitalLayerInfo, 0)
+	for _, layer := range meta.Capitals {
+		layerInfo := CapitalLayerInfo{
+			Name:     layer.Name,
+			Capitals: make([]CapitalInfo, len(layer.Capitals)),
 		}
-		if cap.Footprint != nil {
-			result.Radius = cap.Footprint.Radius
-		} else {
-			result.Radius = 1.0
-		}
-		if file != nil {
-			result.Slice = file.Path()
-		}
-		region.Capitals[i] = result
-		return nil
-	})
+		progress.Concurrent(workerCount, layer.Capitals, func(cap capitals.Capital, i int) error {
+			file := assets.ResolveDynamicSliceByName(cap.SliceName)
+			result := CapitalInfo{
+				ID:        cap.ID,
+				Transform: cap.Transform().ToMat4(),
+			}
+			if cap.Footprint != nil {
+				result.Radius = cap.Footprint.Radius
+			} else {
+				result.Radius = 1.0
+			}
+			if file != nil {
+				result.Slice = file.Path()
+			}
+			layerInfo.Capitals[i] = result
+			return nil
+		})
+		region.Capitals = append(region.Capitals, layerInfo)
+	}
 
 	return &region
 }
@@ -421,8 +468,8 @@ type LevelLoader interface {
 
 type RegionLoader interface {
 	Info() *RegionInfo
-	Capital(id string) CapitalLoader
-	Entities() map[string][]EntityInfo
+	Entities() map[string]map[string][]EntityInfo
+	Distribution() *DistributionInfo
 }
 
 type CapitalLoader interface {
@@ -529,49 +576,124 @@ func (l *levelLoader) MissionEntities() []EntityInfo {
 	if definition.MissionEntitiesFile == nil {
 		return l.missionEntities
 	}
-	l.missionEntities = LoadEntities(l.assets, definition.MissionEntitiesFile.Path(), crymath.Mat4Identity())
+	l.missionEntities = LoadEntities(l.assets, definition.MissionEntitiesFile.Path(), mat4.Identity())
 	return l.missionEntities
 }
 
 type regionLoader struct {
-	assets   *Assets
-	name     string
-	info     *RegionInfo
-	capitals *maps.SafeDict[CapitalLoader]
+	assets       *Assets
+	name         string
+	info         *RegionInfo
+	capitals     *maps.SafeDict[CapitalLoader]
+	distribution *DistributionInfo
 }
 
 func (r *regionLoader) Info() *RegionInfo {
 	return r.info
 }
 
-func (r *regionLoader) Entities() map[string][]EntityInfo {
+func (r *regionLoader) Entities() map[string]map[string][]EntityInfo {
 	if r.info == nil {
 		return nil
 	}
-	entities := maps.NewSafeDict[[]EntityInfo]()
-	progress.Concurrent(10, r.info.Capitals, func(cap *CapitalInfo, i int) error {
-		capitalLoader := r.Capital(cap.ID)
-		if capitalLoader != nil {
-			entities.Store(cap.ID, capitalLoader.Entities())
-		}
-		return nil
-	})
+	entities := maps.NewSafeDict[map[string][]EntityInfo]()
+	for _, layer := range r.info.Capitals {
+		layerEntities := maps.NewSafeDict[[]EntityInfo]()
+		progress.Concurrent(10, layer.Capitals, func(cap CapitalInfo, i int) error {
+			capitalLoader := r.Capital(layer.Name, cap.ID)
+			if capitalLoader != nil {
+				layerEntities.Store(cap.ID, capitalLoader.Entities())
+			}
+			return nil
+		})
+		entities.Store(layer.Name, layerEntities.ToMap())
+	}
 	return entities.ToMap()
 }
 
-func (r *regionLoader) Capital(id string) CapitalLoader {
-	capital, _ := r.capitals.LoadOrStoreFn(id, func() CapitalLoader {
+func (r *regionLoader) Distribution() *DistributionInfo {
+	if r.distribution != nil {
+		return r.distribution
+	}
+	if r.Info().Distribution == "" {
+		return nil
+	}
+	file, ok := r.assets.Archive.Lookup(r.Info().Distribution)
+	if !ok {
+		return nil
+	}
+	doc, err := distribution.Load(file)
+	if err != nil {
+		slog.Error("distribution not loaded", "file", file.Path(), "error", err)
+		return nil
+	}
+
+	slices := maps.NewSafeDict[[]EntityInfo]()
+	segments := maps.NewSafeDict[map[string]DistributionSlice]()
+
+	progress.Concurrent(10, doc.Positions, func(position [2]uint16, i int) error {
+		index := doc.Indices[i]
+		sliceName := doc.Slices[index]
+
+		slices.LoadOrStoreFn(sliceName, func() []EntityInfo {
+			sliceFile := r.assets.ResolveDynamicSliceByName(sliceName)
+			if sliceFile == nil {
+				return nil
+			}
+			return LoadEntities(r.assets, sliceFile.Path(), mat4.Identity())
+		})
+
+		worldX, worldY, localX, localY := distribution.ConvertPosition(doc.Region, position)
+		segmentX := int(m.Floor(float64(localX) / 128))
+		segmentY := int(m.Floor(float64(localY) / 128))
+
+		key := fmt.Sprintf("%d_%d", segmentX, segmentY)
+
+		segments.Write(func() {
+			bucket, _ := segments.LoadOrStoreFn(key, func() map[string]DistributionSlice {
+				return make(map[string]DistributionSlice)
+			})
+			slice, ok := bucket[sliceName]
+			if !ok {
+				slice = DistributionSlice{
+					Slice:     sliceName,
+					Positions: make([][2]float32, 0),
+				}
+			}
+			slice.Positions = append(slice.Positions, [2]float32{float32(worldX), float32(worldY)})
+			bucket[sliceName] = slice
+		})
+
+		return nil
+	})
+
+	r.distribution = &DistributionInfo{
+		Slices:   slices.ToMap(),
+		Segments: make(map[string][]DistributionSlice),
+	}
+
+	return r.distribution
+}
+
+func (r *regionLoader) Capital(layerName, id string) CapitalLoader {
+	key := layerName + ":" + id
+	capital, _ := r.capitals.LoadOrStoreFn(key, func() CapitalLoader {
 		if r.info == nil {
 			return nil
 		}
-		for _, capital := range r.info.Capitals {
-			if capital.ID != id {
+		for _, layer := range r.info.Capitals {
+			if layer.Name != layerName {
 				continue
 			}
-			return &capitalLoader{
-				assets: r.assets,
-				name:   id,
-				info:   capital,
+			for _, capital := range layer.Capitals {
+				if capital.ID != id {
+					continue
+				}
+				return &capitalLoader{
+					assets: r.assets,
+					name:   id,
+					info:   &capital,
+				}
 			}
 		}
 		return nil
@@ -603,16 +725,88 @@ func (c *capitalLoader) Entities() []EntityInfo {
 	return c.entities
 }
 
-func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4) []EntityInfo {
+func LoadEntities(assets *Assets, sliceFile string, rootTransform mat4.Data) []EntityInfo {
 	file, ok := assets.Archive.Lookup(sliceFile)
 	if !ok {
 		return nil
 	}
 
 	result := make([]EntityInfo, 0)
+
+	// if path.Ext(sliceFile) == ".dynamicslice" {
+	// 	assets.WalkSliceMeta(file, func(node *MetaDataNode) {
+	// 		meta := node.MetaData
+	// 		if meta == nil {
+	// 			return
+	// 		}
+	// 		for _, mesh := range meta.Meshes.Element {
+	// 			transform := node.Transform
+	// 			if mesh.Rootrelativetransform.Data != nil {
+	// 				transform = mat4.Multiply(transform, mat4.DataFromData(mesh.Rootrelativetransform.Data))
+	// 			}
+	// 			transform = mat4.Multiply(rootTransform, transform)
+
+	// 			modelFile, err := assets.LookupFileByAssetId(mesh.Meshassetid)
+	// 			if err != nil {
+	// 				slog.Error("model file not found", "asset", mesh.Meshassetid, "err", err)
+	// 				continue
+	// 			}
+	// 			materialFile, _ := assets.LookupFileByAssetId(mesh.Materialoverrideassetid)
+
+	// 			model := modelFile.Path()
+	// 			material := ""
+	// 			if materialFile != nil {
+	// 				material = materialFile.Path()
+	// 			}
+	// 			model, material = assets.ResolveModelMaterialPair(model, material)
+
+	// 			instances := make([]gltf.Mat4x4, 0)
+	// 			for _, instance := range mesh.Rootrelativeinstancetransforms.Element {
+	// 				instances = append(instances, math.TransformFromAzTransform(instance).ToMat4())
+	// 			}
+	// 			result = append(result, EntityInfo{
+	// 				File:      node.File.Path(),
+	// 				Transform: transform,
+	// 				Model:     model,
+	// 				Material:  material,
+	// 				Instances: instances,
+	// 			})
+	// 		}
+	// 	})
+	// 	return result
+	// }
+
 	assets.WalkSlice(file, func(node *EntityNode) {
+		transform := mat4.Multiply(rootTransform, node.Transform)
 		for _, component := range node.Components {
 			switch v := component.(type) {
+			case nwt.LightComponent:
+				config := v.LightConfiguration
+				if !config.Visible {
+					break
+				}
+				switch config.LightType {
+				case 0:
+					// Point light
+					result = append(result, EntityInfo{
+						ID:        uint(node.Entity.Id.Id),
+						Name:      string(node.Entity.Name),
+						File:      node.File.Path(),
+						Transform: transform,
+						Light: &LightInfo{
+							Type:              0,
+							Color:             config.Color,
+							DiffuseIntensity:  float32(config.DiffuseMultiplier),
+							SpecularIntensity: float32(config.SpecMultiplier),
+							PointDistance:     float32(config.PointMaxDistance),
+							PointAttenuation:  float32(config.PointAttenuationBulbSize),
+						},
+					})
+
+				case 1: // area
+				case 2: // projector
+				case 3: // probe
+				}
 			case nwt.InstancedMeshComponent:
 				meshNode := v.Instanced_mesh_render_node.BaseClass1
 				if !meshNode.Visible {
@@ -638,22 +832,36 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4
 				if materialFile != nil {
 					material = materialFile.Path()
 				}
-				model, material = assets.ResolveModelMaterialPair(model, material)
-				instances := make([]gltf.Mat4x4, 0)
+
+				// TODO: instances don't show up correctly. use individual meshes as workaround
+				model, material = assets.ResolveCgfAndMtl(model, material)
 				for _, instance := range v.Instanced_mesh_render_node.Instance_transforms.Element {
-					transform := crymath.TransformFromAzTransform(instance).ToMat4()
-					instances = append(instances, transform)
+					result = append(result, EntityInfo{
+						ID:        uint(node.Entity.Id.Id),
+						Name:      string(node.Entity.Name),
+						File:      node.File.Path(),
+						Transform: mat4.Multiply(transform, mat4.FromAzTransform(instance)),
+						Model:     model,
+						Material:  material,
+						Options:   meshNode.Render_Options,
+					})
 				}
-				transform := gltf.Mat4Multiply(rootTransform, node.Transform)
-				result = append(result, EntityInfo{
-					ID:        uint(node.Entity.Id.Id),
-					Name:      string(node.Entity.Name),
-					File:      node.File.Path(),
-					Transform: transform,
-					Model:     model,
-					Material:  material,
-					Instances: instances,
-				})
+
+				// instances := make([]gltf.Mat4x4, 0)
+				// for _, instance := range v.Instanced_mesh_render_node.Instance_transforms.Element {
+				// 	transform := math.TransformFromAzTransform(instance).ToMat4()
+				// 	instances = append(instances, transform)
+				// }
+				// result = append(result, EntityInfo{
+				// 	ID:        uint(node.Entity.Id.Id),
+				// 	Name:      string(node.Entity.Name),
+				// 	File:      node.File.Path(),
+				// 	Transform: transform,
+				// 	Model:     model,
+				// 	Material:  material,
+				// 	Instances: instances,
+				// 	Options:   meshNode.Render_Options,
+				// })
 			case nwt.MeshComponent:
 				meshNode := v.Static_Mesh_Render_Node
 				if !meshNode.Visible {
@@ -679,16 +887,26 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4
 				if materialFile != nil {
 					material = materialFile.Path()
 				}
-				model, material = assets.ResolveModelMaterialPair(model, material)
-				transform := gltf.Mat4Multiply(rootTransform, node.Transform)
+				model, material = assets.ResolveCgfAndMtl(model, material)
 				result = append(result, EntityInfo{
-					ID:        uint(node.Entity.Id.Id),
-					Name:      string(node.Entity.Name),
-					File:      node.File.Path(),
+					ID:   uint(node.Entity.Id.Id),
+					Name: string(node.Entity.Name),
+					File: node.File.Path(),
+					// TODO: this is weird, but it moves some "wrong" nodes out of the way, but keeps others correctly in place
+					//Transform: mat4.Multiply(FindTransformMat4(FindAncestorWithPositionInTheWorld(node.Slice, node.Entity)), transform),
 					Transform: transform,
 					Model:     model,
 					Material:  material,
+					Options:   meshNode.Render_Options,
 				})
+			case nwt.SpawnerComponent:
+				facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.SpawnerComponentServerFacet)
+				if !ok {
+					break
+				}
+				if !node.WalkAsset(facet.M_aliasAsset) {
+					node.WalkAsset(facet.M_sliceAsset)
+				}
 			case nwt.PrefabSpawnerComponent:
 				if !node.WalkAsset(v.M_aliasAsset) {
 					node.WalkAsset(v.M_sliceAsset)
@@ -697,8 +915,38 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform crymath.Mat4x4
 				if !node.WalkAsset(v.BaseClass1.M_aliasAsset) {
 					node.WalkAsset(v.BaseClass1.M_sliceAsset)
 				}
+			case nwt.EncounterComponent:
+				tmpTm := node.Transform
+				for _, tl := range v.M_spawntimeline.Element {
+					for _, loc := range tl.M_spawnlocations.Element {
+						locEnt := FindEntityById(node.Slice, loc.EntityId.Id)
+						if locEnt == nil {
+							continue
+						}
+						node.Transform = mat4.Multiply(tmpTm, FindTransformMat4(locEnt))
+						if !node.WalkAsset(tl.M_aliasAsset) {
+							node.WalkAsset(tl.M_sliceAsset)
+						}
+					}
+				}
+				node.Transform = tmpTm
 			case nwt.AreaSpawnerComponent:
-				// 	node.WalkAsset(v.BaseClass1.M_aliasAsset)
+				facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.AreaSpawnerComponentServerFacet)
+				if !ok {
+					break
+				}
+				tmpTm := node.Transform
+				for _, loc := range facet.M_locations.Element {
+					entity := FindEntityById(node.Slice, loc.EntityId.Id)
+					if entity == nil {
+						continue
+					}
+					node.Transform = mat4.Multiply(tmpTm, FindTransformMat4(entity))
+					if !node.WalkAsset(facet.M_aliasAsset) {
+						node.WalkAsset(facet.M_sliceAsset)
+					}
+				}
+				node.Transform = tmpTm
 			default:
 				break
 			}

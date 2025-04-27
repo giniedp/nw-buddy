@@ -44,6 +44,11 @@ func IsDDS(file string) bool {
 	return strings.EqualFold(path.Ext(file), ".dds")
 }
 
+func IsDDSAlpha(file string) bool {
+	ext := path.Ext(file)
+	return IsDDSSplitPart(file) && strings.HasSuffix(ext, "a")
+}
+
 func IsDDSSplitPart(file string) bool {
 	return IsDDS(strings.TrimSuffix(file, path.Ext(file)))
 }

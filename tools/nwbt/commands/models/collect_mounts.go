@@ -70,7 +70,7 @@ func (c *Collector) CollectMounts(ids ...string) {
 			if path.Ext(model) != ".cdf" {
 				continue
 			}
-			cdf, err := c.ResolveCdfAsset(model)
+			cdf, err := c.LoadCdf(model)
 			if err != nil {
 				continue
 			}
@@ -78,7 +78,7 @@ func (c *Collector) CollectMounts(ids ...string) {
 			group := importer.AssetGroup{}
 			group.Animations = c.getAnimations(cdf, adbFile)
 			for _, mesh := range cdf.SkinAndClothAttachments() {
-				model, mtl := c.ResolveModelMaterialPair(mesh.Binding, mesh.Material, material)
+				model, mtl := c.ResolveCgfAndMtl(mesh.Binding, mesh.Material, material)
 				if model != "" {
 					group.Meshes = append(group.Meshes, importer.GeometryAsset{
 						GeometryFile: model,
@@ -101,7 +101,7 @@ func (c *Collector) getAnimations(cdf *cdf.Document, adbFile string) []importer.
 	if adbFile == "" {
 		return nil
 	}
-	adb, err := c.LoadAdbDocument(adbFile)
+	adb, err := c.LoadAdb(adbFile)
 	if err != nil {
 		slog.Warn("ADB not loaded", "file", adbFile, "err", err)
 		return nil

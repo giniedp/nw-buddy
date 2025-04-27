@@ -1,6 +1,7 @@
 import { AssetContainer, LoadAssetContainerAsync, Mesh } from '@babylonjs/core'
 import '@babylonjs/loaders'
 import { IGLTFLoaderData } from '@babylonjs/loaders'
+import { NwMaterialExtension, NwMaterialPlugin } from '@nw-viewer/graphics'
 import PQueue from 'p-queue'
 import { Observable } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
@@ -23,6 +24,7 @@ export interface ModelSource {
   rootUrl?: string
 }
 
+NwMaterialPlugin.register()
 ShareTexturesExtension.register()
 export class ContentProvider implements GameService {
   private scene: SceneProvider
@@ -95,6 +97,9 @@ export class ContentProvider implements GameService {
                   ...ShareTexturesExtension.options({
                     enabled: true,
                     textures: this.textures,
+                  }),
+                  ...NwMaterialExtension.options({
+                    enabled: true,
                   }),
                 },
               },

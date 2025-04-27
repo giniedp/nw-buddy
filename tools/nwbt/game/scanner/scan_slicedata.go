@@ -20,7 +20,7 @@ func (ctx *Scanner) ScanSlicedata(rootFile nwfs.File) iter.Seq[SpawnNode] {
 		}
 		for _, it := range doc.Slicemetadatamap.Element {
 			sliceName := string(it.Value1.Slicename)
-			file := ctx.ResolveDynamicSliceNameToFile(sliceName)
+			file := ctx.ResolveDynamicSliceByName(sliceName)
 			if file == nil {
 				continue
 			}

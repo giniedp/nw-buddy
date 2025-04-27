@@ -81,6 +81,13 @@ type PublicParams struct {
 	params *maps.Dict[string]
 }
 
+func (e *PublicParams) ToMap() map[string]string {
+	if e.params == nil {
+		return nil
+	}
+	return e.params.ToMap()
+}
+
 func (e *PublicParams) Len() int {
 	if e.params == nil {
 		return 0
@@ -172,8 +179,8 @@ type TextMod struct {
 	RotateV                     float32
 	RotateW                     float32
 	TexMod_bTexGenProjecte      float32
-	TexMod_RotateTyp            float32
-	TexMod_TexGenTyp            float32
+	TexMod_RotateType           float32
+	TexMod_TexGenType           float32
 	TexMod_UOscillatorAmplitude float32
 	TexMod_UOscillatorPhase     float32
 	TexMod_UOscillatorRate      float32

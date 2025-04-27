@@ -13,7 +13,6 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
     return
   }
 
-
   // TODO: group models
   // const groups = groupBy(list, (it) => it.model)
   // for (const key in groups) {
@@ -44,30 +43,48 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
   //   )
   // }
 
-
   for (const item of list) {
     const entity = collection.create(item.name, item.id)
     entity.addComponents(
       new TransformComponent({
         transform: parent.createChild(`${item.name} - ${item.id}`, {
           matrix: Matrix.FromArray(cryToGltfMat4(item.transform)),
-          isAbsolute: true, // absolute transform is calculated in backend
+          isAbsolute: true,
         }),
-      }),
-      new StaticMeshComponent({
-        model: item.model,
-        instances: item.instances?.map((it) => Matrix.FromArray(cryToGltfMat4(it))),
       }),
     )
-    if (ENABLE_ENTITY_INDICATOR) {
+    if (item.model) {
       entity.addComponent(
-        new DebugMeshComponent({
-          name: `${item.name} - ${item.id} - indicator`,
-          type: 'sphere',
-          color: new Color4(0.25, 0.25, 0.25, 1.0),
-          size: 0.5,
+        new StaticMeshComponent({
+          model: item.model,
+          material: item.material,
+          instances: item.instances?.map((it) => Matrix.FromArray(cryToGltfMat4(it))),
         }),
       )
+    }
+    if (item.light) {
+    }
+
+    if (ENABLE_ENTITY_INDICATOR) {
+      if (item.light) {
+        // entity.addComponent(
+        //   new DebugMeshComponent({
+        //     name: `${item.name} - ${item.id} - ligtht`,
+        //     type: 'sphere',
+        //     color: new Color4(0.5, 0.5, 0.0, 1.0),
+        //     size: item.light.pointDistance,
+        //   }),
+        // )
+      } else {
+        entity.addComponent(
+          new DebugMeshComponent({
+            name: `${item.name} - ${item.id} - indicator`,
+            type: 'sphere',
+            color: new Color4(0.25, 0.25, 0.25, 1.0),
+            size: 0.5,
+          }),
+        )
+      }
     }
   }
 }

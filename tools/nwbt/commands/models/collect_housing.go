@@ -3,13 +3,13 @@ package models
 import (
 	"fmt"
 	"log/slog"
-	"nw-buddy/tools/formats/gltf"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/logging"
+	"nw-buddy/tools/utils/math"
 	"nw-buddy/tools/utils/progress"
 	"path"
 	"strings"
@@ -113,14 +113,14 @@ func (c *Collector) collectPrefabPath(sliceFile string) importer.AssetGroup {
 				if materialFile != nil {
 					material = materialFile.Path()
 				}
-				model, material = c.ResolveModelMaterialPair(model, material)
+				model, material = c.ResolveCgfAndMtl(model, material)
 
 				group.Meshes = append(group.Meshes, importer.GeometryAsset{
 					GeometryFile: model,
 					MaterialFile: material,
 					Entity: importer.Entity{
 						Name:      string(node.Entity.Name),
-						Transform: gltf.CryToGltfMat4(node.Transform),
+						Transform: math.CryToGltfMat4(node.Transform),
 					},
 				})
 			case nwt.SkinnedMeshComponent:
@@ -147,7 +147,7 @@ func (c *Collector) collectPrefabPath(sliceFile string) importer.AssetGroup {
 					material = materialFile.Path()
 				}
 				if path.Ext(model) == ".cdf" {
-					cdf, err := c.ResolveCdfAsset(model)
+					cdf, err := c.LoadCdf(model)
 					if err != nil {
 						slog.Warn("failed to resolve cdf asset", "file", model, "err", err)
 						continue
@@ -160,25 +160,25 @@ func (c *Collector) collectPrefabPath(sliceFile string) importer.AssetGroup {
 							// - /housing/house_housingitem_pet_entitlement_tiger_black
 							continue
 						}
-						if model, mtl := c.ResolveModelMaterialPair(attch.Binding, attch.Material, material); model != "" {
+						if model, mtl := c.ResolveCgfAndMtl(attch.Binding, attch.Material, material); model != "" {
 							group.Meshes = append(group.Meshes, importer.GeometryAsset{
 								GeometryFile: model,
 								MaterialFile: mtl,
 								Entity: importer.Entity{
 									Name:      string(node.Entity.Name),
-									Transform: gltf.CryToGltfMat4(node.Transform),
+									Transform: math.CryToGltfMat4(node.Transform),
 								},
 							})
 						}
 					}
 				} else {
-					if model, material = c.ResolveModelMaterialPair(model, material); model != "" {
+					if model, material = c.ResolveCgfAndMtl(model, material); model != "" {
 						group.Meshes = append(group.Meshes, importer.GeometryAsset{
 							GeometryFile: model,
 							MaterialFile: material,
 							Entity: importer.Entity{
 								Name:      string(node.Entity.Name),
-								Transform: gltf.CryToGltfMat4(node.Transform),
+								Transform: math.CryToGltfMat4(node.Transform),
 							},
 						})
 					}

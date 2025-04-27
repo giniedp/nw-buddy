@@ -1,31 +1,27 @@
-import { DyeColorData } from '@nw-data/generated'
 import {
-  Skeleton,
-  ISceneLoaderAsyncResult,
-  Engine,
-  Scene,
-  Color4,
+  AbstractMesh,
   ArcRotateCamera,
-  Vector3,
+  Color3,
+  Color4,
   CubeTexture,
   DefaultRenderingPipeline,
-  SceneLoader,
-  Tags,
-  Quaternion,
-  IShadowLight,
-  ShadowGenerator,
-  PointLight,
-  AbstractMesh,
-  Tools,
-  Scalar,
-  Color3,
+  Engine,
   ImportMeshAsync,
-  LoadAssetContainerAsync,
+  ISceneLoaderAsyncResult,
+  IShadowLight,
+  PointLight,
+  Quaternion,
+  Scalar,
+  Scene,
+  ShadowGenerator,
+  Skeleton,
+  Tags,
+  Tools,
+  Vector3,
 } from '@babylonjs/core'
-import { NwMaterialExtension } from './nw-material-extension'
-import { registerNwMaterialPlugin } from './nw-material-plugin'
-import { updateNwMaterial } from './nw-material-update'
-import { environment } from 'apps/web/environments'
+import { DyeColorData } from '@nw-data/generated'
+
+import { NwMaterialExtension, NwMaterialPlugin, updateNwMaterial } from '@nw-viewer/graphics'
 import { getModelUrl } from '../utils/get-model-url'
 
 export type TransmogModelSlot = 'level' | 'player' | 'head' | 'chest' | 'hands' | 'legs' | 'feet'
@@ -40,7 +36,7 @@ export interface TransmogViewerModel extends ISceneLoaderAsyncResult {
 }
 
 export function createTransmogViewer(canvas: HTMLCanvasElement) {
-  registerNwMaterialPlugin()
+  NwMaterialPlugin.register()
 
   const { scene, engine, camera, pipeline } = createScene(canvas)
   bindCandleLightFlicker(scene)

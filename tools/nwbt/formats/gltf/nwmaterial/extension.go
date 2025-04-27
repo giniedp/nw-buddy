@@ -7,6 +7,7 @@ const (
 )
 
 type Extension struct {
-	MaskTexture *gltf.TextureInfo `json:"maskTexture,omitempty"`
-	Params      *Appearance       `json:"params,omitempty"`
+	MaskTexture   *gltf.TextureInfo `json:"maskTexture,omitempty"`
+	SmoothTexture *gltf.TextureInfo `json:"smoothTexture,omitempty"`
+	Params        *Appearance       `json:"params,omitempty"`
 }

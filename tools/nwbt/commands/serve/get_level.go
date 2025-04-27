@@ -24,7 +24,7 @@ func LevelsRouter(r *mux.Router, assets *game.Assets) {
 
 	r.HandleFunc("/{level}/region/{region}", getLevelRegionInfoFunc(levels))
 	r.HandleFunc("/{level}/region/{region}/capital", getLevelRegionEntitiesFunc(levels))
-	r.HandleFunc("/{level}/region/{region}/capital/{capital}", getLevelRegionCapitalEntitiesFunc(levels))
+	r.HandleFunc("/{level}/region/{region}/distribution", getLevelRegionDistributionFunc(levels))
 }
 
 func GetLevelNamesFunc(assets *game.Assets) http.HandlerFunc {
@@ -122,12 +122,11 @@ func getLevelRegionEntitiesFunc(collection game.LevelCollection) http.HandlerFun
 	}
 }
 
-func getLevelRegionCapitalEntitiesFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelRegionDistributionFunc(collection game.LevelCollection) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
 		regionName := nwfs.NormalizePath(vars["region"])
-		capitalId := nwfs.NormalizePath(vars["capital"])
 		level := collection.Level(levelName)
 		if level == nil {
 			http.NotFound(w, r)
@@ -138,12 +137,8 @@ func getLevelRegionCapitalEntitiesFunc(collection game.LevelCollection) http.Han
 			http.NotFound(w, r)
 			return
 		}
-		capital := region.Capital(capitalId)
-		if capital == nil {
-			http.NotFound(w, r)
-			return
-		}
-		result := capital.Entities()
+
+		result := region.Distribution()
 		if data, err := json.MarshalJSON(result, "", "\t"); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		} else {
