@@ -23,7 +23,7 @@ func GetFileHandler(assets *game.Assets) http.HandlerFunc {
 
 		res, err, _ := execGroup.Do(cacheKey, func() (any, error) {
 			ext := path.Ext(r.URL.Path)
-			shouldcache := false // ext == ".glb" || ext == ".png"
+			shouldcache := ext == ".glb" || ext == ".png"
 			if shouldcache && utils.FileExists(cacheKey) {
 				data, err := os.ReadFile(cacheKey)
 				if err != nil {
