@@ -97,7 +97,7 @@ func (c *Collector) CollectCapitals(glob string) {
 					// 			Range:     float32(config.PointMaxDistance),
 					// 			Entity: importer.Entity{
 					// 				Name:      string(node.Entity.Name),
-					// 				Transform: math.CryToGltfMat4(mat4.Multiply(capTransform, node.Transform)),
+					// 				Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
 					// 			},
 					// 		})
 					// 	case 2: // projector

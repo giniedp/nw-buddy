@@ -338,8 +338,6 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 				}
 			}
 			material.Extensions[nwmaterial.ExtensionName] = ext
-			slog.Debug("NWMaterial", "material", material.Name, "params", m.Params.ToMap())
-
 		}
 	}
 }
