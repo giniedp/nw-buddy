@@ -43,5 +43,5 @@ export const env = {
    * @remarks
    * only for local development
    */
-  nwbtUrl: ''
+  nwbtUrl: 'http://localhost:8000/nwbt',
 }
