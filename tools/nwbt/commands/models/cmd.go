@@ -22,21 +22,23 @@ import (
 )
 
 type Flags struct {
-	GameDir      string
-	OutputDir    string
-	TempDir      string
-	CacheDir     string
-	TextureSize  uint
-	Binary       bool
-	Embed        bool
-	Webp         bool
-	Ktx2         bool
-	RelativeUri  bool
-	WorkerCount  uint
-	SkipExisting bool
-	Animations   bool
-	CrcFile      string
-	UuidFile     string
+	GameDir        string
+	OutputDir      string
+	TempDir        string
+	CacheDir       string
+	TextureSize    uint
+	Binary         bool
+	Embed          bool
+	Webp           bool
+	Ktx2           bool
+	RelativeUri    bool
+	WorkerCount    uint
+	SkipExisting   bool
+	Animations     bool
+	CrcFile        string
+	UuidFile       string
+	Lights         bool
+	LightIntensity float32
 }
 
 var flg Flags
@@ -68,6 +70,8 @@ func init() {
 	Cmd.Flags().BoolVar(&flg.Ktx2, "ktx", false, "Textures are converted to ktx2")
 	Cmd.MarkFlagsMutuallyExclusive("webp", "ktx")
 
+	Cmd.Flags().BoolVar(&flg.Lights, "lights", false, "Whether lights should be exported")
+	Cmd.Flags().Float32Var(&flg.LightIntensity, "light-intensity", 500.0, "Light intensity scale")
 	Cmd.Flags().BoolVar(&flg.Animations, "animations", false, "Whether animations should be processed")
 	Cmd.Flags().BoolVar(&flg.Embed, "embed", false, "Whether to embed textures in the gltf file")
 	Cmd.Flags().BoolVar(&flg.RelativeUri, "relative", false, "When linking resources (embed is false), relative uris are written in the gltf file")
@@ -191,8 +195,8 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 			for _, anim := range group.Animations {
 				document.ImportCgfAnimation(anim, c.LoadAnimation)
 			}
-			if len(group.Lights) > 0 {
-				document.ImportCgfLights(group.Lights)
+			if flg.Lights && len(group.Lights) > 0 {
+				document.ImportCgfLights(group.Lights, flg.LightIntensity)
 			}
 
 			document.ImportCgfMaterials(true)

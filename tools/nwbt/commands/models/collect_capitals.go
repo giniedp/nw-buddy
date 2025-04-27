@@ -39,6 +39,9 @@ func init() {
 	cmdCollectCapitals.Flags().StringVarP(&flgOutFile, "file", "f", "", "If set, all capitals are merged into a single file. ")
 }
 
+const RAD_TO_DEG = 180.0 / 3.14159265358979323846
+const DEG_TO_RAD = 3.14159265358979323846 / 180.0
+
 func runCollectCapitals(ccmd *cobra.Command, args []string) {
 	glob := path.Join("**", "coatlicue", flgLevel, "regions", flgRegion, "**", flgName+".capitals.json")
 	slog.SetDefault(logging.DefaultFileHandler())
@@ -80,29 +83,50 @@ func (c *Collector) CollectCapitals(glob string) {
 				continue
 			}
 			c.WalkSlice(file, func(node *game.EntityNode) {
-
 				for _, component := range node.Components {
 					switch v := component.(type) {
-					// case nwt.LightComponent:
-					// 	config := v.LightConfiguration
-					// 	if !config.Visible {
-					// 		break
-					// 	}
-					// 	switch config.LightType {
-					// 	case 0:
-					// 		group.Lights = append(group.Lights, importer.LightAsset{
-					// 			Type:      0,
-					// 			Color:     [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
-					// 			Intensity: float32(config.DiffuseMultiplier),
-					// 			Range:     float32(config.PointMaxDistance),
-					// 			Entity: importer.Entity{
-					// 				Name:      string(node.Entity.Name),
-					// 				Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
-					// 			},
-					// 		})
-					// 	case 2: // projector
-					// 	case 3: // probe
-					// 	}
+					case nwt.LightComponent:
+						config := v.LightConfiguration
+						if !config.Visible {
+							break
+						}
+						switch config.LightType {
+						case 0:
+							group.Lights = append(group.Lights, importer.LightAsset{
+								Type:      0,
+								Color:     [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
+								Intensity: float32(config.DiffuseMultiplier),
+								Range:     float32(config.PointMaxDistance),
+								Entity: importer.Entity{
+									Name:      string(node.Entity.Name),
+									Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
+								},
+							})
+						case 1: // area
+							group.Lights = append(group.Lights, importer.LightAsset{
+								Type:      0,
+								Color:     [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
+								Intensity: float32(config.DiffuseMultiplier),
+								Range:     float32(config.PointMaxDistance),
+								Entity: importer.Entity{
+									Name:      string(node.Entity.Name),
+									Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
+								},
+							})
+						case 2: // projector
+							group.Lights = append(group.Lights, importer.LightAsset{
+								Type:           0,
+								Color:          [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
+								Intensity:      float32(config.DiffuseMultiplier),
+								Range:          float32(config.PointMaxDistance),
+								OuterConeAngle: float32(config.ProjectorFOV/2.0) * DEG_TO_RAD,
+								Entity: importer.Entity{
+									Name:      string(node.Entity.Name),
+									Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
+								},
+							})
+						case 3: // probe
+						}
 					case nwt.InstancedMeshComponent:
 						meshNode := v.Instanced_mesh_render_node.BaseClass1
 						if !meshNode.Visible {
