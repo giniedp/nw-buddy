@@ -1,6 +1,6 @@
 import { Color4, Matrix, StandardMaterial } from '@babylonjs/core'
 import { EntityInfo } from '@nw-serve'
-import { GameEntityCollection } from '@nw-viewer/ecs'
+import { GameEntity, GameEntityCollection } from '@nw-viewer/ecs'
 import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
 import { DebugMeshComponent } from '../debug-mesh-component'
 import { StaticMeshComponent } from '../static-mesh-component'
@@ -9,7 +9,7 @@ import { groupBy } from 'lodash'
 import { ENABLE_ENTITY_INDICATOR } from './constants'
 import { SpriteComponent } from '../sprite-component'
 
-export function instantiateEntities(collection: GameEntityCollection, list: EntityInfo[], parent: TransformComponent) {
+export function instantiateEntities(collection: GameEntityCollection, list: EntityInfo[], parent: TransformComponent, onEntity?: (item: EntityInfo, entity: GameEntity) => void) {
   if (!list?.length) {
     return
   }
@@ -94,6 +94,7 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
         )
       }
     }
+    onEntity?.(item, entity)
   }
 }
 

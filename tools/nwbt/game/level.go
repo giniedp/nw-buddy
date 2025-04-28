@@ -326,17 +326,18 @@ type ChunkInfo struct {
 }
 
 type EntityInfo struct {
-	ID        uint            `json:"id"`
-	Name      string          `json:"name"`
-	File      string          `json:"file"`
-	Transform mat4.Data       `json:"transform"`
-	Model     string          `json:"model,omitempty"`
-	Material  string          `json:"material,omitempty"`
-	Instances []mat4.Data     `json:"instances,omitempty"`
-	Light     *LightInfo      `json:"light,omitempty"`
-	Vital     *VitalSpawnInfo `json:"vital,omitempty"`
-	Encounter *EncounterInfo  `json:"encounter,omitempty"`
-	Options   any             `json:"options"`
+	ID              uint            `json:"id"`
+	Name            string          `json:"name"`
+	File            string          `json:"file"`
+	Transform       mat4.Data       `json:"transform"`
+	Model           string          `json:"model,omitempty"`
+	Material        string          `json:"material,omitempty"`
+	Instances       []mat4.Data     `json:"instances,omitempty"`
+	Light           *LightInfo      `json:"light,omitempty"`
+	Vital           *VitalSpawnInfo `json:"vital,omitempty"`
+	Encounter       *EncounterInfo  `json:"encounter,omitempty"`
+	MaxViewDistance float32         `json:"maxViewDistance,omitempty,omitzero"`
+	Options         any             `json:"options"`
 }
 
 type VitalSpawnInfo struct {

@@ -67,6 +67,7 @@ export interface EntityInfo {
   light: LightInfo
   vital: VitalSpawnInfo
   encounter: EncounterInfo
+  maxViewDistance: number
 }
 
 export interface VitalSpawnInfo {

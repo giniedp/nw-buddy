@@ -32,7 +32,6 @@ export class SpriteComponent implements GameComponent {
     this.sprite = new Sprite(this.options.kind, this.content.spriteVitals)
     this.sprite.width = 1
     this.sprite.height = 1
-    console.log(this.transform.node.absolutePosition.toString())
     const pos = this.transform.node.absolutePosition
     this.sprite.position.x = pos.x
     this.sprite.position.y = pos.y + 2

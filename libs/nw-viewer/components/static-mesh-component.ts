@@ -89,6 +89,8 @@ export class StaticMeshComponent implements GameComponent {
     if (!this.active || !asset) {
       return
     }
+    //this.content.addFrameTask(() => {
+
     if (!this.options.instances?.length) {
       for (const mesh of asset.container.meshes) {
         const m = mesh as Mesh
@@ -116,20 +118,29 @@ export class StaticMeshComponent implements GameComponent {
         this.meshes.push(clone)
       }
     }
-    freezeMeshes(this.meshes)
+    const meshes = collectMeshes(this.meshes)
+    for (const mesh of meshes) {
+      mesh.unfreezeWorldMatrix()
+    }
+    for (const mesh of meshes) {
+      mesh.computeWorldMatrix()
+      mesh.cullingStrategy = Mesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+    }
+    for (const mesh of meshes) {
+      mesh.freezeWorldMatrix()
+    }
+    //})
   }
 }
 
-function freezeMeshes(nodes: Node[]) {
+function collectMeshes(nodes: Node[], meshes: AbstractMesh[] = []): AbstractMesh[] {
   if (!nodes) {
-    return
+    return meshes
   }
   for (const node of nodes) {
     if (node instanceof AbstractMesh) {
-      node.computeWorldMatrix()
-      node.freezeWorldMatrix()
-      node.freezeWorldMatrix()
+      meshes.push(node)
     }
-    freezeMeshes(node.getChildren())
   }
+  return meshes
 }

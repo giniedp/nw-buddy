@@ -32,9 +32,10 @@ export class ContentProvider implements GameService {
 
   private textures = {}
   private queue = new PQueue({
-    concurrency: 6,
+    concurrency: 5,
     autoStart: true,
   })
+  private tasks: Array<() => void> = []
 
   public game: GameServiceContainer
   public spriteVitals: SpriteManager
@@ -64,10 +65,22 @@ export class ContentProvider implements GameService {
       { width: 64, height: 64 },
       this.scene.main,
     )
+    this.scene.main.getEngine().onBeginFrameObservable.add(this.update)
   }
 
   public destroy(): void {
-    //
+    this.scene.main.getEngine().onBeginFrameObservable.removeCallback(this.update)
+  }
+
+  private update = () => {
+    const task = this.tasks.shift()
+    if (task) {
+      try {
+        task()
+      } catch (e) {
+        console.error('Failed to execute frame task', e)
+      }
+    }
   }
 
   /**
@@ -86,45 +99,47 @@ export class ContentProvider implements GameService {
   /**
    * Loads an asset without caching. Asset must be disposed by caller.
    */
-  public async loadAsset(url: string, rootUrl?: string, abort?: AbortController) {
+  public async loadAsset(url: string, rootUrl?: string, abort?: AbortController): Promise<GltfAsset> {
     if (!url) {
       return null
     }
     let gltf: IGLTFLoaderData
-    return this.queue
-      .add(
-        () => {
-          return LoadAssetContainerAsync(url, this.scene.main, {
-            rootUrl: rootUrl,
-            pluginOptions: {
-              gltf: {
-                onParsed: (data) => {
-                  gltf = data
-                },
-                extensionOptions: {
-                  ...ShareTexturesExtension.options({
-                    enabled: true,
-                    textures: this.textures,
-                  }),
-                  ...NwMaterialExtension.options({
-                    enabled: true,
-                  }),
-                },
+    return this.queue.add<GltfAsset>(
+      async (): Promise<GltfAsset> => {
+        const asset = await LoadAssetContainerAsync(url, this.scene.main, {
+          rootUrl: rootUrl,
+          pluginOptions: {
+            gltf: {
+              onParsed: (data) => {
+                gltf = data
+              },
+              extensionOptions: {
+                ...ShareTexturesExtension.options({
+                  enabled: true,
+                  textures: this.textures,
+                }),
+                ...NwMaterialExtension.options({
+                  enabled: true,
+                }),
               },
             },
-          })
-        },
-        {
-          signal: abort?.signal,
-        },
-      )
-      .then(onAssetContainerLoaded)
-      .then((asset): GltfAsset => {
+          },
+        })
         return {
           document: gltf,
           container: asset,
         }
-      })
+      },
+      {
+        signal: abort?.signal,
+      },
+    )
+    .then((asset) => asset as GltfAsset)
+    // .then((asset) => new Promise<GltfAsset>((resolve) => {
+    //   this.addFrameTask(() => {
+    //     resolve(asset as GltfAsset)
+    //   })
+    // }))
   }
 
   public modelSource(url: string, material: string, rootUrl: string): ModelSource | null {
@@ -160,6 +175,10 @@ export class ContentProvider implements GameService {
     }
   }
 
+  public addFrameTask(task: () => void) {
+    this.tasks.push(task)
+  }
+
   private createStream(url: string, rootUrl: string) {
     return new Observable<GltfAsset>((sub) => {
       const abort = new AbortController()
@@ -184,15 +203,4 @@ function extName(url: string) {
     return null
   }
   return url.substring(index)
-}
-
-function onAssetContainerLoaded(asset: AssetContainer) {
-  if (asset) {
-    for (const mesh of asset.meshes) {
-      mesh.cullingStrategy = Mesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
-      // mesh.isPickable = false
-      // mesh.freezeWorldMatrix()
-    }
-  }
-  return asset
 }

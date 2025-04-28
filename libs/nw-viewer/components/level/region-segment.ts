@@ -28,6 +28,10 @@ export type ChunkWithEntities = ChunkInfo & {
   entities: EntityInfo[]
 }
 
+export type EntityInfoWithPosition = EntityInfo & {
+  matrix: Matrix
+}
+
 export interface RegionSegmentOptions {
   level: string
   region: string
@@ -36,6 +40,7 @@ export interface RegionSegmentOptions {
   impostors: ImpostorInfo[]
   capitals: CapitalWithEntities[]
   chunks: ChunkWithEntities[]
+  entities: EntityInfoWithPosition[]
   distribution?: EntityInfo[]
 }
 
@@ -103,6 +108,9 @@ export class RegionSegmentComponent implements GameComponent {
       for (const chunk of this.data.chunks) {
         this.createCapitalEntity(chunk, `chunk ${chunk.id}`)
       }
+    }
+    if (this.data.entities) {
+      this.createEntity(this.data.entities, 'entities')
     }
     if (this.data.distribution) {
       for (const item of this.data.distribution) {
@@ -281,6 +289,16 @@ export class RegionSegmentComponent implements GameComponent {
         }),
       )
     }
+  }
+
+  private createEntity(entities: EntityInfoWithPosition[], entityName: string) {
+    const entity = this.capitals.create(entityName).addComponents(
+      new TransformComponent({
+        transform: createChildTransform(this.capitalsLayer, entityName),
+      }),
+      new CapitalComponent({ entities }),
+    )
+
   }
 
   private createDistributionEntity(item: EntityInfo) {

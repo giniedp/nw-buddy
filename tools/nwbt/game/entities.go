@@ -136,12 +136,13 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform mat4.Data) []E
 				model, material = assets.ResolveCgfAndMtl(model, material)
 				for _, instance := range v.Instanced_mesh_render_node.Instance_transforms.Element {
 					result = append(result, EntityInfo{
-						ID:        uint(node.Entity.Id.Id),
-						Name:      string(node.Entity.Name),
-						File:      node.File.Path(),
-						Transform: mat4.Multiply(transform, mat4.FromAzTransform(instance)),
-						Model:     model,
-						Material:  material,
+						ID:              uint(node.Entity.Id.Id),
+						Name:            string(node.Entity.Name),
+						File:            node.File.Path(),
+						Transform:       mat4.Multiply(transform, mat4.FromAzTransform(instance)),
+						Model:           model,
+						Material:        material,
+						MaxViewDistance: float32(meshNode.Render_Options.MaxViewDistance),
 						// Options:   meshNode.Render_Options,
 					})
 				}
@@ -198,9 +199,10 @@ func LoadEntities(assets *Assets, sliceFile string, rootTransform mat4.Data) []E
 					File: node.File.Path(),
 					// TODO: this is weird, but it moves some "wrong" nodes out of the way, but keeps others correctly in place
 					//Transform: mat4.Multiply(FindTransformMat4(FindAncestorWithPositionInTheWorld(node.Slice, node.Entity)), transform),
-					Transform: transform,
-					Model:     model,
-					Material:  material,
+					Transform:       transform,
+					Model:           model,
+					Material:        material,
+					MaxViewDistance: float32(meshNode.Render_Options.MaxViewDistance),
 					// Options:   meshNode.Render_Options,
 				})
 			case nwt.SpawnerComponent:
