@@ -154,6 +154,7 @@ export class NwMaterialPlugin extends MaterialPluginBase {
     defines['NW_OVERLAY_MASK'] = this.isMaskEnabled
     defines['NW_OVERLAY_DEBUG'] = this.debugMask
     defines['WORLD_UBO'] = this.isMaskEnabled || this.isSmoothEnabled
+    defines['MAINUV1'] = true // ensure vMainUV1 is defined
   }
 
   public override getUniforms(lang: ShaderLanguage) {

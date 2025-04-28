@@ -7,7 +7,6 @@ import { DebugMeshComponent } from '../debug-mesh-component'
 import {
   EntityInfo,
   fetchTypedRequest,
-  getRegionDistributionUrl,
   getRegionEntitiesUrl,
   getRegionInfoUrl,
   ImpostorInfo,
@@ -17,7 +16,7 @@ import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
 import { ContentProvider } from '@nw-viewer/services/content-provider'
 import { TransformComponent } from '../transform-component'
 import { REGION_VISIBILITY, SEGMENT_SIZE } from './constants'
-import { CapitalWitEntities, RegionSegmentComponent } from './region-segment'
+import { CapitalWithEntities, ChunkWithEntities, RegionSegmentComponent } from './region-segment'
 
 export interface RegionOptions {
   levelName: string
@@ -119,7 +118,8 @@ export class RegionComponent implements GameComponent {
     //const distribution = await fetchTypedRequest(baseUrl, getRegionDistributionUrl(this.levelName, this.regionName))
     this.segments.clear()
 
-    const capitals: CapitalWitEntities[] = []
+    const capitals: CapitalWithEntities[] = []
+    const chunks: ChunkWithEntities[] = []
     for (const layer of data.capitals || []) {
       for (const capital of layer.capitals || []) {
         const capEntities = entities?.[layer.name]?.[capital.id] || []
@@ -132,12 +132,24 @@ export class RegionComponent implements GameComponent {
           entities: capEntities,
         })
       }
+
+      for (const chunk of layer.chunks || []) {
+        const capEntities = entities?.[layer.name]?.[chunk.id] || []
+        if (capEntities.length === 0) {
+          continue
+        }
+        chunks.push({
+          ...chunk,
+          matrix: Matrix.FromArray(cryToGltfMat4(chunk.transform)),
+          entities: capEntities,
+        })
+      }
     }
 
     const count = this.regionSize / SEGMENT_SIZE
     for (let y = 0; y < count; y++) {
       for (let x = 0; x < count; x++) {
-        this.createSegment(x, y, data, capitals)//, distribution[`${x}_${y}`] || [])
+        this.createSegment(x, y, data, capitals, chunks)
       }
     }
     this.segments.initialize(this.entity.game)
@@ -150,12 +162,14 @@ export class RegionComponent implements GameComponent {
     x: number,
     y: number,
     data: RegionInfo,
-    capitalsTx: CapitalWitEntities[],
+    capitalsTx: CapitalWithEntities[],
+    chunksTx: ChunkWithEntities[],
     distribution?: EntityInfo[],
   ) {
     const index = this.segments.length()
     const impostors: ImpostorInfo[] = []
-    const capitals: CapitalWitEntities[] = []
+    const capitals: CapitalWithEntities[] = []
+    const chunks: ChunkWithEntities[] = []
 
     const originX = this.originX + x * SEGMENT_SIZE
     const originY = this.originY + y * SEGMENT_SIZE
@@ -198,6 +212,16 @@ export class RegionComponent implements GameComponent {
       }
       capitals.push(capital)
     }
+    for (const chunk of chunksTx || []) {
+      chunk.matrix.getTranslationToRef(position)
+      if (position.x < originX || position.x >= originX + SEGMENT_SIZE) {
+        continue
+      }
+      if (position.z < originY || position.z >= originY + SEGMENT_SIZE) {
+        continue
+      }
+      chunks.push(chunk)
+    }
 
     const centerX = originX + 0.5 * SEGMENT_SIZE
     const centerY = originY + 0.5 * SEGMENT_SIZE
@@ -213,7 +237,7 @@ export class RegionComponent implements GameComponent {
         region: this.regionName,
         impostors: impostors,
         capitals: capitals,
-        distribution: distribution,
+        chunks: chunks,
         centerX: centerX,
         centerY: centerY,
       }),

@@ -2,6 +2,7 @@ package game
 
 import (
 	"log/slog"
+	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/cloth"
 	"nw-buddy/tools/nwfs"
@@ -103,17 +104,14 @@ func (c *Assets) ResolveMtlFromCgf(model string) string {
 			continue
 		}
 
-		uuid := utils.ExtractUUID(name)
-		switch uuid {
-		case "":
-			// skip
-		case "00000000-0000-0000-0000-000000000000":
-			return ""
-		default:
-			if asset := c.Catalog[strings.ToLower(uuid)]; asset != nil {
+		if assetId, isAssetId := catalog.ParseAssetId(name); isAssetId {
+			if assetId.IsZeroOrEmpty() {
+				return ""
+			}
+			if asset := c.Catalog.LookupById(assetId); asset != nil {
 				return asset.File
 			}
-			slog.Debug("material not found", "tried", uuid)
+			slog.Debug("material not found", "name", name)
 			return ""
 		}
 

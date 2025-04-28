@@ -2,6 +2,7 @@ package models
 
 import (
 	"log/slog"
+	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/formats/impostors"
 	"nw-buddy/tools/utils"
@@ -75,13 +76,12 @@ func (c *Collector) CollectImpostors(glob string) {
 		}
 		for _, impostor := range doc.Impostors {
 
-			assetId := utils.ExtractUUID(impostor.MeshAssetID)
-			if assetId == "" {
+			assetId, _ := catalog.ParseAssetId(impostor.MeshAssetID)
+			if assetId.IsZeroOrEmpty() {
 				continue
 			}
-			assetId = strings.ToLower(assetId)
-			asset, ok := c.Catalog[assetId]
-			if !ok {
+			asset := c.Catalog.LookupById(assetId)
+			if asset == nil {
 				slog.Error("asset not found", "asset", assetId)
 				continue
 			}

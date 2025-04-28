@@ -7,11 +7,10 @@ import (
 type Data = [16]float32
 
 func FromQuat(q [4]float32) Data {
-	return FromXYZW(q[0], q[1], q[2], q[3])
+	return FromQuatXYZW(q[0], q[1], q[2], q[3])
 }
 
-func FromXYZW(x, y, z, w float32) Data {
-
+func FromQuatXYZW(x, y, z, w float32) Data {
 	xx := x * x
 	xy := x * y
 	xz := x * z
@@ -143,7 +142,7 @@ func FromAzTransformData(data []nwt.AzFloat32) Data {
 		rotation := data[0:4]
 		scale := data[4:7]
 		translation := data[7:10]
-		mat := FromXYZW(float32(rotation[0]), float32(rotation[1]), float32(rotation[2]), float32(rotation[3]))
+		mat := FromQuatXYZW(float32(rotation[0]), float32(rotation[1]), float32(rotation[2]), float32(rotation[3]))
 		mat[0] *= float32(scale[0])
 		mat[1] *= float32(scale[0])
 		mat[2] *= float32(scale[0])

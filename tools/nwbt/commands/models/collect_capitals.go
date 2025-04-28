@@ -133,7 +133,7 @@ func (c *Collector) CollectCapitals(glob string) {
 							continue
 						}
 						modelAsset := meshNode.Static_Mesh
-						modelFile, err := c.LookupFileByAsset2(modelAsset, node.File)
+						modelFile, err := c.LookupFileByAsset(modelAsset)
 						if err != nil {
 							slog.Error("model file not found", "asset", modelAsset, "err", err)
 							continue
@@ -144,7 +144,7 @@ func (c *Collector) CollectCapitals(glob string) {
 						model := modelFile.Path()
 
 						materialAsset := meshNode.Material_Override_Asset
-						materialFile, err := c.LookupFileByAsset2(materialAsset, node.File)
+						materialFile, err := c.LookupFileByAsset(materialAsset)
 						if err != nil {
 							slog.Error("material not found", "asset", materialAsset, "err", err)
 						}

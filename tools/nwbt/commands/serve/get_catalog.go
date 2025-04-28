@@ -4,9 +4,7 @@ import (
 	"net/http"
 	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/game"
-	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils"
-	"strings"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -20,44 +18,21 @@ func GetCatalogHandler(assets *game.Assets) http.HandlerFunc {
 func GetCatalogAssetHandler(assets *game.Assets) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assetId := utils.ExtractUUID(vars["assetId"])
-		query := r.URL.Query()
-		byName := query.Get("name")
-		byHint := query.Get("hint")
+		assetIdString := vars["assetId"]
 
-		if byHint != "" {
-			file, err := assets.LookupFileByAsset(nwt.AzAsset{
-				Guid: assetId,
-				Hint: byHint,
-			})
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-			if file != nil {
-				serveJson(catalog.Asset{
-					Uuid: assetId,
-					File: file.Path(),
-				}, w)
-				return
+		assetId, _ := catalog.ParseAssetId(assetIdString)
+		if subid := r.URL.Query().Get("subid"); subid != "" {
+			subidInt, err := strconv.Atoi(subid)
+			if err == nil {
+				assetId.SubID = uint32(subidInt)
 			}
 		}
-
-		if byName != "" {
-			file := assets.ResolveDynamicSliceByName(byName)
-			if file != nil {
-				serveJson(catalog.Asset{
-					Uuid: assetId,
-					File: file.Path(),
-				}, w)
-				return
-			}
+		result := map[string]any{
+			"asset":  assets.Catalog.LookupById(assetId),
+			"assets": assets.Catalog.AllByGuid(assetId.Guid),
+			"link":   assets.Catalog.LookupLink(assetId.Guid),
+			"legacy": assets.Catalog.LookupLegacy(assetIdString),
 		}
-
-		asset, ok := assets.Catalog[strings.ToLower(assetId)]
-		if !ok {
-			http.Error(w, "asset not found", http.StatusNotFound)
-			return
-		}
-		serveJson(asset, w)
+		serveJson(result, w)
 	}
 }

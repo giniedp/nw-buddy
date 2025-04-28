@@ -1,6 +1,7 @@
 package game
 
 import (
+	"context"
 	"log/slog"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
@@ -22,6 +23,34 @@ type EntityNode struct {
 	Walker     *EntityWalker
 	Components []any
 	Transform  mat4.Data
+	Context    context.Context
+}
+
+func (it *EntityNode) ContextStr(key string) (string, bool) {
+	v, ok := it.Context.Value(key).(string)
+	return v, ok
+}
+
+func (it *EntityNode) ContextStrSet(key string, value string) {
+	it.Context = context.WithValue(it.Context, key, value)
+}
+
+func (it *EntityNode) ContextInt(key string) (int, bool) {
+	v, ok := it.Context.Value(key).(int)
+	return v, ok
+}
+
+func (it *EntityNode) ContextIntSet(key string, value int) {
+	it.Context = context.WithValue(it.Context, key, value)
+}
+
+func (it *EntityNode) ContextFloat(key string) (float32, bool) {
+	v, ok := it.Context.Value(key).(float32)
+	return v, ok
+}
+
+func (it *EntityNode) ContextFloatSet(key string, value float32) {
+	it.Context = context.WithValue(it.Context, key, value)
 }
 
 func (it *EntityNode) WalkAsset(asset nwt.AzAsset) bool {
@@ -105,6 +134,10 @@ func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
 		if parent != nil {
 			transform = mat4.Multiply(parent.Transform, transform)
 		}
+		ctx := context.Background()
+		if parent != nil {
+			ctx = parent.Context
+		}
 		it.Visit(&EntityNode{
 			File:       file,
 			Parent:     parent,
@@ -113,6 +146,7 @@ func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
 			Transform:  transform,
 			Components: entity.Components.Element,
 			Walker:     it,
+			Context:    ctx,
 		})
 	}
 }
@@ -175,10 +209,7 @@ func (it *MetaDataWalker) Walk(parent *MetaDataNode, file nwfs.File) {
 	for _, element := range meta.Spawners.Element {
 		spawnFile := it.Assets.ResolveDynamicSliceByName(string(element.Slicename))
 		if spawnFile == nil {
-			spawnFile, err = it.Assets.LookupFileByAsset2(nwt.AzAsset{
-				Guid: string(element.Sliceassetid.Guid),
-				Hint: string(element.Slicename),
-			}, file)
+			spawnFile, err = it.Assets.LookupFileByAssetId(element.Sliceassetid)
 			if err != nil {
 				slog.Error("slice asset not loaded", "error", err, "file", file.Path())
 			}

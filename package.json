@@ -18,7 +18,7 @@
     "tauri": "tauri",
     "dev": "concurrently -n WEB,NWBT -c red,green -k -s first \"pnpm dev:web\" \"pnpm dev:nwbt\"",
     "dev:electron": "npm-run-all -p electron:serve dev:web",
-    "dev:nwbt": "pnpm nwbt serve --texture-size 1024",
+    "dev:nwbt": "pnpm nwbt serve --texture-size 2048",
     "dev:web": "pnpm nw-generate env -c dev && ng serve -c dev",
     "dev:web-cdn": "pnpm nw-generate env -c dev-cdn && ng serve -c dev-cdn",
     "dev:storybook": "ng run nw-buddy:storybook",

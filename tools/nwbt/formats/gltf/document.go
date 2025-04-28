@@ -21,6 +21,7 @@ const (
 	ExtraKeyLimbID       = "limbId"
 	ExtraKeySource       = "source"
 	ExtraKeyInverse      = "inverse"
+	ExtraKeyAlpha        = "alpha"
 )
 
 type Document struct {

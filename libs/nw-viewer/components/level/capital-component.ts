@@ -1,17 +1,17 @@
 import { GameComponent, GameEntity, GameEntityCollection } from '@nw-viewer/ecs'
 import { TransformComponent } from '../transform-component'
 import { instantiateEntities } from './instantiate-entities'
-import type { CapitalWitEntities } from './region-segment'
+import type { CapitalWithEntities, ChunkWithEntities } from './region-segment'
 
 export class CapitalComponent implements GameComponent {
-  private data: CapitalWitEntities
+  private data: CapitalWithEntities | ChunkWithEntities
   private isLoaded: boolean
   private transform: TransformComponent
 
   private entities = new GameEntityCollection()
   public entity: GameEntity
 
-  public constructor(data: CapitalWitEntities) {
+  public constructor(data: CapitalWithEntities | ChunkWithEntities) {
     this.data = data
   }
 

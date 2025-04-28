@@ -9,7 +9,7 @@ import (
 )
 
 type Assets struct {
-	Catalog catalog.Document
+	Catalog *catalog.Document
 	Archive nwfs.Archive
 
 	objectCache sync.Map

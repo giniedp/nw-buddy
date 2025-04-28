@@ -53,7 +53,7 @@ export function getHeightmapInfoUrl(levelName: string): TypedRequest<TerrainInfo
 }
 
 export function getRegionEntitiesUrl(levelName: string, regionName: string): TypedRequest<Record<string, Record<string, EntityInfo[]>>> {
-  return { url: `/level/${levelName}/region/${regionName}/capital` }
+  return { url: `/level/${levelName}/region/${regionName}/entities` }
 }
 
 export function getRegionDistributionUrl(levelName: string, regionName: string): TypedRequest<DistributionInfo> {

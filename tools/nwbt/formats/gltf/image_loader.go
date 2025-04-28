@@ -21,13 +21,19 @@ func (c *Document) LoadTexture(texture *mtl.Texture, alpha ...bool) *gltf.Textur
 		return nil
 	}
 
-	file := resolveFile(c.ImageLoader, texture.File, texture.AssetId)
+	file := resolveFile(c.ImageLoader, texture.AssetId, texture.File)
 	if file == nil {
 		return nil
 	}
 
-	if len(alpha) > 0 && alpha[0] {
-		file = resolveFile(c.ImageLoader, utils.ReplaceExt(file.Path(), ".dds.a"))
+	useAlpha := len(alpha) > 0 && alpha[0]
+	isAlpha := false
+	if useAlpha {
+		alphaFile := resolveFile(c.ImageLoader, utils.ReplaceExt(file.Path(), ".dds.a"))
+		if alphaFile != nil {
+			file = alphaFile
+			isAlpha = true
+		}
 	}
 	if file == nil {
 		return nil
@@ -40,10 +46,14 @@ func (c *Document) LoadTexture(texture *mtl.Texture, alpha ...bool) *gltf.Textur
 			return nil, err
 		}
 		source = img.Source
+		if useAlpha && img.Alpha != nil {
+			return img.Alpha, nil
+		}
 		return img.Data, nil
 	})
 	if tex != nil && source != "" {
 		tex.Extras = ExtrasStore(tex.Extras, ExtraKeySource, source)
+		tex.Extras = ExtrasStore(tex.Extras, ExtraKeyAlpha, isAlpha)
 	}
 	if tex != nil {
 		return tex

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/adb"
+	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/datasheet"
@@ -11,9 +12,6 @@ import (
 	"nw-buddy/tools/formats/mtl"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils"
-	"path"
-	"strings"
 )
 
 func (it *Assets) LoadObjectStream(file nwfs.File) (any, error) {
@@ -88,13 +86,15 @@ func (it *Assets) LoadAliasAsset(file nwfs.File) (*nwt.AliasAsset, error) {
 	return nil, nil
 }
 
-func (it *Assets) LookupFileByUuid(uuid string) (nwfs.File, error) {
-	if uuid == "" || uuid == "00000000-0000-0000-0000-000000000000" {
+func (it *Assets) LookupFileByAssetIdRef(assetIdRef string) (nwfs.File, error) {
+	assetId, isAssetId := catalog.ParseAssetId(assetIdRef)
+	if !isAssetId || assetId.IsZeroOrEmpty() {
 		return nil, nil
 	}
-	asset := it.Catalog[strings.ToLower(uuid)]
+
+	asset := it.Catalog.LookupById(assetId)
 	if asset == nil {
-		return nil, fmt.Errorf("asset id does not exist in catalog: %v", uuid)
+		return nil, fmt.Errorf("asset id does not exist in catalog: %v", assetIdRef)
 	}
 	file, ok := it.Archive.Lookup(asset.File)
 	if ok {
@@ -104,11 +104,12 @@ func (it *Assets) LookupFileByUuid(uuid string) (nwfs.File, error) {
 }
 
 func (it *Assets) LookupFileByAssetId(id nwt.AssetId) (nwfs.File, error) {
-	uuid := string(id.Guid)
-	if uuid == "" || uuid == "00000000-0000-0000-0000-000000000000" {
+	assetId := catalog.ToAssetId(string(id.Guid), uint(id.SubId))
+	if assetId.IsZeroOrEmpty() {
 		return nil, nil
 	}
-	asset := it.Catalog[strings.ToLower(uuid)]
+
+	asset := it.Catalog.Lookup(string(id.Guid), uint(id.SubId))
 	if asset == nil {
 		return nil, fmt.Errorf("asset id does not exist in catalog: %v", id)
 	}
@@ -120,68 +121,11 @@ func (it *Assets) LookupFileByAssetId(id nwt.AssetId) (nwfs.File, error) {
 }
 
 func (it *Assets) LookupFileByAsset(azAsset nwt.AzAsset) (nwfs.File, error) {
-	uuid := string(azAsset.Guid)
-
-	if azAsset.Hint != "" {
-		// hint seems to be most reliable for our use case
-
-		file, ok := it.Archive.Lookup(azAsset.Hint)
-		if ok {
-			return file, nil
-		}
-		if path.Ext(azAsset.Hint) == ".slice" {
-			file, ok = it.Archive.Lookup(utils.ReplaceExt(azAsset.Hint, ".dynamicslice"))
-			if ok {
-				return file, nil
-			}
-		}
-	}
-
-	if uuid == "" || uuid == "00000000-0000-0000-0000-000000000000" {
+	if catalog.UUID(azAsset.Guid).IsZeroOrEmpty() {
 		return nil, nil
 	}
 
-	asset := it.Catalog[strings.ToLower(uuid)]
-	if asset == nil {
-		return nil, fmt.Errorf("asset id does not exist in catalog: %v", azAsset)
-	}
-
-	file, ok := it.Archive.Lookup(asset.File)
-	if ok {
-		return file, nil
-	}
-
-	return nil, fmt.Errorf("asset does not exist in archive: %v", asset)
-}
-
-func (it *Assets) LookupFileByAsset2(azAsset nwt.AzAsset, parent nwfs.File) (nwfs.File, error) {
-	uuid := string(azAsset.Guid)
-
-	if azAsset.Hint != "" {
-		// hint seems to be most reliable for our use case
-
-		file, ok := it.Archive.Lookup(azAsset.Hint)
-		if ok {
-			return file, nil
-		}
-		file, ok = it.Archive.Lookup(path.Join(path.Dir(parent.Path()), azAsset.Hint))
-		if ok {
-			return file, nil
-		}
-
-		if path.Ext(azAsset.Hint) == ".slice" {
-			file, ok = it.Archive.Lookup(utils.ReplaceExt(azAsset.Hint, ".dynamicslice"))
-			if ok {
-				return file, nil
-			}
-		}
-	}
-
-	if uuid == "" || uuid == "00000000-0000-0000-0000-000000000000" {
-		return nil, nil
-	}
-
-	asset := it.Catalog[strings.ToLower(uuid)]
+	asset := it.Catalog.Find(azAsset.Guid, azAsset.Type, azAsset.Hint)
 	if asset == nil {
 		return nil, fmt.Errorf("asset id does not exist in catalog: %v", azAsset)
 	}

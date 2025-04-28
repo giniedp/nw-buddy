@@ -6,6 +6,7 @@ import {
   Color4,
   FlyCamera,
   FreeCamera,
+  GlowLayer,
   GPUPicker,
   HighlightLayer,
   ImageProcessingConfiguration,
@@ -15,6 +16,7 @@ import {
   PointerEventTypes,
   PointerInfo,
   Scene,
+  ScenePerformancePriority,
   SSAO2RenderingPipeline,
   TAARenderingPipeline,
   Vector3,
@@ -34,6 +36,7 @@ export class SceneProvider implements GameService {
   public engine: AbstractEngine
   private ssao: SSAO2RenderingPipeline
   private taa: TAARenderingPipeline
+  private glow: GlowLayer
 
   public arcRotateCamera: ArcRotateCamera
   public freeCamera: FreeCamera
@@ -81,6 +84,14 @@ export class SceneProvider implements GameService {
     this.freeCamera.keysRight = [68] // D
 
     this.main.activeCamera = this.arcRotateCamera
+    this.ssao = new SSAO2RenderingPipeline('ssao', this.main, 1, [this.freeCamera])
+    this.ssao.samples = 16
+    this.taa = new TAARenderingPipeline('taa', this.main, [this.freeCamera])
+    this.main.prePassRenderer.samples = 16;
+    // this.glow = new GlowLayer("glow", this.main, {
+    //   mainTextureFixedSize: 512,
+    //   blurKernelSize: 64,
+    // })
 
     //this.main.performancePriority = ScenePerformancePriority.Aggressive
     this.engine.runRenderLoop(this.onRenderLoop)

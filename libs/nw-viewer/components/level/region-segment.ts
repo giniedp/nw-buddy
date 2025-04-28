@@ -1,26 +1,29 @@
-import { BoundingInfo, Color4, Matrix, TransformNode, Vector3 } from '@babylonjs/core'
+import { Color4, Matrix, TransformNode } from '@babylonjs/core'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../ecs'
 import { SceneProvider } from '../../services/scene-provider'
 import { DebugMeshComponent } from '../debug-mesh-component'
 
-import { CapitalInfo, EntityInfo, ImpostorInfo } from '@nw-serve'
+import { CapitalInfo, ChunkInfo, EntityInfo, ImpostorInfo } from '@nw-serve'
+import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
 import { StaticMeshComponent } from '../static-mesh-component'
 import { createChildTransform, TransformComponent } from '../transform-component'
 import { CapitalComponent } from './capital-component'
 import {
+  ENABLE_CAPITAL_INDICATOR,
+  ENABLE_IMPOSTORS,
   LOAD_CAPITALS_AT,
   LOAD_IMPOSTORS_AT,
-  SEGMENT_SIZE,
   SHOW_CAPITALS_AT,
   SHOW_IMPOSTORS_AT,
-  ENABLE_IMPOSTORS,
   UNLOAD_AT,
-  ENABLE_CAPITAL_INDICATOR,
 } from './constants'
-import { cryToGltfMat4 } from '@nw-viewer/math/mat4'
 
-export type CapitalWitEntities = CapitalInfo & {
-  layer?: TransformNode
+export type CapitalWithEntities = CapitalInfo & {
+  matrix: Matrix
+  entities: EntityInfo[]
+}
+
+export type ChunkWithEntities = ChunkInfo & {
   matrix: Matrix
   entities: EntityInfo[]
 }
@@ -31,8 +34,9 @@ export interface RegionSegmentOptions {
   centerX: number
   centerY: number
   impostors: ImpostorInfo[]
-  capitals: CapitalWitEntities[]
-  distribution: EntityInfo[]
+  capitals: CapitalWithEntities[]
+  chunks: ChunkWithEntities[]
+  distribution?: EntityInfo[]
 }
 
 export class RegionSegmentComponent implements GameComponent {
@@ -42,6 +46,7 @@ export class RegionSegmentComponent implements GameComponent {
   private region: string
 
   private capitalsLayer: TransformNode
+  private capitalLayerNodes: Map<string, TransformNode>
   private capitalsLoaded: boolean = false
   private capitalsShown: boolean = false
 
@@ -75,6 +80,7 @@ export class RegionSegmentComponent implements GameComponent {
     this.entity = entity
     this.transform = this.entity.component(TransformComponent)
     this.capitalsLayer = this.transform.createChild('capitals')
+    this.capitalLayerNodes = new Map<string, TransformNode>()
     this.impostorsLayer = this.transform.createChild('impostors')
     this.capitalsLayer.setEnabled(false)
     this.impostorsLayer.setEnabled(false)
@@ -90,7 +96,12 @@ export class RegionSegmentComponent implements GameComponent {
     }
     if (this.data.capitals) {
       for (const capital of this.data.capitals) {
-        this.createCapitalEntity(capital)
+        this.createCapitalEntity(capital, `capital ${capital.id}`)
+      }
+    }
+    if (this.data.chunks) {
+      for (const chunk of this.data.chunks) {
+        this.createCapitalEntity(chunk, `chunk ${chunk.id}`)
       }
     }
     if (this.data.distribution) {
@@ -184,7 +195,6 @@ export class RegionSegmentComponent implements GameComponent {
     if (this.capitalsShown && d2 >= showCapitalsAt) {
       this.capitalsShown = false
       this.capitalsLayer.setEnabled(false)
-
     }
     if (!this.capitalsShown && d2 <= showCapitalsAt) {
       this.capitalsShown = true
@@ -236,11 +246,7 @@ export class RegionSegmentComponent implements GameComponent {
     )
   }
 
-  private createCapitalEntity(capital: CapitalWitEntities) {
-    const index = this.capitals.length()
-
-    const entityName = `${this.transform.node.name} - capital ${index} ${capital.id}`
-
+  private createCapitalEntity(capital: CapitalWithEntities | ChunkWithEntities, entityName: string) {
     this.capitals.create(entityName).addComponents(
       new TransformComponent({
         transform: createChildTransform(this.capitalsLayer, entityName, {
@@ -251,6 +257,16 @@ export class RegionSegmentComponent implements GameComponent {
     )
 
     if (ENABLE_CAPITAL_INDICATOR) {
+      let size = 1
+      let color = new Color4(1, 0.5, 1, 1)
+      let shape: 'sphere' | 'box' = 'sphere'
+      if ('radius' in capital) {
+        size = capital.radius || 1
+      }
+      if ('size' in capital) {
+        size = capital.size || 1
+        shape = 'box'
+      }
       this.capitalIndicators.create().addComponents(
         new TransformComponent({
           transform: createChildTransform(this.capitalsLayer, entityName, {
@@ -259,9 +275,9 @@ export class RegionSegmentComponent implements GameComponent {
         }),
         new DebugMeshComponent({
           name: entityName,
-          type: 'sphere',
-          size: capital.radius || 1,
-          color: new Color4(1, 0.5, 1, 1),
+          type: shape,
+          size: size,
+          color: color,
         }),
       )
     }

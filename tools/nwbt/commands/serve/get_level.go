@@ -23,8 +23,9 @@ func LevelsRouter(r *mux.Router, assets *game.Assets) {
 	r.HandleFunc("/{level}/heightmap/{z}_{y}_{x}.png", getLevelHeitmapTileFunc(levels))
 
 	r.HandleFunc("/{level}/region/{region}", getLevelRegionInfoFunc(levels))
-	r.HandleFunc("/{level}/region/{region}/capital", getLevelRegionEntitiesFunc(levels))
+	r.HandleFunc("/{level}/region/{region}/entities", getLevelRegionEntitiesFunc(levels))
 	r.HandleFunc("/{level}/region/{region}/distribution", getLevelRegionDistributionFunc(levels))
+
 }
 
 func GetLevelNamesFunc(assets *game.Assets) http.HandlerFunc {

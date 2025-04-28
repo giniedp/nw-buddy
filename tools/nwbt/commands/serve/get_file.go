@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
@@ -82,11 +83,11 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 	queryPath := nwfs.NormalizePath(r.URL.Path)
 	queryType := path.Ext(queryPath)
 	queryIsImage := queryType == ".png" || queryType == ".webp" || queryType == ".dds"
-	uuid := utils.ExtractUUID(queryPath)
+	assetId, isAssetId := catalog.ParseAssetId(queryPath) // TODO: review, the extension might break this
 
 	filePath := queryPath
-	if uuid != "" {
-		asset := assets.Catalog[strings.ToLower(uuid)]
+	if isAssetId {
+		asset := assets.Catalog.LookupById(assetId)
 		if asset != nil {
 			filePath = asset.File
 		}

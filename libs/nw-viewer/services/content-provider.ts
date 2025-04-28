@@ -1,4 +1,4 @@
-import { AssetContainer, LoadAssetContainerAsync, Mesh } from '@babylonjs/core'
+import { AssetContainer, LoadAssetContainerAsync, Mesh, SpriteManager } from '@babylonjs/core'
 import '@babylonjs/loaders'
 import { IGLTFLoaderData } from '@babylonjs/loaders'
 import { NwMaterialExtension, NwMaterialPlugin } from '@nw-viewer/graphics'
@@ -37,6 +37,7 @@ export class ContentProvider implements GameService {
   })
 
   public game: GameServiceContainer
+  public spriteVitals: SpriteManager
 
   public rootUrl: string
   public nwbtUrl: string
@@ -56,6 +57,13 @@ export class ContentProvider implements GameService {
   public initialize(game: GameServiceContainer): void {
     this.game = game
     this.scene = game.get(SceneProvider)
+    this.spriteVitals = new SpriteManager(
+      'vital',
+      'https://www.nw-buddy.de/assets/icons/families/lostbane1.png',
+      10000,
+      { width: 64, height: 64 },
+      this.scene.main,
+    )
   }
 
   public destroy(): void {

@@ -39,12 +39,20 @@ export interface DistributionSlice {
 export interface CapitalLayerInfo {
   name: string
   capitals: CapitalInfo[]
+  chunks: ChunkInfo[]
 }
 
 export interface CapitalInfo {
   id: string
   transform: number[]
   radius: number
+  slice: string
+}
+
+export interface ChunkInfo {
+  id: string
+  transform: number[]
+  size: number
   slice: string
 }
 
@@ -57,6 +65,19 @@ export interface EntityInfo {
   material: string
   instances: number[][]
   light: LightInfo
+  vital: VitalSpawnInfo
+  encounter: EncounterInfo
+}
+
+export interface VitalSpawnInfo {
+  vitalsId: string
+  categoryId: string
+  level: number
+}
+
+export interface EncounterInfo {
+  name: string
+  stages: string[]
 }
 
 export interface LightInfo {

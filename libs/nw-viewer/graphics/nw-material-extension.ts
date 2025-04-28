@@ -100,6 +100,9 @@ export class NwMaterialExtension implements GLTF2.IGLTFLoaderExtension {
       if (!smoothTexture && smoothTextureInfo?.index >= 0) {
         smoothTexture = await this.loader
           .loadTextureInfoAsync(`${context}/smoothTexture`, smoothTextureInfo, (babylonTexture) => {
+            if (babylonTexture.hasAlpha) {
+              console.log('smoothTexture', smoothTextureInfo, babylonTexture)
+            }
             babylonTexture.name = `${material.name}_smooth`
           })
           .catch((err) => {

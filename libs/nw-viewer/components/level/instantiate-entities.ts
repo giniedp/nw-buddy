@@ -7,6 +7,7 @@ import { StaticMeshComponent } from '../static-mesh-component'
 import { TransformComponent } from '../transform-component'
 import { groupBy } from 'lodash'
 import { ENABLE_ENTITY_INDICATOR } from './constants'
+import { SpriteComponent } from '../sprite-component'
 
 export function instantiateEntities(collection: GameEntityCollection, list: EntityInfo[], parent: TransformComponent) {
   if (!list?.length) {
@@ -53,6 +54,13 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
         }),
       }),
     )
+    if (item.vital) {
+      entity.addComponent(
+        new SpriteComponent({
+          kind: "vital"
+        }),
+      )
+    }
     if (item.model) {
       entity.addComponent(
         new StaticMeshComponent({

@@ -9,7 +9,6 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"path"
-	"strings"
 )
 
 type LoadedImage struct {
@@ -28,7 +27,7 @@ type Loader interface {
 
 type LoaderWithConverter struct {
 	Archive   nwfs.Archive
-	Catalog   catalog.Document
+	Catalog   *catalog.Document
 	Converter Converter
 	Cache     Cache
 }
@@ -73,14 +72,7 @@ var (
 
 func (r LoaderWithConverter) ResolveFile(imageOrUuid string) (nwfs.File, error) {
 	file := imageOrUuid
-	if uuid := utils.ExtractUUID(file); uuid != "" {
-		if r.Catalog == nil {
-			return nil, ErrCatalogNotAvailable
-		}
-		asset := r.Catalog[strings.ToLower(uuid)]
-		if asset == nil {
-			return nil, fmt.Errorf("%w: %s", ErrAssetNotFound, uuid)
-		}
+	if asset := r.Catalog.LookupByRef(imageOrUuid); asset != nil {
 		file = asset.File
 	}
 
