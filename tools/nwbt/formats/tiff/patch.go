@@ -1,23 +1,27 @@
 package tiff
 
 import (
-	"bytes"
 	"encoding/binary"
 	"fmt"
 	"image"
 	"io"
 	"log/slog"
-
-	"golang.org/x/image/tiff"
 )
 
+// DecodeWithPhotometricPatch applies the photometric interpretation patch
+// and then uses our libtiff CGO wrapper to decode the TIFF data.
 func DecodeWithPhotometricPatch(data []byte) (image.Image, error) {
-	// intentionally ingore the error
-	if _, err := PatchPhotometricInterpretaion(data); err != nil {
-		return nil, err
+	// Apply the patch first
+	patched, err := PatchPhotometricInterpretaion(data)
+	if err != nil {
+		return nil, fmt.Errorf("photometric interpretation patch failed: %w", err)
 	}
-	// Decode using the standard library decoder. The data might have been modified.
-	return tiff.Decode(bytes.NewReader(data))
+	if patched {
+		slog.Debug("Applied photometric interpretation patch")
+	}
+
+	// Use our libtiff wrapper to decode the TIFF data
+	return Decode(data)
 }
 
 // PatchPhotometricInterpretaion checks if the TIFF data has PhotometricInterpretation=RGB
@@ -114,7 +118,7 @@ func parse(data []byte) (binary.ByteOrder, []*tag, error) {
 	case beHeader:
 		order = binary.BigEndian
 	default:
-		return nil, nil, tiff.FormatError("malformed header")
+		return nil, nil, fmt.Errorf("malformed header")
 	}
 
 	ifdOffset := int64(order.Uint32(data[4:8]))

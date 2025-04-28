@@ -8,8 +8,11 @@ import (
 	"nw-buddy/tools/formats/tiff"
 	"nw-buddy/tools/utils"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/HugoSmits86/nativewebp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +25,7 @@ func TestReadPathMetadata(t *testing.T) {
 func TestParseHeightField(t *testing.T) {
 	data, err := os.ReadFile("samples/region.heightmap")
 	assert.NoError(t, err)
-	region, err := heightmap.LoadFromTiffOld(data)
+	region, err := heightmap.LoadFromTiff(data)
 	assert.NoError(t, err)
 	assert.Equal(t, 2048*2048, len(region))
 
@@ -75,5 +78,49 @@ func TestLoad(t *testing.T) {
 		assert.NoError(t, err, "Failed to read file: %s", file)
 		_, err = heightmap.LoadFromTiff(data)
 		assert.NoError(t, err, "Failed to load heightmap from file: %s", file)
+	}
+}
+
+func TestSaveAsPNG(t *testing.T) {
+	files := []string{
+		"samples/region.heightmap",
+		"samples/r_+03_+02/region.heightmap",
+		"samples/r_+03_+05/region.heightmap",
+	}
+	for _, file := range files {
+		t.Run(file, func(t *testing.T) {
+			data, err := os.ReadFile(file)
+			assert.NoError(t, err, "Failed to read file")
+			if err != nil {
+				return
+			}
+
+			imgData, err := tiff.DecodeWithPhotometricPatch(data)
+			assert.NoError(t, err, "Failed to load heightmap")
+			if err != nil {
+				return
+			}
+
+			// --- Save as PNG ---
+			pngOutPath := strings.TrimSuffix(file, filepath.Ext(file)) + ".png"
+			pngFile, err := os.Create(pngOutPath)
+			assert.NoError(t, err, "Failed to create PNG output file: %s", pngOutPath)
+			if err == nil {
+				defer pngFile.Close()
+				err = png.Encode(pngFile, imgData)
+				assert.NoError(t, err, "Failed to encode PNG: %s", pngOutPath)
+			}
+
+			// --- Save as WebP ---
+			webpOutPath := strings.TrimSuffix(file, filepath.Ext(file)) + ".webp"
+			webpFile, err := os.Create(webpOutPath)
+			assert.NoError(t, err, "Failed to create WebP output file: %s", webpOutPath)
+			if err == nil {
+				defer webpFile.Close()
+				// Use default options (lossless) for encoding
+				err = nativewebp.Encode(webpFile, imgData, nil)
+				assert.NoError(t, err, "Failed to encode WebP: %s", webpOutPath)
+			}
+		})
 	}
 }

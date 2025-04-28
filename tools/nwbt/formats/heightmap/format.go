@@ -87,6 +87,7 @@ func Load(file nwfs.File) ([]float32, error) {
 }
 
 func LoadFromTiff(data []byte) ([]float32, error) {
+	// Use the patched CGO libtiff decoder
 	img, err := tiff.DecodeWithPhotometricPatch(data)
 	if err != nil {
 		return nil, err
