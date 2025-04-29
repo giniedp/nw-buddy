@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"nw-buddy/tools/commands/cache"
 	"nw-buddy/tools/commands/cat"
 	"nw-buddy/tools/commands/list"
 	"nw-buddy/tools/commands/models"
@@ -42,4 +43,5 @@ func init() {
 	rootCmd.AddCommand(vet.Cmd)
 	rootCmd.AddCommand(models.Cmd)
 	rootCmd.AddCommand(serve.Cmd)
+	rootCmd.AddCommand(cache.Cmd)
 }
