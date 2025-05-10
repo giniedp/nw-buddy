@@ -1,10 +1,5 @@
 import { Component, inject, signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { CreateScreenshotAsync } from '@babylonjs/core'
-import { Inspector } from '@babylonjs/inspector'
-import { AdbFragment } from '@nw-viewer/adb'
-import { LightingProvider } from '@nw-viewer/services/lighting-provider'
-import { SceneProvider } from '@nw-viewer/services/scene-provider'
 import { of, switchMap } from 'rxjs'
 import { IconsModule } from '~/ui/icons'
 import {
@@ -15,7 +10,6 @@ import {
   svgCubes,
   svgExpand,
   svgFilm,
-  svgFilms,
   svgGlobeSnow,
   svgMoon,
   svgPause,
@@ -26,9 +20,7 @@ import {
 } from '~/ui/icons/svg'
 import { FullscreenService, LayoutModule } from '~/ui/layout'
 import { ScreenshotService } from '../screenshot'
-import { CharacterActionBrowserComponent } from './character-action-browser.component'
 import { GameViewerService } from './game-viewer.service'
-import { GameViewerCharacterDirective } from './game-viewer-character.directive'
 
 @Component({
   selector: 'nwb-game-viewer-toolbar',
@@ -39,28 +31,26 @@ import { GameViewerCharacterDirective } from './game-viewer-character.directive'
   imports: [IconsModule, LayoutModule],
 })
 export class GameViewerToolbarComponent {
-  private charViewer = inject(GameViewerCharacterDirective, { optional: true })
-
   protected fullscreen = inject(FullscreenService)
   protected screenshots = inject(ScreenshotService)
   protected service = inject(GameViewerService)
+  protected loadedEntity = this.service.loadedEntity
+  private bridge$ = this.service.bridge$
+
+  protected bridge = this.service.bridge
+  protected envMapConnected = toSignal(this.bridge$.pipe(switchMap((it) => it.envMapConnected || of(false))))
+  protected envMapBackground = toSignal(this.bridge$.pipe(switchMap((it) => it.envMappedBackground || of(false))))
+  protected envMapUrl = toSignal(this.bridge$.pipe(switchMap((it) => it.envMapUrl || of(null))))
+
+  protected terrainConnected = toSignal(this.bridge$.pipe(switchMap((it) => it.terrainConnected || of(false))))
+  protected terrainEnabled = toSignal(this.bridge$.pipe(switchMap((it) => it.terrainEnabled || of(false))))
+
   protected envOptions = signal([
-    { value: 'https://assets.babylonjs.com/textures/parking.env', label: 'parking' },
-    { value: 'https://assets.babylonjs.com/textures/country.env', label: 'country' },
-    { value: 'https://assets.babylonjs.com/textures/environment.env', label: 'environment' },
-    { value: 'https://assets.babylonjs.com/textures/night.env', label: 'night' },
+    { value: 'https://assets.babylonjs.com/textures/parking.hdr', label: 'parking' },
+    { value: 'https://assets.babylonjs.com/textures/country.hdr', label: 'country' },
+    { value: 'https://assets.babylonjs.com/textures/environment.hdr', label: 'environment' },
+    { value: 'https://assets.babylonjs.com/textures/night.hdr', label: 'night' },
   ])
-
-  protected lighting$ = this.service.service(LightingProvider)
-  protected envMapUrl$ = this.lighting$.pipe(switchMap((it) => it.envUrl$ || of(null)))
-  protected skyboxEnabled$ = this.lighting$.pipe(switchMap((it) => it.skybox$ || of(false)))
-
-  protected lighting = toSignal(this.lighting$)
-  protected envMapUrl = toSignal(this.envMapUrl$)
-  protected skyboxEnabled = toSignal(this.skyboxEnabled$)
-  protected adbActions = this.service.adbActions
-  protected adbTags = this.service.adbTags
-  protected canReframe = !!this.charViewer
 
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
@@ -78,32 +68,25 @@ export class GameViewerToolbarComponent {
   protected iconReframe = svgCameraViewfinder
 
   protected toggleFullscreen() {
-    this.fullscreen.toggle(this.service.host().nativeElement)
+    this.fullscreen.toggle(this.service.host())
   }
 
-  protected async capturePhoto() {
-    const game = this.service.game()
-    const scene = game.get(SceneProvider).main
-    const engine = scene.getEngine()
-    const size = this.fullscreen.isActive() ? window.innerWidth : 2000
-    const data = await CreateScreenshotAsync(engine, scene.activeCamera, size)
-    const blob = await fetch(data).then((res) => res.blob())
-    this.screenshots.saveBlobWithDialog(blob)
-  }
+  // protected async capturePhoto() {
+  //   const game = this.service.game()
+  //   const scene = game.get(SceneProvider).main
+  //   const engine = scene.getEngine()
+  //   const size = this.fullscreen.isActive() ? window.innerWidth : 2000
+  //   const data = await CreateScreenshotAsync(engine, scene.activeCamera, size)
+  //   const blob = await fetch(data).then((res) => res.blob())
+  //   this.screenshots.saveBlobWithDialog(blob)
+  // }
 
   protected toggleDebugView() {
-    if (Inspector.IsVisible) {
-      Inspector.Hide()
-      return
-    }
-    const scene = this.service.game().get(SceneProvider).main
-    Inspector.Show(scene, {
-      globalRoot: this.service.host().nativeElement.querySelector('#inspector'),
-      embedMode: true,
-    })
+    this.bridge().toggleDebug()
   }
 
   protected reframeCamera() {
-    this.charViewer.reframeCamera()
+    const entity = this.loadedEntity()
+    this.bridge().reframeCameraOn(entity)
   }
 }

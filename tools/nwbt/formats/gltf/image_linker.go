@@ -19,6 +19,8 @@ type ImageLinker interface {
 	RelativeMode() bool
 	// Set whether to use relative URIs
 	SetRelativeMode(relative bool)
+	// Whether to skip to write linked resources
+	SkipWrite(skip bool)
 	// Sets the query parameter to be appended to the URI when writing linked resources
 	SetQueryParam(param string)
 	// Read a file from the output directory
@@ -47,10 +49,11 @@ func NewResourceLinker(dir string) ImageLinker {
 }
 
 type resourceLinker struct {
-	dir      string
-	relative bool
-	mu       *sync.Mutex
-	query    string
+	dir       string
+	relative  bool
+	skipWrite bool
+	mu        *sync.Mutex
+	query     string
 }
 
 func (r *resourceLinker) OutputDirectory() string {
@@ -67,6 +70,10 @@ func (r *resourceLinker) RelativeMode() bool {
 
 func (r *resourceLinker) SetRelativeMode(relative bool) {
 	r.relative = relative
+}
+
+func (r *resourceLinker) SkipWrite(skip bool) {
+	r.skipWrite = skip
 }
 
 func (r *resourceLinker) SetQueryParam(query string) {
@@ -115,7 +122,10 @@ func (r *resourceLinker) WriteLinkedResource(assetPath string, uri string, data 
 		uri = r.ToAssetURI(assetPath, uri)
 	}
 	uri = strings.ToLower(uri)
-	err := r.Write(uri, data)
+	var err error
+	if !r.skipWrite {
+		err = r.Write(uri, data)
+	}
 	if r.query != "" {
 		uri = uri + "?" + r.query
 	}

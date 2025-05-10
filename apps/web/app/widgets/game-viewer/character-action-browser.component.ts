@@ -1,11 +1,11 @@
 import { CdkVirtualForOfContext, CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling'
 import { Component, computed, Directive, effect, inject, Input, input, output, signal, viewChild } from '@angular/core'
+import type { AdbAction, AdbFragment } from '@nw-viewer/babylon/adb'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCircleExclamation, svgFilm, svgInfo, svgInfoCircle, svgPause, svgPlay, svgPlus, svgTags, svgXmark } from '~/ui/icons/svg'
+import { svgFilm, svgInfoCircle, svgPause, svgPlay, svgPlus, svgTags } from '~/ui/icons/svg'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { humanize } from '~/utils'
-import type { AdbAction, AdbFragment } from '@nw-viewer/adb'
 
 @Directive({
   selector: '[cdkVirtualFor]',

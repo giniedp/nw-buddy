@@ -14,6 +14,10 @@ export interface GameServiceQueryOptions {
    */
   self?: boolean
   /**
+   * If true, skips to the parent container.
+   */
+  skipSelf?: boolean
+  /**
    * If true, does not throw an error if the system is not found.
    */
   optional?: boolean
@@ -30,21 +34,28 @@ export class GameServiceContainer {
   }
 
   public get<T extends GameService>(type: GameServiceType<T>, options?: GameServiceQueryOptions): T {
+    if (options?.skipSelf) {
+      if (this.parent) {
+        return this.parent.get(type, options)
+      } else if (options?.optional) {
+        return null
+      }
+      throw new Error(`Service ${getTypeName(type)} not found`)
+    }
+
     const result = this.registry.get(type) as T
     if (result) {
       return result
     }
-    if (options) {
-      if (!options?.self && this.parent) {
-        return this.parent.get(type, options)
-      }
-      if (options?.optional) {
-        return null
-      }
-    }
-    throw new Error(`Service ${type} not found`)
-  }
 
+    if (!options?.self && this.parent) {
+      return this.parent.get(type, options)
+    }
+    if (options?.optional) {
+      return null
+    }
+    throw new Error(`Service ${getTypeName(type)} not found`)
+  }
 
   public add<T extends GameService>(service: T, type?: GameServiceType<T>): this {
     if (type === undefined) {
@@ -55,7 +66,7 @@ export class GameServiceContainer {
         throw new Error('Cannot use Object as service type')
       }
       if (this.registry.has(type)) {
-        throw new Error(`Service ${type} already exists`)
+        throw new Error(`Service ${getTypeName(type)} already exists`)
       }
       this.registry.set(type, service)
     }
@@ -121,5 +132,15 @@ function removeFromArray<T>(array: T[], item: T) {
   const index = array.indexOf(item)
   if (index !== -1) {
     array.splice(index, 1)
+  }
+}
+
+function getTypeName(type: any): string {
+  if (typeof type === 'function') {
+    return type.name
+  } else if (typeof type === 'string') {
+    return type
+  } else {
+    return String(type)
   }
 }

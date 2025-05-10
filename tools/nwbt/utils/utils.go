@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"slices"
@@ -16,19 +18,28 @@ func ReplaceExt(filePath string, ext string) string {
 // Data is written to a temporary file and then renamed to the target file.
 func WriteFile(file string, data []byte) error {
 	dir := path.Dir(file)
+	base := path.Base(file)
+
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
-	tmp, err := os.CreateTemp(dir, "*")
+
+	tmp, err := os.CreateTemp(dir, base+".*")
 	if err != nil {
-		return err
+		return fmt.Errorf("temp file not created: %w", err)
 	}
 	defer tmp.Close()
 	if _, err := tmp.Write(data); err != nil {
-		return err
+		return fmt.Errorf("temp file not written: %w", err)
 	}
-	tmp.Close()
-	return os.Rename(tmp.Name(), file)
+	tmpFile := strings.ReplaceAll(tmp.Name(), "\\", "/")
+	if err = tmp.Close(); err != nil {
+		slog.Warn("temp file not closed", "file", tmpFile, "error", err)
+	}
+	if err = os.Rename(tmpFile, file); err != nil {
+		return fmt.Errorf("temp file not renamed: %w", err)
+	}
+	return nil
 }
 
 func FileExists(filePath string) bool {

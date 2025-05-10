@@ -1,8 +1,30 @@
-export function cryToGltfMat4(mat: number[]): number[] {
-  // 1 0 0 0
-  // 0 0 1 0
-  // 0 1 0 0
-  // 0 0 0 1
+/**
+ * Conversion matrix from CRY engine space to Babylon engine space.
+ * @remarks
+ * - Swaps the Y and Z axes.
+ * - X axis remains unchanged.
+ * @example
+ * CRY engine space:
+ *  Z
+ *  |  Y
+ *  | /
+ *  |/
+ *  o--------X
+ *
+ *  Babylon engine space:
+ *  Y
+ *  |  Z
+ *  | /
+ *  |/
+ *  o--------X
+ *
+ * The conversion matrix:
+ *   1 0 0 0
+ *   0 0 1 0
+ *   0 1 0 0
+ *   0 0 0 1
+ */
+export function cryToBabylonMat4(mat: number[]): number[] {
   // prettier-ignore
   return [
 		mat[0], mat[2], mat[1], mat[3],
@@ -10,6 +32,87 @@ export function cryToGltfMat4(mat: number[]): number[] {
 		mat[4], mat[6], mat[5], mat[7],
 		mat[12], mat[14], mat[13], mat[15],
   ]
+}
+
+export function cryToBabylonVec3(vec: number[], out?: V3): number[] {
+  out = out || [0, 0, 0]
+  const x = vec[0]
+  const y = vec[2]
+  const z = vec[1]
+  out[0] = x
+  out[1] = y
+  out[2] = z
+  return out
+}
+export function babylonToCryVec3(vec: number[], out?: V3): number[] {
+  out = out || [0, 0, 0]
+  const x = vec[0]
+  const y = vec[2]
+  const z = vec[1]
+  out[0] = x
+  out[1] = y
+  out[2] = z
+  return out
+}
+/**
+ * Conversion matrix from CRY engine space to GLTF or Three.js engine space.
+ * @remarks
+ * - Swaps the Y and Z axes.
+ * - Negates the X axis.
+ * @example
+ * CRY engine space:
+ *  Z
+ *  |  Y
+ *  | /
+ *  |/
+ *  o--------X
+ *
+ *  GLTF/Three.js engine space:
+ *     Y
+ *     |
+ *     |
+ *     |
+ *     o--------X
+ *    /
+ *   /
+ *  Z
+ *
+ * The conversion matrix:
+ *  -1 0 0 0
+ *   0 0 1 0
+ *   0 1 0 0
+ *   0 0 0 1
+ */
+export function cryToGltfMat4(mat: number[]): number[] {
+  // prettier-ignore
+  return [
+		mat[0], -mat[2], -mat[1], -mat[3],
+		-mat[8], mat[10], mat[9], mat[11],
+		-mat[4], mat[6], mat[5], mat[7],
+		-mat[12], mat[14], mat[13], mat[15],
+  ]
+}
+
+export type V3 = [number, number, number]
+export function cryToGltfVec3(vec: V3, out?: V3): V3 {
+  out = out || [0, 0, 0]
+  const x = -vec[0]
+  const y = vec[2]
+  const z = vec[1]
+  out[0] = x
+  out[1] = y
+  out[2] = z
+  return out
+}
+export function gltfToCryVec3(vec: V3, out?: V3): V3 {
+  out = out || [0, 0, 0]
+  const x = -vec[0]
+  const y = vec[2]
+  const z = vec[1]
+  out[0] = x
+  out[1] = y
+  out[2] = z
+  return out
 }
 
 export function mat4FromAzTransform(data: number[]): number[] {

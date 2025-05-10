@@ -21,7 +21,7 @@ import {
 } from '@babylonjs/core'
 import { DyeColorData } from '@nw-data/generated'
 
-import { NwMaterialExtension, NwMaterialPlugin, updateNwMaterial } from '@nw-viewer/graphics'
+import { NwMaterialExtension, NwMaterialPlugin, updateNwMaterial } from '@nw-viewer/babylon/extensions'
 import { getModelUrl } from '../utils/get-model-url'
 
 export type TransmogModelSlot = 'level' | 'player' | 'head' | 'chest' | 'hands' | 'legs' | 'feet'

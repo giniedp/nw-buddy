@@ -1,5 +1,5 @@
 import type { GameComponent, GameComponentType } from './game-component'
-import type { GameService, GameServiceContainer, GameServiceQueryOptions, GameServiceType } from './game-service'
+import { GameService, GameServiceContainer, GameServiceQueryOptions, GameServiceType } from './game-service'
 
 export class GameEntity {
   public id: number
@@ -19,6 +19,7 @@ export class GameEntity {
   private isInitialized: boolean = false
   private isActive: boolean = false
   private isDestoryed: boolean = false
+  private services: GameService[] = []
 
   public get componentCount() {
     return this.components.length
@@ -42,7 +43,12 @@ export class GameEntity {
     if (this.isInitialized) {
       throw new Error('Entity is already initialized')
     }
-    this.game = game
+    this.game = new GameServiceContainer(game).initialize()
+    if (this.services.length ) {
+      for (const service of this.services) {
+        this.game.add(service)
+      }
+    }
     while (this.toInitialize.length > 0) {
       const component = this.toInitialize.shift()
       if (initializeComponent(component, this)) {
@@ -116,6 +122,14 @@ export class GameEntity {
     return this
   }
 
+  public withServices(...services: GameService[]): this {
+    if (this.isInitialized) {
+      throw new Error('Cannot add services after entity is initialized')
+    }
+    this.services = services
+    return this
+  }
+
   /**
    * Adds a component to the entity and registers it in the 'by type' lookup registry.
    * - Only one component of a given type can be added and registered at the entity.
@@ -186,7 +200,7 @@ export class GameEntity {
 
   /**
    * Looks up a component by type on the entity
-   * @throws Error if the component is not found
+   * @throws Error if the component is not found in the entity
    */
   public component<T extends GameComponent>(type: GameComponentType<T>, optional?: boolean): T {
     if (this.componentByType.has(type)) {

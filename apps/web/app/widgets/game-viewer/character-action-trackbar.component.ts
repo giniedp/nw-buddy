@@ -1,10 +1,8 @@
 import { Component, computed, inject } from '@angular/core'
-import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop'
-import type { ProceduralBar, ProceduralLayer } from '@nw-viewer/adb'
-import { NEVER, switchMap } from 'rxjs'
+import { rxResource } from '@angular/core/rxjs-interop'
+import type { ProceduralBar, ProceduralLayer } from '@nw-viewer/babylon/adb'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
-import { tapDebug } from '~/utils'
 import { GameViewerService } from './game-viewer.service'
 
 @Component({

@@ -1,6 +1,7 @@
 package mat4
 
 import (
+	"fmt"
 	"nw-buddy/tools/rtti/nwt"
 )
 
@@ -171,4 +172,12 @@ func FromAzTransformData(data []nwt.AzFloat32) Data {
 		0, 0, 1, 0,
 		0, 0, 0, 1,
 	}
+}
+
+func UnsafeHash(m Data) string {
+	res := ""
+	for _, v := range m {
+		res += fmt.Sprintf("%.4f", v)
+	}
+	return res
 }

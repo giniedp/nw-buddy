@@ -1,100 +1,140 @@
 <nwb-game-viewer
   class="w-full h-full"
+  engine="threejs"
   [nwbGameLevel]="level()"
-  [nwbGameLevelTest]="false"
   [nwbGameLevelTerrain]="terrainEnabled()"
-  [nwbGameCamera]="'free'"
-  [nwbGameCameraPosition]="cameraPosition()"
-  (nwbGameCameraPositionChange)="handleCameraPositionChange($event)"
   #lvl="level"
-  #camera="camera"
+  #viewer
 >
-  <div cdkMenuGroup slot="toolbar">
-    <ul class="menu bg-base-200 bg-opacity-50 rounded max-w-sm overflow-clip">
-      <li>
-        <a
-          cdkMenuItem
-          [cdkMenuTriggerFor]="tplLevels"
-          [cdkMenuPosition]="[
-            {
-              originX: 'start',
-              originY: 'top',
-              overlayX: 'end',
-              overlayY: 'top',
-              offsetX: -4,
-            },
-          ]"
-        >
-          <nwb-icon [icon]="iconLevel" class="w-5 h-5" />
-          <span>
-            Level: <span class="font-mono"> {{ level() | nwHumanize }}</span>
-          </span>
-        </a>
-      </li>
-      <li>
-        <a
-          cdkMenuItem
-          [cdkMenuTriggerFor]="tplCamera"
-          [cdkMenuPosition]="[
-            {
-              originX: 'start',
-              originY: 'top',
-              overlayX: 'end',
-              overlayY: 'top',
-              offsetX: -4,
-            },
-          ]"
-        >
-          <nwb-icon [icon]="iconCamera" class="w-5 h-5" />
-          <span class="font-mono">
-            x:{{ camera.position()?.x | number: '1.0-0' }} y:{{ camera.position()?.y | number: '1.0-0' }} z:{{
-              camera.position()?.z | number: '1.0-0'
-            }}
-          </span>
-        </a>
-      </li>
-      <li>
-        <a (click)="handleTerrainChange(!lvl.terrainEnabled())">
-          <nwb-icon [icon]="iconTerrain" class="w-5 h-5" />
-          <span class="font-mono"> Terrain: {{ lvl.terrainEnabled() ? 'On' : 'Off' }} </span>
-        </a>
-      </li>
-    </ul>
-
-    <ng-template #tplLevels>
-      <ul cdkMenu class="menu menu-sm dropdown-content bg-base-300 bg-opacity-50 border border-base-100 rounded">
-        @for (name of levels.value(); track $index) {
+  <nwb-game-viewer-camera
+    [mode]="'free'"
+    [position]="cameraPosition()"
+    (positionChange)="handleCameraPositionChange($event)"
+    #camera="camera"
+  />
+  @if (lvl.isConnected()) {
+    <div cdkMenuGroup slot="toolbar">
+      <ul class="menu bg-base-200 bg-opacity-50 rounded max-w-sm overflow-clip">
+        <li>
+          <a
+            cdkMenuItem
+            [cdkMenuTriggerFor]="tplLevels"
+            [cdkMenuPosition]="[
+              {
+                originX: 'start',
+                originY: 'top',
+                overlayX: 'end',
+                overlayY: 'top',
+                offsetX: -4,
+              },
+            ]"
+          >
+            <nwb-icon [icon]="iconLevel" class="w-5 h-5" />
+            <span>
+              Level: <span class="font-mono"> {{ lvl.nwbGameLevel() | nwHumanize }}</span>
+            </span>
+          </a>
+        </li>
+        @if (camera.connected()) {
           <li>
-            <a cdkMenuItem [routerLink]="['/levels', name]">{{ name | nwHumanize }}</a>
+            <a
+              cdkMenuItem
+              [cdkMenuTriggerFor]="tplCamera"
+              [cdkMenuPosition]="[
+                {
+                  originX: 'start',
+                  originY: 'top',
+                  overlayX: 'end',
+                  overlayY: 'top',
+                  offsetX: -4,
+                },
+              ]"
+            >
+              <nwb-icon [icon]="iconCamera" class="w-5 h-5" />
+              <!-- prettier-ignore -->
+              <span class="font-mono">
+               x:{{ camera.position()?.[0] | number: '1.0-0' }}
+               y:{{ camera.position()?.[1] | number: '1.0-0' }}
+               z:{{ camera.position()?.[2] | number: '1.0-0' }}
+             </span>
+            </a>
           </li>
         }
+        <li>
+          <a (click)="handleTerrainChange(!lvl.terrainEnabled())">
+            <nwb-icon [icon]="iconTerrain" class="w-5 h-5" />
+            <span class="font-mono"> Terrain: {{ lvl.terrainEnabled() ? 'On' : 'Off' }} </span>
+          </a>
+        </li>
       </ul>
-    </ng-template>
 
-    <ng-template #tplCamera>
-      <div cdkMenu class="p-2 bg-base-300 bg-opacity-50 border border-base-100 rounded">
-        <div class="flex flex-col gap-2" (keydown.tab)="$event.stopPropagation()">
-          <h3 class="text-lg font-bold">Set camera position</h3>
-          <label class="input input-xs grow overflow-hidden flex items-center gap-2">
-            X:
-            <input type="number" class="max-w-full" placeholder="X" [ngModel]="camera.position()?.x" #x />
-          </label>
-          <label class="input input-xs grow overflow-hidden flex items-center gap-2">
-            Y:
-            <input type="number" class="max-w-full" placeholder="X" [ngModel]="camera.position()?.y" #y />
-          </label>
-          <label class="input input-xs grow overflow-hidden flex items-center gap-2">
-            Z:
-            <input type="number" class="max-w-full" placeholder="X" [ngModel]="camera.position()?.z" #z />
-          </label>
-          <button
-            class="btn btn-sm btn-block mt-4"
-            (click)="cameraPosition.set([x.valueAsNumber, y.valueAsNumber, z.valueAsNumber])"
+      <ng-template #tplLevels>
+        <ul
+          cdkMenu
+          class="menu menu-sm dropdown-content bg-base-300 bg-opacity-50 border border-base-100 rounded flex-nowrap overflow-auto max-h-[75vh]"
+        >
+          @for (group of levels.value(); track $index) {
+            <h2 class="menu-title">{{ group.name | nwHumanize }}</h2>
+            <ul>
+              @for (map of group.levels; track $index) {
+                <li>
+                  <a cdkMenuItem [routerLink]="map.route" [queryParams]="map.query" (click)="handleLevelChange($event, map)">
+                    {{ map.name | nwHumanize }}
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </ul>
+      </ng-template>
+
+      <ng-template #tplCamera>
+        <div cdkMenu class="p-2 bg-base-300 bg-opacity-50 border border-base-100 rounded">
+          <form
+            class="flex flex-col gap-2"
+            (keydown.tab)="$event.stopPropagation()"
+            (submit)="cameraPosition.set([x.valueAsNumber, y.valueAsNumber, z.valueAsNumber])"
           >
-            Teleport
-          </button>
+            <h3 class="text-lg font-bold">Set camera position</h3>
+            <label class="input input-xs grow overflow-hidden flex items-center gap-2">
+              X:
+              <input
+                type="number"
+                class="max-w-full"
+                step="1"
+                [ngModel]="camera.position()?.[0]"
+                #x
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </label>
+            <label class="input input-xs grow overflow-hidden flex items-center gap-2">
+              Y:
+              <input
+                type="number"
+                class="max-w-full"
+                step="1"
+                [ngModel]="camera.position()?.[1]"
+                #y
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </label>
+            <label class="input input-xs grow overflow-hidden flex items-center gap-2">
+              Z:
+              <input
+                type="number"
+                class="max-w-full"
+                step="1"
+                [ngModel]="camera.position()?.[2]"
+                #z
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </label>
+            <button type="submit" class="btn btn-sm btn-block mt-4">Teleport</button>
+          </form>
         </div>
-      </div>
-    </ng-template>
-  </div>
+      </ng-template>
+    </div>
+  }
+
+  <nwb-game-viewer-stats class="self-end" slot="toolbar"/>
 </nwb-game-viewer>

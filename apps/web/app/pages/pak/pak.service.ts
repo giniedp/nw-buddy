@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { environment } from 'apps/web/environments'
+import { MonacoService } from '../../ui/code-editor/monaco.service'
+import { monaco } from '../../ui/code-editor/monaco-editor'
 
 const toImageTypes = ['dds', 'png', 'tif', 'a', '1a', '2a', '3a', '4a', '5a', '6a', '7a', 'heightmap']
-const toModelTypes = ['cgf', 'cdf', 'skin']
+const toModelTypes = ['cgf', 'cdf', 'skin', 'mtl']
 const toJsonTypes = [
   'dynamicslice',
   'meta',
@@ -64,6 +66,7 @@ export interface FileSource {
 
 @Injectable({ providedIn: 'root' })
 export class PakService {
+  private monaco = inject(MonacoService)
   public fileSource(file: string) {
     if (!file) {
       return null
@@ -108,5 +111,75 @@ export class PakService {
 
   public listUrl(pattern: string) {
     return this.assetUrl(`list/${pattern}`)
+  }
+
+  public constructor() {
+    // this.extendEditor()
+  }
+
+  private async extendEditor() {
+    const monaco = await this.monaco.loadMonaco()
+    monaco.languages.registerCodeLensProvider('json', {
+
+      provideCodeLenses: (model, token) => {
+
+        const lenses: monaco.languages.CodeLens[] = []
+        for (let i = 0; i < model.getLineCount(); i++) {
+          const line = model.getLineContent(i + 1)
+          const indexAssetId = line.indexOf('sliceAssetId')
+          if (indexAssetId > 0) {
+            console.log('sliceAssetId', line)
+            lenses.push({
+              range: {
+                startLineNumber: i + 1,
+                startColumn: indexAssetId,
+                endLineNumber: i + 1,
+                endColumn: line.length,
+              },
+              id: "Asset",
+
+              command: {
+                id: "null",
+                title: "Asset",
+              },
+            })
+          }
+        }
+        return {
+          lenses: lenses,
+          dispose: () => {},
+        }
+      },
+      resolveCodeLens: function (model, codeLens, token) {
+        return codeLens;
+      },
+    })
+
+    monaco.languages.registerHoverProvider("json", {
+      provideHover: async (model, position) => {
+        const line = model.getLineContent(position.lineNumber)
+        console.log("hover", model, position, model.getValue())
+        return null
+        // return xhr("./playground.html").then(function (res) {
+        //   return {
+        //     range: new monaco.Range(
+        //       1,
+        //       1,
+        //       model.getLineCount(),
+        //       model.getLineMaxColumn(model.getLineCount())
+        //     ),
+        //     contents: [
+        //       { value: "**SOURCE**" },
+        //       {
+        //         value:
+        //           "```html\n" +
+        //           res.responseText.substring(0, 200) +
+        //           "\n```",
+        //       },
+        //     ],
+        //   };
+        // });
+      },
+    })
   }
 }

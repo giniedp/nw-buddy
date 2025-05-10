@@ -23,10 +23,11 @@ type Entity struct {
 
 type GeometryAsset struct {
 	Entity
-	GeometryFile string
-	MaterialFile string
-	SkipSkin     bool
-	SkipGeometry bool
+	GeometryFile          string
+	MaterialFile          string
+	SkipSkin              bool
+	SkipGeometry          bool
+	OverrideMaterialIndex *int
 }
 
 type LightAsset struct {

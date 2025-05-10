@@ -1,0 +1,66 @@
+<ion-split-pane contentId="editor">
+  <ion-menu contentId="editor" class="min-w-96 max-w-screen-lg order-3" [nwbSplitPane]="gutter">
+    <nwb-assets-sidebar class="ion-page" />
+  </ion-menu>
+  <nwb-split-gutter class="order-2" #gutter="gutter" />
+  <div class="ion-page order-1" id="editor">
+    <ion-header class="bg-base-300">
+      <ion-toolbar>
+        <ion-title>Pak Browser</ion-title>
+        @if (tabs()?.length) {
+          <div slot="end" class="join">
+            @for (tab of tabs(); track $index) {
+              <button
+                class="join-item btn btn-ghost"
+                [class.text-primary]="tab.active"
+                [routerLink]="'.'"
+                [queryParams]="{ tab: tab.id }"
+                [queryParamsHandling]="'merge'"
+              >
+                <nwb-icon [icon]="tab.icon" class="w-4 h-4" />
+              </button>
+            }
+          </div>
+        }
+      </ion-toolbar>
+    </ion-header>
+    @if (source(); as source) {
+      <ion-content [scrollY]="false">
+        @switch (previewType()) {
+          @case ('3d') {
+            <div class="h-full flex flex-row">
+              <nwb-game-viewer class="h-full flex-1">
+                <nwb-game-viewer-stats slot="toolbar" />
+                <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
+              </nwb-game-viewer>
+              <nwb-game-viewer class="h-full flex-1" engine="threejs">
+                <nwb-game-viewer-stats slot="toolbar" />
+                <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
+              </nwb-game-viewer>
+            </div>
+          }
+          @case ('txt') {
+            <nwb-code-editor
+              class="ion-page"
+              [nwbMonacoSliceExtension]=""
+              [ngModel]="textContent.value()"
+              [language]="source.textType"
+              [disabled]="true"
+              (fileClicked)="handleFileSelection($event.file, $event.newTab)"
+            />
+          }
+          @case ('img') {
+            <picture class="block relative">
+              <img [src]="source.baseUrl + source.imagePath" class="object-scale-down" #img />
+              @if (img.naturalWidth) {
+                <span class="absolute top-0 left-0 p-2 font-mono">
+                  {{ img.naturalWidth }}x{{ img.naturalHeight }}
+                </span>
+              }
+            </picture>
+          }
+        }
+      </ion-content>
+    }
+  </div>
+</ion-split-pane>

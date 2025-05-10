@@ -11,7 +11,7 @@ import (
 	"github.com/qmuntal/gltf"
 )
 
-func (d *Document) ImportCgfHierarchy(cgfile *cgf.File, handleObject func(node *gltf.Node, chunk cgf.Chunker)) []*gltf.Node {
+func (d *Document) ImportCgfHierarchy(cgfile *cgf.File, handleObject func(node *gltf.Node, chunk cgf.Chunker, name string)) []*gltf.Node {
 	rootNodes := make([]*gltf.Node, 0)
 	nodeMap := newIdToNodeMap(d)
 	for _, chunk := range cgf.SelectChunks[cgf.ChunkNode](cgfile) {
@@ -30,7 +30,7 @@ func (d *Document) ImportCgfHierarchy(cgfile *cgf.File, handleObject func(node *
 			parent.Children = append(parent.Children, nodeIndex)
 		}
 		if object, ok := cgf.FindChunk[cgf.Chunker](cgfile, chunk.ObjectId); ok {
-			handleObject(node, object)
+			handleObject(node, object, chunk.Name)
 		}
 	}
 	return rootNodes

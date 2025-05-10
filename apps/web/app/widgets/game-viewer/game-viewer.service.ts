@@ -1,36 +1,58 @@
-import { ElementRef, Injectable, signal } from '@angular/core'
+import { Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { Engine } from '@babylonjs/core'
-import { AdbAction, AdbFragment, AdbPlayerState } from '@nw-viewer/adb'
-import { AdbPlayer } from '@nw-viewer/adb/player'
-import { SkyboxComponent } from '@nw-viewer/components/skybox-component'
-import { GameService, GameServiceContainer, GameServiceType } from '@nw-viewer/ecs'
-import { ContentProvider } from '@nw-viewer/services/content-provider'
-import { DebugShapeProvider } from '@nw-viewer/services/debug-shapes'
-import { EngineProvider } from '@nw-viewer/services/engine-provider'
-import { LevelProvider } from '@nw-viewer/services/level-provider'
-import { LightingProvider } from '@nw-viewer/services/lighting-provider'
-import { SceneProvider } from '@nw-viewer/services/scene-provider'
+import { patchState, signalState } from '@ngrx/signals'
+import { AdbAction } from '@nw-viewer/babylon/adb'
+import { AdbPlayer } from '@nw-viewer/babylon/adb/player'
+import { createBabylonViewer } from '@nw-viewer/babylon/services/babylon-viewer'
+import { ViewerBridge } from '@nw-viewer/common'
+import { GameEntity, GameService, GameServiceContainer, GameServiceType } from '@nw-viewer/ecs'
+import { createThreeViewer } from '@nw-viewer/three/services/three-viewer'
 import { environment } from 'apps/web/environments'
 import { filter, map } from 'rxjs'
+import { shareReplayRefCount } from '../../utils'
 
 @Injectable()
 export class GameViewerService {
+  private state = signalState({
+    host: null as HTMLElement,
+    canvas: null as HTMLCanvasElement,
+    game: null as GameServiceContainer,
+    bridge: null as ViewerBridge,
+  })
+
   public readonly isLoading = signal(false)
   public readonly isEmpty = signal(false)
   public readonly hasError = signal(false)
-  public readonly host = signal<ElementRef<HTMLElement> | null>(null)
-  public readonly game = signal<GameServiceContainer>(null)
+  public readonly host = this.state.host
+  public readonly game = this.state.game
+  public readonly game$ = toObservable(this.game).pipe(
+    filter((it) => !!it),
+    shareReplayRefCount(1),
+  )
+  public readonly bridge = this.state.bridge
+  public readonly bridge$ = toObservable(this.bridge).pipe(
+    filter((it) => !!it),
+    shareReplayRefCount(1),
+  )
+
+  public readonly loadedEntity = signal<GameEntity>(null)
   public readonly adbPlayer = signal<AdbPlayer>(null)
   public readonly adbActions = signal<AdbAction[]>(null)
   public readonly adbTags = signal<string[]>(null)
   public readonly showTagBrowser = signal(false)
 
-  private game$ = toObservable(this.game).pipe(filter((it) => !!it))
-
-  public create(host: ElementRef<HTMLElement>, canvas: HTMLCanvasElement) {
-    this.host.set(host)
-    this.game.set(createGame(canvas))
+  public create(host: HTMLElement, canvas: HTMLCanvasElement, threeJs: boolean) {
+    if (this.host()) {
+      throw new Error('GameViewerService already created')
+    }
+    const game = createGame(canvas, threeJs)
+    const bridge = game.get(ViewerBridge, { optional: true })
+    patchState(this.state, {
+      host,
+      canvas,
+      game,
+      bridge,
+    })
   }
 
   public service<T extends GameService>(type: GameServiceType<T>) {
@@ -38,33 +60,19 @@ export class GameViewerService {
   }
 }
 
-export function createGame(canvas: HTMLCanvasElement) {
-  const engine = new Engine(canvas, true, {
-    preserveDrawingBuffer: true,
-    depth: true,
-    alpha: true,
-    antialias: true,
-    adaptToDeviceRatio: true,
+function createGame(canvas: HTMLCanvasElement, threeJs: boolean) {
+  if (threeJs) {
+    return createThreeViewer({
+      canvas,
+      resizeElement: canvas.parentElement,
+      rootUrl: environment.modelsUrl,
+      nwbtUrl: environment.nwbtUrl,
+    })
+  }
+  return createBabylonViewer({
+    canvas,
+    resizeElement: canvas.parentElement,
+    rootUrl: environment.modelsUrl,
+    nwbtUrl: environment.nwbtUrl,
   })
-
-  const game = new GameServiceContainer(null)
-    .add(new EngineProvider(engine))
-    .add(new SceneProvider())
-    .add(new LightingProvider())
-    .add(new DebugShapeProvider())
-    .add(
-      new ContentProvider({
-        rootUrl: environment.modelsUrl,
-        nwbtUrl: environment.nwbtUrl,
-      }),
-    )
-    .add(new LevelProvider())
-    .initialize()
-
-  const root = game.createEntity()
-  root.addComponent(new SkyboxComponent())
-  root.initialize(game)
-  root.activate()
-
-  return game
 }

@@ -9,6 +9,8 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"path"
+
+	"golang.org/x/sync/singleflight"
 )
 
 type LoadedImage struct {
@@ -30,11 +32,13 @@ type LoaderWithConverter struct {
 	Catalog   *catalog.Document
 	Converter Converter
 	Cache     Cache
+	Group     *singleflight.Group
 }
 
 func NewLoader(archive nwfs.Archive) Loader {
 	return LoaderWithConverter{
 		Archive: archive,
+		Group:   new(singleflight.Group),
 	}
 }
 
@@ -43,6 +47,21 @@ func (r LoaderWithConverter) LoadImage(image string) (*LoadedImage, error) {
 	if err != nil {
 		return nil, err
 	}
+	if r.Group == nil {
+		return r.LoadFile(file)
+	}
+	value, err, shared := r.Group.Do(file.Path(), func() (any, error) {
+		return r.LoadFile(file)
+	})
+	loaded, _ := value.(*LoadedImage)
+	if loaded != nil && shared {
+		copy := *loaded
+		loaded = &copy
+	}
+	return loaded, err
+}
+
+func (r LoaderWithConverter) LoadFile(file nwfs.File) (*LoadedImage, error) {
 	if r.Cache != nil {
 		if cached, ok := r.Cache.Load(file); ok {
 			return cached, nil
@@ -50,12 +69,12 @@ func (r LoaderWithConverter) LoadImage(image string) (*LoadedImage, error) {
 	}
 	loaded, err := r.load(file)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("image not loaded: %w", err)
 	}
 	if r.Converter != nil {
 		loaded, err = r.Converter.Convert(*loaded)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("file not converted: %w", err)
 		}
 	}
 	if r.Cache != nil {

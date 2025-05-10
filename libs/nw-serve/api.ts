@@ -1,4 +1,4 @@
-import { DistributionInfo, EntityInfo, LevelInfo, RegionInfo, TerrainInfo } from './types'
+import { CatalogAssetInfo, DistributionInfo, EntityInfo, LevelInfo, RegionInfo, TerrainInfo } from './types'
 
 export type TypedRequest<T> = {
   url: string
@@ -36,6 +36,10 @@ export async function fetchTypedRequest<T>(baseUrl: string, url: TypedRequest<T>
   return fetch((baseUrl || '') + url.url).then((it) => it.json())
 }
 
+export function getLevelsUrl(): TypedRequest<LevelInfo[]> {
+  return { url: `/level` }
+}
+
 export function getLevelInfoUrl(levelName: string): TypedRequest<LevelInfo> {
   return { url: `/level/${levelName}` }
 }
@@ -58,6 +62,10 @@ export function getRegionEntitiesUrl(levelName: string, regionName: string): Typ
 
 export function getRegionDistributionUrl(levelName: string, regionName: string): TypedRequest<DistributionInfo> {
   return { url: `/level/${levelName}/region/${regionName}/distribution` }
+}
+
+export function getCatalogAssetInfo(assetId: string): TypedRequest<CatalogAssetInfo> {
+  return { url: `/catalog/${encodeURIComponent(assetId)}` }
 }
 
 export function getCapitalEntities(

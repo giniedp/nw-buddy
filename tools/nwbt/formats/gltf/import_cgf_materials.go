@@ -12,7 +12,6 @@ import (
 	"nw-buddy/tools/utils"
 	"path"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/qmuntal/gltf"
@@ -41,14 +40,32 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			MetallicFactor:  gltf.Float(1),
 			RoughnessFactor: gltf.Float(1),
 		}
+		material.Extras = ExtrasStore(material.Extras, "mtl", m)
 
 		mtlDiffuse := mtl.ParamColor(m.Diffuse)
 		mtlSpecular := mtl.ParamColor(m.Specular)
-		// mtlEmissive := mtl.ParamColor(m.Emissive)
+		// mtlEmissive := mtl.ParamColor(m.Emissive) // HINT: Emissive is not used in NW
 		mtlEmittance := mtl.ParamColor(m.Emittance)
-		mtlOpacity := m.Opacity
-		mtlAlphaTest := m.AlphaTest
-		mtlShininess := m.Shininess
+		for i := range mtlEmittance {
+			// WTF:
+			// Emittance="-341776551831207702696034304.000000,0.000000,0.000000,0.000000"
+			if mtlEmittance[i] < 0 {
+				mtlEmittance[i] = 0
+			}
+		}
+
+		mtlOpacity := float32(1)
+		if m.Opacity != nil {
+			mtlOpacity = *m.Opacity
+		}
+		mtlAlphaTest := float32(1)
+		if m.AlphaTest != nil {
+			mtlAlphaTest = *m.AlphaTest
+		}
+		mtlShininess := float32(255)
+		if m.Shininess != nil {
+			mtlShininess = *m.Shininess
+		}
 
 		mapDiffuse := m.TextureByMapType(mtl.MtlMap_Diffuse)
 		mapBumpmap := m.TextureByMapType(mtl.MtlMap_Bumpmap)
@@ -67,12 +84,35 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 		isGeometryBeam := shader == "geometrybeam" || shader == "geometrybeamsimple"
 		isParticle := shader == "meshparticle"
 		isNoDraw := shader == "nodraw"
+		isVegetation := shader == "vegetation"
 
 		features := strings.Split(m.StringGenMask, "%")
 		shaderOverlayMask := slices.Contains(features, "OVERLAY_MASK")
 		shaderEmittanceMap := slices.Contains(features, "EMITTANCE_MAP")
 		shaderEmissiveDecal := slices.Contains(features, "EMISSIVE_DECAL")
 		shaderTintColorMap := slices.Contains(features, "TINT_COLOR_MAP")
+		shaderVertColors := slices.Contains(features, "VERTCOLORS")
+		shaderDecal := slices.Contains(features, "DECAL")
+		if isVegetation {
+			// vegetation shader uses vert colors differently
+			shaderVertColors = false
+		}
+
+		if shaderDecal && m.Params != nil {
+			// PublicParams EmittanceMapGamma="1" DecalDiffuseOpacity="0" DecalFalloff="1" DecalAlphaMult="0" IndirectColor="0.24620135,0.24620135,0.24620135,0.25"/>
+			// decalOpacity := float32(1) // DecalDiffuseOpacity -> unused in shader
+			// decalFalloff := float32(1) // DecalFalloff
+			// decalAlphaMult := float32(1) // DecalAlphaMult
+			// if v, ok := m.Params.LoadFloat("DecalFalloff"); ok {
+			// 	decalFalloff = v
+			// }
+			// if v, ok := m.Params.LoadFloat("DecalAlphaMult"); ok {
+			// 	decalAlphaMult = v
+			// }
+
+			// does break other stuff, so disable for now
+			// mtlOpacity = float32(math.Pow(float64(mtlOpacity*decalAlphaMult), float64(decalFalloff)))
+		}
 
 		// HINT: Bumpmap and Smoothness are usually the same texture source
 		if mapSmoothness == nil && mapBumpmap != nil && strings.Contains(mapBumpmap.File, "_ddna") {
@@ -82,7 +122,8 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			mapDiffuse = mapCustom
 			mapCustom = nil
 		}
-		if shaderTintColorMap && mapDiffuse == nil {
+		if shaderTintColorMap && (mapDiffuse == nil || strings.Contains(mapDiffuse.File, "/white.dds")) {
+			// replaces EngineAssets/Textures/white.dds texture
 			mapDiffuse = mapCustom
 			mapCustom = nil
 		}
@@ -91,34 +132,71 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			mapDecal = nil
 		}
 
+		texMods := make(map[string]any)
+		addTexMod := func(tex *gltf.Texture, mTex *mtl.Texture) {
+			if tex == nil || mTex == nil || mTex.TexMod == nil {
+				return
+			}
+			refId, _ := ExtrasLoad[string](tex.Extras, ExtraKeyRefID)
+			texMods[refId] = mTex.TexMod
+			material.Extras = ExtrasStore(material.Extras, "mods", texMods)
+		}
+
 		var texCustom *gltf.Texture
+		// var texCustomTransform *texturetransform.TextureTranform
 		if mapCustom != nil {
-			texCustom = c.LoadTexture(mapCustom)
+			texCustom = c.LoadOrStoreMtlTexture(mapCustom)
+			addTexMod(texCustom, mapCustom)
+			// texCustomTransform = resolveTextureTransform(mapCustom)
 		}
 		var texDiffuse *gltf.Texture
+		var texDiffuseTransform *texturetransform.TextureTranform
 		if mapDiffuse != nil {
-			texDiffuse = c.LoadTexture(mapDiffuse)
+			texDiffuse = c.LoadOrStoreMtlTexture(mapDiffuse)
+			texDiffuseTransform = resolveTextureTransform(mapDiffuse)
+			addTexMod(texDiffuse, mapDiffuse)
 		}
 		var texBumpmap *gltf.Texture
+		var texBumpmapTransform *texturetransform.TextureTranform
 		if mapBumpmap != nil {
-			texBumpmap = c.LoadTexture(mapBumpmap)
+			texBumpmap = c.LoadOrStoreMtlTexture(mapBumpmap)
+			texBumpmapTransform = resolveTextureTransform(mapBumpmap)
+			if texBumpmapTransform == nil {
+				texBumpmapTransform = texDiffuseTransform
+			}
+			addTexMod(texBumpmap, mapBumpmap)
 		}
 
 		var texSpecular *gltf.Texture
+		var texSpecularTransform *texturetransform.TextureTranform
 		if mapSpecular != nil {
-			texSpecular = c.LoadTexture(mapSpecular)
+			texSpecular = c.LoadOrStoreMtlTexture(mapSpecular)
+			texSpecularTransform = resolveTextureTransform(mapSpecular)
+			if texBumpmapTransform == nil {
+				texSpecularTransform = texDiffuseTransform
+			}
+			addTexMod(texSpecular, mapSpecular)
+		}
+		texTransformPublic := resolveTextureTransformPublic(m.Params)
+
+		var texSmoothnessTransform *texturetransform.TextureTranform
+		if mapSmoothness != nil {
+			texSmoothnessTransform = resolveTextureTransform(mapSmoothness)
+			if texSmoothnessTransform == nil {
+				texSmoothnessTransform = texDiffuseTransform
+			}
 		}
 		if textureBaking && texSpecular != nil && mapSmoothness != nil {
 			key := buildTexturePath(texSpecular, mapSmoothness.File, mapSmoothness.AssetId)
-			tex, err := c.LoadTextureFunc(key, func() ([]byte, error) {
-				specBytes, err := c.ReadTextureImage(texSpecular)
+			tex, err := c.LoadOrStoreTexture(nil, key, func() ([]byte, error) {
+				specBytes, err := c.LoadTextureBytes(texSpecular)
 				if err != nil {
 					return nil, err
 				}
 				if specBytes == nil {
 					return nil, fmt.Errorf("specBytes is nil")
 				}
-				smoothImg, err := c.LoadImage(mapSmoothness)
+				smoothImg, err := c.ResolveAndLoadImage(mapSmoothness)
 				if err != nil {
 					return nil, err
 				}
@@ -149,12 +227,12 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 		var texEmissive *gltf.Texture
 		if textureBaking && shaderEmissiveDecal && mapEmittance != nil && mapDecal != nil {
 			key := mapEmittance.File + "_" + hashString(path.Join(mapDecal.File, mapDecal.AssetId))
-			tex, err := c.LoadTextureFunc(key, func() ([]byte, error) {
-				emitImg, err := c.LoadImage(mapEmittance)
+			tex, err := c.LoadOrStoreTexture(nil, key, func() ([]byte, error) {
+				emitImg, err := c.ResolveAndLoadImage(mapEmittance)
 				if err != nil {
 					return nil, err
 				}
-				decalImg, err := c.LoadImage(mapDecal)
+				decalImg, err := c.ResolveAndLoadImage(mapDecal)
 				if err != nil {
 					return nil, err
 				}
@@ -175,10 +253,8 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 		}
 
 		if (shaderEmissiveDecal || shaderEmittanceMap) && texEmissive == nil && mapEmittance != nil {
-			texEmissive = c.LoadTexture(mapEmittance)
+			texEmissive = c.LoadOrStoreMtlTexture(mapEmittance)
 		}
-
-		texTransform := getTexTransform(m)
 
 		if len(mtlDiffuse) >= 3 {
 			factor := [4]float64{
@@ -193,49 +269,76 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			material.PBRMetallicRoughness.BaseColorFactor = &factor
 		}
 		if texDiffuse != nil {
+			texExt := gltf.Extensions{}
+			if texDiffuseTransform != nil {
+				texExt[texturetransform.ExtensionName] = &texDiffuseTransform
+			} else if texTransformPublic != nil {
+				texExt[texturetransform.ExtensionName] = &texTransformPublic
+			}
 			material.PBRMetallicRoughness.MetallicFactor = nil
 			material.PBRMetallicRoughness.BaseColorTexture = &gltf.TextureInfo{
 				Index:      slices.Index(c.Textures, texDiffuse),
-				Extensions: gltf.Extensions{},
-			}
-			if texTransform != nil {
-				material.PBRMetallicRoughness.BaseColorTexture.Extensions[texturetransform.ExtensionName] = &texTransform
+				Extensions: texExt,
 			}
 		}
 		if texBumpmap != nil {
+			texExt := gltf.Extensions{}
+			if texBumpmapTransform != nil {
+				texExt[texturetransform.ExtensionName] = &texBumpmapTransform
+			} else if texTransformPublic != nil {
+				texExt[texturetransform.ExtensionName] = &texTransformPublic
+			}
 			material.NormalTexture = &gltf.NormalTexture{
 				Index:      gltf.Index(slices.Index(c.Textures, texBumpmap)),
 				Scale:      gltf.Float(1),
-				Extensions: gltf.Extensions{},
-			}
-			if texTransform != nil {
-				material.NormalTexture.Extensions[texturetransform.ExtensionName] = &texTransform
+				Extensions: texExt,
 			}
 		}
-		if texSpecular != nil && !isGlass && !isHair {
-			ext := specular.PBRSpecularGlossiness{
+		if !isGlass && !isHair {
+			glossExt := specular.PBRSpecularGlossiness{
 				DiffuseFactor:    float4(1, 1, 1, 1),
 				SpecularFactor:   float3(1, 1, 1),
 				GlossinessFactor: gltf.Float(1),
 			}
+			if mtlShininess >= 0 {
+				smoothness := float64(mtlShininess / 255)
+				roughness := (1.0 - smoothness)
+				glossExt.GlossinessFactor = gltf.Float(smoothness)
+				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(roughness)
+			}
+			if mtlShininess == 255 && mapSmoothness != nil {
+				// some materials have shininess 255 but should be rough (wood)
+				// others render OK. use a compromise value of 0.5 for now
+				glossExt.GlossinessFactor = gltf.Float(0.5)
+				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(0.5)
+			}
+
 			if material.PBRMetallicRoughness.BaseColorTexture != nil {
-				ext.DiffuseTexture = &gltf.TextureInfo{
+				texExt := gltf.Extensions{}
+				if texDiffuseTransform != nil {
+					texExt[texturetransform.ExtensionName] = &texDiffuseTransform
+				} else if texTransformPublic != nil {
+					texExt[texturetransform.ExtensionName] = &texTransformPublic
+				}
+				glossExt.DiffuseTexture = &gltf.TextureInfo{
 					Index:      material.PBRMetallicRoughness.BaseColorTexture.Index,
-					Extensions: gltf.Extensions{},
-				}
-				if texTransform != nil {
-					ext.DiffuseTexture.Extensions[texturetransform.ExtensionName] = &texTransform
+					Extensions: texExt,
 				}
 			}
-			ext.SpecularGlossinessTexture = &gltf.TextureInfo{
-				Index:      slices.Index(c.Textures, texSpecular),
-				Extensions: gltf.Extensions{},
-			}
-			if texTransform != nil {
-				ext.SpecularGlossinessTexture.Extensions[texturetransform.ExtensionName] = &texTransform
+			if texSpecular != nil {
+				texExt := gltf.Extensions{}
+				if texSpecularTransform != nil {
+					texExt[texturetransform.ExtensionName] = &texSpecularTransform
+				} else if texTransformPublic != nil {
+					texExt[texturetransform.ExtensionName] = &texTransformPublic
+				}
+				glossExt.SpecularGlossinessTexture = &gltf.TextureInfo{
+					Index:      slices.Index(c.Textures, texSpecular),
+					Extensions: texExt,
+				}
 			}
 			if len(mtlSpecular) >= 3 {
-				ext.SpecularFactor = float3(float64(mtlSpecular[0]), float64(mtlSpecular[1]), float64(mtlSpecular[2]))
+				glossExt.SpecularFactor = float3(float64(mtlSpecular[0]), float64(mtlSpecular[1]), float64(mtlSpecular[2]))
 			}
 			if len(mtlDiffuse) >= 3 {
 				factor := float4(
@@ -247,20 +350,14 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 				if len(mtlDiffuse) == 4 {
 					factor[3] = float64(mtlDiffuse[3])
 				}
-				ext.DiffuseFactor = factor
+				factor[3] *= float64(mtlOpacity)
+				glossExt.DiffuseFactor = factor
 			}
 
-			material.Extensions[specular.ExtensionName] = &ext
+			material.Extensions[specular.ExtensionName] = &glossExt
 			c.ExtensionsRequired = utils.AppendUniq(c.ExtensionsRequired, specular.ExtensionName)
 			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, specular.ExtensionName)
 
-			// need to remove the pbrMetallicRoughness, otherwise playcanvas would pick that up instead
-			material.PBRMetallicRoughness.BaseColorFactor = nil
-			material.PBRMetallicRoughness.BaseColorTexture = nil
-			material.PBRMetallicRoughness.MetallicFactor = gltf.Float(0)
-			if mtlShininess >= 0 {
-				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(float64(1.0 - mtlShininess/255))
-			}
 		}
 
 		if texEmissive != nil {
@@ -270,7 +367,8 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			}
 		}
 
-		if (isFxTransp || texEmissive != nil) && !shaderEmissiveDecal && len(mtlEmittance) >= 4 {
+		// (isFxTransp || texEmissive != nil) && !shaderEmissiveDecal &&
+		if len(mtlEmittance) >= 4 {
 			scale := math.Log(1+float64(mtlEmittance[3])) / 10
 			material.EmissiveFactor = [3]float64{
 				float64(mtlEmittance[0]) * scale,
@@ -286,7 +384,7 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 		}
 
 		material.AlphaMode = gltf.AlphaOpaque
-		if mtlAlphaTest >= 0 {
+		if mtlAlphaTest < 1.0 {
 			cutoff := float64(mtlAlphaTest)
 			material.AlphaCutoff = &cutoff
 			material.AlphaMode = gltf.AlphaMask
@@ -295,7 +393,7 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 		if isGeometryFog || isGeometryBeam || isParticle || isNoDraw {
 			mtlOpacity = 0.1
 		}
-		if mtlOpacity >= 0 && mtlOpacity < 1 {
+		if mtlOpacity < 1 {
 			opacity := float64(mtlOpacity)
 			if material.PBRMetallicRoughness == nil {
 				material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{}
@@ -323,8 +421,10 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 
 		if !textureBaking || (shaderOverlayMask && texCustom != nil) {
 			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, nwmaterial.ExtensionName)
+
 			ext := nwmaterial.Extension{
-				Params: nwmaterial.AppearanceFromMtl(m),
+				Params:     nwmaterial.AppearanceFromMtl(m),
+				VertColors: shaderVertColors,
 			}
 			if texCustom != nil {
 				ext.MaskTexture = &gltf.TextureInfo{
@@ -332,13 +432,25 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 				}
 			}
 			if !textureBaking && mapSmoothness != nil {
-				texSmoothness := c.LoadTexture(mapSmoothness, true)
-				ext.SmoothTexture = &gltf.TextureInfo{
-					Index: slices.Index(c.Textures, texSmoothness),
+				texSmoothness := c.LoadOrStoreMtlTexture(mapSmoothness, true)
+				if texSmoothness != nil {
+					texExt := gltf.Extensions{}
+					if texSmoothnessTransform != nil {
+						texExt[texturetransform.ExtensionName] = &texSmoothnessTransform
+					} else if texTransformPublic != nil {
+						texExt[texturetransform.ExtensionName] = &texTransformPublic
+					}
+					ext.SmoothTexture = &gltf.TextureInfo{
+						Index:      slices.Index(c.Textures, texSmoothness),
+						Extensions: texExt,
+					}
+				} else {
+					slog.Warn("Smoothness texture not loaded", "file", mapSmoothness.File)
 				}
 			}
 			material.Extensions[nwmaterial.ExtensionName] = ext
 		}
+		c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, texturetransform.ExtensionName)
 	}
 }
 
@@ -358,36 +470,6 @@ func pluckMtl(material *gltf.Material) *mtl.Material {
 		return &mtl
 	}
 	return nil
-}
-
-func getTexTransform(m *mtl.Material) *texturetransform.TextureTranform {
-	hasTile := m.Params.Has("SOURCE_2D_TILE_X")
-	hasPhase := m.Params.Has("SOURCE_2D_PHASE_X")
-	if !hasTile && !hasPhase {
-		return nil
-	}
-
-	texTransform := texturetransform.TextureTranform{
-		Scale:  [2]float64{1, 1},
-		Offset: [2]float64{0, 0},
-	}
-	if m.Params.Has("SOURCE_2D_TILE_X") {
-		if v1, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_TILE_X"), 32); err == nil {
-			texTransform.Scale[0] = v1
-		}
-		if v2, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_TILE_Y"), 32); err == nil {
-			texTransform.Scale[1] = v2
-		}
-	}
-	if m.Params.Has("SOURCE_2D_PHASE_X") {
-		if v1, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_PHASE_X"), 32); err == nil {
-			texTransform.Offset[0] = v1
-		}
-		if v2, err := strconv.ParseFloat(m.Params.Get("SOURCE_2D_PHASE_Y"), 32); err == nil {
-			texTransform.Offset[1] = v2
-		}
-	}
-	return &texTransform
 }
 
 func float4(r, g, b, a float64) *[4]float64 {

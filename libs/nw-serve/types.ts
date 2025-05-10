@@ -5,6 +5,29 @@ export interface LevelInfo {
   groundMaterial: string
   regionSize: number
   regions: RegionReference[]
+  maps: MapInfo[]
+  timeOfDay: TimeOfDay
+}
+
+export interface TimeOfDay {
+  time: number
+  timeStart: number
+  timeEnd: number
+  timeAnimSpeed: number
+  variables: TimeOfDayVariable[]
+}
+export interface TimeOfDayVariable {
+  name: string
+  color: string
+  value: string
+}
+export interface MapInfo {
+  gameModeMapId: string
+  gameModeId: string
+  slicePath: string
+  coatlicueName: string
+  worldBounds: string
+  teamTeleportData: string
 }
 
 export interface RegionReference {
@@ -74,6 +97,10 @@ export interface VitalSpawnInfo {
   vitalsId: string
   categoryId: string
   level: number
+  adbFile: string
+  statusEffects: string[]
+  tags: string[]
+  damageTable: string
 }
 
 export interface EncounterInfo {
@@ -102,4 +129,17 @@ export interface TerrainInfo {
   oceanLevel: number
   mountainHeight: number
   groundMaterial: string
+}
+
+export interface CatalogAssetInfo {
+  asset: AssetInfo
+  assets: AssetInfo[]
+}
+
+export interface AssetInfo {
+  guid: string
+  subId: number
+  type: string
+  file: string
+  size: number
 }

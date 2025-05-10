@@ -5,6 +5,7 @@ import (
 	"image/png"
 	"net/http"
 	"nw-buddy/tools/game"
+	"nw-buddy/tools/game/level"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils/json"
 	"strconv"
@@ -13,7 +14,7 @@ import (
 )
 
 func LevelsRouter(r *mux.Router, assets *game.Assets) {
-	levels := game.NewLevelCollection(assets)
+	levels := level.NewCollectionLoader(assets)
 
 	r.HandleFunc("", GetLevelNamesFunc(assets))
 	r.HandleFunc("/{level}", getLevelInfoFunc(levels))
@@ -30,12 +31,12 @@ func LevelsRouter(r *mux.Router, assets *game.Assets) {
 
 func GetLevelNamesFunc(assets *game.Assets) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		result := game.ListLevelNames(assets.Archive)
+		result := level.ListLevels(assets)
 		serveJson(result, w)
 	}
 }
 
-func getLevelInfoFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelInfoFunc(collection level.CollectionLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
@@ -54,7 +55,7 @@ func getLevelInfoFunc(collection game.LevelCollection) http.HandlerFunc {
 	}
 }
 
-func getLevelMissionEntitiesFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelMissionEntitiesFunc(collection level.CollectionLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
@@ -73,7 +74,7 @@ func getLevelMissionEntitiesFunc(collection game.LevelCollection) http.HandlerFu
 	}
 }
 
-func getLevelRegionInfoFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelRegionInfoFunc(collection level.CollectionLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
@@ -98,7 +99,7 @@ func getLevelRegionInfoFunc(collection game.LevelCollection) http.HandlerFunc {
 	}
 }
 
-func getLevelRegionEntitiesFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelRegionEntitiesFunc(collection level.CollectionLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
@@ -123,7 +124,7 @@ func getLevelRegionEntitiesFunc(collection game.LevelCollection) http.HandlerFun
 	}
 }
 
-func getLevelRegionDistributionFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelRegionDistributionFunc(collection level.CollectionLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := nwfs.NormalizePath(vars["level"])
@@ -148,7 +149,7 @@ func getLevelRegionDistributionFunc(collection game.LevelCollection) http.Handle
 	}
 }
 
-func getLevelHeitmapInfoFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelHeitmapInfoFunc(collection level.CollectionLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := vars["level"]
@@ -166,7 +167,7 @@ func getLevelHeitmapInfoFunc(collection game.LevelCollection) http.HandlerFunc {
 	}
 }
 
-func getLevelHeitmapTileFunc(collection game.LevelCollection) http.HandlerFunc {
+func getLevelHeitmapTileFunc(collection level.CollectionLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		levelName := vars["level"]

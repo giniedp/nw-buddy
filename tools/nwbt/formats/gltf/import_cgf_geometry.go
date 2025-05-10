@@ -12,8 +12,27 @@ import (
 	"github.com/qmuntal/gltf"
 )
 
-func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset importer.GeometryAsset) (*cgf.File, []mtl.Material)) {
+type LoadGeometryFunc func(asset string) (*cgf.File, error)
+type LoadMaterialFunc func(asset string) ([]mtl.Material, error)
+type LoadAssetFunc func(asset importer.GeometryAsset) (*cgf.File, []mtl.Material)
+type MaterialLookup struct {
+	List     []*gltf.Material
+	Fallback *gltf.Material
+}
+
+func (c MaterialLookup) Get(index int) *gltf.Material {
+	result := c.Fallback
+	if index >= 0 && index < len(c.List) {
+		result = c.List[index]
+	}
+	return result
+}
+
+func (c *Document) ImportGeometry(asset importer.GeometryAsset, load LoadAssetFunc) {
 	modelRefId := hashString(fmt.Sprintf("%s#%s", asset.GeometryFile, asset.MaterialFile))
+	if asset.OverrideMaterialIndex != nil {
+		modelRefId = fmt.Sprintf("%s#%d", modelRefId, *asset.OverrideMaterialIndex)
+	}
 	if reference, _ := c.FindNodeByRefID(modelRefId); reference != nil {
 		node, _ := c.CopyNode(reference)
 		c.AddToSceneWithTransform(c.DefaultScene(), node, asset.Transform)
@@ -46,13 +65,24 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset 
 		gltfMtl := c.FindOrAddMaterial(mtl)
 		gltfMaterials = append(gltfMaterials, gltfMtl)
 	}
+	materialLookup := MaterialLookup{
+		List: gltfMaterials,
+	}
+	if len(gltfMaterials) > 0 {
+		materialLookup.Fallback = gltfMaterials[0]
+	}
+	if asset.OverrideMaterialIndex != nil {
+		materialLookup.Fallback = gltfMaterials[*asset.OverrideMaterialIndex]
+		materialLookup.List = []*gltf.Material{materialLookup.Fallback}
+	}
 
-	rootNodes := c.ImportCgfHierarchy(model, func(node *gltf.Node, chunk cgf.Chunker) {
+	rootNodes := c.ImportCgfHierarchy(model, func(node *gltf.Node, chunk cgf.Chunker, name string) {
 		switch meshChunk := chunk.(type) {
 		case cgf.ChunkMesh:
-			node.Name = asset.Name
-			node.Mesh, _ = c.ImportCgfMesh(meshChunk, model, gltfMaterials)
+			node.Name = name
+			node.Mesh, _ = c.ImportCgfMesh(name, meshChunk, model, materialLookup)
 			node.Skin = skin
+			node.Extras = ExtrasStore(node.Extras, ExtraKeyName, name)
 		}
 	})
 	if len(rootNodes) == 0 {
@@ -65,7 +95,9 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load func(asset 
 		c.NodeAddChild(parent, rootNodes...)
 		rootNode = parent
 	}
+	rootNode.Name = asset.Name
 	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyRefID, modelRefId)
+	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyName, asset.Name)
 	c.AddToSceneWithTransform(c.DefaultScene(), rootNode, asset.Transform)
 }
 

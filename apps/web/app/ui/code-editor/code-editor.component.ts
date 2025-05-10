@@ -45,7 +45,7 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
   protected value = signal<string>(null)
   protected readonly = signal<boolean>(false)
 
-  protected editor = signal<monaco.editor.IStandaloneCodeEditor>(null)
+  public readonly editor = signal<monaco.editor.IStandaloneCodeEditor>(null)
 
   public constructor() {
     effect(() => {

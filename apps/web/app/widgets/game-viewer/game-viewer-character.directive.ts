@@ -1,11 +1,11 @@
 import { computed, Directive, effect, inject, input, resource, signal, untracked } from '@angular/core'
 import { rxResource } from '@angular/core/rxjs-interop'
 import { NwData } from '@nw-data/db'
-import { ActionlistComponent } from '@nw-viewer/components/actionlist-component'
-import { SkinnedMeshComponent } from '@nw-viewer/components/skinned-mesh-component'
+import { ActionlistComponent } from '@nw-viewer/babylon/components/actionlist-component'
+import { SkinnedMeshComponent } from '@nw-viewer/babylon/components/skinned-mesh-component'
+import { SceneProvider } from '@nw-viewer/babylon/services/scene-provider'
+import { fromBObservable, reduceMeshesExtendsToBoundingInfo, reframeCamera } from '@nw-viewer/babylon/utils'
 import { GameEntity, GameServiceContainer } from '@nw-viewer/ecs'
-import { SceneProvider } from '@nw-viewer/services/scene-provider'
-import { fromBObservable, reduceMeshesExtendsToBoundingInfo, reframeCamera } from '@nw-viewer/utils'
 import { injectNwData } from '~/data'
 import { vitalModelUriById } from '../model-viewer/utils/get-model-uri'
 import { getModelUrl } from '../model-viewer/utils/get-model-url'
@@ -69,8 +69,12 @@ export class GameViewerCharacterDirective {
         return null
       }
       const entity = createEntity(game, options)
-      onCleanup(() => entity.destroy())
+      onCleanup(() => {
+        this.service.loadedEntity.set(null)
+        entity.destroy()
+      })
       this.entity.set(entity)
+      this.service.loadedEntity.set(entity)
     })
 
     // propagate the actionlist to the service

@@ -81,7 +81,11 @@ func WithConfig(config UnpackArchiveConfig) UnpackArchiveOption {
 }
 
 func NewUnpackedArchive(rootDir string, options ...UnpackArchiveOption) (Archive, error) {
+	if !path.IsAbs(rootDir) {
+		rootDir, _ = filepath.Abs(rootDir)
+	}
 	rootDir = NormalizePath(rootDir)
+
 	fs := &unpackedArchive{
 		rootDir: rootDir,
 	}

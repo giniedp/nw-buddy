@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"image/png"
 	"net/url"
+	"nw-buddy/tools/formats/adb"
 	"nw-buddy/tools/formats/azcs"
+	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/formats/dds"
 	"nw-buddy/tools/formats/distribution"
@@ -18,6 +20,7 @@ import (
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
+	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/json"
 	"path"
 	"strconv"
@@ -26,37 +29,41 @@ import (
 	"golang.org/x/image/tiff"
 )
 
-func convertFile(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
-	if target == "" {
+func convertFile(assets *game.Assets, file nwfs.File, targetFormat string, query url.Values) ([]byte, error) {
+	if targetFormat == "" {
 		return file.Read()
 	}
 
 	filePath := file.Path()
 	if dds.IsDDSSplitPart(filePath) {
-		return convertDDS(assets, file, target, query)
+		return convertDDS(assets, file, targetFormat, query)
 	}
 
 	switch path.Ext(filePath) {
 	case ".datasheet":
-		return convertDatasheet(file, target)
+		return convertDatasheet(file, targetFormat)
 	case ".dds":
-		return convertDDS(assets, file, target, query)
+		return convertDDS(assets, file, targetFormat, query)
 	case ".tif":
-		return convertTif(assets, file, target, query)
+		return convertTif(assets, file, targetFormat, query)
 	case ".heightmap":
-		return convertHeightmap(file, target)
+		return convertHeightmap(file, targetFormat)
 	case ".cgf", ".skin":
-		return convertCGF(assets, file, target, query)
+		return convertCGF(assets, file, targetFormat, query)
+	case ".caf":
+		return convertCAF(assets, file, targetFormat, query)
 	case ".cdf":
-		return convertCDF(assets, file, target)
+		return convertCDF(assets, file, targetFormat)
 	case ".distribution":
-		return convertDistribution(file, target)
+		return convertDistribution(file, targetFormat)
+	case ".mtl":
+		return convertMTL(assets, file, targetFormat, query)
 	case ".xml":
 		if strings.HasSuffix(file.Path(), ".loc.xml") {
-			return convertLocale(file, target)
+			return convertLocale(file, targetFormat)
 		}
 	}
-	return convertAny(file, target)
+	return convertAny(file, targetFormat)
 }
 
 func convertDatasheet(file nwfs.File, target string) ([]byte, error) {
@@ -164,6 +171,10 @@ func convertHeightmap(file nwfs.File, target string) ([]byte, error) {
 }
 
 func convertCGF(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
+	if target != ".gltf" && target != ".glb" {
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+
 	group := importer.AssetGroup{}
 	model := file.Path()
 	material := query.Get("material")
@@ -175,14 +186,41 @@ func convertCGF(assets *game.Assets, file nwfs.File, target string, query url.Va
 	return convertGltf(assets, group, target == ".glb")
 }
 
-func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, error) {
+func convertCAF(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
+	if target != ".gltf" && target != ".glb" {
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+
 	group := importer.AssetGroup{}
 	model := file.Path()
-	asset, err := assets.LoadCdf(model)
+
+	filePath := file.Path()
+	group.Animations = append(group.Animations, importer.Animation{
+		File: model,
+		Name: utils.ReplaceExt(path.Base(filePath), path.Ext(filePath)),
+	})
+	return convertGltf(assets, group, target == ".glb")
+}
+
+func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, error) {
+	if target != ".gltf" && target != ".glb" {
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+
+	model := file.Path()
+	cdfModel, err := assets.LoadCdf(model)
 	if err != nil {
 		return nil, err
 	}
-	for _, mesh := range asset.SkinAndClothAttachments() {
+
+	animations, _ := CollectAnimations(assets, cdfModel)
+	group := importer.AssetGroup{
+		Extra: map[string]any{
+			"animationList": animations,
+		},
+	}
+
+	for _, mesh := range cdfModel.SkinAndClothAttachments() {
 		model, material := assets.ResolveCgfAndMtl(mesh.Binding, mesh.Material)
 		if model != "" {
 			group.Meshes = append(group.Meshes, importer.GeometryAsset{
@@ -194,12 +232,71 @@ func convertCDF(assets *game.Assets, file nwfs.File, target string) ([]byte, err
 	return convertGltf(assets, group, target == ".glb")
 }
 
+func CollectAnimations(assets *game.Assets, cdf *cdf.Document) ([]adb.AnimationFile, error) {
+	animations, err := cdf.LoadAnimationFiles(assets.Archive)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]adb.AnimationFile, 0)
+	for _, animation := range animations {
+		switch animation.Type {
+		case adb.Caf:
+			result = append(result, adb.AnimationFile{
+				Name: animation.Name,
+				File: animation.File,
+				Type: adb.Caf,
+			})
+		}
+	}
+	return result, nil
+}
+
+func convertMTL(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
+	if target != ".gltf" && target != ".glb" {
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+	group := importer.AssetGroup{}
+	material := file.Path()
+
+	collection, err := assets.LoadMaterial(material)
+	if err != nil {
+		return nil, err
+	}
+	modelFile, ok := assets.Archive.Lookup("engineassets/objects/default/primitive_plane.cgf")
+	if !ok {
+		return nil, fmt.Errorf("model file not found: %s", "engineassets/objects/default/primitive_plane.cgf")
+	}
+	gap := 0.1  // gap between planes
+	step := 1.0 // size of the plane
+	// count := float64(len(collection))
+	for i, mtl := range collection {
+		x := float32(float64(i) * (step + gap))
+		group.Meshes = append(group.Meshes, importer.GeometryAsset{
+			Entity: importer.Entity{
+				Name: fmt.Sprintf("material_%d_%s", i, mtl.Name),
+				Transform: [16]float32{
+					1, 0, 0, 0,
+					0, 1, 0, 0,
+					0, 0, 1, 0,
+					x, 0, 0, 1,
+				},
+			},
+			GeometryFile:          modelFile.Path(),
+			MaterialFile:          material,
+			OverrideMaterialIndex: &i,
+		})
+	}
+
+	return convertGltf(assets, group, target == ".glb")
+}
+
 func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([]byte, error) {
 	document := gltf.NewDocument()
 	cacheDir := imageCacheDir(flg.CacheDir, flg.TextureSize)
 
 	linker := gltf.NewResourceLinker(cacheDir)
 	linker.SetRelativeMode(false)
+	linker.SkipWrite(true)
 	// instruction to merge DDS faces
 	queryParam := "merge=true"
 	// instruction to resize DDS images
@@ -208,6 +305,7 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([
 	}
 	linker.SetQueryParam(queryParam)
 
+	document.Extras = group.Extra
 	document.ImageLinker = linker
 	document.ImageLoader = image.LoaderWithConverter{
 		Archive: assets.Archive,
@@ -219,6 +317,12 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([
 			Silent:  true,
 			MaxSize: flg.TextureSize,
 		},
+	}
+	if len(group.Animations) > 0 {
+		document.MergeSkins()
+	}
+	for _, anim := range group.Animations {
+		document.ImportCgfAnimation(anim, assets.LoadAnimation)
 	}
 	for _, mesh := range group.Meshes {
 		document.ImportGeometry(mesh, assets.LoadAsset)

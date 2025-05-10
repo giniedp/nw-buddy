@@ -178,6 +178,27 @@ func (c *Assets) LoadAnimation(anim importer.Animation) *cgf.File {
 	return doc
 }
 
+func (c *Assets) LoadGeometry(geometryFile string) (*cgf.File, error) {
+	modelFile, ok := c.Archive.Lookup(geometryFile)
+	if !ok {
+		return nil, fmt.Errorf("model file not found: %s", geometryFile)
+	}
+	return cgf.Load(modelFile)
+}
+
+func (c *Assets) LoadMaterial(materialFile string) ([]mtl.Material, error) {
+	mtlFile, ok := c.Archive.Lookup(materialFile)
+	if !ok {
+		return nil, fmt.Errorf("material file not found: %s", materialFile)
+	}
+	material, err := mtl.Load(mtlFile)
+	if err != nil {
+		return nil, err
+	}
+	materials := material.Collection()
+	return materials, nil
+}
+
 func (c *Assets) LoadAsset(mesh importer.GeometryAsset) (*cgf.File, []mtl.Material) {
 	modelFile, ok := c.Archive.Lookup(mesh.GeometryFile)
 	if !ok {
@@ -201,8 +222,4 @@ func (c *Assets) LoadAsset(mesh importer.GeometryAsset) (*cgf.File, []mtl.Materi
 	}
 	materials := material.Collection()
 	return model, materials
-}
-
-func (c *Assets) LoadLevel(name string) LevelLoader {
-	return NewLevelLoader(c, name)
 }

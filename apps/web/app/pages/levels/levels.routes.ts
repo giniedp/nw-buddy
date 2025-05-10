@@ -5,7 +5,7 @@ export const ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'nw_opr_004_trench',
+    redirectTo: 'nw_ori_er_questliang',
   },
   {
     path: ':id',

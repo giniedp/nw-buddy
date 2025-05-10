@@ -21,6 +21,7 @@ func (c BasicConverter) TargetFormat() Format {
 	return c.Format
 }
 func (c BasicConverter) Convert(image LoadedImage) (*LoadedImage, error) {
+
 	if image.Data == nil {
 		return nil, fmt.Errorf("no image data")
 	}

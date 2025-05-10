@@ -1,16 +1,11 @@
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
-  HostListener,
   inject,
-  Injector,
   input,
   linkedSignal,
   output,
-  runInInjectionContext,
   untracked,
   viewChild,
 } from '@angular/core'
@@ -32,7 +27,7 @@ import { FileTreeNode, FileTreeStore } from './file-tree.store'
   template: `
     <cdk-virtual-scroll-viewport itemSize="24" class="h-full" (scrolledIndexChange)="viewport().checkViewportSize()">
       <div
-        *cdkVirtualFor="let item of store.flatlist(); trackBy: trackBy"
+        *cdkVirtualFor="let item of store.list(); trackBy: trackBy"
         [style.paddingLeft.px]="item.depth * 10"
         class="whitespace-nowrap overflow-hidden h-6 cursor-pointer group"
         [class.text-primary]="item.id === active()"
@@ -55,13 +50,6 @@ export class FileTreeComponent {
   public selected = output<string>()
   public selection = input<string>()
   protected active = linkedSignal(() => this.selection())
-  protected displayFiles = computed(() => {
-    if (!this.search() || !this.files()) {
-      return this.files()
-    }
-    const query = this.search().toLowerCase()
-    return this.files().filter((f) => f.includes(query))
-  })
 
   protected folderIcon = svgFolderOpen
   protected fileIcon = svgFileCode
@@ -70,17 +58,24 @@ export class FileTreeComponent {
 
   public constructor() {
     effect(() => {
-      const files = this.displayFiles()
-      untracked(() => {
-        this.store.load(files)
-        const index = this.store.select(this.selection())
-        if (index >= 0) {
-          this.viewport().scrollToIndex(index)
-        }
-        setTimeout(() => {
-          this.viewport().checkViewportSize()
-        })
-      })
+      const files = this.files()
+      untracked(() => this.store.load(files))
+    })
+
+    effect(() => {
+      const search = this.search()
+      untracked(() => this.store.filter(search))
+    })
+
+    effect(() => {
+      const selection = this.selection()
+      untracked(() => this.store.select(selection))
+    })
+
+    effect(() => {
+      this.store.list()
+      this.store.selection()
+      untracked(() => this.scrollToSelection())
     })
   }
 
@@ -91,5 +86,19 @@ export class FileTreeComponent {
       this.active.set(item.id)
       this.selected.emit(item.id)
     }
+  }
+
+  private scrollToSelection() {
+    setTimeout(() => {
+      this.viewport().checkViewportSize()
+      setTimeout(() => {
+        const index = this.store.selection()
+        const range = this.viewport().getRenderedRange()
+        if (index >= 0 && (index < range.start || index > range.end)) {
+          const mid = Math.max(0, index - (range.end - range.start) / 2)
+          this.viewport().scrollToIndex(mid)
+        }
+      })
+    })
   }
 }

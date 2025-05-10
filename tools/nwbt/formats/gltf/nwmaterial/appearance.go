@@ -24,6 +24,9 @@ type Appearance struct {
 }
 
 func AppearanceFromMtl(m *mtl.Material) *Appearance {
+	if m.Params == nil {
+		return nil
+	}
 	return &Appearance{
 		EmissiveIntensity: m.Params.Get("EmittanceMapGamma"),
 		EmissiveColor:     m.Params.Get("EmissiveColor"),

@@ -16,7 +16,7 @@ import (
 	"github.com/qmuntal/gltf/modeler"
 )
 
-func (d *Document) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, materials []*gltf.Material) (*int, *gltf.Mesh) {
+func (d *Document) ImportCgfMesh(name string, chunk cgf.ChunkMesh, cgfile *cgf.File, materialLookup MaterialLookup) (*int, *gltf.Mesh) {
 
 	subsets, hasSubsets := cgf.FindChunk[cgf.ChunkMeshSubsets](cgfile, chunk.SubsetsChunkId)
 	if !hasSubsets {
@@ -25,15 +25,7 @@ func (d *Document) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, material
 
 	mesh := &gltf.Mesh{}
 	for i, subset := range subsets.Subsets {
-		var material *gltf.Material
-		if subset.MaterialId >= 0 && len(materials) > 0 {
-			if int(subset.MaterialId) < len(materials) {
-				material = materials[subset.MaterialId]
-			}
-			if material == nil {
-				material = materials[0]
-			}
-		}
+		material := materialLookup.Get(int(subset.MaterialId))
 		if material != nil && strings.Contains(strings.ToLower(material.Name), "shadow_proxy") {
 			continue
 		}
@@ -56,6 +48,8 @@ func (d *Document) ImportCgfMesh(chunk cgf.ChunkMesh, cgfile *cgf.File, material
 			continue
 		}
 		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeyRefID, subRefId)
+		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeySource, cgfile.Source)
+		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeyName, name)
 
 		index := slices.Index(d.Materials, material)
 		if index != -1 {

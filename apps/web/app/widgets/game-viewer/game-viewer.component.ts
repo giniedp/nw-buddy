@@ -1,5 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay'
-import { Component, effect, ElementRef, HostListener, inject, untracked, viewChild } from '@angular/core'
+import { Component, ElementRef, HostAttributeToken, HostListener, inject, OnInit, viewChild } from '@angular/core'
+import { map, of, switchMap, throttleTime } from 'rxjs'
 import { CharacterActionBrowserComponent } from './character-action-browser.component'
 import { CharacterActionTrackbarComponent } from './character-action-trackbar.component'
 import { GameViewerToolbarComponent } from './game-viewer-toolbar.component'
@@ -10,7 +11,7 @@ import { GameViewerService } from './game-viewer.service'
   template: `
     <div class="flex-1 relative h-full w-full">
       @if (!service.isEmpty()) {
-        <div class="absolute top-0 right-0 p-2">
+        <div class="absolute top-0 right-0 p-2 flex flex-col gap-1">
           <nwb-game-viewer-toolbar #toolbar />
           <ng-content select="[slot='toolbar']" />
         </div>
@@ -59,24 +60,38 @@ import { GameViewerService } from './game-viewer.service'
     `,
   ],
 })
-export class GameViewerComponent {
+export class GameViewerComponent implements OnInit {
   private elRef = inject<ElementRef<HTMLElement>>(ElementRef)
 
+  public readonly engine = inject(new HostAttributeToken('engine'), { optional: true })
   public readonly service = inject(GameViewerService)
-  public readonly canvas = viewChild<string, ElementRef<HTMLCanvasElement>>('canvas', { read: ElementRef })
+  public readonly canvas = viewChild.required<string, ElementRef<HTMLCanvasElement>>('canvas', { read: ElementRef })
+  public readonly stats$ = this.service.bridge$.pipe(
+    switchMap((it) => {
+      return it.statsConnected.pipe(
+        switchMap((connected) => {
+          if (connected) {
+            return it.stats
+          } else {
+            return of(null)
+          }
+        }),
+      )
+    }),
+    throttleTime(1000),
+    map((it) => JSON.parse(JSON.stringify(it))),
+  )
 
-  public constructor() {
-    effect(() => {
-      const canvas = this.canvas().nativeElement
-      untracked(() => this.service.create(this.elRef, canvas))
-    })
+  public ngOnInit() {
+    const host = this.elRef.nativeElement
+    const canvas = this.canvas().nativeElement
+    this.service.create(host, canvas, this.engine === 'threejs')
   }
 
   @HostListener('wheel', ['$event'])
   protected onWheel(event: WheelEvent) {
     if (event.target === this.canvas().nativeElement) {
       event.preventDefault()
-      event.stopPropagation()
     }
   }
 }

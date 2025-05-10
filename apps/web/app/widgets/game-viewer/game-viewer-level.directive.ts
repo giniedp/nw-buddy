@@ -1,8 +1,6 @@
-import { computed, Directive, effect, inject, input, untracked } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { LevelProvider } from '@nw-viewer/services/level-provider'
-import { fromBObservable } from '@nw-viewer/utils'
-import { filter, startWith, switchMap } from 'rxjs'
+import { Directive, effect, inject, input, signal, untracked } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { of, switchMap } from 'rxjs'
 import { GameViewerService } from './game-viewer.service'
 
 @Directive({
@@ -11,49 +9,42 @@ import { GameViewerService } from './game-viewer.service'
 })
 export class GameViewerLevelDirective {
   private service = inject(GameViewerService)
-  private game = this.service.game
-  private levelProvider = computed(() => this.game()?.get(LevelProvider))
-  private levelProvider$ = toObservable(this.levelProvider)
+  private bridge = this.service.bridge
+
+  public isConnected = toSignal(this.service.bridge$.pipe(switchMap((it) => it.levelConnected || of(false))))
 
   public nwbGameLevel = input<string>(null, { alias: 'nwbGameLevel' })
-  public nwbGameLevelTest = input<boolean>(null, { alias: 'nwbGameLevelTest' })
   public nwbGameLevelTerrain = input<boolean>(null, { alias: 'nwbGameLevelTerrain' })
 
-  public terrainEnabled = toSignal(
-    this.levelProvider$.pipe(
-      filter((it) => !!it),
-      switchMap((it) => fromBObservable(it.terrainEnabledObserver).pipe(startWith(it.terrainEnabled))),
-    ),
-  )
+  public terrainEnabled = signal(false)
+  // public terrainEnabled = toSignal(
+  //   this.levelProvider$.pipe(
+  //     filter((it) => !!it),
+  //     switchMap((it) => fromBObservable(it.terrainEnabledObserver).pipe(startWith(it.terrainEnabled))),
+  //   ),
+  // )
 
   public constructor() {
     effect(() => {
-      const level = this.levelProvider()
+      const accessor = this.bridge()
       const name = this.nwbGameLevel()
-      const test = this.nwbGameLevelTest()
-      untracked(() => {
-        if (test) {
-          level.loadTestLevel()
-        } else {
-          level.loadLevel(name)
-        }
-      })
+      untracked(() => accessor?.loadLevel(name))
     })
     effect(() => {
-      const level = this.levelProvider()
-      const terrainEnbalbed = this.nwbGameLevelTerrain()
-      untracked(() => {
-        if (level) {
-          level.setTerrainEnabled(terrainEnbalbed)
-        }
-      })
+      // const level = this.levelProvider()
+      // const terrainEnbalbed = this.nwbGameLevelTerrain()
+      // untracked(() => {
+      //   if (level) {
+      //     level.setTerrainEnabled(terrainEnbalbed)
+      //   }
+      // })
     })
   }
 
   public setTerrainEnabled(value: boolean) {
-    const level = this.levelProvider()
-    if (level) {
-      level.setTerrainEnabled(value)
-    }
+    // const level = this.levelProvider()
+    // if (level) {
+    //   level.setTerrainEnabled(value)
+    // }
   }
 }

@@ -1,16 +1,13 @@
-import { BoundingBox, Vector3 } from '@babylonjs/core'
-
-import { IVec3, SpatialEntry, SpatialNode } from './types'
 import { boxContainsBox, IntersectionType } from './collision'
+import { IVec3, SpatialEntry, SpatialNode } from './types'
+
 
 /**
  * @public
  */
 export class QuadTree<T = any> implements SpatialNode<T> {
-  /**
-   * The AABB volume of this node
-   */
-  public readonly volume: BoundingBox
+  public readonly min: IVec3
+  public readonly max: IVec3
 
   /**
    * Number of object contained by this or descendant nodes
@@ -49,7 +46,16 @@ export class QuadTree<T = any> implements SpatialNode<T> {
     level: number,
     private parent?: QuadTree<T>,
   ) {
-    this.volume = new BoundingBox(new Vector3(min.x, min.y, min.z), new Vector3(max.x, max.y, max.z))
+    this.min = {
+      x: Math.min(min.x, max.x),
+      y: Math.min(min.y, max.y),
+      z: Math.min(min.z, max.z),
+    }
+    this.max = {
+      x: Math.max(min.x, max.x),
+      y: Math.max(min.y, max.y),
+      z: Math.max(min.z, max.z),
+    }
     this.level = level
   }
 
@@ -63,6 +69,17 @@ export class QuadTree<T = any> implements SpatialNode<T> {
       }
     }
     return false
+  }
+
+  public walk(callback: (node: QuadTree<T>) => true | void): true | void  {
+    if (callback(this)) {
+      return true
+    }
+    for (let i = 0; i < this.children.length; i++) {
+      if (this.children[i].walk(callback)) {
+        return true
+      }
+    }
   }
 
   /**
@@ -118,13 +135,22 @@ export class QuadTree<T = any> implements SpatialNode<T> {
       return this
     }
     if (this.children.length == 0) {
-      const step = this.volume.maximum.subtract(this.volume.minimum).multiplyByFloats(0.5, 1, 0.5)
-      const offset = Vector3.Zero()
+      const stepX = (this.max.x - this.min.x) * 0.5
+      const stepZ = (this.max.z - this.min.z) * 0.5
+
       for (let i = 0; i < 4; i++) {
-        offset.x = i & 1 ? step.x : 0
-        offset.z = i & 2 ? step.z : 0
-        const min = this.volume.minimum.add(offset)
-        const max = min.add(step)
+        const offsetX = i & 1 ? stepX : 0
+        const offsetZ = i & 2 ? stepZ : 0
+        const min = {
+          x: this.min.x + offsetX,
+          y: this.min.y,
+          z: this.min.z + offsetZ,
+        }
+        const max = {
+          x: min.x + stepX,
+          y: this.max.y,
+          z: min.z + stepZ,
+        }
         this.children[i] = new QuadTree(min, max, this.level + 1, this)
       }
     }
@@ -135,7 +161,7 @@ export class QuadTree<T = any> implements SpatialNode<T> {
   }
 
   public fit(min: IVec3, max: IVec3): QuadTree<T> {
-    if (boxContainsBox(this.volume.minimum, this.volume.maximum, min, max) === IntersectionType.Contains) {
+    if (boxContainsBox(this.min, this.max, min, max) === IntersectionType.Contains) {
       return this.testDown(min, max)
     }
     return this.testUp(min, max)
@@ -143,9 +169,7 @@ export class QuadTree<T = any> implements SpatialNode<T> {
 
   private testUp(min: IVec3, max: IVec3): QuadTree<T> {
     if (this.parent) {
-      if (
-        boxContainsBox(this.parent.volume.minimum, this.parent.volume.maximum, min, max) === IntersectionType.Contains
-      ) {
+      if (boxContainsBox(this.parent.min, this.parent.max, min, max) === IntersectionType.Contains) {
         return this.parent
       }
       return this.parent.testUp(min, max)
@@ -155,10 +179,10 @@ export class QuadTree<T = any> implements SpatialNode<T> {
 
   private testDown(min: IVec3, max: IVec3): QuadTree<T> {
     if (this.children) {
-      let volume: BoundingBox
+      let child: QuadTree
       for (let i = 0; i < this.children.length; i++) {
-        volume = this.children[i].volume
-        if (boxContainsBox(volume.minimum, volume.maximum, min, max) === IntersectionType.Contains) {
+        child = this.children[i]
+        if (boxContainsBox(child.min, child.max, min, max) === IntersectionType.Contains) {
           return this.children[i].testDown(min, max)
         }
       }

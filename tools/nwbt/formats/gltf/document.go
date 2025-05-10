@@ -20,6 +20,7 @@ const (
 	ExtraKeyControllerID = "controllerId"
 	ExtraKeyLimbID       = "limbId"
 	ExtraKeySource       = "source"
+	ExtraKeyName         = "name"
 	ExtraKeyInverse      = "inverse"
 	ExtraKeyAlpha        = "alpha"
 )

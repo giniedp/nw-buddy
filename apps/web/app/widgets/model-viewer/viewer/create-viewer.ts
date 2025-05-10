@@ -2,7 +2,7 @@ import { NgZone } from '@angular/core'
 
 import { CreateScreenshotAsync } from '@babylonjs/core'
 import { CreateViewerForCanvas, Viewer, ViewerDetails } from '@babylonjs/viewer'
-import { NwMaterialPlugin } from '@nw-viewer/graphics'
+import { NwMaterialPlugin } from '@nw-viewer/babylon/extensions'
 
 export type { Model, Viewer } from '@babylonjs/viewer'
 

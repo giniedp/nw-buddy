@@ -1,0 +1,12 @@
+export const SEGMENT_SIZE = 128
+export const REGION_VISIBILITY = 4 * SEGMENT_SIZE
+export const SEGMENT_VISIBILITY = 4 * SEGMENT_SIZE
+export const ENABLE_IMPOSTORS = true
+export const ENABLE_CAPITAL_INDICATOR = false
+export const ENABLE_ENTITY_INDICATOR = false
+
+export const SHOW_CAPITALS_AT = 2 * SEGMENT_SIZE
+export const LOAD_CAPITALS_AT = 3 * SEGMENT_SIZE
+export const SHOW_IMPOSTORS_AT = 4 * SEGMENT_SIZE
+export const LOAD_IMPOSTORS_AT = 5 * SEGMENT_SIZE
+export const UNLOAD_AT = 7 * SEGMENT_SIZE

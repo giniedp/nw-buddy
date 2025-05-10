@@ -24,7 +24,16 @@ func GetFileHandler(assets *game.Assets) http.HandlerFunc {
 
 		res, err, _ := execGroup.Do(cacheKey, func() (any, error) {
 			ext := path.Ext(r.URL.Path)
-			shouldcache := ext == ".glb" || ext == ".png"
+			shouldcache := false
+			switch r.URL.Query().Get("cache") {
+			case "true":
+				shouldcache = true
+			case "false":
+				shouldcache = false
+			default:
+				shouldcache = ext == ".glb" || ext == ".png" // expensive transformations
+			}
+
 			if shouldcache && utils.FileExists(cacheKey) {
 				data, err := os.ReadFile(cacheKey)
 				if err != nil {
@@ -83,7 +92,7 @@ func getFile(assets *game.Assets, r *http.Request) (contentResult, error) {
 	queryPath := nwfs.NormalizePath(r.URL.Path)
 	queryType := path.Ext(queryPath)
 	queryIsImage := queryType == ".png" || queryType == ".webp" || queryType == ".dds"
-	assetId, isAssetId := catalog.ParseAssetId(queryPath) // TODO: review, the extension might break this
+	assetId, isAssetId := catalog.ParseAssetId(queryPath)
 
 	filePath := queryPath
 	if isAssetId {

@@ -4,7 +4,7 @@ import { LayoutModule } from '~/ui/layout'
 import { httpResource } from '@angular/common/http'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router } from '@angular/router'
-import { debounceTime } from 'rxjs'
+import { debounceTime, map } from 'rxjs'
 import { FileTreeComponent } from '~/ui/file-tree'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { PakService } from './pak.service'
@@ -27,27 +27,33 @@ import { PakService } from './pak.service'
         <nwb-quicksearch-input />
       </ion-toolbar>
     </ion-header>
-    <nwb-file-tree
-      class="h-full font-mono px-2"
-      [files]="files.value()"
-      [search]="search()"
-      [selection]="selection()"
-      (selected)="handleFileSelection($event)"
-    />
+    @if (files.isLoading()) {
+      <div class="h-full flex items-center justify-center">
+        <span class="loading loading-spinner"></span>
+      </div>
+    } @else {
+      <nwb-file-tree
+        class="h-full font-mono px-2"
+        [files]="files.value()"
+        [search]="search()"
+        [selection]="selection()"
+        (selected)="handleFileSelection($event)"
+      />
+    }
   `,
 })
 export class PakSidebarComponent {
   private service = inject(PakService)
-  protected search = toSignal(inject(QuicksearchService).query$.pipe(debounceTime(1000)))
+  protected search = toSignal(inject(QuicksearchService).query$.pipe(debounceTime(300)))
   protected files = httpResource<string[]>(() => this.service.listUrl('**'))
 
   private router = inject(Router)
   private route = inject(ActivatedRoute)
 
-  protected selection = signal(this.route.snapshot.queryParams['file'])
+  protected selection = toSignal(this.route.queryParams.pipe(map((it) => it['file'])))
   protected handleFileSelection(file: string) {
     this.router.navigate(['.'], {
-      queryParams: { file: file },
+      queryParams: { file },
       queryParamsHandling: 'merge',
       relativeTo: this.route,
     })
