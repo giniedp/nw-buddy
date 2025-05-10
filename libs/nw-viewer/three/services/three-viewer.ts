@@ -17,13 +17,20 @@ export interface ThreeGameOptions {
 export function createThreeViewer(options: ThreeGameOptions) {
   const engine = new WebGLRenderer({
     canvas: options.canvas,
-    alpha: true,
-    antialias: true,
-    depth: true,
-    precision: 'highp',
-    premultipliedAlpha: false,
-    stencil: true,
+    // alpha: true,
+    // antialias: false,
+    // depth: false,
+    // stencil: false,
+    // precision: 'highp',
+    // powerPreference: 'high-performance',
+    // premultipliedAlpha: false,
     logarithmicDepthBuffer: true,
+
+    powerPreference: "high-performance",
+    antialias: false,
+    stencil: false,
+    depth: false,
+    alpha: true,
   })
 
   const game = new GameServiceContainer(null)

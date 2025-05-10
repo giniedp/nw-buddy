@@ -368,6 +368,9 @@ importers:
       karma-mocha-reporter:
         specifier: 2.2.5
         version: 2.2.5(karma@6.4.4)
+      lil-gui:
+        specifier: 0.20.0
+        version: 0.20.0
       lodash:
         specifier: 4.17.21
         version: 4.17.21
@@ -7612,6 +7615,9 @@ packages:
     peerDependenciesMeta:
       webpack:
         optional: true
+
+  lil-gui@0.20.0:
+    resolution: {integrity: sha512-k7Ipr0ztqslMA2XvM5z5ZaWhxQtnEOwJBfI/hmSuRh6q4iMG9L0boqqrnZSzBR1jzyJ28OMl47l65ILzRe1TdA==}
 
   lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
@@ -19534,6 +19540,8 @@ snapshots:
       webpack-sources: 3.2.3
     optionalDependencies:
       webpack: 5.98.0(esbuild@0.25.1)
+
+  lil-gui@0.20.0: {}
 
   lilconfig@2.1.0: {}
 

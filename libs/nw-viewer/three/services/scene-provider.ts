@@ -1,28 +1,16 @@
-import { N8AOPass } from 'n8ao'
 import {
-  Color,
   EquirectangularReflectionMapping,
   Frustum,
-  HalfFloatType,
   Matrix4,
-  NeutralToneMapping,
   Object3D,
   PerspectiveCamera,
   Raycaster,
   Scene,
   Texture,
   Vector2,
-  Box3,
-  Vector3,
-  Box3Helper,
-  FogExp2,
 } from 'three'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
-import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import { GameEntity, GameService, GameServiceContainer } from '../../ecs'
 import { IVec2 } from '../../math'
 import { QuadTree } from '../../math/quad-tree'
@@ -41,13 +29,6 @@ export class SceneProvider implements GameService {
   private cameraViewMatrix = new Matrix4()
   private cameraProjectionMatrix = new Matrix4()
   private cameraFrustum = new Frustum()
-
-  private composer: EffectComposer
-  private renderPass: RenderPass
-  private n8aoPass: any
-  private bloomPass: UnrealBloomPass
-  private smaaPass: SMAAPass
-  private outputPass: OutputPass
 
   private renderList: RenderList
   private quadTree: QuadTree<Object3D>
@@ -69,10 +50,10 @@ export class SceneProvider implements GameService {
       60, // fov
       2, // aspect
       0.1, // near
-      10000, // far
+      4096, // far
     )
     this.camera.name = 'camera'
-    this.createComposer()
+    // this.createComposer()
     this.loadEnvMap(this.envMapUrl)
 
     this.renderer.onResize.add(this.onResize)
@@ -159,20 +140,7 @@ export class SceneProvider implements GameService {
   }
 
   private onDraw = (dt: number) => {
-    if (this.composer) {
-      this.composer.render()
-    } else {
-      this.renderer.render(this.main, this.camera)
-    }
-
-    // if (!this.quadTree) {
-    //   this.renderer.render(this.main, this.camera)
-    //   return
-    // }
-    // this.renderList.clear()
-    // this.updateCameraFrustum()
-    // this.collectTreeNodes(this.quadTree)
-    // this.renderer.render(this.renderList, this.camera)
+    this.renderer.render(this.main, this.camera)
   }
 
   private collectTreeNodes(tree: QuadTree<Object3D>) {
@@ -195,7 +163,6 @@ export class SceneProvider implements GameService {
 
   private onResize = (width: number, height: number) => {
     this.resizeCamera(width, height)
-    this.resizeComposer(width, height)
   }
 
   private resizeCamera(width: number, height: number) {
@@ -203,87 +170,6 @@ export class SceneProvider implements GameService {
       this.camera.aspect = width / height
       this.camera.updateProjectionMatrix()
     }
-  }
-
-  private createComposer(scene: Scene = this.main, camera: PerspectiveCamera = this.camera) {
-    const width = this.renderer.clientWidth
-    const height = this.renderer.clientHeight
-    this.composer = new EffectComposer(this.renderer.renderer)
-    // this.renderPass = new RenderPass(scene, camera)
-    this.composer.setPixelRatio(window.devicePixelRatio)
-    // this.composer.setPixelRatio(1) // use this with SSAA
-
-    // https://github.com/N8python/n8ao
-    this.n8aoPass = new N8AOPass(scene, camera, width, height)
-    // this.n8aoPass = new N8AOPass(scene, camera, width, height)
-    this.n8aoPass.configuration.aoRadius = 0.5
-    this.n8aoPass.configuration.distanceFalloff = 2.0
-    this.n8aoPass.configuration.intensity = 2.0
-    this.n8aoPass.configuration.color = new Color(0, 0, 0)
-    this.n8aoPass.configuration.gammaCorrection = false
-
-    // this.n8aoPass.setDisplayMode("Split AO")
-    // this.n8aoPass.setDisplayMode('Split')
-    // this.n8aoPass.setDisplayMode('Combined')
-    this.n8aoPass.setQualityMode('Ultra')
-
-    this.smaaPass = new SMAAPass()
-
-    this.bloomPass = new UnrealBloomPass(
-      new Vector2(width, height),
-      0.25, // strength
-      0.05, // radius
-      0.85, // threshold
-    )
-
-    // https://threejs.org/examples/?q=ssaa#webgl_postprocessing_ssaa
-    // this.ssaaPass = new SSAARenderPass(scene, camera)
-    // this.ssaaPass.sampleLevel = 1
-    this.outputPass = new OutputPass()
-
-    // https://threejs.org/examples/?q=tone#webgl_tonemapping
-    this.renderer.renderer.toneMapping = NeutralToneMapping
-    // this.renderer.renderer.toneMapping = ACESFilmicToneMapping
-    // this.renderer.renderer.toneMapping = LinearToneMapping
-    // this.renderer.renderer.toneMapping = CineonToneMapping
-    this.renderer.renderer.toneMappingExposure = 1.2
-    // None: NoToneMapping,
-    // Linear: LinearToneMapping,
-    // Reinhard: ReinhardToneMapping,
-    // Cineon: CineonToneMapping,
-    // ACESFilmic: ACESFilmicToneMapping,
-    // AgX: AgXToneMapping,
-    // Neutral: NeutralToneMapping,
-    // Custom: CustomToneMapping
-
-    if (this.renderPass) {
-      this.composer.addPass(this.renderPass)
-    }
-    if (this.n8aoPass) {
-      this.composer.addPass(this.n8aoPass)
-    }
-
-    if (this.bloomPass) {
-      this.composer.addPass(this.bloomPass)
-    }
-    // if (this.ssaaPass) {
-    //   this.composer.addPass(this.ssaaPass)
-    // }
-    if (this.smaaPass) {
-      this.composer.addPass(this.smaaPass)
-    }
-    if (this.outputPass) {
-      this.composer.addPass(this.outputPass)
-    }
-  }
-
-  private resizeComposer(width: number, height: number) {
-    this.composer?.setSize(width, height)
-    this.renderPass?.setSize(width, height)
-    this.n8aoPass?.setSize(width, height)
-    this.smaaPass?.setSize(width, height)
-    this.bloomPass?.setSize(width, height)
-    this.outputPass?.setSize(width, height)
   }
 }
 
