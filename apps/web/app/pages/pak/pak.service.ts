@@ -4,7 +4,7 @@ import { MonacoService } from '../../ui/code-editor/monaco.service'
 import { monaco } from '../../ui/code-editor/monaco-editor'
 
 const toImageTypes = ['dds', 'png', 'tif', 'a', '1a', '2a', '3a', '4a', '5a', '6a', '7a', 'heightmap']
-const toModelTypes = ['cgf', 'cdf', 'skin', 'mtl']
+const toModelTypes = ['cgf', 'cdf', 'skin', 'mtl', 'dynamicslice']
 const toJsonTypes = [
   'dynamicslice',
   'meta',

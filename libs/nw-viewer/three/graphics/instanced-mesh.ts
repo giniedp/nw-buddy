@@ -57,7 +57,7 @@ export class InstancedMesh extends ThreeInstancedMesh {
     super(options.geometry, options.material, options.capacity)
 
     this.capacity = options.capacity
-    this.autoGrow = options.autoGrow || 64
+    this.autoGrow = options.autoGrow || 0
     if (!this.instanceMatrix) {
       this.instanceMatrix = new InstancedBufferAttribute(new Float32Array(16 * this.capacity), 16)
     }

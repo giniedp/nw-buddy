@@ -91,6 +91,7 @@ export interface EntityInfo {
   vital: VitalSpawnInfo
   encounter: EncounterInfo
   maxViewDistance: number
+  layer: string
 }
 
 export interface VitalSpawnInfo {

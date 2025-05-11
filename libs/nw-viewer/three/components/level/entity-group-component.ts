@@ -1,24 +1,21 @@
 import { EntityInfo } from '@nw-serve'
-import { Matrix4 } from 'three'
+import { uniq } from 'lodash'
+import { Matrix4, Quaternion, Vector3 } from 'three'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../../ecs'
 import { cryToGltfMat4 } from '../../../math/mat4'
 import { RendererProvider } from '../../services/renderer-provider'
 import { SceneProvider } from '../../services/scene-provider'
+import { ActionlistComponent } from '../actionlist-component'
+import { NameplateComponent } from '../nameplate-component'
+import { SkinnedMeshComponent } from '../skinned-mesh-component'
 import { StaticMeshComponent } from '../static-mesh-component'
 import { createTransform, Transform, TransformComponent } from '../transform-component'
-import { uniq, uniqBy } from 'lodash'
-import { SkinnedMeshComponent } from '../skinned-mesh-component'
-import { ActionlistComponent } from '../actionlist-component'
 
 export interface ThreeEntitiesGroupComponentOptions {
   entities: EntityInfo[]
 }
 
-interface EntityWithDistance {
-  entity: GameEntity
-  transform: TransformComponent
-  maxDistanceSq: number
-}
+const DEBUG_LAYER = '' // 'dungeon_script'
 
 export class EntityGroupComponent implements GameComponent {
   private data: ThreeEntitiesGroupComponentOptions
@@ -49,39 +46,18 @@ export class EntityGroupComponent implements GameComponent {
       this.entities.initialize(this.entity.game)
     }
     this.entities.activate()
-    this.renderer.onUpdate.add(this.update)
   }
 
   public deactivate(): void {
-    this.renderer.onUpdate.remove(this.update)
     this.entities.deactivate()
   }
 
   public destroy(): void {
     this.entities.destroy()
   }
-
-  private update = () => {
-    // const camera = this.scene.camera
-    // if (!camera) return
-    // const cx = camera.position.x
-    // const cy = camera.position.y
-    // for (const item of this.entitiesWithDistance) {
-    //   const object = item.transform.node
-    //   const dx = cx - object.position.x
-    //   const dy = cy - object.position.y
-    //   const distanceSquared = dx * dx + dy * dy
-    //   const isVisible = distanceSquared <= item.maxDistanceSq
-    //   if (object.visible !== isVisible) {
-    //     object.visible = isVisible
-    //     object.updateMatrixWorld()
-    //   }
-    // }
-  }
 }
 
-const m = new Matrix4()
-export function instantiateEntities(collection: GameEntityCollection, list: EntityInfo[], parent: Transform) {
+export function instantiateEntities(collection: GameEntityCollection, list: EntityInfo[], host: Transform) {
   if (!list?.length) {
     return
   }
@@ -91,22 +67,25 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
   let dublicatesCount = 0
   for (const item of list) {
     if (item.vital?.vitalsId?.toLowerCase() == 'naga_angryearth') {
+      // TODO: naga, where are you?
       console.log('VITAL', item)
     }
     if (!item.model) {
       // TODO: handle non-model items
       continue
     }
-
+    if (DEBUG_LAYER && item.layer?.toLowerCase() !== DEBUG_LAYER) {
+      continue
+    }
     const key = `${item.model}#${item.material}`
     modelGroups[key] = modelGroups[key] || []
     modelGroups[key].push(item)
   }
 
   for (const key in modelGroups) {
-    const items = modelGroups[key]
-    if (items.length == 1) {
-      for (const item of items) {
+    const group = modelGroups[key]
+    if (group.length == 1 || !!group[0].vital) {
+      for (const item of group) {
         const mKey = `${item.model}#${fromCryMatrix(item.transform)
           .elements.map((it) => it.toFixed(4))
           .join(',')}`
@@ -119,13 +98,16 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
 
         const entity = collection.create(item.name, item.id).addComponent(
           new TransformComponent({
-            parent: parent,
+            parent: host,
             name: item.name,
             matrix: fromCryMatrix(item.transform),
             matrixIsWorld: true,
+            maxDistance: item.maxViewDistance,
           }),
         )
-        if (false) { // item.vital) {
+        // TODO: implement skinned meshes
+        const isSkinned = false // item.vital
+        if (isSkinned) {
           entity.addComponents(
             new ActionlistComponent({
               animationDatabase: item.vital.adbFile,
@@ -134,7 +116,6 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
             new SkinnedMeshComponent({
               model: item.model,
               material: item.material,
-              maxDistance: item.maxViewDistance,
               adbFile: item.vital.adbFile,
             }),
           )
@@ -143,9 +124,16 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
             new StaticMeshComponent({
               model: item.model,
               material: item.material,
-              maxDistance: item.maxViewDistance,
               // TODO: add identity matrix for first instance?
               instances: item.instances?.map(fromCryMatrix),
+            }),
+          )
+        }
+
+        if (item.vital) {
+          entity.addComponent(
+            new NameplateComponent({
+              vital: item.vital,
             }),
           )
         }
@@ -153,18 +141,21 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
       continue
     }
 
-    const ref = items[0]
-    const refModel = ref.model
-    const refMaterial = ref.material
-    const refWorld = fromCryMatrix(ref.transform)
-    const refInverse = m.copy(refWorld).invert()
-    const entityName = `${urlPathBasename(refModel)} [${items.length}]`
+    const lead = group[0]
+    const model = lead.model
+    const material = lead.material
 
+    const leadWorld = fromCryMatrix(lead.transform)
+    const leadInverse = new Matrix4().copy(leadWorld).invert()
+    const entityName = `${urlPathBasename(model)} [${group.length}]`
     const instances: Matrix4[] = []
     const skipped: EntityInfo[] = []
-    for (const item of items) {
-      const instance = fromCryMatrix(item.transform).premultiply(refInverse)
-      const mKey = `${item.model}#${instance.elements.map((it) => it.toFixed(4)).join(',')}`
+    const debugItems: any[] = []
+
+    for (const item of group) {
+      const instanceWorld = fromCryMatrix(item.transform)
+      const instance = new Matrix4().multiplyMatrices(leadInverse, instanceWorld)
+      const mKey = `${item.model}#${instanceWorld.elements.map((it) => it.toFixed(4)).join(',')}`
       if (dubplicates[mKey]) {
         dubplicates[mKey] += 1
         dublicatesCount += 1
@@ -174,32 +165,29 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
       instances.push(instance)
     }
     if (skipped.length) {
-      console.warn(entityName, 'skipped dublicates', { skipped, items })
+      console.warn(entityName, 'skipped dublicates', { skipped, group })
     }
 
-    const node = createTransform({
-      parent: parent,
-      name: entityName,
-      matrix: refWorld,
-      matrixIsWorld: true,
-    })
-    node.userData ||= {}
-    node.userData['instance items'] = items
-    collection
-      .create(entityName)
-      .addComponent(
-        new TransformComponent({
-          node: node,
+    collection.create(entityName).addComponents(
+      new TransformComponent({
+        node: createTransform({
+          parent: host,
+          name: entityName,
+          matrix: leadWorld,
+          matrixIsWorld: true,
+          maxDistance: Math.max(...uniq(group.map((it) => it.maxViewDistance | 0))),
+          userData: {
+            instanceItems: group,
+            debugItems,
+          },
         }),
-      )
-      .addComponent(
-        new StaticMeshComponent({
-          model: refModel,
-          material: refMaterial,
-          instances: instances,
-          maxDistance: Math.max(...uniq(items.map((it) => it.maxViewDistance | 0))),
-        }),
-      )
+      }),
+      new StaticMeshComponent({
+        model: model,
+        material: material,
+        instances: instances,
+      }),
+    )
   }
 
   if (dublicatesCount) {
@@ -223,4 +211,36 @@ function setReadOnly<T, K extends keyof T>(target: T, key: K, value: T[K]) {
 
 function fromCryMatrix(matrix: number[]) {
   return new Matrix4().fromArray(cryToGltfMat4(matrix))
+}
+
+function getMatrixPosition(matrix: Matrix4) {
+  return new Vector3().setFromMatrixPosition(matrix)
+}
+
+function getMatrixScale(matrix: Matrix4) {
+  return new Vector3().setFromMatrixScale(matrix)
+}
+
+function hasUniformScale(mat: Matrix4) {
+  const scale = new Vector3()
+
+  mat.decompose(new Vector3(), new Quaternion(), scale)
+  const scaleArray = scale.toArray()
+  return scaleArray.every((it) => it.toFixed(4) == scaleArray[0].toFixed(4))
+}
+
+function buildLeadMatrix(items: EntityInfo[]) {
+  const positions = items.map((it) => {
+    const mat = fromCryMatrix(it.transform)
+    return new Vector3().setFromMatrixPosition(mat)
+  })
+  return new Matrix4().setPosition(findCenter(positions))
+}
+
+function findCenter(positions: Vector3[]) {
+  const center = new Vector3()
+  for (const pos of positions) {
+    center.add(pos)
+  }
+  return center.divideScalar(positions.length)
 }

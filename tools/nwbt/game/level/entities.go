@@ -42,7 +42,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 		result = append(result, entity)
 	}
 
-	assets.WalkSlice(file, func(node *game.EntityNode) {
+	visitSlice := func(node *game.EntityNode) {
 		transform := mat4.Multiply(rootTransform, node.Transform)
 
 		isEncounterTree := false
@@ -65,8 +65,11 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 					if _, ok := node.ContextStr(keyVitalsId); !ok && (f.M_vitalstablerowid != "") {
 						node.ContextStrSet(keyVitalsId, string(f.M_vitalstablerowid))
 					}
-					if _, ok := node.ContextStr(keyVitalsLevel); !ok && (f.M_vitalslevel != 0) {
-						node.ContextStrSet(keyVitalsLevel, fmt.Sprintf("%d", f.M_vitalslevel))
+					if _, ok := node.ContextInt(keyVitalsLevel); !ok && (f.M_vitalslevel != 0) {
+						node.ContextIntSet(keyVitalsLevel, int(f.M_vitalslevel))
+					}
+					if _, ok := node.ContextStr(keyVitalsCategory); !ok && (f.M_vitalscategorytablerowid != "") {
+						node.ContextStrSet(keyVitalsCategory, string(f.M_vitalscategorytablerowid))
 					}
 					if _, ok := node.ContextStr(keyVitalsCategory); !ok && (f.M_vitalscategorytablerowid != "") {
 						node.ContextStrSet(keyVitalsCategory, string(f.M_vitalscategorytablerowid))
@@ -157,7 +160,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 					Model:           model,
 					Material:        material,
 					MaxViewDistance: float32(meshNode.Render_Options.MaxViewDistance),
-					Vital:           ResolveVitalSpawnInfo(node),
+					Vital:           ResolveVitalSpawnInfo(assets, node),
 				})
 			case nwt.MeshComponent:
 				if isEncounterTree {
@@ -194,12 +197,10 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 
 				model, material = assets.ResolveCgfAndMtl(model, material)
 				pushEntity(EntityInfo{
-					ID:   uint(node.Entity.Id.Id),
-					Name: string(node.Entity.Name),
-					File: node.File.Path(),
-					// TODO: this is weird, but it moves some "wrong" nodes out of the way, but keeps others correctly in place
-					//Transform: mat4.Multiply(FindTransformMat4(FindAncestorWithPositionInTheWorld(node.Slice, node.Entity)), transform),
-					Transform:       transform,
+					ID:              uint(node.Entity.Id.Id),
+					Name:            string(node.Entity.Name),
+					File:            node.File.Path(),
+					Transform:       mat4.Multiply(mat4.Identity(), transform),
 					Model:           model,
 					Material:        material,
 					MaxViewDistance: float32(meshNode.Render_Options.MaxViewDistance),
@@ -266,25 +267,28 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 			}
 		}
 		if isVital {
-			if vital := ResolveVitalSpawnInfo(node); vital != nil {
+			if vital := ResolveVitalSpawnInfo(assets, node); vital != nil {
 				pushEntity(EntityInfo{
 					ID:        uint(node.Entity.Id.Id),
 					Name:      string(node.Entity.Name),
 					File:      node.File.Path(),
-					Transform: transform,
+					Transform: mat4.Multiply(mat4.Identity(), transform),
 					Vital:     vital,
 				})
 			}
 		}
-	})
+	}
+
+	assets.WalkSlice(file, visitSlice)
 
 	return result
 }
 
-func ResolveVitalSpawnInfo(node *game.EntityNode) *VitalSpawnInfo {
+func ResolveVitalSpawnInfo(assets *game.Assets, node *game.EntityNode) *VitalSpawnInfo {
 	result := VitalSpawnInfo{}
 	vitalsID, _ := node.ContextStr(keyVitalsId)
 	categoryId, _ := node.ContextStr(keyVitalsCategory)
+	vitalsLevel, _ := node.ContextInt(keyVitalsLevel)
 
 	for _, component := range node.Components {
 		switch v := component.(type) {
@@ -292,6 +296,7 @@ func ResolveVitalSpawnInfo(node *game.EntityNode) *VitalSpawnInfo {
 			if vitalsID == "" {
 				vitalsID = string(v.M_rowreference)
 			}
+
 		case nwt.TagComponent:
 			// TODO: remap crc32 tags to strings
 			// for _, tag := range v.Tags.Element {
@@ -334,6 +339,7 @@ func ResolveVitalSpawnInfo(node *game.EntityNode) *VitalSpawnInfo {
 
 	result.VitalsID = vitalsID
 	result.CategoryID = categoryId
+	result.Level = vitalsLevel
 	if result.VitalsID == "" {
 		return nil
 	}

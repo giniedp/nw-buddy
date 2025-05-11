@@ -13,14 +13,14 @@ type Document struct {
 }
 
 type Capital struct {
-	ID           string     `json:"id"`
-	Position     *Vector    `json:"worldPosition"`
-	Rotation     *Vector    `json:"rotation"`
-	Scale        *float32   `json:"scale"`
-	Footprint    *Footprint `json:"footprint"`
-	SliceName    string     `json:"sliceName"`
-	SliceAssetID string     `json:"sliceAssetId"`
-	VariantName  string     `json:"variantName"`
+	ID           string      `json:"id"`
+	Position     *Vector     `json:"worldPosition"`
+	Rotation     *Quaternion `json:"rotation"`
+	Scale        *float32    `json:"scale"`
+	Footprint    *Footprint  `json:"footprint"`
+	SliceName    string      `json:"sliceName"`
+	SliceAssetID string      `json:"sliceAssetId"`
+	VariantName  string      `json:"variantName"`
 }
 
 type Vector struct {
@@ -30,6 +30,12 @@ type Vector struct {
 	W *float32 `json:"w,omitempty"`
 }
 
+type Quaternion struct {
+	X float32 `json:"x"`
+	Y float32 `json:"y"`
+	Z float32 `json:"z"`
+	W float32 `json:"w"`
+}
 type Footprint struct {
 	Type   string  `json:"type"`
 	Id     string  `json:"id"`
@@ -67,13 +73,18 @@ func (doc *Capital) Transform() transform.Node {
 		// Translation
 		0, 0, 0,
 	}
-	if doc.Rotation != nil {
+	skipRotation := false
+	if doc.ID == "af072283-0cf3-29ea-ed0f-c11e6449484d" {
+		// sharedassets/coatlicue/nw_dungeon_edengrove_00/regions/r_+00_+00/capitals/dungeon_art/dungeon_art.capitals.json
+		// "sliceName": "slices/dungeon/natural/dungeon_hallway_natural_16m_a",
+		// entry hallway to greenkeeper boss
+		skipRotation = true
+	}
+	if !skipRotation && doc.Rotation != nil {
 		data[0] = nwt.AzFloat32(doc.Rotation.X)
 		data[1] = nwt.AzFloat32(doc.Rotation.Y)
 		data[2] = nwt.AzFloat32(doc.Rotation.Z)
-		if doc.Rotation.W != nil {
-			data[3] = nwt.AzFloat32(*doc.Rotation.W)
-		}
+		data[3] = nwt.AzFloat32(doc.Rotation.W)
 	}
 	if doc.Scale != nil && *doc.Scale != 0 {
 		data[4] = nwt.AzFloat32(*doc.Scale)

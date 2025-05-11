@@ -1,9 +1,11 @@
 import { WebGLRenderer } from 'three'
+import { NwData } from '../../../nw-data/db'
 import { ViewerBridge } from '../../common'
 import { GameServiceContainer } from '../../ecs'
 import { ContentProvider } from './content-provider'
 import { InstancedMeshProvider } from './instanced-mesh-provider'
 import { LevelLoader } from './level-loader'
+import { NwDataProvider, TranslateService } from './nw-data-provider'
 import { RendererProvider } from './renderer-provider'
 import { SceneProvider } from './scene-provider'
 import { ThreeViewerBridge } from './three-viewer-bridge'
@@ -13,6 +15,8 @@ export interface ThreeGameOptions {
   resizeElement?: HTMLElement
   rootUrl: string
   nwbtUrl: string
+  nwData?: NwData
+  tl8?: TranslateService
 }
 export function createThreeViewer(options: ThreeGameOptions) {
   const engine = new WebGLRenderer({
@@ -26,7 +30,7 @@ export function createThreeViewer(options: ThreeGameOptions) {
     // premultipliedAlpha: false,
     logarithmicDepthBuffer: true,
 
-    powerPreference: "high-performance",
+    powerPreference: 'high-performance',
     antialias: false,
     stencil: false,
     depth: false,
@@ -40,6 +44,7 @@ export function createThreeViewer(options: ThreeGameOptions) {
     .add(new InstancedMeshProvider('root instances'))
     .add(new LevelLoader())
     .add(new ThreeViewerBridge(), ViewerBridge)
+    .add(new NwDataProvider(options))
     .initialize()
 
   return game

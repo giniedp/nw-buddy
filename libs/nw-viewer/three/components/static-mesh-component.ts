@@ -1,7 +1,7 @@
 import { filter, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { AxesHelper, Box3, Box3Helper, Matrix4, Mesh, Object3D, Sphere } from 'three'
 import { GameComponent, GameEntity } from '../../ecs'
-import { InstancedMeshModel, InstancedModelRef } from '../graphics/instanced-model'
+import { InstancedModel, InstancedModelRef } from '../graphics/instanced-model'
 import { SphereHelper } from '../graphics/sphere-helper'
 import { ContentProvider, ModelAsset } from '../services/content-provider'
 import { GridProvider } from '../services/grid-provider'
@@ -15,7 +15,6 @@ export type StaticMeshComponentOptions = {
   rootUrl?: string
   material?: string
   instances?: Matrix4[]
-  maxDistance?: number
 }
 
 export class StaticMeshComponent implements GameComponent {
@@ -25,14 +24,12 @@ export class StaticMeshComponent implements GameComponent {
   private renderer: RendererProvider
   private grid: GridProvider
   private options: StaticMeshComponentOptions
-  private instanceModel: InstancedMeshModel
+  private instanceModel: InstancedModel
   private instances: InstancedModelRef[] = []
   private meshes: Mesh[] = []
   private model: Object3D
 
   private axes: AxesHelper
-  private maxDistance: number
-  private maxDistanceSq: number
 
   private boxWorld: Box3
   private box: Box3Helper
@@ -50,8 +47,6 @@ export class StaticMeshComponent implements GameComponent {
   public onError = this.emitter.createObserver<void>('error')
 
   public constructor(options?: StaticMeshComponentOptions) {
-    this.maxDistance = options?.maxDistance || 0
-    this.maxDistanceSq = this.maxDistance * this.maxDistance
     this.options = options
     this.options$.next(options)
   }
@@ -86,13 +81,9 @@ export class StaticMeshComponent implements GameComponent {
         },
       })
 
-    if (this.maxDistance > 0) {
-      this.renderer.onUpdate.add(this.update)
-    }
   }
 
   public deactivate(): void {
-    this.renderer.onUpdate.remove(this.update)
     this.active = false
     this.disable$.next()
     this.unload()
@@ -102,28 +93,6 @@ export class StaticMeshComponent implements GameComponent {
     this.unload()
   }
 
-  private update = () => {
-    const cam = this.scene.camera
-    const node = this.transform.node
-    const sphere = this.worldSphere
-    if (!sphere) {
-      return
-    }
-    const dx = cam.matrixWorld.elements[12] - sphere.center.x
-    const dy = cam.matrixWorld.elements[13] - sphere.center.y
-    const dz = cam.matrixWorld.elements[14] - sphere.center.z
-    const r2 = sphere.radius * sphere.radius
-    const d2 = dx * dx + dy * dy + dz * dz
-    const isVisible = d2 <= this.maxDistanceSq + r2
-    if (node.disabled && isVisible) {
-      node.disabled = false
-      setVisibility(node, true)
-    } else if (!node.disabled && !isVisible) {
-      node.disabled = true
-      setVisibility(node, false)
-    }
-  }
-
   private onAssetLoaded(asset: ModelAsset) {
     this.unload()
     if (!this.active || !asset) {
@@ -131,13 +100,17 @@ export class StaticMeshComponent implements GameComponent {
     }
 
     const model = asset.gltf.scene
+    removeShadowObjects(model)
     if (this.options.instances?.length) {
       this.cloneAndAddInstances(model, this.options.instances, asset.source)
     } else {
       // this.cloneAndAddModel(model)
       this.cloneAndAddMeshes(model, asset.source)
     }
-
+    if (this.worldSphere) {
+      this.transform.worldSphere ||= new Sphere()
+      this.transform.worldSphere.copy(this.worldSphere)
+    }
     // this.axes = new AxesHelper(1)
     // this.transform.node.add(this.axes)
   }
@@ -174,7 +147,7 @@ export class StaticMeshComponent implements GameComponent {
   }
 
   private cloneAndAddInstances(model: Object3D, instances: Matrix4[], sourceTag?: string) {
-    this.instanceModel = new InstancedMeshModel(model, instances.length, 0)
+    this.instanceModel = new InstancedModel(model, instances.length, 0)
     this.instanceModel.userData ||= {}
     this.instanceModel.userData['source'] = sourceTag
     this.transform.node.add(this.instanceModel)
@@ -214,8 +187,6 @@ export class StaticMeshComponent implements GameComponent {
     this.boxWorld.applyMatrix4(this.transform.node.matrixWorld)
     this.grid?.notifyBoxAdded(this.boxWorld)
   }
-
-
 
   private unload() {
     if (this.meshes) {
@@ -279,9 +250,34 @@ function cloneMeshes(model: Object3D): Mesh[] {
   return result
 }
 
-function setVisibility(node: Object3D, visible: boolean) {
-  node.visible = visible
-  for (const child of node.children) {
-    setVisibility(child, visible)
+function removeShadowObjects(node: Object3D) {
+  const toRemove: Object3D[] = []
+  node.traverse((child) => {
+    if (child instanceof Mesh) {
+      if (isShadowMaterial(child.material)) {
+        // child.visible = false
+        toRemove.push(child)
+      }
+    }
+  })
+  for (const child of toRemove) {
+    child.removeFromParent()
   }
+}
+
+function isShadowMaterial(material: any) {
+  if (Array.isArray(material)) {
+    return material.some((it) => isShadow(it.name))
+  } else if (material) {
+    return isShadow(material.name)
+  }
+  return false
+}
+
+function isShadow(name: string) {
+  if (!name) {
+    return false
+  }
+  name = name.toLowerCase()
+  return name === 'shadow' || name.includes('shadoww_proxy')
 }

@@ -88,6 +88,7 @@ export class InstancedMeshProvider implements GameService {
       case 'sphere':
         geometry = new SphereGeometry(1, 8, 8)
         material = new MeshBasicMaterial({ color: new Color(1, 1, 1) })
+        material.wireframe = true
         break
       case 'box':
         geometry = new BoxGeometry(1, 1, 1)

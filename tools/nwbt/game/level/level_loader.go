@@ -94,5 +94,8 @@ func (l *levelLoader) MissionEntities() []EntityInfo {
 		return l.missionEntities
 	}
 	l.missionEntities = LoadEntities(l.assets, definition.MissionEntitiesFile.Path(), mat4.Identity())
+	for i := range l.missionEntities {
+		l.missionEntities[i].Layer = "Mission"
+	}
 	return l.missionEntities
 }

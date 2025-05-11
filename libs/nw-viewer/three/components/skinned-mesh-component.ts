@@ -1,15 +1,14 @@
 import { filter, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { AxesHelper, Box3, Box3Helper, Matrix4, Mesh, Object3D, SkeletonHelper, SkinnedMesh, Sphere } from 'three'
+import { AxesHelper, Box3, Box3Helper, Mesh, Object3D, SkeletonHelper, SkinnedMesh, Sphere } from 'three'
 import { GameComponent, GameEntity } from '../../ecs'
-import { InstancedMeshModel, InstancedModelRef } from '../graphics/instanced-model'
+import { AnimationFile } from '../adb'
+import { EventEmitter } from '../core'
 import { SphereHelper } from '../graphics/sphere-helper'
 import { ContentProvider, ModelAsset } from '../services/content-provider'
 import { GridProvider } from '../services/grid-provider'
 import { RendererProvider } from '../services/renderer-provider'
 import { SceneProvider } from '../services/scene-provider'
 import { TransformComponent } from './transform-component'
-import { EventEmitter } from '../core'
-import { AnimationFile } from '../adb'
 
 export type SkinnedMeshComponentOptions = {
   model?: string
@@ -31,8 +30,6 @@ export class SkinnedMeshComponent implements GameComponent {
   public model: Object3D
 
   private axes: AxesHelper
-  private maxDistance: number
-  private maxDistanceSq: number
 
   private boxWorld: Box3
   private box: Box3Helper
@@ -50,8 +47,6 @@ export class SkinnedMeshComponent implements GameComponent {
   public onError = this.emitter.createObserver<void>('error')
 
   public constructor(options?: SkinnedMeshComponentOptions) {
-    this.maxDistance = options?.maxDistance || 0
-    this.maxDistanceSq = this.maxDistance * this.maxDistance
     this.options = options
     this.options$.next(options)
   }
@@ -85,14 +80,9 @@ export class SkinnedMeshComponent implements GameComponent {
           this.onError.trigger()
         },
       })
-
-    if (this.maxDistance > 0) {
-      this.renderer.onUpdate.add(this.update)
-    }
   }
 
   public deactivate(): void {
-    this.renderer.onUpdate.remove(this.update)
     this.active = false
     this.disable$.next()
     this.unload()
@@ -100,28 +90,6 @@ export class SkinnedMeshComponent implements GameComponent {
 
   public destroy(): void {
     this.unload()
-  }
-
-  private update = () => {
-    const cam = this.scene.camera
-    const node = this.transform.node
-    const sphere = this.worldSphere
-    if (!sphere) {
-      return
-    }
-    const dx = cam.matrixWorld.elements[12] - sphere.center.x
-    const dy = cam.matrixWorld.elements[13] - sphere.center.y
-    const dz = cam.matrixWorld.elements[14] - sphere.center.z
-    const r2 = sphere.radius * sphere.radius
-    const d2 = dx * dx + dy * dy + dz * dz
-    const isVisible = d2 <= this.maxDistanceSq + r2
-    if (node.disabled && isVisible) {
-      node.disabled = false
-      setVisibility(node, true)
-    } else if (!node.disabled && !isVisible) {
-      node.disabled = true
-      setVisibility(node, false)
-    }
   }
 
   private onAssetLoaded(asset: ModelAsset) {
@@ -150,7 +118,6 @@ export class SkinnedMeshComponent implements GameComponent {
         this.scene.main.add(helper)
       }
     })
-    console.log('model', this.model)
   }
 
   private cloneAndAddMeshes(model: Object3D, sourceTag?: string) {

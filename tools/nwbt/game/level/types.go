@@ -178,6 +178,7 @@ type EntityInfo struct {
 	Encounter       *EncounterInfo  `json:"encounter,omitempty"`
 	MaxViewDistance float32         `json:"maxViewDistance,omitempty,omitzero"`
 	Options         any             `json:"options"`
+	Layer           string          `json:"layer,omitempty"`
 }
 
 type VitalSpawnInfo struct {

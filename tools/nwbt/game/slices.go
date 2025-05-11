@@ -11,8 +11,9 @@ import (
 )
 
 type EntityWalker struct {
-	Assets *Assets
-	Visit  func(node *EntityNode)
+	Assets    *Assets
+	Visit     func(node *EntityNode)
+	VisitMeta func(node *MetaDataNode)
 }
 
 type EntityNode struct {
@@ -171,28 +172,28 @@ type MetaDataNode struct {
 	Transform mat4.Data
 }
 
-func (it *MetaDataWalker) Walk(parent *MetaDataNode, file nwfs.File) {
+func (it *MetaDataWalker) Walk(parent *MetaDataNode, file nwfs.File, recursive bool) bool {
 	if path.Ext(file.Path()) != ".dynamicslice" {
 		slog.Warn("not a dynamicslice file", "file", file.Path())
-		return
+		return false
 	}
 
 	metaFile, _ := it.Assets.Archive.Lookup(utils.ReplaceExt(file.Path(), ".slice.meta"))
 	if metaFile == nil {
 		slog.Warn("slice meta file not found", "file", file.Path())
-		return
+		return false
 	}
 
 	data, err := it.Assets.LoadObjectStream(metaFile)
 	if err != nil {
 		slog.Error("slice meta not loaded", "error", err, "file", file.Path())
-		return
+		return false
 	}
 
 	meta, ok := data.(nwt.SliceMetaData)
 	if !ok {
 		slog.Error("slice meta not loaded", "file", file.Path())
-		return
+		return false
 	}
 
 	transform := mat4.Identity()
@@ -205,6 +206,10 @@ func (it *MetaDataWalker) Walk(parent *MetaDataNode, file nwfs.File) {
 		MetaData:  &meta,
 		Transform: transform,
 	})
+
+	if !recursive {
+		return true
+	}
 
 	for _, element := range meta.Spawners.Element {
 		spawnFile := it.Assets.ResolveDynamicSliceByName(string(element.Slicename))
@@ -223,14 +228,15 @@ func (it *MetaDataWalker) Walk(parent *MetaDataNode, file nwfs.File) {
 			Parent:    parent,
 			MetaData:  &meta,
 			Transform: mat4.Multiply(transform, mat4.FromAzTransform(element.Worldtm)),
-		}, spawnFile)
+		}, spawnFile, recursive)
 	}
+	return true
 }
 
-func (it *Assets) WalkSliceMeta(file nwfs.File, visit func(node *MetaDataNode)) {
+func (it *Assets) WalkSliceMeta(file nwfs.File, visit func(node *MetaDataNode), recursive bool) bool {
 	walker := &MetaDataWalker{
 		Assets: it,
 		Visit:  visit,
 	}
-	walker.Walk(nil, file)
+	return walker.Walk(nil, file, recursive)
 }

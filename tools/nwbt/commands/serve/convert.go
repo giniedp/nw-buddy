@@ -18,10 +18,13 @@ import (
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/loc"
 	"nw-buddy/tools/game"
+	"nw-buddy/tools/game/level"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/json"
+	"nw-buddy/tools/utils/math"
+	"nw-buddy/tools/utils/math/mat4"
 	"path"
 	"strconv"
 	"strings"
@@ -54,6 +57,10 @@ func convertFile(assets *game.Assets, file nwfs.File, targetFormat string, query
 		return convertCAF(assets, file, targetFormat, query)
 	case ".cdf":
 		return convertCDF(assets, file, targetFormat)
+	case ".dynamicslice":
+		if targetFormat == ".gltf" || targetFormat == ".glb" {
+			return convertSliceToModel(assets, file, targetFormat, query)
+		}
 	case ".distribution":
 		return convertDistribution(file, targetFormat)
 	case ".mtl":
@@ -287,6 +294,27 @@ func convertMTL(assets *game.Assets, file nwfs.File, target string, query url.Va
 		})
 	}
 
+	return convertGltf(assets, group, target == ".glb")
+}
+
+func convertSliceToModel(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
+	if target != ".gltf" && target != ".glb" {
+		return nil, fmt.Errorf("unsupported target format x: %s", target)
+	}
+
+	group := importer.AssetGroup{}
+	for _, entity := range level.LoadEntities(assets, file.Path(), mat4.Identity()) {
+		if entity.Model != "" {
+			group.Meshes = append(group.Meshes, importer.GeometryAsset{
+				Entity: importer.Entity{
+					Name:      entity.Name,
+					Transform: math.CryToGltfMat4(entity.Transform),
+				},
+				GeometryFile: entity.Model,
+				MaterialFile: entity.Material,
+			})
+		}
+	}
 	return convertGltf(assets, group, target == ".glb")
 }
 

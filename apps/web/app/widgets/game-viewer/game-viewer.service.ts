@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core'
+import { inject, Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState, signalState } from '@ngrx/signals'
+import { NwData } from '@nw-data/db'
 import { AdbAction } from '@nw-viewer/babylon/adb'
 import { AdbPlayer } from '@nw-viewer/babylon/adb/player'
 import { createBabylonViewer } from '@nw-viewer/babylon/services/babylon-viewer'
@@ -9,6 +10,8 @@ import { GameEntity, GameService, GameServiceContainer, GameServiceType } from '
 import { createThreeViewer } from '@nw-viewer/three/services/three-viewer'
 import { environment } from 'apps/web/environments'
 import { filter, map } from 'rxjs'
+import { injectNwData } from '../../data'
+import { TranslateService } from '../../i18n'
 import { shareReplayRefCount } from '../../utils'
 
 @Injectable()
@@ -20,6 +23,8 @@ export class GameViewerService {
     bridge: null as ViewerBridge,
   })
 
+  public readonly nwData = injectNwData()
+  public readonly tl8 = inject(TranslateService)
   public readonly isLoading = signal(false)
   public readonly isEmpty = signal(false)
   public readonly hasError = signal(false)
@@ -45,7 +50,8 @@ export class GameViewerService {
     if (this.host()) {
       throw new Error('GameViewerService already created')
     }
-    const game = createGame(canvas, threeJs)
+
+    const game = createGame(canvas, threeJs, this.nwData, this.tl8)
     const bridge = game.get(ViewerBridge, { optional: true })
     patchState(this.state, {
       host,
@@ -60,13 +66,15 @@ export class GameViewerService {
   }
 }
 
-function createGame(canvas: HTMLCanvasElement, threeJs: boolean) {
+function createGame(canvas: HTMLCanvasElement, threeJs: boolean, nwData?: NwData, tl8?: TranslateService) {
   if (threeJs) {
     return createThreeViewer({
       canvas,
       resizeElement: canvas.parentElement,
       rootUrl: environment.modelsUrl,
       nwbtUrl: environment.nwbtUrl,
+      nwData: nwData,
+      tl8: tl8,
     })
   }
   return createBabylonViewer({

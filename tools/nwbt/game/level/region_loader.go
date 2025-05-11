@@ -35,15 +35,21 @@ func (r *regionLoader) Entities() map[string]map[string][]EntityInfo {
 		entities := maps.NewSafeDict[[]EntityInfo]()
 		progress.Concurrent(10, layer.Capitals, func(it CapitalInfo, i int) error {
 			items := LoadEntities(r.assets, it.Slice, it.Transform)
+			for i := range items {
+				items[i].Layer = layer.Name
+			}
 			if len(items) > 0 {
-				entities.Store(it.ID, LoadEntities(r.assets, it.Slice, it.Transform))
+				entities.Store(it.ID, items)
 			}
 			return nil
 		})
 		progress.Concurrent(10, layer.Chunks, func(it ChunkInfo, i int) error {
 			items := LoadEntities(r.assets, it.Slice, it.Transform)
+			for i := range items {
+				items[i].Layer = layer.Name
+			}
 			if len(items) > 0 {
-				entities.Store(it.ID, LoadEntities(r.assets, it.Slice, it.Transform))
+				entities.Store(it.ID, items)
 			}
 			return nil
 		})
