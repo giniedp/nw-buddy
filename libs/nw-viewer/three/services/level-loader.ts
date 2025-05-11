@@ -105,7 +105,7 @@ export class LevelLoader implements GameService {
       if (v.name === 'Fog color' && v.color) {
         const color = v.color.split(',').map(Number)
         console.debug('fog color', color)
-        scene.fog = new FogExp2(new Color(color[0], color[1], color[2]), 0.005)
+        scene.fog = new FogExp2(new Color(color[0], color[1], color[2]), 0.002)
         return
       }
     }

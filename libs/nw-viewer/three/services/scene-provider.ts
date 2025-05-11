@@ -8,6 +8,7 @@ import {
   Scene,
   Texture,
   Vector2,
+  Vector3,
 } from 'three'
 
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
@@ -18,6 +19,7 @@ import { CameraComponent } from '../components/camera-component'
 import { TransformComponent } from '../components/transform-component'
 import { ThreeWASDComponent } from '../components/wasd-component'
 import { RendererProvider } from './renderer-provider'
+import { Sky } from 'three/examples/jsm/objects/Sky.js'
 
 export class SceneProvider implements GameService {
   public game: GameServiceContainer
@@ -38,6 +40,7 @@ export class SceneProvider implements GameService {
   private envMapUrl = 'https://assets.babylonjs.com/textures/parking.hdr'
   private envMapBackground = true
   private envMap: Texture = null
+  private sky: Sky
 
   public initialize(game: GameServiceContainer) {
     this.game = game
@@ -53,7 +56,38 @@ export class SceneProvider implements GameService {
       4096, // far
     )
     this.camera.name = 'camera'
-    // this.createComposer()
+    this.sky = new Sky()
+    this.sky.scale.setScalar(450000)
+    this.main.add(this.sky)
+
+    const params = {
+      turbidity: 0.5,
+      rayleigh: 0.6,
+      mieCoefficient: 0.025,
+      mieDirectionalG: 0.5,
+    }
+    // const gui = new GUI()
+    // gui.add(params, 'turbidity', 0, 20, 0.1).onChange(() => {
+    //   uniforms['turbidity'].value = params.turbidity
+    // })
+    // gui.add(params, 'rayleigh', 0, 4, 0.001).onChange(() => {
+    //   uniforms['rayleigh'].value = params.rayleigh
+    // })
+    // gui.add(params, 'mieCoefficient', 0, 0.1, 0.001).onChange(() => {
+    //   uniforms['mieCoefficient'].value = params.mieCoefficient
+    // })
+    // gui.add(params, 'mieDirectionalG', 0, 1, 0.001).onChange(() => {
+    //   uniforms['mieDirectionalG'].value = params.mieDirectionalG
+    // })
+    const uniforms = this.sky.material.uniforms
+    uniforms['turbidity'].value = params.turbidity
+    uniforms['rayleigh'].value = params.rayleigh
+    uniforms['mieCoefficient'].value = params.mieCoefficient
+    uniforms['mieDirectionalG'].value = params.mieDirectionalG
+    uniforms['sunPosition'].value.copy(new Vector3(1, 0.5, 0).normalize())
+    // sun.setFromSphericalCoords( 1, phi, theta );
+    // uniforms[ 'sunPosition' ].value.copy( sun );
+
     this.loadEnvMap(this.envMapUrl)
 
     this.renderer.onResize.add(this.onResize)

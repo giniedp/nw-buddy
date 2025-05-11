@@ -160,9 +160,9 @@ export class RendererProvider implements GameService {
     // n8aoPass.setDisplayMode('Combined')
 
     const bloomEffect = new BloomEffect({
-      luminanceThreshold: 0.85,
+      luminanceThreshold: 0.9,
       luminanceSmoothing: 0.1,
-      intensity: 1,
+      intensity: 0.5,
       mipmapBlur: true,
     })
 
@@ -216,8 +216,8 @@ export class RendererProvider implements GameService {
         ...[
           smaa,
           ssaoEffect,
-          bloomEffect,
           tonemapping,
+          bloomEffect,
         ],
       ),
     )
