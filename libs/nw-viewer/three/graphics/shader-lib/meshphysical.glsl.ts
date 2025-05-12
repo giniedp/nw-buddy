@@ -12,6 +12,7 @@ varying vec3 vViewPosition;
 #include <common>
 #include <batching_pars_vertex>
 #include <uv_pars_vertex>
+#include <clipmap_vertex>
 #include <displacementmap_pars_vertex>
 #include <color_pars_vertex>
 #include <fog_pars_vertex>
@@ -224,9 +225,17 @@ void main() {
 	#include <fog_fragment>
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
+
   // #ifdef USE_MAP
   // gl_FragColor.rgb = sampledDiffuseColor.rgb;// material.diffuseColor;
   // gl_FragColor.rgb = texture2D( map, vMapUv ).rgb;
   // #endif
+
+  #ifdef USE_CLIPMAP
+  // gl_FragColor.rgb = texture2D( map, vClipMapUv.xy ).rgb;
+  // gl_FragColor.rgb = mix(vec3(vClipMapUv.xy, 0.0), gl_FragColor.rgb, 0.25);
+  // gl_FragColor.rgb = vec3(vClipMapUv.xy, 0.0);
+  // gl_FragColor.rgb = vNormal;
+  #endif
 }
 `;

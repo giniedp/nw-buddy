@@ -12,6 +12,8 @@ import {
 } from 'three'
 
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+import { Sky } from 'three/examples/jsm/objects/Sky.js'
+import { Water } from 'three/examples/jsm/objects/Water.js'
 import { GameEntity, GameService, GameServiceContainer } from '../../ecs'
 import { IVec2 } from '../../math'
 import { QuadTree } from '../../math/quad-tree'
@@ -19,7 +21,6 @@ import { CameraComponent } from '../components/camera-component'
 import { TransformComponent } from '../components/transform-component'
 import { ThreeWASDComponent } from '../components/wasd-component'
 import { RendererProvider } from './renderer-provider'
-import { Sky } from 'three/examples/jsm/objects/Sky.js'
 
 export class SceneProvider implements GameService {
   public game: GameServiceContainer
@@ -41,6 +42,7 @@ export class SceneProvider implements GameService {
   private envMapBackground = true
   private envMap: Texture = null
   private sky: Sky
+  private water: Water
 
   public initialize(game: GameServiceContainer) {
     this.game = game

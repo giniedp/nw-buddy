@@ -8,7 +8,7 @@ import {
   TextureSampler,
 } from '@babylonjs/core'
 
-const VERTEX_SHADER = /* wgsl */ `
+const VERTEX_SHADER = /* glsl */ `
   precision highp float;
   attribute vec3 position;
   attribute vec3 normal;

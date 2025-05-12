@@ -1,5 +1,6 @@
 import { EntityInfo, LevelInfo, RegionReference, TerrainInfo } from '@nw-serve'
-import { Matrix4 } from 'three'
+import { Matrix4, PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from 'three'
+import { Water } from 'three/examples/jsm/objects/Water.js'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../../ecs'
 import { GridProvider } from '../../services/grid-provider'
 import { InstancedMeshProvider } from '../../services/instanced-mesh-provider'
@@ -7,6 +8,7 @@ import { GridCellComponent } from '../grid-cell-component'
 import { StaticShapeComponent } from '../static-shape-component'
 import { TransformComponent } from '../transform-component'
 import { RegionComponent } from './region-component'
+import { SceneProvider } from '../../services/scene-provider'
 
 export interface LevelOptions {
   level: LevelInfo
@@ -20,7 +22,8 @@ export class LevelComponent implements GameComponent {
   private regions = new GameEntityCollection()
   private mission = new GameEntityCollection()
   private transform: TransformComponent
-
+  private water: Water
+  private scene: SceneProvider
   public readonly entity: GameEntity
 
   public constructor(data: LevelOptions) {
@@ -30,21 +33,27 @@ export class LevelComponent implements GameComponent {
   public initialize(entity: GameEntity): void {
     setReadOnly(this, 'entity', entity)
     this.transform = entity.component(TransformComponent)
+    this.scene = entity.service(SceneProvider)
 
     this.createRegions(this.data.level.regions)
 
     this.terrain?.initialize(this.entity.game)
     this.regions.initialize(this.entity.game)
     this.mission.initialize(this.entity.game)
+    // if (this.data.heightmap?.oceanLevel > 0) {
+    //   this.createOcean()
+    // }
   }
 
   public activate(): void {
     this.regions.activate()
     this.terrain?.activate()
     this.mission.activate()
+    this.scene.renderer.onDraw.add(this.update)
   }
 
   public deactivate(): void {
+    this.scene.renderer.onDraw.remove(this.update)
     this.regions.deactivate()
     this.terrain?.deactivate()
     this.mission.deactivate()
@@ -54,6 +63,10 @@ export class LevelComponent implements GameComponent {
     this.regions.destroy()
     this.terrain?.destroy()
     this.mission.destroy()
+    this.water?.removeFromParent()
+    this.water?.material?.dispose()
+    this.water?.geometry?.dispose()
+    this.water = null
   }
 
   private createRegions(regions: RegionReference[]) {
@@ -97,6 +110,37 @@ export class LevelComponent implements GameComponent {
           color: 0xffff00,
         }),
       )
+  }
+
+  private createOcean() {
+    const geometry = new PlaneGeometry(10000, 10000)
+    this.water = new Water(geometry, {
+      textureWidth: 512,
+      textureHeight: 512,
+      waterNormals: new TextureLoader().load('https://assets.babylonjs.com/textures/waterbump.png', (texture) => {
+        texture.wrapS = RepeatWrapping
+        texture.wrapT = RepeatWrapping
+      }),
+      sunDirection: new Vector3(),
+      sunColor: 0xffffff,
+      waterColor: 0x001e0f,
+      distortionScale: 3.7,
+
+      fog: true,
+    })
+    this.water.rotation.x = -Math.PI / 2
+    this.water.position.y = this.data.heightmap.oceanLevel
+    this.transform.node.add(this.water)
+  }
+
+  private cp = new Vector3()
+  private update = (dt: number) => {
+    if (this.water) {
+      this.scene.camera.getWorldPosition(this.cp)
+      this.water.material.uniforms['time'].value += dt * 0.001
+      this.water.position.x = this.cp.x
+      this.water.position.z = this.cp.z
+    }
   }
 }
 

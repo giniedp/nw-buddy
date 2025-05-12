@@ -1,22 +1,24 @@
 import {
+  EntityInfo,
   fetchTypedRequest,
   getHeightmapInfoUrl,
   getLevelInfoUrl,
   getLevelMissionUrl,
   LevelInfo,
+  TerrainInfo,
   TimeOfDay,
 } from '@nw-serve'
 
+import { Color, FogExp2 } from 'three'
 import { GameEntity, GameEntityCollection, GameService, GameServiceContainer } from '../../ecs'
 import { IVec2 } from '../../math'
 import { GridCellComponent } from '../components/grid-cell-component'
 import { LevelComponent } from '../components/level/level-component'
+import { TerrainComponent } from '../components/level/terrain-component'
 import { TransformComponent } from '../components/transform-component'
 import { ContentProvider } from './content-provider'
 import { GridProvider } from './grid-provider'
 import { SceneProvider } from './scene-provider'
-import { time } from 'console'
-import { Color, FogExp2 } from 'three'
 
 export class LevelLoader implements GameService {
   private entities = new GameEntityCollection()
@@ -61,11 +63,11 @@ export class LevelLoader implements GameService {
 
     const heightmapInfo = await fetchTypedRequest(baseUrl, heightmapUrl).catch((err) => {
       console.error('failed to load heightmap', err)
-      return null
+      return null as TerrainInfo
     })
     const missionInfo = await fetchTypedRequest(baseUrl, missionUrl).catch((err) => {
       console.error('failed to load mission', err)
-      return null
+      return [] as EntityInfo[]
     })
     const levelExtent = getLevelExtent(levelInfo)
     this.scene.installQuadTree(levelExtent.min, levelExtent.max)
@@ -84,6 +86,9 @@ export class LevelLoader implements GameService {
           level: levelInfo,
           heightmap: heightmapInfo,
           mission: missionInfo,
+        }),
+        new TerrainComponent({
+          data: heightmapInfo,
         }),
       )
 

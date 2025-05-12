@@ -1,6 +1,6 @@
 import { IShaderPath, Scene, ShaderMaterial, Texture } from '@babylonjs/core'
 
-const VERTEX_SHADER = /* wgsl */ `
+const VERTEX_SHADER = /* glsl */ `
   precision highp float;
   attribute vec3 position;
   attribute vec2 uv;
@@ -16,7 +16,7 @@ const VERTEX_SHADER = /* wgsl */ `
     gl_Position.xy = gl_Position.xy * 2.0 - 1.0;
   }
 `
-const FRAGMENT_SHADER = /* wgsl */ `
+const FRAGMENT_SHADER = /* glsl */ `
   precision highp float;
 
   varying vec2 vUV;

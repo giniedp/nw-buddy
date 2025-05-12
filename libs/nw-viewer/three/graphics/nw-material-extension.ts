@@ -1,14 +1,7 @@
 import { Group, Material, Mesh, MeshPhysicalMaterial, ShaderChunk, ShaderLib, SkinnedMesh, SRGBColorSpace, Texture } from 'three'
 import { GLTFParser } from 'three/examples/jsm/loaders/GLTFLoader'
-import lights_physical_fragment from './shader-chunks/lights_physical_fragment.glsl'
-import { fragment, vertex } from './shader-lib/meshphysical.glsl'
 import { GLTFLoaderPlugin } from 'three/examples/jsm/loaders/GLTFLoader.js'
-
-ShaderChunk.lights_physical_fragment = lights_physical_fragment
-ShaderChunk.meshphysical_vert = vertex
-ShaderChunk.meshphysical_frag = fragment
-ShaderLib.physical.vertexShader = ShaderChunk.meshphysical_vert
-ShaderLib.physical.fragmentShader = ShaderChunk.meshphysical_frag
+import './shader-lib' // side effect, override shader chunks
 
 const EXTENSION_NAME = 'EXT_nw_material'
 interface ExtensionData {
