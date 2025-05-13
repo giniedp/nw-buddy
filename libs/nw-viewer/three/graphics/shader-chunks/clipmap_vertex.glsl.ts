@@ -35,16 +35,24 @@ export default /* glsl */`
     return value * (clipHeight / 16777215.0);
   }
 
-  vec3 clipmapNormal(float scale) {
+  vec3 clipmapNormalPara(float scale, vec2 uv, sampler2D tex) {
     float texel = 1.0 / (clipSize + 1.0);
-    float heightL = clipmapHeight(texture(clipTex1, vClipMapUv.xy - vec2(texel, 0.0)).rgb);
-    float heightR = clipmapHeight(texture(clipTex1, vClipMapUv.xy + vec2(texel, 0.0)).rgb);
-    float heightD = clipmapHeight(texture(clipTex1, vClipMapUv.xy - vec2(0.0, texel)).rgb);
-    float heightU = clipmapHeight(texture(clipTex1, vClipMapUv.xy + vec2(0.0, texel)).rgb);
+    float heightL = clipmapHeight(texture(tex, uv - vec2(texel, 0.0)).rgb);
+    float heightR = clipmapHeight(texture(tex, uv + vec2(texel, 0.0)).rgb);
+    float heightD = clipmapHeight(texture(tex, uv - vec2(0.0, texel)).rgb);
+    float heightU = clipmapHeight(texture(tex, uv + vec2(0.0, texel)).rgb);
     // Compute gradient
     float dx = (heightR - heightL) * scale;
     float dy = (heightU - heightD) * scale;
     return normalize(vec3(-dx, 1.0, -dy));
+  }
+
+  vec3 clipmapNormal(float scale, vec2 vWorld) {
+    float blend = clipmapBlend(vWorld, clipSize, clipDensity, cameraPosition.xz);
+    vec3 n1 = clipmapNormalPara(scale, vClipMapUv.xy, clipTex1);
+    vec3 n2 = clipmapNormalPara(scale * 0.5, vClipMapUv.zw, clipTex2);
+    vec3 n = mix(n1, n2, blend * coarseBlend);
+    return normalize(n);
   }
 
   vec2 clipmapParams(vec2 vWorld) {
