@@ -16,7 +16,7 @@ export abstract class ViewerBridge implements GameService {
   abstract currentLevel: Observable<string>
   abstract currentRegion: Observable<string>
   abstract currentSegment: Observable<string>
-  abstract loadLevel(value: string): void
+  abstract loadLevel(value: string, mapName: string): void
 
   abstract envMapConnected: Observable<boolean>
   abstract envMappedBackground: Observable<boolean>

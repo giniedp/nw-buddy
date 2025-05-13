@@ -42,11 +42,11 @@ export class ThreeViewerBridge extends ViewerBridge {
   public readonly currentLevel = new BehaviorSubject<string>('')
   public readonly currentRegion = new BehaviorSubject<string>('')
   public readonly currentSegment = new BehaviorSubject<string>('')
-  public async loadLevel(value: string) {
+  public async loadLevel(value: string, mapName: string) {
     this.currentLevel.next(value)
     this.currentRegion.next('')
     this.currentSegment.next('')
-    await this.level.loadLevel(value)
+    await this.level.loadLevel(value, mapName)
     this.level.entity
   }
 

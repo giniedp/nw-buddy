@@ -38,7 +38,7 @@ export class LevelProvider implements GameService {
     this.terrainEnabledObserver.notifyObservers(value)
   }
 
-  public async loadLevel(name: string) {
+  public async loadLevel(name: string, mapName: string) {
     this.unloadLevel()
     if (!name) {
       return

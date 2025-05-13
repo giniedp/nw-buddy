@@ -169,6 +169,7 @@ export class SegmentComponent implements GameComponent {
 
     const showCapitalsAt = SHOW_CAPITALS_AT * SHOW_CAPITALS_AT
     const showImpostorsAt = SHOW_IMPOSTORS_AT * SHOW_IMPOSTORS_AT
+    const hasEntities = this.data.entities?.length > 0
 
     let alpha = this.alpha
     if ((this.capitalsLoaded || this.impostorsLoaded) && d2 >= unloadAt) {
@@ -206,7 +207,7 @@ export class SegmentComponent implements GameComponent {
       this.scene.main.attach(this.capitalsLayer)
     }
 
-    if (this.impostorsShown && this.capitalsShown) {
+    if (this.impostorsShown && this.capitalsShown && hasEntities) {
       this.impostorsShown = false
       this.scene.main.remove(this.impostorsLayer)
     }

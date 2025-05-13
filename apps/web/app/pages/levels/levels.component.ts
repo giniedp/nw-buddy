@@ -13,7 +13,7 @@ import { GameViewerModule } from '~/widgets/game-viewer'
 import { PropertyGridModule } from '../../ui/property-grid'
 import { fetchTypedRequest, getLevelsUrl, LevelInfo, MapInfo } from '@nw-serve'
 
-const DEFAULT_MAP = 'nw_opr_004_trench'
+const DEFAULT_LEVEL = 'nw_ori_er_questliang'
 const DEFAULT_POSITION: [number, number, number] = [1024, 1024, 256]
 
 export interface LevelOptions {
@@ -52,8 +52,10 @@ export class LevelsComponent {
   public terrainEnabled$ = this.route.queryParamMap.pipe(map((it) => it.get('terrain') !== 'false'))
   public terrainEnabled = toSignal(this.terrainEnabled$)
 
-  public level$ = this.route.paramMap.pipe(map((it) => it.get('id') || DEFAULT_MAP))
+  public level$ = this.route.paramMap.pipe(map((it) => it.get('id') || DEFAULT_LEVEL))
+  public map$ = this.route.queryParamMap.pipe(map((it) => it.get('map')))
   public level = toSignal(this.level$)
+  public map = toSignal(this.map$)
   public levels = resource({
     loader: async (): Promise<LevelOptions[]> => {
       const levels = await fetchTypedRequest(environment.nwbtUrl, getLevelsUrl())

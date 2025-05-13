@@ -9,7 +9,7 @@ import {
   TimeOfDay,
 } from '@nw-serve'
 
-import { Color, FogExp2 } from 'three'
+import { Box3, Color, FogExp2, Vector3 } from 'three'
 import { GameEntity, GameEntityCollection, GameService, GameServiceContainer } from '../../ecs'
 import { IVec2 } from '../../math'
 import { GridCellComponent } from '../components/grid-cell-component'
@@ -19,6 +19,7 @@ import { TransformComponent } from '../components/transform-component'
 import { ContentProvider } from './content-provider'
 import { GridProvider } from './grid-provider'
 import { SceneProvider } from './scene-provider'
+import { cryToGltfVec3 } from '../../math/mat4'
 
 export class LevelLoader implements GameService {
   private entities = new GameEntityCollection()
@@ -48,7 +49,7 @@ export class LevelLoader implements GameService {
     // this.terrainEnabledObserver.notifyObservers(value)
   }
 
-  public async loadLevel(name: string) {
+  public async loadLevel(name: string, mapName: string) {
     this.unloadLevel()
     if (!name) {
       return
@@ -59,7 +60,7 @@ export class LevelLoader implements GameService {
     const missionUrl = getLevelMissionUrl(name)
 
     const levelInfo = await fetchTypedRequest(baseUrl, levelUrl)
-    console.log('level info', levelInfo)
+    console.log('level info', levelInfo, mapName)
 
     const heightmapInfo = await fetchTypedRequest(baseUrl, heightmapUrl).catch((err) => {
       console.error('failed to load heightmap', err)
@@ -84,6 +85,7 @@ export class LevelLoader implements GameService {
         }),
         new LevelComponent({
           level: levelInfo,
+          mapName: mapName,
           heightmap: heightmapInfo,
           mission: missionInfo,
         }),
@@ -91,7 +93,6 @@ export class LevelLoader implements GameService {
           data: heightmapInfo,
         }),
       )
-
     setReadOnly(this, 'entity', level)
     this.updateFog(levelInfo.timeOfDay)
     this.entities.initialize(this.game)

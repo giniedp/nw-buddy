@@ -42,6 +42,7 @@ export class TerrainComponent implements GameComponent {
       coarse = clipmap
     }
     this.scene.renderer.onDraw.add(this.update)
+    this.clipmaps.reverse() // update order from fine to coarse, so the near terrain is loaded first
     console.log('clipmaps', this.clipmaps)
   }
 

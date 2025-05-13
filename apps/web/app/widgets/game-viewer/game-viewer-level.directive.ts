@@ -14,6 +14,7 @@ export class GameViewerLevelDirective {
   public isConnected = toSignal(this.service.bridge$.pipe(switchMap((it) => it.levelConnected || of(false))))
 
   public nwbGameLevel = input<string>(null, { alias: 'nwbGameLevel' })
+  public nwbGameMap = input<string>(null, { alias: 'nwbGameMap' })
   public nwbGameLevelTerrain = input<boolean>(null, { alias: 'nwbGameLevelTerrain' })
 
   public terrainEnabled = signal(false)
@@ -27,8 +28,9 @@ export class GameViewerLevelDirective {
   public constructor() {
     effect(() => {
       const accessor = this.bridge()
-      const name = this.nwbGameLevel()
-      untracked(() => accessor?.loadLevel(name))
+      const level = this.nwbGameLevel()
+      const map = this.nwbGameMap()
+      untracked(() => accessor?.loadLevel(level, map))
     })
     effect(() => {
       // const level = this.levelProvider()

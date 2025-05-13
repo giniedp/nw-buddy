@@ -1,5 +1,5 @@
-import { EntityInfo, LevelInfo, RegionReference, TerrainInfo } from '@nw-serve'
-import { Matrix4, PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from 'three'
+import { EntityInfo, LevelInfo, MapInfo, RegionReference, TerrainInfo } from '@nw-serve'
+import { Box3, Box3Helper, Matrix4, PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from 'three'
 import { Water } from 'three/examples/jsm/objects/Water.js'
 import { GameComponent, GameEntity, GameEntityCollection } from '../../../ecs'
 import { GridProvider } from '../../services/grid-provider'
@@ -9,9 +9,11 @@ import { StaticShapeComponent } from '../static-shape-component'
 import { TransformComponent } from '../transform-component'
 import { RegionComponent } from './region-component'
 import { SceneProvider } from '../../services/scene-provider'
+import { cryToGltfVec3 } from '../../../math/mat4'
 
 export interface LevelOptions {
   level: LevelInfo
+  mapName: string
   heightmap: TerrainInfo
   mission: EntityInfo[]
 }
@@ -22,6 +24,9 @@ export class LevelComponent implements GameComponent {
   private regions = new GameEntityCollection()
   private mission = new GameEntityCollection()
   private transform: TransformComponent
+  private bounds: [number, number, number, number]
+  private boundsBox: Box3
+  private boundsHelper: Box3Helper
   private water: Water
   private scene: SceneProvider
   public readonly entity: GameEntity
@@ -35,8 +40,10 @@ export class LevelComponent implements GameComponent {
     this.transform = entity.component(TransformComponent)
     this.scene = entity.service(SceneProvider)
 
-    this.createRegions(this.data.level.regions)
+    this.bounds = getMapWorldBounds(this.data.level, this.data.mapName)
+    this.createWorldBounds()
 
+    this.createRegions(this.data.level.regions)
     this.terrain?.initialize(this.entity.game)
     this.regions.initialize(this.entity.game)
     this.mission.initialize(this.entity.game)
@@ -49,10 +56,14 @@ export class LevelComponent implements GameComponent {
     this.regions.activate()
     this.terrain?.activate()
     this.mission.activate()
+    // if (this.boundsHelper) {
+    //   this.scene.main.attach(this.boundsHelper)
+    // }
     this.scene.renderer.onDraw.add(this.update)
   }
 
   public deactivate(): void {
+    this.boundsHelper?.removeFromParent()
     this.scene.renderer.onDraw.remove(this.update)
     this.regions.deactivate()
     this.terrain?.deactivate()
@@ -60,6 +71,7 @@ export class LevelComponent implements GameComponent {
   }
 
   public destroy(): void {
+    this.boundsHelper?.dispose()
     this.regions.destroy()
     this.terrain?.destroy()
     this.mission.destroy()
@@ -105,6 +117,7 @@ export class LevelComponent implements GameComponent {
           regionSize: regionSize,
           centerX: centerX,
           centerY: centerY,
+          worldBounds: this.boundsBox,
         }),
         new GridCellComponent({
           color: 0xffff00,
@@ -135,15 +148,56 @@ export class LevelComponent implements GameComponent {
 
   private cp = new Vector3()
   private update = (dt: number) => {
+    this.scene.camera.getWorldPosition(this.cp)
     if (this.water) {
-      this.scene.camera.getWorldPosition(this.cp)
       this.water.material.uniforms['time'].value += dt * 0.001
       this.water.position.x = this.cp.x
       this.water.position.z = this.cp.z
     }
   }
+
+  private createWorldBounds() {
+    if (!this.bounds) {
+      return
+    }
+    const bounds = getMapExtent(this.bounds)
+    if (!bounds) {
+      return
+    }
+    this.boundsBox = bounds
+    this.boundsHelper = new Box3Helper(bounds, 0xffff00)
+  }
 }
 
 function setReadOnly<T, K extends keyof T>(target: T, key: K, value: T[K]) {
   target[key] = value
+}
+
+function getMapExtent(bounds: [number, number, number, number]): Box3 {
+  const p0 = new Vector3(...cryToGltfVec3([bounds[0], bounds[1], 0]))
+  const p1 = new Vector3(...cryToGltfVec3([bounds[0] + bounds[2], bounds[1] + bounds[3], 2048]))
+  const box = new Box3()
+  box.setFromPoints([p0, p1])
+  return box
+}
+
+function getMapWorldBounds(info: LevelInfo, map: string): [number, number, number, number] {
+  if (!info || !info.maps || !map) {
+    return null
+  }
+  const mapInfo = info.maps.find((it) => it.gameModeMapId.toLowerCase() === map.toLowerCase())
+  if (!mapInfo || !mapInfo.worldBounds) {
+    console.warn('map not found ', map)
+    return null
+  }
+  const bounds = mapInfo.worldBounds.split(',').map(Number)
+  if (bounds.length !== 4) {
+    console.warn('Invalid world bounds', mapInfo.worldBounds)
+    return null
+  }
+  if (bounds.some((it) => !Number.isFinite(it) || Number.isNaN(it))) {
+    console.warn('Invalid world bounds', mapInfo.worldBounds)
+    return null
+  }
+  return bounds as [number, number, number, number]
 }

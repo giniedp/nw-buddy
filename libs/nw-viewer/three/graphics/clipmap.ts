@@ -124,10 +124,6 @@ export class Clipmap extends Object3D {
     this.groundmap = new WebGLRenderTarget(1024, 1024, {
       depthBuffer: false,
     })
-
-    // this.material.map = this.heightmap.texture
-    // this.material.needsUpdate = true
-    // this.frustumCulled = false
   }
 
   public dispose() {
@@ -223,7 +219,6 @@ export class Clipmap extends Object3D {
         }
         let tile = findTile(this.tiles, x, y)
         if (!tile) {
-          const bounds = [x * tileSize, y * tileSize, tileSize, tileSize]
 
           tile = {
             x,
@@ -234,7 +229,7 @@ export class Clipmap extends Object3D {
             ty: 0,
             ts: 1,
             ready: false,
-            bounds,
+            bounds: [x * tileSize, y * tileSize, tileSize, tileSize],
           }
 
           this.tiles.push(tile)
@@ -342,7 +337,10 @@ export function createClipmapMeshes(vertexPerSide: number, material: Material) {
     mesh.name = name
     mesh.position.x = x
     mesh.position.z = z
-    mesh.frustumCulled = false // TODO: fix bounding boxes
+    // threejs uses a bounding sphere for culling
+    // sphere is not suitable for our case
+    // disable frustum culling
+    mesh.frustumCulled = false
     geometry.computeBoundingBox()
     geometry.boundingBox.min.y = Number.NEGATIVE_INFINITY
     geometry.boundingBox.max.y = Number.POSITIVE_INFINITY
