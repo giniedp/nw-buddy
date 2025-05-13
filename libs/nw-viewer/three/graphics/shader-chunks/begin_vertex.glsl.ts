@@ -15,7 +15,7 @@ vec3 transformed = vec3( position );
   vClipMapUv.zw = vec2(-1.0, 1.0) * ((transformed.xz - coarseOrigin.xy) / (clipDensity * 2.0)+ 0.5) * clipTexel;
 
   transformed.y = clipmapParams(transformed.xz).x;
-  vNormal = clipmapNormal(2.0 / clipDensity).xyz;
+  vNormal = clipmapNormal(2.0 / clipDensity, transformed.xz).xyz;
 
 #endif
 
