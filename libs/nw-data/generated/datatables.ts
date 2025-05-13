@@ -20,6 +20,7 @@ import type {
   BuffBucketData,
   CameraShakeData,
   CampSkinData,
+  CaptureTheFlagBalanceData,
   CategoricalProgressionData,
   CategoricalProgressionRankData,
   CinematicVideoStaticData,
@@ -44,6 +45,7 @@ import type {
   DarknessData,
   DarknessDifficultyData,
   DataPointData,
+  DifficultyScalingData,
   DivertedLootData,
   DuelBalanceData,
   DyeColorData,
@@ -124,6 +126,8 @@ import type {
   ObjectivesGlobalReleaseData,
   OpenWorldBalanceData,
   OutpostRushBalanceData,
+  OutpostRush_NoPerksBalanceData,
+  PUGActivityInfo,
   PUGRewardData,
   ParticleContextualPriorityOverrideData,
   ParticleData,
@@ -146,6 +150,7 @@ import type {
   RewardMilestoneData,
   RewardModifierData,
   RewardTrackItemData,
+  RotationalQueueData,
   ScheduleData,
   SeasonPassRankData,
   SeasonsRewardData,
@@ -395,6 +400,11 @@ export const DATASHEETS = {
       uri: "datatables/javelindata_campskins.json",
     },
   },
+  CaptureTheFlagBalanceData: {
+    CaptureTheFlagPvpBalanceTable: <DataSheetUri<CaptureTheFlagBalanceData>>{
+      uri: "datatables/pvpbalancetables/javelindata_pvpbalance_capturetheflag.json",
+    },
+  },
   CategoricalProgressionData: {
     CategoricalProgression: <DataSheetUri<CategoricalProgressionData>>{
       uri: "datatables/javelindata_categoricalprogression.json",
@@ -515,7 +525,7 @@ export const DATASHEETS = {
       uri: "datatables/contribution/javelindata_contribution_default.json",
     },
     DarknessContribution: <DataSheetUri<ContributionData>>{
-      uri: "datatables/contribution/javelindata_contribution_darkness.json",
+      uri: ["datatables/contribution/javelindata_contribution_darkness.json","datatables/contribution/javelindata_contribution_worldboss.json"]
     },
     DefendObjectContribution: <DataSheetUri<ContributionData>>{
       uri: "datatables/contribution/javelindata_contribution_defendobject.json",
@@ -633,6 +643,234 @@ export const DATASHEETS = {
     ConversationStates_C99G: <DataSheetUri<ConversationStateData>>{
       uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_conversationstates.json",
     },
+    'NPC_03976.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_03976.json",
+    },
+    'NPC_04288.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04288.json",
+    },
+    'NPC_04289.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04289.json",
+    },
+    'NPC_04290.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04290.json",
+    },
+    'NPC_04291.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04291.json",
+    },
+    'NPC_04292.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04292.json",
+    },
+    'NPC_04293.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04293.json",
+    },
+    'NPC_04294.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04294.json",
+    },
+    'NPC_04295.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04295.json",
+    },
+    'NPC_04296.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04296.json",
+    },
+    'NPC_04297.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04297.json",
+    },
+    'NPC_04627.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04627.json",
+    },
+    'NPC_04628.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04628.json",
+    },
+    'NPC_04629.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04629.json",
+    },
+    'NPC_04630.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04630.json",
+    },
+    'NPC_04631.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04631.json",
+    },
+    'NPC_04632.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04632.json",
+    },
+    'NPC_04633.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04633.json",
+    },
+    'NPC_04634.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04634.json",
+    },
+    'NPC_04635.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04635.json",
+    },
+    'NPC_04636.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_04636.json",
+    },
+    'NPC_18000.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18000.json",
+    },
+    'NPC_18001.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18001.json",
+    },
+    'NPC_18002.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18002.json",
+    },
+    'NPC_18003.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18003.json",
+    },
+    'NPC_18004.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18004.json",
+    },
+    'NPC_18005.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18005.json",
+    },
+    'NPC_18006.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18006.json",
+    },
+    'NPC_18007.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18007.json",
+    },
+    'NPC_18008.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18008.json",
+    },
+    'NPC_18009.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18009.json",
+    },
+    'NPC_18010.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18010.json",
+    },
+    'NPC_18011.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18011.json",
+    },
+    'NPC_18012.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18012.json",
+    },
+    'NPC_18013.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18013.json",
+    },
+    'NPC_18014.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18014.json",
+    },
+    'NPC_18015.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18015.json",
+    },
+    'NPC_18016.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18016.json",
+    },
+    'NPC_18017.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18017.json",
+    },
+    'NPC_18018.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18018.json",
+    },
+    'NPC_18019.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18019.json",
+    },
+    'NPC_18020.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18020.json",
+    },
+    'NPC_18021.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18021.json",
+    },
+    'NPC_18022.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18022.json",
+    },
+    'NPC_18023.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18023.json",
+    },
+    'NPC_18024.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18024.json",
+    },
+    'NPC_18025.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18025.json",
+    },
+    'NPC_18026.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18026.json",
+    },
+    'NPC_18027.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18027.json",
+    },
+    'NPC_18028.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18028.json",
+    },
+    'NPC_18029.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18029.json",
+    },
+    'NPC_18030.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18030.json",
+    },
+    'NPC_18031.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18031.json",
+    },
+    'NPC_18032.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18032.json",
+    },
+    'NPC_18033.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18033.json",
+    },
+    'NPC_18034.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18034.json",
+    },
+    'NPC_18035.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18035.json",
+    },
+    'NPC_18036.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18036.json",
+    },
+    'NPC_18037.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18037.json",
+    },
+    'NPC_18038.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18038.json",
+    },
+    'NPC_18039.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18039.json",
+    },
+    'NPC_18040.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18040.json",
+    },
+    'NPC_18041.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18041.json",
+    },
+    'NPC_18042.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18042.json",
+    },
+    'NPC_18043.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18043.json",
+    },
+    'NPC_18044.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18044.json",
+    },
+    'NPC_18045.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18045.json",
+    },
+    'NPC_18046.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18046.json",
+    },
+    'NPC_18047.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18047.json",
+    },
+    'NPC_18048.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18048.json",
+    },
+    'NPC_18049.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18049.json",
+    },
+    'NPC_18050.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18050.json",
+    },
+    'NPC_18051.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18051.json",
+    },
+    'NPC_18052.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18052.json",
+    },
+    'NPC_18053.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_18053.json",
+    },
+    'NPC_22000.datasheet': <DataSheetUri<ConversationStateData>>{
+      uri: "datatables/questdata/conversationstatedata_npc_22000.json",
+    },
   },
   ConversationTopicData: {
     ConversationTopics: <DataSheetUri<ConversationTopicData>>{
@@ -733,6 +971,234 @@ export const DATASHEETS = {
     },
     ConversationTopics_C99G: <DataSheetUri<ConversationTopicData>>{
       uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_conversationtopics.json",
+    },
+    'NPC_03976.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_03976.json",
+    },
+    'NPC_04288.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04288.json",
+    },
+    'NPC_04289.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04289.json",
+    },
+    'NPC_04290.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04290.json",
+    },
+    'NPC_04291.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04291.json",
+    },
+    'NPC_04292.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04292.json",
+    },
+    'NPC_04293.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04293.json",
+    },
+    'NPC_04294.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04294.json",
+    },
+    'NPC_04295.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04295.json",
+    },
+    'NPC_04296.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04296.json",
+    },
+    'NPC_04297.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04297.json",
+    },
+    'NPC_04627.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04627.json",
+    },
+    'NPC_04628.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04628.json",
+    },
+    'NPC_04629.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04629.json",
+    },
+    'NPC_04630.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04630.json",
+    },
+    'NPC_04631.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04631.json",
+    },
+    'NPC_04632.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04632.json",
+    },
+    'NPC_04633.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04633.json",
+    },
+    'NPC_04634.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04634.json",
+    },
+    'NPC_04635.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04635.json",
+    },
+    'NPC_04636.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_04636.json",
+    },
+    'NPC_18000.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18000.json",
+    },
+    'NPC_18001.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18001.json",
+    },
+    'NPC_18002.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18002.json",
+    },
+    'NPC_18003.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18003.json",
+    },
+    'NPC_18004.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18004.json",
+    },
+    'NPC_18005.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18005.json",
+    },
+    'NPC_18006.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18006.json",
+    },
+    'NPC_18007.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18007.json",
+    },
+    'NPC_18008.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18008.json",
+    },
+    'NPC_18009.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18009.json",
+    },
+    'NPC_18010.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18010.json",
+    },
+    'NPC_18011.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18011.json",
+    },
+    'NPC_18012.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18012.json",
+    },
+    'NPC_18013.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18013.json",
+    },
+    'NPC_18014.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18014.json",
+    },
+    'NPC_18015.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18015.json",
+    },
+    'NPC_18016.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18016.json",
+    },
+    'NPC_18017.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18017.json",
+    },
+    'NPC_18018.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18018.json",
+    },
+    'NPC_18019.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18019.json",
+    },
+    'NPC_18020.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18020.json",
+    },
+    'NPC_18021.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18021.json",
+    },
+    'NPC_18022.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18022.json",
+    },
+    'NPC_18023.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18023.json",
+    },
+    'NPC_18024.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18024.json",
+    },
+    'NPC_18025.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18025.json",
+    },
+    'NPC_18026.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18026.json",
+    },
+    'NPC_18027.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18027.json",
+    },
+    'NPC_18028.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18028.json",
+    },
+    'NPC_18029.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18029.json",
+    },
+    'NPC_18030.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18030.json",
+    },
+    'NPC_18031.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18031.json",
+    },
+    'NPC_18032.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18032.json",
+    },
+    'NPC_18033.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18033.json",
+    },
+    'NPC_18034.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18034.json",
+    },
+    'NPC_18035.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18035.json",
+    },
+    'NPC_18036.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18036.json",
+    },
+    'NPC_18037.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18037.json",
+    },
+    'NPC_18038.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18038.json",
+    },
+    'NPC_18039.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18039.json",
+    },
+    'NPC_18040.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18040.json",
+    },
+    'NPC_18041.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18041.json",
+    },
+    'NPC_18042.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18042.json",
+    },
+    'NPC_18043.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18043.json",
+    },
+    'NPC_18044.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18044.json",
+    },
+    'NPC_18045.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18045.json",
+    },
+    'NPC_18046.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18046.json",
+    },
+    'NPC_18047.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18047.json",
+    },
+    'NPC_18048.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18048.json",
+    },
+    'NPC_18049.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18049.json",
+    },
+    'NPC_18050.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18050.json",
+    },
+    'NPC_18051.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18051.json",
+    },
+    'NPC_18052.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18052.json",
+    },
+    'NPC_18053.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_18053.json",
+    },
+    'NPC_22000.datasheet': <DataSheetUri<ConversationTopicData>>{
+      uri: "datatables/questdata/conversationtopicdata_npc_22000.json",
     },
   },
   CooldownData: {
@@ -869,6 +1335,9 @@ export const DATASHEETS = {
     AnubianLotusScarabDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json",
     },
+    AnubianLotusScarabWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_anubianlotusscarab_worldboss.json",
+    },
     AnubianScarabDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json",
     },
@@ -913,6 +1382,9 @@ export const DATASHEETS = {
     },
     BloodOfTheSandsDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/seasons_datatables/season_02/javelindata_damagetable_malek_bloodofthesands.json",
+    },
+    BloodbeastDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/grunt_datatables/javelindata_damagetable_bloodbeast.json",
     },
     BoarDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/javelindata_damagetable_boar.json",
@@ -1064,6 +1536,12 @@ export const DATASHEETS = {
     DynastyEmpressPedestalDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/empress_datatables/javelindata_damagetable_pedestal.json",
     },
+    DynastyEmpressSoloDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/empress_datatables/javelindata_damagetable_empress_solo.json",
+    },
+    DynastyEmpressWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_empress_worldboss.json",
+    },
     DynastyHeavyDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/corruptionheavy_datatables/javelindata_damagetable_dynasty_heavy.json",
     },
@@ -1133,11 +1611,17 @@ export const DATASHEETS = {
     FeralArcherDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/dryad_datatables/javelindata_damagetable_dryadarcher.json",
     },
+    FeralGhoulDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/feralghoul_datatables/javelindata_damagetable_feralghoul.json",
+    },
     FeralShamanDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/dryad_datatables/javelindata_damagetable_dryadshaman.json",
     },
     FireChampionDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/human_datatables/javelindata_damagetable_human_firechampion.json",
+    },
+    FireChampionWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_firechampion_worldboss.json",
     },
     FireNagaDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/naga_datatables/javelindata_damagetable_naga_fire.json",
@@ -1150,6 +1634,15 @@ export const DATASHEETS = {
     },
     GenericBossDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/boss_datatables/javelindata_damagetable_boss.json",
+    },
+    GhastlyHatchetDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_hatchet.json",
+    },
+    GhastlySniper_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_sniper.json",
+    },
+    GhastlyVillagerShovelDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_shovel.json",
     },
     GhostCharredDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/ghost_datatables/javelindata_damagetable_ghost_charred.json",
@@ -1301,6 +1794,12 @@ export const DATASHEETS = {
     IsabellaTigerDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/lion_datatables/javelindata_damagetable_isabella_tiger.json",
     },
+    IsabellaWingedWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_isabella_winged_worldboss.json",
+    },
+    JesterAddBruteDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/isleofnight_datatables/javelindata_damagetable_jesteradd_brute.json",
+    },
     KnightHoundDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/wolf_datatables/javelindata_damagetable_evil_knight_hound.json",
     },
@@ -1340,6 +1839,9 @@ export const DATASHEETS = {
     LostSirenDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/lostsiren_datatables/javelindata_damagetable_lost_siren.json",
     },
+    LostSirenV2DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/lostsiren_datatables/javelindata_damagetable_lost_siren_v2.json",
+    },
     MalekDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/seasons_datatables/season_02/javelindata_damagetable_malek.json",
     },
@@ -1372,6 +1874,9 @@ export const DATASHEETS = {
     },
     NagaAngryEarthDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/naga_datatables/javelindata_damagetable_naga_angryearth.json",
+    },
+    NagaAngryEarthWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_naga_angryearth_worldboss.json",
     },
     NagaCorruptedDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/naga_datatables/javelindata_damagetable_naga_corrupted.json",
@@ -1469,6 +1974,9 @@ export const DATASHEETS = {
     SkeletonSpearDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/skeleton_datatables/javelindata_damagetable_skeletonspear.json",
     },
+    SoulharvesterDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/soulharvester_datatables/javelindata_damagetable_soulharvester.json",
+    },
     SpellBotDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/spellbot_datatables/javelindata_damagetable_spellbot.json",
     },
@@ -1496,6 +2004,9 @@ export const DATASHEETS = {
     SulfurLizardDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/sulfur_dragon/javelindata_damagetable_sulfurlizard.json",
     },
+    SwampBeastAvariceDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/brute_datatables/javelindata_damagetable_swampbeast_openworld.json",
+    },
     SwampBeastDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/brute_datatables/javelindata_damagetable_swampbeast.json",
     },
@@ -1520,11 +2031,17 @@ export const DATASHEETS = {
     UndeadAdmiralBruteDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_admiral_brute.json",
     },
+    UndeadAdmiralBruteWorldBossDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_undead_admiral_brute_worldboss.json",
+    },
     UndeadBerserkerDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_berserker.json",
     },
     UndeadBruteDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_brute.json",
+    },
+    UndeadCryptkeeperDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_cryptkeeper.json",
     },
     UndeadDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/javelindata_damagetable_undead.json",
@@ -1540,6 +2057,15 @@ export const DATASHEETS = {
     },
     UndeadJavelineerDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_javelineer.json",
+    },
+    UndeadMummifiedCorpseDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_mummifiedcorpse.json",
+    },
+    UndeadMutatedNurseDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_mutatednurse.json",
+    },
+    UndeadNagaDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/undeadnaga_datatables/javelindata_damagetable_undeadnaga.json",
     },
     UndeadNavigatorDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_navigator.json",
@@ -1558,6 +2084,15 @@ export const DATASHEETS = {
     },
     Undead_Sailor_DamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/undead_datatables/javelindata_damagetable_undead_sailor.json",
+    },
+    WBFireNagaDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_wb_naga_fire.json",
+    },
+    WB_Mammoth_FL_Mahantaram_DamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_wb_mammoth_fl_mahantaram.json",
+    },
+    WispyWaspDamageTable: <DataSheetUri<DamageData>>{
+      uri: "datatables/charactertables/wispywaspswarm_datatables/javelindata_damagetable_wispy_wasp_swarm.json",
     },
     WitheredBeetleDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/witheredbeetle_datatables/javelindata_damagetable_witheredbeetle.json",
@@ -1611,6 +2146,11 @@ export const DATASHEETS = {
   DataPointData: {
     DataPointDataTable: <DataSheetUri<DataPointData>>{
       uri: "datatables/javelindata_datapoints.json",
+    },
+  },
+  DifficultyScalingData: {
+    DifficultyScaling_WorldEncounter_Participants: <DataSheetUri<DifficultyScalingData>>{
+      uri: "datatables/javelindata_difficultyscaling_worldencounter_participants.json",
     },
   },
   DivertedLootData: {
@@ -1748,6 +2288,9 @@ export const DATASHEETS = {
     GameEvents_05: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_05_gameevents.json",
     },
+    GameEvents_05A: <DataSheetUri<GameEventData>>{
+      uri: "datatables/questgameevents/javelindata_05a_gameevents.json",
+    },
     GameEvents_06: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_06_gameevents.json",
     },
@@ -1807,6 +2350,9 @@ export const DATASHEETS = {
     },
     GameEvents_81: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_81_gameevents.json",
+    },
+    GameEvents_90: <DataSheetUri<GameEventData>>{
+      uri: "datatables/questgameevents/javelindata_90_gameevents.json",
     },
     GameEvents_91: <DataSheetUri<GameEventData>>{
       uri: "datatables/questgameevents/javelindata_91_gameevents.json",
@@ -2007,6 +2553,9 @@ export const DATASHEETS = {
   LootBucketData: {
     LootBuckets: <DataSheetUri<LootBucketData>>{
       uri: "datatables/javelindata_lootbuckets.json",
+    },
+    LootBucketsBattleRoyale: <DataSheetUri<LootBucketData>>{
+      uri: "datatables/javelindata_lootbuckets_battleroyale.json",
     },
     LootBucketsFish: <DataSheetUri<LootBucketData>>{
       uri: "datatables/fishing/javelindata_lootbuckets_fishing.json",
@@ -2270,6 +2819,234 @@ export const DATASHEETS = {
     },
   },
   NPCData: {
+    'NPC_03976.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_03976.json",
+    },
+    'NPC_04288.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04288.json",
+    },
+    'NPC_04289.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04289.json",
+    },
+    'NPC_04290.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04290.json",
+    },
+    'NPC_04291.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04291.json",
+    },
+    'NPC_04292.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04292.json",
+    },
+    'NPC_04293.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04293.json",
+    },
+    'NPC_04294.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04294.json",
+    },
+    'NPC_04295.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04295.json",
+    },
+    'NPC_04296.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04296.json",
+    },
+    'NPC_04297.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04297.json",
+    },
+    'NPC_04627.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04627.json",
+    },
+    'NPC_04628.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04628.json",
+    },
+    'NPC_04629.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04629.json",
+    },
+    'NPC_04630.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04630.json",
+    },
+    'NPC_04631.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04631.json",
+    },
+    'NPC_04632.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04632.json",
+    },
+    'NPC_04633.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04633.json",
+    },
+    'NPC_04634.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04634.json",
+    },
+    'NPC_04635.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04635.json",
+    },
+    'NPC_04636.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_04636.json",
+    },
+    'NPC_18000.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18000.json",
+    },
+    'NPC_18001.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18001.json",
+    },
+    'NPC_18002.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18002.json",
+    },
+    'NPC_18003.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18003.json",
+    },
+    'NPC_18004.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18004.json",
+    },
+    'NPC_18005.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18005.json",
+    },
+    'NPC_18006.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18006.json",
+    },
+    'NPC_18007.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18007.json",
+    },
+    'NPC_18008.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18008.json",
+    },
+    'NPC_18009.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18009.json",
+    },
+    'NPC_18010.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18010.json",
+    },
+    'NPC_18011.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18011.json",
+    },
+    'NPC_18012.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18012.json",
+    },
+    'NPC_18013.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18013.json",
+    },
+    'NPC_18014.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18014.json",
+    },
+    'NPC_18015.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18015.json",
+    },
+    'NPC_18016.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18016.json",
+    },
+    'NPC_18017.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18017.json",
+    },
+    'NPC_18018.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18018.json",
+    },
+    'NPC_18019.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18019.json",
+    },
+    'NPC_18020.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18020.json",
+    },
+    'NPC_18021.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18021.json",
+    },
+    'NPC_18022.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18022.json",
+    },
+    'NPC_18023.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18023.json",
+    },
+    'NPC_18024.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18024.json",
+    },
+    'NPC_18025.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18025.json",
+    },
+    'NPC_18026.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18026.json",
+    },
+    'NPC_18027.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18027.json",
+    },
+    'NPC_18028.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18028.json",
+    },
+    'NPC_18029.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18029.json",
+    },
+    'NPC_18030.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18030.json",
+    },
+    'NPC_18031.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18031.json",
+    },
+    'NPC_18032.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18032.json",
+    },
+    'NPC_18033.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18033.json",
+    },
+    'NPC_18034.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18034.json",
+    },
+    'NPC_18035.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18035.json",
+    },
+    'NPC_18036.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18036.json",
+    },
+    'NPC_18037.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18037.json",
+    },
+    'NPC_18038.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18038.json",
+    },
+    'NPC_18039.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18039.json",
+    },
+    'NPC_18040.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18040.json",
+    },
+    'NPC_18041.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18041.json",
+    },
+    'NPC_18042.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18042.json",
+    },
+    'NPC_18043.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18043.json",
+    },
+    'NPC_18044.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18044.json",
+    },
+    'NPC_18045.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18045.json",
+    },
+    'NPC_18046.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18046.json",
+    },
+    'NPC_18047.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18047.json",
+    },
+    'NPC_18048.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18048.json",
+    },
+    'NPC_18049.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18049.json",
+    },
+    'NPC_18050.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18050.json",
+    },
+    'NPC_18051.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18051.json",
+    },
+    'NPC_18052.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18052.json",
+    },
+    'NPC_18053.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_18053.json",
+    },
+    'NPC_22000.datasheet': <DataSheetUri<NPCData>>{
+      uri: "datatables/questdata/npcdata_npc_22000.json",
+    },
     NPCs: <DataSheetUri<NPCData>>{
       uri: "datatables/javelindata_npcs.json",
     },
@@ -2284,9 +3061,6 @@ export const DATASHEETS = {
     },
     NPCs_10: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/10_cutlasskeys/javelindata_10_npcs.json",
-    },
-    NPCs_11: <DataSheetUri<NPCData>>{
-      uri: "datatables/quests/11_mourningdale/javelindata_11_npcs.json",
     },
     NPCs_12: <DataSheetUri<NPCData>>{
       uri: "datatables/quests/12_monarchsbluffs/javelindata_12_npcs.json",
@@ -2505,6 +3279,159 @@ export const DATASHEETS = {
     ObjectiveTasksDataManager_C99G: <DataSheetUri<ObjectiveTasks>>{
       uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_objectivetasks.json",
     },
+    'Quest_02789.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02789.json",
+    },
+    'Quest_02790.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02790.json",
+    },
+    'Quest_02791.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02791.json",
+    },
+    'Quest_02792.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02792.json",
+    },
+    'Quest_02793.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02793.json",
+    },
+    'Quest_02794.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02794.json",
+    },
+    'Quest_02795.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02795.json",
+    },
+    'Quest_02796.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02796.json",
+    },
+    'Quest_02797.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02797.json",
+    },
+    'Quest_02798.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02798.json",
+    },
+    'Quest_02799.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02799.json",
+    },
+    'Quest_02801.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02801.json",
+    },
+    'Quest_02802.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_02802.json",
+    },
+    'Quest_03189.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03189.json",
+    },
+    'Quest_03190.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03190.json",
+    },
+    'Quest_03192.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03192.json",
+    },
+    'Quest_03194.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03194.json",
+    },
+    'Quest_03196.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03196.json",
+    },
+    'Quest_03197.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03197.json",
+    },
+    'Quest_03199.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03199.json",
+    },
+    'Quest_03200.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_03200.json",
+    },
+    'Quest_18000.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18000.json",
+    },
+    'Quest_18001.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18001.json",
+    },
+    'Quest_18002.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18002.json",
+    },
+    'Quest_18003.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18003.json",
+    },
+    'Quest_18004.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18004.json",
+    },
+    'Quest_18005.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18005.json",
+    },
+    'Quest_18006.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18006.json",
+    },
+    'Quest_18007.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18007.json",
+    },
+    'Quest_18008.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18008.json",
+    },
+    'Quest_18009.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18009.json",
+    },
+    'Quest_18010.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18010.json",
+    },
+    'Quest_18011.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18011.json",
+    },
+    'Quest_18012.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18012.json",
+    },
+    'Quest_18013.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18013.json",
+    },
+    'Quest_18014.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18014.json",
+    },
+    'Quest_18015.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18015.json",
+    },
+    'Quest_18016.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18016.json",
+    },
+    'Quest_18017.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18017.json",
+    },
+    'Quest_18018.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18018.json",
+    },
+    'Quest_18019.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18019.json",
+    },
+    'Quest_18020.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18020.json",
+    },
+    'Quest_18021.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18021.json",
+    },
+    'Quest_18022.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18022.json",
+    },
+    'Quest_18023.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18023.json",
+    },
+    'Quest_18024.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18024.json",
+    },
+    'Quest_18025.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18025.json",
+    },
+    'Quest_18026.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_18026.json",
+    },
+    'Quest_22000.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_22000.json",
+    },
+    'Quest_22001.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_22001.json",
+    },
+    'Quest_22002.datasheet': <DataSheetUri<ObjectiveTasks>>{
+      uri: "datatables/questdata/objectivetasks_quest_22002.json",
+    },
   },
   Objectives: {
     ObjectivesDataManager: <DataSheetUri<Objectives>>{
@@ -2609,6 +3536,159 @@ export const DATASHEETS = {
     ObjectivesDataManager_C99G: <DataSheetUri<Objectives>>{
       uri: "datatables/quests/console/c99g_msq_shattered/javelindata_c99g_objectives.json",
     },
+    'Quest_02789.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02789.json",
+    },
+    'Quest_02790.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02790.json",
+    },
+    'Quest_02791.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02791.json",
+    },
+    'Quest_02792.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02792.json",
+    },
+    'Quest_02793.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02793.json",
+    },
+    'Quest_02794.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02794.json",
+    },
+    'Quest_02795.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02795.json",
+    },
+    'Quest_02796.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02796.json",
+    },
+    'Quest_02797.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02797.json",
+    },
+    'Quest_02798.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02798.json",
+    },
+    'Quest_02799.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02799.json",
+    },
+    'Quest_02801.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02801.json",
+    },
+    'Quest_02802.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_02802.json",
+    },
+    'Quest_03189.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03189.json",
+    },
+    'Quest_03190.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03190.json",
+    },
+    'Quest_03192.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03192.json",
+    },
+    'Quest_03194.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03194.json",
+    },
+    'Quest_03196.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03196.json",
+    },
+    'Quest_03197.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03197.json",
+    },
+    'Quest_03199.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03199.json",
+    },
+    'Quest_03200.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_03200.json",
+    },
+    'Quest_18000.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18000.json",
+    },
+    'Quest_18001.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18001.json",
+    },
+    'Quest_18002.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18002.json",
+    },
+    'Quest_18003.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18003.json",
+    },
+    'Quest_18004.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18004.json",
+    },
+    'Quest_18005.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18005.json",
+    },
+    'Quest_18006.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18006.json",
+    },
+    'Quest_18007.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18007.json",
+    },
+    'Quest_18008.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18008.json",
+    },
+    'Quest_18009.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18009.json",
+    },
+    'Quest_18010.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18010.json",
+    },
+    'Quest_18011.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18011.json",
+    },
+    'Quest_18012.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18012.json",
+    },
+    'Quest_18013.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18013.json",
+    },
+    'Quest_18014.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18014.json",
+    },
+    'Quest_18015.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18015.json",
+    },
+    'Quest_18016.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18016.json",
+    },
+    'Quest_18017.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18017.json",
+    },
+    'Quest_18018.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18018.json",
+    },
+    'Quest_18019.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18019.json",
+    },
+    'Quest_18020.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18020.json",
+    },
+    'Quest_18021.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18021.json",
+    },
+    'Quest_18022.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18022.json",
+    },
+    'Quest_18023.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18023.json",
+    },
+    'Quest_18024.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18024.json",
+    },
+    'Quest_18025.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18025.json",
+    },
+    'Quest_18026.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_18026.json",
+    },
+    'Quest_22000.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_22000.json",
+    },
+    'Quest_22001.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_22001.json",
+    },
+    'Quest_22002.datasheet': <DataSheetUri<Objectives>>{
+      uri: "datatables/questdata/objectives_quest_22002.json",
+    },
   },
   ObjectivesGlobalReleaseData: {
     ObjectivesGlobalRelease: <DataSheetUri<ObjectivesGlobalReleaseData>>{
@@ -2623,6 +3703,16 @@ export const DATASHEETS = {
   OutpostRushBalanceData: {
     OutpostRushPvpBalanceTable: <DataSheetUri<OutpostRushBalanceData>>{
       uri: "datatables/pvpbalancetables/javelindata_pvpbalance_outpostrush.json",
+    },
+  },
+  OutpostRush_NoPerksBalanceData: {
+    OutpostRush_NoPerksPvpBalanceTable: <DataSheetUri<OutpostRush_NoPerksBalanceData>>{
+      uri: "datatables/pvpbalancetables/javelindata_pvpbalance_outpostrush_noperks.json",
+    },
+  },
+  PUGActivityInfo: {
+    PUGActivityInfo: <DataSheetUri<PUGActivityInfo>>{
+      uri: "datatables/javelindata_pugactivityinfo.json",
     },
   },
   PUGRewardData: {
@@ -2738,6 +3828,11 @@ export const DATASHEETS = {
       uri: "datatables/pvp_rewardstrack/javelindata_pvp_rewards_v2.json",
     },
   },
+  RotationalQueueData: {
+    RotationalQueue: <DataSheetUri<RotationalQueueData>>{
+      uri: "datatables/javelindata_rotationalqueues.json",
+    },
+  },
   ScheduleData: {
     Schedules: <DataSheetUri<ScheduleData>>{
       uri: "datatables/javelindata_schedules.json",
@@ -2765,6 +3860,9 @@ export const DATASHEETS = {
     SeasonPass_Season7: <DataSheetUri<SeasonPassRankData>>{
       uri: "datatables/seasonsrewards/season7/javelindata_seasonpassdata_season7.json",
     },
+    SeasonPass_Season8: <DataSheetUri<SeasonPassRankData>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_seasonpassdata_season8.json",
+    },
   },
   SeasonsRewardData: {
     SeasonsRewardData_Season1: <DataSheetUri<SeasonsRewardData>>{
@@ -2787,6 +3885,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardData_Season7: <DataSheetUri<SeasonsRewardData>>{
       uri: "datatables/seasonsrewards/season7/javelindata_rewarddata_season7.json",
+    },
+    SeasonsRewardData_Season8: <DataSheetUri<SeasonsRewardData>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_rewarddata_season8.json",
     },
   },
   SeasonsRewardsActivitiesConfig: {
@@ -2811,6 +3912,9 @@ export const DATASHEETS = {
     SeasonsRewardsActivitiesConfig_Season7: <DataSheetUri<SeasonsRewardsActivitiesConfig>>{
       uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardsactivitiesconfig_s7.json",
     },
+    SeasonsRewardsActivitiesConfig_Season8: <DataSheetUri<SeasonsRewardsActivitiesConfig>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_seasonsrewardsactivitiesconfig_s8.json",
+    },
   },
   SeasonsRewardsActivitiesTasksData: {
     SeasonsRewardsActivitiesTasksData_Season4: <DataSheetUri<SeasonsRewardsActivitiesTasksData>>{
@@ -2824,6 +3928,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardsActivitiesTasksData_Season7: <DataSheetUri<SeasonsRewardsActivitiesTasksData>>{
       uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardsactivitiestasks_s7.json",
+    },
+    SeasonsRewardsActivitiesTasksData_Season8: <DataSheetUri<SeasonsRewardsActivitiesTasksData>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_seasonsrewardsactivitiestasks_s8.json",
     },
   },
   SeasonsRewardsCardData: {
@@ -2848,6 +3955,9 @@ export const DATASHEETS = {
     SeasonsRewardsCardData_Season7: <DataSheetUri<SeasonsRewardsCardData>>{
       uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardscarddata_s7.json",
     },
+    SeasonsRewardsCardData_Season8: <DataSheetUri<SeasonsRewardsCardData>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_seasonsrewardscarddata_s8.json",
+    },
   },
   SeasonsRewardsCardTemplates: {
     SeasonsRewardsCardTemplates_Season1: <DataSheetUri<SeasonsRewardsCardTemplates>>{
@@ -2870,6 +3980,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardsCardTemplates_Season7: <DataSheetUri<SeasonsRewardsCardTemplates>>{
       uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardscardtemplates_s7.json",
+    },
+    SeasonsRewardsCardTemplates_Season8: <DataSheetUri<SeasonsRewardsCardTemplates>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_seasonsrewardscardtemplates_s8.json",
     },
   },
   SeasonsRewardsChapterData: {
@@ -2894,6 +4007,9 @@ export const DATASHEETS = {
     SeasonsRewardsChapterData_Season7: <DataSheetUri<SeasonsRewardsChapterData>>{
       uri: "datatables/seasonsrewards/season7/javelindata_chapterdata_season7.json",
     },
+    SeasonsRewardsChapterData_Season8: <DataSheetUri<SeasonsRewardsChapterData>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_chapterdata_season8.json",
+    },
   },
   SeasonsRewardsJourneyData: {
     SeasonsRewardsJourneyData_Season1: <DataSheetUri<SeasonsRewardsJourneyData>>{
@@ -2916,6 +4032,9 @@ export const DATASHEETS = {
     },
     SeasonsRewardsJourneyData_Season7: <DataSheetUri<SeasonsRewardsJourneyData>>{
       uri: "datatables/seasonsrewards/season7/javelindata_seasonsrewardsjourney_season7.json",
+    },
+    SeasonsRewardsJourneyData_Season8: <DataSheetUri<SeasonsRewardsJourneyData>>{
+      uri: "datatables/seasonsrewards/season8/javelindata_seasonsrewardsjourney_season8.json",
     },
   },
   SeasonsRewardsSeasonData: {
@@ -3053,6 +4172,12 @@ export const DATASHEETS = {
     SpellDataTable_Bow: <DataSheetUri<SpellData>>{
       uri: "datatables/javelindata_spelltable_bow.json",
     },
+    SpellDataTable_CTF: <DataSheetUri<SpellData>>{
+      uri: "datatables/javelindata_spelltable_ctf.json",
+    },
+    SpellDataTable_CarryMe: <DataSheetUri<SpellData>>{
+      uri: "datatables/javelindata_spelltable_carryme.json",
+    },
     SpellDataTable_Conqueror: <DataSheetUri<SpellData>>{
       uri: "datatables/javelindata_spelltable_conquerorsitems.json",
     },
@@ -3136,11 +4261,20 @@ export const DATASHEETS = {
     StatusEffects_Bow: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_bow.json",
     },
+    StatusEffects_CTF: <DataSheetUri<StatusEffectData>>{
+      uri: "datatables/javelindata_statuseffects_ctf.json",
+    },
+    StatusEffects_CarryMe: <DataSheetUri<StatusEffectData>>{
+      uri: "datatables/javelindata_statuseffects_carryme.json",
+    },
     StatusEffects_Common: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_common.json",
     },
     StatusEffects_ConquerorsItems: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_conquerersitems.json",
+    },
+    StatusEffects_DifficultyScaling: <DataSheetUri<StatusEffectData>>{
+      uri: "datatables/javelindata_statuseffects_difficultyscaling.json",
     },
     StatusEffects_Firestaff: <DataSheetUri<StatusEffectData>>{
       uri: "datatables/javelindata_statuseffects_firestaff.json",
@@ -3468,8 +4602,14 @@ export const DATASHEETS = {
     Gatherable_Bushes: <DataSheetUri<VariationDataGatherable>>{
       uri: "datatables/javelindata_variations_gatherables_bushes.json",
     },
+    Gatherable_CarryMe: <DataSheetUri<VariationDataGatherable>>{
+      uri: "datatables/javelindata_variations_gatherables_carryme.json",
+    },
     Gatherable_Cinematic: <DataSheetUri<VariationDataGatherable>>{
       uri: "datatables/javelindata_variations_gatherables_cinematic.json",
+    },
+    Gatherable_Collectibles: <DataSheetUri<VariationDataGatherable>>{
+      uri: "datatables/javelindata_variations_gatherables_collectibles.json",
     },
     Gatherable_Cyclic: <DataSheetUri<VariationDataGatherable>>{
       uri: "datatables/javelindata_variations_gatherables_cyclic.json",
@@ -3542,6 +4682,9 @@ export const DATASHEETS = {
     BaseVitals_Raid_CutlassKeys: <DataSheetUri<VitalsBaseData>>{
       uri: "datatables/vitalstables/raids/javelindata_basevitals_raid_cutlasskeys.json",
     },
+    BaseVitals_WorldBoss: <DataSheetUri<VitalsBaseData>>{
+      uri: "datatables/vitalstables/javelindata_basevitals_worldboss.json",
+    },
   },
   VitalsCategoryData: {
     VitalsCategories: <DataSheetUri<VitalsCategoryData>>{
@@ -3571,6 +4714,9 @@ export const DATASHEETS = {
     LevelVariantVitals_Player: <DataSheetUri<VitalsLevelVariantData>>{
       uri: "datatables/vitalstables/javelindata_levelvariantvitals_player.json",
     },
+    LevelVariantVitals_WorldBoss: <DataSheetUri<VitalsLevelVariantData>>{
+      uri: "datatables/vitalstables/javelindata_levelvariantvitals_worldboss.json",
+    },
     Vitals_Raid_CutlassKeys: <DataSheetUri<VitalsLevelVariantData>>{
       uri: "datatables/vitalstables/raids/javelindata_levelvariantvitals_raid_cutlasskeys.json",
     },
@@ -3587,7 +4733,7 @@ export const DATASHEETS = {
   },
   WarboardStatDefinitions: {
     ORWarboardStatDefinitions: <DataSheetUri<WarboardStatDefinitions>>{
-      uri: "datatables/javelindata_orwarboardaggregates.json",
+      uri: ["datatables/javelindata_ctfwarboardaggregates.json","datatables/javelindata_orwarboardaggregates.json"]
     },
     PvPArenaWarboardStatDefinitions: <DataSheetUri<WarboardStatDefinitions>>{
       uri: "datatables/javelindata_pvparenawarboardaggregates.json",
