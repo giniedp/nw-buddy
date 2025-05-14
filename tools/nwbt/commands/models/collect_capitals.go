@@ -261,14 +261,20 @@ func (c *Collector) CollectCapitals(glob string) {
 					case nwt.EncounterComponent:
 						nodeTranform := node.Transform
 						for _, timeline := range v.M_spawntimeline.Element {
-							for _, location := range timeline.M_spawnlocations.Element {
-								entity := game.FindEntityById(node.Slice, location.EntityId.Id)
-								if entity == nil {
-									continue
-								}
-								node.Transform = mat4.Multiply(nodeTranform, game.FindTransformMat4(entity))
+							if len(timeline.M_spawnlocations.Element) == 0 && timeline.M_count > 0 {
 								if !node.WalkAsset(timeline.M_aliasAsset) {
 									node.WalkAsset(timeline.M_sliceAsset)
+								}
+							} else {
+								for _, location := range timeline.M_spawnlocations.Element {
+									entity := game.FindEntityById(node.Slice, location.EntityId.Id)
+									if entity == nil {
+										continue
+									}
+									node.Transform = mat4.Multiply(nodeTranform, game.FindTransformMat4(entity))
+									if !node.WalkAsset(timeline.M_aliasAsset) {
+										node.WalkAsset(timeline.M_sliceAsset)
+									}
 								}
 							}
 						}

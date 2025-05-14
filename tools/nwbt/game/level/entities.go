@@ -233,14 +233,20 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 
 				tmpTm := node.Transform
 				for _, spawn := range v.M_spawntimeline.Element {
-					for _, location := range spawn.M_spawnlocations.Element {
-						entity := game.FindEntityById(node.Slice, location.EntityId.Id)
-						if entity == nil {
-							continue
-						}
-						node.Transform = mat4.Multiply(tmpTm, game.FindTransformMat4(entity))
+					if len(spawn.M_spawnlocations.Element) == 0 && spawn.M_count > 0 {
 						if !node.WalkAsset(spawn.M_aliasAsset) {
 							node.WalkAsset(spawn.M_sliceAsset)
+						}
+					} else {
+						for _, location := range spawn.M_spawnlocations.Element {
+							entity := game.FindEntityById(node.Slice, location.EntityId.Id)
+							if entity == nil {
+								continue
+							}
+							node.Transform = mat4.Multiply(tmpTm, game.FindTransformMat4(entity))
+							if !node.WalkAsset(spawn.M_aliasAsset) {
+								node.WalkAsset(spawn.M_sliceAsset)
+							}
 						}
 					}
 				}
