@@ -29,10 +29,10 @@
         @switch (previewType()) {
           @case ('3d') {
             <div class="h-full flex flex-row">
-              <nwb-game-viewer class="h-full flex-1">
+              <!-- <nwb-game-viewer class="h-full flex-1">
                 <nwb-game-viewer-stats slot="toolbar" />
                 <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
-              </nwb-game-viewer>
+              </nwb-game-viewer> -->
               <nwb-game-viewer class="h-full flex-1" engine="threejs">
                 <nwb-game-viewer-stats slot="toolbar" />
                 <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
