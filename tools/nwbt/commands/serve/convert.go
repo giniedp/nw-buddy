@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"image/png"
+	"log/slog"
 	"net/url"
 	"nw-buddy/tools/formats/adb"
 	"nw-buddy/tools/formats/azcs"
@@ -304,7 +305,26 @@ func convertSliceToModel(assets *game.Assets, file nwfs.File, target string, que
 
 	group := importer.AssetGroup{}
 	for _, entity := range level.LoadEntities(assets, file.Path(), mat4.Identity()) {
-		if entity.Model != "" {
+		if entity.Model == "" {
+			continue
+		}
+		if path.Ext(entity.Model) == ".cdf" {
+			cdfModel, err := assets.LoadCdf(entity.Model)
+			if err != nil {
+				slog.Warn("CDF not loaded", "file", entity.Model, "err", err)
+				continue
+			}
+
+			for _, mesh := range cdfModel.SkinAndClothAttachments() {
+				model, material := assets.ResolveCgfAndMtl(mesh.Binding, mesh.Material, entity.Material)
+				if model != "" {
+					group.Meshes = append(group.Meshes, importer.GeometryAsset{
+						GeometryFile: model,
+						MaterialFile: material,
+					})
+				}
+			}
+		} else {
 			group.Meshes = append(group.Meshes, importer.GeometryAsset{
 				Entity: importer.Entity{
 					Name:      entity.Name,
