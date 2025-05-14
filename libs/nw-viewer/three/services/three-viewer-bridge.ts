@@ -35,6 +35,7 @@ export class ThreeViewerBridge extends ViewerBridge {
   public readonly terrainConnected = new BehaviorSubject<boolean>(false)
   public readonly terrainEnabled = new BehaviorSubject<boolean>(false)
   public setTerrainEnabled(value: boolean): void {
+    this.terrainEnabled.next(value)
     this.level.setTerrainEnabled(value)
   }
 

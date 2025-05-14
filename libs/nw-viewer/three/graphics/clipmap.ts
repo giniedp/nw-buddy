@@ -26,6 +26,7 @@ export interface ClipmapOptions {
   tileSize: number
   levelName: string
   coarse: Clipmap
+  mountainHeight: number
 }
 
 export interface ClipmapTile {
@@ -90,7 +91,7 @@ export class Clipmap extends Object3D {
   private needsUpdate = true
   private loader: TextureLoader
   private coarse: Clipmap
-
+  private mountainHeight: number
   public constructor(options: ClipmapOptions) {
     super()
     this.index = options.index
@@ -100,6 +101,7 @@ export class Clipmap extends Object3D {
     this.levelName = options.levelName
     this.loader = new TextureLoader()
     this.coarse = options.coarse
+    this.mountainHeight = options.mountainHeight || 2048
 
     this.material = new ClipmapShaderMaterial()
     this.material.wireframe = false
@@ -153,6 +155,7 @@ export class Clipmap extends Object3D {
     this.material.coarseOrigin = this.coarse?.origin || this.origin
     this.material.coarseCenter = this.coarse?.center || this.center
     this.material.coarseBlend = this.coarse ? 1.0 : 0.0
+    this.material.clipHeight = this.mountainHeight
     this.material.clipTex1 = this.heightmap.texture
     this.material.clipTex2 = this.coarse?.heightmap.texture || null
   }
@@ -171,7 +174,7 @@ export class Clipmap extends Object3D {
     this.origin.x = cx + Math.floor(this.clipsize * 0.5) * this.density
     this.origin.y = cy - Math.floor(this.clipsize * 0.5) * this.density
 
-    this.position.set(cx, 0, cy)
+    this.position.set(cx, -1, cy)
     this.scale.set(this.density, 1, this.density)
     this.updateMatrix()
     this.needsUpdate = this.needsUpdate || this.delta.lengthSq() > 0

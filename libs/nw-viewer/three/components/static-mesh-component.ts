@@ -80,7 +80,6 @@ export class StaticMeshComponent implements GameComponent {
           this.onError.trigger()
         },
       })
-
   }
 
   public deactivate(): void {
@@ -162,7 +161,6 @@ export class StaticMeshComponent implements GameComponent {
     // this.createSphereHelper(this.instanceModel.boundingSphere)
     this.setWorldSphere(this.instanceModel.boundingSphere)
     this.setWorldBox(this.instanceModel.boundingBox)
-
   }
 
   private createBoxHelper(box: Box3, color?: number) {
@@ -258,6 +256,9 @@ function removeShadowObjects(node: Object3D) {
         // child.visible = false
         toRemove.push(child)
       }
+      if (isTestMesh(child.geometry?.userData?.['source'])) {
+        toRemove.push(child)
+      }
     }
   })
   for (const child of toRemove) {
@@ -280,4 +281,12 @@ function isShadow(name: string) {
   }
   name = name.toLowerCase()
   return name === 'shadow' || name.includes('shadoww_proxy')
+}
+
+function isTestMesh(source: string) {
+  if (!source) {
+    return false
+  }
+
+  return source.toLowerCase().includes('cube_1_meter')
 }

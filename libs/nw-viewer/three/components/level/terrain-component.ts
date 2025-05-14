@@ -14,6 +14,8 @@ export class TerrainComponent implements GameComponent {
   private data: TerrainInfo
   private clipmaps: Clipmap[] = []
   private scene: SceneProvider
+
+  public isActive = false
   public constructor(options: TerrainComponentOptions) {
     this.data = options.data
   }
@@ -27,8 +29,10 @@ export class TerrainComponent implements GameComponent {
     if (!this.data || !this.data.mipCount || this.data.oceanLevel < 0) {
       return null
     }
+
     this.clipmaps = []
     let coarse: Clipmap
+
     for (let i = this.data.mipCount - 1; i >= 0; i--) {
       const clipmap = new Clipmap({
         index: i,
@@ -36,6 +40,7 @@ export class TerrainComponent implements GameComponent {
         tileSize: this.data.tileSize,
         levelName: this.data.level,
         coarse,
+        mountainHeight: this.data.mountainHeight,
       })
       this.clipmaps.push(clipmap)
       this.scene.main.add(clipmap)
@@ -43,7 +48,6 @@ export class TerrainComponent implements GameComponent {
     }
     this.scene.renderer.onDraw.add(this.update)
     this.clipmaps.reverse() // update order from fine to coarse, so the near terrain is loaded first
-    console.log('clipmaps', this.clipmaps)
   }
 
   public deactivate(): void {
@@ -52,7 +56,7 @@ export class TerrainComponent implements GameComponent {
       clipmap.removeFromParent()
       clipmap.dispose()
     }
-    this.clipmaps = null
+    this.clipmaps = []
   }
 
   public destroy(): void {

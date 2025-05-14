@@ -46,7 +46,14 @@ export class LevelLoader implements GameService {
       return
     }
     this.terrainEnabled = value
-    // this.terrainEnabledObserver.notifyObservers(value)
+    const component = this.entity.component(TerrainComponent, true)
+    if (component && !value) {
+      component.deactivate()
+    }
+    if (component && value) {
+      component.deactivate()
+      component.activate()
+    }
   }
 
   public async loadLevel(name: string, mapName: string) {

@@ -35,7 +35,7 @@ export class CameraComponent implements GameComponent {
 
   private onFrame = () => {
     const pCam = this.camera as PerspectiveCamera
-    pCam.aspect = this.three.renderer.domElement.clientWidth / this.three.renderer.domElement.clientHeight
+    pCam.aspect = this.three.clientWidth / this.three.clientHeight
     pCam.updateProjectionMatrix()
   }
 }
