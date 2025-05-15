@@ -106,7 +106,7 @@ func (ctx *Scanner) ScanSliceComponentForData(slice *nwt.SliceComponent, source 
 				}
 			case nwt.StorageComponent:
 				ptr := v.BaseClass1.M_clientFacetPtr
-				if facet, ok := ptr.(nwt.StorageComponentClientFacet); ok && !bool(facet.M_showpreview) && bool(v.M_isplayeruniquestorage) {
+				if facet, ok := ptr.(nwt.StorageComponentClientFacet); ok && !bool(facet.M_showPreview) && bool(v.M_isPlayerUniqueStorage) {
 					data.StructureType = "Storage"
 				}
 			}
@@ -307,7 +307,7 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 					}
 				case nwt.StorageComponent:
 					ptr := v.BaseClass1.M_clientFacetPtr
-					if facet, ok := ptr.(nwt.StorageComponentClientFacet); ok && !bool(facet.M_showpreview) && bool(v.M_isplayeruniquestorage) {
+					if facet, ok := ptr.(nwt.StorageComponentClientFacet); ok && !bool(facet.M_showPreview) && bool(v.M_isPlayerUniqueStorage) {
 						result := SpawnNode{
 							Name:          findName(node),
 							StructureType: "Storage",
