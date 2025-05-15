@@ -181,3 +181,11 @@ func UnsafeHash(m Data) string {
 	}
 	return res
 }
+
+func PositionOf(m Data) nwt.AzVec3 {
+	return nwt.AzVec3{
+		nwt.AzFloat32(m[12]),
+		nwt.AzFloat32(m[13]),
+		nwt.AzFloat32(m[14]),
+	}
+}

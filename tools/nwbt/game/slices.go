@@ -17,14 +17,29 @@ type EntityWalker struct {
 }
 
 type EntityNode struct {
-	File       nwfs.File
-	Parent     *EntityNode
-	Slice      *nwt.SliceComponent
-	Entity     *nwt.AZ__Entity
-	Walker     *EntityWalker
-	Components []any
-	Transform  mat4.Data
-	Context    context.Context
+	File        nwfs.File
+	Parent      *EntityNode
+	Slice       *nwt.SliceComponent
+	Entity      *nwt.AZ__Entity
+	Walker      *EntityWalker
+	Components  []any
+	Transform   mat4.Data
+	Context     context.Context
+	HasChildren bool
+}
+
+func (it *EntityNode) ContextHasValue(key string) bool {
+	return it.Context.Value(key) != nil
+}
+
+func (it *EntityNode) ContextSetValue(key string, value any) {
+	it.Context = context.WithValue(it.Context, key, value)
+}
+
+func (it *EntityNode) ContextProvideIfMissing(key string, value any) {
+	if !it.ContextHasValue(key) {
+		it.Context = context.WithValue(it.Context, key, value)
+	}
 }
 
 func (it *EntityNode) ContextStr(key string) (string, bool) {
@@ -32,13 +47,30 @@ func (it *EntityNode) ContextStr(key string) (string, bool) {
 	return v, ok
 }
 
+func (it *EntityNode) ContextStrGet(key string) string {
+	v, _ := it.Context.Value(key).(string)
+	return v
+}
+
 func (it *EntityNode) ContextStrSet(key string, value string) {
 	it.Context = context.WithValue(it.Context, key, value)
+}
+
+func (it *EntityNode) ContextStrArrGet(key string) []string {
+	v, _ := it.Context.Value(key).([]string)
+	return v
 }
 
 func (it *EntityNode) ContextInt(key string) (int, bool) {
 	v, ok := it.Context.Value(key).(int)
 	return v, ok
+}
+
+func (it *EntityNode) ContextIntGet(key string) int {
+	if v, ok := it.Context.Value(key).(int); ok {
+		return v
+	}
+	return 0
 }
 
 func (it *EntityNode) ContextIntSet(key string, value int) {
@@ -52,6 +84,13 @@ func (it *EntityNode) ContextFloat(key string) (float32, bool) {
 
 func (it *EntityNode) ContextFloatSet(key string, value float32) {
 	it.Context = context.WithValue(it.Context, key, value)
+}
+
+func (it *EntityNode) ContextBoolGet(key string) bool {
+	if v, ok := it.Context.Value(key).(bool); ok {
+		return v
+	}
+	return false
 }
 
 func (it *EntityNode) WalkAsset(asset nwt.AzAsset) bool {
@@ -130,8 +169,16 @@ func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
 		slog.Error("can't load slice component", "error", err)
 		return
 	}
+	luTransforms := make(map[nwt.AzUInt64]mat4.Data)
+	luChildren := make(map[nwt.AzUInt64][]*nwt.AZ__Entity)
 	for entity := range EntitiesOf(component) {
-		transform := FindTransformMat4(entity)
+		transform, parentId := FindTransformMat4WithParentId(entity)
+		luTransforms[entity.Id.Id] = transform
+		luChildren[parentId] = append(luChildren[parentId], entity)
+	}
+
+	for entity := range EntitiesOf(component) {
+		transform := luTransforms[entity.Id.Id]
 		if parent != nil {
 			transform = mat4.Multiply(parent.Transform, transform)
 		}
@@ -140,14 +187,15 @@ func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
 			ctx = parent.Context
 		}
 		it.Visit(&EntityNode{
-			File:       file,
-			Parent:     parent,
-			Entity:     entity,
-			Slice:      component,
-			Transform:  transform,
-			Components: entity.Components.Element,
-			Walker:     it,
-			Context:    ctx,
+			File:        file,
+			Parent:      parent,
+			Entity:      entity,
+			Slice:       component,
+			Transform:   transform,
+			Components:  entity.Components.Element,
+			Walker:      it,
+			Context:     ctx,
+			HasChildren: len(luChildren[entity.Id.Id]) > 0,
 		})
 	}
 }

@@ -1,15 +1,4 @@
-import {
-  Component,
-  Injector,
-  TemplateRef,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-  untracked,
-  viewChild,
-} from '@angular/core'
+import { Component, Injector, TemplateRef, computed, inject, input, signal, viewChild } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
@@ -20,8 +9,7 @@ import { NwModule } from '~/nw'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { ExpressionTreeModule } from '~/ui/expression-tree'
 import { ModalService } from '~/ui/layout'
-import { TreeNodeComponent, TreeNodeToggleComponent } from '~/ui/tree'
-import { GameMapHost, GameMapLayerDirective, GameMapMouseTipDirective, GameMapPopupComponent } from '~/widgets/game-map'
+import { GameMapHost, GameMapLayerDirective, GameMapMouseTipDirective } from '~/widgets/game-map'
 import {
   ExpressionBranchKeyDirective,
   ExpressionBranchValueDirective,
@@ -51,11 +39,8 @@ import { ZoneMapStore } from './zone-map.store'
     ExpresssionBranchEditorComponent,
     FormsModule,
     GameMapLayerDirective,
-    GameMapPopupComponent,
     GameMapMouseTipDirective,
     NwModule,
-    TreeNodeComponent,
-    TreeNodeToggleComponent,
     VitalDetailModule,
     RouterModule,
   ],
@@ -101,19 +86,6 @@ export class MapFilterVitalsComponent {
     const data = this.data()
     return data.data[this.mapId()]?.data
   })
-
-  public constructor() {
-    effect(() => {
-      const hideRandom = !this.mapStore.showRandomEncounter()
-      const hideDarkness = !this.mapStore.showDarknessEncounter()
-      const hideGoblin = !this.mapStore.showGoblinEncounter()
-      untracked(() => {
-        this.store.setHideRandomEncounters(hideRandom)
-        this.store.setHideDarknessEncounters(hideDarkness)
-        this.store.setHideGoblinEncounters(hideGoblin)
-      })
-    })
-  }
 
   protected pickVitalId(input: ExpresssionBranchEditorComponent, index: number, value: string) {
     DataViewPicker.from({

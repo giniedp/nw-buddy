@@ -27,9 +27,6 @@ export interface ZoneMapState {
   showHeatmap?: boolean
   showLabels?: boolean
   showPOI?: boolean
-  showRandomEncounter?: boolean
-  showDarknessEncounter?: boolean
-  showGoblinEncounter?: boolean
 }
 
 export const ZoneMapStore = signalStore(
@@ -50,9 +47,6 @@ export const ZoneMapStore = signalStore(
     showHeatmap: true,
     showLabels: true,
     showPOI: true,
-    showRandomEncounter: false,
-    showDarknessEncounter: false,
-    showGoblinEncounter: false,
   }),
   withRedux({
     actions: {
@@ -120,15 +114,7 @@ export const ZoneMapStore = signalStore(
       setPOI(showPOI: boolean) {
         patchState(state, { showPOI })
       },
-      setRandomEncounter(value: boolean) {
-        patchState(state, { showRandomEncounter: value })
-      },
-      setDarknessEncounter(value: boolean) {
-        patchState(state, { showDarknessEncounter: value })
-      },
-      setGoblinEncounter(value: boolean) {
-        patchState(state, { showGoblinEncounter: value })
-      },
+
       setMap(mapId: string) {
         patchState(state, { mapId })
       },
