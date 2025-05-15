@@ -57,7 +57,7 @@ export interface FileSource {
   baseUrl: string
 
   path: string
-
+  ext: string
   textPath?: string
   textType?: string
   modelPath?: string
@@ -80,6 +80,7 @@ export class PakService {
     const stat: FileSource = {
       baseUrl: this.assetUrl('file/'),
       path: file,
+      ext: ext,
     }
     if (textTypes.includes(ext)) {
       stat.textPath = file
@@ -113,73 +114,4 @@ export class PakService {
     return this.assetUrl(`list/${pattern}`)
   }
 
-  public constructor() {
-    // this.extendEditor()
-  }
-
-  private async extendEditor() {
-    const monaco = await this.monaco.loadMonaco()
-    monaco.languages.registerCodeLensProvider('json', {
-
-      provideCodeLenses: (model, token) => {
-
-        const lenses: monaco.languages.CodeLens[] = []
-        for (let i = 0; i < model.getLineCount(); i++) {
-          const line = model.getLineContent(i + 1)
-          const indexAssetId = line.indexOf('sliceAssetId')
-          if (indexAssetId > 0) {
-            console.log('sliceAssetId', line)
-            lenses.push({
-              range: {
-                startLineNumber: i + 1,
-                startColumn: indexAssetId,
-                endLineNumber: i + 1,
-                endColumn: line.length,
-              },
-              id: "Asset",
-
-              command: {
-                id: "null",
-                title: "Asset",
-              },
-            })
-          }
-        }
-        return {
-          lenses: lenses,
-          dispose: () => {},
-        }
-      },
-      resolveCodeLens: function (model, codeLens, token) {
-        return codeLens;
-      },
-    })
-
-    monaco.languages.registerHoverProvider("json", {
-      provideHover: async (model, position) => {
-        const line = model.getLineContent(position.lineNumber)
-        console.log("hover", model, position, model.getValue())
-        return null
-        // return xhr("./playground.html").then(function (res) {
-        //   return {
-        //     range: new monaco.Range(
-        //       1,
-        //       1,
-        //       model.getLineCount(),
-        //       model.getLineMaxColumn(model.getLineCount())
-        //     ),
-        //     contents: [
-        //       { value: "**SOURCE**" },
-        //       {
-        //         value:
-        //           "```html\n" +
-        //           res.responseText.substring(0, 200) +
-        //           "\n```",
-        //       },
-        //     ],
-        //   };
-        // });
-      },
-    })
-  }
 }

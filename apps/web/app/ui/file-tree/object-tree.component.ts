@@ -10,16 +10,17 @@ import {
   viewChild,
 } from '@angular/core'
 import { IconsModule } from '~/ui/icons'
-import { svgFileCode, svgFolderOpen } from '~/ui/icons/svg'
+import { svgFileCode, svgFolder, svgFolderOpen } from '~/ui/icons/svg'
 
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling'
-import { FileTreeNode, FileTreeStore } from './file-tree.store'
+
+import { ObjectTreeAdapter, ObjectTreeNode, ObjectTreeStore } from './object-tree.store'
 
 @Component({
   standalone: true,
-  selector: 'nwb-file-tree',
+  selector: 'nwb-object-tree',
   imports: [IconsModule, ScrollingModule],
-  providers: [FileTreeStore],
+  providers: [ObjectTreeStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'block h-full',
@@ -58,23 +59,37 @@ import { FileTreeNode, FileTreeStore } from './file-tree.store'
     </cdk-virtual-scroll-viewport>
   `,
 })
-export class FileTreeComponent {
-  protected store = inject(FileTreeStore)
-  public files = input<string[]>()
+export class ObjectTreeComponent<T> {
+  protected store = inject(ObjectTreeStore)
+  public items = input<T[]>()
+  public adapter = input<ObjectTreeAdapter<T>>()
   public search = input<string>('')
-  public selected = output<FileTreeNode>()
+  public open = input<boolean>(false)
+  public selected = output<T>()
   public selection = input<string>()
   protected active = linkedSignal(() => this.selection())
 
-  protected folderIcon = svgFolderOpen
+  protected folderOpenIcon = svgFolderOpen
+  protected folderIcon = svgFolder
   protected fileIcon = svgFileCode
-  protected trackBy = (i: number, item: FileTreeNode) => item.id
+  protected trackBy = (i: number, item: ObjectTreeNode) => item.id
   protected viewport = viewChild(CdkVirtualScrollViewport)
 
   public constructor() {
     effect(() => {
-      const files = this.files()
-      untracked(() => this.store.load(files))
+      const items = this.items()
+      const adapter = this.adapter()
+      untracked(() => this.store.load(items, adapter))
+    })
+
+    effect(() => {
+      this.store.tree() // trigger update
+      const open = this.open()
+      untracked(() => {
+        if (open) {
+          this.store.expandAll()
+        }
+      })
     })
 
     effect(() => {
@@ -88,29 +103,31 @@ export class FileTreeComponent {
     })
 
     effect(() => {
-      this.store.search()
+      this.store.list()
       this.store.selection()
       untracked(() => this.scrollToSelection())
     })
   }
 
-  protected handleClick(item: FileTreeNode) {
-    this.active.set(item.id)
-    this.selected.emit(item)
-  }
-
-  protected handleToggle(item: FileTreeNode) {
+  protected handleToggle(item: ObjectTreeNode) {
     if (item.isDir) {
       this.store.toggle(item.id)
+    } else {
+      this.active.set(item.id)
+      this.selected.emit(item.object)
     }
   }
 
+  protected handleClick(item: ObjectTreeNode) {
+    this.active.set(item.id)
+    this.selected.emit(item.object)
+  }
+
   private scrollToSelection() {
-    console.log('scrollToSelection', this.store.selection())
     setTimeout(() => {
       this.viewport().checkViewportSize()
       setTimeout(() => {
-        const index = this.store.selectedIndex()
+        const index = this.store.selection()
         const range = this.viewport().getRenderedRange()
         if (index >= 0 && (index < range.start || index > range.end)) {
           const mid = Math.max(0, index - (range.end - range.start) / 2)

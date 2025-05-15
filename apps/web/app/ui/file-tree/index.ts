@@ -1,1 +1,4 @@
 export * from './file-tree.component'
+export * from './file-tree.store'
+export * from './object-tree.component'
+export * from './object-tree.store'

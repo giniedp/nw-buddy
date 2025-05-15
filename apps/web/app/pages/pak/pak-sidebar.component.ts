@@ -8,6 +8,7 @@ import { debounceTime, map } from 'rxjs'
 import { FileTreeComponent } from '~/ui/file-tree'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { PakService } from './pak.service'
+import { FileTreeNode } from '../../ui/file-tree/file-tree.store'
 
 @Component({
   standalone: true,
@@ -33,7 +34,7 @@ import { PakService } from './pak.service'
       </div>
     } @else {
       <nwb-file-tree
-        class="h-full font-mono px-2"
+        class="h-full px-2"
         [files]="files.value()"
         [search]="search()"
         [selection]="selection()"
@@ -51,9 +52,12 @@ export class PakSidebarComponent {
   private route = inject(ActivatedRoute)
 
   protected selection = toSignal(this.route.queryParams.pipe(map((it) => it['file'])))
-  protected handleFileSelection(file: string) {
+  protected handleFileSelection(file: FileTreeNode) {
+    if (file.isDir) {
+      return
+    }
     this.router.navigate(['.'], {
-      queryParams: { file },
+      queryParams: { file: file.id },
       queryParamsHandling: 'merge',
       relativeTo: this.route,
     })

@@ -1,36 +1,44 @@
 import { computed, effect } from '@angular/core'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 
-export interface FileTreeState {
-  search: SearchQuery
-  selectedIndex: number
-  selection: FileTreeNode
-  files: string[]
-  list: FileTreeNode[]
+export interface ObjectTreeState {
+  search: string
+  selection: number
+  objects: any[]
+  list: ObjectTreeNode[]
+  adapter: ObjectTreeAdapter<any>
 }
 
-export interface FileTreeNode {
+export interface ObjectTreeAdapter<T = any> {
+  parentId(item: T): string
+  id(item: T): string
+  name(item: T): string
+  match(item: T, search: string): boolean
+}
+
+export interface ObjectTreeNode<T = any> {
   id: string
   name: string
-  depth: number
   isDir: boolean
   isOpen: boolean
   isOpenWeak: boolean
   isHidden: boolean
   isSelected: boolean
-  children: FileTreeNode[]
+  children: ObjectTreeNode<T>[]
+  depth: number
+  object: any
 }
 
-export const FileTreeStore = signalStore(
-  withState<FileTreeState>({
+export const ObjectTreeStore = signalStore(
+  withState<ObjectTreeState>({
     search: null,
-    selectedIndex: -1,
-    selection: null,
-    files: [],
+    selection: -1,
+    objects: [],
     list: [],
+    adapter: null,
   }),
-  withComputed(({ files }) => {
-    const tree = computed(() => toTree(files()))
+  withComputed(({ objects, adapter }) => {
+    const tree = computed(() => toTree(objects(), adapter()))
     return {
       lookup: computed(() => tree().lookup),
       tree: computed(() => tree().roots),
@@ -40,28 +48,26 @@ export const FileTreeStore = signalStore(
   withMethods((state) => {
     return {
       update: () => {
-        const list = flatten(state.tree())
-        const selectedIndex = list.findIndex((it) => it.isSelected)
-        const selection = list[selectedIndex]
+        const list = flattenTree(state.tree())
+        const selection = list.findIndex((it) => it.isSelected)
         patchState(state, {
           list,
-          selectedIndex,
-          selection
+          selection,
         })
       },
-      load: (files: string[]) => {
-        patchState(state, { files })
+      load: <T>(items: T[], adapter: ObjectTreeAdapter<T>) => {
+        patchState(state, { objects: items, adapter })
       },
       filter: (search: string) => {
         patchState(state, { search: query(search) })
       },
     }
   }),
-  withHooks(({ tree, search, update }) => {
+  withHooks(({ tree, search, update, adapter }) => {
     return {
       onInit() {
         effect(() => {
-          applySearch(tree(), search(), true)
+          applySearch(tree(), search(), adapter())
           if (search()) {
             unfoldFirstVisible(tree())
           }
@@ -97,9 +103,9 @@ export const FileTreeStore = signalStore(
           update()
         }
       },
-      expandAll: (prefix: string) => {
+      expandAll: (prefix?: string) => {
         for (const id in lookup()) {
-          if (!id.startsWith(prefix)) {
+          if (prefix && !id.startsWith(prefix)) {
             continue
           }
           const node = lookup()[id]
@@ -122,23 +128,23 @@ export const FileTreeStore = signalStore(
   }),
 )
 
-function applySearch(items: FileTreeNode[], search: SearchQuery, recursive: boolean): boolean {
+function applySearch(items: ObjectTreeNode[], search: string, adapter: ObjectTreeAdapter): boolean {
   let didMatch = false
   for (const item of items) {
     item.isOpenWeak = false
     if (!item.children.length) {
       // apply search to leaf nodes
-      item.isHidden = !!search && !fileMatch(item, search)
+      item.isHidden = !!search && !matchQuery(item, search, adapter)
     } else {
       // propagate state up the tree
-      item.isHidden = !applySearch(item.children, search, recursive)
+      item.isHidden = !applySearch(item.children, search, adapter)
     }
     didMatch = didMatch || !item.isHidden
   }
   return didMatch
 }
 
-function clearSelection(tree: FileTreeNode[]) {
+function clearSelection(tree: ObjectTreeNode[]) {
   for (const item of tree) {
     item.isOpenWeak = false
     item.isSelected = false
@@ -146,7 +152,7 @@ function clearSelection(tree: FileTreeNode[]) {
   }
 }
 
-function applySelection(tree: FileTreeNode[], selection: string): boolean {
+function applySelection(tree: ObjectTreeNode[], selection: string): boolean {
   for (const item of tree) {
     if (item.id === selection) {
       item.isOpen = true
@@ -161,20 +167,14 @@ function applySelection(tree: FileTreeNode[], selection: string): boolean {
   return false
 }
 
-function query(search: string): SearchQuery {
+function query(search: string): string {
   if (!search) {
     return null
   }
-  search = search.toLowerCase()
-  const tokens = search.split('/')
-  return {
-    value: search,
-    tokens,
-    isFile: tokens[tokens.length - 1].includes('.'),
-  }
+  return search.toLowerCase()
 }
 
-function unfoldFirstVisible(tree: FileTreeNode[]): boolean {
+function unfoldFirstVisible(tree: ObjectTreeNode[]): boolean {
   for (const item of tree) {
     if (item.isHidden) {
       continue
@@ -190,40 +190,34 @@ function unfoldFirstVisible(tree: FileTreeNode[]): boolean {
   return false
 }
 
-interface SearchQuery {
-  value: string
-  tokens: string[]
-  isFile: boolean
-}
-
-function fileMatch(item: FileTreeNode, query: SearchQuery) {
+function matchQuery(item: ObjectTreeNode, query: string, adapter: ObjectTreeAdapter): boolean {
   if (!query) {
     return true
   }
-  // if (query.isFile && item.isDir) {
-  //   return false
-  // }
-  return item.id.includes(query.value)
+  if (adapter?.match) {
+    return adapter.match(item, query)
+  }
+  return item.name.includes(query)
 }
 
-function flatten(items: FileTreeNode[]) {
+function flattenTree(items: ObjectTreeNode[]) {
   if (!items) {
     return []
   }
-  const list: FileTreeNode[] = []
+  const list: ObjectTreeNode[] = []
   for (const item of items) {
     if (item.isHidden) {
       continue
     }
     list.push(item)
     if (item.isOpen || item.isOpenWeak) {
-      list.push(...flatten(item.children))
+      list.push(...flattenTree(item.children))
     }
   }
   return list
 }
 
-function sort(items: FileTreeNode[], deep: boolean) {
+function sortTree(items: ObjectTreeNode[], deep: boolean) {
   items.sort((a, b) => {
     if (a.isDir === b.isDir) {
       return a.name.localeCompare(b.name)
@@ -232,81 +226,64 @@ function sort(items: FileTreeNode[], deep: boolean) {
   })
   if (deep) {
     for (const item of items) {
-      sort(item.children, deep)
+      sortTree(item.children, deep)
     }
   }
   return items
 }
 
-function toTree(files: string[]) {
-  if (!files) {
+function toTree(objects: any[], adapter: ObjectTreeAdapter) {
+  if (!objects || !adapter) {
     return {
       lookup: {},
       roots: [],
     }
   }
-  files = files.map(normalize).sort()
-  const lookup: Record<string, FileTreeNode> = {}
-  const roots: FileTreeNode[] = []
 
-  for (const file of files) {
-    const tokens = file.split('/')
-    const fileName = tokens.pop()
+  const lookup: Record<string, ObjectTreeNode> = {}
+  const roots: ObjectTreeNode[] = []
 
-    let folder = []
-    for (const dir of tokens) {
-      const parentId = folder.join('/')
-      folder.push(dir)
-      const id = folder.join('/')
-      if (lookup[id]) {
-        continue
-      }
-      lookup[id] = {
-        id,
-        name: dir,
-        depth: folder.length,
-        isDir: true,
-        isOpen: false,
-        isOpenWeak: false,
-        isHidden: false,
-        isSelected: false,
-        children: [],
-      }
-      const parent = lookup[parentId]
-      if (parent) {
-        parent.children.push(lookup[id])
-      } else {
-        roots.push(lookup[id])
-      }
-    }
-    const parentId = folder.join('/')
-    const parent = lookup[parentId]
-    const node: FileTreeNode = {
-      id: file,
-      name: fileName,
-      depth: folder.length + 1,
+  for (const item of objects) {
+    const itemId = adapter.id(item)
+    lookup[itemId] = lookup[itemId] || {
+      id: itemId,
+      name: itemId,
+      object: null,
       isDir: false,
       isOpen: false,
       isOpenWeak: false,
       isHidden: false,
       isSelected: false,
+      depth: 0,
       children: [],
     }
-    if (parent) {
-      parent.children.push(node)
+    lookup[itemId].name = adapter.name(item)
+    lookup[itemId].object = item
+
+    const parentId = adapter.parentId(item)
+    if (parentId != null) {
+      lookup[parentId] = lookup[parentId] || {
+        id: parentId,
+        name: parentId,
+        object: null,
+        isDir: false,
+        isOpen: false,
+        isOpenWeak: false,
+        isHidden: false,
+        isSelected: false,
+        depth: 0,
+        children: [],
+      }
+      lookup[itemId].depth = lookup[parentId].depth + 1
+      lookup[parentId].isDir = true
+      lookup[parentId].children.push(lookup[itemId])
     } else {
-      roots.push(node)
+      roots.push(lookup[itemId])
     }
   }
+
   return {
     lookup,
-    roots: sort(roots, true),
+    roots: roots,
   }
-}
-
-function normalize(file: string): string {
-  return file
-    .replace(/[\\/]+/g, '/')
-    .toLowerCase()
-    .replace(/(^\/)|(\/$)/, '')
 }

@@ -6,6 +6,7 @@ import { FileTreeComponent } from '~/ui/file-tree'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { DatasheetsStore } from './datasheets.store'
+import { FileTreeNode } from '../../ui/file-tree'
 
 @Component({
   selector: 'nwb-datasheets-sidebar',
@@ -20,7 +21,7 @@ import { DatasheetsStore } from './datasheets.store'
       </ion-toolbar>
     </ion-header>
     <nwb-file-tree
-      class="h-full font-mono pt-4 pl-4 pb-4"
+      class="h-full font-mono"
       [files]="files()"
       [search]="search()"
       [selection]="selection()"
@@ -37,9 +38,12 @@ export class DatasheetsSidebarComponent {
   private route = inject(ActivatedRoute)
 
   protected selection = signal(this.route.snapshot.queryParams['file'])
-  protected handleFileSelection(file: string) {
+  protected handleFileSelection(file: FileTreeNode) {
+    if (file.isDir) {
+      return
+    }
     this.router.navigate(['.'], {
-      queryParams: { file: file },
+      queryParams: { file: file.id },
       queryParamsHandling: 'merge',
       relativeTo: this.route,
     })

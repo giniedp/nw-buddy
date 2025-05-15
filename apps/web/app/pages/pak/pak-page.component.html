@@ -25,42 +25,65 @@
       </ion-toolbar>
     </ion-header>
     @if (source(); as source) {
-      <ion-content [scrollY]="false">
-        @switch (previewType()) {
-          @case ('3d') {
-            <div class="h-full flex flex-row">
-              <!-- <nwb-game-viewer class="h-full flex-1">
-                <nwb-game-viewer-stats slot="toolbar" />
-                <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
-              </nwb-game-viewer> -->
-              <nwb-game-viewer class="h-full flex-1" engine="threejs">
-                <nwb-game-viewer-stats slot="toolbar" />
-                <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
-              </nwb-game-viewer>
-            </div>
-          }
-          @case ('txt') {
-            <nwb-code-editor
-              class="ion-page"
-              [nwbMonacoSliceExtension]=""
-              [ngModel]="textContent.value()"
-              [language]="source.textType"
-              [disabled]="true"
-              (fileClicked)="handleFileSelection($event.file, $event.newTab)"
+      <div class="flex flex-row h-full">
+        @if (outlineContent(); as outline) {
+          <div class="flex flex-col">
+            <nwb-object-tree
+              [items]="outline.items"
+              [adapter]="outline.adapter"
+              [open]="true"
+              class="h-full w-96 flex-fill"
+              (selected)="handleEntitySelection($event)"
             />
-          }
-          @case ('img') {
-            <picture class="block relative">
-              <img [src]="source.baseUrl + source.imagePath" class="object-scale-down" #img />
-              @if (img.naturalWidth) {
-                <span class="absolute top-0 left-0 p-2 font-mono">
-                  {{ img.naturalWidth }}x{{ img.naturalHeight }}
-                </span>
-              }
-            </picture>
-          }
+            @if (entityComponents(); as list) {
+              <div class="flex-none flex flex-col gap-1 bg-base-300 p-1">
+                <label>Components:</label>
+                @for (item of list; track $index) {
+                  <button class="btn btn-sm bt-ghost justify-start cursor-default" (click)="handleComponentSelection(item)">
+                    {{ item | nwHumanize }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
         }
-      </ion-content>
+        <ion-content [scrollY]="false">
+          <div class="flex flex-row h-full">
+            @switch (previewType()) {
+              @case ('3d') {
+                <!-- <nwb-game-viewer class="h-full flex-1">
+                  <nwb-game-viewer-stats slot="toolbar" />
+                  <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
+                </nwb-game-viewer> -->
+                <nwb-game-viewer class="h-full flex-1" engine="threejs">
+                  <nwb-game-viewer-stats slot="toolbar" />
+                  <nwb-game-viewer-model [url]="modelContent()[0].url" [rootUrl]="modelContent()[0].rootUrl" />
+                </nwb-game-viewer>
+              }
+              @case ('txt') {
+                <nwb-code-editor
+                  class="ion-page"
+                  [nwbMonacoSliceExtension]=""
+                  [ngModel]="textContent.value()"
+                  [language]="source.textType"
+                  [disabled]="true"
+                  (fileClicked)="handleFileSelection($event.file, $event.newTab)"
+                />
+              }
+              @case ('img') {
+                <picture class="block relative">
+                  <img [src]="source.baseUrl + source.imagePath" class="object-scale-down" #img />
+                  @if (img.naturalWidth) {
+                    <span class="absolute top-0 left-0 p-2 font-mono">
+                      {{ img.naturalWidth }}x{{ img.naturalHeight }}
+                    </span>
+                  }
+                </picture>
+              }
+            }
+          </div>
+        </ion-content>
+      </div>
     }
   </div>
 </ion-split-pane>

@@ -103,6 +103,9 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
             matrix: fromCryMatrix(item.transform),
             matrixIsWorld: true,
             maxDistance: item.maxViewDistance,
+            userData: {
+              item: item,
+            },
           }),
         )
         // TODO: implement skinned meshes
