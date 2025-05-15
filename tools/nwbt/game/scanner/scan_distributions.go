@@ -47,20 +47,19 @@ func (ctx *Scanner) ScanDistributionFile(file nwfs.File) iter.Seq[DistributionOu
 			if sliceFile == nil {
 				continue
 			}
-			for spawn := range ctx.ScanFileForSpawners(sliceFile, make([]string, 0)) {
+			for spawn := range ctx.ScanSlice(sliceFile) {
+				// for spawn := range ctx.ScanFileForSpawners(sliceFile, make([]string, 0)) {
 				item := DistributionOutput{}
 				if spawn.VariantID != "" {
 					item.Variant = &VariantEntry{
 						VariantID: spawn.VariantID,
 						Position:  nwt.AzVec3{spawn.Position[0] + nwt.AzFloat32(x), spawn.Position[1] + nwt.AzFloat32(y), 0},
-						Trace:     append(spawn.Trace, file.Path()),
 					}
 				}
 				if spawn.GatherableID != "" {
 					item.Gatherable = &GatherableEntry{
 						GatherableID: spawn.GatherableID,
 						Position:     nwt.AzVec3{spawn.Position[0] + nwt.AzFloat32(x), spawn.Position[1] + nwt.AzFloat32(y), 0},
-						Trace:        append(spawn.Trace, file.Path()),
 					}
 				}
 				if !yield(item) {

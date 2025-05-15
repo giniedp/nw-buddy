@@ -119,15 +119,17 @@ export class MapFilterCategoryComponent {
   protected lootTable = computed(() => this.data().lootTable)
   protected filter = computed((): FilterSpecification => {
     const filter: FilterSpecification[] = []
-    if (!this.mapStore.showRandomEncounter()) {
-      filter.push(['!', ['in', 'random', ['get', 'encounter']]])
-    }
-    if (!this.mapStore.showGoblinEncounter()) {
-      filter.push(['!', ['in', 'goblin', ['get', 'encounter']]])
-    }
-    if (!this.mapStore.showDarknessEncounter()) {
-      filter.push(['!', ['in', 'darkness', ['get', 'encounter']]])
-    }
+    // filter.push(['!=', 0, ['length', ['get', 'encounter']]])
+
+    // if (!this.mapStore.showRandomEncounter()) {
+    filter.push(['!', ['in', 'random', ['get', 'encounter']]])
+    // }
+    // if (!this.mapStore.showGoblinEncounter()) {
+    //   filter.push(['!', ['in', 'goblin', ['get', 'encounter']]])
+    // }
+    // if (!this.mapStore.showDarknessEncounter()) {
+    //   filter.push(['!', ['in', 'darkness', ['get', 'encounter']]])
+    // }
     if (!filter.length) {
       return null
     }
@@ -195,13 +197,6 @@ export class MapFilterCategoryComponent {
       [it.vitalID, it.lootTableID, it.loreID, it.gatherableID, it.variationID].join(),
     )
     this.hoverItems.set(uniqueItems)
-
-    // const lootTables = uniq(uniqueItems.map((it) => it.lootTableID)).filter((it) => !isLootTableEmpty(it))
-    // if (lootTables.length) {
-    //   this.mapHost.map.getCanvas().style.cursor = 'pointer'
-    // } else {
-    //   this.mapHost.map.getCanvas().style.cursor = 'help'
-    // }
   }
 
   protected handleMouseMove(features: Array<Feature<any, FilterFeatureProperties>>) {

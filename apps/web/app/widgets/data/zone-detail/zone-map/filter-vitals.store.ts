@@ -8,13 +8,29 @@ import { combineLatest, map } from 'rxjs'
 import { injectNwData } from '~/data'
 import { BranchExpression } from '~/ui/expression-branch'
 
+const KNOWN_ENCOUNTER_TYPES = [
+  '',
+  'random',
+  'darkness',
+  'goblin',
+  'siege',
+  'worldboss',
+  'springtide',
+  'worldevent',
+  'sandworm',
+  'hunt_the_hunter',
+  'dungeon',
+  'raid',
+  'trial',
+  'other',
+]
+
 export interface FilterVitalsState {
   levelMin: number
   levelMax: number
 
-  hideRandomEncounters: boolean
-  hideDarknessEncounters: boolean
-  hideGoblinEncounters: boolean
+  knownEncounterTypes: string[]
+  hideEncounter: string[]
 
   outerOperators: JoinOperator[]
 
@@ -73,9 +89,8 @@ export const FilterVitalsStore = signalStore(
   withState<FilterVitalsState>({
     levelMin: 1,
     levelMax: NW_MAX_ENEMY_LEVEL,
-    hideRandomEncounters: false,
-    hideDarknessEncounters: false,
-    hideGoblinEncounters: false,
+    knownEncounterTypes: KNOWN_ENCOUNTER_TYPES,
+    hideEncounter: [],
     outerOperators: [
       {
         value: 'all',
@@ -154,19 +169,32 @@ export const FilterVitalsStore = signalStore(
   }),
   withMethods((state) => {
     return {
-      setHideRandomEncounters(hide: boolean) {
-        patchState(state, {
-          hideRandomEncounters: hide,
+      toggleEncounter(type: string) {
+        patchState(state, ({ hideEncounter }) => {
+          if (hideEncounter.includes(type)) {
+            hideEncounter = hideEncounter.filter((it) => it !== type)
+          } else {
+            hideEncounter = [...hideEncounter, type]
+          }
+          return {
+            hideEncounter,
+          }
         })
       },
-      setHideDarknessEncounters(hide: boolean) {
-        patchState(state, {
-          hideDarknessEncounters: hide,
+      toggleAllEncounter() {
+        patchState(state, ({ hideEncounter, knownEncounterTypes }) => {
+          const hasValues = hideEncounter.length > 0
+          return {
+            hideEncounter: hasValues ? [] : [...knownEncounterTypes],
+          }
         })
       },
-      setHideGoblinEncounters(hide: boolean) {
-        patchState(state, {
-          hideGoblinEncounters: hide,
+      setAllEncounter(value: boolean) {
+        patchState(state, ({ knownEncounterTypes }) => {
+          const hideEncounter = value ? [...knownEncounterTypes] : []
+          return {
+            hideEncounter,
+          }
         })
       },
       setMinLevel(level: number) {
@@ -226,25 +254,32 @@ export const FilterVitalsStore = signalStore(
       poiTagsExpression,
       lootTagsExpression,
       categoriesExpression,
-      hideRandomEncounters,
-      hideDarknessEncounters,
-      hideGoblinEncounters,
+      hideEncounter,
+      knownEncounterTypes,
     }) => {
       return {
+        encounterTypes: computed(() => {
+          return knownEncounterTypes().map((id) => {
+            return {
+              id,
+              enabled: !hideEncounter().includes(id),
+            }
+          })
+        }),
         layerFilter: computed(() => {
           const result: FilterSpecification = [
             'all',
             ['>=', ['get', 'level'], levelMin()],
             ['<=', ['get', 'level'], levelMax()],
           ]
-          if (hideRandomEncounters()) {
-            result.push(['!', ['in', 'random', ['get', 'encounter']]])
-          }
-          if (hideDarknessEncounters()) {
-            result.push(['!', ['in', 'darkness', ['get', 'encounter']]])
-          }
-          if (hideGoblinEncounters()) {
-            result.push(['!', ['in', 'goblin', ['get', 'encounter']]])
+          if (hideEncounter()?.length) {
+            for (const type of hideEncounter()) {
+              if (type) {
+                result.push(['!', ['in', type, ['get', 'encounter']]])
+              } else {
+                result.push(['!=', 0, ['length', ['get', 'encounter']]])
+              }
+            }
           }
           const expressions = [
             idExpression(),

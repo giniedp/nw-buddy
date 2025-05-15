@@ -30,23 +30,42 @@
 </ng-template>
 
 <div class="flex flex-col gap-1 p-4">
-  <div class="join w-full">
-    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level min:</span>
-    <input
-      class="join-item input input-sm min-w-0 flex-1"
-      type="number"
-      [ngModel]="store.levelMin()"
-      (ngModelChange)="store.setMinLevel($event)"
-    />
-    <span class="join-item btn btn-sm btn-ghost pointer-events-none">Level max:</span>
-    <input
-      class="join-item input input-sm min-w-0 flex-1"
-      type="number"
-      [ngModel]="store.levelMax()"
-      (ngModelChange)="store.setMaxLevel($event)"
-    />
+  <div class="form-control">
+    <div class="label">
+      <span> Encounter</span>
+      <div class="join">
+        <button class="btn btn-sm" (click)="store.toggleAllEncounter()">Toggle</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-3 gap-1">
+      @for (row of store.encounterTypes(); track $index) {
+        <button class="btn btn-sm btn-primary" [class.grayscale]="!row.enabled" (click)="store.toggleEncounter(row.id)">
+          {{ row.id || 'no encounter' | nwHumanize }}
+        </button>
+      }
+    </div>
   </div>
-  <div>
+  <div class="form-control">
+    <div class="label">Level</div>
+    <div class="join w-full">
+      <span class="join-item btn btn-sm btn-ghost pointer-events-none">min</span>
+      <input
+        class="join-item input input-sm min-w-0 flex-1"
+        type="number"
+        [ngModel]="store.levelMin()"
+        (ngModelChange)="store.setMinLevel($event)"
+      />
+      <span class="join-item btn btn-sm btn-ghost pointer-events-none">max</span>
+      <input
+        class="join-item input input-sm min-w-0 flex-1"
+        type="number"
+        [ngModel]="store.levelMax()"
+        (ngModelChange)="store.setMaxLevel($event)"
+      />
+    </div>
+  </div>
+  <div class="form-control">
+     <div class="label">Tags</div>
     @let idExpression = store.idExpression();
     <nwb-expresssion-branch-input
       #idExpressionInput

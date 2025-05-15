@@ -102,6 +102,22 @@ func FindEntityParent(slice *nwt.SliceComponent, entity *nwt.AZ__Entity) *nwt.AZ
 	return nil
 }
 
+func HasEntityChildren(slice *nwt.SliceComponent, entity *nwt.AZ__Entity) bool {
+	if entity == nil {
+		return false
+	}
+	for _, it := range slice.Entities.Element {
+		parent := FindEntityParent(slice, &it)
+		if parent == nil {
+			continue
+		}
+		if parent.Id.Id == entity.Id.Id {
+			return true
+		}
+	}
+	return false
+}
+
 func FindTransform(entity *nwt.AZ__Entity) transform.Node {
 	if entity == nil {
 		return nil
@@ -130,6 +146,21 @@ func FindTransformMat4(entity *nwt.AZ__Entity) mat4.Data {
 		}
 	}
 	return mat4.Identity()
+}
+
+func FindTransformMat4WithParentId(entity *nwt.AZ__Entity) (mat4.Data, nwt.AzUInt64) {
+	if entity == nil {
+		return mat4.Identity(), 0
+	}
+	for _, component := range entity.Components.Element {
+		switch v := component.(type) {
+		case nwt.GameTransformComponent:
+			return mat4.FromAzTransform(v.M_worldTM), v.M_parentId.Id
+		case nwt.TransformComponent:
+			return mat4.FromAzTransform(v.Transform), v.Parent.Id
+		}
+	}
+	return mat4.Identity(), 0
 }
 
 func FindTransformFromRootMat4(entity *nwt.AZ__Entity) mat4.Data {
