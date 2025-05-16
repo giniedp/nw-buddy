@@ -10,7 +10,7 @@ import { map } from 'rxjs'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { GameViewerModule } from '~/widgets/game-viewer'
 import { ModelItemInfo, ModelViewerModule } from '~/widgets/model-viewer'
-import { ObjectTreeComponent } from '../../ui/file-tree'
+import { ObjectTreeComponent, ObjectTreeLabelDirective } from '../../ui/file-tree'
 import { IconsModule } from '../../ui/icons'
 import { svgCode, svgCubes, svgImage } from '../../ui/icons/svg'
 import { MonacoSliceExtensionDirective } from './monaco'
@@ -36,6 +36,7 @@ export type TabId = 'img' | 'txt' | '3d'
     IconsModule,
     MonacoSliceExtensionDirective,
     ObjectTreeComponent,
+    ObjectTreeLabelDirective,
     NwModule
   ],
   host: {
@@ -187,5 +188,18 @@ export class PakPageComponent {
         return
       }
     }
+  }
+
+  protected isEntityRuntimeActive(entity: Entity) {
+    return !!entity?.['isruntimeactive']
+  }
+
+  protected isEntityInTheWorld(entity: Entity) {
+    for (const component of entityComponentNames(entity)) {
+      if (component === 'PositionInTheWorldComponent') {
+        return true
+      }
+    }
+    return false
   }
 }

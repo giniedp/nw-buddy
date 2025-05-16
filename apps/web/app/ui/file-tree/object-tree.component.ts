@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  contentChild,
   effect,
   inject,
   input,
@@ -15,11 +16,13 @@ import { svgFileCode, svgFolder, svgFolderOpen } from '~/ui/icons/svg'
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling'
 
 import { ObjectTreeAdapter, ObjectTreeNode, ObjectTreeStore } from './object-tree.store'
+import { ObjectTreeLabelDirective } from './object-tree-label.directive'
+import { NgTemplateOutlet } from '@angular/common'
 
 @Component({
   standalone: true,
   selector: 'nwb-object-tree',
-  imports: [IconsModule, ScrollingModule],
+  imports: [IconsModule, ScrollingModule, NgTemplateOutlet],
   providers: [ObjectTreeStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -40,7 +43,6 @@ import { ObjectTreeAdapter, ObjectTreeNode, ObjectTreeStore } from './object-tre
           }
           <button
             class="join-item btn btn-sm bt-ghost w-full justify-start no-animation flex-nowrap pl-1"
-
             [class.text-primary]="item.id === active()"
             (click)="handleClick(item)"
             (dblclick)="handleToggle(item)"
@@ -50,8 +52,17 @@ import { ObjectTreeAdapter, ObjectTreeNode, ObjectTreeStore } from './object-tre
             @if (!item.isDir) {
               <nwb-icon [icon]="fileIcon" class="w-5 h-5" />
             }
-            <span class="block opacity-80 group-hover:opacity-100 whitespace-nowrap text-nowrap overflow-hidden text-ellipsis">
-              {{ item.name }}
+            <span
+              class="block opacity-80 group-hover:opacity-100 whitespace-nowrap text-nowrap overflow-hidden text-ellipsis"
+            >
+              @if (tplLabel()) {
+                <ng-container
+                  [ngTemplateOutlet]="tplLabel().template"
+                  [ngTemplateOutletContext]="{ $implicit: item.object }"
+                />
+              } @else {
+                {{ item.name }}
+              }
             </span>
           </button>
         </div>
@@ -68,6 +79,7 @@ export class ObjectTreeComponent<T> {
   public selected = output<T>()
   public selection = input<string>()
   protected active = linkedSignal(() => this.selection())
+  protected tplLabel = contentChild(ObjectTreeLabelDirective)
 
   protected folderOpenIcon = svgFolderOpen
   protected folderIcon = svgFolder

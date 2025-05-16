@@ -34,7 +34,17 @@
               [open]="true"
               class="h-full w-96 flex-fill"
               (selected)="handleEntitySelection($event)"
-            />
+            >
+              <ng-template [nwbObjectTreeLabel] let-item>
+                {{ item.name }}
+                @if (isEntityInTheWorld(item)) {
+                  <span class="badge badge-xs badge-primary tooltip" data-tip="Has PositionInTheWorld component"></span>
+                }
+                @if (!isEntityRuntimeActive(item)) {
+                  <span class="badge badge-xs badge-error tooltip" data-tip="isRuntimeActive is false"></span>
+                }
+              </ng-template>
+            </nwb-object-tree>
             @if (entityComponents(); as list) {
               <div class="flex-none flex flex-col gap-1 bg-base-300 p-1">
                 <label>Components:</label>
