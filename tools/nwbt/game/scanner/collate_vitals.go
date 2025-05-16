@@ -139,8 +139,19 @@ func CollateVitals(
 
 	models := make([]ScannedVitalModel, 0)
 	for _, model := range modelsMap {
+		slices.Sort(model.VitalIds)
+		slices.Sort(model.Tags)
 		models = append(models, *model)
 	}
+	slices.SortFunc(models, func(a, b ScannedVitalModel) int {
+		if a.Cdf != b.Cdf {
+			return strings.Compare(a.Cdf, b.Cdf)
+		}
+		if a.Mtl != b.Mtl {
+			return strings.Compare(a.Mtl, b.Mtl)
+		}
+		return strings.Compare(a.Id, b.Id)
+	})
 
 	records := maps.NewDict[*ScannedVital]()
 	for recordID, b1 := range index.SortedIter() {
