@@ -42,7 +42,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 		result = append(result, entity)
 	}
 
-	visitSlice := func(node *game.EntityNode) {
+	visitSlice := func(node *game.SliceNode) {
 		transform := mat4.Multiply(rootTransform, node.Transform)
 
 		isEncounterTree := false
@@ -290,7 +290,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 	return result
 }
 
-func ResolveVitalSpawnInfo(assets *game.Assets, node *game.EntityNode) *VitalSpawnInfo {
+func ResolveVitalSpawnInfo(assets *game.Assets, node *game.SliceNode) *VitalSpawnInfo {
 	result := VitalSpawnInfo{}
 	vitalsID, _ := node.ContextStr(keyVitalsId)
 	categoryId, _ := node.ContextStr(keyVitalsCategory)

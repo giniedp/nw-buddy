@@ -82,7 +82,7 @@ func (c *Collector) CollectCapitals(glob string) {
 				slog.Error("file not found", "slice", cap.SliceName)
 				continue
 			}
-			c.WalkSlice(file, func(node *game.EntityNode) {
+			c.WalkSlice(file, func(node *game.SliceNode) {
 				for _, component := range node.Components {
 					switch v := component.(type) {
 					case nwt.LightComponent:

@@ -10,98 +10,96 @@ import (
 	"path"
 )
 
-type EntityWalker struct {
-	Assets    *Assets
-	Visit     func(node *EntityNode)
-	VisitMeta func(node *MetaDataNode)
+type SliceWalker struct {
+	Assets *Assets
+	Visit  func(node *SliceNode)
 }
 
-type EntityNode struct {
-	File        nwfs.File
-	Parent      *EntityNode
-	Slice       *nwt.SliceComponent
-	Entity      *nwt.AZ__Entity
-	Walker      *EntityWalker
-	Components  []any
-	Transform   mat4.Data
-	Context     context.Context
-	HasChildren bool
+type SliceNode struct {
+	File       nwfs.File
+	Parent     *SliceNode
+	Slice      *nwt.SliceComponent
+	Entity     *nwt.AZ__Entity
+	Walker     *SliceWalker
+	Components []any
+	Transform  mat4.Data
+	Context    context.Context
 }
 
-func (it *EntityNode) ContextHasValue(key string) bool {
+func (it *SliceNode) ContextHasValue(key string) bool {
 	return it.Context.Value(key) != nil
 }
 
-func (it *EntityNode) ContextSetValue(key string, value any) {
+func (it *SliceNode) ContextSetValue(key string, value any) {
 	it.Context = context.WithValue(it.Context, key, value)
 }
 
-func (it *EntityNode) ContextProvideIfMissing(key string, value any) {
+func (it *SliceNode) ContextProvideIfMissing(key string, value any) {
 	if !it.ContextHasValue(key) {
 		it.Context = context.WithValue(it.Context, key, value)
 	}
 }
 
-func (it *EntityNode) ContextStr(key string) (string, bool) {
+func (it *SliceNode) ContextStr(key string) (string, bool) {
 	v, ok := it.Context.Value(key).(string)
 	return v, ok
 }
 
-func (it *EntityNode) ContextStrGet(key string) string {
+func (it *SliceNode) ContextStrGet(key string) string {
 	v, _ := it.Context.Value(key).(string)
 	return v
 }
 
-func (it *EntityNode) ContextStrSet(key string, value string) {
+func (it *SliceNode) ContextStrSet(key string, value string) {
 	it.Context = context.WithValue(it.Context, key, value)
 }
 
-func (it *EntityNode) ContextStrArrGet(key string) []string {
+func (it *SliceNode) ContextStrArrGet(key string) []string {
 	v, _ := it.Context.Value(key).([]string)
 	return v
 }
 
-func (it *EntityNode) ContextInt(key string) (int, bool) {
+func (it *SliceNode) ContextInt(key string) (int, bool) {
 	v, ok := it.Context.Value(key).(int)
 	return v, ok
 }
 
-func (it *EntityNode) ContextIntGet(key string) int {
+func (it *SliceNode) ContextIntGet(key string) int {
 	if v, ok := it.Context.Value(key).(int); ok {
 		return v
 	}
 	return 0
 }
 
-func (it *EntityNode) ContextIntSet(key string, value int) {
+func (it *SliceNode) ContextIntSet(key string, value int) {
 	it.Context = context.WithValue(it.Context, key, value)
 }
 
-func (it *EntityNode) ContextFloat(key string) (float32, bool) {
+func (it *SliceNode) ContextFloat(key string) (float32, bool) {
 	v, ok := it.Context.Value(key).(float32)
 	return v, ok
 }
 
-func (it *EntityNode) ContextFloatSet(key string, value float32) {
+func (it *SliceNode) ContextFloatSet(key string, value float32) {
 	it.Context = context.WithValue(it.Context, key, value)
 }
 
-func (it *EntityNode) ContextBoolGet(key string) bool {
+func (it *SliceNode) ContextBoolGet(key string) bool {
 	if v, ok := it.Context.Value(key).(bool); ok {
 		return v
 	}
 	return false
 }
 
-func (it *EntityNode) WalkAsset(asset nwt.AzAsset) bool {
+func (it *SliceNode) WalkAsset(asset nwt.AzAsset) bool {
 	return it.Walker.WalkAsset(it, asset)
 }
 
-func (it *EntityNode) Walk(file nwfs.File) {
+func (it *SliceNode) Walk(file nwfs.File) {
 	it.Walker.Walk(it, file)
 }
 
-func (it *EntityNode) isCircle(file nwfs.File) bool {
+func (it *SliceNode) isCircle(file nwfs.File) bool {
 	if it.File != nil && it.File.Path() == file.Path() {
 		return true
 	}
@@ -111,7 +109,7 @@ func (it *EntityNode) isCircle(file nwfs.File) bool {
 	return false
 }
 
-func (it *EntityWalker) WalkAsset(parent *EntityNode, asset nwt.AzAsset) bool {
+func (it *SliceWalker) WalkAsset(parent *SliceNode, asset nwt.AzAsset) bool {
 	file, err := it.Assets.LookupFileByAsset(asset)
 	if err != nil {
 		return false
@@ -133,7 +131,7 @@ func (it *EntityWalker) WalkAsset(parent *EntityNode, asset nwt.AzAsset) bool {
 	case ".dynamicslice":
 		it.Walk(parent, file)
 	case ".aliasasset":
-		aliasParent := EntityNode{
+		aliasParent := SliceNode{
 			File:   file,
 			Walker: it,
 		}
@@ -160,7 +158,7 @@ func (it *EntityWalker) WalkAsset(parent *EntityNode, asset nwt.AzAsset) bool {
 	return true
 }
 
-func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
+func (it *SliceWalker) Walk(parent *SliceNode, file nwfs.File) {
 	if parent != nil && parent.isCircle(file) {
 		return
 	}
@@ -169,122 +167,71 @@ func (it *EntityWalker) Walk(parent *EntityNode, file nwfs.File) {
 		slog.Error("can't load slice component", "error", err)
 		return
 	}
-	luTransforms := make(map[nwt.AzUInt64]mat4.Data)
-	luChildren := make(map[nwt.AzUInt64][]*nwt.AZ__Entity)
-	for entity := range EntitiesOf(component) {
-		transform, parentId := FindTransformMat4WithParentId(entity)
-		luTransforms[entity.Id.Id] = transform
-		luChildren[parentId] = append(luChildren[parentId], entity)
-	}
+	tree := EntityTree(component)
 
-	for entity := range EntitiesOf(component) {
-		transform := luTransforms[entity.Id.Id]
-		if parent != nil {
-			transform = mat4.Multiply(parent.Transform, transform)
-		}
-		ctx := context.Background()
-		if parent != nil {
-			ctx = parent.Context
-		}
-		it.Visit(&EntityNode{
-			File:        file,
-			Parent:      parent,
-			Entity:      entity,
-			Slice:       component,
-			Transform:   transform,
-			Components:  entity.Components.Element,
-			Walker:      it,
-			Context:     ctx,
-			HasChildren: len(luChildren[entity.Id.Id]) > 0,
-		})
+	ctx := context.Background()
+	if parent != nil {
+		ctx = parent.Context
 	}
+	parentTransform := mat4.Identity()
+	if parent != nil {
+		parentTransform = parent.Transform
+	}
+	WalkEntityTree(tree, func(node *EntityTreeNode) {
+		node.Transform2 = mat4.Multiply(parentTransform, node.Transform)
+
+		if node.Parent == nil {
+			node.Context = ctx
+		} else {
+			node.Context = node.Parent.Context
+		}
+
+		it.Visit(&SliceNode{
+			File:       file,
+			Parent:     parent,
+			Entity:     node.Entity,
+			Slice:      component,
+			Transform:  node.Transform2,
+			Components: node.Entity.Components.Element,
+			Walker:     it,
+			Context:    ctx,
+		})
+	})
+
+	// luTransforms := make(map[nwt.AzUInt64]mat4.Data)
+	// luChildren := make(map[nwt.AzUInt64][]*nwt.AZ__Entity)
+	// for entity := range EntitiesOf(component) {
+	// 	transform, parentId := FindTransformMat4WithParentId(entity)
+	// 	luTransforms[entity.Id.Id] = transform
+	// 	luChildren[parentId] = append(luChildren[parentId], entity)
+	// }
+
+	// for entity := range EntitiesOf(component) {
+	// 	transform := luTransforms[entity.Id.Id]
+	// 	if parent != nil {
+	// 		transform = mat4.Multiply(parent.Transform, transform)
+	// 	}
+	// 	ctx := context.Background()
+	// 	if parent != nil {
+	// 		ctx = parent.Context
+	// 	}
+	// 	it.Visit(&EntityNode{
+	// 		File:       file,
+	// 		Parent:     parent,
+	// 		Entity:     entity,
+	// 		Slice:      component,
+	// 		Transform:  transform,
+	// 		Components: entity.Components.Element,
+	// 		Walker:     it,
+	// 		Context:    ctx,
+	// 	})
+	// }
 }
 
-func (it *Assets) WalkSlice(file nwfs.File, visit func(node *EntityNode)) {
-	walker := &EntityWalker{
+func (it *Assets) WalkSlice(file nwfs.File, visit func(node *SliceNode)) {
+	walker := &SliceWalker{
 		Assets: it,
 		Visit:  visit,
 	}
 	walker.Walk(nil, file)
-}
-
-type MetaDataWalker struct {
-	Assets *Assets
-	Visit  func(node *MetaDataNode)
-}
-
-type MetaDataNode struct {
-	File      nwfs.File
-	Parent    *MetaDataNode
-	MetaData  *nwt.SliceMetaData
-	Transform mat4.Data
-}
-
-func (it *MetaDataWalker) Walk(parent *MetaDataNode, file nwfs.File, recursive bool) bool {
-	if path.Ext(file.Path()) != ".dynamicslice" {
-		slog.Warn("not a dynamicslice file", "file", file.Path())
-		return false
-	}
-
-	metaFile, _ := it.Assets.Archive.Lookup(utils.ReplaceExt(file.Path(), ".slice.meta"))
-	if metaFile == nil {
-		slog.Warn("slice meta file not found", "file", file.Path())
-		return false
-	}
-
-	data, err := it.Assets.LoadObjectStream(metaFile)
-	if err != nil {
-		slog.Error("slice meta not loaded", "error", err, "file", file.Path())
-		return false
-	}
-
-	meta, ok := data.(nwt.SliceMetaData)
-	if !ok {
-		slog.Error("slice meta not loaded", "file", file.Path())
-		return false
-	}
-
-	transform := mat4.Identity()
-	if parent != nil {
-		transform = mat4.Multiply(parent.Transform, transform)
-	}
-	it.Visit(&MetaDataNode{
-		File:      file,
-		Parent:    parent,
-		MetaData:  &meta,
-		Transform: transform,
-	})
-
-	if !recursive {
-		return true
-	}
-
-	for _, element := range meta.Spawners.Element {
-		spawnFile := it.Assets.ResolveDynamicSliceByName(string(element.Slicename))
-		if spawnFile == nil {
-			spawnFile, err = it.Assets.LookupFileByAssetId(element.Sliceassetid)
-			if err != nil {
-				slog.Error("slice asset not loaded", "error", err, "file", file.Path())
-			}
-		}
-		if spawnFile == nil {
-			continue
-		}
-
-		it.Walk(&MetaDataNode{
-			File:      file,
-			Parent:    parent,
-			MetaData:  &meta,
-			Transform: mat4.Multiply(transform, mat4.FromAzTransform(element.Worldtm)),
-		}, spawnFile, recursive)
-	}
-	return true
-}
-
-func (it *Assets) WalkSliceMeta(file nwfs.File, visit func(node *MetaDataNode), recursive bool) bool {
-	walker := &MetaDataWalker{
-		Assets: it,
-		Visit:  visit,
-	}
-	return walker.Walk(nil, file, recursive)
 }

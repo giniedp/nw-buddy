@@ -86,7 +86,7 @@ func (c *Collector) collectPrefabPath(sliceFile string) importer.AssetGroup {
 		return group
 	}
 
-	c.WalkSlice(file, func(node *game.EntityNode) {
+	c.WalkSlice(file, func(node *game.SliceNode) {
 		for _, component := range node.Components {
 			switch v := component.(type) {
 			case nwt.MeshComponent:

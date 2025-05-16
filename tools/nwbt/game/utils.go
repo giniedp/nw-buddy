@@ -1,6 +1,7 @@
 package game
 
 import (
+	"context"
 	"fmt"
 	"iter"
 	"nw-buddy/tools/formats/azcs"
@@ -222,4 +223,62 @@ func ParseRegionLocation(regionName string) *[2]int {
 	x, _ := strconv.Atoi(match[1])
 	y, _ := strconv.Atoi(match[2])
 	return &[2]int{x, y}
+}
+
+type EntityTreeNode struct {
+	Parent     *EntityTreeNode
+	Entity     *nwt.AZ__Entity
+	Transform  mat4.Data // as it was found in the file
+	Transform2 mat4.Data // computed hierarchy transform
+	Children   []*EntityTreeNode
+	Context    context.Context
+}
+
+func EntityTree(slice *nwt.SliceComponent) []*EntityTreeNode {
+	roots := make([]*EntityTreeNode, 0)
+	lookup := make(map[nwt.AzUInt64]*EntityTreeNode)
+	for entity := range EntitiesOf(slice) {
+		entityId := entity.Id.Id
+		if _, ok := lookup[entity.Id.Id]; !ok {
+			lookup[entityId] = &EntityTreeNode{
+				Transform: mat4.Identity(),
+				Children:  make([]*EntityTreeNode, 0),
+				Context:   context.Background(),
+			}
+		}
+
+		transform, parentId := FindTransformMat4WithParentId(entity)
+		if _, ok := lookup[parentId]; !ok {
+			lookup[parentId] = &EntityTreeNode{
+				Transform: mat4.Identity(),
+				Children:  make([]*EntityTreeNode, 0),
+				Context:   context.Background(),
+			}
+		}
+
+		lookup[entityId].Entity = entity
+		lookup[entityId].Transform = transform
+		lookup[parentId].Children = append(lookup[parentId].Children, lookup[entityId])
+		if parent := FindEntityParent(slice, entity); parent == nil {
+			roots = append(roots, lookup[entityId])
+		} else {
+			lookup[entityId].Parent = lookup[parent.Id.Id]
+		}
+	}
+
+	WalkEntityTree(roots, func(node *EntityTreeNode) {
+		if node.Parent != nil {
+			node.Transform2 = mat4.Multiply(node.Parent.Transform2, node.Transform)
+		} else {
+			node.Transform2 = node.Transform
+		}
+	})
+	return roots
+}
+
+func WalkEntityTree(tree []*EntityTreeNode, visit func(node *EntityTreeNode)) {
+	for _, node := range tree {
+		visit(node)
+		WalkEntityTree(node.Children, visit)
+	}
 }

@@ -140,7 +140,7 @@ type SpawnNode struct {
 	Trace          []any
 }
 
-func findName(node *game.EntityNode) string {
+func findName(node *game.SliceNode) string {
 	for _, component := range node.Components {
 		switch v := component.(type) {
 		case nwt.NameComponent:
@@ -172,7 +172,7 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 			return
 		}
 
-		ctx.Assets.WalkSlice(file, func(node *game.EntityNode) {
+		ctx.Assets.WalkSlice(file, func(node *game.SliceNode) {
 			hasVital := false
 			hasGatherable := false
 			hasVariant := false
