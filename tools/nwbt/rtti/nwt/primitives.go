@@ -40,9 +40,8 @@ var PRIMITIVES = map[string]reflect.Type{
 	"3D80F623-C85C-4741-90D0-E4E66164E6BF": reflect.TypeOf(AzVec2{}),
 	"8379EB7D-01FA-4538-B64B-A6543B4BE73D": reflect.TypeOf(AzVec3{}),
 	"73103120-3DD3-4873-BAB3-9713FA2804FB": reflect.TypeOf(AzQuat{}),
-
-	// technically not a primitive, but has simple enough structure
-	// "6383F1D3-BB27-4E6B-A49A-6409B2059EAA": reflect.TypeOf((*AzEntityId)(nil)),
+	// technically not a primitive, but has simple enough structure. need custom json marshalling due to 64 bit
+	// "6383F1D3-BB27-4E6B-A49A-6409B2059EAA": reflect.TypeOf(EntityId{}),
 }
 
 // unknown and unmapped primitives
@@ -90,6 +89,10 @@ type AzAsset struct {
 type AzUuid string
 type AzString string
 type AzUnknown []byte
+
+// type EntityId struct {
+// 	Id AzUInt64 `crc:"3208210256"`
+// }
 
 func (it *AzString) Deserialize(el *azcs.Element) error {
 	*it = AzString(el.Data)
@@ -266,6 +269,12 @@ func (it *AzUInt64) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	*it = AzUInt64(v)
 	return nil
+}
+
+func (v AzUInt64) MarshalJSON() ([]byte, error) {
+	// mainly for entity ids which are 64 bit and loos precision in js world
+	s := fmt.Sprintf("%d", v)
+	return []byte(`"` + s + `"`), nil
 }
 
 func (it *AzFloat32) Deserialize(el *azcs.Element) error {
@@ -558,3 +567,22 @@ func (it *AzTransform) DeserializeXml(el *azcs.XmlElement) error {
 	it.Data = res
 	return nil
 }
+
+// func (it *EntityId) Deserialize(el *azcs.Element) error {
+// 	if len(el.Elements) != 1 {
+// 		return fmt.Errorf("expected one child element but found: %d", len(el.Elements))
+// 	}
+// 	return it.Id.Deserialize(el.Elements[0])
+// }
+
+// func (it *EntityId) DeserializeXml(el *azcs.XmlElement) error {
+// 	if len(el.Elements) != 1 {
+// 		return fmt.Errorf("expected one child element but found: %d", len(el.Elements))
+// 	}
+// 	return it.Id.DeserializeXml(el.Elements[0])
+// }
+
+// func (v EntityId) MarshalJSON() ([]byte, error) {
+// 	strId := fmt.Sprintf("%d", v.Id)
+// 	return []byte(`"` + strId + `"`), nil
+// }
