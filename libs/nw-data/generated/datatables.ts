@@ -2091,9 +2091,6 @@ export const DATASHEETS = {
     WB_Mammoth_FL_Mahantaram_DamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/worldboss_datatables/javelindata_damagetable_wb_mammoth_fl_mahantaram.json",
     },
-    WispyWaspDamageTable: <DataSheetUri<DamageData>>{
-      uri: "datatables/charactertables/wispywaspswarm_datatables/javelindata_damagetable_wispy_wasp_swarm.json",
-    },
     WitheredBeetleDamageTable: <DataSheetUri<DamageData>>{
       uri: "datatables/charactertables/witheredbeetle_datatables/javelindata_damagetable_witheredbeetle.json",
     },

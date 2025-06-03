@@ -401,7 +401,7 @@ function isPerkActive({ slot, perk, item }: ActivePerk, weapon: ActiveWeapon) {
 }
 
 export function selectEquppedAttributes(
-  { attrCon, attrDex, attrFoc, attrInt, attrStr }: DbSlice,
+  { attrCon, attrDex, attrFoc, attrInt, attrStr, abilities, effects }: DbSlice,
   { perks }: AttributeModsSource,
 ) {
   const result: Record<AttributeRef, number> = {
@@ -427,6 +427,34 @@ export function selectEquppedAttributes(
     result.foc += Math.floor((affix.MODFocus || 0) * scale)
     result.int += Math.floor((affix.MODIntelligence || 0) * scale)
     result.str += Math.floor((affix.MODStrength || 0) * scale)
+
+    for (const abilityId of perk.EquipAbility || []) {
+      const ability = abilities.get(abilityId)
+      if (!ability) {
+        continue
+      }
+      for (const effectId of ability.OnEquipStatusEffect || []) {
+        const effect = effects.get(effectId)
+        if (!effect) {
+          continue
+        }
+        if (effect.MODConstitution) {
+          result.con += Math.floor(effect.MODConstitution)
+        }
+        if (effect.MODDexterity) {
+          result.dex += Math.floor(effect.MODDexterity)
+        }
+        if (effect.MODFocus) {
+          result.foc += Math.floor(effect.MODFocus)
+        }
+        if (effect.MODIntelligence) {
+          result.int += Math.floor(effect.MODIntelligence)
+        }
+        if (effect.MODStrength) {
+          result.str += Math.floor(effect.MODStrength)
+        }
+      }
+    }
   }
   return result
 }
@@ -602,7 +630,7 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof AbilityData> = [
   'OnFatalDamageTaken',
   'OnDeath',
   'OnDeathsDoor',
-  'OnEquipStatusEffect',
+  //'OnEquipStatusEffect',
   'OnEventConditionalActivationChance',
   'OnEventPassiveConditionsPass',
   'OnExecuted',

@@ -62,7 +62,7 @@ func LoadRegionDefinition(archive nwfs.Archive, levelName, regionName string) Re
 
 			if chunkFile, ok := archive.Lookup(strings.TrimSuffix(file.Path(), ".capitals.json") + ".chunks"); ok {
 				obj, _ := game.LoadObjectStream(chunkFile)
-				if chunks, ok := obj.(nwt.UUID_AC608BE6_77F3_5AF5_A7A9_607621389D91); ok {
+				if chunks, ok := obj.(nwt.GridGenericAsset_AssetData__); ok {
 					layer.Chunks = chunks.Chunks.Element
 				}
 			}

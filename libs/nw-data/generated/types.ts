@@ -2309,9 +2309,9 @@ export interface GameModeMapData {
   GameModeId: string
   GameModeMapId: string
   NavGenerationEnabled: boolean
-  PauseTimeOfDay: boolean
+  PauseTimeOfDay: string
   ProjectedAZothComputeUnits: number
-  ProjectedMemoryUseMb: number
+  ProjectedMemoryUseMb: string
   SlicePath: string
   TeamTeleportData: string
   TeamTeleportFormationData: string
@@ -9185,7 +9185,6 @@ export type CraftingCategory =
   | 'SummerMedleyfaire'
   | 'TerritoryContribution'
   | 'TimelessShards'
-  | 'Tokens'
   | 'Tools'
   | 'TrialNamedReplicas'
   | 'Trinkets'
@@ -17004,7 +17003,6 @@ export type VitalsCategory =
   | 'WB_Scarab_BS_LotusScarab_Sun'
   | 'Waterfowl'
   | 'Waterfowl_40'
-  | 'Wispy_Wasp_Swarm'
   | 'Withered'
   | 'Withered_Beetle'
   | 'Withered_Beetle_ELITE'
