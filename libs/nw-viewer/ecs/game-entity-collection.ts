@@ -45,7 +45,7 @@ export class GameEntityCollection {
     this.clear()
   }
 
-  public create(name?: string, id?: number) {
+  public create(name?: string, id?: number | string) {
     const entity = new GameEntity()
     entity.name = name
     entity.id = id

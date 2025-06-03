@@ -10,14 +10,14 @@ import (
 )
 
 const (
-	keyVitalsId       = "vitalsId"
-	keyVitalsLevel    = "vitalsLevel"
-	keyVitalsCategory = "vitalsCategory"
-	keyEncounterName  = "encounterName"
-	keyEncounterStage = "encounterStage"
-	keyDamageTable    = "damageTable"
-	keyAdbFile        = "adbFile"
-	keyTags           = "tags"
+	ctxVitalsId         = "vitalsId"
+	ctxVitalsLevel      = "vitalsLevel"
+	ctxVitalsCategoryId = "vitalsCategory"
+	ctxEncounter        = "encounter"
+	ctxEncounterName    = "encounterName"
+	ctxSpawnerName      = "encounterStage"
+	ctxDamageTable      = "damageTable"
+	ctxAdbFile          = "adbFile"
 )
 
 func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data) []EntityInfo {
@@ -29,12 +29,12 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 	result := make([]EntityInfo, 0)
 	contained := make(map[string]bool)
 	pushEntity := func(entity EntityInfo) {
-		if entity.ID == 0 || entity.Name == "" {
+		if entity.ID == "" || entity.ID == "0" || entity.Name == "" {
 			result = append(result, entity)
 			return
 		}
 
-		key := fmt.Sprintf("%s-%d-%s-%s-%d-%v", entity.File, entity.ID, entity.Name, entity.Model, entity.ModelInstance, entity.Transform)
+		key := fmt.Sprintf("%s-%s-%s-%s-%d-%v", entity.File, entity.ID, entity.Name, entity.Model, entity.ModelInstance, entity.Transform)
 		if _, ok := contained[key]; ok {
 			return
 		}
@@ -45,13 +45,8 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 	visitSlice := func(node *game.SliceNode) {
 		transform := mat4.Multiply(rootTransform, node.Transform)
 
-		isEncounterTree := false
-		if _, ok := node.ContextStr(keyEncounterName); ok {
-			isEncounterTree = true
-		}
-		if _, ok := node.ContextStr(keyEncounterStage); ok {
-			isEncounterTree = true
-		}
+		encounter, _ := node.ContextStr(ctxEncounter)
+		encounterName, isEncounterTree := node.ContextStr(ctxEncounterName)
 
 		isVital := false
 		for _, component := range node.Components {
@@ -62,24 +57,24 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 				facet := v.BaseClass1.M_serverFacetPtr
 				switch f := facet.(type) {
 				case nwt.AIVariantProviderComponentServerFacet:
-					if _, ok := node.ContextStr(keyVitalsId); !ok && (f.M_vitalstablerowid != "") {
-						node.ContextStrSet(keyVitalsId, string(f.M_vitalstablerowid))
+					if f.M_vitalstablerowid != "" {
+						node.ContextProvideIfMissing(ctxVitalsId, string(f.M_vitalstablerowid))
 					}
-					if _, ok := node.ContextInt(keyVitalsLevel); !ok && (f.M_vitalslevel != 0) {
-						node.ContextIntSet(keyVitalsLevel, int(f.M_vitalslevel))
+					if f.M_vitalscategorytablerowid != "" {
+						node.ContextProvideIfMissing(ctxVitalsCategoryId, string(f.M_vitalscategorytablerowid))
 					}
-					if _, ok := node.ContextStr(keyVitalsCategory); !ok && (f.M_vitalscategorytablerowid != "") {
-						node.ContextStrSet(keyVitalsCategory, string(f.M_vitalscategorytablerowid))
+					if f.M_vitalslevel != 0 {
+						node.ContextProvideIfMissing(ctxVitalsLevel, int(f.M_vitalslevel))
 					}
-					if _, ok := node.ContextStr(keyVitalsCategory); !ok && (f.M_vitalscategorytablerowid != "") {
-						node.ContextStrSet(keyVitalsCategory, string(f.M_vitalscategorytablerowid))
-					}
+					// if f.M_useterritoryleveloverride {
+					//   node.ContextProvideIfMissing(ctxVitalsTerritoryLevel, bool(f.M_useterritoryleveloverride))
+					// }
 				}
 			case nwt.VitalsComponent:
 				// at this point we can create a vitals instance
 				isVital = true
-				if _, ok := node.ContextStr(keyVitalsId); !ok && (v.M_rowreference != "") {
-					node.ContextStrSet(keyVitalsId, string(v.M_rowreference))
+				if v.M_rowreference != "" {
+					node.ContextProvideIfMissing(ctxVitalsId, string(v.M_rowreference))
 				}
 			case nwt.InstancedMeshComponent:
 				if isEncounterTree {
@@ -116,7 +111,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 				model, material = assets.ResolveCgfAndMtl(model, material)
 				for i, instance := range v.Instanced_mesh_render_node.Instance_transforms.Element {
 					pushEntity(EntityInfo{
-						ID:              uint(node.Entity.Id.Id),
+						ID:              fmt.Sprintf("%d", node.Entity.Id.Id),
 						Name:            string(node.Entity.Name),
 						File:            node.File.Path(),
 						Transform:       mat4.Multiply(transform, mat4.FromAzTransform(instance)),
@@ -124,7 +119,8 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 						ModelInstance:   i,
 						Material:        material,
 						MaxViewDistance: float32(meshNode.Render_Options.MaxViewDistance),
-						// Options:   meshNode.Render_Options,
+						Encounter:       encounter,
+						EncounterName:   encounterName,
 					})
 				}
 			case nwt.SkinnedMeshComponent:
@@ -153,7 +149,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 					material = materialFile.Path()
 				}
 				pushEntity(EntityInfo{
-					ID:              uint(node.Entity.Id.Id),
+					ID:              fmt.Sprintf("%d", node.Entity.Id.Id),
 					Name:            string(node.Entity.Name),
 					File:            node.File.Path(),
 					Transform:       transform,
@@ -161,17 +157,13 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 					Material:        material,
 					MaxViewDistance: float32(meshNode.Render_Options.MaxViewDistance),
 					Vital:           ResolveVitalSpawnInfo(assets, node),
+					Encounter:       encounter,
+					EncounterName:   encounterName,
 				})
 			case nwt.MeshComponent:
-				if isEncounterTree {
-					// don't send encounter models to the client to reduce model count
-					continue
-				}
 
 				meshNode := v.Static_Mesh_Render_Node
 				if !meshNode.Visible {
-					// || !v.Load_Mesh_On_Activate
-					// TODO: what is Load_Mesh_On_Activate exactly for?
 					continue
 				}
 				modelAsset := meshNode.Static_Mesh
@@ -197,60 +189,44 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 
 				model, material = assets.ResolveCgfAndMtl(model, material)
 				pushEntity(EntityInfo{
-					ID:              uint(node.Entity.Id.Id),
+					ID:              fmt.Sprintf("%d", node.Entity.Id.Id),
 					Name:            string(node.Entity.Name),
 					File:            node.File.Path(),
 					Transform:       mat4.Multiply(mat4.Identity(), transform),
 					Model:           model,
 					Material:        material,
 					MaxViewDistance: float32(meshNode.Render_Options.MaxViewDistance),
+					Encounter:       encounter,
+					EncounterName:   encounterName,
 				})
 			case nwt.SpawnerComponent:
-				if facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.SpawnerComponentServerFacet); ok {
-					if !node.WalkAsset(facet.M_aliasAsset) {
-						node.WalkAsset(facet.M_sliceAsset)
-					}
+				facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.SpawnerComponentServerFacet)
+				if !ok {
+					continue
 				}
-			case nwt.PrefabSpawnerComponent:
-				if !node.WalkAsset(v.M_aliasAsset) {
-					node.WalkAsset(v.M_sliceAsset)
+				assets := make([]nwt.AzAsset, 0)
+				assets = utils.AppendUniqNoZero(assets, facet.M_sliceAsset)
+				assets = utils.AppendUniqNoZero(assets, facet.M_aliasAsset)
+				for _, asset := range assets {
+					node.WalkAsset(asset)
 				}
 			case nwt.PointSpawnerComponent:
-				if !node.WalkAsset(v.BaseClass1.M_aliasAsset) {
-					node.WalkAsset(v.BaseClass1.M_sliceAsset)
+				assets := make([]nwt.AzAsset, 0)
+				assets = utils.AppendUniqNoZero(assets, v.BaseClass1.M_sliceAsset)
+				assets = utils.AppendUniqNoZero(assets, v.BaseClass1.M_aliasAsset)
+				for _, asset := range assets {
+					node.WalkAsset(asset)
 				}
-			case nwt.EncounterManagerComponent:
-				isEncounterTree = true
-				// TODO: handle encounter manager with encounter spawners
-				//   for _, stage := range v.M_stages.Element {
-				//     entity := FindEntityById(node.Slice, stage.EntityId.Id)
-				//     if entity == nil {
-				//       continue
-				//     }
-				//   }
-			case nwt.EncounterComponent:
-				isEncounterTree = true
-
-				tmpTm := node.Transform
-				for _, spawn := range v.M_spawntimeline.Element {
-					if len(spawn.M_spawnlocations.Element) == 0 && spawn.M_count > 0 {
-						if !node.WalkAsset(spawn.M_aliasAsset) {
-							node.WalkAsset(spawn.M_sliceAsset)
-						}
-					} else {
-						for _, location := range spawn.M_spawnlocations.Element {
-							entity := game.FindEntityById(node.Slice, location.EntityId.Id)
-							if entity == nil {
-								continue
-							}
-							node.Transform = mat4.Multiply(tmpTm, game.FindTransformMat4(entity))
-							if !node.WalkAsset(spawn.M_aliasAsset) {
-								node.WalkAsset(spawn.M_sliceAsset)
-							}
-						}
-					}
+			case nwt.PrefabSpawnerComponent:
+				// if variantId := string(v.M_sliceVariant); variantId != "" {
+				//   node.ContextProvideIfMissing(ctxVariantId, variantId)
+				// }
+				assets := make([]nwt.AzAsset, 0)
+				assets = utils.AppendUniqNoZero(assets, v.M_sliceAsset)
+				assets = utils.AppendUniqNoZero(assets, v.M_aliasAsset)
+				for _, asset := range assets {
+					node.WalkAsset(asset)
 				}
-				node.Transform = tmpTm
 			case nwt.AreaSpawnerComponent:
 				facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.AreaSpawnerComponentServerFacet)
 				if !ok {
@@ -263,8 +239,37 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 						continue
 					}
 					node.Transform = mat4.Multiply(tmpTm, game.FindTransformMat4(entity))
-					if !node.WalkAsset(facet.M_aliasAsset) {
-						node.WalkAsset(facet.M_sliceAsset)
+					assets := make([]nwt.AzAsset, 0)
+					assets = utils.AppendUniqNoZero(assets, facet.M_sliceAsset)
+					assets = utils.AppendUniqNoZero(assets, facet.M_aliasAsset)
+					for _, asset := range assets {
+						node.WalkAsset(asset)
+					}
+				}
+				node.Transform = tmpTm
+			case nwt.EncounterManagerComponent:
+				tmpTm := node.Transform
+				node.ContextSetValue(ctxEncounter, string(node.Entity.Name))
+				node.ContextSetValue(ctxEncounterName, game.ParseEncounterName(string(node.Entity.Name)))
+				for _, spawn := range game.WalkEncounterSpawns(node.Slice, v.M_stages.Element) {
+					assets := make([]nwt.AzAsset, 0)
+					assets = utils.AppendUniqNoZero(assets, spawn.M_sliceAsset)
+					assets = utils.AppendUniqNoZero(assets, spawn.M_aliasAsset)
+					if len(spawn.M_spawnlocations.Element) == 0 && spawn.M_count > 0 {
+						for _, asset := range assets {
+							node.WalkAsset(asset)
+						}
+					} else {
+						for _, location := range spawn.M_spawnlocations.Element {
+							entity := game.FindEntityById(node.Slice, location.EntityId.Id)
+							if entity == nil {
+								continue
+							}
+							node.Transform = mat4.Multiply(tmpTm, game.FindTransformMat4(entity))
+							for _, asset := range assets {
+								node.WalkAsset(asset)
+							}
+						}
 					}
 				}
 				node.Transform = tmpTm
@@ -275,11 +280,12 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 		if isVital {
 			if vital := ResolveVitalSpawnInfo(assets, node); vital != nil {
 				pushEntity(EntityInfo{
-					ID:        uint(node.Entity.Id.Id),
+					ID:        fmt.Sprintf("%d", node.Entity.Id.Id),
 					Name:      string(node.Entity.Name),
 					File:      node.File.Path(),
 					Transform: mat4.Multiply(mat4.Identity(), transform),
 					Vital:     vital,
+					Encounter: encounterName,
 				})
 			}
 		}
@@ -292,9 +298,9 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 
 func ResolveVitalSpawnInfo(assets *game.Assets, node *game.SliceNode) *VitalSpawnInfo {
 	result := VitalSpawnInfo{}
-	vitalsID, _ := node.ContextStr(keyVitalsId)
-	categoryId, _ := node.ContextStr(keyVitalsCategory)
-	vitalsLevel, _ := node.ContextInt(keyVitalsLevel)
+	vitalsID, _ := node.ContextStr(ctxVitalsId)
+	categoryId, _ := node.ContextStr(ctxVitalsCategoryId)
+	vitalsLevel, _ := node.ContextInt(ctxVitalsLevel)
 
 	for _, component := range node.Components {
 		switch v := component.(type) {

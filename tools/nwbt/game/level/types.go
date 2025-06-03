@@ -165,7 +165,7 @@ type TimeOfDayVariable struct {
 }
 
 type EntityInfo struct {
-	ID              uint            `json:"id"`
+	ID              string          `json:"id"`
 	Name            string          `json:"name"`
 	File            string          `json:"file"`
 	Transform       mat4.Data       `json:"transform"`
@@ -175,7 +175,8 @@ type EntityInfo struct {
 	Instances       []mat4.Data     `json:"instances,omitempty"`
 	Light           *LightInfo      `json:"light,omitempty"`
 	Vital           *VitalSpawnInfo `json:"vital,omitempty"`
-	Encounter       *EncounterInfo  `json:"encounter,omitempty"`
+	Encounter       string          `json:"encounter,omitempty"`
+	EncounterName   string          `json:"encounterName,omitempty"`
 	MaxViewDistance float32         `json:"maxViewDistance,omitempty,omitzero"`
 	Options         any             `json:"options"`
 	Layer           string          `json:"layer,omitempty"`

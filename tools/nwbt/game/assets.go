@@ -3,8 +3,10 @@ package game
 import (
 	"log/slog"
 	"nw-buddy/tools/formats/catalog"
+	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils/progress"
+	"strings"
 	"sync"
 )
 
@@ -58,4 +60,18 @@ func (it *Assets) FindPrefabPathForAmmoId(ammoId string) string {
 		}
 	}
 	return ""
+}
+
+func (it *Assets) FindTableRow(tableName string, idKey string, id string) *datasheet.JSONRow {
+	for sheet := range it.EachDatasheet() {
+		if !strings.EqualFold(sheet.Table, tableName) {
+			continue
+		}
+		for _, row := range sheet.RowsAsJSON() {
+			if strings.EqualFold(row.GetString(idKey), id) {
+				return &row
+			}
+		}
+	}
+	return nil
 }

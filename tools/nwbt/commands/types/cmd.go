@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"go/format"
 	"log/slog"
 	"nw-buddy/tools/nwfs"
@@ -128,6 +129,29 @@ func runScan(ccmd *cobra.Command, args []string) {
 		crcTable.Merge(lvlCrc)
 	}
 
+	{
+		mixedTypeFile := path.Join(flgOutputDir, "mixed-types.json")
+		mixedTypeData, err := os.ReadFile(mixedTypeFile)
+		mixedTypes := make([]MixedType, 0)
+		if err != nil {
+			slog.Warn("Failed to read mixed types file", "file", mixedTypeFile, "error", err)
+		}
+		if err := json.Unmarshal(mixedTypeData, &mixedTypes); err != nil {
+			slog.Warn("Failed to parse mixed types file", "file", mixedTypeFile, "error", err)
+		}
+
+		for _, item := range mixedTypes {
+			if !uidTable.Has(item.TypeId) {
+				uidTable.Put(item.TypeId, item.Name)
+			}
+			for _, elem := range item.Elements {
+				if !crcTable.HasName(elem.Name) {
+					crcTable.PutName(elem.Name)
+				}
+			}
+		}
+	}
+
 	outFile := path.Join(flgOutputDir, "types.json")
 	typeTable := utils.Must(scanObjects(fs, uidTable, crcTable))
 	if err := typeTable.SaveJson(outFile); err != nil {
@@ -143,4 +167,15 @@ func runGenerate(ccmd *cobra.Command, args []string) {
 	code := table.GenerateCode()
 	formatted := utils.Must(format.Source([]byte(code)))
 	os.WriteFile(path.Join(flgOutputDir, "generated.go"), formatted, os.ModePerm)
+}
+
+type MixedType struct {
+	Name     string             `json:"name"`
+	TypeId   string             `json:"typeId"`
+	Version  string             `json:"version"`
+	Elements []MixedTypeElement `json:"elements"`
+}
+type MixedTypeElement struct {
+	Name   string `json:"name"`
+	TypeId string `json:"typeId"`
 }

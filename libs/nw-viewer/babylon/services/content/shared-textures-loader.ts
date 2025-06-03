@@ -29,8 +29,8 @@ export class ShareTexturesExtension implements GLTF2.IGLTFLoaderExtension {
   public constructor(loader: GLTF2.GLTFLoader) {
     this.loader = loader
     const options = loader.parent.extensionOptions[SHARED_TEXTURES_EXTENSION_NAME] as any as ShareTextureOptions
-    this.enabled = options.enabled
-    this.textures = options.textures
+    this.enabled = options?.enabled
+    this.textures = options?.textures
   }
 
   _loadTextureAsync?(

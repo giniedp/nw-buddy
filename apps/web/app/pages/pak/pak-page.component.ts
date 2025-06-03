@@ -37,7 +37,7 @@ export type TabId = 'img' | 'txt' | '3d'
     MonacoSliceExtensionDirective,
     ObjectTreeComponent,
     ObjectTreeLabelDirective,
-    NwModule
+    NwModule,
   ],
   host: {
     class: 'ion-page flex flex-row',
@@ -150,39 +150,62 @@ export class PakPageComponent {
     this.scrollToComponent(this.selectedEntity(), name)
   }
 
-  private scrollToEntity(item: Entity) {
+  private findEntityStart(item: Entity): { line: number; column: number } {
     const id = item?.id?.id
     const editor = this.editor()?.editor()
     if (!editor || !id) {
-      return
+      return null
     }
     const model = editor.getModel()
-    const matches = model.findMatches(`"id":\\s*${id}`, false, true, false, null, false)
-    if (matches.length > 0) {
-      const match = matches[0]
-      editor.setPosition({ column: match.range.startColumn, lineNumber: match.range.startLineNumber })
-      editor.revealLineNearTop(match.range.startLineNumber)
+
+    // looking for this shape
+    //    "__type": "AZ::Entity",
+    //    "id": {
+    //      "__type": "EntityId",
+    //      "id": "5625285448014657717"
+    //    },
+    //
+    // - find lines with: "__type": "AZ::Entity"
+    // - check line+3 for "id": ...
+
+    const azEntityMatch = model.findMatches(`"__type":\\s*"AZ::Entity"`, false, true, false, null, false)
+    for (const match of azEntityMatch) {
+      const line = model.getLineContent(match.range.startLineNumber + 3)
+      if (!line.match(`"id":\\s*"${id}"`)) {
+        continue
+      }
+      return {
+        line: match.range.startLineNumber,
+        column: match.range.startColumn,
+      }
+    }
+    return null
+  }
+
+  private scrollToEntity(item: Entity) {
+    const range = this.findEntityStart(item)
+    if (!range) {
       return
     }
+    const editor = this.editor()?.editor()
+    editor.setPosition({ column: range.column, lineNumber: range.line })
+    editor.revealLineNearTop(range.line)
   }
 
   private scrollToComponent(item: Entity, component: string) {
-    const id = item?.id?.id
+    const entityRange = this.findEntityStart(item)
+    if (!entityRange) {
+      return
+    }
+
     const editor = this.editor()?.editor()
-    if (!editor || !id) {
-      return
-    }
     const model = editor.getModel()
-    const range1 = model.findMatches(`"id":\\s*${id}`, false, true, false, null, false)?.[0]?.range
-    if (!range1) {
-      return
-    }
     const matches = model.findMatches(`"__type":\\s*"${component}"`, false, true, false, null, false)
     if (!matches.length) {
       return
     }
     for (const match of matches) {
-      if (match.range.startLineNumber > range1.startLineNumber) {
+      if (match.range.startLineNumber > entityRange.line) {
         editor.setPosition({ column: match.range.startColumn, lineNumber: match.range.startLineNumber })
         editor.revealLineNearTop(match.range.startLineNumber)
         return

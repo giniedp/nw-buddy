@@ -106,14 +106,20 @@ export class ThreeWASDComponent implements GameComponent {
     const mouse = this.three.mouse
     const node = this.target.node
 
-    if (mouse.wheelDelta < 0) {
-      this.moveSpeed += this.moveSpeedStep
-    }
-    if (mouse.wheelDelta > 0) {
-      this.moveSpeed -= this.moveSpeedStep
+    if (
+      keyboard.isPressed(KeyboardKey.ControlLeft) ||
+      keyboard.isPressed(KeyboardKey.ControlRight) ||
+      keyboard.isPressed(KeyboardKey.MetaLeft) ||
+      keyboard.isPressed(KeyboardKey.MetaRight)
+    ) {
+      if (mouse.wheelDelta < 0) {
+        this.moveSpeed += this.moveSpeedStep
+      }
+      if (mouse.wheelDelta > 0) {
+        this.moveSpeed -= this.moveSpeedStep
+      }
     }
     this.moveSpeed = Math.min(this.moveSpeedMax, Math.max(this.moveSpeedMin, this.moveSpeed))
-
 
     let isMoving = false
     this.translation.set(0, 0, 0)
@@ -159,7 +165,8 @@ export class ThreeWASDComponent implements GameComponent {
       node.translateOnAxis(this.direction, this.currentMoveSpeed * (dt / 1000.0))
     }
 
-    const isMouseDown = (this.mouseButton === 0 && mouse.leftButtonIsPressed) || (this.mouseButton !== 0 && mouse.rightButtonIsPressed)
+    const isMouseDown =
+      (this.mouseButton === 0 && mouse.leftButtonIsPressed) || (this.mouseButton !== 0 && mouse.rightButtonIsPressed)
     if (!this.isMouseDown && isMouseDown) {
       this.startX = mouse.xNormalized
       this.startY = mouse.yNormalized

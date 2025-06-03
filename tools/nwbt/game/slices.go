@@ -167,6 +167,9 @@ func (it *SliceWalker) Walk(parent *SliceNode, file nwfs.File) {
 		slog.Error("can't load slice component", "error", err)
 		return
 	}
+
+	ApplyVariationData(it.Assets, component)
+
 	tree := EntityTree(component)
 
 	ctx := context.Background()
@@ -197,35 +200,6 @@ func (it *SliceWalker) Walk(parent *SliceNode, file nwfs.File) {
 			Context:    ctx,
 		})
 	})
-
-	// luTransforms := make(map[nwt.AzUInt64]mat4.Data)
-	// luChildren := make(map[nwt.AzUInt64][]*nwt.AZ__Entity)
-	// for entity := range EntitiesOf(component) {
-	// 	transform, parentId := FindTransformMat4WithParentId(entity)
-	// 	luTransforms[entity.Id.Id] = transform
-	// 	luChildren[parentId] = append(luChildren[parentId], entity)
-	// }
-
-	// for entity := range EntitiesOf(component) {
-	// 	transform := luTransforms[entity.Id.Id]
-	// 	if parent != nil {
-	// 		transform = mat4.Multiply(parent.Transform, transform)
-	// 	}
-	// 	ctx := context.Background()
-	// 	if parent != nil {
-	// 		ctx = parent.Context
-	// 	}
-	// 	it.Visit(&EntityNode{
-	// 		File:       file,
-	// 		Parent:     parent,
-	// 		Entity:     entity,
-	// 		Slice:      component,
-	// 		Transform:  transform,
-	// 		Components: entity.Components.Element,
-	// 		Walker:     it,
-	// 		Context:    ctx,
-	// 	})
-	// }
 }
 
 func (it *Assets) WalkSlice(file nwfs.File, visit func(node *SliceNode)) {
@@ -234,4 +208,75 @@ func (it *Assets) WalkSlice(file nwfs.File, visit func(node *SliceNode)) {
 		Visit:  visit,
 	}
 	walker.Walk(nil, file)
+}
+
+func ApplyVariationData(assets *Assets, slice *nwt.SliceComponent) {
+	for _, it := range slice.Entities.Element {
+		v := FindVariationDataComponent(&it)
+		if v == nil {
+			continue
+		}
+		if v.M_variationtableuniquename == "" || v.M_selectedvariant == "" {
+			continue
+		}
+		row := assets.FindTableRow(string(v.M_variationtableuniquename), "VariantID", string(v.M_selectedvariant))
+		if row == nil {
+			continue
+		}
+		for _, data := range v.M_variantdata.Element {
+			switch data.M_action {
+			case "Change Prefab Spawner Slice":
+				entity := FindEntityById(slice, data.M_entity.EntityId.Id)
+				if entity == nil {
+					continue
+				}
+				MutatePrefabSpawner(entity, func(prefab *nwt.PrefabSpawnerComponent) {
+					value := row.GetString(string(data.M_colname))
+					if value == "" {
+						prefab.M_aliasAsset = nwt.AzAsset{}
+						prefab.M_sliceAsset = nwt.AzAsset{}
+					} else {
+						prefab.M_aliasAsset.Hint = value
+						prefab.M_aliasAsset.Hint = value
+					}
+				})
+
+			}
+		}
+	}
+}
+
+func FindVariationDataComponent(entity *nwt.AZ__Entity) *nwt.VariationDataComponent {
+	if entity == nil {
+		return nil
+	}
+	for _, component := range entity.Components.Element {
+		if v, ok := component.(nwt.VariationDataComponent); ok {
+			return &v
+		}
+	}
+	return nil
+}
+
+func FindPrefabSpawnerComponent(entity *nwt.AZ__Entity) *nwt.PrefabSpawnerComponent {
+	if entity == nil {
+		return nil
+
+	}
+	for _, component := range entity.Components.Element {
+		if v, ok := component.(nwt.PrefabSpawnerComponent); ok {
+			return &v
+		}
+	}
+	return nil
+}
+
+func MutatePrefabSpawner(entity *nwt.AZ__Entity, mutate func(it *nwt.PrefabSpawnerComponent)) {
+	for i, component := range entity.Components.Element {
+		if v, ok := component.(nwt.PrefabSpawnerComponent); ok {
+			ptr := &v
+			mutate(ptr)
+			entity.Components.Element[i] = *ptr
+		}
+	}
 }

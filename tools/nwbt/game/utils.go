@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"iter"
+	"log/slog"
 	"nw-buddy/tools/formats/azcs"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
@@ -281,4 +282,101 @@ func WalkEntityTree(tree []*EntityTreeNode, visit func(node *EntityTreeNode)) {
 		visit(node)
 		WalkEntityTree(node.Children, visit)
 	}
+}
+
+func WalkEncounterSpawns(slice *nwt.SliceComponent, refs []nwt.LocalEntityRef) iter.Seq2[*nwt.AZ__Entity, nwt.SpawnDefinition] {
+	return func(yield func(*nwt.AZ__Entity, nwt.SpawnDefinition) bool) {
+		for _, ref := range refs {
+			entity := FindEntityById(slice, ref.EntityId.Id)
+			encounter := findEncounterComponent(entity)
+			if encounter == nil {
+				continue
+			}
+			for _, spawn := range encounter.M_spawntimeline.Element {
+				if !yield(entity, spawn) {
+					return
+				}
+			}
+			for e, spawn := range WalkEncounterSpawns(slice, encounter.M_stages.Element) {
+				if !yield(e, spawn) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func findEncounterComponent(entity *nwt.AZ__Entity) *nwt.EncounterComponent {
+	for _, component := range entity.Components.Element {
+		switch v := component.(type) {
+		case nwt.EncounterComponent:
+			return &v
+		}
+	}
+	return nil
+}
+
+func ParseEncounterName(name string) string {
+	name = strings.ToLower(name)
+	if strings.Contains(name, "RandomEncounter") {
+		return "random"
+	}
+	if strings.Contains(name, "enc_darkness") {
+		// e.g.: "Enc_Darkness_Major_Monolith_00"
+		return "darkness"
+	}
+	if strings.Contains(name, "lootgoblin") || strings.Contains(name, "rafflebones") {
+		// e.g.: "Enc_WorldEvent_LootGoblin_00"
+		// e.g.: "encounter_rafflebones_portal"
+		return "goblin"
+	}
+	if strings.Contains(name, "siege_fort_") {
+		// e.g.: "Siege_Fort_Brightwood"
+		return "siege"
+	}
+	if strings.Contains(name, "worldboss") {
+		// e.g.: "worldevent_enc_worldboss_admiralbrute"
+		return "worldboss"
+	}
+	if strings.Contains(name, "springtide") {
+		// e.g.: "enc_springtide_activity_wispybloom_01"
+		return "springtide"
+	}
+	if strings.Contains(name, "worldevent") {
+		// e.g.: "enc_worldevent_mimic_statue_corrupted_acolyte"
+		return "worldevent"
+	}
+	if strings.Contains(name, "sandworm") {
+		// e.g.: "enc_sandworm_glimpseevent_00"
+		return "sandworm"
+	}
+	if strings.Contains(name, "hunt_the_hunter") {
+		// e.g.: "enc_fl_hunt_the_hunter_turkeytodrake"
+		return "hunt_the_hunter"
+	}
+	if strings.HasPrefix(name, "dg_") {
+		// e.g.: "dg_enc_cutlasskeys_00_dryadsiren"
+		return "dungeon"
+	}
+	if strings.HasPrefix(name, "raid_") {
+		// e.g.: "raid_enc_cutlasskeys_00_ch01_clearing"
+		return "raid"
+	}
+	if strings.Contains(name, "trial_") {
+		// e.g.: "enc_trial_hatchery_soloplus"
+		return "trial"
+	}
+	if strings.Contains(name, "_daily") {
+		// e.g.: "Enc_FirstLight_01_Mammoth_Open_World_Encounter_Daily"
+		return "daily"
+	}
+	if strings.Contains(name, "_quest") {
+		// e.g.: "enc_quest_apophis"
+		return "quest"
+	}
+	if name != "" {
+		slog.Debug("unmapped encounter", "name", name)
+		return "other"
+	}
+	return ""
 }

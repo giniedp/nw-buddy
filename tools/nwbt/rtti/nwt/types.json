@@ -5548,18 +5548,18 @@
 	},
 	"16738E68-CBA3-4B1E-948C-D30E5C5189F6": {
 		"ID": "16738E68-CBA3-4B1E-948C-D30E5C5189F6",
-		"Name": "",
+		"Name": "ColorGradingClip",
 		"Members": {
 			"282353030": {
 				"Crc32": 282353030,
-				"Name": "",
+				"Name": "FadeOutTime",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
 			},
 			"3194852418": {
 				"Crc32": 3194852418,
-				"Name": "",
+				"Name": "FadeInTime",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -5573,7 +5573,7 @@
 			},
 			"3772719300": {
 				"Crc32": 3772719300,
-				"Name": "",
+				"Name": "ColorGradingTexture",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
@@ -6129,7 +6129,7 @@
 			},
 			"1846782970": {
 				"Crc32": 1846782970,
-				"Name": "",
+				"Name": "Hold Primary Interact Progress Bar entity",
 				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
 				"TypeIDs": [],
 				"Array": false
@@ -6150,7 +6150,7 @@
 			},
 			"278845058": {
 				"Crc32": 278845058,
-				"Name": "",
+				"Name": "Hold Secondary Progress Bar entity",
 				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
 				"TypeIDs": [],
 				"Array": false
@@ -6247,7 +6247,7 @@
 	},
 	"1937FE82-E3FC-4F21-9788-8BDFEC29A43B": {
 		"ID": "1937FE82-E3FC-4F21-9788-8BDFEC29A43B",
-		"Name": "",
+		"Name": "SeasonsRewardsComponent",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -12332,7 +12332,7 @@
 	},
 	"32737B9C-7A9F-547A-868D-79E601645FC8": {
 		"ID": "32737B9C-7A9F-547A-868D-79E601645FC8",
-		"Name": "",
+		"Name": "EditEnum<EnumType><Javelin::SBItemClass::ItemClasses >",
 		"Members": {
 			"3965275927": {
 				"Crc32": 3965275927,
@@ -13203,7 +13203,7 @@
 	},
 	"36675533-C431-4EAD-9883-846E3696BF99": {
 		"ID": "36675533-C431-4EAD-9883-846E3696BF99",
-		"Name": "",
+		"Name": "GameModeEventsData",
 		"Members": {
 			"1401378634": {
 				"Crc32": 1401378634,
@@ -21790,7 +21790,7 @@
 	},
 	"54CB00F3-C64E-48B9-9779-859545BF46B3": {
 		"ID": "54CB00F3-C64E-48B9-9779-859545BF46B3",
-		"Name": "",
+		"Name": "AchievementEventsData",
 		"Members": {
 			"1401378634": {
 				"Crc32": 1401378634,
@@ -23541,7 +23541,7 @@
 			},
 			"3074988142": {
 				"Crc32": 3074988142,
-				"Name": "",
+				"Name": "UpdateOnInputChange",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -28033,7 +28033,7 @@
 	},
 	"69C38C99-611D-49F8-AE99-F42D54777FA9": {
 		"ID": "69C38C99-611D-49F8-AE99-F42D54777FA9",
-		"Name": "",
+		"Name": "LootLockEventsData",
 		"Members": {
 			"1110540403": {
 				"Crc32": 1110540403,
@@ -37909,7 +37909,7 @@
 	},
 	"9D2F173A-AE75-4A1E-8F6F-D476C587F313": {
 		"ID": "9D2F173A-AE75-4A1E-8F6F-D476C587F313",
-		"Name": "",
+		"Name": "MusicalPerformancePlayerComponent",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -38478,7 +38478,7 @@
 	},
 	"A09068F0-7FB8-42E8-B4EA-9A458CAF39E9": {
 		"ID": "A09068F0-7FB8-42E8-B4EA-9A458CAF39E9",
-		"Name": "",
+		"Name": "StealthInvisibilityComponent",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -39371,7 +39371,7 @@
 			},
 			"390589540": {
 				"Crc32": 390589540,
-				"Name": "",
+				"Name": "FrictionOverrideValue",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -41240,7 +41240,7 @@
 	},
 	"AC608BE6-77F3-5AF5-A7A9-607621389D91": {
 		"ID": "AC608BE6-77F3-5AF5-A7A9-607621389D91",
-		"Name": "",
+		"Name": "GridGenericAsset<AssetData >",
 		"Members": {
 			"3343762613": {
 				"Crc32": 3343762613,
@@ -41429,7 +41429,7 @@
 	},
 	"AD73F519-A850-4FF0-8733-E7AC9D228C8B": {
 		"ID": "AD73F519-A850-4FF0-8733-E7AC9D228C8B",
-		"Name": "",
+		"Name": "MusicalPerformanceComponent",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -44427,14 +44427,14 @@
 			},
 			"447931111": {
 				"Crc32": 447931111,
-				"Name": "",
+				"Name": "CommandId",
 				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
 			},
 			"908330411": {
 				"Crc32": 908330411,
-				"Name": "",
+				"Name": "TickForDuration",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -57054,7 +57054,7 @@
 	},
 	"F8EAF34E-7A4A-436F-8A8A-141D8F3459A2": {
 		"ID": "F8EAF34E-7A4A-436F-8A8A-141D8F3459A2",
-		"Name": "",
+		"Name": "TransformLinkComponentServerFacet",
 		"Members": {
 			"1402650918": {
 				"Crc32": 1402650918,
@@ -57828,7 +57828,7 @@
 	},
 	"FD06ACF8-D56A-4E96-BED7-7B7CEDF79EDC": {
 		"ID": "FD06ACF8-D56A-4E96-BED7-7B7CEDF79EDC",
-		"Name": "",
+		"Name": "UiQRCodeComponent",
 		"Members": {
 			"1716930793": {
 				"Crc32": 1716930793,
@@ -57839,7 +57839,7 @@
 			},
 			"3098734442": {
 				"Crc32": 3098734442,
-				"Name": "",
+				"Name": "EncodedText",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
@@ -57860,7 +57860,7 @@
 			},
 			"3617527467": {
 				"Crc32": 3617527467,
-				"Name": "",
+				"Name": "ErrorCorrectionLevel",
 				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false

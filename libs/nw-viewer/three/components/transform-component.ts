@@ -78,7 +78,7 @@ export class TransformComponent implements GameComponent {
   public constructor(options: CreateTransformOptions) {
     this.options = options || {}
     this.maxDistance = options.maxDistance || 0
-    this.maxDistanceSq = this.maxDistance * this.maxDistance
+    this.maxDistanceSq = (this.maxDistance * this.maxDistance)
   }
 
   public initialize(entity: GameEntity): void {

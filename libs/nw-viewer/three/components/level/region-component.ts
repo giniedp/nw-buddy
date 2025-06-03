@@ -119,7 +119,10 @@ export class RegionComponent implements GameComponent {
       this.isLoaded = false
       return
     }
-
+    console.log('region data loaded', this.levelName, this.regionName, {
+      data,
+      entities,
+    })
     this.segments.clear()
 
     const capitals: CapitalWithEntities[] = []

@@ -303,6 +303,7 @@ var GENERATED = map[string]reflect.Type{
 	"4043AF23-760D-4058-9BE4-C28AC57A19B4": reflect.TypeOf(AchievementComponentClientFacet{}),
 	"C0E75D42-2E03-415B-89C6-AAE699F981AF": reflect.TypeOf(AchievementComponentServerFacet{}),
 	"9217F896-B2B1-4812-9EE4-E7789FCB3EC7": reflect.TypeOf(AchievementEvent{}),
+	"54CB00F3-C64E-48B9-9779-859545BF46B3": reflect.TypeOf(AchievementEventsData{}),
 	"207F1E2F-3129-4CD2-AF0D-8B0FE02BFF4B": reflect.TypeOf(ActionConditionCacheComponent{}),
 	"50D88433-A738-47D6-A06A-BCB1102D1E07": reflect.TypeOf(ActionConditionCacheComponentClientFacet{}),
 	"60535DBE-5057-4603-84CE-BC3A290E9467": reflect.TypeOf(ActionConditionCacheComponentServerFacet{}),
@@ -554,6 +555,7 @@ var GENERATED = map[string]reflect.Type{
 	"C148C555-3264-41F7-A335-E48B65F91728": reflect.TypeOf(ClientRef{}),
 	"D6F2C792-D886-4600-B81C-548DF895A5E6": reflect.TypeOf(CollisionFilterColor{}),
 	"3F5634A1-8683-4783-8ACB-07478CB686FE": reflect.TypeOf(CollisionFiltersAsset{}),
+	"16738E68-CBA3-4B1E-948C-D30E5C5189F6": reflect.TypeOf(ColorGradingClip{}),
 	"3C0E5DC7-06B9-4411-893E-DAAC101731D3": reflect.TypeOf(CombatDebugSettings{}),
 	"D2671994-3011-4BFE-BB0B-C206B742070E": reflect.TypeOf(CombatStatusComponent{}),
 	"C68ABEB4-3627-46DC-9883-3C6A76710408": reflect.TypeOf(CombatStatusComponentClientFacet{}),
@@ -735,6 +737,7 @@ var GENERATED = map[string]reflect.Type{
 	"BCE81364-B266-4A2C-A2DC-1CC6922B4A57": reflect.TypeOf(EconomyTrackerComponentClientFacet{}),
 	"7782DACA-B60F-44BA-B652-EB3EE0CB2915": reflect.TypeOf(EconomyTrackerComponentServerFacet{}),
 	"9A339DE9-0D6E-4708-922F-F46AF04370E9": reflect.TypeOf(EditCrc{}),
+	"32737B9C-7A9F-547A-868D-79E601645FC8": reflect.TypeOf(EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__{}),
 	"0F8A4615-8824-4E01-BA47-A5CBF14227CA": reflect.TypeOf(EditableCollisionFilter{}),
 	"32502B25-0F43-4CD3-AFFA-9E6A541E83A7": reflect.TypeOf(EditorMetadata{}),
 	"62F718F2-00DF-4D8E-BADE-31BAFE7B9E08": reflect.TypeOf(EditorMetadata_0{}),
@@ -874,6 +877,7 @@ var GENERATED = map[string]reflect.Type{
 	"5D542FF9-DDF1-426A-9835-03D7F2E30234": reflect.TypeOf(GameModeComponentClientFacet{}),
 	"CB2CFEA9-B758-47AE-8857-488A62A78444": reflect.TypeOf(GameModeComponentServerFacet{}),
 	"6097AEA8-E541-41F4-BA5D-E34806B658E4": reflect.TypeOf(GameModeEvent{}),
+	"36675533-C431-4EAD-9883-846E3696BF99": reflect.TypeOf(GameModeEventsData{}),
 	"B7F400AC-2994-4939-BFB3-84032D017A5F": reflect.TypeOf(GameModeMutationSchedulerComponent{}),
 	"2C223EA6-98EF-416E-A66F-5FE2984DD80A": reflect.TypeOf(GameModeMutationSchedulerComponentClientFacet{}),
 	"C13DE62B-2C36-44BB-A0F6-33EBA3D3B011": reflect.TypeOf(GameModeMutationSchedulerComponentServerFacet{}),
@@ -921,6 +925,7 @@ var GENERATED = map[string]reflect.Type{
 	"127579B6-B5BE-4282-8985-BF1FCE3C3F51": reflect.TypeOf(GlobalStorageComponent{}),
 	"ED6D7BCB-3C6C-4E12-ABEA-8170585CFC2C": reflect.TypeOf(GlobalStorageComponentClientFacet{}),
 	"2CE31DAD-4340-43BC-88F1-C6E0628D641F": reflect.TypeOf(GlobalStorageComponentServerFacet{}),
+	"AC608BE6-77F3-5AF5-A7A9-607621389D91": reflect.TypeOf(GridGenericAsset_AssetData__{}),
 	"05E9D829-20E1-40B2-A8BA-BA70B6024921": reflect.TypeOf(GritComponent{}),
 	"45E65BC3-465C-4417-985A-328C7536B740": reflect.TypeOf(GritComponentClientFacet{}),
 	"CBBBEDC7-5640-4B2D-97B2-B6F03CCEA2FD": reflect.TypeOf(GritComponentServerFacet{}),
@@ -1139,6 +1144,7 @@ var GENERATED = map[string]reflect.Type{
 	"00E43920-5237-42B5-87B7-66A861B88206": reflect.TypeOf(LootDropComponentClientFacet{}),
 	"55226C68-A998-4F52-BCAB-10555EC140A3": reflect.TypeOf(LootDropComponentServerFacet{}),
 	"4339D959-E586-4814-8331-E95BC84007B6": reflect.TypeOf(LootLockEvent{}),
+	"69C38C99-611D-49F8-AE99-F42D54777FA9": reflect.TypeOf(LootLockEventsData{}),
 	"FAFEB94D-F433-46CB-BF05-8C68A37FDF0D": reflect.TypeOf(LootTableComponent{}),
 	"51F88658-95A6-4802-94A7-B93E77D3F6F3": reflect.TypeOf(LootTableComponentClientFacet{}),
 	"B8B4F707-0A08-47D3-B7D3-FD6A9310C47E": reflect.TypeOf(LootTableComponentServerFacet{}),
@@ -1200,11 +1206,13 @@ var GENERATED = map[string]reflect.Type{
 	"E0C0B127-8A14-4830-B6A4-C3B4CADA2FE9": reflect.TypeOf(MountDetectionVolumeBehaviorComponent{}),
 	"6E3C132E-EFD7-440D-8E07-578529CAE867": reflect.TypeOf(MountDetectionVolumeBehaviorComponentClientFacet{}),
 	"527D161A-CB9A-486E-A0B9-499FD528AB00": reflect.TypeOf(MountDetectionVolumeBehaviorComponentServerFacet{}),
+	"AD73F519-A850-4FF0-8733-E7AC9D228C8B": reflect.TypeOf(MusicalPerformanceComponent{}),
 	"352C4941-8902-4782-9E7A-5CFE4681468B": reflect.TypeOf(MusicalPerformanceComponentClientFacet{}),
 	"198FED96-AF80-404F-AB12-5E85C121FA38": reflect.TypeOf(MusicalPerformanceComponentServerFacet{}),
 	"2C3C707B-C4D4-483B-820D-4A5EC98FA526": reflect.TypeOf(MusicalPerformanceIndicatorComponent{}),
 	"34093BA4-B4E7-4E33-82C2-D5D4649F9E01": reflect.TypeOf(MusicalPerformanceIndicatorComponentClientFacet{}),
 	"1FA77B4C-7DFB-429B-A2B8-480D6E633012": reflect.TypeOf(MusicalPerformanceIndicatorComponentServerFacet{}),
+	"9D2F173A-AE75-4A1E-8F6F-D476C587F313": reflect.TypeOf(MusicalPerformancePlayerComponent{}),
 	"FC5A0350-56B8-4323-B7C2-8188590AD93C": reflect.TypeOf(MusicalPerformancePlayerComponentClientFacet{}),
 	"98CB7152-D818-4AD1-A9D5-92AF7064B7CF": reflect.TypeOf(MusicalPerformancePlayerComponentServerFacet{}),
 	"BE312972-8DC5-4268-992A-8F482A2DBA3D": reflect.TypeOf(MusicalPerformanceZoneComponent{}),
@@ -1537,6 +1545,7 @@ var GENERATED = map[string]reflect.Type{
 	"AAE3B29E-A5FC-4892-BC4F-6E3AADE9CCF2": reflect.TypeOf(ScheduleConstraintComponentServerFacet{}),
 	"2ACBDACC-9F79-42D2-A488-4687EB1F3F13": reflect.TypeOf(ScriptBindScriptEvent{}),
 	"79682522-2F81-4B36-9FC2-A091C7504F7F": reflect.TypeOf(ScriptPropertyGroup{}),
+	"1937FE82-E3FC-4F21-9788-8BDFEC29A43B": reflect.TypeOf(SeasonsRewardsComponent{}),
 	"3C849DA5-B648-4208-BD98-ADFF7960B80D": reflect.TypeOf(SeasonsRewardsComponentClientFacet{}),
 	"01A82C96-F080-4FCF-ADEB-5E8055F36529": reflect.TypeOf(SeasonsRewardsComponentServerFacet{}),
 	"B4B954B1-4B3A-4D6D-A86A-B85493751918": reflect.TypeOf(SeasonsRewardsTrackedStatComponent{}),
@@ -1679,6 +1688,7 @@ var GENERATED = map[string]reflect.Type{
 	"5C822D39-E3CA-73F0-7AB5-922457E9CC9C": reflect.TypeOf(StatusEffectsComponent{}),
 	"3418F3A8-BA97-4A0B-8B10-E87D7EE3EAA0": reflect.TypeOf(StatusEffectsComponentClientFacet{}),
 	"6558EBAE-464E-420F-9FF3-FAFF3A7ACFD9": reflect.TypeOf(StatusEffectsComponentServerFacet{}),
+	"A09068F0-7FB8-42E8-B4EA-9A458CAF39E9": reflect.TypeOf(StealthInvisibilityComponent{}),
 	"CB40F28D-79B0-4DD2-B61D-33C274F7CC76": reflect.TypeOf(StealthInvisibilityComponentClientFacet{}),
 	"661DC7C8-20E0-4B4D-A55F-83551AA3C7B4": reflect.TypeOf(StealthInvisibilityComponentServerFacet{}),
 	"1A3A143C-F324-4073-8BAA-2C99B4DFEC55": reflect.TypeOf(StimulusComponent{}),
@@ -1784,6 +1794,7 @@ var GENERATED = map[string]reflect.Type{
 	"ABC6FC2B-C543-40E4-B3B1-8871E957236E": reflect.TypeOf(TransformLinkChildComponentServerFacet{}),
 	"7F24EBE2-1729-4D59-9EF1-937DD5BF7654": reflect.TypeOf(TransformLinkComponent{}),
 	"B08270B0-BC3B-431A-B609-BBBF451BE550": reflect.TypeOf(TransformLinkComponentClientFacet{}),
+	"F8EAF34E-7A4A-436F-8A8A-141D8F3459A2": reflect.TypeOf(TransformLinkComponentServerFacet{}),
 	"86ABFB50-98B3-4A4A-9370-269BDD3DD6F3": reflect.TypeOf(TransformLinkConnectionData{}),
 	"2CAA22D9-10A9-4CE7-988D-E61145728A07": reflect.TypeOf(TranslationComponent{}),
 	"A31C15F4-CA54-478A-9FA8-08F35277C8D8": reflect.TypeOf(TranslationComponentClientFacet{}),
@@ -1843,8 +1854,6 @@ var GENERATED = map[string]reflect.Type{
 	"0B66E343-C513-5EB3-B152-770C4628BB73": reflect.TypeOf(UUID_0B66E343_C513_5EB3_B152_770C4628BB73_SlayerScriptEditCrc{}),
 	"12E435DD-B28E-5082-8E17-67F1BBC894B1": reflect.TypeOf(UUID_12E435DD_B28E_5082_8E17_67F1BBC894B1_RotationAchievementEvent{}),
 	"14F31861-6045-5B62-B6D2-1FA6DA976FB8": reflect.TypeOf(UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8{}),
-	"16738E68-CBA3-4B1E-948C-D30E5C5189F6": reflect.TypeOf(UUID_16738E68_CBA3_4B1E_948C_D30E5C5189F6{}),
-	"1937FE82-E3FC-4F21-9788-8BDFEC29A43B": reflect.TypeOf(UUID_1937FE82_E3FC_4F21_9788_8BDFEC29A43B{}),
 	"1CED0D23-5BD7-50DD-80BB-21B6081B8F00": reflect.TypeOf(UUID_1CED0D23_5BD7_50DD_80BB_21B6081B8F00_Javelin__CutsceneEntityEvent{}),
 	"233C4DEF-0EBF-58C4-9A69-7D5EFC602339": reflect.TypeOf(UUID_233C4DEF_0EBF_58C4_9A69_7D5EFC602339_OwnershipAlignmentEventData{}),
 	"283F62D6-A310-5D1E-A38E-409DB6C165A4": reflect.TypeOf(UUID_283F62D6_A310_5D1E_A38E_409DB6C165A4_ChunkEntry{}),
@@ -1852,17 +1861,14 @@ var GENERATED = map[string]reflect.Type{
 	"2C4AB36A-7ABB-5DEB-B4BB-9F033FA9E3B7": reflect.TypeOf(UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7{}),
 	"2F09439E-051F-5360-859E-55EAB094FEB5": reflect.TypeOf(UUID_2F09439E_051F_5360_859E_55EAB094FEB5{}),
 	"31D79E49-9CD5-51BF-8403-F9A16BEDECF5": reflect.TypeOf(UUID_31D79E49_9CD5_51BF_8403_F9A16BEDECF5_CustomDataEntry{}),
-	"32737B9C-7A9F-547A-868D-79E601645FC8": reflect.TypeOf(UUID_32737B9C_7A9F_547A_868D_79E601645FC8{}),
 	"33C158B9-7C9D-54C1-AE8E-ED3C7F5B77C6": reflect.TypeOf(UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_HealthThresholdBossPhaseConfig{}),
 	"344F38EA-4D1D-5D55-83C1-5F6060C0A09D": reflect.TypeOf(UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D_UUID_BD7E940E_6D84_5185_87C3_99D6C8DB63E0{}),
 	"363ED6CD-26B0-5FB8-BF5C-A0320F380286": reflect.TypeOf(UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286_UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677{}),
-	"36675533-C431-4EAD-9883-846E3696BF99": reflect.TypeOf(UUID_36675533_C431_4EAD_9883_846E3696BF99{}),
 	"3B1D6FE2-1CA5-51ED-A0B2-99392B9AE7D1": reflect.TypeOf(UUID_3B1D6FE2_1CA5_51ED_A0B2_99392B9AE7D1_RtpcMeterSettings{}),
 	"3B429139-BF67-557B-B347-D0A61D4F47B1": reflect.TypeOf(UUID_3B429139_BF67_557B_B347_D0A61D4F47B1_SlicePercentReference{}),
 	"3C9D208A-2E62-51E2-8AA1-5B6BB7473A52": reflect.TypeOf(UUID_3C9D208A_2E62_51E2_8AA1_5B6BB7473A52{}),
 	"3EDC016A-52CF-5BB9-B450-2550DB28F9E2": reflect.TypeOf(UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2_UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66{}),
 	"4E495371-25FE-5D42-8E40-AE22C9C5DE42": reflect.TypeOf(UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42_TransformLinkConnectionData{}),
-	"54CB00F3-C64E-48B9-9779-859545BF46B3": reflect.TypeOf(UUID_54CB00F3_C64E_48B9_9779_859545BF46B3{}),
 	"59EAF609-9D81-561C-A744-77F737CF92C4": reflect.TypeOf(UUID_59EAF609_9D81_561C_A744_77F737CF92C4{}),
 	"59FE499C-650B-50BD-AC05-909D3D56505C": reflect.TypeOf(UUID_59FE499C_650B_50BD_AC05_909D3D56505C{}),
 	"5B5C3E6D-91FC-5863-96CA-57879B448A3C": reflect.TypeOf(UUID_5B5C3E6D_91FC_5863_96CA_57879B448A3C{}),
@@ -1871,10 +1877,9 @@ var GENERATED = map[string]reflect.Type{
 	"6434A20B-A21D-5575-AEC5-5A7319FBC3FB": reflect.TypeOf(UUID_6434A20B_A21D_5575_AEC5_5A7319FBC3FB_MeshMergeGroup{}),
 	"65CDD55C-BE9B-5689-8E2C-A4117FF26F6E": reflect.TypeOf(UUID_65CDD55C_BE9B_5689_8E2C_A4117FF26F6E_UUID_D8B4529D_EDDB_525C_BA46_09A63951E5FD{}),
 	"661C1835-82E9-519E-852C-4586C3435B17": reflect.TypeOf(UUID_661C1835_82E9_519E_852C_4586C3435B17_Unsigned_char{}),
-	"69C38C99-611D-49F8-AE99-F42D54777FA9": reflect.TypeOf(UUID_69C38C99_611D_49F8_AE99_F42D54777FA9{}),
 	"6C3DEDA3-D591-59B8-80FF-4148F8C2A5EC": reflect.TypeOf(UUID_6C3DEDA3_D591_59B8_80FF_4148F8C2A5EC_InstancedSlayerScriptPart{}),
 	"6D152BFE-EC46-52D0-9F1A-24DD1151F86B": reflect.TypeOf(UUID_6D152BFE_EC46_52D0_9F1A_24DD1151F86B_SlayerScriptDataContainer{}),
-	"734B2005-8CD7-5561-B79F-58ED4EB9C0C2": reflect.TypeOf(UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_UUID_32737B9C_7A9F_547A_868D_79E601645FC8{}),
+	"734B2005-8CD7-5561-B79F-58ED4EB9C0C2": reflect.TypeOf(UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__{}),
 	"777E8FDA-6A1B-55FD-BAF9-8AFF3C0B7397": reflect.TypeOf(UUID_777E8FDA_6A1B_55FD_BAF9_8AFF3C0B7397_AchievementEvent{}),
 	"77B3BC35-E577-5281-AEBE-11C0E1B622BF": reflect.TypeOf(UUID_77B3BC35_E577_5281_AEBE_11C0E1B622BF_GameModeEvent{}),
 	"7FF36F26-644E-5051-84BB-AE54534C84D4": reflect.TypeOf(UUID_7FF36F26_644E_5051_84BB_AE54534C84D4_Transform{}),
@@ -1884,10 +1889,6 @@ var GENERATED = map[string]reflect.Type{
 	"945D6962-DF72-5875-861B-52D14D233D65": reflect.TypeOf(UUID_945D6962_DF72_5875_861B_52D14D233D65_QuickCourseSection{}),
 	"98F0B819-838F-5548-B645-4CF0959F2D43": reflect.TypeOf(UUID_98F0B819_838F_5548_B645_4CF0959F2D43_UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8{}),
 	"9C719DD5-F8D3-59D3-B55B-627422922A43": reflect.TypeOf(UUID_9C719DD5_F8D3_59D3_B55B_627422922A43_Int{}),
-	"9D2F173A-AE75-4A1E-8F6F-D476C587F313": reflect.TypeOf(UUID_9D2F173A_AE75_4A1E_8F6F_D476C587F313{}),
-	"A09068F0-7FB8-42E8-B4EA-9A458CAF39E9": reflect.TypeOf(UUID_A09068F0_7FB8_42E8_B4EA_9A458CAF39E9{}),
-	"AC608BE6-77F3-5AF5-A7A9-607621389D91": reflect.TypeOf(UUID_AC608BE6_77F3_5AF5_A7A9_607621389D91{}),
-	"AD73F519-A850-4FF0-8733-E7AC9D228C8B": reflect.TypeOf(UUID_AD73F519_A850_4FF0_8733_E7AC9D228C8B{}),
 	"B27B9A2C-895B-5DBE-813D-DD7A16EBE833": reflect.TypeOf(UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833{}),
 	"B6E08B3F-F4E1-50C2-8752-3CF3C4AB414A": reflect.TypeOf(UUID_B6E08B3F_F4E1_50C2_8752_3CF3C4AB414A_LootLockEvent{}),
 	"BC2FD03C-7FA0-5D12-B681-C5266456E0EC": reflect.TypeOf(UUID_BC2FD03C_7FA0_5D12_B681_C5266456E0EC{}),
@@ -1908,8 +1909,6 @@ var GENERATED = map[string]reflect.Type{
 	"F54891FA-D2F9-503D-9E59-3680D40B1262": reflect.TypeOf(UUID_F54891FA_D2F9_503D_9E59_3680D40B1262_Unsigned_short{}),
 	"F6E6495E-59A8-5724-8DE1-D6B68162DB92": reflect.TypeOf(UUID_F6E6495E_59A8_5724_8DE1_D6B68162DB92_CharacterColliderConfig{}),
 	"F7F30D6D-06D0-5533-ACB3-8FBE9D047904": reflect.TypeOf(UUID_F7F30D6D_06D0_5533_ACB3_8FBE9D047904{}),
-	"F8EAF34E-7A4A-436F-8A8A-141D8F3459A2": reflect.TypeOf(UUID_F8EAF34E_7A4A_436F_8A8A_141D8F3459A2{}),
-	"FD06ACF8-D56A-4E96-BED7-7B7CEDF79EDC": reflect.TypeOf(UUID_FD06ACF8_D56A_4E96_BED7_7B7CEDF79EDC{}),
 	"FD14840B-21BD-5C50-9FAC-D20CE0B95474": reflect.TypeOf(UUID_FD14840B_21BD_5C50_9FAC_D20CE0B95474{}),
 	"FDBD40B4-8A70-5B23-BCE7-A717BA039A86": reflect.TypeOf(UUID_FDBD40B4_8A70_5B23_BCE7_A717BA039A86_SlicePercentReference{}),
 	"FFA1E556-F423-5A4D-AE2C-8F30D28BE5FD": reflect.TypeOf(UUID_FFA1E556_F423_5A4D_AE2C_8F30D28BE5FD_CollisionFilterColor{}),
@@ -1959,6 +1958,7 @@ var GENERATED = map[string]reflect.Type{
 	"2279AA38-271D-4D4F-A472-E42B984088AC": reflect.TypeOf(UiMaskComponent{}),
 	"E28DDC8B-F7C6-406F-966C-2F0825471641": reflect.TypeOf(UiNavigationSettings{}),
 	"7DFE5E32-FAFB-4A19-8A57-E0B61419AD02": reflect.TypeOf(UiProgressBarComponent{}),
+	"FD06ACF8-D56A-4E96-BED7-7B7CEDF79EDC": reflect.TypeOf(UiQRCodeComponent{}),
 	"773A0F4B-F9F9-4B82-9951-BBD73A737DE4": reflect.TypeOf(UiRadioButtonComponent{}),
 	"F89D5EF2-37C4-4CA7-9AA2-23DC3867EC9D": reflect.TypeOf(UiRadioButtonGroupComponent{}),
 	"153A4BF9-1404-4D54-8B39-AF2224B15088": reflect.TypeOf(UiRequiredResourceDetailsComponent{}),
@@ -3369,6 +3369,12 @@ type AchievementEvent struct {
 	Rotationevents                        UUID_12E435DD_B28E_5082_8E17_67F1BBC894B1_RotationAchievementEvent `crc:"2051707756"`
 	Runeventsonconditionalsatisfied       AzBool                                                             `crc:"1252970601"`
 	Runeventsonenteraoi                   AzBool                                                             `crc:"2063507281"`
+}
+
+type AchievementEventsData struct {
+	BaseClass1       SlayerScriptData                                           `crc:"3566360373"`
+	Events           UUID_777E8FDA_6A1B_55FD_BAF9_8AFF3C0B7397_AchievementEvent `crc:"1401378634"`
+	Usevariationdata AzBool                                                     `crc:"1522165786"`
 }
 
 type ActionConditionCacheComponent struct {
@@ -4980,6 +4986,13 @@ type CollisionFiltersAsset struct {
 	Sleepingbodycolor    AzColor                                                        `crc:"2936879165"`
 }
 
+type ColorGradingClip struct {
+	BaseClass1          TimelineClip `crc:"3566360373"`
+	ColorGradingTexture AzString     `crc:"3772719300"`
+	FadeInTime          AzFloat32    `crc:"3194852418"`
+	FadeOutTime         AzFloat32    `crc:"282353030"`
+}
+
 type CombatDebugSettings struct {
 	Disable_durability_penalty_on_death AzBool `crc:"429903575"`
 	Disable_item_durability             AzBool `crc:"880532799"`
@@ -5019,10 +5032,10 @@ type CombatTextComponentServerFacet struct {
 
 type CommandClip struct {
 	BaseClass1                      TimelineClip `crc:"3566360373"`
-	CRC_447931111                   AzInt32      `crc:"447931111"`
-	CRC_908330411                   AzBool       `crc:"908330411"`
+	CommandId                       AzInt32      `crc:"447931111"`
 	Executestringcommand            AzString     `crc:"2398894834"`
 	Executestringcommand_clientcvar AzString     `crc:"198166777"`
+	TickForDuration                 AzBool       `crc:"908330411"`
 }
 
 type CompoundShapeComponent struct {
@@ -6064,6 +6077,10 @@ type EditCrc struct {
 	M_valuestr AzString `crc:"3432344339"`
 }
 
+type EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__ struct {
+	M_valuecrc AzUInt32 `crc:"3965275927"`
+}
+
 type EditableCollisionFilter struct {
 	Collidewithcategories AZStd__vector_AZStd__string                             `crc:"3869464348"`
 	Description           AzString                                                `crc:"1843675174"`
@@ -6941,6 +6958,11 @@ type GameModeEvent struct {
 	Rotationevents     UUID_12E435DD_B28E_5082_8E17_67F1BBC894B1_RotationAchievementEvent `crc:"2051707756"`
 }
 
+type GameModeEventsData struct {
+	BaseClass1 SlayerScriptData                                        `crc:"3566360373"`
+	Events     UUID_77B3BC35_E577_5281_AEBE_11C0E1B622BF_GameModeEvent `crc:"1401378634"`
+}
+
 type GameModeMutationSchedulerComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -7230,6 +7252,10 @@ type GlobalStorageComponentClientFacet struct {
 
 type GlobalStorageComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type GridGenericAsset_AssetData__ struct {
+	Chunks UUID_283F62D6_A310_5D1E_A38E_409DB6C165A4_ChunkEntry `crc:"3343762613"`
 }
 
 type GritComponent struct {
@@ -8601,6 +8627,11 @@ type LootLockEvent struct {
 	Runonserver                   AzBool                                                        `crc:"1894105038"`
 }
 
+type LootLockEventsData struct {
+	BaseClass1           SlayerScriptData                                        `crc:"3566360373"`
+	Lootlockentityevents UUID_B6E08B3F_F4E1_50C2_8752_3CF3C4AB414A_LootLockEvent `crc:"1110540403"`
+}
+
 type LootTableComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
@@ -8996,6 +9027,10 @@ type MountDetectionVolumeBehaviorComponentServerFacet struct {
 	M_id                    AzString       `crc:"1896410336"`
 }
 
+type MusicalPerformanceComponent struct {
+	BaseClass1 FacetedComponent `crc:"3566360373"`
+}
+
 type MusicalPerformanceComponentClientFacet struct {
 	BaseClass1 ClientFacet `crc:"3566360373"`
 }
@@ -9016,6 +9051,11 @@ type MusicalPerformanceIndicatorComponentClientFacet struct {
 
 type MusicalPerformanceIndicatorComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type MusicalPerformancePlayerComponent struct {
+	BaseClass1          FacetedComponent                                                                                              `crc:"3566360373"`
+	M_timelinecomponent LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__TimelineComponent__void__ `crc:"438240765"`
 }
 
 type MusicalPerformancePlayerComponentClientFacet struct {
@@ -9876,139 +9916,139 @@ type PlayerArenaComponentServerFacet struct {
 }
 
 type PlayerAttributeData struct {
-	Ability_point_row_requirements                                           AZStd__vector_AZStd__pair                                                           `crc:"2545508799"`
-	Ability_points_required_in_tree_to_unlock_final_row                      AzInt32                                                                             `crc:"449510696"`
-	Allprojectpoolid                                                         EditCrc                                                                             `crc:"830663296"`
-	Alwaysavailabletownprojectid                                             EditCrc                                                                             `crc:"2571713759"`
-	Armor_mitigation_exponent                                                AzFloat32                                                                           `crc:"3127166134"`
-	Armor_rating_decimal_accuracy                                            AzInt32                                                                             `crc:"1514296702"`
-	Armor_set_rating_exponent                                                AzFloat32                                                                           `crc:"2564406730"`
-	Attribute_bias_exclusive_label                                           EditCrc                                                                             `crc:"2321104830"`
-	Attribute_chance_modifier                                                AzFloat32                                                                           `crc:"775543972"`
-	Attribute_exclusive_label_map                                            UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2_UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66 `crc:"3467641744"`
-	Azoth_currency                                                           AzString                                                                            `crc:"407522883"`
-	Azoth_currency_id                                                        Crc32                                                                               `crc:"3015906265"`
-	Base_amount_to_apply                                                     AzInt32                                                                             `crc:"3872903542"`
-	Base_apply_rate                                                          AzFloat32                                                                           `crc:"544118269"`
-	Base_damage_compound_increase                                            AzFloat32                                                                           `crc:"1040437940"`
-	Base_damage_gear_score_interval                                          AzUInt32                                                                            `crc:"2932050538"`
-	Base_deployable_limit                                                    AzInt32                                                                             `crc:"3953435712"`
-	Base_gather_durability_cost                                              AzFloat32                                                                           `crc:"4004614495"`
-	Base_xp_value_for_finding_lore                                           AzUInt32                                                                            `crc:"2184948075"`
-	Blocking_threat_mulitplier                                               AzFloat32                                                                           `crc:"1099214177"`
-	Broken_item_efficiency_data                                              AZStd__vector_UUID_BC2FD03C_7FA0_5D12_B681_C5266456E0EC                             `crc:"3582040118"`
-	Camping_achievement_id                                                   AZStd__vector_CampTierData                                                          `crc:"2456218248"`
-	Camping_unlock_by_level                                                  AZStd__vector_Int_1                                                                 `crc:"859849246"`
-	Categorical_progression_rankup_game_event_id                             EditCrc                                                                             `crc:"3929721992"`
-	Chance_of_salvage_success                                                AzFloat32                                                                           `crc:"3325838676"`
-	Chat_max_message_size                                                    AzUInt32                                                                            `crc:"1147526063"`
-	Compound_increase_diminishing_multiplier                                 AzFloat32                                                                           `crc:"4228706248"`
-	Container_level_loot_tag                                                 EditCrc                                                                             `crc:"4063601589"`
-	Controllingcompanyhousecostmodifier                                      AzFloat32                                                                           `crc:"690734670"`
-	Controllingcompanytaxmodifier                                            AzFloat32                                                                           `crc:"1183396263"`
-	Controllingfactiongathermodifier                                         AzFloat32                                                                           `crc:"493663274"`
-	Controllingfactionluckmodifier                                           AzInt32                                                                             `crc:"2680451908"`
-	Craftingfeeratemax                                                       AzFloat32                                                                           `crc:"1742627026"`
-	Craftingfeeratemin                                                       AzFloat32                                                                           `crc:"1540579211"`
-	Diminishing_gear_score_threshold                                         AzUInt32                                                                            `crc:"1654436668"`
-	Drop_probability_falloff                                                 AzFloat32                                                                           `crc:"2072792132"`
-	Drop_probability_min                                                     AzFloat32                                                                           `crc:"1465196189"`
-	Durability_repair_cost_data                                              AZStd__vector_AZStd__pair                                                           `crc:"4176640140"`
-	Durability_to_coin_rate                                                  AzFloat32                                                                           `crc:"4276558014"`
-	Dynamic_poi_objective_gameeventid                                        EditCrc                                                                             `crc:"2135484126"`
-	Dynamic_poi_objective_itemids                                            AZStd__vector_EditCrc                                                               `crc:"4036203988"`
-	Dynamic_poi_objective_reward_modifier_ids                                AZStd__vector_EditCrc                                                               `crc:"2746046252"`
-	Elemental_armor_scale_factor                                             AzFloat32                                                                           `crc:"3864752996"`
-	Encumbrance_immobilization_modifier                                      AzFloat32                                                                           `crc:"3063667835"`
-	Encumbrance_max_limit_modifier                                           AzFloat32                                                                           `crc:"1629097626"`
-	Enemy_level_loot_tag                                                     EditCrc                                                                             `crc:"1501713786"`
-	Equipped_item_loot_tag                                                   EditCrc                                                                             `crc:"3606199992"`
-	Equipped_tag_ignore_classes                                              UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_UUID_32737B9C_7A9F_547A_868D_79E601645FC8 `crc:"1688526123"`
-	Final_starting_beach_achievement                                         EditCrc                                                                             `crc:"2058419845"`
-	First_house_flat_discount                                                AzUInt32                                                                            `crc:"1495088854"`
-	First_time_ffa_achievement                                               EditCrc                                                                             `crc:"3852206400"`
-	Fish_rarity_loot_tag                                                     EditCrc                                                                             `crc:"4121231104"`
-	Fish_size_loot_tag                                                       EditCrc                                                                             `crc:"1648700664"`
-	Fishing_fresh_water_loot_tag                                             EditCrc                                                                             `crc:"2715057642"`
-	Fishing_salt_water_loot_tag                                              EditCrc                                                                             `crc:"3884139696"`
-	Gear_score_rounding_interval                                             AzInt32                                                                             `crc:"3077216752"`
-	Gear_set_storage_excluded_paperdoll_slots                                UUID_9C719DD5_F8D3_59D3_B55B_627422922A43_Int                                       `crc:"1091404389"`
-	Gem_slot_chance_modifier                                                 AzFloat32                                                                           `crc:"1196177737"`
-	Global_mod_loot_tag                                                      EditCrc                                                                             `crc:"2567042273"`
-	Instanced_ai_loot_clear_time_mins                                        AzInt32                                                                             `crc:"2012145171"`
-	Instanced_loot_chest_reset_time_mins                                     AzInt32                                                                             `crc:"3502766460"`
-	Instanced_slayerscript_state_reset_time_mins                             AzInt32                                                                             `crc:"1806419256"`
-	Inventory_durability_loss_ratio                                          AzFloat32                                                                           `crc:"2855985132"`
-	Item_rarity_data                                                         AZStd__vector_ItemRarityData                                                        `crc:"769099946"`
-	Kill_game_event_id                                                       EditCrc                                                                             `crc:"2666012534"`
-	Level_damage_multiplier                                                  AzFloat32                                                                           `crc:"1251230836"`
-	Level_loot_tag                                                           EditCrc                                                                             `crc:"2485241194"`
-	Loot_biasing_exception_item_classes                                      UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_UUID_32737B9C_7A9F_547A_868D_79E601645FC8 `crc:"2309037884"`
-	Loot_biasing_item_classes                                                UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_UUID_32737B9C_7A9F_547A_868D_79E601645FC8 `crc:"649808250"`
-	Loot_table_diverted_loot_tag                                             EditCrc                                                                             `crc:"1930234241"`
-	Max_ai_loot_receiver_count                                               AzInt32                                                                             `crc:"4029712458"`
-	Max_armor_mitigation                                                     AzFloat32                                                                           `crc:"129293126"`
-	Max_camp_respawn_distance_meters                                         AzInt32                                                                             `crc:"4043513367"`
-	Max_instanced_loot_chest_count                                           AzInt32                                                                             `crc:"3545799627"`
-	Max_instanced_slayerscript_state_count                                   AzInt32                                                                             `crc:"2548198547"`
-	Max_points_per_attribute                                                 AzUInt32                                                                            `crc:"4240139679"`
-	Max_pvp_respawn_extend_deaths                                            AzUInt32                                                                            `crc:"4081838422"`
-	Min_armor_mitigation                                                     AzFloat32                                                                           `crc:"785000030"`
-	Min_content_level_loot_tag                                               EditCrc                                                                             `crc:"1109938975"`
-	Min_enemy_content_level_loot_tag                                         EditCrc                                                                             `crc:"3943173529"`
-	Min_level_roll_gem_slot                                                  AzInt32                                                                             `crc:"36781581"`
-	Min_level_roll_perks                                                     AzInt32                                                                             `crc:"3869727889"`
-	Min_poi_content_level_loot_tag                                           EditCrc                                                                             `crc:"198007638"`
-	Min_possible_weapon_gear_score                                           AzUInt32                                                                            `crc:"1599705814"`
-	Minimum_ai_level_for_territory_standing                                  AzUInt32                                                                            `crc:"99919581"`
-	Minimum_salvage_quantity                                                 AzInt32                                                                             `crc:"1544845026"`
-	Number_of_entries_that_need_to_be_discovered_to_advance_to_the_next_step AzUInt32                                                                            `crc:"2460882875"`
-	Objective_gameeventid                                                    EditCrc                                                                             `crc:"3377791829"`
-	One_handed_gathering_distance                                            AzFloat32                                                                           `crc:"3236005074"`
-	Paperdoll_slot_unlocks_by_level                                          AZStd__vector_AZStd__pair_0                                                         `crc:"615778146"`
-	Paperdoll_slot_unlocks_by_tradeskill_rank                                UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286_UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677 `crc:"3448727571"`
-	Perk_chance_itemid                                                       AzString                                                                            `crc:"1084564535"`
-	Perk_chance_modifier                                                     AzFloat32                                                                           `crc:"3299387875"`
-	Perk_generation_data                                                     PerkGenerationData                                                                  `crc:"3853421234"`
-	Physical_armor_scale_factor                                              AzFloat32                                                                           `crc:"2475629711"`
-	Player_age_display_string                                                AzString                                                                            `crc:"1065784067"`
-	Player_display_level_unlock_free_gear_sets                               AzInt32                                                                             `crc:"215894519"`
-	Poi_level_loot_tag                                                       EditCrc                                                                             `crc:"846282420"`
-	Post_ftue_achievement_id_unlocks                                         AZStd__vector_AZStd__string                                                         `crc:"2201477537"`
-	Propertytaxratemax                                                       AzFloat32                                                                           `crc:"3459536558"`
-	Propertytaxratemin                                                       AzFloat32                                                                           `crc:"4063848951"`
-	Pvp_camp_respawn_cooldown_seconds                                        AzUInt32                                                                            `crc:"9917307"`
-	Pvp_death_extend_timeout_seconds                                         AzUInt32                                                                            `crc:"3486674766"`
-	Pvp_inventory_durability_loss_multiplier                                 AzFloat32                                                                           `crc:"2780560358"`
-	Pvp_paperdoll_durability_loss_multiplier                                 AzFloat32                                                                           `crc:"2010798859"`
-	Refiningfeeratemax                                                       AzFloat32                                                                           `crc:"2350428674"`
-	Refiningfeeratemin                                                       AzFloat32                                                                           `crc:"2954202459"`
-	Repair_max_durability_cost                                               AzFloat32                                                                           `crc:"2648225034"`
-	Repair_resource_modifier                                                 AzFloat32                                                                           `crc:"856481591"`
-	Rested_exp_max_percentage                                                AzFloat32                                                                           `crc:"2665704463"`
-	Rested_exp_modifier                                                      AzFloat32                                                                           `crc:"4038702296"`
-	Rested_exp_percentage_per_hour                                           AzFloat32                                                                           `crc:"961084086"`
-	Rested_exp_threshold_hours                                               AzUInt32                                                                            `crc:"2710447355"`
-	Round_gearscore_up_                                                      AzBool                                                                              `crc:"2104736165"`
-	Salvage_dust_modifier                                                    AzFloat32                                                                           `crc:"1047457124"`
-	Salvage_gold_tier_modifiers                                              AZStd__vector_Float                                                                 `crc:"1864432170"`
-	Salvage_item_gear_score_loot_tag                                         EditCrc                                                                             `crc:"3476169896"`
-	Salvage_item_rarity_loot_tag                                             EditCrc                                                                             `crc:"2119527783"`
-	Salvage_item_tier_loot_tag                                               EditCrc                                                                             `crc:"305498271"`
-	Salvage_max_percent                                                      AzFloat32                                                                           `crc:"2441712665"`
-	Salvage_min_percent                                                      AzFloat32                                                                           `crc:"1568993046"`
-	Settaxorfeecooldowninmin                                                 AzUInt32                                                                            `crc:"666278674"`
-	Stamina_cost_entry                                                       AzString                                                                            `crc:"4042830083"`
-	Status_effect_category_limit_crcs                                        AZStd__unordered_flat_map_0                                                         `crc:"219012040"`
-	Status_effect_category_limits                                            AZStd__unordered_flat_map                                                           `crc:"2118208978"`
-	Structure_rotation_amount___deg__                                        AzFloat32                                                                           `crc:"918781310"`
-	Summer_fish_rarity_loot_tag                                              EditCrc                                                                             `crc:"1792141096"`
-	The_amount_of_xp_gained_per_step                                         AzUInt32                                                                            `crc:"3038743946"`
-	Tradingtaxratemax                                                        AzFloat32                                                                           `crc:"3355861281"`
-	Tradingtaxratemin                                                        AzFloat32                                                                           `crc:"4094385784"`
-	Two_handed_gathering_distance                                            AzFloat32                                                                           `crc:"1159889716"`
-	User_camera_max_sensitivity                                              AzFloat32                                                                           `crc:"3421740222"`
-	User_camera_min_sensitivity                                              AzFloat32                                                                           `crc:"3964205967"`
+	Ability_point_row_requirements                                           AZStd__vector_AZStd__pair                                                                        `crc:"2545508799"`
+	Ability_points_required_in_tree_to_unlock_final_row                      AzInt32                                                                                          `crc:"449510696"`
+	Allprojectpoolid                                                         EditCrc                                                                                          `crc:"830663296"`
+	Alwaysavailabletownprojectid                                             EditCrc                                                                                          `crc:"2571713759"`
+	Armor_mitigation_exponent                                                AzFloat32                                                                                        `crc:"3127166134"`
+	Armor_rating_decimal_accuracy                                            AzInt32                                                                                          `crc:"1514296702"`
+	Armor_set_rating_exponent                                                AzFloat32                                                                                        `crc:"2564406730"`
+	Attribute_bias_exclusive_label                                           EditCrc                                                                                          `crc:"2321104830"`
+	Attribute_chance_modifier                                                AzFloat32                                                                                        `crc:"775543972"`
+	Attribute_exclusive_label_map                                            UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2_UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66              `crc:"3467641744"`
+	Azoth_currency                                                           AzString                                                                                         `crc:"407522883"`
+	Azoth_currency_id                                                        Crc32                                                                                            `crc:"3015906265"`
+	Base_amount_to_apply                                                     AzInt32                                                                                          `crc:"3872903542"`
+	Base_apply_rate                                                          AzFloat32                                                                                        `crc:"544118269"`
+	Base_damage_compound_increase                                            AzFloat32                                                                                        `crc:"1040437940"`
+	Base_damage_gear_score_interval                                          AzUInt32                                                                                         `crc:"2932050538"`
+	Base_deployable_limit                                                    AzInt32                                                                                          `crc:"3953435712"`
+	Base_gather_durability_cost                                              AzFloat32                                                                                        `crc:"4004614495"`
+	Base_xp_value_for_finding_lore                                           AzUInt32                                                                                         `crc:"2184948075"`
+	Blocking_threat_mulitplier                                               AzFloat32                                                                                        `crc:"1099214177"`
+	Broken_item_efficiency_data                                              AZStd__vector_UUID_BC2FD03C_7FA0_5D12_B681_C5266456E0EC                                          `crc:"3582040118"`
+	Camping_achievement_id                                                   AZStd__vector_CampTierData                                                                       `crc:"2456218248"`
+	Camping_unlock_by_level                                                  AZStd__vector_Int_1                                                                              `crc:"859849246"`
+	Categorical_progression_rankup_game_event_id                             EditCrc                                                                                          `crc:"3929721992"`
+	Chance_of_salvage_success                                                AzFloat32                                                                                        `crc:"3325838676"`
+	Chat_max_message_size                                                    AzUInt32                                                                                         `crc:"1147526063"`
+	Compound_increase_diminishing_multiplier                                 AzFloat32                                                                                        `crc:"4228706248"`
+	Container_level_loot_tag                                                 EditCrc                                                                                          `crc:"4063601589"`
+	Controllingcompanyhousecostmodifier                                      AzFloat32                                                                                        `crc:"690734670"`
+	Controllingcompanytaxmodifier                                            AzFloat32                                                                                        `crc:"1183396263"`
+	Controllingfactiongathermodifier                                         AzFloat32                                                                                        `crc:"493663274"`
+	Controllingfactionluckmodifier                                           AzInt32                                                                                          `crc:"2680451908"`
+	Craftingfeeratemax                                                       AzFloat32                                                                                        `crc:"1742627026"`
+	Craftingfeeratemin                                                       AzFloat32                                                                                        `crc:"1540579211"`
+	Diminishing_gear_score_threshold                                         AzUInt32                                                                                         `crc:"1654436668"`
+	Drop_probability_falloff                                                 AzFloat32                                                                                        `crc:"2072792132"`
+	Drop_probability_min                                                     AzFloat32                                                                                        `crc:"1465196189"`
+	Durability_repair_cost_data                                              AZStd__vector_AZStd__pair                                                                        `crc:"4176640140"`
+	Durability_to_coin_rate                                                  AzFloat32                                                                                        `crc:"4276558014"`
+	Dynamic_poi_objective_gameeventid                                        EditCrc                                                                                          `crc:"2135484126"`
+	Dynamic_poi_objective_itemids                                            AZStd__vector_EditCrc                                                                            `crc:"4036203988"`
+	Dynamic_poi_objective_reward_modifier_ids                                AZStd__vector_EditCrc                                                                            `crc:"2746046252"`
+	Elemental_armor_scale_factor                                             AzFloat32                                                                                        `crc:"3864752996"`
+	Encumbrance_immobilization_modifier                                      AzFloat32                                                                                        `crc:"3063667835"`
+	Encumbrance_max_limit_modifier                                           AzFloat32                                                                                        `crc:"1629097626"`
+	Enemy_level_loot_tag                                                     EditCrc                                                                                          `crc:"1501713786"`
+	Equipped_item_loot_tag                                                   EditCrc                                                                                          `crc:"3606199992"`
+	Equipped_tag_ignore_classes                                              UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__ `crc:"1688526123"`
+	Final_starting_beach_achievement                                         EditCrc                                                                                          `crc:"2058419845"`
+	First_house_flat_discount                                                AzUInt32                                                                                         `crc:"1495088854"`
+	First_time_ffa_achievement                                               EditCrc                                                                                          `crc:"3852206400"`
+	Fish_rarity_loot_tag                                                     EditCrc                                                                                          `crc:"4121231104"`
+	Fish_size_loot_tag                                                       EditCrc                                                                                          `crc:"1648700664"`
+	Fishing_fresh_water_loot_tag                                             EditCrc                                                                                          `crc:"2715057642"`
+	Fishing_salt_water_loot_tag                                              EditCrc                                                                                          `crc:"3884139696"`
+	Gear_score_rounding_interval                                             AzInt32                                                                                          `crc:"3077216752"`
+	Gear_set_storage_excluded_paperdoll_slots                                UUID_9C719DD5_F8D3_59D3_B55B_627422922A43_Int                                                    `crc:"1091404389"`
+	Gem_slot_chance_modifier                                                 AzFloat32                                                                                        `crc:"1196177737"`
+	Global_mod_loot_tag                                                      EditCrc                                                                                          `crc:"2567042273"`
+	Instanced_ai_loot_clear_time_mins                                        AzInt32                                                                                          `crc:"2012145171"`
+	Instanced_loot_chest_reset_time_mins                                     AzInt32                                                                                          `crc:"3502766460"`
+	Instanced_slayerscript_state_reset_time_mins                             AzInt32                                                                                          `crc:"1806419256"`
+	Inventory_durability_loss_ratio                                          AzFloat32                                                                                        `crc:"2855985132"`
+	Item_rarity_data                                                         AZStd__vector_ItemRarityData                                                                     `crc:"769099946"`
+	Kill_game_event_id                                                       EditCrc                                                                                          `crc:"2666012534"`
+	Level_damage_multiplier                                                  AzFloat32                                                                                        `crc:"1251230836"`
+	Level_loot_tag                                                           EditCrc                                                                                          `crc:"2485241194"`
+	Loot_biasing_exception_item_classes                                      UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__ `crc:"2309037884"`
+	Loot_biasing_item_classes                                                UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__ `crc:"649808250"`
+	Loot_table_diverted_loot_tag                                             EditCrc                                                                                          `crc:"1930234241"`
+	Max_ai_loot_receiver_count                                               AzInt32                                                                                          `crc:"4029712458"`
+	Max_armor_mitigation                                                     AzFloat32                                                                                        `crc:"129293126"`
+	Max_camp_respawn_distance_meters                                         AzInt32                                                                                          `crc:"4043513367"`
+	Max_instanced_loot_chest_count                                           AzInt32                                                                                          `crc:"3545799627"`
+	Max_instanced_slayerscript_state_count                                   AzInt32                                                                                          `crc:"2548198547"`
+	Max_points_per_attribute                                                 AzUInt32                                                                                         `crc:"4240139679"`
+	Max_pvp_respawn_extend_deaths                                            AzUInt32                                                                                         `crc:"4081838422"`
+	Min_armor_mitigation                                                     AzFloat32                                                                                        `crc:"785000030"`
+	Min_content_level_loot_tag                                               EditCrc                                                                                          `crc:"1109938975"`
+	Min_enemy_content_level_loot_tag                                         EditCrc                                                                                          `crc:"3943173529"`
+	Min_level_roll_gem_slot                                                  AzInt32                                                                                          `crc:"36781581"`
+	Min_level_roll_perks                                                     AzInt32                                                                                          `crc:"3869727889"`
+	Min_poi_content_level_loot_tag                                           EditCrc                                                                                          `crc:"198007638"`
+	Min_possible_weapon_gear_score                                           AzUInt32                                                                                         `crc:"1599705814"`
+	Minimum_ai_level_for_territory_standing                                  AzUInt32                                                                                         `crc:"99919581"`
+	Minimum_salvage_quantity                                                 AzInt32                                                                                          `crc:"1544845026"`
+	Number_of_entries_that_need_to_be_discovered_to_advance_to_the_next_step AzUInt32                                                                                         `crc:"2460882875"`
+	Objective_gameeventid                                                    EditCrc                                                                                          `crc:"3377791829"`
+	One_handed_gathering_distance                                            AzFloat32                                                                                        `crc:"3236005074"`
+	Paperdoll_slot_unlocks_by_level                                          AZStd__vector_AZStd__pair_0                                                                      `crc:"615778146"`
+	Paperdoll_slot_unlocks_by_tradeskill_rank                                UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286_UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677              `crc:"3448727571"`
+	Perk_chance_itemid                                                       AzString                                                                                         `crc:"1084564535"`
+	Perk_chance_modifier                                                     AzFloat32                                                                                        `crc:"3299387875"`
+	Perk_generation_data                                                     PerkGenerationData                                                                               `crc:"3853421234"`
+	Physical_armor_scale_factor                                              AzFloat32                                                                                        `crc:"2475629711"`
+	Player_age_display_string                                                AzString                                                                                         `crc:"1065784067"`
+	Player_display_level_unlock_free_gear_sets                               AzInt32                                                                                          `crc:"215894519"`
+	Poi_level_loot_tag                                                       EditCrc                                                                                          `crc:"846282420"`
+	Post_ftue_achievement_id_unlocks                                         AZStd__vector_AZStd__string                                                                      `crc:"2201477537"`
+	Propertytaxratemax                                                       AzFloat32                                                                                        `crc:"3459536558"`
+	Propertytaxratemin                                                       AzFloat32                                                                                        `crc:"4063848951"`
+	Pvp_camp_respawn_cooldown_seconds                                        AzUInt32                                                                                         `crc:"9917307"`
+	Pvp_death_extend_timeout_seconds                                         AzUInt32                                                                                         `crc:"3486674766"`
+	Pvp_inventory_durability_loss_multiplier                                 AzFloat32                                                                                        `crc:"2780560358"`
+	Pvp_paperdoll_durability_loss_multiplier                                 AzFloat32                                                                                        `crc:"2010798859"`
+	Refiningfeeratemax                                                       AzFloat32                                                                                        `crc:"2350428674"`
+	Refiningfeeratemin                                                       AzFloat32                                                                                        `crc:"2954202459"`
+	Repair_max_durability_cost                                               AzFloat32                                                                                        `crc:"2648225034"`
+	Repair_resource_modifier                                                 AzFloat32                                                                                        `crc:"856481591"`
+	Rested_exp_max_percentage                                                AzFloat32                                                                                        `crc:"2665704463"`
+	Rested_exp_modifier                                                      AzFloat32                                                                                        `crc:"4038702296"`
+	Rested_exp_percentage_per_hour                                           AzFloat32                                                                                        `crc:"961084086"`
+	Rested_exp_threshold_hours                                               AzUInt32                                                                                         `crc:"2710447355"`
+	Round_gearscore_up_                                                      AzBool                                                                                           `crc:"2104736165"`
+	Salvage_dust_modifier                                                    AzFloat32                                                                                        `crc:"1047457124"`
+	Salvage_gold_tier_modifiers                                              AZStd__vector_Float                                                                              `crc:"1864432170"`
+	Salvage_item_gear_score_loot_tag                                         EditCrc                                                                                          `crc:"3476169896"`
+	Salvage_item_rarity_loot_tag                                             EditCrc                                                                                          `crc:"2119527783"`
+	Salvage_item_tier_loot_tag                                               EditCrc                                                                                          `crc:"305498271"`
+	Salvage_max_percent                                                      AzFloat32                                                                                        `crc:"2441712665"`
+	Salvage_min_percent                                                      AzFloat32                                                                                        `crc:"1568993046"`
+	Settaxorfeecooldowninmin                                                 AzUInt32                                                                                         `crc:"666278674"`
+	Stamina_cost_entry                                                       AzString                                                                                         `crc:"4042830083"`
+	Status_effect_category_limit_crcs                                        AZStd__unordered_flat_map_0                                                                      `crc:"219012040"`
+	Status_effect_category_limits                                            AZStd__unordered_flat_map                                                                        `crc:"2118208978"`
+	Structure_rotation_amount___deg__                                        AzFloat32                                                                                        `crc:"918781310"`
+	Summer_fish_rarity_loot_tag                                              EditCrc                                                                                          `crc:"1792141096"`
+	The_amount_of_xp_gained_per_step                                         AzUInt32                                                                                         `crc:"3038743946"`
+	Tradingtaxratemax                                                        AzFloat32                                                                                        `crc:"3355861281"`
+	Tradingtaxratemin                                                        AzFloat32                                                                                        `crc:"4094385784"`
+	Two_handed_gathering_distance                                            AzFloat32                                                                                        `crc:"1159889716"`
+	User_camera_max_sensitivity                                              AzFloat32                                                                                        `crc:"3421740222"`
+	User_camera_min_sensitivity                                              AzFloat32                                                                                        `crc:"3964205967"`
 }
 
 type PlayerAudioProxyComponent struct {
@@ -11229,6 +11269,10 @@ type ScriptPropertyGroup struct {
 	Properties AZStd__vector_0                   `crc:"2277716423"`
 }
 
+type SeasonsRewardsComponent struct {
+	BaseClass1 FacetedComponent `crc:"3566360373"`
+}
+
 type SeasonsRewardsComponentClientFacet struct {
 	BaseClass1 ClientFacet `crc:"3566360373"`
 }
@@ -12066,6 +12110,10 @@ type StatusEffectsComponentServerFacet struct {
 	M_initialstatuseffects   AZStd__vector_EffectData `crc:"1909366757"`
 }
 
+type StealthInvisibilityComponent struct {
+	BaseClass1 FacetedComponent `crc:"3566360373"`
+}
+
 type StealthInvisibilityComponentClientFacet struct {
 	BaseClass1 ClientFacet `crc:"3566360373"`
 }
@@ -12715,6 +12763,15 @@ type TransformLinkComponentClientFacet struct {
 	BaseClass1 ClientFacet `crc:"3566360373"`
 }
 
+type TransformLinkComponentServerFacet struct {
+	BaseClass1             ServerFacet                                                           `crc:"3566360373"`
+	M_attachmentdatas      UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42_TransformLinkConnectionData `crc:"1402650918"`
+	M_childattachevents    UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7                             `crc:"2670938974"`
+	M_childdestroyevents   UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7                             `crc:"3483356810"`
+	M_childdetachevents    UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7                             `crc:"1760044869"`
+	M_delaydetachtodestroy AzBool                                                                `crc:"2508433346"`
+}
+
 type TransformLinkConnectionData struct {
 	M_childattachmentname AzString `crc:"2351351760"`
 	M_sliceAsset          AzAsset  `crc:"1745424384"`
@@ -13075,17 +13132,6 @@ type UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8 struct {
 	Value2 AZStd__vector_AZStd__pair `crc:"997998048"`
 }
 
-type UUID_16738E68_CBA3_4B1E_948C_D30E5C5189F6 struct {
-	BaseClass1     TimelineClip `crc:"3566360373"`
-	CRC_282353030  AzFloat32    `crc:"282353030"`
-	CRC_3194852418 AzFloat32    `crc:"3194852418"`
-	CRC_3772719300 AzString     `crc:"3772719300"`
-}
-
-type UUID_1937FE82_E3FC_4F21_9788_8BDFEC29A43B struct {
-	BaseClass1 FacetedComponent `crc:"3566360373"`
-}
-
 type UUID_1CED0D23_5BD7_50DD_80BB_21B6081B8F00_Javelin__CutsceneEntityEvent struct {
 	Element []Javelin__CutsceneEntityEvent `crc:"1094737465"`
 }
@@ -13113,10 +13159,6 @@ type UUID_31D79E49_9CD5_51BF_8403_F9A16BEDECF5_CustomDataEntry struct {
 	Element CustomDataEntry `crc:"1094737465"`
 }
 
-type UUID_32737B9C_7A9F_547A_868D_79E601645FC8 struct {
-	M_valuecrc AzUInt32 `crc:"3965275927"`
-}
-
 type UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_HealthThresholdBossPhaseConfig struct {
 	Element any `crc:"1094737465"`
 }
@@ -13127,11 +13169,6 @@ type UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D_UUID_BD7E940E_6D84_5185_87C3_99D6
 
 type UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286_UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677 struct {
 	Element []UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677 `crc:"1094737465"`
-}
-
-type UUID_36675533_C431_4EAD_9883_846E3696BF99 struct {
-	BaseClass1 SlayerScriptData                                        `crc:"3566360373"`
-	Events     UUID_77B3BC35_E577_5281_AEBE_11C0E1B622BF_GameModeEvent `crc:"1401378634"`
 }
 
 type UUID_3B1D6FE2_1CA5_51ED_A0B2_99392B9AE7D1_RtpcMeterSettings struct {
@@ -13152,12 +13189,6 @@ type UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2_UUID_6270FE26_CE9D_5972_B088_E57B
 
 type UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42_TransformLinkConnectionData struct {
 	Element []TransformLinkConnectionData `crc:"1094737465"`
-}
-
-type UUID_54CB00F3_C64E_48B9_9779_859545BF46B3 struct {
-	BaseClass1       SlayerScriptData                                           `crc:"3566360373"`
-	Events           UUID_777E8FDA_6A1B_55FD_BAF9_8AFF3C0B7397_AchievementEvent `crc:"1401378634"`
-	Usevariationdata AzBool                                                     `crc:"1522165786"`
 }
 
 type UUID_59EAF609_9D81_561C_A744_77F737CF92C4 struct {
@@ -13193,11 +13224,6 @@ type UUID_661C1835_82E9_519E_852C_4586C3435B17_Unsigned_char struct {
 	Element AzUInt8 `crc:"1094737465"`
 }
 
-type UUID_69C38C99_611D_49F8_AE99_F42D54777FA9 struct {
-	BaseClass1           SlayerScriptData                                        `crc:"3566360373"`
-	Lootlockentityevents UUID_B6E08B3F_F4E1_50C2_8752_3CF3C4AB414A_LootLockEvent `crc:"1110540403"`
-}
-
 type UUID_6C3DEDA3_D591_59B8_80FF_4148F8C2A5EC_InstancedSlayerScriptPart struct {
 	Element []InstancedSlayerScriptPart `crc:"1094737465"`
 }
@@ -13206,8 +13232,8 @@ type UUID_6D152BFE_EC46_52D0_9F1A_24DD1151F86B_SlayerScriptDataContainer struct 
 	Element []SlayerScriptDataContainer `crc:"1094737465"`
 }
 
-type UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_UUID_32737B9C_7A9F_547A_868D_79E601645FC8 struct {
-	Element []UUID_32737B9C_7A9F_547A_868D_79E601645FC8 `crc:"1094737465"`
+type UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__ struct {
+	Element []EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__ `crc:"1094737465"`
 }
 
 type UUID_777E8FDA_6A1B_55FD_BAF9_8AFF3C0B7397_AchievementEvent struct {
@@ -13244,23 +13270,6 @@ type UUID_98F0B819_838F_5548_B645_4CF0959F2D43_UUID_14F31861_6045_5B62_B6D2_1FA6
 
 type UUID_9C719DD5_F8D3_59D3_B55B_627422922A43_Int struct {
 	Element []AzInt32 `crc:"1094737465"`
-}
-
-type UUID_9D2F173A_AE75_4A1E_8F6F_D476C587F313 struct {
-	BaseClass1          FacetedComponent                                                                                              `crc:"3566360373"`
-	M_timelinecomponent LocalComponentRef_InterfaceType__const_char____cdecl_MB__GetTypeName_class_Javelin__TimelineComponent__void__ `crc:"438240765"`
-}
-
-type UUID_A09068F0_7FB8_42E8_B4EA_9A458CAF39E9 struct {
-	BaseClass1 FacetedComponent `crc:"3566360373"`
-}
-
-type UUID_AC608BE6_77F3_5AF5_A7A9_607621389D91 struct {
-	Chunks UUID_283F62D6_A310_5D1E_A38E_409DB6C165A4_ChunkEntry `crc:"3343762613"`
-}
-
-type UUID_AD73F519_A850_4FF0_8733_E7AC9D228C8B struct {
-	BaseClass1 FacetedComponent `crc:"3566360373"`
 }
 
 type UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833 struct {
@@ -13347,23 +13356,6 @@ type UUID_F6E6495E_59A8_5724_8DE1_D6B68162DB92_CharacterColliderConfig struct {
 type UUID_F7F30D6D_06D0_5533_ACB3_8FBE9D047904 struct {
 	Value1 AzString                `crc:"2725604442"`
 	Value2 AZStd__vector_EventData `crc:"997998048"`
-}
-
-type UUID_F8EAF34E_7A4A_436F_8A8A_141D8F3459A2 struct {
-	BaseClass1             ServerFacet                                                           `crc:"3566360373"`
-	M_attachmentdatas      UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42_TransformLinkConnectionData `crc:"1402650918"`
-	M_childattachevents    UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7                             `crc:"2670938974"`
-	M_childdestroyevents   UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7                             `crc:"3483356810"`
-	M_childdetachevents    UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7                             `crc:"1760044869"`
-	M_delaydetachtodestroy AzBool                                                                `crc:"2508433346"`
-}
-
-type UUID_FD06ACF8_D56A_4E96_BED7_7B7CEDF79EDC struct {
-	Alpha          AzFloat32     `crc:"3504355690"`
-	BaseClass1     AZ__Component `crc:"3566360373"`
-	CRC_3098734442 AzString      `crc:"3098734442"`
-	CRC_3617527467 AzInt32       `crc:"3617527467"`
-	Color          AzColor       `crc:"1716930793"`
 }
 
 type UUID_FD14840B_21BD_5C50_9FAC_D20CE0B95474 struct {
@@ -13638,8 +13630,8 @@ type UiInteractPrivilegeId struct {
 
 type UiInteractableComponent struct {
 	BaseClass1                     AZ__Component        `crc:"3566360373"`
-	CRC_390589540                  AzFloat32            `crc:"390589540"`
 	Disabledstateactions           AZStd__vector_4      `crc:"4247406732"`
+	FrictionOverrideValue          AzFloat32            `crc:"390589540"`
 	Hoverendactionname             AzString             `crc:"723728796"`
 	Hoverstartactionname           AzString             `crc:"4055209061"`
 	Hoverstateactions              AZStd__vector_4      `crc:"2477468393"`
@@ -13793,6 +13785,14 @@ type UiProgressBarComponent struct {
 	Vertical          AzBool        `crc:"2826335388"`
 }
 
+type UiQRCodeComponent struct {
+	Alpha                AzFloat32     `crc:"3504355690"`
+	BaseClass1           AZ__Component `crc:"3566360373"`
+	Color                AzColor       `crc:"1716930793"`
+	EncodedText          AzString      `crc:"3098734442"`
+	ErrorCorrectionLevel AzInt32       `crc:"3617527467"`
+}
+
 type UiRadioButtonComponent struct {
 	BaseClass1              UiInteractableComponent `crc:"3566360373"`
 	Changedactionname       AzString                `crc:"4043642931"`
@@ -13915,25 +13915,25 @@ type UiTelemetryEventTypePair struct {
 }
 
 type UiTextComponent struct {
-	Alpha            AzFloat32                                             `crc:"3504355690"`
-	BaseClass1       AZ__Component                                         `crc:"3566360373"`
-	CRC_3074988142   AzBool                                                `crc:"3074988142"`
-	Caseoverride     AzInt32                                               `crc:"1508381331"`
-	Characterspacing AzFloat32                                             `crc:"4090525812"`
-	Color            AzColor                                               `crc:"1716930793"`
-	Effectindex      AzUInt32                                              `crc:"1295196387"`
-	Fontfilename     AzFramework__SimpleAssetReference_LyShine__FontAsset_ `crc:"1155464559"`
-	Fontsize         AzFloat32                                             `crc:"3866138890"`
-	Imagesenabled    AzBool                                                `crc:"1798347585"`
-	Linespacing      AzFloat32                                             `crc:"618458458"`
-	Markupenabled    AzBool                                                `crc:"2716121984"`
-	Minshrinkscale   AzFloat32                                             `crc:"2236011288"`
-	Overflowmode     AzInt32                                               `crc:"2152931211"`
-	Shrinktofit      AzInt32                                               `crc:"2787519099"`
-	Text             AzString                                              `crc:"999008199"`
-	Texthalignment   AzInt32                                               `crc:"1441707225"`
-	Textvalignment   AzInt32                                               `crc:"1820919170"`
-	Wraptextsetting  AzInt32                                               `crc:"2934723730"`
+	Alpha               AzFloat32                                             `crc:"3504355690"`
+	BaseClass1          AZ__Component                                         `crc:"3566360373"`
+	Caseoverride        AzInt32                                               `crc:"1508381331"`
+	Characterspacing    AzFloat32                                             `crc:"4090525812"`
+	Color               AzColor                                               `crc:"1716930793"`
+	Effectindex         AzUInt32                                              `crc:"1295196387"`
+	Fontfilename        AzFramework__SimpleAssetReference_LyShine__FontAsset_ `crc:"1155464559"`
+	Fontsize            AzFloat32                                             `crc:"3866138890"`
+	Imagesenabled       AzBool                                                `crc:"1798347585"`
+	Linespacing         AzFloat32                                             `crc:"618458458"`
+	Markupenabled       AzBool                                                `crc:"2716121984"`
+	Minshrinkscale      AzFloat32                                             `crc:"2236011288"`
+	Overflowmode        AzInt32                                               `crc:"2152931211"`
+	Shrinktofit         AzInt32                                               `crc:"2787519099"`
+	Text                AzString                                              `crc:"999008199"`
+	Texthalignment      AzInt32                                               `crc:"1441707225"`
+	Textvalignment      AzInt32                                               `crc:"1820919170"`
+	UpdateOnInputChange AzBool                                                `crc:"3074988142"`
+	Wraptextsetting     AzInt32                                               `crc:"2934723730"`
 }
 
 type UiTextInputAutoCompleteComponent struct {
@@ -13989,19 +13989,19 @@ type UnifiedInteractData struct {
 }
 
 type UnifiedInteractOptionComponent struct {
-	Additional_info_root_entity        EntityId      `crc:"3117434055"`
-	BaseClass1                         AZ__Component `crc:"3566360373"`
-	Bg_entity                          EntityId      `crc:"1055246457"`
-	Button_entity_id                   EntityId      `crc:"3250038483"`
-	CRC_1846782970                     EntityId      `crc:"1846782970"`
-	CRC_278845058                      EntityId      `crc:"278845058"`
-	Hold_progress_bar_entity           EntityId      `crc:"2778793672"`
-	Hover_text_entity_id               EntityId      `crc:"4265299037"`
-	Icon_hold_button_entity            EntityId      `crc:"568530794"`
-	Icon_hold_secondary_button_entity  EntityId      `crc:"3507553079"`
-	Icon_press_button_entity           EntityId      `crc:"660189541"`
-	Icon_press_secondary_button_entity EntityId      `crc:"2470599817"`
-	Name_text_entity                   EntityId      `crc:"1416900352"`
+	Additional_info_root_entity               EntityId      `crc:"3117434055"`
+	BaseClass1                                AZ__Component `crc:"3566360373"`
+	Bg_entity                                 EntityId      `crc:"1055246457"`
+	Button_entity_id                          EntityId      `crc:"3250038483"`
+	Hold_Primary_Interact_Progress_Bar_entity EntityId      `crc:"1846782970"`
+	Hold_Secondary_Progress_Bar_entity        EntityId      `crc:"278845058"`
+	Hold_progress_bar_entity                  EntityId      `crc:"2778793672"`
+	Hover_text_entity_id                      EntityId      `crc:"4265299037"`
+	Icon_hold_button_entity                   EntityId      `crc:"568530794"`
+	Icon_hold_secondary_button_entity         EntityId      `crc:"3507553079"`
+	Icon_press_button_entity                  EntityId      `crc:"660189541"`
+	Icon_press_secondary_button_entity        EntityId      `crc:"2470599817"`
+	Name_text_entity                          EntityId      `crc:"1416900352"`
 }
 
 type UnifiedInteractOptionsComponent struct {

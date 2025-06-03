@@ -2,7 +2,7 @@ import type { GameComponent, GameComponentType } from './game-component'
 import { GameService, GameServiceContainer, GameServiceQueryOptions, GameServiceType } from './game-service'
 
 export class GameEntity {
-  public id: number
+  public id: number | string
   public name: string
   public game: GameServiceContainer
   private componentByType = new Map<any, GameComponent>()

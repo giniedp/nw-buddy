@@ -60,7 +60,7 @@ export interface Entity {
   __type: string
   id: {
     __type: string
-    id: 9211194748935
+    id: string
   }
   name: string
   components: EntityComponents

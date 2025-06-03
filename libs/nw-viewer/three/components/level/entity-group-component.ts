@@ -16,6 +16,7 @@ export interface ThreeEntitiesGroupComponentOptions {
 }
 
 const DEBUG_LAYER = '' // 'dungeon_script'
+const SHOW_ENCOUNTERS = ['sandworm', 'dungeon', 'raid', 'trial', 'daily', 'quest']
 
 export class EntityGroupComponent implements GameComponent {
   private data: ThreeEntitiesGroupComponentOptions
@@ -66,15 +67,15 @@ export function instantiateEntities(collection: GameEntityCollection, list: Enti
   const dubplicates: Record<string, number> = {}
   let dublicatesCount = 0
   for (const item of list) {
-    if (item.vital?.vitalsId?.toLowerCase() == 'naga_angryearth') {
-      // TODO: naga, where are you?
-      console.log('VITAL', item)
-    }
     if (!item.model) {
       // TODO: handle non-model items
       continue
     }
     if (DEBUG_LAYER && item.layer?.toLowerCase() !== DEBUG_LAYER) {
+      continue
+    }
+    if (item.encounterName && !SHOW_ENCOUNTERS.includes(item.encounterName)) {
+      console.debug('skip encounter', item.encounterName, item.encounter)
       continue
     }
     const key = `${item.model}#${item.material}`

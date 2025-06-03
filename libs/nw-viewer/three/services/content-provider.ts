@@ -2,12 +2,15 @@ import PQueue from 'p-queue'
 import { Observable } from 'rxjs'
 import {
   Cache,
+  Camera,
   Clock,
   LoaderUtils,
   LoadingManager,
   Material,
   Mesh,
   MeshPhysicalMaterial,
+  Object3D,
+  Scene,
   Texture,
   Vector2,
 } from 'three'
@@ -49,10 +52,15 @@ export class ContentProvider implements GameService {
   private clock: Clock
 
   private taskQueue: Array<() => void> = []
-  private promiseQueue = new PQueue({
+  private loadQueue = new PQueue({
     concurrency: 5,
     autoStart: true,
   })
+  private compileQueue = new PQueue({
+    concurrency: 5,
+    autoStart: true,
+  })
+  private prerenderQueue = new TextureQueue()
 
   public game: GameServiceContainer
 
@@ -91,6 +99,7 @@ export class ContentProvider implements GameService {
   }
 
   private update = () => {
+    this.prerenderQueue.update(this.renderer)
     const task = this.taskQueue.shift()
     if (task) {
       task()
@@ -129,14 +138,20 @@ export class ContentProvider implements GameService {
     loader.register((parser) => new GLTFNwMaterialExtension(parser))
     loader.register((parser) => new GLTFSpecularGlossinessExtension(parser))
     loader.setPath('/')
-    const result = await this.promiseQueue.add(async () => {
-      const gltf = await loader.loadAsync(url)
-      if (!abort?.signal.aborted) {
-        await this.compileAsync(gltf)
-      }
-      return gltf
+    const result = await this.loadQueue.add(async () => {
+      return await loader.loadAsync(url)
     })
     const gltf = result || null
+
+    await this.compileQueue.add(async () => {
+      if (!abort?.signal.aborted && gltf) {
+        await this.compileAsync(gltf)
+      }
+    })
+    if (!abort?.signal.aborted && gltf) {
+      await this.prerenderQueue.schedule(gltf.scene, abort)
+    }
+
     const animations = gltf?.parser.json['extras']?.['animationList'] || []
     const asset = { gltf, source: url, animationList: animations }
     // resolve one per frame to avoid blocking the main thread
@@ -242,7 +257,6 @@ export class ContentProvider implements GameService {
     const onBeforeRender = material.onBeforeRender
     material.onBeforeRender = (renderer, scene, camera, geometry, material, group) => {
       for (const animation of animations) {
-
         animation(renderer)
       }
       onBeforeRender.call(material, renderer, scene, camera, geometry, material, group)
@@ -292,4 +306,71 @@ function disposeAsset(asset: ModelAsset) {
       }
     }
   })
+}
+
+class TextureQueue {
+  private queue: TextureTask[] = []
+
+  public update(renderer: RendererProvider) {
+    if (this.queue.length === 0) {
+      return
+    }
+
+    let limit = 5
+    while (limit > 0 && this.queue.length > 0) {
+      limit--
+      const texture = this.queue[0].textures.shift()
+      if (texture) {
+        renderer.renderer.initTexture(texture)
+      }
+      if (this.queue[0].textures.length === 0) {
+        this.queue[0].resolve()
+        this.queue.shift()
+      }
+    }
+  }
+
+  public schedule(asset: Object3D, abort?: AbortController): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.queue.push({
+        textures: getTextures(asset),
+        abort,
+        resolve,
+      })
+    })
+  }
+}
+
+interface TextureTask {
+  textures: Texture[]
+  abort: AbortController
+  resolve: () => void
+}
+
+function getTextures(object: Object3D) {
+  const result: Texture[] = []
+  object.traverse((node) => {
+    if (node instanceof Mesh) {
+      if (Array.isArray(node.material)) {
+        for (const material of node.material) {
+          getTexturesFromMaterial(material, result)
+        }
+      } else if (node.material) {
+        getTexturesFromMaterial(node.material, result)
+      }
+    }
+  })
+  return result
+}
+
+function getTexturesFromMaterial(material: Material, result: Texture[]) {
+  if (!material) {
+    return
+  }
+  for (const key in material) {
+    const value = material[key]
+    if (value && value instanceof Texture) {
+      result.push(value)
+    }
+  }
 }

@@ -100,6 +100,7 @@ export class KeyboardListener extends EventEmitter {
     this.eventTarget.addEventListener('keyup', this.onKeyUp)
     // visibility events
     document.addEventListener('visibilitychange', this.onNeedsClear)
+    document.addEventListener('contextmenu', this.onNeedsClear)
     document.addEventListener('blur', this.onNeedsClear)
     window.addEventListener('blur', this.onNeedsClear)
     // delegated events
@@ -117,6 +118,7 @@ export class KeyboardListener extends EventEmitter {
     this.eventTarget.removeEventListener('keyup', this.onKeyUp)
     // visibility events
     document.removeEventListener('visibilitychange', this.onNeedsClear)
+    document.removeEventListener('contextmenu', this.onNeedsClear)
     document.removeEventListener('blur', this.onNeedsClear)
     window.removeEventListener('blur', this.onNeedsClear)
     // delegated events

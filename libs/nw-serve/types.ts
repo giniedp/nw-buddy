@@ -80,7 +80,7 @@ export interface ChunkInfo {
 }
 
 export interface EntityInfo {
-  id: number
+  id: string
   name: string
   file: string
   transform: number[]
@@ -89,7 +89,8 @@ export interface EntityInfo {
   instances: number[][]
   light: LightInfo
   vital: VitalSpawnInfo
-  encounter: EncounterInfo
+  encounter: string
+  encounterName: string
   maxViewDistance: number
   layer: string
 }
@@ -102,11 +103,6 @@ export interface VitalSpawnInfo {
   statusEffects: string[]
   tags: string[]
   damageTable: string
-}
-
-export interface EncounterInfo {
-  name: string
-  stages: string[]
 }
 
 export interface LightInfo {

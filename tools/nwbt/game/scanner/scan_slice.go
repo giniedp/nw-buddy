@@ -2,7 +2,6 @@ package scanner
 
 import (
 	"iter"
-	"log/slog"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
@@ -444,11 +443,11 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 				case nwt.EncounterManagerComponent:
 					tmpTm := node.Transform
 					// node.Entity.Name
-					node.ContextSetValue(ctxEncounterName, getEncounterName(string(node.Entity.Name)))
+					node.ContextSetValue(ctxEncounterName, game.ParseEncounterName(string(node.Entity.Name)))
 					if encounterFallback != "" {
 						node.ContextProvideIfMissing(ctxSpawnerName, encounterFallback)
 					}
-					for _, spawn := range walkEncounterSpawns(node.Slice, v.M_stages.Element) {
+					for _, spawn := range game.WalkEncounterSpawns(node.Slice, v.M_stages.Element) {
 						assets := make([]nwt.AzAsset, 0)
 						assets = utils.AppendUniqNoZero(assets, spawn.M_sliceAsset)
 						assets = utils.AppendUniqNoZero(assets, spawn.M_aliasAsset)
@@ -474,95 +473,6 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 			}
 		})
 	}
-}
-
-func walkEncounterSpawns(slice *nwt.SliceComponent, refs []nwt.LocalEntityRef) iter.Seq2[*nwt.AZ__Entity, nwt.SpawnDefinition] {
-	return func(yield func(*nwt.AZ__Entity, nwt.SpawnDefinition) bool) {
-		for _, ref := range refs {
-			entity := game.FindEntityById(slice, ref.EntityId.Id)
-			encounter := findEncounterComponent(entity)
-			if encounter == nil {
-				continue
-			}
-			for _, spawn := range encounter.M_spawntimeline.Element {
-				if !yield(entity, spawn) {
-					return
-				}
-			}
-			for e, spawn := range walkEncounterSpawns(slice, encounter.M_stages.Element) {
-				if !yield(e, spawn) {
-					return
-				}
-			}
-		}
-	}
-}
-
-func findEncounterComponent(entity *nwt.AZ__Entity) *nwt.EncounterComponent {
-	for _, component := range entity.Components.Element {
-		switch v := component.(type) {
-		case nwt.EncounterComponent:
-			return &v
-		}
-	}
-	return nil
-}
-
-func getEncounterName(name string) string {
-	name = strings.ToLower(name)
-	if strings.Contains(name, "RandomEncounter") {
-		return "random"
-	}
-	if strings.Contains(name, "enc_darkness") {
-		// e.g.: "Enc_Darkness_Major_Monolith_00"
-		return "darkness"
-	}
-	if strings.Contains(name, "lootgoblin") || strings.Contains(name, "rafflebones") {
-		// e.g.: "Enc_WorldEvent_LootGoblin_00"
-		// e.g.: "encounter_rafflebones_portal"
-		return "goblin"
-	}
-	if strings.Contains(name, "siege_fort_") {
-		// e.g.: "Siege_Fort_Brightwood"
-		return "siege"
-	}
-	if strings.Contains(name, "worldboss") {
-		// e.g.: "worldevent_enc_worldboss_admiralbrute"
-		return "worldboss"
-	}
-	if strings.Contains(name, "springtide") {
-		// e.g.: "enc_springtide_activity_wispybloom_01"
-		return "springtide"
-	}
-	if strings.Contains(name, "worldevent") {
-		// e.g.: "enc_worldevent_mimic_statue_corrupted_acolyte"
-		return "worldevent"
-	}
-	if strings.Contains(name, "sandworm") {
-		// e.g.: "enc_sandworm_glimpseevent_00"
-		return "sandworm"
-	}
-	if strings.Contains(name, "hunt_the_hunter") {
-		// e.g.: "enc_fl_hunt_the_hunter_turkeytodrake"
-		return "hunt_the_hunter"
-	}
-	if strings.HasPrefix(name, "dg_") {
-		// e.g.: "dg_enc_cutlasskeys_00_dryadsiren"
-		return "dungeon"
-	}
-	if strings.HasPrefix(name, "raid_") {
-		// e.g.: "raid_enc_cutlasskeys_00_ch01_clearing"
-		return "raid"
-	}
-	if strings.Contains(name, "trial_") {
-		// e.g.: "enc_trial_hatchery_soloplus"
-		return "trial"
-	}
-	if name != "" {
-		slog.Debug("unmapped encounter", "name", name)
-		return "other"
-	}
-	return ""
 }
 
 func getSpawnerName(name string) string {

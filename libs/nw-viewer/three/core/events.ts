@@ -1,11 +1,5 @@
 import { Observable } from "rxjs"
 
-// interface EventRegistry {
-//   handler: EventHandler
-//   context: any
-//   ctx: any
-// }
-
 /**
  * @public
  */

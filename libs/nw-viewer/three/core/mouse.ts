@@ -164,6 +164,7 @@ export class MouseListener extends EventEmitter {
     this.eventTarget.addEventListener('mouseup', this.onCaptureStateListener)
     // visibility events
     document.addEventListener('visibilitychange', this.onClearStateListener)
+    document.addEventListener('contextmenu', this.onClearStateListener)
     document.addEventListener('blur', this.onClearStateListener)
     window.addEventListener('blur', this.onClearStateListener)
     // delegated events
@@ -186,6 +187,7 @@ export class MouseListener extends EventEmitter {
     this.eventTarget.removeEventListener('mouseup', this.onCaptureStateListener)
     // visibility events
     document.removeEventListener('visibilitychange', this.onClearStateListener)
+    document.removeEventListener('contextmenu', this.onClearStateListener)
     document.removeEventListener('blur', this.onClearStateListener)
     window.removeEventListener('blur', this.onClearStateListener)
     // delegated events

@@ -30,6 +30,10 @@ func (it CrcTable) PutName(name string) {
 	it[crc] = name
 }
 
+func (it CrcTable) HasName(name string) bool {
+	return it.Has(str.Crc32(name))
+}
+
 func LoadOrCreateCrcTable(path string) CrcTable {
 	table, err := LoadCrcTable(path)
 	if err != nil {
