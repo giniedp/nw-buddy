@@ -45,20 +45,20 @@ export class GameViewerCharacterDirective {
 
   protected modelComponent = computed(() => this.entity()?.component(SkinnedMeshComponent))
   protected modelResource = rxResource({
-    request: this.modelComponent,
-    loader: ({ request }) => fromBObservable(request?.onDataLoaded),
+    params: this.modelComponent,
+    stream: ({ params }) => fromBObservable(params?.onDataLoaded),
   })
   protected modelData = this.modelResource.value
 
   protected actionComponent = computed(() => this.entity()?.component(ActionlistComponent))
   protected actionData = rxResource({
-    request: this.actionComponent,
-    loader: ({ request }) => fromBObservable(request?.onDataLoaded),
+    params: this.actionComponent,
+    stream: ({ params }) => fromBObservable(params?.onDataLoaded),
   }).value
 
   private vitalOptionsList = resource({
-    request: this.vitalId,
-    loader: async ({ request }) => loadVitalsOptions(request, this.db),
+    params: this.vitalId,
+    loader: async ({ params }) => loadVitalsOptions(params, this.db),
   })
 
   public constructor() {

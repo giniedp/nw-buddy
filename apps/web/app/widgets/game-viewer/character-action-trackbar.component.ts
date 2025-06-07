@@ -71,13 +71,13 @@ export class CharacterActionTrackbarComponent {
   private player = this.service.adbPlayer
 
   protected fragment = rxResource({
-    request: this.player,
-    loader: ({ request }) => request?.fragment$,
+    params: this.player,
+    stream: ({ params }) => params?.fragment$,
   }).value
 
   protected state = rxResource({
-    request: this.player,
-    loader: ({ request }) => request?.playbackState$,
+    params: this.player,
+    stream: ({ params }) => params?.playbackState$,
   }).value
 
   protected progress = computed(() => this.state()?.progress || 0)
