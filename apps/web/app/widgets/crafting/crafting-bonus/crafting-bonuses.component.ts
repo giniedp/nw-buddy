@@ -11,7 +11,7 @@ import {
   signal,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { getPerkMultiplier } from '@nw-data/common'
+import { getPerkMultiplier, getPerkOnlyMultiplier } from '@nw-data/common'
 import { sumBy } from 'lodash'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
@@ -117,8 +117,8 @@ export class CraftingChanceMenuComponent {
               buffs: category.items.map((it) => {
                 return {
                   ...it,
-                  perkMultiplier: getPerkMultiplier(
-                    { ScalingPerGearScore: it.scalingPerGS, ScalingPerGearScoreAttributes: null },
+                  perkMultiplier: getPerkOnlyMultiplier(
+                    { ScalingPerGearScore: it.scalingPerGS },
                     this.store.getSettingGS(it.setting),
                   ),
                 }
@@ -131,8 +131,8 @@ export class CraftingChanceMenuComponent {
                 .map((it) => {
                   return {
                     ...it,
-                    perkMultiplier: getPerkMultiplier(
-                      { ScalingPerGearScore: it.scalingPerGS, ScalingPerGearScoreAttributes: null },
+                    perkMultiplier: getPerkOnlyMultiplier(
+                      { ScalingPerGearScore: it.scalingPerGS },
                       this.store.getSettingGS(it.setting),
                     ),
                   }

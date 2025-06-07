@@ -205,17 +205,34 @@ export function getPerksInherentMODs(
   return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
 }
 
-export function getPerkScalingPerGearScore(
+export function hasPerkScalingPerGearScore(
   perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
+): boolean {
+  return !!perk?.ScalingPerGearScore || !!perk?.ScalingPerGearScoreAttributes
+}
+
+export function getPerkAttributeMultiplier(
+  perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
+  gearScore: number,
 ) {
-  return perk?.ScalingPerGearScore || perk?.ScalingPerGearScoreAttributes
+  return getPerkMultiplier(perk, gearScore)
+}
+
+export function getPerkOnlyMultiplier(
+  perk: Pick<PerkData, 'ScalingPerGearScore'>,
+  gearScore: number,
+) {
+  return getPerkMultiplier({
+    ScalingPerGearScore: perk?.ScalingPerGearScore,
+    ScalingPerGearScoreAttributes: null,
+  }, gearScore)
 }
 
 export function getPerkMultiplier(
   perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
   gearScore: number,
 ) {
-  const scalingPerGearScore = getPerkScalingPerGearScore(perk)
+  const scalingPerGearScore = perk?.ScalingPerGearScore || perk?.ScalingPerGearScoreAttributes
   if (!scalingPerGearScore) {
     return 1
   }

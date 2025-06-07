@@ -2,6 +2,7 @@ import { inject } from '@angular/core'
 import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import {
   getPerkMultiplier,
+  getPerkOnlyMultiplier,
   getStatusEffectEXPCategoricalProgression,
   NW_MAX_GEAR_SCORE,
   patchPrecision,
@@ -592,10 +593,9 @@ function sumBuffs({
         continue
       }
       if (scalingPerGearscore) {
-        scale = getPerkMultiplier(
+        scale = getPerkOnlyMultiplier(
           {
             ScalingPerGearScore: scalingPerGearscore,
-            ScalingPerGearScoreAttributes: null,
           },
           settings.get(`${id}:gs`) ?? NW_MAX_GEAR_SCORE,
         )

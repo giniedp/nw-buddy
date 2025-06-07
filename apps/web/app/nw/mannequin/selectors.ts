@@ -11,7 +11,7 @@ import {
   NW_EQUIP_LOAD_RATIO_SLOW,
   getAmmoTypeFromWeaponTag,
   getAverageGearScore,
-  getPerkScalingPerGearScore,
+  hasPerkScalingPerGearScore,
   getWeaponTagFromWeapon,
   solveAttributePlacingMods,
 } from '@nw-data/common'
@@ -418,7 +418,7 @@ export function selectEquppedAttributes(
     }
 
     let scale = 1
-    if (getPerkScalingPerGearScore(perk)) {
+    if (hasPerkScalingPerGearScore(perk)) {
       scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
     }
 
@@ -493,7 +493,7 @@ export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
       continue
     }
     let scale = 1
-    if (getPerkScalingPerGearScore(perk)) {
+    if (hasPerkScalingPerGearScore(perk)) {
       scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
     }
     const mods = affix.AttributePlacingMods.split(',')

@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import {
   getItemGsBonus,
   getPerkMultiplier,
-  getPerkScalingPerGearScore,
+  getPerkOnlyMultiplier,
+  hasPerkScalingPerGearScore,
   isPerkGenerated,
   walkNwExpression,
 } from '@nw-data/common'
@@ -99,7 +100,7 @@ function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, AbilityDat
 
       let description = tl8.get(perk.Description)
       let scaleInjected = true
-      if (!getPerkScalingPerGearScore(perk)) {
+      if (!hasPerkScalingPerGearScore(perk)) {
         const withInjection = injectMultiplierIntoDescription(description)
         if (withInjection) {
           description = withInjection
@@ -109,7 +110,7 @@ function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, AbilityDat
       }
       description = injectFontColor(description)
 
-      const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+      const scale = getPerkOnlyMultiplier(perk, gearScore + getItemGsBonus(perk, item))
       const stackTotal = group.length
       let stackLimit: number = null
       for (const abilityId of perk.EquipAbility || []) {

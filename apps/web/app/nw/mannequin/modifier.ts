@@ -1,4 +1,10 @@
-import { EquipSlotId, getItemGsBonus, getItemIconPath, getPerkMultiplier } from '@nw-data/common'
+import {
+  EquipSlotId,
+  getItemGsBonus,
+  getItemIconPath,
+  getPerkMultiplier,
+  getPerkOnlyMultiplier,
+} from '@nw-data/common'
 import {
   AbilityData,
   AffixStatData,
@@ -136,13 +142,7 @@ export function* eachModifier<T extends number | string>(
       continue
     }
     if (perk) {
-      scale = getPerkMultiplier(
-        {
-          ScalingPerGearScore: perk.perk?.ScalingPerGearScore,
-          ScalingPerGearScoreAttributes: null,
-        },
-        perk.gearScore,
-      )
+      scale = getPerkOnlyMultiplier(perk.perk, perk.gearScore)
     }
     const source: Required<ModifierSource> = {
       icon: null,
@@ -167,7 +167,7 @@ export function* eachModifier<T extends number | string>(
     }
 
     if (perk) {
-      scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+      scale = getPerkOnlyMultiplier(perk, gearScore + getItemGsBonus(perk, item))
     }
     const source: Required<ModifierSource> = {
       icon: null,
@@ -190,13 +190,7 @@ export function* eachModifier<T extends number | string>(
       continue
     }
     if (perk) {
-      upscale *= getPerkMultiplier(
-        {
-          ScalingPerGearScore: perk.perk?.ScalingPerGearScore,
-          ScalingPerGearScoreAttributes: null,
-        },
-        perk.gearScore,
-      )
+      upscale *= getPerkOnlyMultiplier(perk.perk, perk.gearScore)
     }
     if (scale) {
       upscale *= scale
@@ -223,13 +217,7 @@ export function* eachModifier<T extends number | string>(
         continue
       }
       if (perk) {
-        upscale *= getPerkMultiplier(
-          {
-            ScalingPerGearScore: perk.perk?.ScalingPerGearScore,
-            ScalingPerGearScoreAttributes: null,
-          },
-          perk.gearScore,
-        )
+        upscale *= getPerkOnlyMultiplier(perk.perk, perk.gearScore)
       }
       if (scale) {
         upscale *= scale
