@@ -3,24 +3,21 @@ import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { AttributeRef } from '@nw-data/common'
-import { AttributeDefinition } from '@nw-data/generated'
 import { isEqual } from 'lodash'
-import { combineLatest, debounceTime, distinctUntilChanged, from, map, of, skip } from 'rxjs'
-import { injectNwData } from '~/data'
+import { debounceTime, distinctUntilChanged, of } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { shareReplayRefCount } from '~/utils'
 import { AttributeState, AttributesStore } from './attributes.store'
-
+import { CheckpointTipComponent } from './checkpoint-tip.component'
 @Component({
   selector: 'nwb-attributes-editor',
   templateUrl: './attributes-editor.component.html',
   styleUrls: ['./attributes-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule, LayoutModule],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule, LayoutModule, CheckpointTipComponent],
   providers: [AttributesStore],
   host: {
     class: 'layout-content',
@@ -28,7 +25,6 @@ import { AttributeState, AttributesStore } from './attributes.store'
 })
 export class AttributesEditorComponent {
   private store = inject(AttributesStore)
-  private db = injectNwData()
 
   @Input()
   public set level(value: number) {
@@ -152,25 +148,6 @@ export class AttributesEditorComponent {
     return of(stat.total)
   }
 
-  protected getAbilities(state: AttributeState, points: number) {
-    return combineLatest({
-      abilities: this.db.abilitiesByIdMap(),
-      levels: this.abilitiesLevels(state.ref),
-    }).pipe(
-      map(({ abilities, levels }) => {
-        const ids = levels.find((it) => it.Level === points)?.EquipAbilities || []
-        return ids.map((id) => {
-          const ability = abilities.get(id)
-          return {
-            Name: ability.DisplayName,
-            Description: ability.Description,
-            Icon: ability.Icon,
-          }
-        })
-      }),
-    )
-  }
-
   protected getBulletColor(attr: AttributeState, step: number) {
     const base = attr.base
     const buffs = base + attr.buffs
@@ -190,46 +167,4 @@ export class AttributesEditorComponent {
     }
     return 'zink' as const
   }
-
-  private attrLevels(ref: AttributeRef) {
-    switch (resolveShortType(ref)) {
-      case 'con':
-        return from(this.db.attrCon())
-      case 'str':
-        return from(this.db.attrStr())
-      case 'foc':
-        return from(this.db.attrFoc())
-      case 'int':
-        return from(this.db.attrInt())
-      case 'dex':
-        return from(this.db.attrDex())
-      default:
-        return of<AttributeDefinition[]>([])
-    }
-  }
-
-  public abilitiesLevels(ref: AttributeRef) {
-    return this.attrLevels(ref)
-      .pipe(
-        map((table) => {
-          return table
-            .filter((it) => it.EquipAbilities?.length)
-            .map((it) => ({
-              Level: it.Level,
-              EquipAbilities: it.EquipAbilities,
-            }))
-        }),
-      )
-      .pipe(shareReplayRefCount(1))
-  }
-}
-
-function resolveShortType(type: string) {
-  if (!type) {
-    return null
-  }
-  if (type.length !== 3) {
-    type = type.substring(0, 3)
-  }
-  return type.toLowerCase()
 }
