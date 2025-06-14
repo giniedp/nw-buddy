@@ -3,10 +3,12 @@ package gltf
 import (
 	"fmt"
 	"log/slog"
+	gomath "math"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/buf"
 	"nw-buddy/tools/utils/math"
+	"nw-buddy/tools/utils/math/mat4"
 	"slices"
 	"strings"
 
@@ -298,7 +300,52 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 				default:
 					slog.Warn("Unsupported bone size", "size", stream.ElementSize)
 				}
+			case cgf.STREAM_TYPE_QTANGENTS:
+				r := buf.NewReaderLE(stream.Data)
+				r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
+				normals := make([][3]float32, subset.NumVertices)
+				switch stream.ElementSize {
+				case 8:
+					factor := float32(1.0 / 1023.0)
+					for i := range subset.NumVertices {
+						// decode quaternion
+						x := float32(r.MustReadInt16()) * factor
+						y := float32(r.MustReadInt16()) * factor
+						z := float32(r.MustReadInt16()) * factor
+						w := float32(r.MustReadInt16()) * factor
+
+						// normalize quaternion
+						length := gomath.Sqrt(float64(x*x + y*y + z*z + w*w))
+						x /= float32(length)
+						y /= float32(length)
+						z /= float32(length)
+						w /= float32(length)
+
+						// convert quaternion to matrix
+						m4 := mat4.FromQuatXYZW(x, y, z, w)
+
+						// extract normal from matrix
+						normal := [3]float32{
+							m4[8],
+							m4[9],
+							m4[10],
+						}
+
+						if w > 0 {
+							normal[0] = -normal[0]
+							normal[1] = -normal[1]
+							normal[2] = -normal[2]
+						}
+
+						normals[i] = normal
+
+					}
+				}
+				if _, ok := out.Attributes[gltf.NORMAL]; !ok {
+					out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
+				}
 			default:
+				slog.Debug("unknown", "size", stream.ElementSize, "firstIndex", subset.FirstIndex, "numIndices", subset.NumIndices)
 				slog.Warn("Unsupported stream type", "type", stream.StreamType)
 			}
 		}
