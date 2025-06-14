@@ -304,6 +304,7 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 				r := buf.NewReaderLE(stream.Data)
 				r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
 				normals := make([][3]float32, subset.NumVertices)
+				tangents := make([][3]float32, subset.NumVertices)
 				switch stream.ElementSize {
 				case 8:
 					factor := float32(1.0 / 1023.0)
@@ -339,10 +340,28 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 
 						normals[i] = normal
 
+						// extract normal from matrix
+						tangent := [3]float32{
+							m4[0],
+							m4[1],
+							m4[2],
+						}
+
+						if w > 0 {
+							tangent[0] = -tangent[0]
+							tangent[1] = -tangent[1]
+							tangent[2] = -tangent[2]
+						}
+
+						tangents[i] = tangent
+
 					}
 				}
 				if _, ok := out.Attributes[gltf.NORMAL]; !ok {
 					out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
+				}
+				if _, ok := out.Attributes[gltf.TANGENT]; !ok {
+					out.Attributes[gltf.TANGENT] = modeler.WriteNormal(doc, tangents)
 				}
 			default:
 				slog.Debug("unknown", "size", stream.ElementSize, "firstIndex", subset.FirstIndex, "numIndices", subset.NumIndices)
