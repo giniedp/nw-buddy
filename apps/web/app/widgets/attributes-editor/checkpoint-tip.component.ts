@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core'
+import { Component, computed, effect, input } from '@angular/core'
 import { rxResource } from '@angular/core/rxjs-interop'
 import { AttributeRef } from '@nw-data/common'
 import { AttributeDefinition } from '@nw-data/generated'
@@ -66,7 +66,7 @@ export class CheckpointTipComponent {
       case 'foc':
         return this.db.attrFoc()
       case 'int':
-        return this.db.attrFoc()
+        return this.db.attrInt()
       case 'dex':
         return this.db.attrDex()
       default:
