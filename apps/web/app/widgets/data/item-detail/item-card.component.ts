@@ -46,7 +46,14 @@ export class ItemCardComponent {
     alias: 'entity',
     transform: (value) => (typeof value === 'string' ? value : getItemId(value)),
   })
-  public gsOverride = input<number>()
+  public gsOverride = input<number, string | number>(null, {
+    transform: (value) => {
+      if (typeof value === 'string') {
+        return Number(value)
+      }
+      return value
+    }
+  })
   public gsEditable = input<boolean>()
   public perkOverride = input<Record<string, string>>()
   public perkEditable = input<boolean>()

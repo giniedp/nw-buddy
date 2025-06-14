@@ -128,7 +128,7 @@ export class GearCellSlotComponent {
   }
 
   protected updateGearScore(value: number) {
-    this.gsValue = value
+    this.gsValue = Number(value)
   }
 
   protected stepGearScore(event: WheelEvent) {
