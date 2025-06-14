@@ -419,7 +419,7 @@ export function selectEquppedAttributes(
 
     let scale = 1
     if (hasPerkScalingPerGearScore(perk)) {
-      scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+      scale = getPerkMultiplier(perk, Number(gearScore) + getItemGsBonus(perk, item))
     }
 
     result.con += Math.floor((affix.MODConstitution || 0) * scale)
