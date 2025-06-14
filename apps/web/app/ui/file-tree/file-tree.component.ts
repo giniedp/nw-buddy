@@ -106,7 +106,6 @@ export class FileTreeComponent {
   }
 
   private scrollToSelection() {
-    console.log('scrollToSelection', this.store.selection())
     setTimeout(() => {
       this.viewport().checkViewportSize()
       setTimeout(() => {

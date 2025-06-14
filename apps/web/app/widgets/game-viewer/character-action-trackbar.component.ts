@@ -4,6 +4,7 @@ import type { ProceduralBar, ProceduralLayer } from '@nw-viewer/babylon/adb'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { GameViewerService } from './game-viewer.service'
+import { of } from 'rxjs'
 
 @Component({
   selector: 'nwb-character-action-trackbar',
@@ -72,12 +73,12 @@ export class CharacterActionTrackbarComponent {
 
   protected fragment = rxResource({
     params: this.player,
-    stream: ({ params }) => params?.fragment$,
+    stream: ({ params }) => params?.fragment$ || of(null),
   }).value
 
   protected state = rxResource({
     params: this.player,
-    stream: ({ params }) => params?.playbackState$,
+    stream: ({ params }) => params?.playbackState$ || of(null),
   }).value
 
   protected progress = computed(() => this.state()?.progress || 0)
