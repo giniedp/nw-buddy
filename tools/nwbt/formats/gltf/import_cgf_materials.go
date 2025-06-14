@@ -402,9 +402,11 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 				material.PBRMetallicRoughness.BaseColorFactor = &[4]float64{1, 1, 1, 1}
 			}
 			material.PBRMetallicRoughness.BaseColorFactor[3] = opacity
-			material.AlphaCutoff = nil
-			material.AlphaMode = gltf.AlphaBlend
-			material.DoubleSided = true
+      if mtlAlphaTest == 1.0 {
+        material.AlphaCutoff = nil
+        material.AlphaMode = gltf.AlphaBlend
+        material.DoubleSided = true
+      }
 		}
 
 		if isGlass {
