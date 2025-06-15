@@ -3,10 +3,15 @@ package math
 import "nw-buddy/tools/utils/math/mat4"
 
 type Vec3 = [3]float32
+type Vec4 = [4]float32
 type Quat = [4]float32
 
 func CryToGltfVec3(v Vec3) Vec3 {
 	return Vec3{-v[0], v[2], v[1]}
+}
+
+func CryToGltfVec4(v Vec4) Vec4 {
+	return Vec4{-v[0], v[2], v[1], v[3]}
 }
 
 func CryToGltfQuat(v Quat) Quat {

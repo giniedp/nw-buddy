@@ -304,10 +304,12 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 				r := buf.NewReaderLE(stream.Data)
 				r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
 				normals := make([][3]float32, subset.NumVertices)
-				tangents := make([][3]float32, subset.NumVertices)
+				tangents := make([][4]float32, subset.NumVertices)
 				switch stream.ElementSize {
 				case 8:
-					factor := float32(1.0 / 1023.0)
+					//factor := float32(1.0 / 1023.0)
+					factor := float32(1.0 / 32767.0)
+
 					for i := range subset.NumVertices {
 						// decode quaternion
 						x := float32(r.MustReadInt16()) * factor
@@ -325,44 +327,36 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 						// convert quaternion to matrix
 						m4 := mat4.FromQuatXYZW(x, y, z, w)
 
-						// extract normal from matrix
-						normal := [3]float32{
+						tangent := math.CryToGltfVec4([4]float32{
+							m4[0],
+							m4[1],
+							m4[2],
+							1.0,
+						})
+						if w < 0 {
+							tangent[3] = -1.0
+						}
+						tangents[i] = tangent
+
+						normal := math.CryToGltfVec3([3]float32{
 							m4[8],
 							m4[9],
 							m4[10],
-						}
-
-						if w > 0 {
+						})
+						if w < 0 {
 							normal[0] = -normal[0]
 							normal[1] = -normal[1]
 							normal[2] = -normal[2]
 						}
-
 						normals[i] = normal
-
-						// extract normal from matrix
-						tangent := [3]float32{
-							m4[0],
-							m4[1],
-							m4[2],
-						}
-
-						if w > 0 {
-							tangent[0] = -tangent[0]
-							tangent[1] = -tangent[1]
-							tangent[2] = -tangent[2]
-						}
-
-						tangents[i] = tangent
-
 					}
 				}
 				if _, ok := out.Attributes[gltf.NORMAL]; !ok {
 					out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
 				}
-				if _, ok := out.Attributes[gltf.TANGENT]; !ok {
-					out.Attributes[gltf.TANGENT] = modeler.WriteNormal(doc, tangents)
-				}
+				// if _, ok := out.Attributes[gltf.TANGENT]; !ok {
+				// 	out.Attributes[gltf.TANGENT] = modeler.WriteTangent(doc, tangents)
+				// }
 			default:
 				slog.Debug("unknown", "size", stream.ElementSize, "firstIndex", subset.FirstIndex, "numIndices", subset.NumIndices)
 				slog.Warn("Unsupported stream type", "type", stream.StreamType)
