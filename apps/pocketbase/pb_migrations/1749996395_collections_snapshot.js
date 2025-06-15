@@ -694,6 +694,26 @@ migrate((app) => {
           "presentable": false,
           "system": false,
           "type": "autodate"
+        },
+        {
+          "hidden": false,
+          "id": "file376926767",
+          "maxSelect": 1,
+          "maxSize": 0,
+          "mimeTypes": [
+            "image/jpeg",
+            "image/png",
+            "image/svg+xml",
+            "image/gif",
+            "image/webp"
+          ],
+          "name": "avatar",
+          "presentable": false,
+          "protected": false,
+          "required": false,
+          "system": false,
+          "thumbs": null,
+          "type": "file"
         }
       ],
       "fileToken": {
@@ -841,58 +861,6 @@ migrate((app) => {
       "type": "base",
       "updateRule": "user.id = @request.auth.id",
       "viewRule": "user.id = @request.auth.id"
-    },
-    {
-      "createRule": null,
-      "deleteRule": null,
-      "fields": [
-        {
-          "autogeneratePattern": "",
-          "hidden": false,
-          "id": "text3208210256",
-          "max": 0,
-          "min": 0,
-          "name": "id",
-          "pattern": "^[a-z0-9]+$",
-          "presentable": false,
-          "primaryKey": true,
-          "required": true,
-          "system": true,
-          "type": "text"
-        },
-        {
-          "cascadeDelete": false,
-          "collectionId": "_pb_users_auth_",
-          "hidden": false,
-          "id": "_clone_mxnW",
-          "maxSelect": 1,
-          "minSelect": 0,
-          "name": "user",
-          "presentable": false,
-          "required": false,
-          "system": false,
-          "type": "relation"
-        },
-        {
-          "hidden": false,
-          "id": "_clone_h9jO",
-          "maxSize": 0,
-          "name": "data",
-          "presentable": false,
-          "required": false,
-          "system": false,
-          "type": "json"
-        }
-      ],
-      "id": "pbc_3826297877",
-      "indexes": [],
-      "listRule": "",
-      "name": "public_gearsets",
-      "system": false,
-      "type": "view",
-      "updateRule": null,
-      "viewQuery": "SELECT\n  gearsets.id as id,\n  gearsets.user as user,\n  gearsets.data as data\nFROM gearsets\nWHERE gearsets.status = 'public'\n",
-      "viewRule": ""
     },
     {
       "createRule": "@request.auth.id = @request.body.user",
@@ -1147,7 +1115,7 @@ migrate((app) => {
           "cascadeDelete": false,
           "collectionId": "_pb_users_auth_",
           "hidden": false,
-          "id": "_clone_rgVa",
+          "id": "_clone_URE5",
           "maxSelect": 1,
           "minSelect": 0,
           "name": "user",
@@ -1158,7 +1126,59 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_m0RP",
+          "id": "_clone_emAO",
+          "maxSize": 0,
+          "name": "data",
+          "presentable": false,
+          "required": false,
+          "system": false,
+          "type": "json"
+        }
+      ],
+      "id": "pbc_3826297877",
+      "indexes": [],
+      "listRule": "",
+      "name": "public_gearsets",
+      "system": false,
+      "type": "view",
+      "updateRule": null,
+      "viewQuery": "SELECT\n  gearsets.id as id,\n  gearsets.user as user,\n  gearsets.data as data\nFROM gearsets\nWHERE gearsets.status = 'public'\n",
+      "viewRule": ""
+    },
+    {
+      "createRule": null,
+      "deleteRule": null,
+      "fields": [
+        {
+          "autogeneratePattern": "",
+          "hidden": false,
+          "id": "text3208210256",
+          "max": 0,
+          "min": 0,
+          "name": "id",
+          "pattern": "^[a-z0-9]+$",
+          "presentable": false,
+          "primaryKey": true,
+          "required": true,
+          "system": true,
+          "type": "text"
+        },
+        {
+          "cascadeDelete": false,
+          "collectionId": "_pb_users_auth_",
+          "hidden": false,
+          "id": "_clone_72ha",
+          "maxSelect": 1,
+          "minSelect": 0,
+          "name": "user",
+          "presentable": false,
+          "required": false,
+          "system": false,
+          "type": "relation"
+        },
+        {
+          "hidden": false,
+          "id": "_clone_Nohb",
           "maxSize": 0,
           "name": "data",
           "presentable": false,
