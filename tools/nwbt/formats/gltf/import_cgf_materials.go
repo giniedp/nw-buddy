@@ -5,8 +5,8 @@ import (
 	"image/color"
 	"log/slog"
 	"math"
-	"nw-buddy/tools/formats/gltf/nwmaterial"
-	"nw-buddy/tools/formats/gltf/transmission"
+
+	"nw-buddy/tools/formats/gltf/extensions"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
 	"nw-buddy/tools/utils"
@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"github.com/qmuntal/gltf"
-	"github.com/qmuntal/gltf/ext/specular"
 	"github.com/qmuntal/gltf/ext/texturetransform"
 )
 
@@ -37,9 +36,14 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 		material.DoubleSided = false
 		material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{
 			BaseColorFactor: float4(1, 1, 1, 1),
-			MetallicFactor:  gltf.Float(1),
+			MetallicFactor:  gltf.Float(0), // non metallic flow for NW
 			RoughnessFactor: gltf.Float(1),
 		}
+		material.Extensions[extensions.KHR_materials_ior] = extensions.KHRMaterialsIOR{
+			IOR: gltf.Float(0.0), // specular workflow requires this
+		}
+		c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, extensions.KHR_materials_ior)
+
 		material.Extras = ExtrasStore(material.Extras, "mtl", m)
 
 		mtlDiffuse := mtl.ParamColor(m.Diffuse)
@@ -275,7 +279,6 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			} else if texTransformPublic != nil {
 				texExt[texturetransform.ExtensionName] = &texTransformPublic
 			}
-			material.PBRMetallicRoughness.MetallicFactor = nil
 			material.PBRMetallicRoughness.BaseColorTexture = &gltf.TextureInfo{
 				Index:      slices.Index(c.Textures, texDiffuse),
 				Extensions: texExt,
@@ -295,36 +298,27 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			}
 		}
 		if !isGlass && !isHair {
-			glossExt := specular.PBRSpecularGlossiness{
-				DiffuseFactor:    float4(1, 1, 1, 1),
-				SpecularFactor:   float3(1, 1, 1),
-				GlossinessFactor: gltf.Float(1),
+
+			specExt := extensions.KHRMaterialsSpecular{
+				SpecularFactor:       gltf.Float(1),
+				SpecularTexture:      nil,
+				SpecularColorFactor:  float3(1, 1, 1),
+				SpecularColorTexture: nil,
 			}
+
 			if mtlShininess >= 0 {
 				smoothness := float64(mtlShininess / 255)
 				roughness := (1.0 - smoothness)
-				glossExt.GlossinessFactor = gltf.Float(smoothness)
+				specExt.SpecularFactor = gltf.Float(smoothness)
 				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(roughness)
 			}
 			if mtlShininess == 255 && mapSmoothness != nil {
 				// some materials have shininess 255 but should be rough (wood)
 				// others render OK. use a compromise value of 0.5 for now
-				glossExt.GlossinessFactor = gltf.Float(0.5)
+				specExt.SpecularFactor = gltf.Float(0.5)
 				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(0.5)
 			}
 
-			if material.PBRMetallicRoughness.BaseColorTexture != nil {
-				texExt := gltf.Extensions{}
-				if texDiffuseTransform != nil {
-					texExt[texturetransform.ExtensionName] = &texDiffuseTransform
-				} else if texTransformPublic != nil {
-					texExt[texturetransform.ExtensionName] = &texTransformPublic
-				}
-				glossExt.DiffuseTexture = &gltf.TextureInfo{
-					Index:      material.PBRMetallicRoughness.BaseColorTexture.Index,
-					Extensions: texExt,
-				}
-			}
 			if texSpecular != nil {
 				texExt := gltf.Extensions{}
 				if texSpecularTransform != nil {
@@ -332,32 +326,22 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 				} else if texTransformPublic != nil {
 					texExt[texturetransform.ExtensionName] = &texTransformPublic
 				}
-				glossExt.SpecularGlossinessTexture = &gltf.TextureInfo{
+				specExt.SpecularColorTexture = &gltf.TextureInfo{
+					Index:      slices.Index(c.Textures, texSpecular),
+					Extensions: texExt,
+				}
+				specExt.SpecularTexture = &gltf.TextureInfo{
 					Index:      slices.Index(c.Textures, texSpecular),
 					Extensions: texExt,
 				}
 			}
 			if len(mtlSpecular) >= 3 {
-				glossExt.SpecularFactor = float3(float64(mtlSpecular[0]), float64(mtlSpecular[1]), float64(mtlSpecular[2]))
-			}
-			if len(mtlDiffuse) >= 3 {
-				factor := float4(
-					float64(mtlDiffuse[0]),
-					float64(mtlDiffuse[1]),
-					float64(mtlDiffuse[2]),
-					1,
-				)
-				if len(mtlDiffuse) == 4 {
-					factor[3] = float64(mtlDiffuse[3])
-				}
-				factor[3] *= float64(mtlOpacity)
-				glossExt.DiffuseFactor = factor
+				specExt.SpecularColorFactor = float3(float64(mtlSpecular[0]), float64(mtlSpecular[1]), float64(mtlSpecular[2]))
 			}
 
-			material.Extensions[specular.ExtensionName] = &glossExt
-			c.ExtensionsRequired = utils.AppendUniq(c.ExtensionsRequired, specular.ExtensionName)
-			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, specular.ExtensionName)
-
+			material.Extensions[extensions.KHR_materials_specular] = &specExt
+			c.ExtensionsRequired = utils.AppendUniq(c.ExtensionsRequired, extensions.KHR_materials_specular)
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, extensions.KHR_materials_specular)
 		}
 
 		if texEmissive != nil {
@@ -402,11 +386,11 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 				material.PBRMetallicRoughness.BaseColorFactor = &[4]float64{1, 1, 1, 1}
 			}
 			material.PBRMetallicRoughness.BaseColorFactor[3] = opacity
-      if mtlAlphaTest == 1.0 {
-        material.AlphaCutoff = nil
-        material.AlphaMode = gltf.AlphaBlend
-        material.DoubleSided = true
-      }
+			if mtlAlphaTest == 1.0 {
+				material.AlphaCutoff = nil
+				material.AlphaMode = gltf.AlphaBlend
+				material.DoubleSided = true
+			}
 		}
 
 		if isGlass {
@@ -415,17 +399,17 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 				factor = 1
 			}
 			material.DoubleSided = true
-			material.Extensions[transmission.ExtensionName] = transmission.Extension{
+			material.Extensions[extensions.KHR_materials_transmission] = extensions.KHRMaterialsTransmission{
 				Factor: float64(factor),
 			}
-			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, transmission.ExtensionName)
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, extensions.KHR_materials_transmission)
 		}
 
 		if !textureBaking || (shaderOverlayMask && texCustom != nil) {
-			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, nwmaterial.ExtensionName)
+			c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, extensions.EXT_nw_material)
 
-			ext := nwmaterial.Extension{
-				Params:     nwmaterial.AppearanceFromMtl(m),
+			ext := extensions.ExtNewWorld{
+				Params:     extensions.AppearanceFromMtl(m),
 				VertColors: shaderVertColors,
 			}
 			if texCustom != nil {
@@ -450,7 +434,7 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 					slog.Warn("Smoothness texture not loaded", "file", mapSmoothness.File)
 				}
 			}
-			material.Extensions[nwmaterial.ExtensionName] = ext
+			material.Extensions[extensions.EXT_nw_material] = ext
 		}
 		c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, texturetransform.ExtensionName)
 	}
