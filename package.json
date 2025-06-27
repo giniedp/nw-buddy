@@ -49,7 +49,6 @@
     "electron:serve": "pnpm electron:tsc && electron . --serve",
     "electron:builder": "electron-builder build --publish=never --config=electron-config.js",
     "nw-generate": "ts-node ./tools/nw-generate.ts",
-    "nw-generate:supabase": "npx supabase gen types typescript --local > ./apps/web/app/data/supabase/types.ts",
     "nw-inspect": "ts-node ./tools/nw-inspect.ts",
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
     "nw-functions": "ts-node ./tools/nw-functions.ts",
@@ -57,12 +56,12 @@
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",
     "cap:android:run": "npx cap run android",
-    "pocketbase": "cd apps/pocketbase && pocketbase.exe",
-    "pocketbase:build": "docker build -f apps/pocketbase/Dockerfile -t nw-buddy-db:latest .",
-    "pocketbase:stop": "docker-compose -f apps/pocketbase/compose.yml -p nw-buddy-db stop",
-    "pocketbase:start": "docker-compose -f apps/pocketbase/compose.yml -p nw-buddy-db up -d",
-    "pocketbase:dev": "docker-compose -f apps/pocketbase/compose.yml -p nw-buddy-db up",
-    "pocketbase:restart": "pnpm pocket:stop && pnpm pocket:start",
+    "db": "cd apps/pocketbase && pocketbase.exe",
+    "db:build": "docker build -f apps/pocketbase/Dockerfile -t nw-buddy-db:latest .",
+    "db:stop": "docker-compose -f apps/pocketbase/compose.yml -p nw-buddy-db stop",
+    "db:start": "docker-compose -f apps/pocketbase/compose.yml -p nw-buddy-db up -d",
+    "db:dev": "docker-compose -f apps/pocketbase/compose.yml -p nw-buddy-db up",
+    "db:restart": "pnpm pocket:stop && pnpm pocket:start",
     "docker:build": "docker build -f apps/docker/Dockerfile.static -t nw-buddy:latest .",
     "docker:build:ssr": "docker build -f apps/docker/Dockerfile.ssr -t nw-buddy:latest .",
     "docker:stop": "docker-compose -f apps/docker/compose.yml -p nw-buddy stop",
@@ -226,7 +225,6 @@
     "rimraf": "5.0.7",
     "rxjs": "7.8.1",
     "sharp": "0.33.4",
-    "supabase": "2.1.1",
     "swiper": "11.1.4",
     "tailwind": "4.0.0",
     "tailwind-merge": "2.3.0",
@@ -260,8 +258,5 @@
   "bugs": {
     "url": "https://github.com/giniedp/nw-buddy/issues"
   },
-  "packageManager": "pnpm@9.1.2",
-  "dependencies": {
-    "@supabase/supabase-js": "2.47.8"
-  }
+  "packageManager": "pnpm@9.1.2"
 }

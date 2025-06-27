@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@supabase/supabase-js':
-        specifier: 2.47.8
-        version: 2.47.8
     devDependencies:
       '@ag-grid-community/client-side-row-model':
         specifier: 31.3.2
@@ -450,9 +446,6 @@ importers:
       sharp:
         specifier: 0.33.4
         version: 0.33.4
-      supabase:
-        specifier: 2.1.1
-        version: 2.1.1
       swiper:
         specifier: 11.1.4
         version: 11.1.4
@@ -4059,28 +4052,6 @@ packages:
     peerDependencies:
       storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
 
-  '@supabase/auth-js@2.67.1':
-    resolution: {integrity: sha512-1SRZG9VkLFz4rtiyEc1l49tMq9jTYu4wJt3pMQEWi7yshZFIBdVH1o5sshk1plQd5LY6GcrPIpCydM2gGDxchA==}
-
-  '@supabase/functions-js@2.4.3':
-    resolution: {integrity: sha512-sOLXy+mWRyu4LLv1onYydq+10mNRQ4rzqQxNhbrKLTLTcdcmS9hbWif0bGz/NavmiQfPs4ZcmQJp4WqOXlR4AQ==}
-
-  '@supabase/node-fetch@2.6.15':
-    resolution: {integrity: sha512-1ibVeYUacxWYi9i0cf5efil6adJ9WRyZBLivgjs+AUpewx1F3xPi7gLgaASI2SmIQxPoCEjAsLAzKPgMJVgOUQ==}
-    engines: {node: 4.x || >=6.0.0}
-
-  '@supabase/postgrest-js@1.17.7':
-    resolution: {integrity: sha512-aOzOYaTADm/dVTNksyqv9KsbhVa1gHz1Hoxb2ZEF2Ed9H7qlWOfptECQWmkEmrrFjtNaiPrgiSaPECvzI/seDA==}
-
-  '@supabase/realtime-js@2.11.2':
-    resolution: {integrity: sha512-u/XeuL2Y0QEhXSoIPZZwR6wMXgB+RQbJzG9VErA3VghVt7uRfSVsjeqd7m5GhX3JR6dM/WRmLbVR8URpDWG4+w==}
-
-  '@supabase/storage-js@2.7.1':
-    resolution: {integrity: sha512-asYHcyDR1fKqrMpytAS1zjyEfvxuOIp1CIXX7ji4lHHcJKqyk+sLl/Vxgm4sN6u8zvuUtae9e4kDxQP2qrwWBA==}
-
-  '@supabase/supabase-js@2.47.8':
-    resolution: {integrity: sha512-2GjK8/PrGJYDVBcjqGyM2irBLMQXvvkJLbS8VFPlym2uuNz+pPMnwLbNf5njkknUTy3PamjgIRoADpuPPPA6oA==}
-
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
@@ -4407,9 +4378,6 @@ packages:
 
   '@types/pbf@3.0.5':
     resolution: {integrity: sha512-j3pOPiEcWZ34R6a6mN07mUkM4o4Lwf6hPNt8eilOeZhTFbxFXmKhvXl9Y28jotFPaI1bpPDJsbCprUoNke6OrA==}
-
-  '@types/phoenix@1.6.6':
-    resolution: {integrity: sha512-PIzZZlEppgrpoT2QgbnDU+MMzuR6BbCjllj0bM70lWoejMeNJAxCchxnv7J3XFkI8MpygtRpzXrIlmWUBclP5A==}
 
   '@types/plist@3.0.5':
     resolution: {integrity: sha512-E6OCaRmAe4WDmWNsL/9RMqdkkzDCY1etutkflWk4c+AcjDU07Pcz1fQwTX0TQz+Pxqn9i4L1TU3UFpjnrcDgxA==}
@@ -5116,10 +5084,6 @@ packages:
   big.js@5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==}
 
-  bin-links@5.0.0:
-    resolution: {integrity: sha512-sdleLVfCjBtgO5cNjA2HVRvWBJAHs4zwenaCPMNJAJU0yNxpzj80IpjOIimkpkr+mhlA+how5poQtt53PygbHA==}
-    engines: {node: ^18.17.0 || >=20.5.0}
-
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
@@ -5489,10 +5453,6 @@ packages:
   clone@1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
-
-  cmd-shim@7.0.0:
-    resolution: {integrity: sha512-rtpaCbr164TPPh+zFdkWpCyZuKkjpAzODfaZCf/SVJZzJN+4bHQb/LP3Jzq5/+84um3XXY8r548XiWKSborwVw==}
-    engines: {node: ^18.17.0 || >=20.5.0}
 
   color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
@@ -9378,10 +9338,6 @@ packages:
   read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
 
-  read-cmd-shim@5.0.0:
-    resolution: {integrity: sha512-SEbJV7tohp3DAAILbEMPXavBjAnMN0tVnh4+9G8ihV4Pq3HYF9h8QNez9zkJ1ILkv9G2BjdzwctznGZXgu/HGw==}
-    engines: {node: ^18.17.0 || >=20.5.0}
-
   read-config-file@6.3.2:
     resolution: {integrity: sha512-M80lpCjnE6Wt6zb98DoW8WHR09nzMSpu8XHtPkiTHrJ5Az9CybfeQhTJ8D7saeBHpGhLPIVyA8lcL6ZmdKwY6Q==}
     engines: {node: '>=12.0.0'}
@@ -10177,11 +10133,6 @@ packages:
   sumchecker@3.0.1:
     resolution: {integrity: sha512-MvjXzkz/BOfyVDkG0oFOtBxHX2u3gKbMHIF/dXblZsgD3BWOFLmHovIpZY7BykJdAjcqRCBi1WYBNdEC9yI7vg==}
     engines: {node: '>= 8.0'}
-
-  supabase@2.1.1:
-    resolution: {integrity: sha512-KPP4LrvMmu6IWIcqSOcPbepTGT2Fv05TMiYwbcEaKgCVUznDNtlyXQTImJhjP+8FhNuJ+tF9SLoQgMQqDei+jA==}
-    engines: {npm: '>=8'}
-    hasBin: true
 
   supercluster@8.0.1:
     resolution: {integrity: sha512-IiOea5kJ9iqzD2t7QJq/cREyLHTtSmUT6gQsweojg9WH2sYJqZK9SswTu6jrscO6D1G5v5vYZ9ru/eq85lXeZQ==}
@@ -11010,10 +10961,6 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
-
-  write-file-atomic@6.0.0:
-    resolution: {integrity: sha512-GmqrO8WJ1NuzJ2DrziEI2o57jKAVIQNf8a18W3nCYU3H7PNWqCCVTeH6/NQE93CIllIgQS98rrmVkYgTX9fFJQ==}
-    engines: {node: ^18.17.0 || >=20.5.0}
 
   ws@6.2.0:
     resolution: {integrity: sha512-deZYUNlt2O4buFCa3t5bKLf8A7FPP/TVjwOeVNpw818Ma5nk4MLXls2eoEGS39o8119QIYxTrTDoPQ5B/gTD6w==}
@@ -15445,48 +15392,6 @@ snapshots:
     dependencies:
       storybook: 8.4.7(prettier@3.3.3)
 
-  '@supabase/auth-js@2.67.1':
-    dependencies:
-      '@supabase/node-fetch': 2.6.15
-
-  '@supabase/functions-js@2.4.3':
-    dependencies:
-      '@supabase/node-fetch': 2.6.15
-
-  '@supabase/node-fetch@2.6.15':
-    dependencies:
-      whatwg-url: 5.0.0
-
-  '@supabase/postgrest-js@1.17.7':
-    dependencies:
-      '@supabase/node-fetch': 2.6.15
-
-  '@supabase/realtime-js@2.11.2':
-    dependencies:
-      '@supabase/node-fetch': 2.6.15
-      '@types/phoenix': 1.6.6
-      '@types/ws': 8.5.13
-      ws: 8.18.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@supabase/storage-js@2.7.1':
-    dependencies:
-      '@supabase/node-fetch': 2.6.15
-
-  '@supabase/supabase-js@2.47.8':
-    dependencies:
-      '@supabase/auth-js': 2.67.1
-      '@supabase/functions-js': 2.4.3
-      '@supabase/node-fetch': 2.6.15
-      '@supabase/postgrest-js': 1.17.7
-      '@supabase/realtime-js': 2.11.2
-      '@supabase/storage-js': 2.7.1
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   '@szmarczak/http-timer@4.0.6':
     dependencies:
       defer-to-connect: 2.0.1
@@ -15815,8 +15720,6 @@ snapshots:
   '@types/parse-json@4.0.2': {}
 
   '@types/pbf@3.0.5': {}
-
-  '@types/phoenix@1.6.6': {}
 
   '@types/plist@3.0.5':
     dependencies:
@@ -16679,14 +16582,6 @@ snapshots:
 
   big.js@5.2.2: {}
 
-  bin-links@5.0.0:
-    dependencies:
-      cmd-shim: 7.0.0
-      npm-normalize-package-bin: 4.0.0
-      proc-log: 5.0.0
-      read-cmd-shim: 5.0.0
-      write-file-atomic: 6.0.0
-
   binary-extensions@2.3.0: {}
 
   bitsyntax@0.0.4:
@@ -17192,8 +17087,6 @@ snapshots:
       mimic-response: 1.0.1
 
   clone@1.0.4: {}
-
-  cmd-shim@7.0.0: {}
 
   color-convert@1.9.3:
     dependencies:
@@ -21771,8 +21664,6 @@ snapshots:
     dependencies:
       pify: 2.3.0
 
-  read-cmd-shim@5.0.0: {}
-
   read-config-file@6.3.2:
     dependencies:
       config-file-ts: 0.2.6
@@ -22818,15 +22709,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  supabase@2.1.1:
-    dependencies:
-      bin-links: 5.0.0
-      https-proxy-agent: 7.0.6
-      node-fetch: 3.3.2
-      tar: 7.4.3
-    transitivePeerDependencies:
-      - supports-color
-
   supercluster@8.0.1:
     dependencies:
       kdbush: 4.0.2
@@ -23851,11 +23733,6 @@ snapshots:
       strip-ansi: 7.1.0
 
   wrappy@1.0.2: {}
-
-  write-file-atomic@6.0.0:
-    dependencies:
-      imurmurhash: 0.1.4
-      signal-exit: 4.1.0
 
   ws@6.2.0:
     dependencies:

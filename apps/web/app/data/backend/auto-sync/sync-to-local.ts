@@ -5,19 +5,15 @@ import { PrivateTable, BackendTableEvent } from "../backend-adapter"
 export function syncToLocal<T extends AppDbRecord>(localTable: AppDbTable<T>, remoteTable: PrivateTable<T>): Observable<void> {
   const tag = `[${localTable.tableName.toUpperCase()}][syncToLocal]`
   return new Observable<void>(() => {
-    // this happens on subscribe
     console.debug(tag, 'START')
     const sub = remoteTable.events$.subscribe(handleEvent)
-
     return () => {
-      // this happens on unsubscribe
       console.debug(tag, 'END')
       sub.unsubscribe()
     }
   })
 
   async function handleEvent(event: BackendTableEvent<T>) {
-    console.debug(tag, 'EVENT:', event)
     switch (event.type) {
       case 'create': {
         await onInsert(event.record)
@@ -35,7 +31,7 @@ export function syncToLocal<T extends AppDbRecord>(localTable: AppDbTable<T>, re
   }
 
   async function onInsert(record: T) {
-    console.debug(tag, 'INSERT', record.id)
+    console.debug(tag, 'INSERT', record)
     const local = await localTable.read(record.id)
     if (!local) {
       await localTable.create(record, { silent: true })
@@ -43,11 +39,11 @@ export function syncToLocal<T extends AppDbRecord>(localTable: AppDbTable<T>, re
   }
 
   async function onUpdate(remote: T) {
-    console.debug(tag, 'UPDATE', remote.id)
-    const local = await localTable.read(remote.id)
+    console.debug(tag, 'UPDATE', remote)
+    let local = await localTable.read(remote.id)
     if (!local) {
-      // TODO: handle this case
-      console.error(tag, 'LOCAL RECORD NOT FOUND')
+      console.warn(tag, `Record ${remote.id} not found in local table, creating it`)
+      local = await localTable.create(remote, { silent: true })
       return
     }
 
@@ -55,7 +51,6 @@ export function syncToLocal<T extends AppDbRecord>(localTable: AppDbTable<T>, re
     const remoteTime = new Date(remote['updated_at']).toJSON()
     console.debug(tag, 'LOCAL:', localTime, 'REMOTE:', remoteTime)
     if (localTime < remoteTime) {
-      console.log('SUPABASE REALTIME ON UPDATE EVENT -> REMOTE AHEAD OF LOCAL')
       localTable.update(remote.id, remote, { silent: true })
     }
   }

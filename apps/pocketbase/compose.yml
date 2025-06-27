@@ -1,9 +1,11 @@
 services:
   pocketbase:
-    image: nw-buddy-db:latest
+    image: nw-buddy-db:0.28.3
     build:
       context: ./
       dockerfile: ./Dockerfile
+      args:
+        PB_VERSION: 0.28.3
     restart: unless-stopped
     ports:
       - ${POCKETBASE_PORT:-3000}:3000
