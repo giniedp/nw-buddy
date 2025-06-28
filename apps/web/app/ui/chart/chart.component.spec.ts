@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 
 import { ChartComponent } from './chart.component'
-import { provideExperimentalZonelessChangeDetection } from '@angular/core'
+import { provideZonelessChangeDetection } from '@angular/core'
 
 describe('ChartComponent', () => {
   let component: ChartComponent
@@ -10,7 +10,7 @@ describe('ChartComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ChartComponent],
-      providers: [provideExperimentalZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents()
   })
 

@@ -1,66 +1,134 @@
-import { Observable, tap } from "rxjs"
-import { AppDbRecord, AppDbTable } from "~/data/app-db"
-import { PrivateTable, BackendTableEvent } from "../backend-adapter"
+import { Observable, switchMap } from 'rxjs'
+import { AppDbRecord, AppDbTable } from '~/data/app-db'
+import { BackendTableEvent, PrivateTable } from '../backend-adapter'
+import { processSyncCommands, SyncCommand } from './sync-commands'
 
-export function syncToLocal<T extends AppDbRecord>(localTable: AppDbTable<T>, remoteTable: PrivateTable<T>): Observable<void> {
-  const tag = `[${localTable.tableName.toUpperCase()}][syncToLocal]`
+export function syncToLocal<T extends AppDbRecord>(
+  localTable: AppDbTable<T>,
+  remoteTable: PrivateTable<T>,
+): Observable<void> {
   return new Observable<void>(() => {
-    console.debug(tag, 'START')
-    const sub = remoteTable.events$.subscribe(handleEvent)
+    const sub = remoteTable.events$
+      .pipe(
+        switchMap(async (event) => {
+          return handleSyncToLocalEvent({
+            localTable,
+            remoteTable,
+            event,
+          }).catch(console.error)
+        }),
+      )
+      .subscribe()
     return () => {
-      console.debug(tag, 'END')
       sub.unsubscribe()
     }
   })
-
-  async function handleEvent(event: BackendTableEvent<T>) {
-    switch (event.type) {
-      case 'create': {
-        await onInsert(event.record)
-        break
-      }
-      case 'update': {
-        await onUpdate(event.record)
-        break
-      }
-      case 'delete': {
-        await onDelete(event.record.id)
-        break
-      }
-    }
-  }
-
-  async function onInsert(record: T) {
-    console.debug(tag, 'INSERT', record)
-    const local = await localTable.read(record.id)
-    if (!local) {
-      await localTable.create(record, { silent: true })
-    }
-  }
-
-  async function onUpdate(remote: T) {
-    console.debug(tag, 'UPDATE', remote)
-    let local = await localTable.read(remote.id)
-    if (!local) {
-      console.warn(tag, `Record ${remote.id} not found in local table, creating it`)
-      local = await localTable.create(remote, { silent: true })
-      return
-    }
-
-    const localTime = new Date(local['updated_at'] || 0).toJSON()
-    const remoteTime = new Date(remote['updated_at']).toJSON()
-    console.debug(tag, 'LOCAL:', localTime, 'REMOTE:', remoteTime)
-    if (localTime < remoteTime) {
-      localTable.update(remote.id, remote, { silent: true })
-    }
-  }
-
-  async function onDelete(id: string) {
-    console.debug(tag, 'DELETE', id)
-    const local = await localTable.read(id)
-    if (local) {
-      await localTable.destroy(id, { silent: true })
-    }
-  }
 }
 
+export interface HandleSyncToLocalEventOptions<T extends AppDbRecord> {
+  localTable: AppDbTable<T>
+  remoteTable: PrivateTable<T>
+  event: BackendTableEvent<T>
+}
+
+export async function handleSyncToLocalEvent<T extends AppDbRecord>(
+  options: HandleSyncToLocalEventOptions<T>,
+): Promise<void> {
+  const { localTable, remoteTable, event } = options
+  const local = await localTable.read(event.record.id)
+  const commands = createSyncToLocalCommands(event, local)
+  await processSyncCommands({
+    localTable,
+    remoteTable,
+    commands,
+  })
+}
+
+export function createSyncToLocalCommands<T extends AppDbRecord>(
+  remote: BackendTableEvent<T>,
+  local: T,
+): Array<SyncCommand<T>> {
+  if (remote.type === 'delete') {
+    if (!local) {
+      return [] // already gone
+    }
+    return [
+      {
+        action: 'delete',
+        resource: 'local',
+        data: local,
+      },
+    ]
+  }
+
+  if (remote.type === 'create') {
+    if (!local) {
+      return [
+        {
+          action: 'create',
+          resource: 'local',
+          data: { ...remote.record, sync_state: 'synced' },
+        },
+      ]
+    }
+    // we already have a local record, but remote is new
+    // conflict must be solved by the user
+    return [
+      {
+        action: 'update',
+        resource: 'local',
+        data: { ...local, sync_state: 'conflict' },
+      },
+    ]
+  }
+
+  if (remote.type === 'update') {
+    if (!local) {
+      return [
+        {
+          action: 'create',
+          resource: 'local',
+          data: { ...remote.record, sync_state: 'synced' },
+        },
+      ]
+    }
+
+    const localTime = local.updated_at
+    const remoteTime = remote.record.updated_at
+    const localIsAhead = !remoteTime || (localTime && localTime > remoteTime)
+    const remoteIsAhead = !localTime || (remoteTime && remoteTime > localTime)
+    if (remoteIsAhead) {
+      return [
+        {
+          action: 'update',
+          resource: 'local',
+          data: { ...remote.record, sync_state: 'synced' },
+        },
+      ]
+    }
+    if (localIsAhead) {
+      // updated remotely but local seems to be ahead
+      // conflict must be solved by the user
+      return [
+        {
+          action: 'update',
+          resource: 'local',
+          data: { ...local, sync_state: 'conflict' },
+        },
+      ]
+    }
+
+    // we don't know which one is ahead
+    // conflict must be solved by the user
+    return [
+      {
+        action: 'update',
+        resource: 'local',
+        data: { ...local, sync_state: 'conflict' },
+      },
+    ]
+  }
+
+  console.warn('Unknown event type:', remote.type)
+  return []
+}

@@ -1,14 +1,11 @@
 import { AttributeRef, EquipSlotId } from '@nw-data/common'
+import type { AppDbRecord } from '../app-db'
 import { ItemInstance } from '../items/types'
 import { SkillSet } from '../skillbuilds/types'
 
 export type GearsetCreateMode = 'link' | 'copy'
 export type GearsetSkillSlot = 'primary' | 'secondary'
-export interface GearsetRecord {
-  /**
-   * ID in database
-   */
-  id: string
+export interface GearsetRecord extends AppDbRecord {
   /**
    * Name of the gearset
    */

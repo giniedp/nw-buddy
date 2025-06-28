@@ -1,8 +1,15 @@
 import { Observable, Subject } from 'rxjs'
 
 
-export type AppDbRecord = { id: string }
-
+export type AppDbRecord = {
+  /**
+   * Unique identifier for the record
+   */
+  id: string
+  sync_state?: null | 'synced' | 'pending' | 'conflict'
+  created_at?: string
+  updated_at?: string
+}
 export abstract class AppDb {
   public abstract reset(): Promise<void>
   public abstract table<T extends AppDbRecord>(name: string): AppDbTable<T>

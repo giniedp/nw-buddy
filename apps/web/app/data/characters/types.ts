@@ -1,8 +1,6 @@
-export interface CharacterRecord {
-  /**
-   * ID in database
-   */
-  id: string
+import { AppDbRecord } from '../app-db'
+
+export interface CharacterRecord extends AppDbRecord {
   /**
    * Image ID
    */

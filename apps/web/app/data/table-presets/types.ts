@@ -1,11 +1,12 @@
 import { ColumnState } from '@ag-grid-community/core'
+import { AppDbRecord } from '../app-db'
 
 export interface TablePreset {
   filter: unknown
   columns: ColumnState[]
 }
 
-export interface TablePresetRecord extends TablePreset {
+export interface TablePresetRecord extends TablePreset, AppDbRecord {
   /**
    * ID in database
    */
@@ -20,7 +21,7 @@ export interface TablePresetRecord extends TablePreset {
   key: string
 }
 
-export interface TableStateRecord {
+export interface TableStateRecord extends AppDbRecord {
   id: string
   columns: ColumnState[]
   pinnedTop: Array<string | number>

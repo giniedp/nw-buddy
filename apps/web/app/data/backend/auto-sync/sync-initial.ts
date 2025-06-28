@@ -1,72 +1,159 @@
 import { AppDbRecord, AppDbTable } from '~/data/app-db'
 import { PrivateTable } from '../backend-adapter'
+import { processSyncCommands, SyncCommand } from './sync-commands'
 
 export async function syncInitial<T extends AppDbRecord>(localTable: AppDbTable<T>, remoteTable: PrivateTable<T>) {
-  const remoteRows = await remoteTable.list()
-  const localRows = await localTable.list()
+  const syncPairs = resolveInitialSyncPairs({
+    localRows: await localTable.list(),
+    remoteRows: await remoteTable.list(),
+  })
+  const syncQueue = syncPairs.map(({ local, remote }) => {
+    return createInitialSyncCommands(local, remote)
+  })
 
-  const pairs: Array<{
-    local: T | null
-    remote: T | null
-  }> = []
+  const promises = syncQueue.map(async (commands): Promise<void> => {
+    await processSyncCommands({
+      localTable,
+      remoteTable,
+      commands,
+    })
+  })
+  await Promise.all(promises)
+}
 
-  for (const row of localRows) {
+export interface SyncPair<T extends AppDbRecord> {
+  local: T | null
+  remote: T | null
+}
+
+export interface ResolveSyncInitialPairsOptions<T extends AppDbRecord> {
+  localRows: Array<T>
+  remoteRows: Array<T>
+}
+
+export function resolveInitialSyncPairs<T extends AppDbRecord>({
+  localRows,
+  remoteRows,
+}: ResolveSyncInitialPairsOptions<T>): Array<SyncPair<T>> {
+  const pairs: Array<SyncPair<T>> = []
+
+  for (const local of localRows) {
     pairs.push({
-      local: row,
-      remote: remoteRows.find((remote) => remote.id === row.id),
+      local,
+      remote: remoteRows.find((remote) => remote.id === local.id) || null,
     })
   }
 
   for (const remote of remoteRows) {
-    const found = localRows.find((local) => local.id === remote.id)
-    if (!found) {
+    const exists = !!localRows.some((local) => local.id === remote.id)
+    if (!exists) {
       pairs.push({
         local: null,
-        remote: remote,
+        remote,
       })
     }
   }
 
-  const promises = pairs.map(async ({ local, remote }): Promise<void> => {
-    if (local == null && remote != null) {
-      // Handle case where only remote row exists
-      await localTable.create(remote, { silent: true })
-      return
+  return pairs
+}
+
+export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remote: T): Array<SyncCommand<T>> {
+  if (local == null && remote != null) {
+    // only remote row exists
+    // we want to create it in the local tables
+    return [
+      {
+        action: 'create',
+        resource: 'local',
+        data: { ...remote, sync_state: 'synced' },
+      },
+    ]
+  }
+
+  if (local != null && remote == null) {
+    if (local.sync_state === 'synced') {
+      return [
+        {
+          action: 'delete',
+          resource: 'local',
+          data: local,
+        },
+      ]
     }
 
-    if (local != null && remote == null) {
-      // Handle case where only local row exists
-      await remoteTable.create(local)
-      return
+    if (!local.sync_state || local.sync_state === 'pending') {
+      // local row was never synced or is in pending state
+      // remote row either never existed or was deleted
+      // we should create the row in both cases
+      return [
+        {
+          action: 'create',
+          resource: 'remote',
+          data: { ...local, sync_state: 'synced' },
+        },
+        {
+          action: 'update',
+          resource: 'local',
+          data: { ...local, sync_state: 'synced' },
+        },
+      ]
     }
 
-    // TODO:
-    // // Handle case where both local and remote rows exist
-    // if (!('updated_at' in local)) {
-    //   return
-    // }
+    // this should never happen, mark as conflict
+    return [
+      {
+        action: 'update',
+        resource: 'local',
+        data: {
+          ...local,
+          sync_state: 'conflict',
+        },
+      },
+    ]
+  }
 
-    // const localDate = new Date(local.updated_at as string)
-    // const remoteDate = new Date(remote.updated_at)
+  const localDate = local.updated_at
+  const remoteDate = remote.updated_at
+  const localIsAhead = localDate && remoteDate && localDate > remoteDate
+  const remoteIsAhead = remoteDate && localDate && remoteDate > localDate
 
-    // // Compare timestamps or perform sync logic
-    // if (remoteDate < localDate) {
-    //   console.log('LOCAL IS AHEAD OF REMOTE')
-    //   await client
-    //     .from(tableName)
-    //     .update(local as TablesUpdate<TableNames>)
-    //     .eq('id', local.id)
+  // Compare timestamps or perform sync logic
+  if (!remoteDate || localIsAhead) {
+    // local is ahead, regardless of sync state
+    // we can safely update the remote row
+    return [
+      {
+        action: 'update',
+        resource: 'remote',
+        data: { ...local, sync_state: 'synced' },
+      },
+      {
+        action: 'update',
+        resource: 'local',
+        data: { ...local, sync_state: 'synced' },
+      },
+    ]
+  }
 
-    //   return
-    // }
-    // if (localDate < remoteDate) {
-    //   console.log('REMOTE IS AHEAD OF LOCAL')
-    //   console.log('local:', local)
-    //   console.log('remote:', remote)
-    //   await table.update(local.id, remote, { silent: true })
-    //   return
-    // }
-  })
+  if (!localDate || remoteIsAhead) {
+    return [
+      {
+        action: 'update',
+        resource: 'local',
+        data: { ...remote, sync_state: 'synced' },
+      },
+    ]
+  }
 
-  await Promise.all(promises)
+  if (String(localDate) === String(remoteDate)) {
+    return []
+  }
+
+  return [
+    {
+      action: 'update',
+      resource: 'local',
+      data: { ...local, sync_state: 'conflict' },
+    },
+  ]
 }

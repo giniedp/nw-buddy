@@ -1,4 +1,4 @@
-import { provideExperimentalZonelessChangeDetection } from '@angular/core'
+import { provideZonelessChangeDetection } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { getCraftingYieldBonus, getCraftingIngredients } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
@@ -9,7 +9,7 @@ fdescribe('CraftingStep', () => {
   let db: NwData = null
   beforeAll(() => {
     TestBed.configureTestingModule({
-      providers: [provideExperimentalZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     })
     TestBed.runInInjectionContext(() => {
       db = injectNwData()

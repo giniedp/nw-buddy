@@ -94,10 +94,11 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     const now = new Date()
     record = {
       ...record,
-      id: record.id || createId(),
-      created_at: now.toJSON(),
-      updated_at: now.toJSON(),
+      id: record.id ?? createId(),
+      created_at: record.created_at ?? now.toJSON(),
+      updated_at: record.updated_at ?? now.toJSON(),
     }
+
     const id = await this.table.add(record as T, record.id)
     const row = await this.read(id as any)
     if (!options?.silent) {
@@ -111,8 +112,10 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   }
 
   public async update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T> {
-    const now = new Date()
-    record['updated_at'] = now.toJSON()
+    if (!options?.silent) {
+      record.updated_at = new Date().toJSON()
+      record['sync_state'] = 'pending'
+    }
 
     await this.table.update(id, record)
     const row = await this.read(id)
@@ -137,6 +140,10 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
 
   public async createOrUpdate(record: T, options?: { silent: boolean }): Promise<T> {
     if (record.id) {
+      if (!options?.silent) {
+        record.updated_at = new Date().toJSON()
+        record['sync_state'] = 'pending'
+      }
       await this.table.put(record, record.id)
       const row = await this.read(record.id)
       if (!options?.silent) {

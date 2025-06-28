@@ -1,5 +1,6 @@
 import { ItemRarity, PerkBucket } from '@nw-data/common'
 import { AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
+import type { AppDbRecord } from '../app-db'
 
 export interface ItemInstance {
   /**
@@ -16,11 +17,7 @@ export interface ItemInstance {
   perks: Record<string, string>
 }
 
-export interface ItemInstanceRecord extends ItemInstance {
-  /**
-   * Record id in the database
-   */
-  id: string
+export interface ItemInstanceRecord extends ItemInstance, AppDbRecord {
   /**
    * Whether item is locked. Must be unlocked before edit or delete
    */

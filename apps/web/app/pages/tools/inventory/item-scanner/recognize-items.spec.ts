@@ -9,7 +9,7 @@ import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { AppTestingModule } from '~/test'
 import { recognizeItemFromImage } from './recognize-item'
-import { provideExperimentalZonelessChangeDetection } from '@angular/core'
+import { provideZonelessChangeDetection } from '@angular/core'
 
 describe('item-scanner / recognize', async () => {
   let db: NwData
@@ -24,7 +24,7 @@ describe('item-scanner / recognize', async () => {
     beforeAll(async () => {
       TestBed.configureTestingModule({
         imports: [AppTestingModule],
-        providers: [provideExperimentalZonelessChangeDetection()],
+        providers: [provideZonelessChangeDetection()],
         teardown: { destroyAfterEach: false },
       })
       db = TestBed.runInInjectionContext(() => injectNwData())

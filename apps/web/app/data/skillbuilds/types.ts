@@ -1,5 +1,6 @@
 import { AttributeRef } from '@nw-data/common'
 import { AbilityData } from '@nw-data/generated'
+import type { AppDbRecord } from '../app-db'
 
 export interface SkillSet {
   /**
@@ -16,11 +17,7 @@ export interface SkillSet {
   tree2: string[]
 }
 
-export interface SkillSetRecord extends SkillSet {
-  /**
-   * ID in database
-   */
-  id: string
+export interface SkillSetRecord extends SkillSet, AppDbRecord {
   /**
    * Name of the gearset
    */

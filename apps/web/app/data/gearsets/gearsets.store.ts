@@ -1,15 +1,17 @@
+import { mapResponse } from '@ngrx/operators'
 import { EquipSlot, ItemRarity } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 
 import { inject } from '@angular/core'
-import { signalStore, withHooks, withMethods } from '@ngrx/signals'
-import { of } from 'rxjs'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { signalStore, type, withHooks, withMethods, withState } from '@ngrx/signals'
+import { eventGroup, Events, on, withEffects, withReducer } from '@ngrx/signals/events'
+import { of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 import { ItemInstance } from '../items/types'
+import { GearsetsDB } from './gearsets.db'
 import { GearsetRecord } from './types'
 import { withGearsetsRows } from './with-gearsets'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-
 
 export interface GearsetRowSlot {
   slot: EquipSlot

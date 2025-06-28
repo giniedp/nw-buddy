@@ -1,6 +1,8 @@
-import { of, Observable as RxObservable, Subject } from 'rxjs'
+import { BehaviorSubject, isObservable, of, Observable as RxObservable, Subject, switchMap } from 'rxjs'
 
-import { AppDb, AppDbTable, AppDbTableEvent } from './app-db'
+import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
+import { customAlphabet } from 'nanoid/non-secure'
+const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
 export class AppDbNoop extends AppDb {
   private tables: Record<string, AppDbNoopTable<any>> = {}

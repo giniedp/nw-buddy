@@ -1,6 +1,6 @@
 import PocketBase, { RecordModel, RecordService } from 'pocketbase'
-import { defer, distinctUntilChanged, EMPTY, filter, map, NEVER, of, pipe, switchMap } from 'rxjs'
-import { shareReplayRefCount, tapDebug } from '~/utils'
+import { defer, distinctUntilChanged, EMPTY, filter, map, switchMap } from 'rxjs'
+import { shareReplayRefCount } from '~/utils'
 import { AppDbRecord, AppDbTable } from '../../app-db'
 import { autoSync } from '../auto-sync'
 import { PrivateTable } from '../backend-adapter'
@@ -100,12 +100,17 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
     if (!ids.length) {
       return 0
     }
-    const batch = this.client.createBatch()
-    const collection = batch.collection(this.collection.collectionIdOrName)
-    for (const id of ids) {
-      collection.delete(this.rowId(id))
-    }
-    await batch.send()
+    const promises = ids.map(async (id) => {
+      return this.collection.delete(this.rowId(id)).catch(console.error)
+    })
+    await Promise.all(promises).catch(console.error)
+
+    // const batch = this.client.createBatch()
+    // const collection = batch.collection(this.collection.collectionIdOrName)
+    // for (const id of ids) {
+    //   collection.delete(this.rowId(id))
+    // }
+    // await batch.send()
     return ids.length
   }
 }

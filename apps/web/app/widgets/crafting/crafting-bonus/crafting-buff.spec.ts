@@ -1,4 +1,4 @@
-import { provideExperimentalZonelessChangeDetection } from '@angular/core'
+import { provideZonelessChangeDetection } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { CraftingBuffStore } from './crafting-buff.store'
 
@@ -6,7 +6,7 @@ fdescribe('CraftingBuffStore', () => {
   let store: CraftingBuffStore = null
   beforeAll(async () => {
     TestBed.configureTestingModule({
-      providers: [CraftingBuffStore, provideExperimentalZonelessChangeDetection()],
+      providers: [CraftingBuffStore, provideZonelessChangeDetection()],
     })
     store = TestBed.inject(CraftingBuffStore)
     store.load()
