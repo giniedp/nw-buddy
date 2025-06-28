@@ -38,7 +38,6 @@ import { VirtualGridStore } from './virtual-grid.store'
     ScrollingModule,
     VirtualGridCellDirective,
     VirtualGridRowDirective,
-    VirtualGridSectionDirective,
   ],
   hostDirectives: [CdkVirtualScrollableElement],
   providers: [VirtualGridStore],

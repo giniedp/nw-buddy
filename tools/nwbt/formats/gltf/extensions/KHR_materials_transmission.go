@@ -1,12 +1,12 @@
-package transmission
+package extensions
 
 import "github.com/qmuntal/gltf"
 
 const (
-	ExtensionName = "KHR_materials_transmission"
+	KHR_materials_transmission = "KHR_materials_transmission"
 )
 
-type Extension struct {
+type KHRMaterialsTransmission struct {
 	Factor  float64           `json:"transmissionFactor"`
 	Texture *gltf.TextureInfo `json:"transmissionTexture,omitempty"`
 }

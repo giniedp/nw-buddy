@@ -3,14 +3,13 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { DamageCalculatorStore, defenderAccessor } from '../damage-calculator.store'
-import { PrecisionInputComponent } from './precision-input.component'
 import { StackedValueControlComponent } from './stacked-value-control.component'
 
 @Component({
   selector: 'nwb-defender-elemental-armor-control',
   templateUrl: './defender-elemental-armor-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent, PrecisionInputComponent],
+  imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent],
   host: {
     class: 'form-control',
   },

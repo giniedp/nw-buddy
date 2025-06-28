@@ -606,6 +606,9 @@ export class GameModeDetailComponent implements OnInit {
   }
 
   protected handleVitalTabChange(tab: string) {
+    if (tab === 'models') {
+      return
+    }
     this.router.navigate(['.'], {
       relativeTo: this.route,
       queryParams: {

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common'
 import { Component, Injector, Input, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { IonHeader } from '@ionic/angular/standalone'
 import { patchState } from '@ngrx/signals'
 import {
   EquipSlotId,
@@ -77,7 +76,6 @@ export const GEARSET_TAGS = [
     RouterModule,
     ScreenshotModule,
     TooltipModule,
-    IonHeader,
     LayoutModule,
     ChipsInputModule,
     OverlayModule,

@@ -44,7 +44,6 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
     TooltipModule,
     FilterPopoverComponent,
     ToLCHPipe,
-    LootGraphComponent,
     PropertyGridModule,
     GatherableDetailDirective,
   ],

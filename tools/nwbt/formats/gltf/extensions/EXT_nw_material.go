@@ -1,11 +1,26 @@
-package nwmaterial
+package extensions
 
 import (
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/formats/mtl"
+
+	"github.com/qmuntal/gltf"
 )
 
-type Appearance struct {
+const EXT_nw_material = "EXT_nw_material"
+
+type ExtNewWorld struct {
+	MaskTexture   *gltf.TextureInfo `json:"maskTexture,omitempty"`
+	SmoothTexture *gltf.TextureInfo `json:"smoothTexture,omitempty"`
+	Params        *ExtNWAppearance  `json:"params,omitempty"`
+	VertColors    bool              `json:"vertColors,omitempty"`
+}
+
+func (e *ExtNewWorld) ExtensionName() string {
+	return EXT_nw_material
+}
+
+type ExtNWAppearance struct {
 	EmissiveIntensity string `json:",omitzero"`
 	EmissiveColor     string `json:",omitzero"`
 	MaskAGloss        string `json:",omitzero"`
@@ -23,11 +38,11 @@ type Appearance struct {
 	MaskR             string `json:",omitzero"`
 }
 
-func AppearanceFromMtl(m *mtl.Material) *Appearance {
+func AppearanceFromMtl(m *mtl.Material) *ExtNWAppearance {
 	if m.Params == nil {
 		return nil
 	}
-	return &Appearance{
+	return &ExtNWAppearance{
 		EmissiveIntensity: m.Params.Get("EmittanceMapGamma"),
 		EmissiveColor:     m.Params.Get("EmissiveColor"),
 		MaskAGloss:        m.Params.Get("MaskAGloss"),
@@ -46,8 +61,8 @@ func AppearanceFromMtl(m *mtl.Material) *Appearance {
 	}
 }
 
-func AppearanceFromRow(r datasheet.JSONRow) *Appearance {
-	return &Appearance{
+func AppearanceFromRow(r datasheet.JSONRow) *ExtNWAppearance {
+	return &ExtNWAppearance{
 		EmissiveIntensity: r.GetString("EmissiveIntensity"),
 		EmissiveColor:     r.GetString("EmissiveColor"),
 		MaskAGloss:        r.GetString("MaskAGloss"),

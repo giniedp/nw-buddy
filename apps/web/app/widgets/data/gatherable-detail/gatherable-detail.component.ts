@@ -12,7 +12,7 @@ import { GatherableDetailStore } from './gatherable-detail.store'
   template: '<ng-content/>',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GatherableDetailMapComponent, IconsModule, TooltipModule],
+  imports: [CommonModule, NwModule, IconsModule, TooltipModule],
   providers: [DecimalPipe, GatherableDetailStore],
   host: {
     class: 'block',

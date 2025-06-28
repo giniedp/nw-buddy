@@ -2,15 +2,14 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { PartialStateUpdater, patchState, signalState } from '@ngrx/signals'
+import { uniq } from 'lodash'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgBars, svgChevronLeft, svgEllipsisVertical, svgInfinity, svgPlus, svgTrashCan } from '~/ui/icons/svg'
-import { InputSliderComponent } from '~/ui/input-slider'
+import { LayoutModule } from '~/ui/layout'
 import { DamageCalculatorStore } from '../damage-calculator.store'
 import { DamageModStack, DamageModStackItem, damageModStackItemEnabled, damageModSum } from '../damage-mod-stack'
 import { PrecisionInputComponent } from './precision-input.component'
-import { LayoutModule } from '~/ui/layout'
-import { uniq } from 'lodash'
 
 @Component({
   selector: 'nwb-stacked-value-control',
@@ -22,7 +21,6 @@ import { uniq } from 'lodash'
     PrecisionInputComponent,
     FormsModule,
     LayoutModule,
-    InputSliderComponent,
     IconsModule,
   ],
   host: {

@@ -17,7 +17,6 @@ import { filter, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { LootContext } from '~/nw/loot'
 import { DataViewModule, DataViewPicker } from '~/ui/data/data-view'
-import { GsSliderComponent } from '~/ui/gs-input'
 import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
@@ -41,7 +40,6 @@ import { LootTagComponent } from './loot-tag.component'
     FormsModule,
     DataViewModule,
     TooltipModule,
-    GsSliderComponent,
     OverlayModule,
     IconsModule,
     InputSliderComponent,

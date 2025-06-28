@@ -9,12 +9,11 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { TrophiesRecord, TrophiesTableAdapter } from './adapter'
-import { CraftingCalculatorComponent } from '~/widgets/crafting'
 
 @Component({
   selector: 'nwb-trophies-page',
   templateUrl: './trophies-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, CraftingCalculatorComponent],
+  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
   providers: [
     provideDataView({
       adapter: TrophiesTableAdapter,

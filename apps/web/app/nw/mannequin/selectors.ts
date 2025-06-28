@@ -11,13 +11,13 @@ import {
   NW_EQUIP_LOAD_RATIO_SLOW,
   getAmmoTypeFromWeaponTag,
   getAverageGearScore,
-  hasPerkScalingPerGearScore,
   getWeaponTagFromWeapon,
+  hasPerkScalingPerGearScore,
   solveAttributePlacingMods,
 } from '@nw-data/common'
-import { AbilityData, DamageData, EquipLoadCategory, AmmoItemDefinitions, StatusEffectData } from '@nw-data/generated'
+import { AbilityData, AmmoItemDefinitions, DamageData, EquipLoadCategory, StatusEffectData } from '@nw-data/generated'
 import { minBy, sum } from 'lodash'
-import { eqCaseInsensitive } from '~/utils'
+import { eqCaseInsensitive, removeFromArray } from '~/utils'
 
 import {
   getItemGsBonus,
@@ -315,21 +315,32 @@ export function selectActiveConsumables({ items, consumables }: DbSlice, equippe
 }
 
 export function selectConsumableEffects({ items, consumables, effects }: DbSlice, equippedItems: EquippedItem[]) {
-  return equippedItems
-    .map((it): ActiveEffect[] => {
-      const consumable = consumables.get(it.itemId)
-      return (
-        consumable?.AddStatusEffects?.map((id) => {
-          return {
-            item: items.get(it.itemId),
-            consumable: consumable,
-            effect: effects.get(id),
-          }
-        }) || []
-      )
-    })
-    .flat()
-    .filter((it) => !!it?.effect)
+  let result: ActiveEffect[] = []
+  for (const item of equippedItems) {
+    const consumable = consumables.get(item.itemId)
+    if (!consumable?.AddStatusEffects?.length) {
+      continue
+    }
+    for (const category of consumable.RemoveStatusEffectCategories || []) {
+      const toRemove = result.find((it) => it.effect?.EffectCategories?.includes(category as any))
+      if (!toRemove) {
+        continue
+      }
+      removeFromArray(result, toRemove)
+    }
+    for (const effectId of consumable.AddStatusEffects) {
+      const effect = effects.get(effectId)
+      if (!effect) {
+        continue
+      }
+      result.push({
+        item: items.get(item.itemId),
+        consumable: consumable,
+        effect,
+      })
+    }
+  }
+  return result
 }
 
 export function selectHousingEffects({ housings, effects }: DbSlice, equippedItems: EquippedItem[]) {
@@ -486,7 +497,7 @@ export function selectBonusAttributes(db: DbSlice, { effects, level }: Attribute
   return result
 }
 
-export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
+export function selectPlacingMods(db: DbSlice, { perks, effects, level }: AttributeModsSource) {
   const result: number[] = []
   for (const { perk, gearScore, affix, item } of perks) {
     if (!affix || !affix.AttributePlacingMods) {
@@ -497,6 +508,20 @@ export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
       scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
     }
     const mods = affix.AttributePlacingMods.split(',')
+    for (let i = 0; i < mods.length; i++) {
+      const value = Math.floor(Number(mods[i] || 0) * scale)
+      result[i] = (result[i] || 0) + value
+    }
+  }
+  for (const { effect, consumable } of effects) {
+    if (!effect || !consumable || !effect.AttributePlacingMods) {
+      continue
+    }
+    let scale = 1
+    if (effect.PotencyPerLevel) {
+      scale = effect.PotencyPerLevel * level
+    }
+    const mods = [effect.AttributePlacingMods]
     for (let i = 0; i < mods.length; i++) {
       const value = Math.floor(Number(mods[i] || 0) * scale)
       result[i] = (result[i] || 0) + value
@@ -544,6 +569,7 @@ export function selectEquipLoadBonus(equipLoad: number): ActiveBonus[] {
 }
 
 export function selectAttributes(db: DbSlice, state: MannequinState, mods: AttributeModsSource): ActiveAttributes {
+  console.log('selectAttributes', { state, mods })
   const attrsBase = selectEquppedAttributes(db, mods)
   const attrsBonus = selectBonusAttributes(db, mods)
   const attrsAssigned = state.assignedAttributes

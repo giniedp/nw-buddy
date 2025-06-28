@@ -15,7 +15,7 @@
   (backdropClick)="isPanelOpen = false"
   (detach)="isPanelOpen = false"
 >
-  <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
+  <div class="w-full max-w-96 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ng-container [ngTemplateOutlet]="nwbDataViewOptionsMenu" />
     @if (service.isTableActive()) {
       <nwb-table-grid-panel

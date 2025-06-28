@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router'
 import {
   IonButtons,
   IonHeader,
-  IonLabel,
   IonMenuButton,
   IonSegment,
   IonSegmentButton,
@@ -48,7 +47,6 @@ import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
     IonSegment,
     IonSegmentButton,
     IonButtons,
-    IonLabel,
     IonMenuButton,
     ChipsInputModule,
     OverlayModule,

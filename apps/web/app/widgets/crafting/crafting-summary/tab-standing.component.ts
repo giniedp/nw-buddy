@@ -1,37 +1,27 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { NwModule } from '~/nw'
 import { apiResource } from '~/utils'
 
 import { RouterModule } from '@angular/router'
-import { NwTradeSkillInfo, getCraftingSkillXP, getCraftingStandingXP } from '@nw-data/common'
+import { NwTradeSkillInfo, getCraftingStandingXP } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { groupBy, sumBy } from 'lodash'
+import { groupBy } from 'lodash'
 import { injectNwData } from '~/data'
 import { LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { TradeskillsModule } from '~/widgets/tradeskills'
-import { CraftingChanceMenuComponent } from '../crafting-bonus'
+import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuses-modal.component'
 import { CraftingBuffStore } from '../crafting-bonus/crafting-buff.store'
 import { SummaryRow } from './types'
-import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuses-modal.component'
 
 @Component({
   selector: 'tab-standing',
   templateUrl: './tab-standing.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    RouterModule,
-    TradeskillsModule,
-    TooltipModule,
-    LayoutModule,
-    CraftingChanceMenuComponent,
-    ItemDetailModule,
-  ],
+  imports: [CommonModule, NwModule, RouterModule, TradeskillsModule, TooltipModule, LayoutModule, ItemDetailModule],
   providers: [],
   host: {
     class: 'block',

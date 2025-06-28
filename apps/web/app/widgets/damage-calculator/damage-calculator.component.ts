@@ -33,7 +33,6 @@ import { OffenderDotControlComponent } from './controls/offender-dot-control.com
 import { OffenderModsControlComponent } from './controls/offender-mods-control.component'
 import { OffenderStatsControlComponent } from './controls/offender-stats-control.component'
 import { OffenderWeaponControlComponent } from './controls/offender-weapon-control.component'
-import { StackedValueControlComponent } from './controls/stacked-value-control.component'
 import { DamageCalculatorState, DamageCalculatorStore, updateDefender, updateOffender } from './damage-calculator.store'
 import { mergeDamageStacks } from './damage-mod-stack'
 import { DamageOutputComponent } from './damage-output.component'
@@ -57,7 +56,6 @@ import { DamageResultsComponent } from './damage-results.component'
     OffenderStatsControlComponent,
     OffenderWeaponControlComponent,
     OffenderDotControlComponent,
-    StackedValueControlComponent,
     LayoutModule,
     IconsModule,
     TooltipModule,

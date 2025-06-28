@@ -10,7 +10,7 @@ import { PriceImporterComponent } from './price-importer.component'
   selector: 'nwb-price-importer-button,[nwbPriceImporterButton]',
   templateUrl: './price-importer-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, PriceImporterComponent],
+  imports: [CommonModule, NwModule, IconsModule],
   host: {
     class: 'layout-content',
   },

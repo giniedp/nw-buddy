@@ -11,7 +11,7 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
   selector: 'nwb-skill-tree-embed',
   templateUrl: './skill-tree-embed.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, SkillBuilderComponent, AttributesEditorModule, EmbedHeightDirective, ShareLoaderComponent],
+  imports: [FormsModule, SkillBuilderComponent, AttributesEditorModule, ShareLoaderComponent],
   hostDirectives: [EmbedHeightDirective],
   host: {
     class: 'layout-col bg-base-300',

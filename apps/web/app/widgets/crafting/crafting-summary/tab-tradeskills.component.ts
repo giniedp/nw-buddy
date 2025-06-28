@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { NwModule } from '~/nw'
 import { apiResource } from '~/utils'
 
 import { RouterModule } from '@angular/router'
-import { NwTradeSkillInfo, getCraftingSkillXP, getCraftingStandingXP } from '@nw-data/common'
+import { NwTradeSkillInfo, getCraftingSkillXP } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { groupBy, sumBy } from 'lodash'
@@ -13,10 +13,9 @@ import { LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { TradeskillsModule } from '~/widgets/tradeskills'
-import { CraftingChanceMenuComponent } from '../crafting-bonus'
+import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuses-modal.component'
 import { CraftingBuffStore } from '../crafting-bonus/crafting-buff.store'
 import { SummaryRow } from './types'
-import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuses-modal.component'
 
 @Component({
   selector: 'tab-tradeskills',
@@ -29,7 +28,6 @@ import { CraftingBonusesModalComponent } from '../crafting-bonus/crafting-bonuse
     TradeskillsModule,
     TooltipModule,
     LayoutModule,
-    CraftingChanceMenuComponent,
     ItemDetailModule,
   ],
   providers: [],
