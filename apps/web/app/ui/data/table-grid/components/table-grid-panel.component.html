@@ -104,7 +104,7 @@
       </li>
     </ul>
   } @else {
-    <div class="px-2 py-1 flex flex-row gap-1">
+    <div class="px-2 py-1 flex flex-row gap-1 sticky top-0 bg-base-200 z-10">
       <button class="btn btn-ghost btn-square btn-sm px-1" (click)="setAllHidden(isAnyColumnVisible())" [tooltip]="'Toggle all columns'">
         <nwb-icon
           [icon]="!isAnyColumnVisible() ? svgEyeSlash : svgEye"
@@ -128,7 +128,7 @@
               <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'" />
             </button>
           </div>
-          <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>
+          <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide" [title]="it.name || it.colId">{{ it.name || it.colId }}</span>
         </div>
       }
     </div>
