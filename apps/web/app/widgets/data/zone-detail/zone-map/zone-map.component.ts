@@ -1,24 +1,21 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { IonButton, IonButtons, IonMenuButton, IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
+import { IonButtons, IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { sortBy } from 'lodash'
+import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgDice, svgFilter, svgFire, svgFont, svgHouse, svgSkull, svgTags, svgWheat } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize } from '~/utils'
 import { GameMapComponent, GameMapCoordsComponent, GameMapHost } from '~/widgets/game-map'
-import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
+import { gameMapOptionsForMapIds } from '~/widgets/game-map/utils'
 import { LootModule } from '~/widgets/loot'
 import { VitalDetailModule } from '../../vital-detail'
-import { MapFilterSectionComponent } from './filter-section.component'
 import { MapFilterSegmentComponent } from './filter-segment.component'
 import { MapFilterVitalsComponent } from './filter-vitals.component'
 import { ZoneMapStore } from './zone-map.store'
-import { gameMapOptionsForMapIds } from '~/widgets/game-map/utils'
-import { TranslateService } from '~/i18n'
 
 @Component({
   selector: 'nwb-zone-map',
@@ -28,16 +25,12 @@ import { TranslateService } from '~/i18n'
     FormsModule,
     FormsModule,
     GameMapComponent,
-    GameMapLayerDirective,
     GameMapCoordsComponent,
     IconsModule,
-    IonButton,
     IonButtons,
-    IonMenuButton,
     IonSegment,
     IonSegmentButton,
     LayoutModule,
-    MapFilterSectionComponent,
     MapFilterSegmentComponent,
     MapFilterVitalsComponent,
     NwModule,

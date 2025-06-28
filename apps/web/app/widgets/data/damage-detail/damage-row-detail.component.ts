@@ -33,7 +33,6 @@ import { DamageDetailStore } from './damage-row-detail.store'
     NwModule,
     ItemFrameModule,
     PropertyGridModule,
-    DecimalPipe,
     StatusEffectCategoryDetailModule,
     StatusEffectDetailModule,
     TooltipModule,

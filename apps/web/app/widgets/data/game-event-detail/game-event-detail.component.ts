@@ -12,7 +12,7 @@ import { GameEventDetailStore } from './game-event-detail.store'
   templateUrl: './game-event-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PropertyGridModule, DecimalPipe, GameEventDetailRewardsComponent],
+  imports: [PropertyGridModule, GameEventDetailRewardsComponent],
   providers: [DecimalPipe, GameEventDetailStore],
   host: {
     class: 'flex flex-col gap-2 text-sm',

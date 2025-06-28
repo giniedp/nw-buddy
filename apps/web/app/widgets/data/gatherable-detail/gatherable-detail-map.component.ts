@@ -16,7 +16,6 @@ import { GatherableDetailMapStore } from './gatherable-detail-map.store'
   selector: 'nwb-gatherable-detail-map',
   templateUrl: './gatherable-detail-map.component.html',
   imports: [
-    DecimalPipe,
     NwModule,
     TooltipModule,
     FormsModule,

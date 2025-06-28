@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input, computed, inject, signal } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { getItemId, getItemRarity, isItemNamed, isMasterItem } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { TreeNodeComponent, TreeNodeToggleComponent } from '~/ui/tree'
+import { TreeNodeToggleComponent } from '~/ui/tree'
 import { BackstoryLootTreeStore } from './backstory-loot-tree.store'
 import { BackstoryTreeNode } from './types'
-import { FormsModule } from '@angular/forms'
-import { RouterModule } from '@angular/router'
 
 @Component({
   selector: 'nwb-backstory-loot-node',
@@ -17,7 +17,6 @@ import { RouterModule } from '@angular/router'
     NwModule,
     ItemFrameModule,
     IconsModule,
-    TreeNodeComponent,
     TreeNodeToggleComponent,
     FormsModule,
     RouterModule,

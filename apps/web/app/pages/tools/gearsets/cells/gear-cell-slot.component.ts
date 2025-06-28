@@ -9,7 +9,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { EquipSlotId, NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { GearsetRecord, GearsetSlotStore, ItemInstancesDB } from '~/data'
-import { GsInputComponent, GsSliderComponent } from '~/ui/gs-input'
+import { GsSliderComponent } from '~/ui/gs-input'
 import { IconsModule } from '~/ui/icons'
 import {
   svgEllipsisVertical,
@@ -41,7 +41,6 @@ import { InventoryPickerService } from '../../inventory/inventory-picker.service
     TooltipModule,
     ItemFrameModule,
     GsSliderComponent,
-    GsInputComponent,
   ],
   providers: [GearsetSlotStore],
   host: {

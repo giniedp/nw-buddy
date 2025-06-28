@@ -20,7 +20,7 @@ export interface AppTab {
   host: {
     class: 'ion-page',
   },
-  imports: [TitleBarComponent, IconsModule, IonToolbar, IonHeader, IonContent],
+  imports: [TitleBarComponent, IconsModule, IonHeader, IonContent],
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class ElectronComponent {

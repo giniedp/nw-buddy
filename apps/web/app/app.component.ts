@@ -55,8 +55,6 @@ console.debug('environment', environment)
     IonContent,
     IonSplitPane,
     IonButtons,
-    IonButton,
-    IonRouterOutlet,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [

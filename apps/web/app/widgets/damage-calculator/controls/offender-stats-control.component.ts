@@ -18,7 +18,6 @@ import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { AttributesEditorComponent } from '~/widgets/attributes-editor'
-import { AttributesScaleComponent } from '~/widgets/attributes-editor/attributes-scale.component'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 import { PrecisionInputComponent } from './precision-input.component'
 
@@ -36,7 +35,6 @@ import { PrecisionInputComponent } from './precision-input.component'
     TooltipModule,
     PrecisionInputComponent,
     AttributesEditorComponent,
-    AttributesScaleComponent,
   ],
   host: {
     class: 'form-control',

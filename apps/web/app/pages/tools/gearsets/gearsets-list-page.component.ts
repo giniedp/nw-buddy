@@ -13,7 +13,7 @@ import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { GearsetsListPageStore } from './gearsets-list-page.store'
-import { GearsetLoadoutItemComponent, GearsetLoadoutListComponent } from './loadout'
+import { GearsetLoadoutItemComponent } from './loadout'
 
 @Component({
   selector: 'nwb-gearsets-list-page',
@@ -27,7 +27,6 @@ import { GearsetLoadoutItemComponent, GearsetLoadoutListComponent } from './load
     IconsModule,
     TooltipModule,
     LayoutModule,
-    GearsetLoadoutListComponent,
     VirtualGridModule,
     GearsetLoadoutItemComponent,
   ],

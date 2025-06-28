@@ -5,29 +5,23 @@ import {
   Component,
   ElementRef,
   Input,
-  ViewChild,
   computed,
   effect,
   inject,
   viewChild,
-  viewChildren,
+  viewChildren
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
-import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
+import { EQUIP_SLOTS } from '@nw-data/common'
 import { GearsetStore } from '~/data'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
-import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { ScreenshotFrameDirective, ScreenshotModule } from '~/widgets/screenshot'
 import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
-import { GearsetLoadoutItemComponent } from '../loadout'
-import { GearsetPaneComponent } from './gearset-pane.component'
-import { GearsetToolbarComponent } from './gearset-toolbar.component'
-import { NwModule } from '~/nw'
 
 @Component({
   selector: 'nwb-gearset-grid',
@@ -38,18 +32,12 @@ import { NwModule } from '~/nw'
     NwModule,
     FormsModule,
     GearCellSlotComponent,
-    GearsetLoadoutItemComponent,
     GearsetPaneMainComponent,
     GearsetPaneSkillComponent,
     GearsetPaneStatsComponent,
-    GearsetToolbarComponent,
-    IonSegment,
-    IonSegmentButton,
     IconsModule,
     LayoutModule,
     ScreenshotModule,
-    SwiperDirective,
-    GearsetPaneComponent,
   ],
   host: {
     class: 'block @container',

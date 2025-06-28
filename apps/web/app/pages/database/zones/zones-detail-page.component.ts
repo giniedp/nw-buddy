@@ -32,7 +32,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ZoneDetailModule,
     LayoutModule,
     DataGridModule,
-    VirtualGridComponent,
   ],
   providers: [],
   host: {

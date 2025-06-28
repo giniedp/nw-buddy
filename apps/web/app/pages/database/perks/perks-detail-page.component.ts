@@ -37,7 +37,6 @@ import { DiffButtonComponent } from '../../../widgets/diff-tool/diff-button.comp
     ItemDetailModule,
     CodeEditorModule,
     FormsModule,
-    DiffButtonComponent,
   ],
   host: {
     class: 'block',

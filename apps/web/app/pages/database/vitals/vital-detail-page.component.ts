@@ -42,7 +42,6 @@ export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loo
     TooltipModule,
     IconsModule,
     GatherableDetailModule,
-    LoadingBarComponent,
     TabsModule,
   ],
   providers: [VitalDetailStore],
