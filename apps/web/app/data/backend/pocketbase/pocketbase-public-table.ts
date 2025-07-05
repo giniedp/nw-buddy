@@ -24,6 +24,9 @@ export class PocketbasePublicTable<T extends AppDbRecord> implements PublicTable
   }
 
   private getRow(userId: string, id: string) {
+    if (!userId || !id) {
+      throw new Error('User ID and Record ID must be provided')
+    }
     return this.collection.getOne(this.rowId(userId, id))
   }
 

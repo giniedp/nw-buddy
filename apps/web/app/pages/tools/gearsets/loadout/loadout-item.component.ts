@@ -1,8 +1,11 @@
+import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
+import { IconsModule } from '~/ui/icons'
+import { svgBars, svgTrashCan } from '~/ui/icons/svg'
 import { GersetSquareSlotComponent } from './square-slot.component'
 
 @Component({
@@ -10,49 +13,30 @@ import { GersetSquareSlotComponent } from './square-slot.component'
   templateUrl: './loadout-item.component.html',
   styleUrls: ['./loadout-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GersetSquareSlotComponent, RouterModule],
+  imports: [CommonModule, NwModule, GersetSquareSlotComponent, RouterModule, IconsModule, CdkMenuModule],
   providers: [GearsetStore],
 })
 export class GearsetLoadoutItemComponent {
   private store = inject(GearsetStore)
   private char = inject(CharacterStore)
 
-  @Input()
-  public set geasrsetId(value: string) {
-    this.store.connectGearsetDB(value)
-  }
-  public get gearsetId() {
-    return this.store.gearset()?.id
-  }
-  k
+  public gearset = input<GearsetRecord>(null)
 
-  @Input()
-  public set gearset(value: GearsetRecord) {
-    this.store.connectGearset(value)
-  }
-  public get gearset() {
-    return this.store.gearset()
-  }
+  public disableHead = input(false)
+  public deleteClicked = output<GearsetRecord>()
+  public createClicked = output<void>()
 
-  @Input()
-  public disableHead = false
-
-  @Output()
-  public deleteClicked = new EventEmitter<GearsetRecord>()
-
-  @Output()
-  public createClicked = new EventEmitter<void>()
-
-  protected get gearScore() {
-    return this.store.gearScore()
-  }
-
-  protected get isLoaded() {
-    return this.store.isLoaded()
-  }
+  protected gearScore = this.store.gearScore
+  protected isLoaded = this.store.isLoaded
+  protected isSynced = this.store.isSynced
+  protected isSyncPending = this.store.isSyncPending
+  protected isSyncConflicted = this.store.isSyncConflicted
+  protected menuIcon = svgBars
+  protected deleteIcon = svgTrashCan
 
   public constructor() {
     this.store.connectLevel(this.char.level)
+    this.store.connectGearset(this.gearset)
   }
 
   protected handleCreate() {

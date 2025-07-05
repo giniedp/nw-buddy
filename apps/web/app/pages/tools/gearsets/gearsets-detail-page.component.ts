@@ -19,9 +19,9 @@ import { TooltipModule } from '~/ui/tooltip'
 import { injectBreakpoint, injectQueryParam, injectRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { BehaviorSubject, map } from 'rxjs'
-import { GearsetsDB, GearsetsStore } from '~/data'
+import { GearsetsDB } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
 import { svgCalculator, svgChartLine, svgCodeMerge, svgSwords, svgUser } from '~/ui/icons/svg'
 
@@ -63,16 +63,15 @@ import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
 export class GearsetsDetailPageComponent implements AfterViewInit {
   protected isTabOpponent = toSignal(injectQueryParam('tab').pipe(map((it) => it === 'vs')))
   protected isLarge = toSignal(injectBreakpoint('(min-width: 992px)'))
-  private gearsets = inject(GearsetsStore)
 
   protected gearsetId$ = injectRouteParam('id')
   protected oppenentId$ = injectQueryParam('vs')
   protected hasOpponent = toSignal(this.oppenentId$.pipe(map((it) => !!it)))
 
-  protected playerGeasrset = toSignal(inject(GearsetsDB).observeByid(this.gearsetId$))
+  protected playerGeasrset = toSignal(inject(GearsetsDB).observeById(this.gearsetId$))
   protected player$ = new BehaviorSubject<Mannequin>(null)
 
-  protected opponentGearset = toSignal(inject(GearsetsDB).observeByid(this.oppenentId$))
+  protected opponentGearset = toSignal(inject(GearsetsDB).observeById(this.oppenentId$))
   protected opponent$ = new BehaviorSubject<Mannequin>(null)
 
   @ViewChildren(GearsetHostDirective)
@@ -83,10 +82,6 @@ export class GearsetsDetailPageComponent implements AfterViewInit {
   protected iconTabSkill = svgCodeMerge
   protected iconTabGear = svgSwords
   protected iconTabCalculator = svgCalculator
-
-  public constructor() {
-    this.gearsets.autoSync().pipe(takeUntilDestroyed()).subscribe()
-  }
 
   public ngAfterViewInit(): void {
     this.players.changes.subscribe(() => {

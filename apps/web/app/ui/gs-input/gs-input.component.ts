@@ -1,6 +1,6 @@
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, inject, input, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, inject, input, model, signal, viewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from '@nw-data/common'
 import { GsSliderComponent } from './gs-slider.component'
@@ -73,20 +73,20 @@ import { GsSliderComponent } from './gs-slider.component'
 })
 export class GsInputComponent implements ControlValueAccessor {
   protected cdkOrigin = inject(CdkOverlayOrigin)
-  public readonly min = input<number>(NW_MIN_GEAR_SCORE);
-  public readonly max = input<number>(NW_MAX_GEAR_SCORE);
-  public readonly step = input<number>(undefined);
-  public readonly bars = input<boolean>(undefined);
-  public readonly values = input<boolean>(undefined);
-  public readonly bordered = input<boolean>(undefined);
-  public readonly ghost = input<boolean>(undefined);
-  public readonly size = input<'xs' | 'sm' | 'md' | 'lg'>('md');
-  public readonly color = input<'primary' | 'secondary'>(undefined);
-  public readonly slider = input<boolean>(undefined);
-  protected readonly input = viewChild('input', { read: ElementRef });
+  public readonly min = input<number>(NW_MIN_GEAR_SCORE)
+  public readonly max = input<number>(NW_MAX_GEAR_SCORE)
+  public readonly step = input<number>(undefined)
+  public readonly bars = input<boolean>(undefined)
+  public readonly values = input<boolean>(undefined)
+  public readonly bordered = input<boolean>(undefined)
+  public readonly ghost = input<boolean>(undefined)
+  public readonly size = input<'xs' | 'sm' | 'md' | 'lg'>('md')
+  public readonly color = input<'primary' | 'secondary'>(undefined)
+  public readonly slider = input<boolean>(undefined)
+  public readonly disabled = model<boolean>(false)
+  protected readonly input = viewChild('input', { read: ElementRef })
   protected isOpen = signal(false)
   protected touched = signal(false)
-  protected disabled = signal(false)
   protected value = signal<number>(null)
 
   protected onChange = (value: unknown) => {}

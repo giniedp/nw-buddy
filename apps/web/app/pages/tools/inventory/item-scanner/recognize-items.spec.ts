@@ -40,7 +40,7 @@ describe('item-scanner / recognize', async () => {
 
     for (const sample of SAMPLES.en) {
       it(sample.file, async () => {
-        const image = await firstValueFrom(http.get(sampleUrl(`en/${sample.file}`), { responseType: 'blob' }))
+        const image = await firstValueFrom(http.get(await sampleUrl(`en/${sample.file}`), { responseType: 'blob' }))
         const results = await recognizeItemFromImage({
           image: image,
           itemClass: sample.itemClass,

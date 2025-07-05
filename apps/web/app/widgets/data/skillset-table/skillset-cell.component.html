@@ -2,9 +2,17 @@
   <img [nwImage]="icon" class="absolute top-0 bottom-0 left-0 right-0 object-contain z-0" />
 }
 <h3
-  class="z-10 text-lg uppercase font-serif flex flex-row gap-2 items-center justify-center text-nw-description nw-bg-title bg-bottom pt-4"
+  class="z-10 text-lg uppercase font-serif flex flex-row gap-2 items-center justify-center text-nw-description nw-bg-title bg-bottom pt-4 relative"
 >
   {{ recordName() }}
+  @switch (syncState()) {
+    @case ('pending') {
+      <span class="badge badge-xs badge-warning absolute top-0 right-0"></span>
+    }
+    @case ('conflict') {
+      <span class="badge badge-xs badge-error absolute top-0 right-0"></span>
+    }
+  }
 </h3>
 <div class="z-10 flex flex-row justify-between p-4">
   @for (item of abilities(); track $index) {

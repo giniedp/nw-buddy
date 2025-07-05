@@ -1,12 +1,10 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
-import { Observable, filter } from 'rxjs'
-import { GearsetRow, GearsetsStore } from '~/data'
+import { Observable, of } from 'rxjs'
+import { GearsetRow } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { shareReplayRefCount } from '~/utils'
 import { GearsetLoadoutItemComponent } from './gearset-cell.component'
 import {
   GearsetTableRecord,
@@ -20,7 +18,6 @@ import {
 export class GearsetTableAdapter implements DataViewAdapter<GearsetTableRecord> {
   private config = injectDataViewAdapterOptions<GearsetTableRecord>({ optional: true })
   private utils: TableGridUtils<GearsetTableRecord> = inject(TableGridUtils)
-  private store = inject(GearsetsStore)
 
   public entityID(item: GearsetRow): string {
     return item.record.id
@@ -56,11 +53,7 @@ export class GearsetTableAdapter implements DataViewAdapter<GearsetTableRecord> 
     return this.source$
   }
 
-  private source$: Observable<GearsetRow[]> =
-    this.config?.source ||
-    toObservable(this.store.rows)
-      .pipe(filter((it) => it != null))
-      .pipe(shareReplayRefCount(1))
+  private source$: Observable<GearsetRow[]> = this.config?.source || of<GearsetRow[]>([])
 }
 
 export function buildCommonGearsetGridOptions(util: TableGridUtils<GearsetTableRecord>) {

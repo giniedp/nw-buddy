@@ -9,22 +9,21 @@
 >
   <nwb-item-header [rarity]="store.rarity()" [isNamed]="store.isNamed()" class="relative font-nimbus gap-2">
     <nwb-item-icon
-      [nwbItemIcon]="store?.item() || store.slot()?.icon"
-      [solid]="!!store?.item()"
+      [nwbItemIcon]="store.item() || store.slot()?.icon"
+      [solid]="!!store.item()"
       class="z-10 w-12 h-12"
     />
-    @if (!disabled && !store?.item()) {
+    @if (!disabled() && !store?.item()) {
       <button
-        *ngIf="!disabled"
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
         (click)="pickItemClicked()"
       >
         <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2" />
       </button>
-    } @else if (!disabled && !!menuTemplate) {
+    } @else if (!disabled() && !!menuTemplate()) {
       <button
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end"
-        [cdkMenuTriggerFor]="menuTemplate"
+        [cdkMenuTriggerFor]="menuTemplate()"
       >
         <nwb-icon [icon]="iconMenu" class="w-4 h-4 mt-2" />
       </button>

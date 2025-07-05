@@ -1,11 +1,21 @@
-import { Observable, Subject } from 'rxjs'
-import { AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
+import { Observable } from 'rxjs'
+import { AppDbRecord, AppDbTable } from './app-db'
+import { customAlphabet } from 'nanoid/non-secure'
+
+// https://github.com/ai/nanoid
+// https://zelark.github.io/nano-id-cc/
+const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
+
 
 export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
   public abstract readonly table: AppDbTable<T>
 
   public get tableName() {
     return this.table.tableName
+  }
+
+  public createId(): string {
+    return createId()
   }
 
   public tx<R>(fn: () => Promise<R>): Promise<R> {
@@ -22,6 +32,10 @@ export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
 
   public async list() {
     return this.table.list()
+  }
+
+  public async where(where: Partial<T>) {
+    return this.table.where(where)
   }
 
   public async create(record: Partial<T>, options?: { silent: boolean }) {
@@ -48,7 +62,11 @@ export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.observeAll()
   }
 
-  public observeByid(id: string | Observable<string>) {
-    return this.table.observeByid(id)
+  public observeWhere(where: Partial<T>): Observable<T[]> {
+    return this.table.observeWhere(where)
+  }
+
+  public observeById(id: string | Observable<string>) {
+    return this.table.observeById(id)
   }
 }

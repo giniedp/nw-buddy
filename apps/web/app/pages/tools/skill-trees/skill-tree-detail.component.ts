@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { AttributeRef } from '@nw-data/common'
-import { filter, switchMap } from 'rxjs'
-import { SkillBuildsDB, SkillSetRecord } from '~/data'
+import { combineLatest, filter, switchMap } from 'rxjs'
+import { SkillBuildsService, SkillBuildStore, SkillTreeRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareDialogComponent } from '~/pages/share'
 import { ChipsInputModule } from '~/ui/chips-input'
@@ -14,6 +14,7 @@ import {
   svgBars,
   svgChevronLeft,
   svgClipboard,
+  svgExclamation,
   svgShareNodes,
   svgSliders,
   svgTags,
@@ -21,13 +22,12 @@ import {
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectRouteParam } from '~/utils'
+import { HtmlHeadService, injectParentRouteParam, injectRouteParam } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { SkillBuildValue, SkillBuilderComponent } from '~/widgets/skill-builder'
+import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder'
 import { GEARSET_TAGS } from '../gearsets/tags'
-import { SkillTreeDetailStore } from './skill-tree-detail.store'
 
 @Component({
   selector: 'nwb-skill-tree-detail',
@@ -46,27 +46,26 @@ import { SkillTreeDetailStore } from './skill-tree-detail.store'
     AttributesEditorModule,
     ChipsInputModule,
   ],
-  providers: [SkillTreeDetailStore],
+  providers: [SkillBuildStore],
   host: {
     class: 'block',
   },
 })
-export class SkillBuildsDetailComponent {
+export class SkillTreeDetailComponent {
   private route = inject(ActivatedRoute)
   private router = inject(Router)
   private modal = inject(ModalService)
   private platform = inject(PlatformService)
 
-  private db = inject(SkillBuildsDB)
-  private store = inject(SkillTreeDetailStore)
-  private recordId$ = injectRouteParam('id')
+  // private skillsStore = inject(SkillBuildsService)
+  private store = inject(SkillBuildStore)
+  private userId = injectParentRouteParam('userid')
+  private recordId = injectRouteParam('id')
 
-  protected get canEdit() {
-    return this.store.canEdit()
-  }
-  protected get record() {
-    return this.store.record()
-  }
+  protected canEdit = this.store.canEdit
+  protected hasError = this.store.hasError
+  protected record = this.store.record
+  protected isPublished = this.store.isPublished
 
   protected iconBack = svgChevronLeft
   protected iconReset = svgArrowRightArrowLeft
@@ -76,12 +75,19 @@ export class SkillBuildsDetailComponent {
   protected iconCopy = svgClipboard
   protected iconDelete = svgTrashCan
   protected iconTags = svgTags
+  protected iconError = svgExclamation
   protected isTagEditorOpen = false
   protected presetTags = GEARSET_TAGS.map((it) => it.value)
 
+  protected builder = viewChild(SkillBuilderComponent)
+
   public constructor(head: HtmlHeadService) {
-    this.store.load(this.recordId$)
-    this.store.setEditable(true)
+    this.store.connect(
+      combineLatest({
+        userId: this.userId,
+        recordId: this.recordId,
+      }),
+    )
 
     head.updateMetadata({
       title: 'Skill Build',
@@ -92,11 +98,11 @@ export class SkillBuildsDetailComponent {
   }
 
   protected updateModel(data: SkillBuildValue) {
-    const record = this.record
+    const record = this.record()
     if (!record) {
       return
     }
-    this.store.update({
+    this.store.update(record.id, {
       ...record,
       weapon: data.weapon,
       tree1: data.tree1,
@@ -105,22 +111,22 @@ export class SkillBuildsDetailComponent {
   }
 
   protected handleUpdateName(name: string) {
-    this.store.update({
-      ...this.record,
+    this.store.update(this.record().id, {
+      ...this.record(),
       name: name,
     })
   }
 
   protected handleUpdateAttributes(attrs: Record<AttributeRef, number>) {
-    this.store.update({
-      ...this.record,
+    this.store.update(this.record().id, {
+      ...this.record(),
       attrs: attrs,
     })
   }
 
   protected handleToggleAttributes() {
-    const record = this.record
-    this.store.update({
+    const record = this.record()
+    this.store.update(record.id, {
       ...record,
       attrs: record.attrs
         ? null
@@ -135,16 +141,28 @@ export class SkillBuildsDetailComponent {
   }
 
   protected handleUpdateTags(tags: string[]) {
-    this.store.update({
-      ...this.record,
+    this.store.update(this.record().id, {
+      ...this.record(),
       tags: tags || [],
     })
   }
 
+  protected handlePublish() {
+    this.store.update(this.record().id, {
+      status: 'public',
+    })
+  }
+
+  protected handleUnpublish() {
+    this.store.update(this.record().id, {
+      status: 'private',
+    })
+  }
+
   protected handleShare() {
-    const ipnsKey = this.record.ipnsKey
-    const ipnsName = this.record.ipnsName
-    const record = cloneRecord(this.record)
+    const ipnsKey = this.record().ipnsKey
+    const ipnsName = this.record().ipnsName
+    const record = cloneRecord(this.record())
 
     ShareDialogComponent.open(this.modal, {
       inputs: {
@@ -191,7 +209,7 @@ export class SkillBuildsDetailComponent {
             if (!res.ipnsKey) {
               return
             }
-            this.store.update({
+            this.store.update(record.id, {
               ...record,
               ipnsKey: res.ipnsKey,
               ipnsName: res.ipnsName,
@@ -207,7 +225,7 @@ export class SkillBuildsDetailComponent {
       inputs: {
         title: 'Create copy',
         body: 'New skill-tree name',
-        value: `${this.record.name} (Copy)`,
+        value: `${this.record().name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',
       },
@@ -215,15 +233,14 @@ export class SkillBuildsDetailComponent {
       .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((name) => {
-          return this.db.create({
-            ...cloneRecord(this.record),
-            id: null,
-            name: name,
+          return this.store.dublicate({
+            ...cloneRecord(this.record()),
+            name,
           })
         }),
       )
-      .subscribe((result) => {
-        this.router.navigate(['..', result.id], { relativeTo: this.route })
+      .subscribe(({ id }) => {
+        this.router.navigate(['..', id], { relativeTo: this.route })
       })
   }
 
@@ -238,7 +255,7 @@ export class SkillBuildsDetailComponent {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
-        this.store.destroy()
+        this.store.delete(this.record().id)
         this.router.navigate(['..'], {
           relativeTo: this.route,
         })
@@ -246,7 +263,7 @@ export class SkillBuildsDetailComponent {
   }
 }
 
-function cloneRecord(record: SkillSetRecord) {
+function cloneRecord(record: SkillTreeRecord) {
   record = JSON.parse(JSON.stringify(record))
   delete record.ipnsKey
   delete record.ipnsName

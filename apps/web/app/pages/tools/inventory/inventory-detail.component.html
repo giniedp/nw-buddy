@@ -1,33 +1,31 @@
-@if (!isLoaded || instance) {
-  <nwb-item-card
-    [entity]="instance?.itemId"
-    [gsOverride]="overrideGearScore || instance?.gearScore"
-    [gsEditable]="true"
-    (gsEdit)="handleOpenGsEditor($event)"
-    [perkOverride]="instance?.perks"
-    [perkEditable]="true"
-    (perkEdit)="handlePickPerk($event.key)"
+<nwb-item-card
+  [entity]="instance()?.itemId"
+  [gsOverride]="overrideGearScore || instance()?.gearScore"
+  [gsEditable]="true"
+  (gsEdit)="handleOpenGsEditor($event)"
+  [perkOverride]="instance()?.perks"
+  [perkEditable]="true"
+  (perkEdit)="handlePickPerk($event.key)"
+>
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="gsTarget"
+    [cdkConnectedOverlayOpen]="!!gsTarget"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    (backdropClick)="handleCloseGsEditor()"
+    (detach)="handleCloseGsEditor()"
   >
-    <ng-template
-      cdkConnectedOverlay
-      [cdkConnectedOverlayOrigin]="gsTarget"
-      [cdkConnectedOverlayOpen]="!!gsTarget"
-      [cdkConnectedOverlayHasBackdrop]="true"
-      (backdropClick)="handleCloseGsEditor()"
-      (detach)="handleCloseGsEditor()"
-    >
-      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-        <input
-          type="range"
-          [min]="minGs"
-          [max]="maxGs"
-          step="1"
-          [ngModel]="instance?.gearScore"
-          (ngModelChange)="handleGearScoreChange($event)"
-          (blur)="handleGearScoreWrite()"
-          class="range range-sm range-primary"
-        />
-      </div>
-    </ng-template>
-  </nwb-item-card>
-}
+    <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+      <input
+        type="range"
+        [min]="minGs"
+        [max]="maxGs"
+        step="1"
+        [ngModel]="instance()?.gearScore"
+        (ngModelChange)="handleGearScoreChange($event)"
+        (blur)="handleGearScoreWrite()"
+        class="range range-sm range-primary"
+      />
+    </div>
+  </ng-template>
+</nwb-item-card>

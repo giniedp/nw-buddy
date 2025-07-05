@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, TemplateRef, inject, input, output } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
@@ -20,32 +20,16 @@ export class GearsetLoadoutItemComponent {
   private store = inject(GearsetStore)
   private char = inject(CharacterStore)
 
-  @Input()
-  public set geasrsetId(value: string) {
-    this.store.connectGearsetDB(value)
-  }
+  public gearsetId = input<string>(null)
+  public editable = input(false)
 
-  @Input()
-  public editable = false
+  public slotMenuTemplate = input<TemplateRef<any>>(null)
+  public buttonTemplate = input<TemplateRef<any>>(null)
+  public delete = output<GearsetRecord>()
+  public create = output<void>()
 
-  @Input()
-  public slotMenuTemplate: TemplateRef<any>
-
-  @Input()
-  public buttonTemplate: TemplateRef<any>
-
-  @Output()
-  public delete = new EventEmitter<GearsetRecord>()
-
-  @Output()
-  public create = new EventEmitter<void>()
-
-  protected get gearset() {
-    return this.store.gearset()
-  }
-  protected get gearScore() {
-    return this.store.gearScore()
-  }
+  protected gearset = this.store.gearset
+  protected gearScore = this.store.gearScore
 
   public constructor() {
     this.store.connectLevel(this.char.level)

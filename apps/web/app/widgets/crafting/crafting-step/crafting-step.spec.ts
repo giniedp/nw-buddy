@@ -5,7 +5,7 @@ import { NwData } from '@nw-data/db'
 import { injectNwData } from '~/data'
 import { BONUS_SAMPLES } from './bonus-samples'
 
-fdescribe('CraftingStep', () => {
+describe('CraftingStep', () => {
   let db: NwData = null
   beforeAll(() => {
     TestBed.configureTestingModule({

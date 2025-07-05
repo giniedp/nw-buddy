@@ -4,12 +4,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Input,
   computed,
   effect,
   inject,
+  input,
+  signal,
   viewChild,
-  viewChildren
+  viewChildren,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EQUIP_SLOTS } from '@nw-data/common'
@@ -61,8 +62,7 @@ import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component
 export class GearsetGridComponent {
   private store = inject(GearsetStore)
 
-  @Input()
-  public disabled = false
+  public disabled = input(false)
 
   protected elMain = viewChild<string, ElementRef<HTMLElement>>('elMain', { read: ElementRef })
   protected elStats = viewChild<string, ElementRef<HTMLElement>>('elStats', { read: ElementRef })

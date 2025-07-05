@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, computed, effect, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { filter, map, switchMap } from 'rxjs'
-import { SkillBuildRow } from '~/data'
+import { SkillBuildsService, SkillTreeRow } from '~/data'
+import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { ShareService } from '~/pages/share'
@@ -15,6 +16,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
@@ -42,6 +44,8 @@ import { SkillTreesPageStore } from './skill-trees-page.store'
     VirtualGridModule,
     LayoutModule,
     IconsModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
   host: {
     class: 'ion-page',
@@ -61,11 +65,18 @@ import { SkillTreesPageStore } from './skill-trees-page.store'
     }),
   ],
 })
-export class SkillBuildsComponent {
+export class SkillTreesPageComponent {
   private router = inject(Router)
+  private backend = inject(BackendService)
   private route = inject(ActivatedRoute)
   private share = inject(ShareService)
   private store = inject(SkillTreesPageStore)
+  private service = inject(SkillBuildsService)
+  private modal = inject(ModalService)
+  private injector = inject(Injector)
+
+  protected search = inject(QuicksearchService)
+  protected dataView = inject(DataViewService<any>)
 
   protected title = 'Skill Trees'
   protected filterParam = 'filter'
@@ -76,6 +87,8 @@ export class SkillBuildsComponent {
     return it ? it : null
   })
 
+  protected userId = toSignal(injectRouteParam('userid'))
+
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)
   protected isChildActive = selectSignal(injectChildRouteParam('id'), (it) => !!it)
@@ -85,29 +98,23 @@ export class SkillBuildsComponent {
   protected iconCreate = svgPlus
   protected iconMore = svgFilterList
   protected iconImport = svgFileImport
-  protected tags = this.store.filterTags
+  protected tags = this.store.tags
+  protected tagsAreActive = computed(() => this.tags()?.some((it) => it.active))
+  protected isAvailable = this.store.isAvailable
 
-  protected get isTagFilterActive() {
-    return this.store.filterTags()?.some((it) => it.active)
-  }
-
-  protected get filterTags() {
-    return this.store.filterTags()
-  }
-
-  public constructor(
-    protected search: QuicksearchService,
-    private modal: ModalService,
-    private injector: Injector,
-    protected dataView: DataViewService<any>,
-    head: HtmlHeadService,
-  ) {
-    this.store.connectDB()
-
-    dataView.patchState({ mode: 'grid', modes: ['grid'] })
+  public constructor(head: HtmlHeadService) {
+    this.store.load(this.userId)
+    this.dataView.patchState({ mode: 'grid', modes: ['grid'] })
     head.updateMetadata({
       title: 'Skill Builder',
       description: 'A Skill Buider tool for New World. Build your skill tree and share with your mates.',
+    })
+
+    effect(() => {
+      const userId = this.backend.session()?.id
+      if (userId && this.userId() === 'local') {
+        this.router.navigate(['..', userId], { relativeTo: this.route })
+      }
     })
   }
 
@@ -125,7 +132,7 @@ export class SkillBuildsComponent {
       )
       .pipe(
         switchMap((weapon) => {
-          return this.store.createRecord({
+          return this.service.create({
             id: null,
             name: `New Skill Tree`,
             tree1: null,
@@ -141,7 +148,7 @@ export class SkillBuildsComponent {
       })
   }
 
-  protected deleteItem(item: SkillBuildRow) {
+  protected deleteItem(item: SkillTreeRow) {
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
         title: 'Delete Skill Tree',
@@ -152,11 +159,11 @@ export class SkillBuildsComponent {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
-        this.store.destroyRecord(item.record.id)
+        this.service.delete(item.record.id)
       })
   }
 
-  protected toggleTag(value: string) {
-    this.store.toggleFilterTag(value)
+  protected handleTagToggle(value: string) {
+    this.store.toggleTag(value)
   }
 }

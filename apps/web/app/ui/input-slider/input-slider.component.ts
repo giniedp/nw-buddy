@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, OnChanges, input, signal, viewChild } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnChanges,
+  input,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 
 interface Bar {
@@ -70,7 +79,7 @@ export class InputSliderComponent implements ControlValueAccessor, OnChanges {
 
   protected barNodes: Bar[] = []
   protected readonly touched = signal(false)
-  protected readonly disabled = signal(false)
+  protected readonly disabled = model(false)
   protected readonly value = signal<number>(null)
 
   protected onChange = (value: unknown) => {}

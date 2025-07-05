@@ -17,11 +17,11 @@ describe('processSyncCommands', () => {
     })
     db = TestBed.inject(APP_DB)
     table = db.table(DBT_GEARSETS)
-    await db.reset()
+    await db.dropTables()
   })
 
   afterEach(async () => {
-    await db.reset()
+    await db.dropTables()
   })
 
   it('creates local', async () => {
@@ -32,7 +32,7 @@ describe('processSyncCommands', () => {
         {
           action: 'create',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Test Item', syncState: 'synced' },
         },
       ],
       remoteTable: null,
@@ -42,14 +42,14 @@ describe('processSyncCommands', () => {
     expect(record).toEqual({
       id: '1',
       name: 'Test Item',
-      sync_state: 'synced',
-      created_at: record.created_at,
-      updated_at: record.updated_at,
+      syncState: 'synced',
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
     })
   })
 
   it('updates local', async () => {
-    const oldRecord = await table.create({ id: '1', name: 'Old Item', sync_state: 'synced' }, { silent: true })
+    const oldRecord = await table.create({ id: '1', name: 'Old Item', syncState: 'synced' }, { silent: true })
     let record = await table.read('1')
     expect(record).toEqual(oldRecord)
 
@@ -58,7 +58,7 @@ describe('processSyncCommands', () => {
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Test Item', syncState: 'synced' },
         },
       ],
       remoteTable: null,
@@ -68,14 +68,14 @@ describe('processSyncCommands', () => {
     expect(record).toEqual({
       id: '1',
       name: 'Test Item',
-      sync_state: 'synced',
-      created_at: record.created_at,
-      updated_at: record.updated_at,
+      syncState: 'synced',
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
     })
   })
 
   it('deletes local', async () => {
-    const oldRecord = await table.create({ id: '1', name: 'Old Item', sync_state: 'synced' }, { silent: true })
+    const oldRecord = await table.create({ id: '1', name: 'Old Item', syncState: 'synced' }, { silent: true })
     let record = await table.read('1')
     expect(record).toEqual(oldRecord)
 
@@ -84,7 +84,7 @@ describe('processSyncCommands', () => {
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Test Item', syncState: 'synced' },
         },
       ],
       remoteTable: null,

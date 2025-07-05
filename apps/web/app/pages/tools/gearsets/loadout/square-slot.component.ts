@@ -9,6 +9,7 @@ import {
   TemplateRef,
   inject,
   input,
+  output,
 } from '@angular/core'
 import { EquipSlot, EquipSlotId } from '@nw-data/common'
 import { GearsetRecord, GearsetSlotStore } from '~/data'
@@ -39,20 +40,15 @@ export class GersetSquareSlotComponent {
   public readonly slotId = input<EquipSlotId>()
   public readonly gearset = input<GearsetRecord>()
 
-  @Input()
-  public disabled: boolean
-
-  @Output()
-  public pickItem = new EventEmitter<EquipSlotId>()
-
-  @Input()
-  public menuTemplate: TemplateRef<any>
+  public disabled = input(false)
+  public pickItem = output<EquipSlotId>()
+  public menuTemplate = input<TemplateRef<any>>()
 
   protected iconPlus = svgPlus
   protected iconMenu = svgEllipsisVertical
 
   public constructor() {
-    this.store.connectState(
+    this.store.connect(
       selectSignal({
         gearset: this.gearset,
         slotId: this.slotId,
@@ -61,7 +57,7 @@ export class GersetSquareSlotComponent {
   }
 
   protected pickItemClicked() {
-    if (!this.disabled) {
+    if (!this.disabled()) {
       this.pickItem.emit(this.slotId())
     }
   }

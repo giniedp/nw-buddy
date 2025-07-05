@@ -1,7 +1,7 @@
-import { BehaviorSubject, isObservable, of, Observable as RxObservable, Subject, switchMap } from 'rxjs'
+import { of, Observable as RxObservable, Subject } from 'rxjs'
 
-import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
 import { customAlphabet } from 'nanoid/non-secure'
+import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
 const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
 export class AppDbNoop extends AppDb {
@@ -19,9 +19,14 @@ export class AppDbNoop extends AppDb {
   public async reset() {
     //
   }
+  public async dropTables() {
+    for (const table of Object.values(this.tables)) {
+      // No-op, as this is a noop implementation
+    }
+  }
 }
 
-export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
+export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
   public db: AppDb
   public tableName: string
   public events = new Subject<AppDbTableEvent<T>>()
@@ -32,6 +37,7 @@ export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
     this.tableName = name
   }
 
+  public createId = createId
   public async tx<R>(fn: () => Promise<R>): Promise<R> {
     return null
   }
@@ -45,6 +51,10 @@ export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
   }
 
   public async list(): Promise<T[]> {
+    return []
+  }
+
+  public async where(where: Partial<T>): Promise<T[]> {
     return []
   }
 
@@ -71,7 +81,12 @@ export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
   public observeAll(): RxObservable<T[]> {
     return of([])
   }
-  public observeByid(id: string | RxObservable<string>): RxObservable<T> {
+
+  public observeWhere(where: Partial<T>): RxObservable<T[]> {
+    return of([])
+  }
+
+  public observeById(id: string | RxObservable<string>): RxObservable<T> {
     return of(null)
   }
 }

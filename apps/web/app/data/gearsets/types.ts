@@ -1,10 +1,10 @@
 import { AttributeRef, EquipSlotId } from '@nw-data/common'
 import type { AppDbRecord } from '../app-db'
 import { ItemInstance } from '../items/types'
-import { SkillSet } from '../skillbuilds/types'
+import { SkillTree } from '../skillbuilds/types'
 
-export type GearsetCreateMode = 'link' | 'copy'
-export type GearsetSkillSlot = 'primary' | 'secondary'
+export type GearsetAttachItemMode = 'link' | 'copy'
+export type GearsetSkillTreeRef = 'primary' | 'secondary'
 export interface GearsetRecord extends AppDbRecord {
   /**
    * Name of the gearset
@@ -29,7 +29,7 @@ export interface GearsetRecord extends AppDbRecord {
   /**
    * The mode how new items should be stored in this set
    */
-  createMode?: GearsetCreateMode
+  createMode?: GearsetAttachItemMode
   /**
    * Item slots for this gear
    */
@@ -45,7 +45,7 @@ export interface GearsetRecord extends AppDbRecord {
   /**
    * Weapon skill builds
    */
-  skills?: Partial<Record<GearsetSkillSlot, string | SkillSet>>
+  skills?: Partial<Record<GearsetSkillTreeRef, string | SkillTree>>
   /**
    * Profile image id
    */
@@ -58,4 +58,8 @@ export interface GearsetRecord extends AppDbRecord {
    * Abilities enforced on this build
    */
   enforceAbilities?: Array<{ id: string; stack: number }>
+  /**
+   * The character level this gearset is designed for
+   */
+  level?: number
 }

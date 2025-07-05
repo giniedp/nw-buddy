@@ -49,9 +49,10 @@
   <nwb-virtual-grid [itemHeight]="272" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']">
     <nwb-gearset-loadout-item
       *nwbVirtualGridCell="items; let item"
-      [geasrsetId]="item?.id"
+      [gearset]="item"
       class="p-2 self-start"
       (createClicked)="handleCreate()"
+      (deleteClicked)="handleDelete($event)"
     />
   </nwb-virtual-grid>
 </ion-content>

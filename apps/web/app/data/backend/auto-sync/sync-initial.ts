@@ -2,9 +2,17 @@ import { AppDbRecord, AppDbTable } from '~/data/app-db'
 import { PrivateTable } from '../backend-adapter'
 import { processSyncCommands, SyncCommand } from './sync-commands'
 
-export async function syncInitial<T extends AppDbRecord>(localTable: AppDbTable<T>, remoteTable: PrivateTable<T>) {
+export async function syncInitial<T extends AppDbRecord>({
+  userId,
+  localTable,
+  remoteTable,
+}: {
+  userId: string,
+  localTable: AppDbTable<T>
+  remoteTable: PrivateTable<T>
+}) {
   const syncPairs = resolveInitialSyncPairs({
-    localRows: await localTable.list(),
+    localRows: await localTable.where({ userId }),
     remoteRows: await remoteTable.list(),
   })
   const syncQueue = syncPairs.map(({ local, remote }) => {
@@ -65,13 +73,13 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
       {
         action: 'create',
         resource: 'local',
-        data: { ...remote, sync_state: 'synced' },
+        data: { ...remote, syncState: 'synced' },
       },
     ]
   }
 
   if (local != null && remote == null) {
-    if (local.sync_state === 'synced') {
+    if (local.syncState === 'synced') {
       return [
         {
           action: 'delete',
@@ -81,7 +89,7 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
       ]
     }
 
-    if (!local.sync_state || local.sync_state === 'pending') {
+    if (!local.syncState || local.syncState === 'pending') {
       // local row was never synced or is in pending state
       // remote row either never existed or was deleted
       // we should create the row in both cases
@@ -89,12 +97,12 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
         {
           action: 'create',
           resource: 'remote',
-          data: { ...local, sync_state: 'synced' },
+          data: { ...local, syncState: 'synced' },
         },
         {
           action: 'update',
           resource: 'local',
-          data: { ...local, sync_state: 'synced' },
+          data: { ...local, syncState: 'synced' },
         },
       ]
     }
@@ -106,14 +114,14 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
         resource: 'local',
         data: {
           ...local,
-          sync_state: 'conflict',
+          syncState: 'conflict',
         },
       },
     ]
   }
 
-  const localDate = local.updated_at
-  const remoteDate = remote.updated_at
+  const localDate = local.updatedAt
+  const remoteDate = remote.updatedAt
   const localIsAhead = localDate && remoteDate && localDate > remoteDate
   const remoteIsAhead = remoteDate && localDate && remoteDate > localDate
 
@@ -125,12 +133,12 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
       {
         action: 'update',
         resource: 'remote',
-        data: { ...local, sync_state: 'synced' },
+        data: { ...local, syncState: 'synced' },
       },
       {
         action: 'update',
         resource: 'local',
-        data: { ...local, sync_state: 'synced' },
+        data: { ...local, syncState: 'synced' },
       },
     ]
   }
@@ -140,7 +148,7 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
       {
         action: 'update',
         resource: 'local',
-        data: { ...remote, sync_state: 'synced' },
+        data: { ...remote, syncState: 'synced' },
       },
     ]
   }
@@ -153,7 +161,7 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
     {
       action: 'update',
       resource: 'local',
-      data: { ...local, sync_state: 'conflict' },
+      data: { ...local, syncState: 'conflict' },
     },
   ]
 }

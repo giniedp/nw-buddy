@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { filter, switchMap } from 'rxjs'
-import { SkillBuildsDB, SkillSetRecord } from '~/data'
+import { SkillBuildsService, SkillTreeRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgShareNodes } from '~/ui/icons/svg'
@@ -38,12 +38,12 @@ export class ShareComponent {
     private router: Router,
     private web3: ShareService,
     private modal: ModalService,
-    private skillsDb: SkillBuildsDB,
+    private skillsStore: SkillBuildsService,
   ) {
     //
   }
 
-  public importSkillBuild(value: SkillSetRecord) {
+  public importSkillBuild(value: SkillTreeRecord) {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Name',
@@ -56,17 +56,16 @@ export class ShareComponent {
       .result$.pipe(filter((it) => it != null))
       .pipe(
         switchMap((name) => {
-          const record = {
+          return this.skillsStore.create({
             ...value,
             id: null,
             name: name,
-          }
-          return this.skillsDb.create(record)
+          })
         }),
       )
       .subscribe({
-        next: (record) => {
-          this.router.navigate(['skill-trees', record.id])
+        next: ({ id }) => {
+          this.router.navigate(['skill-trees', id])
         },
         error: () => {
           ConfirmDialogComponent.open(this.modal, {

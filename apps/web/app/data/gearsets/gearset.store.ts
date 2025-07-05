@@ -1,25 +1,23 @@
-import { inject } from '@angular/core'
-import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { EquipSlotId, ItemPerkInfo, NW_MAX_CHARACTER_LEVEL, PerkBucket, getItemPerkInfos } from '@nw-data/common'
 import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 
+import { inject } from '@angular/core'
+import { NwData } from '@nw-data/db'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { ItemInstancesDB } from '../items/items.db'
 import { ItemInstance } from '../items/types'
-import { GearsetsDB } from './gearsets.db'
+import { GearsetsService } from './gearsets.service'
 import { GearsetRecord } from './types'
 import { withGearsetMethods } from './with-gearset-methods'
 import { withGearsetProps } from './with-gearset-props'
 import { withGearsetToMannequin } from './with-gearset-to-mannequin'
-import { NwData } from '@nw-data/db'
-import { BackendService } from '../backend'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 export interface GearsetStoreState {
   readonly: boolean
-  level: number
+  defaultLevel: number
   gearset: GearsetRecord
   isLoaded: boolean
   showCalculator: boolean
@@ -30,7 +28,7 @@ export type GearsetStore = InstanceType<typeof GearsetStore>
 export const GearsetStore = signalStore(
   { protectedState: false },
   withState<GearsetStoreState>({
-    level: NW_MAX_CHARACTER_LEVEL,
+    defaultLevel: NW_MAX_CHARACTER_LEVEL,
     gearset: null,
     isLoaded: false,
     readonly: false,
@@ -41,14 +39,16 @@ export const GearsetStore = signalStore(
   withGearsetMethods(),
   withGearsetToMannequin(),
   withMethods((state) => {
-    const backend = inject(BackendService)
-    const db = inject(GearsetsDB)
+    const service = inject(GearsetsService)
     return {
-      autoSync: () => backend.privateTables.gearsets?.autoSync$ || of(null),
-      connectGearsetDB: rxMethod<string>(
+      connectGearsetId: rxMethod<{ userId: string; id: string }>(
         pipe(
-          switchMap((id) => db.observeByid(id)),
-          map((gearset) => patchState(state, { gearset, isLoaded: true })),
+          switchMap((source) => {
+            return service.observeRecord(source)
+          }),
+          map((gearset) => {
+            patchState(state, { gearset: gearset, isLoaded: true })
+          }),
         ),
       ),
       connectGearset: rxMethod<GearsetRecord>(
@@ -61,16 +61,11 @@ export const GearsetStore = signalStore(
       connectLevel: rxMethod<number>(
         pipe(
           map((level) => {
-            patchState(state, { level })
+            patchState(state, { defaultLevel: level })
           }),
         ),
       ),
     }
-  }),
-  withHooks({
-    onInit(state) {
-      state.autoSync().pipe(takeUntilDestroyed()).subscribe()
-    },
   }),
 )
 
@@ -88,7 +83,7 @@ export function resolveSlotItemInstance(
   itemDB: ItemInstancesDB,
 ): Observable<ItemInstance> {
   const { instance, instanceId } = decodeSlot(slot)
-  return instanceId ? itemDB.observeByid(instanceId) : of(instance)
+  return instanceId ? itemDB.observeById(instanceId) : of(instance)
 }
 
 export function resolveGearsetSlotInstances(record: GearsetRecord, itemDB: ItemInstancesDB) {

@@ -15,14 +15,14 @@ describe('resolvSyncCommand', () => {
         {
           action: 'create',
           resource: 'local',
-          data: { id: '1', name: 'Remote Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Remote Item', syncState: 'synced' },
         },
       ])
     })
   })
 
   describe('local exists, remote missing or deleted', () => {
-    it('sync_state = null, creates remote', () => {
+    it('syncState = null, creates remote', () => {
       const local: MyRecord = { id: '1', name: 'Local Item' }
       const remote: MyRecord = null
       const commands = createInitialSyncCommands(local, remote)
@@ -30,87 +30,87 @@ describe('resolvSyncCommand', () => {
         {
           action: 'create',
           resource: 'remote',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced' },
         },
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced' },
         },
       ])
     })
 
-    it('sync_state = empty, creates remote', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: '' as any }
+    it('syncState = empty, creates remote', () => {
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: '' as any }
       const remote: MyRecord = null as any
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([
         {
           action: 'create',
           resource: 'remote',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced' },
         },
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced' },
         },
       ])
     })
 
-    it('sync_state = pending, creates remote', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: 'pending' }
+    it('syncState = pending, creates remote', () => {
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: 'pending' }
       const remote: MyRecord = null
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([
         {
           action: 'create',
           resource: 'remote',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced' },
         },
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced' },
         },
       ])
     })
 
-    it('sync_state = synced, deletes local', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: 'synced' }
+    it('syncState = synced, deletes local', () => {
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: 'synced' }
       const remote: MyRecord = null
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced' },
         },
       ])
     })
 
-    it('sync_state = conflict, keeps conflict', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: 'conflict' }
+    it('syncState = conflict, keeps conflict', () => {
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: 'conflict' }
       const remote: MyRecord = null
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', sync_state: 'conflict' },
+          data: { id: '1', name: 'Local Item', syncState: 'conflict' },
         },
       ])
     })
 
-    it('sync_state = anything, keeps conflict', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: 'anything' as any }
+    it('syncState = anything, keeps conflict', () => {
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: 'anything' as any }
       const remote: MyRecord = null
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', sync_state: 'conflict' },
+          data: { id: '1', name: 'Local Item', syncState: 'conflict' },
         },
       ])
     })
@@ -118,19 +118,19 @@ describe('resolvSyncCommand', () => {
 
   describe('both exist, local is newer', () => {
     it('updates remote', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: 'any' as any, updated_at: '2' }
-      const remote: MyRecord = { id: '1', name: 'Remote Item', sync_state: null, updated_at: '1' }
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: 'any' as any, updatedAt: '2' }
+      const remote: MyRecord = { id: '1', name: 'Remote Item', syncState: null, updatedAt: '1' }
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'remote',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced', updated_at: '2' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced', updatedAt: '2' },
         },
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', sync_state: 'synced', updated_at: '2' },
+          data: { id: '1', name: 'Local Item', syncState: 'synced', updatedAt: '2' },
         },
       ])
     })
@@ -138,14 +138,14 @@ describe('resolvSyncCommand', () => {
 
   describe('both exist, remote is newer', () => {
     it('updates remote', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: null as any, updated_at: '1' }
-      const remote: MyRecord = { id: '1', name: 'Remote Item', sync_state: 'any' as any, updated_at: '2' }
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: null as any, updatedAt: '1' }
+      const remote: MyRecord = { id: '1', name: 'Remote Item', syncState: 'any' as any, updatedAt: '2' }
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Remote Item', sync_state: 'synced', updated_at: '2' },
+          data: { id: '1', name: 'Remote Item', syncState: 'synced', updatedAt: '2' },
         },
       ])
     })
@@ -153,8 +153,8 @@ describe('resolvSyncCommand', () => {
 
   describe('both exist, same age', () => {
     it('does nothing', () => {
-      const local: MyRecord = { id: '1', name: 'Local Item', sync_state: null as any, updated_at: '1' }
-      const remote: MyRecord = { id: '1', name: 'Remote Item', sync_state: 'any' as any, updated_at: '1' }
+      const local: MyRecord = { id: '1', name: 'Local Item', syncState: null as any, updatedAt: '1' }
+      const remote: MyRecord = { id: '1', name: 'Remote Item', syncState: 'any' as any, updatedAt: '1' }
       const commands = createInitialSyncCommands(local, remote)
       expect(commands).toEqual([])
     })

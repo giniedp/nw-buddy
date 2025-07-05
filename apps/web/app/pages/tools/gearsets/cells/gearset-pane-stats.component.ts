@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input, Input } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { injectElementWidth } from '~/ui/layout/resize-observer.directive'
 import { GearCellModsAbsComponent } from '../cells/gear-cell-mods-abs.component'
@@ -32,8 +32,6 @@ import { GearCellWeaponComponent } from '../cells/gear-cell-weapon.component'
   },
 })
 export class GearsetPaneStatsComponent {
-  @Input()
-  public disabled: boolean
-
+  public disabled = input(false)
   protected width = toSignal(injectElementWidth())
 }

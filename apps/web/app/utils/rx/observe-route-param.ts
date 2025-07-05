@@ -11,6 +11,14 @@ export function injectRouteParam(
   return observeRouteParam(route, param)
 }
 
+export function injectParentRouteParam(
+  param: string | Observable<string>,
+  router = inject(Router),
+  route = inject(ActivatedRoute),
+): Observable<string> {
+  return observeParentRouteParam(router, route, param)
+}
+
 export function injectChildRouteParam(
   param: string | Observable<string>,
   router = inject(Router),
@@ -49,6 +57,7 @@ export function observeQueryParam(route: ActivatedRoute, param: string | Observa
 export function injectRouteChange<T>(fn: (router: Router, route: ActivatedRoute) => Observable<T>) {
   return observeRouteChange(inject(Router), inject(ActivatedRoute), fn)
 }
+
 export function observeRouteChange<T>(
   router: Router,
   route: ActivatedRoute,
@@ -57,6 +66,29 @@ export function observeRouteChange<T>(
   return router.events.pipe(filter((it) => it instanceof NavigationEnd)).pipe(switchMap(() => fn(router, route)))
 }
 
+export function observeAncestorRouteParam(router: Router, route: ActivatedRoute, param: string | Observable<string>) {
+  return defer(() => (isObservable(param) ? param : of(param))).pipe(
+    switchMap((param) => {
+      return router.events.pipe(filter((it) => it instanceof NavigationEnd)).pipe(
+        map(() => getAncestorRouteParam(route, param)),
+        distinctUntilChanged(),
+        startWith(getAncestorRouteParam(route, param)),
+      )
+    }),
+  )
+}
+
+export function observeParentRouteParam(router: Router, route: ActivatedRoute, param: string | Observable<string>) {
+  return defer(() => (isObservable(param) ? param : of(param))).pipe(
+    switchMap((param) => {
+      return router.events.pipe(filter((it) => it instanceof NavigationEnd)).pipe(
+        map(() => getParentRouteParam(route, param)),
+        distinctUntilChanged(),
+        startWith(getParentRouteParam(route, param)),
+      )
+    }),
+  )
+}
 export function observeChildRouteParam(router: Router, route: ActivatedRoute, param: string | Observable<string>) {
   return defer(() => (isObservable(param) ? param : of(param))).pipe(
     switchMap((param) => {
@@ -101,6 +133,33 @@ function childRouteWithParam(route: ActivatedRoute, param: string) {
 function getChildRouteParam(route: ActivatedRoute, param: string) {
   const childRoute = childRouteWithParam(route, param)
   return childRoute?.snapshot?.paramMap?.get(param)
+}
+
+function parentRouteWithParam(route: ActivatedRoute, param: string) {
+  if (!route.parent?.routeConfig?.path) {
+    return null
+  }
+  const regex = new RegExp(`:${param}`)
+  if (route.parent.routeConfig.path.match(regex)) {
+    return route.parent
+  }
+  return null
+}
+
+function getParentRouteParam(route: ActivatedRoute, param: string) {
+  const parentRoute = parentRouteWithParam(route, param)
+  return parentRoute?.snapshot?.paramMap?.get(param)
+}
+
+function ancestorRouteWithParam(route: ActivatedRoute, param: string) {
+  const regex = new RegExp(`:${param}`)
+  const routes = route.pathFromRoot.filter((it) => it.routeConfig?.path && it.routeConfig.path.match(regex))
+  return routes?.[routes.length - 1] || null
+}
+
+function getAncestorRouteParam(route: ActivatedRoute, param: string) {
+  const parentRoute = ancestorRouteWithParam(route, param)
+  return parentRoute?.snapshot?.paramMap?.get(param)
 }
 
 export function queryParamModel(

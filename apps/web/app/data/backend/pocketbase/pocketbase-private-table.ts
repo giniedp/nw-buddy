@@ -1,8 +1,7 @@
 import PocketBase, { RecordModel, RecordService } from 'pocketbase'
-import { defer, distinctUntilChanged, EMPTY, filter, map, switchMap } from 'rxjs'
+import { defer, distinctUntilChanged, filter, map, NEVER, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { AppDbRecord, AppDbTable } from '../../app-db'
-import { autoSync } from '../auto-sync'
 import { PrivateTable } from '../backend-adapter'
 import { authState } from './auth-state'
 import { collectionEvents } from './collection-events'
@@ -24,7 +23,7 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
   public readonly events$ = defer(() => this.userId$).pipe(
     switchMap((userId) => {
       if (!userId) {
-        return EMPTY
+        return NEVER
       }
       return collectionEvents<PocketRecord<T>>(this.collection).pipe(filter(({ record }) => record.user === userId))
     }),
@@ -35,15 +34,6 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
       }
     }),
     shareReplayRefCount(0),
-  )
-  public readonly autoSync$ = defer(() => this.userId$).pipe(
-    switchMap((userId) => {
-      if (!userId) {
-        return EMPTY
-      }
-      return autoSync({ local: this.table, remote: this })
-    }),
-    shareReplayRefCount(1),
   )
 
   private userId: string
@@ -73,13 +63,15 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
     if (!id) {
       throw new Error('Cannot create a record without an id')
     }
-    return this.collection
-      .create({
-        id: this.rowId(id),
-        user: this.userId,
-        data,
-      })
-      .then((it) => it.data)
+    const params = {
+      id: this.rowId(id),
+      user: this.userId,
+      data,
+    }
+    if (data && 'status' in data) {
+      params['status'] = data.status
+    }
+    return this.collection.create(params).then((it) => it.data)
   }
 
   public async read(id: string): Promise<T> {
@@ -87,12 +79,15 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
   }
 
   public async update(id: string, data: Partial<T>): Promise<T> {
-    return this.collection
-      .update(this.rowId(id), {
-        user: this.userId,
-        data,
-      })
-      .then((it) => it.data)
+    const params = {
+      id: this.rowId(id),
+      user: this.userId,
+      data,
+    }
+    if (data && 'status' in data) {
+      params['status'] = data.status
+    }
+    return this.collection.update(this.rowId(id), params).then((it) => it.data)
   }
 
   public async delete(id: string | string[]): Promise<number> {

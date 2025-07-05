@@ -1,65 +1,67 @@
-import { computed } from '@angular/core'
+import { computed, EventEmitter } from '@angular/core'
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 import { AbilityData } from '@nw-data/generated'
-import { injectNwData, withStateLoader } from '~/data'
+import { map, switchMap } from 'rxjs'
+import { injectNwData } from '~/data'
 import { CaseInsensitiveSet, eqCaseInsensitive } from '~/utils'
 import { buildGrid, getGridSelection, updateGrid } from './skill-tree.model'
-import { eq } from 'lodash'
 
 export interface SkillTreeEditorState {
+  isLoaded: boolean
+  isLoading: boolean
   abilities: AbilityData[]
   points: number
   selection: string[]
 }
 
+export type SkillTreeStore = InstanceType<typeof SkillTreeStore>
 export const SkillTreeStore = signalStore(
-  withState<Pick<SkillTreeEditorState, 'abilities'>>({
-    abilities: [],
-  }),
-  withStateLoader(() => {
-    const db = injectNwData()
-    return {
-      load: async ({ weaponTag, treeId }: { weaponTag: string; treeId: number }) => {
-        const abilities = await db.abilitiesAll().then((abilities) => {
-          return abilities
-            .filter(({ WeaponTag }) => eqCaseInsensitive(WeaponTag, weaponTag))
-            .filter(({ TreeId }) => TreeId === treeId)
-        })
-        return {
-          abilities,
-        }
-      },
-    }
-  }),
-  withState<Pick<SkillTreeEditorState, 'points' | 'selection'>>({
+  withState<SkillTreeEditorState>({
+    isLoaded: false,
+    isLoading: false,
     points: NW_MAX_WEAPON_LEVEL - 1,
     selection: [],
+    abilities: [],
+  }),
+  withProps(() => {
+    return {
+      change: new EventEmitter<void>(),
+    }
   }),
   withMethods((state) => {
+    const db = injectNwData()
     return {
-      setSelection: (selection: string[]) => {
-        if (!eq(state.selection(), selection)) {
-          patchState(state, { selection })
+      setPoints: rxMethod<number>((source) => {
+        return source.pipe(map((value) => patchState(state, { points: value })))
+      }),
+      setSelection: rxMethod<string[]>((source) => {
+        return source.pipe(map((value) => patchState(state, { selection: value })))
+      }),
+      toggleAbility: (abilityId: string) => {
+        const selection = new CaseInsensitiveSet(state.selection())
+        if (selection.has(abilityId)) {
+          selection.delete(abilityId)
+        } else {
+          selection.add(abilityId)
         }
+        patchState(state, { selection: Array.from(selection) })
+        state.change.emit()
       },
-      setPoints: (points: number) => {
-        patchState(state, { points })
-      },
-      addAbility: (name: string) => {
-        const selection = new CaseInsensitiveSet(state.selection())
-        selection.add(name)
-        patchState(state, {
-          selection: Array.from(selection),
-        })
-      },
-      removeAbility: (name: string) => {
-        const selection = new CaseInsensitiveSet(state.selection())
-        selection.delete(name)
-        patchState(state, {
-          selection: Array.from(selection),
-        })
-      },
+      load: rxMethod<{ weaponTag: string; treeId: number }>((source) => {
+        return source.pipe(
+          switchMap(async ({ treeId, weaponTag }) => {
+            patchState(state, { isLoading: true })
+            const abilities = await db.abilitiesAll().then((abilities) => {
+              return abilities
+                .filter(({ WeaponTag }) => eqCaseInsensitive(WeaponTag, weaponTag))
+                .filter(({ TreeId }) => TreeId === treeId)
+            })
+            patchState(state, { abilities, isLoaded: true, isLoading: false })
+          }),
+        )
+      }),
     }
   }),
   withProps(({ abilities, points, selection }) => {
@@ -75,12 +77,12 @@ export const SkillTreeStore = signalStore(
     return {
       numRows: computed(() => rows().length),
       numCols: computed(() => rows()[0]?.length || 0),
-      selection: computed(() => getGridSelection(rows())),
+      value: computed(() => getGridSelection(rows())),
     }
   }),
-  withProps(({ selection }) => {
+  withProps(({ value }) => {
     return {
-      spent: computed(() => selection().length),
+      spent: computed(() => value().length),
     }
   }),
 )

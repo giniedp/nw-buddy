@@ -33,24 +33,41 @@ export class AppDbDexie extends AppDb {
     await this.dexie.open()
   }
 
+  public async dropTables() {
+    for (const table of Object.values(this.tables)) {
+      await this.dexie.table(table.tableName).clear()
+    }
+  }
+
   private init(db: Dexie) {
-    db.version(1).stores({
-      [DBT_ITEMS]: 'id,itemId,gearScore',
-      [DBT_GEARSETS]: 'id,*tags',
-    })
-    db.version(2).stores({
-      [DBT_IMAGES]: 'id',
-    })
-    db.version(3).stores({
-      [DBT_CHARACTERS]: 'id',
-    })
-    db.version(4).stores({
-      [DBT_SKILL_BUILDS]: 'id',
-    })
-    db.version(5).stores({
-      [DBT_TABLE_PRESETS]: 'id,key',
-      [DBT_TABLE_STATES]: 'id',
-    })
+    db.version(6)
+      .stores({
+        [DBT_ITEMS]: 'id,itemId,gearScore,userId',
+        [DBT_GEARSETS]: 'id,*tags,userId,characterId',
+        [DBT_IMAGES]: 'id',
+        [DBT_CHARACTERS]: 'id,userId',
+        [DBT_SKILL_BUILDS]: 'id,userId',
+        [DBT_TABLE_PRESETS]: 'id,key,userId',
+        [DBT_TABLE_STATES]: 'id,userId',
+      })
+      .upgrade((trans) => {
+        const tables = [
+          DBT_ITEMS,
+          DBT_GEARSETS,
+          DBT_CHARACTERS,
+          DBT_SKILL_BUILDS,
+          DBT_TABLE_PRESETS,
+          DBT_TABLE_STATES,
+        ]
+        for (const table of tables) {
+          trans
+            .table(table)
+            .toCollection()
+            .modify((item) => {
+              item.userId ||= 'local'
+            })
+        }
+      })
   }
 }
 
@@ -71,6 +88,7 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     this.table = db.dexie.table(name)
   }
 
+  public createId = createId
   public async tx<R>(fn: () => Promise<R>): Promise<R> {
     return this.db.dexie.transaction('rw', this.table, fn)
   }
@@ -90,13 +108,17 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.toArray()
   }
 
+  public where(where: Partial<T>): Promise<T[]> {
+    return this.table.where(where).toArray()
+  }
+
   public async create(record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     const now = new Date()
     record = {
       ...record,
       id: record.id ?? createId(),
-      created_at: record.created_at ?? now.toJSON(),
-      updated_at: record.updated_at ?? now.toJSON(),
+      createdAt: record.createdAt ?? now.toJSON(),
+      updatedAt: record.updatedAt ?? now.toJSON(),
     }
 
     const id = await this.table.add(record as T, record.id)
@@ -113,8 +135,8 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
 
   public async update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     if (!options?.silent) {
-      record.updated_at = new Date().toJSON()
-      record['sync_state'] = 'pending'
+      record.updatedAt = new Date().toJSON()
+      record.syncState = 'pending'
     }
 
     await this.table.update(id, record)
@@ -141,8 +163,8 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   public async createOrUpdate(record: T, options?: { silent: boolean }): Promise<T> {
     if (record.id) {
       if (!options?.silent) {
-        record.updated_at = new Date().toJSON()
-        record['sync_state'] = 'pending'
+        record.updatedAt = new Date().toJSON()
+        record.syncState = 'pending'
       }
       await this.table.put(record, record.id)
       const row = await this.read(record.id)
@@ -166,7 +188,12 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   public observeAll(): RxObservable<T[]> {
     return this.live((t) => t.toArray())
   }
-  public observeByid(id: string | RxObservable<string>): RxObservable<T> {
+
+  public observeWhere(where: Partial<T>): RxObservable<T[]> {
+    return this.live((t) => t.where(where).toArray())
+  }
+
+  public observeById(id: string | RxObservable<string>): RxObservable<T> {
     return (isObservable(id) ? id : of(id)).pipe(
       switchMap((id) => {
         return id ? this.live((t) => t.get(id)) : of(null)

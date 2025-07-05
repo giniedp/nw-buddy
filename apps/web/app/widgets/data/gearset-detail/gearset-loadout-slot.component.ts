@@ -67,7 +67,7 @@ export class GersetLoadoutSlotComponent {
     @Optional()
     private eventHandler: LoadoutSlotEventHandler,
   ) {
-    this.store.connectState(
+    this.store.connect(
       selectSignal({
         gearset: this.gearset,
         slotId: this.slotId,

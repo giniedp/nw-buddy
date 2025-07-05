@@ -1,14 +1,27 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostBinding, HostListener, Input, computed, inject } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostBinding,
+  HostListener,
+  Input,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { SkillBuildsDB, injectNwData } from '~/data'
+import { SkillTreeRecord, injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 
+import { rxResource } from '@angular/core/rxjs-interop'
 import { NW_FALLBACK_ICON, getAbilityCategoryTag } from '@nw-data/common'
-import { Observable, ReplaySubject, combineLatest, map, of, switchMap } from 'rxjs'
+import { NwData } from '@nw-data/db'
+import { AbilityData } from '@nw-data/generated'
+import { Observable, combineLatest, map, of } from 'rxjs'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
-import { selectSignal } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { EmptyComponent } from '~/widgets/empty'
 import { SkillTreeStore } from '~/widgets/skill-builder/skill-tree.store'
@@ -38,69 +51,77 @@ export class SkillsetCellComponent implements VirtualGridCellComponent<SkillsetT
     }
   }
 
-  private store = inject(SkillBuildsDB)
+  private grid = inject(VirtualGridComponent<SkillsetTableRecord>)
   private db = injectNwData()
-
-  private recordId = new ReplaySubject<string>(1)
-
-  private record = selectSignal(
-    this.store.observeByid(this.recordId).pipe(
-      switchMap((record): Observable<SkillsetTableRecord> => {
-        if (!record) {
-          return of(null)
-        }
-        return combineLatest({
-          record: of(record),
-          abilities: combineLatestOrEmpty(
-            [...(record.tree1 || []), ...(record.tree2 || [])].map((it) => this.db.abilitiesById(it)),
-          ).pipe(map((list) => list.filter((it) => it.IsActiveAbility))),
-        })
-      }),
-    ),
-  )
-
-  protected recordName = computed(() => this.record()?.record?.name || '')
-  protected abilities = computed(() => {
-    const result = (this.record()?.abilities || []).map((it) => {
-      return {
-        icon: it.Icon || NW_FALLBACK_ICON,
-        category: getAbilityCategoryTag(it),
-      }
-    })
-    result.length = Math.max(result.length, 3)
-    for (let i = 0; i < result.length; i++) {
-      if (!result[i]) {
-        result[i] = { icon: NW_FALLBACK_ICON, category: 'none' }
-      }
-    }
-    return result
+  private record = signal<SkillTreeRecord>(null)
+  private resource = rxResource({
+    params: this.record,
+    stream: ({ params }) => loadRow(this.db, params),
   })
-  protected tags = computed(() => {
-    return this.record()?.record?.tags || []
-  })
-  protected icon = computed(() => {
-    const info = getWeaponTypeInfo(this.record()?.record?.weapon)
-    return info?.IconPath
-  })
+  private row = signal<SkillsetTableRecord>(null)
+
+  protected recordName = computed(() => this.record()?.name || '')
+  protected abilities = computed(() => selectAbilities(this.row()?.abilities))
+  protected tags = computed(() => this.record()?.tags || [])
+  protected icon = computed(() => getWeaponTypeInfo(this.record()?.weapon)?.IconPath)
+  protected syncState = computed(() => this.record()?.syncState)
 
   @Input()
   public set data(value: SkillsetTableRecord) {
-    this.recordId.next(value.record.id)
-  }
-  public get data() {
-    return this.record()
+    this.record.set(value.record)
   }
 
   @Input()
   @HostBinding('class.is-selected')
   public selected: boolean
 
-  private grid = inject(VirtualGridComponent<SkillsetTableRecord>)
+  public constructor() {
+    effect(() => {
+      if (this.resource.isLoading()) {
+        return
+      }
+      untracked(() => {
+        this.row.set(this.resource.hasValue() ? this.resource.value() : null)
+      })
+    })
+  }
 
   @HostListener('click', ['$event'])
   @HostListener('dblclick', ['$event'])
   @HostListener('keydown', ['$event'])
   public onClick(e: Event) {
-    this.grid.handleItemEvent(this.data, e)
+    this.grid.handleItemEvent(this.row(), e)
   }
+}
+
+function loadRow(db: NwData, record: SkillTreeRecord): Observable<SkillsetTableRecord> {
+  const abilities = [...(record.tree1 || []), ...(record.tree2 || [])]
+  return combineLatest({
+    record: of(record),
+    abilities: combineLatestOrEmpty(
+      abilities.map((it) => {
+        return db.abilitiesById(it)
+      }),
+    ).pipe(
+      map((list) => {
+        return list.filter((it) => it.IsActiveAbility)
+      }),
+    ),
+  })
+}
+
+function selectAbilities(abilities: AbilityData[]) {
+  const result = (abilities || []).map((it) => {
+    return {
+      icon: it.Icon || NW_FALLBACK_ICON,
+      category: getAbilityCategoryTag(it),
+    }
+  })
+  result.length = Math.max(result.length, 3)
+  for (let i = 0; i < result.length; i++) {
+    if (!result[i]) {
+      result[i] = { icon: NW_FALLBACK_ICON, category: 'none' }
+    }
+  }
+  return result
 }

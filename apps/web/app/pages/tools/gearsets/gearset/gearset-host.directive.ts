@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, OnInit, Output, inject } from '@angular/core'
+import { Directive, Input, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { patchState, signalState } from '@ngrx/signals'
 import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'

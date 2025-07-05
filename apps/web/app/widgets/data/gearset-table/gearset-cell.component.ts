@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { patchState } from '@ngrx/signals'
 import { CharacterStore, GearsetRecord, GearsetRow, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -50,10 +49,7 @@ export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<Gea
 
   @Input()
   public set data(value: GearsetRow) {
-    patchState(this.store, {
-      gearset: value.record,
-      isLoaded: true,
-    })
+    this.store.connectGearset(value.record)
   }
 
   @Input()

@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/c
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
-import { filter, switchMap } from 'rxjs'
-import { GearsetStore, GearsetsDB, ItemInstanceRecord } from '~/data'
+import { combineLatest, filter, of, switchMap } from 'rxjs'
+import { GearsetStore, GearsetsService, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -55,6 +55,12 @@ import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
   },
 })
 export class GearsetFormComponent {
+  private injector = inject(Injector)
+  private gearService = inject(GearsetsService)
+  private modal = inject(ModalService)
+  private preferences = inject(PreferencesService)
+  private slotEventHandler = inject(GearsetFormSlotHandler)
+
   public slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable')
 
   public get gearset() {
@@ -77,18 +83,17 @@ export class GearsetFormComponent {
   protected iconCopy = svgPaste
   protected iconNav = svgSquareArrowUpRight
 
-  private currentId = this.pref.session.storageProperty<string>('recent-gearset-id')
+  private currentId = this.preferences.session.storageProperty<string>('recent-gearset-id')
   private store = inject(GearsetStore)
 
-  public constructor(
-    private gearDb: GearsetsDB,
-    private modal: ModalService,
-    private injector: Injector,
-    private pref: PreferencesService,
-    slotEventHandler: GearsetFormSlotHandler,
-  ) {
-    this.store.connectGearsetDB(this.currentId.observe())
-    slotEventHandler.itemDropped.subscribe((it) => this.onItemDropped(it.slot, it.item))
+  public constructor() {
+    this.store.connectGearsetId(
+      combineLatest({
+        userId: of('local'),
+        id: this.currentId.observe(),
+      }),
+    )
+    this.slotEventHandler.itemDropped.subscribe((it) => this.onItemDropped(it.slot, it.item))
   }
 
   protected createSet() {
@@ -104,7 +109,7 @@ export class GearsetFormComponent {
       .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((newName) => {
-          return this.gearDb.create({
+          return this.gearService.create({
             id: null,
             name: newName,
             slots: {},

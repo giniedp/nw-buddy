@@ -17,7 +17,7 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
     class: 'layout-col bg-base-300',
   },
 })
-export class SkillBuildsEmbedComponent {
+export class SkillTreeEmbedComponent {
   protected paramName = toSignal(injectRouteParam('name'))
   protected paramCid = toSignal(injectRouteParam('cid'))
   protected validType = 'skill-build'

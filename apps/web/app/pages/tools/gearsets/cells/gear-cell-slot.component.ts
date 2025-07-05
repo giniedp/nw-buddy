@@ -8,7 +8,7 @@ import { NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { EquipSlotId, NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE, getItemId, getItemMaxGearScore } from '@nw-data/common'
-import { GearsetRecord, GearsetSlotStore, ItemInstancesDB } from '~/data'
+import { GearsetRecord, GearsetSlotStore, ItemsService } from '~/data'
 import { GsSliderComponent } from '~/ui/gs-input'
 import { IconsModule } from '~/ui/icons'
 import {
@@ -63,7 +63,7 @@ export class GearCellSlotComponent {
   public disabled: boolean
 
   protected store = inject(GearsetSlotStore)
-  private itemDb = inject(ItemInstancesDB)
+  private items = inject(ItemsService)
 
   protected iconRemove = svgTrashCan
   protected iconLink = svgLink16p
@@ -108,7 +108,7 @@ export class GearCellSlotComponent {
     private modal: ModalService,
     private overlay: Overlay,
   ) {
-    this.store.connectState(
+    this.store.connect(
       selectSignal({
         gearset: this.gearset,
         slotId: this.slotId,
@@ -237,7 +237,7 @@ export class GearCellSlotComponent {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe(async () => {
-        const instance = await this.itemDb.create({
+        const instance = await this.items.create({
           gearScore: record.gearScore,
           itemId: record.itemId,
           perks: record.perks,

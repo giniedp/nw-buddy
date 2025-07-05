@@ -1,46 +1,60 @@
 import { computed, inject } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { signalStore, withComputed, withHooks, withMethods } from '@ngrx/signals'
-import { of } from 'rxjs'
-import { GearsetRecord, GearsetsDB, withDbRecords, withFilterByQuery, withFilterByTags } from '~/data'
+import { rxResource } from '@angular/core/rxjs-interop'
+import { patchState, signalMethod, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
+import { GearsetsService } from '~/data'
 import { BackendService } from '~/data/backend'
+import { collectTagsFromRecords, filterRecordsByTags, toggleTagInList } from '~/data/tagging'
+
+export interface GearsetsListPageState {
+  userId: string
+  activeTags: string[]
+  search: string
+}
 
 export const GearsetsListPageStore = signalStore(
-  withDbRecords(GearsetsDB),
-  withFilterByTags<GearsetRecord>(),
-  withFilterByQuery<GearsetRecord>((record, filter) => {
-    return (
-      String(record.name || '')
-        .toLowerCase()
-        .includes(filter) ||
-      String(record.description || '')
-        .toLowerCase()
-        .includes(filter)
-    )
+  withState<GearsetsListPageState>({
+    userId: 'local',
+    activeTags: [],
+    search: '',
   }),
-  withComputed(({ filteredRecords }) => {
+  withProps(({ userId }) => {
+    const service = inject(GearsetsService)
+    const backend = inject(BackendService)
+    const records = rxResource({
+      params: userId,
+      stream: ({ params }) => service.observeRecords(params),
+      defaultValue: [],
+    })
+
     return {
-      filteredRecords: computed(() => {
-        return [
-          null, // placeholder for "create new"
-          ...(filteredRecords() || []).sort((a, b) => {
-            return (a.name || '').localeCompare(b.name || '')
-          }),
-        ]
+      records: computed(() => (records.hasValue() ? records.value() : [])),
+      isLoading: computed(() => records.isLoading()),
+      isAvailable: computed(() => {
+        return userId() === 'local' || userId() === backend.session()?.id
       }),
     }
   }),
-
-  withMethods(() => {
-    const backend = inject(BackendService)
+  withMethods((state) => {
     return {
-      autoSync: () => backend.privateTables.gearsets?.autoSync$ || of(null),
+      connectUser: signalMethod<string>((userId) => {
+        patchState(state, { userId })
+      }),
+      connectSearch: signalMethod<string>((search) => {
+        patchState(state, { search })
+      }),
+      toggleTag: (tag: string) => {
+        patchState(state, {
+          activeTags: toggleTagInList(state.activeTags(), tag),
+        })
+      },
     }
   }),
-  withHooks({
-    onInit(state) {
-      state.autoSync().pipe(takeUntilDestroyed()).subscribe()
-    },
+  withComputed(({ records, activeTags }) => {
+    const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
+    const filteredRecords = computed(() => filterRecordsByTags(records(), activeTags()))
+    return {
+      tags,
+      filteredRecords,
+    }
   }),
-
 )

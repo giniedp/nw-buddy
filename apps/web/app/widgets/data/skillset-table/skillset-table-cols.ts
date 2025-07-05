@@ -1,10 +1,10 @@
 import { getAbilityCategoryTag } from '@nw-data/common'
-import { SkillBuildRow } from '~/data'
+import { SkillTreeRow } from '~/data'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type SkillsetTableUtils = TableGridUtils<SkillsetTableRecord>
-export type SkillsetTableRecord = SkillBuildRow
+export type SkillsetTableRecord = SkillTreeRow
 
 export function skillsetColName(util: SkillsetTableUtils) {
   return util.colDef<string>({

@@ -53,7 +53,7 @@ export class GersetSquareSlotComponent {
   protected iconMenu = svgEllipsisVertical
 
   public constructor() {
-    this.store.connectState(
+    this.store.connect(
       selectSignal({
         slotId: this.slotId,
         gearset: this.gearset,

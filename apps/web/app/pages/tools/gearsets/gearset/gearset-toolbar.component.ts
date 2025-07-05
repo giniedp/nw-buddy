@@ -20,7 +20,7 @@ import { filter, firstValueFrom, map, switchMap } from 'rxjs'
 import {
   GearsetRecord,
   GearsetStore,
-  GearsetsDB,
+  GearsetsService,
   ImagesDB,
   ItemInstance,
   ItemInstancesDB,
@@ -91,6 +91,13 @@ export class GearsetToolbarComponent {
   private route = inject(ActivatedRoute)
   private vsQueryParam = queryParamModel('vs')
   private calcQueryParam = queryParamModel('calc')
+  private gearService = inject(GearsetsService)
+  private picker = inject(InventoryPickerService)
+  private itemsDb = inject(ItemInstancesDB)
+  private imagesDb = inject(ImagesDB)
+  private modal = inject(ModalService)
+  private platform = inject(PlatformService)
+  private db = injectNwData()
 
   protected iconCamera = svgCamera
   protected iconDelete = svgTrashCan
@@ -117,15 +124,7 @@ export class GearsetToolbarComponent {
   @Input()
   public mode: 'player' | 'opponent' = 'player'
 
-  private db = injectNwData()
-  public constructor(
-    private gearDb: GearsetsDB,
-    private picker: InventoryPickerService,
-    private itemsDb: ItemInstancesDB,
-    private imagesDb: ImagesDB,
-    private modal: ModalService,
-    private platform: PlatformService,
-  ) {
+  public constructor() {
     patchState(this.store, {
       showCalculator: this.calcQueryParam.value() === 'true',
     })
@@ -149,7 +148,7 @@ export class GearsetToolbarComponent {
       .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((newName) => {
-          return this.gearDb.create({
+          return this.gearService.create({
             ...record,
             id: null,
             ipnsKey: null,
@@ -179,7 +178,7 @@ export class GearsetToolbarComponent {
           this.imagesDb.destroy(record.imageId)
         }
         if (record.id) {
-          this.gearDb.destroy(record.id)
+          this.gearService.delete(record.id)
         }
         this.router.navigate(['..'], { relativeTo: this.route })
       })
@@ -221,7 +220,7 @@ export class GearsetToolbarComponent {
           },
           published: (res) => {
             if (res.ipnsKey) {
-              this.gearDb.update(record.id, {
+              this.gearService.update(record.id, {
                 ipnsName: res.ipnsName,
                 ipnsKey: res.ipnsKey,
               })
@@ -264,7 +263,7 @@ export class GearsetToolbarComponent {
   }
 
   protected updateTags(record: GearsetRecord, tags: string[]) {
-    this.gearDb.update(record.id, {
+    this.gearService.update(record.id, {
       ...record,
       tags: tags || [],
     })

@@ -1,6 +1,5 @@
 import { getAbilityCategoryTag } from '@nw-data/common'
 import { AbilityData, UICategory } from '@nw-data/generated'
-import { NwExpressionContext, NwTextContextService } from '~/nw/expression'
 import { CaseInsensitiveSet } from '~/utils'
 
 export type SkillTreeGrid = SkillTreeCell[][]

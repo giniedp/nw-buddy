@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, effect, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { debounceTime, filter, switchMap } from 'rxjs'
-import { GearsetRecord, GearsetsStore } from '~/data'
+import { GearsetRecord, GearsetsService } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
@@ -13,8 +13,10 @@ import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogCompone
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { injectRouteParam } from '~/utils'
 import { GearsetsListPageStore } from './gearsets-list-page.store'
 import { GearsetLoadoutItemComponent } from './loadout'
+import { BackendService } from '~/data/backend'
 
 @Component({
   selector: 'nwb-gearsets-list-page',
@@ -41,26 +43,37 @@ export class GearsetsListPageComponent {
   protected iconImport = svgFileImport
   protected iconMore = svgFilterList
 
+  private backend = inject(BackendService)
+  private service = inject(GearsetsService)
   private store = inject(GearsetsListPageStore)
   private quicksearch = inject(QuicksearchService)
   private modal = inject(ModalService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
   private share = inject(ShareService)
+  protected userId = toSignal(injectRouteParam('userid'))
+  protected search = toSignal(this.quicksearch.query$.pipe(debounceTime(500)))
 
   protected get filterTags() {
-    return this.store.filterTags()
+    return this.store.tags()
   }
   protected get isTagFilterActive() {
-    return this.store.filterTags()?.some((it) => it.active)
+    return this.store.tags()?.some((it) => it.active)
   }
   protected get items() {
     return this.store.filteredRecords()
   }
 
   public constructor() {
-    this.store.connectDB()
-    this.store.connectFilterQuery(this.quicksearch.query$.pipe(debounceTime(500)))
+    this.store.connectUser(this.userId)
+    this.store.connectSearch(this.search)
+
+    effect(() => {
+      const userId = this.backend.session()?.id
+      if (userId && this.userId() === 'local') {
+        this.router.navigate(['..', userId], { relativeTo: this.route })
+      }
+    })
   }
 
   protected async handleCreate() {
@@ -76,7 +89,7 @@ export class GearsetsListPageComponent {
       .result$.pipe(
         filter((it) => !!it),
         switchMap((newName) => {
-          return this.store.createRecord({
+          return this.service.create({
             id: null,
             name: newName,
           })
@@ -98,7 +111,7 @@ export class GearsetsListPageComponent {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
-        this.store.destroyRecord(gearset.id)
+        this.service.delete(gearset.id)
       })
   }
 
@@ -107,6 +120,6 @@ export class GearsetsListPageComponent {
   }
 
   protected toggleTag(value: string) {
-    this.store.toggleFilterTag(value)
+    this.store.toggleTag(value)
   }
 }

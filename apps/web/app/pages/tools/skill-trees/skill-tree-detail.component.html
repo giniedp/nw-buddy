@@ -1,4 +1,4 @@
-<div class="relative flex-none p-1 bg-base-300 bg-opacity-100">
+<div class="sticky top-0 flex-none bg-base-300 bg-opacity-100">
   <div class="flex flex-row gap-1 overflow-x-auto">
     <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
       <nwb-icon [icon]="iconBack" class="w-4 h-4" />
@@ -6,24 +6,26 @@
     <input
       type="text"
       placeholder=""
-      class="input input-bordered w-full h-10 my-1 min-w-[200px]"
+      class="input input-bordered w-full h-10 my-1"
       maxlength="100"
-      [disabled]="!canEdit"
-      [ngModel]="record?.name"
+      [disabled]="!canEdit()"
+      [ngModel]="record()?.name"
       (ngModelChange)="handleUpdateName($event)"
       [ngModelOptions]="{ updateOn: 'blur' }"
     />
     <div class="join">
       <button [nwbScreenshotBtn] class="join-item btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
-      <button
-        class="join-item btn btn-ghost btn-square"
-        cdkOverlayOrigin
-        [tooltip]="'Edit Tags'"
-        [disabled]="!canEdit"
-        [cdkMenuTriggerFor]="tplTags"
-      >
-        <nwb-icon [icon]="iconTags" class="w-4 h-4" />
-      </button>
+      @if (canEdit()) {
+        <button
+          class="join-item btn btn-ghost btn-square"
+          cdkOverlayOrigin
+          [tooltip]="'Edit Tags'"
+          [disabled]="!canEdit()"
+          [cdkMenuTriggerFor]="tplTags"
+        >
+          <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+        </button>
+      }
       <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplMenu">
         <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
@@ -31,16 +33,28 @@
   </div>
 </div>
 <div class="layout-content relative">
-  <div [nwbScreenshotFrame]="record?.name" class="bg-base-300">
-    <nwb-skill-builder [disabled]="!canEdit" [ngModel]="record" (ngModelChange)="updateModel($event)" #builder />
+  <div [nwbScreenshotFrame]="record()?.name" class="bg-base-300">
+    @if (record()) {
+      <nwb-skill-builder [disabled]="!canEdit()" [ngModel]="record()" (ngModelChange)="updateModel($event)" />
+    }
 
-    @if (record?.attrs; as attrs) {
+    @if (record()?.attrs; as attrs) {
       <div class="layout-pad">
         <nwb-attributes-editor
           [freeMode]="true"
           [assigned]="attrs"
           (assignedChanged)="handleUpdateAttributes($event)"
         />
+      </div>
+    }
+
+    @if (hasError()) {
+      <div class="alert alert-error shadow-lg">
+        <nwb-icon [icon]="iconError" class="w-6 h-6" />
+        <div>
+          <label class="font-bold">Error</label>
+          <p>Record not found or not published.</p>
+        </div>
       </div>
     }
   </div>
@@ -57,6 +71,31 @@
         </div>
       </button>
     </li>
+
+    @if (canEdit()) {
+      @if (isPublished()) {
+        <li class="text-shadow-sm shadow-black">
+          <button cdkMenuItem (click)="handleUnpublish()">
+            <nwb-icon [icon]="iconShare" class="w-4 h-4" />
+            <div class="flex flex-col leading-none">
+              <span>Unpublish</span>
+              <span class="text-xs opacity-75">Unpublish this set from public viewing</span>
+            </div>
+          </button>
+        </li>
+      } @else {
+        <li class="text-shadow-sm shadow-black">
+          <button cdkMenuItem (click)="handlePublish()">
+            <nwb-icon [icon]="iconShare" class="w-4 h-4" />
+            <div class="flex flex-col leading-none">
+              <span>Publish</span>
+              <span class="text-xs opacity-75">Publish this set for other users to see</span>
+            </div>
+          </button>
+        </li>
+      }
+    }
+
     <li class="text-shadow-sm shadow-black">
       <button cdkMenuItem (click)="handleToggleAttributes()">
         <nwb-icon [icon]="iconAttrs" class="w-4 h-4" />
@@ -68,15 +107,17 @@
     </li>
     <li class="divider my-1 h-[2px]"></li>
 
-    <li class="text-shadow-sm shadow-black">
-      <button (click)="builder.switchWeapon()" [disabled]="!canEdit" cdkMenuItem>
-        <nwb-icon [icon]="iconReset" class="w-4 h-4" />
-        <div class="flex flex-col leading-none">
-          <span>Reset</span>
-          <span class="text-xs opacity-75">Change weapon and reset sheet</span>
-        </div>
-      </button>
-    </li>
+    @if (canEdit()) {
+      <li class="text-shadow-sm shadow-black">
+        <button (click)="builder().switchWeapon()" cdkMenuItem>
+          <nwb-icon [icon]="iconReset" class="w-4 h-4" />
+          <div class="flex flex-col leading-none">
+            <span>Reset</span>
+            <span class="text-xs opacity-75">Change weapon and reset sheet</span>
+          </div>
+        </button>
+      </li>
+    }
     <li class="text-shadow-sm shadow-black">
       <button (click)="handleClone()" cdkMenuItem>
         <nwb-icon [icon]="iconCopy" class="w-4 h-4" />
@@ -86,15 +127,17 @@
         </div>
       </button>
     </li>
-    <li class="text-shadow-sm shadow-black">
-      <button (click)="handleDelete()" [disabled]="!canEdit" cdkMenuItem>
-        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error" />
-        <div class="flex flex-col leading-none">
-          <span>Delete</span>
-          <span class="text-xs opacity-75">Delete this sheet</span>
-        </div>
-      </button>
-    </li>
+    @if (canEdit()) {
+      <li class="text-shadow-sm shadow-black">
+        <button (click)="handleDelete()" cdkMenuItem>
+          <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error" />
+          <div class="flex flex-col leading-none">
+            <span>Delete</span>
+            <span class="text-xs opacity-75">Delete this sheet</span>
+          </div>
+        </button>
+      </li>
+    }
   </ul>
 </ng-template>
 
@@ -103,8 +146,8 @@
     <nwb-chips-input-pane
       [tags]="presetTags"
       [placeholder]="'custom tags'"
-      [disabled]="!canEdit"
-      [ngModel]="record?.tags"
+      [disabled]="!canEdit()"
+      [ngModel]="record()?.tags"
       (ngModelChange)="handleUpdateTags($event)"
     />
   </div>

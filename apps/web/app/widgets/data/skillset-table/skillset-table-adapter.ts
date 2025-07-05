@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NwData } from '@nw-data/db'
 import { defer } from 'rxjs'
-import { SkillBuildsDB, buildSkillSetRow, injectNwData } from '~/data'
+import { SkillBuildsService, buildSkillSetRow, injectNwData } from '~/data'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
@@ -13,7 +13,7 @@ import { SkillsetTableRecord, skillsetColName, skillsetColSkills, skillsetColWea
 
 @Injectable()
 export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord> {
-  private db = inject(SkillBuildsDB)
+  private skills = inject(SkillBuildsService)
   private data = injectNwData()
   private config = injectDataViewAdapterOptions<SkillsetTableRecord>({ optional: true })
   private utils: TableGridUtils<SkillsetTableRecord> = inject(TableGridUtils)
@@ -58,7 +58,7 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
 
   public entities = selectStream(
     {
-      items: defer(() => this.config?.source || sourceRows(this.data, this.db)),
+      items: defer(() => this.config?.source || sourceRows(this.data, this.skills)),
     },
     ({ items }) => {
       items = items || []
@@ -82,10 +82,10 @@ function buildOptions(util: TableGridUtils<SkillsetTableRecord>) {
   return result
 }
 
-function sourceRows(data: NwData, db: SkillBuildsDB) {
+function sourceRows(data: NwData, skills: SkillBuildsService) {
   return selectStream(
     {
-      items: db.observeAll(),
+      items: skills.observeRecords('local'),
       abilities: data.abilitiesByIdMap(),
     },
     ({ items, abilities }) => {

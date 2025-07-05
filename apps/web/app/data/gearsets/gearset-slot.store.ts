@@ -21,7 +21,7 @@ export const GearsetSlotStore = signalStore(
   withGearsetSlot(),
   withMethods((state) => {
     return {
-      connectState: rxMethod<GearsetSlotState>(
+      connect: rxMethod<GearsetSlotState>(
         pipe(
           map(({ gearset, slotId }) => {
             patchState(state, {

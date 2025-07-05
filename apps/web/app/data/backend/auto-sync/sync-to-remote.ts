@@ -28,7 +28,10 @@ export function createSyncToRemoteCommands<T extends AppDbRecord>(event: AppDbTa
         {
           action: 'create',
           resource: 'remote',
-          data: event.payload,
+          data: {
+            ...event.payload,
+            syncState: 'synced',
+          },
         },
       ]
     }
@@ -37,7 +40,10 @@ export function createSyncToRemoteCommands<T extends AppDbRecord>(event: AppDbTa
         {
           action: 'createOrUpdate',
           resource: 'remote',
-          data: event.payload,
+          data: {
+            ...event.payload,
+            syncState: 'synced',
+          },
         },
       ]
     }

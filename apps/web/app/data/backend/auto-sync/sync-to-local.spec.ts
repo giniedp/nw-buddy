@@ -26,14 +26,14 @@ describe('createSyncToLocalCommands', () => {
           type: 'delete',
           record: { id: '1', name: 'Test Item' },
         },
-        { id: '1', name: 'Test Item', sync_state: 'synced' },
+        { id: '1', name: 'Test Item', syncState: 'synced' },
       )
 
       expect(commands).toEqual([
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Test Item', syncState: 'synced' },
         },
       ])
     })
@@ -44,14 +44,14 @@ describe('createSyncToLocalCommands', () => {
           type: 'delete',
           record: { id: '1', name: 'Test Item' },
         },
-        { id: '1', name: 'Test Item', sync_state: 'any' as any },
+        { id: '1', name: 'Test Item', syncState: 'any' as any },
       )
 
       expect(commands).toEqual([
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'any' as any },
+          data: { id: '1', name: 'Test Item', syncState: 'any' as any },
         },
       ])
     })
@@ -71,7 +71,7 @@ describe('createSyncToLocalCommands', () => {
         {
           action: 'create',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Test Item', syncState: 'synced' },
         },
       ])
     })
@@ -84,14 +84,14 @@ describe('createSyncToLocalCommands', () => {
           type: 'create',
           record: { id: '1', name: 'Test Item' },
         },
-        { id: '1', name: 'Existing Item', sync_state: 'synced' },
+        { id: '1', name: 'Existing Item', syncState: 'synced' },
       )
 
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Existing Item', sync_state: 'conflict' },
+          data: { id: '1', name: 'Existing Item', syncState: 'conflict' },
         },
       ])
     })
@@ -111,7 +111,7 @@ describe('createSyncToLocalCommands', () => {
         {
           action: 'create',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'synced' },
+          data: { id: '1', name: 'Test Item', syncState: 'synced' },
         },
       ])
     })
@@ -122,16 +122,16 @@ describe('createSyncToLocalCommands', () => {
       const commands = createSyncToLocalCommands<MyRecord>(
         {
           type: 'update',
-          record: { id: '1', name: 'Test Item', updated_at: new Date('2023-01-01').toJSON() },
+          record: { id: '1', name: 'Test Item', updatedAt: new Date('2023-01-01').toJSON() },
         },
-        { id: '1', name: 'Old Item', sync_state: 'synced', updated_at: new Date('2022-12-31').toJSON() },
+        { id: '1', name: 'Old Item', syncState: 'synced', updatedAt: new Date('2022-12-31').toJSON() },
       )
 
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', sync_state: 'synced', updated_at: new Date('2023-01-01').toJSON() },
+          data: { id: '1', name: 'Test Item', syncState: 'synced', updatedAt: new Date('2023-01-01').toJSON() },
         },
       ])
     })
@@ -142,16 +142,16 @@ describe('createSyncToLocalCommands', () => {
       const commands = createSyncToLocalCommands<MyRecord>(
         {
           type: 'update',
-          record: { id: '1', name: 'Test Item', updated_at: new Date('2022-01-01').toJSON() },
+          record: { id: '1', name: 'Test Item', updatedAt: new Date('2022-01-01').toJSON() },
         },
-        { id: '1', name: 'Old Item', sync_state: 'synced', updated_at: new Date('2023-12-31').toJSON() },
+        { id: '1', name: 'Old Item', syncState: 'synced', updatedAt: new Date('2023-12-31').toJSON() },
       )
 
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Old Item', sync_state: 'conflict', updated_at: new Date('2023-12-31').toJSON() },
+          data: { id: '1', name: 'Old Item', syncState: 'conflict', updatedAt: new Date('2023-12-31').toJSON() },
         },
       ])
     })
@@ -162,16 +162,16 @@ describe('createSyncToLocalCommands', () => {
       const commands = createSyncToLocalCommands<MyRecord>(
         {
           type: 'update',
-          record: { id: '1', name: 'Test Item', updated_at: new Date('2023-01-01').toJSON() },
+          record: { id: '1', name: 'Test Item', updatedAt: new Date('2023-01-01').toJSON() },
         },
-        { id: '1', name: 'Old Item', sync_state: 'synced', updated_at: new Date('2023-12-31').toJSON() },
+        { id: '1', name: 'Old Item', syncState: 'synced', updatedAt: new Date('2023-12-31').toJSON() },
       )
 
       expect(commands).toEqual([
         {
           action: 'update',
           resource: 'local',
-          data: { id: '1', name: 'Old Item', sync_state: 'conflict', updated_at: new Date('2023-12-31').toJSON() },
+          data: { id: '1', name: 'Old Item', syncState: 'conflict', updatedAt: new Date('2023-12-31').toJSON() },
         },
       ])
     })

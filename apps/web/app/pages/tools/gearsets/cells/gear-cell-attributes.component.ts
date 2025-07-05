@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input, Input } from '@angular/core'
 import { getItemPerkIdsWithOverride } from '@nw-data/common'
 import { combineLatest, filter, firstValueFrom, map, of } from 'rxjs'
 import { GearsetStore, injectNwData } from '~/data'
@@ -26,15 +26,9 @@ export class GearCellAttributesComponent {
   private mannequin = inject(Mannequin)
   private modal = inject(ModalService)
 
-  @Input()
-  public hideTitle = false
-
-  @Input()
-  public disabled = false
-
-  public get isEditable() {
-    return !this.disabled && !!this.store.gearsetId()
-  }
+  public hideTitle = input(false)
+  public disabled = input(false)
+  public isEditable = computed(() => !this.disabled() && !!this.store.gearsetId())
 
   private attributes = this.mannequin.activeAttributes
   protected stats = computed(() => {

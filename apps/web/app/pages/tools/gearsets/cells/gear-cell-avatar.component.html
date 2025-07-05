@@ -1,19 +1,12 @@
-@if (title) {
-  <h3 class="flex-none text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom">
-    {{ title | nwText }}
+@if (title(); as text) {
+  <h3
+    class="flex-none text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom"
+  >
+    {{ text | nwText }}
   </h3>
 }
-<picture
-  class="
-    flex-1 block w-full aspect-video
-    relative rounded-md transition-all shadow-md
-    outline outline-transparent outline-2 outline-offset-0 hover:outline-offset-4
-  "
-  [class.cursor-pointer]="isEditable"
-  [class.hover:outline-primary]="isEditable"
-  (click)="handleAvatarClicked()"
-  [tabIndex]="isEditable ? 0 : -1"
->
+
+<picture class="flex-1 block w-full aspect-video relative rounded-md shadow-md">
   @if (image()) {
     <img [src]="image()" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
   } @else {
@@ -21,11 +14,74 @@
   }
   <img [nwImage]="'assets/landing-animation.webp'" class="absolute bottom-0 left-0 w-full" />
 
-  <div class="absolute bottom-0 left-0 p-2 flex flex-row items-center">
+  <div class="absolute bottom-0 right-0 p-2 flex flex-row items-center">
     <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14" />
     <div class="text-6xl font-caslon relative top-1">{{ gearScore() | number: '0.0-0' }}</div>
   </div>
-  @if (isEditable) {
-    <nwb-icon [icon]="iconMenu" class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none" />
+
+  <button
+    class="absolute bottom-0 left-0 p-2 flex flex-row gap-2 items-center group transition-colors"
+    [class.hover:text-primary]="isEditable()"
+    [class.opacity-0]="!!leveltarget"
+    (click)="openLevelEditor($event)"
+  >
+    <span class="inline-block relative">
+      <img
+        class="w-[56px] rotate-45"
+        [class.group-hover:outline-primary]="isEditable()"
+        [nwImage]="'assets/icons/glorydiamonddetailed.png'"
+      />
+      <div class="absolute inset-0 flex items-center justify-center">lvl</div>
+    </span>
+    <div class="text-6xl font-caslon">{{ level() | number: '0.0-0' }}</div>
+  </button>
+  @if (isEditable()) {
+    <button class="absolute top-1 right-1 btn btn-ghost btn-square screenshot-hidden" (click)="handleAvatarClicked()">
+      <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+    </button>
   }
 </picture>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="leveltarget"
+  [cdkConnectedOverlayOpen]="!!leveltarget"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  [cdkConnectedOverlayPanelClass]="['w-80']"
+  [cdkConnectedOverlayPositions]="[{ overlayX: 'start', overlayY: 'top', originX: 'start', originY: 'top' }]"
+  (overlayOutsideClick)="closeLevelEditor()"
+  (backdropClick)="closeLevelEditor()"
+  (detach)="closeLevelEditor()"
+>
+  <div class="flex flex-col gap-1 w-full">
+    <div class="p-2 flex flex-row gap-2 items-center">
+      <span class="block relative">
+        <img
+          class="w-[56px] rotate-45"
+          [class.group-hover:outline-primary]="isEditable()"
+          [nwImage]="'assets/icons/glorydiamonddetailed.png'"
+        />
+        <div class="absolute inset-0 flex items-center justify-center">lvl</div>
+      </span>
+      <input
+        type="number"
+        [min]="levelMin"
+        [max]="levelMax"
+        [ngModel]="levelValue || level()"
+        (ngModelChange)="updateLevel($event)"
+        (wheel)="stepLevel($event)"
+        class="w-full flex-1 font-caslon text-6xl text-primary input bg-transparent p-0 border-0"
+      />
+    </div>
+    <nwb-input-slider
+      [bars]="true"
+      [values]="true"
+      [min]="levelMin"
+      [max]="levelMax"
+      [ngModel]="levelValue || level()"
+      (ngModelChange)="updateLevel($event)"
+      (wheel)="stepLevel($event)"
+      class="w-full bg-black bg-opacity-80 p-1 rounded-md"
+    />
+  </div>
+</ng-template>

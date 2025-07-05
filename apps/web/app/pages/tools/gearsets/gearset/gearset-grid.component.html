@@ -8,7 +8,7 @@
     [nwbScreenshotWidth]="800"
   >
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled" />
+    <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled()" />
   </div>
 
   <div
@@ -20,7 +20,7 @@
     [nwbScreenshotWidth]="800"
   >
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled" />
+    <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled()" />
   </div>
 
   <div
@@ -36,7 +36,7 @@
       class="relative min-h-80 p-4 block"
       [slot]="'primary'"
       [gearset]="gearset"
-      [disabled]="disabled"
+      [disabled]="disabled()"
     />
   </div>
 
@@ -53,7 +53,7 @@
       class="relative min-h-80 p-4 block"
       [slot]="'secondary'"
       [gearset]="gearset"
-      [disabled]="disabled"
+      [disabled]="disabled()"
     />
   </div>
 
@@ -67,7 +67,7 @@
         #elGear
         [slotId]="slot.id"
         [gearset]="gearset"
-        [disabled]="disabled"
+        [disabled]="disabled()"
         [compact]="!showItemInfo"
         [nwbScreenshotFrame]="screenshotName(slot.id)"
         [nwbScreenshotLabel]="'Slot - ' + slot.id"

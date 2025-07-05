@@ -1,18 +1,16 @@
-import { computed, inject, signal } from '@angular/core'
+import { computed, inject } from '@angular/core'
 import { signalStoreFeature, type, withComputed } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { map, pipe, switchMap } from 'rxjs'
 
-import { gearScoreRelevantSlots, getAverageGearScore } from '@nw-data/common'
-import { ItemInstancesDB } from '../items/items.db'
-import { ItemInstance } from '../items/types'
-import { SkillBuildsDB, SkillSet } from '../skillbuilds'
-import { GearsetRecord, GearsetSkillSlot } from './types'
-import { ResolvedGearsetSlot, resolveGearsetSkills, resolveGearsetSlots } from './utils'
+import { rxResource } from '@angular/core/rxjs-interop'
+import { gearScoreRelevantSlots, getAverageGearScore, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { ItemsService } from '../items'
+import { SkillBuildsService } from '../skillbuilds'
+import { GearsetRecord } from './types'
+import { resolveGearsetSlots } from './utils'
 
 export interface WithGearsetPropsState {
   gearset: GearsetRecord
-  level: number
+  defaultLevel: number
 }
 
 export function withGearsetProps() {
@@ -20,7 +18,7 @@ export function withGearsetProps() {
     {
       state: type<WithGearsetPropsState>(),
     },
-    withComputed(({ gearset }) => {
+    withComputed(({ gearset, defaultLevel }) => {
       return {
         gearsetId: computed(() => gearset()?.id),
         gearsetName: computed(() => gearset()?.name),
@@ -35,53 +33,55 @@ export function withGearsetProps() {
         isPersistable: computed(() => !!gearset()?.id),
         isLinkMode: computed(() => gearset()?.createMode !== 'copy'),
         isCopyMode: computed(() => gearset()?.createMode === 'copy'),
+        isSynced: computed(() => gearset()?.syncState === 'synced'),
+        isSyncPending: computed(() => gearset()?.syncState === 'pending' || !gearset()?.syncState),
+        isSyncConflicted: computed(() => gearset()?.syncState === 'conflict'),
+        level: computed(() => gearset()?.level ?? defaultLevel() ?? NW_MAX_CHARACTER_LEVEL),
       }
     }),
-    withComputed(({ gearsetSlots }) => {
-      const itemDB = inject(ItemInstancesDB)
-      const resolvedSlots = signal<ResolvedGearsetSlot[]>([])
-      const connect = rxMethod<Record<string, string | ItemInstance>>(
-        pipe(
-          switchMap((it) => resolveGearsetSlots(itemDB, it)),
-          map((slots) => resolvedSlots.set(slots)),
-        ),
-      )
-      connect(gearsetSlots)
+    withComputed(({ gearsetSlots, skills, gearset, level }) => {
+      const items = inject(ItemsService)
+
+      const resolvedSlots = rxResource({
+        params: gearsetSlots,
+        stream: ({ params }) => {
+          return resolveGearsetSlots(items, {
+            slots: params,
+            userId: gearset()?.userId,
+          })
+        },
+        defaultValue: [],
+      }).value
+
+      const resolvedSkills = rxResource({
+        params: skills,
+        stream: ({ params }) => {
+          const skillStore = inject(SkillBuildsService)
+          return skillStore.resolveGearsetSkills(params)
+        },
+        defaultValue: {
+          primary: null,
+          secondary: null,
+        },
+      }).value
+
+      const gearScore = computed(() => {
+        const slotIds = gearScoreRelevantSlots().map(({ id }) => id)
+        const slots = resolvedSlots()
+          .filter((it) => slotIds.includes(it.slot))
+          .map((it) => {
+            return {
+              id: it.slot,
+              gearScore: it.instance?.gearScore,
+            }
+          })
+        return getAverageGearScore(slots, level())
+      })
+
       return {
         resolvedSlots,
-      }
-    }),
-    withComputed(({ skills }) => {
-      const skillDB = inject(SkillBuildsDB)
-      const resolvedSkills = signal<Record<GearsetSkillSlot, SkillSet>>({
-        primary: null,
-        secondary: null,
-      })
-      const connect = rxMethod<Record<string, string | SkillSet>>(
-        pipe(
-          switchMap((it) => resolveGearsetSkills(skillDB, it)),
-          map((slots) => resolvedSkills.set(slots)),
-        ),
-      )
-      connect(skills)
-      return {
         resolvedSkills,
-      }
-    }),
-    withComputed(({ resolvedSlots, level }) => {
-      return {
-        gearScore: computed(() => {
-          const slotIds = gearScoreRelevantSlots().map(({ id }) => id)
-          const slots = resolvedSlots()
-            .filter((it) => slotIds.includes(it.slot))
-            .map((it) => {
-              return {
-                id: it.slot,
-                gearScore: it.instance?.gearScore,
-              }
-            })
-          return getAverageGearScore(slots, level())
-        }),
+        gearScore,
       }
     }),
   )

@@ -1,46 +1,115 @@
 import { computed, inject, Injector } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_TRADESKILL_LEVEL, NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
-import { distinctUntilChanged, exhaustMap, filter, map, pipe, switchMap } from 'rxjs'
-import { CaseInsensitiveMap, tapDebug } from '~/utils'
+import { combineLatest, map, NEVER, of, pipe, switchMap } from 'rxjs'
+import { CaseInsensitiveMap } from '~/utils'
 
 import { toObservable } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { isEqual } from 'lodash'
+import { BackendService } from '../backend'
+import { autoSync } from '../backend/auto-sync'
 import { CharactersDB } from './characters.db'
 import { CharacterRecord } from './types'
-import { migrateCharacter } from './migrations'
 
-export interface CharacterStoreStateOLD {
-  data: CharacterRecord
+export interface CharacterStoreState {
+  record: CharacterRecord
+  ready: boolean
 }
 
 export type CharacterStore = InstanceType<typeof CharacterStore>
 export const CharacterStore = signalStore(
   { providedIn: 'root' },
-  withState<{ record: CharacterRecord }>({
+  withState<CharacterStoreState>({
     record: null,
+    ready: false,
+  }),
+  withProps(({ record, ready }) => {
+    const record$ = toObservable(record)
+    const ready$ = toObservable(ready)
+    return {
+      record$,
+      ready$,
+    }
   }),
   withMethods((state) => {
-    const db = inject(CharactersDB)
-    const record$ = toObservable(state.record)
+    const backend = inject(BackendService)
+    const userId = backend.sessionUserId
+    const table = inject(CharactersDB)
+    return {
+      create: (record: Partial<CharacterRecord>) => {
+        return table.create({
+          ...record,
+          id: record.id ?? table.createId(),
+          syncState: 'pending',
+          createdAt: new Date().toJSON(),
+          updatedAt: new Date().toJSON(),
+          userId: userId() || 'local',
+        })
+      },
+      update: (id: string, record: Partial<CharacterRecord>) => {
+        return table.update(id, {
+          ...record,
+          id,
+          syncState: 'pending',
+          updatedAt: new Date().toJSON(),
+          userId: userId() || 'local',
+        })
+      },
+      destroy: (id: string) => {
+        return table.destroy(id)
+      },
+    }
+  }),
+  withMethods((state) => {
+    const backend = inject(BackendService)
+    const userId = backend.sessionUserId
+    const userId$ = toObservable(userId)
+    const table = inject(CharactersDB)
     return {
       load: rxMethod<string | void>(
         pipe(
-          switchMap((id) => (id ? db.observeByid(id) : db.observeCurrent())),
-          map(migrateCharacter),
-          // tapDebug('load'),
-          distinctUntilChanged<CharacterRecord>(isEqual),
-          map((record) => patchState(state, { record })),
-        ),
-      ),
-      connectSync: rxMethod<void>(
-        pipe(
-          switchMap(() => record$),
-          filter((it) => !!it),
-          distinctUntilChanged<CharacterRecord>(isEqual),
-          // tapDebug('sync back'),
-          exhaustMap(async (record) => db.update(record.id, record).catch(console.error)),
+          switchMap((characterId) => {
+            return combineLatest({
+              characterId: of(characterId),
+              stage: autoSync({
+                userId: userId$,
+                local: table,
+                remote: backend.privateTables.characters,
+              }),
+            })
+          }),
+          switchMap(({ stage, characterId }) => {
+            const ready = stage === 'offline' || stage === 'syncing'
+            patchState(state, { ready })
+            if (!ready) {
+              patchState(state, { record: null })
+            }
+            return ready ? of(characterId) : NEVER
+          }),
+          switchMap(async (id) => {
+            const records = await table.where({ userId: userId() || 'local' })
+            if (id && !records.some((it) => it.id === id)) {
+              throw new Error(`Character with id ${id} not found`)
+            }
+            if (!id) {
+              // first record
+              id = records?.[0]?.id
+            }
+            if (!id) {
+              // create default record
+              console.log('Creating default character record', userId())
+              const record = await state.create({})
+              id = record.id
+            }
+            return id
+          }),
+          switchMap((id) => {
+            console.log('Observing character record', id)
+            return table.observeById(id)
+          }),
+          map((record) => {
+            return patchState(state, { record })
+          }),
         ),
       ),
     }
@@ -48,7 +117,6 @@ export const CharacterStore = signalStore(
   withHooks({
     onInit: (state) => {
       state.load()
-      state.connectSync()
     },
   }),
   withComputed(({ record }) => {
@@ -63,31 +131,21 @@ export const CharacterStore = signalStore(
       ),
     }
   }),
-  withMethods((state) => {
-    const patchRecord = (patch: Partial<CharacterRecord>) => {
-      patchState(state, ({ record }) => {
-        return {
-          record: {
-            ...record,
-            ...patch,
-          },
-        }
-      })
-    }
-    return {
-      patchRecord,
-      clearEffects: () => patchRecord({ effectStacks: {} }),
-      clearProgression: () => patchRecord({ progressionLevels: {} }),
-    }
-  }),
-  withMethods(({ record, patchRecord, effectStacksMap, progressionMap }) => {
+  withMethods(({ record, update, effectStacksMap, progressionMap }) => {
     const injector = inject(Injector)
+
+    const clearEffects = () => {
+      return update(record().id, { effectStacks: {} })
+    }
+    const clearProgression = () => {
+      return update(record().id, { progressionLevels: {} })
+    }
 
     const getProgressionLevel = (progressionId: string) => {
       return progressionMap().get(progressionId)
     }
     const setProgresssionLevel = (progressionId: string, level: number) => {
-      patchRecord({
+      update(record().id, {
         progressionLevels: {
           ...(record().progressionLevels || {}),
           [progressionId]: level,
@@ -99,7 +157,7 @@ export const CharacterStore = signalStore(
       return effectStacksMap().get(effect) || 0
     }
     const setEffectStacks = (effect: string, stacks: number) => {
-      patchRecord({
+      update(record().id, {
         effectStacks: {
           ...(record().effectStacks || {}),
           [effect]: stacks,
@@ -118,6 +176,8 @@ export const CharacterStore = signalStore(
       return observeProgressionLevel(weapon).pipe(map((level) => level ?? NW_MAX_WEAPON_LEVEL))
     }
     return {
+      clearEffects,
+      clearProgression,
       getEffectStacks,
       setEffectStacks,
       getProgressionLevel,

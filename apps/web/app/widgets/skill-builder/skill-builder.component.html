@@ -19,7 +19,7 @@
     </picture>
   </div>
   <div class="grid grid-cols-1 @[500px]:grid-cols-2">
-    @for (tree of trees(); track tree.trackId) {
+    @for (tree of trees(); track tree.id) {
       <nwb-skill-tree
         class="rounded-md"
         [points]="tree.points()"

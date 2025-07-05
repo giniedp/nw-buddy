@@ -12,5 +12,4 @@ export class ItemInstancesDB extends DBTable<ItemInstanceRecord> {
   public get events() {
     return this.table.events
   }
-
 }

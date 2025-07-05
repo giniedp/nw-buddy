@@ -3,11 +3,10 @@ import { signalStoreFeature, type, withMethods } from '@ngrx/signals'
 import { EquipSlotId } from '@nw-data/common'
 import { PerkData } from '@nw-data/generated'
 import { ImagesDB } from '../images'
-import { ItemInstance, ItemInstancesDB } from '../items'
-import { SkillSet } from '../skillbuilds/types'
-import { GearsetsDB } from './gearsets.db'
+import { ItemInstance, ItemsService } from '../items'
+import { SkillTree } from '../skillbuilds/types'
+import { GearsetsService } from './gearsets.service'
 import { GearsetRecord } from './types'
-
 export interface WithGearsetMethodsState {
   gearset: GearsetRecord
 }
@@ -17,122 +16,61 @@ export function withGearsetMethods() {
       state: type<WithGearsetMethodsState>(),
     },
     withMethods(({ gearset }) => {
-      const gearDB = inject(GearsetsDB)
-      const itemDB = inject(ItemInstancesDB)
+      const gears = inject(GearsetsService)
       return {
         clone: () => {
           return makeCopy(gearset())
         },
         async patchSlot(slot: EquipSlotId, patchValue: string | Partial<ItemInstance>) {
-          if (patchValue == null) {
-            // clear slot
-            const record = makeCopy(gearset())
-            record.slots = record.slots || {}
-            delete record.slots[slot]
-            gearDB.update(record.id, record)
-            return
-          }
-          if (typeof patchValue === 'string') {
-            // set slot to item instance id
-            const record = makeCopy(gearset())
-            record.slots = record.slots || {}
-            record.slots[slot] = patchValue
-            gearDB.update(record.id, record)
-            return
-          }
-
-          const instance = gearset().slots?.[slot] || null
-          if (typeof instance === 'string') {
-            const instanceId = instance
-            // patch the item instance
-            const data = await itemDB.read(instanceId)
-            if (data) {
-              await itemDB.update(instanceId, {
-                ...data,
-                ...patchValue,
-                perks: {
-                  ...(data.perks || {}),
-                  ...(patchValue.perks || {}),
-                },
-              })
-              return
-            }
-            // instance not found, fall through to patch the slot
-          }
-          const previous = typeof instance === 'string' ? null : instance
-          // patch data on the gearset
-          const record = makeCopy(gearset())
-          record.slots = record.slots || {}
-          record.slots[slot] = {
-            ...(previous || { itemId: null, gearScore: null }),
-            ...(patchValue || {}),
-            perks: {
-              ...(previous?.perks || {}),
-              ...(patchValue?.perks || {}),
-            },
-          }
-          gearDB.update(record.id, record)
+          return gears.patchSlot({
+            gearset: gearset(),
+            slot,
+            value: patchValue,
+          })
         },
         async updateSlot(slot: EquipSlotId, patchValue: string | Partial<ItemInstance>) {
-          if (patchValue == null) {
-            // clear slot
-            const record = makeCopy(gearset())
-            record.slots = record.slots || {}
-            delete record.slots[slot]
-            gearDB.update(record.id, record)
-            return
-          }
-          if (typeof patchValue === 'string') {
-            // set slot to item instance id
-            const record = makeCopy(gearset())
-            record.slots = record.slots || {}
-            record.slots[slot] = patchValue
-            gearDB.update(record.id, record)
-            return
-          }
-
-          // patch data on the gearset
-          const record = makeCopy(gearset())
-          record.slots = record.slots || {}
-          record.slots[slot] = {
-            ...(record.slots[slot] || ({} as any)),
-            ...patchValue,
-          }
-          gearDB.update(record.id, record)
+          return gears.updateSlot({
+            gearset: gearset(),
+            slot,
+            value: patchValue,
+          })
         },
         patchGearset(patchValue: Partial<GearsetRecord>) {
-          return gearDB.update(gearset().id, {
+          return gears.update(gearset().id, {
             ...gearset(),
             ...patchValue,
           })
         },
         destroyGearset() {
-          return gearDB.destroy(gearset().id)
+          return gears.delete(gearset().id)
         },
       }
     }),
     withMethods(({ gearset, patchSlot, patchGearset }) => {
-      const itemDB = inject(ItemInstancesDB)
-      const imagesDb = inject(ImagesDB)
+      const items = inject(ItemsService)
+      const images = inject(ImagesDB)
       return {
         updateSlotGearScore: async (slot: EquipSlotId, gearScore: number) => {
           return patchSlot(slot, { gearScore })
         },
         updateSlotPerk: async (slot: EquipSlotId, perkKey: string, perk: PerkData) => {
-          const { instance } = await resolveSlot(gearset(), slot, itemDB)
+          const { instance } = await resolveSlot(gearset(), slot, items)
           const perks = makeCopy(instance?.perks || {})
           perks[perkKey] = perk?.PerkID || null
           await patchSlot(slot, { perks })
+        },
+        updateLevel: async (level: number) => {
+          await patchGearset({ level })
         },
         updateGearsetImage: async (file: File) => {
           const buffer = await file.arrayBuffer()
           const gearset = this.get().gearset
           const oldId = gearset.imageId
-          const result = await imagesDb.tx(async () => {
+          const result = await images.tx(async () => {
             if (oldId) {
-              await imagesDb.destroy(oldId)
+              await images.destroy(oldId)
             }
-            return imagesDb.create({
+            return images.create({
               id: null,
               type: file.type,
               data: buffer,
@@ -156,7 +94,7 @@ export function withGearsetMethods() {
           await patchGearset(record)
         },
 
-        async updateSkill(slot: string, skill: SkillSet) {
+        async updateSkill(slot: string, skill: SkillTree) {
           const record = makeCopy(gearset())
           record.skills = record.skills || {}
           if (skill) {
@@ -198,7 +136,7 @@ function decodeSlot(slot: string | ItemInstance) {
   }
 }
 
-async function resolveSlot(gearset: GearsetRecord, slot: EquipSlotId, itemDB: ItemInstancesDB) {
+async function resolveSlot(gearset: GearsetRecord, slot: EquipSlotId, itemDB: ItemsService) {
   const instanceOrId = gearset.slots?.[slot]
   const instanceId = typeof instanceOrId === 'string' ? instanceOrId : null
   const instance = instanceId ? await itemDB.read(instanceId) : null

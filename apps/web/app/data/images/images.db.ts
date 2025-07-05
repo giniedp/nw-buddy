@@ -23,7 +23,7 @@ export class ImagesDB extends DBTable<ImageRecord> {
       id = of(id)
     }
     return id
-      .pipe(switchMap((id) => this.observeByid(id)))
+      .pipe(switchMap((id) => this.observeById(id)))
       .pipe(map((it) => (it?.data instanceof ArrayBuffer ? it : null)))
       .pipe(
         map((it) => {

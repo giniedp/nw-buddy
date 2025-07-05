@@ -1,5 +1,5 @@
 export * from './items.db'
-export * from './items.store'
+export * from './items.service'
 export * from './types'
 export * from './utils'
 export * from './with-item-instance-methods'

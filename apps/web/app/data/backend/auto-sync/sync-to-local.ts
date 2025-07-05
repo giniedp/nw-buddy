@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash'
 import { Observable, switchMap } from 'rxjs'
 import { AppDbRecord, AppDbTable } from '~/data/app-db'
 import { BackendTableEvent, PrivateTable } from '../backend-adapter'
@@ -61,23 +62,38 @@ export function createSyncToLocalCommands<T extends AppDbRecord>(
     ]
   }
 
+  {
+    const localSynced = { ...local, syncState: 'synced' }
+    const remoteSynced = { ...remote.record, syncState: 'synced' }
+    if (isEqual(localSynced, remoteSynced)) {
+      return [
+        {
+          action: 'update',
+          resource: 'local',
+          data: { ...local, syncState: 'synced' },
+        },
+      ]
+    }
+  }
+
   if (remote.type === 'create') {
     if (!local) {
       return [
         {
           action: 'create',
           resource: 'local',
-          data: { ...remote.record, sync_state: 'synced' },
+          data: { ...remote.record, syncState: 'synced' },
         },
       ]
     }
+
     // we already have a local record, but remote is new
     // conflict must be solved by the user
     return [
       {
         action: 'update',
         resource: 'local',
-        data: { ...local, sync_state: 'conflict' },
+        data: { ...local, syncState: 'conflict' },
       },
     ]
   }
@@ -88,13 +104,13 @@ export function createSyncToLocalCommands<T extends AppDbRecord>(
         {
           action: 'create',
           resource: 'local',
-          data: { ...remote.record, sync_state: 'synced' },
+          data: { ...remote.record, syncState: 'synced' },
         },
       ]
     }
 
-    const localTime = local.updated_at
-    const remoteTime = remote.record.updated_at
+    const localTime = local.updatedAt
+    const remoteTime = remote.record.updatedAt
     const localIsAhead = !remoteTime || (localTime && localTime > remoteTime)
     const remoteIsAhead = !localTime || (remoteTime && remoteTime > localTime)
     if (remoteIsAhead) {
@@ -102,7 +118,7 @@ export function createSyncToLocalCommands<T extends AppDbRecord>(
         {
           action: 'update',
           resource: 'local',
-          data: { ...remote.record, sync_state: 'synced' },
+          data: { ...remote.record, syncState: 'synced' },
         },
       ]
     }
@@ -113,7 +129,28 @@ export function createSyncToLocalCommands<T extends AppDbRecord>(
         {
           action: 'update',
           resource: 'local',
-          data: { ...local, sync_state: 'conflict' },
+          data: { ...local, syncState: 'conflict' },
+        },
+      ]
+    }
+
+    if (
+      isEqual(
+        {
+          ...local,
+          syncState: 'synced',
+        },
+        {
+          ...remote.record,
+          syncState: 'synced',
+        },
+      )
+    ) {
+      return [
+        {
+          action: 'update',
+          resource: 'local',
+          data: { ...local, syncState: 'synced' },
         },
       ]
     }
@@ -124,7 +161,7 @@ export function createSyncToLocalCommands<T extends AppDbRecord>(
       {
         action: 'update',
         resource: 'local',
-        data: { ...local, sync_state: 'conflict' },
+        data: { ...local, syncState: 'conflict' },
       },
     ]
   }

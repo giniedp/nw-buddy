@@ -23,7 +23,6 @@ export interface PrivateTable<T extends AppDbRecord> {
   update(id: string, data: Partial<T>): Promise<T>
   delete(id: string | string[]): Promise<number>
   events$: Observable<BackendTableEvent<T>>
-  autoSync$: Observable<void>
 }
 
 export interface BackendTableEvent<T extends AppDbRecord> {

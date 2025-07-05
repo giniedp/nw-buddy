@@ -2,7 +2,7 @@ import { AttributeRef } from '@nw-data/common'
 import { AbilityData } from '@nw-data/generated'
 import type { AppDbRecord } from '../app-db'
 
-export interface SkillSet {
+export interface SkillTree {
   /**
    * The weapon tag
    */
@@ -17,7 +17,7 @@ export interface SkillSet {
   tree2: string[]
 }
 
-export interface SkillSetRecord extends SkillSet, AppDbRecord {
+export interface SkillTreeRecord extends SkillTree, AppDbRecord {
   /**
    * Name of the gearset
    */
@@ -38,13 +38,17 @@ export interface SkillSetRecord extends SkillSet, AppDbRecord {
    * User defined tags
    */
   tags?: string[]
+  /**
+   * The status of the skill set
+   */
+  status?: 'public' | 'private'
 }
 
-export interface SkillBuildRow {
+export interface SkillTreeRow {
   /**
    * The player item stored in database
    */
-  record: SkillSetRecord
+  record: SkillTreeRecord
   /**
    * The abilities of the player
    */

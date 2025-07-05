@@ -1,8 +1,10 @@
 import { computed, inject, Injectable } from '@angular/core'
-import { CharacterRecord, CharactersDB } from '../characters'
-import { GearsetRecord, GearsetsDB } from '../gearsets'
+import { CharactersDB } from '../characters'
+import { GearsetsDB } from '../gearsets/gearsets.db'
+import { GearsetRecord } from '../gearsets/types'
 import { ItemInstanceRecord, ItemInstancesDB } from '../items'
-import { SkillBuildsDB, SkillSetRecord } from '../skillbuilds'
+import { SkillBuildsDB } from '../skillbuilds/skill-builds.db'
+import { SkillTreeRecord } from '../skillbuilds/types'
 import { injectBackendAdapter } from './provider'
 
 @Injectable({
@@ -15,6 +17,7 @@ export class BackendService {
   public readonly isOnline = this.adapter.isOnline
   public readonly session = this.adapter.session
   public readonly isSignedIn = computed(() => !!this.session()?.token)
+  public readonly sessionUserId = computed(() => this.session()?.id || null)
 
   public signIn() {
     return this.adapter.signIn()
@@ -38,7 +41,7 @@ export class BackendService {
 
   public readonly publicTables = {
     gearsets: this.adapter.initPublicTable<GearsetRecord>(`public_${this.gearsets.tableName}`),
-    skillSets: this.adapter.initPublicTable<SkillSetRecord>(`public_${this.skillBuilds.tableName}`),
+    skillSets: this.adapter.initPublicTable<SkillTreeRecord>(`public_${this.skillBuilds.tableName}`),
     items: this.adapter.initPublicTable<ItemInstanceRecord>(this.itemInstances.tableName),
   }
 }

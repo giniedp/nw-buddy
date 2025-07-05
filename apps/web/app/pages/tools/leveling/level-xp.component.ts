@@ -7,7 +7,7 @@ import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { CharacterStore } from '~/data'
 import { LayoutModule } from '~/ui/layout'
 import { LevelInputModule } from '~/ui/level-input'
-import { injectQueryParam, injectRouteParam } from '~/utils'
+import { injectRouteParam } from '~/utils'
 import { XpTableModule } from '~/widgets/xp-table'
 
 @Component({
@@ -34,6 +34,6 @@ export class LevelXpComponent {
   protected tab = toSignal(injectRouteParam('tab'))
 
   protected updateLevel(value: number) {
-    this.char.patchRecord({ level: value })
+    this.char.update(this.char.record().id, { level: value })
   }
 }

@@ -1,11 +1,11 @@
 <div class="row-span-3">
-  <nwb-gear-cell-avatar [disabled]="disabled" class="w-full h-full" />
+  <nwb-gear-cell-avatar [disabled]="disabled()" class="w-full h-full" />
 </div>
-<nwb-gear-cell-attributes [disabled]="disabled" />
+<nwb-gear-cell-attributes [disabled]="disabled()" />
 <nwb-gear-cell-equip-load />
 <nwb-gear-cell-vitality />
 
-<nwb-gear-cell-slots-consumables [disabled]="disabled"/>
-<nwb-gear-cell-slots-buffs [disabled]="disabled" />
-<nwb-gear-cell-slots-trophies [disabled]="disabled"/>
-<nwb-gear-cell-slots-town-buffs [disabled]="disabled" />
+<nwb-gear-cell-slots-consumables [disabled]="disabled()"/>
+<nwb-gear-cell-slots-buffs [disabled]="disabled()" />
+<nwb-gear-cell-slots-trophies [disabled]="disabled()"/>
+<nwb-gear-cell-slots-town-buffs [disabled]="disabled()" />

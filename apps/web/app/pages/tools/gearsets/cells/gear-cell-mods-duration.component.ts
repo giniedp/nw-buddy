@@ -7,10 +7,10 @@ import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { statusEffectCategoryIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize, selectSignal } from '~/utils'
-import { ModifierTipComponent } from './ui/modifier-tip.component'
+import { humanize } from '~/utils'
 import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
+import { ModifierTipComponent } from './ui/modifier-tip.component'
 
 @Component({
   selector: 'nwb-gear-cell-mods-duration',
@@ -26,8 +26,8 @@ import { FlashDirective } from './ui/flash.directive'
 export class GearCellModsDurationComponent {
   private mannequin = inject(Mannequin)
   protected rowCount = computed(() => this.mods()?.length)
-  protected mods = selectSignal(this.mannequin.modEffectReduction, (mods) => {
-    return selectMods(mods)
+  protected mods = computed(() => {
+    return selectMods(this.mannequin.modEffectReduction())
   })
 
   protected seconds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 40]

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core'
 import { signalStoreFeature, type, withMethods } from '@ngrx/signals'
 import { PerkData } from '@nw-data/generated'
-import { ItemInstancesDB } from '../items'
+import { ItemsService } from './items.service'
 import { ItemInstanceRecord } from './types'
 
 export interface WithItemInstanceMethodsState {
@@ -13,16 +13,16 @@ export function withItemInstanceMethods() {
       state: type<WithItemInstanceMethodsState>(),
     },
     withMethods(({ itemInstance }) => {
-      const itemDB = inject(ItemInstancesDB)
+      const service = inject(ItemsService)
       return {
         patchItemInstance(patchValue: Partial<ItemInstanceRecord>) {
-          return itemDB.update(itemInstance().id, {
+          return service.update(itemInstance().id, {
             ...itemInstance(),
             ...patchValue,
           })
         },
         destroyItemInstance() {
-          return itemDB.destroy(itemInstance().id)
+          return service.delete(itemInstance().id)
         },
       }
     }),

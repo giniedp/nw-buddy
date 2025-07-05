@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { AttributeRef } from '@nw-data/common'
-import { isEqual } from 'lodash'
-import { debounceTime, distinctUntilChanged, of } from 'rxjs'
+import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { debounceTime, of, Subject } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { AttributeState, AttributesStore } from './attributes.store'
+import { AttributesStore, AttributeState } from './attributes.store'
 import { CheckpointTipComponent } from './checkpoint-tip.component'
 @Component({
   selector: 'nwb-attributes-editor',
@@ -26,69 +25,17 @@ import { CheckpointTipComponent } from './checkpoint-tip.component'
 export class AttributesEditorComponent {
   private store = inject(AttributesStore)
 
-  @Input()
-  public set level(value: number) {
-    this.store.setLevel(value)
-  }
-  public get level() {
-    return this.store.level()
-  }
+  public level = input<number>(NW_MAX_CHARACTER_LEVEL)
+  public base = input<Record<AttributeRef, number>>(null)
+  public assigned = input<Record<AttributeRef, number>>(null)
+  public buffs = input<Record<AttributeRef, number>>(null)
+  public magnify = input<number[]>([])
+  public magnifyPlacement = input<AttributeRef>(null)
+  public freeMode = input<boolean>(false)
 
-  @Input()
-  public set base(value: Record<AttributeRef, number>) {
-    this.store.setBase(value)
-  }
-  public get base() {
-    return this.store.base()
-  }
-
-  @Input()
-  public set assigned(value: Record<AttributeRef, number>) {
-    this.store.setAssigned(value)
-  }
-  public get assigned() {
-    return this.store.assigned()
-  }
-
-  @Input()
-  public set buffs(value: Record<AttributeRef, number>) {
-    this.store.setBuffs(value)
-  }
-  public get buffs() {
-    return this.store.buffs()
-  }
-
-  @Input()
-  public set magnify(value: number[]) {
-    this.store.setMagnify(value)
-  }
-  public get magnify() {
-    return this.store.magnify()
-  }
-
-  @Input()
-  public set magnifyPlacement(value: AttributeRef) {
-    this.store.setMagnifyPlacement(value)
-  }
-  public get magnifyPlacement() {
-    return this.store.magnifyPlacement()
-  }
-
-  @Input()
-  public set freeMode(value: boolean) {
-    this.store.setUnlocked(value)
-  }
-  public get freeMode() {
-    return this.store.unlocked()
-  }
-
-  public assignedChanged = outputFromObservable(
-    toObservable(this.store.assigned).pipe(distinctUntilChanged((a, b) => isEqual(a, b))),
-  )
-
-  public magnifyPlacementChanged = outputFromObservable(
-    toObservable(this.store.magnifyPlacement).pipe(distinctUntilChanged()),
-  )
+  private assignedSubject = new Subject<Record<AttributeRef, number>>()
+  public assignedChanged = output<Record<AttributeRef, number>>()
+  public magnifyPlacementChanged = output<AttributeRef>()
 
   protected magnifyOptions: Array<{ label: string; value: AttributeRef }> = [
     { label: 'ui_Strength_short', value: 'str' },
@@ -110,37 +57,55 @@ export class AttributesEditorComponent {
   public readonly totalFoc$ = toObservable(this.store.totalFoc).pipe(debounceTime(300))
   public readonly totalCon$ = toObservable(this.store.totalCon).pipe(debounceTime(300))
 
-  protected attributeToggle(state: AttributeState, points: number) {
+  public constructor() {
+    this.store.setLevel(this.level)
+    this.store.setBase(this.base)
+    this.store.setAssigned(this.assigned)
+    this.store.setBuffs(this.buffs)
+    this.store.setMagnify(this.magnify)
+    this.store.setMagnifyPlacement(this.magnifyPlacement)
+    this.store.setUnlocked(this.freeMode)
+    this.assignedSubject.pipe(debounceTime(150), takeUntilDestroyed()).subscribe((assigned) => {
+      this.assignedChanged.emit(assigned)
+    })
+  }
+
+  protected handleMagnifyUpdate(value: AttributeRef) {
+    this.store.setMagnifyPlacement(value)
+    this.magnifyPlacementChanged.emit(value)
+  }
+
+  protected handleAttributeToggle(state: AttributeState, points: number) {
     const total = state.total - state.magnify
     if (total === points) {
       this.store.update({ attribute: state.ref, value: points - 50 })
     } else {
       this.store.update({ attribute: state.ref, value: points })
     }
+    this.assignedSubject.next(this.store.assigned())
   }
 
-  protected attributeInput(state: AttributeState, points: number) {
+  protected handleAttributeUpdate(state: AttributeState, points: number) {
     if (points > state.inputMax) {
       points = state.inputMax
     }
     const value = state.base + state.buffs + points
     this.store.update({ attribute: state.ref, value: value })
+    this.assignedSubject.next(this.store.assigned())
   }
 
-  protected attributeWheel(state: AttributeState, e: Event) {
-    setTimeout(() => {
-      const value = (e.target as HTMLInputElement).valueAsNumber
-      this.attributeInput(state, value)
-    })
+  protected handleAttributeWheel(state: AttributeState, e: Event) {
+    const value = (e.target as HTMLInputElement).valueAsNumber
+    this.handleAttributeUpdate(state, value)
   }
 
-  protected attributeBlur(state: AttributeState, e: Event) {
+  protected handleAttributeBlur(state: AttributeState, e: Event) {
     const value = Math.max(Math.min(state.assigned, state.inputMax), state.inputMin)
     const input = e.target as HTMLInputElement
     input.valueAsNumber = value
   }
 
-  protected attributeFocus(e: Event) {
+  protected handleAttributeFocus(e: Event) {
     ;(e.target as HTMLInputElement).select()
   }
 
