@@ -1,6 +1,6 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { Component, Injector, Input, inject } from '@angular/core'
+import { Component, Injector, Input, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { patchState } from '@ngrx/signals'
@@ -28,6 +28,7 @@ import {
   injectNwData,
   resolveGearsetSlotItems,
 } from '~/data'
+import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { ShareDialogComponent } from '~/pages/share'
 import { ChipsInputModule } from '~/ui/chips-input'
@@ -85,6 +86,7 @@ export const GEARSET_TAGS = [
   },
 })
 export class GearsetToolbarComponent {
+  private backend = inject(BackendService)
   private store = inject(GearsetStore)
   private injector = inject(Injector)
   private router = inject(Router)
@@ -114,12 +116,11 @@ export class GearsetToolbarComponent {
   protected presetTags = GEARSET_TAGS.map((it) => it.value)
   protected isTagEditorOpen = false
 
-  protected get gearset() {
-    return this.store.gearset()
-  }
-  protected get isLoaded() {
-    return this.store.isLoaded()
-  }
+  protected gearset = this.store.gearset
+  protected isEditable = computed(() => !!this.gearset() && this.store.isOwned())
+  protected isPublishable = this.store.isPublishable
+  protected isPublic = this.store.isPublic
+  protected isSignedIn = this.backend.isSignedIn
 
   @Input()
   public mode: 'player' | 'opponent' = 'player'
@@ -134,8 +135,16 @@ export class GearsetToolbarComponent {
     this.store.patchGearset({ name: value })
   }
 
+  protected onPublishClicked() {
+    this.store.update({ status: 'public' })
+  }
+
+  protected onUnpublishClicked() {
+    this.store.update({ status: 'private' })
+  }
+
   protected onCloneClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create copy',
@@ -163,7 +172,7 @@ export class GearsetToolbarComponent {
   }
 
   protected onDeleteClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
         title: 'Delete Gearset',
@@ -278,7 +287,7 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchResetClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const resetableIds: EquipSlotId[] = [
       'head',
@@ -319,7 +328,7 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchGemClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const gemSlots = recordSlots.filter(({ item, perks }) =>
       perks.some(
@@ -369,7 +378,7 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchAttributeClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const gearSlots = recordSlots.filter(({ item }) => isItemArmor(item) || isItemWeapon(item) || isItemJewelery(item))
     const armorSlotIds: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet', 'amulet', 'ring', 'earring']
@@ -456,7 +465,7 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchGearScoreClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const gearSlotIds: EquipSlotId[] = [
       'head',

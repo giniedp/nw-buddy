@@ -29,7 +29,7 @@ export class GearsetsService {
     autoSync({
       userId: this.userId$,
       local: this.table,
-      remote: this.backend.privateTables.skillSets,
+      remote: this.backend.privateTables.gearsets,
     })
       .pipe(takeUntilDestroyed())
       .subscribe((stage) => {

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
-import { filter } from 'rxjs'
+import { combineLatest, filter } from 'rxjs'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
@@ -13,6 +13,10 @@ import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
+import { BackendService } from '~/data/backend'
+import { environment } from 'apps/web/environments'
+import { CharactersDB, GearsetsDB, ItemInstancesDB, SkillBuildsDB, TablePresetDB } from '~/data'
+import { rxResource, toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'nwb-preferences-page',
@@ -24,18 +28,65 @@ import { DataImportDialogComponent } from './data-import-dialog.component'
   },
 })
 export class PreferencesComponent {
+  protected backend = inject(BackendService)
+  protected signedIn = this.backend.isSignedIn
+  protected session = this.backend.session
+  private tableChar = inject(CharactersDB)
+  private tableItems = inject(ItemInstancesDB)
+  private tableTrees = inject(SkillBuildsDB)
+  private tableGears = inject(GearsetsDB)
+  private tableGrids = inject(TablePresetDB)
+
+  protected envName = environment.environment
+  protected version = environment.version
+  protected branch = environment.branchname
+  protected cdnUrl = environment.cdnUrl
+  protected modelsUrl = environment.modelsUrl
+  protected tilesUrl = environment.nwTilesUrl
+
+  protected countLocal = rxResource({
+    stream: () => {
+      return combineLatest({
+        characters: this.tableChar.observeWhereCount({ userId: 'local' }),
+        items: this.tableItems.observeWhereCount({ userId: 'local' }),
+        trees: this.tableTrees.observeWhereCount({ userId: 'local' }),
+        gears: this.tableGears.observeWhereCount({ userId: 'local' }),
+        grids: this.tableGrids.observeWhereCount({ userId: 'local' }),
+      })
+    },
+    defaultValue: {
+      characters: 0,
+      items: 0,
+      trees: 0,
+      gears: 0,
+      grids: 0,
+    }
+  })
+  protected countUser = rxResource({
+    params: () => this.backend.session()?.id || 'local',
+    stream: ({ params }) => {
+      return combineLatest({
+        characters: this.tableChar.observeWhereCount({ userId: params }),
+        items: this.tableItems.observeWhereCount({ userId: params }),
+        trees: this.tableTrees.observeWhereCount({ userId: params }),
+        gears: this.tableGears.observeWhereCount({ userId: params }),
+        grids: this.tableGrids.observeWhereCount({ userId: params }),
+      })
+    },
+    defaultValue: {
+      characters: 0,
+      items: 0,
+      trees: 0,
+      gears: 0,
+      grids: 0,
+    }
+  })
+
   protected get collapseMenu() {
     return this.pref.collapseMenuMode.get() == 'always'
   }
   protected set collapseMenu(value: boolean) {
     this.pref.collapseMenuMode.set(value ? 'always' : 'auto')
-  }
-
-  protected get highQualityModels() {
-    return this.pref.highQualityModels.get()
-  }
-  protected set highQualityModels(value: boolean) {
-    this.pref.highQualityModels.set(value)
   }
 
   protected get ipfsGateway() {

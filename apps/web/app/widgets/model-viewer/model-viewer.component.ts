@@ -1,3 +1,5 @@
+import { animate, style, transition, trigger } from '@angular/animations'
+import { Overlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -14,7 +16,12 @@ import {
   untracked,
   viewChild,
 } from '@angular/core'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { FormsModule } from '@angular/forms'
+import { TransformNode, Vector3 } from '@babylonjs/core'
+import type { ViewerDetails } from '@babylonjs/viewer'
 import { ArmorAppearanceDefinitions } from '@nw-data/generated'
+import { NwMaterialExtension, updateNwMaterial } from '@nw-viewer/babylon/extensions'
 import { catchError, from, of, switchMap, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -33,19 +40,11 @@ import {
   svgSun,
   svgXmark,
 } from '~/ui/icons/svg'
+import { FullscreenService, LayoutModule, ModalRef } from '~/ui/layout'
 import { TranslateService } from '../../i18n'
 import { ScreenshotModule, ScreenshotService } from '../screenshot'
-import { ModelItemInfo } from './model-viewer.service'
-
-import { animate, style, transition, trigger } from '@angular/animations'
-import { Overlay } from '@angular/cdk/overlay'
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
-import { FormsModule } from '@angular/forms'
-import { TransformNode, Vector3 } from '@babylonjs/core'
-import { ViewerDetails } from '@babylonjs/viewer'
-import { NwMaterialExtension, updateNwMaterial } from '@nw-viewer/babylon/extensions'
-import { FullscreenService, LayoutModule, ModalRef } from '~/ui/layout'
 import { DyePanelComponent } from './dye-panel.component'
+import { ModelItemInfo } from './model-viewer.service'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { getModelUrl } from './utils/get-model-url'

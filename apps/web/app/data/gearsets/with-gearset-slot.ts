@@ -1,5 +1,5 @@
 import { computed, inject } from '@angular/core'
-import { rxResource } from '@angular/core/rxjs-interop'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { signalStoreFeature, type, withComputed } from '@ngrx/signals'
 import {
   EquipSlot,
@@ -12,11 +12,10 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { combineLatest, of, switchMap } from 'rxjs'
+import { catchError, combineLatest, map, of, switchMap } from 'rxjs'
 import { ItemsService } from '../items'
 import { injectNwData } from '../nw-data'
 import { GearsetRecord } from './types'
-import { resolveGearsetSlot } from './utils'
 
 export interface WithGearsetSlotState {
   gearset: GearsetRecord
@@ -30,29 +29,40 @@ export function withGearsetSlot() {
     withComputed(({ gearset, slotId }) => {
       const items = inject(ItemsService)
       const data = injectNwData()
-      const resource = rxResource({
-        params: () => {
+
+      const resource$ = combineLatest({
+        gearset: toObservable(gearset),
+        slotId: toObservable(slotId),
+      }).pipe(
+        map(({ gearset, slotId }) => {
           return {
-            gearset: gearset(),
-            slotId: slotId(),
-          }
-        },
-        stream: ({ params: { gearset, slotId } }) => {
-          return resolveGearsetSlot(items, {
             slotId,
             instance: gearset?.slots?.[slotId],
             userId: gearset?.userId,
-          }).pipe(
-            switchMap(({ instance, instanceId }) => {
-              return combineLatest({
-                instanceId: of(instanceId),
-                instance: of(instance),
+          }
+        }),
+        switchMap(({ slotId, instance, userId }) => {
+          return items.resolveGearsetSlot({ slotId, instance, userId }).pipe(
+            map(({ instance, instanceId }) => {
+              return {
+                instanceId,
+                instance,
                 item: data.itemOrHousingItem(instance?.itemId),
-              })
+              }
             }),
           )
-        },
-        defaultValue: {
+        }),
+        catchError((err) => {
+          console.error(err)
+          return of({
+            instanceId: null,
+            instance: null,
+            item: null,
+          })
+        }),
+      )
+      const resource = toSignal(resource$, {
+        initialValue: {
           instanceId: null,
           instance: null,
           item: null,
@@ -60,9 +70,9 @@ export function withGearsetSlot() {
       })
 
       return {
-        instanceId: computed(() => resource.value()?.instanceId),
-        instance: computed(() => resource.value()?.instance),
-        item: computed(() => resource.value()?.item),
+        instanceId: computed(() => resource()?.instanceId),
+        instance: computed(() => resource()?.instance),
+        item: computed(() => resource()?.item),
       }
     }),
     withComputed(({ item, instance, instanceId, slotId }) => {

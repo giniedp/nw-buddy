@@ -62,4 +62,8 @@ export interface GearsetRecord extends AppDbRecord {
    * The character level this gearset is designed for
    */
   level?: number
+    /**
+   * The status of the skill set
+   */
+  status?: 'public' | 'private'
 }

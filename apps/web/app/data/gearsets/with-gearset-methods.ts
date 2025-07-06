@@ -50,6 +50,7 @@ export function withGearsetMethods() {
       const items = inject(ItemsService)
       const images = inject(ImagesDB)
       return {
+        update: patchGearset,
         updateSlotGearScore: async (slot: EquipSlotId, gearScore: number) => {
           return patchSlot(slot, { gearScore })
         },

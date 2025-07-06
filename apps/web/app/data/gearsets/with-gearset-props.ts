@@ -1,12 +1,13 @@
 import { computed, inject } from '@angular/core'
 import { signalStoreFeature, type, withComputed } from '@ngrx/signals'
 
-import { rxResource } from '@angular/core/rxjs-interop'
+import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { gearScoreRelevantSlots, getAverageGearScore, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { BackendService } from '../backend'
 import { ItemsService } from '../items'
 import { SkillBuildsService } from '../skillbuilds'
 import { GearsetRecord } from './types'
-import { resolveGearsetSlots } from './utils'
+import { combineLatest, switchMap } from 'rxjs'
 
 export interface WithGearsetPropsState {
   gearset: GearsetRecord
@@ -19,6 +20,8 @@ export function withGearsetProps() {
       state: type<WithGearsetPropsState>(),
     },
     withComputed(({ gearset, defaultLevel }) => {
+      const backend = inject(BackendService)
+      const userId = computed(() => backend.sessionUserId() || 'local')
       return {
         gearsetId: computed(() => gearset()?.id),
         gearsetName: computed(() => gearset()?.name),
@@ -27,6 +30,8 @@ export function withGearsetProps() {
         gearsetEnforcedEffects: computed(() => gearset()?.enforceEffects),
         gearsetEnforcedAbilities: computed(() => gearset()?.enforceAbilities),
         gearsetImageId: computed(() => gearset()?.imageId),
+        gearsetUserid: computed(() => gearset()?.userId),
+        level: computed(() => gearset()?.level ?? defaultLevel() ?? NW_MAX_CHARACTER_LEVEL),
         skills: computed(() => gearset()?.skills),
         skillsPrimary: computed(() => gearset()?.skills?.['primary']),
         skillsSecondary: computed(() => gearset()?.skills?.['secondary']),
@@ -36,34 +41,57 @@ export function withGearsetProps() {
         isSynced: computed(() => gearset()?.syncState === 'synced'),
         isSyncPending: computed(() => gearset()?.syncState === 'pending' || !gearset()?.syncState),
         isSyncConflicted: computed(() => gearset()?.syncState === 'conflict'),
-        level: computed(() => gearset()?.level ?? defaultLevel() ?? NW_MAX_CHARACTER_LEVEL),
+        isOwned: computed(() => gearset()?.userId === userId()),
+        isPublic: computed(() => gearset()?.status === 'public'),
+        isPrivate: computed(() => gearset()?.status !== 'public'),
+        isPublishable: computed(() => {
+          const slots = gearset()?.slots
+          if (!slots) {
+            return false
+          }
+          for (const slot in slots) {
+            if (typeof slots[slot] === 'string') {
+              return false
+            }
+          }
+          return true
+        }),
       }
     }),
-    withComputed(({ gearsetSlots, skills, gearset, level }) => {
-      const items = inject(ItemsService)
+    withComputed(({ gearsetSlots, skills, gearset, gearsetUserid, level }) => {
+      const itemsService = inject(ItemsService)
+      const skillsService = inject(SkillBuildsService)
 
-      const resolvedSlots = rxResource({
-        params: gearsetSlots,
-        stream: ({ params }) => {
-          return resolveGearsetSlots(items, {
-            slots: params,
-            userId: gearset()?.userId,
-          })
+      const resolvedSlots = toSignal(
+        combineLatest({
+          slots: toObservable(gearsetSlots),
+          userId: toObservable(gearsetUserid),
+        }).pipe(
+          switchMap(({ slots, userId }) => {
+            return itemsService.resolveGearsetSlots({
+              slots,
+              userId,
+            })
+          }),
+        ),
+        {
+          initialValue: [],
         },
-        defaultValue: [],
-      }).value
+      )
 
-      const resolvedSkills = rxResource({
-        params: skills,
-        stream: ({ params }) => {
-          const skillStore = inject(SkillBuildsService)
-          return skillStore.resolveGearsetSkills(params)
+      const resolvedSkills = toSignal(
+        toObservable(skills).pipe(
+          switchMap((params) => {
+            return skillsService.resolveGearsetSkills(params)
+          }),
+        ),
+        {
+          initialValue: {
+            primary: null,
+            secondary: null,
+          },
         },
-        defaultValue: {
-          primary: null,
-          secondary: null,
-        },
-      }).value
+      )
 
       const gearScore = computed(() => {
         const slotIds = gearScoreRelevantSlots().map(({ id }) => id)

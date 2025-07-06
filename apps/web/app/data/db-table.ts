@@ -1,11 +1,10 @@
-import { Observable } from 'rxjs'
-import { AppDbRecord, AppDbTable } from './app-db'
 import { customAlphabet } from 'nanoid/non-secure'
+import { Observable } from 'rxjs'
+import { AppDbRecord, AppDbTable, WhereConditions } from './app-db'
 
 // https://github.com/ai/nanoid
 // https://zelark.github.io/nano-id-cc/
 const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
-
 
 export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
   public abstract readonly table: AppDbTable<T>
@@ -62,8 +61,12 @@ export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.observeAll()
   }
 
-  public observeWhere(where: Partial<T>): Observable<T[]> {
+  public observeWhere(where: WhereConditions<T>): Observable<T[]> {
     return this.table.observeWhere(where)
+  }
+
+  public observeWhereCount(where: WhereConditions<T>): Observable<number> {
+    return this.table.observeWhereCount(where)
   }
 
   public observeById(id: string | Observable<string>) {

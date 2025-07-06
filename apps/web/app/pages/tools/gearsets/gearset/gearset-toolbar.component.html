@@ -11,13 +11,19 @@
   placeholder=""
   class="input input-bordered w-full h-10 min-w-[200px]"
   maxlength="100"
-  [ngModel]="gearset?.name"
+  [ngModel]="gearset()?.name"
   (ngModelChange)="updateName($event)"
   [ngModelOptions]="{ updateOn: 'blur' }"
+  [disabled]="!isEditable()"
 />
 
 <div class="join">
-  <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
+  <button
+    class="join-item btn btn-ghost btn-square"
+    [cdkMenuTriggerFor]="tplTagPicker"
+    [tooltip]="'Edit Tags'"
+    [disabled]="!isEditable()"
+  >
     <nwb-icon [icon]="iconTags" class="w-4 h-4" />
   </button>
   <ng-template #tplTagPicker>
@@ -25,30 +31,60 @@
       <nwb-chips-input-pane
         [tags]="presetTags"
         [placeholder]="'custom tags'"
-        [ngModel]="gearset?.tags"
-        (ngModelChange)="updateTags(gearset, $event)"
+        [ngModel]="gearset()?.tags"
+        (ngModelChange)="updateTags(gearset(), $event)"
       />
     </div>
   </ng-template>
 
-  <button [nwbScreenshotBtn] class="join-item btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
+  <button
+    [nwbScreenshotBtn]
+    class="join-item btn btn-ghost btn-square"
+    [tooltip]="'Screenshot'"
+    [disabled]="!gearset()"
+  ></button>
 
-  <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+  <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu" [disabled]="!gearset()">
     <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
   </button>
 </div>
 
 <ng-template #menu>
   <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0" cdkMenu>
-    <li class="text-shadow-sm shadow-black">
-      <a cdkMenuItem (click)="onShareClicked()" class="rounded-none">
-        <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
-        <div class="flex flex-col leading-none">
-          <span>Share</span>
-          <span class="text-xs opacity-75">Upload online and create a share URL</span>
-        </div>
-      </a>
-    </li>
+    @if (isSignedIn() && isPublishable()) {
+      @if (isPublic()) {
+        <li class="text-shadow-sm shadow-black">
+          <a cdkMenuItem (click)="onUnpublishClicked()" class="rounded-none">
+            <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+            <div class="flex flex-col leading-none">
+              <span>Unpublish</span>
+              <span class="text-xs opacity-75">Makes this gearset private</span>
+            </div>
+          </a>
+        </li>
+      } @else {
+        <li class="text-shadow-sm shadow-black">
+          <a cdkMenuItem (click)="onPublishClicked()" class="rounded-none">
+            <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+            <div class="flex flex-col leading-none">
+              <span>Publish</span>
+              <span class="text-xs opacity-75">Makes this gearset public so others can see it</span>
+            </div>
+          </a>
+        </li>
+      }
+    }
+    @if (!isSignedIn()) {
+      <li class="text-shadow-sm shadow-black">
+        <a cdkMenuItem (click)="onShareClicked()" class="rounded-none">
+          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Share</span>
+            <span class="text-xs opacity-75">Upload online and create a share URL</span>
+          </div>
+        </a>
+      </li>
+    }
     <li class="text-shadow-sm shadow-black">
       <a (click)="onCloneClicked()" cdkMenuItem class="rounded-none">
         <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-2" />

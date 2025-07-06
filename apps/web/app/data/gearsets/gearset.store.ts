@@ -2,7 +2,7 @@ import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { EquipSlotId, ItemPerkInfo, NW_MAX_CHARACTER_LEVEL, PerkBucket, getItemPerkInfos } from '@nw-data/common'
 import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
-import { Observable, combineLatest, map, of, pipe, switchMap } from 'rxjs'
+import { Observable, catchError, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 
 import { inject } from '@angular/core'
 import { NwData } from '@nw-data/db'
@@ -16,7 +16,6 @@ import { withGearsetProps } from './with-gearset-props'
 import { withGearsetToMannequin } from './with-gearset-to-mannequin'
 
 export interface GearsetStoreState {
-  readonly: boolean
   defaultLevel: number
   gearset: GearsetRecord
   isLoaded: boolean
@@ -31,7 +30,6 @@ export const GearsetStore = signalStore(
     defaultLevel: NW_MAX_CHARACTER_LEVEL,
     gearset: null,
     isLoaded: false,
-    readonly: false,
     showCalculator: false,
     showItemInfo: true,
   }),
@@ -45,6 +43,10 @@ export const GearsetStore = signalStore(
         pipe(
           switchMap((source) => {
             return service.observeRecord(source)
+          }),
+          catchError((err) => {
+            console.error(err)
+            return of(null)
           }),
           map((gearset) => {
             patchState(state, { gearset: gearset, isLoaded: true })

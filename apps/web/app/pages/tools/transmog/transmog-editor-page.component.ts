@@ -27,15 +27,14 @@ import { injectBreakpoint } from '~/utils'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
+import { animate, style, transition, trigger } from '@angular/animations'
+import { FormsModule } from '@angular/forms'
 import { IconsModule } from '~/ui/icons'
 import { PlatformService } from '~/utils/services/platform.service'
 import type { TransmogViewer } from '~/widgets/model-viewer/viewer'
 import { ScreenshotService } from '~/widgets/screenshot'
 import { TransmogEditorStore } from './transmog-editor-page.store'
 import { TransmogEditorPanelComponent } from './transmog-editor-panel.component'
-import { animate, style, transition, trigger } from '@angular/animations'
-import { FormsModule } from '@angular/forms'
-import { ModelsService } from '~/widgets/model-viewer'
 
 @Component({
   selector: 'nwb-transmog-editor-page',
@@ -70,7 +69,6 @@ export class TransmogEditorPageComponent implements OnDestroy {
   private preferences = inject(PreferencesService)
   private screenshots = inject(ScreenshotService)
   private platform = inject(PlatformService)
-  private modelService = inject(ModelsService)
 
   protected encodedState: string = null
   protected iconLink = svgLink

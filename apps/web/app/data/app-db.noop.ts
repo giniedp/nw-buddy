@@ -1,7 +1,7 @@
 import { of, Observable as RxObservable, Subject } from 'rxjs'
 
 import { customAlphabet } from 'nanoid/non-secure'
-import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
+import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent, WhereConditions } from './app-db'
 const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
 export class AppDbNoop extends AppDb {
@@ -82,10 +82,13 @@ export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
     return of([])
   }
 
-  public observeWhere(where: Partial<T>): RxObservable<T[]> {
+  public observeWhere(where: WhereConditions<T>): RxObservable<T[]> {
     return of([])
   }
 
+  public observeWhereCount(where: WhereConditions<T>): RxObservable<number> {
+    return of(0)
+  }
   public observeById(id: string | RxObservable<string>): RxObservable<T> {
     return of(null)
   }

@@ -1,6 +1,5 @@
 import { Observable, Subject } from 'rxjs'
 
-
 export type AppDbRecord = {
   /**
    * Unique identifier for the record
@@ -59,6 +58,31 @@ export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract createOrUpdate(record: T, options?: { silent: boolean }): Promise<T>
 
   public abstract observeAll(): Observable<T[]>
-  public abstract observeWhere(where: Partial<AppDbRecord>): Observable<T[]>
+  public abstract observeWhere(where: WhereConditions<T>): Observable<T[]>
+  public abstract observeWhereCount(where: WhereConditions<T>): Observable<number>
   public abstract observeById(id: string | Observable<string>): Observable<T>
 }
+
+export type WhereConditions<T> = FieldConditionMap<T>
+
+export type FieldConditionMap<T> = Partial<{
+  [K in keyof T]: FieldCondition | Primitive
+}>
+
+export type FieldCondition =
+  | Primitive
+  // | {
+  //     eq?: Primitive
+  //     neq?: Primitive
+  //     gt?: Primitive
+  //     gte?: Primitive
+  //     lt?: Primitive
+  //     lte?: Primitive
+  //     in?: Primitive[]
+  //     nin?: Primitive[]
+  //     like?: string
+  //     ilike?: string
+  //     isNull?: boolean
+  //   }
+
+export type Primitive = string | number | boolean | null

@@ -1,5 +1,5 @@
 import { AssetContainer, LoadAssetContainerAsync, SpriteManager } from '@babylonjs/core'
-import '@babylonjs/loaders'
+// import '@babylonjs/loaders'
 import { IGLTFLoaderData } from '@babylonjs/loaders'
 import PQueue from 'p-queue'
 import { Observable } from 'rxjs'

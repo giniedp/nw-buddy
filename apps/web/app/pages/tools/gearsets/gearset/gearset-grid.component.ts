@@ -23,6 +23,7 @@ import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
+import { svgCircleExclamation } from '~/ui/icons/svg'
 
 @Component({
   selector: 'nwb-gearset-grid',
@@ -70,12 +71,12 @@ export class GearsetGridComponent {
   protected elSkill2 = viewChild<string, ElementRef<HTMLElement>>('elSkill2', { read: ElementRef })
   protected elGear = viewChildren<string, ElementRef<HTMLElement>>('elGear', { read: ElementRef })
 
-  protected get gearset() {
-    return this.store.gearset()
-  }
-  protected get showItemInfo() {
-    return this.store.showItemInfo()
-  }
+  protected gearset = this.store.gearset
+  protected isLoaded = this.store.isLoaded
+  protected readonly = computed(() => this.disabled() || !this.store.isOwned())
+  protected iconInfo = svgCircleExclamation
+
+  protected showItemInfo = this.store.showItemInfo
   protected slots = computed(() => {
     return EQUIP_SLOTS.filter(
       (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies',
@@ -84,7 +85,7 @@ export class GearsetGridComponent {
 
   constructor(screenshot: ScreenshotFrameDirective) {
     effect(() => {
-      screenshot.nwbScreenshotFrame = this.gearset?.name
+      screenshot.nwbScreenshotFrame = this.gearset()?.name
       screenshot.nwbScreenshotLabel = 'Full Gearset'
       screenshot.nwbScreenshotWidth = 1660
       screenshot.nwbScreenshotMode = 'detached'

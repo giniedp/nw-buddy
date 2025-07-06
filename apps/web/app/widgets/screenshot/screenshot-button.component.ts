@@ -1,6 +1,6 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
+import { Component, computed, HostListener, inject, input, Input, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 
@@ -10,35 +10,30 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
   imports: [CommonModule, FormsModule, OverlayModule],
   host: {
     class: 'flex',
+    '[class.disabled]': 'isDisabled()',
+    '[attr.disabled]': 'isDisabled()',
   },
 })
 export class ScreenshotButtonComponent {
+  private service = inject(ScreenshotService)
+
   @Input()
   public nwbScreenshotBtn: void
 
-  @Input()
-  public nwbScreenshotBtnDelay: number
+  public nwbScreenshotBtnDelay = input<number>()
 
-  @HostBinding('class.disabled')
-  @HostBinding('class.opacity-25')
-  @HostBinding('attr.disabled')
-  public get disabled() {
-    return this.isBusy || !this.frames.length ? true : null
-  }
+  public disabled = input<boolean>(false)
+
+  protected isDisabled = computed(() => {
+    return this.disabled() || this.isBusy() || !this.frames.length ? true : null
+  })
 
   protected get frames() {
     return this.service.frames
   }
 
-  protected isOverlayOpen = false
-  protected isBusy = false
-
-  public constructor(
-    private service: ScreenshotService,
-    private cdRef: ChangeDetectorRef,
-  ) {
-    //
-  }
+  protected isOverlayOpen = signal(false)
+  protected isBusy = signal(false)
 
   @HostListener('click', ['$event'])
   protected async clicked(e: MouseEvent) {
@@ -46,7 +41,7 @@ export class ScreenshotButtonComponent {
       return
     }
     if (this.frames.length > 1) {
-      this.isOverlayOpen = !this.isOverlayOpen
+      this.isOverlayOpen.set(!this.isOverlayOpen())
       return
     }
     this.makeScreenshot(this.frames[0])
@@ -54,16 +49,15 @@ export class ScreenshotButtonComponent {
 
   protected async makeScreenshot(frame: ScreenshotFrame) {
     if (this.nwbScreenshotBtnDelay) {
-      await new Promise((resolve) => setTimeout(resolve, this.nwbScreenshotBtnDelay))
+      await new Promise((resolve) => setTimeout(resolve, this.nwbScreenshotBtnDelay()))
     }
-    this.isBusy = true
+    this.isBusy.set(true)
     await this.grabScreenshot(frame).catch(console.error)
-    this.isBusy = false
-    this.cdRef.markForCheck()
+    this.isBusy.set(false)
   }
 
   protected async grabScreenshot(frame: ScreenshotFrame) {
-    this.isOverlayOpen = false
+    this.isOverlayOpen.set(false)
     if (!frame) {
       return
     }

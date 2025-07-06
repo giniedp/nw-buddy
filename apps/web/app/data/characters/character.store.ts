@@ -97,14 +97,12 @@ export const CharacterStore = signalStore(
             }
             if (!id) {
               // create default record
-              console.log('Creating default character record', userId())
               const record = await state.create({})
               id = record.id
             }
             return id
           }),
           switchMap((id) => {
-            console.log('Observing character record', id)
             return table.observeById(id)
           }),
           map((record) => {

@@ -1,11 +1,14 @@
 import { inject, Injectable, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { combineLatest, map, of, switchMap } from 'rxjs'
+import { EquipSlotId } from '@nw-data/common'
+import { combineLatest, map, Observable, of, switchMap } from 'rxjs'
+import { combineLatestOrEmpty } from '~/utils'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
+import { GearsetRecord } from '../gearsets/types'
 import { injectNwData } from '../nw-data'
 import { ItemInstancesDB } from './items.db'
-import { ItemInstanceRecord } from './types'
+import { ItemInstance, ItemInstanceRecord } from './types'
 import { buildItemInstanceRows } from './utils'
 
 @Injectable({
@@ -119,4 +122,45 @@ export class ItemsService {
   public delete(id: string) {
     return this.table.destroy(id)
   }
+
+  public resolveGearsetSlots({ userId, slots }: { userId: string; slots: GearsetRecord['slots'] }) {
+    return combineLatestOrEmpty(
+      Object.entries(slots || {}).map(([slot, instance]): Observable<ResolvedGearsetSlot> => {
+        return this.resolveGearsetSlot({
+          userId,
+          slotId: slot as EquipSlotId,
+          instance,
+        })
+      }),
+    )
+  }
+
+  public resolveGearsetSlot({
+    userId,
+    slotId,
+    instance,
+  }: {
+    userId: string
+    slotId: EquipSlotId
+    instance: string | ItemInstance
+  }) {
+    if (typeof instance === 'string') {
+      return combineLatest({
+        slot: of(slotId),
+        instanceId: of(instance),
+        instance: this.observeRecord({ userId, id: instance }),
+      })
+    }
+    return combineLatest({
+      slot: of(slotId),
+      instanceId: of<string>(null),
+      instance: of(instance),
+    })
+  }
+}
+
+export interface ResolvedGearsetSlot {
+  slot: EquipSlotId
+  instanceId: string
+  instance: ItemInstance
 }

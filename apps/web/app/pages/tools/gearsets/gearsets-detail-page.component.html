@@ -1,6 +1,6 @@
 <ion-content [scrollY]="false">
   <ion-split-pane
-    [when]="!!(oppenentId$ | async)"
+    [when]="hasOpponent()"
     [contentId]="'gearset-content'"
     class="transition-transform"
     style="--side-min-width: 50%; --side-max-width: 50%"
@@ -13,9 +13,8 @@
       class="ion-page order-1"
       id="gearset-content"
       nwbGearsetHost
-      #host="gearsetHost"
-      [gearset]="playerGeasrset()"
-      [mode]="'player'"
+      #playerHost="gearsetHost"
+      [gearset]="playerGearset()"
       [opponent]="opponentGearset()"
     >
       <ion-header class="bg-base-300">
@@ -27,7 +26,7 @@
         <ion-split-pane
           [contentId]="'player'"
           style="--side-min-width: 360px; --side-max-width: 400px"
-          [when]="host.showCalculator && size.width() >= 768"
+          [when]="playerHost.showCalculator() && size.width() >= 768"
         >
           <ion-menu
             [menuId]="'player-menu'"
@@ -38,7 +37,7 @@
             style="--min-width: min(100vw, 360px)"
           >
             <ion-content class="bg-black ion-p-4">
-              <nwb-damage-calculator [layoutAsPage]="true" [player]="player$ | async" [opponent]="opponent$ | async" />
+              <nwb-damage-calculator [layoutAsPage]="true" [player]="player()" [opponent]="opponent()" />
             </ion-content>
           </ion-menu>
           <div class="ion-page order-1" id="player">
@@ -81,10 +80,9 @@
         <div
           class="ion-page"
           nwbGearsetHost
-          #host="gearsetHost"
+          #opponentHost="gearsetHost"
           [gearset]="opponentGearset()"
-          [mode]="'opponent'"
-          [opponent]="playerGeasrset()"
+          [opponent]="playerGearset()"
         >
           <ion-header class="bg-base-300">
             <ion-toolbar>
@@ -95,7 +93,7 @@
             <ion-split-pane
               [contentId]="'opponent'"
               style="--side-min-width: 360px; --side-max-width: 400px"
-              [when]="host.showCalculator && size.width() >= 768"
+              [when]="opponentHost.showCalculator() && size.width() >= 768"
             >
               <ion-menu
                 [menuId]="'opponent-menu'"
@@ -105,11 +103,7 @@
                 style="--min-width: min(100vw, 360px)"
               >
                 <ion-content class="bg-black ion-p-4">
-                  <nwb-damage-calculator
-                    [layoutAsPage]="true"
-                    [opponent]="player$ | async"
-                    [player]="opponent$ | async"
-                  />
+                  <nwb-damage-calculator [layoutAsPage]="true" [opponent]="player()" [player]="opponent()" />
                 </ion-content>
               </ion-menu>
               <div class="ion-page order-2" id="opponent">

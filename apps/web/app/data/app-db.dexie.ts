@@ -2,7 +2,7 @@ import { Dexie, liveQuery, PromiseExtended, Table } from 'dexie'
 import { customAlphabet } from 'nanoid/non-secure'
 import { defer, isObservable, of, Observable as RxObservable, Subject, switchMap } from 'rxjs'
 
-import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent } from './app-db'
+import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent, WhereConditions } from './app-db'
 import {
   DBT_CHARACTERS,
   DBT_GEARSETS,
@@ -51,14 +51,7 @@ export class AppDbDexie extends AppDb {
         [DBT_TABLE_STATES]: 'id,userId',
       })
       .upgrade((trans) => {
-        const tables = [
-          DBT_ITEMS,
-          DBT_GEARSETS,
-          DBT_CHARACTERS,
-          DBT_SKILL_BUILDS,
-          DBT_TABLE_PRESETS,
-          DBT_TABLE_STATES,
-        ]
+        const tables = [DBT_ITEMS, DBT_GEARSETS, DBT_CHARACTERS, DBT_SKILL_BUILDS, DBT_TABLE_PRESETS, DBT_TABLE_STATES]
         for (const table of tables) {
           trans
             .table(table)
@@ -189,8 +182,12 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.live((t) => t.toArray())
   }
 
-  public observeWhere(where: Partial<T>): RxObservable<T[]> {
+  public observeWhere(where: WhereConditions<T>): RxObservable<T[]> {
     return this.live((t) => t.where(where).toArray())
+  }
+
+  public observeWhereCount(where: WhereConditions<T>): RxObservable<number> {
+    return this.live((t) => t.where(where).count())
   }
 
   public observeById(id: string | RxObservable<string>): RxObservable<T> {

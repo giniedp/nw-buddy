@@ -4,7 +4,6 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { getWeaponTagFromWeapon } from '@nw-data/common'
 import { map, pipe, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetSkillTreeRef, injectNwData, ItemsService, SkillBuildsService, SkillTree } from '~/data'
-import { resolveGearsetSlot } from '~/data/gearsets/utils'
 
 export interface GearsetPaneSkillState {
   slot: GearsetSkillTreeRef
@@ -29,18 +28,20 @@ export const GearsetPaneSkillStore = signalStore(
       pipe(
         switchMap(({ gearset, slot }) => {
           const slotId = slot === 'primary' ? 'weapon1' : 'weapon2'
-          return resolveGearsetSlot(items, {
-            slotId,
-            instance: gearset?.slots?.[slotId],
-            userId: gearset?.userId,
-          }).pipe(
-            switchMap(({ instance }) => db.itemsById(instance?.itemId)),
-            switchMap((item) => db.weaponItemsById(item?.ItemStatsRef)),
-            map((it) => {
-              equippedWeaponTag.set(getWeaponTagFromWeapon(it))
-              equippedWeaponTagLoaded.set(true)
-            }),
-          )
+          return items
+            .resolveGearsetSlot({
+              slotId,
+              instance: gearset?.slots?.[slotId],
+              userId: gearset?.userId,
+            })
+            .pipe(
+              switchMap(({ instance }) => db.itemsById(instance?.itemId)),
+              switchMap((item) => db.weaponItemsById(item?.ItemStatsRef)),
+              map((it) => {
+                equippedWeaponTag.set(getWeaponTagFromWeapon(it))
+                equippedWeaponTagLoaded.set(true)
+              }),
+            )
         }),
       ),
     )

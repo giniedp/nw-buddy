@@ -1,56 +1,14 @@
 import {
   EQUIP_SLOTS,
   EquipSlot,
-  EquipSlotId,
   getAverageGearScore,
   getItemPerkInfos,
   getItemRarity,
   ItemRarity,
 } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
-import { combineLatest, Observable, of } from 'rxjs'
-import { combineLatestOrEmpty } from '~/utils'
-import { ItemInstance, ItemsService } from '../items'
+import { ItemInstance } from '../items'
 import { GearsetRecord } from './types'
-
-export interface ResolvedGearsetSlot {
-  slot: EquipSlotId
-  instanceId: string
-  instance: ItemInstance
-}
-
-export function resolveGearsetSlots(
-  db: ItemsService,
-  { userId, slots }: { userId: string; slots: GearsetRecord['slots'] },
-) {
-  return combineLatestOrEmpty(
-    Object.entries(slots || {}).map(([slot, instance]): Observable<ResolvedGearsetSlot> => {
-      return resolveGearsetSlot(db, {
-        userId,
-        slotId: slot as EquipSlotId,
-        instance,
-      })
-    }),
-  )
-}
-
-export function resolveGearsetSlot(
-  db: ItemsService,
-  { userId, slotId, instance }: { userId; slotId: EquipSlotId; instance: string | ItemInstance },
-) {
-  if (typeof instance === 'string') {
-    return combineLatest({
-      slot: of(slotId),
-      instanceId: of(instance),
-      instance: db.observeRecord({ userId, id: instance }),
-    })
-  }
-  return combineLatest({
-    slot: of(slotId),
-    instanceId: of<string>(null),
-    instance: of(instance),
-  })
-}
 
 export interface GearsetRowSlot {
   slot: EquipSlot

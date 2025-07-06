@@ -73,6 +73,9 @@ export class GearsetsListPageComponent {
       if (userId && this.userId() === 'local') {
         this.router.navigate(['..', userId], { relativeTo: this.route })
       }
+      if (!userId && this.userId() !== 'local') {
+        this.router.navigate(['..', 'local'], { relativeTo: this.route })
+      }
     })
   }
 

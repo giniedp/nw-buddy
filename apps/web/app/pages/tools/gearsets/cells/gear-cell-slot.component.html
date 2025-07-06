@@ -1,4 +1,4 @@
-@if (square) {
+@if (square()) {
   <nwb-item-header
     class="relative font-nimbus gap-2 bg-neutral-content"
     [nwbItemDetail]="slotItemId()"
@@ -7,7 +7,7 @@
   >
     <nwb-item-icon [nwbItemIcon]="slotIcon()" [solid]="hasItem()" class="z-10 w-12 h-12" />
 
-    @if (!disabled && !hasItem()) {
+    @if (!disabled() && !hasItem()) {
       <button
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
         (click)="handlePickItem()"
@@ -15,7 +15,7 @@
         <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2" />
       </button>
     }
-    @if (!disabled && hasItem()) {
+    @if (!disabled() && hasItem()) {
       <button
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end pr-1 pt-2"
         [cdkMenuTriggerFor]="menu"
@@ -30,7 +30,7 @@
     <nwb-item-header-content class="z-10">
       <span header-title [nwHtml]="store.slot()?.name | nwText"></span>
     </nwb-item-header-content>
-    @if (!disabled) {
+    @if (!disabled()) {
       <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
         <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
@@ -41,23 +41,23 @@
     class="relative flex=1"
     [entity]="store.instance().itemId"
     [gsOverride]="gsValue || store.instance().gearScore"
-    [gsEditable]="!disabled && isGearSlot()"
+    [gsEditable]="!disabled() && isGearSlot()"
     (gsEdit)="openGsEditor($event)"
     [perkOverride]="store.instance().perks"
-    [perkEditable]="!disabled"
+    [perkEditable]="!disabled()"
     (perkEdit)="handlePickPerk($event.key)"
     [disableStats]="!isGearSlot()"
-    [disableInfo]="!isGearSlot() || compact"
-    [disableDescription]="compact"
-    [square]="square"
-    [enableLink]="!disabled"
+    [disableInfo]="!isGearSlot() || compact()"
+    [disableDescription]="compact()"
+    [square]="square()"
+    [enableLink]="!disabled()"
   >
     @if (store.isLinked()) {
       <span class="absolute top-[5px] left-[55px] p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden">
         <nwb-icon [icon]="iconLink" class="w-4 h-4" />
       </span>
     }
-    @if (!disabled) {
+    @if (!disabled()) {
       <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
         <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
@@ -98,7 +98,7 @@
   </nwb-item-card>
 }
 
-@if (!store.instance() && !square && !disabled) {
+@if (!store.instance() && !square() && !disabled()) {
   <div class="h-full p-4 opacity-50 hover:opacity-100 transition-opacity">
     <ul class="menu menu-compact menu-vertical rounded-md">
       <li>

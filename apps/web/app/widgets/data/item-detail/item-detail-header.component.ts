@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { getItemId, isHousingItem, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '@nw-data/common'
 import { NwLinkService, NwModule } from '~/nw'

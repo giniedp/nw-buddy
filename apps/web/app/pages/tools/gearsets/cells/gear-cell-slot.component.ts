@@ -53,14 +53,9 @@ export class GearCellSlotComponent {
   public readonly slotId = input<EquipSlotId>()
   public readonly gearset = input<GearsetRecord>()
 
-  @Input()
-  public compact: boolean
-
-  @Input()
-  public square: boolean
-
-  @Input()
-  public disabled: boolean
+  public compact = input(false)
+  public square = input(false)
+  public disabled = input(false)
 
   protected store = inject(GearsetSlotStore)
   private items = inject(ItemsService)
@@ -84,10 +79,10 @@ export class GearCellSlotComponent {
   })
 
   protected isHidden = computed(() => {
-    return !this.store.hasItem() && this.disabled
+    return !this.store.hasItem() && this.disabled()
   })
   public isScreenshotHidden = computed(() => {
-    return !this.store.hasItem() || this.disabled
+    return !this.store.hasItem() || this.disabled()
   })
 
   protected slotIcon = computed(() => {
@@ -123,6 +118,7 @@ export class GearCellSlotComponent {
     this.gsTarget = null
     if (this.gsValue) {
       this.store.updateSlotGearScore(this.store.slotId(), this.gsValue)
+      this.gsValue = null
     }
   }
 
