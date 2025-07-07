@@ -1,6 +1,6 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { Component, Injector, Input, computed, inject } from '@angular/core'
+import { Component, Injector, Input, computed, effect, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { patchState } from '@ngrx/signals'
@@ -35,11 +35,13 @@ import { ChipsInputModule } from '~/ui/chips-input'
 import { DataViewPicker } from '~/ui/data/data-view/data-view-picker.component'
 import { IconsModule } from '~/ui/icons'
 import {
+  svgBars,
   svgCalculator,
   svgCamera,
   svgChevronLeft,
-  svgEllipsisVertical,
   svgEraser,
+  svgFileImport,
+  svgGlobe,
   svgInfoCircle,
   svgPaste,
   svgShareNodes,
@@ -110,22 +112,37 @@ export class GearsetToolbarComponent {
   protected iconShare = svgShareNodes
   protected iconTags = svgTags
   protected iconCalculator = svgCalculator
-  protected iconMenu = svgEllipsisVertical
+  protected iconMenu = svgBars
   protected iconReset = svgEraser
   protected iconSwords = svgSwords
+  protected iconGlobe = svgGlobe
+  protected iconImport = svgFileImport
   protected presetTags = GEARSET_TAGS.map((it) => it.value)
   protected isTagEditorOpen = false
 
   protected gearset = this.store.gearset
   protected isEditable = computed(() => !!this.gearset() && this.store.isOwned())
   protected isPublishable = this.store.isPublishable
-  protected isPublic = this.store.isPublic
+  protected isPublic = this.store.isPublished
+  protected isOwned = this.store.isOwned
+  protected isSyncPending = this.store.isSyncPending
+  protected isSyncConflict = this.store.isSyncConflict
   protected isSignedIn = this.backend.isSignedIn
+  protected isLoaded = this.store.isLoaded
+  protected isLoading = this.store.isLoading
 
   @Input()
   public mode: 'player' | 'opponent' = 'player'
 
   public constructor() {
+    effect(() => {
+      console.log({
+        record: this.store.gearset(),
+        isLoading: this.store.isLoading(),
+        isLoaded: this.store.isLoaded(),
+        isOwned: this.store.isOwned()
+      })
+    })
     patchState(this.store, {
       showCalculator: this.calcQueryParam.value() === 'true',
     })
@@ -141,6 +158,31 @@ export class GearsetToolbarComponent {
 
   protected onUnpublishClicked() {
     this.store.update({ status: 'private' })
+  }
+
+  protected onImportClicked() {
+    const record = this.gearset()
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Import Gearset',
+        body: 'Rename imported gearset if needed',
+        value: record.name,
+        positive: 'Import',
+        negative: 'Cancel',
+      },
+    })
+      .result$.pipe(filter((it) => !!it))
+      .pipe(
+        switchMap((newName) => {
+          return this.gearService.dublicate({
+            ...record,
+            name: newName,
+          })
+        }),
+      )
+      .subscribe((newSet) => {
+        this.router.navigate(['/gearsets', newSet.userId, newSet.id])
+      })
   }
 
   protected onCloneClicked() {
@@ -167,12 +209,13 @@ export class GearsetToolbarComponent {
         }),
       )
       .subscribe((newSet) => {
-        this.router.navigate(['..', newSet.id], { relativeTo: this.route })
+        this.router.navigate(['/gearsets', newSet.userId, newSet.id])
       })
   }
 
   protected onDeleteClicked() {
     const record = this.gearset()
+    const userId = record.userId
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
         title: 'Delete Gearset',
@@ -189,7 +232,7 @@ export class GearsetToolbarComponent {
         if (record.id) {
           this.gearService.delete(record.id)
         }
-        this.router.navigate(['..'], { relativeTo: this.route })
+        this.router.navigate(['/gearsets', userId])
       })
   }
 
@@ -248,23 +291,15 @@ export class GearsetToolbarComponent {
             if (!cid && !name) {
               return null
             }
-            const command = name ? ['../embed/ipns', name] : ['../embed/ipfs', cid]
-            return this.router
-              .createUrlTree(command, {
-                relativeTo: this.route,
-              })
-              .toString()
+            const command = name ? ['/gearsets/embed/ipns', name] : ['/gearsets/embed/ipfs', cid]
+            return this.router.createUrlTree(command).toString()
           },
           buildShareUrl: (cid, name) => {
             if (!cid && !name) {
               return null
             }
-            const command = name ? ['../share/ipns', name] : ['../share/ipfs', cid]
-            return this.router
-              .createUrlTree(command, {
-                relativeTo: this.route,
-              })
-              .toString()
+            const command = name ? ['/gearsets/share/ipns', name] : ['/gearsets/share/ipfs', cid]
+            return this.router.createUrlTree(command).toString()
           },
         },
       },

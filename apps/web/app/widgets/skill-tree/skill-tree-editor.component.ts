@@ -10,39 +10,39 @@ import { NW_WEAPON_TYPES, NwWeaponType, NwWeaponTypesService } from '~/nw/weapon
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { openWeaponTypePicker } from '../data/weapon-type'
-import { SkillBuilderStore } from './skill-builder.store'
-import { SkillTreeComponent } from './skill-tree.component'
+import { SkillTreeEditorStore } from './skill-tree-editor.store'
+import { SkillTreeInputComponent } from './skill-tree-input.component'
 
 let trackId = 0
-export interface SkillBuildValue {
+export interface SkillTreeValue {
   weapon: string
   tree1: string[]
   tree2: string[]
 }
 
 @Component({
-  selector: 'nwb-skill-builder',
-  templateUrl: './skill-builder.component.html',
-  styleUrls: ['./skill-builder.component.scss'],
+  selector: 'nwb-skill-tree-editor',
+  templateUrl: './skill-tree-editor.component.html',
+  styleUrls: ['./skill-tree-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, SkillTreeComponent, FormsModule, LayoutModule],
+  imports: [CommonModule, NwModule, TooltipModule, SkillTreeInputComponent, FormsModule, LayoutModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: SkillBuilderComponent,
+      useExisting: SkillTreeEditorComponent,
     },
-    SkillBuilderStore,
+    SkillTreeEditorStore,
   ],
   host: {
     class: 'flex flex-col layout-gap @container',
   },
 })
-export class SkillBuilderComponent implements ControlValueAccessor {
+export class SkillTreeEditorComponent implements ControlValueAccessor {
   private weaponTypes = inject(NwWeaponTypesService)
   private injector = inject(Injector)
   private character = inject(CharacterStore)
-  private store = inject(SkillBuilderStore)
+  private store = inject(SkillTreeEditorStore)
 
   private weapon = this.store.weapon
   private tree1 = this.store.tree1
@@ -102,7 +102,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   })
 
   protected touched = false
-  protected onChange = (value: SkillBuildValue) => {}
+  protected onChange = (value: SkillTreeValue) => {}
   protected onTouched = () => {}
 
   public constructor() {
@@ -111,7 +111,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
     })
   }
 
-  public writeValue(value: SkillBuildValue): void {
+  public writeValue(value: SkillTreeValue): void {
     this.store.patchState(value || { weapon: null, tree1: [], tree2: [] })
   }
 
@@ -135,7 +135,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
     this.store.updateWeapon(item)
   }
 
-  protected commit(value: SkillBuildValue) {
+  protected commit(value: SkillTreeValue) {
     this.onChange(value)
   }
 

@@ -73,6 +73,7 @@ export class GearsetGridComponent {
 
   protected gearset = this.store.gearset
   protected isLoaded = this.store.isLoaded
+  protected isLoading = this.store.isLoading
   protected readonly = computed(() => this.disabled() || !this.store.isOwned())
   protected iconInfo = svgCircleExclamation
 

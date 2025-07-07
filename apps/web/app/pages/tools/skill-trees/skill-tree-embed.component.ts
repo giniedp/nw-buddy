@@ -5,13 +5,13 @@ import { ShareLoaderComponent } from '~/pages/share'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
-import { SkillBuilderComponent } from '~/widgets/skill-builder'
+import { SkillTreeEditorComponent } from '~/widgets/skill-tree'
 
 @Component({
   selector: 'nwb-skill-tree-embed',
   templateUrl: './skill-tree-embed.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, SkillBuilderComponent, AttributesEditorModule, ShareLoaderComponent],
+  imports: [FormsModule, SkillTreeEditorComponent, AttributesEditorModule, ShareLoaderComponent],
   hostDirectives: [EmbedHeightDirective],
   host: {
     class: 'layout-col bg-base-300',

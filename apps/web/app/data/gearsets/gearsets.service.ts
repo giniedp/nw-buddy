@@ -16,7 +16,7 @@ export class GearsetsService {
   private nwdata = injectNwData()
   private table = inject(GearsetsDB)
   private backend = inject(BackendService)
-  private userId = computed(() => this.backend.session()?.id)
+  private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
   private itemsDb = inject(ItemsService)
   private ready = signal(false)
@@ -100,7 +100,10 @@ export class GearsetsService {
     return this.table.create({
       ...record,
       id: this.table.createId(),
+      ipnsKey: null,
+      ipnsName: null,
       syncState: 'pending',
+      status: 'private',
       createdAt: new Date().toJSON(),
       updatedAt: new Date().toJSON(),
       userId: this.userId() || 'local',

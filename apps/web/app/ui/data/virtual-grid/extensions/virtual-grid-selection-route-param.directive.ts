@@ -36,11 +36,21 @@ export class VirtualGridSelectionRouteParamDirective {
       distinctUntilChanged(isEqual),
       tap((selection) => {
         const target = this.navigationTarget(selection, childConfig, param)
-        this.router.navigate([target || '.'], {
+        const urlTree = this.router.createUrlTree([target || '.'], {
           relativeTo: this.route,
           queryParamsHandling: 'preserve',
           preserveFragment: true,
         })
+        const isActive = this.router.isActive(urlTree, {
+          paths: 'exact',
+          queryParams: 'exact',
+          matrixParams: 'exact',
+          fragment: 'ignored',
+        })
+        if (isActive) {
+          return
+        }
+        this.router.navigateByUrl(urlTree)
       }),
     )
   }

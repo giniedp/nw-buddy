@@ -3,10 +3,10 @@ import { SkillTreeRow } from '~/data'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type SkillsetTableUtils = TableGridUtils<SkillsetTableRecord>
-export type SkillsetTableRecord = SkillTreeRow
+export type SkillTreeTableUtils = TableGridUtils<SkillTreeTableRecord>
+export type SkillTreeTableRecord = SkillTreeRow
 
-export function skillsetColName(util: SkillsetTableUtils) {
+export function skillTreeColName(util: SkillTreeTableUtils) {
   return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
@@ -17,7 +17,7 @@ export function skillsetColName(util: SkillsetTableUtils) {
     valueGetter: ({ data }) => data.record.name,
   })
 }
-export function skillsetColWeapon(util: SkillsetTableUtils) {
+export function skillTreeColWeapon(util: SkillTreeTableUtils) {
   return util.colDef<string>({
     colId: 'weapon',
     headerValueGetter: () => 'Weapon',
@@ -28,7 +28,7 @@ export function skillsetColWeapon(util: SkillsetTableUtils) {
     valueGetter: ({ data }) => humanize(data.record.weapon),
   })
 }
-export function skillsetColSkills(util: SkillsetTableUtils) {
+export function skillTreeColSkills(util: SkillTreeTableUtils) {
   return util.colDef({
     colId: 'skills',
     headerValueGetter: () => 'Skills',

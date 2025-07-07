@@ -3,7 +3,7 @@ import { signalStore, withComputed, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { getWeaponTagFromWeapon } from '@nw-data/common'
 import { map, pipe, switchMap } from 'rxjs'
-import { GearsetRecord, GearsetSkillTreeRef, injectNwData, ItemsService, SkillBuildsService, SkillTree } from '~/data'
+import { GearsetRecord, GearsetSkillTreeRef, injectNwData, ItemsService, SkillTreesService, SkillTree } from '~/data'
 
 export interface GearsetPaneSkillState {
   slot: GearsetSkillTreeRef
@@ -58,7 +58,7 @@ export const GearsetPaneSkillStore = signalStore(
     }
   }),
   withComputed((state) => {
-    const skills = inject(SkillBuildsService)
+    const skills = inject(SkillTreesService)
     const instance = signal<SkillTree>(null)
     const instanceLoaded = signal<boolean>(false)
     const connect = rxMethod<{ gearset: GearsetRecord; slot: GearsetSkillTreeRef }>(

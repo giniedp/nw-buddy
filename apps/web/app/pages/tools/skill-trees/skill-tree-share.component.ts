@@ -3,18 +3,18 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { filter, switchMap } from 'rxjs'
-import { SkillBuildsService, SkillTreeRecord } from '~/data'
+import { SkillTreesService, SkillTreeRecord } from '~/data'
 import { ShareLoaderComponent } from '~/pages/share'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
-import { SkillBuilderComponent } from '~/widgets/skill-builder'
+import { SkillTreeEditorComponent } from '~/widgets/skill-tree'
 
 @Component({
   selector: 'nwb-skill-tree-share',
   templateUrl: './skill-tree-share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, SkillBuilderComponent, AttributesEditorModule, LayoutModule, ShareLoaderComponent],
+  imports: [FormsModule, SkillTreeEditorComponent, AttributesEditorModule, LayoutModule, ShareLoaderComponent],
   host: {
     class: 'ion-page',
   },
@@ -23,7 +23,7 @@ export class SkillTreeShareComponent {
   private route = inject(ActivatedRoute)
   private router = inject(Router)
   private modal = inject(ModalService)
-  private store = inject(SkillBuildsService)
+  private store = inject(SkillTreesService)
 
   protected paramName = toSignal(injectRouteParam('name'))
   protected paramCid = toSignal(injectRouteParam('cid'))

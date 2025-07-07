@@ -2,20 +2,20 @@ import { TestBed } from '@angular/core/testing'
 import { firstValueFrom } from 'rxjs'
 import { testAppConfig } from '~/test'
 import { APP_DB } from '../db'
-import { SkillBuildsDB } from './skill-builds.db'
-import { SkillBuildsService } from './skill-builds.service'
+import { SkillTreesDB } from './skill-trees.db'
+import { SkillTreesService } from './skill-trees.service'
 
-describe('SkillBuildsService', () => {
-  let table: SkillBuildsDB
-  let store: SkillBuildsService
+describe('SkillTreesService', () => {
+  let table: SkillTreesDB
+  let store: SkillTreesService
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [testAppConfig.providers],
     }).compileComponents()
     TestBed.inject(APP_DB).dropTables()
-    table = TestBed.inject(SkillBuildsDB)
-    store = TestBed.inject(SkillBuildsService)
+    table = TestBed.inject(SkillTreesDB)
+    store = TestBed.inject(SkillTreesService)
     table.create({ id: 'test1', name: 'Build without user' })
     table.create({ id: 'test2', name: 'Build with user', userId: 'user1' })
   })

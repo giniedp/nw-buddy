@@ -6,7 +6,7 @@
   #loader
 />
 @if (loader.record(); as record) {
-  <nwb-skill-builder [ngModel]="record" [disabled]="true" />
+  <nwb-skill-tree-editor [ngModel]="record" [disabled]="true" />
   @if (record.attrs; as attrs) {
     <div class="layout-pad">
       <nwb-attributes-editor [freeMode]="true" [assigned]="attrs" />

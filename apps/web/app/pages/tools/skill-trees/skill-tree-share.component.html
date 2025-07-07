@@ -10,7 +10,7 @@
   />
   @if (loader.record(); as record) {
     <div class="max-w-5xl mx-auto">
-      <nwb-skill-builder [ngModel]="record" [disabled]="true" />
+      <nwb-skill-tree-editor [ngModel]="record" [disabled]="true" />
       @if (record.attrs) {
         <div class="layout-pad">
           <nwb-attributes-editor [freeMode]="true" [assigned]="record.attrs" />

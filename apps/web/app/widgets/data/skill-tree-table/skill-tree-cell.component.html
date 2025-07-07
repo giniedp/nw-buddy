@@ -1,0 +1,41 @@
+@if (icon(); as icon) {
+  <img [nwImage]="icon" class="absolute top-0 bottom-0 left-0 right-0 object-contain z-0" />
+}
+<h3
+  class="z-10 text-lg uppercase font-serif text-center text-nw-description nw-bg-title bg-bottom pt-4 relative whitespace-nowrap text-ellipsis overflow-hidden"
+  [title]="recordName()"
+>
+  {{ recordName() }}
+  @if (state.isOwned()) {
+    <div class="absolute bottom-0 right-0 flex flex-row items-center gap-2 p-2">
+      @if (state.isSyncable() && !state.isSyncComplete()) {
+        <span
+          class="badge badge-xs"
+          [class.badge-success]="state.isSyncComplete()"
+          [class.badge-warning]="state.isSyncPending()"
+          [class.badge-error]="state.isSyncConflict()"
+          [class.animate-ping]="state.isSyncPending()"
+        ></span>
+      }
+      @if (state.isPublished()) {
+        <nwb-icon
+          [icon]="iconGlobe"
+          class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+          [attr.data-tip]="'Published'"
+        />
+      }
+    </div>
+  }
+</h3>
+<div class="z-10 flex flex-row justify-between p-4">
+  @for (item of abilities(); track $index) {
+    <picture class="block border-[1px] border-gray-400 aspect-square rounded-sm w-full max-w-[76px] m-1 bg-base-200">
+      <img class="aspect-square w-full nw-icon" [class]="'bg-ability-' + item.category" [nwImage]="item.icon" />
+    </picture>
+  }
+</div>
+<div class="z-10 absolute bottom-1 left-0 right-0 flex flex-row items-center justify-center gap-1">
+  @for (tag of tags(); track $index) {
+    <span class="badge badge-xs badge-secondary bg-opacity-50">{{ tag }}</span>
+  }
+</div>

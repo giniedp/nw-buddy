@@ -1,7 +1,7 @@
 <div class="outer-grid gap-x-3 gap-y-2">
   @if (!disableHead()) {
     <h3
-      class="text-lg uppercase font-serif text-nw-description col-span-2 nw-bg-title bg-bottom h-8 flex items-end justify-center"
+      class="text-lg uppercase font-serif col-span-2 text-center text-nw-description nw-bg-title bg-bottom z-10 pt-4 relative whitespace-nowrap text-ellipsis overflow-hidden"
     >
       @if (!isLoaded()) {
         Loading...
@@ -9,6 +9,26 @@
         {{ gearset().name }}
       } @else {
         New Gearset
+      }
+      @if (isOwned()) {
+        <div class="absolute bottom-0 right-0 flex flex-row items-center gap-2 p-2">
+          @if (isSyncable() && !isSyncComplete()) {
+            <span
+              class="badge badge-xs"
+              [class.badge-success]="isSyncComplete()"
+              [class.badge-warning]="isSyncPending()"
+              [class.badge-error]="isSyncConflict()"
+              [class.animate-ping]="isSyncPending()"
+            ></span>
+          }
+          @if (isPublished()) {
+            <nwb-icon
+              [icon]="iconGlobe"
+              class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+              [attr.data-tip]="'Published'"
+            />
+          }
+        </div>
       }
     </h3>
     <div class="h-8 flex flex-row gap-1 items-center">
@@ -22,15 +42,6 @@
         @if (isLoaded()) {
           @if (gearset()) {
             <a class="join-item flex-1 btn btn-sm btn-outline btn-primary" [routerLink]="[gearset().id]"> Show </a>
-            @if (isSynced()) {
-              <span class="indicator-item badge badge-xs badge-success cursor-help"></span>
-            }
-            @if (isSyncPending()) {
-              <span class="indicator-item badge badge-xs badge-warning"></span>
-            }
-            @if (isSyncConflicted()) {
-              <span class="indicator-item badge badge-xs badge-error"></span>
-            }
             <button
               class="join-item flex-none btn btn-sm btn-square btn-primary btn-outline"
               [cdkMenuTriggerFor]="menu"

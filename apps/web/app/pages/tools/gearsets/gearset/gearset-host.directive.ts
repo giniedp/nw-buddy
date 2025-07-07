@@ -12,6 +12,7 @@ export type GearsetMode = 'player' | 'opponent'
   exportAs: 'gearsetHost',
 })
 export class GearsetHostDirective {
+  public isLoading = input<boolean>(false)
   public gearset = input<GearsetRecord>()
   public opponent = input<GearsetRecord>()
   public showCalculator = computed(() => {
@@ -23,6 +24,7 @@ export class GearsetHostDirective {
   public readonly mannequin = inject(Mannequin)
 
   public constructor() {
+    this.store.connectIsLoading(this.isLoading)
     this.store.connectGearset(this.gearset)
     this.store.connectLevel(this.character.level)
     this.store.connectToMannequin(this.mannequin)

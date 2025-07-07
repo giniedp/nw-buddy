@@ -102,32 +102,34 @@
   <div class="h-full p-4 opacity-50 hover:opacity-100 transition-opacity">
     <ul class="menu menu-compact menu-vertical rounded-md">
       <li>
-        <a (click)="handlePickItem()">
+        <button (click)="handlePickItem()">
           <nwb-icon [icon]="iconPlus" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
             <span>New item</span>
-            <span class="text-xs opacity-75">Pick an item from DB and configure from scratch</span>
+            <span class="text-xs opacity-75">Pick an item for this slot</span>
           </div>
-        </a>
+        </button>
       </li>
       @if (isGearSlot()) {
+        @if (!isPublished()) {
+          <li>
+            <button (click)="handleLinkItem()" [disabled]="">
+              <nwb-icon [icon]="iconLink" class="w-4 h-4" />
+              <div class="flex flex-col leading-none">
+                <span>Link item</span>
+                <span class="text-xs opacity-75">Pick an item from inventory and link it to this slot</span>
+              </div>
+            </button>
+          </li>
+        }
         <li>
-          <a (click)="handleLinkItem()">
-            <nwb-icon [icon]="iconLink" class="w-4 h-4" />
-            <div class="flex flex-col leading-none">
-              <span>Link item</span>
-              <span class="text-xs opacity-75">Pick an item from inventory and link it to this slot</span>
-            </div>
-          </a>
-        </li>
-        <li>
-          <a (click)="handleScanItem()">
+          <button (click)="handleScanItem()">
             <nwb-icon [icon]="iconImage" class="w-4 h-4" />
             <div class="flex flex-col leading-none">
               <span>Scan item</span>
               <span class="text-xs opacity-75">Create a new item from a screenshot</span>
             </div>
-          </a>
+          </button>
         </li>
       }
     </ul>

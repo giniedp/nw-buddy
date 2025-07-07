@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router'
 import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgBars, svgTrashCan } from '~/ui/icons/svg'
+import { svgBars, svgGlobe, svgTrashCan } from '~/ui/icons/svg'
 import { GersetSquareSlotComponent } from './square-slot.component'
 
 @Component({
@@ -28,11 +28,16 @@ export class GearsetLoadoutItemComponent {
 
   protected gearScore = this.store.gearScore
   protected isLoaded = this.store.isLoaded
-  protected isSynced = this.store.isSynced
+  protected isOwned = this.store.isOwned
+  protected isSyncable= this.store.isSyncable
+  protected isSynced = this.store.isSyncComplete
+  protected isSyncComplete = this.store.isSyncComplete
   protected isSyncPending = this.store.isSyncPending
-  protected isSyncConflicted = this.store.isSyncConflicted
+  protected isSyncConflict = this.store.isSyncConflict
+  protected isPublished = this.store.isPublished
   protected menuIcon = svgBars
   protected deleteIcon = svgTrashCan
+  protected iconGlobe = svgGlobe
 
   public constructor() {
     this.store.connectLevel(this.char.level)

@@ -9,20 +9,20 @@ import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SkillTreeCell } from './skill-tree.model'
-import { SkillTreeStore } from './skill-tree.store'
+import { SkillTreeInputStore } from './skill-tree-input.store'
 
 @Component({
-  selector: 'nwb-skill-tree',
-  templateUrl: './skill-tree.component.html',
-  styleUrls: ['./skill-tree.component.scss'],
+  selector: 'nwb-skill-tree-input',
+  templateUrl: './skill-tree-input.component.html',
+  styleUrls: ['./skill-tree-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, TooltipModule, LayoutModule],
   providers: [
-    SkillTreeStore,
+    SkillTreeInputStore,
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: SkillTreeComponent,
+      useExisting: SkillTreeInputComponent,
     },
   ],
   host: {
@@ -35,8 +35,8 @@ import { SkillTreeStore } from './skill-tree.store'
     ]),
   ],
 })
-export class SkillTreeComponent implements ControlValueAccessor {
-  private store = inject(SkillTreeStore)
+export class SkillTreeInputComponent implements ControlValueAccessor {
+  private store = inject(SkillTreeInputStore)
   private weaponTypes = inject(NwWeaponTypesService)
   public readonly weaponTag = input<string>()
   public readonly treeID = input<number>()

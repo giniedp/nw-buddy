@@ -12,7 +12,7 @@ import {
   untracked,
 } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { SkillTreeRecord, injectNwData } from '~/data'
+import { SkillTreeRecord, injectNwData, skillTreeProps } from '~/data'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 
@@ -24,16 +24,16 @@ import { Observable, combineLatest, map, of } from 'rxjs'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { EmptyComponent } from '~/widgets/empty'
-import { SkillTreeStore } from '~/widgets/skill-builder/skill-tree.store'
-import { SkillsetTableRecord } from './skillset-table-cols'
+import { SkillTreeTableRecord } from './skill-tree-table-cols'
+import { svgGlobe } from '~/ui/icons/svg'
+import { IconsModule } from '~/ui/icons'
 
 @Component({
-  selector: 'nwb-skillset-cell',
-  templateUrl: './skillset-cell.component.html',
-  styleUrl: './skillset-cell.component.scss',
+  selector: 'nwb-skill-tree-cell',
+  templateUrl: './skill-tree-cell.component.html',
+  styleUrl: './skill-tree-cell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule],
-  providers: [SkillTreeStore],
+  imports: [CommonModule, NwModule, RouterModule, IconsModule],
   host: {
     class: 'relative flex flex-col rounded-md overflow-clip m-1 h-40 cursor-pointer',
     '[class.outline]': 'selected',
@@ -41,33 +41,34 @@ import { SkillsetTableRecord } from './skillset-table-cols'
     '[tabindex]': '0',
   },
 })
-export class SkillsetCellComponent implements VirtualGridCellComponent<SkillsetTableRecord> {
-  public static buildGridOptions(): VirtualGridOptions<SkillsetTableRecord> {
+export class SkillTreeCellComponent implements VirtualGridCellComponent<SkillTreeTableRecord> {
+  public static buildGridOptions(): VirtualGridOptions<SkillTreeTableRecord> {
     return {
       height: 168,
       width: [300, 300],
-      cellDataView: SkillsetCellComponent,
+      cellDataView: SkillTreeCellComponent,
       cellEmptyView: EmptyComponent,
     }
   }
 
-  private grid = inject(VirtualGridComponent<SkillsetTableRecord>)
   private db = injectNwData()
+  private grid = inject(VirtualGridComponent<SkillTreeTableRecord>)
   private record = signal<SkillTreeRecord>(null)
   private resource = rxResource({
     params: this.record,
     stream: ({ params }) => loadRow(this.db, params),
   })
-  private row = signal<SkillsetTableRecord>(null)
+  private row = signal<SkillTreeTableRecord>(null)
 
   protected recordName = computed(() => this.record()?.name || '')
   protected abilities = computed(() => selectAbilities(this.row()?.abilities))
   protected tags = computed(() => this.record()?.tags || [])
   protected icon = computed(() => getWeaponTypeInfo(this.record()?.weapon)?.IconPath)
-  protected syncState = computed(() => this.record()?.syncState)
+  protected state = skillTreeProps({ skillTree: this.record })
+  protected iconGlobe = svgGlobe
 
   @Input()
-  public set data(value: SkillsetTableRecord) {
+  public set data(value: SkillTreeTableRecord) {
     this.record.set(value.record)
   }
 
@@ -94,7 +95,7 @@ export class SkillsetCellComponent implements VirtualGridCellComponent<SkillsetT
   }
 }
 
-function loadRow(db: NwData, record: SkillTreeRecord): Observable<SkillsetTableRecord> {
+function loadRow(db: NwData, record: SkillTreeRecord): Observable<SkillTreeTableRecord> {
   const abilities = [...(record.tree1 || []), ...(record.tree2 || [])]
   return combineLatest({
     record: of(record),

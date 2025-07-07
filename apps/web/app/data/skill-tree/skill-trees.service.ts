@@ -3,13 +3,13 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { catchError, combineLatest, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 import { GearsetRecord } from '../gearsets'
-import { SkillBuildsDB } from './skill-builds.db'
+import { SkillTreesDB } from './skill-trees.db'
 import { SkillTree, SkillTreeRecord } from './types'
 import { autoSync } from '../backend/auto-sync'
 
 @Injectable({ providedIn: 'root' })
-export class SkillBuildsService {
-  private table = inject(SkillBuildsDB)
+export class SkillTreesService {
+  private table = inject(SkillTreesDB)
   private backend = inject(BackendService)
   private userId = computed(() => this.backend.session()?.id)
   private userId$ = toObservable(this.userId)
@@ -23,7 +23,7 @@ export class SkillBuildsService {
     autoSync({
       userId: this.userId$,
       local: this.table,
-      remote: this.backend.privateTables.skillSets,
+      remote: this.backend.privateTables.skillTrees,
     })
       .pipe(takeUntilDestroyed())
       .subscribe((stage) => {
@@ -91,7 +91,7 @@ export class SkillBuildsService {
       syncState: 'pending',
       createdAt: new Date().toJSON(),
       updatedAt: new Date().toJSON(),
-      userId: record.userId || this.userId() || 'local',
+      userId: this.userId() || 'local',
     })
   }
 
@@ -111,7 +111,7 @@ export class SkillBuildsService {
       id,
       syncState: 'pending',
       updatedAt: new Date().toJSON(),
-      userId: record.userId || this.userId() || 'local',
+      userId: this.userId() || 'local',
     })
   }
 

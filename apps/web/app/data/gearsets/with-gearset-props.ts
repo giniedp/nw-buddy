@@ -5,7 +5,7 @@ import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { gearScoreRelevantSlots, getAverageGearScore, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { BackendService } from '../backend'
 import { ItemsService } from '../items'
-import { SkillBuildsService } from '../skillbuilds'
+import { SkillTreesService } from '../skill-tree'
 import { GearsetRecord } from './types'
 import { combineLatest, switchMap } from 'rxjs'
 
@@ -21,7 +21,7 @@ export function withGearsetProps() {
     },
     withComputed(({ gearset, defaultLevel }) => {
       const backend = inject(BackendService)
-      const userId = computed(() => backend.sessionUserId() || 'local')
+      const recordUserId = computed(() => backend.sessionUserId() || 'local')
       return {
         gearsetId: computed(() => gearset()?.id),
         gearsetName: computed(() => gearset()?.name),
@@ -38,11 +38,12 @@ export function withGearsetProps() {
         isPersistable: computed(() => !!gearset()?.id),
         isLinkMode: computed(() => gearset()?.createMode !== 'copy'),
         isCopyMode: computed(() => gearset()?.createMode === 'copy'),
-        isSynced: computed(() => gearset()?.syncState === 'synced'),
+        isSyncable: computed(() => recordUserId() !== 'local'),
+        isSyncComplete: computed(() => gearset()?.syncState === 'synced'),
         isSyncPending: computed(() => gearset()?.syncState === 'pending' || !gearset()?.syncState),
-        isSyncConflicted: computed(() => gearset()?.syncState === 'conflict'),
-        isOwned: computed(() => gearset()?.userId === userId()),
-        isPublic: computed(() => gearset()?.status === 'public'),
+        isSyncConflict: computed(() => gearset()?.syncState === 'conflict'),
+        isOwned: computed(() => gearset()?.userId === recordUserId()),
+        isPublished: computed(() => gearset()?.status === 'public'),
         isPrivate: computed(() => gearset()?.status !== 'public'),
         isPublishable: computed(() => {
           const slots = gearset()?.slots
@@ -58,9 +59,9 @@ export function withGearsetProps() {
         }),
       }
     }),
-    withComputed(({ gearsetSlots, skills, gearset, gearsetUserid, level }) => {
+    withComputed(({ gearsetSlots, skills, gearsetUserid, level }) => {
       const itemsService = inject(ItemsService)
-      const skillsService = inject(SkillBuildsService)
+      const skillsService = inject(SkillTreesService)
 
       const resolvedSlots = toSignal(
         combineLatest({

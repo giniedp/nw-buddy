@@ -67,6 +67,7 @@ export function resolveInitialSyncPairs<T extends AppDbRecord>({
 
 export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remote: T): Array<SyncCommand<T>> {
   if (local == null && remote != null) {
+    console.debug(`sync initial`, { remote })
     // only remote row exists
     // we want to create it in the local tables
     return [

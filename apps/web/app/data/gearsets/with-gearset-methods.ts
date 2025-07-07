@@ -4,7 +4,7 @@ import { EquipSlotId } from '@nw-data/common'
 import { PerkData } from '@nw-data/generated'
 import { ImagesDB } from '../images'
 import { ItemInstance, ItemsService } from '../items'
-import { SkillTree } from '../skillbuilds/types'
+import { SkillTree } from '../skill-tree/types'
 import { GearsetsService } from './gearsets.service'
 import { GearsetRecord } from './types'
 export interface WithGearsetMethodsState {

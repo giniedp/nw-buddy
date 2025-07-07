@@ -2,26 +2,26 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NwData } from '@nw-data/db'
 import { defer } from 'rxjs'
-import { SkillBuildsService, buildSkillSetRow, injectNwData } from '~/data'
+import { SkillTreesService, buildSkillTreeRow, injectNwData } from '~/data'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
-import { SkillsetCellComponent } from './skillset-cell.component'
-import { SkillsetTableRecord, skillsetColName, skillsetColSkills, skillsetColWeapon } from './skillset-table-cols'
+import { SkillTreeCellComponent } from './skill-tree-cell.component'
+import { SkillTreeTableRecord, skillTreeColName, skillTreeColSkills, skillTreeColWeapon } from './skill-tree-table-cols'
 
 @Injectable()
-export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord> {
-  private skills = inject(SkillBuildsService)
+export class SkillTreeTableAdapter implements DataViewAdapter<SkillTreeTableRecord> {
+  private skills = inject(SkillTreesService)
   private data = injectNwData()
-  private config = injectDataViewAdapterOptions<SkillsetTableRecord>({ optional: true })
-  private utils: TableGridUtils<SkillsetTableRecord> = inject(TableGridUtils)
-  public entityID(item: SkillsetTableRecord): string {
+  private config = injectDataViewAdapterOptions<SkillTreeTableRecord>({ optional: true })
+  private utils: TableGridUtils<SkillTreeTableRecord> = inject(TableGridUtils)
+  public entityID(item: SkillTreeTableRecord): string {
     return item.record.id
   }
 
-  public entityCategories(item: SkillsetTableRecord): DataTableCategory[] {
+  public entityCategories(item: SkillTreeTableRecord): DataTableCategory[] {
     const info = getWeaponTypeInfo(item.record?.weapon)
     return [
       {
@@ -32,15 +32,15 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
     ]
   }
 
-  public virtualOptions(): VirtualGridOptions<SkillsetTableRecord> {
+  public virtualOptions(): VirtualGridOptions<SkillTreeTableRecord> {
     if (this.config?.virtualOptions) {
       return this.config.virtualOptions(this.utils)
     }
-    return SkillsetCellComponent.buildGridOptions()
+    return SkillTreeCellComponent.buildGridOptions()
   }
 
-  public gridOptions(): GridOptions<SkillsetTableRecord> {
-    let options: GridOptions<SkillsetTableRecord>
+  public gridOptions(): GridOptions<SkillTreeTableRecord> {
+    let options: GridOptions<SkillTreeTableRecord>
     if (this.config?.gridOptions) {
       options = this.config.gridOptions(this.utils)
     } else {
@@ -75,21 +75,21 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
   )
 }
 
-function buildOptions(util: TableGridUtils<SkillsetTableRecord>) {
-  const result: GridOptions<SkillsetTableRecord> = {
-    columnDefs: [skillsetColName(util), skillsetColWeapon(util), skillsetColSkills(util)],
+function buildOptions(util: TableGridUtils<SkillTreeTableRecord>) {
+  const result: GridOptions<SkillTreeTableRecord> = {
+    columnDefs: [skillTreeColName(util), skillTreeColWeapon(util), skillTreeColSkills(util)],
   }
   return result
 }
 
-function sourceRows(data: NwData, skills: SkillBuildsService) {
+function sourceRows(data: NwData, skills: SkillTreesService) {
   return selectStream(
     {
       items: skills.observeRecords('local'),
       abilities: data.abilitiesByIdMap(),
     },
     ({ items, abilities }) => {
-      return items.map((it) => buildSkillSetRow(it, abilities))
+      return items.map((it) => buildSkillTreeRow(it, abilities))
     },
   )
 }

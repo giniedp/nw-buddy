@@ -8,7 +8,7 @@ export type ExportedTable = { name: string; rows: Object[] }
 
 @Injectable({ providedIn: 'root' })
 export class DbService {
-  private appDb = injectAppDB()
+  public appDb = injectAppDB()
   public get db() {
     return (this.appDb as AppDbDexie)?.dexie
   }

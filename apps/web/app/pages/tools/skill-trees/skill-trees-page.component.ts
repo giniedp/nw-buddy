@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, computed, effect, inject } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, Injector, OnInit, computed, effect, inject } from '@angular/core'
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
-import { filter, map, switchMap } from 'rxjs'
-import { SkillBuildsService, SkillTreeRow } from '~/data'
+import { filter, map, switchMap, takeUntil } from 'rxjs'
+import { SkillTreesService, SkillTreeRow } from '~/data'
 import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
@@ -18,10 +18,10 @@ import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectQueryParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
+import { SkillTreeTableAdapter } from '~/widgets/data/skill-tree-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillTreesPageStore } from './skill-trees-page.store'
@@ -53,7 +53,7 @@ import { SkillTreesPageStore } from './skill-trees-page.store'
   providers: [
     SkillTreesPageStore,
     provideDataView({
-      adapter: SkillsetTableAdapter,
+      adapter: SkillTreeTableAdapter,
       factory: () => {
         return {
           source: toObservable(inject(SkillTreesPageStore).rows),
@@ -71,7 +71,7 @@ export class SkillTreesPageComponent {
   private route = inject(ActivatedRoute)
   private share = inject(ShareService)
   private store = inject(SkillTreesPageStore)
-  private service = inject(SkillBuildsService)
+  private service = inject(SkillTreesService)
   private modal = inject(ModalService)
   private injector = inject(Injector)
 
@@ -82,7 +82,8 @@ export class SkillTreesPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'skilltrees-table'
-  protected categoryParam = toSignal(injectRouteParam('category'))
+  protected categoryParamName = 'category'
+  protected categoryParam = toSignal(injectQueryParam(this.categoryParamName))
   protected category = selectSignal(this.categoryParam, (it) => {
     return it ? it : null
   })
@@ -111,7 +112,7 @@ export class SkillTreesPageComponent {
     })
 
     effect(() => {
-      const userId = this.backend.session()?.id
+      const userId = this.backend.sessionUserId()
       if (userId && this.userId() === 'local') {
         this.router.navigate(['..', userId], { relativeTo: this.route })
       }
@@ -122,7 +123,7 @@ export class SkillTreesPageComponent {
     this.share.importItem(this.modal, this.router)
   }
 
-  protected async createItem() {
+  protected async handleCreateItemClicked() {
     openWeaponTypePicker({
       injector: this.injector,
     })

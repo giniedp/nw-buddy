@@ -37,7 +37,7 @@ export class ScreenshotButtonComponent {
 
   @HostListener('click', ['$event'])
   protected async clicked(e: MouseEvent) {
-    if (this.disabled) {
+    if (this.disabled()) {
       return
     }
     if (this.frames.length > 1) {

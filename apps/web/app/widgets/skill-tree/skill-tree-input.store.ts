@@ -8,7 +8,7 @@ import { injectNwData } from '~/data'
 import { CaseInsensitiveSet, eqCaseInsensitive } from '~/utils'
 import { buildGrid, getGridSelection, updateGrid } from './skill-tree.model'
 
-export interface SkillTreeEditorState {
+export interface SkillTreeInputState {
   isLoaded: boolean
   isLoading: boolean
   abilities: AbilityData[]
@@ -16,9 +16,9 @@ export interface SkillTreeEditorState {
   selection: string[]
 }
 
-export type SkillTreeStore = InstanceType<typeof SkillTreeStore>
-export const SkillTreeStore = signalStore(
-  withState<SkillTreeEditorState>({
+export type SkillTreeInputStore = InstanceType<typeof SkillTreeInputStore>
+export const SkillTreeInputStore = signalStore(
+  withState<SkillTreeInputState>({
     isLoaded: false,
     isLoading: false,
     points: NW_MAX_WEAPON_LEVEL - 1,

@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Injector, Input, effect, inject } f
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { filter, map } from 'rxjs'
-import { GearsetRecord, GearsetSkillTreeRef, GearsetsService, SkillBuildsService, SkillTree } from '~/data'
+import { GearsetRecord, GearsetSkillTreeRef, GearsetsService, SkillTreesService, SkillTree } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -23,9 +23,9 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-import { SkillsetTableAdapter, SkillsetTableRecord } from '~/widgets/data/skillset-table'
+import { SkillTreeTableAdapter, SkillTreeTableRecord } from '~/widgets/data/skill-tree-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
-import { SkillTreeModule } from '~/widgets/skill-builder'
+import { SkillTreeEditorModule } from '~/widgets/skill-tree'
 import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
 
 @Component({
@@ -40,7 +40,7 @@ import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
     ItemDetailModule,
     IconsModule,
     LayoutModule,
-    SkillTreeModule,
+    SkillTreeEditorModule,
     TooltipModule,
   ],
   providers: [GearsetPaneSkillStore],
@@ -49,7 +49,7 @@ import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
   },
 })
 export class GearsetPaneSkillComponent {
-  private skillService = inject(SkillBuildsService)
+  private skillService = inject(SkillTreesService)
   private gearService = inject(GearsetsService)
   private injector = inject(Injector)
   private store = inject(GearsetPaneSkillStore)
@@ -147,11 +147,11 @@ export class GearsetPaneSkillComponent {
   }
 
   protected async handleOpenSkillSet(weapon: string) {
-    const result = await DataViewPicker.open<SkillsetTableRecord>({
+    const result = await DataViewPicker.open<SkillTreeTableRecord>({
       title: 'Choose Skill Tree',
       selection: null,
       dataView: {
-        adapter: SkillsetTableAdapter,
+        adapter: SkillTreeTableAdapter,
         filter: (it) => eqCaseInsensitive(it.record?.weapon, weapon),
       },
       displayMode: ['grid'],

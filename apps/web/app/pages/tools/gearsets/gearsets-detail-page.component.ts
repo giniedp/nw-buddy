@@ -99,6 +99,7 @@ export class GearsetsDetailPageComponent {
     }
     return null
   })
+  protected playerIsLoading = this.playerResource.isLoading
   protected playerGearsetEditable = computed(() => this.playerGearset()?.userId === this.backend.sessionUserId())
 
   protected opponentResource = rxResource({
@@ -116,6 +117,7 @@ export class GearsetsDetailPageComponent {
     }
     return null
   })
+  protected opponentIsLoading = this.opponentResource.isLoading
   protected opponentGearsetEditable = computed(() => this.opponentGearset()?.userId === this.backend.sessionUserId())
   protected hasOpponent = computed(() => !!this.oppenentId())
 

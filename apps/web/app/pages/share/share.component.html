@@ -1,31 +1,31 @@
-@if (state(); as state) {
-  @if (state.pending) {
-    <div class="flex flex-row justify-center p-10">
-      <button class="btn loading">loading...</button>
+@if (isLoading()) {
+  <div class="flex flex-row justify-center p-10">
+    <button class="btn loading">loading...</button>
+  </div>
+} @else if (error() || !value()) {
+  <div class="alert bg-transparent">
+    <nwb-icon [icon]="iconError" class="w-6 h-6 text-error" />
+    <div>
+      <h3 class="font-bold">Error!</h3>
+      <div class="text-xs">Data is unavailable</div>
     </div>
-  } @else if (state.hasError || !state.hasValue) {
-    <div class="alert bg-transparent">
-      <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"/>
+  </div>
+} @else if (value().type === 'skill-build') {
+  <div class="max-w-7xl mx-auto">
+    <nwb-skill-tree-editor [ngModel]="value().data" [disabled]="true" />
+    @if (value().data.attrs; as attrs) {
+      <div class="layout-pad">
+        <nwb-attributes-editor [freeMode]="true" [assigned]="attrs" />
+      </div>
+    }
+    <div class="alert alert-info shadow-lg max-w-lg mx-auto">
+      <nwb-icon [icon]="iconInfo" class="w-6 h-6" />
       <div>
-        <h3 class="font-bold">Error!</h3>
-        <div class="text-xs">Data is unavailable</div>
+        <span>You can import this build into your collection</span>
+      </div>
+      <div class="flex-none">
+        <button class="btn btn-sm btn-primary" (click)="importSkillBuild(value().data)">Import</button>
       </div>
     </div>
-  } @else if (state.value.type === 'skill-build') {
-    <div class="max-w-7xl mx-auto">
-      <nwb-skill-builder [ngModel]="state.value.data" [disabled]="true"></nwb-skill-builder>
-      <div *ngIf="state.value.data.attrs; let attrs" class="layout-pad">
-        <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"/>
-      </div>
-      <div class="alert alert-info shadow-lg max-w-lg mx-auto">
-        <nwb-icon [icon]="iconInfo" class="w-6 h-6"/>
-        <div>
-          <span>You can import this build into your collection</span>
-        </div>
-        <div class="flex-none">
-          <button class="btn btn-sm btn-primary" (click)="importSkillBuild(state.value.data)">Import</button>
-        </div>
-      </div>
-    </div>
-  }
+  </div>
 }

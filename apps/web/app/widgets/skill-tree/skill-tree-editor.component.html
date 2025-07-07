@@ -20,7 +20,7 @@
   </div>
   <div class="grid grid-cols-1 @[500px]:grid-cols-2">
     @for (tree of trees(); track tree.id) {
-      <nwb-skill-tree
+      <nwb-skill-tree-input
         class="rounded-md"
         [points]="tree.points()"
         [weaponTag]="tree.weaponTag"

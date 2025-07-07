@@ -1,7 +1,7 @@
 import { computed, inject, resource } from '@angular/core'
 import { rxResource } from '@angular/core/rxjs-interop'
 import { patchState, signalMethod, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
-import { SkillBuildsService, buildSkillSetRows, injectNwData } from '~/data'
+import { SkillTreesService, buildSkillTreeRows, injectNwData } from '~/data'
 import { BackendService } from '~/data/backend'
 import { collectTagsFromRecords, filterRecordsByTags, toggleTagInList } from '~/data/tagging'
 
@@ -17,7 +17,7 @@ export const SkillTreesPageStore = signalStore(
   }),
   withProps(({ userId }) => {
     const db = injectNwData()
-    const store = inject(SkillBuildsService)
+    const store = inject(SkillTreesService)
     const backend = inject(BackendService)
     const records = rxResource({
       params: userId,
@@ -51,7 +51,7 @@ export const SkillTreesPageStore = signalStore(
   withComputed(({ records, activeTags, abilities }) => {
     const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
     const filteredRecords = computed(() => filterRecordsByTags(records(), activeTags()))
-    const rows = computed(() => buildSkillSetRows(filteredRecords(), abilities()))
+    const rows = computed(() => buildSkillTreeRows(filteredRecords(), abilities()))
     return {
       tags,
       rows,

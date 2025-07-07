@@ -1,7 +1,7 @@
 import { AttributeRef, EquipSlotId } from '@nw-data/common'
 import type { AppDbRecord } from '../app-db'
 import { ItemInstance } from '../items/types'
-import { SkillTree } from '../skillbuilds/types'
+import { SkillTree } from '../skill-tree/types'
 
 export type GearsetAttachItemMode = 'link' | 'copy'
 export type GearsetSkillTreeRef = 'primary' | 'secondary'

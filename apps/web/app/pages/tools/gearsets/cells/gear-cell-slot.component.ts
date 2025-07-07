@@ -71,6 +71,7 @@ export class GearCellSlotComponent {
     threshold: 10,
   })
 
+  protected isPublished = computed(() => this.gearset()?.status === 'public')
   protected isGearSlot = computed(() => {
     return this.store.isArmor() || this.store.isWeapon() || this.store.isJewelry() || this.store.isRune()
   })

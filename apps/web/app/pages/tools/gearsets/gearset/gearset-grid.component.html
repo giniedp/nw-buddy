@@ -1,12 +1,12 @@
-@if (isLoaded() && !gearset()) {
+@if (!isLoaded() || (isLoading() && !gearset())) {
+} @else if (isLoaded() && !gearset()) {
   <div role="alert" class="alert shadow-lg max-w-96 mx-auto my-10">
-    <nwb-icon [icon]="iconInfo" class="w-4 h-4 text-error"/>
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4 text-error" />
     <div>
       <h3 class="font-bold">Not available!</h3>
       <div class="text-xs">The gearset does not exist or has not been published yet.</div>
     </div>
   </div>
-} @else if (!isLoaded()) {
 } @else {
   <div class="flex flex-col gap-4 @lg:grid grid-auto-fill-[320px] grid-flow-dense">
     <div

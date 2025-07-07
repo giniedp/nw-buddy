@@ -1,16 +1,6 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
-  inject,
-  input,
-  output,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, TemplateRef, computed, inject, input, output } from '@angular/core'
 import { EquipSlot, EquipSlotId } from '@nw-data/common'
 import { GearsetRecord, GearsetSlotStore } from '~/data'
 import { NwModule } from '~/nw'
@@ -49,9 +39,11 @@ export class GersetSquareSlotComponent {
 
   public constructor() {
     this.store.connect(
-      selectSignal({
-        gearset: this.gearset,
-        slotId: this.slotId,
+      computed(() => {
+        return {
+          gearset: this.gearset(),
+          slotId: this.slotId(),
+        }
       }),
     )
   }

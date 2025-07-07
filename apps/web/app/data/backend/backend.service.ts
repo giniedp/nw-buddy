@@ -3,8 +3,8 @@ import { CharactersDB } from '../characters'
 import { GearsetsDB } from '../gearsets/gearsets.db'
 import { GearsetRecord } from '../gearsets/types'
 import { ItemInstanceRecord, ItemInstancesDB } from '../items'
-import { SkillBuildsDB } from '../skillbuilds/skill-builds.db'
-import { SkillTreeRecord } from '../skillbuilds/types'
+import { SkillTreesDB } from '../skill-tree/skill-trees.db'
+import { SkillTreeRecord } from '../skill-tree/types'
 import { injectBackendAdapter } from './provider'
 
 @Injectable({
@@ -28,20 +28,20 @@ export class BackendService {
   }
 
   private gearsets = inject(GearsetsDB)
-  private skillBuilds = inject(SkillBuildsDB)
-  private itemInstances = inject(ItemInstancesDB)
+  private skills = inject(SkillTreesDB)
+  private items = inject(ItemInstancesDB)
   private characters = inject(CharactersDB)
 
   public readonly privateTables = {
     gearsets: this.adapter.initPrivateTable(this.gearsets),
-    skillSets: this.adapter.initPrivateTable(this.skillBuilds),
-    items: this.adapter.initPrivateTable(this.itemInstances),
+    skillTrees: this.adapter.initPrivateTable(this.skills),
+    items: this.adapter.initPrivateTable(this.items),
     characters: this.adapter.initPrivateTable(this.characters),
   }
 
   public readonly publicTables = {
     gearsets: this.adapter.initPublicTable<GearsetRecord>(`public_${this.gearsets.tableName}`),
-    skillSets: this.adapter.initPublicTable<SkillTreeRecord>(`public_${this.skillBuilds.tableName}`),
-    items: this.adapter.initPublicTable<ItemInstanceRecord>(this.itemInstances.tableName),
+    skillSets: this.adapter.initPublicTable<SkillTreeRecord>(`public_${this.skills.tableName}`),
+    items: this.adapter.initPublicTable<ItemInstanceRecord>(this.items.tableName),
   }
 }

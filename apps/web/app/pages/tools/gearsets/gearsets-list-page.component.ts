@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, effect, inject } from '@angular/core'
+import { Component, computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { debounceTime, filter, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetsService } from '~/data'
+import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
-import { ShareService } from '~/pages/share'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
@@ -16,7 +16,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { injectRouteParam } from '~/utils'
 import { GearsetsListPageStore } from './gearsets-list-page.store'
 import { GearsetLoadoutItemComponent } from './loadout'
-import { BackendService } from '~/data/backend'
 
 @Component({
   selector: 'nwb-gearsets-list-page',
@@ -50,26 +49,19 @@ export class GearsetsListPageComponent {
   private modal = inject(ModalService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-  private share = inject(ShareService)
   protected userId = toSignal(injectRouteParam('userid'))
   protected search = toSignal(this.quicksearch.query$.pipe(debounceTime(500)))
 
-  protected get filterTags() {
-    return this.store.tags()
-  }
-  protected get isTagFilterActive() {
-    return this.store.tags()?.some((it) => it.active)
-  }
-  protected get items() {
-    return this.store.filteredRecords()
-  }
+  protected tags = this.store.tags
+  protected isTagFilterActive = computed(() => this.store.tags()?.some((it) => it.active))
+  protected items = this.store.filteredRecords
 
   public constructor() {
     this.store.connectUser(this.userId)
     this.store.connectSearch(this.search)
 
     effect(() => {
-      const userId = this.backend.session()?.id
+      const userId = this.backend.sessionUserId()
       if (userId && this.userId() === 'local') {
         this.router.navigate(['..', userId], { relativeTo: this.route })
       }
@@ -79,7 +71,7 @@ export class GearsetsListPageComponent {
     })
   }
 
-  protected async handleCreate() {
+  protected async handleCreateClicked() {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create new set',
@@ -103,7 +95,7 @@ export class GearsetsListPageComponent {
       })
   }
 
-  protected handleDelete(gearset: GearsetRecord) {
+  protected handleDeleteClicked(gearset: GearsetRecord) {
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
         title: 'Delete Gearset',
@@ -116,10 +108,6 @@ export class GearsetsListPageComponent {
       .subscribe(() => {
         this.service.delete(gearset.id)
       })
-  }
-
-  protected async handleImport() {
-    this.share.importItem(this.modal, this.router)
   }
 
   protected toggleTag(value: string) {

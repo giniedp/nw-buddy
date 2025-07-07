@@ -43,12 +43,12 @@ export function withGearsetSlot() {
         }),
         switchMap(({ slotId, instance, userId }) => {
           return items.resolveGearsetSlot({ slotId, instance, userId }).pipe(
-            map(({ instance, instanceId }) => {
-              return {
-                instanceId,
-                instance,
+            switchMap(({ instance, instanceId }) => {
+              return combineLatest({
+                instanceId: of(instanceId),
+                instance: of(instance),
                 item: data.itemOrHousingItem(instance?.itemId),
-              }
+              })
             }),
           )
         }),

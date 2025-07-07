@@ -2,15 +2,15 @@ import { EventEmitter } from '@angular/core'
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
 import { NwWeaponType } from '~/nw/weapon-types'
 
-export interface SkillBuilderStoreState {
+export interface SkillTreeEditorState {
   weapon: string
   tree1: string[]
   tree2: string[]
 }
 
-export type SkillBuilderStore = InstanceType<typeof SkillBuilderStore>
-export const SkillBuilderStore = signalStore(
-  withState<SkillBuilderStoreState>({
+export type SkillTreeEditorStore = InstanceType<typeof SkillTreeEditorStore>
+export const SkillTreeEditorStore = signalStore(
+  withState<SkillTreeEditorState>({
     weapon: null,
     tree1: [],
     tree2: [],
@@ -29,7 +29,7 @@ export const SkillBuilderStore = signalStore(
           tree2: state.tree2(),
         }
       },
-      patchState: (update: Partial<SkillBuilderStoreState>) => {
+      patchState: (update: Partial<SkillTreeEditorState>) => {
         patchState(state, update)
       },
       updateTree: (treeId: number, tree: string[]) => {

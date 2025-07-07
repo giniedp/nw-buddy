@@ -15,7 +15,7 @@ import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
 import { BackendService } from '~/data/backend'
 import { environment } from 'apps/web/environments'
-import { CharactersDB, GearsetsDB, ItemInstancesDB, SkillBuildsDB, TablePresetDB } from '~/data'
+import { CharactersDB, GearsetsDB, ItemInstancesDB, SkillTreesDB, TablePresetDB } from '~/data'
 import { rxResource, toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
@@ -33,7 +33,7 @@ export class PreferencesComponent {
   protected session = this.backend.session
   private tableChar = inject(CharactersDB)
   private tableItems = inject(ItemInstancesDB)
-  private tableTrees = inject(SkillBuildsDB)
+  private tableTrees = inject(SkillTreesDB)
   private tableGears = inject(GearsetsDB)
   private tableGrids = inject(TablePresetDB)
 
@@ -132,6 +132,10 @@ export class PreferencesComponent {
 
   public async importPreferences() {
     DataImportDialogComponent.open(this.modal)
+  }
+
+  public async dropTables() {
+    await this.appDb.appDb.dropTables()
   }
 
   protected clearPrices() {

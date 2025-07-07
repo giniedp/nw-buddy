@@ -58,7 +58,7 @@ export class GearCellAttributesComponent {
   })
 
   protected async handleClicked() {
-    if (!this.isEditable) {
+    if (!this.isEditable()) {
       return
     }
     const level = this.mannequin.level()

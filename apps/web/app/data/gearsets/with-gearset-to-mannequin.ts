@@ -7,7 +7,7 @@ import { EquippedItem, Mannequin } from '~/nw/mannequin'
 import { combineLatestOrEmpty } from '~/utils'
 import { ItemsService } from '../items'
 import { ItemInstance } from '../items/types'
-import { SkillBuildsService } from '../skillbuilds'
+import { SkillTreesService } from '../skill-tree'
 import { GearsetRecord } from './types'
 
 export interface WithGearsetToMannequinState {
@@ -23,7 +23,7 @@ export function withGearsetToMannequin() {
     withMethods(({ gearset, level }) => {
       const injector = inject(Injector)
       const items = inject(ItemsService)
-      const skills = inject(SkillBuildsService)
+      const skills = inject(SkillTreesService)
       const gearset$ = toObservable(gearset)
       const level$ = toObservable(
         computed(() => {

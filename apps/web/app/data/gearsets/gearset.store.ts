@@ -19,6 +19,7 @@ export interface GearsetStoreState {
   defaultLevel: number
   gearset: GearsetRecord
   isLoaded: boolean
+  isLoading: boolean
   showCalculator: boolean
   showItemInfo: boolean
 }
@@ -30,6 +31,7 @@ export const GearsetStore = signalStore(
     defaultLevel: NW_MAX_CHARACTER_LEVEL,
     gearset: null,
     isLoaded: false,
+    isLoading: false,
     showCalculator: false,
     showItemInfo: true,
   }),
@@ -57,6 +59,13 @@ export const GearsetStore = signalStore(
         pipe(
           map((gearset) => {
             patchState(state, { gearset: gearset, isLoaded: true })
+          }),
+        ),
+      ),
+      connectIsLoading: rxMethod<boolean>(
+        pipe(
+          map((value) => {
+            patchState(state, { isLoading: value })
           }),
         ),
       ),

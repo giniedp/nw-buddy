@@ -8,20 +8,22 @@
         [defaultRoute]="''"
         [defaultTitle]="title"
         [routePrefix]="'.'"
-        [queryParam]="categoryParam()"
+        [queryParam]="categoryParamName"
         class="btn btn-ghost normal-case text-left"
       ></button>
 
       <span class="flex-1"></span>
       <div class="join">
-        <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
-          <span class="indicator">
-            <nwb-icon [icon]="iconMore" class="w-5 h-5" />
-            @if (tagsAreActive()) {
-              <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
-            }
-          </span>
-        </button>
+        @if (tags()?.length) {
+          <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
+            <span class="indicator">
+              <nwb-icon [icon]="iconMore" class="w-5 h-5" />
+              @if (tagsAreActive()) {
+                <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
+              }
+            </span>
+          </button>
+        }
 
         <ng-template #tplMenu>
           <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
@@ -39,11 +41,12 @@
           </div>
         </ng-template>
 
-        <button class="join-item btn btn-square btn-ghost" (click)="createItem()" [tooltip]="'Create new entry'">
+        <button
+          class="join-item btn btn-square btn-ghost"
+          (click)="handleCreateItemClicked()"
+          [tooltip]="'Create new entry'"
+        >
           <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
-        </button>
-        <button class="join-item btn btn-square btn-ghost" (click)="importItem()" [tooltip]="'Import'">
-          <nwb-icon [icon]="iconImport" class="w-5 h-5" />
         </button>
       </div>
     </div>
@@ -110,7 +113,7 @@
     <router-outlet #outlet="outlet" />
     @if (!outlet.isActivated) {
       <div class="p-4 flex flex-row items-center justify-center">
-        <button (click)="createItem()" class="btn btn-primary gap-1">
+        <button (click)="handleCreateItemClicked()" class="btn btn-primary gap-1">
           <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
           <span>Create New</span>
         </button>

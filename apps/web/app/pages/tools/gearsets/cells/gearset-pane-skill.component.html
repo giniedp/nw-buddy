@@ -1,5 +1,5 @@
 @if (instance?.weapon) {
-  <nwb-skill-builder [ngModel]="instance" (ngModelChange)="updateSkillTree($event)" [disabled]="disabled" #builder />
+  <nwb-skill-tree-editor [ngModel]="instance" (ngModelChange)="updateSkillTree($event)" [disabled]="disabled" #builder />
 } @else {
   <picture class="w-64 h-64 text-white absolute left-1/2 -translate-x-1/2">
     <img [nwImage]="'assets/loaders/crafting_rune_clockwise.png'" class="w-full h-full animate-spin-ccw" />
