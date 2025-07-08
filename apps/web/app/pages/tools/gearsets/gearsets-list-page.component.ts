@@ -8,14 +8,15 @@ import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
+import { svgBars, svgFileImport, svgFilterList, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { injectRouteParam } from '~/utils'
 import { GearsetsListPageStore } from './gearsets-list-page.store'
-import { GearsetLoadoutItemComponent } from './loadout'
+//import { GearsetLoadoutItemComponent } from './loadout'
+import { GearsetLoadoutComponent } from '~/widgets/data/gearset-detail'
 
 @Component({
   selector: 'nwb-gearsets-list-page',
@@ -30,7 +31,7 @@ import { GearsetLoadoutItemComponent } from './loadout'
     TooltipModule,
     LayoutModule,
     VirtualGridModule,
-    GearsetLoadoutItemComponent,
+    GearsetLoadoutComponent,
   ],
   providers: [QuicksearchService, GearsetsListPageStore],
   host: {
@@ -41,6 +42,8 @@ export class GearsetsListPageComponent {
   protected iconCreate = svgPlus
   protected iconImport = svgFileImport
   protected iconMore = svgFilterList
+  protected iconMenu = svgBars
+  protected iconDelete = svgTrashCan
 
   private backend = inject(BackendService)
   private service = inject(GearsetsService)

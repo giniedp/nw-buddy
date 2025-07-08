@@ -117,7 +117,7 @@
           <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
           <div class="flex flex-col leading-none">
             <span>Unpublish</span>
-            <span class="text-xs opacity-75">Makes this gearset private</span>
+            <span class="text-xs opacity-75">Removes this gearset from public listing</span>
           </div>
         </button>
       </li>
@@ -128,7 +128,7 @@
           <div class="flex flex-col leading-none">
             <span>Publish</span>
             @if (isPublishable()) {
-              <span class="text-xs opacity-75">Makes this gearset public so others can see it</span>
+              <span class="text-xs opacity-75">Publish this gearsets for other users to see</span>
             } @else {
               <span class="text-xs text-error">Gearsets with <b>linked</b> items can not be published</span>
             }

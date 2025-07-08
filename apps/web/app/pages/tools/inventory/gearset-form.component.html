@@ -1,108 +1,129 @@
-@if (gearset) {
-  <nwb-gearset-loadout [gearsetId]="gearset.id" [buttonTemplate]="tplButton">
+@if (gearset()) {
+  <nwb-gearset-loadout [gearset]="gearset()" [buttonTemplate]="tplButton">
     <ng-template #tplButton>
       <div class="join w-full">
         <button class="join-item flex-1 btn btn-sm btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
-          <nwb-icon [icon]="iconMenu" class="w-4 h-4"/>
+          <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
         </button>
         <a
           class="join-item flex-1 btn btn-sm btn-ghost btn-square inline-flex"
-          [routerLink]="['/gearsets', gearset.id]"
+          [routerLink]="['/gearsets', gearset().userId, gearset().id]"
           [tooltip]="'Open full editor'"
           [tooltipClass]="'bg-info'"
         >
-          <nwb-icon [icon]="iconNav" class="w-4 h-4"/>
+          <nwb-icon [icon]="iconNav" class="w-4 h-4" />
         </a>
       </div>
     </ng-template>
   </nwb-gearset-loadout>
 } @else {
   <div class="max-w-md mx-auto layout-col layout-gap layout-pad-y h-full items-center justify-center">
-    <button class="btn btn-primary w-full" (click)="loadSet()">
-      <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2"/>
+    <button class="btn btn-primary w-full" (click)="handleLoadGearset()">
+      <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2" />
       Open existing set
     </button>
-    <button class="btn btn-primary w-full" (click)="createSet()">
-      <nwb-icon [icon]="iconCreate" class="w-4 h-4 mr-2"/>
+    <button class="btn btn-primary w-full" (click)="handleCreateSet()">
+      <nwb-icon [icon]="iconCreate" class="w-4 h-4 mr-2" />
       Create new set
     </button>
   </div>
 }
 
 <ng-template #menu>
-  <ul class="menu menu-compact bg-base-100 rounded-md w-80" cdkMenu>
-    <li class="text-shadow-sm shadow-black">
-      <a (click)="createSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconCreate" class="w-4 h-4"/>
+  <ul
+    class="my-1 p-0 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg text-shadow-sm shadow-black"
+    cdkMenu
+  >
+    <li>
+      <button (click)="handleCreateSet()" cdkMenuItem>
+        <nwb-icon [icon]="iconCreate" class="w-4 h-4 mr-2" />
         <div class="flex flex-col leading-none">
           <span>Create New</span>
           <span class="text-xs opacity-75">Create a new set and start editing</span>
         </div>
-      </a>
+      </button>
     </li>
-    <li class="text-shadow-sm shadow-black">
-      <a (click)="loadSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconOpen" class="w-4 h-4"/>
+    <li>
+      <button (click)="handleLoadGearset()" cdkMenuItem>
+        <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2" />
         <div class="flex flex-col leading-none">
           <span>Open</span>
           <span class="text-xs opacity-75">Open another set to edit</span>
         </div>
-      </a>
+      </button>
     </li>
-    <!-- <li class="text-shadow-sm shadow-black">
-      <a cdkMenuItem>
-        <nwb-icon [icon]="iconCopy" class="w-4 h-4"/>
-        <div class="flex flex-col leading-none">
-          <span>Clone</span>
-          <span class="text-xs opacity-75">Make a copy of this set and start editing</span>
-        </div>
-      </a>
-    </li> -->
+
+    @if (isSignedIn()) {
+      <li>
+        @if (isPublished()) {
+          <button (click)="handleUnpublish()" cdkMenuItem>
+            <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2" />
+            <div class="flex flex-col leading-none">
+              <span>Unpublish</span>
+              <span class="text-xs opacity-75">Removes this gearset from public listing</span>
+            </div>
+          </button>
+        } @else {
+          <button (click)="handlePublish()" cdkMenuItem [disabled]="!isPublishable()">
+            <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2" />
+            <div class="flex flex-col leading-none">
+              <span>Publish</span>
+              @if (isPublishable()) {
+                <span class="text-xs opacity-75">Publish this gearsets for other users to see</span>
+              } @else {
+                <span class="text-xs text-error">Gearsets with <b>linked</b> items can not be published</span>
+              }
+            </div>
+          </button>
+        }
+      </li>
+    }
 
     <li class="menu-title">
-      <span>Item Mode</span>
+      <span>Equip Item Mode</span>
     </li>
-    <li [class.bordered]="isLinkMode" cdkMenuItem>
-      <a (click)="updateMode('link')" cdkMenuItem>
-        <nwb-icon [icon]="iconLink" class="w-4 h-4"/>
+    <li [class.bordered]="isLinkMode()" cdkMenuItem>
+      <button (click)="handleUpdateMode('link')" cdkMenuItem [disabled]="isPublished()">
+        <nwb-icon [icon]="iconLink" class="w-4 h-4 mr-2" />
         <div class="flex flex-col leading-none">
-          <span>Link Mode</span>
-          <span class="text-xs opacity-75">
-            Inventory items are <span class="text-primary">linked</span> when slotted
+          <span>
+            Link
+            @if (isLinkMode()) {
+              <span class="badge badge-success badge-xs"></span>
+            }
           </span>
+          @if (isPublished()) {
+            <span class="text-xs text-error"> Link mode is not available for published items </span>
+          } @else {
+            <span class="text-xs opacity-75"> Items are <span class="text-primary">linked</span> when equipped </span>
+          }
         </div>
-      </a>
+      </button>
     </li>
-    <li [class.bordered]="isCopyMode" cdkMenuItem>
-      <a (click)="updateMode('copy')" cdkMenuItem>
-        <nwb-icon [icon]="iconCopy" class="w-4 h-4"/>
+    <li [class.bordered]="isCopyMode()" cdkMenuItem>
+      <button (click)="handleUpdateMode('copy')" cdkMenuItem>
+        <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-2" />
         <div class="flex flex-col leading-none">
-          <span>Copy Mode</span>
-          <span class="text-xs opacity-75">
-            Inventory items are <span class="text-primary">copied</span> when slotted
+          <span>
+            Copy
+            @if (!isLinkMode()) {
+              <span class="badge badge-success badge-xs"></span>
+            }
           </span>
+          <span class="text-xs opacity-75"> Items are <span class="text-primary">copied</span> when equipped </span>
         </div>
-      </a>
+      </button>
     </li>
 
-    <li class="divider"></li>
+    <span class="divider my-0 py-0"></span>
     <li class="text-shadow-sm shadow-black">
-      <a (click)="unloadSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconClose" class="w-4 h-4"/>
+      <button (click)="handleUnloadSet()" cdkMenuItem>
+        <nwb-icon [icon]="iconClose" class="w-4 h-4 mr-2" />
         <div class="flex flex-col leading-none">
           <span>Close</span>
           <span class="text-xs opacity-75">Close this set and exit editor</span>
         </div>
-      </a>
-    </li>
-    <li class="text-shadow-sm shadow-black">
-      <a (click)="unloadSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error"/>
-        <div class="flex flex-col leading-none">
-          <span>Delete</span>
-          <span class="text-xs opacity-75">Delete this set</span>
-        </div>
-      </a>
+      </button>
     </li>
   </ul>
 </ng-template>

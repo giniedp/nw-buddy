@@ -5,7 +5,7 @@ import { GearsetRow } from '~/data'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { GearsetLoadoutItemComponent } from './gearset-cell.component'
+import { GearsetLoadoutComponent } from '../gearset-detail'
 import {
   GearsetTableRecord,
   gearsetColGearScore,
@@ -36,7 +36,7 @@ export class GearsetTableAdapter implements DataViewAdapter<GearsetTableRecord> 
   }
 
   public virtualOptions(): VirtualGridOptions<GearsetTableRecord> {
-    return GearsetLoadoutItemComponent.buildGridOptions()
+    return GearsetLoadoutComponent.buildGridOptions()
   }
 
   public gridOptions(): GridOptions<GearsetTableRecord> {

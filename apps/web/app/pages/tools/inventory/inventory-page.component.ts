@@ -29,6 +29,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 
 @Component({
   selector: 'nwb-inventory-page',
@@ -48,6 +49,8 @@ import { InventoryPickerService } from './inventory-picker.service'
     TooltipModule,
     VirtualGridModule,
     LayoutModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
   host: {
     class: 'ion-page',

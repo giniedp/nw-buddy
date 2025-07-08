@@ -41,12 +41,43 @@
 </ion-header>
 <ion-content>
   <nwb-virtual-grid [itemHeight]="284" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']">
-    <nwb-gearset-loadout-item
+    <nwb-gearset-loadout
       *nwbVirtualGridCell="items(); let item"
       [gearset]="item"
+      [buttonTemplate]="tplButton"
       class="p-2 self-start"
-      (createClicked)="handleCreateClicked()"
-      (deleteClicked)="handleDeleteClicked($event)"
-    />
+    >
+      <ng-template #tplButton>
+        <div class="join w-full indicator">
+          <a
+            class="join-item flex-1 btn btn-sm btn-outline btn-primary"
+            [routerLink]="['/gearsets', item.userId, item.id]"
+          >
+            Show
+          </a>
+          <button
+            class="join-item flex-none btn btn-sm btn-square btn-primary btn-outline"
+            [cdkMenuTriggerFor]="dropdownMenu"
+          >
+            <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+          </button>
+        </div>
+      </ng-template>
+
+      <ng-template #dropdownMenu>
+        <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu>
+          <li>
+            <a (click)="handleDeleteClicked(item)" cdkMenuItem>
+              <nwb-icon [icon]="iconDelete" class="w-4 h-4" />
+              <div class="flex flex-col leading-none">
+                <span>Delete</span>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </ng-template>
+    </nwb-gearset-loadout>
   </nwb-virtual-grid>
 </ion-content>
+
+<!--  -->

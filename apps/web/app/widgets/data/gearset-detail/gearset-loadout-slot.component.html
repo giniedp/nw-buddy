@@ -1,43 +1,54 @@
-@if (!store.hasItem()) {
-  <nwb-item-header class="relative font-nimbus gap-2" [rarity]="'common'">
-    <nwb-item-icon [nwbItemIcon]="store.slot()?.icon" [solid]="false" class="z-10 aspect-square w-full" />
-    @if (!disabled) {
+<nwb-item-detail
+  [itemId]="store.item()"
+  [perkOverride]="store.instance()?.perks"
+  class="p-1"
+  class="flex flex-row gap-1"
+  [tooltip]="store.instance() ? tplTip : null"
+  [tooltipClass]="'p-0'"
+  #detail
+>
+  <nwb-item-header
+    [rarity]="store.rarity()"
+    [isNamed]="store.isNamed()"
+    class="relative font-nimbus gap-2 w-full max-w-14"
+  >
+    <nwb-item-icon
+      [nwbItemIcon]="store.item() || store.slot()?.icon"
+      [solid]="!!store.item()"
+      class="z-10 w-full aspect-square"
+    />
+
+    @if (!disabled() && !store?.item()) {
       <button
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
         (click)="pickItemClicked()"
       >
         <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2" />
       </button>
+    } @else if (!disabled() && !!menuTemplate()) {
+      <button
+        class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end"
+        [cdkMenuTriggerFor]="menuTemplate()"
+      >
+        <nwb-icon [icon]="iconMenu" class="w-4 h-4 mt-2" />
+      </button>
+    }
+    @if (detail.slottedGemIcon(); as icon) {
+      <span
+        class="z-10 absolute bottom-0 right-0 rounded-tl-xl bg-base-100 bg-opacity-60 w-6 aspect-square inline-flex items-center justify-center"
+      >
+        <img [nwImage]="icon" class="w-5 h-5" />
+      </span>
+    }
+    @if (store.isLinked()) {
+      <span
+        class="z-10 absolute top-0 right-0 rounded-bl-xl bg-base-100 bg-opacity-60 w-6 aspect-square inline-flex items-center justify-center screenshot-hidden"
+      >
+        <nwb-icon [icon]="iconLink" class="w-4 h-4" />
+      </span>
     }
   </nwb-item-header>
-} @else {
-  <nwb-item-detail
-    [itemId]="store.instance().itemId"
-    [perkOverride]="store.instance().perks"
-    class="p-1"
-    class="flex flex-row gap-1"
-    [tooltip]="tplTip"
-    [tooltipClass]="'p-0'"
-    #detail
-  >
-    <nwb-item-header [rarity]="store.rarity()" [isNamed]="store.isNamed()" class="relative font-nimbus gap-2">
-      <nwb-item-icon [nwbItemIcon]="store.item()" [solid]="true" class="z-10 aspect-square w-full" />
-      @if (!disabled && !!menuTemplate) {
-        <button
-          class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end"
-          [cdkMenuTriggerFor]="menuTemplate"
-        >
-          <nwb-icon [icon]="iconMenu" class="w-4 h-4 mt-2" />
-        </button>
-      }
-      @if (detail.slottedGemIcon(); as icon) {
-        <span class="z-10 absolute bottom-0 right-0 p-[2px] rounded-tl-xl bg-base-100 bg-opacity-50">
-          <img [nwImage]="icon" class="w-5 h-5" />
-        </span>
-      }
-    </nwb-item-header>
-  </nwb-item-detail>
-}
+</nwb-item-detail>
 
 <ng-template #tplTip>
   <nwb-item-card
