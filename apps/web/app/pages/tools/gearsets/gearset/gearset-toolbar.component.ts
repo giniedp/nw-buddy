@@ -135,14 +135,6 @@ export class GearsetToolbarComponent {
   public mode: 'player' | 'opponent' = 'player'
 
   public constructor() {
-    effect(() => {
-      console.log({
-        record: this.store.gearset(),
-        isLoading: this.store.isLoading(),
-        isLoaded: this.store.isLoaded(),
-        isOwned: this.store.isOwned()
-      })
-    })
     patchState(this.store, {
       showCalculator: this.calcQueryParam.value() === 'true',
     })
