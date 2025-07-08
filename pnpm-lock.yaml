@@ -15646,7 +15646,7 @@ snapshots:
       recast: 0.23.9
       semver: 7.7.2
       util: 0.12.5
-      ws: 8.18.0
+      ws: 8.18.2
     optionalDependencies:
       prettier: 3.3.3
     transitivePeerDependencies:

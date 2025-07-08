@@ -21,27 +21,21 @@ const DEFAULT_CLASS = [
   selector: 'nwb-tooltip',
   styleUrls: ['./tooltip.component.scss'],
   template: `
-    <ng-container *ngIf="text">{{ text }}</ng-container>
-    <ng-template [ngComponentOutlet]="component" [ngComponentOutletInjector]="injector" ]></ng-template>
-    <ng-template
-      [ngTemplateOutlet]="tpl"
-      [ngTemplateOutletContext]="context"
-      [ngTemplateOutletInjector]="injector"
-    ></ng-template>
+    @if (text) {
+      {{ text }}
+    }
+    <ng-template [ngComponentOutlet]="component" [ngComponentOutletInjector]="injector" ] />
+    <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="context" [ngTemplateOutletInjector]="injector" />
   `,
   imports: [CommonModule],
   hostDirectives: [NgClass],
-  animations: [
-    trigger('animate', [
-      transition(':enter', [style({ opacity: 0 }), animate('100ms', style({ opacity: 1 }))]),
-      transition(':leave', [animate('100ms', style({ opacity: 0 }))]),
-    ]),
-  ],
+  host: {
+    '[class.tooltip-active]': 'active',
+    '[style.--tooltip-fade-time.ms]': 'fadeTime',
+  }
 })
 export class TooltipComponent {
   private html = inject(NwHtmlService)
-  @HostBinding('@animate')
-  protected animate: void
 
   @Input()
   public ngClass: string | string[]
@@ -51,6 +45,12 @@ export class TooltipComponent {
 
   @Input()
   public injector: Injector
+
+  @Input()
+  public active: boolean
+
+  @Input()
+  public fadeTime: number = 150
 
   @Input()
   public set content(value: string | TemplateRef<any> | Type<any>) {
