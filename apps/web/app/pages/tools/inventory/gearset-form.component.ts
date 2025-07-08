@@ -12,6 +12,7 @@ import { PreferencesService } from '~/preferences'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import {
+  svgBars,
   svgChevronLeft,
   svgEllipsisVertical,
   svgFolderOpen,
@@ -78,7 +79,7 @@ export class GearsetFormComponent {
   protected iconCreate = svgPlus
   protected iconDelete = svgTrashCan
   protected iconClose = svgXmark
-  protected iconMenu = svgEllipsisVertical
+  protected iconMenu = svgBars
   protected iconBack = svgChevronLeft
   protected iconLink = svgLink
   protected iconCopy = svgPaste
