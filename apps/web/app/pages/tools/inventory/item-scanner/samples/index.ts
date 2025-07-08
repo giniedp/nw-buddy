@@ -29,5 +29,5 @@ export const SAMPLES: { en: ScanSample[] } = {
 }
 
 export function sampleUrl(file: string) {
-  return `/app/pages/tools/inventory/item-scanner/samples/${file}`
+  return `/test-data/pages/tools/inventory/item-scanner/samples/${file}`
 }

@@ -45,6 +45,7 @@
     "build:web-ssr": "pnpm nw-generate env -c web && ng build -c web && pnpm nw-generate version",
     "build:web-ssr-cdn": "pnpm nw-generate env -c web-cdn && ng build -c web-cdn && pnpm nw-generate version",
     "build:web-standalone": "pnpm nw-generate env -c standalone && ng build -c standalone",
+    "build:test": "pnpm nw-generate env -c test && ng build -c test --ssr false && pnpm nw-generate version",
     "electron:tsc": "tsc -p apps/electron/tsconfig.json",
     "electron:serve": "pnpm electron:tsc && electron . --serve",
     "electron:builder": "electron-builder build --publish=never --config=electron-config.js",
