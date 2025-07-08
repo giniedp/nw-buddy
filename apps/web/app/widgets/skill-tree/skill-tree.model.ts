@@ -114,9 +114,10 @@ export function buildGrid(abilities: AbilityData[]) {
 export function updateGrid(grid: SkillTreeGrid, points: number, selection: ReadonlyArray<string>) {
   const selected = new CaseInsensitiveSet(selection || [])
   let spent = 0
-  grid.forEach((row, r) => {
-    const parentRow = grid[r - 1]
-    const rowOk = r === 0 || parentRow?.some((it) => selected.has(it.value))
+  let rowUnlocked = true
+  grid.forEach((row, rowIndex) => {
+    const parentRow = grid[rowIndex - 1]
+    rowUnlocked = rowUnlocked && (rowIndex === 0 || parentRow?.some((it) => selected.has(it.value)))
     row.forEach((cell) => {
       if (!cell.value) {
         return
@@ -126,7 +127,7 @@ export function updateGrid(grid: SkillTreeGrid, points: number, selection: Reado
       const parentId = cell.parentId
       const parentOk = !parentId || (selected.has(parentId) && checkPath(grid, cell, parentId))
       const limitOk = spent < points
-      const pointsOk = r < grid.length - 1 || spent >= 10
+      const pointsOk = rowIndex < grid.length - 1 || spent >= 10
       if (!limitOk) {
         cell.tooltip = 'ui_ability_unavailable_nopoints'
         cell.tooltipColor = 'error'
@@ -143,15 +144,21 @@ export function updateGrid(grid: SkillTreeGrid, points: number, selection: Reado
           cell.tooltip = 'ui_ability_unavailable_noparent_lastrow'
           cell.tooltipColor = 'error'
         }
+        if (cell.checked) {
+          cell.invalid = true
+        }
         return
       }
-      if (cell.value && (!rowOk || !parentOk)) {
+      if (cell.value && (!rowUnlocked || !parentOk)) {
         if (parentId) {
           cell.tooltip = 'ui_ability_unavailable_parent'
           cell.tooltipColor = 'error'
         } else {
           cell.tooltip = 'ui_ability_unavailable_noparent'
           cell.tooltipColor = 'error'
+        }
+        if (cell.checked) {
+          cell.invalid = true
         }
         return
       }
