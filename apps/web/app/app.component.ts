@@ -15,10 +15,11 @@ import { TranslateService } from './i18n'
 
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { IonApp, IonButton, IonButtons, IonContent, IonRouterOutlet, IonSplitPane } from '@ionic/angular/standalone'
+import { IonApp, IonButtons, IonContent, IonSplitPane } from '@ionic/angular/standalone'
 import { environment } from '../environments'
 import { LANG_OPTIONS, LanguageOption } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
+import { AuthComponent } from './auth/auth.component'
 import { injectNwData } from './data/nw-data/provider'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
@@ -34,7 +35,7 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
-import { AuthComponent } from './auth/auth.component'
+import { BackendService } from './data/backend'
 console.debug('environment', environment)
 @Component({
   selector: 'nw-buddy-app',
@@ -164,8 +165,7 @@ export class AppComponent {
   protected iconGithub = svgGithub
   protected iconDiscord = svgDiscord
   protected iconBack = svgChevronLeft
-  private db = injectNwData()
-  //private items = toSignal(from(this.db.itemsAll()), { initialValue: [] })
+  protected backend = inject(BackendService)
 
   constructor(
     private preferences: AppPreferencesService,
@@ -239,5 +239,13 @@ export class AppComponent {
       segments.unshift(new UrlSegment(selection.value, {}))
     }
     return url
+  }
+
+  protected onUserSignedIn(userId: string) {
+    console.log('User signed in', userId)
+  }
+
+  protected onUserSignedOut(userId: string) {
+    console.log('User signed out', userId)
   }
 }

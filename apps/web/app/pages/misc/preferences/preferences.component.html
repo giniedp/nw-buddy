@@ -1,181 +1,143 @@
 <ion-content class="ion-p-4">
   <div class="grid grid-cols-fill-sm gap-4 w-auto max-w-4xl mx-auto">
-    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
-      <h3 class="uppercase">Account</h3>
+    <div class="bg-base-300 rounded-md p-4 prose prose-sm row-span-2">
+      @if (backend.isEnabled()) {
+        <h3 class="uppercase">Account</h3>
+        @if (signedIn()) {
+          <p>
+            You are signed in as <b class="uppercase text-success"> {{ session().name }} </b>
+          </p>
+          @if (!backend.isOnline()) {
+            <div class="alert alert-error mb-4">
+              The session could net be verified, the server is probably offline or not reachable. You can still use the
+              app. The data will be stored locally and synced once the server is back online.
+            </div>
+          }
+        } @else {
+          <p>You are not signed, running in <b class="text-primary">offline</b> mode</p>
+        }
+
+        @if (signedIn()) {
+          <div class="form-control w-full">
+            <button class="btn w-full" (click)="backend.signOut()">Sign out</button>
+          </div>
+        } @else {
+          <div class="form-control w-full">
+            <button class="btn w-full" (click)="backend.signIn()">Sign in</button>
+          </div>
+        }
+      }
+      <h3 class="uppercase">Local database</h3>
       @if (signedIn()) {
         <p>
-          You are signed in as <b> {{ session().name }} </b>. Your data is automatically synced with the server.
+          In <b class="text-success">online</b> mode, your data is stored in a remote database. For quick access, it is
+          also synced to a local database inside the browser.
         </p>
       } @else {
-        <p>You are currently not signed in and using the <b class="text-primary">offline</b> mode</p>
+        <p>
+          In <b class="text-warning">offline</b> mode, your data is stored in a local database inside the browser. This
+          can be wiped on cache clear, so it is recommended to export your data regularly.
+        </p>
       }
       <table class="table table-zebra table-xs">
         <tbody>
           <tr>
             <td></td>
-
+            <td><i class="text-primary text-nowrap">offline</i> mode data</td>
             @if (signedIn()) {
-              <td>Owned by <i class="text-success">{{ session().name }}</i></td>
+              <td>
+                Owned by <i class="text-success">{{ session().name }}</i>
+              </td>
             }
-            <td>Owned by <i class="text-primary text-nowrap">no-one</i> </td>
           </tr>
           <tr>
             <td>Characters</td>
+            <td>{{ countLocal.value().characters }}</td>
             @if (signedIn()) {
               <td>{{ countUser.value().characters }}</td>
             }
-            <td>{{ countLocal.value().characters }}</td>
           </tr>
           <tr>
             <td>Skill trees</td>
+            <td>{{ countLocal.value().skillTrees }}</td>
             @if (signedIn()) {
-              <td>{{ countUser.value().trees }}</td>
+              <td>{{ countUser.value().skillTrees }}</td>
             }
-            <td>{{ countLocal.value().trees }}</td>
           </tr>
           <tr>
             <td>Gearsets</td>
+            <td>{{ countLocal.value().gearsets }}</td>
             @if (signedIn()) {
-              <td>{{ countUser.value().gears }}</td>
+              <td>{{ countUser.value().gearsets }}</td>
             }
-            <td>{{ countLocal.value().gears }}</td>
           </tr>
           <tr>
             <td>Inventory Items</td>
+            <td>{{ countLocal.value().items }}</td>
             @if (signedIn()) {
               <td>{{ countUser.value().items }}</td>
             }
-            <td>{{ countLocal.value().items }}</td>
           </tr>
           <tr>
             <td>Table settings</td>
+            <td>{{ countLocal.value().presets }}</td>
             @if (signedIn()) {
-              <td>{{ countUser.value().grids }}</td>
+              <td>{{ countUser.value().presets }}</td>
             }
-            <td>{{ countLocal.value().grids }}</td>
           </tr>
         </tbody>
       </table>
-    </div>
+      @if (signedIn()) {
+        <div class="form-control w-full">
+          <button class="btn w-full mt-4" (click)="dropTables()">Sync</button>
+          <label class="label">
+            <span class="label-text-alt">Clears the local database and restores from remote</span>
+          </label>
+        </div>
+      } @else {
+        <div class="form-control w-full">
+          <input type="text" class="input input-bordered" [(ngModel)]="projectName" />
+          <label class="label">
+            <span class="label-text-alt"> File name </span>
+          </label>
+        </div>
 
-    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
-      <h3 class="uppercase">App Configuration</h3>
+        <div class="form-control w-full">
+          <button class="btn w-full mt-4" (click)="exportPreferences()">Export</button>
+          <label class="label">
+            <span class="label-text-alt">Exports user data e.g. gearsets, skill trees etc.</span>
+          </label>
+        </div>
 
-      <table class="table table-zebra table-xs">
-        <tbody>
-          <tr>
-            <td>Sync backend</td>
-            <td>
-              @if (backend.isEnabled()) {
-                <span class="text-success">Enabled</span>
-              } @else {
-                <span class="text-error">Disabled</span>
-              }
-            </td>
-          </tr>
-          <tr>
-            <td>Environment name</td>
-            <td>
-              {{ envName }}
-            </td>
-          </tr>
-          <tr>
-            <td>Branch</td>
-            <td>
-              {{ branch }}
-            </td>
-          </tr>
-          <tr>
-            <td>Version</td>
-            <td>
-              {{ version }}
-            </td>
-          </tr>
-          <tr>
-            <td>CDN</td>
-            <td>
-              {{ cdnUrl }}
-            </td>
-          </tr>
-          <tr>
-            <td>Models</td>
-            <td>
-              {{ modelsUrl }}
-            </td>
-          </tr>
-          <tr>
-            <td>Tiles</td>
-            <td>
-              {{ tilesUrl }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <div class="form-control w-full">
+          <button class="btn w-full mt-4" (click)="importPreferences()">Import</button>
+          <label class="label">
+            <span class="label-text-alt">Imports previously exported user data</span>
+          </label>
+        </div>
 
-    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
-      <h3 class="uppercase">Local database</h3>
-      <p>
-        Whether you're signed in or using the offline mode, your data is always stored locally on your device. You can
-        export it to a file and import it later.
-      </p>
-      <div class="form-control w-full">
-        <input type="text" class="input input-bordered" [(ngModel)]="projectName" />
-        <label class="label">
-          <span class="label-text-alt"> File name </span>
-        </label>
-      </div>
-
-      <div class="form-control w-full">
-        <button class="btn w-full mt-4" (click)="exportPreferences()">Export</button>
-        <label class="label">
-          <span class="label-text-alt">Exports user data e.g. favourites, item prices etc.</span>
-        </label>
-      </div>
-
-      <div class="form-control w-full">
-        <button class="btn w-full mt-4" (click)="importPreferences()">Import</button>
-        <label class="label">
-          <span class="label-text-alt">Imports previously exported user data</span>
-        </label>
-      </div>
-
-      <div class="form-control w-full">
-        <button class="btn w-full mt-4" (click)="dropTables()">Clear</button>
-        <label class="label">
-          <span class="label-text-alt">Clears the local database</span>
-        </label>
-      </div>
+        <div class="form-control w-full">
+          <button class="btn w-full mt-4" (click)="dropTables()">Clear</button>
+          <label class="label">
+            <span class="label-text-alt">Clears the local database</span>
+          </label>
+        </div>
+      }
     </div>
 
     <div class="bg-base-300 rounded-md p-4 prose prose-sm">
       <h3 class="uppercase">Market prices</h3>
       <p>Previously imported market prices can be cleared here or re-imported here.</p>
       <div class="form-control w-full">
-        <button class="btn w-full" (click)="clearPrices()">Clear</button>
-        <label class="label">
-          <span class="label-text-alt">Clears all item prices</span>
-        </label>
-      </div>
-
-      <div class="form-control w-full">
-        <nwb-price-importer-button class="btn w-full mt-4" [icon]="false"> Import </nwb-price-importer-button>
+        <nwb-price-importer-button class="btn w-full" [icon]="false"> Import </nwb-price-importer-button>
         <label class="label">
           <span class="label-text-alt">Import prices from file or a website</span>
         </label>
       </div>
-    </div>
-
-    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
-      <h3 class="uppercase">IPFS</h3>
-      <p>The IPFS system is used in offline mode for sharing build links with other users.</p>
       <div class="form-control w-full mt-4">
-        <input type="text" class="input input-bordered" [(ngModel)]="ipfsGateway" [placeholder]="'Gateway'" />
+        <button class="btn w-full" (click)="clearPrices()">Clear</button>
         <label class="label">
-          <span class="label-text-alt">
-            The preferred IPFS hostname to use when downloading shared content. Check public gateways
-            <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link link-primary">here</a>.
-          </span>
+          <span class="label-text-alt">Clears all item prices</span>
         </label>
       </div>
     </div>
@@ -281,18 +243,78 @@
       }
     </div>
     <div class="bg-base-300 rounded-md p-4 prose prose-sm">
+      <h3 class="uppercase">IPFS</h3>
+      <p>The IPFS system is used in offline mode for sharing build links with other users.</p>
+      <div class="form-control w-full mt-4">
+        <input type="text" class="input input-bordered" [(ngModel)]="ipfsGateway" [placeholder]="'Gateway'" />
+        <label class="label">
+          <span class="label-text-alt">
+            The preferred IPFS hostname to use when downloading shared content. Check public gateways
+            <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link link-primary">here</a>.
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
+      <h3 class="uppercase">App Configuration</h3>
+
+      <table class="table table-zebra table-xs">
+        <tbody>
+          <tr>
+            <td>Sync backend</td>
+            <td>
+              @if (backend.isEnabled()) {
+                <span class="text-success">Enabled</span>
+              } @else {
+                <span class="text-error">Disabled</span>
+              }
+            </td>
+          </tr>
+          <tr>
+            <td>Environment name</td>
+            <td>
+              {{ envName }}
+            </td>
+          </tr>
+          <tr>
+            <td>Branch</td>
+            <td>
+              {{ branch }}
+            </td>
+          </tr>
+          <tr>
+            <td>Version</td>
+            <td>
+              {{ version }}
+            </td>
+          </tr>
+          <tr>
+            <td>CDN</td>
+            <td>
+              {{ cdnUrl }}
+            </td>
+          </tr>
+          <tr>
+            <td>Models</td>
+            <td>
+              {{ modelsUrl }}
+            </td>
+          </tr>
+          <tr>
+            <td>Tiles</td>
+            <td>
+              {{ tilesUrl }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
       <div class="form-control w-full">
         <label class="cursor-pointer label">
           <span class="label-text">Collapse sidebar permanently</span>
           <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="collapseMenu" />
         </label>
       </div>
-      <ng-container *ngIf="isDevCount > 10">
-        <div class="divider"></div>
-        <div class="form-control w-full">
-          <a class="btn w-full mt-4" [routerLink]="['/dev/platform']">Open Dev Panel</a>
-        </div>
-      </ng-container>
     </div>
   </div>
 </ion-content>

@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { catchError, of, switchMap } from 'rxjs'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { catchError, distinctUntilChanged, NEVER, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 import { injectTransmogsDB } from './transmogs.db'
 import { TransmogRecord } from './types'
@@ -11,13 +12,15 @@ export class TransmogsService {
   private backend = inject(BackendService)
   private userId = computed(() => this.backend.session()?.id)
   private userId$ = toObservable(this.userId)
-  private ready = signal(false)
+  private ready = signal(true)
+  public ready$ = toObservable(this.ready)
 
   public constructor() {
-    this.connect()
+    this.sync()
   }
 
-  private connect() {
+  public sync = rxMethod<void>((source) => {
+    return source
     // TODO: connect to backend for syncing
     // autoSync({
     //   userId: this.userId$,
@@ -28,17 +31,24 @@ export class TransmogsService {
     //   .subscribe((stage) => {
     //     this.ready.set(stage === 'offline' || stage === 'syncing')
     //   })
-  }
+  })
 
   public read(id: string) {
     return this.table.read(id)
+  }
+
+  public observeCount(userId: string) {
+    userId ||= 'local'
+    return this.table.observeWhereCount({ userId })
   }
 
   public observeRecords(userId: string) {
     if (userId === 'local' || !userId) {
       return this.table.observeWhere({ userId: 'local' })
     }
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === localUserId) {
           return this.table.observeWhere({ userId: localUserId })
@@ -53,7 +63,9 @@ export class TransmogsService {
   }
 
   public observeRecord({ userId, id }: { userId: string; id: string }) {
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === 'local' || (userId || '') === (localUserId || '')) {
           return this.table.observeById(id)

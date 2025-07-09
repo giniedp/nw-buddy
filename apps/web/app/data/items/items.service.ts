@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { EquipSlotId } from '@nw-data/common'
-import { combineLatest, map, Observable, of, switchMap } from 'rxjs'
+import { combineLatest, distinctUntilChanged, map, NEVER, Observable, of, switchMap } from 'rxjs'
 import { combineLatestOrEmpty } from '~/utils'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
@@ -10,6 +10,7 @@ import { injectNwData } from '../nw-data'
 import { injectItemInstancesDB } from './items.db'
 import { ItemInstance, ItemInstanceRecord } from './types'
 import { buildItemInstanceRows } from './utils'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,7 @@ export class ItemsService {
   private userId$ = toObservable(this.backend.session).pipe(map((it) => it?.id))
   private userId = toSignal(this.userId$)
   private ready = signal(false)
+  public ready$ = toObservable(this.ready)
 
   private nwData$ = combineLatest({
     items: this.nwdb.itemsByIdMap(),
@@ -30,27 +32,35 @@ export class ItemsService {
   })
 
   public constructor() {
-    this.connect()
+    this.sync()
   }
 
-  private connect() {
-    autoSync({
-      userId: this.userId$,
-      local: this.table,
-      remote: this.backend.privateTables.items,
-    })
-      .pipe(takeUntilDestroyed())
-      .subscribe((stage) => {
-        this.ready.set(stage === 'offline' || stage === 'syncing')
-      })
-  }
+  public sync = rxMethod<void>((source) => {
+    return source.pipe(
+      switchMap(() => {
+        return autoSync({
+          userId: this.userId$,
+          local: this.table,
+          remote: this.backend.privateTables.items,
+        })
+      }),
+      map((stage) => this.ready.set(stage === 'offline' || stage === 'syncing')),
+    )
+  })
 
   public read(id: string) {
     return this.table.read(id)
   }
 
+  public observeCount(userId: string) {
+    userId ||= 'local'
+    return this.table.observeWhereCount({ userId })
+  }
+
   public observeRecords(userId: string) {
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === 'local' || !userId) {
           return this.table.observeWhere({ userId: 'local' })
@@ -64,14 +74,16 @@ export class ItemsService {
   }
 
   public observeRecord({ userId, id }: { userId: string; id: string }) {
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === 'local' || (userId || '') === (localUserId || '')) {
           return this.table.observeById(id)
         }
-        if (this.backend.isEnabled()) {
-          return this.backend.publicTables.items.read({ user: userId, id })
-        }
+        // if (this.backend.isEnabled()) {
+        //   return this.backend.publicTables.items.read({ user: userId, id })
+        // }
         return of(null)
       }),
     )

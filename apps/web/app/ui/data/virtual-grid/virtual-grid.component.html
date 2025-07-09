@@ -6,6 +6,7 @@
     class="overflow-hidden mx-auto"
     [style.width.px]="store.gridSize()"
 
+
     #viewport
   >
     <div
@@ -15,8 +16,8 @@
       [style.--nwb-vg-rows]="rowCount()"
       [style.--nwb-vg-height.px]="itemSize()"
     >
-      <ng-container *cdkVirtualFor="let row of rows(); trackBy: trackBy;">
-        <ng-container [ngTemplateOutlet]="customRow?.template || tplRow" [ngTemplateOutletContext]="row"></ng-container>
+      <ng-container *cdkVirtualFor="let row of rows(); trackBy: trackBy; templateCacheSize: 0" >
+        <ng-container [ngTemplateOutlet]="customRow?.template || tplRow" [ngTemplateOutletContext]="row"/>
       </ng-container>
     </div>
   </cdk-virtual-scroll-viewport>

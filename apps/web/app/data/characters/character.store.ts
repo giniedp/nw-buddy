@@ -36,6 +36,10 @@ export const CharacterStore = signalStore(
     const userId = backend.sessionUserId
     const table = injectCharactersDB()
     return {
+      observeCount(userId: string) {
+        userId ||= 'local'
+        return table.observeWhereCount({ userId })
+      },
       create: (record: Partial<CharacterRecord>) => {
         return table.create({
           ...record,
@@ -66,24 +70,30 @@ export const CharacterStore = signalStore(
     const userId$ = toObservable(userId)
     const table = injectCharactersDB()
     return {
+      sync: rxMethod<void>((source) => {
+        return source.pipe(
+          switchMap(() => {
+            return autoSync({
+              userId: userId$,
+              local: table,
+              remote: backend.privateTables.characters,
+            })
+          }),
+          map((stage) => {
+            const ready = stage === 'offline' || stage === 'syncing'
+            patchState(state, { ready })
+          }),
+        )
+      }),
       load: rxMethod<string | void>(
         pipe(
           switchMap((characterId) => {
             return combineLatest({
               characterId: of(characterId),
-              stage: autoSync({
-                userId: userId$,
-                local: table,
-                remote: backend.privateTables.characters,
-              }),
+              ready: state.ready$,
             })
           }),
-          switchMap(({ stage, characterId }) => {
-            const ready = stage === 'offline' || stage === 'syncing'
-            patchState(state, { ready })
-            if (!ready) {
-              patchState(state, { record: null })
-            }
+          switchMap(({ characterId, ready }) => {
             return ready ? of(characterId) : NEVER
           }),
           switchMap(async (id) => {
@@ -114,6 +124,7 @@ export const CharacterStore = signalStore(
   }),
   withHooks({
     onInit: (state) => {
+      state.sync()
       state.load()
     },
   }),

@@ -3,17 +3,31 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { EquipSlotId, getItemPerkInfos, ItemPerkInfo, PerkBucket } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
-import { combineLatest, map, Observable, of, switchMap } from 'rxjs'
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  NEVER,
+  Observable,
+  of,
+  queueScheduler,
+  subscribeOn,
+  switchMap,
+  tap,
+} from 'rxjs'
 import { combineLatestOrEmpty } from '~/utils'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
-import { ItemInstance, ItemInstancesDB, ItemsService } from '../items'
+import { ItemInstance, ItemsService } from '../items'
 import { injectNwData } from '../nw-data'
 import { tableIndexBy } from '../nw-data/dsl'
 import { injectGearsetsDB } from './gearsets.db'
 import { GearsetRecord } from './types'
 import { GearsetRow, selectGearsetRow } from './utils'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
 
+function whenReady() {}
 @Injectable({ providedIn: 'root' })
 export class GearsetsService {
   private nwdata = injectNwData()
@@ -23,32 +37,43 @@ export class GearsetsService {
   private userId$ = toObservable(this.userId)
   private itemsDb = inject(ItemsService)
   private ready = signal(false)
+  private ready$ = toObservable(this.ready)
 
   public constructor() {
-    this.connect()
+    this.sync()
   }
 
-  private connect() {
-    autoSync({
-      userId: this.userId$,
-      local: this.table,
-      remote: this.backend.privateTables.gearsets,
-    })
-      .pipe(takeUntilDestroyed())
-      .subscribe((stage) => {
+  public sync = rxMethod<void>((source) => {
+    return source.pipe(
+      switchMap(() =>
+        autoSync({
+          userId: this.userId$,
+          local: this.table,
+          remote: this.backend.privateTables.gearsets,
+        }),
+      ),
+      tap((stage) => {
         this.ready.set(stage === 'offline' || stage === 'syncing')
-      })
-  }
+      }),
+    )
+  })
 
   public read(id: string) {
     return this.table.read(id)
+  }
+
+  public observeCount(userId: string) {
+    userId ||= 'local'
+    return this.table.observeWhereCount({ userId })
   }
 
   public observeRecords(userId: string) {
     if (userId === 'local' || !userId) {
       return this.table.observeWhere({ userId: 'local' })
     }
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === localUserId) {
           return this.table.observeWhere({ userId: localUserId })
@@ -64,6 +89,8 @@ export class GearsetsService {
 
   public observeRecord({ userId, id }: { userId: string; id: string }): Observable<GearsetRecord> {
     return this.userId$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === 'local' || (userId || '') === (localUserId || '')) {
           return this.table.observeById(id)
@@ -224,7 +251,6 @@ export class GearsetsService {
   public resolveGearsetSlotItems(record: GearsetRecord) {
     return resolveGearsetSlotItems(record, this.itemsDb, this.nwdata)
   }
-
 }
 
 function makeCopy<T>(it: T) {
@@ -240,7 +266,11 @@ function decodeSlot(slot: string | ItemInstance) {
   }
 }
 
-function resolveSlotItemInstance(userId: string, slot: string | ItemInstance, itemDB: ItemsService): Observable<ItemInstance> {
+function resolveSlotItemInstance(
+  userId: string,
+  slot: string | ItemInstance,
+  itemDB: ItemsService,
+): Observable<ItemInstance> {
   const { instance, instanceId } = decodeSlot(slot)
   return instanceId ? itemDB.observeRecord({ userId, id: instanceId }) : of(instance)
 }

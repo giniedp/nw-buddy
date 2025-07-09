@@ -15,6 +15,7 @@ import { TooltipModule } from '~/ui/tooltip'
 export class AuthComponent {
   protected backend = inject(BackendService)
 
+  protected isOnline = this.backend.isOnline
   protected isEnabled = this.backend.isEnabled
   protected isSignedIn = this.backend.isSignedIn
   protected userName = computed(() => this.backend.session()?.name)

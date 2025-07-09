@@ -5,10 +5,16 @@
     [tooltip]="'Signed in as ' + userName()"
     [tooltipPlacement]="'bottom'"
   >
-    <div class="avatar w-8 online placeholder">
+    <div class="avatar w-8 placeholder indicator" [class.online]="isOnline()">
       <div class="bg-neutral text-neutral-content w-8 rounded-full">
         <span class="text-xl uppercase">{{ initials() }}</span>
       </div>
+      @if (!isOnline()) {
+        <span class="indicator-item badge badge-xs badge-error translate-x-0 translate-y-0 scale-75"></span>
+        <span
+          class="indicator-item badge badge-xs badge-error translate-x-0 translate-y-0 scale-75 animate-ping"
+        ></span>
+      }
     </div>
   </button>
 } @else {
@@ -24,7 +30,12 @@
 <ng-template #tplAccMenu>
   <ul class="menu menu-compact bg-base-300 border border-base-200 rounded-md w-40 shadow-md" cdkMenu>
     <li>
-      <div cdkMenuItem class="menu-title">{{ userName() }}</div>
+      <div class="menu-title">
+        Signed in as <b class="uppercase text-success">{{ userName() }}</b>
+      </div>
+      @if (!isOnline()) {
+        <div class="menu-title">Server status <b class="uppercase text-error">Offline</b></div>
+      }
     </li>
     <li>
       <button cdkMenuItem (click)="signOut()">Sign Out</button>

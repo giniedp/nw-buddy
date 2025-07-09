@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core'
+import { inject, Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { catchError, of, switchMap } from 'rxjs'
+import { catchError, distinctUntilChanged, NEVER, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 import { injectTableStatesDB } from './table-states.db'
 import { TableStateRecord } from './types'
@@ -11,6 +11,8 @@ export class TableStatesService {
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
+  private ready = signal(true)
+  private ready$ = toObservable(this.ready)
 
   public read(id: string) {
     return this.table.read(id)
@@ -20,7 +22,9 @@ export class TableStatesService {
     if (userId === 'local' || !userId) {
       return this.table.observeWhere({ userId: 'local' })
     }
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === localUserId) {
           return this.table.observeWhere({ userId: localUserId })
@@ -31,7 +35,9 @@ export class TableStatesService {
   }
 
   public observeRecord({ userId, id }: { userId: string; id: string }) {
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         if (userId === 'local' || (userId || '') === (localUserId || '')) {
           return this.table.observeById(id)

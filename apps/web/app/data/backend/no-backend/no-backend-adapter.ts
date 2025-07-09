@@ -1,9 +1,12 @@
 import { Injectable, signal } from '@angular/core'
+import { Subject } from 'rxjs'
 import { AppDbRecord, AppDbTable } from '../../app-db'
-import { BackendAdapter } from '../backend-adapter'
+import { BackendAdapter, SessionState } from '../backend-adapter'
 
 @Injectable({ providedIn: 'root' })
 export class NoBackendAdapter extends BackendAdapter {
+  public userSignedIn = new Subject<SessionState>()
+  public userSignedOut = new Subject<SessionState>()
   public isEnabled = signal(false)
   public isOnline = signal(false)
   public session = signal({

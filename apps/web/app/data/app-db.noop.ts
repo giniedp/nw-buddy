@@ -85,7 +85,12 @@ export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
   public observeWhereCount(where: WhereConditions<T>): RxObservable<number> {
     return of(0)
   }
-  public observeById(id: string | RxObservable<string>): RxObservable<T> {
+
+  public observeBy(where: WhereConditions<T>): RxObservable<T> {
+    return of(null)
+  }
+
+  public observeById(id: string): RxObservable<T> {
     return of(null)
   }
 }

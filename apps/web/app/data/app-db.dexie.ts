@@ -1,6 +1,6 @@
 import { Dexie, liveQuery, PromiseExtended, Table } from 'dexie'
 import { customAlphabet } from 'nanoid/non-secure'
-import { defer, isObservable, of, Observable as RxObservable, Subject, switchMap } from 'rxjs'
+import { defer, of, Observable as RxObservable, Subject } from 'rxjs'
 
 import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent, WhereConditions } from './app-db'
 import {
@@ -43,9 +43,10 @@ export class AppDbDexie extends AppDb {
   public async clearUserData(userId: string) {
     await this.dexie.open()
     const tables = [
-      DBT_ITEMS,
-      DBT_GEARSETS,
       DBT_CHARACTERS,
+      DBT_GEARSETS,
+      DBT_IMAGES,
+      DBT_ITEMS,
       DBT_SKILL_BUILDS,
       DBT_TABLE_PRESETS,
       DBT_TABLE_STATES,
@@ -56,12 +57,34 @@ export class AppDbDexie extends AppDb {
     }
   }
 
+  public async transferOwnershipOfData({ sourceUserId, targetUserid }: { sourceUserId: string; targetUserid: string }) {
+    await this.dexie.open()
+    const tables = [
+      DBT_CHARACTERS,
+      DBT_GEARSETS,
+      DBT_IMAGES,
+      DBT_ITEMS,
+      DBT_SKILL_BUILDS,
+      DBT_TABLE_PRESETS,
+      DBT_TABLE_STATES,
+      DBT_TRANSMOGS,
+    ]
+    for (const table of tables) {
+      await this.dexie
+        .table(table)
+        .where({ userId: sourceUserId })
+        .modify((item) => {
+          item.userId = targetUserid
+        })
+    }
+  }
+
   private init(db: Dexie) {
-    db.version(7)
+    db.version(8)
       .stores({
         [DBT_ITEMS]: 'id,itemId,gearScore,userId',
         [DBT_GEARSETS]: 'id,*tags,userId,characterId',
-        [DBT_IMAGES]: 'id',
+        [DBT_IMAGES]: 'id,userId',
         [DBT_CHARACTERS]: 'id,userId',
         [DBT_SKILL_BUILDS]: 'id,userId',
         [DBT_TABLE_PRESETS]: 'id,key,userId',
@@ -70,9 +93,10 @@ export class AppDbDexie extends AppDb {
       })
       .upgrade((trans) => {
         const tables = [
-          DBT_ITEMS,
-          DBT_GEARSETS,
           DBT_CHARACTERS,
+          DBT_GEARSETS,
+          DBT_IMAGES,
+          DBT_ITEMS,
           DBT_SKILL_BUILDS,
           DBT_TABLE_PRESETS,
           DBT_TABLE_STATES,
@@ -195,11 +219,11 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.live((t) => t.where(where).count())
   }
 
-  public observeById(id: string | RxObservable<string>): RxObservable<T> {
-    return (isObservable(id) ? id : of(id)).pipe(
-      switchMap((id) => {
-        return id ? this.live((t) => t.get(id)) : of(null)
-      }),
-    )
+  public observeBy(where: WhereConditions<T>): RxObservable<T> {
+    return this.live((t) => t.where(where).first())
+  }
+
+  public observeById(id: string): RxObservable<T> {
+    return id ? this.live((t) => t.get(id)) : of(null)
   }
 }

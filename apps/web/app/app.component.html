@@ -119,7 +119,9 @@
             {{ langLabel() }}
           </button>
           <nwb-global-search-input class="no-drag" />
-          <app-auth/>
+          @if (backend.isEnabled()) {
+            <app-auth/>
+          }
         </div>
       </ion-buttons>
     </ion-toolbar>

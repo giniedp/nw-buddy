@@ -58,7 +58,8 @@ export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract observeAll(): Observable<T[]>
   public abstract observeWhere(where: WhereConditions<T>): Observable<T[]>
   public abstract observeWhereCount(where: WhereConditions<T>): Observable<number>
-  public abstract observeById(id: string | Observable<string>): Observable<T>
+  public abstract observeBy(where: WhereConditions<T>): Observable<T>
+  public abstract observeById(id: string): Observable<T>
 }
 
 export type WhereConditions<T> = FieldConditionMap<T>

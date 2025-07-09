@@ -1,6 +1,7 @@
-import { inject, Injectable } from '@angular/core'
+import { inject, Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { catchError, map, of, switchMap } from 'rxjs'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { catchError, distinctUntilChanged, map, NEVER, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 import { injectTablePresetsDB } from './table-presets.db'
 import { TablePresetRecord } from './types'
@@ -11,21 +12,31 @@ export class TablePresetsService {
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
+  private ready = signal(true)
+  private ready$ = toObservable(this.ready)
 
   public constructor() {
-    this.connect()
+    this.sync()
   }
 
-  private connect() {
+  public sync = rxMethod<void>((source) => {
+    return source
     // TODO: connect to backend for syncing
-  }
+  })
 
   public read(id: string) {
     return this.table.read(id)
   }
 
+  public observeCount(userId: string) {
+    userId ||= 'local'
+    return this.table.observeWhereCount({ userId })
+  }
+
   public observeRecords({ key }: { key: string }) {
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         return this.table.observeWhere({ userId: localUserId, key })
       }),
@@ -33,7 +44,9 @@ export class TablePresetsService {
   }
 
   public observeRecord({ id }: { id: string }) {
-    return this.userId$.pipe(
+    return this.ready$.pipe(
+      switchMap((ready) => (ready ? this.userId$ : NEVER)),
+      distinctUntilChanged(),
       switchMap((localUserId) => {
         return this.table.observeWhere({ userId: localUserId, id })
       }),

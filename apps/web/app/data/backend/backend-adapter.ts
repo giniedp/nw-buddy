@@ -37,6 +37,9 @@ export abstract class BackendAdapter {
   abstract signIn(): Promise<void>
   abstract signOut(): Promise<void>
 
+  abstract userSignedIn: Observable<SessionState>
+  abstract userSignedOut: Observable<SessionState>
+
   abstract initPrivateTable<T extends AppDbRecord>(table: AppDbTable<T>): PrivateTable<T>
   abstract initPublicTable<T extends AppDbRecord>(table: string): PublicTable<T>
 }

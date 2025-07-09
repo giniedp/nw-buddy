@@ -1,4 +1,4 @@
-import { isObservable, merge, NEVER, Observable, of, shareReplay, switchMap } from 'rxjs'
+import { catchError, isObservable, merge, NEVER, Observable, of, shareReplay, switchMap } from 'rxjs'
 import { AppDbRecord, AppDbTable } from '../../app-db'
 import { PrivateTable } from '../backend-adapter'
 import { syncInitial } from './sync-initial'
@@ -37,7 +37,6 @@ export function autoSync<T extends AppDbRecord>(options: {
             userId: userId,
           })
         }),
-
         switchMap(() => {
           updateStage('syncing')
           return merge(
@@ -46,6 +45,10 @@ export function autoSync<T extends AppDbRecord>(options: {
             syncToLocal(options.local, options.remote),
           )
         }),
+        catchError(() => {
+          updateStage('offline')
+          return NEVER
+        })
       )
       .subscribe()
     return () => {

@@ -4,13 +4,18 @@ import { rxResource } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { environment } from 'apps/web/environments'
-import { combineLatest, filter } from 'rxjs'
+import { combineLatest, filter, switchMap, tap } from 'rxjs'
 import {
+  CharacterStore,
+  GearsetsService,
   injectCharactersDB,
   injectGearsetsDB,
   injectItemInstancesDB,
   injectSkillTreesDB,
   injectTablePresetsDB,
+  ItemsService,
+  SkillTreesService,
+  TablePresetsService,
 } from '~/data'
 import { BackendService } from '~/data/backend'
 import { DbService } from '~/data/db.service'
@@ -23,6 +28,8 @@ import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
+import { ToastController } from '@ionic/angular/standalone'
+import { TransmogsService } from '~/data/transmogs'
 
 @Component({
   selector: 'nwb-preferences-page',
@@ -34,14 +41,16 @@ import { DataImportDialogComponent } from './data-import-dialog.component'
   },
 })
 export class PreferencesComponent {
+  protected pref = inject(AppPreferencesService)
+  private dbService = inject(DbService)
+
+  private itemPreferences = inject(ItemPreferencesService)
+  private modal = inject(ModalService)
+  private toast = inject(ToastController)
+
   protected backend = inject(BackendService)
   protected signedIn = this.backend.isSignedIn
   protected session = this.backend.session
-  private tableChar = injectCharactersDB()
-  private tableItems = injectItemInstancesDB()
-  private tableTrees = injectSkillTreesDB()
-  private tableGears = injectGearsetsDB()
-  private tableGrids = injectTablePresetsDB()
 
   protected envName = environment.environment
   protected version = environment.version
@@ -51,40 +60,26 @@ export class PreferencesComponent {
   protected tilesUrl = environment.nwTilesUrl
 
   protected countLocal = rxResource({
-    stream: () => {
-      return combineLatest({
-        characters: this.tableChar.observeWhereCount({ userId: 'local' }),
-        items: this.tableItems.observeWhereCount({ userId: 'local' }),
-        trees: this.tableTrees.observeWhereCount({ userId: 'local' }),
-        gears: this.tableGears.observeWhereCount({ userId: 'local' }),
-        grids: this.tableGrids.observeWhereCount({ userId: 'local' }),
-      })
-    },
+    stream: () => this.dbService.userDataStats('local'),
     defaultValue: {
       characters: 0,
       items: 0,
-      trees: 0,
-      gears: 0,
-      grids: 0,
+      gearsets: 0,
+      presets: 0,
+      transmogs: 0,
+      skillTrees: 0,
     },
   })
   protected countUser = rxResource({
     params: () => this.backend.session()?.id || 'local',
-    stream: ({ params }) => {
-      return combineLatest({
-        characters: this.tableChar.observeWhereCount({ userId: params }),
-        items: this.tableItems.observeWhereCount({ userId: params }),
-        trees: this.tableTrees.observeWhereCount({ userId: params }),
-        gears: this.tableGears.observeWhereCount({ userId: params }),
-        grids: this.tableGrids.observeWhereCount({ userId: params }),
-      })
-    },
+    stream: ({ params }) => this.dbService.userDataStats(params),
     defaultValue: {
       characters: 0,
       items: 0,
-      trees: 0,
-      gears: 0,
-      grids: 0,
+      gearsets: 0,
+      presets: 0,
+      transmogs: 0,
+      skillTrees: 0,
     },
   })
 
@@ -119,13 +114,7 @@ export class PreferencesComponent {
   protected isDev = false
   protected isDevCount = 0
   protected iconInfo = svgInfoCircle
-  public constructor(
-    public pref: AppPreferencesService,
-    public appDb: DbService,
-    private itemPref: ItemPreferencesService,
-    private modal: ModalService,
-    head: HtmlHeadService,
-  ) {
+  public constructor(head: HtmlHeadService) {
     head.updateMetadata({
       title: 'Preferences',
       description: 'Personal preferences to adjust your New World Buddy experience',
@@ -141,7 +130,39 @@ export class PreferencesComponent {
   }
 
   public async dropTables() {
-    await this.appDb.appDb.dropTables()
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Clear all data',
+        body: 'Are you sure you want to clear all data? The data for local user will be lost.',
+        negative: 'Cancel',
+        positive: 'Clear',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.clearAllData()),
+        switchMap(() => this.dbService.syncUserData()),
+      )
+      .subscribe({
+        next: () =>
+          this.toast
+            .create({
+              message: 'All data cleared.',
+              duration: 2000,
+              position: 'bottom',
+              color: 'success',
+            })
+            .then((toast) => toast.present()),
+        error: (err) =>
+          this.toast
+            .create({
+              message: `There was an error clearing the data: ${err.message}`,
+              duration: 2000,
+              position: 'bottom',
+              color: 'danger',
+            })
+            .then((toast) => toast.present()),
+      })
   }
 
   protected clearPrices() {
@@ -153,16 +174,29 @@ export class PreferencesComponent {
         positive: 'Clear',
       },
     })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe(() => {
-        this.itemPref.clearPrices()
-        ConfirmDialogComponent.open(this.modal, {
-          inputs: {
-            title: 'Clear prices',
-            body: 'Prices cleared.',
-            positive: 'Close',
-          },
-        })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(async () => this.itemPreferences.clearPrices()),
+      )
+      .subscribe({
+        next: () =>
+          this.toast
+            .create({
+              message: 'Prices cleared.',
+              duration: 2000,
+              position: 'bottom',
+              color: 'success',
+            })
+            .then((toast) => toast.present()),
+        error: (err) =>
+          this.toast
+            .create({
+              message: `There was an error clearing the data: ${err.message}`,
+              duration: 2000,
+              position: 'bottom',
+              color: 'danger',
+            })
+            .then((toast) => toast.present()),
       })
   }
 
