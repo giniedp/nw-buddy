@@ -74,10 +74,6 @@ export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
     //
   }
 
-  public async createOrUpdate(record: T, options?: { silent: boolean }): Promise<T> {
-    return null
-  }
-
   public observeAll(): RxObservable<T[]> {
     return of([])
   }

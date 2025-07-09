@@ -55,8 +55,6 @@ export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T>
   public abstract destroy(id: string | string[], options?: { silent: boolean }): Promise<void>
 
-  public abstract createOrUpdate(record: T, options?: { silent: boolean }): Promise<T>
-
   public abstract observeAll(): Observable<T[]>
   public abstract observeWhere(where: WhereConditions<T>): Observable<T[]>
   public abstract observeWhereCount(where: WhereConditions<T>): Observable<number>

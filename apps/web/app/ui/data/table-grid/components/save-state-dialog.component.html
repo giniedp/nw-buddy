@@ -5,29 +5,33 @@
 </ion-header>
 
 <ion-content class="ion-p-4">
-  <div
-    *ngFor="let item of store.entries$()"
-    class="flex flex-row items-center gap-1 overflow-hidden"
-    [class.text-primary]="item.id === store.selection$()"
-  >
-    <div
-      class="flex-1 text-lg px-2 whitespace-nowrap text-ellipsis overflow-hidden cursor-pointer link-hover"
-      (click)="selectEntry(item.id)"
-    >
-      {{ item.name || item.id }}
+  @for (item of store.entries(); track $index) {
+    <div class="flex flex-row items-center gap-1 overflow-hidden" [class.text-primary]="item.id === store.selection()">
+      <div
+        class="flex-1 text-lg px-2 whitespace-nowrap text-ellipsis overflow-hidden cursor-pointer link-hover"
+        (click)="selectEntry(item.id)"
+      >
+        {{ item.name || item.id }}
+      </div>
+      <div class="join flex-none">
+        <button
+          class="join-item btn btn-square btn-sm btn-ghost"
+          (click)="renameEntry(item.id, item.name)"
+          [tooltip]="'Rename'"
+        >
+          <nwb-icon [icon]="iconRename" class="w-4 h-4" />
+        </button>
+        <button class="join-item btn btn-square btn-sm btn-error" (click)="deleteEntry(item.id)" [tooltip]="'Delete'">
+          <nwb-icon [icon]="iconDelete" class="w-4 h-4" />
+        </button>
+      </div>
     </div>
-    <div class="join flex-none">
-      <button class="join-item btn btn-square btn-sm btn-ghost" (click)="renameEntry(item.id, item.name)" [tooltip]="'Rename'">
-        <nwb-icon [icon]="iconRename" class="w-4 h-4"/>
-      </button>
-      <button class="join-item btn btn-square btn-sm btn-error" (click)="deleteEntry(item.id)" [tooltip]="'Delete'">
-        <nwb-icon [icon]="iconDelete" class="w-4 h-4"/>
-      </button>
+  }
+  @if (!store.entries()?.length) {
+    <div class="flex items-center justify-center p-4">
+      <button type="button" class="btn btn-primary" (click)="createEntry()">Create New Entry</button>
     </div>
-  </div>
-  <div *ngIf="!store.entries$()?.length" class="flex items-center justify-center p-4">
-    <button type="button" class="btn btn-primary" (click)="createEntry()">Create New Entry</button>
-  </div>
+  }
 </ion-content>
 <ion-footer class="rounded-b-md">
   <ion-toolbar class="ion-color ion-color-base-300">
@@ -35,7 +39,9 @@
       <button type="button" class="join-item btn" (click)="createEntry()">New Entry</button>
 
       <button type="button" class="join-item btn" (click)="close()">Cancel</button>
-      <button type="button" class="join-item btn btn-primary" [disabled]="!store.selection$()" (click)="commit()">Save</button>
+      <button type="button" class="join-item btn btn-primary" [disabled]="!store.selection()" (click)="commit()">
+        Save
+      </button>
     </div>
   </ion-toolbar>
 </ion-footer>

@@ -53,10 +53,6 @@ export abstract class DBTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.destroy(id, options)
   }
 
-  public async createOrUpdate(record: T, options?: { silent: boolean }) {
-    return this.table.createOrUpdate(record, options)
-  }
-
   public observeAll() {
     return this.table.observeAll()
   }

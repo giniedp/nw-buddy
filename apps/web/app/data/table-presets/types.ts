@@ -8,10 +8,6 @@ export interface TablePreset {
 
 export interface TablePresetRecord extends TablePreset, AppDbRecord {
   /**
-   * ID in database
-   */
-  id: string
-  /**
    * Name of the gearset
    */
   name: string
@@ -22,7 +18,6 @@ export interface TablePresetRecord extends TablePreset, AppDbRecord {
 }
 
 export interface TableStateRecord extends AppDbRecord {
-  id: string
   columns: ColumnState[]
   pinnedTop: Array<string | number>
   pinnedBottom: Array<string | number>

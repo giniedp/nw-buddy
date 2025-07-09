@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core'
 import { injectAppDB } from '../db'
 import { DBTable } from '../db-table'
-import { DBT_TABLE_PRESETS } from './constants'
-import { TablePresetRecord } from './types'
+import { DBT_TRANSMOGS } from './constants'
+import { TransmogRecord } from './types'
 
 @Injectable({ providedIn: 'root' })
-export class TablePresetDB extends DBTable<TablePresetRecord> {
+export class TransmogsDB extends DBTable<TransmogRecord> {
   public readonly db = injectAppDB()
-  public readonly table = this.db.table<TablePresetRecord>(DBT_TABLE_PRESETS)
+  public readonly table = this.db.table<TransmogRecord>(DBT_TRANSMOGS)
   public get events() {
     return this.table.events
   }

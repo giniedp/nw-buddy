@@ -12,6 +12,7 @@ import {
   DBT_TABLE_PRESETS,
   DBT_TABLE_STATES,
 } from './constants'
+import { DBT_TRANSMOGS } from './transmogs'
 
 export class AppDbDexie extends AppDb {
   private tables: Record<string, AppDbDexieTable<any>> = {}
@@ -39,8 +40,24 @@ export class AppDbDexie extends AppDb {
     }
   }
 
+  public async clearUserData(userId: string) {
+    await this.dexie.open()
+    const tables = [
+      DBT_ITEMS,
+      DBT_GEARSETS,
+      DBT_CHARACTERS,
+      DBT_SKILL_BUILDS,
+      DBT_TABLE_PRESETS,
+      DBT_TABLE_STATES,
+      DBT_TRANSMOGS,
+    ]
+    for (const table of tables) {
+      await this.dexie.table(table).where({ userId }).delete()
+    }
+  }
+
   private init(db: Dexie) {
-    db.version(6)
+    db.version(7)
       .stores({
         [DBT_ITEMS]: 'id,itemId,gearScore,userId',
         [DBT_GEARSETS]: 'id,*tags,userId,characterId',
@@ -49,9 +66,18 @@ export class AppDbDexie extends AppDb {
         [DBT_SKILL_BUILDS]: 'id,userId',
         [DBT_TABLE_PRESETS]: 'id,key,userId',
         [DBT_TABLE_STATES]: 'id,userId',
+        [DBT_TRANSMOGS]: 'id,userId',
       })
       .upgrade((trans) => {
-        const tables = [DBT_ITEMS, DBT_GEARSETS, DBT_CHARACTERS, DBT_SKILL_BUILDS, DBT_TABLE_PRESETS, DBT_TABLE_STATES]
+        const tables = [
+          DBT_ITEMS,
+          DBT_GEARSETS,
+          DBT_CHARACTERS,
+          DBT_SKILL_BUILDS,
+          DBT_TABLE_PRESETS,
+          DBT_TABLE_STATES,
+          DBT_TRANSMOGS,
+        ]
         for (const table of tables) {
           trans
             .table(table)
@@ -151,22 +177,6 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     }
 
     return
-  }
-
-  public async createOrUpdate(record: T, options?: { silent: boolean }): Promise<T> {
-    if (record.id) {
-      if (!options?.silent) {
-        record.updatedAt = new Date().toJSON()
-        record.syncState = 'pending'
-      }
-      await this.table.put(record, record.id)
-      const row = await this.read(record.id)
-      if (!options?.silent) {
-        this.events.next({ type: 'create', payload: row })
-      }
-      return row
-    }
-    return this.create(record, options)
   }
 
   public live<R>(fn: (tbale: Table<T>) => PromiseExtended<R>) {

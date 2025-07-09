@@ -29,7 +29,7 @@ export class LoadStateDialogComponent {
 
   @Input()
   public set key(value: string) {
-    this.store.patchState({ key: value })
+    this.store.selectScope(value)
   }
 
   public constructor(
@@ -44,10 +44,10 @@ export class LoadStateDialogComponent {
   }
 
   protected async commit() {
-    this.modalRef.close(this.store.selectedData$())
+    this.modalRef.close(this.store.selectedData())
   }
 
   protected selectEntry(id: string) {
-    this.store.patchState({ selection: id })
+    this.store.select(id)
   }
 }
