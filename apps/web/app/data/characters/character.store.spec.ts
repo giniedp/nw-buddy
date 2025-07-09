@@ -5,10 +5,8 @@ import { testAppConfig } from '~/test'
 import { BackendService } from '../backend'
 import { APP_DB } from '../db'
 import { CharacterStore } from './character.store'
-import { CharactersDB } from './characters.db'
 
 describe('Character Store', () => {
-  let table: CharactersDB
   let store: CharacterStore
   let backend: BackendService
   let injector: Injector
@@ -20,7 +18,6 @@ describe('Character Store', () => {
     injector = TestBed.inject(Injector)
     store = TestBed.inject(CharacterStore)
     backend = TestBed.inject(BackendService)
-    table = TestBed.inject(CharactersDB)
   })
 
   it('creates default character automatically', async () => {

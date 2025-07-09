@@ -153,11 +153,6 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   }
 
   public async update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T> {
-    if (!options?.silent) {
-      record.updatedAt = new Date().toJSON()
-      record.syncState = 'pending'
-    }
-
     await this.table.update(id, record)
     const row = await this.read(id)
     if (!options?.silent) {

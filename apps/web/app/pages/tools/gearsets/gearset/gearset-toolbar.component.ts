@@ -1,6 +1,6 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { Component, Injector, Input, computed, effect, inject } from '@angular/core'
+import { Component, Injector, Input, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { patchState } from '@ngrx/signals'
@@ -21,12 +21,11 @@ import {
   GearsetRecord,
   GearsetStore,
   GearsetsService,
-  ImagesDB,
   ItemInstance,
-  ItemInstancesDB,
+  ItemsService,
   ResolvedItemPerkInfo,
+  injectImagesDB,
   injectNwData,
-  resolveGearsetSlotItems,
 } from '~/data'
 import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
@@ -97,8 +96,8 @@ export class GearsetToolbarComponent {
   private calcQueryParam = queryParamModel('calc')
   private gearService = inject(GearsetsService)
   private picker = inject(InventoryPickerService)
-  private itemsDb = inject(ItemInstancesDB)
-  private imagesDb = inject(ImagesDB)
+  private itemsDb = inject(ItemsService)
+  private imagesDb = injectImagesDB()
   private modal = inject(ModalService)
   private platform = inject(PlatformService)
   private db = injectNwData()
@@ -315,7 +314,7 @@ export class GearsetToolbarComponent {
 
   protected async onBatchResetClicked() {
     const record = this.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const resetableIds: EquipSlotId[] = [
       'head',
       'chest',
@@ -356,7 +355,7 @@ export class GearsetToolbarComponent {
 
   protected async onBatchGemClicked() {
     const record = this.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const gemSlots = recordSlots.filter(({ item, perks }) =>
       perks.some(
         ({ perk, bucket }) => isPerkGem(bucket) || isPerkEmptyGemSlot(perk) || (isPerkGem(perk) && item?.CanReplaceGem),
@@ -406,7 +405,7 @@ export class GearsetToolbarComponent {
 
   protected async onBatchAttributeClicked() {
     const record = this.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const gearSlots = recordSlots.filter(({ item }) => isItemArmor(item) || isItemWeapon(item) || isItemJewelery(item))
     const armorSlotIds: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet', 'amulet', 'ring', 'earring']
     const weaponSlotIds: EquipSlotId[] = ['weapon1', 'weapon2', 'weapon3']
@@ -493,7 +492,7 @@ export class GearsetToolbarComponent {
 
   protected async onBatchGearScoreClicked() {
     const record = this.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const gearSlotIds: EquipSlotId[] = [
       'head',
       'chest',

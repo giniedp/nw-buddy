@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostListener, Input, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, inject, Input, OnInit } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, filter, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
-import { ImagesDB } from '~/data'
+import { ImagesService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
@@ -33,6 +33,11 @@ export interface AvatarDialogResult {
   },
 })
 export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> implements OnInit {
+  private modal = inject(ModalService)
+  private modalRef = inject<ModalRef<AvatarDialogResult>>(ModalRef)
+  private images = inject(ImagesService)
+  private sanitizer = inject(DomSanitizer)
+
   public static open(modal: ModalService, options: ModalOpenOptions<AvatarDialogComponent>) {
     options.size ??= 'sm'
     options.content = AvatarDialogComponent
@@ -48,7 +53,7 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
   protected iconDelete = svgTrashCan
   private maxFileSizeInMb$ = of(1.2)
   private imageId$ = this.select(({ imageId }) => imageId)
-  private imageUrl$ = this.imageId$.pipe(switchMap((id) => this.imagesDb.imageUrl(id)))
+  private imageUrl$ = this.imageId$.pipe(switchMap((id) => this.images.imageUrl(id)))
   private file$ = this.select(({ file }) => file)
   private filePreviewUrl$ = this.file$.pipe(switchMap((file) => this.createPreviewurl(file)))
 
@@ -75,12 +80,7 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
     }),
   )
 
-  public constructor(
-    private modal: ModalService,
-    private modalRef: ModalRef<AvatarDialogResult>,
-    private imagesDb: ImagesDB,
-    private sanitizer: DomSanitizer,
-  ) {
+  public constructor() {
     super({
       imageId: null,
     })
@@ -129,7 +129,7 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
       },
     })
       .result$.pipe(filter((it) => !!it))
-      .pipe(switchMap(() => this.imagesDb.destroy(imageId)))
+      .pipe(switchMap(() => this.images.delete(imageId)))
       .subscribe(() => {
         this.patchState({ imageId: null })
         this.modalRef.close({ imageId: null })
@@ -170,17 +170,14 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
 
   protected async saveImageFile(file: File, oldId: string) {
     const buffer = await file.arrayBuffer()
-    const result = await this.imagesDb.tx(async () => {
-      if (oldId) {
-        await this.imagesDb.destroy(oldId).catch(() => null)
-      }
-      return this.imagesDb.create({
-        id: null,
-        type: file.type,
-        data: buffer,
-      })
+    if (oldId) {
+      await this.images.delete(oldId).catch(() => null)
+    }
+    return this.images.create({
+      id: null,
+      type: file.type,
+      data: buffer,
     })
-    return result
   }
 
   // protected showFileTooLargeError() {

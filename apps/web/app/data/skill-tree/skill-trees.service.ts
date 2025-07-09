@@ -2,14 +2,14 @@ import { computed, inject, Injectable, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { catchError, combineLatest, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
-import { GearsetRecord } from '../gearsets'
-import { SkillTreesDB } from './skill-trees.db'
-import { SkillTree, SkillTreeRecord } from './types'
 import { autoSync } from '../backend/auto-sync'
+import { GearsetRecord } from '../gearsets'
+import { injectSkillTreesDB } from './skill-trees.db'
+import { SkillTree, SkillTreeRecord } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class SkillTreesService {
-  private table = inject(SkillTreesDB)
+  private table = injectSkillTreesDB()
   private backend = inject(BackendService)
   private userId = computed(() => this.backend.session()?.id)
   private userId$ = toObservable(this.userId)
@@ -67,7 +67,7 @@ export class SkillTreesService {
       catchError((error) => {
         console.error('Error observing skill build record:', error)
         return of(null)
-      })
+      }),
     )
   }
 

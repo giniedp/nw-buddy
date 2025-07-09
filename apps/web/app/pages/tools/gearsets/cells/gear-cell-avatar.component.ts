@@ -1,11 +1,11 @@
 import { CdkConnectedOverlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { filter } from 'rxjs'
-import { GearsetStore, ImagesDB } from '~/data'
+import { GearsetStore, ImagesService } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
@@ -34,7 +34,7 @@ export class GearCellAvatarComponent {
 
   protected gearScore = this.mannequin.gearScore
   protected level = this.mannequin.level
-  protected image = toSignal(inject(ImagesDB).imageUrl(toObservable(this.store.gearsetImageId)))
+  protected image = toSignal(inject(ImagesService).imageUrl(toObservable(this.store.gearsetImageId)))
 
   protected leveltarget: Element
   protected levelValue: number

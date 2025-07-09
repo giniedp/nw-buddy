@@ -2,7 +2,7 @@ import { inject } from '@angular/core'
 import { signalStoreFeature, type, withMethods } from '@ngrx/signals'
 import { EquipSlotId } from '@nw-data/common'
 import { PerkData } from '@nw-data/generated'
-import { ImagesDB } from '../images'
+import { injectImagesDB } from '../images'
 import { ItemInstance, ItemsService } from '../items'
 import { SkillTree } from '../skill-tree/types'
 import { GearsetsService } from './gearsets.service'
@@ -48,7 +48,7 @@ export function withGearsetMethods() {
     }),
     withMethods(({ gearset, patchSlot, patchGearset }) => {
       const items = inject(ItemsService)
-      const images = inject(ImagesDB)
+      const images = injectImagesDB()
       return {
         update: patchGearset,
         updateSlotGearScore: async (slot: EquipSlotId, gearScore: number) => {

@@ -8,7 +8,7 @@ import { patchState, signalStore, withComputed, withHooks, withMethods, withProp
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
-import { CharactersDB } from './characters.db'
+import { injectCharactersDB } from './characters.db'
 import { CharacterRecord } from './types'
 
 export interface CharacterStoreState {
@@ -34,7 +34,7 @@ export const CharacterStore = signalStore(
   withMethods((state) => {
     const backend = inject(BackendService)
     const userId = backend.sessionUserId
-    const table = inject(CharactersDB)
+    const table = injectCharactersDB()
     return {
       create: (record: Partial<CharacterRecord>) => {
         return table.create({
@@ -64,7 +64,7 @@ export const CharacterStore = signalStore(
     const backend = inject(BackendService)
     const userId = backend.sessionUserId
     const userId$ = toObservable(userId)
-    const table = inject(CharactersDB)
+    const table = injectCharactersDB()
     return {
       load: rxMethod<string | void>(
         pipe(

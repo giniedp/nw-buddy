@@ -1,8 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
+import { environment } from 'apps/web/environments'
 import { combineLatest, filter } from 'rxjs'
+import {
+  injectCharactersDB,
+  injectGearsetsDB,
+  injectItemInstancesDB,
+  injectSkillTreesDB,
+  injectTablePresetsDB,
+} from '~/data'
+import { BackendService } from '~/data/backend'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
@@ -13,10 +23,6 @@ import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
-import { BackendService } from '~/data/backend'
-import { environment } from 'apps/web/environments'
-import { CharactersDB, GearsetsDB, ItemInstancesDB, SkillTreesDB, TablePresetDB } from '~/data'
-import { rxResource, toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'nwb-preferences-page',
@@ -31,11 +37,11 @@ export class PreferencesComponent {
   protected backend = inject(BackendService)
   protected signedIn = this.backend.isSignedIn
   protected session = this.backend.session
-  private tableChar = inject(CharactersDB)
-  private tableItems = inject(ItemInstancesDB)
-  private tableTrees = inject(SkillTreesDB)
-  private tableGears = inject(GearsetsDB)
-  private tableGrids = inject(TablePresetDB)
+  private tableChar = injectCharactersDB()
+  private tableItems = injectItemInstancesDB()
+  private tableTrees = injectSkillTreesDB()
+  private tableGears = injectGearsetsDB()
+  private tableGrids = injectTablePresetsDB()
 
   protected envName = environment.environment
   protected version = environment.version
@@ -60,7 +66,7 @@ export class PreferencesComponent {
       trees: 0,
       gears: 0,
       grids: 0,
-    }
+    },
   })
   protected countUser = rxResource({
     params: () => this.backend.session()?.id || 'local',
@@ -79,7 +85,7 @@ export class PreferencesComponent {
       trees: 0,
       gears: 0,
       grids: 0,
-    }
+    },
   })
 
   protected get collapseMenu() {

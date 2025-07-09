@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { firstValueFrom } from 'rxjs'
 import { testAppConfig } from '~/test'
 import { APP_DB } from '../db'
-import { SkillTreesDB } from './skill-trees.db'
+import { injectSkillTreesDB, SkillTreesDB } from './skill-trees.db'
 import { SkillTreesService } from './skill-trees.service'
 
 describe('SkillTreesService', () => {
@@ -14,7 +14,7 @@ describe('SkillTreesService', () => {
       providers: [testAppConfig.providers],
     }).compileComponents()
     TestBed.inject(APP_DB).dropTables()
-    table = TestBed.inject(SkillTreesDB)
+    table = injectSkillTreesDB()
     store = TestBed.inject(SkillTreesService)
     table.create({ id: 'test1', name: 'Build without user' })
     table.create({ id: 'test2', name: 'Build with user', userId: 'user1' })

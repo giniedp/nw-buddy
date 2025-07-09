@@ -2,12 +2,12 @@ import { inject, Injectable } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { catchError, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
-import { TableStateDB } from './table-states.db'
+import { injectTableStatesDB } from './table-states.db'
 import { TableStateRecord } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class TableStatesService {
-  private table = inject(TableStateDB)
+  private table = injectTableStatesDB()
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)

@@ -7,7 +7,7 @@ import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
 import { GearsetRecord } from '../gearsets/types'
 import { injectNwData } from '../nw-data'
-import { ItemInstancesDB } from './items.db'
+import { injectItemInstancesDB } from './items.db'
 import { ItemInstance, ItemInstanceRecord } from './types'
 import { buildItemInstanceRows } from './utils'
 
@@ -17,7 +17,7 @@ import { buildItemInstanceRows } from './utils'
 export class ItemsService {
   private backend = inject(BackendService)
   private nwdb = injectNwData()
-  private table = inject(ItemInstancesDB)
+  private table = injectItemInstancesDB()
   private userId$ = toObservable(this.backend.session).pipe(map((it) => it?.id))
   private userId = toSignal(this.userId$)
   private ready = signal(false)

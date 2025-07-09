@@ -1,9 +1,9 @@
-import { computed, inject, Injectable } from '@angular/core'
-import { CharactersDB } from '../characters'
-import { GearsetsDB } from '../gearsets/gearsets.db'
+import { computed, Injectable } from '@angular/core'
+import { injectCharactersDB } from '../characters'
+import { injectGearsetsDB } from '../gearsets'
 import { GearsetRecord } from '../gearsets/types'
-import { ItemInstanceRecord, ItemInstancesDB } from '../items'
-import { SkillTreesDB } from '../skill-tree/skill-trees.db'
+import { injectItemInstancesDB, ItemInstanceRecord } from '../items'
+import { injectSkillTreesDB } from '../skill-tree'
 import { SkillTreeRecord } from '../skill-tree/types'
 import { injectBackendAdapter } from './provider'
 
@@ -27,10 +27,10 @@ export class BackendService {
     return this.adapter.signOut()
   }
 
-  private gearsets = inject(GearsetsDB)
-  private skills = inject(SkillTreesDB)
-  private items = inject(ItemInstancesDB)
-  private characters = inject(CharactersDB)
+  private gearsets = injectGearsetsDB()
+  private skills = injectSkillTreesDB()
+  private items = injectItemInstancesDB()
+  private characters = injectCharactersDB()
 
   public readonly privateTables = {
     gearsets: this.adapter.initPrivateTable(this.gearsets),

@@ -1,15 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core'
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
-import { catchError, combineLatest, of, switchMap } from 'rxjs'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { catchError, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
-import { GearsetRecord } from '../gearsets'
-import { autoSync } from '../backend/auto-sync'
-import { TransmogsDB } from './transmogs.db'
+import { injectTransmogsDB } from './transmogs.db'
 import { TransmogRecord } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogsService {
-  private table = inject(TransmogsDB)
+  private table = injectTransmogsDB()
   private backend = inject(BackendService)
   private userId = computed(() => this.backend.session()?.id)
   private userId$ = toObservable(this.userId)
@@ -68,7 +66,7 @@ export class TransmogsService {
       catchError((error) => {
         console.error('Error observing skill build record:', error)
         return of(null)
-      })
+      }),
     )
   }
 

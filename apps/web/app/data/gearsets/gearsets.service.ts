@@ -1,20 +1,23 @@
-import { computed, inject, Injectable, signal } from '@angular/core'
+import { inject, Injectable, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
-import { EquipSlotId } from '@nw-data/common'
+import { EquipSlotId, getItemPerkInfos, ItemPerkInfo, PerkBucket } from '@nw-data/common'
+import { NwData } from '@nw-data/db'
+import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs'
+import { combineLatestOrEmpty } from '~/utils'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
-import { ItemInstance, ItemsService } from '../items'
+import { ItemInstance, ItemInstancesDB, ItemsService } from '../items'
 import { injectNwData } from '../nw-data'
 import { tableIndexBy } from '../nw-data/dsl'
-import { GearsetsDB } from './gearsets.db'
+import { injectGearsetsDB } from './gearsets.db'
 import { GearsetRecord } from './types'
 import { GearsetRow, selectGearsetRow } from './utils'
 
 @Injectable({ providedIn: 'root' })
 export class GearsetsService {
   private nwdata = injectNwData()
-  private table = inject(GearsetsDB)
+  private table = injectGearsetsDB()
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
@@ -217,8 +220,76 @@ export class GearsetsService {
     }
     this.update(record.id, record)
   }
+
+  public resolveGearsetSlotItems(record: GearsetRecord) {
+    return resolveGearsetSlotItems(record, this.itemsDb, this.nwdata)
+  }
+
 }
 
 function makeCopy<T>(it: T) {
   return JSON.parse(JSON.stringify(it)) as T
+}
+
+function decodeSlot(slot: string | ItemInstance) {
+  const instanceId = typeof slot === 'string' ? slot : null
+  const instance = typeof slot !== 'string' ? slot : null
+  return {
+    instanceId,
+    instance,
+  }
+}
+
+function resolveSlotItemInstance(userId: string, slot: string | ItemInstance, itemDB: ItemsService): Observable<ItemInstance> {
+  const { instance, instanceId } = decodeSlot(slot)
+  return instanceId ? itemDB.observeRecord({ userId, id: instanceId }) : of(instance)
+}
+
+function resolveGearsetSlotInstances(record: GearsetRecord, itemDB: ItemsService) {
+  return combineLatestOrEmpty(
+    Object.entries(record.slots).map(([slot, instance]) => {
+      return combineLatest({
+        slot: of(slot as EquipSlotId),
+        instanceId: of(typeof instance === 'string' ? instance : null),
+        instance: resolveSlotItemInstance(record.userId, instance, itemDB),
+      })
+    }),
+  )
+}
+
+export interface ResolvedGersetSlotItem {
+  slot: EquipSlotId
+  instance: ItemInstance
+  item: MasterItemDefinitions
+  perks: ResolvedItemPerkInfo[]
+}
+export interface ResolvedItemPerkInfo extends ItemPerkInfo {
+  bucket: PerkBucket
+  perk: PerkData
+}
+function resolveGearsetSlotItems(record: GearsetRecord, itemDB: ItemsService, db: NwData) {
+  return combineLatest({
+    slots: resolveGearsetSlotInstances(record, itemDB),
+    items: db.itemsByIdMap(),
+    perks: db.perksByIdMap(),
+    buckets: db.perkBucketsByIdMap(),
+  }).pipe(
+    map(({ slots, items, perks, buckets }): ResolvedGersetSlotItem[] => {
+      return slots.map(({ slot, instance }): ResolvedGersetSlotItem => {
+        const item = items.get(instance?.itemId)
+        return {
+          slot,
+          instance,
+          item,
+          perks: getItemPerkInfos(item, instance.perks).map((it): ResolvedItemPerkInfo => {
+            return {
+              ...it,
+              bucket: buckets.get(it.bucketId),
+              perk: perks.get(it.perkId),
+            }
+          }),
+        }
+      })
+    }),
+  )
 }
