@@ -12,6 +12,7 @@ export interface PocketRecord<T extends AppDbRecord> extends RecordModel {
 }
 
 export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTable<T> {
+  protected readonly client: PocketBase
   public readonly name: string
   public readonly collection: RecordService<PocketRecord<T>>
 
@@ -42,10 +43,11 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
   }
 
   public constructor(
-    protected readonly client: PocketBase,
-    protected readonly table: AppDbTable<T>,
+    client: PocketBase,
+    tableName: string,
   ) {
-    this.name = table.tableName
+    this.client = client
+    this.name = tableName
     this.collection = client.collection(this.name)
     this.userId$.subscribe((id) => (this.userId = id))
   }

@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core'
 import { Subject } from 'rxjs'
-import { AppDbRecord, AppDbTable } from '../../app-db'
 import { BackendAdapter, SessionState } from '../backend-adapter'
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +22,7 @@ export class NoBackendAdapter extends BackendAdapter {
     //
   }
 
-  public initPrivateTable(table: AppDbTable<AppDbRecord>) {
+  public initPrivateTable(table: string) {
     return null
   }
 

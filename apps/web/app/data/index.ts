@@ -1,6 +1,5 @@
 export * from './characters'
 export * from './gearsets'
-export * from './images'
 export * from './items'
 export * from './skill-tree'
 export * from './table-presets'

@@ -2,7 +2,7 @@ import { computed, Injectable, signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import PocketBase from 'pocketbase'
 import { Subject } from 'rxjs'
-import { AppDbRecord, AppDbTable } from '~/data/app-db'
+import { AppDbRecord } from '~/data/app-db'
 import { environment } from '../../../../environments'
 import { BackendAdapter, SessionState } from '../backend-adapter'
 import { authState } from './auth-state'
@@ -71,7 +71,7 @@ export class PocketbaseAdapter extends BackendAdapter {
     this.userSignedOut.next(currentSession)
   }
 
-  public initPrivateTable<T extends AppDbRecord>(table: AppDbTable<T>) {
+  public initPrivateTable<T extends AppDbRecord>(table: string) {
     return new PocketbasePrivateTable<T>(this.client, table)
   }
 

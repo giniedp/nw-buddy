@@ -1,6 +1,6 @@
 import { Signal } from '@angular/core'
 import { Observable } from 'rxjs'
-import { AppDbRecord, AppDbTable } from '../app-db'
+import { AppDbRecord } from '../app-db'
 
 export interface SessionState {
   id: string
@@ -40,6 +40,6 @@ export abstract class BackendAdapter {
   abstract userSignedIn: Observable<SessionState>
   abstract userSignedOut: Observable<SessionState>
 
-  abstract initPrivateTable<T extends AppDbRecord>(table: AppDbTable<T>): PrivateTable<T>
+  abstract initPrivateTable<T extends AppDbRecord>(table: string): PrivateTable<T>
   abstract initPublicTable<T extends AppDbRecord>(table: string): PublicTable<T>
 }

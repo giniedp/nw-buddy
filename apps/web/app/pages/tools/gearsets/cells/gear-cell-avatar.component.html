@@ -7,11 +7,7 @@
 }
 
 <picture class="flex-1 block w-full aspect-video relative rounded-md shadow-md">
-  @if (image()) {
-    <img [src]="image()" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
-  } @else {
-    <img [nwImage]="'assets/landing.webp'" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
-  }
+  <img [nwImage]="'assets/landing.webp'" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
   <img [nwImage]="'assets/landing-animation.webp'" class="absolute bottom-0 left-0 w-full" />
 
   <div class="absolute bottom-0 right-0 p-2 flex flex-row items-center">
@@ -35,11 +31,6 @@
     </span>
     <div class="text-6xl font-caslon">{{ level() | number: '0.0-0' }}</div>
   </button>
-  @if (isEditable()) {
-    <button class="absolute top-1 right-1 btn btn-ghost btn-square screenshot-hidden" (click)="handleAvatarClicked()">
-      <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
-    </button>
-  }
 </picture>
 
 <ng-template

@@ -2,7 +2,6 @@ import { inject } from '@angular/core'
 import { signalStoreFeature, type, withMethods } from '@ngrx/signals'
 import { EquipSlotId } from '@nw-data/common'
 import { PerkData } from '@nw-data/generated'
-import { injectImagesDB } from '../images'
 import { ItemInstance, ItemsService } from '../items'
 import { SkillTree } from '../skill-tree/types'
 import { GearsetsService } from './gearsets.service'
@@ -48,7 +47,6 @@ export function withGearsetMethods() {
     }),
     withMethods(({ gearset, patchSlot, patchGearset }) => {
       const items = inject(ItemsService)
-      const images = injectImagesDB()
       return {
         update: patchGearset,
         updateSlotGearScore: async (slot: EquipSlotId, gearScore: number) => {
@@ -62,22 +60,6 @@ export function withGearsetMethods() {
         },
         updateLevel: async (level: number) => {
           await patchGearset({ level })
-        },
-        updateGearsetImage: async (file: File) => {
-          const buffer = await file.arrayBuffer()
-          const gearset = this.get().gearset
-          const oldId = gearset.imageId
-          const result = await images.tx(async () => {
-            if (oldId) {
-              await images.destroy(oldId)
-            }
-            return images.create({
-              id: null,
-              type: file.type,
-              data: buffer,
-            })
-          })
-          await patchGearset({ imageId: result.id })
         },
 
         async updateStatusEffects(updates: Array<{ id: string; stack: number }>) {

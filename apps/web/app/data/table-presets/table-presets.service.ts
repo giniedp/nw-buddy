@@ -5,6 +5,7 @@ import { catchError, distinctUntilChanged, map, NEVER, of, switchMap } from 'rxj
 import { BackendService } from '../backend'
 import { injectTablePresetsDB } from './table-presets.db'
 import { TablePresetRecord } from './types'
+import { autoSync } from '../backend/auto-sync'
 
 @Injectable({ providedIn: 'root' })
 export class TablePresetsService {
@@ -12,7 +13,7 @@ export class TablePresetsService {
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
-  private ready = signal(true)
+  private ready = signal(false)
   private ready$ = toObservable(this.ready)
 
   public constructor() {
@@ -20,8 +21,16 @@ export class TablePresetsService {
   }
 
   public sync = rxMethod<void>((source) => {
-    return source
-    // TODO: connect to backend for syncing
+    return source.pipe(
+      switchMap(() => {
+        return autoSync({
+          userId: this.userId$,
+          local: this.table,
+          remote: this.backend.privateTables.grids,
+        })
+      }),
+      map((stage) => this.ready.set(stage === 'offline' || stage === 'syncing')),
+    )
   })
 
   public read(id: string) {

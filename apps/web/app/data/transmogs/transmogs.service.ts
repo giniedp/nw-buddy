@@ -1,10 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, distinctUntilChanged, NEVER, of, switchMap } from 'rxjs'
+import { catchError, distinctUntilChanged, map, NEVER, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 import { injectTransmogsDB } from './transmogs.db'
 import { TransmogRecord } from './types'
+import { autoSync } from '../backend/auto-sync'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogsService {
@@ -12,7 +13,7 @@ export class TransmogsService {
   private backend = inject(BackendService)
   private userId = computed(() => this.backend.session()?.id)
   private userId$ = toObservable(this.userId)
-  private ready = signal(true)
+  private ready = signal(false)
   public ready$ = toObservable(this.ready)
 
   public constructor() {
@@ -20,17 +21,16 @@ export class TransmogsService {
   }
 
   public sync = rxMethod<void>((source) => {
-    return source
-    // TODO: connect to backend for syncing
-    // autoSync({
-    //   userId: this.userId$,
-    //   local: this.table,
-    //   remote: this.backend.privateTables.transmogs,
-    // })
-    //   .pipe(takeUntilDestroyed())
-    //   .subscribe((stage) => {
-    //     this.ready.set(stage === 'offline' || stage === 'syncing')
-    //   })
+    return source.pipe(
+      switchMap(() => {
+        return autoSync({
+          userId: this.userId$,
+          local: this.table,
+          remote: this.backend.privateTables.transmogs,
+        })
+      }),
+      map((stage) => this.ready.set(stage === 'offline' || stage === 'syncing')),
+    )
   })
 
   public read(id: string) {

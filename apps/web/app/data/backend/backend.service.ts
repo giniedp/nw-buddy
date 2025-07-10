@@ -1,12 +1,10 @@
 import { computed, effect, Injectable } from '@angular/core'
-import { Subject } from 'rxjs'
-import { injectCharactersDB } from '../characters'
-import { injectGearsetsDB } from '../gearsets'
+import { CharacterRecord } from '../characters'
 import { GearsetRecord } from '../gearsets/types'
-import { injectItemInstancesDB } from '../items'
-import { injectSkillTreesDB } from '../skill-tree'
+import { ItemInstanceRecord } from '../items'
 import { SkillTreeRecord } from '../skill-tree/types'
-import { injectTablePresetsDB } from '../table-presets'
+import { TablePresetRecord } from '../table-presets'
+import { TransmogRecord } from '../transmogs'
 import { injectBackendAdapter } from './provider'
 
 @Injectable({
@@ -23,33 +21,19 @@ export class BackendService {
   public readonly userSignedIn = this.adapter.userSignedIn
   public readonly userSignedOut = this.adapter.userSignedOut
 
-  private characters = injectCharactersDB()
-  private gearsets = injectGearsetsDB()
-  private skills = injectSkillTreesDB()
-  private items = injectItemInstancesDB()
-  // private transmogs = injectTransmogsDB()
-  private gridsets = injectTablePresetsDB()
-
   public readonly privateTables = {
-    gearsets: this.adapter.initPrivateTable(this.gearsets),
-    skillTrees: this.adapter.initPrivateTable(this.skills),
-    items: this.adapter.initPrivateTable(this.items),
-    characters: this.adapter.initPrivateTable(this.characters),
-    // transmogs: this.adapter.initPrivateTable(this.transmogs),
-    // gridsets: this.adapter.initPrivateTable(this.gridsets),
+    gearsets: this.adapter.initPrivateTable<GearsetRecord>('gearsets'),
+    skillTrees: this.adapter.initPrivateTable<SkillTreeRecord>('skilltrees'),
+    items: this.adapter.initPrivateTable<ItemInstanceRecord>('items'),
+    characters: this.adapter.initPrivateTable<CharacterRecord>('characters'),
+    transmogs: this.adapter.initPrivateTable<TransmogRecord>('transmogs'),
+    grids: this.adapter.initPrivateTable<TablePresetRecord>('grids'),
   }
 
   public readonly publicTables = {
-    gearsets: this.adapter.initPublicTable<GearsetRecord>(`public_${this.gearsets.tableName}`),
-    skillSets: this.adapter.initPublicTable<SkillTreeRecord>(`public_${this.skills.tableName}`),
-    // items: this.adapter.initPublicTable<ItemInstanceRecord>(`public_${this.items.tableName}`),
-    // items: this.adapter.initPublicTable<ItemInstanceRecord>(`public_${this.items.tableName}`),
-  }
-
-  public constructor() {
-    effect(() => {
-      console.log({ session: this.session() })
-    })
+    gearsets: this.adapter.initPublicTable<GearsetRecord>(`public_gearsets`),
+    skillSets: this.adapter.initPublicTable<SkillTreeRecord>(`public_skilltrees`),
+    transmogs: this.adapter.initPublicTable<TransmogRecord>(`public_transmogs`),
   }
 
   public signIn() {

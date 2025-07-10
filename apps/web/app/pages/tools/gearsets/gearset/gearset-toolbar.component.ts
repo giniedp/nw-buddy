@@ -24,7 +24,6 @@ import {
   ItemInstance,
   ItemsService,
   ResolvedItemPerkInfo,
-  injectImagesDB,
   injectNwData,
 } from '~/data'
 import { BackendService } from '~/data/backend'
@@ -97,7 +96,6 @@ export class GearsetToolbarComponent {
   private gearService = inject(GearsetsService)
   private picker = inject(InventoryPickerService)
   private itemsDb = inject(ItemsService)
-  private imagesDb = injectImagesDB()
   private modal = inject(ModalService)
   private platform = inject(PlatformService)
   private db = injectNwData()
@@ -217,9 +215,6 @@ export class GearsetToolbarComponent {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
-        if (record.imageId) {
-          this.imagesDb.destroy(record.imageId)
-        }
         if (record.id) {
           this.gearService.delete(record.id)
         }

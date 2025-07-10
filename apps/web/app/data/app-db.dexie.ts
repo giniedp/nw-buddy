@@ -6,9 +6,8 @@ import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent, WhereConditions } from
 import {
   DBT_CHARACTERS,
   DBT_GEARSETS,
-  DBT_IMAGES,
   DBT_ITEMS,
-  DBT_SKILL_BUILDS,
+  DBT_SKILL_TREES,
   DBT_TABLE_PRESETS,
   DBT_TABLE_STATES,
 } from './constants'
@@ -20,7 +19,7 @@ export class AppDbDexie extends AppDb {
   public constructor(name: string) {
     super()
     this.dexie = new Dexie(name)
-    this.init(this.dexie)
+    this.createSchema(this.dexie)
   }
 
   public override table(name: string) {
@@ -45,9 +44,8 @@ export class AppDbDexie extends AppDb {
     const tables = [
       DBT_CHARACTERS,
       DBT_GEARSETS,
-      DBT_IMAGES,
       DBT_ITEMS,
-      DBT_SKILL_BUILDS,
+      DBT_SKILL_TREES,
       DBT_TABLE_PRESETS,
       DBT_TABLE_STATES,
       DBT_TRANSMOGS,
@@ -62,9 +60,8 @@ export class AppDbDexie extends AppDb {
     const tables = [
       DBT_CHARACTERS,
       DBT_GEARSETS,
-      DBT_IMAGES,
       DBT_ITEMS,
-      DBT_SKILL_BUILDS,
+      DBT_SKILL_TREES,
       DBT_TABLE_PRESETS,
       DBT_TABLE_STATES,
       DBT_TRANSMOGS,
@@ -79,25 +76,42 @@ export class AppDbDexie extends AppDb {
     }
   }
 
-  private init(db: Dexie) {
-    db.version(8)
+  private createSchema(db: Dexie) {
+    db.version(1).stores({
+      items: 'id,itemId,gearScore',
+      gearsets: 'id,*tags',
+    })
+    db.version(2).stores({
+      images: 'id',
+    })
+    db.version(3).stores({
+      characters: 'id',
+    })
+    db.version(4).stores({
+      skillbuilds: 'id',
+    })
+    db.version(5).stores({
+      ['table-presets']: 'id,key',
+      ['table-states']: 'id',
+    })
+
+    db.version(6)
       .stores({
-        [DBT_ITEMS]: 'id,itemId,gearScore,userId',
-        [DBT_GEARSETS]: 'id,*tags,userId,characterId',
-        [DBT_IMAGES]: 'id,userId',
-        [DBT_CHARACTERS]: 'id,userId',
-        [DBT_SKILL_BUILDS]: 'id,userId',
-        [DBT_TABLE_PRESETS]: 'id,key,userId',
-        [DBT_TABLE_STATES]: 'id,userId',
-        [DBT_TRANSMOGS]: 'id,userId',
+        items: 'id,itemId,gearScore,userId',
+        gearsets: 'id,*tags,userId,characterId',
+        images: null, // deleted
+        characters: 'id,userId',
+        skillbuilds: 'id,userId',
+        'table-presets': 'id,key,userId',
+        'table-states': 'id,userId',
+        transmogs: 'id,userId',
       })
       .upgrade((trans) => {
         const tables = [
           DBT_CHARACTERS,
           DBT_GEARSETS,
-          DBT_IMAGES,
           DBT_ITEMS,
-          DBT_SKILL_BUILDS,
+          DBT_SKILL_TREES,
           DBT_TABLE_PRESETS,
           DBT_TABLE_STATES,
           DBT_TRANSMOGS,
@@ -162,6 +176,9 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
       id: record.id ?? createId(),
       createdAt: record.createdAt ?? now.toJSON(),
       updatedAt: record.updatedAt ?? now.toJSON(),
+    }
+    if (!record.userId) {
+      console.warn(`Creating record in table "${this.tableName}" without userId.`)
     }
 
     const id = await this.table.add(record as T, record.id)

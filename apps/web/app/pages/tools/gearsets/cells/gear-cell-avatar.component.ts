@@ -1,18 +1,15 @@
 import { CdkConnectedOverlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
-import { filter } from 'rxjs'
-import { GearsetStore, ImagesService } from '~/data'
+import { GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { ModalService } from '~/ui/layout'
-import { AvatarDialogComponent } from './ui/avatar-dialog.component'
 
 @Component({
   selector: 'nwb-gear-cell-avatar',
@@ -34,7 +31,6 @@ export class GearCellAvatarComponent {
 
   protected gearScore = this.mannequin.gearScore
   protected level = this.mannequin.level
-  protected image = toSignal(inject(ImagesService).imageUrl(toObservable(this.store.gearsetImageId)))
 
   protected leveltarget: Element
   protected levelValue: number
@@ -65,20 +61,5 @@ export class GearCellAvatarComponent {
       this.levelValue -= 1
     }
     this.levelValue = Math.max(this.levelMin, Math.min(this.levelMax, this.levelValue))
-  }
-
-  protected handleAvatarClicked() {
-    if (!this.isEditable) {
-      return
-    }
-    AvatarDialogComponent.open(this.modal, {
-      inputs: {
-        imageId: this.store.gearset()?.imageId,
-      },
-    })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe(({ imageId }) => {
-        this.store.patchGearset({ imageId })
-      })
   }
 }
