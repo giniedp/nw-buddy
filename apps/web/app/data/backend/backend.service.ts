@@ -6,6 +6,7 @@ import { SkillTreeRecord } from '../skill-tree/types'
 import { TablePresetRecord } from '../table-presets'
 import { TransmogRecord } from '../transmogs'
 import { injectBackendAdapter } from './provider'
+import { BookmarkRecord } from '../bookmarks/types'
 
 @Injectable({
   providedIn: 'root',
@@ -22,12 +23,13 @@ export class BackendService {
   public readonly userSignedOut = this.adapter.userSignedOut
 
   public readonly privateTables = {
-    gearsets: this.adapter.initPrivateTable<GearsetRecord>('gearsets'),
-    skillTrees: this.adapter.initPrivateTable<SkillTreeRecord>('skilltrees'),
-    items: this.adapter.initPrivateTable<ItemInstanceRecord>('items'),
+    bookmarks: this.adapter.initPrivateTable<BookmarkRecord>('bookmarks'),
     characters: this.adapter.initPrivateTable<CharacterRecord>('characters'),
-    transmogs: this.adapter.initPrivateTable<TransmogRecord>('transmogs'),
+    gearsets: this.adapter.initPrivateTable<GearsetRecord>('gearsets'),
     grids: this.adapter.initPrivateTable<TablePresetRecord>('grids'),
+    items: this.adapter.initPrivateTable<ItemInstanceRecord>('items'),
+    skillTrees: this.adapter.initPrivateTable<SkillTreeRecord>('skilltrees'),
+    transmogs: this.adapter.initPrivateTable<TransmogRecord>('transmogs'),
   }
 
   public readonly publicTables = {

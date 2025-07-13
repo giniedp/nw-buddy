@@ -1,17 +1,17 @@
 import { Dexie, liveQuery, PromiseExtended, Table } from 'dexie'
 import { customAlphabet } from 'nanoid/non-secure'
 import { defer, of, Observable as RxObservable, Subject } from 'rxjs'
-
 import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent, WhereConditions } from './app-db'
 import {
+  DBT_BOOKMARKS,
   DBT_CHARACTERS,
   DBT_GEARSETS,
   DBT_ITEMS,
   DBT_SKILL_TREES,
   DBT_TABLE_PRESETS,
   DBT_TABLE_STATES,
+  DBT_TRANSMOGS,
 } from './constants'
-import { DBT_TRANSMOGS } from './transmogs'
 
 export class AppDbDexie extends AppDb {
   private tables: Record<string, AppDbDexieTable<any>> = {}
@@ -25,12 +25,6 @@ export class AppDbDexie extends AppDb {
   public override table(name: string) {
     this.tables[name] = this.tables[name] || new AppDbDexieTable(this, name)
     return this.tables[name]
-  }
-
-  public async reset() {
-    await this.dexie.open()
-    await this.dexie.delete()
-    await this.dexie.open()
   }
 
   public async dropTables() {
@@ -95,7 +89,7 @@ export class AppDbDexie extends AppDb {
       ['table-states']: 'id',
     })
 
-    db.version(6)
+    db.version(8)
       .stores({
         items: 'id,itemId,gearScore,userId',
         gearsets: 'id,*tags,userId,characterId',
@@ -105,6 +99,7 @@ export class AppDbDexie extends AppDb {
         'table-presets': 'id,key,userId',
         'table-states': 'id,userId',
         transmogs: 'id,userId',
+        bookmarks: 'id,userId,[userId+characterId]',
       })
       .upgrade((trans) => {
         const tables = [
@@ -115,6 +110,7 @@ export class AppDbDexie extends AppDb {
           DBT_TABLE_PRESETS,
           DBT_TABLE_STATES,
           DBT_TRANSMOGS,
+          DBT_BOOKMARKS,
         ]
         for (const table of tables) {
           trans

@@ -18,7 +18,7 @@ import { map, switchMap } from 'rxjs'
 import { ItemMeta, ItemPreferencesService } from '~/preferences'
 
 @Component({
-  selector: 'nwb-gs-tracker,nwb-price-tracker,nwb-stock-tracker',
+  selector: 'nwb-price-tracker,nwb-stock-tracker',
   exportAs: 'gsTracker',
   templateUrl: './item-tracker.component.html',
   styleUrls: ['./item-tracker.component.scss'],

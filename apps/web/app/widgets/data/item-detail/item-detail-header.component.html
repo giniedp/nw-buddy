@@ -45,19 +45,6 @@
             [class.opacity-100]="marker.hasValue()"
             #marker
           />
-          @if (enableGsTracker()) {
-            <span
-              class="text-right transition-opacity opacity-0 group-hover:opacity-100"
-              [class.opacity-100]="!tracker.isEmpty()"
-            >
-              <nwb-gs-tracker
-                #tracker
-                [itemId]="recordId()"
-                class="text-right mt-1 tooltip-left"
-                [emptyTip]="'Track Gear Score'"
-              />
-            </span>
-          }
         </div>
       }
       <!-- <ng-content select=".content" /> -->

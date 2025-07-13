@@ -16,9 +16,6 @@ export class AppDbNoop extends AppDb {
     return this.tables[name]
   }
 
-  public async reset() {
-    //
-  }
   public async dropTables() {
     for (const table of Object.values(this.tables)) {
       // No-op, as this is a noop implementation

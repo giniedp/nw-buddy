@@ -16,8 +16,13 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { CraftingRecipeData, GameEventData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { ScannedStation } from '@nw-data/generated'
+import {
+  CraftingRecipeData,
+  GameEventData,
+  HouseItems,
+  MasterItemDefinitions,
+  ScannedStation,
+} from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { CharacterStore } from '~/data'
 import { RangeFilter } from '~/ui/data/ag-grid'
@@ -246,11 +251,11 @@ export function craftingColBookmark(util: CraftingTableUtils) {
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item)?.toLowerCase())?.mark || 0,
+    valueGetter: ({ data }) => util.character.getItemMarker(getItemId(data.$item)) || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (data: CraftingTableRecord) => getItemId(data.$item),
-      pref: util.itemPref,
+      character: util.character,
     }),
   })
 }

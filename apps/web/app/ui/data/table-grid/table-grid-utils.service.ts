@@ -13,7 +13,7 @@ import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core
 import { DomSanitizer } from '@angular/platform-browser'
 import { Router } from '@angular/router'
 import { ItemRarity } from '@nw-data/common'
-import { injectNwData } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkResource, NwLinkService } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
@@ -34,6 +34,7 @@ export class TableGridUtils<T = any> {
   public readonly expr = inject(NwExpressionService)
   public readonly i18n = inject(TranslateService)
   public readonly itemPref = inject(ItemPreferencesService)
+  public readonly character = inject(CharacterStore)
   public readonly nwLink = inject(NwLinkService)
   public readonly router = inject(Router)
   public readonly sanitizer = inject(DomSanitizer)

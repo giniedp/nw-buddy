@@ -28,7 +28,6 @@ export type AppDbRecord = {
 }
 
 export abstract class AppDb {
-  public abstract reset(): Promise<void>
   public abstract table<T extends AppDbRecord>(name: string): AppDbTable<T>
   public abstract dropTables(): Promise<void>
 }

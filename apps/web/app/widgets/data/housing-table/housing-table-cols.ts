@@ -114,11 +114,11 @@ export function housingColUserBookmark(util: HousingTableUtils) {
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID.toLowerCase())?.mark || 0,
+    valueGetter: ({ data }) => util.character.getItemMarker(data.HouseItemID),
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (value: HouseItems) => getItemId(value),
-      pref: util.itemPref,
+      character: util.character,
     }),
   })
 }

@@ -6,9 +6,8 @@ import { StorageScopeNode, StorageNode } from './storage'
 export interface ItemMeta {
   price?: number
   stock?: number
-  gs?: number
-  fav?: boolean
-  mark?: number
+  // gs?: number
+  // mark?: number
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,16 +21,6 @@ export class ItemPreferencesService {
 
   public get(itemId: string): ItemMeta {
     return this.storage.get(itemId?.toLowerCase())
-  }
-
-  public getFavouritesIds() {
-    return this.storage.keys().filter((id) => this.get(id)?.fav)
-  }
-
-  public toggleFavourite(itemId: string) {
-    this.merge(itemId, {
-      fav: !this.get(itemId)?.fav,
-    })
   }
 
   public merge(itemId: string, meta: ItemMeta) {

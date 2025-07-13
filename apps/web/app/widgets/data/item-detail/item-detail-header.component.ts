@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { getItemId, isHousingItem, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '@nw-data/common'
 import { NwLinkService, NwModule } from '~/nw'
@@ -59,12 +59,4 @@ export class ItemDetailHeaderComponent {
   })
   protected showSkeleton = computed(() => (!this.store.record() && this.store.isLoading()) || !this.store.isLoaded())
   protected showMissing = computed(() => !this.store.record() && !this.store.isLoading() && this.store.isLoaded())
-
-  protected enableGsTracker = computed(() => {
-    const record = this.record()
-    if (!record || !isMasterItem(record)) {
-      return false
-    }
-    return isItemWeapon(record) || isItemArmor(record) || isItemJewelery(record)
-  })
 }

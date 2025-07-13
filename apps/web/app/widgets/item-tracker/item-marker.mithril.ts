@@ -1,11 +1,10 @@
-import { ClosureComponent } from 'mithril'
-import { distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { ItemPreferencesService } from '~/preferences'
-import m from 'mithril'
+import m, { ClosureComponent } from 'mithril'
+import { combineLatest, distinctUntilChanged, of, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { CharacterStore } from '~/data'
 
 export interface ItemMarkerAtts {
   itemId: string
-  meta: ItemPreferencesService
+  char: CharacterStore
   class?: string
   disabled?: boolean
 }
@@ -20,16 +19,14 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
   function value(index: number) {
     return Math.pow(2, index)
   }
-  function toggle(index: number, pref: ItemPreferencesService) {
+  function toggle(index: number, char: CharacterStore) {
     let result = trackedValue
     if (checked(index)) {
       result = result & ~value(index)
     } else {
       result = result | value(index)
     }
-    pref.merge(trackedId, {
-      mark: result,
-    })
+    char.setItemMarker(trackedId, result)
   }
 
   function checked(index: number) {
@@ -42,11 +39,18 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
     oncreate: ({ attrs }) => {
       itemId$
         .pipe(distinctUntilChanged())
-        .pipe(switchMap((id) => attrs.meta.observe(id)))
+        .pipe(
+          switchMap((id) => {
+            return combineLatest({
+              id: of(id),
+              mark: attrs.char.observeItemMarker(id),
+            })
+          }),
+        )
         .pipe(takeUntil(destroy$))
         .subscribe((data) => {
           trackedId = data.id
-          trackedValue = cleanValue(data.meta?.mark) || 0
+          trackedValue = cleanValue(data.mark) || 0
           m.redraw()
         })
     },
@@ -72,7 +76,7 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
             ].join(' '),
             onclick: () => {
               if (!attrs.disabled) {
-                toggle(0, attrs.meta)
+                toggle(0, attrs.char)
               }
             },
           })

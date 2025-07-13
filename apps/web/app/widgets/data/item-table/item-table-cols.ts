@@ -37,7 +37,7 @@ import { uniq } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
-import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
+import { BookmarkCell, TrackGsCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 
 export type ItemTableUtils = TableGridUtils<ItemTableRecord>
@@ -438,11 +438,11 @@ export function itemColBookmark(util: TableGridUtils<MasterItemDefinitions>) {
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: ({ data }) => util.itemPref.get(data.ItemID.toLowerCase())?.mark || 0,
+    valueGetter: ({ data }) => util.character.getItemMarker(data.ItemID) || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (value: MasterItemDefinitions) => getItemId(value),
-      pref: util.itemPref,
+      character: util.character,
     }),
   })
 }
@@ -474,12 +474,11 @@ export function itemColOwnedWithGS(util: TableGridUtils<MasterItemDefinitions>) 
     headerValueGetter: () => 'Owned GS',
     headerTooltip: 'Item owned with this gear score',
     getQuickFilterText: () => '',
-    valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.gs,
-    cellRenderer: TrackingCell,
-    cellRendererParams: TrackingCell.params({
+    valueGetter: ({ data }) => util.character.getItemGearScore(data.ItemID),
+    cellRenderer: TrackGsCell,
+    cellRendererParams: TrackGsCell.params({
       getId: (value: MasterItemDefinitions) => getItemId(value),
-      pref: util.itemPref,
-      mode: 'gs',
+      character: util.character,
     }),
     width: 100,
   })

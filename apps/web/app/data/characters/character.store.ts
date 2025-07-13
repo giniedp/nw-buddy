@@ -3,11 +3,12 @@ import { NW_MAX_CHARACTER_LEVEL, NW_MAX_TRADESKILL_LEVEL, NW_MAX_WEAPON_LEVEL } 
 import { combineLatest, map, NEVER, of, pipe, switchMap } from 'rxjs'
 import { CaseInsensitiveMap } from '~/utils'
 
-import { toObservable } from '@angular/core/rxjs-interop'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
+import { BookmarkRecord, BookmarksService } from '../bookmarks'
 import { injectCharactersDB } from './characters.db'
 import { CharacterRecord } from './types'
 
@@ -133,27 +134,27 @@ export const CharacterStore = signalStore(
       name: computed(() => record()?.name),
       level: computed(() => record()?.level ?? NW_MAX_CHARACTER_LEVEL),
       progressionMap: computed(
-        () => new CaseInsensitiveMap(Object.entries(record()?.progressionLevels || {})) as ReadonlyMap<string, number>,
+        () => new CaseInsensitiveMap<string, number>(Object.entries(record()?.progressionLevels || {})),
       ),
       effectStacksMap: computed(
-        () => new CaseInsensitiveMap(Object.entries(record()?.effectStacks || {})) as ReadonlyMap<string, number>,
+        () => new CaseInsensitiveMap<string, number>(Object.entries(record()?.effectStacks || {})),
       ),
     }
   }),
   withMethods(({ record, update, effectStacksMap, progressionMap }) => {
     const injector = inject(Injector)
 
-    const clearEffects = () => {
+    function clearEffects() {
       return update(record().id, { effectStacks: {} })
     }
-    const clearProgression = () => {
+    function clearProgression() {
       return update(record().id, { progressionLevels: {} })
     }
 
-    const getProgressionLevel = (progressionId: string) => {
+    function getProgressionLevel(progressionId: string) {
       return progressionMap().get(progressionId)
     }
-    const setProgresssionLevel = (progressionId: string, level: number) => {
+    function setProgresssionLevel(progressionId: string, level: number) {
       update(record().id, {
         progressionLevels: {
           ...(record().progressionLevels || {}),
@@ -162,10 +163,10 @@ export const CharacterStore = signalStore(
       })
     }
 
-    const getEffectStacks = (effect: string) => {
+    function getEffectStacks(effect: string) {
       return effectStacksMap().get(effect) || 0
     }
-    const setEffectStacks = (effect: string, stacks: number) => {
+    function setEffectStacks(effect: string, stacks: number) {
       update(record().id, {
         effectStacks: {
           ...(record().effectStacks || {}),
@@ -173,24 +174,27 @@ export const CharacterStore = signalStore(
         },
       })
     }
-    const observeProgressionLevel = (progressionId: string) => {
+
+    function observeProgressionLevel(progressionId: string) {
       return toObservable(progressionMap, {
         injector,
       }).pipe(map((map) => map.get(progressionId)))
     }
-    const observeTradeskillLevel = (skill: string) => {
+    function observeTradeskillLevel(skill: string) {
       return observeProgressionLevel(skill).pipe(map((level) => level ?? NW_MAX_TRADESKILL_LEVEL))
     }
-    const observeWeaponLevel = (weapon: string) => {
+    function observeWeaponLevel(weapon: string) {
       return observeProgressionLevel(weapon).pipe(map((level) => level ?? NW_MAX_WEAPON_LEVEL))
     }
     return {
       clearEffects,
-      clearProgression,
       getEffectStacks,
       setEffectStacks,
+
+      clearProgression,
       getProgressionLevel,
       setProgresssionLevel,
+
       getTradeskillLevel(skill: string) {
         return getProgressionLevel(skill) ?? NW_MAX_TRADESKILL_LEVEL
       },
@@ -206,6 +210,79 @@ export const CharacterStore = signalStore(
       observeProgressionLevel,
       observeTradeskillLevel,
       observeWeaponLevel,
+    }
+  }),
+  withMethods(({ record }) => {
+    const bookmarks = inject(BookmarksService)
+    const userId = computed(() => record()?.userId || 'local')
+    const characterId = computed(() => record()?.id || '')
+    const userId$ = toObservable(userId)
+    const characterId$ = toObservable(characterId)
+    const bookRecords$ = combineLatest({
+      userId: userId$,
+      characterId: characterId$,
+    }).pipe(
+      switchMap(({ userId, characterId }) => {
+        return bookmarks.observeRecords({ userId, characterId })
+      }),
+      map((bookRecords) => {
+        const entries = (bookRecords || []).map((it) => {
+          return [it.itemId, it] as const
+        })
+        return new CaseInsensitiveMap<string, BookmarkRecord>(entries)
+      }),
+    )
+    const itemMap = toSignal(bookRecords$, {
+      initialValue: new CaseInsensitiveMap<string, BookmarkRecord>(),
+    })
+    const itemMap$ = toObservable(itemMap)
+
+    function getItemGearScore(itemId: string) {
+      return itemMap().get(itemId)?.gearScore
+    }
+    function getItemMarker(itemId: string) {
+      return itemMap().get(itemId)?.flags || 0
+    }
+    function observeItemGearScore(itemId: string) {
+      return itemMap$.pipe(map((map) => map.get(itemId)?.gearScore))
+    }
+    function observeItemMarker(itemId: string) {
+      return itemMap$.pipe(map((map) => map.get(itemId)?.flags || 0))
+    }
+    function updateItemTracking(itemId: string, tracker: Partial<Pick<BookmarkRecord, 'gearScore' | 'flags'>>) {
+      itemId = itemId.toLowerCase()
+
+      const record: BookmarkRecord = {
+        id: null,
+        userId: userId(),
+        characterId: characterId(),
+        itemId,
+        ...(itemMap().get(itemId) || {}),
+        ...tracker,
+      }
+
+      if (!record.gearScore && !record.flags) {
+        return bookmarks.delete(record.id)
+      }
+      if (record.id) {
+        return bookmarks.update(record.id, record)
+      }
+      return bookmarks.create(record)
+    }
+    function setItemGearScore(itemId: string, level: number) {
+      updateItemTracking(itemId, { gearScore: level })
+    }
+    function setItemMarker(itemId: string, marker: number) {
+      updateItemTracking(itemId, { flags: marker })
+    }
+
+    return {
+      getItemGearScore,
+      getItemMarker,
+      setItemGearScore,
+      setItemMarker,
+      observeItemGearScore,
+      observeItemMarker,
     }
   }),
 )

@@ -11,7 +11,7 @@ import m from 'mithril'
 import { merge, skip, takeUntil } from 'rxjs'
 import { mithrilCell } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
-import { ItemMarkerCell, ItemTrackerCell } from '~/widgets/item-tracker'
+import { ItemMarkerCell } from '~/widgets/item-tracker'
 import { Armorset } from '../types'
 
 export type ArmorsetGridUtils = TableGridUtils<ArmorsetGridRecord>
@@ -121,11 +121,11 @@ export function armorsetColItemTrack(util: ArmorsetGridUtils, index: number) {
     },
     valueGetter: ({ data }) => {
       const item = (data as Armorset).items[index]
-      return util.itemPref.get(item.ItemID)?.gs
+      return util.character.getItemGearScore(item.ItemID)
     },
     cellRenderer: mithrilCell<Armorset>({
       oncreate: ({ attrs: { data, destroy$, api, node } }) => {
-        merge(...data.items.map((it) => util.itemPref.observe(it.ItemID).pipe(skip(1))))
+        merge(...data.items.map((it) => util.character.observeItemGearScore(it.ItemID).pipe(skip(1))))
           .pipe(takeUntil(destroy$))
           .subscribe(() => {
             api.refreshCells({ rowNodes: [node] })
@@ -155,14 +155,7 @@ export function armorsetColItemTrack(util: ArmorsetGridUtils, index: number) {
               m(ItemMarkerCell, {
                 class: [value && max ? 'text-success' : '', value && !max ? 'text-warning' : ''].join(' '),
                 itemId: item.ItemID,
-                meta: util.itemPref,
-                disabled: true,
-              }),
-              m(ItemTrackerCell, {
-                class: [value && max ? 'text-success' : '', value && !max ? 'text-warning' : ''].join(' '),
-                itemId: item.ItemID,
-                meta: util.itemPref,
-                mode: 'gs',
+                char: util.character,
                 disabled: true,
               }),
             ]),

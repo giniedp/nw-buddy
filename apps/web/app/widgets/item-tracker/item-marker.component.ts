@@ -1,18 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  computed,
-  effect,
-  inject,
-  input,
-} from '@angular/core'
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { ReplaySubject, distinctUntilChanged, switchMap } from 'rxjs'
-import { ItemPreferencesService } from '~/preferences'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
+import { CharacterStore } from '~/data'
 
 @Component({
   selector: 'nwb-item-marker',
@@ -26,15 +13,13 @@ import { ItemPreferencesService } from '~/preferences'
   standalone: false,
 })
 export class ItemMarkerComponent {
-  private meta = inject(ItemPreferencesService)
-  public itemId = input.required<string>()
-  public hasValue = computed(() => !!this.trackedValue())
-  private data = toSignal(toObservable(this.itemId).pipe(switchMap((id) => this.meta.observe(id))))
-  private trackedId = computed(() => this.data()?.id)
-  private trackedValue = computed(() => cleanValue(this.data()?.meta?.mark))
+  private character = inject(CharacterStore)
+  public itemId = input<string>()
+  public hasValue = computed(() => !!this.flags())
+  private flags = computed(() => cleanValue(this.character.getItemMarker(this.itemId())))
 
   public toggle(index: number) {
-    let result = this.trackedValue()
+    let result = this.flags()
     if (this.checked(index)) {
       result = result & ~indexValue(index)
     } else {
@@ -44,13 +29,11 @@ export class ItemMarkerComponent {
   }
 
   public checked(index: number) {
-    return !!(this.trackedValue() & indexValue(index))
+    return !!(this.flags() & indexValue(index))
   }
 
   private submitValue(value: number | string) {
-    this.meta.merge(this.trackedId(), {
-      mark: cleanValue(value),
-    })
+    this.character.setItemMarker(this.itemId(), cleanValue(value))
   }
 }
 

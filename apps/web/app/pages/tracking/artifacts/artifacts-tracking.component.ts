@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NwModule } from '~/nw'
 import { DataViewService } from '~/ui/data/data-view'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
@@ -16,10 +15,5 @@ import { ArtifactRecord } from './adapter'
   },
 })
 export class ArtifactsTrackingComponent {
-  public constructor(
-    private route: ActivatedRoute,
-    protected service: DataViewService<ArtifactRecord>,
-  ) {
-    //
-  }
+  protected service = inject(DataViewService<ArtifactRecord>)
 }

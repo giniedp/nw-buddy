@@ -32,9 +32,9 @@
   </div>
 </div>
 
-<ng-template #tplIndex> </ng-template>
+<ng-template #tplIndex/>
 
-<ng-template #tplCategory> </ng-template>
+<ng-template #tplCategory/>
 
-<ng-container *ngIf="outlet.isActivated; then tplCategory; else tplIndex"></ng-container>
-<router-outlet></router-outlet>
+<ng-container *ngIf="outlet().isActivated; then tplCategory; else tplIndex"></ng-container>
+<router-outlet/>

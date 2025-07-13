@@ -1,11 +1,11 @@
 import { AgPromise, ICellRendererComp, ICellRendererParams } from '@ag-grid-community/core'
-import { map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { ItemPreferencesService } from '~/preferences'
+import { combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { createElement } from '~/utils'
 
 export interface BookmarkCellParams<T> {
   getId: (item: T) => string
-  pref: ItemPreferencesService
+  character: CharacterStore
 }
 
 export class BookmarkCell<T> implements ICellRendererComp<T> {
@@ -69,11 +69,18 @@ export class BookmarkCell<T> implements ICellRendererComp<T> {
     this.item$.next(params.data)
     this.item$
       .pipe(map((it) => params.getId(it)))
-      .pipe(switchMap((it) => params.pref.observe(it)))
+      .pipe(
+        switchMap((it) => {
+          return combineLatest({
+            id: of(it),
+            value: params.character.observeItemMarker(it),
+          })
+        }),
+      )
       .pipe(takeUntil(this.destroy$))
       .subscribe((it) => {
         this.valueKey = it?.id
-        this.value = it?.meta?.mark || 0
+        this.value = it?.value || 0
         this.updateUI()
       })
   }
@@ -108,9 +115,7 @@ export class BookmarkCell<T> implements ICellRendererComp<T> {
 
   private write() {
     if (this.valueKey) {
-      this.params.pref.merge(this.valueKey, {
-        mark: this.value,
-      })
+      this.params.character.setItemMarker(this.valueKey, this.value)
     }
   }
 }
