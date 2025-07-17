@@ -27,21 +27,22 @@ export const CharacterStore = signalStore(
   withProps(({ record, ready }) => {
     const record$ = toObservable(record)
     const ready$ = toObservable(ready)
+    const table = injectCharactersDB()
     return {
       record$,
       ready$,
+      table
     }
   }),
-  withMethods((state) => {
+  withMethods(({ table }) => {
     const backend = inject(BackendService)
     const userId = backend.sessionUserId
-    const table = injectCharactersDB()
     return {
       observeCount(userId: string) {
         userId ||= 'local'
         return table.observeWhereCount({ userId })
       },
-      create: (record: Partial<CharacterRecord>) => {
+      create(record: Partial<CharacterRecord>) {
         return table.create({
           ...record,
           id: record.id ?? table.createId(),
@@ -51,7 +52,7 @@ export const CharacterStore = signalStore(
           userId: userId() || 'local',
         })
       },
-      update: (id: string, record: Partial<CharacterRecord>) => {
+      update(id: string, record: Partial<CharacterRecord>) {
         return table.update(id, {
           ...record,
           id,
@@ -60,8 +61,12 @@ export const CharacterStore = signalStore(
           userId: userId() || 'local',
         })
       },
-      destroy: (id: string) => {
-        return table.destroy(id)
+      delete(id: string) {
+        return table.delete(id)
+      },
+      async deleteUserData(userId: string) {
+        const records = await table.where({ userId })
+        return table.delete(records.map((it) => it.id))
       },
     }
   }),

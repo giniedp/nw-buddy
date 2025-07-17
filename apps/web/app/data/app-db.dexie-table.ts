@@ -27,6 +27,10 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.count()
   }
 
+  public async countWhere(where: Partial<AppDbRecord>): Promise<number>{
+    return this.table.where(where).count()
+  }
+
   public async keys(): Promise<string[]> {
     return this.table
       .toCollection()
@@ -75,14 +79,12 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return row
   }
 
-  public async destroy(id: string | string[], options?: { silent: boolean }): Promise<void> {
+  public async delete(id: string | string[], options?: { silent: boolean }): Promise<void> {
     await this.table.delete(id)
     const ids = typeof id === 'string' ? [id] : id
 
     if (!options?.silent) {
-      for (const id of ids) {
-        this.events.next({ type: 'delete', payload: { id } as T })
-      }
+      this.events.next({ type: 'delete', payload: ids })
     }
 
     return

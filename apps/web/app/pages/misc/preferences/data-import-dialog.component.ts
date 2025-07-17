@@ -96,8 +96,6 @@ export class DataImportDialogComponent extends ComponentStore<DataImportDialogSt
     const result = await convertImportData(data)
     this.preferences.import(result.preferences)
     await this.appDb.import(result.database)
-    // switch to default character, forces a reload of all character listeners
-    this.appDb.characters.load()
   }
 }
 

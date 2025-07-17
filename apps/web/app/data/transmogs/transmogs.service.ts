@@ -9,7 +9,7 @@ import { autoSync } from '../backend/auto-sync'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogsService {
-  private table = injectTransmogsDB()
+  public readonly table = injectTransmogsDB()
   private backend = inject(BackendService)
   private userId = computed(() => this.backend.session()?.id)
   private userId$ = toObservable(this.userId)
@@ -114,7 +114,12 @@ export class TransmogsService {
   }
 
   public delete(id: string) {
-    return this.table.destroy(id)
+    return this.table.delete(id)
+  }
+
+  public async deleteUserData(userId: string) {
+    const records = await this.table.where({ userId })
+    return this.table.delete(records.map((it) => it.id))
   }
 
   public publish(record: TransmogRecord) {

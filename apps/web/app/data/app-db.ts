@@ -36,10 +36,10 @@ export abstract class AppDb {
   public abstract dropTables(): Promise<void>
 }
 
-export interface AppDbTableEvent<T> {
-  type: 'delete' | 'create' | 'update'
-  payload: T
-}
+export type AppDbTableEvent<T> =
+  | { type: 'delete'; payload: string | string[] }
+  | { type: 'create' | 'update'; payload: T }
+
 export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract readonly db: AppDb
 
@@ -49,6 +49,7 @@ export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract createId(): string
   public abstract tx<R>(fn: () => Promise<R>): Promise<R>
   public abstract count(): Promise<number>
+  public abstract countWhere(where: Partial<AppDbRecord>): Promise<number>
   public abstract keys(): Promise<string[]>
 
   public abstract list(): Promise<T[]>
@@ -56,7 +57,7 @@ export abstract class AppDbTable<T extends AppDbRecord> {
   public abstract create(record: Partial<T>, options?: { silent: boolean }): Promise<T>
   public abstract read(id: string): Promise<T>
   public abstract update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T>
-  public abstract destroy(id: string | string[], options?: { silent: boolean }): Promise<void>
+  public abstract delete(id: string | string[], options?: { silent: boolean }): Promise<void>
 
   public abstract observeAll(): Observable<T[]>
   public abstract observeWhere(where: WhereConditions<T>): Observable<T[]>
@@ -71,20 +72,19 @@ export type FieldConditionMap<T> = Partial<{
   [K in keyof T]: FieldCondition | Primitive
 }>
 
-export type FieldCondition =
-  | Primitive
-  // | {
-  //     eq?: Primitive
-  //     neq?: Primitive
-  //     gt?: Primitive
-  //     gte?: Primitive
-  //     lt?: Primitive
-  //     lte?: Primitive
-  //     in?: Primitive[]
-  //     nin?: Primitive[]
-  //     like?: string
-  //     ilike?: string
-  //     isNull?: boolean
-  //   }
+export type FieldCondition = Primitive
+// | {
+//     eq?: Primitive
+//     neq?: Primitive
+//     gt?: Primitive
+//     gte?: Primitive
+//     lt?: Primitive
+//     lte?: Primitive
+//     in?: Primitive[]
+//     nin?: Primitive[]
+//     like?: string
+//     ilike?: string
+//     isNull?: boolean
+//   }
 
 export type Primitive = string | number | boolean | null

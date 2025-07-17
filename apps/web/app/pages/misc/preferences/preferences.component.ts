@@ -46,7 +46,6 @@ export class PreferencesComponent {
 
   private itemPreferences = inject(ItemPreferencesService)
   private modal = inject(ModalService)
-  private toast = inject(ToastController)
 
   protected backend = inject(BackendService)
   protected signedIn = this.backend.isSignedIn
@@ -72,7 +71,7 @@ export class PreferencesComponent {
     },
   })
   protected countUser = rxResource({
-    params: () => this.backend.session()?.id || 'local',
+    params: () => this.backend.sessionUserId() || 'local',
     stream: ({ params }) => this.dbService.userDataStats(params),
     defaultValue: {
       characters: 0,
@@ -135,7 +134,7 @@ export class PreferencesComponent {
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
         title: 'Clear all data',
-        body: 'Are you sure you want to clear all data? The data for local user will be lost.',
+        body: 'Are you sure you want to clear all data?',
         negative: 'Cancel',
         positive: 'Clear',
       },
@@ -146,24 +145,129 @@ export class PreferencesComponent {
         switchMap(() => this.dbService.syncUserData()),
       )
       .subscribe({
-        next: () =>
-          this.toast
-            .create({
-              message: 'All data cleared.',
-              duration: 2000,
-              position: 'bottom',
-              color: 'success',
-            })
-            .then((toast) => toast.present()),
-        error: (err) =>
-          this.toast
-            .create({
-              message: `There was an error clearing the data: ${err.message}`,
-              duration: 2000,
-              position: 'bottom',
-              color: 'danger',
-            })
-            .then((toast) => toast.present()),
+        next: () => {
+          this.modal.showToast({
+            message: 'All data cleared.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error clearing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
+      })
+  }
+
+  public async refreshAccountData() {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Refresh account data',
+        body: 'This will clear your account data on this device and re-fetch it from the server. Any pending data will be lost.',
+        negative: 'Cancel',
+        positive: 'Refresh now',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.clearUserData(this.backend.sessionUserId())),
+        switchMap(() => this.dbService.syncUserData()),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'Refresh complete.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error refreshing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
+      })
+  }
+
+  public async deleteAccountData() {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Delete account data',
+        body: 'Are you sure you want to delete all your account data?',
+        negative: 'Cancel',
+        positive: 'Delete',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.deleteAccountData(this.backend.sessionUserId())),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'All data deleted!',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `An error occured while deleting the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
+      })
+  }
+
+  public async importToAccount() {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Import local data',
+        body: `
+        This will copy all <i class="text-warning">local</i> data to your <i class="text-success">account</i>.
+        <br /><br />
+        Character progression will be merged with existing character data. Any collision will be overwritten.
+        <br /><br />
+        Gearsets, skill trees etc. will be created as new records.
+        `,
+        isHtml: true,
+        negative: 'Cancel',
+        positive: 'Import',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.importToAccount(this.backend.sessionUserId())),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'All data cleared.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error clearing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
       })
   }
 
@@ -181,24 +285,22 @@ export class PreferencesComponent {
         switchMap(async () => this.itemPreferences.clearPrices()),
       )
       .subscribe({
-        next: () =>
-          this.toast
-            .create({
-              message: 'Prices cleared.',
-              duration: 2000,
-              position: 'bottom',
-              color: 'success',
-            })
-            .then((toast) => toast.present()),
-        error: (err) =>
-          this.toast
-            .create({
-              message: `There was an error clearing the data: ${err.message}`,
-              duration: 2000,
-              position: 'bottom',
-              color: 'danger',
-            })
-            .then((toast) => toast.present()),
+        next: () => {
+          this.modal.showToast({
+            message: 'Prices cleared.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error clearing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
       })
   }
 

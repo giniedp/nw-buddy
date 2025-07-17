@@ -1,12 +1,17 @@
 import { AppDbRecord, AppDbTable } from '~/data/app-db'
 import { PrivateTable } from '../backend-adapter'
 
-export interface SyncCommand<T extends AppDbRecord> {
-  action: 'create' | 'update' | 'delete' | 'createOrUpdate'
-  resource: 'local' | 'remote'
-  data: T
-}
-
+export type SyncCommand<T extends AppDbRecord> =
+  | {
+      action: 'create' | 'update' | 'createOrUpdate'
+      resource: 'local' | 'remote'
+      data: T
+    }
+  | {
+      action: 'delete'
+      resource: 'local' | 'remote'
+      data: string | string[]
+    }
 export interface ProcessSyncCommandsOptions<T extends AppDbRecord> {
   localTable: AppDbTable<T>
   remoteTable: PrivateTable<T>
@@ -18,7 +23,7 @@ export async function processSyncCommands<T extends AppDbRecord>({
   remoteTable,
   commands,
 }: ProcessSyncCommandsOptions<T>) {
-  for (const { action, resource, data } of commands) {
+  for (const { action, data, resource } of commands) {
     if (resource === 'local') {
       switch (action) {
         case 'create': {
@@ -26,7 +31,7 @@ export async function processSyncCommands<T extends AppDbRecord>({
           continue
         }
         case 'delete': {
-          await localTable.destroy(data.id, { silent: true })
+          await localTable.delete(data, { silent: true })
           continue
         }
         case 'update': {
@@ -51,7 +56,7 @@ export async function processSyncCommands<T extends AppDbRecord>({
           continue
         }
         case 'delete': {
-          await remoteTable.delete(data.id)
+          await remoteTable.delete(data)
           continue
         }
         case 'update': {

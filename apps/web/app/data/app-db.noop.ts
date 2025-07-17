@@ -43,6 +43,10 @@ export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
     return 0
   }
 
+  public async countWhere(where: Partial<AppDbRecord>): Promise<number>{
+    return 0
+  }
+
   public async keys(): Promise<string[]> {
     return []
   }
@@ -67,7 +71,7 @@ export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
     return null
   }
 
-  public async destroy(id: string | string[], options?: { silent: boolean }): Promise<void> {
+  public async delete(id: string | string[], options?: { silent: boolean }): Promise<void> {
     //
   }
 

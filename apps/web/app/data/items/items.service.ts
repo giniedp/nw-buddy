@@ -16,9 +16,9 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop'
   providedIn: 'root',
 })
 export class ItemsService {
+  public readonly table = injectItemInstancesDB()
   private backend = inject(BackendService)
   private nwdb = injectNwData()
-  private table = injectItemInstancesDB()
   private userId$ = toObservable(this.backend.session).pipe(map((it) => it?.id))
   private userId = toSignal(this.userId$)
   private ready = signal(false)
@@ -107,7 +107,7 @@ export class ItemsService {
       syncState: 'pending',
       createdAt: new Date().toJSON(),
       updatedAt: new Date().toJSON(),
-      userId: record.userId || this.userId() || 'local',
+      userId: this.userId() || 'local',
     })
   }
 
@@ -115,10 +115,6 @@ export class ItemsService {
     return this.table.create({
       ...record,
       id: this.table.createId(),
-      syncState: 'pending',
-      createdAt: new Date().toJSON(),
-      updatedAt: new Date().toJSON(),
-      userId: record.userId || this.userId() || 'local',
     })
   }
 
@@ -127,12 +123,17 @@ export class ItemsService {
       ...record,
       syncState: 'pending',
       updatedAt: new Date().toJSON(),
-      userId: record.userId || this.userId() || 'local',
+      userId: this.userId() || 'local',
     })
   }
 
   public delete(id: string) {
-    return this.table.destroy(id)
+    return this.table.delete(id)
+  }
+
+  public async deleteUserData(userId: string) {
+    const records = await this.table.where({ userId })
+    return this.table.delete(records.map((it) => it.id))
   }
 
   public resolveGearsetSlots({ userId, slots }: { userId: string; slots: GearsetRecord['slots'] }) {

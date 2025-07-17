@@ -11,8 +11,8 @@ import { BookmarkRecord } from './types'
   providedIn: 'root',
 })
 export class BookmarksService {
+  public readonly table = injectBookmarksDB()
   private backend = inject(BackendService)
-  private table = injectBookmarksDB()
   private userId$ = toObservable(this.backend.session).pipe(map((it) => it?.id))
   private userId = toSignal(this.userId$)
   private ready = signal(false)
@@ -92,7 +92,12 @@ export class BookmarksService {
     })
   }
 
-  public delete(id: string) {
-    return this.table.destroy(id)
+  public async deleteUserData(userId: string) {
+    const records = await this.table.where({ userId })
+    return this.table.delete(records.map((it) => it.id))
+  }
+
+  public delete(id: string | string[]) {
+    return this.table.delete(id)
   }
 }

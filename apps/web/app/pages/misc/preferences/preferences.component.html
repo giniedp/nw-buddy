@@ -14,7 +14,7 @@
             </div>
           }
         } @else {
-          <p>You are not signed, running in <b class="text-primary">offline</b> mode</p>
+          <p>You are not signed, using <b class="text-primary">local</b> data</p>
         }
 
         @if (signedIn()) {
@@ -29,25 +29,25 @@
       }
       <h3 class="uppercase">Local database</h3>
       @if (signedIn()) {
+        <p>Your account data is <b class="text-success">synced</b> with a remote database.</p>
         <p>
-          In <b class="text-success">online</b> mode, your data is stored in a remote database. For quick access, it is
-          also synced to a local database inside the browser.
+          Any <b class="text-warning">local</b> data created before signing in is still available and can be imported
+          into your account.
         </p>
       } @else {
         <p>
-          In <b class="text-warning">offline</b> mode, your data is stored in a local database inside the browser. This
-          can be wiped on cache clear, so it is recommended to export your data regularly.
+          Your <b class="text-warning">local</b> data, is stored in a browser database on your device. This can be wiped
+          when site cache is cleared or the device has memory pressure. To prevent data loss, you can export your data
+          to a file and import it later.
         </p>
       }
       <table class="table table-zebra table-xs">
         <tbody>
           <tr>
             <td></td>
-            <td><i class="text-primary text-nowrap">offline</i> mode data</td>
+            <td><i class="text-primary">Local</i> data</td>
             @if (signedIn()) {
-              <td>
-                Owned by <i class="text-success">{{ session().name }}</i>
-              </td>
+              <td><i class="text-success">Synced</i> data</td>
             }
           </tr>
           <tr>
@@ -96,16 +96,28 @@
       </table>
       @if (signedIn()) {
         <div class="form-control w-full">
-          <button class="btn w-full mt-4" (click)="dropTables()">Sync</button>
+          <button class="btn w-full mt-4" (click)="importToAccount()">Import</button>
           <label class="label">
-            <span class="label-text-alt">Clears the local database and restores from remote</span>
+            <span class="label-text-alt">Imports any local data into your account</span>
+          </label>
+        </div>
+        <div class="form-control w-full">
+          <button class="btn w-full mt-4" (click)="refreshAccountData()">Refresh</button>
+          <label class="label">
+            <span class="label-text-alt">Deletes your account data on this device and restores it from the server</span>
+          </label>
+        </div>
+        <div class="form-control w-full">
+          <button class="btn w-full mt-4 text-error" (click)="deleteAccountData()">Delete</button>
+          <label class="label">
+            <span class="label-text-alt">Deletes your account data on this device and on the server</span>
           </label>
         </div>
       } @else {
         <div class="form-control w-full">
           <input type="text" class="input input-bordered" [(ngModel)]="projectName" />
           <label class="label">
-            <span class="label-text-alt"> File name </span>
+            <span class="label-text-alt"> Export file name </span>
           </label>
         </div>
 

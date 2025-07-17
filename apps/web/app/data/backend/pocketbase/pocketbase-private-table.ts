@@ -1,7 +1,7 @@
 import PocketBase, { RecordModel, RecordService } from 'pocketbase'
 import { defer, distinctUntilChanged, filter, map, NEVER, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
-import { AppDbRecord, AppDbTable } from '../../app-db'
+import { AppDbRecord } from '../../app-db'
 import { PrivateTable } from '../backend-adapter'
 import { authState } from './auth-state'
 import { collectionEvents } from './collection-events'
@@ -42,10 +42,7 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
     return `${this.userId}:${id}`
   }
 
-  public constructor(
-    client: PocketBase,
-    tableName: string,
-  ) {
+  public constructor(client: PocketBase, tableName: string) {
     this.client = client
     this.name = tableName
     this.collection = client.collection(this.name)
@@ -97,17 +94,14 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
     if (!ids.length) {
       return 0
     }
+    // batch delete is not supported in PocketBase
+    // https://github.com/pocketbase/pocketbase/issues/6936
     const promises = ids.map(async (id) => {
       return this.collection.delete(this.rowId(id)).catch(console.error)
     })
-    await Promise.all(promises).catch(console.error)
-
-    // const batch = this.client.createBatch()
-    // const collection = batch.collection(this.collection.collectionIdOrName)
-    // for (const id of ids) {
-    //   collection.delete(this.rowId(id))
-    // }
-    // await batch.send()
+    while (promises.length > 10) {
+      await Promise.all(promises.splice(0, 10))
+    }
     return ids.length
   }
 }

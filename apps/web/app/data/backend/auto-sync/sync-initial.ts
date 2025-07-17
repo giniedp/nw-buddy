@@ -84,7 +84,7 @@ export function createInitialSyncCommands<T extends AppDbRecord>(local: T, remot
         {
           action: 'delete',
           resource: 'local',
-          data: local,
+          data: local.id,
         },
       ]
     }

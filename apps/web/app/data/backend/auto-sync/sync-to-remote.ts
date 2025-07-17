@@ -8,14 +8,11 @@ export function syncToRemote<T extends AppDbRecord>(
   remoteTable: PrivateTable<T>,
 ): Observable<void> {
   return localTable.events.pipe(
-    switchMap(async ({ type, payload }) => {
+    switchMap(async (event) => {
       await processSyncCommands({
         localTable,
         remoteTable,
-        commands: createSyncToRemoteCommands<T>({
-          type,
-          payload,
-        }),
+        commands: createSyncToRemoteCommands<T>(event),
       }).catch(console.error)
     }),
   )
@@ -57,7 +54,7 @@ export function createSyncToRemoteCommands<T extends AppDbRecord>(event: AppDbTa
       ]
     }
     default:
-      console.warn(`Unknown sync command type: ${event.type} for`, event.payload)
+      console.warn(`Unknown sync event:`, event)
       return []
   }
 }

@@ -30,8 +30,8 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop'
 function whenReady() {}
 @Injectable({ providedIn: 'root' })
 export class GearsetsService {
+  public readonly table = injectGearsetsDB()
   private nwdata = injectNwData()
-  private table = injectGearsetsDB()
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
@@ -150,7 +150,12 @@ export class GearsetsService {
   }
 
   public delete(id: string) {
-    return this.table.destroy(id)
+    return this.table.delete(id)
+  }
+
+  public async deleteUserData(userId: string) {
+    const records = await this.table.where({ userId })
+    return this.table.delete(records.map((it) => it.id))
   }
 
   public async patchSlot({

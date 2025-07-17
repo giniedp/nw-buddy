@@ -57,7 +57,7 @@ export function createSyncToLocalCommands<T extends AppDbRecord>(
       {
         action: 'delete',
         resource: 'local',
-        data: local,
+        data: local.id,
       },
     ]
   }

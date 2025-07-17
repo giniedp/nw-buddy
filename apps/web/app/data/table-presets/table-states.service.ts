@@ -84,6 +84,11 @@ export class TableStatesService {
   }
 
   public delete(id: string) {
-    return this.table.destroy(id)
+    return this.table.delete(id)
+  }
+
+  public async deleteUserData(userId: string) {
+    const records = await this.table.where({ userId })
+    return this.table.delete(records.map((it) => it.id))
   }
 }

@@ -15,6 +15,17 @@ import {
   LOCAL_USER_ID,
 } from './constants'
 
+const ALL_TABLE_NAMES = [
+  DBT_CHARACTERS,
+  DBT_BOOKMARKS,
+  DBT_GEARSETS,
+  DBT_ITEMS,
+  DBT_SKILL_TREES,
+  DBT_TABLE_PRESETS,
+  DBT_TABLE_STATES,
+  DBT_TRANSMOGS,
+]
+
 export class AppDbDexie extends AppDb {
   private tables: Record<string, AppDbDexieTable<any>> = {}
   public readonly dexie: Dexie
@@ -37,32 +48,15 @@ export class AppDbDexie extends AppDb {
 
   public async clearUserData(userId: string) {
     await this.dexie.open()
-    const tables = [
-      DBT_CHARACTERS,
-      DBT_GEARSETS,
-      DBT_ITEMS,
-      DBT_SKILL_TREES,
-      DBT_TABLE_PRESETS,
-      DBT_TABLE_STATES,
-      DBT_TRANSMOGS,
-    ]
-    for (const table of tables) {
+    for (const table of ALL_TABLE_NAMES) {
       await this.dexie.table(table).where({ userId }).delete()
     }
   }
 
-  public async transferOwnershipOfData({ sourceUserId, targetUserid }: { sourceUserId: string; targetUserid: string }) {
+  public async copytUserData({ sourceUserId, targetUserid }: { sourceUserId: string; targetUserid: string }) {
     await this.dexie.open()
-    const tables = [
-      DBT_CHARACTERS,
-      DBT_GEARSETS,
-      DBT_ITEMS,
-      DBT_SKILL_TREES,
-      DBT_TABLE_PRESETS,
-      DBT_TABLE_STATES,
-      DBT_TRANSMOGS,
-    ]
-    for (const table of tables) {
+
+    for (const table of ALL_TABLE_NAMES) {
       await this.dexie
         .table(table)
         .where({ userId: sourceUserId })
@@ -112,17 +106,7 @@ export class AppDbDexie extends AppDb {
 }
 
 async function fillMissingDefaults(tx: Transaction) {
-  const tables = [
-    DBT_CHARACTERS,
-    DBT_BOOKMARKS,
-    DBT_GEARSETS,
-    DBT_ITEMS,
-    DBT_SKILL_TREES,
-    DBT_TABLE_PRESETS,
-    DBT_TABLE_STATES,
-    DBT_TRANSMOGS,
-  ]
-  for (const table of tables) {
+  for (const table of ALL_TABLE_NAMES) {
     await tx
       .table(table)
       .toCollection()

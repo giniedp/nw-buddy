@@ -3,13 +3,13 @@ import { toObservable } from '@angular/core/rxjs-interop'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, distinctUntilChanged, map, NEVER, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
+import { autoSync } from '../backend/auto-sync'
 import { injectTablePresetsDB } from './table-presets.db'
 import { TablePresetRecord } from './types'
-import { autoSync } from '../backend/auto-sync'
 
 @Injectable({ providedIn: 'root' })
 export class TablePresetsService {
-  private table = injectTablePresetsDB()
+  public readonly table = injectTablePresetsDB()
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
@@ -78,6 +78,13 @@ export class TablePresetsService {
     })
   }
 
+  public dublicate(record: TablePresetRecord) {
+    return this.create({
+      ...record,
+      id: null,
+    })
+  }
+
   public update(id: string, record: Partial<TablePresetRecord>) {
     return this.table.update(id, {
       ...record,
@@ -89,6 +96,11 @@ export class TablePresetsService {
   }
 
   public delete(id: string) {
-    return this.table.destroy(id)
+    return this.table.delete(id)
+  }
+
+  public async deleteUserData(userId: string) {
+    const records = await this.table.where({ userId })
+    return this.table.delete(records.map((it) => it.id))
   }
 }

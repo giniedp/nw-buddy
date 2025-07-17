@@ -1,7 +1,9 @@
 import { inject, Injectable } from '@angular/core'
 import Dexie, { Table } from 'dexie'
-import { combineLatest } from 'rxjs'
+import { combineLatest, filter, switchMap } from 'rxjs'
+import { AppDbRecord } from './app-db'
 import { AppDbDexie } from './app-db.dexie'
+import { BookmarksService } from './bookmarks'
 import { CharacterStore } from './characters'
 import { injectAppDB } from './db'
 import { GearsetsService } from './gearsets'
@@ -9,8 +11,7 @@ import { ItemsService } from './items'
 import { SkillTreesService } from './skill-tree'
 import { TablePresetsService } from './table-presets'
 import { TransmogsService } from './transmogs'
-import { BookmarksService } from './bookmarks'
-import { AppDbRecord } from './app-db'
+import { ConfirmDialogComponent, ModalService } from '~/ui/layout'
 
 export type ExportedDB = { name: string; tables: ExportedTable[] }
 export type ExportedTable<T extends AppDbRecord = AppDbRecord> = { name: string; rows: T[] }
@@ -26,6 +27,17 @@ export class DbService {
   public readonly skillTrees = inject(SkillTreesService)
   public readonly transmogs = inject(TransmogsService)
 
+  private modal = inject(ModalService)
+  private allStores = [
+    this.characters,
+    this.bookmarks,
+    this.gearsets,
+    this.items,
+    this.presets,
+    this.skillTrees,
+    this.transmogs,
+  ]
+
   public async export(): Promise<ExportedDB> {
     if (this.db instanceof AppDbDexie) {
       return exportDB(this.db.dexie)
@@ -38,6 +50,8 @@ export class DbService {
       throw new Error('import is only supported for Dexie database')
     }
     await importDB(this.db.dexie, data)
+    // switch to default character, forces a reload of all character listeners
+    this.characters.load()
   }
 
   public async clearAllData() {
@@ -51,33 +65,131 @@ export class DbService {
     if (this.db instanceof AppDbDexie) {
       await this.db.clearUserData(userId)
     }
+    // // switch to default character, forces a reload of all character listeners
+    // this.characters.load()
+    // this.characters.sync()
   }
 
-  public async syncUserData() {
+  public async deleteAccountData(userId: string) {
+    if (!userId || userId === 'local') {
+      throw new Error('clearing local user data is not allowed')
+    }
+    for (const store of this.allStores) {
+      await store.deleteUserData(userId)
+    }
+    // switch to default character, forces a reload of all character listeners
+    this.characters.load()
     this.characters.sync()
-    this.bookmarks.sync()
-    this.gearsets.sync()
-    this.items.sync()
-    this.presets.sync()
-    this.skillTrees.sync()
-    this.transmogs.sync()
   }
 
-  public async takeoverUserData(targetUserId: string) {
+  public async importToAccount(targetUserId: string) {
     if (!targetUserId || targetUserId === 'local') {
       // nothing to do
       return
     }
-    if (this.db instanceof AppDbDexie) {
-      await this.db.transferOwnershipOfData({
-        sourceUserId: 'local',
-        targetUserid: targetUserId,
+
+    // we currently support only one progression character per user
+    // merge local character into target user character
+    const localChar = (await this.characters.table.where({ userId: 'local' }))?.[0]
+    const targetChar = (await this.characters.table.where({ userId: targetUserId }))?.[0]
+    if (!targetChar) {
+      throw new Error(`Target user ${targetUserId} does not have a character`)
+    }
+    if (localChar) {
+      await this.characters.update(targetChar.id, {
+        ...targetChar,
+        ...localChar,
+        id: targetChar.id,
+        userId: targetUserId,
+        progressionLevels: {
+          ...(targetChar.progressionLevels || {}),
+          ...(localChar.progressionLevels || {}),
+        },
+        effectStacks: {
+          ...(targetChar.effectStacks || {}),
+          ...(localChar.effectStacks || {}),
+        },
       })
+    }
+
+    // markers are scoped by character
+    const localBookmarks = await this.bookmarks.table.where({ userId: 'local' })
+    for (const bookmark of localBookmarks) {
+      if (bookmark.flags) {
+        this.characters.setItemMarker(bookmark.itemId, bookmark.flags)
+      }
+      if (bookmark.gearScore) {
+        this.characters.setItemMarker(bookmark.itemId, bookmark.gearScore)
+      }
+    }
+
+    const localGearsets = await this.gearsets.table.where({ userId: 'local' })
+    for (const record of localGearsets) {
+      await this.gearsets.dublicate(record)
+    }
+
+    const localItems = await this.items.table.where({ userId: 'local' })
+    for (const record of localItems) {
+      await this.items.dublicate(record)
+    }
+
+    const localSkills = await this.skillTrees.table.where({ userId: 'local' })
+    for (const record of localSkills) {
+      await this.skillTrees.dublicate(record)
+    }
+
+    const localMogs = await this.transmogs.table.where({ userId: 'local' })
+    for (const record of localMogs) {
+      await this.transmogs.dublicate(record)
+    }
+
+    const localPresets = await this.presets.table.where({ userId: 'local' })
+    for (const record of localPresets) {
+      await this.presets.dublicate(record)
     }
   }
 
-  public afterSignedIn(userId: string) {
-    // TODO: check
+  public async syncUserData() {
+    for (const store of this.allStores) {
+      store.sync()
+    }
+  }
+
+  public async afterSignedIn(userId: string) {
+    // wait a while to ensure the user has some synced data
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    const isNewUser = await this.detectNewUser(userId)
+    if (!isNewUser) {
+      return
+    }
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Welcome to NW Buddy',
+        body: 'It looks like you are a new user. Do you want to import your local data to your account?',
+        negative: 'No, thanks',
+        positive: 'Import',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.importToAccount(userId)),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'Data import complete',
+            duration: 3000,
+            color: 'success',
+          })
+        },
+        error: () => {
+          this.modal.showToast({
+            message: 'Import failed',
+            duration: 3000,
+            color: 'danger',
+          })
+        },
+      })
   }
 
   public afterSignedOut(userId: string) {
@@ -94,6 +206,29 @@ export class DbService {
       skillTrees: this.skillTrees.observeCount(userId),
       transmogs: this.transmogs.observeCount(userId),
     })
+  }
+
+  private async detectNewUser(userId: string): Promise<boolean> {
+    for (const store of this.allStores) {
+      if (store === this.characters) {
+        continue
+      }
+      const count = await store.table.countWhere({ userId })
+      if (count > 0) {
+        return false
+      }
+    }
+    const character = (await this.characters.table.where({ userId }))[0]
+    if (character) {
+      const ageInMs = new Date().getTime() - new Date(character.createdAt).getTime()
+      const ageInSec = Math.floor(ageInMs / 1000)
+      if (ageInSec > 60) {
+        // user has data older than 1 minute, assume this is not a new user
+        return false
+      }
+    }
+    // no data found, assume this is a new user
+    return true
   }
 }
 

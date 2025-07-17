@@ -10,7 +10,7 @@ import { SkillTree, SkillTreeRecord } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class SkillTreesService {
-  private table = injectSkillTreesDB()
+  public readonly table = injectSkillTreesDB()
   private backend = inject(BackendService)
   private userId = computed(() => this.backend.session()?.id)
   private userId$ = toObservable(this.userId)
@@ -126,7 +126,12 @@ export class SkillTreesService {
   }
 
   public delete(id: string) {
-    return this.table.destroy(id)
+    return this.table.delete(id)
+  }
+
+  public async deleteUserData(userId: string) {
+    const records = await this.table.where({ userId })
+    return this.table.delete(records.map((it) => it.id))
   }
 
   public publish(record: SkillTreeRecord) {
