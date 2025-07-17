@@ -20,7 +20,7 @@ export type AbilityTableRecord = AbilityData & {
 }
 
 export function abilityColIcon(util: AbilityTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
     getQuickFilterText: () => '',
@@ -32,6 +32,7 @@ export function abilityColIcon(util: AbilityTableUtils) {
       fields: Object.keys(COLS_ABILITYDATA),
     }),
     width: 62,
+    field: 'Icon',
     cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
