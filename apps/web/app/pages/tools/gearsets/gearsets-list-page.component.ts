@@ -58,6 +58,7 @@ export class GearsetsListPageComponent {
   protected tags = this.store.tags
   protected isTagFilterActive = computed(() => this.store.tags()?.some((it) => it.active))
   protected items = this.store.filteredRecords
+  protected trackBy = (it: GearsetRecord) => it.id
 
   public constructor() {
     this.store.connectUser(this.userId)

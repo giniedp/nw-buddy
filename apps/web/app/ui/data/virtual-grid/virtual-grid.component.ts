@@ -32,13 +32,7 @@ import { VirtualGridStore } from './virtual-grid.store'
   styleUrls: ['./virtual-grid.component.scss'],
   templateUrl: './virtual-grid.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    ScrollingModule,
-    VirtualGridCellDirective,
-    VirtualGridRowDirective,
-  ],
+  imports: [CommonModule, NwModule, ScrollingModule, VirtualGridCellDirective, VirtualGridRowDirective],
   hostDirectives: [CdkVirtualScrollableElement],
   providers: [VirtualGridStore],
   host: {

@@ -79,6 +79,13 @@
             }
           </tr>
           <tr>
+            <td>Bookmarks</td>
+            <td>{{ countLocal.value().bookmarks }}</td>
+            @if (signedIn()) {
+              <td>{{ countUser.value().bookmarks }}</td>
+            }
+          </tr>
+          <tr>
             <td>Table settings</td>
             <td>{{ countLocal.value().presets }}</td>
             @if (signedIn()) {

@@ -9,19 +9,22 @@ import { ItemsService } from './items'
 import { SkillTreesService } from './skill-tree'
 import { TablePresetsService } from './table-presets'
 import { TransmogsService } from './transmogs'
+import { BookmarksService } from './bookmarks'
+import { AppDbRecord } from './app-db'
 
 export type ExportedDB = { name: string; tables: ExportedTable[] }
-export type ExportedTable = { name: string; rows: Object[] }
+export type ExportedTable<T extends AppDbRecord = AppDbRecord> = { name: string; rows: T[] }
 
 @Injectable({ providedIn: 'root' })
 export class DbService {
   public readonly db = injectAppDB()
   public readonly characters = inject(CharacterStore)
+  public readonly bookmarks = inject(BookmarksService)
   public readonly gearsets = inject(GearsetsService)
-  public readonly skillTrees = inject(SkillTreesService)
   public readonly items = inject(ItemsService)
-  public readonly transmogs = inject(TransmogsService)
   public readonly presets = inject(TablePresetsService)
+  public readonly skillTrees = inject(SkillTreesService)
+  public readonly transmogs = inject(TransmogsService)
 
   public async export(): Promise<ExportedDB> {
     if (this.db instanceof AppDbDexie) {
@@ -31,10 +34,10 @@ export class DbService {
   }
 
   public async import(data: ExportedDB) {
-    if (this.db instanceof AppDbDexie) {
-      return importDB(this.db.dexie, data)
+    if (!(this.db instanceof AppDbDexie)) {
+      throw new Error('import is only supported for Dexie database')
     }
-    throw new Error('import is only supported for Dexie database')
+    await importDB(this.db.dexie, data)
   }
 
   public async clearAllData() {
@@ -52,11 +55,12 @@ export class DbService {
 
   public async syncUserData() {
     this.characters.sync()
+    this.bookmarks.sync()
     this.gearsets.sync()
-    this.skillTrees.sync()
     this.items.sync()
-    this.transmogs.sync()
     this.presets.sync()
+    this.skillTrees.sync()
+    this.transmogs.sync()
   }
 
   public async takeoverUserData(targetUserId: string) {
@@ -82,12 +86,13 @@ export class DbService {
 
   public userDataStats(userId: string) {
     return combineLatest({
+      bookmarks: this.bookmarks.observeCount(userId),
       characters: this.characters.observeCount(userId),
       gearsets: this.gearsets.observeCount(userId),
       items: this.items.observeCount(userId),
       presets: this.presets.observeCount(userId),
-      transmogs: this.transmogs.observeCount(userId),
       skillTrees: this.skillTrees.observeCount(userId),
+      transmogs: this.transmogs.observeCount(userId),
     })
   }
 }

@@ -2,29 +2,25 @@ import { AppDbRecord } from '../app-db'
 
 export interface CharacterRecord extends AppDbRecord {
   /**
-   * Image ID
-   */
-  imageId: string
-  /**
    * Name of the character
    */
   name: string
   /**
    * Character level
    */
-  level: number
+  level?: number
   /**
    * Server name
    */
-  serverName: string
+  serverName?: string
   /**
    * Company name
    */
-  companyName: string
+  companyName?: string
   /**
    * Faction
    */
-  faction: 'covenant' | 'syndicate' | 'marauder'
+  faction?: 'covenant' | 'syndicate' | 'marauder'
   /**
    *
    */

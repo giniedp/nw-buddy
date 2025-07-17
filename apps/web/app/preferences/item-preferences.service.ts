@@ -6,8 +6,6 @@ import { StorageScopeNode, StorageNode } from './storage'
 export interface ItemMeta {
   price?: number
   stock?: number
-  // gs?: number
-  // mark?: number
 }
 
 @Injectable({ providedIn: 'root' })

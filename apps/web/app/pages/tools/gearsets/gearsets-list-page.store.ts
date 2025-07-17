@@ -49,9 +49,15 @@ export const GearsetsListPageStore = signalStore(
       },
     }
   }),
-  withComputed(({ records, activeTags }) => {
+  withComputed(({ records, search, activeTags }) => {
     const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
-    const filteredRecords = computed(() => filterRecordsByTags(records(), activeTags()))
+    const filteredRecords = computed(() => {
+      let result = filterRecordsByTags(records(), activeTags())
+      if (search()) {
+        result = result.filter((it) => it.name.toLowerCase().includes(search().toLowerCase()))
+      }
+      return result
+    })
     return {
       tags,
       filteredRecords,

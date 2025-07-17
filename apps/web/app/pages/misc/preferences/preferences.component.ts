@@ -68,6 +68,7 @@ export class PreferencesComponent {
       presets: 0,
       transmogs: 0,
       skillTrees: 0,
+      bookmarks: 0,
     },
   })
   protected countUser = rxResource({
@@ -80,6 +81,7 @@ export class PreferencesComponent {
       presets: 0,
       transmogs: 0,
       skillTrees: 0,
+      bookmarks: 0,
     },
   })
 

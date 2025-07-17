@@ -40,7 +40,7 @@
   </div>
 </ion-header>
 <ion-content>
-  <nwb-virtual-grid [itemHeight]="284" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']">
+  <nwb-virtual-grid [itemHeight]="284" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']" [identifyBy]="trackBy">
     <nwb-gearset-loadout
       *nwbVirtualGridCell="items(); let item"
       [gearset]="item"

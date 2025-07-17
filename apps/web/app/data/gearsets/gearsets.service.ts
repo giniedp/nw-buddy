@@ -88,7 +88,7 @@ export class GearsetsService {
   }
 
   public observeRecord({ userId, id }: { userId: string; id: string }): Observable<GearsetRecord> {
-    return this.userId$.pipe(
+    return this.ready$.pipe(
       switchMap((ready) => (ready ? this.userId$ : NEVER)),
       distinctUntilChanged(),
       switchMap((localUserId) => {

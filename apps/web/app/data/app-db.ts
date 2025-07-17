@@ -1,3 +1,4 @@
+import { customAlphabet } from 'nanoid/non-secure'
 import { Observable, Subject } from 'rxjs'
 
 export type AppDbRecord = {
@@ -26,6 +27,9 @@ export type AppDbRecord = {
    */
   userId?: string
 }
+
+// https://zelark.github.io/nano-id-cc/
+export const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
 export abstract class AppDb {
   public abstract table<T extends AppDbRecord>(name: string): AppDbTable<T>

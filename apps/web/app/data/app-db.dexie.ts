@@ -1,7 +1,8 @@
-import { Dexie, liveQuery, PromiseExtended, Table } from 'dexie'
-import { customAlphabet } from 'nanoid/non-secure'
-import { defer, of, Observable as RxObservable, Subject } from 'rxjs'
-import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent, WhereConditions } from './app-db'
+import { Dexie, Transaction } from 'dexie'
+import { AppDb, AppDbRecord, createId } from './app-db'
+import { AppDbDexieTable } from './app-db.dexie-table'
+import { BookmarkRecord } from './bookmarks/types'
+import { CharacterRecord } from './characters'
 import {
   DBT_BOOKMARKS,
   DBT_CHARACTERS,
@@ -11,6 +12,7 @@ import {
   DBT_TABLE_PRESETS,
   DBT_TABLE_STATES,
   DBT_TRANSMOGS,
+  LOCAL_USER_ID,
 } from './constants'
 
 export class AppDbDexie extends AppDb {
@@ -89,7 +91,7 @@ export class AppDbDexie extends AppDb {
       ['table-states']: 'id',
     })
 
-    db.version(8)
+    db.version(6)
       .stores({
         items: 'id,itemId,gearScore,userId',
         gearsets: 'id,*tags,userId,characterId',
@@ -101,142 +103,99 @@ export class AppDbDexie extends AppDb {
         transmogs: 'id,userId',
         bookmarks: 'id,userId,[userId+characterId]',
       })
-      .upgrade((trans) => {
-        const tables = [
-          DBT_CHARACTERS,
-          DBT_GEARSETS,
-          DBT_ITEMS,
-          DBT_SKILL_TREES,
-          DBT_TABLE_PRESETS,
-          DBT_TABLE_STATES,
-          DBT_TRANSMOGS,
-          DBT_BOOKMARKS,
-        ]
-        for (const table of tables) {
-          trans
-            .table(table)
-            .toCollection()
-            .modify((item) => {
-              item.userId ||= 'local'
-            })
-        }
+      .upgrade(async (tx) => {
+        await fillMissingDefaults(tx)
+        await ensureCharacter(tx)
+        await migrateBookmarks(tx)
       })
   }
 }
 
-// https://github.com/ai/nanoid
-// https://zelark.github.io/nano-id-cc/
-const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
-
-export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
-  public readonly db: AppDbDexie
-  public readonly tableName: string
-  public readonly events = new Subject<AppDbTableEvent<T>>()
-  private readonly table: Table<T>
-
-  public constructor(db: AppDbDexie, name: string) {
-    super()
-    this.db = db
-    this.tableName = name
-    this.table = db.dexie.table(name)
-  }
-
-  public createId = createId
-  public async tx<R>(fn: () => Promise<R>): Promise<R> {
-    return this.db.dexie.transaction('rw', this.table, fn)
-  }
-
-  public async count(): Promise<number> {
-    return this.table.count()
-  }
-
-  public async keys(): Promise<string[]> {
-    return this.table
+async function fillMissingDefaults(tx: Transaction) {
+  const tables = [
+    DBT_CHARACTERS,
+    DBT_BOOKMARKS,
+    DBT_GEARSETS,
+    DBT_ITEMS,
+    DBT_SKILL_TREES,
+    DBT_TABLE_PRESETS,
+    DBT_TABLE_STATES,
+    DBT_TRANSMOGS,
+  ]
+  for (const table of tables) {
+    await tx
+      .table(table)
       .toCollection()
-      .keys()
-      .then((list) => list as string[])
+      .modify((item: AppDbRecord) => {
+        item.userId ||= LOCAL_USER_ID
+        item.syncState ||= 'pending'
+      })
   }
+}
 
-  public list(): Promise<T[]> {
-    return this.table.toArray()
-  }
-
-  public where(where: Partial<T>): Promise<T[]> {
-    return this.table.where(where).toArray()
-  }
-
-  public async create(record: Partial<T>, options?: { silent: boolean }): Promise<T> {
-    const now = new Date()
-    record = {
-      ...record,
-      id: record.id ?? createId(),
-      createdAt: record.createdAt ?? now.toJSON(),
-      updatedAt: record.updatedAt ?? now.toJSON(),
-    }
-    if (!record.userId) {
-      console.warn(`Creating record in table "${this.tableName}" without userId.`)
-    }
-
-    const id = await this.table.add(record as T, record.id)
-    const row = await this.read(id as any)
-    if (!options?.silent) {
-      this.events.next({ type: 'create', payload: row })
-    }
-    return row
-  }
-
-  public read(id: string): Promise<T> {
-    return this.table.get(id)
-  }
-
-  public async update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T> {
-    await this.table.update(id, record)
-    const row = await this.read(id)
-    if (!options?.silent) {
-      this.events.next({ type: 'update', payload: row })
-    }
-    return row
-  }
-
-  public async destroy(id: string | string[], options?: { silent: boolean }): Promise<void> {
-    await this.table.delete(id)
-    const ids = typeof id === 'string' ? [id] : id
-
-    if (!options?.silent) {
-      for (const id of ids) {
-        this.events.next({ type: 'delete', payload: { id } as T })
-      }
-    }
-
+async function ensureCharacter(tx: Transaction) {
+  const table = tx.table(DBT_CHARACTERS)
+  const count = await table.count()
+  if (count > 0) {
     return
   }
-
-  public live<R>(fn: (tbale: Table<T>) => PromiseExtended<R>) {
-    return defer(
-      () =>
-        new RxObservable<R>((sub) => {
-          return liveQuery<R>(() => fn(this.table)).subscribe(sub)
-        }),
-    )
+  const character: CharacterRecord = {
+    id: createId(),
+    name: null,
+    userId: LOCAL_USER_ID,
+    progressionLevels: {},
+    effectStacks: {},
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   }
+  await table.add(character, character.id)
+}
 
-  public observeAll(): RxObservable<T[]> {
-    return this.live((t) => t.toArray())
+async function migrateBookmarks(tx: Transaction) {
+  const character = await tx.table(DBT_CHARACTERS).toCollection().first()
+  const bookmarks = extractLegacyBookmarks()
+  const table = tx.table(DBT_BOOKMARKS)
+  for (const bookmark of bookmarks) {
+    bookmark.id = createId()
+    bookmark.characterId = character.id
+    bookmark.userId = LOCAL_USER_ID
+    await table.add(bookmark, bookmark.id).catch(console.error)
   }
+}
 
-  public observeWhere(where: WhereConditions<T>): RxObservable<T[]> {
-    return this.live((t) => t.where(where).toArray())
+function extractLegacyBookmarks() {
+  const result: BookmarkRecord[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (!key || !key.startsWith('nwb:items:')) {
+      continue
+    }
+    try {
+      const itemId = key.replace('nwb:items:', '').toLowerCase()
+      const value = JSON.parse(localStorage.getItem(key)) as { gs: number; mark: number }
+      if (!value.gs && !value.mark) {
+        continue
+      }
+      result.push({
+        id: null,
+        characterId: null,
+        userId: null,
+        itemId,
+        gearScore: value.gs || 0,
+        flags: value.mark || 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+      delete value.gs
+      delete value.mark
+      if (Object.keys(value).length === 0) {
+        localStorage.removeItem(key)
+      } else {
+        localStorage.setItem(key, JSON.stringify(value))
+      }
+    } catch (e) {
+      console.error(`Failed to parse bookmark from localStorage key "${key}":`, e)
+    }
   }
-
-  public observeWhereCount(where: WhereConditions<T>): RxObservable<number> {
-    return this.live((t) => t.where(where).count())
-  }
-
-  public observeBy(where: WhereConditions<T>): RxObservable<T> {
-    return this.live((t) => t.where(where).first())
-  }
-
-  public observeById(id: string): RxObservable<T> {
-    return id ? this.live((t) => t.get(id)) : of(null)
-  }
+  return result
 }

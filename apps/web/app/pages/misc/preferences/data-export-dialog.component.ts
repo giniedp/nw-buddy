@@ -3,18 +3,16 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
 import saveAs from 'file-saver'
-import { SENSITIVE_KEYS } from '~/data/constants'
-import { DbService } from '~/data/db.service'
+import { convertExport, DbService } from '~/data'
 import { NwModule } from '~/nw'
 import { AppPreferencesService, PreferencesService } from '~/preferences'
 import { ClipboardService } from '~/ui/clipboard'
 import { CodeEditorModule } from '~/ui/code-editor'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileExport, svgInfoCircle } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { ModalRef, ModalService, PromptDialogComponent } from '~/ui/layout/modal'
 import { PlatformService } from '~/utils/services/platform.service'
-import { recursivelyEncodeArrayBuffers } from './buffer-encoding'
-import { LayoutModule } from '~/ui/layout'
 
 export interface DataExportDialogState {
   active?: boolean
@@ -84,16 +82,11 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
   }
 
   public async openJson() {
-    const publicExport = this.get(({ publicExport }) => publicExport)
-    const data = this.preferences.export()
-    const db = await this.db.export()
-    data['db:nw-buddy'] = db
-
-    await recursivelyEncodeArrayBuffers(data)
-    if (publicExport) {
-      removeSensitiveKeys(data)
-    }
-
+    const data = convertExport({
+      database: await this.db.export(),
+      preferences: this.preferences.export(),
+      publicExport: this.get(({ publicExport }) => publicExport),
+    })
     const json = JSON.stringify(data, null, 2)
     PromptDialogComponent.open(this.modal, {
       inputs: {
@@ -113,14 +106,12 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     const suffix = publicExport ? '-pub' : ''
     const fileName = projectName + suffix + '.json'
 
-    const data = this.preferences.export()
-    const db = await this.db.export()
-    data['db:nw-buddy'] = db
+    const data = convertExport({
+      database: await this.db.export(),
+      preferences: this.preferences.export(),
+      publicExport,
+    })
 
-    await recursivelyEncodeArrayBuffers(data)
-    if (publicExport) {
-      removeSensitiveKeys(data)
-    }
     await downloadJson({
       data,
       fileName,
@@ -146,28 +137,6 @@ async function downloadJson({ data, fileName, usePicker }: { data: any; fileName
   })
   if (await verifyPermission(handle)) {
     await writeFile(handle, blob)
-  }
-}
-
-function removeSensitiveKeys(data: any) {
-  if (!data) {
-    return
-  }
-
-  if (Array.isArray(data)) {
-    for (const item of data) {
-      removeSensitiveKeys(item)
-    }
-  } else if (typeof data === 'object') {
-    for (const key of SENSITIVE_KEYS) {
-      if (key in data) {
-        console.log('removed key', key, data[key])
-        delete data[key]
-      }
-    }
-    for (const key in data) {
-      removeSensitiveKeys(data[key])
-    }
   }
 }
 
