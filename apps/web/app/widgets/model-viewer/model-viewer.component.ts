@@ -18,7 +18,7 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { TransformNode, Vector3 } from '@babylonjs/core'
+
 import type { ViewerDetails } from '@babylonjs/viewer'
 import { ArmorAppearanceDefinitions } from '@nw-data/generated'
 import { NwMaterialExtension, updateNwMaterial } from '@nw-viewer/babylon/extensions'
@@ -48,7 +48,7 @@ import { ModelItemInfo } from './model-viewer.service'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { getModelUrl } from './utils/get-model-url'
-import { Model, Viewer, createViewer, viewerCaptureImage } from './viewer'
+import { Model, Viewer, createViewer, viewerCaptureImage } from './viewer/create-viewer'
 
 export interface ModelViewerState {
   models: ModelItemInfo[]
@@ -393,10 +393,11 @@ async function updateEnv(viewer: Viewer, env: string) {
   }
 }
 
-function updateRotation(viewer: Viewer, model: Model, data: ModelItemInfo) {
+async function updateRotation(viewer: Viewer, model: Model, data: ModelItemInfo) {
   if (!model || !viewer) {
     return
   }
+  const { TransformNode, Vector3 } = await import('@babylonjs/core')
   const rotation = getItemRotation(data?.itemClass)
 
   const root = new TransformNode('root')

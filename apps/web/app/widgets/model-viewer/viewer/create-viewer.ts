@@ -1,10 +1,7 @@
 import { NgZone } from '@angular/core'
 
-import { CreateScreenshotAsync } from '@babylonjs/core'
-import { CreateViewerForCanvas, Viewer, ViewerDetails } from '@babylonjs/viewer'
-import { NwMaterialPlugin } from '@nw-viewer/babylon/extensions'
-
-export type { Model, Viewer } from '@babylonjs/viewer'
+import type { Viewer, ViewerDetails } from '@babylonjs/viewer'
+export type { Model, Viewer, ViewerDetails } from '@babylonjs/viewer'
 
 export async function createViewer(options: {
   element: HTMLCanvasElement
@@ -12,7 +9,11 @@ export async function createViewer(options: {
   mode?: 'dark' | 'light'
   onInitialized?: (details: ViewerDetails) => void
 }): Promise<Viewer> {
-  NwMaterialPlugin.register()
+  await import('@nw-viewer/babylon/extensions').then(({ NwMaterialExtension }) => {
+    NwMaterialExtension.register()
+  })
+  const { CreateViewerForCanvas } = await import('@babylonjs/viewer')
+
   const canvas = options.element
   const zone = options.zone
   return zone.runOutsideAngular(async () => {
@@ -41,5 +42,6 @@ export function viewerUpdateMode(viewer: Viewer, mode: 'dark' | 'light') {
 export async function viewerCaptureImage(viewer: Viewer, size: number) {
   const engine = viewer['_engine']
   const camera = viewer['_camera']
+  const { CreateScreenshotAsync } = await import('@babylonjs/core')
   return CreateScreenshotAsync(engine as any, camera, size)
 }

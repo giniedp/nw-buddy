@@ -31,7 +31,7 @@ import { animate, style, transition, trigger } from '@angular/animations'
 import { FormsModule } from '@angular/forms'
 import { IconsModule } from '~/ui/icons'
 import { PlatformService } from '~/utils/services/platform.service'
-import type { TransmogViewer } from '~/widgets/model-viewer/viewer'
+import type { TransmogViewer } from '~/widgets/model-viewer/viewer/create-transmog-viewer'
 import { ScreenshotService } from '~/widgets/screenshot'
 import { TransmogEditorStore } from './transmog-editor-page.store'
 import { TransmogEditorPanelComponent } from './transmog-editor-panel.component'
@@ -172,7 +172,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
     if (!canvas || this.viewer) {
       return
     }
-    const { createTransmogViewer } = await import('~/widgets/model-viewer/viewer')
+    const { createTransmogViewer } = await import('~/widgets/model-viewer/viewer/create-transmog-viewer')
     this.viewer = createTransmogViewer(canvas)
     this.resize
       .observe(canvas as any as Element)
