@@ -172,9 +172,10 @@ export class ItemSlotService {
     return from(
       new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
-        img.src = url
         img.onload = () => resolve(img)
         img.onerror = (err) => reject(err)
+        img.crossOrigin = 'anonymous'
+        img.src = url
       }),
     )
   }
