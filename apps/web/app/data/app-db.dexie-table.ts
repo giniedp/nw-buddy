@@ -3,7 +3,7 @@
 import { liveQuery, PromiseExtended, Table } from 'dexie'
 import { defer, of, Observable as RxObservable, Subject } from 'rxjs'
 import { AppDbRecord, AppDbTable, AppDbTableEvent, createId, WhereConditions } from './app-db'
-import { AppDbDexie } from './app-db.dexie'
+import type { AppDbDexie } from './app-db.dexie'
 
 export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   public readonly db: AppDbDexie

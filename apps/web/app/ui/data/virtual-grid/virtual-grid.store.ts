@@ -1,12 +1,12 @@
 import { Injectable, NgIterable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { groupBy, isEqual } from 'lodash'
+import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { SectionGroup } from './types'
-import { VirtualGridCellContext } from './virtual-grid-cell.directive'
-import { QuickFilterGetterFn } from './virtual-grid-options'
-import { VirtualGridRowContext } from './virtual-grid-row.directive'
-import { map, tap } from 'rxjs'
+import type { SectionGroup } from './types'
+import type { VirtualGridCellContext } from './virtual-grid-cell.directive'
+import type { QuickFilterGetterFn } from './virtual-grid-options'
+import type { VirtualGridRowContext } from './virtual-grid-row.directive'
 
 export interface VirtualGridState<T> {
   data: T[]

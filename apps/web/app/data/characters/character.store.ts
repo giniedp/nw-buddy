@@ -8,7 +8,8 @@ import { patchState, signalStore, withComputed, withHooks, withMethods, withProp
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
-import { BookmarkRecord, BookmarksService } from '../bookmarks'
+import { BookmarksService } from '../bookmarks/bookmarks.service'
+import { BookmarkRecord } from '../bookmarks/types'
 import { injectCharactersDB } from './characters.db'
 import { CharacterRecord } from './types'
 
@@ -31,7 +32,7 @@ export const CharacterStore = signalStore(
     return {
       record$,
       ready$,
-      table
+      table,
     }
   }),
   withMethods(({ table }) => {

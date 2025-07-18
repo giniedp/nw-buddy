@@ -2,7 +2,7 @@ import { Dexie, Transaction } from 'dexie'
 import { AppDb, AppDbRecord, createId } from './app-db'
 import { AppDbDexieTable } from './app-db.dexie-table'
 import { BookmarkRecord } from './bookmarks/types'
-import { CharacterRecord } from './characters'
+import { CharacterRecord } from './characters/types'
 import {
   DBT_BOOKMARKS,
   DBT_CHARACTERS,

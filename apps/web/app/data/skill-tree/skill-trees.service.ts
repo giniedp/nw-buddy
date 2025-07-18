@@ -4,7 +4,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, combineLatest, distinctUntilChanged, map, NEVER, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
-import { GearsetRecord } from '../gearsets'
+import { GearsetRecord } from '../gearsets/types'
 import { injectSkillTreesDB } from './skill-trees.db'
 import { SkillTree, SkillTreeRecord } from './types'
 

@@ -1,12 +1,12 @@
-import { computed, effect, Injectable } from '@angular/core'
-import { CharacterRecord } from '../characters'
-import { GearsetRecord } from '../gearsets/types'
-import { ItemInstanceRecord } from '../items'
-import { SkillTreeRecord } from '../skill-tree/types'
-import { TablePresetRecord } from '../table-presets'
-import { TransmogRecord } from '../transmogs'
-import { injectBackendAdapter } from './provider'
+import { computed, Injectable } from '@angular/core'
 import { BookmarkRecord } from '../bookmarks/types'
+import { CharacterRecord } from '../characters/types'
+import { GearsetRecord } from '../gearsets/types'
+import { ItemInstanceRecord } from '../items/types'
+import { SkillTreeRecord } from '../skill-tree/types'
+import { TablePresetRecord } from '../table-presets/types'
+import { TransmogRecord } from '../transmogs/types'
+import { injectBackendAdapter } from './provider'
 
 @Injectable({
   providedIn: 'root',
