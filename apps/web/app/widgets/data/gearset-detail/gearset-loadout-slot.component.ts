@@ -41,7 +41,7 @@ export abstract class LoadoutSlotEventHandler {
   imports: [CommonModule, NwModule, ItemDetailModule, IconsModule, CdkMenuModule, TooltipModule],
   providers: [GearsetSlotStore],
   host: {
-    class: 'inline-block rounded-md overflow-clip',
+    class: 'inline-block overflow-clip',
     '[class.outline]': 'dragState() === "success" || dragState() === "error"',
     '[class.outline-success]': 'dragState() === "success"',
     '[class.outline-error]': 'dragState() === "error"',
