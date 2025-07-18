@@ -207,7 +207,7 @@ function renderTile(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, da
   }
 
   if (data.icon) {
-    ctx.drawImage(data.icon, 4, 4, size - 8, size - 8)
+    ctx.drawImage(data.icon, 0, 0, size, size)
   } else if (data.slotIcon) {
     ctx.drawImage(data.slotIcon, 4, 4, size - 8, size - 8)
   }
@@ -216,6 +216,7 @@ function renderTile(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, da
     const rSize = Math.ceil(size / 2)
     const pad = 2
     const pad2 = pad * 2
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
     drawRoundedTopLeftRect(ctx, size - rSize, size - rSize, rSize, rSize, rSize / 2)
     ctx.drawImage(data.gemIcon, size - rSize + pad, size - rSize + pad, rSize - pad2, rSize - pad2)
   }
@@ -224,6 +225,7 @@ function renderTile(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, da
     const rSize = 16 + 4
     const pad = 2
     const pad2 = pad * 2
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
     drawRoundedBottomLeftRect(ctx, size - rSize, 0, rSize, rSize, rSize / 2)
     ctx.drawImage(data.linkIcon, size - rSize + pad, pad, rSize - pad2, rSize - pad2)
   }
