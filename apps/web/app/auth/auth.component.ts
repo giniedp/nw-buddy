@@ -1,5 +1,5 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
-import { Component, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { BackendService } from '~/data/backend'
 import { TooltipModule } from '~/ui/tooltip'
 
@@ -8,9 +8,10 @@ import { TooltipModule } from '~/ui/tooltip'
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   imports: [TooltipModule, CdkMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.hidden]': '!isEnabled()'
-  }
+    '[class.hidden]': '!isEnabled()',
+  },
 })
 export class AuthComponent {
   protected backend = inject(BackendService)

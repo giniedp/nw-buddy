@@ -36,6 +36,7 @@ export class BackstoryCellComponent implements VirtualGridCellComponent<Backstor
     return {
       height: 800,
       width: [400, 400],
+      cols: [1, 5],
       cellDataView: BackstoryCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (item, tl8) => {

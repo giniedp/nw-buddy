@@ -22,7 +22,7 @@ import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { VirtualGridCellComponent } from './virtual-grid-cell.component'
 import { VirtualGridCellDirective } from './virtual-grid-cell.directive'
 import { VirtualGridOptions } from './virtual-grid-options'
-import { VirtualGridRowDirective } from './virtual-grid-row.directive'
+import { VirtualGridRowContext, VirtualGridRowDirective } from './virtual-grid-row.directive'
 import { VirtualGridSectionComponent } from './virtual-grid-section.component'
 import { VirtualGridSectionDirective } from './virtual-grid-section.directive'
 import { VirtualGridStore } from './virtual-grid.store'
@@ -132,7 +132,7 @@ export class VirtualGridComponent<T> implements AfterViewInit {
   @ContentChild(VirtualGridSectionDirective, { static: true })
   protected customSection: VirtualGridSectionDirective
 
-  protected viewport = viewChild('viewport', { read: CdkVirtualScrollViewport })
+  protected viewport = viewChild(CdkVirtualScrollViewport)
   protected viewport$ = toObservable(this.viewport)
 
   @Output()
@@ -143,7 +143,23 @@ export class VirtualGridComponent<T> implements AfterViewInit {
   protected rowCount = this.store.rowCount
   protected itemSize = this.store.itemSize
 
-  protected trackBy = (i: number) => i
+  protected trackRowBy = (i: number, row: VirtualGridRowContext<T>) => {
+    if (!this.store.identifyBy()) {
+      return i
+    }
+    if (row.$implicit.type === 'items') {
+      return row.$implicit.items.map((it) => this.store.identifyBy()(it.$implicit)).join(',')
+    }
+
+    return i
+  }
+  protected trackCellBy = (i: number, cell: T) => {
+    if (this.store.identifyBy()) {
+      return this.store.identifyBy()(cell)
+    }
+    return i
+  }
+
   private destroyRef = inject(DestroyRef)
   private injector = inject(Injector)
 

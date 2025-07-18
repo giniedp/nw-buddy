@@ -1,6 +1,7 @@
 import { computed, inject } from '@angular/core'
 import { rxResource } from '@angular/core/rxjs-interop'
 import { patchState, signalMethod, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
+import { sortBy } from 'lodash'
 import { GearsetsService } from '~/data'
 import { BackendService } from '~/data/backend'
 import { collectTagsFromRecords, filterRecordsByTags, toggleTagInList } from '~/data/tagging'
@@ -56,7 +57,7 @@ export const GearsetsListPageStore = signalStore(
       if (search()) {
         result = result.filter((it) => it.name.toLowerCase().includes(search().toLowerCase()))
       }
-      return result
+      return sortBy(result, (it) => it.name)
     })
     return {
       tags,

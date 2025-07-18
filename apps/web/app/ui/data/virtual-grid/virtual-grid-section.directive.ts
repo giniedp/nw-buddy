@@ -1,4 +1,4 @@
-import { Directive, Input, TemplateRef } from '@angular/core'
+import { Directive, inject, Input, TemplateRef } from '@angular/core'
 
 export interface VirtualGridSectionContext {
   $implicit: string
@@ -17,10 +17,8 @@ export class VirtualGridSectionDirective {
     return true
   }
 
+  public readonly template = inject<TemplateRef<VirtualGridSectionContext>>(TemplateRef)
+
   @Input()
   public nwbVirtualGridSection: void
-
-  public constructor(public readonly template: TemplateRef<VirtualGridSectionContext>) {
-    //
-  }
 }

@@ -1,6 +1,23 @@
 import { Injectable } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ItemRarity } from '@nw-data/common'
-import { combineLatest, distinctUntilChanged, from, map, Observable, of, startWith, tap } from 'rxjs'
+import {
+  combineLatest,
+  defer,
+  distinctUntilChanged,
+  finalize,
+  firstValueFrom,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 
 interface RarityStyle {
@@ -80,6 +97,8 @@ const RARITY_STYLES: Record<ItemRarity, RarityStyle> = {
 const LINK_ICON =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAVElEQVQ4jdWRMQ7AIAwDz/z/WeVd7sQCRlAxVNwa20ocuB/b1YGgSzxKYgBJ6gOirg16w8bmBihfTIkhYNZJu3kZAMRbZ7P/Ozh+YwHqwQJDqRfyAhb0ckzto9dcAAAAAElFTkSuQmCC'
 
+const MAX_CONCURRENT_JOBS = 5
+
 export interface TileInput {
   rarity: ItemRarity
   isNamed: boolean
@@ -97,6 +116,7 @@ export class ItemSlotService {
   private ctx: CanvasRenderingContext2D
   private imageCache: Map<string, Observable<ImageBitmap | HTMLImageElement>> = new Map()
   private tileCache: Map<string, Observable<string>> = new Map()
+  private jobLimiter = createConcurrencyLimiter(MAX_CONCURRENT_JOBS)
 
   public constructor() {
     this.canvas = document.createElement('canvas')
@@ -112,7 +132,7 @@ export class ItemSlotService {
     if (!this.tileCache.has(id)) {
       this.tileCache.set(
         id,
-        this.createTile(input).pipe(
+        this.createTileStream(input).pipe(
           distinctUntilChanged(),
           shareReplayRefCount(1),
           tap({
@@ -124,29 +144,50 @@ export class ItemSlotService {
     return this.tileCache.get(id)
   }
 
-  private createTile(input: TileInput): Observable<string> {
+  private createTileStream(input: TileInput): Observable<string> {
+    return defer(() => {
+      const controller = new AbortController()
+
+      return this.jobLimiter().pipe(
+        switchMap(async () => this.createTile(input, controller.signal)),
+        finalize(() => {
+          controller.abort()
+        }),
+      )
+    })
+  }
+
+  private async createTile(input: TileInput, abort: AbortSignal): Promise<string> {
+    if (abort.aborted) {
+      return null
+    }
+
     const style = RARITY_STYLES[input.rarity] || RARITY_STYLES.common
     const background = (input.isNamed ? style.bgSquareNamed : style.bgSquare) || style.bgSquare
-    return combineLatest({
-      background: this.loadImage(background).pipe(startWith(null)),
-      linkIcon: input.isLinked ? this.loadImage(LINK_ICON) : of(null),
-      slotIcon: this.loadImage(input.slotIcon),
-      gemIcon: this.loadImage(input.gemIcon),
-      icon: this.loadImage(input.icon),
-    }).pipe(
-      map((data) => {
-        return renderTile(this.canvas, this.ctx, {
-          c0: style.c0,
-          c1: style.c1,
-          c2: style.c2,
-          background: data.background,
-          icon: data.icon,
-          gemIcon: data.gemIcon,
-          linkIcon: data.linkIcon,
-          slotIcon: data.slotIcon,
-        })
+
+    const data = await firstValueFrom(
+      combineLatest({
+        background: this.loadImage(background).pipe(startWith(null)),
+        linkIcon: input.isLinked ? this.loadImage(LINK_ICON) : of(null),
+        slotIcon: this.loadImage(input.slotIcon),
+        gemIcon: this.loadImage(input.gemIcon),
+        icon: this.loadImage(input.icon),
       }),
     )
+    if (abort.aborted) {
+      return null
+    }
+
+    return renderTile(this.canvas, this.ctx, {
+      c0: style.c0,
+      c1: style.c1,
+      c2: style.c2,
+      background: data.background,
+      icon: data.icon,
+      gemIcon: data.gemIcon,
+      linkIcon: data.linkIcon,
+      slotIcon: data.slotIcon,
+    })
   }
 
   private loadImage(url: string): Observable<ImageBitmap | HTMLImageElement> {
@@ -270,4 +311,33 @@ function drawRoundedBottomLeftRect(
   ctx.lineTo(x, y) // left edge
   ctx.closePath()
   ctx.fill()
+}
+
+function createConcurrencyLimiter(max: number) {
+  let active = 0
+  const queue = new Subject<() => void>()
+
+  queue.subscribe((run) => run())
+
+  return function acquire(): Observable<void> {
+    return new Observable<void>((subscriber) => {
+      const tryAcquire = () => {
+        if (active < max) {
+          active++
+          subscriber.next()
+          subscriber.complete()
+        } else {
+          queue.next(() => tryAcquire())
+        }
+      }
+
+      tryAcquire()
+
+      return () => {
+        active--
+        // Let next job in
+        queue.next(() => {})
+      }
+    })
+  }
 }

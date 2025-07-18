@@ -1,4 +1,4 @@
-import { Directive, Input, NgIterable, TemplateRef } from '@angular/core'
+import { Directive, inject, Input, TemplateRef } from '@angular/core'
 import { VirtualGridStore } from './virtual-grid.store'
 
 export interface VirtualGridCellContext<T> {
@@ -23,16 +23,11 @@ export class VirtualGridCellDirective<T> {
   ): ctx is VirtualGridCellContext<T> {
     return true
   }
+  public readonly template = inject<TemplateRef<VirtualGridCellContext<T>>>(TemplateRef)
+  private store = inject<VirtualGridStore<T>>(VirtualGridStore)
 
   @Input()
   public set nwbVirtualGridCell(data: T[]) {
     this.store.patchState({ data: data })
-  }
-
-  public constructor(
-    public readonly template: TemplateRef<VirtualGridCellContext<T>>,
-    private store: VirtualGridStore<T>,
-  ) {
-    //
   }
 }
