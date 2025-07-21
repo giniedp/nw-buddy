@@ -1,6 +1,6 @@
-<span class="label">
-  <span class="label-text"> Defender </span>
-  <label class="label-text flex flex-row items-center gap-2 cursor-pointer">
+<div class="flex flex-row justify-between">
+  <span class="label"> Defender </span>
+  <label class="label flex flex-row items-center gap-2 cursor-pointer">
     <span> Is Player </span>
     <input
       type="checkbox"
@@ -10,9 +10,9 @@
       [disabled]="isBound"
     />
   </label>
-</span>
+</div>
 @if (isVitalPickable) {
-  <div class="join mb-1">
+  <div class="join w-full">
     <button class="join-item btn btn-sm w-full" (click)="pickVital()">
       @if (vitalName(); as name) {
         {{ name | nwText }}
@@ -22,7 +22,7 @@
     </button>
   </div>
 }
-<div class="join">
+<div class="join w-full">
   <button
     class="join-item btn btn-sm justify-start text-left w-40"
     [cdkMenuTriggerFor]="isLevelDisabled ? null : tplSliderLevel"
@@ -30,7 +30,7 @@
     Level
   </button>
   <nwb-precision-input
-    class="join-item input input-sm text-right w-full"
+    class="join-item input border-0 input-sm text-right w-full"
     [min]="levelMin"
     [max]="levelMax"
     [step]="1"
@@ -58,7 +58,7 @@
     </div>
   </ng-template>
 </div>
-<div class="join mt-1">
+<div class="join w-full">
   <button
     class="join-item btn btn-sm justify-start text-left w-40"
     [cdkMenuTriggerFor]="isGsDisabled ? null : tplGearScoreLevel"
@@ -66,7 +66,7 @@
     GS
   </button>
   <nwb-precision-input
-    class="join-item input input-sm text-right w-full"
+    class="join-item input border-0 input-sm text-right w-full"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"

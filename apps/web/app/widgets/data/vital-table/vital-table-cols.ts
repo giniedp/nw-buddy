@@ -55,7 +55,7 @@ const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) =>
 export function vitalColIcon(util: VitalTableUtils, options?: { color: boolean }) {
   return util.colDef({
     colId: 'icon',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,
@@ -128,7 +128,7 @@ export function vitalColName(util: VitalTableUtils, options?: { link: boolean })
 export function vitalColLevel(util: VitalTableUtils) {
   return util.colDef<number>({
     colId: 'level',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Level',
     getQuickFilterText: () => '',
     width: 150,
@@ -148,7 +148,7 @@ export function vitalColLevel(util: VitalTableUtils) {
 export function vitalColFamily(util: VitalTableUtils) {
   return util.colDef<string[]>({
     colId: 'family',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Family',
     valueGetter: ({ data: { $familyInfo } }) => {
       return [$familyInfo.ID]
@@ -260,7 +260,7 @@ export function vitalColLootTags(util: VitalTableUtils) {
 export function vitalColExpedition(util: VitalTableUtils) {
   return util.colDef<string[]>({
     colId: 'expedition',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Occurance in',
     valueGetter: ({ data }) => data?.$dungeons?.map((it) => util.i18n.get(it.DisplayName)),
     ...util.selectFilter({
@@ -399,7 +399,7 @@ export function vitalColDmgEffectivenessArcane(util: VitalTableUtils) {
 export function vitalColSpawnCount(util: VitalTableUtils) {
   return util.colDef<number>({
     colId: 'spawnCount',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Spawn Count',
     getQuickFilterText: () => '',
     filter: 'agNumberColumnFilter',
@@ -418,7 +418,7 @@ export function vitalColSpawnCount(util: VitalTableUtils) {
 export function vitalColSpawnLevels(util: VitalTableUtils) {
   return util.colDef<number[]>({
     colId: 'spawnLevels',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Spawn Levels',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => {
@@ -448,7 +448,7 @@ export function vitalColSpawnTerritories(util: VitalTableUtils) {
   const zoneFilter = isZoneTerritory
   return util.colDef<number[]>({
     colId: 'spawnTerritories',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Spawn Territories',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => data.$zones?.filter(zoneFilter).map((it) => it.TerritoryID),
@@ -477,7 +477,7 @@ export function vitalColSpawnAreas(util: VitalTableUtils) {
   const zoneFilter = isZoneArea
   return util.colDef<number[]>({
     colId: 'spawnAreas',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Spawn Areas',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => data.$zones?.filter(zoneFilter).map((it) => it.TerritoryID),
@@ -506,7 +506,7 @@ export function vitalColSpawnPois(util: VitalTableUtils) {
   const zoneFilter = isZonePoi
   return util.colDef<number[]>({
     colId: 'spawnPois',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Spawn POIs',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => data.$zones?.filter(zoneFilter).map((it) => it.TerritoryID),
@@ -534,7 +534,7 @@ export function vitalColSpawnPois(util: VitalTableUtils) {
 export function vitalColBuffs(util: VitalTableUtils) {
   return util.colDef<string[]>({
     colId: 'buffs',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Buffs',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) =>

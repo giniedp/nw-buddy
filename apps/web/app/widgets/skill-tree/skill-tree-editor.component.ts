@@ -23,7 +23,7 @@ export interface SkillTreeValue {
 @Component({
   selector: 'nwb-skill-tree-editor',
   templateUrl: './skill-tree-editor.component.html',
-  styleUrls: ['./skill-tree-editor.component.scss'],
+  styleUrl: './skill-tree-editor.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, TooltipModule, SkillTreeInputComponent, FormsModule, LayoutModule],
   providers: [

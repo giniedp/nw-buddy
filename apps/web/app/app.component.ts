@@ -20,7 +20,7 @@ import { environment } from '../environments'
 import { LANG_OPTIONS, LanguageOption } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
 import { AuthComponent } from './auth/auth.component'
-import { injectNwData } from './data/nw-data/provider'
+import { BackendService } from './data/backend'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
 import { IconsModule } from './ui/icons'
@@ -35,12 +35,11 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
-import { BackendService } from './data/backend'
 console.debug('environment', environment)
 @Component({
   selector: 'nw-buddy-app',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AeternumMapModule,

@@ -40,7 +40,7 @@ import { LayoutModule } from '~/ui/layout'
     </div>
     <iframe src="https://aeternum-map.gg" class="flex-1"></iframe>
   `,
-  styleUrls: ['./aeternum-map.component.scss'],
+  styleUrl: './aeternum-map.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, LayoutModule, IconsModule],
   host: {

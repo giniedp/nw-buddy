@@ -10,7 +10,7 @@ import { TooltipModule } from '~/ui/tooltip'
 @Component({
   selector: 'nwb-xp-unlock-line',
   templateUrl: './xp-unlock-line.component.html',
-  styleUrl: './xp-unlock-line.component.scss',
+  styleUrl: './xp-unlock-line.component.css',
   imports: [CommonModule, NwModule, IconsModule, TooltipModule],
   host: {
     class: 'block',

@@ -7,7 +7,6 @@ import { NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgInfo } from '~/ui/icons/svg'
-import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
@@ -17,18 +16,9 @@ import { PrecisionInputComponent } from './precision-input.component'
   selector: 'nwb-offender-dot-control',
   templateUrl: './offender-dot-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    FormsModule,
-    // InputSliderComponent,
-    IconsModule,
-    LayoutModule,
-    TooltipModule,
-    PrecisionInputComponent,
-  ],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, LayoutModule, TooltipModule, PrecisionInputComponent],
   host: {
-    class: 'form-control',
+    class: 'fieldset',
   },
 })
 export class OffenderDotControlComponent {

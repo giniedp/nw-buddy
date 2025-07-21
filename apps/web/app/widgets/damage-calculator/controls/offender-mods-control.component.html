@@ -1,7 +1,7 @@
-<label class="label">
-  <span class="label-text">Modifiers</span>
-</label>
-<div class="grid gap-x-4 gap-y-1 grid-auto-fit-80">
+<div class="flex flex-row justify-between">
+  <span class="label">Modifiers</span>
+</div>
+<div class="grid gap-x-4 gap-y-[6px] grid-auto-fit-80">
   <nwb-stacked-value-control [(ngModel)]="modPvP.value" class="col-start-1" [percent]="true">
     <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> PvP Balance </span>
     <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipModPvP" [preventClick]="true">

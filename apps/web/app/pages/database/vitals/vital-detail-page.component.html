@@ -40,7 +40,7 @@
       [disabled]="!tabs.canScrollRight()"
       [class.hidden]="!tabs.canScroll()"
     />
-    <nwb-tabs [active]="tab()" class="tabs tabs-bordered bg-base-300" #tabs>
+    <nwb-tabs [active]="tab()" class="tabs tabs-border tabs-sm bg-base-300" #tabs>
       <nwb-tab class="flex-1" [value]="'stats'" [content]="tabStats">Stats</nwb-tab>
       <nwb-tab class="flex-1" [value]="'loot'" [content]="tabLoot">Loot</nwb-tab>
       <nwb-tab class="flex-1" [value]="'damage-table'" [content]="tabAttacks">Attacks</nwb-tab>
@@ -101,8 +101,8 @@
     </ng-template>
   </nwb-tabs-host>
 
-  <!--   
-  <div class="flex tabs tabs-bordered flex-none justify-center bg-base-300">
+  <!--
+  <div class="flex tabs tabs-border flex-none justify-center bg-base-300">
     <button class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')">Stats</button>
     <button class="tab flex-1" [class.tab-active]="tab() === 'loot'" (click)="selectTab('loot')">Loot</button>
     <button class="tab flex-1" [class.tab-active]="tab() === 'damage-table'" (click)="selectTab('damage-table')">

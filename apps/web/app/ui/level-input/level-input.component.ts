@@ -18,7 +18,7 @@ import { LayoutModule } from '../layout'
 @Component({
   selector: 'nwb-level-input',
   templateUrl: './level-input.component.html',
-  styleUrls: ['./level-input.component.scss'],
+  styleUrl: './level-input.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, InputSliderComponent, LayoutModule],
   host: {

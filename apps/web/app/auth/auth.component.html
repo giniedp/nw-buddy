@@ -4,7 +4,7 @@
     [cdkMenuTriggerFor]="tplAccMenu"
     [tooltip]="'Signed in as ' + userName()"
   >
-    <div class="avatar w-8 placeholder indicator" [class.online]="isOnline()">
+    <div class="avatar w-8 placeholder indicator" [class.avatar-online]="isOnline()">
       <div class="bg-neutral text-neutral-content w-8 rounded-full">
         <span class="text-xl uppercase">{{ initials() }}</span>
       </div>

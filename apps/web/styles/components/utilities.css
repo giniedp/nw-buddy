@@ -1,0 +1,71 @@
+@utility content-auto {
+  content-visibility: auto;
+}
+@utility content-hidden {
+  content-visibility: hidden;
+}
+@utility content-visible {
+  content-visibility: visible;
+}
+@utility grid-item-min-w-* {
+  --grid-item-min-w: --spacing(--value(integer));
+}
+@utility grid-gap-* {
+  --grid-gap: --spacing(--value(integer));
+  grid-gap: var(--grid-gap);
+}
+@utility grid-cols-max-* {
+  --grid-column-count: --value(integer);
+  --gap-count: calc(var(--grid-column-count) - 1);
+  --total-gap-width: calc(var(--gap-count) * var(--grid-gap));
+  --grid-item-max-w: calc((100% - var(--total-gap-width)) / var(--grid-column-count));
+  grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-item-min-w), var(--grid-item-max-w)), 1fr));
+}
+@utility grid-auto-fill-* {
+  grid-template-columns: repeat(auto-fill, minmax(min(--value([length]), 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(--spacing(--value(integer)), 100%), 1fr));
+}
+@utility grid-auto-fit-* {
+  grid-template-columns: repeat(auto-fit, minmax(min(--value([length]), 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(--spacing(--value(integer)), 100%), 1fr));
+}
+
+@utility grid-cols-fill-5xs {
+  grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+}
+@utility grid-cols-fill-4xs {
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+}
+@utility grid-cols-fill-3xs {
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+}
+@utility grid-cols-fill-2xs {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+@utility grid-cols-fill-xs {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+@utility grid-cols-fill-sm {
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+}
+@utility grid-cols-fill {
+  grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+}
+@utility grid-cols-fill-lg {
+  grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+}
+@utility grid-cols-fill-2lg {
+  grid-template-columns: repeat(auto-fill, minmax(35rem, 1fr));
+}
+@utility grid-cols-fill-3lg {
+  grid-template-columns: repeat(auto-fill, minmax(40rem, 1fr));
+}
+@utility grid-cols-dl {
+  grid-template-columns: max-content auto;
+}
+@utility grid-cols-dl2 {
+  grid-template-columns: repeat(2, max-content) auto;
+}
+@utility grid-cols-dl3 {
+  grid-template-columns: repeat(3, max-content) auto;
+}

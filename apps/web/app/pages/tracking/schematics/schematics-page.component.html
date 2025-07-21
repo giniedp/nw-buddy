@@ -4,7 +4,7 @@
       <div class="stat place-items-center">
         <div class="stat-title">Learned Schematics</div>
         <div class="stat-value text-primary">{{ stat.learned }} / {{ stat.total }}</div>
-        <div class="stat-desc text-opacity-50 italic">
+        <div class="stat-desc italic">
           Any
           <span class="inline-block w-3 h-3 mask mask-star-2 bg-orange-400"></span>
           <span class="inline-block w-3 h-3 mask mask-star-2 bg-yellow-400"></span>
@@ -12,7 +12,7 @@
           marks the schematic as "learned"
         </div>
 
-        <div class="tabs tabs-bordered flex-nowrap overflow-x-auto p-2">
+        <div class="tabs tabs-border flex-nowrap overflow-x-auto p-2">
           <ng-container *ngFor="let category of service.categories$ | async">
             <a class="tab" [routerLink]="[category.id]" [routerLinkActive]="'tab-active'">
               {{ category.label }}

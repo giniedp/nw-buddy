@@ -19,7 +19,7 @@ export type LootLimitTableRecord = LootLimitData & {
 export function lootLimitColIcon(util: LootLimitTableUtils) {
   return util.colDef({
     colId: 'icon',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,
@@ -50,7 +50,7 @@ export function lootLimitColIcon(util: LootLimitTableUtils) {
 export function lootLimitColName(util: LootLimitTableUtils) {
   return util.colDef<string>({
     colId: 'name',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Name',
     width: 200,
     valueGetter: ({ data }) => {
@@ -77,7 +77,7 @@ export function lootLimitColCountLimit(util: LootLimitTableUtils) {
 export function lootLimitColTimeBetweenDrops(util: LootLimitTableUtils) {
   return util.colDef<[number, number]>({
     colId: 'timeBetweenDrops',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Time Between Drops',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => {

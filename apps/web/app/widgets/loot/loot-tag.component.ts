@@ -10,9 +10,9 @@ import { svgCheck, svgPlus } from '~/ui/icons/svg'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, IconsModule],
   host: {
-    class: 'badge badge-sm badge-secondary whitespace-nowrap',
-    '[class.bg-opacity-25]': '!isChecked',
-    '[class.bg-opacity-90]': 'isChecked',
+    class: 'badge badge-sm whitespace-nowrap',
+    '[class.bg-secondary/25]': '!isChecked',
+    '[class.bg-secondary/90]': 'isChecked',
   },
 })
 export class LootTagComponent {

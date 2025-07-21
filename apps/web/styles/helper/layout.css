@@ -1,0 +1,47 @@
+
+.layout-gap {
+  @apply gap-2 lg:gap-4;
+}
+
+.layout-pad {
+  @apply p-2 lg:p-4;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  --padding-start: 0.5rem;
+  --padding-end: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+  }
+}
+
+.layout-pad-y {
+  @apply py-2 lg:py-4;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+  }
+}
+
+@utility layout-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+@utility layout-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+}
+
+@utility layout-content {
+  flex: auto;
+  overflow: auto;
+}

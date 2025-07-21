@@ -21,7 +21,7 @@ export function addGenericColumns(
     const colDef: ColDef = {
       ...(opts?.defaults || {}),
       colId: field,
-      headerClass: 'bg-info bg-opacity-15',
+      headerClass: 'bg-info/15',
       getQuickFilterText: () => '',
       headerValueGetter: () => humanize(field),
       valueGetter: ({ data }) => {

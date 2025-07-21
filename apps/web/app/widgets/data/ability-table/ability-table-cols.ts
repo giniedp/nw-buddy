@@ -74,7 +74,7 @@ export function abilityColName(util: AbilityTableUtils) {
       if (data.DisplayName && data.DisplayName !== value) {
         return null
       }
-      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+      return ['font-mono', 'text-neutral-content/50']
     },
   })
 }
@@ -147,7 +147,7 @@ export function abilityColWeaponTag(util: AbilityTableUtils) {
 export function abilityColSource(util: AbilityTableUtils) {
   return util.colDef<string>({
     colId: 'source',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Source',
     valueGetter: ({ data }) => data['$source'],
     hide: true,

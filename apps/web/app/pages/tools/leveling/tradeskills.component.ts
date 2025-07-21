@@ -11,7 +11,7 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
 @Component({
   selector: 'nwb-tradeskills-page',
   templateUrl: './tradeskills.component.html',
-  styleUrls: ['./tradeskills.component.scss'],
+  styleUrl: './tradeskills.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, TradeskillsModule, LayoutModule, IonSegment, IonSegmentButton],
   host: {

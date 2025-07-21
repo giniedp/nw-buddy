@@ -1,0 +1,40 @@
+@reference '../../../style.css';
+
+:host {
+
+  display: inline-flex;
+  position: relative;
+
+  .glorycane {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glorydiamond {
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(45deg);
+    background-image: url('../../../assets/icons/glorydiamonddetailed.png');
+    background-size: 100% 100%;
+  }
+  input {
+    z-index: 3;
+    cursor: pointer;
+  }
+  input:focus::placeholder {
+    color: transparent;
+  }
+  @apply rounded-md transition-all outline outline-4 outline-transparent cursor-pointer;
+  @apply focus-within:outline-primary;
+  @media (hover: hover) and (pointer: fine) {
+    @apply hover:outline-primary;
+  }
+}

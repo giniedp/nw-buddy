@@ -1,6 +1,6 @@
 <div class="grid grid-cols-fill-xs gap-x-2 gap-y-1">
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 justify-start flex-nowrap truncate"
       [class.justify-start]="!!territoryId"
@@ -38,7 +38,7 @@
     </ng-template>
   </div>
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start"
       [cdkMenuTriggerFor]="contentLevelSlider"
@@ -47,7 +47,7 @@
     </button>
     <input
       type="number"
-      class="join-item input input-sm w-20 appearance-none text-right"
+      class="join-item input border-0 input-sm w-20 appearance-none text-right"
       [(ngModel)]="contLevel"
       [min]="contentLevelMin"
       [max]="contentLevelMax"
@@ -85,7 +85,7 @@
     </ng-template>
   </div>
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 flex-nowrap truncate"
       [class.justify-start]="!!poiId"
@@ -126,13 +126,13 @@
     </ng-template>
   </div>
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start" [cdkMenuTriggerFor]="poiLevelSlider">
       POI Level
     </button>
     <input
       type="number"
-      class="join-item input input-sm w-20 max-w-xs appearance-none text-right"
+      class="join-item input border-0 input-sm w-20 max-w-xs appearance-none text-right"
       [(ngModel)]="poiLevel"
       [min]="poiLevelMin"
       [max]="poiLevelMax"
@@ -175,7 +175,7 @@
   </div>
 
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 justify-start"
       [class.justify-start]="!!vitalId"
@@ -212,7 +212,7 @@
     </ng-template>
   </div>
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start"
       [cdkMenuTriggerFor]="enemyLevelSlider"
@@ -221,7 +221,7 @@
     </button>
     <input
       type="number"
-      class="join-item input input-sm w-20 appearance-none text-right"
+      class="join-item input border-0 input-sm w-20 appearance-none text-right"
       [(ngModel)]="vitalLevel"
       [min]="enemyLevelMin"
       [max]="enemyLevelMax"
@@ -259,7 +259,7 @@
     </ng-template>
   </div>
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start"
       [cdkMenuTriggerFor]="playerLevelSlider"
@@ -268,7 +268,7 @@
     </button>
     <input
       type="number"
-      class="join-item input input-sm w-20 appearance-none text-right"
+      class="join-item input border-0 input-sm w-20 appearance-none text-right"
       [(ngModel)]="playerLevel"
       [min]="playerLevelMin"
       [max]="playerLevelMax"
@@ -307,7 +307,7 @@
   </div>
 
 
-  <div class="join bg-base-200">
+  <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 justify-start flex-nowrap truncate"
       [class.justify-start]="!!gameModeId"
@@ -347,7 +347,7 @@
   </div>
 
   @if (gameModeIsMutable) {
-    <div class="join bg-base-200">
+    <div class="join bg-base-200 rounded-md">
       <button class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start">Difficulty</button>
       <select
         type="number"
@@ -372,7 +372,7 @@
       </ng-template>
     </div>
 
-    <div class="join bg-base-200">
+    <div class="join bg-base-200 rounded-md">
       <button class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start">Mutation</button>
       <select
         type="number"

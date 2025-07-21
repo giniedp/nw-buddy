@@ -13,7 +13,7 @@
 @if (hoverItems()?.length) {
   <ng-template [nwbGameMapMouseTip]>
     @for (item of hoverItems(); track $index; let index = $index) {
-      <nwb-vital-detail [vitalId]="item.id" [level]="item.level" class="w-80 bg-base-300 bg-opacity-75 mb-1">
+      <nwb-vital-detail [vitalId]="item.id" [level]="item.level" class="w-80 bg-base-300/75 mb-1">
       </nwb-vital-detail>
     }
   </ng-template>
@@ -22,7 +22,7 @@
 <ng-template #clickModal>
   <div class="flex flex-col items-center gap-1 bg-base-300 max-h-[800px] overflow-auto rounded-sm">
     @for (item of clickItems(); track $index) {
-      <nwb-vital-detail [vitalId]="item.id" [level]="item.level" class="w-full bg-base-200 bg-opacity-75 mb-1">
+      <nwb-vital-detail [vitalId]="item.id" [level]="item.level" class="w-full bg-base-200/75 mb-1">
         <nwb-vital-detail-stats class="p-2 text-sm" />
       </nwb-vital-detail>
     }

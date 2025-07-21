@@ -1,7 +1,7 @@
-<label class="label">
-  <span class="label-text">Modifiers</span>
-</label>
-<div class="grid gap-x-4 gap-y-1 grid-auto-fit-80">
+<div class="flex flex-row">
+  <span class="label">Modifiers</span>
+</div>
+<div class="grid gap-x-4 gap-y-[6px] grid-auto-fit-80">
   <nwb-stacked-value-control [(ngModel)]="modCritReduction.value" [percent]="true" [min]="0">
     <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> Crit Reduction </span>
     <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipCrit" [preventClick]="true">
@@ -19,7 +19,7 @@
       </button>
     </nwb-stacked-value-control>
     @if (store.offenderAffixIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modBaseReductionAffix.value" [percent]="true" [min]="0" class="mt-1">
+      <nwb-stacked-value-control [(ngModel)]="modBaseReductionAffix.value" [percent]="true" [min]="0">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           Base Reduction
@@ -30,7 +30,7 @@
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modBaseReductionDot.value" [percent]="true" [min]="0" class="mt-1">
+      <nwb-stacked-value-control [(ngModel)]="modBaseReductionDot.value" [percent]="true" [min]="0">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-accent">
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           Base Reduction
@@ -53,12 +53,7 @@
       </button>
     </nwb-stacked-value-control>
     @if (store.offenderAffixIsActive()) {
-      <nwb-stacked-value-control
-        [(ngModel)]="modABSAffix.value"
-        [percent]="true"
-        [lockPreset]="lockAbsPreset"
-        class="mt-1"
-      >
+      <nwb-stacked-value-control [(ngModel)]="modABSAffix.value" [percent]="true" [lockPreset]="lockAbsPreset">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           ABS
@@ -69,12 +64,7 @@
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
-      <nwb-stacked-value-control
-        [(ngModel)]="modABSDot.value"
-        [percent]="true"
-        [lockPreset]="lockAbsPreset"
-        class="mt-1"
-      >
+      <nwb-stacked-value-control [(ngModel)]="modABSDot.value" [percent]="true" [lockPreset]="lockAbsPreset">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-accent">
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           ABS
@@ -97,12 +87,7 @@
       </button>
     </nwb-stacked-value-control>
     @if (store.offenderAffixIsActive()) {
-      <nwb-stacked-value-control
-        [(ngModel)]="modWKNAffix.value"
-        [percent]="true"
-        [lockPreset]="lockWknPreset"
-        class="mt-1"
-      >
+      <nwb-stacked-value-control [(ngModel)]="modWKNAffix.value" [percent]="true" [lockPreset]="lockWknPreset">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           WKN
@@ -113,12 +98,7 @@
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
-      <nwb-stacked-value-control
-        [(ngModel)]="modWKNDot.value"
-        [percent]="true"
-        [lockPreset]="lockWknPreset"
-        class="mt-1"
-      >
+      <nwb-stacked-value-control [(ngModel)]="modWKNDot.value" [percent]="true" [lockPreset]="lockWknPreset">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-accent">
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           WKN
@@ -160,8 +140,8 @@
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Fortify / Rend Modifier</h4>
     <p>
-      This value is utilized to both, to <i class="text-primary">Fortify</i>
-      against current attack (reduce damage taken) and to <i class="text-error">Rend</i> (increase damage taken)
+      This value is utilized to both, to <i class="text-primary">Fortify</i> against current attack (reduce damage
+      taken) and to <i class="text-error">Rend</i> (increase damage taken)
     </p>
     <p>Increase the value to simulate <i class="text-primary">Fortify</i>, or add positives values to the stack</p>
     <p>Decrease the value to simulate <i class="text-error">Rend</i>, or add negative values to the stack</p>
@@ -189,9 +169,7 @@
 <ng-template #tipWkn>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Weakness</h4>
-    <p>
-      Weakness against current attack. Higher values will increase the damage taken.
-    </p>
+    <p>Weakness against current attack. Higher values will increase the damage taken.</p>
     <hr class="mt-0 mb-3" />
     <p class="italic text-xs text-nw-description">
       Modifiers may impact multiple damage types in-game. This calculator requires modifiers to be set for each

@@ -34,7 +34,7 @@
           (keydown.enter)="toggle(cell)"
           [tooltip]="tip"
           [tooltipDelay]="0"
-          [tooltipClass]="'p-0 bg-opacity-100'"
+          [tooltipClass]="'p-0'"
         >
           <ng-template #tip>
             <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
@@ -52,7 +52,7 @@
           </ng-template>
 
           <picture
-            class="outline outline-[2px] aspect-square relative"
+            class="outline-[2px] aspect-square relative"
             [class.rounded-full]="!cell.square"
             [class.rounded-sm]="cell.square"
           >

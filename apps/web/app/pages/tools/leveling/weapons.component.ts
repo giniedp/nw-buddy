@@ -11,7 +11,6 @@ import { WeaponChartComponent } from './weapon-chart.component'
 @Component({
   selector: 'nwb-weapons-page',
   templateUrl: './weapons.component.html',
-  styleUrls: ['./weapons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, FormsModule, NwModule, WeaponLevelInputModule, WeaponChartComponent],
   host: {

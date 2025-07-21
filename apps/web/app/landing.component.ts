@@ -8,7 +8,6 @@ import { LayoutModule } from './ui/layout'
 @Component({
   selector: 'nwb-landing',
   templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, TooltipModule, LayoutModule],
   host: {

@@ -14,7 +14,7 @@ import { TerritoryModule } from '~/widgets/territory'
 @Component({
   selector: 'nwb-territories-list',
   templateUrl: './territories-list.component.html',
-  styleUrls: ['./territories-list.component.scss'],
+  styleUrl: './territories-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, TerritoryModule],
   host: {

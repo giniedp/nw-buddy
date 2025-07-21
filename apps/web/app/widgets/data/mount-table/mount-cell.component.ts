@@ -14,7 +14,7 @@ import { NW_FALLBACK_ICON } from '@nw-data/common'
     <picture class="block w-full h-full">
       <img class="w-full h-full object-contain" [nwImage]="icon" />
     </picture>
-    <h3 class="absolute bottom left-0 right-0 bottom-0 bg-black bg-opacity-50 px-3 py-2 text-lg font-bold">
+    <h3 class="absolute bottom left-0 right-0 bottom-0 bg-black/50 px-3 py-2 text-lg font-bold">
       {{ title | nwText }}
     </h3>
   `,

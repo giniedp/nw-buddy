@@ -181,7 +181,7 @@ export class TableGridUtils<T = any> {
       'div.flex.flex-row.flex-wrap.gap-1.items-center',
       attr,
       tags?.map((attr) => {
-        return this.el('span.badge.badge-sm.badge-secondary.bg-secondary.bg-opacity-50.px-1', attr)
+        return this.el('span.badge.badge-sm.badge-secondary.bg-secondary/50.px-1', attr)
       }),
     )
   }
@@ -202,8 +202,7 @@ export class TableGridUtils<T = any> {
         value?.map((tag: string) => {
           const list = [...(getClass?.(tag) || [])]
           if (list.every((it) => it !== 'bg-primary' && it !== 'bg-error')) {
-            list.push('bg-secondary')
-            list.push('bg-opacity-50')
+            list.push('bg-secondary/50')
           }
           if (list.every((it) => it !== 'badge-primary' && it !== 'badge-error')) {
             list.push('badge-secondary')

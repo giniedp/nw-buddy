@@ -1,0 +1,46 @@
+@import '@ag-grid-community/styles/ag-grid.css';
+@import '@ag-grid-community/styles/ag-theme-alpine.css';
+
+.ag-theme-alpine-dark {
+  --ag-borders: solid 0px;
+  --ag-cell-horizontal-padding: 8px;
+  --ag-background-color: #1a1a1a;
+  --ag-header-background-color: #1a1a1a;
+  --ag-odd-row-background-color: #181818;
+  --ag-control-panel-background-color: #181818;
+  --ag-card-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+  --ag-row-border-color: #222222;
+}
+
+.ag-floating-top {
+  @apply border-b border-solid border-primary;
+}
+
+.overflow-visible .ag-cell-value {
+  overflow: visible !important;
+}
+
+.ag-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: initial !important;
+}
+
+.multiline-cell {
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  word-break: initial !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.ag-header-cell-resize::after {
+  top: 2px !important;
+  height: calc(100% - 4px) !important;
+  width: 1px !important;
+}
+
+.ag-header-cell-filtered {
+  @apply bg-primary;
+}

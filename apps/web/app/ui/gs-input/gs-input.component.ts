@@ -39,7 +39,7 @@ import { GsSliderComponent } from './gs-slider.component'
         { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
         { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 },
       ]"
-      [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
+      [cdkConnectedOverlayPanelClass]="['bg-base-100/75', 'rounded-md', 'shadow-md', 'p-2']"
       (overlayOutsideClick)="onOutsideClick()"
       (backdropClick)="isOpen.set(false)"
       (detach)="isOpen.set(false)"

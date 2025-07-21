@@ -83,9 +83,9 @@ const RARITY_STYLES: Record<ItemRarity, RarityStyle> = {
     bgAnimated: `assets/icons/item/named_bg_4.webp`,
   },
   artifact: {
-    c0: '#63230e',
     c1: '#ff7c55',
     c2: '#b42e0a',
+    c0: '#63230e',
     bgSquare: `assets/icons/item/itemraritybgsquareartifact.png`,
     bgRound: `assets/icons/item/itemraritybgsquareartifact.png')`, // has no circle varnt
     bgHead: `assets/icons/item/tooltip_header_bg_artifact.png`,

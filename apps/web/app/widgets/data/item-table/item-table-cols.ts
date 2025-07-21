@@ -115,7 +115,7 @@ export function itemColItemId(util: ItemTableUtils) {
 export function itemColTransformTo(util: ItemTableUtils) {
   return util.colDef<string>({
     colId: 'transformTo',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Transform To',
     sortable: true,
     valueGetter: ({ data }) => getItemId(data.$transformTo),
@@ -171,7 +171,7 @@ export function itemColTransformFrom(util: ItemTableUtils) {
   return util.colDef<string[]>({
     colId: 'transformFrom',
     headerValueGetter: () => 'Transform From',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     sortable: true,
     valueGetter: ({ data }) => data.$transformFrom?.map(getItemId),
     cellRenderer: util.cellRenderer(({ data }) => {
@@ -227,7 +227,7 @@ export function itemColPerks(
     colId: 'perks',
     width: 175,
     sortable: false,
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Perks',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => data.$perks?.map((it) => it?.PerkID),
@@ -250,9 +250,8 @@ export function itemColPerks(
                 'h-7',
                 'indicator',
                 'rounded',
-                isApplicableInvalid ? 'bg-warning' : null,
-                isExclusiveInvalid ? 'bg-error' : null,
-                'bg-opacity-80',
+                isApplicableInvalid ? 'bg-warning/80' : null,
+                isExclusiveInvalid ? 'bg-error/80' : null,
               ],
               attrs: {
                 target: '_blank',
@@ -301,7 +300,7 @@ export function itemColPerkValidity(util: ItemTableUtils) {
     width: 175,
     sortable: false,
     hide: true,
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Perks Validity',
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => {
@@ -361,7 +360,7 @@ export function itemColAttributeMods(util: ItemTableUtils) {
     colId: 'attributeMods',
     headerValueGetter: () => 'Attr. Mods',
     width: 100,
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     valueGetter: ({ data }) => {
       return data.$affixes
         .filter((it) => !!it)
@@ -432,7 +431,7 @@ export function itemColTier(util: ItemTableUtils) {
 export function itemColBookmark(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userBookmark',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Bookmark',
     getQuickFilterText: () => '',
     width: 100,
@@ -450,7 +449,7 @@ export function itemColBookmark(util: TableGridUtils<MasterItemDefinitions>) {
 export function itemColStockCount(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userStockCount',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'In Stock',
     getQuickFilterText: () => '',
     suppressHeaderMenuButton: false,
@@ -470,7 +469,7 @@ export function itemColStockCount(util: TableGridUtils<MasterItemDefinitions>) {
 export function itemColOwnedWithGS(util: TableGridUtils<MasterItemDefinitions>) {
   return util.colDef<number>({
     colId: 'userOwnedWithGS',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Owned GS',
     headerTooltip: 'Item owned with this gear score',
     getQuickFilterText: () => '',
@@ -489,7 +488,7 @@ export function itemColPrice(util: TableGridUtils<MasterItemDefinitions>) {
     headerValueGetter: () => 'Price',
     getQuickFilterText: () => '',
     headerTooltip: 'Current price in Trading post',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     cellClass: 'text-right',
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.price,
     cellRenderer: TrackingCell,
@@ -509,7 +508,7 @@ export function itemColGearScore(util: ItemTableUtils) {
     colId: 'gearScore',
     headerValueGetter: () => 'Gear Score',
     getQuickFilterText: () => '',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     width: 120,
     cellClass: 'text-right',
     comparator: (a, b) => {
@@ -537,7 +536,7 @@ export function itemColSource(util: ItemTableUtils) {
   return util.colDef<string>({
     colId: 'source',
     headerValueGetter: () => 'Source',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     valueGetter: ({ data }) => getItemSourceShort(data),
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
@@ -737,7 +736,7 @@ export function colDefPin(util: ItemTableUtils) {
 export function itemColShops(util: ItemTableUtils) {
   return util.colDef({
     colId: 'currencyShops',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Shops',
     width: 150,
     valueGetter: ({ data }) => data.$shops?.map((it) => it?.CategoricalProgressionId),

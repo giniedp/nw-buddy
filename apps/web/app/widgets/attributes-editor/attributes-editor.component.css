@@ -1,0 +1,17 @@
+@reference '../../../style.css';
+.grid {
+  display: grid;
+  grid-template-columns: max-content max-content 1fr;
+}
+.tracker {
+  @apply bg-zinc-800 h-2;
+  top: calc(50% - 4px);
+}
+.tracker span {
+  transition: 0.15s ease width;
+}
+.segment:hover {
+  .badge {
+    @apply scale-125;
+  }
+}

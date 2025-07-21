@@ -9,7 +9,7 @@
   min="0"
   type="number"
   [attr.max]="60"
-  class="input focus:outline-none bg-transparent h-full w-full p-0 text-center font-bold text-3xl appearance-none font-caslon"
+  class="input input-ghost bg-transparent focus:bg-transparent focus:outline-none h-full w-full p-0 text-center font-bold text-3xl appearance-none font-caslon"
   placeholder="0"
   [(ngModel)]="modelValue"
   (focus)="isSliderOpen = true"
@@ -23,9 +23,9 @@
   [cdkConnectedOverlayPositions]="[
     { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
     { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
-    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 }
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 },
   ]"
-  [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
+  [cdkConnectedOverlayPanelClass]="['bg-base-100/75', 'rounded-md', 'shadow-md', 'p-2']"
   (overlayOutsideClick)="onOutsideClick()"
   (backdropClick)="isSliderOpen = false"
   (detach)="isSliderOpen = false"
@@ -40,4 +40,3 @@
     class="block w-96"
   />
 </ng-template>
-

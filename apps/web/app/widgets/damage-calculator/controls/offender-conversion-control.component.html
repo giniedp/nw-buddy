@@ -1,33 +1,41 @@
-<label class="label">
-  <span class="label-text text-secondary"> Affix </span>
-  <span class="label-text" [class.text-primary]="scalingIsHigher"> Scaling {{ scalingSum | number: '0.2-2' }} </span>
-</label>
-<span class="join">
+<div class="flex flex-row justify-between">
+  <span class="label text-secondary"> Affix </span>
+  <span class="label" [class.text-primary]="scalingIsHigher"> Scaling {{ scalingSum | number: '0.2-2' }} </span>
+</div>
+<span class="join w-full">
   <button
-    class="join-item btn btn-sm flex-1 text-left"
-    [class.btn-error]="!!affixPercent.value && !affixType.value"
+    class="join-item select select-sm border-0 btn btn-sm items-center rounded-md bg-base-200"
     [cdkMenuTriggerFor]="tplDamageType"
     [disabled]="isBound"
   >
-    @if (affixType.value) {
-      <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
-      <span> {{ affixType.value }} </span>
-    } @else {
-      <span class="italic"> - none - </span>
-    }
-    <ng-template #tplDamageType>
-      <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-[80vh] overflow-y-auto flex flex-col flex-nowrap" cdkMenu>
-        @for (item of damageTypeOptions(); track $index) {
-          <li class="text-shadow-sm shadow-black" cdkMenuItem>
-            <a (click)="affixType.value = item.value">
-              <img [nwImage]="item.icon" class="w-5 h-5 ml-2" />
-              <span>{{ item.label }}</span>
-            </a>
-          </li>
-        }
-      </ul>
-    </ng-template>
+    <span class="label w-20"> Type </span>
+    <span
+      class="flex-1 flex flex-row items-center justify-center gap-2"
+      [class.text-error]="!!affixPercent.value && !affixType.value"
+    >
+      @if (affixType.value) {
+        <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
+        <span> {{ affixType.value }} </span>
+      } @else {
+        <span class="italic"> - none - </span>
+      }
+    </span>
   </button>
+  <ng-template #tplDamageType>
+    <ul
+      class="mt-1 menu bg-base-200 border border-base-100 rounded-md w-80 max-h-[80vh] overflow-y-auto flex flex-col flex-nowrap"
+      cdkMenu
+    >
+      @for (item of damageTypeOptions(); track $index) {
+        <li class="w-80" cdkMenuItem>
+          <button (click)="affixType.value = item.value">
+            <img [nwImage]="item.icon" class="w-5 h-5 ml-2" />
+            <span>{{ item.label }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  </ng-template>
   @if (!isBound) {
     <button class="join-item btn btn-sm btn-square" (click)="pickAffix()">
       <nwb-icon [icon]="iconMore" class="w-4 h-4" />
@@ -35,12 +43,10 @@
   }
 </span>
 
-<span class="join mt-1">
-  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="isBound ? null : tplSlider">
-    Convert
-  </button>
+<span class="join w-full">
+  <button class="join-item btn btn-sm justify-start text-left w-20">Convert</button>
   <nwb-precision-input
-    class="join-item flex-1 input input-sm text-right"
+    class="join-item flex-1 input border-0 input-sm text-right"
     [min]="0"
     [max]="100"
     [step]="0.1"
@@ -55,7 +61,7 @@
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipConvert" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
   </button>
-  <ng-template #tplSlider>
+  <!-- <ng-template #tplSlider>
     <div class="bg-base-200 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
       <nwb-input-slider
         class="w-full"
@@ -66,17 +72,18 @@
         [bars]="true"
         [barsStep]="20"
         [values]="true"
-        [(ngModel)]="affixPercent.value"
+        (ngModel)="affixPercent.value * 100"
+        (ngModelChange)="affixPercent.value = $event / 100"
       />
     </div>
-  </ng-template>
+  </ng-template> -->
 </span>
 
-<span class="join mt-1">
+<span class="join w-full">
   <button class="join-item btn btn-sm justify-start text-left w-20">Scaling</button>
   @for (item of scaling; track $index) {
     <nwb-precision-input
-      class="join-item input input-sm  w-full text-white focus-within:z-10"
+      class="join-item input border-0 input-sm w-full text-white focus-within:z-10"
       [min]="0"
       [max]="100"
       [step]="1"
@@ -86,9 +93,8 @@
       [(ngModel)]="item.access.value"
       [unit]="'%'"
       [disabled]="isBound"
-      [class.text-opacity-25]="!item.access.value"
     >
-      <span class="absolute top-0 left-0 text-xs leading-none text-opacity-30 text-white scale-75">{{ item.label }}</span>
+      <span class="absolute top-0 left-0 text-xs leading-none text-white/30 scale-75">{{ item.label }}</span>
     </nwb-precision-input>
   }
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipScaling" [preventClick]="true">
@@ -111,9 +117,7 @@
 <ng-template #tipScaling>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Affix Scaling</h4>
-    <p>
-      If affix scaling is defined and exceeds the weapon's final scaling, it takes precedence.
-    </p>
+    <p>If affix scaling is defined and exceeds the weapon's final scaling, it takes precedence.</p>
     @if (scalingSum) {
       <p>The affix scales with:</p>
       <p>

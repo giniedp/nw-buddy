@@ -1,7 +1,8 @@
 <div class="outer-grid gap-x-3 gap-y-2">
   @if (!disableHead()) {
     <h3
-      class="text-lg uppercase font-serif col-span-2 text-center text-nw-description nw-bg-title bg-bottom z-10 pt-4 relative whitespace-nowrap text-ellipsis overflow-hidden"
+      class="h-11 text-lg uppercase font-serif col-span-2 text-center text-nw-description nw-bg-title bg-bottom z-10 relative text-ellipsis overflow-clip leading-tight flex flex-row items-end justify-center line-clamp-2"
+      [title]="gearset()?.name"
     >
       @if (!isLoaded()) {
         Loading...

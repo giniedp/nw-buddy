@@ -154,7 +154,7 @@
                       <span [nwText]="row.RankName"></span>
                     </div>
                     <div
-                      class="stat-value cursor-pointer transition-all rounded-md outline outline-4 outline-transparent focus:outline-primary hover:outline-primary"
+                      class="stat-value cursor-pointer transition-all rounded-md outline-4 outline-transparent focus:outline-primary hover:outline-primary"
                       [class.text-primary]="row.Completed"
                       (click)="row.toggle()"
                     >
@@ -199,7 +199,7 @@
         </div>
       </div>
 
-      <div class="content-grid-tabs tabs tabs-bordered mt-4 justify-stretch flex-none">
+      <div class="content-grid-tabs tabs tabs-border mt-4 justify-stretch flex-none">
         @for (item of tabs; track item.id) {
           @if (item.externUrl) {
             <a class="tab" [class.tab-active]="item.id === tab" [href]="item.externUrl" target="_blank">

@@ -41,7 +41,7 @@
             @if (stat.assigned) {
               <span> + </span>
               <span
-                class="text-attr-assign text-opacity-75 cursor-help"
+                class="text-attr-assign cursor-help"
                 [tooltip]="'Assigned'"
                 [tooltipClass]="'text-attr-assign'"
               >
@@ -51,7 +51,7 @@
             @if (stat.buffs) {
               <span> + </span>
               <span
-                class="text-attr-buff text-opacity-75 cursor-help"
+                class="text-attr-buff cursor-help"
                 [tooltip]="'Item Buffs'"
                 [tooltipClass]="'text-attr-buff'"
               >
@@ -61,7 +61,7 @@
             @if (stat.magnify) {
               <span> + </span>
               <span
-                class="text-attr-magnify text-opacity-75 cursor-help"
+                class="text-attr-magnify cursor-help"
                 [tooltip]="'Magnify'"
                 [tooltipClass]="'text-attr-magnify'"
               >
@@ -123,7 +123,7 @@
               >
                 @if (getBulletColor(stat, step.value); as col) {
                   <span
-                    class="badge absolute right-0"
+                    class="badge absolute right-0 rounded-full"
                     [class.bg-zinc-800]="col === 'zink'"
                     [class.bg-attr-base]="col === 'base'"
                     [class.bg-attr-buff]="col === 'buff'"

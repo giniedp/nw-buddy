@@ -52,7 +52,7 @@ export interface LootGraphNodeState<T = LootNode> {
 @Component({
   selector: 'nwb-loot-graph-node',
   templateUrl: './loot-graph-node.component.html',
-  styleUrls: ['./loot-graph-node.component.scss'],
+  styleUrl: './loot-graph-node.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

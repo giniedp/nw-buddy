@@ -14,7 +14,7 @@ import { CheckpointTipComponent } from './checkpoint-tip.component'
 @Component({
   selector: 'nwb-attributes-editor',
   templateUrl: './attributes-editor.component.html',
-  styleUrls: ['./attributes-editor.component.scss'],
+  styleUrl: './attributes-editor.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule, LayoutModule, CheckpointTipComponent],
   providers: [AttributesStore],

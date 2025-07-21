@@ -9,7 +9,7 @@ import { TabsStore } from './tabs.store'
   selector: 'nwb-tabs',
   template: ` <ng-content /> `,
   host: {
-    class: 'flex flex-row overflow-hidden',
+    class: 'flex flex-row overflow-hidden flex-nowrap',
   },
   imports: [IconsModule],
   providers: [TabsStore],

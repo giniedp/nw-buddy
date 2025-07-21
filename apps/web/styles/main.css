@@ -1,0 +1,36 @@
+@import './vendor/tailwind.css';
+@import './vendor/ionic.css';
+@import './vendor/ag-grid.css';
+@import './vendor/cdk.css';
+@import './vendor/maplibre.css';
+@import './vendor/swiper.css';
+
+@import './fonts/_all.css';
+@import './helper/_all.css';
+@import './components/_all.css';
+
+@supports not (color: oklch(0 0 0)) {
+  :root {
+    color-scheme: dark;
+    --fallback-p: #f28c18;
+    --fallback-pc: #131616;
+    --fallback-s: #6d3a9c;
+    --fallback-sc: #e3c4ff;
+    --fallback-a: #51a800;
+    --fallback-ac: #dcffbb;
+    --fallback-n: #1b1d1d;
+    --fallback-nc: #cfd4d4;
+    --fallback-b1: #222222;
+    --fallback-b2: #191919;
+    --fallback-b3: #111111;
+    --fallback-bc: #cfd4d4;
+    --fallback-in: #2563eb;
+    --fallback-inc: #cfdeff;
+    --fallback-su: #16a34a;
+    --fallback-suc: #beffd6;
+    --fallback-wa: #d97706;
+    --fallback-wac: #2d1800;
+    --fallback-er: #dc2626;
+    --fallback-erc: #ffcdcd;
+  }
+}

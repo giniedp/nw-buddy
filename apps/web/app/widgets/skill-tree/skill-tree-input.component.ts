@@ -14,7 +14,7 @@ import { SkillTreeInputStore } from './skill-tree-input.store'
 @Component({
   selector: 'nwb-skill-tree-input',
   templateUrl: './skill-tree-input.component.html',
-  styleUrls: ['./skill-tree-input.component.scss'],
+  styleUrl: './skill-tree-input.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, TooltipModule, LayoutModule],
   providers: [

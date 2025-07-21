@@ -53,7 +53,7 @@
     [enableLink]="!disabled()"
   >
     @if (store.isLinked()) {
-      <span class="absolute top-[5px] left-[55px] p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden">
+      <span class="absolute top-[5px] left-[55px] p-1 bg-black/75 rounded-bl-xl screenshot-hidden">
         <nwb-icon [icon]="iconLink" class="w-4 h-4" />
       </span>
     }
@@ -91,7 +91,7 @@
           [ngModel]="gsValue || store.instance().gearScore"
           (ngModelChange)="updateGearScore($event)"
           (wheel)="stepGearScore($event)"
-          class="w-full bg-black bg-opacity-80 p-1 rounded-md"
+          class="w-full bg-black/80 p-1 rounded-md"
         />
       </div>
     </ng-template>

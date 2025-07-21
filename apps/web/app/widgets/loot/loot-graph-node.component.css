@@ -1,0 +1,14 @@
+@reference '../../../style.css';
+
+:host {
+  content-visibility: auto;
+}
+.grid {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+nwb-item-detail.v-highlight {
+  @apply outline-2 outline-success outline-offset-2;
+}
+nwb-item-detail {
+  min-height: 86px;
+}

@@ -10,7 +10,7 @@
       [disabled]="!tabs.canScrollRight()"
       [class.hidden]="!tabs.canScroll()"
     />
-    <nwb-tabs [active]="activeTab()" class="tabs tabs-bordered bg-base-300" #tabs>
+    <nwb-tabs [active]="activeTab()" class="tabs tabs-border tabs-sm bg-base-300" #tabs>
       @for (tab of tabItems(); track tab.id) {
         <nwb-tab
           class="whitespace-nowrap"

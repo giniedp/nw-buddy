@@ -16,7 +16,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "css"
         },
         "@schematics/angular:application": {
           "strict": true
@@ -83,9 +83,9 @@
               ]
             },
             "styles": [
-              "apps/web/style.scss"
+              "apps/web/style.css"
             ],
-            "inlineStyleLanguage": "scss",
+            "inlineStyleLanguage": "css",
             "scripts": []
           },
           "configurations": {
@@ -319,7 +319,7 @@
             "port": 5200,
             "compodoc": false,
             "styles": [
-              "apps/web/style.scss"
+              "apps/web/style.css"
             ]
           }
         },
@@ -330,7 +330,7 @@
             "browserTarget": "nw-buddy:build",
             "compodoc": false,
             "styles": [
-              "apps/web/style.scss"
+              "apps/web/style.css"
             ],
             "outputDir": "dist/web-storybook",
             "quiet": true,
@@ -343,7 +343,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "nwb",
-      "style": "scss"
+      "style": "css"
     },
     "@schematics/angular:directive": {
       "prefix": "nwb"

@@ -1,0 +1,25 @@
+@reference '../../../style.css';
+:host {
+  width: 40%;
+  @apply bg-base-300 p-3;
+  iframe {
+    @apply rounded-md;
+  }
+  &.floating {
+    @apply bg-transparent absolute bottom-0 right-0;
+    width: calc(max(25vw, 600px));
+    height: calc(max(25vw, 600px) * (9/16));
+  }
+  &.floating.left {
+    right: initial;
+    left: 0;
+  }
+  &.floating.expand {
+    @apply inset-0 p-0;
+    width: initial;
+    height: initial;
+    iframe {
+      @apply rounded-none;
+    }
+  }
+}

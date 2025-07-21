@@ -14,7 +14,7 @@ import { svgInfo } from '~/ui/icons/svg'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent, TooltipModule, IconsModule],
   host: {
-    class: 'form-control',
+    class: 'fieldset',
   },
 })
 export class DefenderModsControlComponent {

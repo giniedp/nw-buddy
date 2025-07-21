@@ -9,8 +9,7 @@ const DEFAULT_CLASS = [
   'rounded-md',
   'text-sm',
   'shadow-md',
-  'bg-black',
-  'bg-opacity-90',
+  'bg-black/90',
   'border',
   'border-base-100',
   'overflow-clip',
@@ -19,7 +18,7 @@ const DEFAULT_CLASS = [
 
 @Component({
   selector: 'nwb-tooltip',
-  styleUrls: ['./tooltip.component.scss'],
+  styleUrl: './tooltip.component.css',
   template: `
     @if (text) {
       {{ text }}

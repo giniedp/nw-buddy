@@ -11,7 +11,7 @@ import { map } from 'rxjs'
 @Component({
   selector: 'nwb-schematics-tracking',
   templateUrl: './schematics-tracking.component.html',
-  styleUrls: ['./schematics-tracking.component.scss'],
+  styleUrl: './schematics-tracking.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, VirtualGridModule],
   host: {

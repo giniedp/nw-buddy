@@ -15,7 +15,7 @@
   />
   @if (lvl.isConnected()) {
     <div cdkMenuGroup slot="toolbar">
-      <ul class="menu bg-base-200 bg-opacity-50 rounded max-w-sm overflow-clip">
+      <ul class="menu bg-base-200/50 rounded max-w-sm overflow-clip">
         <li>
           <a
             cdkMenuItem
@@ -72,7 +72,7 @@
       <ng-template #tplLevels>
         <ul
           cdkMenu
-          class="menu menu-sm dropdown-content bg-base-300 bg-opacity-50 border border-base-100 rounded flex-nowrap overflow-auto max-h-[75vh]"
+          class="menu menu-sm dropdown-content bg-base-300/50 border border-base-100 rounded flex-nowrap overflow-auto max-h-[75vh]"
         >
           @for (group of levels.value(); track $index) {
             <h2 class="menu-title">{{ group.name | nwHumanize }}</h2>
@@ -90,7 +90,7 @@
       </ng-template>
 
       <ng-template #tplCamera>
-        <div cdkMenu class="p-2 bg-base-300 bg-opacity-50 border border-base-100 rounded">
+        <div cdkMenu class="p-2 bg-base-300/50 border border-base-100 rounded">
           <form
             class="flex flex-col gap-2"
             (keydown.tab)="$event.stopPropagation()"

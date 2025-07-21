@@ -1,0 +1,17 @@
+picture,
+img {
+  &.fade {
+    opacity: 0;
+  }
+  &.show {
+    opacity: 1;
+  }
+  &.error {
+    opacity: 1;
+  }
+}
+
+picture.error img,
+img.error {
+  display: none;
+}

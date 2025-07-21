@@ -15,7 +15,7 @@ export function tagsCell(options: ComponentInputs<TagsCellComponent>): PropertyG
   selector: 'nwb-tags-cell',
   template: `
     @for (tag of tags(); track $index) {
-      <span class="badge badge-sm badge-secondary bg-opacity-50 px-1">{{ tag }}</span>
+      <span class="badge badge-sm bg-secondary/50 px-1">{{ tag }}</span>
     }
   `,
   host: {

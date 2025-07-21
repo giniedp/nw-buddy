@@ -4,7 +4,6 @@ import { CharacterStore } from '~/data'
 @Component({
   selector: 'nwb-item-marker',
   templateUrl: './item-marker.component.html',
-  styleUrls: ['./item-marker.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [],
   host: {

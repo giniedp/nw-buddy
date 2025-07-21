@@ -40,7 +40,7 @@ export function seasonPassColLevel(util: SeasonPassTableUtils) {
 export function seasonPassColSeason(util: SeasonPassTableUtils) {
   return util.colDef<string>({
     colId: 'source',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Season',
     valueGetter: ({ data }) => data.$source,
   })
@@ -49,7 +49,7 @@ export function seasonPassColSeason(util: SeasonPassTableUtils) {
 export function seasonPassColFreeItem(util: SeasonPassTableUtils) {
   return util.colDef({
     colId: 'freeTrackItem',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Free Track Item',
     resizable: true,
     sortable: false,
@@ -88,7 +88,7 @@ export function seasonPassColFreeItem(util: SeasonPassTableUtils) {
 export function seasonPassColPremiumItem(util: SeasonPassTableUtils) {
   return util.colDef({
     colId: 'premiumTrackItem',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Premium Track Item',
     resizable: true,
     sortable: false,

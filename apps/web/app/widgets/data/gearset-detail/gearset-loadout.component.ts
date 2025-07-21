@@ -23,7 +23,7 @@ import { GearsetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 @Component({
   selector: 'nwb-gearset-loadout',
   templateUrl: './gearset-loadout.component.html',
-  styleUrls: ['./gearset-loadout.component.scss'],
+  styleUrl: './gearset-loadout.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, GearsetLoadoutSlotComponent, RouterModule, IconsModule, CdkMenuModule],
   providers: [GearsetStore],

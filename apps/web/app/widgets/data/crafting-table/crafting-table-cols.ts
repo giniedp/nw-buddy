@@ -123,7 +123,7 @@ export function craftingColFilterText(util: CraftingTableUtils) {
 export function craftingColSource(util: CraftingTableUtils) {
   return util.colDef<string>({
     colId: 'source',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Source',
     valueGetter: ({ data }) => (data['$source'] as string)?.replace('CraftingRecipes', ''),
     valueFormatter: ({ value }) => humanize(value),
@@ -149,7 +149,7 @@ export function craftingColIngredients(util: CraftingTableUtils) {
   return util.colDef<string[]>({
     colId: 'ingredients',
     headerValueGetter: () => 'Ingredients',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     width: 350,
     sortable: false,
     headerName: 'Ingredients',
@@ -245,7 +245,7 @@ export function craftingColExpansion(util: CraftingTableUtils) {
 export function craftingColBookmark(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'userBookmark',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Bookmark',
     getQuickFilterText: () => null,
     width: 100,
@@ -263,7 +263,7 @@ export function craftingColBookmark(util: CraftingTableUtils) {
 export function craftingColInStock(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'userStock',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'In Stock',
     headerTooltip: 'Number of items currently owned',
     getQuickFilterText: () => null,
@@ -282,7 +282,7 @@ export function craftingColInStock(util: CraftingTableUtils) {
 export function craftingColPrice(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'userPrice',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Price',
     headerTooltip: 'Current price in Trading post',
     getQuickFilterText: () => null,
@@ -316,7 +316,7 @@ export function craftingColTradeskill(util: CraftingTableUtils) {
 export function craftingColTradeskillEXP(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'tradeskillEXP',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Tradskill XP',
     width: 130,
     cellClass: 'text-right',
@@ -329,7 +329,7 @@ export function craftingColTradeskillEXP(util: CraftingTableUtils) {
 export function craftingColStandingEXP(util: CraftingTableUtils) {
   return util.colDef<number>({
     colId: 'standingEXP',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Standing XP',
     width: 120,
     cellClass: 'text-right',
@@ -342,7 +342,7 @@ export function craftingColStandingEXP(util: CraftingTableUtils) {
 export function craftingColCanCraft(util: CraftingTableUtils, char: CharacterStore) {
   return util.colDef<boolean>({
     colId: 'userCanCraft',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Can Craft',
     width: 100,
     cellClass: 'cursor-pointer',
@@ -364,7 +364,7 @@ export function craftingColCanCraft(util: CraftingTableUtils, char: CharacterSto
 export function craftingColHasYieldBonus(util: CraftingTableUtils) {
   return util.colDef<string[]>({
     colId: 'hasYieldBonus',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Yield Bonus',
     width: 110,
     cellClass: 'cursor-pointer',
@@ -391,7 +391,7 @@ export function craftingColHasYieldBonus(util: CraftingTableUtils) {
 export function craftingColHasYieldBonusFromFort(util: CraftingTableUtils) {
   return util.colDef<boolean>({
     colId: 'hasFortYieldBonus',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Fort Yield Bonus',
     width: 130,
     cellClass: 'cursor-pointer',
@@ -504,7 +504,7 @@ export function craftingColCooldownCeconds(util: CraftingTableUtils) {
 export function craftingColStation(util: CraftingTableUtils) {
   return util.colDef<string[]>({
     colId: 'station',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Station',
     getQuickFilterText: () => null,
     valueGetter: ({ data }) => data.$stations?.map((it) => it.stationID),

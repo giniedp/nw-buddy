@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common'
 @Component({
   selector: 'nwb-title-bar',
   templateUrl: './title-bar.component.html',
-  styleUrls: ['./title-bar.component.scss'],
+  styleUrl: './title-bar.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
 })

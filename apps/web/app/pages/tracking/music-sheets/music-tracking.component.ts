@@ -9,7 +9,6 @@ import { MusicRecord } from './adapter'
 @Component({
   selector: 'nwb-music-tracking',
   templateUrl: './music-tracking.component.html',
-  styleUrls: ['./music-tracking.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, VirtualGridModule],
   host: {

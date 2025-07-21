@@ -19,7 +19,7 @@ export function iconCell({ value, size }: ComponentInputs<IconCellComponent>): P
   template: `
     @if (value()) {
       <img [nwImage]="value()" class="max-w-full" [ngClass]="size()" />
-      <div class="w-full text-xs truncate text-opacity-50">{{ value() }}</div>
+      <div class="w-full text-xs truncate">{{ value() }}</div>
     }
   `,
   host: {
