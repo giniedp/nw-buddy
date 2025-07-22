@@ -11,7 +11,6 @@ import { damageTypeIcon } from '~/nw/weapon-types'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgInfo } from '~/ui/icons/svg'
-import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { PerkTableAdapter } from '~/widgets/data/perk-table'
@@ -22,16 +21,7 @@ import { PrecisionInputComponent } from './precision-input.component'
   selector: 'nwb-offender-conversion-control',
   templateUrl: './offender-conversion-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    FormsModule,
-    InputSliderComponent,
-    IconsModule,
-    LayoutModule,
-    TooltipModule,
-    PrecisionInputComponent,
-  ],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, LayoutModule, TooltipModule, PrecisionInputComponent],
   host: {
     class: 'fieldset',
   },

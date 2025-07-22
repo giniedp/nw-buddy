@@ -1,21 +1,21 @@
 import { computed, inject, Injector } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_TRADESKILL_LEVEL, NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
-import { combineLatest, map, NEVER, of, pipe, switchMap } from 'rxjs'
+import { combineLatest, isObservable, map, NEVER, Observable, of, pipe, switchMap } from 'rxjs'
 import { CaseInsensitiveMap } from '~/utils'
 
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { BackendService } from '../backend'
-import { autoSync } from '../backend/auto-sync'
 import { BookmarksService } from '../bookmarks/bookmarks.service'
 import { BookmarkRecord } from '../bookmarks/types'
+import { injectNwData } from '../nw-data'
 import { injectCharactersDB } from './characters.db'
-import { CharacterRecord } from './types'
+import { CharactersService } from './characters.service'
+import { CharacterRecord, TerritoryData } from './types'
 
 export interface CharacterStoreState {
   record: CharacterRecord
-  ready: boolean
 }
 
 export type CharacterStore = InstanceType<typeof CharacterStore>
@@ -23,88 +23,40 @@ export const CharacterStore = signalStore(
   { providedIn: 'root' },
   withState<CharacterStoreState>({
     record: null,
-    ready: false,
   }),
-  withProps(({ record, ready }) => {
+  withProps(({ record }) => {
     const record$ = toObservable(record)
-    const ready$ = toObservable(ready)
     const table = injectCharactersDB()
     return {
       record$,
-      ready$,
       table,
     }
   }),
-  withMethods(({ table }) => {
-    const backend = inject(BackendService)
-    const userId = backend.sessionUserId
-    return {
-      observeCount(userId: string) {
-        userId ||= 'local'
-        return table.observeWhereCount({ userId })
-      },
-      create(record: Partial<CharacterRecord>) {
-        return table.create({
-          ...record,
-          id: record.id ?? table.createId(),
-          syncState: 'pending',
-          createdAt: new Date().toJSON(),
-          updatedAt: new Date().toJSON(),
-          userId: userId() || 'local',
-        })
-      },
-      update(id: string, record: Partial<CharacterRecord>) {
-        return table.update(id, {
-          ...record,
-          id,
-          syncState: 'pending',
-          updatedAt: new Date().toJSON(),
-          userId: userId() || 'local',
-        })
-      },
-      delete(id: string) {
-        return table.delete(id)
-      },
-      async deleteUserData(userId: string) {
-        const records = await table.where({ userId })
-        return table.delete(records.map((it) => it.id))
-      },
-    }
-  }),
   withMethods((state) => {
+    const service = inject(CharactersService)
     const backend = inject(BackendService)
     const userId = backend.sessionUserId
     const userId$ = toObservable(userId)
-    const table = injectCharactersDB()
     return {
-      sync: rxMethod<void>((source) => {
-        return source.pipe(
-          switchMap(() => {
-            return autoSync({
-              userId: userId$,
-              local: table,
-              remote: backend.privateTables.characters,
-            })
-          }),
-          map((stage) => {
-            const ready = stage === 'offline' || stage === 'syncing'
-            patchState(state, { ready })
-          }),
-        )
-      }),
       load: rxMethod<string | void>(
         pipe(
           switchMap((characterId) => {
             return combineLatest({
               characterId: of(characterId),
-              ready: state.ready$,
+              ready: service.ready$,
             })
           }),
           switchMap(({ characterId, ready }) => {
-            return ready ? of(characterId) : NEVER
+            if (!ready) {
+              return NEVER
+            }
+            return combineLatest({
+              userId: userId$.pipe(map((id) => id || 'local')),
+              id: of(characterId),
+            })
           }),
-          switchMap(async (id) => {
-            const records = await table.where({ userId: userId() || 'local' })
+          switchMap(async ({ userId, id }) => {
+            const records = await service.table.where({ userId })
             if (id && !records.some((it) => it.id === id)) {
               throw new Error(`Character with id ${id} not found`)
             }
@@ -114,13 +66,13 @@ export const CharacterStore = signalStore(
             }
             if (!id) {
               // create default record
-              const record = await state.create({})
+              const record = await service.create({})
               id = record.id
             }
-            return id
+            return { id, userId }
           }),
-          switchMap((id) => {
-            return table.observeById(id)
+          switchMap(({ id, userId }) => {
+            return service.observeRecord({ id, userId })
           }),
           map((record) => {
             return patchState(state, { record })
@@ -131,7 +83,6 @@ export const CharacterStore = signalStore(
   }),
   withHooks({
     onInit: (state) => {
-      state.sync()
       state.load()
     },
   }),
@@ -139,32 +90,43 @@ export const CharacterStore = signalStore(
     return {
       name: computed(() => record()?.name),
       level: computed(() => record()?.level ?? NW_MAX_CHARACTER_LEVEL),
-      progressionMap: computed(
-        () => new CaseInsensitiveMap<string, number>(Object.entries(record()?.progressionLevels || {})),
-      ),
-      effectStacksMap: computed(
-        () => new CaseInsensitiveMap<string, number>(Object.entries(record()?.effectStacks || {})),
-      ),
+      progressionMap: computed(() => {
+        return new CaseInsensitiveMap(Object.entries(record()?.progressionLevels || {}))
+      }),
+      effectStacksMap: computed(() => {
+        return new CaseInsensitiveMap(Object.entries(record()?.effectStacks || {}))
+      }),
+      territoriesMap: computed(() => {
+        return new CaseInsensitiveMap(Object.entries(record()?.territories || {}))
+      }),
     }
   }),
-  withMethods(({ record, update, effectStacksMap, progressionMap }) => {
-    const injector = inject(Injector)
+  withMethods(({ record, effectStacksMap, progressionMap, territoriesMap }) => {
+    const service = inject(CharactersService)
+    const progressionMap$ = toObservable(progressionMap)
+    const territoriesMap$ = toObservable(territoriesMap)
 
+    function update(data: Partial<CharacterRecord>) {
+      return service.update(record().id, data)
+    }
     function clearEffects() {
-      return update(record().id, { effectStacks: {} })
+      return update({ effectStacks: {} })
     }
     function clearProgression() {
-      return update(record().id, { progressionLevels: {} })
+      return update({ progressionLevels: {} })
     }
 
-    function getProgressionLevel(progressionId: string) {
+    function getProgression(progressionId: string): number {
       return progressionMap().get(progressionId)
     }
-    function setProgresssionLevel(progressionId: string, level: number) {
-      update(record().id, {
+    function setProgression(progressionId: string, value: number) {
+      if (progressionId == null || progressionId === '') {
+        return
+      }
+      update({
         progressionLevels: {
           ...(record().progressionLevels || {}),
-          [progressionId]: level,
+          [progressionId]: value,
         },
       })
     }
@@ -173,7 +135,7 @@ export const CharacterStore = signalStore(
       return effectStacksMap().get(effect) || 0
     }
     function setEffectStacks(effect: string, stacks: number) {
-      update(record().id, {
+      update({
         effectStacks: {
           ...(record().effectStacks || {}),
           [effect]: stacks,
@@ -181,44 +143,89 @@ export const CharacterStore = signalStore(
       })
     }
 
-    function observeProgressionLevel(progressionId: string) {
-      return toObservable(progressionMap, {
-        injector,
-      }).pipe(map((map) => map.get(progressionId)))
+    function getTerritory(territoryId: number) {
+      return territoriesMap().get(String(territoryId))
     }
-    function observeTradeskillLevel(skill: string) {
-      return observeProgressionLevel(skill).pipe(map((level) => level ?? NW_MAX_TRADESKILL_LEVEL))
+    function setTerritory(progressionId: number, value: Partial<TerritoryData>) {
+      if (progressionId == null) {
+        return
+      }
+      const key = String(progressionId)
+      update({
+        territories: {
+          ...(record().territories || {}),
+          [key]: {
+            ...(record().territories?.[key] || {}),
+            ...value,
+          },
+        },
+      })
     }
-    function observeWeaponLevel(weapon: string) {
-      return observeProgressionLevel(weapon).pipe(map((level) => level ?? NW_MAX_WEAPON_LEVEL))
+
+    function gameModeProgressionId(progressionId: string, difficulty: number) {
+      return `${progressionId}:${difficulty}`
     }
+
+    function observeProgression(progressionId: string): Observable<number> {
+      return progressionMap$.pipe(map((map) => map.get(progressionId)))
+    }
+    function observeTradeskillLevel(skill: string): Observable<number> {
+      return observeProgression(skill).pipe(map((level) => level ?? NW_MAX_TRADESKILL_LEVEL))
+    }
+    function observeWeaponLevel(weapon: string): Observable<number> {
+      return observeProgression(weapon).pipe(map((level) => level ?? NW_MAX_WEAPON_LEVEL))
+    }
+    function observeGameModeProgression(progressionId: string, difficulty: number) {
+      return observeProgression(gameModeProgressionId(progressionId, difficulty))
+    }
+
+    function observeTerritoryData(territoryId: number) {
+      return territoriesMap$.pipe(map((map) => map.get(String(territoryId))))
+    }
+
     return {
+      update,
       clearEffects,
       getEffectStacks,
       setEffectStacks,
 
       clearProgression,
-      getProgressionLevel,
-      setProgresssionLevel,
+      getProgression,
+      setProgression,
 
       getTradeskillLevel(skill: string) {
-        return getProgressionLevel(skill) ?? NW_MAX_TRADESKILL_LEVEL
+        return getProgression(skill) ?? NW_MAX_TRADESKILL_LEVEL
       },
       setTradeskillLevel(skill: string, level: number) {
-        setProgresssionLevel(skill, level)
+        setProgression(skill, level)
       },
       getWeaponLevel(weapon: string) {
-        return getProgressionLevel(weapon) ?? NW_MAX_WEAPON_LEVEL
+        return getProgression(weapon) ?? NW_MAX_WEAPON_LEVEL
       },
       setWeaponLevel(weapon: string, level: number) {
-        setProgresssionLevel(weapon, level)
+        setProgression(weapon, level)
       },
-      observeProgressionLevel,
+      getTerritoryData(territoryId: number) {
+        return getTerritory(territoryId)
+      },
+      setTerritoryData(territoryId: number, update: Partial<TerritoryData>) {
+        setTerritory(territoryId, update)
+      },
+      getGameModeProgression(progressionId: string, difficulty: number) {
+        return getProgression(gameModeProgressionId(progressionId, difficulty))
+      },
+      setGameModeProgression(progressionId: string, difficulty: number, level: number) {
+        setProgression(gameModeProgressionId(progressionId, difficulty), level)
+      },
+
       observeTradeskillLevel,
       observeWeaponLevel,
+      observeGameModeProgression,
+      observeTerritoryData,
     }
   }),
-  withMethods(({ record }) => {
+  withMethods(({ record, observeTradeskillLevel }) => {
+    const db = injectNwData()
     const bookmarks = inject(BookmarksService)
     const userId = computed(() => record()?.userId || 'local')
     const characterId = computed(() => record()?.id || '')
@@ -289,6 +296,26 @@ export const CharacterStore = signalStore(
       setItemMarker,
       observeItemGearScore,
       observeItemMarker,
+
+      tradeskillLevelData: (skill: string | Observable<string>) => {
+        if (!skill) {
+          return of(null)
+        }
+        if (typeof skill === 'string') {
+          skill = of(skill)
+        }
+        return skill.pipe(
+          switchMap((skill) => {
+            return combineLatest({
+              skill: of(skill),
+              level: observeTradeskillLevel(skill),
+            })
+          }),
+          switchMap(({ skill, level }) => {
+            return db.tradeskillRankDataByTradeskillAndLevel(skill, level)
+          }),
+        )
+      },
     }
   }),
 )

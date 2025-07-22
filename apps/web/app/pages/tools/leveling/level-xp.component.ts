@@ -34,6 +34,6 @@ export class LevelXpComponent {
   protected tab = toSignal(injectRouteParam('tab'))
 
   protected updateLevel(value: number) {
-    this.char.update(this.char.record().id, { level: value })
+    this.char.update({ level: value })
   }
 }

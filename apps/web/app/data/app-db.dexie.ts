@@ -2,7 +2,7 @@ import { Dexie, Transaction } from 'dexie'
 import { AppDb, AppDbRecord, createId } from './app-db'
 import { AppDbDexieTable } from './app-db.dexie-table'
 import { BookmarkRecord } from './bookmarks/types'
-import { CharacterRecord } from './characters/types'
+import { CharacterRecord, TerritoryData } from './characters/types'
 import {
   DBT_BOOKMARKS,
   DBT_CHARACTERS,
@@ -14,6 +14,7 @@ import {
   DBT_TRANSMOGS,
   LOCAL_USER_ID,
 } from './constants'
+import { GAME_MODE_TO_PROGRESSION_ID } from './characters/constants'
 
 const ALL_TABLE_NAMES = [
   DBT_CHARACTERS,
@@ -102,6 +103,9 @@ export class AppDbDexie extends AppDb {
         await ensureCharacter(tx)
         await migrateBookmarks(tx)
       })
+
+    db.version(7).upgrade(async (tx) => migrateProgression(tx))
+
   }
 }
 
@@ -129,6 +133,7 @@ async function ensureCharacter(tx: Transaction) {
     userId: LOCAL_USER_ID,
     progressionLevels: {},
     effectStacks: {},
+    territories: {},
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }
@@ -149,6 +154,7 @@ async function migrateBookmarks(tx: Transaction) {
 
 function extractLegacyBookmarks() {
   const result: BookmarkRecord[] = []
+  const toRemove: string[] = []
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
     if (!key || !key.startsWith('nwb:items:')) {
@@ -173,7 +179,7 @@ function extractLegacyBookmarks() {
       delete value.gs
       delete value.mark
       if (Object.keys(value).length === 0) {
-        localStorage.removeItem(key)
+        toRemove.push(key)
       } else {
         localStorage.setItem(key, JSON.stringify(value))
       }
@@ -181,5 +187,87 @@ function extractLegacyBookmarks() {
       console.error(`Failed to parse bookmark from localStorage key "${key}":`, e)
     }
   }
+  for (const key of toRemove) {
+    localStorage.removeItem(key)
+  }
   return result
+}
+
+async function migrateProgression(tx: Transaction) {
+  const { dungeonProgressions, territoryProgressions } = extractLegacyProgression()
+  const character: CharacterRecord = await tx.table(DBT_CHARACTERS).toCollection().first()
+  if (!character) {
+    return
+  }
+  for (const { progressionId, difficulty, level } of dungeonProgressions) {
+    const key = `${progressionId}:${difficulty}`
+    character.progressionLevels ||= {}
+    character.progressionLevels[key] = level
+  }
+  for (const { progressionId, data } of territoryProgressions) {
+    character.territories ||= {}
+    character.territories[progressionId] = data
+  }
+  tx.table(DBT_CHARACTERS).update(character.id, character)
+}
+
+function extractLegacyProgression() {
+  const toRemove: string[] = []
+  const MEDAL_MAP = {
+    bronze: 1,
+    silver: 2,
+    gold: 3,
+  } as const
+  const dungeonProgressions: Array<{ progressionId: string; difficulty: number; level: number }> = []
+  const territoryProgressions: Array<{ progressionId: string; data: TerritoryData }> = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (!key || !key.startsWith('nwb:')) {
+      continue
+    }
+    if (key.startsWith('nwb:dungeons:')) {
+      toRemove.push(key)
+      const dungeonId = key.replace('nwb:dungeons:', '')
+      const progressionId = GAME_MODE_TO_PROGRESSION_ID[dungeonId]
+      if (!progressionId) {
+        continue
+      }
+      const value = JSON.parse(localStorage.getItem(key)) as any as {
+        ranks: Record<number, 'gold' | 'silver' | 'bronze'>
+      }
+      const ranks = value?.ranks
+      if (!ranks) {
+        continue
+      }
+      for (const [difficulty, medal] of Object.entries(ranks)) {
+        if (Number(difficulty) > 3) {
+          continue
+        }
+        const level = MEDAL_MAP[medal]
+        if (level) {
+          dungeonProgressions.push({
+            progressionId,
+            difficulty: Number(difficulty),
+            level,
+          })
+        }
+      }
+    }
+    if (key === 'nwb:territories') {
+      toRemove.push(key)
+      const value = JSON.parse(localStorage.getItem(key)) as Record<number, TerritoryData>
+      for (const [territoryId, territory] of Object.entries(value)) {
+        if (territory.standing) {
+          territoryProgressions.push({ progressionId: territoryId, data: territory })
+        }
+      }
+    }
+  }
+  for (const key of toRemove) {
+    localStorage.removeItem(key)
+  }
+  return {
+    dungeonProgressions,
+    territoryProgressions,
+  }
 }

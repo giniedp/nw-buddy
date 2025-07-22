@@ -60,7 +60,7 @@ export const CraftingBuffStore = signalStore(
         return char.getTradeskillLevel(skill)
       },
       setSkillLevel: (skill: string, value: number) => {
-        char.setProgresssionLevel(skill, value)
+        char.setTradeskillLevel(skill, value)
       },
     }
   }),

@@ -82,6 +82,7 @@ function ensureCharacter(db: ExportedDB) {
     userId: LOCAL_USER_ID,
     progressionLevels: {},
     effectStacks: {},
+    territories: {},
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }

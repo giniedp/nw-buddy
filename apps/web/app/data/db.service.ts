@@ -1,17 +1,17 @@
 import { inject, Injectable } from '@angular/core'
 import Dexie, { Table } from 'dexie'
 import { combineLatest, filter, switchMap } from 'rxjs'
+import { ConfirmDialogComponent, ModalService } from '~/ui/layout'
 import { AppDbRecord } from './app-db'
 import { AppDbDexie } from './app-db.dexie'
 import { BookmarksService } from './bookmarks'
-import { CharacterStore } from './characters'
+import { CharactersService, CharacterStore } from './characters'
 import { injectAppDB } from './db'
 import { GearsetsService } from './gearsets'
 import { ItemsService } from './items'
 import { SkillTreesService } from './skill-tree'
 import { TablePresetsService } from './table-presets'
 import { TransmogsService } from './transmogs'
-import { ConfirmDialogComponent, ModalService } from '~/ui/layout'
 
 export type ExportedDB = { name: string; tables: ExportedTable[] }
 export type ExportedTable<T extends AppDbRecord = AppDbRecord> = { name: string; rows: T[] }
@@ -19,7 +19,8 @@ export type ExportedTable<T extends AppDbRecord = AppDbRecord> = { name: string;
 @Injectable({ providedIn: 'root' })
 export class DbService {
   public readonly db = injectAppDB()
-  public readonly characters = inject(CharacterStore)
+  public readonly character = inject(CharacterStore)
+  public readonly characters = inject(CharactersService)
   public readonly bookmarks = inject(BookmarksService)
   public readonly gearsets = inject(GearsetsService)
   public readonly items = inject(ItemsService)
@@ -51,7 +52,7 @@ export class DbService {
     }
     await importDB(this.db.dexie, data)
     // switch to default character, forces a reload of all character listeners
-    this.characters.load()
+    this.character.load()
   }
 
   public async clearAllData() {
@@ -78,8 +79,8 @@ export class DbService {
       await store.deleteUserData(userId)
     }
     // switch to default character, forces a reload of all character listeners
-    this.characters.load()
     this.characters.sync()
+    this.character.load()
   }
 
   public async importToAccount(targetUserId: string) {
@@ -116,10 +117,10 @@ export class DbService {
     const localBookmarks = await this.bookmarks.table.where({ userId: 'local' })
     for (const bookmark of localBookmarks) {
       if (bookmark.flags) {
-        this.characters.setItemMarker(bookmark.itemId, bookmark.flags)
+        this.character.setItemMarker(bookmark.itemId, bookmark.flags)
       }
       if (bookmark.gearScore) {
-        this.characters.setItemMarker(bookmark.itemId, bookmark.gearScore)
+        this.character.setItemMarker(bookmark.itemId, bookmark.gearScore)
       }
     }
 

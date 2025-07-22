@@ -3,13 +3,13 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { NwTradeSkillInfo, getCraftingGearScore, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { CharacterService, ItemInstance, injectNwData, withStateLoader } from '~/data'
+import { CharacterStore, ItemInstance, injectNwData, withStateLoader } from '~/data'
 
+import { PreferencesService } from '~/preferences'
 import { apiResource } from '~/utils'
+import { CraftingBuffStore } from './crafting-bonus/crafting-buff.store'
 import { CraftingPerkSlot, CraftingStep, loadRecipe, solveRecipeTree } from './loader/load-recipe'
 import { AmountMode } from './types'
-import { CraftingBuffStore } from './crafting-bonus/crafting-buff.store'
-import { PreferencesService } from '~/preferences'
 
 export interface CraftingCalculatorState {
   recipeId: string
@@ -144,7 +144,7 @@ export const CraftingCalculatorStore = signalStore(
   }),
   withComputed(({ tree, recipe, item, slots }) => {
     const db = injectNwData()
-    const char = inject(CharacterService)
+    const char = inject(CharacterStore)
     const buffs = inject(CraftingBuffStore)
 
     const tradeSkill = computed(() => recipe()?.Tradeskill)

@@ -24,9 +24,19 @@ export interface CharacterRecord extends AppDbRecord {
   /**
    *
    */
-  progressionLevels: Record<string, number>
+  progressionLevels: Record<string | number, number>
   /**
    * Active crafting buffs (effect or perk or faction buff IDs)
    */
   effectStacks: Record<string, number>
+  /**
+   * Territory progression and notes
+   */
+  territories: Record<string, TerritoryData>
+}
+
+export interface TerritoryData {
+  standing?: number
+  notes?: string
+  tags?: string[]
 }
