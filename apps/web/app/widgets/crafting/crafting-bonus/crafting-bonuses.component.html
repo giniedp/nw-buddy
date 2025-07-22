@@ -3,8 +3,8 @@
     <span class="loading loading-infinity loading-lg"></span>
   </div>
 }
-<div class="flex flex-row h-full">
-  <ul class="flex-none menu flex-nowrap overflow-scroll p-0 [&_li>*]:rounded-none">
+<div class="flex flex-row flex-nowrap h-full">
+  <ul class="flex-none menu w-auto flex-nowrap overflow-scroll p-0 [&_li>*]:rounded-none">
     @for (tab of tabsItems(); track $index) {
       <li [class.bg-base-200]="tab.isActive">
         <a (click)="tabValue.set(tab.id)">

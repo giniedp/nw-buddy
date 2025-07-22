@@ -3,13 +3,12 @@
     <span class="font-bold">Points</span>
     <span class="font-bold text-center">{{ pointsAvailable() }}</span>
     <span class="flex-1"></span>
-    @if (!freeMode) {
-      <label class="join items-center my-1">
-        <span class="join-item btn btn-sm btn-ghost no-animation cursor-default">Magnify</span>
+    @if (!freeMode()) {
+      <label class="select select-sm w-40 my-1">
+        <span class="label">Magnify</span>
         <select
-          [ngModel]="magnifyPlacement"
+          [ngModel]="magnifyPlacement()"
           (ngModelChange)="handleMagnifyUpdate($event)"
-          class="join-item select select-sm"
         >
           <option [ngValue]="null">Auto</option>
           @for (option of magnifyOptions; track $index) {

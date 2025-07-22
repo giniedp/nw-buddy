@@ -225,9 +225,6 @@
 }
 .nw-item-header {
   position: relative;
-  & > * {
-    position: relative;
-  }
 }
 .nw-item-header-bg {
   background: var(--rarity-bg-head, url('/assets/icons/item/tooltip_header_bg_0.png')) var(--rarity-c2);

@@ -1,7 +1,8 @@
-.menu {
+@utility menu {
   @apply w-full;
   padding: 0;
 }
+
 .menu :where(li:not(.menu-title) > *:not(ul):not(details):not(.menu-title)),
 .menu :where(li:not(.menu-title) > details > summary:not(.menu-title)) {
   border-radius: 0;
