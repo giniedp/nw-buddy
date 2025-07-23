@@ -4,82 +4,62 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-p-4">
-  <div class="flex flex-col">
+  <fieldset class="fieldset">
     @if (!data) {
-      <div class="form-control w-full">
-        <label class="label cursor-pointer">
-          <span class="label-text">Export all columns</span>
-          <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportAllCols" />
-        </label>
-      </div>
-      <div class="form-control w-full">
-        <label class="label cursor-pointer">
-          <span class="label-text">Export all rows</span>
-          <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportAllRows" />
-        </label>
-      </div>
-      <div class="form-control w-full">
-        <label class="label cursor-pointer">
-          <span class="label-text">Export only selected</span>
-          <input
-            type="checkbox"
-            class="toggle toggle-primary"
-            [disabled]="isLoading"
-            [(ngModel)]="exportOnlySelected"
-          />
-        </label>
-      </div>
-      <div class="form-control w-full">
-        <label class="label cursor-pointer">
-          <span class="label-text">Skip header</span>
-          <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="skipHeader" />
-        </label>
-      </div>
-      <div class="form-control w-full">
-        <label class="label cursor-pointer">
-          <span class="label-text">Suppress quotes</span>
-          <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="suppressQuotes" />
-        </label>
-      </div>
-      <div class="form-control w-full max-w-xs">
-        <label class="label">
-          <span class="label-text">Column separator</span>
-        </label>
-        <input type="text" class="input input-bordered" [disabled]="isLoading" [(ngModel)]="columnSeparator" />
-      </div>
-      <div class="alert alert-error" *ngIf="hasError">
+      <label class="label w-full">
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportAllCols" />
+        <span>Export all columns</span>
+      </label>
+      <label class="label w-full">
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportAllRows" />
+        <span>Export all rows</span>
+      </label>
+      <label class="label w-full">
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportOnlySelected" />
+        <span>Export only selected</span>
+      </label>
+      <label class="label w-full">
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="skipHeader" />
+        <span>Skip header</span>
+      </label>
+      <label class="label w-full">
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="suppressQuotes" />
+        <span>Suppress quotes</span>
+      </label>
+
+      <label class="input w-full">
+        <span class="label">Column separator</span>
+        <input type="text" [disabled]="isLoading" [(ngModel)]="columnSeparator" />
+      </label>
+      @if (hasError) {
+        <div class="alert alert-error alert-soft">
+          <nwb-icon [icon]="iconError" class="w-6 h-6 self-start" />
+          <div class="w-full">
+            <div class="text-xs">Something went wrong.</div>
+          </div>
+        </div>
+      }
+    } @else {
+      <label class="input w-full">
+        <span class="label">File size</span>
+        <input type="text" disabled [ngModel]="(data.size / 1024 / 1024 | number) + ' MB'" />
+      </label>
+
+      <label class="input w-full">
+        <span class="label">File name</span>
+        <input type="text" [disabled]="isLoading" [(ngModel)]="filename" />
+      </label>
+    }
+
+    @if (hasError) {
+      <div class="alert alert-error alert-soft">
         <nwb-icon [icon]="iconError" class="w-6 h-6 self-start" />
         <div class="w-full">
           <div class="text-xs">Something went wrong.</div>
         </div>
       </div>
-    } @else {
-      <div class="form-control w-full max-w-xs">
-        <label class="label">
-          <span class="label-text">File size</span>
-        </label>
-        <input
-          type="text"
-          class="input input-bordered"
-          disabled
-          [ngModel]="(data.size / 1024 / 1024 | number) + ' MB'"
-        />
-      </div>
-      <div class="form-control w-full max-w-xs">
-        <label class="label">
-          <span class="label-text">File name</span>
-        </label>
-        <input type="text" class="input input-bordered" [disabled]="isLoading" [(ngModel)]="filename" />
-      </div>
     }
-
-    <div class="alert alert-error" *ngIf="hasError">
-      <nwb-icon [icon]="iconError" class="w-6 h-6 self-start" />
-      <div class="w-full">
-        <div class="text-xs">Something went wrong.</div>
-      </div>
-    </div>
-  </div>
+  </fieldset>
 </ion-content>
 <ion-footer class="rounded-b-md">
   <ion-toolbar class="ion-color ion-color-base-300">
@@ -89,13 +69,12 @@
         <button class="join-item btn btn-ghost text-primary" (click)="downloadData()">Download</button>
       } @else {
         <button class="join-item btn btn-ghost" (click)="close()">Cancel</button>
-        <button
-          class="join-item btn btn-ghost text-primary"
-          [disabled]="isLoading"
-          (click)="export()"
-          [class.loading]="isLoading"
-        >
-          Export
+        <button class="join-item btn btn-ghost text-primary" [disabled]="isLoading" (click)="export()">
+          @if (isLoading) {
+            Working...
+          } @else {
+            Export
+          }
         </button>
       }
     </div>

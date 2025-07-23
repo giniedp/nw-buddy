@@ -1,9 +1,9 @@
-@import './vendor/tailwind.css';
 @import './vendor/ionic.css';
 @import './vendor/ag-grid.css';
 @import './vendor/cdk.css';
 @import './vendor/maplibre.css';
 @import './vendor/swiper.css';
+@import './vendor/tailwind.css';
 
 @import './fonts/_all.css';
 @import './helper/_all.css';

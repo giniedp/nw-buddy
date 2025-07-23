@@ -94,7 +94,7 @@ export interface Tab {
 @Component({
   selector: 'nwb-game-mode-detail',
   templateUrl: './game-mode-detail.component.html',
-  styleUrls: ['./game-mode-detail.component.scss'],
+  styleUrl: './game-mode-detail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -116,7 +116,7 @@ export interface Tab {
   ],
   providers: [GameModeDetailStore],
   host: {
-    class: 'ion-page flex flex-co, xl:flex-row',
+    class: 'ion-page',
   },
   animations: [
     trigger('list', [

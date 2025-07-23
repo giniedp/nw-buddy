@@ -1,3 +1,8 @@
+@reference '../../../../style.css';
+:host {
+  @apply flex-col;
+  @apply xl:flex-row!;
+}
 .grid.grid-loot,
 .grid.grid-vitals {
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -11,14 +16,12 @@
     'map'
     'tabs'
     'content';
-
   @media (min-width: 1600px) {
     grid-template-areas:
       'info map'
       'tabs map'
       'content content';
     grid-template-columns: 500px 1fr;
-
   }
 }
 
@@ -39,4 +42,3 @@ nwb-item-detail {
   content-visibility: auto;
   min-height: 86px;
 }
-

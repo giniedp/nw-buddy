@@ -7,7 +7,7 @@ import { NwModule } from '~/nw'
 import { ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgSackDollar, svgXmark } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, ModalService } from '~/ui/layout'
+import { ModalService } from '~/ui/layout'
 import { JsonPriceImporterComponent } from './json'
 import { NwmpPriceImporterComponent } from './nwmp/price-importer-nwmp.component'
 
@@ -61,26 +61,20 @@ export class PriceImporterComponent extends ComponentStore<{
         }
       })
       this.modal.close()
-      ConfirmDialogComponent.open(this.modal, {
-        inputs: {
-          title: 'Import Complete',
-          body: 'Prices have been imported.',
-          positive: 'Close',
-        },
+      this.modal.showToast({
+        message: 'Prices successfully imported',
+        duration: 3000,
+        position: 'bottom',
+        color: 'success',
       })
     } catch (e) {
       console.error(e)
       this.modal.close()
-      ConfirmDialogComponent.open(this.modal, {
-        inputs: {
-          title: 'Import Failed',
-          isHtml: true,
-          body: `
-            <p class="text-error mb-1">There was an error while processing the items.</p>
-            <pre class="text-xs overflow-auto">${e.stack || e.message}</pre>
-          `,
-          positive: 'Close',
-        },
+      this.modal.showToast({
+        message: 'There was an error while importing prices',
+        duration: 5000,
+        position: 'bottom',
+        color: 'error',
       })
     }
   }

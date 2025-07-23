@@ -225,6 +225,7 @@
 }
 .nw-item-header {
   position: relative;
+  z-index: 0;
 }
 .nw-item-header-bg {
   background: var(--rarity-bg-head, url('/assets/icons/item/tooltip_header_bg_0.png')) var(--rarity-c2);
@@ -236,8 +237,10 @@
   right: 0;
   bottom: 0;
   transition: --rarity-c1 0.15s ease;
+  z-index: -1;
 }
 .nw-item-header-fg {
+  z-index: -1;
   background-image: var(--rarity-bg-ani);
   background-position: 50% 90%;
   background-size: cover;
