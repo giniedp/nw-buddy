@@ -32,7 +32,7 @@ export class RunesCellComponent implements VirtualGridCellComponent<RunesRecord>
   public static buildGridOptions(): VirtualGridOptions<RunesRecord> {
     return {
       height: 1200,
-      width: 320,
+      width: 375,
       cellDataView: RunesCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (record, tl8) => {

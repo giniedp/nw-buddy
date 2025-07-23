@@ -7,6 +7,7 @@ import { combineLatest, defer, map, switchMap } from 'rxjs'
 import { CharacterStore, injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TerritoriesService } from '~/nw/territories'
+import { LayoutModule } from '~/ui/layout'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
 import { TerritoryModule } from '~/widgets/territory'
@@ -16,9 +17,9 @@ import { TerritoryModule } from '~/widgets/territory'
   templateUrl: './territories-list.component.html',
   styleUrl: './territories-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, TerritoryModule],
+  imports: [CommonModule, RouterModule, TerritoryModule, LayoutModule],
   host: {
-    class: 'layout-row layout-gap layout-pad',
+    class: 'ion-page',
   },
 })
 export class TerritoriesListComponent {
