@@ -1,0 +1,88 @@
+<ion-header class="bg-base-300">
+  <div class="flex flex-col-reverse md:flex-row md:items-center">
+    <span class="flex-1"></span>
+
+    <div class="join">
+      @if (tags()?.length) {
+        <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
+          <span class="indicator">
+            <nwb-icon [icon]="iconMore" class="w-5 h-5" />
+            @if (tagsAreActive()) {
+              <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
+            }
+          </span>
+        </button>
+      }
+
+      <ng-template #tplMenu>
+        <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
+          <div class="grid grid-cols-3 gap-1">
+            @for (item of tags(); track $index) {
+              <button class="btn btn-sm btn-primary" [class.btn-outline]="!item.active" (click)="toggleTag(item.tag)">
+                {{ item.tag }}
+              </button>
+            }
+          </div>
+        </div>
+      </ng-template>
+
+      <button
+        (click)="createNew()"
+        class="join-item btn btn-ghost"
+        [tooltip]="'Create new set'"
+        [tooltipClass]="'bg-accent'"
+      >
+        <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
+      </button>
+    </div>
+    <div class="flex-none p-2 w-full md:max-w-[256px]">
+      <nwb-quicksearch-input />
+    </div>
+  </div>
+</ion-header>
+<ion-content>
+  @if (!isAvailable()) {
+    <div class="w-full h-full flex items-center justify-center">
+      <div class="alert alert-info alert-soft">
+        <div>
+          <h3 class="font-bold">Not available!</h3>
+          <div class="text-xs">Listing of public items from other accounts is not available yet.</div>
+        </div>
+      </div>
+    </div>
+  } @else if (isLoading()) {
+    <div class="w-full h-full flex items-center justify-center">
+      <span className="loading loading-ring loading-xl"></span>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="w-full h-full flex items-center justify-center">
+      <div class="alert alert-info alert-soft">
+        <div>
+          <h3 class="font-bold">No data!</h3>
+          <div class="text-xs">You have no transmog sets created yet.</div>
+        </div>
+        <button class="btn btn-sm btn-primary" (click)="createNew()">Create</button>
+      </div>
+    </div>
+  } @else {
+    <nwb-virtual-grid [itemHeight]="125" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']">
+      <a *nwbVirtualGridCell="items(); let item" [routerLink]="[item.id]">
+        <nwb-transmog-loadout [record]="item" class="p-2 self-start group" />
+      </a>
+    </nwb-virtual-grid>
+  }
+</ion-content>
+
+<ng-template #tplDetail>
+  <ion-content [class.bg-base-300]="true">
+    <router-outlet #outlet="outlet" />
+    @if (!outlet.isActivated) {
+      <div class="p-4 flex flex-row items-center justify-center">
+        <a [routerLink]="['/transmog/sets/new']" class="btn btn-primary gap-1">
+          <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
+          <span>Create New</span>
+        </a>
+      </div>
+    }
+  </ion-content>
+</ng-template>

@@ -113,7 +113,8 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Inventory', path: '/inventory', svgIcon: svgTreasureChest, divider: true },
       { label: 'Gear Sets', path: '/gearsets', svgIcon: svgHelmetBattle },
       { label: 'Skill Trees', path: '/skill-trees', svgIcon: svgSitemap },
-      { label: 'Damage Calculator', path: '/damage-calculator', svgIcon: svgSwords },
+      { label: 'Transmog', path: '/transmog/sets', icon: 'assets/icons/menu/transmogtoken.webp' },
+      { label: 'Damage Calculator', path: '/damage-calculator', svgIcon: svgSwords, divider: true },
     ],
   },
   {

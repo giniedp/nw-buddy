@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, computed, inject } from '@angular/core'
-import { patchState } from '@ngrx/signals'
 import { EquipSlot, getEquipSlotForId } from '@nw-data/common'
 import { DyeColorData } from '@nw-data/generated'
 import { filter, map } from 'rxjs'
@@ -15,7 +14,8 @@ import { TooltipModule } from '~/ui/tooltip'
 import { getTransmogCategory } from '~/widgets/data/transmog'
 import { TransmogTableAdapter, provideTransmogCellOptions } from '~/widgets/data/transmog-table'
 import { DyePickerComponent } from '~/widgets/model-viewer/dye-picker.component'
-import { TransmogEditorStore, TransmogSlotName } from './transmog-editor-page.store'
+import { TransmogEditorStore } from './transmog-editor.store'
+import { TransmogSlot, TransmogSlotId } from '~/data/transmogs'
 
 @Component({
   selector: 'nwb-transmog-editor-panel',
@@ -23,7 +23,7 @@ import { TransmogEditorStore, TransmogSlotName } from './transmog-editor-page.st
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule],
   host: {
-    class: 'block',
+    class: 'flex flex-col gap-2',
   },
   providers: [
     provideTransmogCellOptions({
@@ -42,12 +42,12 @@ export class TransmogEditorPanelComponent {
 
   protected isMale = computed(() => this.store.gender() === 'male')
   protected slots = computed(() => {
-    const slotIds: TransmogSlotName[] = ['head', 'chest', 'hands', 'legs', 'feet']
+    const slotIds: TransmogSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet']
     return slotIds.map((id) => {
       switch (id) {
         case 'head': {
           const slot = getEquipSlotForId('head')
-          const transmogId = this.store.head.t()
+          const transmogId = this.store.head.item()
           const appearance = this.store.headAppearance()
           const dye = this.store.headDye()
           return {
@@ -58,12 +58,12 @@ export class TransmogEditorPanelComponent {
             appearance: appearance,
             debug: this.store.debug(),
             hideChannel: null,
-            hideValue: this.store.head.h(),
+            hideValue: this.store.head.flag(),
           }
         }
         case 'chest': {
           const slot = getEquipSlotForId('chest')
-          const transmogId = this.store.chest.t()
+          const transmogId = this.store.chest.item()
           const appearance = this.store.chestAppearance()
           const dye = this.store.chestDye()
           return {
@@ -74,12 +74,12 @@ export class TransmogEditorPanelComponent {
             appearance: appearance,
             debug: this.store.debug(),
             hideChannel: 'all',
-            hideValue: this.store.chest.h(),
+            hideValue: this.store.chest.flag(),
           }
         }
         case 'hands': {
           const slot = getEquipSlotForId('hands')
-          const transmogId = this.store.hands.t()
+          const transmogId = this.store.hands.item()
           const appearance = this.store.handsAppearance()
           const dye = this.store.handsDye()
           return {
@@ -90,12 +90,12 @@ export class TransmogEditorPanelComponent {
             appearance: appearance,
             debug: this.store.debug(),
             hideChannel: 'main',
-            hideValue: this.store.hands.h(),
+            hideValue: this.store.hands.flag(),
           }
         }
         case 'legs': {
           const slot = getEquipSlotForId('legs')
-          const transmogId = this.store.legs.t()
+          const transmogId = this.store.legs.item()
           const appearance = this.store.legsAppearance()
           const dye = this.store.legsDye()
           return {
@@ -106,12 +106,12 @@ export class TransmogEditorPanelComponent {
             appearance: appearance,
             debug: this.store.debug(),
             hideChannel: 'main',
-            hideValue: this.store.legs.h(),
+            hideValue: this.store.legs.flag(),
           }
         }
         case 'feet': {
           const slot = getEquipSlotForId('feet')
-          const transmogId = this.store.feet.t()
+          const transmogId = this.store.feet.item()
           const appearance = this.store.feetAppearance()
           const dye = this.store.feetDye()
           return {
@@ -122,7 +122,7 @@ export class TransmogEditorPanelComponent {
             appearance: appearance,
             debug: this.store.debug(),
             hideChannel: 'main',
-            hideValue: this.store.feet.h(),
+            hideValue: this.store.feet.flag(),
           }
         }
       }
@@ -135,7 +135,7 @@ export class TransmogEditorPanelComponent {
       title: 'Select Item',
       injector: this.injector,
       displayMode: ['grid'],
-      selection: [this.store[slot.id].t()],
+      selection: [this.store[slot.id].item()],
       dataView: {
         adapter: TransmogTableAdapter,
         filter: (item) => {
@@ -148,18 +148,13 @@ export class TransmogEditorPanelComponent {
         map((list) => list[0]),
       )
       .subscribe((transmogName) => {
-        patchState(this.store, (state) => {
-          return {
-            [slot.id]: {
-              ...state[slot.id],
-              t: transmogName,
-            },
-          }
+        this.store.updateSlot(slot.id as TransmogSlotId, {
+          item: transmogName,
         })
       })
   }
 
-  protected async pickSlotDye(slot: EquipSlot, channel: 'r' | 'g' | 'b' | 'a', selection: DyeColorData) {
+  protected async pickSlotDye(slot: EquipSlot, channel: keyof TransmogSlot, selection: DyeColorData) {
     DyePickerComponent.open(this.modal, {
       inputs: {
         colors: await this.db.dyeColorsAll(),
@@ -168,118 +163,88 @@ export class TransmogEditorPanelComponent {
     })
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
-        patchState(this.store, (state) => {
-          return {
-            [slot.id]: {
-              ...state[slot.id],
-              [channel]: value?.Index,
-            },
-          }
+        this.store.updateSlot(slot.id as TransmogSlotId, {
+          [channel]: value?.Index,
         })
       })
   }
 
   protected clearSlotColors(slot: EquipSlot) {
-    patchState(this.store, (state) => {
-      return {
-        [slot.id]: {
-          ...state[slot.id],
-          r: null,
-          g: null,
-          b: null,
-          a: null,
-        },
-      }
+    this.store.updateSlot(slot.id as TransmogSlotId, {
+      dyeR: null,
+      dyeG: null,
+      dyeB: null,
+      dyeA: null,
     })
   }
   protected clearColors() {
-    patchState(this.store, (state) => {
-      return {
-        head: {
-          ...state.head,
-          r: null,
-          g: null,
-          b: null,
-          a: null,
-        },
-        chest: {
-          ...state.chest,
-          r: null,
-          g: null,
-          b: null,
-          a: null,
-        },
-        hands: {
-          ...state.hands,
-          r: null,
-          g: null,
-          b: null,
-          a: null,
-        },
-        legs: {
-          ...state.legs,
-          r: null,
-          g: null,
-          b: null,
-          a: null,
-        },
-        feet: {
-          ...state.feet,
-          r: null,
-          g: null,
-          b: null,
-          a: null,
-        },
-      }
+    this.store.update({
+      head: {
+        dyeR: null,
+        dyeG: null,
+        dyeB: null,
+        dyeA: null,
+      },
+      chest: {
+        dyeR: null,
+        dyeG: null,
+        dyeB: null,
+        dyeA: null,
+      },
+      hands: {
+        dyeR: null,
+        dyeG: null,
+        dyeB: null,
+        dyeA: null,
+      },
+      legs: {
+        dyeR: null,
+        dyeG: null,
+        dyeB: null,
+        dyeA: null,
+      },
+      feet: {
+        dyeR: null,
+        dyeG: null,
+        dyeB: null,
+        dyeA: null,
+      },
     })
   }
 
   protected toggleDebug() {
-    patchState(this.store, (state) => {
-      return {
-        debug: !state.debug,
-      }
+    this.store.update({
+      debug: !this.store.debug(),
     })
   }
 
   protected toggleGender() {
-    patchState(this.store, (state) => {
-      return {
-        gender: (state.gender === 'male' ? 'female' : 'male') as any,
-      }
+    this.store.update({
+      gender: this.store.gender() === 'male' ? 'female' : 'male',
     })
   }
 
   protected toggleHide(slot: EquipSlot) {
-    patchState(this.store, (state) => {
-      return {
-        [slot.id]: {
-          ...state[slot.id],
-          h: !state[slot.id].h,
-        },
-      }
+    const slotId: TransmogSlotId = slot.id as any
+    const hidden = this.store[slotId]().flag
+    this.store.updateSlot(slotId, {
+      flag: toggleBit(Number(hidden) || 0, 1),
     })
   }
 
   protected toggleHide1(slot: EquipSlot) {
-    patchState(this.store, (state) => {
-      return {
-        [slot.id]: {
-          ...state[slot.id],
-          h: toggleBit(Number(state[slot.id].h) || 0, 1),
-        },
-      }
+    const slotId: TransmogSlotId = slot.id as any
+    const hidden = this.store[slotId]().flag
+    this.store.updateSlot(slotId, {
+      flag: toggleBit(Number(hidden) || 0, 1),
     })
   }
 
   protected toggleHide2(slot: EquipSlot) {
-    patchState(this.store, (state) => {
-      return {
-        [slot.id]: {
-          ...state[slot.id],
-          h: toggleBit(Number(state[slot.id].h) || 0, 2),
-        },
-      }
+    const slotId: TransmogSlotId = slot.id as any
+    const hidden = this.store[slotId]().flag
+    this.store.updateSlot(slotId, {
+      flag: toggleBit(Number(hidden) || 0, 2),
     })
   }
 

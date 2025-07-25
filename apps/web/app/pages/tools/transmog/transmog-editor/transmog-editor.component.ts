@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -13,12 +14,10 @@ import {
   viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { ActivatedRoute, Router } from '@angular/router'
-import { ToastController } from '@ionic/angular/standalone'
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { getEquipSlotForId } from '@nw-data/common'
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
 import { NwModule } from '~/nw'
-import { PreferencesService } from '~/preferences'
+import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgLink } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
@@ -26,19 +25,14 @@ import { TooltipModule } from '~/ui/tooltip'
 import { injectBreakpoint } from '~/utils'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-
-import { animate, style, transition, trigger } from '@angular/animations'
-import { FormsModule } from '@angular/forms'
-import { IconsModule } from '~/ui/icons'
-import { PlatformService } from '~/utils/services/platform.service'
 import type { TransmogViewer } from '~/widgets/model-viewer/viewer/create-transmog-viewer'
 import { ScreenshotService } from '~/widgets/screenshot'
-import { TransmogEditorStore } from './transmog-editor-page.store'
 import { TransmogEditorPanelComponent } from './transmog-editor-panel.component'
+import { TransmogEditorStore } from './transmog-editor.store'
 
 @Component({
-  selector: 'nwb-transmog-editor-page',
-  templateUrl: './transmog-editor-page.component.html',
+  selector: 'nwb-transmog-editor',
+  templateUrl: './transmog-editor.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -54,7 +48,14 @@ import { TransmogEditorPanelComponent } from './transmog-editor-panel.component'
   host: {
     class: 'ion-page relative h-full',
   },
-  providers: [TransmogEditorStore],
+  providers: [
+    TransmogEditorStore,
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: TransmogEditorComponent,
+    },
+  ],
   animations: [
     trigger('fade', [
       transition(':enter', [style({ opacity: 0 }), animate('0.3s ease-out', style({ opacity: 1 }))]),
@@ -62,17 +63,9 @@ import { TransmogEditorPanelComponent } from './transmog-editor-panel.component'
     ]),
   ],
 })
-export class TransmogEditorPageComponent implements OnDestroy {
-  private router = inject(Router)
-  private route = inject(ActivatedRoute)
-  private toast = inject(ToastController)
-  private preferences = inject(PreferencesService)
+export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor {
   private screenshots = inject(ScreenshotService)
-  private platform = inject(PlatformService)
 
-  protected encodedState: string = null
-  protected iconLink = svgLink
-  protected iconCamera = svgCamera
   protected isLoading = signal(true)
   protected timeOfDay = signal(0.25)
 
@@ -87,6 +80,9 @@ export class TransmogEditorPageComponent implements OnDestroy {
   protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
   protected showSidebar = computed(() => this.isLargeContent())
   protected showModal = computed(() => !this.isLargeContent())
+  protected isDisabled = signal(false)
+  protected onChange = (value: unknown) => {}
+  protected onTouched = () => {}
 
   private modelPlayerMale = 'https://cdn.nw-buddy.de/models-1k/objects/characters/player/male/player_male.glb'
   private modelPlayerFemale = 'https://cdn.nw-buddy.de/models-1k/objects/characters/player/female/player_female.glb'
@@ -141,31 +137,27 @@ export class TransmogEditorPageComponent implements OnDestroy {
     })
   })
 
-  protected handleStateChange(value: any) {
-    this.preferences.session.set('transmog-editor', value)
-    this.encodedState = encodeState(value)
+  public constructor() {
+    effect(() => setTimeout(() => this.onCanvasAvailable(this.canvas()?.nativeElement)))
+    this.store.changed.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.onChange(this.store.getState())
+    })
   }
 
-  public constructor() {
-    const queryState = decodeState(this.route.snapshot.queryParamMap.get('state'))
-    const sessionState = this.preferences.session.get('transmog-editor')
-    this.store.load(queryState || sessionState || null)
-    if (queryState) {
-      this.router.navigate(['.'], {
-        relativeTo: this.route,
-        queryParams: { state: null },
-      })
-    }
-    effect(() => setTimeout(() => this.onCanvasAvailable(this.canvas()?.nativeElement)))
-    effect(() => {
-      this.handleStateChange({
-        head: this.store.head(),
-        chest: this.store.chest(),
-        hands: this.store.hands(),
-        legs: this.store.legs(),
-        feet: this.store.feet(),
-      })
-    })
+  public writeValue(obj: any): void {
+    this.store.load(obj)
+  }
+
+  public registerOnChange(fn: any): void {
+    this.onChange = fn
+  }
+
+  public registerOnTouched(fn: any): void {
+    this.onTouched = fn
+  }
+
+  public setDisabledState?(isDisabled: boolean): void {
+    this.isDisabled.set(isDisabled)
   }
 
   private async onCanvasAvailable(canvas: HTMLCanvasElement) {
@@ -325,38 +317,10 @@ export class TransmogEditorPageComponent implements OnDestroy {
     this.viewer.hideMeshes('player', this.store.hideNakedMeshes())
   }
 
-  protected copyLink() {
-    const url = new URL(this.router.url, this.platform.websiteUrl)
-    url.searchParams.set('state', this.encodedState)
-    navigator.clipboard.writeText(url.toString())
-    this.toast
-      .create({
-        message: 'Link was copied to clipboard',
-        duration: 2000,
-        position: 'top',
-      })
-      .then((toast) => toast.present())
-  }
-
-  protected async capturePhoto() {
+  public async capturePhoto() {
     const data = await this.viewer.takeScreenshot()
 
     const blob = await fetch(data).then((res) => res.blob())
     this.screenshots.saveBlobWithDialog(blob)
   }
-}
-
-function decodeState(state: string) {
-  if (!state) {
-    return null
-  }
-  try {
-    return JSON.parse(decompressFromEncodedURIComponent(state))
-  } catch (e) {
-    console.error('Failed to decode state', e)
-    return null
-  }
-}
-function encodeState(state: any) {
-  return compressToEncodedURIComponent(JSON.stringify(state))
 }

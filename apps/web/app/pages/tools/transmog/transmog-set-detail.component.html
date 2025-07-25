@@ -1,0 +1,103 @@
+<ion-header>
+  <ion-toolbar class="bg-base-300">
+    <a class="btn btn-ghost btn-square" [routerLink]="'..'" slot="start">
+      <nwb-icon [icon]="iconBack" class="w-5 h-5" />
+    </a>
+    <label class="input input-bordered w-full h-8 my-1 flex items-center gap-1">
+      <input
+        type="text"
+        class="grow"
+        maxlength="100"
+        [ngModel]="record()?.name"
+        (ngModelChange)="handleNameChange($event)"
+        [ngModelOptions]="{ updateOn: 'blur' }"
+      />
+      @if (isEditable()) {
+        @if (isSyncPending()) {
+          <nwb-icon
+            [icon]="iconInfo"
+            class="w-4 h-4 text-warning cursor-help tooltip tooltip-left"
+            [attr.data-tip]="'Sync pending'"
+          />
+        }
+        @if (isSyncConflict()) {
+          <nwb-icon
+            [icon]="iconInfo"
+            class="w-4 h-4 text-error cursor-help tooltip tooltip-left"
+            [attr.data-tip]="'Sync conflict'"
+          />
+        }
+        @if (isPublic()) {
+          <nwb-icon
+            [icon]="iconGlobe"
+            class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+            [attr.data-tip]="'Published'"
+          />
+        }
+      }
+    </label>
+    <div slot="end">
+      <button
+        class="join-item btn btn-square btn-ghost"
+        (click)="editor.capturePhoto()"
+        [tooltip]="'Capture Screenshot'"
+      >
+        <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
+      </button>
+
+      @if (isEditable()) {
+        <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+          <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+        </button>
+      }
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <nwb-transmog-editor [ngModel]="editorState()" (ngModelChange)="handleStateChange($event)" #editor />
+</ion-content>
+
+<ng-template #menu>
+  <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0" cdkMenu>
+    @if (!isSignedIn()) {
+      <!-- <li class="text-shadow-sm shadow-black">
+        <a cdkMenuItem (click)="onShareClicked()" class="rounded-none">
+          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Share</span>
+            <span class="text-xs opacity-75">Upload online and create a share URL</span>
+          </div>
+        </a>
+      </li> -->
+    } @else if (isPublic()) {
+      <li class="text-shadow-sm shadow-black">
+        <button cdkMenuItem (click)="handleUnpublish()" class="rounded-none">
+          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Unpublish</span>
+            <span class="text-xs opacity-75">Removes this set from public listing</span>
+          </div>
+        </button>
+      </li>
+    } @else {
+      <li class="text-shadow-sm shadow-black">
+        <button cdkMenuItem (click)="handlePublish()" class="rounded-none">
+          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Publish</span>
+            <span class="text-xs opacity-75">Publish this set for other users to see</span>
+          </div>
+        </button>
+      </li>
+    }
+    <li class="text-shadow-sm shadow-black">
+      <a (click)="handleDelete()" cdkMenuItem class="rounded-none">
+        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error mr-2" />
+        <div class="flex flex-col leading-none">
+          <span>Delete</span>
+          <span class="text-xs opacity-75">Delete this set</span>
+        </div>
+      </a>
+    </li>
+  </ul>
+</ng-template>

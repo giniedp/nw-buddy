@@ -1,0 +1,41 @@
+@if (!disableHead()) {
+  <h3
+    class="h-11 text-lg uppercase font-serif col-span-2 text-center text-nw-description nw-bg-title bg-bottom z-10 relative text-ellipsis overflow-clip leading-tight flex flex-row items-end justify-center line-clamp-2"
+    [title]="record()?.name"
+  >
+    @if (!isLoaded()) {
+      Loading...
+    } @else if (record()) {
+      {{ record().name }}
+    } @else {
+      New Transmog
+    }
+    @if (isOwned()) {
+      <div class="absolute bottom-0 right-0 flex flex-row items-center gap-2 p-2">
+        @if (isSyncable() && !isSyncComplete()) {
+          <span
+            class="badge badge-xs"
+            [class.badge-success]="isSyncComplete()"
+            [class.badge-warning]="isSyncPending()"
+            [class.badge-error]="isSyncConflict()"
+            [class.animate-ping]="isSyncPending()"
+          ></span>
+        }
+        @if (isPublished()) {
+          <nwb-icon
+            [icon]="iconGlobe"
+            class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+            [attr.data-tip]="'Published'"
+          />
+        }
+      </div>
+    }
+  </h3>
+}
+<div class="flex flex-row gap-1 mt-2 mx-auto">
+  <nwb-transmog-loadout-slot [record]="record()" [slotId]="'head'" />
+  <nwb-transmog-loadout-slot [record]="record()" [slotId]="'chest'" />
+  <nwb-transmog-loadout-slot [record]="record()" [slotId]="'hands'" />
+  <nwb-transmog-loadout-slot [record]="record()" [slotId]="'legs'" />
+  <nwb-transmog-loadout-slot [record]="record()" [slotId]="'feet'" />
+</div>

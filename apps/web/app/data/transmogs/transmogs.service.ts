@@ -71,7 +71,7 @@ export class TransmogsService {
           return this.table.observeById(id)
         }
         if (this.backend.isEnabled()) {
-          return this.backend.publicTables.skillSets.read({ user: userId, id })
+          return this.backend.publicTables.transmogs.read({ user: userId, id })
         }
         return of(null)
       }),
@@ -97,8 +97,6 @@ export class TransmogsService {
     return this.create({
       ...record,
       id: null,
-      ipnsKey: null,
-      ipnsName: null,
       status: 'private',
     })
   }

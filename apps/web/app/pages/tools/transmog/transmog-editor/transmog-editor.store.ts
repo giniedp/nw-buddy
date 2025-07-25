@@ -1,77 +1,62 @@
-import { computed, inject } from '@angular/core'
+import { computed, EventEmitter, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
 import { ArmorAppearanceDefinitions, DyeColorData } from '@nw-data/generated'
+import { DeepPartial } from 'chart.js/dist/types/utils'
 import { from } from 'rxjs'
 import { injectNwData } from '~/data'
+import { TransmogSlot, TransmogSlotId } from '~/data/transmogs'
 import { TransmogItem, TransmogService } from '~/widgets/data/transmog'
 import { ModelsService } from '~/widgets/model-viewer'
 
-export type TransmogSlotName = 'head' | 'chest' | 'hands' | 'legs' | 'feet'
-export interface TransmogSlotState {
-  // transmog item name
-  t: string
-  // dye color id
-  r: number
-  // dye color id
-  g: number
-  // dye color id
-  b: number
-  // dye color id
-  a: number
-  // hide naked sking
-  h: boolean | 1 | 2 | 3
-}
-
-export interface TransmogEditorState extends Record<TransmogSlotName, TransmogSlotState> {
+export interface TransmogEditorState extends Record<TransmogSlotId, TransmogSlot> {
   gender: 'male' | 'female'
   debug: boolean
 }
 
 export const TransmogEditorStore = signalStore(
-  { protectedState: false },
   withState<TransmogEditorState>({
     debug: false,
     gender: 'male',
     head: {
-      t: null,
-      r: null,
-      g: null,
-      b: null,
-      a: null,
-      h: false,
+      item: null,
+      dyeR: null,
+      dyeG: null,
+      dyeB: null,
+      dyeA: null,
+      flag: 0,
     },
     chest: {
-      t: null,
-      r: null,
-      g: null,
-      b: null,
-      a: null,
-      h: false,
+      item: null,
+      dyeR: null,
+      dyeG: null,
+      dyeB: null,
+      dyeA: null,
+      flag: 0,
     },
     hands: {
-      t: null,
-      r: null,
-      g: null,
-      b: null,
-      a: null,
-      h: false,
+      item: null,
+      dyeR: null,
+      dyeG: null,
+      dyeB: null,
+      dyeA: null,
+      flag: 0,
     },
     legs: {
-      t: null,
-      r: null,
-      g: null,
-      b: null,
-      a: null,
-      h: false,
+      item: null,
+      dyeR: null,
+      dyeG: null,
+      dyeB: null,
+      dyeA: null,
+      flag: 0,
     },
     feet: {
-      t: null,
-      r: null,
-      g: null,
-      b: null,
-      a: null,
-      h: false,
+      item: null,
+      dyeR: null,
+      dyeG: null,
+      dyeB: null,
+      dyeA: null,
+      flag: 0,
     },
   }),
   withComputed(() => {
@@ -98,16 +83,16 @@ export const TransmogEditorStore = signalStore(
     function getDye(id: number) {
       return dyeColorsMap().get(id)
     }
-    function getDyeSettings(ts: TransmogSlotState, appearance: ArmorAppearanceDefinitions) {
+    function getDyeSettings(ts: TransmogSlot, appearance: ArmorAppearanceDefinitions) {
       const rDisabled = 1 === Number(appearance?.RDyeSlotDisabled)
       const gDisabled = 1 === Number(appearance?.GDyeSlotDisabled)
       const bDisabled = 1 === Number(appearance?.BDyeSlotDisabled)
       const aDisabled = 1 === Number(appearance?.ADyeSlotDisabled)
       return {
-        r: getDye(ts.r),
-        g: getDye(ts.g),
-        b: getDye(ts.b),
-        a: getDye(ts.a),
+        r: getDye(ts.dyeR),
+        g: getDye(ts.dyeG),
+        b: getDye(ts.dyeB),
+        a: getDye(ts.dyeA),
         rDisabled,
         gDisabled,
         bDisabled,
@@ -115,11 +100,11 @@ export const TransmogEditorStore = signalStore(
       }
     }
 
-    const headAppearanceId = computed(() => getAppearanceId(head().t))
-    const chestAppearanceId = computed(() => getAppearanceId(chest().t))
-    const handsAppearanceId = computed(() => getAppearanceId(hands().t))
-    const legsAppearanceId = computed(() => getAppearanceId(legs().t))
-    const feetAppearanceId = computed(() => getAppearanceId(feet().t))
+    const headAppearanceId = computed(() => getAppearanceId(head.item()))
+    const chestAppearanceId = computed(() => getAppearanceId(chest.item()))
+    const handsAppearanceId = computed(() => getAppearanceId(hands.item()))
+    const legsAppearanceId = computed(() => getAppearanceId(legs.item()))
+    const feetAppearanceId = computed(() => getAppearanceId(feet.item()))
     const headAppearance = computed(() => itemAppearancesMap().get(headAppearanceId()))
     const chestAppearance = computed(() => itemAppearancesMap().get(chestAppearanceId()))
     const handsAppearance = computed(() => itemAppearancesMap().get(handsAppearanceId()))
@@ -137,22 +122,22 @@ export const TransmogEditorStore = signalStore(
     const feetDye = computed(() => getDyeSettings(feet(), feetAppearance()))
     const hideNakedMeshes = computed(() => {
       const list: string[] = []
-      if (head.h()) {
+      if (head.flag()) {
         list.push('female_naked_head_caucasian', 'male_naked_head_caucasian')
       }
-      if (chest.h() === true || (Number(chest.h()) & 1) === 1) {
+      if ((Number(chest.flag()) & 1) === 1) {
         list.push('female_naked_chest', 'male_naked_chest')
       }
-      if (chest.h() === true || (Number(chest.h()) & 2) === 2) {
+      if ((Number(chest.flag()) & 2) === 2) {
         list.push('female_naked_chest_sleeveless', 'male_naked_chest_sleeveless')
       }
-      if (hands.h()) {
+      if (hands.flag()) {
         list.push('female_naked_forearms', 'male_naked_forearms')
       }
-      if (legs.h()) {
+      if (legs.flag()) {
         list.push('female_naked_thighs', 'male_naked_thighs')
       }
-      if (feet.h()) {
+      if (feet.flag()) {
         list.push('female_naked_calves', 'male_naked_calves')
       }
       return list
@@ -206,53 +191,113 @@ export const TransmogEditorStore = signalStore(
       feetModel: computed(() => feetModels()?.[0]?.url),
     }
   }),
+  withProps(() => {
+    return {
+      changed: new EventEmitter(),
+    }
+  }),
   withMethods((state) => {
     return {
+      getState: (): TransmogEditorState => {
+        return {
+          gender: state.gender(),
+          debug: state.debug(),
+          head: state.head(),
+          chest: state.chest(),
+          hands: state.hands(),
+          legs: state.legs(),
+          feet: state.feet(),
+        }
+      },
       load: (input: Partial<TransmogEditorState>) => {
         if (!input) {
           return
         }
         patchState(state, {
+          gender: input.gender || 'male',
           head: {
-            t: input.head?.t,
-            r: input.head?.r,
-            g: input.head?.g,
-            b: input.head?.b,
-            a: input.head?.a,
-            h: !!input.head?.h,
+            item: input.head?.item,
+            dyeR: input.head?.dyeR,
+            dyeG: input.head?.dyeG,
+            dyeB: input.head?.dyeB,
+            dyeA: input.head?.dyeA,
+            flag: input.head?.flag,
           },
           chest: {
-            t: input.chest?.t,
-            r: input.chest?.r,
-            g: input.chest?.g,
-            b: input.chest?.b,
-            a: input.chest?.a,
-            h: input.chest?.h,
+            item: input.chest?.item,
+            dyeR: input.chest?.dyeR,
+            dyeG: input.chest?.dyeG,
+            dyeB: input.chest?.dyeB,
+            dyeA: input.chest?.dyeA,
+            flag: input.chest?.flag,
           },
           hands: {
-            t: input.hands?.t,
-            r: input.hands?.r,
-            g: input.hands?.g,
-            b: input.hands?.b,
-            a: input.hands?.a,
-            h: !!input.hands?.h,
+            item: input.hands?.item,
+            dyeR: input.hands?.dyeR,
+            dyeG: input.hands?.dyeG,
+            dyeB: input.hands?.dyeB,
+            dyeA: input.hands?.dyeA,
+            flag: input.hands?.flag,
           },
           legs: {
-            t: input.legs?.t,
-            r: input.legs?.r,
-            g: input.legs?.g,
-            b: input.legs?.b,
-            a: input.legs?.a,
-            h: !!input.legs?.h,
+            item: input.legs?.item,
+            dyeR: input.legs?.dyeR,
+            dyeG: input.legs?.dyeG,
+            dyeB: input.legs?.dyeB,
+            dyeA: input.legs?.dyeA,
+            flag: input.legs?.flag,
           },
           feet: {
-            t: input.feet?.t,
-            r: input.feet?.r,
-            g: input.feet?.g,
-            b: input.feet?.b,
-            a: input.feet?.a,
-            h: !!input.feet?.h,
+            item: input.feet?.item,
+            dyeR: input.feet?.dyeR,
+            dyeG: input.feet?.dyeG,
+            dyeB: input.feet?.dyeB,
+            dyeA: input.feet?.dyeA,
+            flag: input.feet?.flag,
           },
+        })
+      },
+      update(update: DeepPartial<TransmogEditorState>) {
+        patchState(state, (it) => {
+          return {
+            ...it,
+            ...update,
+            head: {
+              ...(it.head || {}),
+              ...(update.head || ({} as any)),
+            },
+            chest: {
+              ...(it.chest || {}),
+              ...(update.chest || ({} as any)),
+            },
+            hands: {
+              ...(it.hands || {}),
+              ...(update.hands || ({} as any)),
+            },
+            legs: {
+              ...(it.legs || {}),
+              ...(update.legs || ({} as any)),
+            },
+            feet: {
+              ...(it.feet || {}),
+              ...(update.feet || ({} as any)),
+            },
+          }
+        })
+        state.changed.emit()
+      },
+    }
+  }),
+  withMethods(({ update }) => {
+    return {
+      updateGender(gender: 'male' | 'female') {
+        update({
+          gender: gender,
+        })
+      },
+      updateSlot(slot: TransmogSlotId, patch: Partial<TransmogSlot>) {
+        update({
+          [slot]: patch,
         })
       },
     }

@@ -1,20 +1,12 @@
 import { EquipSlotId } from '@nw-data/common'
 import type { AppDbRecord } from '../app-db'
 
-export type TransmogSlogId = Extract<EquipSlotId, 'head' | 'chest' | 'hands' | 'legs' | 'feet'>
+export type TransmogSlotId = Extract<EquipSlotId, 'head' | 'chest' | 'hands' | 'legs' | 'feet'>
 export interface TransmogRecord extends AppDbRecord {
   /**
    * Name of the set
    */
   name: string
-  /**
-   * The ipns private key
-   */
-  ipnsKey?: string
-  /**
-   * The ipns public name
-   */
-  ipnsName?: string
   /**
    * User description about the set
    */
@@ -27,7 +19,7 @@ export interface TransmogRecord extends AppDbRecord {
   /**
    * Item slots for this gear
    */
-  slots?: Partial<Record<TransmogSlogId, TransmogSlot>>
+  slots?: Partial<Record<TransmogSlotId, TransmogSlot>>
   /**
    * Gender appearance
    */
@@ -40,8 +32,9 @@ export interface TransmogRecord extends AppDbRecord {
 
 export interface TransmogSlot {
   item: string
-  dyeR: string
-  dyeG: string
-  dyeB: string
-  dyeA: string
+  dyeR: number
+  dyeG: number
+  dyeB: number
+  dyeA: number
+  flag: number
 }

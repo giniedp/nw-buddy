@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash'
+import { isEqual, isMatch } from 'lodash'
 import { Observable, switchMap } from 'rxjs'
 import { AppDbRecord, AppDbTable } from '~/data/app-db'
 import { BackendTableEvent, PrivateTable } from '../backend-adapter'
@@ -135,7 +135,7 @@ export function createSyncToLocalCommands<T extends AppDbRecord>(
     }
 
     if (
-      isEqual(
+      isMatch(
         {
           ...local,
           syncState: 'synced',

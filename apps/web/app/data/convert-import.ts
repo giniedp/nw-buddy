@@ -1,9 +1,17 @@
-import { createId } from "./app-db"
-import { BookmarkRecord } from "./bookmarks"
-import { recursivelyDecodeArrayBuffers } from "./buffer-encoding"
-import { CharacterRecord } from "./characters"
-import { DATABASE_NAME, DBT_BOOKMARKS, DBT_CHARACTERS, LOCAL_USER_ID, PREFERENCES_DB_KEY, PREFERENCES_PREFIX } from "./constants"
-import { ExportedDB } from "./db.service"
+import { createId } from './app-db'
+import { BookmarkRecord } from './bookmarks'
+import { recursivelyDecodeArrayBuffers } from './buffer-encoding'
+import { CharacterRecord, TerritoryData } from './characters'
+import { GAME_MODE_TO_PROGRESSION_ID } from './characters/constants'
+import {
+  DATABASE_NAME,
+  DBT_BOOKMARKS,
+  DBT_CHARACTERS,
+  LOCAL_USER_ID,
+  PREFERENCES_DB_KEY,
+  PREFERENCES_PREFIX,
+} from './constants'
+import { ExportedDB } from './db.service'
 
 export async function convertImportData(doc: Object) {
   if (!doc || typeof doc !== 'object') {
@@ -18,6 +26,7 @@ export async function convertImportData(doc: Object) {
   ensureCharacter(database)
   removeUnknownTables(database)
   migrateBookmarks(database, preferences)
+  migrateProgression(database, preferences)
   return {
     database,
     preferences,
@@ -69,7 +78,7 @@ function ensureCharacter(db: ExportedDB) {
   if (!table) {
     table = {
       name: DBT_CHARACTERS,
-      rows: []
+      rows: [],
     }
     db.tables.push(table)
   }
@@ -96,7 +105,7 @@ function migrateBookmarks(db: ExportedDB, pref: Record<string, any>) {
   if (!table) {
     table = {
       name: DBT_BOOKMARKS,
-      rows: []
+      rows: [],
     }
     db.tables.push(table)
   }
@@ -110,6 +119,7 @@ function migrateBookmarks(db: ExportedDB, pref: Record<string, any>) {
 
 function extractLegacyBookmarks(pref: Record<string, any>) {
   const result: BookmarkRecord[] = []
+  const toRemove: string[] = []
   for (const key in pref) {
     if (!key || !key.startsWith('nwb:items:')) {
       continue
@@ -133,11 +143,88 @@ function extractLegacyBookmarks(pref: Record<string, any>) {
       delete value.gs
       delete value.mark
       if (Object.keys(value).length === 0) {
-        delete pref[key]
+        toRemove.push(key)
       }
     } catch (e) {
       console.error(`Failed to parse bookmark from localStorage key "${key}":`, e)
     }
   }
+  for (const key of toRemove) {
+    delete pref[key]
+  }
   return result
+}
+
+function migrateProgression(db: ExportedDB, pref: Record<string, any>) {
+  const character = db.tables.find((t) => t.name === DBT_CHARACTERS)?.rows[0] as CharacterRecord
+  const { dungeonProgressions, territoryProgressions } = extractLegacyProgression(pref)
+  for (const { progressionId, difficulty, level } of dungeonProgressions) {
+    const key = `${progressionId}:${difficulty}`
+    character.progressionLevels ||= {}
+    character.progressionLevels[key] = level
+  }
+  for (const { progressionId, data } of territoryProgressions) {
+    character.territories ||= {}
+    character.territories[progressionId] = data
+  }
+}
+
+function extractLegacyProgression(pref: Record<string, any>) {
+  const toRemove: string[] = []
+  const MEDAL_MAP = {
+    bronze: 1,
+    silver: 2,
+    gold: 3,
+  } as const
+  const dungeonProgressions: Array<{ progressionId: string; difficulty: number; level: number }> = []
+  const territoryProgressions: Array<{ progressionId: string; data: TerritoryData }> = []
+  for (const key in pref) {
+    if (!key || !key.startsWith('nwb:')) {
+      continue
+    }
+    if (key.startsWith('nwb:dungeons:')) {
+      toRemove.push(key)
+      const dungeonId = key.replace('nwb:dungeons:', '')
+      const progressionId = GAME_MODE_TO_PROGRESSION_ID[dungeonId]
+      if (!progressionId) {
+        continue
+      }
+      const value = pref[key] as any as {
+        ranks: Record<number, 'gold' | 'silver' | 'bronze'>
+      }
+      const ranks = value?.ranks
+      if (!ranks) {
+        continue
+      }
+      for (const [difficulty, medal] of Object.entries(ranks)) {
+        if (Number(difficulty) > 3) {
+          continue
+        }
+        const level = MEDAL_MAP[medal]
+        if (level) {
+          dungeonProgressions.push({
+            progressionId,
+            difficulty: Number(difficulty),
+            level,
+          })
+        }
+      }
+    }
+    if (key === 'nwb:territories') {
+      toRemove.push(key)
+      const value = pref[key] as Record<number, TerritoryData>
+      for (const [territoryId, territory] of Object.entries(value)) {
+        if (territory.standing) {
+          territoryProgressions.push({ progressionId: territoryId, data: territory })
+        }
+      }
+    }
+  }
+  for (const key of toRemove) {
+    delete pref[key]
+  }
+  return {
+    dungeonProgressions,
+    territoryProgressions,
+  }
 }
