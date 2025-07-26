@@ -12,142 +12,133 @@
       </ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-p-4 prose">
-    <div *ngIf="!vm.shared">
-      <p>
-        Your data will be uploaded to the IPFS network and is publicly available to anyone. As long as there is a copy
-        on the network, the generated share link will work.
-        <br />
-        <a href="https://ipfs.tech/#how" target="_blank" class="link link-primary">Read more info about IPFS</a>.
-      </p>
-
-      <!-- <ng-container *ngIf="vm.web3Token">
+  <ion-content class="ion-p-4">
+    @if (!vm.shared) {
+      <div class="prose">
         <p>
-          In order to keep your shared data on the ipfs network and to prevent it from expiring, check the following
-          option
+          Your data will be uploaded to the IPFS network and is publicly available to anyone. As long as there is a copy
+          on the network, the generated share link will work.
+          <br />
+          <a href="https://ipfs.tech/#how" target="_blank" class="link link-primary">Read more info about IPFS</a>.
         </p>
+
+        <!-- <ng-container *ngIf="vm.web3Token">
+          <p>
+            In order to keep your shared data on the ipfs network and to prevent it from expiring, check the following
+            option
+          </p>
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <span class="label-text flex flex-row"> Upload to Web3 Storage </span>
+              <input
+                type="checkbox"
+                class="toggle toggle-accent"
+                [ngModel]="vm.web3Enabled"
+                (ngModelChange)="patchState({ web3Enabled: $event })"
+              />
+            </label>
+          </div>
+        </ng-container> -->
+
+        <!-- <p *ngIf="!vm.web3Token">
+          In order to keep your shared data on the ipfs network and to prevent it from expiring, you may want to upload
+          the data to your Web3 Storage account.
+          <a [routerLink]="'/preferences'" class="link link-primary">See preferences</a>
+        </p> -->
+
+        <p>
+          After sharing a link, your local changes are <span class="text-error">not</span> automatically re-uploaded.
+          You have to re-share your build which will also change the share URL. If you want to create a permanent URL,
+          check the following option.
+        </p>
+
         <div class="form-control">
           <label class="label cursor-pointer">
-            <span class="label-text flex flex-row"> Upload to Web3 Storage </span>
+            <span class="label-text flex flex-row"> Create Permalink </span>
             <input
               type="checkbox"
               class="toggle toggle-accent"
-              [ngModel]="vm.web3Enabled"
-              (ngModelChange)="patchState({ web3Enabled: $event })"
+              [ngModel]="vm.ipnsEnabled"
+              (ngModelChange)="patchState({ ipnsEnabled: $event })"
             />
           </label>
         </div>
-      </ng-container> -->
-
-      <!-- <p *ngIf="!vm.web3Token">
-        In order to keep your shared data on the ipfs network and to prevent it from expiring, you may want to upload
-        the data to your Web3 Storage account.
-        <a [routerLink]="'/preferences'" class="link link-primary">See preferences</a>
-      </p> -->
-
-      <p>
-        After sharing a link, your local changes are <span class="text-error">not</span> automatically re-uploaded. You
-        have to re-share your build which will also change the share URL. If you want to create a permanent URL, check
-        the following option.
-      </p>
-
-      <div class="form-control">
-        <label class="label cursor-pointer">
-          <span class="label-text flex flex-row"> Create Permalink </span>
-          <input
-            type="checkbox"
-            class="toggle toggle-accent"
-            [ngModel]="vm.ipnsEnabled"
-            (ngModelChange)="patchState({ ipnsEnabled: $event })"
-          />
-        </label>
       </div>
-    </div>
+    }
 
     @if (vm.shared && vm.error) {
-      <div class="alert alert-error">
+      <div class="alert alert-error alert-soft">
         <nwb-icon [icon]="iconError" class="w-6 h-6" />
-        <div class="w-full">
+        <div>
+          <h3 class="font-bold">Error</h3>
           <div class="text-xs">Something went wrong.</div>
         </div>
       </div>
     }
 
     @if (vm.shared && !vm.error) {
-      <div class="alert alert-success">
+      <div class="alert alert-success alert-soft">
         <nwb-icon [icon]="iconSuccess" class="w-6 h-6" />
-        <div class="w-full">
+        <div>
+          <h3 class="font-bold">Shared</h3>
           <div class="text-xs">Content has been successfully shared.</div>
         </div>
       </div>
     }
 
-    @if (vm.shareUrl; as value) {
-      <div class="form-control">
-        <label class="label">
-          <span class="label-text">Share URL</span>
-        </label>
-        <label class="join">
-          <input type="text" class="join-item input input-bordered w-full" [ngModel]="value" />
+    <fieldset class="fieldset">
+      @if (vm.shareUrl; as value) {
+        <label class="label"> Share URL </label>
+        <div class="join">
+          <input type="text" class="join-item input w-full" [ngModel]="value" />
           <button class="join-item btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
             <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1" />
           </button>
-        </label>
-      </div>
-    }
-    @if (vm.embedUrl; as value) {
-      <div class="form-control">
-        <label class="label">
-          <span class="label-text">Embed URL</span>
-          <span>
-            <label class="label cursor-pointer flex flex-row gap-1">
-              <span class="label-text flex flex-row"> Grid Mode </span>
-              <input
-                type="checkbox"
-                class="toggle toggle-xs toggle-accent"
-                [ngModel]="vm.gridMode"
-                (ngModelChange)="patchState({ gridMode: $event })"
-              />
-            </label>
-          </span>
-        </label>
-        <label class="join">
-          <input type="text" class="join-item input input-bordered w-full" [ngModel]="value" />
+        </div>
+      }
+      @if (vm.embedUrl; as value) {
+        <div class="label">
+          <span class="flex-1"> Embed URL </span>
+          <label>
+            Grid Mode
+            <input
+              type="checkbox"
+              class="toggle toggle-xs toggle-accent"
+              [ngModel]="vm.gridMode"
+              (ngModelChange)="patchState({ gridMode: $event })"
+            />
+          </label>
+        </div>
+        <div class="join">
+          <input type="text" class="join-item input w-full" [ngModel]="value" />
           <button class="join-item btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
             <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1" />
           </button>
-        </label>
-      </div>
-    }
+        </div>
+      }
 
-    @if (vm.embedSnippet; as value) {
-      <div class="form-control">
-        <label class="label">
-          <span class="label-text">Embed Snippet</span>
-          <div>
-            <label class="label cursor-pointer flex flex-row gap-1">
-              <span class="label-text flex flex-row"> Grid Mode </span>
-              <input
-                type="checkbox"
-                class="toggle toggle-xs toggle-accent"
-                [ngModel]="vm.gridMode"
-                (ngModelChange)="patchState({ gridMode: $event })"
-              />
-            </label>
-          </div>
-        </label>
+      @if (vm.embedSnippet; as value) {
+        <div class="label">
+          <span class="flex-1"> Embed Snippet </span>
+          <label>
+            Grid Mode
+            <input
+              type="checkbox"
+              class="toggle toggle-xs toggle-accent"
+              [ngModel]="vm.gridMode"
+              (ngModelChange)="patchState({ gridMode: $event })"
+            />
+          </label>
+        </div>
+
         <label class="join join-vertical">
-          <textarea
-            class="join-item textarea textarea-bordered textarea-md w-full"
-            rows="4"
-            [ngModel]="value"
-          ></textarea>
+          <textarea class="join-item textarea textarea-md w-full" rows="4" [ngModel]="value"></textarea>
           <button class="join-item btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
             <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1" /> Copy embed snippet
           </button>
         </label>
-      </div>
-    }
+      }
+    </fieldset>
   </ion-content>
 
   <ion-footer class="rounded-b-md">

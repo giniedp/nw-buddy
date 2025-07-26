@@ -8,22 +8,23 @@ import {
   effect,
   inject,
   input,
-  signal,
   viewChild,
   viewChildren,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EQUIP_SLOTS } from '@nw-data/common'
-import { GearsetStore } from '~/data'
+import { GearsetsService, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { LayoutModule } from '~/ui/layout'
+import { svgCircleExclamation, svgGlobe } from '~/ui/icons/svg'
+import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { ScreenshotFrameDirective, ScreenshotModule } from '~/widgets/screenshot'
 import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
-import { svgCircleExclamation } from '~/ui/icons/svg'
+import { filter, switchMap } from 'rxjs'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'nwb-gearset-grid',
@@ -62,6 +63,9 @@ import { svgCircleExclamation } from '~/ui/icons/svg'
 })
 export class GearsetGridComponent {
   private store = inject(GearsetStore)
+  private modal = inject(ModalService)
+  private service = inject(GearsetsService)
+  private router = inject(Router)
 
   public disabled = input(false)
 
@@ -76,8 +80,10 @@ export class GearsetGridComponent {
   protected isLoading = this.store.isLoading
   protected readonly = computed(() => this.disabled() || !this.store.isOwned())
   protected iconInfo = svgCircleExclamation
-
+  protected iconGlobe = svgGlobe
+  protected isEmbed = computed(() => this.router.url.includes('embed'))
   protected showItemInfo = this.store.showItemInfo
+  protected isOwned = this.store.isOwned
   protected slots = computed(() => {
     return EQUIP_SLOTS.filter(
       (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies',
@@ -111,5 +117,30 @@ export class GearsetGridComponent {
 
   protected screenshotName(suffix: string) {
     return `${this.gearset?.name} - ${suffix}`
+  }
+
+  protected handleImportClicked() {
+    const record = this.gearset()
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Import Gearset',
+        body: 'Give it a name',
+        value: record.name,
+        positive: 'Import',
+        negative: 'Cancel',
+      },
+    })
+      .result$.pipe(filter((it) => !!it))
+      .pipe(
+        switchMap((newName) => {
+          return this.service.dublicate({
+            ...record,
+            name: newName,
+          })
+        }),
+      )
+      .subscribe((record) => {
+        this.router.navigate(['/gearsets', record.userId, record.id])
+      })
   }
 }

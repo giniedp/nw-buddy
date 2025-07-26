@@ -22,18 +22,19 @@ import { NwData } from '@nw-data/db'
 import { AbilityData } from '@nw-data/generated'
 import { Observable, combineLatest, map, of } from 'rxjs'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
+import { IconsModule } from '~/ui/icons'
+import { svgGlobe } from '~/ui/icons/svg'
+import { SyncBadgeComponent } from '~/ui/sync-badge'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { EmptyComponent } from '~/widgets/empty'
 import { SkillTreeTableRecord } from './skill-tree-table-cols'
-import { svgGlobe } from '~/ui/icons/svg'
-import { IconsModule } from '~/ui/icons'
 
 @Component({
   selector: 'nwb-skill-tree-cell',
   templateUrl: './skill-tree-cell.component.html',
   styleUrl: './skill-tree-cell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, IconsModule],
+  imports: [CommonModule, NwModule, RouterModule, IconsModule, SyncBadgeComponent],
   host: {
     class: 'relative flex flex-col rounded-md overflow-clip m-1 h-40 cursor-pointer',
     '[class.outline]': 'selected',

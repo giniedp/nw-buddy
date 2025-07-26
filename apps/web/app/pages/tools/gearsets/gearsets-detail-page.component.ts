@@ -6,6 +6,7 @@ import {
   computed,
   effect,
   inject,
+  Injector,
   signal,
   untracked,
   viewChild,
@@ -32,7 +33,7 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop'
 import { map } from 'rxjs'
 import { GearsetsService } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
-import { svgCalculator, svgChartLine, svgCodeMerge, svgSwords, svgUser } from '~/ui/icons/svg'
+import { svgCalculator, svgChartLine, svgChevronLeft, svgCodeMerge, svgGlobe, svgSwords, svgUser } from '~/ui/icons/svg'
 
 import { BackendService } from '~/data/backend'
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
@@ -75,14 +76,14 @@ export class GearsetsDetailPageComponent {
   private router = inject(Router)
   private route = inject(ActivatedRoute)
   private gearsets = inject(GearsetsService)
+  protected injector = inject(Injector)
 
   protected isTabOpponent = toSignal(injectQueryParam('tab').pipe(map((it) => it === 'vs')))
   protected isLarge = toSignal(injectBreakpoint('(min-width: 992px)'))
 
   protected userId = toSignal(injectRouteParam('userid'))
   protected id = toSignal(injectRouteParam('id'))
-  protected oppenentId = toSignal(injectQueryParam('vs'))
-
+  protected opponentId = toSignal(injectQueryParam('vs'))
 
   protected playerResource = rxResource({
     params: () => ({ userId: this.userId(), id: this.id() }),
@@ -100,10 +101,12 @@ export class GearsetsDetailPageComponent {
     return null
   })
   protected playerIsLoading = this.playerResource.isLoading
-  protected playerGearsetEditable = computed(() => this.playerGearset()?.userId === this.backend.sessionUserId())
+  protected playerIsOwned = computed(() => {
+    return this.userId() === (this.backend.sessionUserId() || 'local')
+  })
 
   protected opponentResource = rxResource({
-    params: () => ({ userId: this.userId(), id: this.oppenentId() }),
+    params: () => ({ userId: this.userId(), id: this.opponentId() }),
     stream: ({ params: { userId, id } }) => {
       return this.gearsets.observeRecord({ userId, id })
     },
@@ -118,17 +121,18 @@ export class GearsetsDetailPageComponent {
     return null
   })
   protected opponentIsLoading = this.opponentResource.isLoading
-  protected opponentGearsetEditable = computed(() => this.opponentGearset()?.userId === this.backend.sessionUserId())
-  protected hasOpponent = computed(() => !!this.oppenentId())
+  protected hasOpponent = computed(() => !!this.opponentId())
 
   protected playerHost = viewChild('playerGrid', { read: GearsetHostDirective })
   protected opponentHost = viewChild('oponentGrid', { read: GearsetHostDirective })
 
+  protected iconBack = svgChevronLeft
   protected iconTabMain = svgUser
   protected iconTabStats = svgChartLine
   protected iconTabSkill = svgCodeMerge
   protected iconTabGear = svgSwords
   protected iconTabCalculator = svgCalculator
+  protected iconGlobe = svgGlobe
 
   public constructor() {
     effect(() => {
@@ -145,5 +149,9 @@ export class GearsetsDetailPageComponent {
         this.opponent.set(opponentHost?.mannequin || null)
       })
     })
+  }
+
+  protected handleImportClicked() {
+
   }
 }

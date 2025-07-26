@@ -1,78 +1,92 @@
-<div class="sticky top-0 flex-none bg-base-300">
-  @if (isLoading()) {
-
-  } @else if (!record()) {
-    <div class="p-3 mx-auto">
-      <div class="alert bg-base-100 shadow-lg">
-        <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-error" />
-        <div class="flex-1">
-          <h3 class="font-bold">Not found</h3>
-          <p class="text-sm">Skill tree does not exist or is not published.</p>
-        </div>
-      </div>
-    </div>
-  } @else if (canImport()) {
-    <div class="p-3 mx-auto">
-      <div class="alert bg-base-100 shadow-lg">
-        <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-success" />
-        <div class="flex-1">
-          <h3 class="font-bold">Public skill tree</h3>
-          <p class="text-sm">You can import this item into your collection.</p>
-        </div>
-        <div class="flex-none">
-          <button class="btn btn-sm btn-primary" (click)="handleImportClicked()">Import</button>
-        </div>
-      </div>
-    </div>
-  } @else {
-    <div class="flex flex-row gap-1 items-center overflow-x-auto">
-      <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
-        <nwb-icon [icon]="iconBack" class="w-4 h-4" />
-      </a>
-      <label class="input input-bordered w-full h-8 my-1 flex items-center gap-2 min-w-0">
-        <input
-          type="text"
-          placeholder=""
-          class="grow min-w-0"
-          maxlength="100"
-          [disabled]="!canEdit()"
-          [ngModel]="record()?.name"
-          (ngModelChange)="handleUpdateName($event)"
-          [ngModelOptions]="{ updateOn: 'blur' }"
-        />
-        @if (canEdit()) {
-          @if (isSyncable() && isPending()) {
-            <nwb-icon [icon]="iconInfo" class="w-4 h-4 text-warning" [tooltip]="'Sync pending'" />
-          } @else if (isSyncable() && isConflict()) {
-            <nwb-icon [icon]="iconInfo" class="w-4 h-4 text-error" [tooltip]="'Sync conflict'" />
-          }
-          @if (isPublic()) {
-            <nwb-icon [icon]="iconGlobe" class="w-4 h-4 text-success" [tooltip]="'Public Skill Tree'" />
-          }
-        }
-      </label>
-      <div class="join">
-        <button [nwbScreenshotBtn] class="join-item btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
-        @if (canEdit()) {
-          <button
-            class="join-item btn btn-ghost btn-square"
-            cdkOverlayOrigin
-            [tooltip]="'Edit Tags'"
+<ion-header>
+  <ion-toolbar>
+    <div class="ms-2">
+      @if (canEdit()) {
+        <label class="input input-bordered w-full h-8 my-1 flex items-center gap-2 min-w-0">
+          <input
+            type="text"
+            placeholder=""
+            class="grow min-w-0"
+            maxlength="100"
             [disabled]="!canEdit()"
-            [cdkMenuTriggerFor]="tplTags"
-          >
-            <nwb-icon [icon]="iconTags" class="w-4 h-4" />
-          </button>
-        }
-        <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplMenu">
+            [ngModel]="record()?.name"
+            (ngModelChange)="handleUpdateName($event)"
+            [ngModelOptions]="{ updateOn: 'blur' }"
+          />
+          @if (isSyncable()) {
+            <nwb-sync-badge
+              class="opacity-0"
+              [class.opacity-100]="isPublic() || isPending() || isConflict()"
+              [published]="isPublic()"
+              [pending]="isPending()"
+              [conflict]="isConflict()"
+              [loading]="isPending()"
+            />
+          }
+        </label>
+      } @else {
+        <span class="ps-4">
+          {{ record()?.name }}
+        </span>
+      }
+    </div>
+    <div slot="end" class="join">
+      <button
+        [nwbScreenshotBtn]
+        class="btn btn-ghost btn-square"
+        [tooltip]="'Screenshot'"
+        [disabled]="!record()"
+      ></button>
+      @if (canEdit()) {
+        <button
+          class="join-item btn btn-ghost btn-square"
+          cdkOverlayOrigin
+          [tooltip]="'Edit Tags'"
+          [disabled]="!canEdit()"
+          [cdkMenuTriggerFor]="tplTags"
+        >
+          <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+        </button>
+        <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplMenu" slot="end">
           <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
         </button>
-      </div>
+      } @else {
+        <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'" slot="start">
+          <nwb-icon [icon]="iconBack" class="w-4 h-4" />
+        </a>
+      }
     </div>
-  }
-</div>
-<div class="layout-content relative">
-  <div [nwbScreenshotFrame]="record()?.name" class="bg-base-300">
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="sticky top-0 z-10">
+    @if (isLoading()) {
+    } @else if (!record()) {
+      <div class="p-3 mx-auto">
+        <div class="alert bg-base-100 max-w-md mx-auto">
+          <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-error" />
+          <div>
+            <h3 class="font-bold">Not available!</h3>
+            <div>The item does not exist or has not been published yet.</div>
+          </div>
+        </div>
+      </div>
+    } @else if (canImport()) {
+      <div class="p-3 mx-auto">
+        <div class="alert backdrop-blur-xl bg-base-100/30 max-w-md mx-auto">
+          <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-success" />
+          <div class="flex-1">
+            <h3 class="font-bold">Public skill tree</h3>
+            <p class="text-sm">You can import this item into your collection.</p>
+          </div>
+          <div class="flex-none">
+            <button class="btn btn-sm btn-primary" (click)="handleImportClicked()">Import</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+  <div [nwbScreenshotFrame]="record()?.name">
     @if (record()) {
       <nwb-skill-tree-editor [disabled]="!canEdit()" [ngModel]="record()" (ngModelChange)="updateModel($event)" />
     }
@@ -87,99 +101,99 @@
       </div>
     }
   </div>
-</div>
 
-<ng-template #tplMenu>
-  <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
-    @if (!isSyncable()) {
-      <li class="text-shadow-sm shadow-black">
-        <button cdkMenuItem (click)="handleShare()">
-          <nwb-icon [icon]="iconShare" class="w-4 h-4" />
-          <div class="flex flex-col leading-none">
-            <span>Share</span>
-            <span class="text-xs opacity-75">Upload online and create a share URL</span>
-          </div>
-        </button>
-      </li>
-    }
-
-    @if (canEdit() && isSyncable()) {
-      @if (isPublic()) {
+  <ng-template #tplMenu>
+    <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+      @if (!isSyncable()) {
         <li class="text-shadow-sm shadow-black">
-          <button cdkMenuItem (click)="handleUnpublish()">
-            <nwb-icon [icon]="iconGlobe" class="w-4 h-4" />
+          <button cdkMenuItem (click)="handleShare()">
+            <nwb-icon [icon]="iconShare" class="w-4 h-4" />
             <div class="flex flex-col leading-none">
-              <span>Unpublish</span>
-              <span class="text-xs opacity-75">Remove this skill tree from public listing</span>
-            </div>
-          </button>
-        </li>
-      } @else {
-        <li class="text-shadow-sm shadow-black">
-          <button cdkMenuItem (click)="handlePublish()">
-            <nwb-icon [icon]="iconGlobe" class="w-4 h-4" />
-            <div class="flex flex-col leading-none">
-              <span>Publish</span>
-              <span class="text-xs opacity-75">Publish this skill tree for other users to see</span>
+              <span>Share</span>
+              <span class="text-xs opacity-75">Upload online and create a share URL</span>
             </div>
           </button>
         </li>
       }
-    }
 
-    <li class="text-shadow-sm shadow-black">
-      <button cdkMenuItem (click)="handleToggleAttributes()">
-        <nwb-icon [icon]="iconAttrs" class="w-4 h-4" />
-        <div class="flex flex-col leading-none">
-          <span>Toggle Attributes</span>
-          <span class="text-xs opacity-75">Enable or disable the attribute editor</span>
-        </div>
-      </button>
-    </li>
-    <li class="divider my-1 h-[2px]"></li>
+      @if (canEdit() && isSyncable()) {
+        @if (isPublic()) {
+          <li class="text-shadow-sm shadow-black">
+            <button cdkMenuItem (click)="handleUnpublish()">
+              <nwb-icon [icon]="iconGlobe" class="w-4 h-4" />
+              <div class="flex flex-col leading-none">
+                <span>Unpublish</span>
+                <span class="text-xs opacity-75">Remove this skill tree from public listing</span>
+              </div>
+            </button>
+          </li>
+        } @else {
+          <li class="text-shadow-sm shadow-black">
+            <button cdkMenuItem (click)="handlePublish()">
+              <nwb-icon [icon]="iconGlobe" class="w-4 h-4" />
+              <div class="flex flex-col leading-none">
+                <span>Publish</span>
+                <span class="text-xs opacity-75">Publish this skill tree for other users to see</span>
+              </div>
+            </button>
+          </li>
+        }
+      }
 
-    @if (canEdit()) {
       <li class="text-shadow-sm shadow-black">
-        <button (click)="builder().switchWeapon()" cdkMenuItem>
-          <nwb-icon [icon]="iconReset" class="w-4 h-4" />
+        <button cdkMenuItem (click)="handleToggleAttributes()">
+          <nwb-icon [icon]="iconAttrs" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
-            <span>Reset</span>
-            <span class="text-xs opacity-75">Change weapon and reset sheet</span>
+            <span>Toggle Attributes</span>
+            <span class="text-xs opacity-75">Enable or disable the attribute editor</span>
           </div>
         </button>
       </li>
-    }
-    <li class="text-shadow-sm shadow-black">
-      <button (click)="handleClone()" cdkMenuItem>
-        <nwb-icon [icon]="iconCopy" class="w-4 h-4" />
-        <div class="flex flex-col leading-none">
-          <span>Copy</span>
-          <span class="text-xs opacity-75">Make a copy of this sheet</span>
-        </div>
-      </button>
-    </li>
-    @if (canEdit()) {
+      <li class="divider my-1 h-[2px]"></li>
+
+      @if (canEdit()) {
+        <li class="text-shadow-sm shadow-black">
+          <button (click)="builder().switchWeapon()" cdkMenuItem>
+            <nwb-icon [icon]="iconReset" class="w-4 h-4" />
+            <div class="flex flex-col leading-none">
+              <span>Reset</span>
+              <span class="text-xs opacity-75">Change weapon and reset sheet</span>
+            </div>
+          </button>
+        </li>
+      }
       <li class="text-shadow-sm shadow-black">
-        <button (click)="handleDelete()" cdkMenuItem>
-          <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error" />
+        <button (click)="handleClone()" cdkMenuItem>
+          <nwb-icon [icon]="iconCopy" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
-            <span>Delete</span>
-            <span class="text-xs opacity-75">Delete this sheet</span>
+            <span>Copy</span>
+            <span class="text-xs opacity-75">Make a copy of this sheet</span>
           </div>
         </button>
       </li>
-    }
-  </ul>
-</ng-template>
+      @if (canEdit()) {
+        <li class="text-shadow-sm shadow-black">
+          <button (click)="handleDelete()" cdkMenuItem>
+            <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error" />
+            <div class="flex flex-col leading-none">
+              <span>Delete</span>
+              <span class="text-xs opacity-75">Delete this sheet</span>
+            </div>
+          </button>
+        </li>
+      }
+    </ul>
+  </ng-template>
 
-<ng-template #tplTags>
-  <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
-    <nwb-chips-input-pane
-      [tags]="presetTags"
-      [placeholder]="'custom tags'"
-      [disabled]="!canEdit()"
-      [ngModel]="record()?.tags"
-      (ngModelChange)="handleUpdateTags($event)"
-    />
-  </div>
-</ng-template>
+  <ng-template #tplTags>
+    <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+      <nwb-chips-input-pane
+        [tags]="presetTags"
+        [placeholder]="'custom tags'"
+        [disabled]="!canEdit()"
+        [ngModel]="record()?.tags"
+        (ngModelChange)="handleUpdateTags($event)"
+      />
+    </div>
+  </ng-template>
+</ion-content>

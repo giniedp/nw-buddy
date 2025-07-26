@@ -59,13 +59,6 @@
 </ion-header>
 <ion-content>
   @if (isLoading()) {
-    <div class="h-full flex items-center justify-center">
-      <div class="alert alert-info alert-soft">
-        <div>
-          <h3 class="font-bold">Loading</h3>
-        </div>
-      </div>
-    </div>
   } @else if (hasError()) {
     <div class="h-full flex items-center justify-center">
       <div class="alert alert-error alert-soft">
@@ -77,10 +70,11 @@
     </div>
   } @else if (!record()) {
     <div class="h-full flex items-center justify-center">
-      <div class="alert alert-error alert-soft">
+      <div class="alert max-w-md mx-auto">
+        <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-error" />
         <div>
-          <h3 class="font-bold">Error!</h3>
-          <div class="text-xs">The set could not be found or loaded.</div>
+          <h3 class="font-bold">Not available!</h3>
+          <div>The item does not exist or has not been published yet.</div>
         </div>
       </div>
     </div>

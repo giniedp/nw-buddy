@@ -1,28 +1,20 @@
-@if (!isLoaded() || (isLoading() && !gearset())) {
-
-} @else if (!isOwned()) {
-  <div class="p-3 mx-auto">
-    <div class="alert bg-base-100 shadow-lg max-w-md">
-      <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-success" />
-      <div class="flex-1">
-        <h3 class="font-bold">Public gearset</h3>
-        <p class="text-xs">You can import this item into your collection.</p>
-      </div>
-      <div class="flex-none">
-        <button class="btn btn-sm btn-primary" (click)="onImportClicked()">Import</button>
-      </div>
-    </div>
+<button class="btn btn-square btn-ghost" [class.text-error]="mode === 'opponent'" (click)="handleBackClicked()">
+  @if (mode === 'opponent') {
+    <nwb-icon [icon]="iconClose" class="w-4 h-4" />
+  } @else {
+    <nwb-icon [icon]="iconBack" class="w-4 h-4" />
+  }
+</button>
+@if (gearset() && !isOwned()) {
+  <div class="leading-tight w-full">
+    <h3 class="font-bold">Gearset</h3>
+    <span>
+      {{ gearset().name }}
+    </span>
   </div>
-} @else {
-  <button class="btn btn-square btn-ghost" [class.text-error]="mode === 'opponent'" (click)="handleBackClicked()">
-    @if (mode === 'opponent') {
-      <nwb-icon [icon]="iconClose" class="w-4 h-4" />
-    } @else {
-      <nwb-icon [icon]="iconBack" class="w-4 h-4" />
-    }
-  </button>
-
-  <label class="input input-bordered w-full h-8 my-1 flex items-center gap-1">
+}
+@if (gearset() && isOwned()) {
+  <label class="input input-bordered input-sm w-full flex items-center gap-1">
     <input
       type="text"
       class="grow"
@@ -32,7 +24,7 @@
       [ngModelOptions]="{ updateOn: 'blur' }"
       [disabled]="!isEditable()"
     />
-    @if (isEditable()) {
+    @if (isSignedIn() && isEditable()) {
       @if (isSyncPending()) {
         <nwb-icon
           [icon]="iconInfo"
@@ -56,48 +48,41 @@
       }
     }
   </label>
-
-  <div class="join">
-    @if (isEditable()) {
-      <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
-        <nwb-icon [icon]="iconTags" class="w-4 h-4" />
-      </button>
-      <ng-template #tplTagPicker>
-        <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
-          <nwb-chips-input-pane
-            [tags]="presetTags"
-            [placeholder]="'custom tags'"
-            [ngModel]="gearset()?.tags"
-            (ngModelChange)="updateTags(gearset(), $event)"
-          />
-        </div>
-      </ng-template>
-    }
-
-    @if (!isEditable()) {
-      <button
-        class="join-item btn btn-ghost btn-square"
-        (click)="onImportClicked()"
-        [tooltip]="'Import to own collection'"
-      >
-        <nwb-icon [icon]="iconImport" class="w-4 h-4" />
-      </button>
-    }
-
-    <button
-      [nwbScreenshotBtn]
-      class="join-item btn btn-ghost btn-square"
-      [tooltip]="'Screenshot'"
-      [disabled]="!gearset()"
-    ></button>
-
-    @if (isEditable()) {
-      <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
-        <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
-      </button>
-    }
-  </div>
 }
+@if (!gearset()) {
+  <div class="w-full"></div>
+}
+
+<div class="join">
+  @if (isEditable()) {
+    <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
+      <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+    </button>
+    <ng-template #tplTagPicker>
+      <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+        <nwb-chips-input-pane
+          [tags]="presetTags"
+          [placeholder]="'custom tags'"
+          [ngModel]="gearset()?.tags"
+          (ngModelChange)="updateTags(gearset(), $event)"
+        />
+      </div>
+    </ng-template>
+  }
+
+  <button
+    [nwbScreenshotBtn]
+    class="join-item btn btn-ghost btn-square"
+    [tooltip]="'Screenshot'"
+    [disabled]="!gearset()"
+  ></button>
+
+  @if (isEditable()) {
+    <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+      <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+    </button>
+  }
+</div>
 
 <ng-template #menu>
   <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0" cdkMenu>

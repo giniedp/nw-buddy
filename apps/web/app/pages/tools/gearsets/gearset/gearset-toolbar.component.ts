@@ -82,7 +82,7 @@ export const GEARSET_TAGS = [
     OverlayModule,
   ],
   host: {
-    class: 'flex-1 flex flex-row items-center gap-1 overflow-x-auto',
+    class: 'flex-1 flex flex-row items-center gap-1 overflow-x-auto overflow-y-hidden',
   },
 })
 export class GearsetToolbarComponent {
@@ -179,7 +179,7 @@ export class GearsetToolbarComponent {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create copy',
-        body: 'New gearset name',
+        label: 'Name',
         value: `${record.name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',
@@ -223,15 +223,16 @@ export class GearsetToolbarComponent {
   }
 
   protected async onShareClicked() {
-    const record = this.store.clone()
+    const record = this.store.getCopy()
     const ipnsKey = record.ipnsKey
     const ipnsName = record.ipnsName
+    delete record.userId
     delete record.imageId
     delete record.createMode
     delete record.ipnsKey
     delete record.ipnsName
 
-    for (const [slot, it] of Object.entries(record.slots)) {
+    for (const [slot, it] of Object.entries(record.slots || {})) {
       if (typeof it === 'string') {
         record.slots[slot] = await this.itemsDb
           .read(it)

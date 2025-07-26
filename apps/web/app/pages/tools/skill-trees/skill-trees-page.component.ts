@@ -13,12 +13,20 @@ import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
+import { svgEmptySet, svgFileImport, svgFilterList, svgGlobe, svgPlus, svgSitemap } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectQueryParam, injectRouteParam, selectSignal } from '~/utils'
+import {
+  HtmlHeadService,
+  injectBreakpoint,
+  injectChildRouteParam,
+  injectParentRouteParam,
+  injectQueryParam,
+  injectRouteParam,
+  selectSignal,
+} from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { SkillTreeTableAdapter } from '~/widgets/data/skill-tree-table'
@@ -56,7 +64,7 @@ import { SkillTreesPageStore } from './skill-trees-page.store'
       adapter: SkillTreeTableAdapter,
       factory: () => {
         return {
-          source: toObservable(inject(SkillTreesPageStore).rows),
+          source: toObservable(inject(SkillTreesPageStore).displayRows),
         }
       },
     }),
@@ -99,9 +107,16 @@ export class SkillTreesPageComponent {
   protected iconCreate = svgPlus
   protected iconMore = svgFilterList
   protected iconImport = svgFileImport
+  protected iconSkilLTree = svgSitemap
+  protected iconGlobe = svgGlobe
+  protected iconEmpty = svgEmptySet
+
   protected tags = this.store.tags
   protected tagsAreActive = computed(() => this.tags()?.some((it) => it.active))
+  protected isLoading = this.store.isLoading
   protected isAvailable = this.store.isAvailable
+  protected isEmpty = this.store.isEmpty
+  protected displayCount = this.store.displayCount
 
   public constructor(head: HtmlHeadService) {
     this.store.load(this.userId)
@@ -123,7 +138,7 @@ export class SkillTreesPageComponent {
     this.share.importItem(this.modal, this.router)
   }
 
-  protected async handleCreateItemClicked() {
+  protected async handleCreateClicked() {
     openWeaponTypePicker({
       injector: this.injector,
     })

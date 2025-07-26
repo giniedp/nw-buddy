@@ -13,7 +13,6 @@ import { IconsModule } from '~/ui/icons'
 import {
   svgArrowRightArrowLeft,
   svgBars,
-  svgChevronLeft,
   svgClipboard,
   svgExclamation,
   svgGlobe,
@@ -22,6 +21,7 @@ import {
   svgSliders,
   svgTags,
   svgTrashCan,
+  svgXmark,
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
@@ -31,6 +31,7 @@ import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillTreeEditorComponent, SkillTreeValue } from '~/widgets/skill-tree'
 import { GEARSET_TAGS } from '../gearsets/tags'
+import { SyncBadgeComponent } from '~/ui/sync-badge'
 
 @Component({
   selector: 'nwb-skill-tree-detail',
@@ -48,10 +49,11 @@ import { GEARSET_TAGS } from '../gearsets/tags'
     LayoutModule,
     AttributesEditorModule,
     ChipsInputModule,
+    SyncBadgeComponent,
   ],
   providers: [SkillTreeStore],
   host: {
-    class: 'block',
+    class: 'ion-page bg-base-300',
   },
 })
 export class SkillTreeDetailComponent {
@@ -77,7 +79,7 @@ export class SkillTreeDetailComponent {
   protected isConflict = this.store.isSyncConflict
   protected canImport = this.store.isImportable
 
-  protected iconBack = svgChevronLeft
+  protected iconBack = svgXmark
   protected iconReset = svgArrowRightArrowLeft
   protected iconMenu = svgBars
   protected iconAttrs = svgSliders
@@ -127,7 +129,7 @@ export class SkillTreeDetailComponent {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Import Skill Tree',
-        body: 'Rename tree if needed',
+        label: 'Name',
         value: record.name,
         positive: 'Import',
         negative: 'Cancel',
@@ -318,7 +320,7 @@ export class SkillTreeDetailComponent {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create copy',
-        body: 'New skill-tree name',
+        label: 'Name',
         value: `${this.record().name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',

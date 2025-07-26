@@ -6,24 +6,16 @@
   [title]="recordName()"
 >
   {{ recordName() }}
-  @if (state.isOwned()) {
+  @if (state.isOwned() && state.isSyncable()) {
     <div class="absolute bottom-0 right-0 flex flex-row items-center gap-2 p-2">
-      @if (state.isSyncable() && !state.isSyncComplete()) {
-        <span
-          class="badge badge-xs"
-          [class.badge-success]="state.isSyncComplete()"
-          [class.badge-warning]="state.isSyncPending()"
-          [class.badge-error]="state.isSyncConflict()"
-          [class.animate-ping]="state.isSyncPending()"
-        ></span>
-      }
-      @if (state.isPublished()) {
-        <nwb-icon
-          [icon]="iconGlobe"
-          class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
-          [attr.data-tip]="'Published'"
-        />
-      }
+      <nwb-sync-badge
+        class="opacity-0"
+        [class.opacity-100]="state.isPublished() || state.isSyncPending() || state.isSyncConflict()"
+        [published]="state.isPublished()"
+        [pending]="state.isSyncPending()"
+        [conflict]="state.isSyncConflict()"
+        [loading]="state.isSyncPending()"
+      />
     </div>
   }
 </h3>

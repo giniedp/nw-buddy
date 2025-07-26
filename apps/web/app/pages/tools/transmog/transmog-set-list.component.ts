@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
-import { filter, switchMap } from 'rxjs'
+import { debounceTime, filter, switchMap } from 'rxjs'
 import { BackendService } from '~/data/backend'
 import { TransmogRecord, TransmogsService } from '~/data/transmogs'
 import { NwModule } from '~/nw'
-import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
+import { DataViewModule } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
+import { svgEmptySet, svgFileImport, svgFilterList, svgGlobe, svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -68,7 +68,8 @@ export class TransmogSetListComponent {
   private store = inject(TransmogCreationsListPageStore)
   private modal = inject(ModalService)
 
-  protected search = inject(QuicksearchService)
+  protected quicksearch = inject(QuicksearchService)
+  protected search = toSignal(this.quicksearch.query$.pipe(debounceTime(500)))
 
   protected title = 'Transmog Creations'
   protected filterParam = 'filter'
@@ -91,16 +92,22 @@ export class TransmogSetListComponent {
   protected iconCreate = svgPlus
   protected iconMore = svgFilterList
   protected iconImport = svgFileImport
+  protected iconGlobe = svgGlobe
+  protected iconEmpty = svgEmptySet
+
   protected tags = this.store.tags
   protected tagsAreActive = computed(() => this.tags()?.some((it) => it.active))
-  protected isAvailable = this.store.isAvailable
+  protected items = this.store.displayRecords
   protected isLoading = this.store.isLoading
-  protected isEmpty = computed(() => !this.items()?.length)
-  protected items = this.store.filteredRecords
+  protected isAvailable = this.store.isAvailable
+  protected totalCount = this.store.totalCount
+  protected displayCount = this.store.displayCount
+  protected isEmpty = this.store.isEmpty
   protected trackBy = (it: TransmogRecord) => it.id
 
   public constructor(head: HtmlHeadService) {
     this.store.connectUser(this.userId)
+    this.store.connectSearch(this.search)
     head.updateMetadata({
       title: 'Transmog Creations',
       description: 'A transmog creation tool for New World.',
@@ -129,11 +136,11 @@ export class TransmogSetListComponent {
       })
   }
 
-  protected createNew() {
+  protected handleCreateClicked() {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create',
-        body: 'Give it a name',
+        label: 'Name',
         value: `My New Transmog`,
         positive: 'Create',
         negative: 'Cancel',

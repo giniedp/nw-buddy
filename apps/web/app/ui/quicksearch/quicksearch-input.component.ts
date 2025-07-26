@@ -28,7 +28,7 @@ import { QuicksearchService } from './quicksearch.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, IconsModule],
   host: {
-    class: 'relative',
+    class: 'block',
   },
   animations: [
     trigger('fade', [

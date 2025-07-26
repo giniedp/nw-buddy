@@ -17,7 +17,7 @@ export function withGearsetMethods() {
     withMethods(({ gearset }) => {
       const gears = inject(GearsetsService)
       return {
-        clone: () => {
+        getCopy: () => {
           return makeCopy(gearset())
         },
         async patchSlot(slot: EquipSlotId, patchValue: string | Partial<ItemInstance>) {

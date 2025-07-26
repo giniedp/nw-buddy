@@ -21,18 +21,20 @@ export const GearsetsListPageStore = signalStore(
   withProps(({ userId }) => {
     const service = inject(GearsetsService)
     const backend = inject(BackendService)
-    const records = rxResource({
+    const recordsResource = rxResource({
       params: userId,
       stream: ({ params }) => service.observeRecords(params),
       defaultValue: [],
     })
 
+    const records = computed(() => (recordsResource.hasValue() ? recordsResource.value() : []))
     return {
-      records: computed(() => (records.hasValue() ? records.value() : [])),
-      isLoading: computed(() => records.isLoading()),
+      records,
+      isLoading: computed(() => recordsResource.isLoading()),
       isAvailable: computed(() => {
-        return userId() === 'local' || userId() === backend.session()?.id
+        return userId() === 'local' || userId() === backend.sessionUserId()
       }),
+      isEmpty: computed(() => !records().length),
     }
   }),
   withMethods((state) => {
@@ -52,7 +54,7 @@ export const GearsetsListPageStore = signalStore(
   }),
   withComputed(({ records, search, activeTags }) => {
     const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
-    const filteredRecords = computed(() => {
+    const displayRecords = computed(() => {
       let result = filterRecordsByTags(records(), activeTags())
       if (search()) {
         result = result.filter((it) => it.name.toLowerCase().includes(search().toLowerCase()))
@@ -61,7 +63,9 @@ export const GearsetsListPageStore = signalStore(
     })
     return {
       tags,
-      filteredRecords,
+      displayRecords,
+      totalCount: computed(() => records().length),
+      displayCount: computed(() => displayRecords().length),
     }
   }),
 )

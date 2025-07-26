@@ -33,7 +33,7 @@ import { environment } from 'apps/web/environments'
   imports: [CommonModule, FormsModule, IconsModule, OverlayModule, SearchResultsPanelComponent],
   hostDirectives: [CdkOverlayOrigin],
   host: {
-    class: 'relative',
+    class: 'block',
   },
   animations: [
     trigger('fade', [
@@ -52,11 +52,11 @@ export class GlobalSearchInputComponent
   @Input()
   public placeholder: string = 'Search'
 
-  public readonly value$ = this.selectSignal(({ query }) => query)
-  public readonly isPanelOpen$ = this.selectSignal(({ isPanelOpen }) => isPanelOpen)
-  public readonly isLoading$ = this.selectSignal(({ isLoading }) => isLoading)
-  public readonly hasResults$ = this.selectSignal(({ results }) => results?.length > 0)
-  public readonly results$ = this.selectSignal(({ results }) => results)
+  public readonly value = this.selectSignal(({ query }) => query)
+  public readonly isPanelOpen = this.selectSignal(({ isPanelOpen }) => isPanelOpen)
+  public readonly isLoading = this.selectSignal(({ isLoading }) => isLoading)
+  public readonly hasResults = this.selectSignal(({ results }) => results?.length > 0)
+  public readonly results = this.selectSignal(({ results }) => results)
 
   protected svgSearch = svgMagnifyingGlass
   protected svgXmark = svgXmark
@@ -117,7 +117,7 @@ export class GlobalSearchInputComponent
   }
 
   protected closePanel() {
-    if (this.isPanelOpen$()) {
+    if (this.isPanelOpen()) {
       this.patchState({ isPanelOpen: false })
     }
   }
@@ -127,7 +127,7 @@ export class GlobalSearchInputComponent
   }
 
   protected async onFocus() {
-    if (this.hasResults$()) {
+    if (this.hasResults()) {
       this.openPanel()
     }
   }

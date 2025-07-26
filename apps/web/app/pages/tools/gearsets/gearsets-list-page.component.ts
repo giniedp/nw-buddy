@@ -8,7 +8,16 @@ import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgBars, svgFileImport, svgFilterList, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import {
+  svgBars,
+  svgEmptySet,
+  svgFileImport,
+  svgFilterList,
+  svgGlobe,
+  svgHelmetBattle,
+  svgPlus,
+  svgTrashCan,
+} from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
@@ -44,6 +53,9 @@ export class GearsetsListPageComponent {
   protected iconMore = svgFilterList
   protected iconMenu = svgBars
   protected iconDelete = svgTrashCan
+  protected iconGlobe = svgGlobe
+  protected iconEmpty = svgEmptySet
+  protected iconGearset = svgHelmetBattle
 
   private backend = inject(BackendService)
   private service = inject(GearsetsService)
@@ -57,7 +69,12 @@ export class GearsetsListPageComponent {
 
   protected tags = this.store.tags
   protected isTagFilterActive = computed(() => this.store.tags()?.some((it) => it.active))
-  protected items = this.store.filteredRecords
+  protected items = this.store.displayRecords
+  protected isLoading = this.store.isLoading
+  protected isAvailable = this.store.isAvailable
+  protected totalCount = this.store.totalCount
+  protected displayCount = this.store.displayCount
+  protected isEmpty = this.store.isEmpty
   protected trackBy = (it: GearsetRecord) => it.id
 
   public constructor() {
@@ -78,8 +95,8 @@ export class GearsetsListPageComponent {
   protected async handleCreateClicked() {
     PromptDialogComponent.open(this.modal, {
       inputs: {
-        title: 'Create new set',
-        body: 'Name for the new gearset',
+        title: 'Create new gearset',
+        label: 'Name',
         value: `New Gearset`,
         positive: 'Create',
         negative: 'Cancel',

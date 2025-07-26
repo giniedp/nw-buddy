@@ -19,21 +19,23 @@ export const SkillTreesPageStore = signalStore(
     const db = injectNwData()
     const store = inject(SkillTreesService)
     const backend = inject(BackendService)
-    const records = rxResource({
+    const recordsResource = rxResource({
       params: userId,
       stream: ({ params }) => store.observeRecords(params),
       defaultValue: [],
     })
-    const abilities = resource({
+    const abilitiesResource = resource({
       loader: () => db.abilitiesByIdMap(),
     })
+    const records = computed(() => (recordsResource.hasValue() ? recordsResource.value() : []))
     return {
-      records: computed(() => (records.hasValue() ? records.value() : [])),
-      abilities: computed(() => (abilities.hasValue() ? abilities.value() : null)),
-      isLoading: computed(() => records.isLoading() || abilities.isLoading()),
+      records,
+      abilities: computed(() => (abilitiesResource.hasValue() ? abilitiesResource.value() : null)),
+      isLoading: computed(() => recordsResource.isLoading() || abilitiesResource.isLoading()),
       isAvailable: computed(() => {
-        return userId() === 'local' || userId() === backend.session()?.id
+        return userId() === 'local' || userId() === backend.sessionUserId()
       }),
+      isEmpty: computed(() => !records().length),
     }
   }),
   withMethods((state) => {
@@ -51,10 +53,12 @@ export const SkillTreesPageStore = signalStore(
   withComputed(({ records, activeTags, abilities }) => {
     const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
     const filteredRecords = computed(() => filterRecordsByTags(records(), activeTags()))
-    const rows = computed(() => buildSkillTreeRows(filteredRecords(), abilities()))
+    const displayRows = computed(() => buildSkillTreeRows(filteredRecords(), abilities()))
     return {
       tags,
-      rows,
+      displayRows,
+      totalCount: computed(() => records().length),
+      displayCount: computed(() => displayRows().length),
     }
   }),
 )

@@ -57,7 +57,7 @@ export class GearsetsSharePageComponent {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Import',
-        body: 'New gearset name',
+        label: 'Name',
         value: record.name,
         positive: 'Import',
         negative: 'Cancel',

@@ -7,6 +7,7 @@ import { autoSync } from '../backend/auto-sync'
 import { GearsetRecord } from '../gearsets/types'
 import { injectSkillTreesDB } from './skill-trees.db'
 import { SkillTree, SkillTreeRecord } from './types'
+import { LOCAL_USER_ID } from '../constants'
 
 @Injectable({ providedIn: 'root' })
 export class SkillTreesService {
@@ -39,13 +40,14 @@ export class SkillTreesService {
   }
 
   public observeCount(userId: string) {
-    userId ||= 'local'
+    userId ||= LOCAL_USER_ID
     return this.table.observeWhereCount({ userId })
   }
 
   public observeRecords(userId: string) {
-    if (userId === 'local' || !userId) {
-      return this.table.observeWhere({ userId: 'local' })
+    userId ||= LOCAL_USER_ID
+    if (userId === LOCAL_USER_ID) {
+      return this.table.observeWhere({ userId })
     }
     return this.ready$.pipe(
       switchMap((ready) => (ready ? this.userId$ : NEVER)),
@@ -64,9 +66,13 @@ export class SkillTreesService {
   }
 
   public observeRecord({ userId, id }: { userId: string; id: string }) {
+    userId ||= LOCAL_USER_ID
+    if (userId === LOCAL_USER_ID) {
+      return this.table.observeById(id)
+    }
     return this.userId$.pipe(
       switchMap((localUserId) => {
-        if (userId === 'local' || (userId || '') === (localUserId || '')) {
+        if (userId === localUserId) {
           return this.table.observeById(id)
         }
         if (this.backend.isEnabled()) {

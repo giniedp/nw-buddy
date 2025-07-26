@@ -1,10 +1,8 @@
-import { ActivatedRouteSnapshot, Routes } from '@angular/router'
+import { Routes } from '@angular/router'
 import { SkillTreeDetailComponent } from './skill-tree-detail.component'
 import { SkillTreeEmbedComponent } from './skill-tree-embed.component'
 import { SkillTreeShareComponent } from './skill-tree-share.component'
 import { SkillTreesPageComponent } from './skill-trees-page.component'
-import { inject } from '@angular/core'
-import { BackendService } from '~/data/backend'
 
 export const ROUTES: Routes = [
   {
