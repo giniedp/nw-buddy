@@ -76,7 +76,7 @@ export class TransmogsService {
         return of(null)
       }),
       catchError((error) => {
-        console.error('Error observing skill build record:', error)
+        console.error('Error transmog record:', error)
         return of(null)
       }),
     )

@@ -3,43 +3,47 @@
     <a class="btn btn-ghost btn-square" [routerLink]="'..'" slot="start">
       <nwb-icon [icon]="iconBack" class="w-5 h-5" />
     </a>
-    <label class="input input-bordered w-full h-8 my-1 flex items-center gap-1">
-      <input
-        type="text"
-        class="grow"
-        maxlength="100"
-        [ngModel]="record()?.name"
-        (ngModelChange)="handleNameChange($event)"
-        [ngModelOptions]="{ updateOn: 'blur' }"
-      />
-      @if (isEditable()) {
-        @if (isSyncPending()) {
-          <nwb-icon
-            [icon]="iconInfo"
-            class="w-4 h-4 text-warning cursor-help tooltip tooltip-left"
-            [attr.data-tip]="'Sync pending'"
-          />
+    @if (record()) {
+      <label class="input input-bordered w-full h-8 my-1 flex items-center gap-1">
+        <input
+          type="text"
+          class="grow"
+          maxlength="100"
+          [disabled]="!isEditable()"
+          [ngModel]="record().name"
+          (ngModelChange)="handleNameChange($event)"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+        />
+        @if (isEditable()) {
+          @if (isSyncPending()) {
+            <nwb-icon
+              [icon]="iconInfo"
+              class="w-4 h-4 text-warning cursor-help tooltip tooltip-left"
+              [attr.data-tip]="'Sync pending'"
+            />
+          }
+          @if (isSyncConflict()) {
+            <nwb-icon
+              [icon]="iconInfo"
+              class="w-4 h-4 text-error cursor-help tooltip tooltip-left"
+              [attr.data-tip]="'Sync conflict'"
+            />
+          }
+          @if (isPublic()) {
+            <nwb-icon
+              [icon]="iconGlobe"
+              class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+              [attr.data-tip]="'Published'"
+            />
+          }
         }
-        @if (isSyncConflict()) {
-          <nwb-icon
-            [icon]="iconInfo"
-            class="w-4 h-4 text-error cursor-help tooltip tooltip-left"
-            [attr.data-tip]="'Sync conflict'"
-          />
-        }
-        @if (isPublic()) {
-          <nwb-icon
-            [icon]="iconGlobe"
-            class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
-            [attr.data-tip]="'Published'"
-          />
-        }
-      }
-    </label>
+      </label>
+    }
     <div slot="end">
       <button
         class="join-item btn btn-square btn-ghost"
-        (click)="editor.capturePhoto()"
+        (click)="editor().capturePhoto()"
+        [disabled]="!record()"
         [tooltip]="'Capture Screenshot'"
       >
         <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
@@ -54,7 +58,50 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <nwb-transmog-editor [ngModel]="editorState()" (ngModelChange)="handleStateChange($event)" #editor />
+  @if (isLoading()) {
+    <div class="h-full flex items-center justify-center">
+      <div class="alert alert-info alert-soft">
+        <div>
+          <h3 class="font-bold">Loading</h3>
+        </div>
+      </div>
+    </div>
+  } @else if (hasError()) {
+    <div class="h-full flex items-center justify-center">
+      <div class="alert alert-error alert-soft">
+        <div>
+          <h3 class="font-bold">Error!</h3>
+          <div class="text-xs">The set could not be found or loaded.</div>
+        </div>
+      </div>
+    </div>
+  } @else if (!record()) {
+    <div class="h-full flex items-center justify-center">
+      <div class="alert alert-error alert-soft">
+        <div>
+          <h3 class="font-bold">Error!</h3>
+          <div class="text-xs">The set could not be found or loaded.</div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <nwb-transmog-editor [ngModel]="editorState()" (ngModelChange)="handleStateChange($event)" #editor>
+      @if (!isEditable()) {
+        <div class="alert mb-4" header>
+          <nwb-icon
+            [icon]="iconGlobe"
+            class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+            [attr.data-tip]="'Published'"
+          />
+          <div>
+            <h3 class="font-bold">Public transmog</h3>
+            <div class="text-xs">You can import this item into your collection.</div>
+          </div>
+          <button class="btn btn-primary btn-sm">Import</button>
+        </div>
+      }
+    </nwb-transmog-editor>
+  }
 </ion-content>
 
 <ng-template #menu>

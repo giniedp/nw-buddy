@@ -56,8 +56,8 @@
 
 <ng-template #tplDetail>
   <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
-    <nwb-transmog-editor-panel class="w-full">
-      <ng-content />
-    </nwb-transmog-editor-panel>
+    <ng-content select='[header]' />
+    <nwb-transmog-editor-panel class="w-full" [disabled]="isDisabled()" />
+    <ng-content />
   </ion-content>
 </ng-template>

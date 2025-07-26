@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core'
+import { Component, computed, effect, inject, viewChild } from '@angular/core'
 import { rxResource, toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
@@ -86,6 +86,7 @@ export class TransmogSetDetailComponent {
   protected isSignedIn = this.backend.isSignedIn
   protected isLoading = this.resource.isLoading
   protected hasError = computed(() => this.resource.error())
+  protected editor = viewChild(TransmogEditorComponent)
 
   protected editorState = computed((): TransmogEditorState => {
     if (!this.record()) {

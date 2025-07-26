@@ -140,7 +140,9 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
   public constructor() {
     effect(() => setTimeout(() => this.onCanvasAvailable(this.canvas()?.nativeElement)))
     this.store.changed.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.onChange(this.store.getState())
+      if (!this.isDisabled()) {
+        this.onChange(this.store.getState())
+      }
     })
   }
 
@@ -157,6 +159,7 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
   }
 
   public setDisabledState?(isDisabled: boolean): void {
+    console.log('setDisabled', isDisabled)
     this.isDisabled.set(isDisabled)
   }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, computed, inject, input } from '@angular/core'
 import { EquipSlot, getEquipSlotForId } from '@nw-data/common'
 import { DyeColorData } from '@nw-data/generated'
 import { filter, map } from 'rxjs'
@@ -40,7 +40,9 @@ export class TransmogEditorPanelComponent {
   protected iconEye = svgEye
   protected iconEyeSlash = svgEyeSlash
 
+  public disabled = input(false)
   protected isMale = computed(() => this.store.gender() === 'male')
+  protected isDebug = computed(() => this.store.debug())
   protected slots = computed(() => {
     const slotIds: TransmogSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet']
     return slotIds.map((id) => {
