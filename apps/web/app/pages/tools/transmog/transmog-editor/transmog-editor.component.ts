@@ -18,7 +18,6 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
 import { getEquipSlotForId } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCamera, svgLink } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
@@ -67,7 +66,7 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
   private screenshots = inject(ScreenshotService)
 
   protected isLoading = signal(true)
-  protected timeOfDay = signal(0.25)
+  protected timeOfDay = signal(1.0)
 
   private store = inject(TransmogEditorStore)
   protected isBooted = signal(false)
@@ -84,9 +83,8 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
 
-  private modelPlayerMale = 'https://cdn.nw-buddy.de/models-1k/objects/characters/player/male/player_male.glb'
-  private modelPlayerFemale = 'https://cdn.nw-buddy.de/models-1k/objects/characters/player/female/player_female.glb'
-  private modelScene = location.origin + '/assets/models/frontend.glb'
+  private modelPlayerMale = '/assets/models/player_male.glb'
+  private modelPlayerFemale = '/assets/models/player_female.glb'
 
   protected slots = computed(() => {
     const slotIds = ['head', 'chest', 'hands', 'legs', 'feet']
@@ -175,9 +173,7 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
       .subscribe(() => {
         this.viewer.resize()
       })
-    this.viewer.useModel('level', this.modelScene).then(() => {
-      this.isLoading.set(false)
-    })
+    this.isLoading.set(false)
     effect(
       async () => {
         await this.viewer.useModel('head', this.store.headModel())

@@ -21,6 +21,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { injectParentRouteParam, injectRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { TransmogEditorComponent, TransmogEditorState } from './transmog-editor'
+import { SyncBadgeComponent } from '~/ui/sync-badge'
 
 @Component({
   selector: 'nwb-transmog-set-detail',
@@ -33,6 +34,7 @@ import { TransmogEditorComponent, TransmogEditorState } from './transmog-editor'
     RouterModule,
     TooltipModule,
     ScreenshotModule,
+    SyncBadgeComponent
   ],
   providers: [TransmogStore],
   host: {
@@ -83,6 +85,7 @@ export class TransmogSetDetailComponent {
   protected isOwned = this.store.isOwned
   protected isSyncPending = this.store.isSyncPending
   protected isSyncConflict = this.store.isSyncConflict
+  protected isSyncable = this.store.isSyncable
   protected isSignedIn = this.backend.isSignedIn
   protected isLoading = this.resource.isLoading
   protected hasError = computed(() => this.resource.error())

@@ -123,22 +123,22 @@ export const TransmogEditorStore = signalStore(
     const hideNakedMeshes = computed(() => {
       const list: string[] = []
       if (head.flag()) {
-        list.push('female_naked_head_caucasian', 'male_naked_head_caucasian')
+        list.push('head1_primitive0')
       }
       if ((Number(chest.flag()) & 1) === 1) {
-        list.push('female_naked_chest', 'male_naked_chest')
+        list.push('shirt1')
       }
       if ((Number(chest.flag()) & 2) === 2) {
-        list.push('female_naked_chest_sleeveless', 'male_naked_chest_sleeveless')
+        list.push('shirt2')
       }
       if (hands.flag()) {
-        list.push('female_naked_forearms', 'male_naked_forearms')
+        list.push('gloves1')
       }
       if (legs.flag()) {
-        list.push('female_naked_thighs', 'male_naked_thighs')
+        list.push('pants1')
       }
       if (feet.flag()) {
-        list.push('female_naked_calves', 'male_naked_calves')
+        list.push('boots1')
       }
       return list
     })
