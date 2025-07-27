@@ -17,6 +17,7 @@ import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgBars, svgGlobe, svgTrashCan } from '~/ui/icons/svg'
+import { SyncBadgeComponent } from '~/ui/sync-badge'
 import { EmptyComponent } from '~/widgets/empty'
 import { GearsetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 
@@ -25,7 +26,15 @@ import { GearsetLoadoutSlotComponent } from './gearset-loadout-slot.component'
   templateUrl: './gearset-loadout.component.html',
   styleUrl: './gearset-loadout.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GearsetLoadoutSlotComponent, RouterModule, IconsModule, CdkMenuModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    GearsetLoadoutSlotComponent,
+    RouterModule,
+    IconsModule,
+    CdkMenuModule,
+    SyncBadgeComponent,
+  ],
   providers: [GearsetStore],
   host: {
     class: 'w-full',

@@ -31,6 +31,8 @@ export class ItemsService {
     buckets: this.nwdb.perkBucketsByIdMap(),
   })
 
+  public isSignedIn = this.backend.isSignedIn
+
   public constructor() {
     this.sync()
   }

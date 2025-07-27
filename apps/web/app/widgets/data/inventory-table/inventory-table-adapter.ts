@@ -107,7 +107,7 @@ export function buildCommonInventoryGridOptions(
       inventoryColAttributeMods(util),
       inventoryColItemType(util),
       inventoryColItemClass(util),
-      inventoryColSync(util),
+      options.store.isSignedIn() ? inventoryColSync(util) : null,
       inventoryColActions(util, {
         destroyAction: (e: Event, data: InventoryTableRecord) => {
           e.stopImmediatePropagation()
@@ -127,7 +127,7 @@ export function buildCommonInventoryGridOptions(
           })
         },
       }),
-    ],
+    ].filter((it) => !!it),
   }
 
   return result

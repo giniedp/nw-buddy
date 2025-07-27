@@ -11,25 +11,15 @@
       } @else {
         New Gearset
       }
-      @if (isOwned()) {
-        <div class="absolute bottom-0 right-0 flex flex-row items-center gap-2 p-2">
-          @if (isSyncable() && !isSyncComplete()) {
-            <span
-              class="badge badge-xs"
-              [class.badge-success]="isSyncComplete()"
-              [class.badge-warning]="isSyncPending()"
-              [class.badge-error]="isSyncConflict()"
-              [class.animate-ping]="isSyncPending()"
-            ></span>
-          }
-          @if (isPublished()) {
-            <nwb-icon
-              [icon]="iconGlobe"
-              class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
-              [attr.data-tip]="'Published'"
-            />
-          }
-        </div>
+      @if (isOwned() && isSyncable()) {
+        <nwb-sync-badge
+          class="absolute bottom-2 right-2 opacity-0"
+          [class.opacity-100]="isPublished() || isSyncPending() || isSyncConflict()"
+          [published]="isPublished()"
+          [pending]="isSyncPending()"
+          [conflict]="isSyncConflict()"
+          [loading]="isSyncPending()"
+        />
       }
     </h3>
     <div class="h-8 flex flex-row gap-1 items-center">

@@ -19,7 +19,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
   imports: [CommonModule, NwModule, ItemDetailModule, IconsModule, CdkMenuModule, TooltipModule],
   providers: [],
   host: {
-    class: 'inline-block overflow-clip relative',
+    class: 'block w-14 overflow-clip relative',
   },
 })
 export class TransmogLoadoutSlotComponent {

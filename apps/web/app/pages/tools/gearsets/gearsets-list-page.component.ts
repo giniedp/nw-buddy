@@ -67,6 +67,7 @@ export class GearsetsListPageComponent {
   protected userId = toSignal(injectRouteParam('userid'))
   protected search = toSignal(this.quicksearch.query$.pipe(debounceTime(500)))
 
+  protected isSignedIn = this.backend.isSignedIn
   protected tags = this.store.tags
   protected isTagFilterActive = computed(() => this.store.tags()?.some((it) => it.active))
   protected items = this.store.displayRecords
@@ -129,6 +130,18 @@ export class GearsetsListPageComponent {
       .subscribe(() => {
         this.service.delete(gearset.id)
       })
+  }
+
+  protected handlePublishClicked(gearset: GearsetRecord) {
+    this.service.update(gearset.id, {
+      status: 'public',
+    })
+  }
+
+  protected handleUnpublishClicked(gearset: GearsetRecord) {
+    this.service.update(gearset.id, {
+      status: 'private',
+    })
   }
 
   protected toggleTag(value: string) {

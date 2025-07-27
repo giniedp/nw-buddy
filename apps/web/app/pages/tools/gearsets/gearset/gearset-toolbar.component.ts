@@ -459,6 +459,7 @@ export class GearsetToolbarComponent {
       selection: [this.vsQueryParam.value() || null],
       dataView: {
         adapter: GearsetTableAdapter,
+        source: this.gearService.observeRows(this.backend.sessionUserId()),
       },
       injector: this.injector,
     })
