@@ -1,6 +1,5 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule, NgClass } from '@angular/common'
-import { Component, ElementRef, HostBinding, Injector, Input, TemplateRef, Type, inject } from '@angular/core'
+import { Component, ElementRef, Injector, Input, TemplateRef, Type, inject } from '@angular/core'
 import { twMerge } from 'tailwind-merge'
 import { NwHtmlService } from '~/nw/nw-html.service'
 
@@ -31,7 +30,7 @@ const DEFAULT_CLASS = [
   host: {
     '[class.tooltip-active]': 'active',
     '[style.--tooltip-fade-time.ms]': 'fadeTime',
-  }
+  },
 })
 export class TooltipComponent {
   private html = inject(NwHtmlService)

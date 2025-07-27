@@ -16,18 +16,28 @@ import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
+  delay,
+  delayWhen,
   distinctUntilChanged,
+  EMPTY,
+  filter,
+  from,
   fromEvent,
   map,
   merge,
   NEVER,
+  Observable,
   of,
+  race,
+  startWith,
   Subject,
   switchMap,
   take,
   takeUntil,
+  tap,
+  timeout,
 } from 'rxjs'
-import { shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount, tapDebug } from '~/utils'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { TooltipComponent } from './tooltip.component'
 
@@ -40,7 +50,6 @@ export declare type TooltipDirection =
   | `${TooltipDirectionX}-${TooltipDirectionY}`
   | `${TooltipDirectionY}-${TooltipDirectionX}`
   | 'auto'
-export declare type TooltipTriggerType = 'click' | 'hover'
 export declare type TooltipScrollStrategy = 'close' | 'reposition'
 
 @Directive({
@@ -100,12 +109,7 @@ export class TooltipDirective {
   }
 
   private attachTooltip(): void {
-    whenActive({
-      element: this.elRef.nativeElement,
-      startEvents: ['mouseenter', 'focus'],
-      endEvents: ['mouseleave', 'blur'],
-      options: { passive: true },
-    })
+    whenActive(this.elRef.nativeElement)
       .pipe(distinctUntilChanged())
       .pipe(takeUntilDestroyed())
       .subscribe({
@@ -206,12 +210,7 @@ export class TooltipDirective {
         this.overlayRef?.updatePosition()
       })
 
-    whenActive({
-      element: this.portalRef.location.nativeElement,
-      startEvents: ['mouseenter', 'focus'],
-      endEvents: ['mouseleave', 'blur'],
-      options: { passive: true },
-    })
+    whenActive(this.portalRef.location.nativeElement)
       .pipe(takeUntil(destroy$))
       .subscribe({
         next: (value) => this.overlayActive$.next(value),
@@ -402,31 +401,88 @@ export class TooltipDirective {
   }
 }
 
-function fromEvents(events: string[], el: HTMLElement, options: EventListenerOptions) {
-  return merge(...events.map((it) => fromEvent(el, it, options)))
-}
+function whenActive(element: HTMLElement): Observable<boolean> {
+  const longpressTime = 300
+  const mouseEnter$ = fromEvent(element, 'mouseenter', { passive: true })
+  const mouseLeave$ = fromEvent(element, 'mouseleave', { passive: true })
+  const touchStart$ = fromEvent(element, 'touchstart', { passive: true })
+  const touchEnd$ = fromEvent(element, 'touchend', { passive: true })
+  const blur$ = fromEvent(element, 'blur', { passive: true })
+  const keydown$ = fromEvent(document, 'keydown', { capture: true })
+  const keyup$ = fromEvent(document, 'keyup', { capture: true })
+  const clickOutside$ = fromEvent(document, 'click', { passive: true }).pipe(
+    filter((e) => !element.contains(e.target as Node)),
+  )
 
-function whenActive({
-  element,
-  startEvents,
-  endEvents,
-  options,
-}: {
-  element: HTMLElement
-  startEvents: string[]
-  endEvents: string[]
-  options: EventListenerOptions
-}) {
-  return fromEvents(startEvents, element, options).pipe(
-    switchMap(() => {
-      return merge(
-        of(true),
-        fromEvents(endEvents, element, options).pipe(
+  let isTouch = false
+
+  const end$ = merge(mouseLeave$, touchEnd$, blur$)
+  const start$ = merge(mouseEnter$, touchStart$).pipe(
+    switchMap((e) => {
+      // detect if we're on a touch device
+      isTouch ||= e.type === 'touchstart'
+      if (isTouch && e.type !== 'touchstart') {
+        // this is to ingore late 'mouseenter' events, coming from touch input
+        return NEVER
+      }
+
+      const cancel$ = merge(mouseLeave$, touchEnd$).pipe(map(() => false))
+      let activate$: Observable<boolean>
+
+      if (!isTouch) {
+        // instant trigger e.g. desktop & mouse usage
+        // but wait until mouse holds still
+        activate$ = fromEvent(element, 'mousemove').pipe(
+          startWith(null),
+          debounceTime(50),
+          map(() => true),
           take(1),
-          map(() => false),
-        ),
+        )
+      } else {
+        // delayed trigger to simulate long press
+        activate$ = of(true).pipe(delay(longpressTime))
+      }
+
+      return race(activate$, cancel$).pipe(
+        take(1),
+        filter((started) => !!started),
       )
     }),
+  )
+
+  const isHolding$ = merge(keydown$, keyup$).pipe(
+    map((e) => {
+      e.preventDefault()
+      return (e as KeyboardEvent).altKey
+    }),
+    distinctUntilChanged(),
+    startWith(false),
+  )
+
+  return start$.pipe(
+    switchMap(() => {
+      return combineLatest({
+        isHolding: isHolding$,
+        ended: end$.pipe(
+          map(() => true),
+          startWith(false),
+        ),
+        cancelled: clickOutside$.pipe(
+          map(() => true),
+          startWith(false),
+        ),
+      }).pipe(
+        filter(({ isHolding, ended, cancelled }) => !isHolding && (ended || cancelled)),
+        map(() => {
+          // reset touch memo, so we're not stuck with one input method
+          isTouch = false
+          return false
+        }),
+        take(1),
+        startWith(true),
+      )
+    }),
+    distinctUntilChanged(),
   )
 }
 
@@ -434,4 +490,11 @@ export interface EventListenerOptions {
   capture?: boolean
   passive?: boolean
   once?: boolean
+}
+
+export interface ActivationConfig {
+  longpressTime: number
+  startEvents: string[]
+  endEvents: string[]
+  options: EventListenerOptions
 }
