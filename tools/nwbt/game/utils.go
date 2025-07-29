@@ -338,6 +338,10 @@ func ParseEncounterName(name string) string {
 		// e.g.: "worldevent_enc_worldboss_admiralbrute"
 		return "worldboss"
 	}
+	if strings.Contains(name, "summermedley") {
+		// e.g.: "enc_summermedley_activity_maudlinbugwaltz_00"
+		return "summermedley"
+	}
 	if strings.Contains(name, "springtide") {
 		// e.g.: "enc_springtide_activity_wispybloom_01"
 		return "springtide"

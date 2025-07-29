@@ -1,6 +1,7 @@
 package distribution
 
 import (
+	"bytes"
 	"io"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
@@ -50,6 +51,11 @@ func Parse(data []byte, file string) (res *Document, err error) {
 	}
 
 	r := buf.NewReaderLE(data)
+	peek := r.MustReadBytes(4)
+	if !bytes.Equal(peek, []byte{0xD6, 0xB9, 0x01, 0x00}) {
+		r.SeekRelative(-4)
+	}
+
 	count := int(r.MustReadUint16())
 	if count > 0 {
 		res.Slices = readStringArray(r, count)
