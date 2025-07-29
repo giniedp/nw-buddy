@@ -29,6 +29,7 @@ export interface TagsInputPaneState {
 export class ChipsInputPaneComponent implements ControlValueAccessor {
   public tags = input<string[]>([])
   public placeholder = input<string>(undefined)
+  public maxLength = input<number>(undefined)
 
   protected selection = signal<string[]>([])
   protected paneTags = computed(() => {

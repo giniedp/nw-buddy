@@ -21,6 +21,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 export class ChipsInputComponent implements ControlValueAccessor {
   public readonly placeholder = input<string>('')
   public readonly separator = input<string[]>([',', 'Enter'])
+  public readonly maxLength = input<number>(undefined)
   readonly input = viewChild<ElementRef<HTMLInputElement>>('input')
 
   protected get inputEl() {

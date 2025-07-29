@@ -1,21 +1,10 @@
-import { inject, Injectable, signal } from '@angular/core'
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { computed, inject, Injectable, resource, signal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { EquipSlotId, getItemPerkInfos, ItemPerkInfo, PerkBucket } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { MasterItemDefinitions, PerkData } from '@nw-data/generated'
-import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  NEVER,
-  Observable,
-  of,
-  queueScheduler,
-  subscribeOn,
-  switchMap,
-  tap,
-} from 'rxjs'
+import { combineLatest, distinctUntilChanged, map, NEVER, Observable, of, switchMap, tap } from 'rxjs'
 import { combineLatestOrEmpty } from '~/utils'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
@@ -25,9 +14,22 @@ import { tableIndexBy } from '../nw-data/dsl'
 import { injectGearsetsDB } from './gearsets.db'
 import { GearsetRecord } from './types'
 import { GearsetRow, selectGearsetRow } from './utils'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
 
-function whenReady() {}
+export interface TagSpec {
+  value: string
+  icon: string
+  color: string
+}
+
+export const GEARSET_TAGS = [
+  { value: 'PvP', icon: '', color: 'primary' },
+  { value: 'PvE', icon: '', color: 'success' },
+  { value: 'Tradeskill', icon: '', color: 'secondary' },
+  { value: 'Heal', icon: '', color: 'success' },
+  { value: 'Tank', icon: '', color: 'info' },
+  { value: 'Damage', icon: '', color: 'error' },
+]
+
 @Injectable({ providedIn: 'root' })
 export class GearsetsService {
   public readonly table = injectGearsetsDB()
@@ -38,6 +40,27 @@ export class GearsetsService {
   private itemsDb = inject(ItemsService)
   private ready = signal(false)
   private ready$ = toObservable(this.ready)
+
+  private tagsResource = resource({
+    loader: async () => {
+      const seasonIds = await this.nwdata.seasonIds(null).catch((): string[] => [])
+      return [
+        ...GEARSET_TAGS,
+        ...seasonIds
+          .map((value): TagSpec => {
+            return { value, icon: '', color: 'secondary' }
+          })
+          .reverse(),
+      ]
+    },
+  })
+
+  public tags = computed(() => {
+    if (this.tagsResource.hasValue()) {
+      return this.tagsResource.value()
+    }
+    return []
+  })
 
   public constructor() {
     this.sync()

@@ -2,7 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { Component, Injector, Input, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { Router, RouterModule } from '@angular/router'
 import { patchState } from '@ngrx/signals'
 import {
   EquipSlotId,
@@ -17,15 +17,7 @@ import {
 } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { filter, firstValueFrom, map, switchMap } from 'rxjs'
-import {
-  GearsetRecord,
-  GearsetStore,
-  GearsetsService,
-  ItemInstance,
-  ItemsService,
-  ResolvedItemPerkInfo,
-  injectNwData,
-} from '~/data'
+import { GearsetRecord, GearsetStore, GearsetsService, ItemInstance, ItemsService, ResolvedItemPerkInfo } from '~/data'
 import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { ShareDialogComponent } from '~/pages/share'
@@ -57,15 +49,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from '../dialogs'
 
-export const GEARSET_TAGS = [
-  { value: 'PvP', icon: '' },
-  { value: 'PvE', icon: '' },
-  { value: 'Tradeskill', icon: '' },
-  { value: 'Heal', icon: '' },
-  { value: 'Tank', icon: '' },
-  { value: 'Damage', icon: '' },
-]
-
 @Component({
   selector: 'nwb-gearset-toolbar',
   templateUrl: './gearset-toolbar.component.html',
@@ -90,7 +73,6 @@ export class GearsetToolbarComponent {
   private store = inject(GearsetStore)
   private injector = inject(Injector)
   private router = inject(Router)
-  private route = inject(ActivatedRoute)
   private vsQueryParam = queryParamModel('vs')
   private calcQueryParam = queryParamModel('calc')
   private gearService = inject(GearsetsService)
@@ -98,7 +80,6 @@ export class GearsetToolbarComponent {
   private itemsDb = inject(ItemsService)
   private modal = inject(ModalService)
   private platform = inject(PlatformService)
-  private db = injectNwData()
 
   protected iconCamera = svgCamera
   protected iconDelete = svgTrashCan
@@ -114,7 +95,7 @@ export class GearsetToolbarComponent {
   protected iconSwords = svgSwords
   protected iconGlobe = svgGlobe
   protected iconImport = svgFileImport
-  protected presetTags = GEARSET_TAGS.map((it) => it.value)
+  protected presetTags = computed(() => this.gearService.tags().map((it) => it.value))
   protected isTagEditorOpen = false
 
   protected gearset = this.store.gearset

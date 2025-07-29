@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, resource } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
+import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
@@ -55,12 +57,20 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   ],
 })
 export class SeasonPassPageComponent {
+  private db = injectNwData()
+  protected seasonIdsResource = resource({ loader: () => this.db.seasonIds(null) })
+  protected seasonIds = computed(() =>
+    this.seasonIdsResource.hasValue() ? this.seasonIdsResource.value().reverse() : [],
+  )
   protected title = 'Season Pass'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'season-pass-table'
   protected categoryParam = 'c'
-  protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || 'season7')
+  protected categoryParamValue = toSignal(injectRouteParam(this.categoryParam))
+  protected category = computed(() => {
+    return this.categoryParamValue() || this.seasonIds()[0]
+  })
 
   protected platform = inject(PlatformService)
   protected isLargeContent = selectSignal(injectBreakpoint('(min-width: 992px)'), (ok) => ok || this.platform.isServer)

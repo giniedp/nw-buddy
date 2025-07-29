@@ -17,6 +17,7 @@
   class="flex-1 input input-ghost input-xs placeholder-gray-500 placeholder-opacity-30 hover:placeholder-opacity-100"
   style="min-width: 60px"
   [placeholder]="placeholder()"
+  [maxLength]="maxLength()"
   type="text"
   (keydown)="onInputKey($event)"
   (blur)="onInputBlur($event)"

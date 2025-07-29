@@ -26,6 +26,7 @@ import { injectRouteParam } from '~/utils'
 import { GearsetsListPageStore } from './gearsets-list-page.store'
 //import { GearsetLoadoutItemComponent } from './loadout'
 import { GearsetLoadoutComponent } from '~/widgets/data/gearset-detail'
+import { LOCAL_USER_ID } from '~/data/constants'
 
 @Component({
   selector: 'nwb-gearsets-list-page',
@@ -84,7 +85,7 @@ export class GearsetsListPageComponent {
 
     effect(() => {
       const userId = this.backend.sessionUserId()
-      if (userId && this.userId() === 'local') {
+      if (userId && this.userId() === LOCAL_USER_ID) {
         this.router.navigate(['..', userId], { relativeTo: this.route })
       }
       if (!userId && this.userId() !== 'local') {

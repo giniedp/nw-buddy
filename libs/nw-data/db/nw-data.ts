@@ -5,6 +5,7 @@ import { NwDataSheets } from './nw-data-sheets'
 import { loadItemsTable } from './tables/items'
 import { backstoriesItemsById } from './views/backstories'
 import { resourceItemsForPerkId } from './views/perks'
+import { seasonIds } from './views/seasons'
 import { vitalsForGameMode } from './views/vitals'
 export { NwDataOptions } from './nw-data-loader'
 
@@ -27,6 +28,7 @@ export class NwData extends NwDataSheets {
 
   public loadItemsTable = bind(this, loadItemsTable)
   public listRecordVersions = listRecordVersions
+  public seasonIds = bind(this, seasonIds)
 
   public async fetchText(url: string): Promise<string> {
     return this.loader.fetch(url).then((res) => res.text())

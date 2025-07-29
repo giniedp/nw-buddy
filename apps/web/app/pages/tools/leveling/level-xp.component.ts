@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { CharacterStore } from '~/data'
+import { IconsModule } from '~/ui/icons'
+import { svgInfoCircle } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { LevelInputModule } from '~/ui/level-input'
 import { injectRouteParam } from '~/utils'
@@ -22,6 +24,7 @@ import { XpTableModule } from '~/widgets/xp-table'
     IonSegment,
     IonSegmentButton,
     RouterModule,
+    IconsModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -32,6 +35,7 @@ export class LevelXpComponent {
   protected char = inject(CharacterStore)
   protected level = this.char.level
   protected tab = toSignal(injectRouteParam('tab'))
+  protected infoIcon = svgInfoCircle
 
   protected updateLevel(value: number) {
     this.char.update({ level: value })

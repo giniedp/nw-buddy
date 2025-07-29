@@ -22,11 +22,17 @@
         />
       }
     </h3>
-    <div class="h-8 flex flex-row gap-1 items-center">
+    <div class="h-8 flex flex-row gap-1 items-center overflow-clip">
       @if (isLoaded() && gearset()) {
         <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
         <span class="font-caslon text-3xl leading-none font-bold">{{ gearScore() | number: '0.0-0' }}</span>
+        <div class="flex flex-row items-center justify-center gap-1 flex-wrap max-h-8 overflow-clip w-full">
+          @for (tag of gearset().tags; track $index) {
+            <span class="badge badge-xs badge-secondary bg-secondary/50">{{ tag }}</span>
+          }
+        </div>
       }
+
     </div>
     <div class="h-8">
       <ng-container [ngTemplateOutlet]="buttonTemplate()" />

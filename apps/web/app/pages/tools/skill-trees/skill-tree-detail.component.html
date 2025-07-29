@@ -188,6 +188,7 @@
   <ng-template #tplTags>
     <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
       <nwb-chips-input-pane
+        [maxLength]="25"
         [tags]="presetTags"
         [placeholder]="'custom tags'"
         [disabled]="!canEdit()"

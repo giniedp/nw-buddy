@@ -1,11 +1,14 @@
 import { HttpClient } from '@angular/common/http'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { catchError, combineLatest, defer, exhaustMap, map, of, timer } from 'rxjs'
 import { deployUrl, shareReplayRefCount } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 
 @Injectable({ providedIn: 'root' })
 export class VersionService {
+  private http = inject(HttpClient)
+  private platform = inject(PlatformService)
+
   public readonly currentVersion$ = of(this.platform.env.version)
   public readonly latestVersion$ = defer(() => timer(0, 1000 * 60 * 15))
     .pipe(exhaustMap(() => this.fetchVersion()))
@@ -17,13 +20,6 @@ export class VersionService {
   })
     .pipe(map(({ current, latest }) => !!current && !!latest && current !== latest))
     .pipe(shareReplayRefCount(1))
-
-  public constructor(
-    private http: HttpClient,
-    private platform: PlatformService,
-  ) {
-    //
-  }
 
   private fetchVersion() {
     if (this.platform.env.standalone) {
