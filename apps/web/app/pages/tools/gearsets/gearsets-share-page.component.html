@@ -1,10 +1,10 @@
-<ion-content [scrollY]="showGrid">
+<ion-content [scrollY]="showGrid" [class.ion-p-4]="showGrid">
   <div nwbEmbedHeight>
     <nwb-shared-content-loader
       [name]="paramName()"
       [cid]="paramCid()"
       (importClicked)="onImportClicked($event)"
-      [showImport]="!isEmbed"
+      [showImport]="false"
       [showGateways]="!isEmbed"
       [validType]="'gearset'"
       #loader
@@ -12,7 +12,7 @@
     @if (loader.record(); as record) {
       @if (showGrid) {
         <div nwbGearsetHost [gearset]="record">
-          <nwb-gearset-grid class="p-4" [disabled]="true" />
+          <nwb-gearset-grid [disabled]="true" />
         </div>
       } @else {
         <nwb-gearset-slider nwbGearsetHost [gearset]="record" />

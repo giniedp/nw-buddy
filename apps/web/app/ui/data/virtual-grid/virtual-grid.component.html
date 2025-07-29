@@ -3,10 +3,10 @@
 @defer (on timer(0.2s)) {
   <cdk-virtual-scroll-viewport
     [itemSize]="itemSize()"
+    [minBufferPx]="itemSize() * 2"
+    [maxBufferPx]="itemSize() * 3"
     class="overflow-hidden mx-auto"
     [style.width.px]="store.gridSize()"
-
-    #viewport
   >
     <div
       class="grid"
@@ -15,8 +15,8 @@
       [style.--nwb-vg-rows]="rowCount()"
       [style.--nwb-vg-height.px]="itemSize()"
     >
-      <ng-container *cdkVirtualFor="let row of rows(); trackBy: trackBy">
-        <ng-container [ngTemplateOutlet]="customRow?.template || tplRow" [ngTemplateOutletContext]="row"></ng-container>
+      <ng-container *cdkVirtualFor="let row of rows(); trackBy: trackRowBy;" >
+        <ng-container [ngTemplateOutlet]="customRow?.template || tplRow" [ngTemplateOutletContext]="row"/>
       </ng-container>
     </div>
   </cdk-virtual-scroll-viewport>
@@ -38,7 +38,7 @@
     </div>
   }
   @if (row.type === 'items') {
-    @for (cell of row.items; track $index) {
+    @for (cell of row.items; track trackCellBy(cell.index, cell.$implicit)) {
       <ng-container [ngTemplateOutlet]="customCell?.template || tplCell" [ngTemplateOutletContext]="cell" />
     }
   }

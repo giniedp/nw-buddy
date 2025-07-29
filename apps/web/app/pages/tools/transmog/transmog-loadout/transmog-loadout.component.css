@@ -1,0 +1,11 @@
+:host {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 400px;
+  @media (min-width: 575px) {
+    max-width: initial;
+  }
+}

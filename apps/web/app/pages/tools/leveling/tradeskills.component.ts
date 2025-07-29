@@ -4,6 +4,8 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { NwTradeskillService } from '~/nw/tradeskill'
+import { IconsModule } from '~/ui/icons'
+import { svgInfo, svgInfoCircle } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { injectRouteParam, selectSignal } from '~/utils'
 import { TradeskillsModule } from '~/widgets/tradeskills'
@@ -11,14 +13,15 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
 @Component({
   selector: 'nwb-tradeskills-page',
   templateUrl: './tradeskills.component.html',
-  styleUrls: ['./tradeskills.component.scss'],
+  styleUrl: './tradeskills.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, TradeskillsModule, LayoutModule, IonSegment, IonSegmentButton],
+  imports: [CommonModule, RouterModule, TradeskillsModule, LayoutModule, IonSegment, IonSegmentButton, IconsModule],
   host: {
     class: 'ion-page',
   },
 })
 export class TradeskillsComponent {
+  protected infoIcon = svgInfoCircle
   protected tab$ = injectRouteParam('tab')
   protected tab = toSignal(this.tab$)
   protected categories = selectSignal(this.service.categories, (list) => {

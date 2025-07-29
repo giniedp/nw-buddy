@@ -25,11 +25,10 @@ import { QuicksearchService } from './quicksearch.service'
   selector: 'nwb-quicksearch-input',
   exportAs: 'quickSearch',
   templateUrl: './quicksearch-input.component.html',
-  styleUrls: ['./quicksearch-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, IconsModule],
   host: {
-    class: 'relative',
+    class: 'block',
   },
   animations: [
     trigger('fade', [

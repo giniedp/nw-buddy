@@ -569,7 +569,6 @@ export function selectEquipLoadBonus(equipLoad: number): ActiveBonus[] {
 }
 
 export function selectAttributes(db: DbSlice, state: MannequinState, mods: AttributeModsSource): ActiveAttributes {
-  console.log('selectAttributes', { state, mods })
   const attrsBase = selectEquppedAttributes(db, mods)
   const attrsBonus = selectBonusAttributes(db, mods)
   const attrsAssigned = state.assignedAttributes

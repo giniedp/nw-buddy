@@ -19,7 +19,7 @@ import { TerritoriesService } from '~/nw/territories'
       type="number"
       min="0"
       placeholder="0"
-      class="input bg-transparent h-full w-full p-0 text-center text-2xl appearance-none relative z-10 text-base-100 font-medium transition-all outline outline-4 outline-transparent focus:outline-primary hover:outline-primary"
+      class="input input-ghost bg-transparent focus:bg-transparent h-full w-full p-0 text-center text-2xl appearance-none relative z-10 text-base-100 font-medium transition-all outline-4 outline-transparent focus:outline-primary hover:outline-primary"
     />
   `,
   exportAs: 'nwbTerritoryStanding',

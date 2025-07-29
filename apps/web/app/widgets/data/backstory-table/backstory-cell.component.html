@@ -50,22 +50,16 @@
       @defer (on viewport(refBottom)) {
         @for (cell of data.$inventoryItems; track $index) {
           <a [routerLink]="['item', cell.itemId] | nwLink">
-            <nwb-item-icon
-              [nwbItemIcon]="cell.item"
-              [solid]="true"
-              [rarity]="cell.rarity"
-              [isNamed]="cell.isNamed"
-              [tooltip]="tplItem"
-            >
-              <ng-template #tplItem>
-                <nwb-item-card
-                  [entity]="cell.itemId"
-                  [gsOverride]="cell.gearScore"
-                  [perkOverride]="cell.perks"
-                  class="w-80"
-                />
-              </ng-template>
-            </nwb-item-icon>
+            <nwb-item-slot [rarity]="cell.rarity" [isNamed]="cell.isNamed" [icon]="cell.item" [tooltip]="tplItem" />
+            <ng-template #tplItem>
+              <nwb-item-card
+                [entity]="cell.itemId"
+                [gsOverride]="cell.gearScore"
+                [perkOverride]="cell.perks"
+                [disableInfo]="true"
+                class="w-80"
+              />
+            </ng-template>
           </a>
         }
       }

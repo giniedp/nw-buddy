@@ -1,13 +1,13 @@
-<label class="label">
-  <span class="label-text"> Player </span>
+<div class="flex flex-row justify-between">
+  <span class="label"> Player </span>
   @if (isPvp()) {
-    <span class="label-text"> PvP Scaling {{ pvpScale() | number: '0.2-2' }} </span>
+    <span class="label"> PvP Scaling {{ pvpScale() | number: '0.2-2' }} </span>
   }
-</label>
-<div class="join">
+</div>
+<div class="join w-full">
   <button class="join-item btn btn-sm w-20 text-left justify-start" [cdkMenuTriggerFor]="tplSliderLevel">Level</button>
   <nwb-precision-input
-    class="join-item input input-sm text-right w-full"
+    class="join-item input border-0 input-sm text-right w-full"
     [min]="levelMin"
     [max]="levelMax"
     [step]="1"
@@ -15,7 +15,7 @@
     [stepCtrl]="5"
     [(ngModel)]="level.value"
   />
-  <span class="join-item input input-sm bg-base-200">
+  <span class="join-item input border-0 input-sm bg-base-200">
     {{ store.offenderLevelFactor() | number: '0.2-2' }}
   </span>
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipLevel" [preventClick]="true">
@@ -37,12 +37,12 @@
     </div>
   </ng-template>
 </div>
-<div class="join mt-1">
+<div class="join w-full">
   <button class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplGearScoreLevel">
     GS
   </button>
   <nwb-precision-input
-    class="join-item input input-sm text-right w-full"
+    class="join-item input border-0 input-sm text-right w-full"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"
@@ -72,13 +72,13 @@
   </button>
 </div>
 
-<span class="join mt-1">
+<span class="join w-full">
   <span class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplToolAttrs">
     Stats
   </span>
   @for (stat of attrPoints; track $index) {
     <nwb-precision-input
-      class="join-item w-full input input-sm text-center focus-within:z-10 pl-0"
+      class="join-item w-full input border-0 input-sm text-center focus-within:z-10 pl-0"
       [min]="attrMin"
       [max]="attrMax"
       [step]="1"
@@ -106,11 +106,11 @@
   </ng-template>
 </span>
 
-<span class="join mt-1">
+<span class="join w-full">
   <span class="join-item btn btn-sm w-20 justify-start"> Levels </span>
   @for (stat of attrLevels; track $index) {
     <input
-      class="join-item w-full appearance-none bg-base-200 text-center text-xs px-0"
+      class="join-item w-full border-0 appearance-none bg-base-200 text-center text-xs px-0"
       [class.opacity-25]="!stat.access.value"
       [ngModel]="stat.access.value"
       disabled
@@ -126,8 +126,8 @@
     <h4>Level</h4>
     <p>Damage is scaled off the attacker level.</p>
     <p>
-      In <span class="text-info font-bold">PvP</span>, the level gap between attacker and defender dictates
-      the scaling of PvP damage.
+      In <span class="text-info font-bold">PvP</span>, the level gap between attacker and defender dictates the scaling
+      of PvP damage.
     </p>
   </div>
 </ng-template>
@@ -136,8 +136,8 @@
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Average Gear Score <span class="badge badge-info badge-xs">PvP only</span></h4>
     <p>
-      In <span class="text-info font-bold">PvP</span>, attackers' weapon gear score adjusts based on the
-      average gear score difference.
+      In <span class="text-info font-bold">PvP</span>, attackers' weapon gear score adjusts based on the average gear
+      score difference.
     </p>
   </div>
 </ng-template>

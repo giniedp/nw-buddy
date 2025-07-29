@@ -1,0 +1,168 @@
+ion-modal::part(handle)::before {
+  padding-top: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+.ion-modal-y-auto {
+  --height: auto;
+  ion-content,
+  .ion-page {
+    position: relative;
+    display: block;
+    contain: content;
+  }
+  ion-content::part(scroll) {
+    max-height: 80vh;
+    overflow: auto;
+    position: relative;
+  }
+}
+
+html.plt-mobile ion-app {
+  user-select: initial;
+}
+
+ion-toolbar {
+  --min-height: 3rem;
+  .btn:not(.btn-sm, .btn-xs, .btn-lg) {
+    min-height: 2.5rem;
+    height: 2.5rem;
+    &.btn-square,
+    &.btn-circle {
+      min-width: 2.5rem;
+      width: 2.5rem;
+    }
+  }
+}
+ion-toolbar ion-title {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.popover-content {
+  --width: auto;
+}
+ion-split-pane {
+  /*
+  --border variable collision when using daisyui and ionicframework
+  we need to set --border to a size vairable, otherwise daisyui badges will not work correctly
+  this has no visual impact on ionic in our case
+  */
+  --border: 1px;
+}
+
+.ion-page.flex-row {
+  flex-direction: row;
+}
+
+@utility ion-color-* {
+  --ion-color-base: --value(--color-*);
+  --ion-color-base-rgb: --value(--color-*-rgb );
+}
+
+@utility ion-contrast-* {
+  --ion-color-contrast: --value(--color-*);
+  --ion-color-contrast-rgb: --value(--color-*-rgb );
+}
+
+@utility ion-p-* {
+  --padding-start: --spacing(--value(integer));
+  --padding-end: --spacing(--value(integer));
+  --padding-top: --spacing(--value(integer));
+  --padding-bottom: --spacing(--value(integer));
+}
+@utility ion-px-* {
+  --padding-start: --spacing(--value(integer));
+  --padding-end: --spacing(--value(integer));
+}
+@utility ion-py-* {
+  --padding-top: --spacing(--value(integer));
+  --padding-bottom: --spacing(--value(integer));
+}
+
+@utility ion-m-* {
+  --margin-start: --spacing(--value(integer));
+  --margin-end: --spacing(--value(integer));
+  --margin-top: --spacing(--value(integer));
+  --margin-bottom: --spacing(--value(integer));
+}
+@utility ion-mx-* {
+  --margin-start: --spacing(--value(integer));
+  --margin-end: --spacing(--value(integer));
+}
+@utility ion-my-* {
+  --margin-top: --spacing(--value(integer));
+  --margin-bottom: --spacing(--value(integer));
+}
+
+@utility ion-modal-fill {
+  --width: 100%;
+  --height: 100%;
+}
+
+@utility ion-modal-xs {
+  --width: 250px;
+  --height: 250px;
+}
+@utility ion-modal-x-xs {
+  --width: 250px;
+}
+@utility ion-modal-y-xs {
+  --height: 250px;
+}
+
+@utility ion-modal-sm {
+  --width: 400px;
+  --height: 400px;
+}
+@utility ion-modal-x-sm {
+  --width: 400px;
+}
+@utility ion-modal-y-sm {
+  --height: 400px;
+}
+
+@utility ion-modal-md {
+  --width: 600px;
+  --height: 600px;
+}
+@utility ion-modal-x-md {
+  --width: 600px;
+}
+@utility ion-modal-y-md {
+  --height: 600px;
+}
+
+@utility ion-modal-lg {
+  --width: 100%;
+  --height: 100%;
+  --max-width: calc(max(800px, min(1200px, 100% - 4rem)));
+  --max-height: calc(max(600px, min(900px, 100% - 4rem)));
+}
+@utility ion-modal-x-lg {
+  --width: 100%;
+  --max-width: calc(max(800px, min(1200px, 100% - 4rem)));
+}
+@utility ion-modal-y-lg {
+  --height: 100%;
+  --max-height: calc(max(600px, min(900px, 100% - 4rem)));
+}
+
+@utility ion-modal-y-auto {
+  --height: auto;
+}
+
+@source inline("ion-modal-fill");
+@source inline("ion-modal-xs");
+@source inline("ion-modal-x-xs");
+@source inline("ion-modal-y-xs");
+@source inline("ion-modal-sm");
+@source inline("ion-modal-x-sm");
+@source inline("ion-modal-y-sm");
+@source inline("ion-modal-md");
+@source inline("ion-modal-x-md");
+@source inline("ion-modal-y-md");
+@source inline("ion-modal-lg");
+@source inline("ion-modal-x-lg");
+@source inline("ion-modal-y-lg");
+@source inline("ion-modal-y-auto");

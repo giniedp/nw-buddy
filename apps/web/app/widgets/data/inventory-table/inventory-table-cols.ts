@@ -225,3 +225,23 @@ export function inventoryColActions(
     }),
   })
 }
+
+export function inventoryColSync(util: InventoryTableUtils) {
+  return util.colDef({
+    colId: 'syncState',
+    headerValueGetter: () => 'Sync',
+    field: 'record.syncState',
+    width: 60,
+    cellRenderer: util.cellRenderer(({ data }) => {
+      return util.el('span.badge.badge-sm', {
+        class: [
+          data.record.syncState === 'pending'
+            ? 'badge-warning'
+            : data.record.syncState === 'synced'
+              ? 'badge-success'
+              : 'badge-error',
+        ],
+      })
+    }),
+  })
+}

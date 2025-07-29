@@ -1,8 +1,8 @@
-<label class="label">
-  <span class="label-text"> Attack </span>
-</label>
+<div class="flex flex-row">
+  <span class="label"> Attack </span>
+</div>
 @if (!isBound && !!attackOptions().length) {
-  <span class="join" [cdkMenuTriggerFor]="attackOptions().length ? tplAttacks : null">
+  <span class="join w-full" [cdkMenuTriggerFor]="attackOptions().length ? tplAttacks : null">
     <button class="join-item btn btn-sm w-full" [disabled]="!attackOptions().length">
       @if (!damageRow.value) {
         <span class="italic"> -- none -- </span>
@@ -66,10 +66,10 @@
   </span>
 }
 
-<span class="join mt-1">
+<span class="join w-full">
   <button class="join-item btn btn-sm justify-start text-left w-40">Damage Coef</button>
   <nwb-precision-input
-    class="join-item input input-sm text-right w-full"
+    class="join-item input border-0 input-sm text-right w-full"
     [min]="0"
     [step]="0.1"
     [stepShift]="10"
@@ -92,11 +92,11 @@
   </ng-template>
 </span>
 
-<span class="join mt-1">
+<span class="join w-full">
   <button class="join-item btn btn-sm justify-start text-left w-40">Damage Add</button>
   <input
     type="number"
-    class="join-item appearance-none input input-sm text-right w-full"
+    class="join-item appearance-none input border-0 input-sm text-right w-full"
     [step]="1"
     [(ngModel)]="damageAdd.value"
     (wheel)="($event)"

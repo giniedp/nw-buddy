@@ -201,7 +201,7 @@ function cellRenderer(util: ArmorWeightTableUtils, slotId: EquipSlotId) {
       [label, subLabel]
         .filter((it) => !!it)
         .map((it, i) => {
-          return util.el('span', { text: it, class: i > 0 ? 'text-white italic text-xs text-opacity-50' : '' })
+          return util.el('span', { text: it, class: i > 0 ? 'text-white/50 italic text-xs' : '' })
         }),
     )
   })

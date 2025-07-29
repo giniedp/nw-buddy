@@ -13,7 +13,7 @@ import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core
 import { DomSanitizer } from '@angular/platform-browser'
 import { Router } from '@angular/router'
 import { ItemRarity } from '@nw-data/common'
-import { injectNwData } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkResource, NwLinkService } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
@@ -34,6 +34,7 @@ export class TableGridUtils<T = any> {
   public readonly expr = inject(NwExpressionService)
   public readonly i18n = inject(TranslateService)
   public readonly itemPref = inject(ItemPreferencesService)
+  public readonly character = inject(CharacterStore)
   public readonly nwLink = inject(NwLinkService)
   public readonly router = inject(Router)
   public readonly sanitizer = inject(DomSanitizer)
@@ -180,7 +181,7 @@ export class TableGridUtils<T = any> {
       'div.flex.flex-row.flex-wrap.gap-1.items-center',
       attr,
       tags?.map((attr) => {
-        return this.el('span.badge.badge-sm.badge-secondary.bg-secondary.bg-opacity-50.px-1', attr)
+        return this.el('span.badge.badge-sm.badge-secondary.bg-secondary/50.px-1', attr)
       }),
     )
   }
@@ -201,8 +202,7 @@ export class TableGridUtils<T = any> {
         value?.map((tag: string) => {
           const list = [...(getClass?.(tag) || [])]
           if (list.every((it) => it !== 'bg-primary' && it !== 'bg-error')) {
-            list.push('bg-secondary')
-            list.push('bg-opacity-50')
+            list.push('bg-secondary/50')
           }
           if (list.every((it) => it !== 'badge-primary' && it !== 'badge-error')) {
             list.push('badge-secondary')

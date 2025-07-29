@@ -1,15 +1,9 @@
-import { Directive, EventEmitter, Input, OnInit, Output, inject } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
-import { patchState, signalState } from '@ngrx/signals'
+import { Directive, computed, inject, input } from '@angular/core'
 import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { Mannequin } from '~/nw/mannequin'
 
 export type GearsetMode = 'player' | 'opponent'
-interface GearsetHostState {
-  mode: GearsetMode
-  opponent: GearsetRecord
-}
 
 @Directive({
   selector: '[nwbGearsetHost]',
@@ -18,37 +12,11 @@ interface GearsetHostState {
   exportAs: 'gearsetHost',
 })
 export class GearsetHostDirective {
-  @Input()
-  public set mode(value: GearsetMode) {
-    patchState(this.state, { mode: value })
-  }
-  public get mode() {
-    return this.state.mode()
-  }
-
-  @Input()
-  public set gearset(value: GearsetRecord) {
-    patchState(this.store, { gearset: value })
-  }
-  public get gearset() {
-    return this.store.gearset()
-  }
-
-  @Input()
-  public set opponent(value: GearsetRecord) {
-    patchState(this.state, { opponent: value })
-  }
-  public get opponent() {
-    return this.state.opponent()
-  }
-
-  public get showCalculator() {
-    return this.store.showCalculator() || !!this.opponent
-  }
-
-  private state = signalState<GearsetHostState>({
-    mode: 'player',
-    opponent: null,
+  public isLoading = input<boolean>(false)
+  public gearset = input<GearsetRecord>()
+  public opponent = input<GearsetRecord>()
+  public showCalculator = computed(() => {
+    return this.store.showCalculator() || !!this.opponent()
   })
 
   private store = inject(GearsetStore)
@@ -56,7 +24,9 @@ export class GearsetHostDirective {
   public readonly mannequin = inject(Mannequin)
 
   public constructor() {
-    this.store.connectLevel(toObservable(this.character.level))
+    this.store.connectIsLoading(this.isLoading)
+    this.store.connectGearset(this.gearset)
+    this.store.connectLevel(this.character.level)
     this.store.connectToMannequin(this.mannequin)
   }
 }

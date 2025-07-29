@@ -1,66 +1,95 @@
+import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef, inject } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Input,
+  input,
+  model,
+  output,
+  TemplateRef,
+} from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
+import { CharacterStore, GearsetRecord, GearsetRow, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
-import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
+import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { IconsModule } from '~/ui/icons'
+import { svgBars, svgGlobe, svgTrashCan } from '~/ui/icons/svg'
+import { SyncBadgeComponent } from '~/ui/sync-badge'
+import { EmptyComponent } from '~/widgets/empty'
+import { GearsetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 
 @Component({
   selector: 'nwb-gearset-loadout',
   templateUrl: './gearset-loadout.component.html',
-  styleUrls: ['./gearset-loadout.component.scss'],
+  styleUrl: './gearset-loadout.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GersetLoadoutSlotComponent, RouterModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    GearsetLoadoutSlotComponent,
+    RouterModule,
+    IconsModule,
+    CdkMenuModule,
+    SyncBadgeComponent,
+  ],
   providers: [GearsetStore],
   host: {
-    class: 'grid gap-x-3 gap-y-2',
+    class: 'w-full',
   },
 })
-export class GearsetLoadoutItemComponent {
+export class GearsetLoadoutComponent implements VirtualGridCellComponent<GearsetRow> {
+  public static buildGridOptions(): VirtualGridOptions<GearsetRow> {
+    return {
+      height: 284,
+      width: 490,
+      cellDataView: GearsetLoadoutComponent,
+      cellEmptyView: EmptyComponent,
+    }
+  }
   private store = inject(GearsetStore)
   private char = inject(CharacterStore)
 
+  public gearset = model<GearsetRecord>(null)
+
+  public slotMenuTemplate = input<TemplateRef<GearsetRecord>>(null)
+  public buttonTemplate = input<TemplateRef<GearsetRecord>>(null)
+  public delete = output<GearsetRecord>()
+  public create = output<void>()
+
+  public disableHead = input(false)
+
   @Input()
-  public set geasrsetId(value: string) {
-    this.store.connectGearsetDB(value)
+  public set data(value: GearsetRow) {
+    this.gearset.set(value.record)
   }
-
   @Input()
-  public editable = false
+  public selected: boolean
 
-  @Input()
-  public slotMenuTemplate: TemplateRef<any>
-
-  @Input()
-  public buttonTemplate: TemplateRef<any>
-
-  @Output()
-  public delete = new EventEmitter<GearsetRecord>()
-
-  @Output()
-  public create = new EventEmitter<void>()
-
-  protected get gearset() {
-    return this.store.gearset()
-  }
-  protected get gearScore() {
-    return this.store.gearScore()
-  }
+  protected gearScore = this.store.gearScore
+  protected isLoaded = this.store.isLoaded
+  protected isOwned = this.store.isOwned
+  protected isSyncable = this.store.isSyncable
+  protected isSynced = this.store.isSyncComplete
+  protected isSyncComplete = this.store.isSyncComplete
+  protected isSyncPending = this.store.isSyncPending
+  protected isSyncConflict = this.store.isSyncConflict
+  protected isPublished = this.store.isPublished
+  protected menuIcon = svgBars
+  protected deleteIcon = svgTrashCan
+  protected iconGlobe = svgGlobe
 
   public constructor() {
     this.store.connectLevel(this.char.level)
-  }
-
-  @Input()
-  public set data(value: GearsetRecord) {
-    this.store.connectGearset(value)
-  }
-
-  protected createClicked() {
-    this.create.emit()
-  }
-
-  protected deleteClicked(gearset: GearsetRecord) {
-    this.delete.emit(gearset)
+    this.store.connectGearsetId(
+      computed(() => {
+        return {
+          id: this.gearset()?.id,
+          userId: this.gearset()?.userId,
+        }
+      }),
+    )
   }
 }

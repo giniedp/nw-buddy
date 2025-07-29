@@ -6,6 +6,7 @@ import { ItemHeaderContentComponent } from './item-header-content.component'
 import { ItemHeaderComponent } from './item-header.component'
 import { ItemIconFrameComponent } from './item-icon-frame.component'
 import { ItemPerkComponent } from './item-perk.component'
+import { ItemSlotComponent } from './item-slot.component'
 import { ItemStatComponent } from './item-stat.component'
 
 const COMPONENTS = [
@@ -17,6 +18,7 @@ const COMPONENTS = [
   ItemGsComponent,
   ItemStatComponent,
   ItemPerkComponent,
+  ItemSlotComponent,
 ]
 
 @NgModule({

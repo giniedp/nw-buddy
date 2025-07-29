@@ -1,0 +1,77 @@
+<div class="skill-tree-title text-lg uppercase text-center font-serif text-nw-description nw-bg-title bg-bottom pt-4">
+  {{ title() | nwText }} - <span class="font-caslon">{{ value?.length || 0 }}</span>
+</div>
+<div class="skill-tree-content grid p-3 relative" [class]="colsClass()">
+  @for (row of rows(); track $index) {
+    @for (cell of row; track $index) {
+      @if (!cell.ability) {
+        <div
+          [class.is-unlocked]="cell.unlocked"
+          [class.is-invalid]="cell.invalid"
+          class="grid-cell aspect-square"
+          [class.edge-t]="cell.edgeTop"
+          [class.edge-l]="cell.edgeLeft"
+          [class.edge-r]="cell.edgeRight"
+          [class.edge-tl]="cell.edgeTopLeft"
+          [class.edge-tr]="cell.edgeTopRight"
+        ></div>
+      } @else {
+        <div
+          [tabindex]="cell.unlocked ? 0 : -1"
+          class="grid-cell aspect-square flex items-center justify-center transition-opacity relative"
+          [class.is-disabled]="!cell.unlocked"
+          [class.is-unlocked]="cell.unlocked"
+          [class.is-invalid]="cell.invalid"
+          [class.is-checked]="cell.checked"
+          [class.is-small]="cell.shrink"
+          [class.edge-t]="cell.edgeTop"
+          [class.edge-l]="cell.edgeLeft"
+          [class.edge-r]="cell.edgeRight"
+          [class.edge-tl]="cell.edgeTopLeft"
+          [class.edge-tr]="cell.edgeTopRight"
+          (click)="toggle(cell)"
+          (keydown.space)="toggle(cell)"
+          (keydown.enter)="toggle(cell)"
+          [tooltip]="tip"
+          [tooltipDelay]="0"
+          [tooltipClass]="'p-0'"
+        >
+          <ng-template #tip>
+            <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
+              <img class="aspect-square w-6" [nwImage]="cell.ability.Icon" />
+              <span>
+                {{ cell.ability.DisplayName | nwText }}
+              </span>
+            </div>
+            <div [nwHtml]="cell.ability.Description | nwText | nwTextBreak" class="p-3"></div>
+            @if (cell.tooltip) {
+              <div class="p-3 text-warning rounded-md">
+                {{ cell.tooltip | nwText: { parent: cell.parentLabel | nwText } }}
+              </div>
+            }
+          </ng-template>
+
+          <picture
+            class="outline-[2px] aspect-square relative"
+            [class.rounded-full]="!cell.square"
+            [class.rounded-sm]="cell.square"
+          >
+            @if (cell.checked && !cell.square) {
+              <img
+                @fade
+                [nwImage]="'assets/icons/skills/masterynodepassiverune.png'"
+                class="block absolute left-[1px] w-full aspect-square scale-[1.3]"
+              />
+            }
+            <img
+              class="aspect-square w-full nw-icon"
+              [class.rounded-full]="!cell.square"
+              [class]="'bg-ability-' + cell.type"
+              [nwImage]="cell.ability.Icon"
+            />
+          </picture>
+        </div>
+      }
+    }
+  }
+</div>

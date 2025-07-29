@@ -1,5 +1,5 @@
 @if (tabs()?.length) {
-  <div class="tabs tabs-xs tabs-boxed justify-start flex-nowrap gap-1 bg-transparent p-2">
+  <div class="tabs tabs-xs tabs-box justify-start flex-nowrap gap-1 bg-transparent p-2">
     @for (item of tabs(); track $index) {
       <a class="tab p-1 h-auto" [class.tab-active]="item.id === tabId()" (click)="tabId.set(item.id)">
         {{ item.label }}

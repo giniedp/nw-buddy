@@ -11,7 +11,7 @@ import { StackedValueControlComponent } from './stacked-value-control.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent],
   host: {
-    class: 'form-control',
+    class: 'fieldset',
   },
 })
 export class DefenderPhysicalArmorControlComponent {

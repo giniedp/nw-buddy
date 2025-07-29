@@ -20,7 +20,7 @@ import { GameViewerService } from './game-viewer.service'
         </div>
         @if (service.showTagBrowser()) {
           <nwb-character-action-browser
-            class="absolute top-10 right-2 h-1/2 bg-base-300 bg-opacity-80 border border-base-200 w-full max-w-md"
+            class="absolute top-10 right-2 h-1/2 bg-base-300/80 border border-base-200 w-full max-w-md"
             [actions]="service.adbActions()"
             [tags]="service.adbTags()"
             (fragmentClicked)="service.adbPlayer()?.executeFragment($event)"

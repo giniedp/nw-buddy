@@ -3,33 +3,35 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   HostListener,
   Injectable,
-  Input,
-  Optional,
-  Output,
   TemplateRef,
+  computed,
   inject,
   input,
+  output,
   signal,
 } from '@angular/core'
-import { EquipSlotId } from '@nw-data/common'
-import { GearsetRecord, GearsetSlotStore } from '~/data'
+import { EquipSlot, EquipSlotId } from '@nw-data/common'
+import { GearsetRecord, GearsetSlotStore } from '~/data/gearsets'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgEllipsisVertical, svgPlus } from '~/ui/icons/svg'
+import { svgEllipsisVertical, svgLink16p, svgPlus } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { selectSignal } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
+
+export interface GearsetSquareSlotState {
+  slot: EquipSlot
+  gearset: GearsetRecord
+}
 
 @Injectable()
 export abstract class LoadoutSlotEventHandler {
-  abstract click(e: MouseEvent, component: GersetLoadoutSlotComponent): void
-  abstract dragEnter(e: DragEvent, component: GersetLoadoutSlotComponent): void
-  abstract dragLeave(e: DragEvent, component: GersetLoadoutSlotComponent): void
-  abstract dragOver(e: DragEvent, component: GersetLoadoutSlotComponent): void
-  abstract dragDrop(e: DragEvent, component: GersetLoadoutSlotComponent): void
+  abstract click(e: MouseEvent, component: GearsetLoadoutSlotComponent): void
+  abstract dragEnter(e: DragEvent, component: GearsetLoadoutSlotComponent): void
+  abstract dragLeave(e: DragEvent, component: GearsetLoadoutSlotComponent): void
+  abstract dragOver(e: DragEvent, component: GearsetLoadoutSlotComponent): void
+  abstract dragDrop(e: DragEvent, component: GearsetLoadoutSlotComponent): void
 }
 
 @Component({
@@ -39,47 +41,44 @@ export abstract class LoadoutSlotEventHandler {
   imports: [CommonModule, NwModule, ItemDetailModule, IconsModule, CdkMenuModule, TooltipModule],
   providers: [GearsetSlotStore],
   host: {
-    class: 'inline-block rounded-md overflow-clip',
+    class: 'inline-block overflow-clip',
     '[class.outline]': 'dragState() === "success" || dragState() === "error"',
     '[class.outline-success]': 'dragState() === "success"',
     '[class.outline-error]': 'dragState() === "error"',
   },
 })
-export class GersetLoadoutSlotComponent {
+export class GearsetLoadoutSlotComponent {
+  private eventHandler = inject(LoadoutSlotEventHandler, { optional: true })
   protected store = inject(GearsetSlotStore)
   public readonly slotId = input<EquipSlotId>()
   public readonly gearset = input<GearsetRecord>()
-  public readonly dragState = signal<'idle' | 'error' | 'success'>('idle')
 
-  @Input()
-  public disabled: boolean
-
-  @Output()
-  public pickItem = new EventEmitter<EquipSlotId>()
-
-  @Input()
-  public menuTemplate: TemplateRef<any>
+  public disabled = input(false)
+  public pickItem = output<EquipSlotId>()
+  public menuTemplate = input<TemplateRef<any>>()
+  public dragState = signal<'idle' | 'error' | 'success'>('idle')
 
   protected iconPlus = svgPlus
+  protected iconLink = svgLink16p
   protected iconMenu = svgEllipsisVertical
 
-  public constructor(
-    @Optional()
-    private eventHandler: LoadoutSlotEventHandler,
-  ) {
-    this.store.connectState(
-      selectSignal({
-        gearset: this.gearset,
-        slotId: this.slotId,
+  public constructor() {
+    this.store.connect(
+      computed(() => {
+        return {
+          gearset: this.gearset(),
+          slotId: this.slotId(),
+        }
       }),
     )
   }
 
   protected pickItemClicked() {
-    if (!this.disabled) {
+    if (!this.disabled()) {
       this.pickItem.emit(this.slotId())
     }
   }
+
   @HostListener('click', ['$event'])
   protected onClick(e: MouseEvent) {
     this.eventHandler?.click(e, this)

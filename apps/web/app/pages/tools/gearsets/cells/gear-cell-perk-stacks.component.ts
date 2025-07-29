@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import {
   getItemGsBonus,
-  getPerkMultiplier,
   getPerkOnlyMultiplier,
   hasPerkScalingPerGearScore,
   isPerkGenerated,

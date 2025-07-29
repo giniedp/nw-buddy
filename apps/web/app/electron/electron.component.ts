@@ -16,7 +16,7 @@ export interface AppTab {
 @Component({
   selector: 'nw-buddy-electron',
   templateUrl: './electron.component.html',
-  styleUrl: './electron.component.scss',
+  styleUrl: './electron.component.css',
   host: {
     class: 'ion-page',
   },

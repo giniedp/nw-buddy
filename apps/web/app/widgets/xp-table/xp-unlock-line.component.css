@@ -1,0 +1,6 @@
+.timeline-vertical > li {
+  --timeline-col-start: 0;
+  @media (min-width: 576px) {
+    --timeline-col-start: minmax(0, 1fr);
+  }
+}

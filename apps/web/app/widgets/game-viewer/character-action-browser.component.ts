@@ -84,7 +84,7 @@ export class TypeSafeCdkVirtualForDirective<T> {
                 {{ tag.label }}
               </span>
             } @empty {
-              <span class="badge badge-success italic bg-opacity-25">untagged</span>
+              <span class="badge badge-success/25 italic">untagged</span>
             }
           </button>
         } @else {

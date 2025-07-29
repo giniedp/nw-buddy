@@ -1,9 +1,9 @@
-<label class="join">
+<label class="join w-full">
   <ng-content select="[slot='start']" />
   @if (inlineInputDisabled) {
     <nwb-precision-input
       type="number"
-      class="join-item appearance-none input input-sm input-bordered text-right w-full focus-within:z-10"
+      class="join-item appearance-none input input-sm border-0 text-right w-full focus-within:z-10"
       [class.text-white]="!!total"
       [scale]="scale"
       [ngModel]="total"
@@ -13,8 +13,7 @@
     />
   } @else {
     <nwb-precision-input
-      class="join-item appearance-none input input-sm text-right w-full text-white focus-within:z-10"
-      [class.text-opacity-30]="!value"
+      class="join-item appearance-none input input-sm border-0 text-right w-full text-white focus-within:z-10"
       [min]="min"
       [max]="max"
       [step]="step"
@@ -38,12 +37,12 @@
   </button>
 </label>
 @if (isOpen) {
-  <label class="join">
-    <span class="join-item input input-sm input-ghost rounded-none flex-1">
+  <label class="join w-full">
+    <span class="join-item input input-sm border-0 input-ghost rounded-none flex-1">
       {{ lockPreset ? 'Preset' : 'Adjust' }}
     </span>
     <nwb-precision-input
-      class="join-item appearance-none input input-sm rounded-none text-right w-20 focus-within:z-10"
+      class="join-item appearance-none input input-sm border-0 rounded-none text-right w-20 focus-within:z-10"
       [class.text-white]="lockPreset && !!value"
       [min]="min"
       [max]="max"
@@ -75,14 +74,14 @@
           </span>
         }
         <span
-          class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1 text-nowrap truncate"
+          class="join-item input input-sm bg-base-200 border-0 rounded-none min-w-0 flex-1 text-nowrap truncate"
           [title]="row.label | nwText"
         >
           {{ row.label | nwText }}
         </span>
       } @else {
         <input
-          class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1 focus:z-10"
+          class="join-item input input-sm bg-base-200 border-0 rounded-none min-w-0 flex-1 focus:z-10"
           placeholder="Label"
           [ngModel]="row.label"
           (ngModelChange)="setStackItemLabel($index, $event)"
@@ -110,7 +109,7 @@
         }
       </span>
       <nwb-precision-input
-        class="join-item appearance-none input input-sm rounded-none text-right w-20 focus-within:z-10"
+        class="join-item appearance-none input input-sm border-0 rounded-none text-right w-20 focus-within:z-10"
         [min]="min"
         [max]="max"
         [step]="step"
@@ -126,14 +125,14 @@
       />
       @if (isInfinite(row.cap)) {
         <div
-          class="join-item appearance-none input input-sm rounded-none text-right w-14 focus-within:z-10"
+          class="join-item appearance-none input input-sm border-0 rounded-none text-right w-14 focus-within:z-10"
           [class.text-white]="!row.disabled && !!row.ref && !!row.cap"
         >
           <nwb-icon [icon]="iconInfinity" class="w-4 h-4" />
         </div>
       } @else {
         <nwb-precision-input
-          class="join-item appearance-none input input-sm rounded-none text-right w-14 focus-within:z-10"
+          class="join-item appearance-none input input-sm border-0 rounded-none text-right w-14 focus-within:z-10"
           placeholder="Cap"
           [min]="min"
           [max]="max"
@@ -175,7 +174,7 @@
                 (ngModelChange)="setStackItemTag($index, 'Light', $event)"
                 class="toggle toggle-xs toggle-success"
               />
-              <span class="text-success" [class.text-opacity-30]="!isTagEnabled(row, 'Light')"> Light </span>
+              <span [class]="isTagEnabled(row, 'Light') ? 'text-success' : 'text-success/30'"> Light </span>
             </label>
           </li>
           <li>
@@ -186,7 +185,7 @@
                 (ngModelChange)="setStackItemTag($index, 'Heavy', $event)"
                 class="toggle toggle-xs toggle-error"
               />
-              <span class="text-error" [class.text-opacity-30]="!isTagEnabled(row, 'Heavy')"> Heavy </span>
+              <span [class]="isTagEnabled(row, 'Heavy') ? 'text-error' : 'text-error/30'"> Heavy </span>
             </label>
           </li>
           <li>
@@ -197,7 +196,7 @@
                 (ngModelChange)="setStackItemTag($index, 'Ability', $event)"
                 class="toggle toggle-xs toggle-secondary"
               />
-              <span class="text-secondary" [class.text-opacity-30]="!isTagEnabled(row, 'Ability')"> Ability </span>
+              <span [class]="isTagEnabled(row, 'Ability') ? 'text-secondary' : 'text-secondary/30'"> Ability </span>
             </label>
           </li>
           <li>
@@ -208,7 +207,7 @@
                 (ngModelChange)="setStackItemTag($index, 'Magic', $event)"
                 class="toggle toggle-xs"
               />
-              <span class="text-white" [class.text-opacity-30]="!isTagEnabled(row, 'Magic')"> Magic </span>
+              <span [class]="isTagEnabled(row, 'Magic') ? 'text-white' : 'text-white/30'"> Magic </span>
             </label>
           </li>
           <li>
@@ -219,7 +218,7 @@
                 (ngModelChange)="setStackItemTag($index, 'Melee', $event)"
                 class="toggle toggle-xs toggle-warning"
               />
-              <span class="text-warning" [class.text-opacity-30]="!isTagEnabled(row, 'Melee')"> Melee </span>
+              <span [class]="isTagEnabled(row, 'Melee') ? 'text-warning' : 'text-warning/30'"> Melee </span>
             </label>
           </li>
           <li>
@@ -230,7 +229,7 @@
                 (ngModelChange)="setStackItemTag($index, 'Ranged', $event)"
                 class="toggle toggle-xs toggle-info"
               />
-              <span class="w-20 text-info" [class.text-opacity-30]="!isTagEnabled(row, 'Ranged')"> Ranged </span>
+              <span [class]="isTagEnabled(row, 'Ranged') ? 'text-info' : 'text-info/30'"> Ranged </span>
             </label>
           </li>
           <li class="divider py-0 my-0 h-[2px]"></li>

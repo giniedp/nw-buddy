@@ -1,6 +1,4 @@
-import { animate, style, transition, trigger } from '@angular/animations'
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
-import { getItemId, ItemRarity } from '@nw-data/common'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 
@@ -10,16 +8,9 @@ import { NwModule } from '~/nw'
     @if (!borderless()) {
       <div class="nw-item-icon-border" [class.rounded-full]="rounded()"></div>
     }
-    @for (item of icons(); track item.id) {
-      <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]" [@inOut]>
-        <img
-          [nwImage]="item.value"
-          class="w-full h-full"
-          [class.object-contain]="!cover()"
-          [class.object-cover]="cover()"
-        />
-      </picture>
-    }
+    <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]">
+      <img [nwImage]="icon()" class="w-full h-full" [class.object-contain]="!cover()" [class.object-cover]="cover()" />
+    </picture>
     <ng-content />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,12 +29,6 @@ import { NwModule } from '~/nw'
     '[class.rounded-full]': 'rounded()',
     '[class.overflow-clip]': 'rounded()',
   },
-  animations: [
-    trigger('inOut', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.15s ease', style({ opacity: 1 }))]),
-      transition(':leave', [style({ opacity: '*' }), animate('0.15s ease', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class ItemIconFrameComponent {
   public icon = input<string | MasterItemDefinitions | HouseItems>(null, { alias: 'nwbItemIcon' })
@@ -53,17 +38,4 @@ export class ItemIconFrameComponent {
   public cover = input<boolean>(false)
   public borderless = input<boolean>(false)
   public rounded = input<boolean>(false)
-  protected icons = computed(() => {
-    const value = this.icon()
-    if (!value) {
-      return null
-    }
-
-    return [
-      {
-        id: typeof value === 'string' ? value : getItemId(value),
-        value: this.icon(),
-      },
-    ]
-  })
 }

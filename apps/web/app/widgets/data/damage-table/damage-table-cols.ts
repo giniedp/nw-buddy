@@ -41,7 +41,7 @@ export function damageColID(util: DamageTableUtils) {
 export function damageSource(util: DamageTableUtils) {
   return util.colDef<string>({
     colId: 'source',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Source',
     width: 200,
     field: '$source' as any,

@@ -4,16 +4,7 @@ import { ChangeDetectionStrategy, Component, effect, ElementRef, HostBinding, in
   standalone: true,
   selector: 'nwb-icon',
   template: '',
-  styles: [
-    `
-      ::ng-deep svg,
-      ::ng-deep img {
-        max-height: 100%;
-        max-width: 100%;
-        width: inherit;
-      }
-    `,
-  ],
+  styleUrl: './icon.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'inline-flex items-center justify-center',

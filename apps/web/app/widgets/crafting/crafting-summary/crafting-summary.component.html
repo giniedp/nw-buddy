@@ -9,7 +9,7 @@
     [disabled]="!tabs.canScrollRight()"
     [class.hidden]="!tabs.canScroll()"
   />
-  <nwb-tabs [active]="tab()" (activeChange)="tab.set($event)" class="tabs tabs-lifted" #tabs>
+  <nwb-tabs [active]="tab()" (activeChange)="tab.set($event)" class="tabs tabs-lift" #tabs>
     <nwb-tab class="flex-1 whitespace-nowrap" [value]="'resources'"> Buy Order </nwb-tab>
     <nwb-tab class="flex-1 whitespace-nowrap" [value]="'skills'"> +Tradeskill </nwb-tab>
     <nwb-tab class="flex-1 whitespace-nowrap" [value]="'standing'"> +Standing </nwb-tab>

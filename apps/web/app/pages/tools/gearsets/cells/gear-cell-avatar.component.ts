@@ -1,20 +1,21 @@
+import { CdkConnectedOverlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { filter } from 'rxjs'
-import { GearsetStore, ImagesDB } from '~/data'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
+import { InputSliderComponent } from '~/ui/input-slider'
 import { ModalService } from '~/ui/layout'
-import { AvatarDialogComponent } from './ui/avatar-dialog.component'
 
 @Component({
   selector: 'nwb-gear-cell-avatar',
   templateUrl: './gear-cell-avatar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule],
+  imports: [CommonModule, NwModule, IconsModule, FormsModule, CdkConnectedOverlay, InputSliderComponent],
   host: {
     class: 'flex flex-col',
   },
@@ -24,32 +25,41 @@ export class GearCellAvatarComponent {
   private mannequin = inject(Mannequin)
   private modal = inject(ModalService)
 
-  @Input()
-  public disabled: boolean
-
-  @Input()
-  public title: string = null
-
-  public get isEditable() {
-    return !this.disabled && !!this.store.gearsetId()
-  }
+  public disabled = input<boolean>(false)
+  public title = input<string>(null)
+  public isEditable = computed(() => !this.disabled() && !!this.store.gearsetId())
 
   protected gearScore = this.mannequin.gearScore
-  protected image = toSignal(inject(ImagesDB).imageUrl(toObservable(this.store.gearsetImageId)))
+  protected level = this.mannequin.level
+
+  protected leveltarget: Element
+  protected levelValue: number
+  protected levelMin = 1
+  protected levelMax = NW_MAX_CHARACTER_LEVEL
   protected iconMenu = svgEllipsisVertical
 
-  protected handleAvatarClicked() {
-    if (!this.isEditable) {
-      return
+  protected openLevelEditor(e: MouseEvent) {
+    this.leveltarget = e.currentTarget as Element
+  }
+
+  protected closeLevelEditor() {
+    this.leveltarget = null
+    if (this.levelValue) {
+      this.store.updateLevel(this.levelValue)
     }
-    AvatarDialogComponent.open(this.modal, {
-      inputs: {
-        imageId: this.store.gearset()?.imageId,
-      },
-    })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe(({ imageId }) => {
-        this.store.patchGearset({ imageId })
-      })
+  }
+
+  protected updateLevel(value: number) {
+    this.levelValue = Number(value)
+  }
+
+  protected stepLevel(event: WheelEvent) {
+    if (event.deltaY < 0) {
+      this.levelValue += 1
+    }
+    if (event.deltaY > 0) {
+      this.levelValue -= 1
+    }
+    this.levelValue = Math.max(this.levelMin, Math.min(this.levelMax, this.levelValue))
   }
 }

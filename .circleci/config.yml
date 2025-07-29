@@ -13,7 +13,7 @@ workflows:
                 - live
       - build_preview:
           context:
-            - nw-buddy-cf
+            - nw-buddy-cf-dev
           filters:
             branches:
               only:
@@ -21,7 +21,7 @@ workflows:
                 - dev
       - build_ptr:
           context:
-            - nw-buddy-cf
+            - nw-buddy-cf-ptr
           filters:
             branches:
               only:

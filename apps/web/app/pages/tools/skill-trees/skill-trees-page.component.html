@@ -1,6 +1,6 @@
 <ion-header class="bg-base-300">
   <div class="flex flex-col-reverse md:flex-row">
-    <div class="flex flex-row flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
+    <div class="flex flex-row items-center flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
       <button
         [nwbDataCateogryMenu]
         [category]="category()"
@@ -8,50 +8,73 @@
         [defaultRoute]="''"
         [defaultTitle]="title"
         [routePrefix]="'.'"
-        [queryParam]="categoryParam()"
+        [queryParam]="categoryParamName"
         class="btn btn-ghost normal-case text-left"
       ></button>
 
       <span class="flex-1"></span>
-      <div class="join">
-        <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
-          <span class="indicator">
-            <nwb-icon [icon]="iconMore" class="w-5 h-5" />
-            @if (isTagFilterActive) {
-              <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
-            }
-          </span>
-        </button>
+      @if (!isEmpty()) {
+        <div class="join">
+          @if (tags()?.length) {
+            <button
+              class="join-item btn btn-square btn-ghost"
+              [cdkMenuTriggerFor]="tplMenu"
+              [tooltip]="'Filter by tag'"
+            >
+              <span class="indicator">
+                <nwb-icon [icon]="iconMore" class="w-5 h-5" />
+                @if (tagsAreActive()) {
+                  <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
+                }
+              </span>
+            </button>
+          }
 
-        <ng-template #tplMenu>
-          <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
-            <div class="grid grid-cols-3 gap-1">
-              @for (item of filterTags; track $index) {
-                <button class="btn btn-sm btn-primary" [class.btn-outline]="!item.active" (click)="toggleTag(item.tag)">
-                  {{ item.tag }}
-                </button>
-              }
+          <ng-template #tplMenu>
+            <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
+              <div class="grid grid-cols-3 gap-1">
+                @for (item of tags(); track $index) {
+                  <button
+                    class="btn btn-sm btn-primary"
+                    [class.btn-outline]="!item.active"
+                    (click)="handleTagToggle(item.tag)"
+                  >
+                    {{ item.tag }}
+                  </button>
+                }
+              </div>
             </div>
-          </div>
-        </ng-template>
+          </ng-template>
 
-        <button class="join-item btn btn-square btn-ghost" (click)="createItem()" [tooltip]="'Create new entry'">
-          <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
-        </button>
-        <button class="join-item btn btn-square btn-ghost" (click)="importItem()" [tooltip]="'Import'">
-          <nwb-icon [icon]="iconImport" class="w-5 h-5" />
-        </button>
+          <button
+            class="join-item btn btn-square btn-ghost"
+            (click)="handleCreateClicked()"
+            [tooltip]="'Create new entry'"
+          >
+            <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
+          </button>
+        </div>
+      }
+    </div>
+    @if (!isEmpty()) {
+      <div class="flex-none p-2 w-full md:max-w-[256px]">
+        <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
       </div>
-    </div>
-    <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
-    </div>
+    }
   </div>
 </ion-header>
 <ion-content [scrollY]="false">
-  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 400px">
-    <div class="ion-page order-2" id="main">
-      @if (dataView.isGridActive()) {
+  <ion-split-pane [when]="showSidebar()" contentId="main">
+    <div class="ion-page order-1" id="main">
+      @if (isLoading()) {
+        <ng-container [ngTemplateOutlet]="tplLoading" />
+      } @else if (!isAvailable()) {
+        <ng-container [ngTemplateOutlet]="tplNoPublic" />
+      } @else if (isEmpty()) {
+        <ng-container [ngTemplateOutlet]="tplEmpty" />
+      } @else if (!displayCount()) {
+        <ng-container [ngTemplateOutlet]="tplFilterEmpty" />
+      } @else if (dataView.isGridActive()) {
         <nwb-virtual-grid
           [enableQuickfilter]="true"
           [data]="dataView.categoryItems$ | async"
@@ -72,7 +95,14 @@
         />
       }
     </div>
-    <ion-menu contentId="main" class="order-2">
+    <nwb-split-gutter class="order-2" #gutter="gutter" [class.hidden]="!showSidebar()" />
+    <ion-menu
+      contentId="main"
+      class="order-3 min-w-96 max-w-screen-md"
+      [nwbSplitPane]="gutter"
+      [nwbSplitPaneWidth]="420"
+      [nwbSplitPaneKey]="'detail-skills'"
+    >
       @if (showSidebar()) {
         <ng-container [ngTemplateOutlet]="tplDetail" />
       }
@@ -89,19 +119,55 @@
 </ion-content>
 
 <ng-template #tplDetail>
-  <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
-    [class.bg-base-300]="true"
-  >
-    <router-outlet #outlet="outlet"></router-outlet>
-    @if (!outlet.isActivated) {
-      <div class="p-4 flex flex-row items-center justify-center">
-        <button (click)="createItem()" class="btn btn-primary gap-1">
-          <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
-          <span>Create New</span>
+  <ion-content [class.bg-base-300]="true">
+    <router-outlet #outlet="outlet" />
+  </ion-content>
+</ng-template>
+
+<ng-template #tplLoading>
+  <div class="h-full flex items-center justify-center">
+    <span class="loading loading-xl loading-ring"></span>
+  </div>
+</ng-template>
+
+<ng-template #tplNoPublic>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-error" />
+      <div>
+        <h3 class="font-bold">Not available</h3>
+        <span>Listing of public items is not available yet</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplEmpty>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconSkilLTree" class="w-10 h-10" />
+      <div>
+        <h3 class="font-bold">No skill trees yet</h3>
+        <span>Create your first skill tree</span>
+      </div>
+      <div class="flex-none">
+        <button class="btn btn-sm btn-primary" (click)="handleCreateClicked()">
+          <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
+          Create
         </button>
       </div>
-    }
-  </ion-content>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplFilterEmpty>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert bg-base-200">
+      <nwb-icon [icon]="iconEmpty" class="w-5 h-5" />
+      <div class="flex-1">
+        <h3 class="font-bold">No data</h3>
+        <p class="text-xs"></p>
+      </div>
+    </div>
+  </div>
 </ng-template>

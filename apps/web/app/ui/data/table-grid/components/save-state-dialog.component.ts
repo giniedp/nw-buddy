@@ -45,7 +45,7 @@ export class SaveStateDialogComponent {
 
   @Input()
   public set key(value: string) {
-    this.store.patchState({ key: value })
+    this.store.selectScope(value)
   }
 
   public constructor(
@@ -61,13 +61,13 @@ export class SaveStateDialogComponent {
   }
 
   protected async commit() {
-    const id = this.store.selection$()
-    await this.store.saveData(id, this.data)
+    const id = this.store.selection()
+    await this.store.save(id, this.data)
     this.modalRef.close()
   }
 
   protected selectEntry(id: string) {
-    this.store.patchState({ selection: id })
+    this.store.select(id)
   }
 
   protected deleteEntry(id: string) {
@@ -79,7 +79,7 @@ export class SaveStateDialogComponent {
       },
     })
       .result$.pipe(filter((it) => !!it))
-      .pipe(switchMap(() => this.store.deleteEntry(id)))
+      .pipe(switchMap(() => this.store.delete(id)))
       .subscribe()
   }
 
@@ -94,7 +94,7 @@ export class SaveStateDialogComponent {
       },
     })
       .result$.pipe(filter((it) => !!it))
-      .pipe(switchMap((value) => this.store.updateName(id, value)))
+      .pipe(switchMap((value) => this.store.rename(id, value)))
       .subscribe()
   }
 
@@ -109,7 +109,7 @@ export class SaveStateDialogComponent {
       },
     })
       .result$.pipe(filter((it) => !!it))
-      .pipe(switchMap((value) => this.store.createEntry(value)))
+      .pipe(switchMap((value) => this.store.create(value)))
       .subscribe((item) => {
         this.selectEntry(item.id)
       })

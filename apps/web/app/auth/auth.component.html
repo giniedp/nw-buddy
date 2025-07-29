@@ -1,0 +1,50 @@
+@if (isSignedIn()) {
+  <button
+    class="btn btn-circle btn-ghost no-drag avatar"
+    [cdkMenuTriggerFor]="tplAccMenu"
+    [tooltip]="'Signed in as ' + userName()"
+  >
+    <div class="avatar w-8 placeholder indicator" [class.avatar-online]="isOnline()">
+      <div class="bg-neutral text-neutral-content w-8 rounded-full">
+        <span class="text-xl uppercase">{{ initials() }}</span>
+      </div>
+      @if (!isOnline()) {
+        <span class="indicator-item badge badge-xs badge-error translate-x-0 translate-y-0 scale-75"></span>
+        <span
+          class="indicator-item badge badge-xs badge-error translate-x-0 translate-y-0 scale-75 animate-ping"
+        ></span>
+      }
+    </div>
+  </button>
+} @else {
+  <button
+    class="btn btn-ghost no-drag avatar placeholder:"
+    [tooltip]="'Sign In'"
+    [tooltipPlacement]="'bottom'"
+    (click)="signIn()"
+  >
+    <span>Sign In</span>
+  </button>
+}
+
+<ng-template #tplAccMenu>
+  <ul class="menu menu-compact bg-base-300 border border-base-200 rounded-md w-40 shadow-md" cdkMenu>
+    <li>
+      <div class="menu-title">
+        Signed in as
+        <b class="uppercase" [class.text-success]="isOnline()" [class.text-error]="!isOnline()">{{ userName() }}</b>
+      </div>
+    </li>
+
+    @if (!isOnline()) {
+      <li cdkMenuItem>
+        <button (click)="signIn()" class="text-xs">
+          It seems like your session has expired. Click here to sign in again.
+        </button>
+      </li>
+    }
+    <li cdkMenuItem>
+      <button (click)="signOut()">Sign Out</button>
+    </li>
+  </ul>
+</ng-template>

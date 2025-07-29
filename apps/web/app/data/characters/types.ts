@@ -1,12 +1,6 @@
-export interface CharacterRecord {
-  /**
-   * ID in database
-   */
-  id: string
-  /**
-   * Image ID
-   */
-  imageId: string
+import { AppDbRecord } from '../app-db'
+
+export interface CharacterRecord extends AppDbRecord {
   /**
    * Name of the character
    */
@@ -14,25 +8,35 @@ export interface CharacterRecord {
   /**
    * Character level
    */
-  level: number
+  level?: number
   /**
    * Server name
    */
-  serverName: string
+  serverName?: string
   /**
    * Company name
    */
-  companyName: string
+  companyName?: string
   /**
    * Faction
    */
-  faction: 'covenant' | 'syndicate' | 'marauder'
+  faction?: 'covenant' | 'syndicate' | 'marauder'
   /**
    *
    */
-  progressionLevels: Record<string, number>
+  progressionLevels: Record<string | number, number>
   /**
    * Active crafting buffs (effect or perk or faction buff IDs)
    */
   effectStacks: Record<string, number>
+  /**
+   * Territory progression and notes
+   */
+  territories: Record<string, TerritoryData>
+}
+
+export interface TerritoryData {
+  standing?: number
+  notes?: string
+  tags?: string[]
 }

@@ -50,6 +50,7 @@ export class PromptDialogComponent<T extends string | number> {
   public readonly min = input<number>(undefined)
   public readonly max = input<number>(undefined)
   public readonly value = model<T>(undefined)
+  public readonly label = model<string>()
 
   private dialog = inject<ModalRef<T>>(ModalRef, { optional: true })
 

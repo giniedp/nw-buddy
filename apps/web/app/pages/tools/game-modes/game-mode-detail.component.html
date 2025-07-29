@@ -98,7 +98,7 @@
               }
             </h2>
             <div class="nw-item-divider max-w-lg mb-2"></div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl items-start">
               @if (store.mutaElementAvailable$ | async) {
                 <nwb-muta-element-tile
                   [mutaElement]="store.mutaElement$ | async"
@@ -154,7 +154,7 @@
                       <span [nwText]="row.RankName"></span>
                     </div>
                     <div
-                      class="stat-value cursor-pointer transition-all rounded-md outline outline-4 outline-transparent focus:outline-primary hover:outline-primary"
+                      class="stat-value cursor-pointer transition-all rounded-md outline-4 outline-transparent focus:outline-primary hover:outline-primary"
                       [class.text-primary]="row.Completed"
                       (click)="row.toggle()"
                     >
@@ -199,7 +199,7 @@
         </div>
       </div>
 
-      <div class="content-grid-tabs tabs tabs-bordered mt-4 justify-stretch flex-none">
+      <div class="content-grid-tabs tabs tabs-border flex-nowrap mt-4 justify-stretch flex-none">
         @for (item of tabs; track item.id) {
           @if (item.externUrl) {
             <a class="tab" [class.tab-active]="item.id === tab" [href]="item.externUrl" target="_blank">
@@ -427,7 +427,7 @@
       <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
     </ion-toolbar>
   </ion-header>
-  <ion-content [scrollY]="false" class="rounded-b-md bg-base-100">
+  <ion-content class="rounded-b-md bg-base-100">
     @if (explainVm$ | async; as vm) {
       <nwb-loot-graph [tags]="vm.tags" [tagValues]="vm.values" [tableId]="vm.tableIds" [highlight]="vm.itemId" />
     }

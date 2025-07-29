@@ -10,7 +10,7 @@
       #mapLayer="mapLayer"
     />
     @if (showLabels() && mapLayer.featuresBelowCursor(); as hoverItems) {
-      <div *nwbGameMapMouseTip class="p-2 bg-base-300 bg-opacity-75 text-sm leading-tight rounded-md">
+      <div *nwbGameMapMouseTip class="p-2 bg-base-300/75 text-sm leading-tight rounded-md">
         @for (item of hoverItems; track $index) {
           <div>{{ item.properties.label }} - {{ item.properties.title | nwText }}</div>
         }

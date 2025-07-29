@@ -2,16 +2,16 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { EquipSlotId } from '@nw-data/common'
-import { map, pipe, switchMap } from 'rxjs'
+import { combineLatest, map, of, switchMap } from 'rxjs'
 import {
-  GearsetsDB,
-  ItemInstancesDB,
+  ItemsService,
   WithGearsetPropsState,
   WithItemInstanceMethodsState,
   withGearsetMethods,
   withGearsetProps,
   withItemInstanceMethods,
 } from '~/data'
+import { GearsetsService } from '~/data/gearsets/gearsets.service'
 
 export interface ItemDetailPageState extends WithGearsetPropsState, WithItemInstanceMethodsState {
   slotId: EquipSlotId
@@ -20,7 +20,7 @@ export interface ItemDetailPageState extends WithGearsetPropsState, WithItemInst
 }
 export const ItemDetailPageStore = signalStore(
   withState<ItemDetailPageState>({
-    level: null,
+    defaultLevel: null,
     gearset: null,
     gearsetLoaded: false,
     itemInstance: null,
@@ -38,40 +38,29 @@ export const ItemDetailPageStore = signalStore(
     }
   }),
   withMethods((state) => {
-    const gearDB = inject(GearsetsDB)
-    const itemDB = inject(ItemInstancesDB)
+    const gears = inject(GearsetsService)
+    const items = inject(ItemsService)
     return {
-      syncSlot: rxMethod<EquipSlotId>(
-        pipe(
-          map((slotId) => {
+      connect: rxMethod<{ slotId: string; gearsetId: string; itemId: string; userId: string }>((source) => {
+        return source.pipe(
+          switchMap(({ slotId, gearsetId, itemId, userId }) => {
+            return combineLatest({
+              slotId: of(slotId as EquipSlotId),
+              gearset: gears.observeRecord({ userId, id: gearsetId }),
+              itemInstance: items.observeRecord({ userId, id: itemId }),
+            })
+          }),
+          map(({ slotId, gearset, itemInstance }) => {
             patchState(state, {
               slotId,
-            })
-          }),
-        ),
-      ),
-      syncGearset: rxMethod<string>(
-        pipe(
-          switchMap((id) => gearDB.observeByid(id)),
-          map((record) => {
-            patchState(state, {
-              gearset: record,
+              gearset,
               gearsetLoaded: true,
-            })
-          }),
-        ),
-      ),
-      syncInstance: rxMethod<string>(
-        pipe(
-          switchMap((id) => itemDB.observeByid(id)),
-          map((record) => {
-            patchState(state, {
-              itemInstance: record,
+              itemInstance,
               itemInstanceLoaded: true,
             })
           }),
-        ),
-      ),
+        )
+      }),
     }
   }),
   withComputed(({ gearsetLoaded, itemInstanceLoaded }) => {

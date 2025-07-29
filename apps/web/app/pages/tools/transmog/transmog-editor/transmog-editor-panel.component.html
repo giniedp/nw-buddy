@@ -1,0 +1,99 @@
+@for (item of slots(); track $index) {
+  <nwb-item-header [rarity]="'common'" class="w-full" class="gap-2 rounded-md overflow-clip">
+    <nwb-item-icon
+      [nwbItemIcon]="item.appearance?.IconPath || item.slot.iconSlot"
+      [rarity]="'common'"
+      [solid]="false"
+      [cover]="true"
+      class="w-20 h-20 cursor-pointer"
+      (click)="pickSlotGear(item.slot)"
+    />
+    <nwb-item-header-content
+      [title]="item.appearance?.Name || item.slot.name | nwText"
+      [titleLink]="item.transmogId ? ['/transmog', item.transmogId] : null"
+    >
+      <div class="flex flex-row gap-1">
+        @if (item.dye; as colors) {
+          <button
+            class="join-item btn btn-sm btn-square btn-outline"
+            [style.background-color]="item.debug ? '#FF0000' : colors.r?.Color"
+            (click)="pickSlotDye(item.slot, 'dyeR', colors.r)"
+            [disabled]="disabled() || colors.rDisabled"
+            [tooltip]="'Primary dye color'"
+          ></button>
+          <button
+            class="join-item btn btn-sm btn-square btn-outline"
+            [style.background-color]="item.debug ? '#00FF00' : colors.g?.Color"
+            (click)="pickSlotDye(item.slot, 'dyeG', colors.g)"
+            [disabled]="disabled() || colors.gDisabled"
+            [tooltip]="'Secondary dye color'"
+          ></button>
+          <button
+            class="join-item btn btn-sm btn-square btn-outline"
+            [style.background-color]="item.debug ? '#0000FF' : colors.b?.Color"
+            (click)="pickSlotDye(item.slot, 'dyeB', colors.b)"
+            [disabled]="disabled() || colors.bDisabled"
+            [tooltip]="'Accent dye color'"
+          ></button>
+          <button
+            class="join-item btn btn-sm btn-square btn-outline"
+            [style.background-color]="item.debug ? '#FF00FF' : colors.a?.Color"
+            (click)="pickSlotDye(item.slot, 'dyeA', colors.a)"
+            [disabled]="disabled() || colors.aDisabled"
+            [tooltip]="'Tint dye color'"
+          ></button>
+          @if (colors.r || colors.g || colors.b || colors.a) {
+            <button
+              class="join-item btn btn-sm btn-square btn-ghost"
+              [disabled]="disabled()"
+              (click)="clearSlotColors(item.slot)"
+            >
+              &times;
+            </button>
+          }
+          <span class="flex-1"></span>
+          @if (item.hideChannel === 'main') {
+            <button
+              class="join-item btn btn-sm btn-square btn-ghost swap swap-rotate"
+              [class.swap-active]="!!item.hideValue"
+              (click)="toggleHide(item.slot)"
+              [disabled]="disabled()"
+              [tooltip]="'Toggle body part'"
+            >
+              <nwb-icon [icon]="iconEye" class="w-4 h-4 swap-off" />
+              <nwb-icon [icon]="iconEyeSlash" class="w-4 h-4 swap-on" />
+            </button>
+          } @else if (item.hideChannel === 'all') {
+            <button
+              class="join-item btn btn-sm btn-square btn-ghost swap swap-rotate"
+              [class.swap-active]="isBitSet(item.hideValue, 1)"
+              (click)="toggleHide1(item.slot)"
+              [disabled]="disabled()"
+              [tooltip]="'Toggle body part'"
+            >
+              <nwb-icon [icon]="iconEye" class="w-4 h-4 swap-off" />
+              <nwb-icon [icon]="iconEyeSlash" class="w-4 h-4 swap-on" />
+            </button>
+            <button
+              class="join-item btn btn-sm btn-square btn-ghost swap swap-rotate"
+              [class.swap-active]="isBitSet(item.hideValue, 2)"
+              (click)="toggleHide2(item.slot)"
+              [disabled]="disabled()"
+              [tooltip]="'Toggle body part'"
+            >
+              <nwb-icon [icon]="iconEye" class="w-4 h-4 swap-off" />
+              <nwb-icon [icon]="iconEyeSlash" class="w-4 h-4 swap-on" />
+            </button>
+          }
+        }
+      </div>
+    </nwb-item-header-content>
+  </nwb-item-header>
+}
+<button class="btn btn-sm w-full" (click)="toggleGender()" [disabled]="disabled()">
+  <span [class.text-primary]="isMale()">Male</span> / <span [class.text-primary]="!isMale()">Female</span>
+</button>
+<button class="btn btn-sm w-full" [class.text-primary]="isDebug()" (click)="toggleDebug()" [disabled]="disabled()">
+  Inspect Dye Channels
+</button>
+<ng-content />

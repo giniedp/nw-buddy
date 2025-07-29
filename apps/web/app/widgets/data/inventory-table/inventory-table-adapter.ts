@@ -1,10 +1,9 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, Optional, inject } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
+import { Injectable, inject } from '@angular/core'
 import { EQUIP_SLOTS } from '@nw-data/common'
 import { uniqBy } from 'lodash'
 import { Observable, filter } from 'rxjs'
-import { InventoryItemsStore, ItemInstanceRow } from '~/data'
+import { ItemInstanceRow, ItemsService } from '~/data'
 import { DataViewAdapter, DataViewCategory, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -22,6 +21,7 @@ import {
   inventoryColName,
   inventoryColPerks,
   inventoryColRarity,
+  inventoryColSync,
   inventoryColTier,
 } from './inventory-table-cols'
 
@@ -29,6 +29,10 @@ import {
 export class InventoryTableAdapter implements DataViewAdapter<InventoryTableRecord> {
   private config = injectDataViewAdapterOptions<InventoryTableRecord>({ optional: true })
   private utils: TableGridUtils<InventoryTableRecord> = inject(TableGridUtils)
+
+  private store = inject(ItemsService)
+  private dnd = inject(DnDService)
+  private modal = inject(ModalService)
 
   public entityID(item: ItemInstanceRow): string {
     return item.record.id
@@ -73,7 +77,7 @@ export class InventoryTableAdapter implements DataViewAdapter<InventoryTableReco
         store: this.store,
       })
     }
-
+    options.getRowId = ({ data }) => this.entityID(data)
     return options
   }
 
@@ -81,23 +85,14 @@ export class InventoryTableAdapter implements DataViewAdapter<InventoryTableReco
     return this.source$
   }
 
-  private readonly source$: Observable<ItemInstanceRow[]> = this.config?.source || toObservable(this.store.rows)
-
-  public constructor(
-    @Optional()
-    private store: InventoryItemsStore,
-    private dnd: DnDService,
-    private modal: ModalService,
-  ) {
-    //
-  }
+  private readonly source$: Observable<ItemInstanceRow[]> = this.config?.source || this.store.observeRows()
 }
 
 export function buildCommonInventoryGridOptions(
   util: TableGridUtils<InventoryTableRecord>,
   options: {
     dnd: DnDService
-    store: InventoryItemsStore
+    store: ItemsService
     modal: ModalService
   },
 ) {
@@ -112,6 +107,7 @@ export function buildCommonInventoryGridOptions(
       inventoryColAttributeMods(util),
       inventoryColItemType(util),
       inventoryColItemClass(util),
+      options.store.isSignedIn() ? inventoryColSync(util) : null,
       inventoryColActions(util, {
         destroyAction: (e: Event, data: InventoryTableRecord) => {
           e.stopImmediatePropagation()
@@ -126,12 +122,12 @@ export function buildCommonInventoryGridOptions(
             })
               .result$.pipe(filter((it) => !!it))
               .subscribe(() => {
-                options.store.destroyRecord(data.record.id)
+                options.store.delete(data.record.id)
               })
           })
         },
       }),
-    ],
+    ].filter((it) => !!it),
   }
 
   return result

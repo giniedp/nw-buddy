@@ -57,7 +57,7 @@ export function backstoryColPvp(util: BackstoryTableUtils) {
 export function backstoryColTerritories(util: BackstoryTableUtils) {
   return util.colDef<string[]>({
     colId: 'respawnPointTerritories',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Territories',
     width: 400,
     autoHeight: true,

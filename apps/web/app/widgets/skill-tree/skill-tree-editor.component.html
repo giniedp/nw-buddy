@@ -1,0 +1,34 @@
+@if(weaponType(); as type) {
+  <div class="weapon-input flex flex-col items-center py-2 relative uppercase text-nw-description">
+    <img
+      [nwImage]="'assets/loaders/crafting_rune_clockwise.png'"
+      class="w-48 h-48 max-h-48 text-white opacity-30 absolute -top-6 animate-spin-cw"
+    />
+    <picture class="block aspect-[7/4] w-52 relative select-none mx-auto z-0">
+      <img [nwImage]="type.IconPath" class="w-full h-full object-contain" />
+      <div class="font-serif absolute inset-0 flex flex-col items-center justify-center">
+        <span class="whitespace-nowrap overflow-hidden text-ellipsis z-10">
+          {{ type.UIName | nwText }}
+        </span>
+        @if (points().available; as points) {
+          <span class="text-5xl font-bold font-caslon">{{ points }}</span>
+          <span class="font-serif">{{ 'ui_available_points' | nwText }}</span>
+        }
+        <span class="font-caslon">{{ 'ui_level' | nwText }} {{ weaponLevel() }} / {{ weaponLevelMax() }}</span>
+      </div>
+    </picture>
+  </div>
+  <div class="grid grid-cols-1 @[500px]:grid-cols-2">
+    @for (tree of trees(); track tree.id) {
+      <nwb-skill-tree-input
+        class="rounded-md"
+        [points]="tree.points()"
+        [weaponTag]="tree.weaponTag"
+        [treeID]="tree.id"
+        [ngModel]="tree.value()"
+        (ngModelChange)="updateTree(tree.id, $event)"
+        [disabled]="disabled()"
+      />
+    }
+  </div>
+}

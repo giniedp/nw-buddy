@@ -1,0 +1,355 @@
+@theme {
+  --color-rarity-common-100: #dddddd;
+  --color-rarity-common-200: #666666;
+  --color-rarity-common-300: #2e3236;
+
+  --color-rarity-uncommon-100: #34ec5b;
+  --color-rarity-uncommon-200: #00ab1a;
+  --color-rarity-uncommon-300: #19451c;
+
+  --color-rarity-rare-100: #72ffff;
+  --color-rarity-rare-200: #31bdeb;
+  --color-rarity-rare-300: #144f5d;
+
+  --color-rarity-epic-100: #ff57ff;
+  --color-rarity-epic-200: #e600de;
+  --color-rarity-epic-300: #421849;
+
+  --color-rarity-legendary-100: #ffa535;
+  --color-rarity-legendary-200: #f07808;
+  --color-rarity-legendary-300: #55371c;
+
+  --color-rarity-artifact-100: #ff7c55;
+  --color-rarity-artifact-200: #b42e0a;
+  --color-rarity-artifact-300: #63230e;
+
+  --color-rarity-common: var(--color-rarity-common-100);
+  --color-rarity-uncommon: var(--color-rarity-uncommon-100);
+  --color-rarity-rare: var(--color-rarity-rare-100);
+  --color-rarity-epic: var(--color-rarity-epic-100);
+  --color-rarity-legendary: var(--color-rarity-legendary-100);
+  --color-rarity-artifact: var(--color-rarity-artifact-100);
+
+  --rarity-common-square-border: url('../../assets/icons/item/itembgsquare0.png');
+  --rarity-common-circle-border: url('../../assets/icons/item/itembgcircle0.png');
+  --rarity-common-square-fg: url('../../assets/icons/item/itemraritybgsquare0.png');
+  --rarity-common-circle-fg: url('../../assets/icons/item/itemraritybgcircle0.png');
+  --rarity-common-head-bg: url('../../assets/icons/item/tooltip_header_bg_0.png');
+
+  --rarity-uncommon-square-border: url('../../assets/icons/item/itembgsquare1.png');
+  --rarity-uncommon-circle-border: url('../../assets/icons/item/itembgcircle1.png');
+  --rarity-uncommon-square-bg: url('../../assets/icons/item/itemraritybgsquare1.png');
+  --rarity-uncommon-square-bg-named: url('../../assets/icons/item/itemraritybgsquarenamed1.png');
+  --rarity-uncommon-circle-bg: url('../../assets/icons/item/itemraritybgcircle1.png');
+  --rarity-uncommon-head-bg: url('../../assets/icons/item/tooltip_header_bg_1.png');
+  --rarity-uncommon-head-ani: url('../../assets/icons/item/named_bg_1.webp');
+
+  --rarity-rare-square-border: url('../../assets/icons/item/itembgsquare2.png');
+  --rarity-rare-circle-border: url('../../assets/icons/item/itembgcircle2.png');
+  --rarity-rare-square-bg: url('../../assets/icons/item/itemraritybgsquare2.png');
+  --rarity-rare-square-bg-named: url('../../assets/icons/item/itemraritybgsquarenamed2.png');
+  --rarity-rare-circle-bg: url('../../assets/icons/item/itemraritybgcircle2.png');
+  --rarity-rare-head-bg: url('../../assets/icons/item/tooltip_header_bg_2.png');
+  --rarity-rare-head-ani: url('../../assets/icons/item/named_bg_2.webp');
+
+  --rarity-epic-square-border: url('../../assets/icons/item/itembgsquare3.png');
+  --rarity-epic-circle-border: url('../../assets/icons/item/itembgcircle3.png');
+  --rarity-epic-square-bg: url('../../assets/icons/item/itemraritybgsquare3.png');
+  --rarity-epic-square-bg-named: url('../../assets/icons/item/itemraritybgsquarenamed3.png');
+  --rarity-epic-circle-bg: url('../../assets/icons/item/itemraritybgcircle3.png');
+  --rarity-epic-head-bg: url('../../assets/icons/item/tooltip_header_bg_3.png');
+  --rarity-epic-head-ani: url('../../assets/icons/item/named_bg_3.webp');
+
+  --rarity-legendary-square-border: url('../../assets/icons/item/itembgsquare4.png');
+  --rarity-legendary-circle-border: url('../../assets/icons/item/itembgcircle4.png');
+  --rarity-legendary-square-bg: url('../../assets/icons/item/itemraritybgsquare4.png');
+  --rarity-legendary-square-bg-named: url('../../assets/icons/item/itemraritybgsquarenamed4.png');
+  --rarity-legendary-circle-bg: url('../../assets/icons/item/itemraritybgcircle4.png');
+  --rarity-legendary-head-bg: url('../../assets/icons/item/tooltip_header_bg_4.png');
+  --rarity-legendary-head-ani: url('../../assets/icons/item/named_bg_4.webp');
+
+  --rarity-artifact-square-bg: url('../../assets/icons/item/itemraritybgsquareartifact.png');
+  --rarity-artifact-square-bg-named: url('../../assets/icons/item/itemraritybgsquareartifact.png');
+  --rarity-artifact-circle-bg: url('../../assets/icons/item/itemraritybgsquareartifact.png');
+  --rarity-artifact-head-bg: url('../../assets/icons/item/tooltip_header_bg_artifact.png');
+  --rarity-artifact-head-ani: url('../../assets/icons/item/artifact_bg.webp');
+
+  --bg-ability-heal: url('../../assets/icons/abilities/abilities_bg1.png');
+  --bg-ability-attack: url('../../assets/icons/abilities/abilities_bg2.png');
+  --bg-ability-defense: url('../../assets/icons/abilities/abilities_bg3.png');
+  --bg-ability-magic: url('../../assets/icons/abilities/abilities_bg4.png');
+}
+
+@property --rarity-c0 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #dddddd;
+}
+@property --rarity-c1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #666666;
+}
+@property --rarity-c2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #666666;
+}
+@property --rarity-c3 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #666666;
+}
+
+@source inline("text-rarity-{common,uncommon,rare,epic,legendary,artifact}");
+
+.is-embed .embed-hidden {
+  display: none !important;
+}
+.nw-item-rarity-common {
+  --rarity-c0: var(--color-rarity-common-100);
+  --rarity-c1: var(--color-rarity-common-200);
+  --rarity-c2: var(--color-rarity-common-300);
+  --rarity-bg-sqr: var(--rarity-common-square-bg);
+  --rarity-bg-rnd: var(--rarity-common-circle-bg);
+  --rarity-bg-head: var(--rarity-common-head-bg);
+}
+.nw-item-rarity-uncommon {
+  --rarity-c0: var(--color-rarity-uncommon-100);
+  --rarity-c1: var(--color-rarity-uncommon-200);
+  --rarity-c2: var(--color-rarity-uncommon-300);
+  --rarity-bg-sqr: var(--rarity-uncommon-square-bg);
+  --rarity-bg-rnd: var(--rarity-uncommon-circle-bg);
+  --rarity-bg-head: var(--rarity-uncommon-head-bg);
+  &.named {
+    --rarity-bg-sqr: var(--rarity-uncommon-square-bg-named);
+    --rarity-bg-ani: var(--rarity-uncommon-head-ani);
+  }
+}
+.nw-item-rarity-rare {
+  --rarity-c0: var(--color-rarity-rare-100);
+  --rarity-c1: var(--color-rarity-rare-200);
+  --rarity-c2: var(--color-rarity-rare-300);
+  --rarity-bg-sqr: var(--rarity-rare-square-bg);
+  --rarity-bg-rnd: var(--rarity-rare-circle-bg);
+  --rarity-bg-head: var(--rarity-rare-head-bg);
+  &.named {
+    --rarity-bg-sqr: var(--rarity-rare-square-bg-named);
+    --rarity-bg-ani: var(--rarity-rare-head-ani);
+  }
+}
+.nw-item-rarity-epic {
+  --rarity-c0: var(--color-rarity-epic-100);
+  --rarity-c1: var(--color-rarity-epic-200);
+  --rarity-c2: var(--color-rarity-epic-300);
+  --rarity-bg-sqr: var(--rarity-epic-square-bg);
+  --rarity-bg-rnd: var(--rarity-epic-circle-bg);
+  --rarity-bg-head: var(--rarity-epic-head-bg);
+  &.named {
+    --rarity-bg-sqr: var(--rarity-epic-square-bg-named);
+    --rarity-bg-ani: var(--rarity-epic-head-ani);
+  }
+}
+.nw-item-rarity-legendary {
+  --rarity-c0: var(--color-rarity-legendary-100);
+  --rarity-c1: var(--color-rarity-legendary-200);
+  --rarity-c2: var(--color-rarity-legendary-300);
+  --rarity-bg-sqr: var(--rarity-legendary-square-bg);
+  --rarity-bg-rnd: var(--rarity-legendary-circle-bg);
+  --rarity-bg-head: var(--rarity-legendary-head-bg);
+  &.named {
+    --rarity-bg-sqr: var(--rarity-legendary-square-bg-named);
+    --rarity-bg-ani: var(--rarity-legendary-head-ani);
+  }
+}
+.nw-item-rarity-artifact {
+  --rarity-c0: var(--color-rarity-artifact-100);
+  --rarity-c1: var(--color-rarity-artifact-200);
+  --rarity-c2: var(--color-rarity-artifact-300);
+  --rarity-bg-sqr: var(--rarity-artifact-square-bg);
+  --rarity-bg-rnd: var(--rarity-artifact-circle-bg);
+  --rarity-bg-head: var(--rarity-artifact-head-bg);
+  --rarity-bg-ani: var(--rarity-artifact-head-ani);
+}
+.nw-bg-pane {
+  background-image: url('/assets/bg-pane.jpg');
+}
+.nw-bg-title {
+  background-image: url('/assets/bg-title.png');
+  background-repeat: no-repeat;
+}
+.nw-bg-crafting-rune {
+  background-image: url('/assets/loaders/crafting_rune_clockwise.png');
+}
+.nw-item-frame {
+  border: 10px solid transparent;
+  border-image-width: 10px;
+  border-image-repeat: stretch;
+  border-image-slice: 17;
+  border-image-source: url('/assets/icons/item/frame-bg.png');
+}
+
+.nw-item-frame-content {
+  border: 1px solid transparent;
+  border-image-width: 2px;
+  border-image-repeat: stretch;
+  border-image-slice: 2;
+  border-image-source: url('/assets/icons/item/frame-border.png');
+  background-color: black;
+}
+.nw-item-divider {
+  opacity: 0.25;
+  border-width: 0;
+  background-image: url('/assets/icons/item/frame-divider.png');
+  background-repeat: repeat-x;
+  height: 1px;
+  &.masked {
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  }
+}
+
+.nw-item-section:not(.hidden):not(:empty) ~ .nw-item-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  &::before {
+    position: relative;
+    top: -8px;
+    content: '';
+    display: block;
+    height: 1px;
+    background-image: url('/assets/icons/item/frame-divider.png');
+    background-repeat: repeat-x;
+    opacity: 0.25;
+    border-width: 0;
+  }
+}
+.nw-item-header {
+  position: relative;
+  z-index: 0;
+}
+.nw-item-header-bg {
+  background: var(--rarity-bg-head, url('/assets/icons/item/tooltip_header_bg_0.png')) var(--rarity-c2);
+  background-position: 50% 50%;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: --rarity-c1 0.15s ease;
+  z-index: -1;
+}
+.nw-item-header-fg {
+  z-index: -1;
+  background-image: var(--rarity-bg-ani);
+  background-position: 50% 90%;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.nw-item-icon-frame {
+  display: block;
+  position: relative;
+}
+.nw-item-icon-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid transparent;
+  background: linear-gradient(to bottom, var(--rarity-c0, #c8c8c8), var(--rarity-c1, #a1a1a1)) border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  transition:
+    --rarity-c1 0.15s ease,
+    --rarity-c2 0.15s ease;
+  &.rounded-full {
+    border: 2px solid transparent;
+  }
+}
+.nw-item-icon-bg {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-image: var(--rarity-bg-sqr, url('/assets/icons/item/itemraritybgsquare0.png'));
+  &.rounded-full {
+    background-image: var(--rarity-bg-rnd, url('/assets/icons/item/itemraritybgcircle0.png'));
+  }
+}
+.nw-item-icon-mask {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+picture.nw-icon {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  img {
+    object-fit: cover;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    z-index: 2;
+  }
+
+  position: relative;
+  background-size: contain;
+
+  &:not(.border) {
+    border: 1px solid transparent;
+  }
+  border-image-width: 2px;
+  border-image-repeat: stretch;
+  border-image-slice: 2;
+
+  &.bg-rarity-common {
+    border-image-source: var(--rarity-common-square-border);
+    background-image: var(--rarity-common-square-bg);
+  }
+
+  &.bg-rarity-uncommon {
+    border-image-source: var(--rarity-uncommon-square-border);
+    background-image: var(--rarity-uncommon-square-bg);
+  }
+
+  &.bg-rarity-rare {
+    border-image-source: var(--rarity-rare-square-border);
+    background-image: var(--rarity-rare-square-bg);
+  }
+
+  &.bg-rarity-epic {
+    border-image-source: var(--rarity-epic-square-border);
+    background-image: var(--rarity-epic-square-bg);
+  }
+
+  &.bg-rarity-legendary {
+    border-image-source: var(--rarity-legendary-square-border);
+    background-image: var(--rarity-legendary-square-bg);
+  }
+}
+
+.nw-icon {
+  &.bg-ability-heal {
+    background-image: var(--bg-ability-heal);
+  }
+  &.bg-ability-attack {
+    background-image: var(--bg-ability-attack);
+  }
+  &.bg-ability-defense {
+    background-image: var(--bg-ability-defense);
+  }
+  &.bg-ability-magic {
+    background-image: var(--bg-ability-magic);
+  }
+}

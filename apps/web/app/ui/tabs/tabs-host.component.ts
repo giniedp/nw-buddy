@@ -18,7 +18,7 @@ import { TabsComponent } from './tabs.component'
       <ng-content />
     </div>
   `,
-  styleUrl: './tabs-host.component.scss',
+  styleUrl: './tabs-host.component.css',
   imports: [TabsContentComponent],
   exportAs: 'tabsHost',
 })

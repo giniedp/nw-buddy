@@ -5,6 +5,6 @@
 }
 <div class="inline-grid grid-cols-5 gap-1 mx-auto">
   @for (slot of slots(); track $index) {
-    <nwb-gear-cell-slot-effect [effectId]="slot?.id" [max]="1" [disabled]="disabled" (effectChange)="handleEffectChange($event)" />
+    <nwb-gear-cell-slot-effect [effectId]="slot?.id" [max]="1" [disabled]="disabled" (effectChange)="handleEffectChange($event)" class="max-w-14" />
   }
 </div>

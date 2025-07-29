@@ -2,7 +2,7 @@ import { EventEmitter, Injectable, inject } from '@angular/core'
 import { EquipSlot, getEquipSlotForId } from '@nw-data/common'
 import { ItemInstanceRecord, ItemInstanceRow } from '~/data'
 import { DnDService } from '~/utils/services/dnd.service'
-import { GersetLoadoutSlotComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
+import { GearsetLoadoutSlotComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
 
 export interface ItemDroppedEvent {
   slot: EquipSlot
@@ -15,9 +15,9 @@ export class GearsetFormSlotHandler extends LoadoutSlotEventHandler {
 
   private dnd = inject(DnDService)
 
-  public override click(e: MouseEvent, component: GersetLoadoutSlotComponent): void {}
+  public override click(e: MouseEvent, component: GearsetLoadoutSlotComponent): void {}
 
-  public override dragEnter(e: DragEvent, component: GersetLoadoutSlotComponent): void {
+  public override dragEnter(e: DragEvent, component: GearsetLoadoutSlotComponent): void {
     const data = this.dnd.data
     const slot = getEquipSlotForId(component.slotId())
     if (isApplicable(data, slot)) {
@@ -27,10 +27,10 @@ export class GearsetFormSlotHandler extends LoadoutSlotEventHandler {
     }
   }
 
-  public override dragLeave(e: DragEvent, component: GersetLoadoutSlotComponent): void {
+  public override dragLeave(e: DragEvent, component: GearsetLoadoutSlotComponent): void {
     component.dragState.set('idle')
   }
-  override dragOver(e: DragEvent, component: GersetLoadoutSlotComponent): void {
+  override dragOver(e: DragEvent, component: GearsetLoadoutSlotComponent): void {
     const data = this.dnd.data as ItemInstanceRow
     const slot = getEquipSlotForId(component.slotId())
     if (isApplicable(data, slot)) {
@@ -42,7 +42,7 @@ export class GearsetFormSlotHandler extends LoadoutSlotEventHandler {
     }
     e.preventDefault()
   }
-  override dragDrop(e: DragEvent, component: GersetLoadoutSlotComponent): void {
+  override dragDrop(e: DragEvent, component: GearsetLoadoutSlotComponent): void {
     component.dragState.set('idle')
     const slot = getEquipSlotForId(component.slotId())
     const data = this.dnd.data as ItemInstanceRow

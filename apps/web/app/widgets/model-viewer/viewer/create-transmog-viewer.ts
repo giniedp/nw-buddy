@@ -35,6 +35,7 @@ export interface TransmogViewerModel extends ISceneLoaderAsyncResult {
   slot: TransmogModelSlot
 }
 
+const IGNORED_MESHES = ['xray', 'head1_primitive1', , 'head1_primitive2']
 export function createTransmogViewer(canvas: HTMLCanvasElement) {
   NwMaterialPlugin.register()
 
@@ -43,7 +44,6 @@ export function createTransmogViewer(canvas: HTMLCanvasElement) {
   bindGlowLayerPulse(scene, pipeline)
   bindCameraCenter(scene, camera)
   bindTimeOfDay(scene)
-  //scene.debugLayer.show()
 
   function useAppearance(
     tag: string,
@@ -70,7 +70,10 @@ export function createTransmogViewer(canvas: HTMLCanvasElement) {
       return
     }
     for (const mesh of meshes) {
-      if (!mesh.name?.toLowerCase()?.includes('shadowproxy')) {
+      const isIgnored = IGNORED_MESHES.some((it) => mesh.name?.toLowerCase()?.includes(it))
+      if (isIgnored) {
+        mesh.setEnabled(true)
+      } else {
         mesh.setEnabled(!names.includes(mesh.name))
       }
     }
@@ -168,8 +171,7 @@ function createScene(canvas: HTMLCanvasElement) {
   pipeline.imageProcessing.contrast = 1.2
   pipeline.imageProcessing.exposure = 1
   pipeline.grainEnabled = false
-  pipeline.depthOfFieldEnabled = true
-  pipeline.fxaaEnabled = true
+  pipeline.depthOfFieldEnabled = false
   pipeline.glowLayerEnabled = true
   pipeline.glowLayer.intensity = 0.25
 
@@ -233,9 +235,12 @@ async function loadModel(scene: Scene, url: string, slot: TransmogModelSlot) {
   }
 
   for (const mesh of result.meshes) {
-    Tags.AddTagsTo(mesh, slot)
-    if (mesh.name?.toLowerCase()?.includes('shadowproxy')) {
+    const isIgnored = IGNORED_MESHES.some((it) => mesh.name === it)
+    if (isIgnored) {
       mesh.setEnabled(false)
+      mesh.isVisible = false
+    } else {
+      Tags.AddTagsTo(mesh, slot)
     }
     mesh.receiveShadows = isLevel
   }
@@ -452,24 +457,20 @@ function bindTimeOfDay(scene: Scene) {
   const context = getContext(scene)
   const tweenTime = 1000
   const minIntensity = 0.001
-  const maxIntensity = 0.75
-  const minSky = Color3.FromHexString('#000000')
-  const maxSky = Color3.FromHexString('#87ceeb')
+  const maxIntensity = 1
 
   let targetIntensity = 0
-  let targetSky = Color3.Black()
   scene.registerBeforeRender(() => {
     const step = scene.getEngine().getTimeStep()
     const target = Math.max(0.001, Math.min(1, context.timeOfDay))
 
     targetIntensity = Scalar.Lerp(minIntensity, maxIntensity, target)
-    Color3.LerpToRef(minSky, maxSky, target, targetSky)
 
     scene.environmentIntensity = Scalar.Lerp(scene.environmentIntensity, targetIntensity, step / tweenTime)
-    scene.clearColor.r = Scalar.Lerp(scene.clearColor.r, targetSky.r, step / tweenTime)
-    scene.clearColor.g = Scalar.Lerp(scene.clearColor.g, targetSky.g, step / tweenTime)
-    scene.clearColor.b = Scalar.Lerp(scene.clearColor.b, targetSky.b, step / tweenTime)
-    scene.clearColor.a = 1
+    scene.clearColor.r = 0
+    scene.clearColor.g = 0
+    scene.clearColor.b = 0
+    scene.clearColor.a = 0
   })
 }
 

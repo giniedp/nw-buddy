@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core'
 import { getCraftingYieldBonus } from '@nw-data/common'
 import { from, map, Observable, of, switchMap } from 'rxjs'
-import { CharacterService, injectNwData } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
 import { CraftingBuffStore } from './crafting-bonus/crafting-buff.store'
 import { CraftingStep } from './loader/load-recipe'
 import { AmountDetail, AmountMode } from './types'
@@ -9,7 +9,7 @@ import { AmountDetail, AmountMode } from './types'
 @Injectable({ providedIn: 'root' })
 export class CraftingCalculatorService {
   private db = injectNwData()
-  private char = inject(CharacterService)
+  private char = inject(CharacterStore)
   private buffs = inject(CraftingBuffStore)
 
   public fetchItem(itemId: string) {

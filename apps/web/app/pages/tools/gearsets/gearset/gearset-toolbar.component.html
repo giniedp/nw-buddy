@@ -5,50 +5,124 @@
     <nwb-icon [icon]="iconBack" class="w-4 h-4" />
   }
 </button>
-
-<input
-  type="text"
-  placeholder=""
-  class="input input-bordered w-full h-10 min-w-[200px]"
-  maxlength="100"
-  [ngModel]="gearset?.name"
-  (ngModelChange)="updateName($event)"
-  [ngModelOptions]="{ updateOn: 'blur' }"
-/>
+@if (gearset() && !isOwned()) {
+  <div class="leading-tight w-full">
+    <h3 class="font-bold">Gearset</h3>
+    <span>
+      {{ gearset().name }}
+    </span>
+  </div>
+}
+@if (gearset() && isOwned()) {
+  <label class="input input-bordered input-sm w-full flex items-center gap-1">
+    <input
+      type="text"
+      class="grow"
+      maxlength="100"
+      [ngModel]="gearset()?.name"
+      (ngModelChange)="updateName($event)"
+      [ngModelOptions]="{ updateOn: 'blur' }"
+      [disabled]="!isEditable()"
+    />
+    @if (isSignedIn() && isEditable()) {
+      @if (isSyncPending()) {
+        <nwb-icon
+          [icon]="iconInfo"
+          class="w-4 h-4 text-warning cursor-help tooltip tooltip-left"
+          [attr.data-tip]="'Sync pending'"
+        />
+      }
+      @if (isSyncConflict()) {
+        <nwb-icon
+          [icon]="iconInfo"
+          class="w-4 h-4 text-error cursor-help tooltip tooltip-left"
+          [attr.data-tip]="'Sync conflict'"
+        />
+      }
+      @if (isPublic()) {
+        <nwb-icon
+          [icon]="iconGlobe"
+          class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+          [attr.data-tip]="'Public gearset'"
+        />
+      }
+    }
+  </label>
+}
+@if (!gearset()) {
+  <div class="w-full"></div>
+}
 
 <div class="join">
-  <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
-    <nwb-icon [icon]="iconTags" class="w-4 h-4" />
-  </button>
-  <ng-template #tplTagPicker>
-    <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
-      <nwb-chips-input-pane
-        [tags]="presetTags"
-        [placeholder]="'custom tags'"
-        [ngModel]="gearset?.tags"
-        (ngModelChange)="updateTags(gearset, $event)"
-      />
-    </div>
-  </ng-template>
+  @if (isEditable()) {
+    <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
+      <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+    </button>
+    <ng-template #tplTagPicker>
+      <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+        <nwb-chips-input-pane
+          [maxLength]="25"
+          [tags]="presetTags()"
+          [placeholder]="'custom tags'"
+          [ngModel]="gearset()?.tags"
+          (ngModelChange)="updateTags(gearset(), $event)"
+        />
+      </div>
+    </ng-template>
+  }
 
-  <button [nwbScreenshotBtn] class="join-item btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
+  <button
+    [nwbScreenshotBtn]
+    class="join-item btn btn-ghost btn-square"
+    [tooltip]="'Screenshot'"
+    [disabled]="!gearset()"
+  ></button>
 
-  <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
-    <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
-  </button>
+  @if (isEditable()) {
+    <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+      <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+    </button>
+  }
 </div>
 
 <ng-template #menu>
   <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0" cdkMenu>
-    <li class="text-shadow-sm shadow-black">
-      <a cdkMenuItem (click)="onShareClicked()" class="rounded-none">
-        <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
-        <div class="flex flex-col leading-none">
-          <span>Share</span>
-          <span class="text-xs opacity-75">Upload online and create a share URL</span>
-        </div>
-      </a>
-    </li>
+    @if (!isSignedIn()) {
+      <li class="text-shadow-sm shadow-black">
+        <a cdkMenuItem (click)="onShareClicked()" class="rounded-none">
+          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Share</span>
+            <span class="text-xs opacity-75">Upload online and create a share URL</span>
+          </div>
+        </a>
+      </li>
+    } @else if (isPublic()) {
+      <li class="text-shadow-sm shadow-black">
+        <button cdkMenuItem (click)="onUnpublishClicked()" class="rounded-none">
+          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Unpublish</span>
+            <span class="text-xs opacity-75">Removes this gearset from public listing</span>
+          </div>
+        </button>
+      </li>
+    } @else {
+      <li class="text-shadow-sm shadow-black">
+        <button cdkMenuItem (click)="onPublishClicked()" class="rounded-none" [disabled]="!isPublishable()">
+          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Publish</span>
+            @if (isPublishable()) {
+              <span class="text-xs opacity-75">Publish this gearsets for other users to see</span>
+            } @else {
+              <span class="text-xs text-error">Gearsets with <b>linked</b> items can not be published</span>
+            }
+          </div>
+        </button>
+      </li>
+    }
+
     <li class="text-shadow-sm shadow-black">
       <a (click)="onCloneClicked()" cdkMenuItem class="rounded-none">
         <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-2" />

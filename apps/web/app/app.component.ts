@@ -15,11 +15,12 @@ import { TranslateService } from './i18n'
 
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { IonApp, IonButton, IonButtons, IonContent, IonRouterOutlet, IonSplitPane } from '@ionic/angular/standalone'
+import { IonApp, IonButtons, IonContent, IonSplitPane } from '@ionic/angular/standalone'
 import { environment } from '../environments'
 import { LANG_OPTIONS, LanguageOption } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
-import { injectNwData } from './data/nw-data/provider'
+import { AuthComponent } from './auth/auth.component'
+import { BackendService } from './data/backend'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
 import { IconsModule } from './ui/icons'
@@ -38,7 +39,7 @@ console.debug('environment', environment)
 @Component({
   selector: 'nw-buddy-app',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AeternumMapModule,
@@ -55,6 +56,7 @@ console.debug('environment', environment)
     IonContent,
     IonSplitPane,
     IonButtons,
+    AuthComponent,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [
@@ -162,8 +164,7 @@ export class AppComponent {
   protected iconGithub = svgGithub
   protected iconDiscord = svgDiscord
   protected iconBack = svgChevronLeft
-  private db = injectNwData()
-  //private items = toSignal(from(this.db.itemsAll()), { initialValue: [] })
+  protected backend = inject(BackendService)
 
   constructor(
     private preferences: AppPreferencesService,
@@ -237,5 +238,13 @@ export class AppComponent {
       segments.unshift(new UrlSegment(selection.value, {}))
     }
     return url
+  }
+
+  protected onUserSignedIn(userId: string) {
+    console.log('User signed in', userId)
+  }
+
+  protected onUserSignedOut(userId: string) {
+    console.log('User signed out', userId)
   }
 }

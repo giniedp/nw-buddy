@@ -11,7 +11,7 @@ import { PropertyGridEntry } from './property-grid-entry'
 @Component({
   selector: 'nwb-property-grid',
   templateUrl: './property-grid.component.html',
-  styleUrls: ['./property-grid.component.scss'],
+  styleUrl: './property-grid.component.css',
   imports: [NwModule, CommonModule, RouterModule, TooltipModule],
   providers: [DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,14 @@
+<nwb-item-slot
+  class="w-full aspect-square"
+  [slotIcon]="slotIcon()"
+  [icon]="icon()"
+  [rarity]="'common'"
+  [isNamed]="false"
+  [isLinked]="false"
+  [gemIcon]="null"
+/>
+<div class="flex flex-row absolute bottom-[1px] left-[1px] right-[1px] bg-base-300/75">
+  @for (color of colors(); track $index) {
+    <div [style.background-color]="color" class="flex-1 h-2.5"></div>
+  }
+</div>

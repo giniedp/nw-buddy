@@ -9,7 +9,6 @@ import { apiResource } from '~/utils'
 @Component({
   selector: 'nwb-weapon-chart',
   templateUrl: './weapon-chart.component.html',
-  styleUrls: ['./weapon-chart.component.scss'],
   imports: [CommonModule, NwModule, ChartModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

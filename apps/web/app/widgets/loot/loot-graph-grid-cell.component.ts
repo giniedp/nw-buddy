@@ -36,7 +36,7 @@ import { LootTagComponent } from './loot-tag.component'
           class="whitespace-nowrap"
         />
       </div>
-      <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto">
+      <div class="flex-none flex flex-row gap-1 p-1 bg-black/40 w-full overflow-auto">
         @if (chanceRel || rollThreshold) {
           <span
             class="whitespace-nowrap badge badge-sm cursor-help"

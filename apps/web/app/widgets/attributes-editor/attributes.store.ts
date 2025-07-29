@@ -1,6 +1,6 @@
-import { computed } from '@angular/core'
+import { computed, EventEmitter } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalMethod, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
 import { AttributeRef, NW_ATTRIBUTE_TYPES, NW_MAX_CHARACTER_LEVEL, solveAttributePlacingMods } from '@nw-data/common'
 import { from } from 'rxjs'
 import { injectNwData } from '~/data'
@@ -44,15 +44,35 @@ export const AttributesStore = signalStore(
     magnify: [],
     magnifyPlacement: null,
   }),
+  withProps(() => {
+    return {
+      assignedChanged: new EventEmitter<Record<AttributeRef, number>>(),
+      magnifyPlacementChanged: new EventEmitter<AttributeRef>(),
+    }
+  }),
   withMethods((state) => {
     return {
-      setLevel: (level: number) => patchState(state, { level }),
-      setBase: (base: Record<AttributeRef, number>) => patchState(state, { base: base || empty(ATTRIBUTE_MIN) }),
-      setAssigned: (assigned: Record<AttributeRef, number>) => patchState(state, { assigned: assigned || empty() }),
-      setBuffs: (buffs: Record<AttributeRef, number>) => patchState(state, { buffs: buffs || empty() }),
-      setMagnify: (magnify: number[]) => patchState(state, { magnify: magnify || [] }),
-      setMagnifyPlacement: (magnifyPlacement: AttributeRef) => patchState(state, { magnifyPlacement }),
-      setUnlocked: (unlocked: boolean) => patchState(state, { unlocked }),
+      setLevel: signalMethod((level: number) => {
+        patchState(state, { level })
+      }),
+      setBase: signalMethod((base: Record<AttributeRef, number>) => {
+        patchState(state, { base: base || empty(ATTRIBUTE_MIN) })
+      }),
+      setAssigned: signalMethod((assigned: Record<AttributeRef, number>) => {
+        patchState(state, { assigned: assigned || empty() })
+      }),
+      setBuffs: signalMethod((buffs: Record<AttributeRef, number>) => {
+        patchState(state, { buffs: buffs || empty() })
+      }),
+      setMagnify: signalMethod((magnify: number[]) => {
+        patchState(state, { magnify: magnify || [] })
+      }),
+      setMagnifyPlacement: signalMethod((magnifyPlacement: AttributeRef) => {
+        patchState(state, { magnifyPlacement })
+      }),
+      setUnlocked: signalMethod((unlocked: boolean) => {
+        patchState(state, { unlocked })
+      }),
     }
   }),
   withComputed(({ level, unlocked }) => {

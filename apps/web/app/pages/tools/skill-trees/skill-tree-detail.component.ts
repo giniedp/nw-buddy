@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { ToastController } from '@ionic/angular/standalone'
 import { AttributeRef } from '@nw-data/common'
-import { filter, switchMap } from 'rxjs'
-import { SkillBuildsDB, SkillSetRecord } from '~/data'
+import { combineLatest, filter, switchMap } from 'rxjs'
+import { SkillTreeRecord, SkillTreesService, SkillTreeStore } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareDialogComponent } from '~/pages/share'
 import { ChipsInputModule } from '~/ui/chips-input'
@@ -12,22 +13,25 @@ import { IconsModule } from '~/ui/icons'
 import {
   svgArrowRightArrowLeft,
   svgBars,
-  svgChevronLeft,
   svgClipboard,
+  svgExclamation,
+  svgGlobe,
+  svgInfoCircle,
   svgShareNodes,
   svgSliders,
   svgTags,
   svgTrashCan,
+  svgXmark,
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectRouteParam } from '~/utils'
+import { HtmlHeadService, injectParentRouteParam, injectRouteParam } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { SkillBuildValue, SkillBuilderComponent } from '~/widgets/skill-builder'
+import { SkillTreeEditorComponent, SkillTreeValue } from '~/widgets/skill-tree'
 import { GEARSET_TAGS } from '../gearsets/tags'
-import { SkillTreeDetailStore } from './skill-tree-detail.store'
+import { SyncBadgeComponent } from '~/ui/sync-badge'
 
 @Component({
   selector: 'nwb-skill-tree-detail',
@@ -38,37 +42,44 @@ import { SkillTreeDetailStore } from './skill-tree-detail.store'
     NwModule,
     FormsModule,
     RouterModule,
-    SkillBuilderComponent,
+    SkillTreeEditorComponent,
     IconsModule,
     ScreenshotModule,
     TooltipModule,
     LayoutModule,
     AttributesEditorModule,
     ChipsInputModule,
+    SyncBadgeComponent,
   ],
-  providers: [SkillTreeDetailStore],
+  providers: [SkillTreeStore],
   host: {
-    class: 'block',
+    class: 'ion-page bg-base-300',
   },
 })
-export class SkillBuildsDetailComponent {
+export class SkillTreeDetailComponent {
   private route = inject(ActivatedRoute)
   private router = inject(Router)
   private modal = inject(ModalService)
   private platform = inject(PlatformService)
+  private toast = inject(ToastController)
+  private store = inject(SkillTreeStore)
+  private service = inject(SkillTreesService)
 
-  private db = inject(SkillBuildsDB)
-  private store = inject(SkillTreeDetailStore)
-  private recordId$ = injectRouteParam('id')
+  private userId = injectParentRouteParam('userid')
+  private recordId = injectRouteParam('id')
 
-  protected get canEdit() {
-    return this.store.canEdit()
-  }
-  protected get record() {
-    return this.store.record()
-  }
+  protected record = this.store.skillTree
+  protected isLoading = this.store.isLoading
+  protected canEdit = this.store.isEditable
+  protected hasError = this.store.hasError
+  protected isPublic = this.store.isPublished
+  protected isSyncable = this.store.isSyncable
+  protected isSynced = this.store.isSyncComplete
+  protected isPending = this.store.isSyncPending
+  protected isConflict = this.store.isSyncConflict
+  protected canImport = this.store.isImportable
 
-  protected iconBack = svgChevronLeft
+  protected iconBack = svgXmark
   protected iconReset = svgArrowRightArrowLeft
   protected iconMenu = svgBars
   protected iconAttrs = svgSliders
@@ -76,12 +87,21 @@ export class SkillBuildsDetailComponent {
   protected iconCopy = svgClipboard
   protected iconDelete = svgTrashCan
   protected iconTags = svgTags
+  protected iconError = svgExclamation
+  protected iconInfo = svgInfoCircle
+  protected iconGlobe = svgGlobe
   protected isTagEditorOpen = false
   protected presetTags = GEARSET_TAGS.map((it) => it.value)
 
+  protected builder = viewChild(SkillTreeEditorComponent)
+
   public constructor(head: HtmlHeadService) {
-    this.store.load(this.recordId$)
-    this.store.setEditable(true)
+    this.store.connect(
+      combineLatest({
+        userId: this.userId,
+        recordId: this.recordId,
+      }),
+    )
 
     head.updateMetadata({
       title: 'Skill Build',
@@ -91,12 +111,12 @@ export class SkillBuildsDetailComponent {
     })
   }
 
-  protected updateModel(data: SkillBuildValue) {
-    const record = this.record
+  protected updateModel(data: SkillTreeValue) {
+    const record = this.record()
     if (!record) {
       return
     }
-    this.store.update({
+    this.service.update(record.id, {
       ...record,
       weapon: data.weapon,
       tree1: data.tree1,
@@ -104,23 +124,67 @@ export class SkillBuildsDetailComponent {
     })
   }
 
+  protected handleImportClicked() {
+    const record = this.record()
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Import Skill Tree',
+        label: 'Name',
+        value: record.name,
+        positive: 'Import',
+        negative: 'Cancel',
+      },
+    })
+      .result$.pipe(filter((it) => !!it))
+      .pipe(
+        switchMap((newName) => {
+          return this.service.dublicate({
+            ...record,
+            name: newName,
+          })
+        }),
+      )
+      .subscribe({
+        next: (newSet) => {
+          this.router.navigate(['/skill-trees', newSet.userId, newSet.id])
+          this.toast
+            .create({
+              message: 'Skill tree imported successfully',
+              duration: 3000,
+              color: 'success',
+            })
+            .then((toast) => toast.present())
+        },
+        error: (error) => {
+          console.error(error)
+          this.toast
+            .create({
+              message: 'Failed to import skill tree',
+              duration: 3000,
+              color: 'danger',
+            })
+            .then((toast) => toast.present())
+        },
+      })
+  }
+
   protected handleUpdateName(name: string) {
-    this.store.update({
-      ...this.record,
+    this.service.update(this.record().id, {
+      ...this.record(),
       name: name,
     })
   }
 
   protected handleUpdateAttributes(attrs: Record<AttributeRef, number>) {
-    this.store.update({
-      ...this.record,
+    this.service.update(this.record().id, {
+      ...this.record(),
       attrs: attrs,
     })
   }
 
   protected handleToggleAttributes() {
-    const record = this.record
-    this.store.update({
+    const record = this.record()
+    this.service.update(record.id, {
       ...record,
       attrs: record.attrs
         ? null
@@ -135,16 +199,66 @@ export class SkillBuildsDetailComponent {
   }
 
   protected handleUpdateTags(tags: string[]) {
-    this.store.update({
-      ...this.record,
+    this.service.update(this.record().id, {
+      ...this.record(),
       tags: tags || [],
     })
   }
 
+  protected handlePublish() {
+    this.service
+      .update(this.record().id, {
+        status: 'public',
+      })
+      .then(() => {
+        this.toast
+          .create({
+            message: 'Skill tree published successfully',
+            duration: 3000,
+            color: 'success',
+          })
+          .then((toast) => toast.present())
+      })
+      .catch(() => {
+        this.toast
+          .create({
+            message: 'Failed to publish skill tree',
+            duration: 3000,
+            color: 'danger',
+          })
+          .then((toast) => toast.present())
+      })
+  }
+
+  protected handleUnpublish() {
+    this.service
+      .update(this.record().id, {
+        status: 'private',
+      })
+      .then(() => {
+        this.toast
+          .create({
+            message: 'Skill tree unpublished successfully',
+            duration: 3000,
+            color: 'success',
+          })
+          .then((toast) => toast.present())
+      })
+      .catch(() => {
+        this.toast
+          .create({
+            message: 'Failed to unpublish skill tree',
+            duration: 3000,
+            color: 'danger',
+          })
+          .then((toast) => toast.present())
+      })
+  }
+
   protected handleShare() {
-    const ipnsKey = this.record.ipnsKey
-    const ipnsName = this.record.ipnsName
-    const record = cloneRecord(this.record)
+    const ipnsKey = this.record().ipnsKey
+    const ipnsName = this.record().ipnsName
+    const record = cloneRecord(this.record())
 
     ShareDialogComponent.open(this.modal, {
       inputs: {
@@ -191,7 +305,7 @@ export class SkillBuildsDetailComponent {
             if (!res.ipnsKey) {
               return
             }
-            this.store.update({
+            this.service.update(record.id, {
               ...record,
               ipnsKey: res.ipnsKey,
               ipnsName: res.ipnsName,
@@ -206,8 +320,8 @@ export class SkillBuildsDetailComponent {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create copy',
-        body: 'New skill-tree name',
-        value: `${this.record.name} (Copy)`,
+        label: 'Name',
+        value: `${this.record().name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',
       },
@@ -215,15 +329,26 @@ export class SkillBuildsDetailComponent {
       .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((name) => {
-          return this.db.create({
-            ...cloneRecord(this.record),
-            id: null,
-            name: name,
+          return this.service.dublicate({
+            ...this.record(),
+            name,
           })
         }),
       )
-      .subscribe((result) => {
-        this.router.navigate(['..', result.id], { relativeTo: this.route })
+      .subscribe({
+        next: ({ id }) => {
+          this.router.navigate(['..', id], { relativeTo: this.route })
+        },
+        error: (error) => {
+          console.error(error)
+          this.toast
+            .create({
+              message: 'Failed to clone skill tree',
+              duration: 3000,
+              color: 'danger',
+            })
+            .then((toast) => toast.present())
+        },
       })
   }
 
@@ -236,17 +361,36 @@ export class SkillBuildsDetailComponent {
         negative: 'Cancel',
       },
     })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe(() => {
-        this.store.destroy()
-        this.router.navigate(['..'], {
-          relativeTo: this.route,
-        })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.service.delete(this.record().id)),
+      )
+      .subscribe({
+        next: () => {
+          this.router.navigate(['..'], { relativeTo: this.route })
+          this.toast
+            .create({
+              message: 'Skill tree deleted successfully',
+              duration: 3000,
+              color: 'success',
+            })
+            .then((toast) => toast.present())
+        },
+        error: (error) => {
+          console.error(error)
+          this.toast
+            .create({
+              message: 'Failed to delete skill tree',
+              duration: 3000,
+              color: 'danger',
+            })
+            .then((toast) => toast.present())
+        },
       })
   }
 }
 
-function cloneRecord(record: SkillSetRecord) {
+function cloneRecord(record: SkillTreeRecord) {
   record = JSON.parse(JSON.stringify(record))
   delete record.ipnsKey
   delete record.ipnsName

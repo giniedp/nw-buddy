@@ -11,7 +11,7 @@ import { map } from 'rxjs'
 @Component({
   selector: 'nwb-recipes-tracking',
   templateUrl: './recipes-tracking.component.html',
-  styleUrls: ['./recipes-tracking.component.scss'],
+  styleUrl: './recipes-tracking.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, VirtualGridModule],
   host: {

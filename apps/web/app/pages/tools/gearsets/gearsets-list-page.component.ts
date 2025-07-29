@@ -1,19 +1,32 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { Component, computed, effect, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { debounceTime, filter, switchMap } from 'rxjs'
-import { GearsetRecord } from '~/data'
+import { GearsetRecord, GearsetsService } from '~/data'
+import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
-import { ShareService } from '~/pages/share'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
+import {
+  svgBars,
+  svgEmptySet,
+  svgFileImport,
+  svgFilterList,
+  svgGlobe,
+  svgHelmetBattle,
+  svgPlus,
+  svgTrashCan,
+} from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { injectRouteParam } from '~/utils'
 import { GearsetsListPageStore } from './gearsets-list-page.store'
-import { GearsetLoadoutItemComponent } from './loadout'
+//import { GearsetLoadoutItemComponent } from './loadout'
+import { GearsetLoadoutComponent } from '~/widgets/data/gearset-detail'
+import { LOCAL_USER_ID } from '~/data/constants'
 
 @Component({
   selector: 'nwb-gearsets-list-page',
@@ -28,7 +41,7 @@ import { GearsetLoadoutItemComponent } from './loadout'
     TooltipModule,
     LayoutModule,
     VirtualGridModule,
-    GearsetLoadoutItemComponent,
+    GearsetLoadoutComponent,
   ],
   providers: [QuicksearchService, GearsetsListPageStore],
   host: {
@@ -39,34 +52,53 @@ export class GearsetsListPageComponent {
   protected iconCreate = svgPlus
   protected iconImport = svgFileImport
   protected iconMore = svgFilterList
+  protected iconMenu = svgBars
+  protected iconDelete = svgTrashCan
+  protected iconGlobe = svgGlobe
+  protected iconEmpty = svgEmptySet
+  protected iconGearset = svgHelmetBattle
 
+  private backend = inject(BackendService)
+  private service = inject(GearsetsService)
   private store = inject(GearsetsListPageStore)
   private quicksearch = inject(QuicksearchService)
   private modal = inject(ModalService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-  private share = inject(ShareService)
+  protected userId = toSignal(injectRouteParam('userid'))
+  protected search = toSignal(this.quicksearch.query$.pipe(debounceTime(500)))
 
-  protected get filterTags() {
-    return this.store.filterTags()
-  }
-  protected get isTagFilterActive() {
-    return this.store.filterTags()?.some((it) => it.active)
-  }
-  protected get items() {
-    return this.store.filteredRecords()
-  }
+  protected isSignedIn = this.backend.isSignedIn
+  protected tags = this.store.tags
+  protected isTagFilterActive = computed(() => this.store.tags()?.some((it) => it.active))
+  protected items = this.store.displayRecords
+  protected isLoading = this.store.isLoading
+  protected isAvailable = this.store.isAvailable
+  protected totalCount = this.store.totalCount
+  protected displayCount = this.store.displayCount
+  protected isEmpty = this.store.isEmpty
+  protected trackBy = (it: GearsetRecord) => it.id
 
   public constructor() {
-    this.store.connectDB()
-    this.store.connectFilterQuery(this.quicksearch.query$.pipe(debounceTime(500)))
+    this.store.connectUser(this.userId)
+    this.store.connectSearch(this.search)
+
+    effect(() => {
+      const userId = this.backend.sessionUserId()
+      if (userId && this.userId() === LOCAL_USER_ID) {
+        this.router.navigate(['..', userId], { relativeTo: this.route })
+      }
+      if (!userId && this.userId() !== 'local') {
+        this.router.navigate(['..', 'local'], { relativeTo: this.route })
+      }
+    })
   }
 
-  protected async handleCreate() {
+  protected async handleCreateClicked() {
     PromptDialogComponent.open(this.modal, {
       inputs: {
-        title: 'Create new set',
-        body: 'Name for the new gearset',
+        title: 'Create new gearset',
+        label: 'Name',
         value: `New Gearset`,
         positive: 'Create',
         negative: 'Cancel',
@@ -75,7 +107,7 @@ export class GearsetsListPageComponent {
       .result$.pipe(
         filter((it) => !!it),
         switchMap((newName) => {
-          return this.store.createRecord({
+          return this.service.create({
             id: null,
             name: newName,
           })
@@ -86,7 +118,7 @@ export class GearsetsListPageComponent {
       })
   }
 
-  protected handleDelete(gearset: GearsetRecord) {
+  protected handleDeleteClicked(gearset: GearsetRecord) {
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
         title: 'Delete Gearset',
@@ -97,15 +129,23 @@ export class GearsetsListPageComponent {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
-        this.store.destroyRecord(gearset.id)
+        this.service.delete(gearset.id)
       })
   }
 
-  protected async handleImport() {
-    this.share.importItem(this.modal, this.router)
+  protected handlePublishClicked(gearset: GearsetRecord) {
+    this.service.update(gearset.id, {
+      status: 'public',
+    })
+  }
+
+  protected handleUnpublishClicked(gearset: GearsetRecord) {
+    this.service.update(gearset.id, {
+      status: 'private',
+    })
   }
 
   protected toggleTag(value: string) {
-    this.store.toggleFilterTag(value)
+    this.store.toggleTag(value)
   }
 }

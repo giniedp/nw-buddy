@@ -1,8 +1,8 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { Component, Injector, Input, inject } from '@angular/core'
+import { Component, Injector, Input, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { Router, RouterModule } from '@angular/router'
 import { patchState } from '@ngrx/signals'
 import {
   EquipSlotId,
@@ -17,28 +17,21 @@ import {
 } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { filter, firstValueFrom, map, switchMap } from 'rxjs'
-import {
-  GearsetRecord,
-  GearsetStore,
-  GearsetsDB,
-  ImagesDB,
-  ItemInstance,
-  ItemInstancesDB,
-  ResolvedItemPerkInfo,
-  injectNwData,
-  resolveGearsetSlotItems,
-} from '~/data'
+import { GearsetRecord, GearsetStore, GearsetsService, ItemInstance, ItemsService, ResolvedItemPerkInfo } from '~/data'
+import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { ShareDialogComponent } from '~/pages/share'
 import { ChipsInputModule } from '~/ui/chips-input'
 import { DataViewPicker } from '~/ui/data/data-view/data-view-picker.component'
 import { IconsModule } from '~/ui/icons'
 import {
+  svgBars,
   svgCalculator,
   svgCamera,
   svgChevronLeft,
-  svgEllipsisVertical,
   svgEraser,
+  svgFileImport,
+  svgGlobe,
   svgInfoCircle,
   svgPaste,
   svgShareNodes,
@@ -56,15 +49,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from '../dialogs'
 
-export const GEARSET_TAGS = [
-  { value: 'PvP', icon: '' },
-  { value: 'PvE', icon: '' },
-  { value: 'Tradeskill', icon: '' },
-  { value: 'Heal', icon: '' },
-  { value: 'Tank', icon: '' },
-  { value: 'Damage', icon: '' },
-]
-
 @Component({
   selector: 'nwb-gearset-toolbar',
   templateUrl: './gearset-toolbar.component.html',
@@ -81,16 +65,21 @@ export const GEARSET_TAGS = [
     OverlayModule,
   ],
   host: {
-    class: 'flex-1 flex flex-row items-center gap-1 overflow-x-auto',
+    class: 'flex-1 flex flex-row items-center gap-1 overflow-x-auto overflow-y-hidden',
   },
 })
 export class GearsetToolbarComponent {
+  private backend = inject(BackendService)
   private store = inject(GearsetStore)
   private injector = inject(Injector)
   private router = inject(Router)
-  private route = inject(ActivatedRoute)
   private vsQueryParam = queryParamModel('vs')
   private calcQueryParam = queryParamModel('calc')
+  private gearService = inject(GearsetsService)
+  private picker = inject(InventoryPickerService)
+  private itemsDb = inject(ItemsService)
+  private modal = inject(ModalService)
+  private platform = inject(PlatformService)
 
   protected iconCamera = svgCamera
   protected iconDelete = svgTrashCan
@@ -101,31 +90,29 @@ export class GearsetToolbarComponent {
   protected iconShare = svgShareNodes
   protected iconTags = svgTags
   protected iconCalculator = svgCalculator
-  protected iconMenu = svgEllipsisVertical
+  protected iconMenu = svgBars
   protected iconReset = svgEraser
   protected iconSwords = svgSwords
-  protected presetTags = GEARSET_TAGS.map((it) => it.value)
+  protected iconGlobe = svgGlobe
+  protected iconImport = svgFileImport
+  protected presetTags = computed(() => this.gearService.tags().map((it) => it.value))
   protected isTagEditorOpen = false
 
-  protected get gearset() {
-    return this.store.gearset()
-  }
-  protected get isLoaded() {
-    return this.store.isLoaded()
-  }
+  protected gearset = this.store.gearset
+  protected isEditable = computed(() => !!this.gearset() && this.store.isOwned())
+  protected isPublishable = this.store.isPublishable
+  protected isPublic = this.store.isPublished
+  protected isOwned = this.store.isOwned
+  protected isSyncPending = this.store.isSyncPending
+  protected isSyncConflict = this.store.isSyncConflict
+  protected isSignedIn = this.backend.isSignedIn
+  protected isLoaded = this.store.isLoaded
+  protected isLoading = this.store.isLoading
 
   @Input()
   public mode: 'player' | 'opponent' = 'player'
 
-  private db = injectNwData()
-  public constructor(
-    private gearDb: GearsetsDB,
-    private picker: InventoryPickerService,
-    private itemsDb: ItemInstancesDB,
-    private imagesDb: ImagesDB,
-    private modal: ModalService,
-    private platform: PlatformService,
-  ) {
+  public constructor() {
     patchState(this.store, {
       showCalculator: this.calcQueryParam.value() === 'true',
     })
@@ -135,12 +122,45 @@ export class GearsetToolbarComponent {
     this.store.patchGearset({ name: value })
   }
 
+  protected onPublishClicked() {
+    this.store.update({ status: 'public' })
+  }
+
+  protected onUnpublishClicked() {
+    this.store.update({ status: 'private' })
+  }
+
+  protected onImportClicked() {
+    const record = this.gearset()
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Import Gearset',
+        body: 'Rename imported gearset if needed',
+        value: record.name,
+        positive: 'Import',
+        negative: 'Cancel',
+      },
+    })
+      .result$.pipe(filter((it) => !!it))
+      .pipe(
+        switchMap((newName) => {
+          return this.gearService.dublicate({
+            ...record,
+            name: newName,
+          })
+        }),
+      )
+      .subscribe((newSet) => {
+        this.router.navigate(['/gearsets', newSet.userId, newSet.id])
+      })
+  }
+
   protected onCloneClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create copy',
-        body: 'New gearset name',
+        label: 'Name',
         value: `${record.name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',
@@ -149,7 +169,7 @@ export class GearsetToolbarComponent {
       .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((newName) => {
-          return this.gearDb.create({
+          return this.gearService.create({
             ...record,
             id: null,
             ipnsKey: null,
@@ -159,12 +179,13 @@ export class GearsetToolbarComponent {
         }),
       )
       .subscribe((newSet) => {
-        this.router.navigate(['..', newSet.id], { relativeTo: this.route })
+        this.router.navigate(['/gearsets', newSet.userId, newSet.id])
       })
   }
 
   protected onDeleteClicked() {
-    const record = this.store.gearset()
+    const record = this.gearset()
+    const userId = record.userId
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
         title: 'Delete Gearset',
@@ -175,26 +196,24 @@ export class GearsetToolbarComponent {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
-        if (record.imageId) {
-          this.imagesDb.destroy(record.imageId)
-        }
         if (record.id) {
-          this.gearDb.destroy(record.id)
+          this.gearService.delete(record.id)
         }
-        this.router.navigate(['..'], { relativeTo: this.route })
+        this.router.navigate(['/gearsets', userId])
       })
   }
 
   protected async onShareClicked() {
-    const record = this.store.clone()
+    const record = this.store.getCopy()
     const ipnsKey = record.ipnsKey
     const ipnsName = record.ipnsName
+    delete record.userId
     delete record.imageId
     delete record.createMode
     delete record.ipnsKey
     delete record.ipnsName
 
-    for (const [slot, it] of Object.entries(record.slots)) {
+    for (const [slot, it] of Object.entries(record.slots || {})) {
       if (typeof it === 'string') {
         record.slots[slot] = await this.itemsDb
           .read(it)
@@ -221,7 +240,7 @@ export class GearsetToolbarComponent {
           },
           published: (res) => {
             if (res.ipnsKey) {
-              this.gearDb.update(record.id, {
+              this.gearService.update(record.id, {
                 ipnsName: res.ipnsName,
                 ipnsKey: res.ipnsKey,
               })
@@ -240,23 +259,15 @@ export class GearsetToolbarComponent {
             if (!cid && !name) {
               return null
             }
-            const command = name ? ['../embed/ipns', name] : ['../embed/ipfs', cid]
-            return this.router
-              .createUrlTree(command, {
-                relativeTo: this.route,
-              })
-              .toString()
+            const command = name ? ['/gearsets/embed/ipns', name] : ['/gearsets/embed/ipfs', cid]
+            return this.router.createUrlTree(command).toString()
           },
           buildShareUrl: (cid, name) => {
             if (!cid && !name) {
               return null
             }
-            const command = name ? ['../share/ipns', name] : ['../share/ipfs', cid]
-            return this.router
-              .createUrlTree(command, {
-                relativeTo: this.route,
-              })
-              .toString()
+            const command = name ? ['/gearsets/share/ipns', name] : ['/gearsets/share/ipfs', cid]
+            return this.router.createUrlTree(command).toString()
           },
         },
       },
@@ -264,7 +275,7 @@ export class GearsetToolbarComponent {
   }
 
   protected updateTags(record: GearsetRecord, tags: string[]) {
-    this.gearDb.update(record.id, {
+    this.gearService.update(record.id, {
       ...record,
       tags: tags || [],
     })
@@ -279,8 +290,8 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchResetClicked() {
-    const record = this.store.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const record = this.gearset()
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const resetableIds: EquipSlotId[] = [
       'head',
       'chest',
@@ -320,8 +331,8 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchGemClicked() {
-    const record = this.store.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const record = this.gearset()
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const gemSlots = recordSlots.filter(({ item, perks }) =>
       perks.some(
         ({ perk, bucket }) => isPerkGem(bucket) || isPerkEmptyGemSlot(perk) || (isPerkGem(perk) && item?.CanReplaceGem),
@@ -370,8 +381,8 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchAttributeClicked() {
-    const record = this.store.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const record = this.gearset()
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const gearSlots = recordSlots.filter(({ item }) => isItemArmor(item) || isItemWeapon(item) || isItemJewelery(item))
     const armorSlotIds: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet', 'amulet', 'ring', 'earring']
     const weaponSlotIds: EquipSlotId[] = ['weapon1', 'weapon2', 'weapon3']
@@ -429,6 +440,7 @@ export class GearsetToolbarComponent {
       selection: [this.vsQueryParam.value() || null],
       dataView: {
         adapter: GearsetTableAdapter,
+        source: this.gearService.observeRows(this.backend.sessionUserId()),
       },
       injector: this.injector,
     })
@@ -457,8 +469,8 @@ export class GearsetToolbarComponent {
   }
 
   protected async onBatchGearScoreClicked() {
-    const record = this.store.gearset()
-    const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
+    const record = this.gearset()
+    const recordSlots = await firstValueFrom(this.gearService.resolveGearsetSlotItems(record))
     const gearSlotIds: EquipSlotId[] = [
       'head',
       'chest',

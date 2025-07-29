@@ -1,77 +1,112 @@
-<div class="flex flex-col gap-4 @lg:grid grid-auto-fill-[320px] grid-flow-dense">
-  <div
-    class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
-    #elMain
-    [nwbScreenshotFrame]="screenshotName('stats1')"
-    [nwbScreenshotLabel]="'Stats 1'"
-    [nwbScreenshotMode]="'detached'"
-    [nwbScreenshotWidth]="800"
-  >
-    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled" />
+@if (!gearset()) {
+  <div class="h-full flex items-center justify-center">
+    <div role="alert" class="alert alert-soft" [class.alert-error]="!isLoading()">
+      @if (isLoading()) {
+        <span class="loading loading-ring loading-sm"></span>
+        <div>
+          <h3 class="font-bold">Loading...</h3>
+          <div class="text-xs"></div>
+        </div>
+      } @else {
+        <nwb-icon [icon]="iconInfo" class="w-4 h-4 text-error" />
+        <div>
+          <h3 class="font-bold">Not available!</h3>
+          <div class="text-xs">The gearset does not exist or has not been published yet.</div>
+        </div>
+      }
+    </div>
   </div>
-
-  <div
-    class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
-    #elStats
-    [nwbScreenshotFrame]="screenshotName('stats2')"
-    [nwbScreenshotLabel]="'Stats 2'"
-    [nwbScreenshotMode]="'detached'"
-    [nwbScreenshotWidth]="800"
-  >
-    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled" />
-  </div>
-
-  <div
-    class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
-    #elSkill1
-    [nwbScreenshotFrame]="screenshotName('skills primary')"
-    [nwbScreenshotLabel]="'Skill Tree - Primary'"
-    [nwbScreenshotMode]="'detached'"
-    [nwbScreenshotWidth]="800"
-  >
-    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-skill
-      class="relative min-h-80 p-4 block"
-      [slot]="'primary'"
-      [gearset]="gearset"
-      [disabled]="disabled"
-    />
-  </div>
-
-  <div
-    class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
-    #elSkill2
-    [nwbScreenshotFrame]="screenshotName('skills secondary')"
-    [nwbScreenshotLabel]="'Skill Tree - Secondary'"
-    [nwbScreenshotMode]="'detached'"
-    [nwbScreenshotWidth]="800"
-  >
-    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-skill
-      class="relative min-h-80 p-4 block"
-      [slot]="'secondary'"
-      [gearset]="gearset"
-      [disabled]="disabled"
-    />
-  </div>
-
-  @for (slot of slots(); track $index) {
-    <div
-      class="shadow-lg rounded-md overflow-clip bg-black screenshot-body"
-      [class.screenshot-hidden]="elGear.isScreenshotHidden()"
-    >
-      <nwb-gear-cell-slot
-        class="min-h-80"
-        #elGear
-        [slotId]="slot.id"
-        [gearset]="gearset"
-        [disabled]="disabled"
-        [compact]="!showItemInfo"
-        [nwbScreenshotFrame]="screenshotName(slot.id)"
-        [nwbScreenshotLabel]="'Slot - ' + slot.id"
-      />
+} @else {
+  @if (!isOwned() && !isEmbed()) {
+    <div class="pb-4 sticky top-0 z-10 screenshot-hidden">
+      <div class="alert backdrop-blur-lg bg-base-200/30 max-w-md mx-auto">
+        <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-success" />
+        <div class="flex-1">
+          <h3 class="font-bold">Public gearset</h3>
+          <p class="text-xs">You can import this item into your collection.</p>
+        </div>
+        <div class="flex-none">
+          <button class="btn btn-sm btn-primary" (click)="handleImportClicked()">Import</button>
+        </div>
+      </div>
     </div>
   }
-</div>
+
+  <div class="flex flex-col gap-4 @lg:grid grid-auto-fill-[320px] grid-flow-dense">
+    <div
+      class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
+      #elMain
+      [nwbScreenshotFrame]="screenshotName('stats1')"
+      [nwbScreenshotLabel]="'Stats 1'"
+      [nwbScreenshotMode]="'detached'"
+      [nwbScreenshotWidth]="800"
+    >
+      <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+      <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="readonly()" />
+    </div>
+
+    <div
+      class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
+      #elStats
+      [nwbScreenshotFrame]="screenshotName('stats2')"
+      [nwbScreenshotLabel]="'Stats 2'"
+      [nwbScreenshotMode]="'detached'"
+      [nwbScreenshotWidth]="800"
+    >
+      <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+      <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="readonly()" />
+    </div>
+
+    <div
+      class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
+      #elSkill1
+      [nwbScreenshotFrame]="screenshotName('skills primary')"
+      [nwbScreenshotLabel]="'Skill Tree - Primary'"
+      [nwbScreenshotMode]="'detached'"
+      [nwbScreenshotWidth]="800"
+    >
+      <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+      <nwb-gearset-pane-skill
+        class="relative min-h-80 p-4 block"
+        [slot]="'primary'"
+        [gearset]="gearset()"
+        [disabled]="readonly()"
+      />
+    </div>
+
+    <div
+      class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2"
+      #elSkill2
+      [nwbScreenshotFrame]="screenshotName('skills secondary')"
+      [nwbScreenshotLabel]="'Skill Tree - Secondary'"
+      [nwbScreenshotMode]="'detached'"
+      [nwbScreenshotWidth]="800"
+    >
+      <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+      <nwb-gearset-pane-skill
+        class="relative min-h-80 p-4 block"
+        [slot]="'secondary'"
+        [gearset]="gearset()"
+        [disabled]="readonly()"
+      />
+    </div>
+
+    @for (slot of slots(); track $index) {
+      <div
+        class="shadow-lg rounded-md overflow-clip bg-black screenshot-body"
+        [class.screenshot-hidden]="elGear.isScreenshotHidden()"
+      >
+        <nwb-gear-cell-slot
+          class="min-h-80"
+          #elGear
+          [slotId]="slot.id"
+          [gearset]="gearset()"
+          [disabled]="readonly()"
+          [compact]="!showItemInfo()"
+          [nwbScreenshotFrame]="screenshotName(slot.id)"
+          [nwbScreenshotLabel]="'Slot - ' + slot.id"
+        />
+      </div>
+    }
+  </div>
+}

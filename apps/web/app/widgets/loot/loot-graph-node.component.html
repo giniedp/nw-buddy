@@ -3,13 +3,13 @@
 @if (itemId) {
   <nwb-item-detail
     [itemId]="itemId"
-    class="max-w-md rounded-md overflow-hidden border-2"
+    class="max-w-md rounded-md overflow-clip border-2"
     [class.border-transparent]="!highlight"
     [class.border-accent]="highlight"
     #detail="detail"
   >
     <nwb-item-detail-header class="h-full" [size]="'sm'" [enableLink]="true" [enableInfoLink]="true">
-      <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto scrollbar-hide">
+      <div class="flex-none flex flex-row gap-1 p-1 bg-black/40 w-full overflow-auto scrollbar-hide">
         @if (condition) {
           <nwb-loot-tag [checked]="condition.checked" [tooltip]="condition.tooltip">
             {{ condition.label }}
@@ -51,7 +51,7 @@
 }
 
 <ng-template #tplHead>
-  <div class="border border-base-100 rounded-l-md bg-black">
+  <div class="border border-base-100 rounded-l-md overflow-clip bg-black">
     <div
       class="px-2 py-1 flex flex-row items-center gap-x-1 bg-base-100 hover:bg-base-200 transition-colors cursor-pointer shadow-accent border-l-4"
       [class.border-l-transparent]="!highlight"

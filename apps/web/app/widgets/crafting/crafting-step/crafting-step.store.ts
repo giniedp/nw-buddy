@@ -1,15 +1,15 @@
 import { computed, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { getCraftingYieldBonus, getCraftingYieldBonusInfo } from '@nw-data/common'
-import { CharacterService, injectNwData } from '~/data'
+import { getCraftingYieldBonusInfo } from '@nw-data/common'
+import { CharacterStore, injectNwData } from '~/data'
+import { NwLinkService } from '~/nw'
 import { apiResource } from '~/utils'
 import { CraftingBuffStore } from '../crafting-bonus/crafting-buff.store'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingCalculatorStore } from '../crafting-calculator.store'
 import { CraftingStep } from '../loader/load-recipe'
 import { AmountMode } from '../types'
-import { NwLinkService } from '~/nw'
 
 export interface CraftingStepState {
   step: CraftingStep
@@ -55,7 +55,7 @@ export const CraftingStepStore = signalStore(
   }),
   withComputed(({ step }) => {
     const db = injectNwData()
-    const char = inject(CharacterService)
+    const char = inject(CharacterStore)
     const buffs = inject(CraftingBuffStore)
     const link = inject(NwLinkService)
     const resource = apiResource({

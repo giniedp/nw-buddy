@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { ArmorAppearanceDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
@@ -9,7 +10,7 @@ import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 
 @Component({
   selector: 'nwb-transmog-detail-page',
-  templateUrl: './transmog-detail-page.component.html',
+  template: ` <nwb-appearance-detail [appearance]="appearanceId()" (appearanceChange)="onEntity($event)" /> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, AppearanceDetailModule, LayoutModule],
   host: {
@@ -17,7 +18,7 @@ import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
   },
 })
 export class TransmogDetailPageComponent {
-  protected appearanceId$ = observeRouteParam(inject(ActivatedRoute), 'id')
+  protected appearanceId = toSignal(observeRouteParam(inject(ActivatedRoute), 'id'))
 
   public constructor(
     private head: HtmlHeadService,

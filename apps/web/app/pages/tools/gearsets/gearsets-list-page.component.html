@@ -1,57 +1,191 @@
 <ion-header class="bg-base-300">
   <div class="flex flex-col-reverse md:flex-row">
-    <span class="flex-1"></span>
-    <div class="join">
-      <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
-        <span class="indicator">
-          <nwb-icon [icon]="iconMore" class="w-5 h-5" />
-          @if (isTagFilterActive) {
-            <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
+    <div class="flex flex-row items-center flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
+      <div class="leading-tight ms-4">
+        <h3>Gearsets</h3>
+        <div class="text-sm text-base-content/50 italic">
+          @if (totalCount() !== displayCount()) {
+            Showing {{ displayCount() }} of {{ totalCount() }}
+          } @else {
+            Total: {{ totalCount() }}
           }
-        </span>
-      </button>
-
-      <ng-template #tplMenu>
-        <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
-          <div class="grid grid-cols-3 gap-1">
-            @for (item of filterTags; track $index) {
-              <button class="btn btn-sm btn-primary" [class.btn-outline]="!item.active" (click)="toggleTag(item.tag)">
-                {{ item.tag }}
-              </button>
-            }
-          </div>
         </div>
-      </ng-template>
+      </div>
+      <span class="flex-1"></span>
+      @if (!isEmpty()) {
+        <div class="flex flex-row items-center gap-1">
+          @if (tags()?.length) {
+            <button
+              class="join-item btn btn-square btn-ghost"
+              [cdkMenuTriggerFor]="tplMenu"
+              [tooltip]="'Filter by tag'"
+            >
+              <span class="indicator">
+                <nwb-icon [icon]="iconMore" class="w-5 h-5" />
+                @if (isTagFilterActive()) {
+                  <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
+                }
+              </span>
+            </button>
+            <ng-template #tplMenu>
+              <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
+                <div class="grid grid-cols-3 gap-1">
+                  @for (item of tags(); track $index) {
+                    <button
+                      class="btn btn-sm btn-primary"
+                      [class.btn-outline]="!item.active"
+                      (click)="toggleTag(item.tag)"
+                    >
+                      {{ item.tag }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </ng-template>
+          }
 
-      <button
-        (click)="handleCreate()"
-        class="join-item btn btn-ghost"
-        [tooltip]="'Create new gearset'"
-        [tooltipClass]="'bg-accent'"
-      >
-        <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
-      </button>
-      <button
-        (click)="handleImport()"
-        class="join-item btn btn-ghost"
-        [tooltip]="'Import Gearset'"
-        [tooltipClass]="'bg-accent'"
-      >
-        <nwb-icon [icon]="iconImport" class="w-4 h-4" />
-      </button>
+          <button
+            (click)="handleCreateClicked()"
+            class="join-item btn btn-ghost"
+            [tooltip]="'Create new gearset'"
+            [tooltipClass]="'bg-accent'"
+          >
+            <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
+          </button>
+        </div>
+      }
     </div>
-    <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input />
-    </div>
+    @if (!isEmpty()) {
+      <div class="flex-none p-2 w-full md:max-w-[256px]">
+        <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
+      </div>
+    }
   </div>
 </ion-header>
 <ion-content>
-  <nwb-virtual-grid [itemHeight]="272" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']">
-    <nwb-gearset-loadout-item
-      *nwbVirtualGridCell="items; let item"
-      [geasrsetId]="item?.id"
-      class="p-2 self-start"
-      (createClicked)="handleCreate()"
-    />
-  </nwb-virtual-grid>
+  @if (isLoading()) {
+    <ng-container [ngTemplateOutlet]="tplLoading" />
+  } @else if (!isAvailable()) {
+    <ng-container [ngTemplateOutlet]="tplNoPublic" />
+  } @else if (isEmpty()) {
+    <ng-container [ngTemplateOutlet]="tplEmpty" />
+  } @else if (!items()?.length) {
+    <ng-container [ngTemplateOutlet]="tplFilterEmpty" />
+  } @else {
+    <ng-container [ngTemplateOutlet]="tplGrid" />
+  }
 </ion-content>
+
+<ng-template #tplLoading>
+  <div class="h-full flex items-center justify-center">
+    <span class="loading loading-xl loading-ring"></span>
+  </div>
+</ng-template>
+
+<ng-template #tplNoPublic>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-error" />
+      <div>
+        <h3 class="font-bold">Not available</h3>
+        <span>Listing of public sets is not available yet</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplEmpty>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconGearset" class="w-10 h-10" />
+      <div>
+        <h3 class="font-bold">No gearsets yet</h3>
+        <span>Create your first Gearset</span>
+      </div>
+      <div class="flex-none">
+        <button class="btn btn-sm btn-primary" (click)="handleCreateClicked()">
+          <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
+          Create
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplFilterEmpty>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconEmpty" class="w-5 h-5 text-error" />
+      <div>
+        <h3 class="font-bold">No data</h3>
+        <div>Couldn't find any results</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplGrid>
+  <nwb-virtual-grid
+    [itemHeight]="284"
+    [itemWidth]="[480, 480]"
+    [columns]="[1, 4]"
+    [gridClass]="['-mx-2']"
+    [identifyBy]="trackBy"
+  >
+    <nwb-gearset-loadout
+      *nwbVirtualGridCell="items(); let item"
+      [gearset]="item"
+      [buttonTemplate]="tplButton"
+      class="p-2 self-start"
+    >
+      <ng-template #tplButton>
+        <div class="join w-full indicator">
+          <a class="join-item flex-1 btn btn-sm btn-ghost" [routerLink]="['/gearsets', item.userId, item.id]"> Open </a>
+          <button class="join-item flex-none btn btn-sm btn-square btn-ghost" [cdkMenuTriggerFor]="dropdownMenu">
+            <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+          </button>
+        </div>
+      </ng-template>
+
+      <ng-template #dropdownMenu>
+        <ul
+          class="my-1 p-0 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg text-shadow-sm shadow-black min-w-40"
+          cdkMenu
+        >
+          @if (isSignedIn()) {
+            @if (item.status === 'public') {
+              <li class="text-shadow-sm shadow-black">
+                <button (click)="handleUnpublishClicked(item)" cdkMenuItem>
+                  <nwb-icon [icon]="iconGlobe" class="w-4 h-4 text-error mr-2" />
+                  <div class="flex flex-col leading-none">
+                    <span>Unpublish</span>
+                    <span class="text-xs opacity-75">Removes this set from public listing</span>
+                  </div>
+                </button>
+              </li>
+            } @else {
+              <li class="text-shadow-sm shadow-black">
+                <button (click)="handlePublishClicked(item)" cdkMenuItem>
+                  <nwb-icon [icon]="iconGlobe" class="w-4 h-4 text-success mr-2" />
+                  <div class="flex flex-col leading-none">
+                    <span>Publish</span>
+                    <span class="text-xs opacity-75">Publishes this set for other users to see</span>
+                  </div>
+                </button>
+              </li>
+            }
+          }
+          <li class="text-shadow-sm shadow-black">
+            <button (click)="handleDeleteClicked(item)" cdkMenuItem>
+              <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error mr-2" />
+              <div class="flex flex-col leading-none">
+                <span>Delete</span>
+                <span class="text-xs opacity-75">Delete this set</span>
+              </div>
+            </button>
+          </li>
+        </ul>
+      </ng-template>
+    </nwb-gearset-loadout>
+  </nwb-virtual-grid>
+</ng-template>

@@ -1,5 +1,5 @@
 import { DecimalPipe, PercentPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input, Input, signal } from '@angular/core'
 import { GearCellAttributesComponent } from '../cells/gear-cell-attributes.component'
 import { GearCellAvatarComponent } from '../cells/gear-cell-avatar.component'
 import { GearCellEquipLoadComponent } from '../cells/gear-cell-equip-load.component'
@@ -26,6 +26,5 @@ import { GearCellSlotsTownBuffsComponent } from '../cells/gear-cell-slots-town-b
   providers: [PercentPipe, DecimalPipe],
 })
 export class GearsetPaneMainComponent {
-  @Input()
-  public disabled = false
+  public disabled = input(false)
 }

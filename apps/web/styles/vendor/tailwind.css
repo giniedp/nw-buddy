@@ -1,0 +1,168 @@
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: nw-buddy --default, nw-buddy --prefersdark;
+}
+@plugin "daisyui/theme" {
+  name: 'nw-buddy';
+  default: true;
+  prefersdark: true;
+  color-scheme: 'dark';
+  --color-base-100: oklch(0.252 0 0);
+  --color-base-200: oklch(0.2134 0 0);
+  --color-base-300: oklch(0.1776 0 0);
+  --color-base-content: oklch(97.807% 0.029 256.847);
+  --color-primary: oklch(77.48% 0.204 60.62);
+  --color-primary-content: oklch(14% 0.005 285.823);
+  --color-secondary: oklch(45.98% 0.248 305.03);
+  --color-secondary-content: oklch(0.8658 0.08655 308.4514);
+  --color-accent: oklch(64.8% 0.223 136.07347934356451);
+  --color-accent-content: oklch(0.9585 0.0955 130.18);
+  --color-neutral: oklch(14% 0.005 285.823);
+  --color-neutral-content: oklch(92% 0.004 286.32);
+  --color-info: oklch(0.5461 0.2152 262.88);
+  --color-info-content: oklch(0.8998 0.0482 266.02);
+  --color-success: oklch(0.6271 0.1699 149.21);
+  --color-success-content: oklch(0.9456 0.0855 156.68);
+  --color-warning: oklch(0.6658 0.1574 58.32);
+  --color-warning-content: oklch(0.2326 0.0511 67.73);
+  --color-error: oklch(0.5771 0.2152 27.33);
+  --color-error-content: oklch(0.8918 0.0568 18.27);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.21875rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+
+  /* RGB variant of color scheme, used for ionic */
+  --color-base-100-rgb: 34 34 34;
+  --color-base-200-rgb: 25 25 25;
+  --color-base-300-rgb: 17 17 17;
+  --color-base-content-rgb: 234 249 255;
+  --color-primary-rgb: 242 140 24;
+  --color-primary-content-rgb: 19 22 22;
+  --color-secondary-rgb: 109 58 156;
+  --color-secondary-content-rgb: 227 196 255;
+  --color-accent-rgb: 81 168 0;
+  --color-accent-content-rgb: 220 255 187;
+  --color-neutral-rgb: 27 29 29;
+  --color-neutral-content-rgb: 207 212 212;
+  --color-info-rgb: 37 99 235;
+  --color-info-content-rgb: 207 222 255;
+  --color-success-rgb: 22 163 74;
+  --color-success-content-rgb: 190 255 214;
+  --color-warning-rgb: 217 119 6;
+  --color-warning-content-rgb: 45 24 0;
+  --color-error-rgb: 220 38 38;
+  --color-error-content-rgb: 255 205 205;
+}
+
+@theme {
+  --font-serif: New-World, ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-caslon: Caslon-Antique, ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-nimbus: Nimbus, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1400px;
+  --breakpoint-3xl: 1600px;
+  --breakpoint-4xl: 2000px;
+  --breakpoint-5xl: 2400px;
+  --breakpoint-6xl: 3000px;
+
+  --animate-spin-cw: spin-cw 100s linear infinite;
+  --animate-spin-ccw: spin-ccw 100s linear infinite;
+
+  @keyframes spin-cw {
+    0% {
+      transform: 'rotate(0deg)';
+    }
+    100% {
+      transform: 'rotate(360deg)';
+    }
+  }
+
+  @keyframes spin-ccw {
+    0% {
+      transform: 'rotate(0deg)';
+    }
+    100% {
+      transform: 'rotate(-360deg)';
+    }
+  }
+
+  /* Daisy theme colors */
+  --color-base-100: oklch(0.252 0 0);
+  --color-base-200: oklch(0.2134 0 0);
+  --color-base-300: oklch(0.1776 0 0);
+  --color-base-content: oklch(97.807% 0.029 256.847);
+  --color-primary: oklch(77.48% 0.204 60.62);
+  --color-primary-content: oklch(14% 0.005 285.823);
+  --color-secondary: oklch(45.98% 0.248 305.03);
+  --color-secondary-content: oklch(0.8658 0.08655 308.4514);
+  --color-accent: oklch(64.8% 0.223 136.07347934356451);
+  --color-accent-content: oklch(0.9585 0.0955 130.18);
+  --color-neutral: oklch(14% 0.005 285.823);
+  --color-neutral-content: oklch(92% 0.004 286.32);
+  --color-info: oklch(0.5461 0.2152 262.88);
+  --color-info-content: oklch(0.8998 0.0482 266.02);
+  --color-success: oklch(0.6271 0.1699 149.21);
+  --color-success-content: oklch(0.9456 0.0855 156.68);
+  --color-warning: oklch(0.6658 0.1574 58.32);
+  --color-warning-content: oklch(0.2326 0.0511 67.73);
+  --color-error: oklch(0.5771 0.2152 27.33);
+  --color-error-content: oklch(0.8918 0.0568 18.27);
+  /* Daisy Theme colors as RGB variants which are used for ionic. */
+  --color-base-100-rgb: 34 34 34;
+  --color-base-200-rgb: 25 25 25;
+  --color-base-300-rgb: 17 17 17;
+  --color-base-content-rgb: 234 249 255;
+  --color-primary-rgb: 242 140 24;
+  --color-primary-content-rgb: 19 22 22;
+  --color-secondary-rgb: 109 58 156;
+  --color-secondary-content-rgb: 227 196 255;
+  --color-accent-rgb: 81 168 0;
+  --color-accent-content-rgb: 220 255 187;
+  --color-neutral-rgb: 27 29 29;
+  --color-neutral-content-rgb: 207 212 212;
+  --color-info-rgb: 37 99 235;
+  --color-info-content-rgb: 207 222 255;
+  --color-success-rgb: 22 163 74;
+  --color-success-content-rgb: 190 255 214;
+  --color-warning-rgb: 217 119 6;
+  --color-warning-content-rgb: 45 24 0;
+  --color-error-rgb: 220 38 38;
+  --color-error-content-rgb: 255 205 205;
+
+  --color-nw-success: #69a762;
+  --color-nw-warning: #e47f35;
+  --color-nw-danger: #eb5050;
+  --color-nw-description: #e1cb99;
+
+  --color-syndicate-light: #8732d3;
+  --color-syndicate-mid: #6e28ad;
+  --color-syndicate-dark: #551f85;
+
+  --color-marauder-light: #149633;
+  --color-marauder-mid: #097122;
+  --color-marauder-dark: #093e16;
+
+  --color-covenant-light: #eb9f0d;
+  --color-covenant-mid: #b47c12;
+  --color-covenant-dark: #895f0d;
+
+  --color-attr-base: #36b6eb;
+  --color-attr-buff: #a65ace;
+  --color-attr-assign: #ffdb7a;
+  --color-attr-magnify: #b42e0a;
+
+  --text-shadow-sm: 1px 1px 2px var(--tw-shadow-color);
+  --text-shadow-lg: 3px 8px 16px var(--tw-shadow-color);
+}

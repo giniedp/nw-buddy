@@ -1,76 +1,306 @@
 <ion-content class="ion-p-4">
-  <div class="flex flex-col gap-4 items-center">
-    <div class="w-80 bg-base-300 rounded-md p-4">
-      <div class="alert shadow-lg" (click)="isDevCount = isDevCount + 1">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          class="stroke-info flex-shrink-0 w-6 h-6 self-start"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <div>
-          <h3 class="font-bold">Data Storage!</h3>
-          <div class="text-xs mb-1">
-            Your data is stored <span class="text-primary">locally in the browser</span>. Data is lost when the browser
-            cache is cleared.
+  <div class="grid grid-cols-fill-sm gap-4 w-auto max-w-4xl mx-auto">
+    <div class="bg-base-300 rounded-md p-4 prose prose-sm row-span-2">
+      @if (backend.isEnabled()) {
+        <h3 class="uppercase">Account</h3>
+        @if (signedIn()) {
+          <p>
+            You are signed in as <b class="uppercase text-success"> {{ session().name }} </b>
+          </p>
+          @if (!backend.isOnline()) {
+            <div class="alert alert-error mb-4">
+              The session could net be verified, the server is probably offline or not reachable. You can still use the
+              app. The data will be stored locally and synced once the server is back online.
+            </div>
+          }
+        } @else {
+          <p>You are not signed, using <b class="text-primary">local</b> data</p>
+        }
+
+        @if (signedIn()) {
+          <div class="form-control w-full">
+            <button class="btn w-full" (click)="backend.signOut()">Sign out</button>
           </div>
-          <div class="text-xs">Please use the functions below to export and backup your data.</div>
+        } @else {
+          <div class="form-control w-full">
+            <button class="btn w-full" (click)="backend.signIn()">Sign in</button>
+          </div>
+        }
+      }
+      <h3 class="uppercase">Local database</h3>
+      @if (signedIn()) {
+        <p>Your account data is <b class="text-success">synced</b> with a remote database.</p>
+        <p>
+          Any <b class="text-warning">local</b> data created before signing in is still available and can be imported
+          into your account.
+        </p>
+      } @else {
+        <p>
+          Your <b class="text-warning">local</b> data, is stored in a browser database on your device. This can be wiped
+          when site cache is cleared or the device has memory pressure. To prevent data loss, you can export your data
+          to a file and import it later.
+        </p>
+      }
+      <table class="table table-zebra table-xs">
+        <tbody>
+          <tr>
+            <td></td>
+            <td><i class="text-primary">Local</i> data</td>
+            @if (signedIn()) {
+              <td><i class="text-success">Synced</i> data</td>
+            }
+          </tr>
+          <tr>
+            <td>Characters</td>
+            <td>{{ countLocal.value().characters }}</td>
+            @if (signedIn()) {
+              <td>{{ countUser.value().characters }}</td>
+            }
+          </tr>
+          <tr>
+            <td>Skill trees</td>
+            <td>{{ countLocal.value().skillTrees }}</td>
+            @if (signedIn()) {
+              <td>{{ countUser.value().skillTrees }}</td>
+            }
+          </tr>
+          <tr>
+            <td>Gearsets</td>
+            <td>{{ countLocal.value().gearsets }}</td>
+            @if (signedIn()) {
+              <td>{{ countUser.value().gearsets }}</td>
+            }
+          </tr>
+          <tr>
+            <td>Inventory Items</td>
+            <td>{{ countLocal.value().items }}</td>
+            @if (signedIn()) {
+              <td>{{ countUser.value().items }}</td>
+            }
+          </tr>
+          <tr>
+            <td>Bookmarks</td>
+            <td>{{ countLocal.value().bookmarks }}</td>
+            @if (signedIn()) {
+              <td>{{ countUser.value().bookmarks }}</td>
+            }
+          </tr>
+          <tr>
+            <td>Table settings</td>
+            <td>{{ countLocal.value().presets }}</td>
+            @if (signedIn()) {
+              <td>{{ countUser.value().presets }}</td>
+            }
+          </tr>
+        </tbody>
+      </table>
+      @if (signedIn()) {
+        <fieldset class="fieldset">
+          <div>
+            <button class="btn w-full" (click)="importToAccount()">Import</button>
+            <span class="fieldset-label"> Imports any local data into your account </span>
+          </div>
+          <div>
+            <button class="btn w-full" (click)="refreshAccountData()">Refresh</button>
+            <span class="fieldset-label">Deletes your account data on this device and restores it from the server</span>
+          </div>
+          <div>
+            <button class="btn w-full text-error" (click)="deleteAccountData()">Delete</button>
+            <span class="fieldset-label">Deletes your account data on this device and on the server</span>
+          </div>
+        </fieldset>
+      } @else {
+        <fieldset class="fieldset">
+          <div>
+            <input type="text" class="input input-bordered" [(ngModel)]="projectName" />
+            <span class="fieldset-label"> Export file name </span>
+          </div>
+          <div>
+            <button class="btn w-full mt-4" (click)="exportPreferences()">Export</button>
+            <span class="fieldset-label"> Exports user data e.g. gearsets, skill trees etc .</span>
+          </div>
+          <div>
+            <button class="btn w-full mt-4" (click)="importPreferences()">Import</button>
+            <span class="fieldset-label"> Imports previously exported user data </span>
+          </div>
+          <div>
+            <button class="btn w-full mt-4" (click)="dropTables()">Clear</button>
+            <span class="fieldset-label"> Clears the local database </span>
+          </div>
+        </fieldset>
+      }
+    </div>
+
+    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
+      <h3 class="uppercase">Market prices</h3>
+      <p>Previously imported market prices can be cleared here or re-imported here.</p>
+      <fieldset class="fieldset">
+        <div>
+          <nwb-price-importer-button class="btn w-full" [icon]="false"> Import </nwb-price-importer-button>
+          <span class="fieldset-label">Import prices from file or a website</span>
         </div>
-      </div>
+        <div>
+          <button class="btn w-full" (click)="clearPrices()">Clear</button>
+          <span class="fieldset-label">Clears all item prices</span>
+        </div>
+      </fieldset>
+    </div>
 
-      <div class="form-control w-full mt-4">
-        <input type="text" class="input input-bordered" [(ngModel)]="projectName" />
-        <label class="label">
-          <span class="label-text-alt"> Project name, used as file name for export </span>
+    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
+      <h3 class="uppercase">Datasheets History</h3>
+      <p>To access the history of datasheets, you need to provide a git access token and select a repository.</p>
+      <fieldset class="fieldset">
+        <div>
+          <label class="input w-full">
+            <span class="label">Access Token</span>
+            <input
+              type="text"
+              [ngModel]="pref.gitAccessToken.observe() | async"
+              (ngModelChange)="pref.gitAccessToken.set($event)"
+              [placeholder]="'Git token'"
+            />
+          </label>
+          <span class="fieldset-label">
+            <span>
+              Your git access token that will be used to fetch diff data from github API. Create your token
+              <a href="https://github.com/settings/tokens" target="_blank" class="link link-primary">here</a>.
+            </span>
+          </span>
+        </div>
+        @let hasToken = !!(pref.gitAccessToken.observe() | async);
+        @let hasPreset = !!(pref.nwDataRepoPreset.observe() | async);
+        @if (hasToken) {
+          <label class="select w-full">
+            <span class="label">Repository</span>
+            <select
+              class="w-full"
+              [ngModel]="pref.nwDataRepoPreset.observe() | async"
+              (ngModelChange)="onHistoryPresetChange($event)"
+            >
+              <option value="nw-buddy-data-live">NW Buddy Data: Live</option>
+              <option value="nw-buddy-data-ptr">NW Buddy Data: PTR</option>
+              <option value="new-world-tools-live">New World Tools: Live</option>
+              <option value="">Custom</option>
+            </select>
+          </label>
+
+          @if (!hasPreset) {
+            <div>
+              <label class="input w-full">
+                <span class="label">URL</span>
+                <input
+                  type="text"
+                  [ngModel]="pref.nwDataRepo.observe() | async"
+                  (ngModelChange)="pref.nwDataRepo.set($event || undefined)"
+                />
+              </label>
+              <span class="fieldset-label"> Git repository url with branch name and path to datasheets folder </span>
+            </div>
+          }
+          <div>
+            <label class="input w-full">
+              <span class="label">Commits</span>
+              <input
+                type="number"
+                [ngModel]="pref.nwDataRepoUseLimit.observe() | async"
+                (ngModelChange)="pref.nwDataRepoUseLimit.set($event)"
+              />
+            </label>
+            <span class="fieldset-label"> Maxumun number of history commits to evaluate </span>
+          </div>
+          @if (!hasPreset) {
+            <label class="fieldset-label">
+              <input
+                type="checkbox"
+                class="toggle toggle-primary"
+                [ngModel]="pref.nwDataRepoUseTags.observe() | async"
+                (ngModelChange)="pref.nwDataRepoUseTags.set($event)"
+              />
+              <span>Use only tagged commits</span>
+            </label>
+
+            <label class="fieldset-label">
+              <input
+                type="checkbox"
+                class="toggle toggle-primary"
+                [ngModel]="pref.nwDataRepoUseFiles.observe() | async"
+                (ngModelChange)="pref.nwDataRepoUseFiles.set($event)"
+              />
+              <span>Datasheets use original file name (not table type)</span>
+            </label>
+          }
+        }
+      </fieldset>
+    </div>
+    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
+      <h3 class="uppercase">IPFS</h3>
+      <p>The IPFS system is used in offline mode for sharing build links with other users.</p>
+      <fieldset class="fieldset">
+        <label class="input w-full">
+          <span class="label">Gateway</span>
+          <input type="text" [(ngModel)]="ipfsGateway" />
         </label>
-      </div>
-
-      <div class="form-control w-full">
-        <button class="btn w-full mt-4" (click)="exportPreferences()">Export Data</button>
-        <label class="label">
-          <span class="label-text-alt">Exports user data e.g. favourites, item prices etc.</span>
-        </label>
-      </div>
-
-      <div class="form-control w-full">
-        <button class="btn w-full mt-4" (click)="importPreferences()">Import Data</button>
-        <label class="label">
-          <span class="label-text-alt">Imports previously exported user data</span>
-        </label>
-      </div>
-
-      <div class="form-control w-full">
-        <button class="btn w-full mt-4" (click)="clearPrices()">Clear Prices</button>
-        <label class="label">
-          <span class="label-text-alt">Clears all item prices</span>
-        </label>
-      </div>
-
-      <div class="form-control w-full">
-        <nwb-price-importer-button class="btn w-full mt-4" [icon]="false"> Import Prices </nwb-price-importer-button>
-        <label class="label">
-          <span class="label-text-alt">Import prices from file or a website</span>
-        </label>
-      </div>
-
-      <div class="form-control w-full mt-4">
-        <input type="text" class="input input-bordered" [(ngModel)]="ipfsGateway" [placeholder]="'IPFS Gateway'" />
-        <label class="label">
-          <span class="label-text-alt">
+        <span class="fieldset-label">
+          <span>
             The preferred IPFS hostname to use when downloading shared content. Check public gateways
             <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link link-primary">here</a>.
           </span>
-        </label>
-      </div>
+        </span>
+      </fieldset>
+    </div>
+    <div class="bg-base-300 rounded-md p-4 prose prose-sm">
+      <h3 class="uppercase">App Configuration</h3>
 
-      <div class="divider"></div>
+      <table class="table table-zebra table-xs">
+        <tbody>
+          <tr>
+            <td>Sync backend</td>
+            <td>
+              @if (backend.isEnabled()) {
+                <span class="text-success">Enabled</span>
+              } @else {
+                <span class="text-error">Disabled</span>
+              }
+            </td>
+          </tr>
+          <tr>
+            <td>Environment name</td>
+            <td>
+              {{ envName }}
+            </td>
+          </tr>
+          <tr>
+            <td>Branch</td>
+            <td>
+              {{ branch }}
+            </td>
+          </tr>
+          <tr>
+            <td>Version</td>
+            <td>
+              {{ version }}
+            </td>
+          </tr>
+          <tr>
+            <td>CDN</td>
+            <td>
+              {{ cdnUrl }}
+            </td>
+          </tr>
+          <tr>
+            <td>Models</td>
+            <td>
+              {{ modelsUrl }}
+            </td>
+          </tr>
+          <tr>
+            <td>Tiles</td>
+            <td>
+              {{ tilesUrl }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <div class="form-control w-full">
         <label class="cursor-pointer label">
@@ -78,118 +308,6 @@
           <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="collapseMenu" />
         </label>
       </div>
-      <div class="form-control w-full">
-        <label class="cursor-pointer label">
-          <span class="label-text">Prefer high quality models</span>
-          <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="highQualityModels" />
-        </label>
-      </div>
-      <ng-container *ngIf="isDevCount > 10">
-        <div class="divider"></div>
-        <div class="form-control w-full">
-          <a class="btn w-full mt-4" [routerLink]="['/dev/platform']">Open Dev Panel</a>
-        </div>
-      </ng-container>
-    </div>
-
-    <div class="w-80 bg-base-300 rounded-md p-4 flex flex-col gap-4">
-      <h3 class="text-nw-description text-lg font-bold uppercase">History Repository</h3>
-      <div class="form-control w-full">
-        <input
-          type="text"
-          class="input input-bordered"
-          [ngModel]="pref.gitAccessToken.observe() | async"
-          (ngModelChange)="pref.gitAccessToken.set($event)"
-          [placeholder]="'Git token'"
-        />
-        <label class="label">
-          <span class="label-text-alt">
-            Your git access token that will be used to fetch diff data from github API. Create your token
-            <a href="https://github.com/settings/tokens" target="_blank" class="link link-primary">here</a>.
-          </span>
-        </label>
-      </div>
-      @let hasToken = !!(pref.gitAccessToken.observe() | async);
-      @let hasPreset = !!(pref.nwDataRepoPreset.observe() | async);
-      @if (hasToken) {
-        <div class="form-control w-full">
-          <select
-            class="input input-bordered"
-            [ngModel]="pref.nwDataRepoPreset.observe() | async"
-            (ngModelChange)="onHistoryPresetChange($event)"
-          >
-            <option value="nw-buddy-data-live">NW Buddy Data: Live</option>
-            <option value="nw-buddy-data-ptr">NW Buddy Data: PTR</option>
-            <option value="new-world-tools-live">New World Tools: Live</option>
-            <option value="">Custom</option>
-          </select>
-          <label class="cursor-pointer label">
-            <span class="label-text">History repository</span>
-          </label>
-        </div>
-
-        @if (!hasPreset) {
-          <div class="form-control w-full">
-            <input
-              type="text"
-              class="input input-bordered"
-              [ngModel]="pref.nwDataRepo.observe() | async"
-              (ngModelChange)="pref.nwDataRepo.set($event || undefined)"
-            />
-            <label class="label">
-              <span class="label-text-alt"> Git repository url with branch name and path to datasheets folder </span>
-            </label>
-          </div>
-          <div class="form-control w-full">
-            <select
-              class="input input-bordered"
-              [ngModel]="pref.nwDataRepoFormat.observe() | async"
-              (ngModelChange)="pref.nwDataRepoFormat.set($event)"
-            >
-              <option value="json">JSON</option>
-              <option value="yaml">YAML</option>
-            </select>
-            <label class="cursor-pointer label">
-              <span class="label-text">Data format</span>
-            </label>
-          </div>
-        }
-        <div class="form-control w-full">
-          <input
-            type="number"
-            class="input input-bordered"
-            [ngModel]="pref.nwDataRepoUseLimit.observe() | async"
-            (ngModelChange)="pref.nwDataRepoUseLimit.set($event)"
-          />
-          <label class="label">
-            <span class="label-text-alt"> Number of history commits to evaluate. </span>
-          </label>
-        </div>
-        @if (!hasPreset) {
-          <div class="form-control w-full">
-            <label class="cursor-pointer label">
-              <span class="label-text">Use only tagged commits</span>
-              <input
-                type="checkbox"
-                class="toggle toggle-primary"
-                [ngModel]="pref.nwDataRepoUseTags.observe() | async"
-                (ngModelChange)="pref.nwDataRepoUseTags.set($event)"
-              />
-            </label>
-          </div>
-          <div class="form-control w-full">
-            <label class="cursor-pointer label">
-              <span class="label-text">Datasheets use original file name (not table type)</span>
-              <input
-                type="checkbox"
-                class="toggle toggle-primary"
-                [ngModel]="pref.nwDataRepoUseFiles.observe() | async"
-                (ngModelChange)="pref.nwDataRepoUseFiles.set($event)"
-              />
-            </label>
-          </div>
-        }
-      }
     </div>
   </div>
 </ion-content>

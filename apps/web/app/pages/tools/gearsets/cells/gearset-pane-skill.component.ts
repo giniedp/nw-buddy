@@ -2,14 +2,10 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, effect, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { filter, map } from 'rxjs'
-
-import { GearsetsDB } from '~/data'
-import { NwModule } from '~/nw'
-import { ItemDetailModule } from '~/widgets/data/item-detail'
-
 import { patchState } from '@ngrx/signals'
-import { GearsetRecord, GearsetSkillSlot, SkillBuildsDB, SkillSet } from '~/data'
+import { filter, map } from 'rxjs'
+import { GearsetRecord, GearsetSkillTreeRef, GearsetsService, SkillTreesService, SkillTree } from '~/data'
+import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
@@ -26,9 +22,10 @@ import {
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive } from '~/utils'
-import { SkillsetTableAdapter, SkillsetTableRecord } from '~/widgets/data/skillset-table'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
+import { SkillTreeTableAdapter, SkillTreeTableRecord } from '~/widgets/data/skill-tree-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
-import { SkillTreeModule } from '~/widgets/skill-builder'
+import { SkillTreeEditorModule } from '~/widgets/skill-tree'
 import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
 
 @Component({
@@ -43,7 +40,7 @@ import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
     ItemDetailModule,
     IconsModule,
     LayoutModule,
-    SkillTreeModule,
+    SkillTreeEditorModule,
     TooltipModule,
   ],
   providers: [GearsetPaneSkillStore],
@@ -52,13 +49,13 @@ import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
   },
 })
 export class GearsetPaneSkillComponent {
-  private db = inject(SkillBuildsDB)
-  private gearDb = inject(GearsetsDB)
+  private skillService = inject(SkillTreesService)
+  private gearService = inject(GearsetsService)
   private injector = inject(Injector)
   private store = inject(GearsetPaneSkillStore)
 
   @Input()
-  public set slot(value: GearsetSkillSlot) {
+  public set slot(value: GearsetSkillTreeRef) {
     patchState(this.store, { slot: value })
   }
   public get slot() {
@@ -116,7 +113,7 @@ export class GearsetPaneSkillComponent {
       if ((!equipped && !slotted) || eqCaseInsensitive(equipped, slotted) || this.disabled) {
         return
       }
-      this.updateSkill({
+      this.updateSkillTree({
         weapon: equipped,
         tree1: [],
         tree2: [],
@@ -124,11 +121,11 @@ export class GearsetPaneSkillComponent {
     })
   }
 
-  protected updateSkill(value: SkillSet) {
-    saveSkill(this.gearDb, {
+  protected updateSkillTree(value: SkillTree) {
+    saveSkill(this.gearService, {
       gearset: this.gearset,
       slot: this.slot,
-      instance: value,
+      skill: value,
     })
   }
 
@@ -141,7 +138,7 @@ export class GearsetPaneSkillComponent {
         map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0]))),
       )
       .subscribe((weapon) => {
-        this.updateSkill({
+        this.updateSkillTree({
           weapon: weapon.WeaponTag,
           tree1: [],
           tree2: [],
@@ -150,23 +147,23 @@ export class GearsetPaneSkillComponent {
   }
 
   protected async handleOpenSkillSet(weapon: string) {
-    const result = await DataViewPicker.open<SkillsetTableRecord>({
+    const result = await DataViewPicker.open<SkillTreeTableRecord>({
       title: 'Choose Skill Tree',
       selection: null,
       dataView: {
-        adapter: SkillsetTableAdapter,
+        adapter: SkillTreeTableAdapter,
         filter: (it) => eqCaseInsensitive(it.record?.weapon, weapon),
       },
       displayMode: ['grid'],
       injector: this.injector,
     }).then((ids: string[]) => {
       const id = ids?.[0]
-      return id ? this.db.read(id) : null
+      return id ? this.skillService.read(id) : null
     })
     if (!result) {
       return
     }
-    this.updateSkill({
+    this.updateSkillTree({
       weapon: result.weapon,
       tree1: result.tree1,
       tree2: result.tree2,
@@ -174,7 +171,7 @@ export class GearsetPaneSkillComponent {
   }
 
   protected handleReset() {
-    this.updateSkill({
+    this.updateSkillTree({
       weapon: this.instance?.weapon,
       tree1: [],
       tree2: [],
@@ -183,22 +180,22 @@ export class GearsetPaneSkillComponent {
 }
 
 function saveSkill(
-  db: GearsetsDB,
+  service: GearsetsService,
   options: {
     gearset: GearsetRecord
-    slot: GearsetSkillSlot
-    instance?: SkillSet
+    slot: GearsetSkillTreeRef
+    skill?: SkillTree
   },
 ) {
-  const { gearset, slot, instance } = options
+  const { gearset, slot, skill } = options
   const record = clone(gearset)
   record.skills = record.skills || {}
-  if (!instance) {
+  if (!skill) {
     delete record.skills[slot]
   } else {
-    record.skills[slot] = instance
+    record.skills[slot] = skill
   }
-  return db.update(record.id, record)
+  return service.update(record.id, record)
 }
 
 function clone<T>(it: T): T {

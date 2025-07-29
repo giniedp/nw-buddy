@@ -54,7 +54,7 @@ export function statusEffectColStatusID(util: StatusEffectTableUtils) {
 export function statusEffectColSource(util: StatusEffectTableUtils) {
   return util.colDef<string>({
     colId: 'source',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     hide: true,
     headerValueGetter: () => 'Source',
     valueGetter: ({ data }) => data['$source'],
@@ -79,7 +79,7 @@ export function statusEffectColName(util: StatusEffectTableUtils) {
       if (data.DisplayName && data.DisplayName !== value) {
         return null
       }
-      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+      return ['font-mono', 'text-neutral-content/50']
     },
     width: 300,
   })
@@ -109,7 +109,7 @@ export function statusEffectColDescription(util: StatusEffectTableUtils) {
       if (data.Description && data.Description !== value) {
         return ['multiline-cell', 'text-nw-description', 'italic', 'py-2']
       }
-      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+      return ['font-mono', 'text-neutral-content/50']
     },
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({

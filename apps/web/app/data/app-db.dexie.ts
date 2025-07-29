@@ -1,17 +1,31 @@
-import { Dexie, liveQuery, PromiseExtended, Table } from 'dexie'
-import { customAlphabet } from 'nanoid/non-secure'
-import { defer, isObservable, of, Observable as RxObservable, switchMap } from 'rxjs'
-
-import { AppDb, AppDbTable } from './app-db'
+import { Dexie, Transaction } from 'dexie'
+import { AppDb, AppDbRecord, createId } from './app-db'
+import { AppDbDexieTable } from './app-db.dexie-table'
+import { BookmarkRecord } from './bookmarks/types'
+import { CharacterRecord, TerritoryData } from './characters/types'
 import {
+  DBT_BOOKMARKS,
   DBT_CHARACTERS,
   DBT_GEARSETS,
-  DBT_IMAGES,
   DBT_ITEMS,
-  DBT_SKILL_BUILDS,
+  DBT_SKILL_TREES,
   DBT_TABLE_PRESETS,
   DBT_TABLE_STATES,
+  DBT_TRANSMOGS,
+  LOCAL_USER_ID,
 } from './constants'
+import { GAME_MODE_TO_PROGRESSION_ID } from './characters/constants'
+
+const ALL_TABLE_NAMES = [
+  DBT_CHARACTERS,
+  DBT_BOOKMARKS,
+  DBT_GEARSETS,
+  DBT_ITEMS,
+  DBT_SKILL_TREES,
+  DBT_TABLE_PRESETS,
+  DBT_TABLE_STATES,
+  DBT_TRANSMOGS,
+]
 
 export class AppDbDexie extends AppDb {
   private tables: Record<string, AppDbDexieTable<any>> = {}
@@ -19,7 +33,7 @@ export class AppDbDexie extends AppDb {
   public constructor(name: string) {
     super()
     this.dexie = new Dexie(name)
-    this.init(this.dexie)
+    this.createSchema(this.dexie)
   }
 
   public override table(name: string) {
@@ -27,112 +41,233 @@ export class AppDbDexie extends AppDb {
     return this.tables[name]
   }
 
-  public async reset() {
-    await this.dexie.open()
-    await this.dexie.delete()
-    await this.dexie.open()
+  public async dropTables() {
+    for (const table of Object.values(this.tables)) {
+      await this.dexie.table(table.tableName).clear()
+    }
   }
 
-  private init(db: Dexie) {
+  public async clearUserData(userId: string) {
+    await this.dexie.open()
+    for (const table of ALL_TABLE_NAMES) {
+      await this.dexie.table(table).where({ userId }).delete()
+    }
+  }
+
+  public async copytUserData({ sourceUserId, targetUserid }: { sourceUserId: string; targetUserid: string }) {
+    await this.dexie.open()
+
+    for (const table of ALL_TABLE_NAMES) {
+      await this.dexie
+        .table(table)
+        .where({ userId: sourceUserId })
+        .modify((item) => {
+          item.userId = targetUserid
+        })
+    }
+  }
+
+  private createSchema(db: Dexie) {
     db.version(1).stores({
-      [DBT_ITEMS]: 'id,itemId,gearScore',
-      [DBT_GEARSETS]: 'id,*tags',
+      items: 'id,itemId,gearScore',
+      gearsets: 'id,*tags',
     })
     db.version(2).stores({
-      [DBT_IMAGES]: 'id',
+      images: 'id',
     })
     db.version(3).stores({
-      [DBT_CHARACTERS]: 'id',
+      characters: 'id',
     })
     db.version(4).stores({
-      [DBT_SKILL_BUILDS]: 'id',
+      skillbuilds: 'id',
     })
     db.version(5).stores({
-      [DBT_TABLE_PRESETS]: 'id,key',
-      [DBT_TABLE_STATES]: 'id',
+      ['table-presets']: 'id,key',
+      ['table-states']: 'id',
     })
+
+    db.version(6)
+      .stores({
+        items: 'id,itemId,gearScore,userId',
+        gearsets: 'id,*tags,userId,characterId',
+        images: null, // deleted
+        characters: 'id,userId',
+        skillbuilds: 'id,userId',
+        'table-presets': 'id,key,userId',
+        'table-states': 'id,userId',
+        transmogs: 'id,userId',
+        bookmarks: 'id,userId,[userId+characterId]',
+      })
+      .upgrade(async (tx) => {
+        await fillMissingDefaults(tx)
+        await ensureCharacter(tx)
+        await migrateBookmarks(tx)
+      })
+
+    db.version(7).upgrade(async (tx) => migrateProgression(tx))
+
   }
 }
 
-// https://github.com/ai/nanoid
-// https://zelark.github.io/nano-id-cc/
-const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
-
-export class AppDbDexieTable<T extends { id: string }> extends AppDbTable<T> {
-  public db: AppDbDexie
-  private table: Table<T>
-  public constructor(db: AppDbDexie, name: string) {
-    super()
-    this.db = db
-    this.table = db.dexie.table(name)
-  }
-
-  public async tx<R>(fn: () => Promise<R>): Promise<R> {
-    return this.db.dexie.transaction('rw', this.table, fn)
-  }
-
-  public async count(): Promise<number> {
-    return this.table.count()
-  }
-
-  public async keys(): Promise<string[]> {
-    return this.table
+async function fillMissingDefaults(tx: Transaction) {
+  for (const table of ALL_TABLE_NAMES) {
+    await tx
+      .table(table)
       .toCollection()
-      .keys()
-      .then((list) => list as string[])
+      .modify((item: AppDbRecord) => {
+        item.userId ||= LOCAL_USER_ID
+        item.syncState ||= 'pending'
+      })
   }
+}
 
-  public list(): Promise<T[]> {
-    return this.table.toArray()
+async function ensureCharacter(tx: Transaction) {
+  const table = tx.table(DBT_CHARACTERS)
+  const count = await table.count()
+  if (count > 0) {
+    return
   }
+  const character: CharacterRecord = {
+    id: createId(),
+    name: null,
+    userId: LOCAL_USER_ID,
+    progressionLevels: {},
+    effectStacks: {},
+    territories: {},
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+  await table.add(character, character.id)
+}
 
-  public async create(record: Partial<T>): Promise<T> {
-    record = {
-      ...record,
-      id: record.id || createId(),
+async function migrateBookmarks(tx: Transaction) {
+  const character = await tx.table(DBT_CHARACTERS).toCollection().first()
+  const bookmarks = extractLegacyBookmarks()
+  const table = tx.table(DBT_BOOKMARKS)
+  for (const bookmark of bookmarks) {
+    bookmark.id = createId()
+    bookmark.characterId = character.id
+    bookmark.userId = LOCAL_USER_ID
+    await table.add(bookmark, bookmark.id).catch(console.error)
+  }
+}
+
+function extractLegacyBookmarks() {
+  const result: BookmarkRecord[] = []
+  const toRemove: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (!key || !key.startsWith('nwb:items:')) {
+      continue
     }
-    const id = await this.table.add(record as T, record.id)
-    return this.read(id as any)
-  }
-
-  public read(id: string): Promise<T> {
-    return this.table.get(id)
-  }
-
-  public async update(id: string, record: Partial<T>): Promise<T> {
-    await this.table.update(id, record)
-    return this.read(id)
-  }
-
-  public async destroy(id: string | string[]): Promise<void> {
-    return this.table.delete(id)
-  }
-
-  public async createOrUpdate(record: T): Promise<T> {
-    if (record.id) {
-      await this.table.put(record, record.id)
-      return this.read(record.id)
+    try {
+      const itemId = key.replace('nwb:items:', '').toLowerCase()
+      const value = JSON.parse(localStorage.getItem(key)) as { gs: number; mark: number }
+      if (!value.gs && !value.mark) {
+        continue
+      }
+      result.push({
+        id: null,
+        characterId: null,
+        userId: null,
+        itemId,
+        gearScore: value.gs || 0,
+        flags: value.mark || 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+      delete value.gs
+      delete value.mark
+      if (Object.keys(value).length === 0) {
+        toRemove.push(key)
+      } else {
+        localStorage.setItem(key, JSON.stringify(value))
+      }
+    } catch (e) {
+      console.error(`Failed to parse bookmark from localStorage key "${key}":`, e)
     }
-    return this.create(record)
   }
+  for (const key of toRemove) {
+    localStorage.removeItem(key)
+  }
+  return result
+}
 
-  public live<R>(fn: (tbale: Table<T>) => PromiseExtended<R>) {
-    return defer(
-      () =>
-        new RxObservable<R>((sub) => {
-          return liveQuery<R>(() => fn(this.table)).subscribe(sub)
-        }),
-    )
+async function migrateProgression(tx: Transaction) {
+  const { dungeonProgressions, territoryProgressions } = extractLegacyProgression()
+  const character: CharacterRecord = await tx.table(DBT_CHARACTERS).toCollection().first()
+  if (!character) {
+    return
   }
+  for (const { progressionId, difficulty, level } of dungeonProgressions) {
+    const key = `${progressionId}:${difficulty}`
+    character.progressionLevels ||= {}
+    character.progressionLevels[key] = level
+  }
+  for (const { progressionId, data } of territoryProgressions) {
+    character.territories ||= {}
+    character.territories[progressionId] = data
+  }
+  tx.table(DBT_CHARACTERS).update(character.id, character)
+}
 
-  public observeAll(): RxObservable<T[]> {
-    return this.live((t) => t.toArray())
+function extractLegacyProgression() {
+  const toRemove: string[] = []
+  const MEDAL_MAP = {
+    bronze: 1,
+    silver: 2,
+    gold: 3,
+  } as const
+  const dungeonProgressions: Array<{ progressionId: string; difficulty: number; level: number }> = []
+  const territoryProgressions: Array<{ progressionId: string; data: TerritoryData }> = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (!key || !key.startsWith('nwb:')) {
+      continue
+    }
+    if (key.startsWith('nwb:dungeons:')) {
+      toRemove.push(key)
+      const dungeonId = key.replace('nwb:dungeons:', '')
+      const progressionId = GAME_MODE_TO_PROGRESSION_ID[dungeonId]
+      if (!progressionId) {
+        continue
+      }
+      const value = JSON.parse(localStorage.getItem(key)) as any as {
+        ranks: Record<number, 'gold' | 'silver' | 'bronze'>
+      }
+      const ranks = value?.ranks
+      if (!ranks) {
+        continue
+      }
+      for (const [difficulty, medal] of Object.entries(ranks)) {
+        if (Number(difficulty) > 3) {
+          continue
+        }
+        const level = MEDAL_MAP[medal]
+        if (level) {
+          dungeonProgressions.push({
+            progressionId,
+            difficulty: Number(difficulty),
+            level,
+          })
+        }
+      }
+    }
+    if (key === 'nwb:territories') {
+      toRemove.push(key)
+      const value = JSON.parse(localStorage.getItem(key)) as Record<number, TerritoryData>
+      for (const [territoryId, territory] of Object.entries(value)) {
+        if (territory.standing) {
+          territoryProgressions.push({ progressionId: territoryId, data: territory })
+        }
+      }
+    }
   }
-  public observeByid(id: string | RxObservable<string>): RxObservable<T> {
-    return (isObservable(id) ? id : of(id)).pipe(
-      switchMap((id) => {
-        return id ? this.live((t) => t.get(id)) : of(null)
-      }),
-    )
+  for (const key of toRemove) {
+    localStorage.removeItem(key)
+  }
+  return {
+    dungeonProgressions,
+    territoryProgressions,
   }
 }

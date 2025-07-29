@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { filter, firstValueFrom, map, take } from 'rxjs'
-import { InventoryItemsStore, ItemInstanceRow } from '~/data'
+import { ItemInstanceRow, ItemsService } from '~/data'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
@@ -18,6 +18,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import {
   eqCaseInsensitive,
   injectBreakpoint,
+  injectChildRouteParam,
   injectRouteParam,
   injectUrlParams,
   observeRouteParam,
@@ -28,6 +29,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 
 @Component({
   selector: 'nwb-inventory-page',
@@ -47,6 +49,8 @@ import { InventoryPickerService } from './inventory-picker.service'
     TooltipModule,
     VirtualGridModule,
     LayoutModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
   host: {
     class: 'ion-page',
@@ -69,14 +73,14 @@ export class InventoryPageComponent implements OnInit {
   })
 
   protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
-  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected isChildActive = toSignal(injectChildRouteParam('id').pipe(map((it) => !!it)))
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 
   protected svgPlus = svgPlus
   protected svgTrash = svgTrashCan
   protected svgImage = svgImage
-  private items = inject(InventoryItemsStore)
+  private store = inject(ItemsService)
 
   protected categoryId$ = observeRouteParam(this.route, '')
   public constructor(
@@ -85,7 +89,7 @@ export class InventoryPageComponent implements OnInit {
     private route: ActivatedRoute,
     protected service: DataViewService<InventoryTableRecord>,
   ) {
-    //
+    service.setMode(['table'])
   }
 
   public async ngOnInit() {
@@ -107,7 +111,7 @@ export class InventoryPageComponent implements OnInit {
       .pipe(take(1))
       .subscribe((items) => {
         for (const item of items) {
-          this.items.createRecord({
+          this.store.create({
             id: null,
             itemId: getItemId(item),
             gearScore: getItemMaxGearScore(item),
@@ -138,7 +142,7 @@ export class InventoryPageComponent implements OnInit {
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe((instance) => {
-        this.items.createRecord({
+        this.store.create({
           id: null,
           ...instance,
         })
@@ -146,6 +150,6 @@ export class InventoryPageComponent implements OnInit {
   }
 
   protected deleteItem(item: ItemInstanceRow) {
-    this.items.destroyRecord(item.record.id)
+    this.store.delete(item.record.id)
   }
 }

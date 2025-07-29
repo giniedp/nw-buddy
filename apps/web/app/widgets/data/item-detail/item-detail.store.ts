@@ -25,7 +25,7 @@ import { injectNwData, withStateLoader } from '~/data'
 import { humanize } from '~/utils'
 import {
   ItemPerkSlot,
-  fetItemPerkSlots,
+  fetchItemPerkSlots,
   selectDescription,
   selectItemGearscore,
   selectItemGearscoreLabel,
@@ -71,7 +71,7 @@ export const ItemDetailStore = signalStore(
         const record = await db.itemOrHousingItem(recordId)
         const item = isMasterItem(record) ? record : null
         const housingItem = isHousingItem(record) ? record : null
-        const itemPerkSlots = await fetItemPerkSlots(db, { item, perkOverride })
+        const itemPerkSlots = await fetchItemPerkSlots(db, { item, perkOverride })
         return {
           recordId,
           record,
@@ -105,7 +105,7 @@ export const ItemDetailStore = signalStore(
           switchMap((perkOverride) => {
             return combineLatest({
               perkOverride: of(perkOverride),
-              itemPerkSlots: fetItemPerkSlots(db, { item: state.item(), perkOverride }),
+              itemPerkSlots: fetchItemPerkSlots(db, { item: state.item(), perkOverride }),
             })
           }),
           map(({ perkOverride, itemPerkSlots }) => {

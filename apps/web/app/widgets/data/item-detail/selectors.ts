@@ -99,7 +99,7 @@ export function selectItemSalvageInfo(item: MasterItemDefinitions | HouseItems, 
   }
 }
 
-export async function fetItemPerkSlots(
+export async function fetchItemPerkSlots(
   db: NwData,
   {
     item,

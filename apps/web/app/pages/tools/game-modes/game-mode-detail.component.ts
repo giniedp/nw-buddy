@@ -10,7 +10,7 @@ import {
   ViewChild,
   signal,
 } from '@angular/core'
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
+import { SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import {
   CurseMutationStaticData,
@@ -34,7 +34,7 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs'
-import { injectNwData } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 
@@ -53,7 +53,7 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { uniqBy } from 'lodash'
-import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
+import { DifficultyRank } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle, svgLocationCrosshairs, svgSquareArrowUpRight, svgThumbtack } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
@@ -94,7 +94,7 @@ export interface Tab {
 @Component({
   selector: 'nwb-game-mode-detail',
   templateUrl: './game-mode-detail.component.html',
-  styleUrls: ['./game-mode-detail.component.scss'],
+  styleUrl: './game-mode-detail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -116,7 +116,7 @@ export interface Tab {
   ],
   providers: [GameModeDetailStore],
   host: {
-    class: 'ion-page flex flex-co, xl:flex-row',
+    class: 'ion-page',
   },
   animations: [
     trigger('list', [
@@ -235,7 +235,7 @@ export class GameModeDetailComponent implements OnInit {
     .pipe(
       switchMap(({ dungeon, difficulties }) =>
         combineLatest(
-          difficulties.map((it) => {
+          difficulties.map((it: MutationDifficultyStaticData) => {
             return combineLatest({
               difficulty: of(it),
               rank: this.difficultyRank(dungeon, it),
@@ -265,10 +265,10 @@ export class GameModeDetailComponent implements OnInit {
         { eventId: difficulty.CompletionEvent2, rankPos: 2, rankId: 'silver' as DifficultyRank },
         { eventId: difficulty.CompletionEvent3, rankPos: 3, rankId: 'gold' as DifficultyRank },
       ]
-        .map(({ eventId, rankPos, rankId }, i) => {
+        .map((row, i) => {
           // TODO: cleanup
-          const event = events.get(eventId)
-          const bucket = loot.get(`Loot_MutDiff${difficulty.MutationDifficulty}T${rankPos}`)
+          //const event = events.get(eventId)
+          const bucket = loot.get(`Loot_MutDiff${difficulty.MutationDifficulty}T${row.rankPos}`)
           const bucketItem = bucket.Items?.[0]
           const itemId = bucketItem?.ItemID
           const item = items.get(itemId)
@@ -277,17 +277,17 @@ export class GameModeDetailComponent implements OnInit {
             return null
           }
           return {
-            RankName: `ui_dungeon_mutator_${rankId}`,
+            RankName: `ui_dungeon_mutator_${row.rankId}`,
             ItemID: item.ItemID,
             ItemName: item.Name,
             IconPath: getItemIconPath(item),
             Quantity: bucketItem?.Qty || '?',
-            Completed: rankId == rank,
+            Completed: row.rankPos == rank,
             toggle: () => {
-              if (rankId == rank) {
+              if (row.rankPos == rank) {
                 this.updateRank(null)
               } else {
-                this.updateRank(rankId)
+                this.updateRank(row.rankPos)
               }
             },
           }
@@ -374,9 +374,9 @@ export class GameModeDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private cdRef: ChangeDetectorRef,
-    private domSanitizer: DomSanitizer,
     protected store: GameModeDetailStore,
-    private preferences: DungeonPreferencesService,
+    //private preferences: DungeonPreferencesService,
+    private character: CharacterStore,
     private i18n: TranslateService,
     private head: HtmlHeadService,
     private platform: PlatformService,
@@ -475,10 +475,10 @@ export class GameModeDetailComponent implements OnInit {
   }
 
   public difficultyRank(dungeon: GameModeData, difficulty: MutationDifficultyStaticData) {
-    if (!dungeon || !difficulty) {
+    if (!dungeon?.DifficultyProgressionId) {
       return of(null)
     }
-    return this.preferences.observeRank(dungeon.GameModeId, difficulty.MutationDifficulty)
+    return this.character.observeGameModeProgression(dungeon.DifficultyProgressionId, difficulty.MutationDifficulty)
   }
 
   public difficultyRankIcon(dungeon: GameModeData, difficulty: MutationDifficultyStaticData) {
@@ -503,23 +503,29 @@ export class GameModeDetailComponent implements OnInit {
     )
   }
 
-  public rankIcon(rank: DifficultyRank) {
-    if (rank) {
-      return `assets/icons/expedition/mutator_rank_${rank}_sm.png`
+  public rankIcon(rank: number) {
+    if (rank === 1) {
+      return `assets/icons/expedition/mutator_rank_bronze_sm.png`
+    }
+    if (rank === 2) {
+      return `assets/icons/expedition/mutator_rank_silver_sm.png`
+    }
+    if (rank === 3) {
+      return `assets/icons/expedition/mutator_rank_gold_sm.png`
     }
     return `assets/icons/expedition/icon_lock_small.png`
   }
 
   public updateRankToGold() {
-    this.updateRank('gold')
+    this.updateRank(3)
   }
 
   public updateRankToSilver() {
-    this.updateRank('silver')
+    this.updateRank(2)
   }
 
   public updateRankToBronze() {
-    this.updateRank('bronze')
+    this.updateRank(1)
   }
 
   protected handleVitalTargetEnter(vital: VitalsBaseData) {
@@ -538,10 +544,13 @@ export class GameModeDetailComponent implements OnInit {
     }
   }
 
-  public updateRank(value: DifficultyRank) {
+  public updateRank(value: number) {
     if (this.dungeon && this.difficulty) {
-      this.preferences.updateRank(this.dungeon.GameModeId, this.difficulty.MutationDifficulty, value)
-      this.cdRef.markForCheck()
+      this.character.setGameModeProgression(
+        this.dungeon.DifficultyProgressionId,
+        this.difficulty.MutationDifficulty,
+        value,
+      )
     }
   }
 

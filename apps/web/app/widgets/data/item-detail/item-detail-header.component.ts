@@ -59,12 +59,4 @@ export class ItemDetailHeaderComponent {
   })
   protected showSkeleton = computed(() => (!this.store.record() && this.store.isLoading()) || !this.store.isLoaded())
   protected showMissing = computed(() => !this.store.record() && !this.store.isLoading() && this.store.isLoaded())
-
-  protected enableGsTracker = computed(() => {
-    const record = this.record()
-    if (!record || !isMasterItem(record)) {
-      return false
-    }
-    return isItemWeapon(record) || isItemArmor(record) || isItemJewelery(record)
-  })
 }

@@ -6,6 +6,7 @@
   }
   <nwb-chips-input
     class="col-start-1 col-span-3"
+    [maxLength]="maxLength()"
     [placeholder]="placeholder()"
     [ngModel]="inputTags()"
     (ngModelChange)="updateInputTags($event)"

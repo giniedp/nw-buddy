@@ -1,0 +1,44 @@
+@reference '../../../../style.css';
+:host {
+  @apply flex-col;
+  @apply xl:flex-row!;
+}
+.grid.grid-loot,
+.grid.grid-vitals {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.content-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-areas:
+    'info'
+    'map'
+    'tabs'
+    'content';
+  @media (min-width: 1600px) {
+    grid-template-areas:
+      'info map'
+      'tabs map'
+      'content content';
+    grid-template-columns: 500px 1fr;
+  }
+}
+
+.content-grid-info {
+  grid-area: info;
+}
+.content-grid-tabs {
+  grid-area: tabs;
+}
+.content-grid-map {
+  grid-area: map;
+}
+.content-grid-content {
+  grid-area: content;
+}
+
+nwb-item-detail {
+  content-visibility: auto;
+  min-height: 86px;
+}

@@ -28,14 +28,14 @@ import { categorizeInventoryItem } from './utils'
       <nwb-item-header [rarity]="detail.rarity()" [isNamed]="detail.isNamed()" class="relative font-nimbus gap-2">
         <nwb-item-icon [nwbItemIcon]="item" [solid]="true" class="z-10 aspect-square"></nwb-item-icon>
         @if (detail.slottedGemIcon(); as icon) {
-          <span class="z-10 absolute bottom-0 right-0 p-[2px] rounded-tl-xl bg-base-100 bg-opacity-50">
+          <span class="z-10 absolute bottom-0 right-0 p-[2px] rounded-tl-xl bg-base-100/50">
             <img [nwImage]="icon" class="w-5 h-5" />
           </span>
         }
         <span class="z-10 absolute top-0 left-0 px-2 py-[2px]">
           {{ detail.tierLabel() }}
         </span>
-        <span class="z-10 absolute bottom-0 left-0 px-[5px] rounded-tr-xl bg-base-100 bg-opacity-50">
+        <span class="z-10 absolute bottom-0 left-0 px-[5px] rounded-tr-xl bg-base-100/50">
           {{ gearScore }}
         </span>
       </nwb-item-header>

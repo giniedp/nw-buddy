@@ -1,6 +1,8 @@
-import { of, Observable as RxObservable } from 'rxjs'
+import { of, Observable as RxObservable, Subject } from 'rxjs'
 
-import { AppDb, AppDbTable } from './app-db'
+import { customAlphabet } from 'nanoid/non-secure'
+import { AppDb, AppDbRecord, AppDbTable, AppDbTableEvent, WhereConditions } from './app-db'
+const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
 export class AppDbNoop extends AppDb {
   private tables: Record<string, AppDbNoopTable<any>> = {}
@@ -14,24 +16,34 @@ export class AppDbNoop extends AppDb {
     return this.tables[name]
   }
 
-  public async reset() {
-    //
+  public async dropTables() {
+    for (const table of Object.values(this.tables)) {
+      // No-op, as this is a noop implementation
+    }
   }
 }
 
-export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
+export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
   public db: AppDb
+  public tableName: string
+  public events = new Subject<AppDbTableEvent<T>>()
 
   public constructor(db: AppDb, name: string) {
     super()
     this.db = db
+    this.tableName = name
   }
 
+  public createId = createId
   public async tx<R>(fn: () => Promise<R>): Promise<R> {
     return null
   }
 
   public async count(): Promise<number> {
+    return 0
+  }
+
+  public async countWhere(where: Partial<AppDbRecord>): Promise<number>{
     return 0
   }
 
@@ -43,7 +55,11 @@ export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
     return []
   }
 
-  public async create(record: Partial<T>): Promise<T> {
+  public async where(where: Partial<T>): Promise<T[]> {
+    return []
+  }
+
+  public async create(record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     return null
   }
 
@@ -51,22 +67,31 @@ export class AppDbNoopTable<T extends { id: string }> extends AppDbTable<T> {
     return null
   }
 
-  public async update(id: string, record: Partial<T>): Promise<T> {
+  public async update(id: string, record: Partial<T>, options?: { silent: boolean }): Promise<T> {
     return null
   }
 
-  public async destroy(id: string | string[]): Promise<void> {
+  public async delete(id: string | string[], options?: { silent: boolean }): Promise<void> {
     //
-  }
-
-  public async createOrUpdate(record: T): Promise<T> {
-    return null
   }
 
   public observeAll(): RxObservable<T[]> {
     return of([])
   }
-  public observeByid(id: string | RxObservable<string>): RxObservable<T> {
+
+  public observeWhere(where: WhereConditions<T>): RxObservable<T[]> {
+    return of([])
+  }
+
+  public observeWhereCount(where: WhereConditions<T>): RxObservable<number> {
+    return of(0)
+  }
+
+  public observeBy(where: WhereConditions<T>): RxObservable<T> {
+    return of(null)
+  }
+
+  public observeById(id: string): RxObservable<T> {
     return of(null)
   }
 }

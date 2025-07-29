@@ -1,8 +1,18 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { AfterViewInit, ChangeDetectionStrategy, Component, QueryList, ViewChildren, inject } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  Injector,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { RouterModule } from '@angular/router'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import {
   IonButtons,
   IonHeader,
@@ -19,12 +29,13 @@ import { TooltipModule } from '~/ui/tooltip'
 import { injectBreakpoint, injectQueryParam, injectRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
-import { toSignal } from '@angular/core/rxjs-interop'
-import { BehaviorSubject, map } from 'rxjs'
-import { GearsetsDB } from '~/data'
+import { rxResource, toSignal } from '@angular/core/rxjs-interop'
+import { map } from 'rxjs'
+import { GearsetsService } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
-import { svgCalculator, svgChartLine, svgCodeMerge, svgSwords, svgUser } from '~/ui/icons/svg'
+import { svgCalculator, svgChartLine, svgChevronLeft, svgCodeMerge, svgGlobe, svgSwords, svgUser } from '~/ui/icons/svg'
 
+import { BackendService } from '~/data/backend'
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
@@ -60,49 +71,87 @@ import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
     class: 'ion-page',
   },
 })
-export class GearsetsDetailPageComponent implements AfterViewInit {
+export class GearsetsDetailPageComponent {
+  private backend = inject(BackendService)
+  private router = inject(Router)
+  private route = inject(ActivatedRoute)
+  private gearsets = inject(GearsetsService)
+  protected injector = inject(Injector)
+
   protected isTabOpponent = toSignal(injectQueryParam('tab').pipe(map((it) => it === 'vs')))
   protected isLarge = toSignal(injectBreakpoint('(min-width: 992px)'))
 
-  protected gearsetId$ = injectRouteParam('id')
-  protected oppenentId$ = injectQueryParam('vs')
-  protected hasOpponent = toSignal(this.oppenentId$.pipe(map((it) => !!it)))
+  protected userId = toSignal(injectRouteParam('userid'))
+  protected id = toSignal(injectRouteParam('id'))
+  protected opponentId = toSignal(injectQueryParam('vs'))
 
-  protected playerGeasrset = toSignal(inject(GearsetsDB).observeByid(this.gearsetId$))
-  protected player$ = new BehaviorSubject<Mannequin>(null)
+  protected playerResource = rxResource({
+    params: () => ({ userId: this.userId(), id: this.id() }),
+    stream: ({ params: { userId, id } }) => {
+      return this.gearsets.observeRecord({ userId, id })
+    },
+    defaultValue: null,
+  })
 
-  protected opponentGearset = toSignal(inject(GearsetsDB).observeByid(this.oppenentId$))
-  protected opponent$ = new BehaviorSubject<Mannequin>(null)
+  protected player = signal<Mannequin>(null)
+  protected playerGearset = computed(() => {
+    if (this.playerResource.hasValue()) {
+      return this.playerResource.value()
+    }
+    return null
+  })
+  protected playerIsLoading = this.playerResource.isLoading
+  protected playerIsOwned = computed(() => {
+    return this.userId() === (this.backend.sessionUserId() || 'local')
+  })
 
-  @ViewChildren(GearsetHostDirective)
-  protected players: QueryList<GearsetHostDirective>
+  protected opponentResource = rxResource({
+    params: () => ({ userId: this.userId(), id: this.opponentId() }),
+    stream: ({ params: { userId, id } }) => {
+      return this.gearsets.observeRecord({ userId, id })
+    },
+    defaultValue: null,
+  })
 
+  protected opponent = signal<Mannequin>(null)
+  protected opponentGearset = computed(() => {
+    if (this.opponentResource.hasValue()) {
+      return this.opponentResource.value()
+    }
+    return null
+  })
+  protected opponentIsLoading = this.opponentResource.isLoading
+  protected hasOpponent = computed(() => !!this.opponentId())
+
+  protected playerHost = viewChild('playerGrid', { read: GearsetHostDirective })
+  protected opponentHost = viewChild('oponentGrid', { read: GearsetHostDirective })
+
+  protected iconBack = svgChevronLeft
   protected iconTabMain = svgUser
   protected iconTabStats = svgChartLine
   protected iconTabSkill = svgCodeMerge
   protected iconTabGear = svgSwords
   protected iconTabCalculator = svgCalculator
+  protected iconGlobe = svgGlobe
 
-  public ngAfterViewInit(): void {
-    this.players.changes.subscribe(() => {
-      const players = this.players.toArray()
-      if (players.length === 2) {
-        players.forEach((it) => {
-          if (it.mode === 'player') {
-            this.player$.next(it.mannequin)
-          }
-          if (it.mode === 'opponent') {
-            this.opponent$.next(it.mannequin)
-          }
-        })
-      } else if (players.length === 1) {
-        this.player$.next(players[0].mannequin)
-        this.opponent$.next(null)
-      } else {
-        this.player$.next(null)
-        this.opponent$.next(null)
+  public constructor() {
+    effect(() => {
+      const sessionUser = this.backend.sessionUserId()
+      if (sessionUser && this.userId() === 'local') {
+        this.router.navigate(['../..', sessionUser], { relativeTo: this.route })
       }
     })
-    this.players.notifyOnChanges()
+    effect(() => {
+      const playerHost = this.playerHost()
+      const opponentHost = this.opponentHost()
+      untracked(() => {
+        this.player.set(playerHost?.mannequin || null)
+        this.opponent.set(opponentHost?.mannequin || null)
+      })
+    })
+  }
+
+  protected handleImportClicked() {
+
   }
 }

@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import type { EnvVars } from '../apps/web/environments/env'
+import { type EnvVars } from '../apps/web/environments/env'
 import {
   BRANCH_NAME,
   CDN_URL,
@@ -12,6 +12,7 @@ import {
   NW_WATERMARK,
   NW_WORKSPACE,
   PACKAGE_VERSION,
+  POCKETBASE_URL,
   environment,
 } from '../env'
 import { glob, readJSONFile } from './utils'
@@ -81,7 +82,9 @@ program
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
       disableTooltips: !['live', 'ptr'].includes(workspace.toLowerCase()),
       watermarkImageUrl: NW_WATERMARK || null,
+
       nwbtUrl: 'http://localhost:8000',
+      pocketbaseUrl: POCKETBASE_URL || null
     } satisfies EnvVars
     console.log(env)
     const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(
@@ -100,7 +103,8 @@ program
     if (fs.existsSync(dataLinkDir)) {
       fs.rmSync(dataLinkDir, { force: true })
     }
-    fs.symlinkSync(dataSrcDir, dataLinkDir)
+
+    fs.symlinkSync(dataSrcDir, dataLinkDir, 'dir')
   })
 
 program

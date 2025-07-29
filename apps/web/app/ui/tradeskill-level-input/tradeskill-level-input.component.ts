@@ -19,7 +19,7 @@ import { NW_MAX_TRADESKILL_LEVEL } from '@nw-data/common'
 @Component({
   selector: 'nwb-tradeskill-level-input',
   templateUrl: './tradeskill-level-input.component.html',
-  styleUrls: ['./tradeskill-level-input.component.scss'],
+  styleUrl: './tradeskill-level-input.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, NwModule, InputSliderComponent, LayoutModule],
   host: {

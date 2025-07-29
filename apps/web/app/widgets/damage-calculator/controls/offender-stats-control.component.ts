@@ -37,7 +37,7 @@ import { PrecisionInputComponent } from './precision-input.component'
     AttributesEditorComponent,
   ],
   host: {
-    class: 'form-control',
+    class: 'fieldset',
   },
 })
 export class OffenderStatsControlComponent {

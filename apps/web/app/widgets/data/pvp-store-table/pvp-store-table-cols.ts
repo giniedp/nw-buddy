@@ -24,7 +24,7 @@ export type PvpStoreTableRecord = PvpStoreRow & {
 export function pvpStoreColIcon(util: PvpStoreTableUtils) {
   return util.colDef({
     colId: 'icon',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,

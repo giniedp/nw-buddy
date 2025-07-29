@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, inject, OnInit, viewChild } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router'
 import { map, merge, switchMap } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { ItemPreferencesService } from '~/preferences'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
@@ -25,15 +26,23 @@ import { SchematicRecord, SchematicsTableAdapter } from './adapter'
   },
 })
 export class SchematicsPageComponent implements OnInit {
-  @ViewChild(RouterOutlet, { static: true })
-  protected outlet: RouterOutlet
+  protected outlet = viewChild(RouterOutlet)
+  private character = inject(CharacterStore)
 
   protected stats$ = this.service.categoryItems$
-    .pipe(switchMap((list) => combineLatestOrEmpty(list?.map((it) => this.itemPref.observe(it.recipeItem.ItemID)))))
+    .pipe(
+      switchMap((list) => {
+        return combineLatestOrEmpty(
+          list?.map((it) => {
+            return this.character.observeItemMarker(it.recipeItem.ItemID)
+          }),
+        )
+      }),
+    )
     .pipe(
       map((list) => {
         const total = list?.length
-        const learned = list?.filter((it) => !!it.meta?.mark)?.length
+        const learned = list?.filter((it) => !!it)?.length
         return {
           total: total,
           learned: learned,
@@ -57,10 +66,11 @@ export class SchematicsPageComponent implements OnInit {
   }
 
   public ngOnInit() {
+    const outlet = this.outlet()
     this.service.loadCateory(
       merge(
-        this.outlet.deactivateEvents.pipe(map(() => null)),
-        this.outlet.activateEvents.pipe(switchMap(() => observeRouteParam(this.outlet.activatedRoute, 'category'))),
+        outlet.deactivateEvents.pipe(map(() => null)),
+        outlet.activateEvents.pipe(switchMap(() => observeRouteParam(outlet.activatedRoute, 'category'))),
       ),
     )
   }

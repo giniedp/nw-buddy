@@ -5,31 +5,40 @@ import {
   Directive,
   ElementRef,
   HostListener,
+  inject,
   Input,
-  NgZone,
-  OnDestroy,
-  OnInit,
   TemplateRef,
   Type,
   ViewContainerRef,
 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
   BehaviorSubject,
-  EMPTY,
-  Subject,
   combineLatest,
   debounceTime,
+  delay,
+  delayWhen,
   distinctUntilChanged,
+  EMPTY,
+  filter,
+  from,
   fromEvent,
   map,
   merge,
+  NEVER,
+  Observable,
   of,
+  race,
+  startWith,
+  Subject,
   switchMap,
   take,
   takeUntil,
+  tap,
+  timeout,
 } from 'rxjs'
-import { shareReplayRefCount } from '~/utils'
-import { runInZone } from '~/utils/rx/run-in-zone'
+import { shareReplayRefCount, tapDebug } from '~/utils'
+import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { TooltipComponent } from './tooltip.component'
 
 export declare type TooltipDirectionX = 'left' | 'right'
@@ -41,7 +50,6 @@ export declare type TooltipDirection =
   | `${TooltipDirectionX}-${TooltipDirectionY}`
   | `${TooltipDirectionY}-${TooltipDirectionX}`
   | 'auto'
-export declare type TooltipTriggerType = 'click' | 'hover'
 export declare type TooltipScrollStrategy = 'close' | 'reposition'
 
 @Directive({
@@ -49,7 +57,12 @@ export declare type TooltipScrollStrategy = 'close' | 'reposition'
   selector: '[tooltip]',
   exportAs: 'tooltip',
 })
-export class TooltipDirective implements OnInit, OnDestroy {
+export class TooltipDirective {
+  private elRef = inject(ElementRef)
+  private vcRef = inject(ViewContainerRef)
+  private overlay = inject(Overlay)
+  private resize = inject(ResizeObserverService)
+
   @Input()
   public tooltip: string | TemplateRef<any> | Type<any>
 
@@ -62,9 +75,6 @@ export class TooltipDirective implements OnInit, OnDestroy {
   @Input()
   public tooltipPlacement: TooltipDirection | TooltipDirection[] = 'auto'
 
-  // @Input()
-  // public tooltipTrigger: TooltipTriggerType = 'hover'
-
   @Input()
   public tooltipClass: string | string[] = null
 
@@ -72,7 +82,10 @@ export class TooltipDirective implements OnInit, OnDestroy {
   public tooltipScrollStrategy: TooltipScrollStrategy = 'reposition'
 
   @Input()
-  public tooltipDelay: number = 150
+  public tooltipDelay: number = 100
+
+  @Input()
+  public tooltipFadeTime: number = 200
 
   @Input()
   public tooltipOffset: number = 4
@@ -83,8 +96,6 @@ export class TooltipDirective implements OnInit, OnDestroy {
   @Input()
   public preventClick: boolean
 
-  private destroy$ = new Subject<void>()
-
   private overlayRef: OverlayRef
   private portal: ComponentPortal<TooltipComponent>
   private portalRef: ComponentRef<TooltipComponent>
@@ -93,71 +104,54 @@ export class TooltipDirective implements OnInit, OnDestroy {
   private tooltipActive$ = new BehaviorSubject<boolean>(false)
   private overlayActive$ = new BehaviorSubject<boolean>(false)
 
-  public constructor(
-    private elRef: ElementRef,
-    private vcRef: ViewContainerRef,
-    private overlay: Overlay,
-    private zone: NgZone,
-  ) {}
-
-  public ngOnDestroy(): void {
-    this.destroy$.next()
+  public constructor() {
+    this.attachTooltip()
   }
 
-  public ngOnInit(): void {
-    this.zone.runOutsideAngular(() => {
-      whenActive({
-        element: this.elRef.nativeElement,
-        startEvents: ['mouseenter', 'focus'],
-        endEvents: ['mouseleave', 'blur'],
-        options: { passive: true },
+  private attachTooltip(): void {
+    whenActive(this.elRef.nativeElement)
+      .pipe(distinctUntilChanged())
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (value) => this.tooltipActive$.next(value),
+        complete: () => this.tooltipActive$.next(false),
+        error: () => this.tooltipActive$.next(false),
       })
-        .pipe(distinctUntilChanged())
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (value) => this.tooltipActive$.next(value),
-          complete: () => this.tooltipActive$.next(false),
-          error: () => this.tooltipActive$.next(false),
-        })
 
-      const active$ = combineLatest({
-        tooltipActive: this.tooltipActive$,
-        overlayActive: this.overlayActive$,
-      }).pipe(
-        debounceTime(this.tooltipDelay),
-        map(({ tooltipActive, overlayActive }) => (this.tooltipKeep ? tooltipActive || overlayActive : tooltipActive)),
-        distinctUntilChanged(),
-        shareReplayRefCount(1),
+    const active$ = combineLatest({
+      tooltipActive: this.tooltipActive$,
+      overlayActive: this.overlayActive$,
+    }).pipe(
+      debounceTime(this.tooltipDelay),
+      map(({ tooltipActive, overlayActive }) => (this.tooltipKeep ? tooltipActive || overlayActive : tooltipActive)),
+      distinctUntilChanged(),
+      shareReplayRefCount(1),
+    )
+
+    active$
+      .pipe(
+        switchMap((active) => {
+          if (active && this.tooltipSticky) {
+            return fromEvent(window, 'mousemove')
+          }
+          return NEVER
+        }),
       )
+      .pipe(takeUntilDestroyed())
+      .subscribe((e) => {
+        this.updateStickyPosition(e as MouseEvent)
+      })
 
-      active$
-        .pipe(
-          switchMap((active) => {
-            if (active && this.tooltipSticky) {
-              return fromEvent(window, 'mousemove')
-            }
-            return EMPTY
-          }),
-        )
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((e) => {
-          this.updateStickyPosition(e as MouseEvent)
-        })
-
-      active$
-        .pipe(runInZone(this.zone))
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (value) => {
-            if (value) {
-              this.showTooltip()
-            } else {
-              this.hideTooltip()
-            }
-          },
-          complete: () => this.hideTooltip(),
-          error: () => this.hideTooltip(),
-        })
+    active$.pipe(takeUntilDestroyed()).subscribe({
+      next: (value) => {
+        if (value) {
+          this.showTooltip()
+        } else {
+          this.hideTooltip()
+        }
+      },
+      complete: () => this.hideTooltip(),
+      error: () => this.hideTooltip(),
     })
   }
 
@@ -193,6 +187,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
     if (!this.tooltip || this.isShown()) {
       return
     }
+
     this.overlayRef = this.overlayRef || this.createOverlay()
     this.portal = this.portal || new ComponentPortal(TooltipComponent, this.vcRef)
     this.portalRef = this.overlayRef.attach(this.portal)
@@ -201,17 +196,22 @@ export class TooltipDirective implements OnInit, OnDestroy {
     }
     this.portalRef.setInput('content', this.tooltip)
     this.portalRef.setInput('context', this.tooltipContext)
+    this.portalRef.setInput('fadeTime', this.tooltipFadeTime)
 
     const destroy$ = new Subject<void>()
     this.portalRef.onDestroy(() => destroy$.next())
 
-    whenActive({
-      element: this.portalRef.location.nativeElement,
-      startEvents: ['mouseenter', 'focus'],
-      endEvents: ['mouseleave', 'blur'],
-      options: { passive: true },
-    })
-      .pipe(takeUntil(merge(destroy$, this.destroy$)))
+    const element = this.portalRef.location.nativeElement as HTMLElement
+    this.resize
+      .observe(element)
+      .pipe(debounceTime(50), takeUntil(destroy$))
+      .subscribe(() => {
+        this.portalRef?.setInput('active', true)
+        this.overlayRef?.updatePosition()
+      })
+
+    whenActive(this.portalRef.location.nativeElement)
+      .pipe(takeUntil(destroy$))
       .subscribe({
         next: (value) => this.overlayActive$.next(value),
         complete: () => this.overlayActive$.next(false),
@@ -220,16 +220,17 @@ export class TooltipDirective implements OnInit, OnDestroy {
   }
 
   private hideTooltip() {
-    const oRef = this.overlayRef
-    const pRef = this.portalRef
+    const overlayRef = this.overlayRef
+    const portalRef = this.portalRef
     this.overlayRef = null
     this.portalRef = null
-    if (oRef?.hasAttached()) {
-      pRef.changeDetectorRef.markForCheck()
-      oRef.detach()
+    if (overlayRef?.hasAttached()) {
+      portalRef.setInput('active', false)
       setTimeout(() => {
-        oRef.dispose()
-      }, 150)
+        overlayRef.detach()
+        overlayRef.dispose()
+        portalRef.destroy()
+      }, this.tooltipFadeTime)
     }
   }
 
@@ -400,31 +401,88 @@ export class TooltipDirective implements OnInit, OnDestroy {
   }
 }
 
-function fromEvents(events: string[], el: HTMLElement, options: EventListenerOptions) {
-  return merge(...events.map((it) => fromEvent(el, it, options)))
-}
+function whenActive(element: HTMLElement): Observable<boolean> {
+  const longpressTime = 300
+  const mouseEnter$ = fromEvent(element, 'mouseenter', { passive: true })
+  const mouseLeave$ = fromEvent(element, 'mouseleave', { passive: true })
+  const touchStart$ = fromEvent(element, 'touchstart', { passive: true })
+  const touchEnd$ = fromEvent(element, 'touchend', { passive: true })
+  const blur$ = fromEvent(element, 'blur', { passive: true })
+  const keydown$ = fromEvent(document, 'keydown', { capture: true })
+  const keyup$ = fromEvent(document, 'keyup', { capture: true })
+  const clickOutside$ = fromEvent(document, 'click', { passive: true }).pipe(
+    filter((e) => !element.contains(e.target as Node)),
+  )
 
-function whenActive({
-  element,
-  startEvents,
-  endEvents,
-  options,
-}: {
-  element: HTMLElement
-  startEvents: string[]
-  endEvents: string[]
-  options: EventListenerOptions
-}) {
-  return fromEvents(startEvents, element, options).pipe(
-    switchMap(() => {
-      return merge(
-        of(true),
-        fromEvents(endEvents, element, options).pipe(
+  let isTouch = false
+
+  const end$ = merge(mouseLeave$, touchEnd$, blur$)
+  const start$ = merge(mouseEnter$, touchStart$).pipe(
+    switchMap((e) => {
+      // detect if we're on a touch device
+      isTouch ||= e.type === 'touchstart'
+      if (isTouch && e.type !== 'touchstart') {
+        // this is to ingore late 'mouseenter' events, coming from touch input
+        return NEVER
+      }
+
+      const cancel$ = merge(mouseLeave$, touchEnd$).pipe(map(() => false))
+      let activate$: Observable<boolean>
+
+      if (!isTouch) {
+        // instant trigger e.g. desktop & mouse usage
+        // but wait until mouse holds still
+        activate$ = fromEvent(element, 'mousemove').pipe(
+          startWith(null),
+          debounceTime(50),
+          map(() => true),
           take(1),
-          map(() => false),
-        ),
+        )
+      } else {
+        // delayed trigger to simulate long press
+        activate$ = of(true).pipe(delay(longpressTime))
+      }
+
+      return race(activate$, cancel$).pipe(
+        take(1),
+        filter((started) => !!started),
       )
     }),
+  )
+
+  const isHolding$ = merge(keydown$, keyup$).pipe(
+    map((e) => {
+      e.preventDefault()
+      return (e as KeyboardEvent).altKey
+    }),
+    distinctUntilChanged(),
+    startWith(false),
+  )
+
+  return start$.pipe(
+    switchMap(() => {
+      return combineLatest({
+        isHolding: isHolding$,
+        ended: end$.pipe(
+          map(() => true),
+          startWith(false),
+        ),
+        cancelled: clickOutside$.pipe(
+          map(() => true),
+          startWith(false),
+        ),
+      }).pipe(
+        filter(({ isHolding, ended, cancelled }) => !isHolding && (ended || cancelled)),
+        map(() => {
+          // reset touch memo, so we're not stuck with one input method
+          isTouch = false
+          return false
+        }),
+        take(1),
+        startWith(true),
+      )
+    }),
+    distinctUntilChanged(),
   )
 }
 
@@ -432,4 +490,11 @@ export interface EventListenerOptions {
   capture?: boolean
   passive?: boolean
   once?: boolean
+}
+
+export interface ActivationConfig {
+  longpressTime: number
+  startEvents: string[]
+  endEvents: string[]
+  options: EventListenerOptions
 }

@@ -16,7 +16,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "css"
         },
         "@schematics/angular:application": {
           "strict": true
@@ -24,7 +24,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "loader": {
               ".ttf": "binary"
@@ -83,9 +83,9 @@
               ]
             },
             "styles": [
-              "apps/web/style.scss"
+              "apps/web/style.css"
             ],
-            "inlineStyleLanguage": "scss",
+            "inlineStyleLanguage": "css",
             "scripts": []
           },
           "configurations": {
@@ -214,13 +214,70 @@
                   "with": "apps/web/environments/env.generated.ts"
                 }
               ]
+            },
+            "test": {
+              "outputPath": "dist/test",
+              "optimization": true,
+              "outputHashing": "all",
+              "baseHref": "/",
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.dev.ts"
+                },
+                {
+                  "replace": "apps/web/environments/env.ts",
+                  "with": "apps/web/environments/env.generated.ts"
+                }
+              ],
+              "assets": [
+                "apps/web/_routes.json",
+                "apps/web/favicon.ico",
+                "apps/web/robots.txt",
+                "apps/web/sitemap.txt",
+                "apps/web/embed.js",
+                "apps/web/assets",
+                "apps/web/version",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/monaco-editor",
+                  "output": "/assets/monaco-editor"
+                },
+                {
+                  "glob": "**/*",
+                  "ignore": [
+                    "*.gz",
+                    "*.zip",
+
+                    "**/items_hires/**"
+                  ],
+                  "input": "dist/nw-data/.current",
+                  "output": "/nw-data/",
+                  "followSymlinks": true
+                },
+                {
+                  "glob": "**/*",
+                  "ignore": [
+                    "*.gz",
+                    "*.zip"
+                  ],
+                  "input": "dist/nw-data/.current",
+                  "output": "/nw-data/",
+                  "followSymlinks": true
+                },
+                 {
+                  "glob": "**/*.png",
+                  "input": "apps/web/app",
+                  "output": "/test-data/",
+                  "followSymlinks": true
+                }
+              ]
             }
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
-            "disableHostCheck": true,
             "host": "0.0.0.0",
             "proxyConfig": "angular.proxy.js"
           },
@@ -243,43 +300,15 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "apps/web/test.ts",
-            "polyfills": "apps/web/polyfills.ts",
+            "runner": "vitest",
+            "browsers": [
+              "chromium"
+            ],
             "tsConfig": "apps/web/tsconfig.spec.json",
-            "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
-            "karmaConfig": "apps/web/karma.conf.js",
-            "scripts": [],
             "include": ["**/*.spec.ts", "../../libs/**/*.spec.ts"],
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "",
-                "./node_modules"
-              ]
-            },
-            "styles": [
-              "apps/web/style.scss"
-            ],
-            "inlineStyleLanguage": "scss",
-            "fileReplacements": [
-              {
-                "replace": "apps/web/environments/env.ts",
-                "with": "apps/web/environments/env.generated.ts"
-              }
-            ],
-            "assets": [
-              "apps/web/assets",
-              {
-                "glob": "**/*",
-                "ignore": [
-                  "*.gz",
-                  "*.zip"
-                ],
-                "input": "dist/nw-data/.current",
-                "output": "/nw-data/"
-              }
-            ]
+            "buildTarget": "nw-buddy:build:test"
           }
         },
         "storybook": {
@@ -290,7 +319,7 @@
             "port": 5200,
             "compodoc": false,
             "styles": [
-              "apps/web/style.scss"
+              "apps/web/style.css"
             ]
           }
         },
@@ -301,7 +330,7 @@
             "browserTarget": "nw-buddy:build",
             "compodoc": false,
             "styles": [
-              "apps/web/style.scss"
+              "apps/web/style.css"
             ],
             "outputDir": "dist/web-storybook",
             "quiet": true,
@@ -314,7 +343,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "nwb",
-      "style": "scss"
+      "style": "css"
     },
     "@schematics/angular:directive": {
       "prefix": "nwb"

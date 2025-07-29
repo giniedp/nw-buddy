@@ -1,29 +1,28 @@
-<input
-  class="input input-sm w-full focus:outline-none focus:border focus:border-primary"
-  [class.text-primary]="!!value()"
-  [class.input-bordered]="bordered()"
-  #input
-  type="text"
-  [placeholder]="placeholder()"
-  [ngModel]="value()"
-  (ngModelChange)="submit($event)"
-  autofocus
-  [disabled]="!active()"
-/>
-@if (!value()) {
-  <span class="pointer-events-none absolute hidden md:inline-flex h-full items-center" style="top: -1px; right: 22px" [@fade]="true">
-    ctrl +
-  </span>
-}
+<label class="input input-sm w-full group focus-within:input-primary">
+  <input
+    class="w-full"
+    [class.text-primary]="!!value()"
+    #input
+    type="text"
+    [placeholder]="placeholder()"
+    [ngModel]="value()"
+    (ngModelChange)="submit($event)"
+    autofocus
+    [disabled]="!active()"
+  />
 
-<button
-  class="absolute right-0 btn btn-sm btn-ghost btn-square swap swap-rotate"
-  [class.text-primary]="!!value()"
-  (click)="submit('')"
-  [disabled]="!active()"
->
-  <input type="checkbox" [checked]="!!value()" />
-  <nwb-icon [icon]="svgXmark" class="swap-on w-4 h-4" />
-  <span class="swap-off w-4 h-4 hidden md:inline-block">k</span>
-  <nwb-icon [icon]="svgSearch" class="swap-off w-4 h-4 md:hidden" />
-</button>
+  @if (!value()) {
+    <span class="text-xs font-mono transition-opacity opacity-100 group-focus-within:opacity-0 pointer-events-none">
+      CTRL + K
+    </span>
+  } @else {
+    <button
+      class="btn btn-sm btn-ghost btn-square bg-transparent -mr-2"
+      [class.text-primary]="!!value()"
+      (click)="submit('')"
+      [disabled]="!active()"
+    >
+      <nwb-icon [icon]="svgXmark" class="w-4 h-4" />
+    </button>
+  }
+</label>

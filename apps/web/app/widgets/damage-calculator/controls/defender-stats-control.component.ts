@@ -33,7 +33,7 @@ import { PrecisionInputComponent } from './precision-input.component'
     TooltipModule,
   ],
   host: {
-    class: 'form-control',
+    class: 'fieldset',
   },
 })
 export class DefenderStatsControlComponent {

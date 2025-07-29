@@ -82,7 +82,7 @@ export function gatherableColTradeSkill(util: GatherableTableUtils) {
 export function gatherableColLootTable(util: GatherableTableUtils) {
   return util.colDef<string[]>({
     colId: 'finalLootTable',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Loot Table',
     width: 120,
     valueGetter: ({ data }) => {
@@ -190,7 +190,7 @@ export function gatherableColExpansion(util: GatherableTableUtils) {
 export function gatherableColVariationCount(util: GatherableTableUtils) {
   return util.colDef<number>({
     colId: 'variationCount',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Num Variations',
     getQuickFilterText: () => '',
     width: 150,
@@ -202,7 +202,7 @@ export function gatherableColVariationCount(util: GatherableTableUtils) {
 export function gatherableColLootTableCount(util: GatherableTableUtils) {
   return util.colDef<number>({
     colId: 'lootTableCount',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Num Loot Tables',
     getQuickFilterText: () => '',
     width: 150,
@@ -214,7 +214,7 @@ export function gatherableColLootTableCount(util: GatherableTableUtils) {
 export function gatherableColVariations(util: GatherableTableUtils) {
   return util.colDef<string[]>({
     colId: 'variations',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Variations',
     getQuickFilterText: ({ data }) => {
       const result = []
@@ -249,7 +249,7 @@ export function gatherableColVariations(util: GatherableTableUtils) {
 export function gatherableColSpawnCount(util: GatherableTableUtils) {
   return util.colDef<number>({
     colId: 'variationCount',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Num Spawns',
     getQuickFilterText: () => '',
     width: 150,

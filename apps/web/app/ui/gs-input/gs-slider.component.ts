@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, OnChanges, input, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, OnChanges, input, model, signal, viewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from '@nw-data/common'
 
@@ -70,7 +70,7 @@ export class GsSliderComponent implements ControlValueAccessor, OnChanges {
   readonly input = viewChild('input', { read: ElementRef })
 
   protected touched = signal(false)
-  protected disabled = signal(false)
+  protected disabled = model(false)
   protected value = signal<number>(null)
   protected barNodes: Bar[] = []
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import {
   NW_EQUIP_LOAD_DAMAGE_MULT_FAST,
   NW_EQUIP_LOAD_DAMAGE_MULT_NORMAL,
@@ -23,8 +23,7 @@ import { FlashDirective } from './ui/flash.directive'
   },
 })
 export class GearCellEquipLoadComponent {
-  @Input()
-  public hideTitle = false
+  public hideTitle = input(false)
 
   private mannequin = inject(Mannequin)
   protected weight = this.mannequin.equipLoad

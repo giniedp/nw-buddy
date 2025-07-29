@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core'
+import type { AppDbTable } from '../app-db'
 import { injectAppDB } from '../db'
-import { DBTable } from '../db-table'
 import { DBT_ITEMS } from './constants'
 import { ItemInstanceRecord } from './types'
 
-@Injectable({ providedIn: 'root' })
-export class ItemInstancesDB extends DBTable<ItemInstanceRecord> {
-  public readonly db = injectAppDB()
-  public readonly table = this.db.table<ItemInstanceRecord>(DBT_ITEMS)
+export type ItemInstancesDB = AppDbTable<ItemInstanceRecord>
+export function injectItemInstancesDB(): ItemInstancesDB {
+  return injectAppDB().table<ItemInstanceRecord>(DBT_ITEMS)
 }

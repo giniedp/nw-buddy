@@ -1,5 +1,5 @@
 import { Injectable, Injector, InputSignal, ModelSignal, TemplateRef, Type, inject } from '@angular/core'
-import { LoadingController, LoadingOptions, ModalController, ModalOptions } from '@ionic/angular/standalone'
+import { LoadingController, LoadingOptions, ModalController, ModalOptions, ToastController, ToastOptions } from '@ionic/angular/standalone'
 import { Subject, from, takeUntil } from 'rxjs'
 import { ModalComponent } from './modal.component'
 import { FullscreenService } from '../fullscreen.service'
@@ -36,6 +36,7 @@ export type ComponentInputs<C> = Partial<{
 export class ModalService {
   protected injector = inject(Injector)
   protected ctrl = inject(ModalController)
+  protected toast = inject(ToastController)
   private loading = inject(LoadingController)
 
   public open<T, R>(options: ModalOpenOptions<T>) {
@@ -114,6 +115,11 @@ export class ModalService {
     loading.present()
     await new Promise((resolve) => setTimeout(resolve, 0))
     await task().finally(() => loading.dismiss())
+  }
+
+  public async showToast(options: ToastOptions) {
+    const toast = await this.toast.create(options)
+    await toast.present()
   }
 }
 

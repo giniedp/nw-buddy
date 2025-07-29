@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { convertImportData } from '~/data'
 import { DbService } from '~/data/db.service'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileImport, svgInfoCircle } from '~/ui/icons/svg'
 import { LayoutModule, ModalRef, ModalService } from '~/ui/layout'
-import { recursivelyDecodeArrayBuffers } from './buffer-encoding'
 
 export interface DataImportDialogState {
   active?: boolean
@@ -93,10 +93,9 @@ export class DataImportDialogComponent extends ComponentStore<DataImportDialogSt
     }
     const content = await file.text()
     const data = JSON.parse(content)
-    const db = data['db:nw-buddy']
-    await recursivelyDecodeArrayBuffers(db)
-    this.preferences.import(data)
-    await this.appDb.import(db)
+    const result = await convertImportData(data)
+    this.preferences.import(result.preferences)
+    await this.appDb.import(result.database)
   }
 }
 

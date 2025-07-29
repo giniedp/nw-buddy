@@ -7,7 +7,7 @@ import { FilterDataSet } from './data/types'
   selector: 'nwb-map-filter-popover',
   template: `
     @if (variants().length) {
-      <div role="tablist" class="tabs tabs-bordered">
+      <div role="tablist" class="tabs tabs-border">
         @for (item of tabs(); track item.id) {
           <a role="tab" class="tab" [class.tab-active]="item.active" (click)="tab.set(item.id)">{{ item.label }}</a>
         }

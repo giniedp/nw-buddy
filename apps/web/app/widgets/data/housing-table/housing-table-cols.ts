@@ -108,17 +108,17 @@ export function housingColTier(util: HousingTableUtils) {
 export function housingColUserBookmark(util: HousingTableUtils) {
   return util.colDef<number>({
     colId: 'userBookmark',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Bookmark',
     getQuickFilterText: () => '',
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID.toLowerCase())?.mark || 0,
+    valueGetter: ({ data }) => util.character.getItemMarker(data.HouseItemID),
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (value: HouseItems) => getItemId(value),
-      pref: util.itemPref,
+      character: util.character,
     }),
   })
 }
@@ -126,7 +126,7 @@ export function housingColUserBookmark(util: HousingTableUtils) {
 export function housingColUserStockValue(util: HousingTableUtils) {
   return util.colDef<number>({
     colId: 'userStockValue',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'In Stock',
     getQuickFilterText: () => '',
     headerTooltip: 'Number of items currently owned',
@@ -145,7 +145,7 @@ export function housingColUserStockValue(util: HousingTableUtils) {
 export function housingColUserPrice(util: HousingTableUtils) {
   return util.colDef<number>({
     colId: 'userPrice',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Price',
     getQuickFilterText: () => '',
     headerTooltip: 'Current price in Trading post',

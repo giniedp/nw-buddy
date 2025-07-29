@@ -6,19 +6,23 @@
 />
 <div class="flex flex-col flex-nowrap gap-1 items-start justify-center">
   <span class="text-lg leading-none" *ngIf="defaultCategory$ | async; let cat">
-    <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
+    @if (cat.icon) {
+      <picture [nwIcon]="cat.icon" class="w-8 h-w-8"></picture>
+    }
     {{ cat.label }}
-    <ng-container *ngIf="activeCateogry$ | async; let cat">
+    @if (activeCateogry$ | async; as cat) {
       <span class="text-primary">• {{ cat.label | nwText }}</span>
-    </ng-container>
+    }
   </span>
-  <span *ngIf="counter$ | async; let counter" class="text-xs opacity-50 italic leading-none">
-    Rows:
-    <ng-container *ngIf="counter.displayed !== counter.total && counter.displayed != null">
-      {{ counter.displayed }} /
-    </ng-container>
-    {{ counter.total }}
-  </span>
+  @if (counter$ | async; as counter) {
+    <span class="text-xs opacity-50 italic leading-none">
+      Rows:
+      @if (counter.displayed !== counter.total && counter.displayed != null) {
+        {{ counter.displayed }} /
+      }
+      {{ counter.total }}
+    </span>
+  }
 </div>
 <ng-template
   cdkConnectedOverlay
@@ -34,16 +38,32 @@
   <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ul class="menu menu-compact">
       <li *ngIf="defaultCategory$ | async; let cat">
-        <a class="flex flex-row" [routerLink]="cat.route" [queryParams]="cat.query" [queryParamsHandling]="'merge'" (click)="isPanelOpen = false">
-          <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
+        <a
+          class="flex flex-row"
+          [routerLink]="cat.route"
+          [queryParams]="cat.query"
+          [queryParamsHandling]="'merge'"
+          (click)="isPanelOpen = false"
+        >
+          @if (cat.icon) {
+            <picture [nwIcon]="cat.icon" class="w-8 h-w-8"></picture>
+          }
           <div class="flex-1 normal-case">
             <h3 class="font-bold">{{ cat.label | nwText }}</h3>
           </div>
         </a>
       </li>
       <li *ngFor="let cat of categories$ | async">
-        <a class="flex flex-row" [routerLink]="cat.route" [queryParams]="cat.query" [queryParamsHandling]="'merge'" (click)="isPanelOpen = false">
-          <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
+        <a
+          class="flex flex-row"
+          [routerLink]="cat.route"
+          [queryParams]="cat.query"
+          [queryParamsHandling]="'merge'"
+          (click)="isPanelOpen = false"
+        >
+          @if (cat.icon) {
+            <picture [nwIcon]="cat.icon" class="w-8 h-w-8"></picture>
+          }
           <div class="flex-1 normal-case">
             <h3 class="font-bold">{{ cat.label | nwText }}</h3>
           </div>

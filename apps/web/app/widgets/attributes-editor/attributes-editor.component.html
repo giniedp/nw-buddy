@@ -3,10 +3,13 @@
     <span class="font-bold">Points</span>
     <span class="font-bold text-center">{{ pointsAvailable() }}</span>
     <span class="flex-1"></span>
-    @if (!freeMode) {
-      <label class="join items-center my-1">
-        <span class="join-item btn btn-sm btn-ghost no-animation cursor-default">Magnify</span>
-        <select [(ngModel)]="magnifyPlacement" class="join-item select select-sm">
+    @if (!freeMode()) {
+      <label class="select select-sm w-40 my-1">
+        <span class="label">Magnify</span>
+        <select
+          [ngModel]="magnifyPlacement()"
+          (ngModelChange)="handleMagnifyUpdate($event)"
+        >
           <option [ngValue]="null">Auto</option>
           @for (option of magnifyOptions; track $index) {
             <option [ngValue]="option.value">
@@ -37,7 +40,7 @@
             @if (stat.assigned) {
               <span> + </span>
               <span
-                class="text-attr-assign text-opacity-75 cursor-help"
+                class="text-attr-assign cursor-help"
                 [tooltip]="'Assigned'"
                 [tooltipClass]="'text-attr-assign'"
               >
@@ -47,7 +50,7 @@
             @if (stat.buffs) {
               <span> + </span>
               <span
-                class="text-attr-buff text-opacity-75 cursor-help"
+                class="text-attr-buff cursor-help"
                 [tooltip]="'Item Buffs'"
                 [tooltipClass]="'text-attr-buff'"
               >
@@ -57,7 +60,7 @@
             @if (stat.magnify) {
               <span> + </span>
               <span
-                class="text-attr-magnify text-opacity-75 cursor-help"
+                class="text-attr-magnify cursor-help"
                 [tooltip]="'Magnify'"
                 [tooltipClass]="'text-attr-magnify'"
               >
@@ -75,36 +78,39 @@
           [min]="stat.inputMin"
           [max]="stat.inputMax"
           [ngModel]="stat.assigned"
-          (ngModelChange)="attributeInput(stat, $event)"
-          (focus)="attributeFocus($event)"
-          (blur)="attributeBlur(stat, $event)"
-          (wheel)="($event)"
-          (wheel)="attributeWheel(stat, $event)"
+          (ngModelChange)="handleAttributeUpdate(stat, $event)"
+          (focus)="handleAttributeFocus($event)"
+          (blur)="handleAttributeBlur(stat, $event)"
+          (wheel)="handleAttributeWheel(stat, $event)"
         />
         <div class="flex-1 flex flex-row justify-between items-center relative">
           <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
-            <span
-              *ngIf="stat.base"
-              class="flex-none bg-attr-base rounded-l-md"
-              [style.width.%]="(stat.base / stat.sliderEnd) * 100"
-            ></span>
-            <span
-              *ngIf="stat.buffs"
-              class="flex-none bg-attr-buff"
-              [class.rounded-r-md]="!stat.assigned && !stat.magnify"
-              [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"
-            ></span>
-            <span
-              *ngIf="stat.assigned"
-              [class.rounded-r-md]="!stat.magnify"
-              class="flex-none bg-attr-assign"
-              [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"
-            ></span>
-            <span
-              *ngIf="stat.magnify"
-              class="flex-none bg-attr-magnify rounded-r-md"
-              [style.width.%]="(stat.magnify / stat.sliderEnd) * 100"
-            ></span>
+            @if (stat.base) {
+              <span
+                class="flex-none bg-attr-base rounded-l-md"
+                [style.width.%]="(stat.base / stat.sliderEnd) * 100"
+              ></span>
+            }
+            @if (stat.buffs) {
+              <span
+                class="flex-none bg-attr-buff"
+                [class.rounded-r-md]="!stat.assigned && !stat.magnify"
+                [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"
+              ></span>
+            }
+            @if (stat.assigned) {
+              <span
+                [class.rounded-r-md]="!stat.magnify"
+                class="flex-none bg-attr-assign"
+                [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"
+              ></span>
+            }
+            @if (stat.magnify) {
+              <span
+                class="flex-none bg-attr-magnify rounded-r-md"
+                [style.width.%]="(stat.magnify / stat.sliderEnd) * 100"
+              ></span>
+            }
           </div>
 
           <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
@@ -112,25 +118,22 @@
               <div
                 class="segment relative h-5 cursor-pointer"
                 [style.flex]="step.weight"
-                (click)="attributeToggle(stat, step.value)"
+                (click)="handleAttributeToggle(stat, step.value)"
               >
-                <span
-                  *ngIf="getBulletColor(stat, step.value); let col"
-                  class="badge absolute right-0"
-                  [class.bg-zinc-800]="col === 'zink'"
-                  [class.bg-attr-base]="col === 'base'"
-                  [class.bg-attr-buff]="col === 'buff'"
-                  [class.bg-attr-assign]="col === 'assign'"
-                  [class.bg-attr-magnify]="col === 'magnify'"
-                  [tooltip]="tip"
-                >
-                </span>
+                @if (getBulletColor(stat, step.value); as col) {
+                  <span
+                    class="badge absolute right-0 rounded-full"
+                    [class.bg-zinc-800]="col === 'zink'"
+                    [class.bg-attr-base]="col === 'base'"
+                    [class.bg-attr-buff]="col === 'buff'"
+                    [class.bg-attr-assign]="col === 'assign'"
+                    [class.bg-attr-magnify]="col === 'magnify'"
+                    [tooltip]="tip"
+                  >
+                  </span>
+                }
                 <ng-template #tip>
-                  <nwb-checkpoint-tip
-                    [total]="stat.total"
-                    [points]="step.value"
-                    [ref]="stat.ref"
-                  />
+                  <nwb-checkpoint-tip [total]="stat.total" [points]="step.value" [ref]="stat.ref" />
                 </ng-template>
               </div>
             }

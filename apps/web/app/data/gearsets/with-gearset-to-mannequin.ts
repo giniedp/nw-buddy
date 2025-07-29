@@ -1,15 +1,14 @@
-import { Injector, effect, inject } from '@angular/core'
+import { Injector, Signal, computed, effect, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { patchState, signalStoreFeature, type, withMethods } from '@ngrx/signals'
 import { AttributeRef, EquipSlotId } from '@nw-data/common'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { EquippedItem, Mannequin } from '~/nw/mannequin'
 import { combineLatestOrEmpty } from '~/utils'
-import { ItemInstancesDB } from '../items'
+import { ItemsService } from '../items'
 import { ItemInstance } from '../items/types'
-import { SkillBuildsDB } from '../skillbuilds'
+import { SkillTreesService } from '../skill-tree'
 import { GearsetRecord } from './types'
-import { resolveGearsetSkill } from './utils'
 
 export interface WithGearsetToMannequinState {
   gearset: GearsetRecord
@@ -18,19 +17,26 @@ export interface WithGearsetToMannequinState {
 export function withGearsetToMannequin() {
   return signalStoreFeature(
     {
-      state: type<WithGearsetToMannequinState>(),
+      state: type<{ gearset: GearsetRecord }>(),
+      props: type<{ level: Signal<number> }>(),
     },
     withMethods(({ gearset, level }) => {
       const injector = inject(Injector)
-      const itemDB = inject(ItemInstancesDB)
-      const skillDB = inject(SkillBuildsDB)
+      const items = inject(ItemsService)
+      const skills = inject(SkillTreesService)
       const gearset$ = toObservable(gearset)
-      const level$ = toObservable(level)
+      const level$ = toObservable(
+        computed(() => {
+          const gsLevel = gearset()?.level
+          const inputLevel = level()
+          return gsLevel || inputLevel
+        }),
+      )
       const src$ = combineLatest({
         level: level$,
-        equippedItems: gearset$.pipe(switchMap((it) => resolveSlots(itemDB, it?.slots))),
-        equippedSkills1: gearset$.pipe(switchMap((it) => resolveGearsetSkill(skillDB, it?.skills?.['primary']))),
-        equippedSkills2: gearset$.pipe(switchMap((it) => resolveGearsetSkill(skillDB, it?.skills?.['secondary']))),
+        equippedItems: gearset$.pipe(switchMap((it) => resolveSlots(items, gearset()?.userId, it?.slots))),
+        equippedSkills1: gearset$.pipe(switchMap((it) => skills.resolveGearsetSkill(it?.skills?.['primary']))),
+        equippedSkills2: gearset$.pipe(switchMap((it) => skills.resolveGearsetSkill(it?.skills?.['secondary']))),
         enforcedEffects: gearset$.pipe(map((it) => it?.enforceEffects)),
         enforcedAbilities: gearset$.pipe(map((it) => it?.enforceAbilities)),
         magnifyPlacement: gearset$.pipe(map((it) => it?.magnify)),
@@ -68,10 +74,10 @@ export function withGearsetToMannequin() {
   )
 }
 
-function resolveSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
+function resolveSlots(db: ItemsService, userId: string, slots: GearsetRecord['slots']) {
   return combineLatestOrEmpty(
     Object.entries(slots || {}).map(([slotId, instanceOrId]) => {
-      return resolveItemInstance(db, instanceOrId).pipe(
+      return resolveItemInstance(db, userId, instanceOrId).pipe(
         map((instance): EquippedItem => {
           if (!instance) {
             return null
@@ -88,9 +94,9 @@ function resolveSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
   ).pipe(map((it) => it.filter((it) => it !== null)))
 }
 
-function resolveItemInstance(db: ItemInstancesDB, idOrInstance: string | ItemInstance) {
+function resolveItemInstance(db: ItemsService, userId: string, idOrInstance: string | ItemInstance) {
   if (typeof idOrInstance === 'string') {
-    return db.observeByid(idOrInstance) // live((t) => t.get(idOrInstance))
+    return db.observeRecord({ userId: userId, id: idOrInstance })
   }
   return of(idOrInstance)
 }

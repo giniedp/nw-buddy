@@ -1,15 +1,18 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, computed, inject } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
-import { filter, switchMap } from 'rxjs'
-import { GearsetStore, GearsetsDB, ItemInstanceRecord } from '~/data'
+import { combineLatest, filter, switchMap } from 'rxjs'
+import { GearsetStore, GearsetsService, ItemInstanceRecord } from '~/data'
+import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import {
+  svgBars,
   svgChevronLeft,
   svgEllipsisVertical,
   svgFolderOpen,
@@ -22,7 +25,7 @@ import {
 } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { GearsetLoadoutItemComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
+import { GearsetLoadoutComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
@@ -40,7 +43,7 @@ import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
     ItemDetailModule,
     RouterModule,
     TooltipModule,
-    GearsetLoadoutItemComponent,
+    GearsetLoadoutComponent,
   ],
   providers: [
     GearsetStore,
@@ -55,43 +58,48 @@ import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
   },
 })
 export class GearsetFormComponent {
+  private backend = inject(BackendService)
+  private injector = inject(Injector)
+  private gearService = inject(GearsetsService)
+  private modal = inject(ModalService)
+  private preferences = inject(PreferencesService)
+  private slotEventHandler = inject(GearsetFormSlotHandler)
+  private store = inject(GearsetStore)
+
   public slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable')
 
-  public get gearset() {
-    return this.store.gearset()
-  }
-  public get isLinkMode() {
-    return this.store.isLinkMode()
-  }
-  public get isCopyMode() {
-    return this.store.isCopyMode()
-  }
+  public gearset = this.store.gearset
+  public isLinkMode = this.store.isLinkMode
+  public isCopyMode = this.store.isCopyMode
+  public isPublished = this.store.isPublished
+  public isPublishable = this.store.isPublishable
+  public isSignedIn = this.backend.isSignedIn
 
   protected iconOpen = svgFolderOpen
   protected iconCreate = svgPlus
   protected iconDelete = svgTrashCan
   protected iconClose = svgXmark
-  protected iconMenu = svgEllipsisVertical
+  protected iconMenu = svgBars
   protected iconBack = svgChevronLeft
   protected iconLink = svgLink
   protected iconCopy = svgPaste
   protected iconNav = svgSquareArrowUpRight
 
-  private currentId = this.pref.session.storageProperty<string>('recent-gearset-id')
-  private store = inject(GearsetStore)
+  private userId = computed(() => this.backend.sessionUserId() || 'local')
+  private currentId = this.preferences.session.storageProperty<string>('recent-gearset-id')
 
-  public constructor(
-    private gearDb: GearsetsDB,
-    private modal: ModalService,
-    private injector: Injector,
-    private pref: PreferencesService,
-    slotEventHandler: GearsetFormSlotHandler,
-  ) {
-    this.store.connectGearsetDB(this.currentId.observe())
-    slotEventHandler.itemDropped.subscribe((it) => this.onItemDropped(it.slot, it.item))
+
+  public constructor() {
+    this.store.connectGearsetId(
+      combineLatest({
+        userId: toObservable(this.userId),
+        id: this.currentId.observe(),
+      }),
+    )
+    this.slotEventHandler.itemDropped.subscribe((it) => this.onItemDropped(it.slot, it.item))
   }
 
-  protected createSet() {
+  protected handleCreateSet() {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Create new set',
@@ -104,7 +112,7 @@ export class GearsetFormComponent {
       .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((newName) => {
-          return this.gearDb.create({
+          return this.gearService.create({
             id: null,
             name: newName,
             slots: {},
@@ -117,11 +125,11 @@ export class GearsetFormComponent {
       })
   }
 
-  protected unloadSet() {
+  protected handleUnloadSet() {
     this.currentId.set(null)
   }
 
-  protected async loadSet() {
+  protected async handleLoadGearset() {
     const id = await this.pickGearsetId()
     if (id != null) {
       this.currentId.set(id)
@@ -134,32 +142,25 @@ export class GearsetFormComponent {
       title: 'Choose a set',
       dataView: {
         adapter: GearsetTableAdapter,
+        source: this.gearService.observeRows(this.userId()),
       },
     }).then((it) => it?.[0] as string)
   }
 
-  protected updateName(name: string) {
-    this.store.patchGearset({ name: name })
+  protected handlePublish() {
+    this.store.update({ status: 'public' })
   }
 
-  protected updateMode(mode: 'link' | 'copy') {
+  protected handleUnpublish() {
+    this.store.update({ status: 'private' })
+  }
+
+  protected handleUpdateMode(mode: 'link' | 'copy') {
     this.store.patchGearset({ createMode: mode })
   }
 
-  protected onItemRemove(slot: EquipSlot) {
-    this.store.updateSlot(slot.id, null)
-  }
-
-  protected async onItemUnlink(slot: EquipSlot, record: ItemInstanceRecord) {
-    this.store.updateSlot(slot.id, {
-      gearScore: record.gearScore,
-      itemId: record.itemId,
-      perks: record.perks,
-    })
-  }
-
-  protected async onItemDropped(slot: EquipSlot, record: ItemInstanceRecord) {
-    if (this.store.isLinkMode()) {
+  private async onItemDropped(slot: EquipSlot, record: ItemInstanceRecord) {
+    if (this.store.isLinkMode() && !this.store.isPublished()) {
       this.store.updateSlot(slot.id, record.id)
     } else {
       this.store.updateSlot(slot.id, {

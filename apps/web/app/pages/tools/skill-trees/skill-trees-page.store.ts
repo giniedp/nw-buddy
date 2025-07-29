@@ -1,25 +1,64 @@
-import { computed } from '@angular/core'
-import { signalStore, withComputed, withHooks } from '@ngrx/signals'
-import { SkillBuildsDB, buildSkillSetRows, withDbRecords, withFilterByTags } from '~/data'
-import { withNwData } from '~/data/with-nw-data'
+import { computed, inject, resource } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
+import { patchState, signalMethod, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
+import { SkillTreesService, buildSkillTreeRows, injectNwData } from '~/data'
+import { BackendService } from '~/data/backend'
+import { collectTagsFromRecords, filterRecordsByTags, toggleTagInList } from '~/data/tagging'
+
+export interface SkillTreesPageState {
+  userId: string
+  activeTags: string[]
+}
 
 export const SkillTreesPageStore = signalStore(
-  withDbRecords(SkillBuildsDB),
-  withFilterByTags(),
-  withNwData((db) => {
+  withState<SkillTreesPageState>({
+    userId: 'local',
+    activeTags: [],
+  }),
+  withProps(({ userId }) => {
+    const db = injectNwData()
+    const store = inject(SkillTreesService)
+    const backend = inject(BackendService)
+    const recordsResource = rxResource({
+      params: userId,
+      stream: ({ params }) => store.observeRecords(params),
+      defaultValue: [],
+    })
+    const abilitiesResource = resource({
+      loader: () => db.abilitiesByIdMap(),
+    })
+    const records = computed(() => (recordsResource.hasValue() ? recordsResource.value() : []))
     return {
-      abilities: db.abilitiesByIdMap(),
+      records,
+      abilities: computed(() => (abilitiesResource.hasValue() ? abilitiesResource.value() : null)),
+      isLoading: computed(() => recordsResource.isLoading() || abilitiesResource.isLoading()),
+      isAvailable: computed(() => {
+        return userId() === 'local' || userId() === backend.sessionUserId()
+      }),
+      isEmpty: computed(() => !records().length),
     }
   }),
-  withComputed(({ filteredRecords, nwData, recordsAreLoaded, nwDataIsLoaded }) => {
+  withMethods((state) => {
     return {
-      rows: computed(() => buildSkillSetRows(filteredRecords(), nwData()?.abilities)),
-      isLoaded: computed(() => recordsAreLoaded() && nwDataIsLoaded()),
+      load: signalMethod<string>((userId) => {
+        patchState(state, { userId })
+      }),
+      toggleTag: (tag: string) => {
+        patchState(state, {
+          activeTags: toggleTagInList(state.activeTags(), tag),
+        })
+      },
     }
   }),
-  withHooks({
-    onInit(state) {
-      state.loadNwData()
-    },
+  withComputed(({ records, activeTags, abilities }) => {
+    const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
+    const filteredRecords = computed(() => filterRecordsByTags(records(), activeTags()))
+    const displayRows = computed(() => buildSkillTreeRows(filteredRecords(), abilities()))
+    return {
+      tags,
+      displayRows,
+      totalCount: computed(() => records().length),
+      displayCount: computed(() => displayRows().length),
+    }
   }),
 )

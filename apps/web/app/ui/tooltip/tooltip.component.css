@@ -1,0 +1,10 @@
+:host {
+  z-index: 999;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: var(--tooltip-fade-time, 150ms);
+  transition-timing-function: linear;
+}
+:host.tooltip-active {
+  opacity: 1;
+}

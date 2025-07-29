@@ -74,7 +74,7 @@ export function perkColId(util: PerkTableUtils) {
 export function perkCraftMod(util: PerkTableUtils) {
   return util.colDef<string[]>({
     colId: 'perkCraftModIds',
-    headerClass: 'bg-secondary bg-opacity-15',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Craft Mod',
     valueGetter: ({ data }) => data.$items?.map((it) => it.ItemID),
     getQuickFilterText: ({ data }) => {
@@ -180,7 +180,7 @@ export function perkColName(util: PerkTableUtils) {
       if (data.SecondaryEffectDisplayName && data.SecondaryEffectDisplayName !== value.secondary) {
         return null
       }
-      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+      return ['font-mono', 'text-neutral-content/50']
     },
   })
 }
@@ -198,7 +198,7 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
       if (data.Description !== value) {
         return ['multiline-cell', 'py-2', 'text-nw-description', 'italic']
       }
-      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+      return ['font-mono', 'text-neutral-content/50']
     },
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({

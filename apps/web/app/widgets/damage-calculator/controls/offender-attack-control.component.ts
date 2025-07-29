@@ -19,7 +19,7 @@ import { PrecisionInputComponent } from './precision-input.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, LayoutModule, TooltipModule, IconsModule, PrecisionInputComponent],
   host: {
-    class: 'form-control',
+    class: 'fieldset',
   },
 })
 export class OffenderAttackControlComponent {

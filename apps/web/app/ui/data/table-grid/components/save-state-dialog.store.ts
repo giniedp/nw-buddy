@@ -1,60 +1,64 @@
-import { Injectable } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { ComponentStore } from '@ngrx/component-store'
-import { combineLatest, map } from 'rxjs'
-import { TablePresetDB, TablePresetRecord } from '~/data'
-import { eqCaseInsensitive } from '~/utils'
+import { inject, Injectable } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
+import { patchState, signalState } from '@ngrx/signals'
+import { TablePresetRecord, TablePresetsService } from '~/data'
 
-@Injectable()
-export class SaveStateDialogStore extends ComponentStore<{
+interface SaveStateDialogState {
   entries: TablePresetRecord[]
   key: string
   selection: string
-}> {
-  public readonly key$ = this.selectSignal(({ key }) => key)
-  public readonly entries$ = this.selectSignal(({ entries }) => entries)
-  public readonly selection$ = this.selectSignal(({ selection }) => selection)
-  public readonly selectedData$ = this.selectSignal(
-    toSignal(this.db.observeByid(this.select(({ selection }) => selection))),
-  )
-
-  public constructor(private db: TablePresetDB) {
-    super({
-      entries: null,
-      selection: null,
-      key: null,
-    })
-    this.load()
-  }
-
-  private load = this.effect<void>(() => {
-    return combineLatest({
-      entries: this.db.observeAll(),
-      key: this.select(({ key }) => key),
-    }).pipe(
-      map(({ entries, key }) => {
-        entries = entries?.filter((it) => eqCaseInsensitive(it.key, key))
-        this.patchState({ entries })
-      }),
-    )
+}
+@Injectable()
+export class SaveStateDialogStore {
+  private service = inject(TablePresetsService)
+  private state = signalState<SaveStateDialogState>({
+    entries: [],
+    key: null,
+    selection: null,
   })
 
-  public deleteEntry(id: string) {
-    return this.db.destroy(id)
-  }
+  public readonly key = this.state.key
+  public readonly entries = rxResource({
+    params: this.key,
+    stream: ({ params }) => this.service.observeRecords({ key: params }),
+    defaultValue: [],
+  }).value
 
-  public createEntry(name: string) {
-    return this.db.create({
-      name: name,
-      key: this.key$(),
+  public readonly selection = this.state.selection
+  public readonly selectedData = rxResource({
+    params: this.selection,
+    stream: ({ params }) => this.service.observeRecord({ id: params }),
+    defaultValue: null,
+  }).value
+
+  public select(id: string) {
+    patchState(this.state, {
+      selection: id,
     })
   }
 
-  public updateName(id: string, name: string) {
-    return this.db.update(id, { name })
+  public selectScope(key: string) {
+    patchState(this.state, {
+      key,
+    })
   }
 
-  public saveData(id: string, data: Pick<TablePresetRecord, 'columns' | 'filter'>) {
-    return this.db.update(id, data)
+  public delete(id: string) {
+    return this.service.delete(id)
+  }
+
+  public create(name: string) {
+    return this.service.create({
+      name: name,
+      key: this.key(),
+    })
+  }
+
+  public rename(id: string, name: string) {
+    return this.service.update(id, { name })
+  }
+
+  public save(id: string, data: Pick<TablePresetRecord, 'columns' | 'filter'>) {
+    return this.service.update(id, data)
   }
 }

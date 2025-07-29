@@ -1,4 +1,4 @@
-@if (square) {
+@if (square()) {
   <nwb-item-header
     class="relative font-nimbus gap-2 bg-neutral-content"
     [nwbItemDetail]="slotItemId()"
@@ -7,17 +7,17 @@
   >
     <nwb-item-icon [nwbItemIcon]="slotIcon()" [solid]="hasItem()" class="z-10 w-12 h-12" />
 
-    @if (!disabled && !hasItem()) {
+    @if (!disabled() && !hasItem()) {
       <button
-        class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
+        class="btn btn-square btn-ghost hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
         (click)="handlePickItem()"
       >
         <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2" />
       </button>
     }
-    @if (!disabled && hasItem()) {
+    @if (!disabled() && hasItem()) {
       <button
-        class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end pr-1 pt-2"
+        class="btn btn-square btn-ghost hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end pr-1 pt-2"
         [cdkMenuTriggerFor]="menu"
       >
         <nwb-icon [icon]="iconMenu" class="relative w-4 h-4" />
@@ -30,8 +30,8 @@
     <nwb-item-header-content class="z-10">
       <span header-title [nwHtml]="store.slot()?.name | nwText"></span>
     </nwb-item-header-content>
-    @if (!disabled) {
-      <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
+    @if (!disabled()) {
+      <button class="btn btn-square btn-ghost hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
         <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
     }
@@ -41,24 +41,24 @@
     class="relative flex=1"
     [entity]="store.instance().itemId"
     [gsOverride]="gsValue || store.instance().gearScore"
-    [gsEditable]="!disabled && isGearSlot()"
+    [gsEditable]="!disabled() && isGearSlot()"
     (gsEdit)="openGsEditor($event)"
     [perkOverride]="store.instance().perks"
-    [perkEditable]="!disabled"
+    [perkEditable]="!disabled()"
     (perkEdit)="handlePickPerk($event.key)"
     [disableStats]="!isGearSlot()"
-    [disableInfo]="!isGearSlot() || compact"
-    [disableDescription]="compact"
-    [square]="square"
-    [enableLink]="!disabled"
+    [disableInfo]="!isGearSlot() || compact()"
+    [disableDescription]="compact()"
+    [square]="square()"
+    [enableLink]="!disabled()"
   >
     @if (store.isLinked()) {
-      <span class="absolute top-[5px] left-[55px] p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden">
+      <span class="absolute top-[5px] left-[55px] p-1 bg-black/75 rounded-bl-xl screenshot-hidden">
         <nwb-icon [icon]="iconLink" class="w-4 h-4" />
       </span>
     }
-    @if (!disabled) {
-      <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
+    @if (!disabled()) {
+      <button class="btn btn-square btn-ghost border-0 hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
         <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
     }
@@ -91,43 +91,45 @@
           [ngModel]="gsValue || store.instance().gearScore"
           (ngModelChange)="updateGearScore($event)"
           (wheel)="stepGearScore($event)"
-          class="w-full bg-black bg-opacity-80 p-1 rounded-md"
+          class="w-full bg-black/80 p-1 rounded-md"
         />
       </div>
     </ng-template>
   </nwb-item-card>
 }
 
-@if (!store.instance() && !square && !disabled) {
+@if (!store.instance() && !square() && !disabled()) {
   <div class="h-full p-4 opacity-50 hover:opacity-100 transition-opacity">
     <ul class="menu menu-compact menu-vertical rounded-md">
       <li>
-        <a (click)="handlePickItem()">
+        <button (click)="handlePickItem()">
           <nwb-icon [icon]="iconPlus" class="w-4 h-4" />
           <div class="flex flex-col leading-none">
             <span>New item</span>
-            <span class="text-xs opacity-75">Pick an item from DB and configure from scratch</span>
+            <span class="text-xs opacity-75">Pick an item for this slot</span>
           </div>
-        </a>
+        </button>
       </li>
       @if (isGearSlot()) {
+        @if (!isPublished()) {
+          <li>
+            <button (click)="handleLinkItem()" [disabled]="">
+              <nwb-icon [icon]="iconLink" class="w-4 h-4" />
+              <div class="flex flex-col leading-none">
+                <span>Link item</span>
+                <span class="text-xs opacity-75">Pick an item from inventory and link it to this slot</span>
+              </div>
+            </button>
+          </li>
+        }
         <li>
-          <a (click)="handleLinkItem()">
-            <nwb-icon [icon]="iconLink" class="w-4 h-4" />
-            <div class="flex flex-col leading-none">
-              <span>Link item</span>
-              <span class="text-xs opacity-75">Pick an item from inventory and link it to this slot</span>
-            </div>
-          </a>
-        </li>
-        <li>
-          <a (click)="handleScanItem()">
+          <button (click)="handleScanItem()">
             <nwb-icon [icon]="iconImage" class="w-4 h-4" />
             <div class="flex flex-col leading-none">
               <span>Scan item</span>
               <span class="text-xs opacity-75">Create a new item from a screenshot</span>
             </div>
-          </a>
+          </button>
         </li>
       }
     </ul>

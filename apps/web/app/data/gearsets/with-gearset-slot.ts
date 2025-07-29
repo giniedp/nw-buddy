@@ -1,6 +1,6 @@
-import { computed, inject, signal } from '@angular/core'
+import { computed, inject } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { signalStoreFeature, type, withComputed } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
   EquipSlot,
   EquipSlotId,
@@ -12,11 +12,10 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
-import { ItemInstance, ItemInstancesDB } from '../items'
+import { catchError, combineLatest, map, of, switchMap } from 'rxjs'
+import { ItemsService } from '../items'
 import { injectNwData } from '../nw-data'
 import { GearsetRecord } from './types'
-import { resolveGearsetSlot } from './utils'
 
 export interface WithGearsetSlotState {
   gearset: GearsetRecord
@@ -27,46 +26,53 @@ export function withGearsetSlot() {
     {
       state: type<WithGearsetSlotState>(),
     },
-    withComputed((state) => {
-      const db = inject(ItemInstancesDB)
+    withComputed(({ gearset, slotId }) => {
+      const items = inject(ItemsService)
       const data = injectNwData()
 
-      const instanceId = signal<string>(null)
-      const instance = signal<ItemInstance>(null)
-      const item = signal<MasterItemDefinitions | HouseItems>(null)
-
-      const connect = rxMethod<WithGearsetSlotState>(
-        pipe(
-          switchMap(({ gearset, slotId }) => {
-            return resolveGearsetSlot(db, slotId, gearset?.slots?.[slotId])
-          }),
-          switchMap(({ instance, instanceId }) => {
-            return combineLatest({
-              instanceId: of(instanceId),
-              instance: of(instance),
-              item: data.itemOrHousingItem(instance?.itemId),
-            })
-          }),
-          map((res) => {
-            instanceId.set(res.instanceId)
-            instance.set(res.instance)
-            item.set(res.item)
-          }),
-        ),
-      )
-      connect(
-        computed(() => {
+      const resource$ = combineLatest({
+        gearset: toObservable(gearset),
+        slotId: toObservable(slotId),
+      }).pipe(
+        map(({ gearset, slotId }) => {
           return {
-            gearset: state.gearset(),
-            slotId: state.slotId(),
+            slotId,
+            instance: gearset?.slots?.[slotId],
+            userId: gearset?.userId,
           }
         }),
+        switchMap(({ slotId, instance, userId }) => {
+          return items.resolveGearsetSlot({ slotId, instance, userId }).pipe(
+            switchMap(({ instance, instanceId }) => {
+              return combineLatest({
+                instanceId: of(instanceId),
+                instance: of(instance),
+                item: data.itemOrHousingItem(instance?.itemId),
+              })
+            }),
+          )
+        }),
+        catchError((err) => {
+          console.error(err)
+          return of({
+            instanceId: null,
+            instance: null,
+            item: null,
+          })
+        }),
       )
+      const resource = toSignal(resource$, {
+        initialValue: {
+          instanceId: null,
+          instance: null,
+          item: null,
+        },
+      })
 
       return {
-        instanceId: computed(() => instanceId()),
-        instance: computed(() => instance()),
-        item: computed(() => item()),
+        instanceId: computed(() => resource()?.instanceId),
+        instance: computed(() => resource()?.instance),
+        item: computed(() => resource()?.item),
       }
     }),
     withComputed(({ item, instance, instanceId, slotId }) => {

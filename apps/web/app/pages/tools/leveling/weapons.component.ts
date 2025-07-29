@@ -5,17 +5,25 @@ import { RouterModule } from '@angular/router'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
+import { LayoutModule } from '~/ui/layout'
 import { WeaponLevelInputModule } from '~/ui/weapon-level-input'
 import { WeaponChartComponent } from './weapon-chart.component'
 
 @Component({
   selector: 'nwb-weapons-page',
   templateUrl: './weapons.component.html',
-  styleUrls: ['./weapons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, FormsModule, NwModule, WeaponLevelInputModule, WeaponChartComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    NwModule,
+    WeaponLevelInputModule,
+    WeaponChartComponent,
+    LayoutModule,
+  ],
   host: {
-    class: 'block layout-pad',
+    class: 'ion-page',
   },
 })
 export class WeaponsComponent {

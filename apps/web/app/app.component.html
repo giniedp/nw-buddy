@@ -79,18 +79,18 @@
             <span class="hidden sm:inline"> New World Buddy</span>
           </span>
         </a>
-        <span class="flex-1 text-center px-16">
-          @if (isOverwolf || isElectron) {
+        @if (isOverwolf || isElectron) {
+          <span class="flex-1 text-center px-16">
             <input
               class="input input-sm input-bordered w-full no-drag"
               [value]="currentUrl()"
               (change)="goToUrl($event)"
             />
-          }
-        </span>
+          </span>
+        }
       </div>
       <ion-buttons slot="end">
-        <div class="flex flex-row items-center gap-1">
+        <div class="flex flex-row items-center gap-1 pr-2">
           <a
             href="https://github.com/giniedp/nw-buddy"
             target="_blank"
@@ -110,7 +110,6 @@
           >
             <nwb-icon [icon]="iconDiscord" class="w-5 h-5" />
           </a>
-          <nwb-global-search-input class="no-drag" />
           <button
             class="btn btn-circle btn-ghost no-drag"
             [cdkMenuTriggerFor]="tplLangMenu"
@@ -119,6 +118,10 @@
           >
             {{ langLabel() }}
           </button>
+          <nwb-global-search-input class="no-drag" />
+          @if (backend.isEnabled()) {
+            <app-auth />
+          }
         </div>
       </ion-buttons>
     </ion-toolbar>

@@ -1,4 +1,5 @@
 export type EnvVars = typeof env
+
 export const env = {
   /**
    * The build version string
@@ -38,10 +39,14 @@ export const env = {
    * A watermark image URL
    */
   watermarkImageUrl: '',
+
   /**
    * New world buddy tools url
    * @remarks
    * only for local development
    */
   nwbtUrl: 'http://localhost:8000',
+
+  pocketbaseUrl: '',
+
 }

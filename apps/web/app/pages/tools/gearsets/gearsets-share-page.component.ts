@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { filter, switchMap } from 'rxjs'
-import { GearsetRecord, GearsetsDB } from '~/data'
+import { GearsetRecord, GearsetsService } from '~/data'
 import { ShareLoaderComponent } from '~/pages/share'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
@@ -30,6 +29,11 @@ import { GearsetSliderComponent } from './gearset/gearset-slider.component'
   },
 })
 export class GearsetsSharePageComponent {
+  private route = inject(ActivatedRoute)
+  private router = inject(Router)
+  private modal = inject(ModalService)
+  private gearService = inject(GearsetsService)
+
   protected paramName = toSignal(injectRouteParam('name'))
   protected paramCid = toSignal(injectRouteParam('cid'))
   protected paramMode = toSignal(injectQueryParam('mode'))
@@ -44,13 +48,7 @@ export class GearsetsSharePageComponent {
   protected iconError = svgCircleExclamation
   protected iconLoading = svgCircleNotch
 
-  public constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private modal: ModalService,
-    private gearsetDb: GearsetsDB,
-    private sanitizer: DomSanitizer,
-  ) {
+  public constructor() {
     //
   }
 
@@ -59,7 +57,7 @@ export class GearsetsSharePageComponent {
     PromptDialogComponent.open(this.modal, {
       inputs: {
         title: 'Import',
-        body: 'New gearset name',
+        label: 'Name',
         value: record.name,
         positive: 'Import',
         negative: 'Cancel',
@@ -68,7 +66,7 @@ export class GearsetsSharePageComponent {
       .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((name) => {
-          return this.gearsetDb.create({
+          return this.gearService.create({
             ...record,
             name: name,
           })

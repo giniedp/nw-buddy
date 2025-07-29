@@ -48,7 +48,6 @@ export class ExportDialogComponent {
   private clipboard: ClipboardService = inject(ClipboardService)
 
   public constructor(
-    protected store: SaveStateDialogStore,
     private modalRef: ModalRef<Array<string | number>>,
     private cdRef: ChangeDetectorRef,
   ) {

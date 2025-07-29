@@ -1,6 +1,0 @@
-<div class="grid grid-cols-fill-sm sm:grid-cols-fill-lg gap-6">
-  @for (item of records; track item.id) {
-    <nwb-gearset-loadout-item [geasrsetId]="item.id" (deleteClicked)="handleDelete(item)" />
-  }
-  <nwb-gearset-loadout-item [geasrsetId]="null" (createClicked)="handleCreate()" />
-</div>

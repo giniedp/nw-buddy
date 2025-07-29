@@ -23,7 +23,7 @@ import { StackedValueControlComponent } from './stacked-value-control.component'
     IconsModule,
   ],
   host: {
-    class: 'block',
+    class: 'fieldset',
   },
 })
 export class OffenderModsControlComponent {

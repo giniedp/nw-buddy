@@ -1,16 +1,16 @@
 import { ColumnState, GridApi } from '@ag-grid-community/core'
 import { EventEmitter, Injectable, inject } from '@angular/core'
-import { TableStateDB, TableStateRecord } from '~/data'
-import { PreferencesService, StorageNode } from '~/preferences'
-import { gridGetPinnedBottomData, gridGetPinnedTopData } from '../ag-grid/utils'
 import { ActivatedRoute, Router } from '@angular/router'
+import { TableStateRecord, TableStatesService } from '~/data'
+import { PreferencesService, StorageNode } from '~/preferences'
 import { compressQueryParam, decompressQueryParam } from '~/utils'
+import { gridGetPinnedBottomData, gridGetPinnedTopData } from '../ag-grid/utils'
 
 const QUERY_PARAM_GRID_STATE = 'gridState'
 
 @Injectable()
 export class TableGridPersistenceService {
-  private storage = inject(TableStateDB)
+  private service = inject(TableStatesService)
   private route = inject(ActivatedRoute)
   private router = inject(Router)
 
@@ -39,8 +39,8 @@ export class TableGridPersistenceService {
     if (!key || !api) {
       return
     }
-    const current = await this.storage.read(key).catch(() => null as TableStateRecord)
-    await this.storage
+    const current = await this.service.read(key).catch(() => null as TableStateRecord)
+    await this.service
       .createOrUpdate({
         pinnedBottom: null,
         pinnedTop: null,
@@ -75,7 +75,7 @@ export class TableGridPersistenceService {
       return
     }
 
-    const current = await this.storage.read(key).catch(() => null as TableStateRecord)
+    const current = await this.service.read(key).catch(() => null as TableStateRecord)
     const data = state ?? current?.columns
     if (data) {
       api.applyColumnState({ state: data, applyOrder: true })
@@ -98,7 +98,7 @@ export class TableGridPersistenceService {
     if (!key || !api || !identify) {
       return
     }
-    const state = await this.storage.read(key).catch(() => null as TableStateRecord)
+    const state = await this.service.read(key).catch(() => null as TableStateRecord)
     const pinnedTop = resolvePinnedData(api, state?.pinnedTop, identify) || []
     const pinnedBottom = resolvePinnedData(api, state?.pinnedBottom, identify) || []
     api.updateGridOptions({
@@ -112,10 +112,10 @@ export class TableGridPersistenceService {
       return
     }
 
-    const state = await this.storage.read(key).catch(() => null as TableStateRecord)
+    const state = await this.service.read(key).catch(() => null as TableStateRecord)
     const pinnedTop = gridGetPinnedTopData(api)?.map(identify)
     const pinnedBottom = gridGetPinnedBottomData(api)?.map(identify)
-    this.storage.createOrUpdate({
+    this.service.createOrUpdate({
       columns: null,
       ...(state || {}),
       id: key,

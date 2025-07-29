@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { InjectFlags, ProviderToken, Type } from '@angular/core'
+import { InjectOptions, ProviderToken, Type } from '@angular/core'
 import { ComponentFixture, discardPeriodicTasks, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing'
 import { By } from '@angular/platform-browser'
 
@@ -33,7 +33,7 @@ export class TestContext<C> {
   /**
    * gets an injectable from current injector
    */
-  public inject<S>(token: ProviderToken<S>, notFoundValue?: S, flags?: InjectFlags): S {
+  public inject<S>(token: ProviderToken<S>, notFoundValue?: S, flags?: InjectOptions): S {
     return this.debugElement.injector.get<S>(token, notFoundValue, flags)
   }
 

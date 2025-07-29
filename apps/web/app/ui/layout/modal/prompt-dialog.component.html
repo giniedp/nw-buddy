@@ -5,40 +5,37 @@
 </ion-header>
 <ion-content class="ion-p-4">
   <div class="h-full flex flex-col gap-4 items-center justify-center">
-    @if (isHtml()) {
-      <div [innerHTML]="body()"></div>
-    } @else {
-      <p>{{ body() }}</p>
+    @if (body()) {
+      @if (isHtml()) {
+        <div [innerHTML]="body()"></div>
+      } @else {
+        <p>{{ body() }}</p>
+      }
     }
 
-    @switch (inputType()) {
-      @case ('number') {
-        <input
-          [(ngModel)]="value"
-          [type]="inputType()"
-          [min]="min()"
-          [max]="max()"
-          [placeholder]="placeholder()"
-          class="input input-bordered w-full max-w-60"
-        />
+    <label class="input w-ful">
+      @if (label()) {
+        <span class="label">{{ label() }}</span>
       }
-      @case ('textarea') {
-        <textarea
-          [(ngModel)]="value"
-          [placeholder]="placeholder()"
-          rows="20"
-          class="input input-bordered w-full h-96"
-        ></textarea>
+      @switch (inputType()) {
+        @case ('number') {
+          <input
+            [(ngModel)]="value"
+            [type]="inputType()"
+            [min]="min()"
+            [max]="max()"
+            [placeholder]="placeholder()"
+            class="w-full"
+          />
+        }
+        @case ('textarea') {
+          <textarea [(ngModel)]="value" [placeholder]="placeholder()" rows="20" class="w-full h-96"></textarea>
+        }
+        @default {
+          <input [(ngModel)]="value" [type]="inputType() || 'text'" [placeholder]="placeholder()" class="w-full" />
+        }
       }
-      @default {
-        <input
-          [(ngModel)]="value"
-          [type]="inputType() || 'text'"
-          [placeholder]="placeholder()"
-          class="input input-bordered w-full max-w-60"
-        />
-      }
-    }
+    </label>
   </div>
 </ion-content>
 <ion-footer class="rounded-b-md">

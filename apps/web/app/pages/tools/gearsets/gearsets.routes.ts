@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core'
-import { RouterModule, Routes } from '@angular/router'
+import { Routes } from '@angular/router'
 import { GearsetsDetailPageComponent } from './gearsets-detail-page.component'
 import { GearsetsListPageComponent } from './gearsets-list-page.component'
 import { GearsetsSharePageComponent } from './gearsets-share-page.component'
@@ -29,11 +28,21 @@ export const ROUTES: Routes = [
     children: [...ipfsRoutes],
   },
   {
-    path: '',
-    component: GearsetsListPageComponent,
+    path: ':userid',
+    children: [
+      {
+        path: '',
+        component: GearsetsListPageComponent,
+      },
+      {
+        path: ':id',
+        component: GearsetsDetailPageComponent,
+      },
+    ],
   },
   {
-    path: ':id',
-    component: GearsetsDetailPageComponent,
+    path: '',
+    redirectTo: 'local',
+    pathMatch: 'full',
   },
 ]

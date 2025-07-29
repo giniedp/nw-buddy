@@ -7,6 +7,7 @@
 <div class="grid grid-cols-4 gap-[2px] mx-auto w-fit">
   @for (slot of buffSlots; track $index) {
     <nwb-gear-cell-slot
+      class="max-w-14"
       [slotId]="slot.id"
       [gearset]="gearset"
       [disabled]="disabled"
@@ -15,6 +16,7 @@
   }
   @for (slot of ammoSlots; track $index) {
     <nwb-gear-cell-slot
+      class="max-w-14"
       [slotId]="slot.id"
       [gearset]="gearset"
       [disabled]="disabled"

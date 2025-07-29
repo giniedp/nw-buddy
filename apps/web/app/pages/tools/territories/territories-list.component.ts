@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, TrackByFunction } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { TerritoryDefinition } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, switchMap } from 'rxjs'
-import { injectNwData } from '~/data'
+import { CharacterStore, injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TerritoriesService } from '~/nw/territories'
+import { LayoutModule } from '~/ui/layout'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
 import { TerritoryModule } from '~/widgets/territory'
@@ -14,15 +15,16 @@ import { TerritoryModule } from '~/widgets/territory'
 @Component({
   selector: 'nwb-territories-list',
   templateUrl: './territories-list.component.html',
-  styleUrls: ['./territories-list.component.scss'],
+  styleUrl: './territories-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, TerritoryModule],
+  imports: [CommonModule, RouterModule, TerritoryModule, LayoutModule],
   host: {
-    class: 'layout-row layout-gap layout-pad',
+    class: 'ion-page',
   },
 })
 export class TerritoriesListComponent {
   private db = injectNwData()
+  private character = inject(CharacterStore)
 
   protected territories$ = defer(() => this.territories())
     .pipe(switchMap((it) => combineLatest(it.map((i) => this.territoryWithinfo(i)))))
@@ -50,7 +52,7 @@ export class TerritoriesListComponent {
   private territoryWithinfo(it: TerritoryDefinition) {
     return combineLatest({
       search: this.search.query$,
-      pref: this.service.getPreferences(it.TerritoryID),
+      pref: this.character.observeTerritoryData(it.TerritoryID),
     }).pipe(
       map(({ search, pref }) => {
         const matchNotes = testString(pref?.notes, search)

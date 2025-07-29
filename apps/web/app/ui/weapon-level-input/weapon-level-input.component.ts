@@ -10,7 +10,7 @@ import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 @Component({
   selector: 'nwb-weapon-level-input',
   templateUrl: './weapon-level-input.component.html',
-  styleUrls: ['./weapon-level-input.component.scss'],
+  styleUrl: './weapon-level-input.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, NwModule, InputSliderComponent, LayoutModule],
   host: {

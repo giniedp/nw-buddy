@@ -4,14 +4,6 @@ import { PreferencesService } from './preferences.service'
 import { StorageNode } from './storage'
 
 export interface TerritoryPreferences {
-  standing?: number
-  taxHousing?: number
-  taxTrading?: number
-  taxCrafting?: number
-  taxRefining?: number
-  numUpgrades?: number
-  controlledBy?: string
-  governedBy?: string
   notes?: string
   tags?: string[]
 }

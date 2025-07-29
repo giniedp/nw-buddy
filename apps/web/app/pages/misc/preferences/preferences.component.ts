@@ -1,8 +1,23 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
-import { filter } from 'rxjs'
+import { environment } from 'apps/web/environments'
+import { combineLatest, filter, switchMap, tap } from 'rxjs'
+import {
+  CharacterStore,
+  GearsetsService,
+  injectCharactersDB,
+  injectGearsetsDB,
+  injectItemInstancesDB,
+  injectSkillTreesDB,
+  injectTablePresetsDB,
+  ItemsService,
+  SkillTreesService,
+  TablePresetsService,
+} from '~/data'
+import { BackendService } from '~/data/backend'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
@@ -13,6 +28,8 @@ import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
+import { ToastController } from '@ionic/angular/standalone'
+import { TransmogsService } from '~/data/transmogs'
 
 @Component({
   selector: 'nwb-preferences-page',
@@ -24,18 +41,54 @@ import { DataImportDialogComponent } from './data-import-dialog.component'
   },
 })
 export class PreferencesComponent {
+  protected pref = inject(AppPreferencesService)
+  private dbService = inject(DbService)
+
+  private itemPreferences = inject(ItemPreferencesService)
+  private modal = inject(ModalService)
+
+  protected backend = inject(BackendService)
+  protected signedIn = this.backend.isSignedIn
+  protected session = this.backend.session
+
+  protected envName = environment.environment
+  protected version = environment.version
+  protected branch = environment.branchname
+  protected cdnUrl = environment.cdnUrl
+  protected modelsUrl = environment.modelsUrl
+  protected tilesUrl = environment.nwTilesUrl
+
+  protected countLocal = rxResource({
+    stream: () => this.dbService.userDataStats('local'),
+    defaultValue: {
+      characters: 0,
+      items: 0,
+      gearsets: 0,
+      presets: 0,
+      transmogs: 0,
+      skillTrees: 0,
+      bookmarks: 0,
+    },
+  })
+  protected countUser = rxResource({
+    params: () => this.backend.sessionUserId() || 'local',
+    stream: ({ params }) => this.dbService.userDataStats(params),
+    defaultValue: {
+      characters: 0,
+      items: 0,
+      gearsets: 0,
+      presets: 0,
+      transmogs: 0,
+      skillTrees: 0,
+      bookmarks: 0,
+    },
+  })
+
   protected get collapseMenu() {
     return this.pref.collapseMenuMode.get() == 'always'
   }
   protected set collapseMenu(value: boolean) {
     this.pref.collapseMenuMode.set(value ? 'always' : 'auto')
-  }
-
-  protected get highQualityModels() {
-    return this.pref.highQualityModels.get()
-  }
-  protected set highQualityModels(value: boolean) {
-    this.pref.highQualityModels.set(value)
   }
 
   protected get ipfsGateway() {
@@ -62,13 +115,7 @@ export class PreferencesComponent {
   protected isDev = false
   protected isDevCount = 0
   protected iconInfo = svgInfoCircle
-  public constructor(
-    public pref: AppPreferencesService,
-    public appDb: DbService,
-    private itemPref: ItemPreferencesService,
-    private modal: ModalService,
-    head: HtmlHeadService,
-  ) {
+  public constructor(head: HtmlHeadService) {
     head.updateMetadata({
       title: 'Preferences',
       description: 'Personal preferences to adjust your New World Buddy experience',
@@ -83,6 +130,147 @@ export class PreferencesComponent {
     DataImportDialogComponent.open(this.modal)
   }
 
+  public async dropTables() {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Clear all data',
+        body: 'Are you sure you want to clear all data?',
+        negative: 'Cancel',
+        positive: 'Clear',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.clearAllData()),
+        switchMap(() => this.dbService.syncUserData()),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'All data cleared.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error clearing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
+      })
+  }
+
+  public async refreshAccountData() {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Refresh account data',
+        body: 'This will clear your account data on this device and re-fetch it from the server. Any pending data will be lost.',
+        negative: 'Cancel',
+        positive: 'Refresh now',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.clearUserData(this.backend.sessionUserId())),
+        switchMap(() => this.dbService.syncUserData()),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'Refresh complete.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error refreshing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
+      })
+  }
+
+  public async deleteAccountData() {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Delete account data',
+        body: 'Are you sure you want to delete all your account data?',
+        negative: 'Cancel',
+        positive: 'Delete',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.deleteAccountData(this.backend.sessionUserId())),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'All data deleted!',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `An error occured while deleting the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
+      })
+  }
+
+  public async importToAccount() {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Import local data',
+        body: `
+        This will copy all <i class="text-warning">local</i> data to your <i class="text-success">account</i>.
+        <br /><br />
+        Character progression will be merged with existing character data. Any collision will be overwritten.
+        <br /><br />
+        Gearsets, skill trees etc. will be created as new records.
+        `,
+        isHtml: true,
+        negative: 'Cancel',
+        positive: 'Import',
+      },
+    })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(() => this.dbService.importToAccount(this.backend.sessionUserId())),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'All data cleared.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error clearing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
+      })
+  }
+
   protected clearPrices() {
     ConfirmDialogComponent.open(this.modal, {
       inputs: {
@@ -92,16 +280,27 @@ export class PreferencesComponent {
         positive: 'Clear',
       },
     })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe(() => {
-        this.itemPref.clearPrices()
-        ConfirmDialogComponent.open(this.modal, {
-          inputs: {
-            title: 'Clear prices',
-            body: 'Prices cleared.',
-            positive: 'Close',
-          },
-        })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap(async () => this.itemPreferences.clearPrices()),
+      )
+      .subscribe({
+        next: () => {
+          this.modal.showToast({
+            message: 'Prices cleared.',
+            duration: 2000,
+            position: 'bottom',
+            color: 'success',
+          })
+        },
+        error: (err) => {
+          this.modal.showToast({
+            message: `There was an error clearing the data: ${err.message}`,
+            duration: 2000,
+            position: 'bottom',
+            color: 'danger',
+          })
+        },
       })
   }
 

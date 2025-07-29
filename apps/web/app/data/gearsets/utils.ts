@@ -1,50 +1,71 @@
-import { EquipSlotId } from '@nw-data/common'
-import { Observable, combineLatest, of } from 'rxjs'
-import { combineLatestOrEmpty } from '~/utils'
-import { ItemInstance, ItemInstancesDB } from '../items'
-import { SkillSet } from '../skillbuilds'
-import { SkillBuildsDB } from '../skillbuilds/skill-builds.db'
+import {
+  EQUIP_SLOTS,
+  EquipSlot,
+  getAverageGearScore,
+  getItemPerkInfos,
+  getItemRarity,
+  ItemRarity,
+} from '@nw-data/common'
+import { MasterItemDefinitions } from '@nw-data/generated'
+import { ItemInstance } from '../items'
 import { GearsetRecord } from './types'
 
-export function resolveGearsetSkills(db: SkillBuildsDB, skills: GearsetRecord['skills']) {
-  return combineLatest({
-    primary: resolveGearsetSkill(db, skills?.['primary']),
-    secondary: resolveGearsetSkill(db, skills?.['secondary']),
-  })
-}
-
-export function resolveGearsetSkill(db: SkillBuildsDB, skill: string | SkillSet) {
-  if (typeof skill === 'string') {
-    return db.observeByid(skill)
-  }
-  return of(skill)
-}
-
-export interface ResolvedGearsetSlot {
-  slot: EquipSlotId
-  instanceId: string
+export interface GearsetRowSlot {
+  slot: EquipSlot
   instance: ItemInstance
+  item: MasterItemDefinitions
+  rarity: ItemRarity
 }
 
-export function resolveGearsetSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
-  return combineLatestOrEmpty(
-    Object.entries(slots || {}).map(([slot, instance]): Observable<ResolvedGearsetSlot> => {
-      return resolveGearsetSlot(db, slot as EquipSlotId, instance)
-    }),
-  )
+export interface GearsetRow {
+  /**
+   * The gearset record in database
+   */
+  record: GearsetRecord
+  /**
+   * The total gearscore of this set
+   */
+  gearScore: number
+  /**
+   * The total weight of this set
+   */
+  weight: number
+  /**
+   *
+   */
+  slots: Record<string, GearsetRowSlot>
 }
 
-export function resolveGearsetSlot(db: ItemInstancesDB, slotId: EquipSlotId, instance: string | ItemInstance) {
-  if (typeof instance === 'string') {
-    return combineLatest({
-      slot: of(slotId),
-      instanceId: of(instance),
-      instance: db.observeByid(instance),
-    })
+export function selectGearsetRow(
+  record: GearsetRecord,
+  items: Map<string, MasterItemDefinitions>,
+  instances: Map<string, ItemInstance>,
+): GearsetRow {
+  if (!record) {
+    return null
   }
-  return combineLatest({
-    slot: of(slotId),
-    instanceId: of<string>(null),
-    instance: of(instance),
-  })
+
+  const result: GearsetRow = {
+    record: record,
+    gearScore: null,
+    weight: null,
+    slots: {},
+  }
+  for (const slot of EQUIP_SLOTS) {
+    const ref = record.slots?.[slot.id]
+    const instance = typeof ref === 'string' ? instances.get(ref) : ref
+    const item = instance ? items.get(instance.itemId) : null
+    const perkIds = instance ? getItemPerkInfos(item, instance.perks).map((it) => it.perkId) : []
+    result.slots[slot.id] = {
+      slot: slot,
+      instance: instance,
+      item: item,
+      rarity: getItemRarity(item, perkIds),
+    }
+  }
+  result.gearScore = getAverageGearScore(
+    Object.values(result.slots).map((it) => ({ id: it.slot.id, gearScore: it.instance?.gearScore || 0 })),
+  )
+  result.gearScore = Math.floor(result.gearScore)
+  return result
 }

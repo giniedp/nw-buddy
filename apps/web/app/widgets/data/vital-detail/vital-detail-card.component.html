@@ -19,7 +19,7 @@
   <nwb-tabs
     [active]="activeTab() || 'stats'"
     (activeChange)="activeTab.set($event)"
-    class="tabs tabs-bordered bg-base-300 relative"
+    class="tabs tabs-border bg-base-300 relative"
     #tabs
   >
     <nwb-tab class="flex-1" [value]="'stats'" [content]="tabStats">Stats</nwb-tab>
