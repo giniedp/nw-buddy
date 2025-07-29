@@ -157,8 +157,6 @@ export abstract class NwDataSheets {
   public affixByStatusEffect = indexLookup(this.affixByStatusEffectMap)
 
   public cooldownsAll = table(() => this.loadDatasheets(DATASHEETS.CooldownData))
-  public cooldownsByIdMap = primaryIndex(this.cooldownsAll, 'ID')
-  public cooldownsById = indexLookup(this.cooldownsByIdMap)
   public cooldownsByAbilityIdMap = secondaryIndex(this.cooldownsAll, 'AbilityID')
   public cooldownsByAbilityId = indexLookup(this.cooldownsByAbilityIdMap)
 

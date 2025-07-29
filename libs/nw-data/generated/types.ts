@@ -1,3 +1,12 @@
+export interface AITargetingData {
+  CreatureType: unknown
+  IgnoreStealthDecoyThreat: unknown
+  InCombatAudioRadiusOffset: unknown
+  InCombatVisionDistanceOffset: unknown
+  OutOfCombatAudioRadiusOffset: unknown
+  OutOfCombatVisionDistanceOffset: unknown
+}
+
 export interface AbilityData {
   AbilitiesOnCooldown: string
   AbilityCooldownComparisonType: ComparisonType
@@ -7,6 +16,7 @@ export interface AbilityData {
   AbilityOnCooldownOptions: AbilityOnCooldownOptions
   AbilityTrigger: string
   ActivationCooldown: number
+  AdjustPointsAccumulatorSelf: string
   AfterAction: string
   AfterSequence: string[]
   AllowSelfDamageForHitEvents: boolean
@@ -74,7 +84,7 @@ export interface AbilityData {
   HealScalingValueMultiplier: number
   Health: string
   HealthDamageMitigation: string
-  HealthDamageMitigation_Endvalue: number
+  HealthDamageMitigation_Endvalue: string
   HealthPenaltyPerStackRemoved: string
   HitFromBehindArmorPenetration: number
   HitFromBehindDamage: number
@@ -98,9 +108,9 @@ export interface AbilityData {
   IsStackableAbility: boolean
   IsStackableDiminishingModifier: number
   IsStackableMax: number
-  IsXGlobalAbility: boolean
   Knockback: number
   KnockbackReduction: number
+  LimitOnHealedToFirstCast: boolean
   LinearlyScaleToDistance: number
   LoadedAmmoCount: number
   LoadedAmmoCountComparisonType: ComparisonType
@@ -170,7 +180,7 @@ export interface AbilityData {
   OnProjPassedThrough: boolean
   OnSelfDamage: boolean
   OnStatusEffectApplied: boolean
-  OnStatusEffectRemoved: string
+  OnStatusEffectRemoved: boolean
   OnTargetBlockBreak: boolean
   OnTargetSet: boolean
   OnTargetStatusEffectRemoved: boolean
@@ -183,6 +193,8 @@ export interface AbilityData {
   PerStatusEffectOnSelfMax: number
   PerStatusEffectOnTarget: boolean
   PerStatusEffectOnTargetMax: number
+  PerStatusEffectStackOnSelf: string
+  PerStatusEffectStackOnSelfMax: string
   PhysicalArmor: number
   PhysicalArmorMaxHealthMod: number
   PowerLevelOverride: number
@@ -242,7 +254,6 @@ export interface AbilityData {
   SupportsSmartcast: boolean
   TargetCollisionFilters: string
   TargetComparisonType: ComparisonType
-  TargetCooldownExtensionModifier: string
   TargetCooldownsExtensionModifier: string
   TargetCooldownsExtensionMultiplier: number
   TargetHasGritActive: boolean
@@ -278,9 +289,8 @@ export interface AbilityData {
   UseDefenderWeaponOnApplyOtherSE: boolean
   UseMinAttackInfoForSelfAppliedSE: boolean
   UseQuickslotItem: string
-  WeaponAccuracy: number
+  WeaponAccuracy: string
   WeaponTag: WeaponTag
-  'stagger damage': string
 }
 
 export interface AchievementData {
@@ -603,7 +613,7 @@ export interface ArmorAppearanceDefinitions {
   MaskRDyeOverride: number
   MaskROverride: number
   Material1: string
-  Material2: string
+  Material2: number
   Name: string
   Notes: string
   RDyeSlotDisabled: string
@@ -1027,6 +1037,7 @@ export interface CategoricalProgressionData {
   EconomyTrackerType: string
   EventId: string
   Expansion01MaxLevel: number
+  Expansion02MaxLevel: number
   GameEventId: string
   IconPath: string
   InfiniteLevels: boolean
@@ -1035,7 +1046,9 @@ export interface CategoricalProgressionData {
   MinTrackedLevel: string
   PostSkillCapSkill: string
   PreSkillCapSkill: string
+  ProgressionCurrencyId: string
   ProgressionPointPool: string
+  ProgressionType: string
   RankTableId: string
   RepeatMaxLevel: boolean
   ShowAsObjectiveReward: boolean
@@ -1353,7 +1366,6 @@ export interface ConversationTopicData {
 
 export interface CooldownData {
   AbilityID: string
-  ID: number
   MinTime: number
   Time: number
   WeaponTag: string
@@ -1534,7 +1546,7 @@ export interface DamageData {
   Affixes: string
   Affliction: string
   AfflictionPercent: number
-  ArmorPenetration: string
+  ArmorPenetration: number
   AttackBlockedRuneCharge: number
   AttackDealsNoDurability: boolean
   AttackRuneCharge: number
@@ -1606,7 +1618,7 @@ export interface DamageData {
   ImpactRating: number | string
   IsAbility: boolean
   IsEmote: boolean
-  IsRanged: boolean | string | number
+  IsRanged: string | boolean | number
   IsSiege: boolean
   IsTaunt: boolean
   LOSCheckVerticalAngleOffset: number
@@ -1632,7 +1644,7 @@ export interface DamageData {
   ThirstDmg: number
   ThreatMultiplier: number
   Unblockable: boolean
-  UseAttackerPosForReaction: string | boolean | number
+  UseAttackerPosForReaction: boolean | number | string
   WeaponCategory: string
   stunBreakoutIncrementer: number
 }
@@ -1757,6 +1769,56 @@ export interface DuelBalanceData {
   PotencyAdjustment: string
   SelfHealAdjustment: number
   WeaponBaseDamageAdjustment: number
+}
+
+export interface DungeonClusterStaticData {
+  ClusterId: unknown
+  Comment: unknown
+  FeatureId: unknown
+  ReplacementCount: unknown
+  SeedGraph: unknown
+  Theme: unknown
+  Weight: unknown
+}
+
+export interface DungeonGrammarStaticData {
+  Comments: unknown
+  FeatureId: unknown
+  GrammaReplacementId: unknown
+  GrammarReplacements: unknown
+  MaxDepth: unknown
+  MinDepth: unknown
+  SeedGraph: unknown
+  Weight: unknown
+}
+
+export interface DungeonRoomStaticData {
+  AliasCategory1: unknown
+  AliasCategory2: unknown
+  AliasCategory3: unknown
+  AliasCategory4: unknown
+  AliasTag1: unknown
+  AliasTag2: unknown
+  AliasTag3: unknown
+  AliasTag4: unknown
+  Curse: unknown
+  FeatureId: unknown
+  IGC_ID: unknown
+  RoomId: unknown
+  RoomType: unknown
+  StartingState: unknown
+  Theme: unknown
+}
+
+export interface DungeonTileStaticData {
+  Connections: unknown
+  DungeonTileId: unknown
+  FeatureId: unknown
+  Rotations: unknown
+  SupportedRoomTypes: unknown
+  TileSize: unknown
+  VariationAssetPaths: unknown
+  Weight: unknown
 }
 
 export interface DyeColorData {
@@ -1900,6 +1962,17 @@ export interface EntitlementData {
   RewardType: EntitlementRewardType
   SourceType: EntitlementSourceType
   UniqueTagID: string
+}
+
+export interface EquipmentSetData {
+  Description: string
+  DisplayName: string
+  EquipmentSetId: string
+  ItemIds: string
+  Perk1: string
+  Perk1Threshold: number
+  Perk2: string
+  Perk2Threshold: number
 }
 
 export interface ExpansionData {
@@ -2086,7 +2159,8 @@ export interface FishingWaterData {
 
 export interface GameEventData {
   AchievementId: string
-  AzothReward: string | number
+  AffinityRewards: string
+  AzothReward: number | string
   AzothRewardChance: number
   AzothSalt: number
   AzothSaltChance: number
@@ -2095,6 +2169,8 @@ export interface GameEventData {
   CoinRewardChance: number
   CreatureType: string
   CurrencyReward: number | string
+  CursedCrowns: string
+  CursedSilvers: string
   EmitTelemetry: boolean
   EntitlementId: string
   EventID: string
@@ -2159,12 +2235,14 @@ export interface GameModeData {
   DailyLootLimitId: string
   Description: string
   DifficultyProgressionId: string
+  DisableAllPerkLabelOverrides: string
   DisableAllPerks: boolean
   DisableDeathsDoor: boolean
   DisableMSQTrackersOnHud: boolean
   DisablePSActivityCards: boolean
   DisabledItemClasses: string
   DisplayName: string
+  EnableEquipInCombat: boolean
   EntryAchievementConditional: string
   ExclusiveRewardIds: string
   FailGroupPenaltyTextId: string
@@ -2198,6 +2276,8 @@ export interface GameModeData {
   LeaveQueueTitleTextId: string
   LeaveTimeDescTextId: string
   LeaveTitleTextId: string
+  LevelGeneratorFeatureId: string
+  LevelGeneratorType: string
   ListImagePath: string
   LootGSRangeOverride: string
   LootLimitId: string
@@ -2230,13 +2310,15 @@ export interface GameModeData {
   MatchmakingRequiresTauntGem: boolean
   MaxAI: string
   MaxPlayerLevelToUseGearScoreOverride: number
-  MinAcceptedInvites: string
+  MinAcceptedInvites: number
   MinGroupSize: number
   MinPlayerLevelToUseGearScoreOverride: number
   ModeNameLocStringId: string
   MountSummonErrorMsg: string
   MutLootTagsOverride: string[]
   NonPurchasableItemClasses: string
+  NotificationText: string
+  NotificationTitle: string
   NumTeams: number
   OverrideDungeonTimeout: number
   PossibleItemDropIds: string[]
@@ -2291,6 +2373,7 @@ export interface GameModeData {
   UsePendingListMatchmaking: boolean
   UseTeamNamePlate: boolean
   UseTempGameModeLoadout: boolean
+  UsesPowerUps: boolean
   UsesRoleSelection: boolean
   VictoryDelaySec: number
   WarBoardAttackerTeamIdx: number
@@ -2309,9 +2392,9 @@ export interface GameModeMapData {
   GameModeId: string
   GameModeMapId: string
   NavGenerationEnabled: boolean
-  PauseTimeOfDay: string
+  PauseTimeOfDay: boolean
   ProjectedAZothComputeUnits: number
-  ProjectedMemoryUseMb: string
+  ProjectedMemoryUseMb: number
   SlicePath: string
   TeamTeleportData: string
   TeamTeleportFormationData: string
@@ -2364,6 +2447,7 @@ export interface GatherableData {
   MountGatherers: string
   NumRequiredToGather: number
   ObstructBuildables: boolean
+  ProgressionCurrencyCosts: string
   RequireControllingFaction: boolean
   RequireLootItems: string
   RequiredSongId: string
@@ -2445,7 +2529,7 @@ export interface HouseItems {
   ItemRarity: string
   ItemType: ItemType
   ItemTypeDisplayName: string
-  MaxPotentialPoints: string | number
+  MaxPotentialPoints: number | string
   MaxStackSize: number
   Name: string
   Nonremovable: boolean
@@ -2454,7 +2538,7 @@ export interface HouseItems {
   PointModifier: number
   PrefabPath: string
   'Primary Color': string
-  RankingPoints: string | number
+  RankingPoints: number | string
   RankingPointsDuplicateLimit: number
   RankingPointsNegativeLimit: number
   RepairDustModifier: number
@@ -2526,6 +2610,7 @@ export interface ImpactAudioTable {
   GhostHanged: string
   GhostPlagued: string
   GhostShipwrecked: string
+  Inquisitor: string
   Leviathan: string
   Lost: string
   MageArcaneShield: string
@@ -2602,6 +2687,7 @@ export interface ImpactTable {
   GhostHanged: string
   GhostPlagued: string
   GhostShipwrecked: string
+  Inquisitor: string
   Leviathan: string
   Lost: string
   MageArcaneShield: string
@@ -2670,13 +2756,17 @@ export interface ItemCurrencyConversionData {
   BuyCurrencyCost: number
   BuyCurrencyItemCost: number
   BuyCurrencyItemName: string
+  BuyProgression2Cost: string
+  BuyProgression2Id: string
+  BuyProgression3Cost: string
+  BuyProgression3Id: string
   CategoricalProgressionId: string
   ConversionID: string
   DisplayOrder: number
   EntitlementId: string
   InContracts: boolean
   ItemID: string
-  ItemQty: number
+  ItemQty: string
   Perk1: string
   Perk2: string
   Perk3: string
@@ -3317,6 +3407,8 @@ export interface LootBucketData {
   Item512: string
   Item513: string
   Item514: string
+  Item515: string
+  Item516: string
   Item52: string
   Item53: string
   Item54: string
@@ -3815,6 +3907,8 @@ export interface LootBucketData {
   LootBucket512: string
   LootBucket513: string
   LootBucket514: string
+  LootBucket515: string
+  LootBucket516: string
   LootBucket52: string
   LootBucket53: string
   LootBucket54: string
@@ -4307,6 +4401,8 @@ export interface LootBucketData {
   MatchOne512: unknown
   MatchOne513: unknown
   MatchOne514: unknown
+  MatchOne515: unknown
+  MatchOne516: unknown
   MatchOne52: unknown
   MatchOne53: unknown
   MatchOne54: unknown
@@ -4366,7 +4462,7 @@ export interface LootBucketData {
   Odds454: number
   Odds474: number
   Odds502: number
-  Odds514: number
+  Odds512: number
   Quantity1: number
   Quantity10: number
   Quantity100: number
@@ -4423,7 +4519,7 @@ export interface LootBucketData {
   Quantity147: string
   Quantity148: number
   Quantity149: number
-  Quantity15: number | string
+  Quantity15: string | number
   Quantity150: number
   Quantity151: number
   Quantity152: number
@@ -4434,7 +4530,7 @@ export interface LootBucketData {
   Quantity157: number
   Quantity158: number
   Quantity159: number
-  Quantity16: number | string
+  Quantity16: string | number
   Quantity160: number
   Quantity161: number
   Quantity162: number
@@ -4454,15 +4550,15 @@ export interface LootBucketData {
   Quantity175: number
   Quantity176: number
   Quantity177: number
-  Quantity18: number | string
-  Quantity19: number | string
+  Quantity18: string | number
+  Quantity19: string | number
   Quantity194: number
   Quantity196: number
   Quantity197: number
   Quantity198: number
   Quantity199: number
   Quantity2: number
-  Quantity20: number | string
+  Quantity20: string | number
   Quantity200: number
   Quantity201: number
   Quantity202: number
@@ -4473,7 +4569,7 @@ export interface LootBucketData {
   Quantity207: number
   Quantity208: number
   Quantity209: number
-  Quantity21: number | string
+  Quantity21: string | number
   Quantity210: number
   Quantity211: number
   Quantity212: number
@@ -4572,7 +4668,7 @@ export interface LootBucketData {
   Quantity298: number
   Quantity299: number
   Quantity3: number
-  Quantity30: string | number
+  Quantity30: number | string
   Quantity300: number
   Quantity301: number
   Quantity302: number
@@ -4594,7 +4690,7 @@ export interface LootBucketData {
   Quantity317: number
   Quantity318: number
   Quantity319: number
-  Quantity32: string | number
+  Quantity32: number | string
   Quantity320: number
   Quantity321: number
   Quantity322: number
@@ -4723,7 +4819,7 @@ export interface LootBucketData {
   Quantity437: number
   Quantity438: number
   Quantity439: number
-  Quantity44: string | number
+  Quantity44: number | string
   Quantity440: number
   Quantity441: number
   Quantity442: number
@@ -4807,6 +4903,8 @@ export interface LootBucketData {
   Quantity512: number
   Quantity513: number
   Quantity514: number
+  Quantity515: number
+  Quantity516: number
   Quantity52: number
   Quantity53: number
   Quantity54: number
@@ -5300,6 +5398,8 @@ export interface LootBucketData {
   Tags512: string[]
   Tags513: string[]
   Tags514: string[]
+  Tags515: string[]
+  Tags516: string[]
   Tags52: string[]
   Tags53: string[]
   Tags54: string[]
@@ -6220,6 +6320,12 @@ export interface MutationPerksStaticData {
   Name: string
 }
 
+export interface NPAData {
+  NPAId: string
+  ObjectiveFlow: string
+  ReqAchievementConditional: string
+}
+
 export interface NPCData {
   Comments: string
   ConversationStateId1: string
@@ -6299,7 +6405,7 @@ export interface ObjectiveTasks {
   DiegeticTaskPinZPosOverride: number
   Duration: number
   EnforceLocationRequirement: boolean
-  FailOnCondition: string | boolean | number
+  FailOnCondition: string | number | boolean
   GameModeID: string
   GameModeMustBeMutated: string
   GridLayout: string
@@ -6327,7 +6433,6 @@ export interface ObjectiveTasks {
   MatAffix: string
   MinGearScore: string
   OnInteractStart: boolean
-  Oninteractstart: string
   OverrideLocation: string
   POITag: string
   PauseAndClearLootOnTaskComplete: boolean
@@ -6339,6 +6444,16 @@ export interface ObjectiveTasks {
   ShowDiegeticTaskPin: boolean
   StayActive: string | number
   SubTask1: string
+  SubTask10: string
+  SubTask11: string
+  SubTask12: string
+  SubTask13: string
+  SubTask14: string
+  SubTask15: string
+  SubTask16: string
+  SubTask17: string
+  SubTask18: string
+  SubTask19: string
   SubTask2: string
   SubTask3: string
   SubTask4: string
@@ -6346,6 +6461,7 @@ export interface ObjectiveTasks {
   SubTask6: string
   SubTask7: string
   SubTask8: string
+  SubTask9: string
   TP_DescriptionTag: string
   TP_HideOnCompassOnEnterPOI: string
   TP_MapIcon: string
@@ -6373,7 +6489,7 @@ export interface ObjectiveTasks {
 
 export interface Objectives {
   AchievementId: string
-  CanBeAbandoned: string | boolean
+  CanBeAbandoned: boolean
   CanBeShared: boolean
   CanFastTravel: boolean
   Description: string
@@ -6386,8 +6502,7 @@ export interface Objectives {
   ExperienceReward: boolean
   FailureGameEventId: string
   FlagPvp: boolean
-  HideAvailableMapIcon: string | boolean
-  HideIncompleteTurnInMarker: unknown
+  HideAvailableMapIcon: boolean
   HideIncompleteTurninMarker: boolean
   InProgressResponse: string
   ItemRewardName: string
@@ -6411,7 +6526,6 @@ export interface Objectives {
   QuestArcTag: string
   Repeatable: boolean
   RequireAllProgression: string
-  RequireallProgression: unknown
   RequiredAchievementId: string
   RequiredEntitlementId: string
   RequiredFaction: string
@@ -7029,6 +7143,7 @@ export interface RewardData {
   KillExperience: number
   KillExperienceDungeonBoss: number
   KillExperienceDungeonMiniBoss: number
+  KillProgressionCurrency: number
   Level: number
   QuestAzoth: number
   QuestCurrency: number
@@ -7068,6 +7183,7 @@ export interface RewardModifierData {
   'Found in': string
   LootDropModifier: number
   Modifiers: string
+  ProgressionCurrencyAmount: string
   PvpXpModifier: number
   SeasonsXpModifier: number
   TerritoryStanding: number
@@ -7103,6 +7219,8 @@ export interface ScheduleData {
   Comments: string
   EndDate: string
   EndWeekday: string
+  MainMenuCoatOverride: string
+  MainMenuOverride: string
   ScheduleId: string
   ScheduledQuestDescription: string
   StartDate: string
@@ -7275,6 +7393,33 @@ export interface SeasonsRewardsTasks {
   TaskMaxValue: number
 }
 
+export interface ShopData {
+  DisplayOnCompass: boolean
+  DisplayOnMap: boolean
+  DisplayOnMarker: boolean
+  DisplayProgressPanel: boolean
+  MapTooltipDescription: string
+  MapTooltipImage: string
+  MapTooltipName: string
+  ProgressPanelTooltip: string
+  ProgressionId: string
+  SeasonalEventId: string
+  ShopColor: string
+  ShopIconLarge: string
+  ShopIconSmall: string
+  ShopId: string
+  ShopName: string
+  WalletDisplayAzoth: boolean
+  WalletDisplayGold: boolean
+  WalletDisplayItem1: string
+  WalletDisplayItem2: string
+  WalletDisplayItem3: string
+  WalletDisplayPlayerLevel: boolean
+  WalletDisplayProgression1: string
+  WalletDisplayProgression2: string
+  WalletDisplayProgression3: string
+}
+
 export interface SimpleTreeCategoryData {
   HideFromUI: boolean
   'Icon Color Background': string
@@ -7442,13 +7587,13 @@ export interface SpellData {
   SpawnAngle: number
   SpawnBeamCasterJoint: string
   SpawnRate: number
-  SpawnSecondaryOnCollision: boolean
+  SpawnSecondaryOnCollision: string | boolean
   SpawnSecondaryOnElapsed: boolean
   SpawnSecondaryOnPassthrough: boolean
   SpellID: string
   SpellPrefabPath: string
   SpellTypes: string
-  StatusEffectDurations: number | string
+  StatusEffectDurations: string | number
   StatusEffects: string[]
   StatusEffectsOnTargetBlockingThisSpell: string[]
   StickWhenAttached: boolean
@@ -7509,7 +7654,7 @@ export interface StatusEffectData {
   ABSStandard: number
   ABSStrike: number
   ABSThrust: number
-  ABSVitalsCategory: string | number
+  ABSVitalsCategory: number | string
   AFABleed: number
   AFABlight: number
   AFACurse: number
@@ -7527,6 +7672,7 @@ export interface StatusEffectData {
   AlwaysReplicate: boolean
   AntirequisiteEffectCategories: string
   ApplicationCooldown: number
+  ApplicationCooldownAppliedOnRemoval: string
   AttributePlacingMods: number
   AzothMod: number
   BLAArcane: number
@@ -7546,7 +7692,7 @@ export interface StatusEffectData {
   CoreTempMod: number
   CostumeChangeId: string
   CritChanceModifier: number
-  CritDamageModifier: string
+  CritDamageModifier: number
   DMGAcid: number
   DMGArcane: number
   DMGCorruption: number
@@ -7559,13 +7705,13 @@ export interface StatusEffectData {
   DMGStandard: number
   DMGStrike: number
   DMGThrust: number
-  DMGVitalsCategory: string | number
+  DMGVitalsCategory: number | string
   DMGVitalsCategory_Tooltip: number
   DamageSkipsDeathsDoor: boolean
   DamageSplitTaken: number
   DamageSplitTakenBySource: number
   DamageType: DamageType
-  DelayInitialTick: boolean | string
+  DelayInitialTick: string | boolean
   Description: string
   DisableAllNonAttributePerks: boolean
   DisableAllNonAttributePerksExceptionLabels: string
@@ -7618,6 +7764,7 @@ export interface StatusEffectData {
   Food: number
   FoodBurn: number
   ForceReplicateToRemotes: boolean
+  ForceServerOnly: string
   FromAlchemy: number
   FromSpell: number
   FxScriptOff: string
@@ -7650,7 +7797,7 @@ export interface StatusEffectData {
   IgnoreFxScriptWhenPotencyIsZero: boolean
   IgnoreInvulnerable: boolean
   InheritDuration: boolean
-  InheritTotalDuration: string | boolean | number
+  InheritTotalDuration: string | number | boolean
   InitialStackSize: number
   IsClientPredicted: boolean
   IsNegative: boolean
@@ -7658,6 +7805,8 @@ export interface StatusEffectData {
   IsTrueDamage: boolean
   ItemClassWeightMods: string | number
   ItemLootVolumeMods: string
+  JumpModScalar: number
+  JumpModType: string
   KeepOnTickEffectOnEnd: boolean
   LinkedBeamName: string
   LinkedBeamStackThreshold: number
@@ -7679,7 +7828,7 @@ export interface StatusEffectData {
   MULTMining: number
   MULTSkinning: number
   Mana: number
-  ManaModifierDamageBased: number | string
+  ManaModifierDamageBased: string | number
   ManaRate: number
   MaxGSArcana: number
   MaxGSArmoring: number
@@ -7687,7 +7836,7 @@ export interface StatusEffectData {
   MaxGSJewelcrafting: number
   MaxGSWeaponsmithing: number
   MaxHealthMod: number
-  MaxStaminaMod: string
+  MaxStaminaMod: number
   MeshChangeCDF: string
   ModDmgBasedMultValue_ForTooltip: number
   MountStaminaDrainRate: number
@@ -7763,6 +7912,7 @@ export interface StatusEffectData {
   ScaleAmountOverTimeMin: string
   ShouldRefreshFxScript: boolean
   ShowInNameplates: boolean
+  ShowInStatusWindow: boolean
   ShowInTokenTray: boolean
   ShowInUITray: boolean
   ShowTextInDamageNumbers: boolean
@@ -7778,7 +7928,7 @@ export interface StatusEffectData {
   SourceRuneChargeOnTick: number
   SpawnSlice: string
   SprintSpeedMod: number
-  StackDuration: string | number | boolean
+  StackDuration: number | string | boolean
   StackMax: number
   Stamina: number
   StaminaDamageModifier: number
@@ -7887,7 +8037,7 @@ export interface TerritoryDefinition {
   FactionControlTerritoryBuffs: string
   GameMode: string
   Grade: string
-  GroupSize: string | number
+  GroupSize: number | string
   IsArea: boolean
   IsChartable: boolean
   IsCollapsible: boolean
@@ -7895,7 +8045,7 @@ export interface TerritoryDefinition {
   IsFFA: boolean
   IsPOI: boolean
   IsTerritory: boolean
-  LevelRange: string | number
+  LevelRange: number | string
   LootTags: string[]
   MapIcon: string
   MaxStructureLimit: number
@@ -8207,6 +8357,7 @@ export interface VariationData {
   InteractionMarker_Offset_Y: unknown
   InteractionMarker_Offset_Z: unknown
   InteractionRadius: unknown
+  LookPoseTimeline: string
   LootTableID: string
   MarkerOffset_Z: number
   MarkerRadius: unknown
@@ -8248,6 +8399,7 @@ export interface VariationData {
   VitalsLevelOverride_003: string
   WalkInTimeline: string
   WalkawayTimeline: string
+  WalkawayVOTimeline: string
   Walkaway_OpacityTransitionDuration: number
   Walkaway_Pathing_Alias_0: string
   Walkaway_Pathing_Alias_1: string
@@ -8406,6 +8558,8 @@ export interface VariationDataGatherable {
   PickedMesh: string
   RequireLoS: boolean
   RequiredAchievement: string
+  RequiredProgression: string
+  Required_Progression: string
   ResetTime: number
   RotationPercent_0: number
   RotationPercent_1: number
@@ -8453,6 +8607,9 @@ export interface VariationDataGatherable {
   Visual_Loot: unknown
   Visual_NotOnRequiredQuest: string
   Visual_RotatedBaseMesh: string
+  Visual_RotatedBaseMesh_Offset_X: number
+  Visual_RotatedBaseMesh_Offset_Y: number
+  Visual_RotatedBaseMesh_Offset_Z: number
   Visual_WaitingForReset: string
   Visuals_Healthy: unknown
   depletedVFX_Offset_Z: number
@@ -8651,6 +8808,7 @@ export interface VitalsCategoryData {
   LocationHint: string
   LootDropChanceOverride: number
   MtlOverride: string
+  ProgressionCurrencyIds: string
   ScheduleVCs: string
   VitalsCategoryID: string
 }
@@ -8837,9 +8995,11 @@ export interface WarboardStatDefinitions {
   AG_TotalDamageDealt: number
   AG_TotalResourcesDeposited: number
   BonusDistanceRange: number
+  DistanceFromAnyFlag: number
   EndGameStat: boolean
   InGameStat: boolean
   InRangeBonusMultiplier: number
+  InRangeOfFlagMultiplier: number
   WarboardStatID: string
 }
 
@@ -8892,15 +9052,15 @@ export interface WeaponAppearanceDefinitions {
   MaskROverride: number
   MaterialOverride1: string
   MaterialOverride2: string
-  MaterialOverride3: string
-  MaterialOverride4: string
+  MaterialOverride3: number
+  MaterialOverride4: number
   MeshOverride: string
   MountAttachmentAppearanceId: string
   Name: string
   RDyeSlotDisabled: number
   SkinOverride1: string
   SkinOverride2: string
-  SkinOverride3: string
+  SkinOverride3: number
   SkinOverride4: string
   SoundTableID: string
   SpellSliceOverrides: string
@@ -8953,6 +9113,7 @@ export interface WeaponItemDefinitions {
   BlockStability: number
   BlockStaminaDamage: number
   CanBlockRanged: boolean
+  ComboPointsClearDuration: number
   CritChance: number
   CritDamageMultiplier: number
   CritStaggerDamageMultiplier: number
@@ -8981,9 +9142,11 @@ export interface WeaponItemDefinitions {
   MaterialOverride4: string
   MaxGatherEFF: number
   MaxLoadedAmmo: number
+  MaxNumComboPoints: number
   MaxStackSize: number
   MeshOverride: string
   MinGatherEFF: number
+  NumWeaponVisuals: number
   OffHandMannequinTag: string
   PhysicalArmorSetScaleFactor: number
   'Primary Hand': string
@@ -9183,8 +9346,10 @@ export type CraftingCategory =
   | 'Scarab'
   | 'SpringtideBloom'
   | 'SummerMedleyfaire'
+  | 'SummerMemento'
   | 'TerritoryContribution'
   | 'TimelessShards'
+  | 'Tokens'
   | 'Tools'
   | 'TrialNamedReplicas'
   | 'Trinkets'
@@ -9218,6 +9383,7 @@ export type CraftingTradeskill =
 
 export type CreatureType =
   | 'Ally'
+  | 'AllyObjective'
   | 'Boss'
   | 'Boss+'
   | 'Critter'
@@ -9526,6 +9692,7 @@ export type ItemClass =
   | 'WeaponOil'
   | 'WeaponSchematic'
   | 'Wood'
+  | 'warhammer'
 
 export type ItemType =
   | 'Ammo'
@@ -9702,6 +9869,7 @@ export type LootTag =
   | 'Duat'
   | 'Ducas'
   | 'Duhetshara'
+  | 'DungeonBossAI'
   | 'DungeonThorpe'
   | 'Dynasty'
   | 'Dynastymaiden'
@@ -10323,8 +10491,10 @@ export type StatusEffectCategory =
   | 'Attributes'
   | 'AzothStaff'
   | 'BBLastChance'
+  | 'BaseDamageIncrease'
   | 'Bleed'
   | 'Blessed'
+  | 'Blight'
   | 'Boltcaster'
   | 'Boost'
   | 'BossDebuff'
@@ -10357,6 +10527,7 @@ export type StatusEffectCategory =
   | 'Crit'
   | 'CritChance'
   | 'CritDmgReduction'
+  | 'Curse'
   | 'DMG'
   | 'DeathFog'
   | 'DeathTracker'
@@ -10406,6 +10577,7 @@ export type StatusEffectCategory =
   | 'HarvestMana'
   | 'Haste'
   | 'HasteDuration'
+  | 'Hatchet_Berserk'
   | 'Heal'
   | 'HealingBreeze'
   | 'Hearty'
@@ -10436,6 +10608,7 @@ export type StatusEffectCategory =
   | 'MutatorHearty'
   | 'NagaArcaneSnare'
   | 'NonDispellable'
+  | 'NonDispellableArmorRend'
   | 'NonDispellableBuff'
   | 'NonDispellableCC'
   | 'NonDispellableDebuff'
@@ -10450,6 +10623,7 @@ export type StatusEffectCategory =
   | 'NondispellableDebuff'
   | 'NondispellableFortify'
   | 'NullChamberBuff'
+  | 'OutgoingHealing'
   | 'OverheatDebuff'
   | 'PassiveFoodRegen'
   | 'Petrified'
@@ -10460,6 +10634,7 @@ export type StatusEffectCategory =
   | 'Poison'
   | 'PotencyMod'
   | 'PowderBurn'
+  | 'Powerup'
   | 'RainofArrows'
   | 'Recovery'
   | 'Regen'
@@ -10514,12 +10689,16 @@ export type StatusEffectCategory =
   | 'Trapper'
   | 'TraversalHaste'
   | 'UnInterruptible'
+  | 'UncategorizedSlow'
+  | 'UnclampedArmorFortify'
+  | 'UnclampedArmorRend'
   | 'UnclampedAzothMod'
   | 'UnclampedDisease'
   | 'UnclampedEmpower'
   | 'UnclampedExhaust'
   | 'UnclampedFactionResourceMod'
   | 'UnclampedFortify'
+  | 'UnclampedHaste'
   | 'UnclampedRend'
   | 'UnclampedSlow'
   | 'UnclampedWeaken'
