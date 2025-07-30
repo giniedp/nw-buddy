@@ -82,6 +82,10 @@ export class AttributeEditorDialogComponent implements OnInit {
 
   public ngOnInit() {
     this.tab = this.weapon1ItemId || this.weapon2ItemId
+    this.result = {
+      assigned: this.assigned,
+      magnify: this.magnifyPlacement,
+    }
   }
 
   protected setAssigned(value: Record<AttributeRef, number>) {
@@ -97,6 +101,7 @@ export class AttributeEditorDialogComponent implements OnInit {
   }
 
   protected commit() {
+    console.log(this.result)
     this.modalRef.close(this.result)
   }
 }
