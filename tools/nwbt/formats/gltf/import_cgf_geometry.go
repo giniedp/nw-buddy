@@ -12,9 +12,9 @@ import (
 	"github.com/qmuntal/gltf"
 )
 
-type LoadGeometryFunc func(asset string) (*cgf.File, error)
-type LoadMaterialFunc func(asset string) ([]mtl.Material, error)
-type LoadAssetFunc func(asset importer.GeometryAsset) (*cgf.File, []mtl.Material)
+// type LoadGeometryFunc func(asset string) (*cgf.File, error)
+// type LoadMaterialFunc func(asset string) ([]mtl.Material, error)
+type LoadAssetFunc func(asset importer.GeometryAsset) (*cgf.File, []byte, []mtl.Material)
 type MaterialLookup struct {
 	List     []*gltf.Material
 	Fallback *gltf.Material
@@ -39,7 +39,7 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load LoadAssetFu
 		return
 	}
 
-	model, materials := load(asset)
+	model, heap, materials := load(asset)
 	if model == nil {
 		return
 	}
@@ -80,7 +80,7 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load LoadAssetFu
 		switch meshChunk := chunk.(type) {
 		case cgf.ChunkMesh:
 			node.Name = name
-			node.Mesh, _ = c.ImportCgfMesh(name, meshChunk, model, materialLookup)
+			node.Mesh, _ = c.ImportCgfMesh(name, meshChunk, model, heap, materialLookup)
 			node.Skin = skin
 			node.Extras = ExtrasStore(node.Extras, ExtraKeyName, name)
 		}

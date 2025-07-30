@@ -199,27 +199,32 @@ func (c *Assets) LoadMaterial(materialFile string) ([]mtl.Material, error) {
 	return materials, nil
 }
 
-func (c *Assets) LoadAsset(mesh importer.GeometryAsset) (*cgf.File, []mtl.Material) {
+func (c *Assets) LoadAsset(mesh importer.GeometryAsset) (*cgf.File, []byte, []mtl.Material) {
 	modelFile, ok := c.Archive.Lookup(mesh.GeometryFile)
 	if !ok {
 		slog.Warn("Model file not found", "file", mesh.GeometryFile)
-		return nil, nil
+		return nil, nil, nil
+	}
+	heapFile, ok := c.Archive.Lookup(mesh.GeometryFile + "heap")
+	var heap []byte
+	if ok {
+		heap, _ = heapFile.Read()
 	}
 	model, err := cgf.Load(modelFile)
 	if err != nil {
 		slog.Warn("Model not loaded", "file", mesh.GeometryFile, "err", err)
-		return nil, nil
+		return nil, nil, nil
 	}
 	mtlFile, ok := c.Archive.Lookup(mesh.MaterialFile)
 	if !ok {
 		slog.Warn("Material not found", "material", mesh.MaterialFile, "model", mesh.GeometryFile, "name", mesh.Name)
-		return nil, nil
+		return nil, nil, nil
 	}
 	material, err := mtl.Load(mtlFile)
 	if err != nil {
 		slog.Warn("Material not loaded", "file", mesh.MaterialFile, "err", err)
-		return nil, nil
+		return nil, nil, nil
 	}
 	materials := material.Collection()
-	return model, materials
+	return model, heap, materials
 }

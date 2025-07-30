@@ -189,6 +189,9 @@ const (
 	ChunkType_GlobalAnimationHeaderCAF
 	ChunkType_GlobalAnimationHeaderAIM
 	ChunkType_BspTreeData
+
+	ChunkType_UNKNOWN
+	ChunkType_DataRef
 )
 
 // export interface Chunk {

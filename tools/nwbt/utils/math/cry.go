@@ -1,6 +1,9 @@
 package math
 
-import "nw-buddy/tools/utils/math/mat4"
+import (
+	gomath "math"
+	"nw-buddy/tools/utils/math/mat4"
+)
 
 type Vec3 = [3]float32
 type Vec4 = [4]float32
@@ -29,4 +32,28 @@ func CryToGltfMat4(mat mat4.Data) mat4.Data {
 		-mat[4], mat[6], mat[5], mat[7],
 		-mat[12], mat[14], mat[13], mat[15],
 	}
+}
+
+func Vec3Len(v Vec3) float32 {
+	return float32(gomath.Sqrt(float64(v[0]*v[0] + v[1]*v[1] + v[2]*v[2])))
+}
+
+func QuatLen(v Quat) float32 {
+	return float32(gomath.Sqrt(float64(v[0]*v[0] + v[1]*v[1] + v[2]*v[2] + v[3]*v[3])))
+}
+
+func Cross(a, b [3]float32) [3]float32 {
+	return [3]float32{
+		a[1]*b[2] - a[2]*b[1],
+		a[2]*b[0] - a[0]*b[2],
+		a[0]*b[1] - a[1]*b[0],
+	}
+}
+
+func Normalize(v [3]float32) [3]float32 {
+	length := float32(gomath.Sqrt(float64(v[0]*v[0] + v[1]*v[1] + v[2]*v[2])))
+	if length > 0 {
+		return [3]float32{v[0] / length, v[1] / length, v[2] / length}
+	}
+	return v
 }
