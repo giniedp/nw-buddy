@@ -141,20 +141,21 @@ program
     const target = options.target
     const client = createClient()
 
-    const fileList = await Promise.resolve(options)
-      .then((it) => (it.force ? [] : listObjects(client)))
-      .then((list) => list.map((it) => normalizeKey(it.Key)))
-      .then((list) => new Set(list))
-
-      // application/octet-stream
+    // application/octet-stream
+    let modelCount = 0
+    let textureCount = 0
     const files = await glob(path.join(source, '**/*')).then((list) => {
       return list.map((file) => {
         const extname = path.extname(file).toLowerCase()
         let contentType = 'application/octet-stream'
         if (extname == '.gltf') {
           contentType = 'model/gltf+json'
+          modelCount++
         } else if (extname == '.glb') {
           contentType = 'model/gltf-binary'
+          modelCount++
+        } else {
+          textureCount++
         }
         return {
           file: file,
@@ -164,8 +165,16 @@ program
         }
       })
     })
+    console.info(`found ${files.length} files (${modelCount} models, ${textureCount} textures) in ${source}`)
+
+    const fileList = await Promise.resolve(options)
+      .then((it) => (it.force ? [] : listObjects(client)))
+      .then((list) => list.map((it) => normalizeKey(it.Key)))
+      .then((list) => new Set(list))
+
     const toUpload = files.filter((it) => !fileList.has(it.key))
-    console.info('found', files.length, 'files', 'to upload', toUpload.length)
+
+    console.info('files to upload', toUpload.length)
     if (options.dryRun) {
       console.debug(toUpload.slice(0, 10))
       return
