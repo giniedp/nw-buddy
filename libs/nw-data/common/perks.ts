@@ -189,7 +189,7 @@ export function explainPerkMods(options: {
         gearScore: gearScore,
       },
     }
-    affix.AttributePlacingMods.split(',').forEach((it, i) => {
+    String(affix.AttributePlacingMods).split(',').forEach((it, i) => {
       part.context[`amount${i + 1}`] = Math.floor(Number(it) * scale)
     })
     result.push(part)

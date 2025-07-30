@@ -507,7 +507,7 @@ export function selectPlacingMods(db: DbSlice, { perks, effects, level }: Attrib
     if (hasPerkScalingPerGearScore(perk)) {
       scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
     }
-    const mods = affix.AttributePlacingMods.split(',')
+    const mods = String(affix.AttributePlacingMods).split(',')
     for (let i = 0; i < mods.length; i++) {
       const value = Math.floor(Number(mods[i] || 0) * scale)
       result[i] = (result[i] || 0) + value
