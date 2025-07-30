@@ -123,7 +123,7 @@ program
 program
   .command('upload-models')
   .option('-f, --force', 'Uploads all files, instead of only new', false)
-  .option('-d, --directory <dirPath>', 'The models directory to upload')
+  .option('-d, --directory <dirPath>', 'The models directory to upload', '.nwbt/models')
   .option('-t, --target <outPath>', 'The target directory in the CDN', 'models')
   .option('-dry, --dry-run', 'Dry run, does not upload files', false)
   .action(async (opts) => {
