@@ -9,8 +9,8 @@ export async function createViewer(options: {
   mode?: 'dark' | 'light'
   onInitialized?: (details: ViewerDetails) => void
 }): Promise<Viewer> {
-  await import('@nw-viewer/babylon/extensions').then(({ NwMaterialExtension }) => {
-    NwMaterialExtension.register()
+  await import('@nw-viewer/babylon/extensions').then(({ NwMaterialPlugin }) => {
+    NwMaterialPlugin.register()
   })
   const { CreateViewerForCanvas } = await import('@babylonjs/viewer')
 
@@ -44,4 +44,8 @@ export async function viewerCaptureImage(viewer: Viewer, size: number) {
   const camera = viewer['_camera']
   const { CreateScreenshotAsync } = await import('@babylonjs/core')
   return CreateScreenshotAsync(engine as any, camera, size)
+}
+
+export function renderFrame(viewer: Viewer) {
+  viewer['_scene'].render()
 }

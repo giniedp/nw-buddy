@@ -48,7 +48,7 @@ import { ModelItemInfo } from './model-viewer.service'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { getModelUrl } from './utils/get-model-url'
-import { Model, Viewer, createViewer, viewerCaptureImage } from './viewer/create-viewer'
+import { Model, Viewer, createViewer, viewerCaptureImage, renderFrame } from './viewer/create-viewer'
 
 export interface ModelViewerState {
   models: ModelItemInfo[]
@@ -365,6 +365,8 @@ export class ModelViewerComponent implements OnDestroy {
           glossShift: dyeA?.MaskGlossShift,
           debugMask: debugMask,
         })
+        setTimeout(() => renderFrame(this.viewer()))
+
       })
     })
   }
