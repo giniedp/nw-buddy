@@ -11,6 +11,10 @@ export interface TransmogRecord extends AppDbRecord {
    * User description about the set
    */
   description?: string
+  /**
+   * User defined tags
+   */
+  tags?: string[]
 
   /**
    * Item slots for this gear

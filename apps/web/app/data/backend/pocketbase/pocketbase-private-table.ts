@@ -70,9 +70,6 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
     if (data && 'status' in data) {
       params['status'] = data.status
     }
-    if (data && 'tags' in data) {
-      params['tags'] = data.tags
-    }
     return this.collection.create(params).then((it) => it.data)
   }
 
@@ -88,9 +85,6 @@ export class PocketbasePrivateTable<T extends AppDbRecord> implements PrivateTab
     }
     if (data && 'status' in data) {
       params['status'] = data.status
-    }
-    if (data && 'tags' in data) {
-      params['tags'] = data.tags
     }
     return this.collection.update(this.rowId(id), params).then((it) => it.data)
   }
