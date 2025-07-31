@@ -31,7 +31,7 @@ export function getNwDataUrl(env: EnvVars, baseUrl: BaseUrl) {
 function normalizePath(path: string) {
   path = path.replace(/\\/gi, '/')
   // replace multiple slashes with a single one but keep the double slashes in the protocol
-  path = path.replace(/([^:]?\/)\/+/gm, '/')
+  path = path.replace(/([^:]?\/)\/+/gm, '$1')
   path = path.replace(/\/$/, '')
   return path
 }
