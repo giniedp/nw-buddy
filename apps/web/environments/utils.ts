@@ -29,10 +29,13 @@ export function getNwDataUrl(env: EnvVars, baseUrl: BaseUrl) {
 }
 
 function normalizePath(path: string) {
+  // \ -> /
   path = path.replace(/\\/gi, '/')
-  // replace multiple slashes with a single one but keep the double slashes in the protocol
+  // collapse multiple forward slashes, keep protocol e.g. https://, don't use lookbehind (breaks Safari)
   path = path.replace(/([^:]\/)\/+/g, '$1');
+  // collapse leading forward slashes that aren't handled above
   path = path.replace(/^\/+/, '/')
+  // ensure there is no trailing slash
   path = path.replace(/\/$/, '')
   return path
 }
