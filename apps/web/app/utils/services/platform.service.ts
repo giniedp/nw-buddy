@@ -4,6 +4,8 @@ import { Platform as IonicPlatform } from '@ionic/angular/standalone'
 import { ElectronService } from '~/electron'
 import { NW_BUDDY_LIVE, environment } from '../../../environments'
 import { injectWindow } from '../injection/window'
+import { ActivatedRoute } from '@angular/router'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Injectable({ providedIn: 'root' })
 export class PlatformService {
@@ -116,6 +118,10 @@ export class PlatformService {
   }
 
   public get isEmbed() {
-    return this.window.location.href.split('/').some((it) => it === 'embed')
+    const url = new URL(this.window.location.toString())
+    if (url.searchParams.get('embed') === 'true') {
+      return true
+    }
+    return url.pathname.split('/').some((it) => it === 'embed')
   }
 }

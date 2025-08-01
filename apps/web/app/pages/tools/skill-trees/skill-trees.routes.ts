@@ -6,28 +6,47 @@ import { SkillTreesPageComponent } from './skill-trees-page.component'
 
 export const ROUTES: Routes = [
   {
-    path: 'embed/ipns/:name',
-    component: SkillTreeEmbedComponent,
+    path: 'embed',
+    children: [
+      {
+        path: 'ipns/:name',
+        component: SkillTreeEmbedComponent,
+      },
+      {
+        path: 'ipfs/:cid',
+        component: SkillTreeEmbedComponent,
+      },
+      {
+        path: ':cid',
+        component: SkillTreeEmbedComponent,
+      },
+      {
+        path: ':userid',
+        children: [
+          {
+            path: ':id',
+            component: SkillTreeDetailComponent,
+          },
+        ],
+      },
+    ],
   },
   {
-    path: 'embed/ipfs/:cid',
-    component: SkillTreeEmbedComponent,
-  },
-  {
-    path: 'embed/:cid',
-    component: SkillTreeEmbedComponent,
-  },
-  {
-    path: 'share/ipns/:name',
-    component: SkillTreeShareComponent,
-  },
-  {
-    path: 'share/ipfs/:cid',
-    component: SkillTreeShareComponent,
-  },
-  {
-    path: 'share/:cid',
-    component: SkillTreeShareComponent,
+    path: 'share',
+    children: [
+      {
+        path: 'ipns/:name',
+        component: SkillTreeShareComponent,
+      },
+      {
+        path: 'ipfs/:cid',
+        component: SkillTreeShareComponent,
+      },
+      {
+        path: ':cid',
+        component: SkillTreeShareComponent,
+      },
+    ],
   },
   {
     path: ':userid',

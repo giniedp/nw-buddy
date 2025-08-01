@@ -30,6 +30,14 @@ export function createSyncToRemoteCommands<T extends AppDbRecord>(event: AppDbTa
             syncState: 'synced',
           },
         },
+        {
+          action: 'update',
+          resource: 'local',
+          data: {
+            ...event.payload,
+            syncState: 'synced',
+          },
+        },
       ]
     }
     case 'update': {
@@ -37,6 +45,14 @@ export function createSyncToRemoteCommands<T extends AppDbRecord>(event: AppDbTa
         {
           action: 'createOrUpdate',
           resource: 'remote',
+          data: {
+            ...event.payload,
+            syncState: 'synced',
+          },
+        },
+        {
+          action: 'update',
+          resource: 'local',
           data: {
             ...event.payload,
             syncState: 'synced',

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { ToastController } from '@ionic/angular/standalone'
@@ -24,14 +24,15 @@ import {
   svgXmark,
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
+import { SyncBadgeComponent } from '~/ui/sync-badge'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectParentRouteParam, injectRouteParam } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillTreeEditorComponent, SkillTreeValue } from '~/widgets/skill-tree'
+import { EmbedHeightDirective } from '../../../utils/directives'
 import { GEARSET_TAGS } from '../gearsets/tags'
-import { SyncBadgeComponent } from '~/ui/sync-badge'
 
 @Component({
   selector: 'nwb-skill-tree-detail',
@@ -52,6 +53,7 @@ import { SyncBadgeComponent } from '~/ui/sync-badge'
     SyncBadgeComponent,
   ],
   providers: [SkillTreeStore],
+  hostDirectives: [EmbedHeightDirective],
   host: {
     class: 'ion-page bg-base-300',
   },
@@ -78,6 +80,7 @@ export class SkillTreeDetailComponent {
   protected isPending = this.store.isSyncPending
   protected isConflict = this.store.isSyncConflict
   protected canImport = this.store.isImportable
+  protected isEmbed = computed(() => this.platform.isEmbed)
 
   protected iconBack = svgXmark
   protected iconReset = svgArrowRightArrowLeft

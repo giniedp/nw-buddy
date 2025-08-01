@@ -16,6 +16,10 @@ const ipfsRoutes: Routes = [
     path: ':cid',
     component: GearsetsSharePageComponent,
   },
+  {
+    path: ':userid/:id',
+    component: GearsetsDetailPageComponent,
+  },
 ]
 
 export const ROUTES: Routes = [

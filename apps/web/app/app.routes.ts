@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Routes, UrlMatcher } from '@angular/router'
+import { ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot, Routes, UrlMatcher } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, map, of } from 'rxjs'
 import { LANG_OPTIONS } from './app-menu'

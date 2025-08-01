@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="embed-hidden">
   <ion-toolbar>
     <div class="ms-2">
       @if (canEdit()) {
@@ -71,7 +71,7 @@
           </div>
         </div>
       </div>
-    } @else if (canImport()) {
+    } @else if (canImport() && !isEmbed()) {
       <div class="p-3 mx-auto">
         <div class="alert backdrop-blur-xl bg-base-100/30 max-w-md mx-auto">
           <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-success" />
@@ -88,7 +88,11 @@
   </div>
   <div [nwbScreenshotFrame]="record()?.name">
     @if (record()) {
-      <nwb-skill-tree-editor [disabled]="!canEdit()" [ngModel]="record()" (ngModelChange)="updateModel($event)" />
+      <nwb-skill-tree-editor
+        [disabled]="!canEdit() || isEmbed()"
+        [ngModel]="record()"
+        (ngModelChange)="updateModel($event)"
+      />
     }
 
     @if (record()?.attrs; as attrs) {
