@@ -229,6 +229,54 @@ program.command('upload-tiles').action(async () => {
   })
 })
 
+program.command('upload-character').action(async () => {
+  const remoteDir = 'character'
+  const sourceDir = 'tmp/character'
+  const client = createClient()
+
+  const patterns = [
+    path.join(sourceDir, '**/*.webp'),
+    path.join(sourceDir, '**/*.png')
+  ]
+  const imageFiles = await glob(patterns)
+  const files = await glob(patterns).then((list) => {
+    return list.map((file) => {
+      return {
+        file: file,
+        key: normalizeKey(path.join(remoteDir, path.relative(sourceDir, file))),
+        contentType: 'image/webp',
+        md5: true,
+      }
+    })
+  })
+
+  const groups = groupBy(imageFiles, (file) => path.dirname(file))
+  for (const [dir, dirFiles] of Object.entries(groups)) {
+    const indexFile = path.join(dir, 'tiles.json')
+    const data = dirFiles.map((file) => path.basename(file))
+    await writeJSONFile(data, {
+      target: indexFile,
+    })
+    files.push({
+      file: indexFile,
+      key: normalizeKey(path.join(remoteDir, path.relative(sourceDir, indexFile))),
+      contentType: 'application/json',
+      md5: true,
+    })
+  }
+
+  const toUpload = files
+  console.log('found', files.length, 'files', 'to upload', toUpload.length)
+  await uploadFiles({
+    client: client,
+    files: toUpload,
+  })
+})
+
+async function globAndUpload() {
+
+}
+
 async function download(url: string, target: string, onProgress?: (downloaded: number, total: number) => void) {
   const file = fs.createWriteStream(target)
 

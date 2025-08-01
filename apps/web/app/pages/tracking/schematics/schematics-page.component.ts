@@ -9,12 +9,14 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
+import { LayoutModule } from '../../../ui/layout'
+import { CharacterAvatarComponent } from '../../../widgets/character'
 import { SchematicRecord, SchematicsTableAdapter } from './adapter'
 
 @Component({
   selector: 'nwb-schematics-page',
   templateUrl: './schematics-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
+  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent],
   providers: [
     provideDataView({
       adapter: SchematicsTableAdapter,
@@ -27,7 +29,7 @@ import { SchematicRecord, SchematicsTableAdapter } from './adapter'
 })
 export class SchematicsPageComponent implements OnInit {
   protected outlet = viewChild(RouterOutlet)
-  private character = inject(CharacterStore)
+  protected character = inject(CharacterStore)
 
   protected stats$ = this.service.categoryItems$
     .pipe(
@@ -67,7 +69,7 @@ export class SchematicsPageComponent implements OnInit {
 
   public ngOnInit() {
     const outlet = this.outlet()
-    this.service.loadCateory(
+    this.service.loadCategory(
       merge(
         outlet.deactivateEvents.pipe(map(() => null)),
         outlet.activateEvents.pipe(switchMap(() => observeRouteParam(outlet.activatedRoute, 'category'))),

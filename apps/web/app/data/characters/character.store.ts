@@ -1,6 +1,6 @@
-import { computed, inject, Injector } from '@angular/core'
+import { computed, inject } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_TRADESKILL_LEVEL, NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
-import { combineLatest, isObservable, map, NEVER, Observable, of, pipe, switchMap } from 'rxjs'
+import { combineLatest, map, NEVER, Observable, of, pipe, switchMap } from 'rxjs'
 import { CaseInsensitiveMap } from '~/utils'
 
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
@@ -9,6 +9,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { BackendService } from '../backend'
 import { BookmarksService } from '../bookmarks/bookmarks.service'
 import { BookmarkRecord } from '../bookmarks/types'
+import { LOCAL_USER_ID } from '../constants'
 import { injectNwData } from '../nw-data'
 import { injectCharactersDB } from './characters.db'
 import { CharactersService } from './characters.service'
@@ -35,8 +36,8 @@ export const CharacterStore = signalStore(
   withMethods((state) => {
     const service = inject(CharactersService)
     const backend = inject(BackendService)
-    const userId = backend.sessionUserId
-    const userId$ = toObservable(userId)
+    const localUserId = computed(() => backend.sessionUserId() || LOCAL_USER_ID)
+    const localUserId$ = toObservable(localUserId)
     return {
       load: rxMethod<string | void>(
         pipe(
@@ -51,7 +52,7 @@ export const CharacterStore = signalStore(
               return NEVER
             }
             return combineLatest({
-              userId: userId$.pipe(map((id) => id || 'local')),
+              userId: localUserId$,
               id: of(characterId),
             })
           }),
@@ -61,8 +62,12 @@ export const CharacterStore = signalStore(
               throw new Error(`Character with id ${id} not found`)
             }
             if (!id) {
-              // first record
-              id = records?.[0]?.id
+              // least recently used
+              id = records?.sort((a, b) => {
+                const aUpdate = a.updatedAt
+                const bUpdate = b.updatedAt
+                return aUpdate < bUpdate ? 1 : -1
+              })?.[0]?.id
             }
             if (!id) {
               // create default record
@@ -90,6 +95,14 @@ export const CharacterStore = signalStore(
     return {
       name: computed(() => record()?.name),
       level: computed(() => record()?.level ?? NW_MAX_CHARACTER_LEVEL),
+      isMale: computed(() => !record()?.gender || record()?.gender === 'male'),
+      isFemale: computed(() => record()?.gender === 'female'),
+      skin: computed(() => Number(record()?.skin) || 1),
+      face: computed(() => Number(record()?.face) || 1),
+      hairColor: computed(() => Number(record()?.hairColor) || 1),
+      hairStyle: computed(() => Number(record()?.hairStyle) || 1),
+      beardColor: computed(() => Number(record()?.beardColor) || 1),
+      beardStyle: computed(() => Number(record()?.beardStyle) || 0),
       progressionMap: computed(() => {
         return new CaseInsensitiveMap(Object.entries(record()?.progressionLevels || {}))
       }),

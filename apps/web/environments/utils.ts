@@ -11,15 +11,21 @@ export interface Environment extends EnvVars {
   cdnUrl: string
   deployUrl: string
   modelsUrl: string
+
   nwDataUrl: string
   nwImagesUrl: string
   nwTilesUrl: string
+  nwCharUrl: string
 }
 
 export type BaseUrl = 'cdnUrl' | 'deployUrl'
 
 export function getModelsUrl(env: EnvVars, baseUrl: BaseUrl) {
   return normalizePath(`${env[baseUrl]}/models`)
+}
+
+export function getCharacterUrl(env: EnvVars, baseUrl: BaseUrl) {
+  return normalizePath(`${env[baseUrl]}/character`)
 }
 
 export function getNwDataUrl(env: EnvVars, baseUrl: BaseUrl) {

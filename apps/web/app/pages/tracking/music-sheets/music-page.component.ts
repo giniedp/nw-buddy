@@ -10,12 +10,22 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
+import { LayoutModule } from '../../../ui/layout'
+import { CharacterAvatarComponent } from '../../../widgets/character'
 import { MusicRecord, RecipesTableAdapter } from './adapter'
 
 @Component({
   selector: 'nwb-music-page',
   templateUrl: './music-page.component.html',
-  imports: [CommonModule, NwModule, RouterModule, DataViewModule, VirtualGridModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    RouterModule,
+    DataViewModule,
+    VirtualGridModule,
+    LayoutModule,
+    CharacterAvatarComponent,
+  ],
   providers: [
     provideDataView({
       adapter: RecipesTableAdapter,
@@ -67,7 +77,7 @@ export class MusicPageComponent implements OnInit {
 
   public ngOnInit() {
     const outlet = this.outlet()
-    this.service.loadCateory(
+    this.service.loadCategory(
       merge(
         outlet.deactivateEvents.pipe(map(() => null)),
         outlet.activateEvents.pipe(switchMap(() => observeRouteParam(outlet.activatedRoute, 'category'))),

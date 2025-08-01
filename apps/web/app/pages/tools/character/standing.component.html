@@ -1,0 +1,20 @@
+<ion-content class="ion-p-4">
+  <div class="flex flex-col gap-4 max-w-7xl mx-auto">
+    <div class="alert mb-3 mx-auto max-w-96 bg-base-100">
+      <nwb-icon [icon]="infoIcon" class="w-4 h-4 text-info" />
+      <div>
+        <h3 class="font-bold">Territory standing</h3>
+        <div>Track your territory standing progression</div>
+      </div>
+    </div>
+    <div class="grid grid-auto-fill-80 gap-4">
+      @for (item of territories$ | async; track $index) {
+        <nwb-territory-card [territory]="item" class="flex-1 select-none" />
+      }
+    </div>
+
+    <nwb-territory-standing-chart class="w-full max-w-xl mx-auto" />
+
+    <nwb-territory-standing-table />
+  </div>
+</ion-content>

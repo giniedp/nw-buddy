@@ -1,8 +1,0 @@
-<ion-content class="ion-p-4">
-  <div class="grid gap-4">
-    @for (item of territories$ | async; track $index) {
-      <nwb-territory-card [territory]="item" class="flex-1 select-none" />
-    }
-  </div>
-
-</ion-content>

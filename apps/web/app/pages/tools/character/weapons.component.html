@@ -1,0 +1,31 @@
+<ion-content class="ion-p-4">
+  <div class="flex flex-col gap-4 mx-auto max-w-6xl">
+    <div class="alert mb-3 mx-auto max-w-96 bg-base-100">
+      <nwb-icon [icon]="infoIcon" class="w-4 h-4 text-info" />
+      <div>
+        <h3 class="font-bold">Weapon levels</h3>
+        <div>Track your weapon progression</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4">
+      @for (item of categories(); track $index) {
+        <div class="flex flex-col gap-2">
+          <h3 class="text-xl font-bold uppercase nw-bg-title font-caslon text-center bg-bottom text-nw-description">
+            {{ item.name | nwText }}
+          </h3>
+          @for (weapon of item.weapons; track $index) {
+            <nwb-weapon-level-input
+              [icon]="weapon.IconPath"
+              [label]="weapon.UIName | nwText"
+              [ngModel]="getValue(weapon)"
+              (ngModelChange)="updateWeapon(weapon, $event)"
+            />
+          }
+        </div>
+      }
+    </div>
+    @if (chartConfig(); as config) {
+      <nwb-chart [config]="config" class="w-full 2xl:max-w-[50%] mx-auto bg-base-100 rounded-md" />
+    }
+  </div>
+</ion-content>

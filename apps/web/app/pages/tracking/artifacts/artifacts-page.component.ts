@@ -8,12 +8,14 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
+import { LayoutModule } from '../../../ui/layout'
+import { CharacterAvatarComponent } from '../../../widgets/character'
 import { ArtifactRecord, ArtifactsTableAdapter } from './adapter'
 
 @Component({
   selector: 'nwb-artifacts-page',
   templateUrl: './artifacts-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
+  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, CharacterAvatarComponent, LayoutModule],
   providers: [
     provideDataView({
       adapter: ArtifactsTableAdapter,
@@ -54,7 +56,7 @@ export class ArtifactsPageComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.service.loadCateory(
+    this.service.loadCategory(
       merge(
         this.outlet.deactivateEvents.pipe(map(() => null)),
         this.outlet.activateEvents.pipe(switchMap(() => observeRouteParam(this.outlet.activatedRoute, 'category'))),

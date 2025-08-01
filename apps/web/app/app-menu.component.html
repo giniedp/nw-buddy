@@ -8,7 +8,7 @@
       }
     </ion-segment>
   </ion-toolbar>
-  <ng-content select="[header]"></ng-content>
+  <ng-content select="[header]" />
 </ion-header>
 <ion-content>
   <ng-content />
@@ -24,10 +24,12 @@
         }
         <li
           [routerLinkActive]="['border-l-4', 'border-primary']"
+          [routerLinkActiveOptions]="{ exact: !!item.exact }"
           (isActiveChange)="$event ? onGroupActive(node.category) : null"
         >
           <a
             [routerLink]="link.withLocale(item.path)"
+            [routerLinkActiveOptions]="{ exact: !!item.exact }"
             nwbMenuClose
             class="rounded-none"
             [routerLinkActive]="['active']"
@@ -70,7 +72,8 @@
       </div>
     } @else if (showBranchName) {
       <div class="badge badge-secondary whitespace-nowrap">
-        <span>{{branchName}}</span>&commat;v{{ version }}
+        <span>{{ branchName }}</span
+        >&commat;v{{ version }}
       </div>
     } @else if (version) {
       <div class="text-xs italic text-primary/75">v{{ version }}</div>

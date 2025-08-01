@@ -9,12 +9,14 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
+import { LayoutModule } from '../../../ui/layout'
+import { CharacterAvatarComponent } from '../../../widgets/character'
 import { RunesRecord, RunesTableAdapter } from './adapter'
 
 @Component({
   selector: 'nwb-runes-page',
   templateUrl: './runes-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
+  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent],
   providers: [
     provideDataView({
       adapter: RunesTableAdapter,
@@ -26,7 +28,7 @@ import { RunesRecord, RunesTableAdapter } from './adapter'
   },
 })
 export class RunesPageComponent implements OnInit {
-  private character = inject(CharacterStore)
+  protected character = inject(CharacterStore)
   protected stats$ = this.service.categoryItems$
     .pipe(
       switchMap((list) => {

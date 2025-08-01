@@ -1,0 +1,25 @@
+<ion-content class="ion-p-4">
+  <div class="max-w-5xl mx-auto flex flex-col gap-4">
+    <div class="alert mb-3 mx-auto max-w-96 bg-base-100">
+      <nwb-icon [icon]="infoIcon" class="w-4 h-4 text-info" />
+      <div>
+        <h3 class="font-bold">Character Level</h3>
+        <div>The value tracked here is used in some places as default character level.</div>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 self-center">
+      <nwb-level-input [ngModel]="level()" (ngModelChange)="updateLevel($event)" class="flex-none self-center w-32" />
+      <nwb-xp-level-info>
+        <div>
+          <button class="btn btn-sm"></button>
+          <button></button>
+        </div>
+      </nwb-xp-level-info>
+    </div>
+    <nwb-xp-unlock-line (levelClicked)="updateLevel($event)" />
+    <nwb-xp-chart-total />
+    <nwb-xp-chart-per-level />
+    <nwb-xp-table class="2xl:col-span-5" />
+  </div>
+</ion-content>

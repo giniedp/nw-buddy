@@ -80,8 +80,7 @@ const PAGE_ROUTES: Routes = [
   { path: 'season-pass', loadChildren: () => import('./pages/database/season-pass').then((m) => m.ROUTES) },
   { path: 'backstories', loadChildren: () => import('./pages/database/backstories').then((m) => m.ROUTES) },
 
-  { path: 'leveling', loadChildren: () => import('./pages/tools/leveling').then((m) => m.ROUTES) },
-  { path: 'territories', loadChildren: () => import('./pages/tools/territories').then((m) => m.ROUTES) },
+  { path: 'character', loadChildren: () => import('./pages/tools/character').then((m) => m.ROUTES) },
   { path: 'inventory', loadChildren: () => import('./pages/tools/inventory').then((m) => m.ROUTES) },
   { path: 'gearsets', loadChildren: () => import('./pages/tools/gearsets').then((m) => m.ROUTES) },
   { path: 'skill-trees', loadChildren: () => import('./pages/tools/skill-trees').then((m) => m.ROUTES) },

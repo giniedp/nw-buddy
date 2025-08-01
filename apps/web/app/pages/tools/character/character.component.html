@@ -1,0 +1,25 @@
+<ion-header class="bg-base-300">
+  <div class="min-h-12 flex flex-col-reverse md:flex-row md:items-center">
+    <div class="flex flex-row items-center flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
+      <div role="tablist" class="tabs tabs-xs xs:tabs-sm sm:tabs-md w-full justify-center h-12">
+        <a
+          role="tab"
+          class="tab h-12 flex items-center justify-center"
+          [routerLinkActive]="'tab-active'"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [routerLink]="'.'"
+        >
+          <nwb-character-avatar class="w-8 m-1" [character]="character()" />
+        </a>
+        <a role="tab" class="tab h-12" [routerLinkActive]="'tab-active'" [routerLink]="'level'">Level</a>
+        <a role="tab" class="tab h-12" [routerLinkActive]="'tab-active'" [routerLink]="'tradeskills'">Tradeskills</a>
+        <a role="tab" class="tab h-12" [routerLinkActive]="'tab-active'" [routerLink]="'standing'">Standing</a>
+        <a role="tab" class="tab h-12" [routerLinkActive]="'tab-active'" [routerLink]="'weapons'">Weapons</a>
+      </div>
+      <span class="flex-1"></span>
+    </div>
+  </div>
+</ion-header>
+<ion-content>
+  <router-outlet />
+</ion-content>

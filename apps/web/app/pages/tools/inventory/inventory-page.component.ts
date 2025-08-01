@@ -93,7 +93,7 @@ export class InventoryPageComponent implements OnInit {
   }
 
   public async ngOnInit() {
-    this.service.loadCateory(this.category$)
+    this.service.loadCategory(this.category$)
   }
 
   protected async createItem() {

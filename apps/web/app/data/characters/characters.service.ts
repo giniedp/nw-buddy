@@ -1,10 +1,11 @@
-import { computed, inject, Injectable, signal } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
+import { inject, Injectable, signal } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, distinctUntilChanged, map, NEVER, Observable, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
 
 import { autoSync } from '../backend/auto-sync'
+import { LOCAL_USER_ID } from '../constants'
 import { injectCharactersDB } from './characters.db'
 import { CharacterRecord } from './types'
 
@@ -16,6 +17,8 @@ export class CharactersService {
   private userId$ = toObservable(this.userId)
   private ready = signal(false)
   public ready$ = toObservable(this.ready)
+
+  public count = toSignal(this.userId$.pipe(switchMap((id) => this.observeCount(id))))
 
   public constructor() {
     this.sync()
@@ -39,13 +42,14 @@ export class CharactersService {
   }
 
   public observeCount(userId: string): Observable<number> {
-    userId ||= 'local'
+    userId ||= LOCAL_USER_ID
     return this.table.observeWhereCount({ userId })
   }
 
   public observeRecords(userId: string): Observable<CharacterRecord[]> {
-    if (userId === 'local' || !userId) {
-      return this.table.observeWhere({ userId: 'local' })
+    userId ||= LOCAL_USER_ID
+    if (userId === LOCAL_USER_ID) {
+      return this.table.observeWhere({ userId })
     }
     return this.ready$.pipe(
       switchMap((ready) => (ready ? this.userId$ : NEVER)),

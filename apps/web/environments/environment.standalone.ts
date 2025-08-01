@@ -10,4 +10,5 @@ export const environment: Environment = {
   nwDataUrl: getNwDataUrl(env, 'deployUrl'),
   nwImagesUrl: getNwDataUrl(env, 'deployUrl'),
   nwTilesUrl: getNwDataUrl(env, 'deployUrl'),
+  nwCharUrl: null,
 }

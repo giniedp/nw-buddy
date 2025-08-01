@@ -1,5 +1,5 @@
 import { env } from './env'
-import { Environment, getNwDataUrl } from './utils'
+import { Environment, getCharacterUrl, getNwDataUrl } from './utils'
 
 export const environment: Environment = {
   ...env,
@@ -11,4 +11,5 @@ export const environment: Environment = {
   nwDataUrl: getNwDataUrl(env, 'deployUrl'),
   nwImagesUrl: getNwDataUrl(env, 'deployUrl'),
   nwTilesUrl: getNwDataUrl(env, 'deployUrl'),
+  nwCharUrl: getCharacterUrl(env, 'cdnUrl'),
 }

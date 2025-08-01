@@ -22,6 +22,16 @@ export interface CharacterRecord extends AppDbRecord {
    */
   faction?: 'covenant' | 'syndicate' | 'marauder'
   /**
+   * Gender
+   */
+  gender?: 'male' | 'female'
+  skin?: number
+  face?: number
+  hairStyle?: number
+  hairColor?: number
+  beardStyle?: number
+  beardColor?: number
+  /**
    *
    */
   progressionLevels: Record<string | number, number>

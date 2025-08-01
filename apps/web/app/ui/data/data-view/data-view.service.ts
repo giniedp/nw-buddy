@@ -77,7 +77,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
     })
   }
 
-  public loadCateory = this.effect((category: Observable<string | null>) => {
+  public loadCategory = this.effect((category: Observable<string | null>) => {
     return category.pipe(
       map((value) => {
         this.patchState({ category: value })

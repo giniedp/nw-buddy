@@ -1,0 +1,28 @@
+<ion-content>
+  <div class="max-w-5xl mx-auto p-4">
+    <div class="alert mb-3 mx-auto max-w-96 bg-base-100">
+      <nwb-icon [icon]="infoIcon" class="w-4 h-4 text-info" />
+      <div>
+        <h3 class="font-bold">Tradeskill levels</h3>
+        <div>Track your tradeskill progression</div>
+      </div>
+    </div>
+    <div class="flex-none tabs tabs-lift flex-nowrap overflow-x-auto">
+      @for (category of categories | async; track $index; let i = $index) {
+        <a class="tab" [class.tab-active]="isActive(category, i)" (click)="selected = category">{{ category }}</a>
+      }
+    </div>
+    <div class="flex-1 bg-base-100 rounded-md rounded-tl-none overflow-auto">
+      @for (category of categories | async; track $index; let i = $index) {
+        @if (isActive(category, i)) {
+          <div class="grid grid-auto-fill-44 gap-2 p-2">
+            @for (skill of skillsByCategory(category) | async; track $index) {
+              <nwb-tradeskill-input [tradeskill]="skill.ID" />
+            }
+          </div>
+          <nwb-tradeskill-chart [category]="category" />
+        }
+      }
+    </div>
+  </div>
+</ion-content>

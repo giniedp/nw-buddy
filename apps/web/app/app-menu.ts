@@ -47,6 +47,7 @@ import {
 export interface AppMenuEntry {
   label: string
   path: string
+  exact?: boolean
   icon?: string
   svgIcon?: string
   divider?: boolean
@@ -90,7 +91,6 @@ export const APP_MENU: AppMenuGroup[] = [
 
       { label: 'Game Modes', path: '/game-modes', svgIcon: svgDungeon, divider: true },
       { label: 'Armor Sets', path: '/armor-sets', svgIcon: svgShield },
-      { label: 'Armor Weights', path: '/armor-weights', svgIcon: svgWeightHanging },
       { label: 'Transmog', path: '/transmog', icon: 'assets/icons/menu/transmogtoken.webp' },
       { label: 'Mounts', path: '/mounts', svgIcon: svgHorseHead },
 
@@ -106,15 +106,18 @@ export const APP_MENU: AppMenuGroup[] = [
     category: 'character',
     icon: svgUser,
     items: [
-      { label: 'Levels', path: '/leveling/xp', svgIcon: svgDiamondOutline },
-      { label: 'Tradeskills', path: '/leveling/tradeskills', svgIcon: svgSickle },
-      { label: 'Territories', path: '/territories', svgIcon: svgFlag },
-      { label: 'Weapons', path: '/leveling/weapons', svgIcon: svgSword },
+
+      { label: 'Character', path: '/character', svgIcon: svgUser, exact: true },
+      { label: 'Level', path: '/character/level', svgIcon: svgDiamondOutline },
+      { label: 'Tradeskills', path: '/character/tradeskills', svgIcon: svgSickle },
+      { label: 'Standing', path: '/character/standing', svgIcon: svgFlag },
+      { label: 'Weapons', path: '/character/weapons', svgIcon: svgSword },
       { label: 'Inventory', path: '/inventory', svgIcon: svgTreasureChest, divider: true },
       { label: 'Gear Sets', path: '/gearsets', svgIcon: svgHelmetBattle },
       { label: 'Skill Trees', path: '/skill-trees', svgIcon: svgSitemap },
       { label: 'Transmog', path: '/transmog/sets', icon: 'assets/icons/menu/transmogtoken.webp' },
       { label: 'Damage Calculator', path: '/damage-calculator', svgIcon: svgSwords, divider: true },
+      { label: 'Armor Weights', path: '/armor-weights', svgIcon: svgWeightHanging },
     ],
   },
   {

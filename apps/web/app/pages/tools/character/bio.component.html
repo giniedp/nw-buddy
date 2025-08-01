@@ -1,0 +1,211 @@
+<ion-content class="bg-base-100">
+  <div class="flex flex-col items-center gap-4">
+    <div class="alert w-full max-w-96 mt-4 mb-10">
+      <div>
+        <h3 class="font-bold">Character Slot</h3>
+        <div>
+          Edit the appearance of your character.
+          <br />
+          <br />
+          Progress and avatar are only shown to you. There is no public character listing and you can not see characters
+          of other users.
+          <br />
+          <br />
+          You can create up to 5 character slots and track progresss individually.
+        </div>
+      </div>
+    </div>
+
+    <nwb-character-avatar [character]="character()" class="w-32" #avatar />
+
+    <fieldset class="fieldset w-full max-w-xs">
+      <label class="input w-full">
+        <span class="label">Name</span>
+        <input
+          [maxlength]="50"
+          [ngModel]="characterName()"
+          (ngModelChange)="handleNameChange($event)"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+        />
+      </label>
+      <label class="input w-full">
+        <span class="label">Server</span>
+        <input
+          [maxlength]="50"
+          [ngModel]="serverName()"
+          (ngModelChange)="handleServerChange($event)"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+        />
+      </label>
+      <label class="select w-full">
+        <span class="label">Faction</span>
+        <select [maxlength]="50" [ngModel]="faction()" (ngModelChange)="handleFactionChange($event)">
+          @for (option of factionOptions; track option.value) {
+            <option [value]="option.value">{{ option.label | nwText }}</option>
+          }
+        </select>
+      </label>
+      <button class="btn btn-block" (click)="handleToggleGender()">
+        <span [class.text-primary]="characterIsMale()">Male</span>
+        <span>/</span>
+        <span [class.text-primary]="!characterIsMale()">Female</span>
+      </button>
+      <button class="btn btn-block" [nwbModalOpen]="{ content: tplSkin, size: ['x-sm', 'y-auto'] }">Skin</button>
+      <button class="btn btn-block" [nwbModalOpen]="{ content: tplFace, size: ['x-sm', 'y-auto'] }">Face</button>
+      <button class="btn btn-block" [nwbModalOpen]="{ content: tplHairStyle, size: ['x-md', 'y-auto'] }">
+        Hair Style
+      </button>
+      <button class="btn btn-block" [nwbModalOpen]="{ content: tplHairColor, size: ['x-sm', 'y-auto'] }">
+        Hair Color
+      </button>
+      <button class="btn btn-block" [nwbModalOpen]="{ content: tplBeardStyle, size: ['x-md', 'y-auto'] }">
+        Beard Style
+      </button>
+      <button class="btn btn-block" [nwbModalOpen]="{ content: tplBeardColor, size: ['x-sm', 'y-auto'] }">
+        Beard Color
+      </button>
+      @if (canDelete()) {
+        <button class="btn btn-block btn-error" (click)="handleDeleteCharacter()">Delete</button>
+      }
+    </fieldset>
+
+    <div class="flex flex-row gap-2 items-center justify-center">
+      @if (characters()?.length >= 2) {
+        @for (item of characters(); track $index) {
+          <button
+            class="btn btn-circle btn-lg filter hover:grayscale-0"
+            [class.grayscale-100]="item.id !== character()?.id"
+            (click)="handleSelectCharacter(item)"
+          >
+            <nwb-character-avatar [character]="item" class="w-full" />
+          </button>
+        }
+      }
+      @if (canCreate()) {
+        <button class="btn btn-circle btn-lg" (click)="handleCreateCharacter()">
+          <nwb-icon [icon]="plusIcon" class="w-6 h-6" />
+        </button>
+      }
+    </div>
+  </div>
+</ion-content>
+
+<ng-template #tplSkin>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
+      <ion-title>Skin Tone</ion-title>
+      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="rounded-b-md bg-base-100">
+    <div class="flex flex-row flex-wrap items-center justify-center gap-2 p-4 h-full">
+      @for (item of avatar.skinOptions(); track $index) {
+        <button class="btn btn-square btn-xl" (click)="handleSkinChange(item.value)" [nwbModalClose]>
+          @if (item.icon) {
+            <img [src]="item.icon" />
+          }
+        </button>
+      }
+    </div>
+  </ion-content>
+</ng-template>
+
+<ng-template #tplFace>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
+      <ion-title>Face</ion-title>
+      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="rounded-b-md bg-base-100">
+    <div class="flex flex-row flex-wrap items-center justify-center gap-2 p-4 h-full">
+      @for (item of avatar.faceOptions(); track $index) {
+        <button class="btn btn-square btn-xl" (click)="handleFaceChange(item.value)" [nwbModalClose]>
+          @if (item.icon) {
+            <img [src]="item.icon" />
+          }
+        </button>
+      }
+    </div>
+  </ion-content>
+</ng-template>
+
+<ng-template #tplHairColor>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
+      <ion-title>Hair Color</ion-title>
+      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="rounded-b-md bg-base-100">
+    <div class="flex flex-row flex-wrap items-center justify-center gap-2 p-4 h-full">
+      @for (item of avatar.hairColorOptions(); track $index) {
+        <button class="btn btn-square btn-xl" (click)="handleHairColorChange(item.value)" [nwbModalClose]>
+          @if (item.icon) {
+            <img [src]="item.icon" />
+          }
+        </button>
+      }
+    </div>
+  </ion-content>
+</ng-template>
+
+<ng-template #tplHairStyle>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
+      <ion-title>Hair Style</ion-title>
+      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="rounded-b-md bg-base-100">
+    <div class="flex flex-row flex-wrap items-center justify-center gap-2 p-4 h-full">
+      @for (item of avatar.hairOptions(); track $index) {
+        <button class="btn btn-square btn-xl" (click)="handleHairStyleChange(item.value)" [nwbModalClose]>
+          @if (item.icon) {
+            <img [src]="item.icon" />
+          }
+        </button>
+      }
+    </div>
+  </ion-content>
+</ng-template>
+
+<ng-template #tplBeardColor>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
+      <ion-title>Beard Color</ion-title>
+      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="rounded-b-md bg-base-100">
+    <div class="flex flex-row flex-wrap items-center justify-center gap-2 p-4 h-full">
+      @for (item of avatar.beardColorOptions(); track $index) {
+        <button class="btn btn-square btn-xl" (click)="handleBeardColorChange(item.value)" [nwbModalClose]>
+          @if (item.icon) {
+            <img [src]="item.icon" />
+          }
+        </button>
+      }
+    </div>
+  </ion-content>
+</ng-template>
+
+<ng-template #tplBeardStyle>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
+      <ion-title>Beard Style</ion-title>
+      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="rounded-b-md bg-base-100">
+    <div class="flex flex-row flex-wrap items-center justify-center gap-2 p-4 h-full">
+      @for (item of avatar.beardOptions(); track $index) {
+        <button class="btn btn-square btn-xl" (click)="handleBeardStyleChange(item.value)" [nwbModalClose]>
+          @if (item.icon) {
+            <img [src]="item.icon" />
+          }
+        </button>
+      }
+    </div>
+  </ion-content>
+</ng-template>

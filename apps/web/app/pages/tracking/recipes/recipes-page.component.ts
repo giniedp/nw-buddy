@@ -9,12 +9,14 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
+import { LayoutModule } from '../../../ui/layout'
+import { CharacterAvatarComponent } from '../../../widgets/character'
 import { RecipeRecord, RecipesTableAdapter } from './adapter'
 
 @Component({
   selector: 'nwb-recipes-page',
   templateUrl: './recipes-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
+  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent],
   providers: [
     provideDataView({
       adapter: RecipesTableAdapter,
@@ -27,7 +29,7 @@ import { RecipeRecord, RecipesTableAdapter } from './adapter'
 })
 export class RecipesPageComponent implements OnInit {
   protected outlet = viewChild(RouterOutlet)
-  private character = inject(CharacterStore)
+  protected character = inject(CharacterStore)
 
   protected stats$ = this.service.categoryItems$
     .pipe(
@@ -67,7 +69,7 @@ export class RecipesPageComponent implements OnInit {
 
   public ngOnInit() {
     const outlet = this.outlet()
-    this.service.loadCateory(
+    this.service.loadCategory(
       merge(
         outlet.deactivateEvents.pipe(map(() => null)),
         outlet.activateEvents.pipe(switchMap(() => observeRouteParam(outlet.activatedRoute, 'category'))),
