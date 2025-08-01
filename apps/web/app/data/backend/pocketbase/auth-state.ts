@@ -1,4 +1,4 @@
-import PocketBase, { AuthRecord, RecordModel, RecordService } from 'pocketbase'
+import PocketBase, { AuthRecord } from 'pocketbase'
 import { Observable } from 'rxjs'
 
 export interface AuthState {
@@ -9,7 +9,7 @@ export interface AuthState {
 export function authState(client: PocketBase): Observable<AuthState> {
   return new Observable<AuthState>((sub) => {
     return client.authStore.onChange((token, record) => {
-      sub.next({ token, record})
+      sub.next({ token, record })
     }, true)
   })
 }

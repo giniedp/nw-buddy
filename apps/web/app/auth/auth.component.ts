@@ -1,5 +1,6 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { BackendService } from '~/data/backend'
 import { TooltipModule } from '~/ui/tooltip'
 
@@ -7,7 +8,7 @@ import { TooltipModule } from '~/ui/tooltip'
   standalone: true,
   selector: 'app-auth',
   templateUrl: './auth.component.html',
-  imports: [TooltipModule, CdkMenuModule],
+  imports: [TooltipModule, CdkMenuModule, RouterLink  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.hidden]': '!isEnabled()',

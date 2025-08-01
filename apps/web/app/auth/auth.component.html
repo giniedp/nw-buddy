@@ -28,14 +28,16 @@
 }
 
 <ng-template #tplAccMenu>
-  <ul class="menu menu-compact bg-base-300 border border-base-200 rounded-md w-40 shadow-md" cdkMenu>
+  <ul class="menu bg-base-300 rounded-md w-60" cdkMenu>
     <li>
       <div class="menu-title">
         Signed in as
         <b class="uppercase" [class.text-success]="isOnline()" [class.text-error]="!isOnline()">{{ userName() }}</b>
       </div>
     </li>
-
+    <li cdkMenuItem>
+      <a [routerLink]="'/preferences'">Preferences</a>
+    </li>
     @if (!isOnline()) {
       <li cdkMenuItem>
         <button (click)="signIn()" class="text-xs">
@@ -43,7 +45,7 @@
         </button>
       </li>
     }
-    <li cdkMenuItem>
+    <li class="rounded-b-md overflow-clip" cdkMenuItem>
       <button (click)="signOut()">Sign Out</button>
     </li>
   </ul>

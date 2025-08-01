@@ -42,7 +42,9 @@ export function autoSync<T extends AppDbRecord>(options: {
           return merge(
             //
             syncToRemote(options.local, options.remote),
-            syncToLocal(options.local, options.remote),
+            // listening for remote events is currently not needed
+            // and is disabled to reduce load on server
+            // syncToLocal(options.local, options.remote),
           )
         }),
         catchError(() => {
