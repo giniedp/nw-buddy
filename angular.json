@@ -31,7 +31,10 @@
             },
             "outputPath": "dist/web",
             "externalDependencies": ["assets/*"],
-            "index": "apps/web/index.html",
+            "index": {
+              "input": "apps/web/index.html",
+              "preloadInitial": false
+            },
             "browser": "apps/web/main.ts",
             "server": "apps/web/main.server.ts",
             "ssr": {
