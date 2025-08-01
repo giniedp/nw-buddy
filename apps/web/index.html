@@ -32,43 +32,31 @@
   <body class="dark font-sans" data-theme="nwbuddy">
     <nw-buddy-frame class="h-full z-[0]"></nw-buddy-frame>
     <div
-      class="flex flex-col h-full bg-base-200 absolute top-0 left-0 right-0 transition-all opacity-100 pointer-events-none z-[-1]"
-      data-skeleton
+      id="skeleton-loader"
+      class="absolute inset-0 bg-red-300/50 z-10 flex flex-col opacity-100 transition-opacity"
     >
-      <div class="flex-none h-12 bg-black"></div>
-      <div class="flex flex-row flex-1">
-        <div class="hidden xl:flex flex-col flex-none w-[270px] bg-base-300"></div>
-        <div class="flex-1 relative"></div>
-      </div>
-    </div>
-    <div
-      class="flex flex-col h-full absolute top-0 left-0 right-0 transition-all opacity-100 pointer-events-none z-[1]"
-      data-skeleton
-    >
-      <div class="flex-none h-12"></div>
-      <div class="flex flex-row flex-1">
-        <div class="hidden xl:flex flex-col flex-none w-[270px]"></div>
-        <div class="flex-1 relative bg-base-200">
-          <div class="flex flex-row justify-center items-center h-full w-full absolute top-0 left-0 scale-100">
-            <picture class="block aspect-square w-40 h-40 relative">
-              <img
-                class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
-                src="assets/loaders/basicscreenrune1.png"
-              />
-              <img
-                class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-                src="assets/loaders/basicscreenrune3.png"
-              />
-              <img
-                class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-                src="assets/loaders/basicscreenrune2.png"
-              />
-              <img
-                class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
-                src="assets/loaders/nwlogo.png"
-              />
-            </picture>
-          </div>
+      <div class="h-0! h-12 bg-black transition-all duration-500"></div>
+      <div class="flex-1 flex flex-row bg-base-200">
+        <div class="h-full w-0! w-[270px] bg-base-300 transition-all duration-500"></div>
+        <div class="h-full flex-1 relative flex items-center justify-center">
+          <picture class="block aspect-square w-40 h-40 relative">
+            <img
+              class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+              src="assets/loaders/basicscreenrune1.png"
+            />
+            <img
+              class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+              src="assets/loaders/basicscreenrune3.png"
+            />
+            <img
+              class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+              src="assets/loaders/basicscreenrune2.png"
+            />
+            <img
+              class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
+              src="assets/loaders/nwlogo.png"
+            />
+          </picture>
         </div>
       </div>
     </div>

@@ -178,15 +178,35 @@ export class AppComponent {
   ) {
     this.bindLanguage()
     this.bindWatermark()
+    this.updateSkeletonLoader()
   }
 
-  private removeLoader() {
-    this.document.querySelectorAll('[data-skeleton]').forEach((el) => {
-      setTimeout(() => {
-        el.classList.remove('opacity-100')
-        el.classList.add('opacity-0')
-        setTimeout(() => el.remove(), 300)
-      }, 750)
+  private querySkeletonLoader() {
+    return this.document.querySelector('#skeleton-loader')
+  }
+  private removeSkeletonLoader() {
+    const skeleton = this.querySkeletonLoader()
+    if (!skeleton) {
+      return
+    }
+    setTimeout(() => {
+      skeleton.classList.remove('opacity-100')
+      skeleton.classList.add('opacity-0')
+      setTimeout(() => skeleton.remove(), 300)
+    }, 750)
+  }
+
+  private updateSkeletonLoader() {
+    if (this.platform.isEmbed) {
+      return
+    }
+    const skeleton = this.querySkeletonLoader()
+    if (!skeleton) {
+      return
+    }
+    skeleton.querySelectorAll<HTMLElement>('.h-0\\!,.w-0\\!').forEach((el) => {
+      el.classList.remove('h-0!')
+      el.classList.remove('w-0!')
     })
   }
 
@@ -200,7 +220,7 @@ export class AppComponent {
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
         if (this.platform.isBrowser) {
-          this.removeLoader()
+          this.removeSkeletonLoader()
         }
       })
   }
