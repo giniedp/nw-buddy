@@ -12,6 +12,7 @@ import { ItemsService } from './items'
 import { SkillTreesService } from './skill-tree'
 import { TablePresetsService } from './table-presets'
 import { TransmogsService } from './transmogs'
+import { LOCAL_USER_ID } from './constants'
 
 export type ExportedDB = { name: string; tables: ExportedTable[] }
 export type ExportedTable<T extends AppDbRecord = AppDbRecord> = { name: string; rows: T[] }
@@ -60,7 +61,7 @@ export class DbService {
   }
 
   public async clearUserData(userId: string) {
-    if (!userId || userId === 'local') {
+    if (!userId || userId === LOCAL_USER_ID) {
       throw new Error('clearing local user data is not allowed')
     }
     if (this.db instanceof AppDbDexie) {
@@ -72,7 +73,7 @@ export class DbService {
   }
 
   public async deleteAccountData(userId: string) {
-    if (!userId || userId === 'local') {
+    if (!userId || userId === LOCAL_USER_ID) {
       throw new Error('clearing local user data is not allowed')
     }
     for (const store of this.allStores) {
@@ -84,14 +85,14 @@ export class DbService {
   }
 
   public async importToAccount(targetUserId: string) {
-    if (!targetUserId || targetUserId === 'local') {
+    if (!targetUserId || targetUserId === LOCAL_USER_ID) {
       // nothing to do
       return
     }
 
     // we currently support only one progression character per user
     // merge local character into target user character
-    const localChar = (await this.characters.table.where({ userId: 'local' }))?.[0]
+    const localChar = (await this.characters.table.where({ userId: LOCAL_USER_ID }))?.[0]
     const targetChar = (await this.characters.table.where({ userId: targetUserId }))?.[0]
     if (!targetChar) {
       throw new Error(`Target user ${targetUserId} does not have a character`)
@@ -114,37 +115,30 @@ export class DbService {
     }
 
     // markers are scoped by character
-    const localBookmarks = await this.bookmarks.table.where({ userId: 'local' })
-    for (const bookmark of localBookmarks) {
-      if (bookmark.flags) {
-        this.character.setItemMarker(bookmark.itemId, bookmark.flags)
-      }
-      if (bookmark.gearScore) {
-        this.character.setItemMarker(bookmark.itemId, bookmark.gearScore)
-      }
-    }
+    const localBookmarks = await this.bookmarks.table.where({ userId: LOCAL_USER_ID })
+    await this.bookmarks.import(targetChar.id, localBookmarks)
 
-    const localGearsets = await this.gearsets.table.where({ userId: 'local' })
+    const localGearsets = await this.gearsets.table.where({ userId: LOCAL_USER_ID })
     for (const record of localGearsets) {
       await this.gearsets.dublicate(record)
     }
 
-    const localItems = await this.items.table.where({ userId: 'local' })
+    const localItems = await this.items.table.where({ userId: LOCAL_USER_ID })
     for (const record of localItems) {
       await this.items.dublicate(record)
     }
 
-    const localSkills = await this.skillTrees.table.where({ userId: 'local' })
+    const localSkills = await this.skillTrees.table.where({ userId: LOCAL_USER_ID })
     for (const record of localSkills) {
       await this.skillTrees.dublicate(record)
     }
 
-    const localMogs = await this.transmogs.table.where({ userId: 'local' })
+    const localMogs = await this.transmogs.table.where({ userId: LOCAL_USER_ID })
     for (const record of localMogs) {
       await this.transmogs.dublicate(record)
     }
 
-    const localPresets = await this.presets.table.where({ userId: 'local' })
+    const localPresets = await this.presets.table.where({ userId: LOCAL_USER_ID })
     for (const record of localPresets) {
       await this.presets.dublicate(record)
     }

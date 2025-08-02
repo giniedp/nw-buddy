@@ -16,6 +16,7 @@ import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
+import { LOCAL_USER_ID } from '../../../data/constants'
 
 @Component({
   selector: 'nwb-preferences-page',
@@ -45,7 +46,7 @@ export class PreferencesComponent {
   protected tilesUrl = environment.nwTilesUrl
 
   protected countLocal = rxResource({
-    stream: () => this.dbService.userDataStats('local'),
+    stream: () => this.dbService.userDataStats(LOCAL_USER_ID),
     defaultValue: {
       characters: 0,
       items: 0,
@@ -58,7 +59,10 @@ export class PreferencesComponent {
   })
   protected countUser = rxResource({
     params: () => this.backend.sessionUserId() || 'local',
-    stream: ({ params }) => this.dbService.userDataStats(params),
+    stream: ({ params }) => {
+      console.log('count user', params)
+      return this.dbService.userDataStats(params)
+    },
     defaultValue: {
       characters: 0,
       items: 0,
@@ -226,7 +230,7 @@ export class PreferencesComponent {
         <br /><br />
         Character progression will be merged with existing character data. Any collision will be overwritten.
         <br /><br />
-        Gearsets, skill trees etc. will be created as new records.
+        Gearsets, skill trees etc. will be created as <span class="text-error">new records<span>.
         `,
         isHtml: true,
         negative: 'Cancel',
@@ -235,7 +239,17 @@ export class PreferencesComponent {
     })
       .result$.pipe(
         filter((it) => !!it),
-        switchMap(() => this.dbService.importToAccount(this.backend.sessionUserId())),
+        switchMap(() => {
+          return this.modal.withLoadingIndicator(
+            {
+              message: 'Importing ...',
+              keyboardClose: false,
+            },
+            () => {
+              return this.dbService.importToAccount(this.backend.sessionUserId())
+            },
+          )
+        }),
       )
       .subscribe({
         next: () => {

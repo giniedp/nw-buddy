@@ -1,9 +1,12 @@
 import { inject, Injectable, signal } from '@angular/core'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { uniqBy } from 'lodash'
 import { distinctUntilChanged, map, NEVER, Observable, of, switchMap } from 'rxjs'
+import { eqCaseInsensitive } from '../../utils'
 import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
+import { LOCAL_USER_ID } from '../constants'
 import { injectBookmarksDB } from './bookmarks.db'
 import { BookmarkRecord } from './types'
 
@@ -38,7 +41,7 @@ export class BookmarksService {
   })
 
   public observeCount(userId: string): Observable<number> {
-    userId ||= 'local'
+    userId ||= LOCAL_USER_ID
     return this.table.observeWhereCount({ userId })
   }
 
@@ -56,11 +59,8 @@ export class BookmarksService {
       switchMap((ready) => (ready ? this.userId$ : NEVER)),
       distinctUntilChanged(),
       switchMap((localUserId) => {
-        if (userId === 'local' || !userId) {
-          return this.table.observeWhere({ userId: 'local', characterId })
-        }
-        if (userId === localUserId) {
-          return this.table.observeWhere({ userId: localUserId, characterId })
+        if (userId === LOCAL_USER_ID || userId === localUserId) {
+          return this.table.observeWhere({ userId, characterId })
         }
         return of<BookmarkRecord[]>([])
       }),
@@ -102,4 +102,64 @@ export class BookmarksService {
   public delete(id: string | string[]) {
     return this.table.delete(id)
   }
+
+  public async import(characterId: string, records: Array<Partial<BookmarkRecord>>) {
+    const userId = this.userId() || 'local'
+    const existing = await this.table
+      .where({ userId })
+      .then((list) => list.filter((it) => it.characterId === characterId))
+
+    const merged = mergeBookmarks({
+      userId,
+      characterId,
+      existing: existing,
+      incoming: records,
+    })
+
+    for (const item of merged) {
+      if (item.id && !item.flags && !item.gearScore) {
+        await this.delete(item.id)
+      } else if (!item.id) {
+        await this.create(item)
+      } else {
+        await this.update(item.id, item)
+      }
+    }
+  }
+}
+
+function mergeBookmarks({
+  userId,
+  characterId,
+  existing,
+  incoming,
+}: {
+  userId: string
+  characterId: string
+  existing: Array<Partial<BookmarkRecord>>
+  incoming: Array<Partial<BookmarkRecord>>
+}) {
+  const merged: Array<Partial<BookmarkRecord>> = []
+  incoming = uniqBy(incoming, (it) => it.itemId.toLowerCase())
+  for (const record of incoming) {
+    const found = existing.find((it) => eqCaseInsensitive(it.itemId, record.itemId))
+    if (found) {
+      merged.push({
+        ...found,
+        userId,
+        characterId,
+        gearScore: record.gearScore ?? found.gearScore,
+        flags: record.flags ?? found.flags,
+      })
+    } else {
+      merged.push({
+        userId,
+        characterId,
+        itemId: record.itemId,
+        gearScore: record.gearScore,
+        flags: record.flags,
+      })
+    }
+  }
+  return merged
 }

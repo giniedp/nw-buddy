@@ -119,6 +119,10 @@ export class ItemsService {
     return this.table.create({
       ...record,
       id: this.table.createId(),
+      syncState: 'pending',
+      createdAt: new Date().toJSON(),
+      updatedAt: new Date().toJSON(),
+      userId: this.userId() || 'local',
     })
   }
 

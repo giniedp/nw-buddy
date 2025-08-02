@@ -35,11 +35,15 @@ export class PocketbaseAdapter extends BackendAdapter {
 
   public async refreshSession() {
     if (!this.session()?.id) {
+      this.isOnline.set(false)
       return
     }
     await this.client
       .collection('users')
       .authRefresh()
+      .then(() => {
+        this.isOnline.set(true)
+      })
       .catch((error) => {
         this.isOnline.set(false)
       })

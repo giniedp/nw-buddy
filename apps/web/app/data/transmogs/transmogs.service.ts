@@ -6,6 +6,7 @@ import { BackendService } from '../backend'
 import { autoSync } from '../backend/auto-sync'
 import { injectTransmogsDB } from './transmogs.db'
 import { TransmogRecord } from './types'
+import { LOCAL_USER_ID } from '../constants'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogsService {
@@ -40,13 +41,14 @@ export class TransmogsService {
   }
 
   public observeCount(userId: string) {
-    userId ||= 'local'
+    userId ||= LOCAL_USER_ID
     return this.table.observeWhereCount({ userId })
   }
 
   public observeRecords(userId: string) {
-    if (userId === 'local' || !userId) {
-      return this.table.observeWhere({ userId: 'local' })
+    userId ||= LOCAL_USER_ID
+    if (userId === LOCAL_USER_ID) {
+      return this.table.observeWhere({ userId })
     }
     return this.ready$.pipe(
       switchMap((ready) => (ready ? this.userId$ : NEVER)),
