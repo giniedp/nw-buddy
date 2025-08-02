@@ -106,7 +106,7 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     const suffix = publicExport ? '-pub' : ''
     const fileName = projectName + suffix + '.json'
 
-    const data = convertExport({
+    const data = await convertExport({
       database: await this.db.export(),
       preferences: this.preferences.export(),
       publicExport,

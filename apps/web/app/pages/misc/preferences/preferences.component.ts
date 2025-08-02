@@ -4,19 +4,7 @@ import { rxResource } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { environment } from 'apps/web/environments'
-import { combineLatest, filter, switchMap, tap } from 'rxjs'
-import {
-  CharacterStore,
-  GearsetsService,
-  injectCharactersDB,
-  injectGearsetsDB,
-  injectItemInstancesDB,
-  injectSkillTreesDB,
-  injectTablePresetsDB,
-  ItemsService,
-  SkillTreesService,
-  TablePresetsService,
-} from '~/data'
+import { filter, switchMap } from 'rxjs'
 import { BackendService } from '~/data/backend'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService } from '~/preferences'
@@ -28,8 +16,6 @@ import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { DataExportDialogComponent } from './data-export-dialog.component'
 import { DataImportDialogComponent } from './data-import-dialog.component'
-import { ToastController } from '@ionic/angular/standalone'
-import { TransmogsService } from '~/data/transmogs'
 
 @Component({
   selector: 'nwb-preferences-page',
