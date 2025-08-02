@@ -13,8 +13,9 @@ import { LOCAL_USER_ID } from '../constants'
 export class SkillTreesService {
   public readonly table = injectSkillTreesDB()
   private backend = inject(BackendService)
-  private userId = computed(() => this.backend.session()?.id)
+  private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
+  private online$ = toObservable(this.backend.isOnline)
   private ready = signal(false)
   private ready$ = toObservable(this.ready)
 
@@ -27,6 +28,7 @@ export class SkillTreesService {
       switchMap(() => {
         return autoSync({
           userId: this.userId$,
+          online: this.online$,
           local: this.table,
           remote: this.backend.privateTables.skillTrees,
         })

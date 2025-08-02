@@ -2,6 +2,7 @@ import { Dexie, Transaction } from 'dexie'
 import { AppDb, AppDbRecord, createId } from './app-db'
 import { AppDbDexieTable } from './app-db.dexie-table'
 import { BookmarkRecord } from './bookmarks/types'
+import { GAME_MODE_TO_PROGRESSION_ID } from './characters/constants'
 import { CharacterRecord, TerritoryData } from './characters/types'
 import {
   DBT_BOOKMARKS,
@@ -14,7 +15,6 @@ import {
   DBT_TRANSMOGS,
   LOCAL_USER_ID,
 } from './constants'
-import { GAME_MODE_TO_PROGRESSION_ID } from './characters/constants'
 
 const ALL_TABLE_NAMES = [
   DBT_CHARACTERS,
@@ -105,7 +105,6 @@ export class AppDbDexie extends AppDb {
       })
 
     db.version(7).upgrade(async (tx) => migrateProgression(tx))
-
   }
 }
 

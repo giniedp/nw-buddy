@@ -27,7 +27,7 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
     return this.table.count()
   }
 
-  public async countWhere(where: Partial<AppDbRecord>): Promise<number>{
+  public async countWhere(where: Partial<AppDbRecord>): Promise<number> {
     return this.table.where(where).count()
   }
 

@@ -19,8 +19,9 @@ export class ItemsService {
   public readonly table = injectItemInstancesDB()
   private backend = inject(BackendService)
   private nwdb = injectNwData()
-  private userId$ = toObservable(this.backend.session).pipe(map((it) => it?.id))
-  private userId = toSignal(this.userId$)
+  private userId = this.backend.sessionUserId
+  private userId$ = toObservable(this.userId)
+  private online$ = toObservable(this.backend.isOnline)
   private ready = signal(false)
   public ready$ = toObservable(this.ready)
 
@@ -42,6 +43,7 @@ export class ItemsService {
       switchMap(() => {
         return autoSync({
           userId: this.userId$,
+          online: this.online$,
           local: this.table,
           remote: this.backend.privateTables.items,
         })

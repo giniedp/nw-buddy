@@ -3,16 +3,17 @@ import { toObservable } from '@angular/core/rxjs-interop'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, distinctUntilChanged, map, NEVER, of, switchMap } from 'rxjs'
 import { BackendService } from '../backend'
+import { autoSync } from '../backend/auto-sync'
 import { injectTransmogsDB } from './transmogs.db'
 import { TransmogRecord } from './types'
-import { autoSync } from '../backend/auto-sync'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogsService {
   public readonly table = injectTransmogsDB()
   private backend = inject(BackendService)
-  private userId = computed(() => this.backend.session()?.id)
+  private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
+  private online$ = toObservable(this.backend.isOnline)
   private ready = signal(false)
   public ready$ = toObservable(this.ready)
 
@@ -25,6 +26,7 @@ export class TransmogsService {
       switchMap(() => {
         return autoSync({
           userId: this.userId$,
+          online: this.online$,
           local: this.table,
           remote: this.backend.privateTables.transmogs,
         })

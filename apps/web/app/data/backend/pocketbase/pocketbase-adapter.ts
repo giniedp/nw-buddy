@@ -15,7 +15,7 @@ export class PocketbaseAdapter extends BackendAdapter {
   private readonly authState = toSignal(authState(this.client))
 
   public isEnabled = signal(true)
-  public isOnline = signal(true)
+  public isOnline = signal(false)
   public userSignedIn = new Subject<SessionState>()
   public userSignedOut = new Subject<SessionState>()
   public session = computed(() => {
@@ -30,18 +30,18 @@ export class PocketbaseAdapter extends BackendAdapter {
   public constructor() {
     super()
     this.client.autoCancellation(false)
-    if (this.session()?.id) {
-      this.refreshSession()
-    }
+    this.refreshSession()
   }
 
   public async refreshSession() {
+    if (!this.session()?.id) {
+      return
+    }
     await this.client
       .collection('users')
       .authRefresh()
       .catch((error) => {
         this.isOnline.set(false)
-        // this.signOut()
       })
   }
 
@@ -52,6 +52,7 @@ export class PocketbaseAdapter extends BackendAdapter {
         provider: 'discord',
       })
       .then((data) => {
+        this.isOnline.set(true)
         this.userSignedIn.next({
           id: data.record.id,
           name: data.record?.['name'] as string,

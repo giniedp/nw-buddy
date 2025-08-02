@@ -15,6 +15,7 @@ export class CharactersService {
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
+  private online$ = toObservable(this.backend.isOnline)
   private ready = signal(false)
   public ready$ = toObservable(this.ready)
 
@@ -29,6 +30,7 @@ export class CharactersService {
       switchMap(() => {
         return autoSync({
           userId: this.userId$,
+          online: this.online$,
           local: this.table,
           remote: this.backend.privateTables.characters,
         })
@@ -88,7 +90,7 @@ export class CharactersService {
       syncState: 'pending',
       createdAt: new Date().toJSON(),
       updatedAt: new Date().toJSON(),
-      userId: this.userId() || 'local',
+      userId: this.userId() || LOCAL_USER_ID,
     })
   }
 
@@ -105,7 +107,7 @@ export class CharactersService {
       id,
       syncState: 'pending',
       updatedAt: new Date().toJSON(),
-      userId: this.userId() || 'local',
+      userId: this.userId() || LOCAL_USER_ID,
     })
   }
 

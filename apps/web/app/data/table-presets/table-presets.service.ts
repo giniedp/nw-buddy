@@ -13,6 +13,7 @@ export class TablePresetsService {
   private backend = inject(BackendService)
   private userId = this.backend.sessionUserId
   private userId$ = toObservable(this.userId)
+  private online$ = toObservable(this.backend.isOnline)
   private ready = signal(false)
   private ready$ = toObservable(this.ready)
 
@@ -25,6 +26,7 @@ export class TablePresetsService {
       switchMap(() => {
         return autoSync({
           userId: this.userId$,
+          online: this.online$,
           local: this.table,
           remote: this.backend.privateTables.grids,
         })
