@@ -62,7 +62,7 @@ export class EmbedGearsetDialogComponent {
   protected embedSnippet = computed(() => {
     return [
       `<script src="${this.platform.websiteUrl}/embed.js"></script>`,
-      `<iframe data="${this.embedUrl()}" style="width: 100%"></iframe>`,
+      `<iframe src="${this.embedUrl()}" style="width: 100%; border: none;"></iframe>`,
     ].join('\n')
   })
 

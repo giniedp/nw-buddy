@@ -37,6 +37,7 @@ import { svgCalculator, svgChartLine, svgChevronLeft, svgCodeMerge, svgGlobe, sv
 
 import { BackendService } from '~/data/backend'
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
+import { EmbedHeightDirective } from '../../../utils/directives'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
 import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
@@ -66,6 +67,7 @@ import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
     GearsetToolbarComponent,
     DamageCalculatorComponent,
   ],
+  hostDirectives: [EmbedHeightDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ion-page',
@@ -151,7 +153,5 @@ export class GearsetsDetailPageComponent {
     })
   }
 
-  protected handleImportClicked() {
-
-  }
+  protected handleImportClicked() {}
 }
