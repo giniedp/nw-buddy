@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { Directive, ElementRef, forwardRef, Inject, Optional } from '@angular/core'
+import { Directive, ElementRef, forwardRef, Inject, Optional, SkipSelf } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ResizeObserverService } from '../services/resize-observer.service'
 
@@ -15,6 +15,7 @@ export class EmbedHeightDirective {
     document: Document,
     @Inject(forwardRef(() => EmbedHeightDirective))
     @Optional()
+    @SkipSelf()
     parent: EmbedHeightDirective,
   ) {
     if (parent) {
