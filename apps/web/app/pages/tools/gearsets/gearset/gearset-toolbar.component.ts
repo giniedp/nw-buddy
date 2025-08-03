@@ -1,9 +1,9 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { Component, Injector, Input, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { Router, RouterModule } from '@angular/router'
-import { patchState } from '@ngrx/signals'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import {
   EquipSlotId,
   NW_MAX_GEAR_SCORE,
@@ -17,7 +17,16 @@ import {
 } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { filter, firstValueFrom, map, switchMap } from 'rxjs'
-import { GearsetRecord, GearsetStore, GearsetsService, ItemInstance, ItemsService, ResolvedItemPerkInfo } from '~/data'
+import {
+  GearsetRecord,
+  GearsetSection,
+  GearsetStore,
+  GearsetsService,
+  ItemInstance,
+  ItemsService,
+  ResolvedItemPerkInfo,
+  getGearsetSections,
+} from '~/data'
 import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { ShareDialogComponent } from '~/pages/share'
@@ -34,6 +43,7 @@ import {
   svgGlobe,
   svgInfoCircle,
   svgPaste,
+  svgRectangleHistory,
   svgShareNodes,
   svgSwords,
   svgTags,
@@ -46,6 +56,7 @@ import { queryParamModel } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { SyncBadgeComponent } from '../../../../ui/sync-badge'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from '../dialogs'
 
@@ -63,6 +74,7 @@ import { SlotsPickerComponent } from '../dialogs'
     LayoutModule,
     ChipsInputModule,
     OverlayModule,
+    SyncBadgeComponent,
   ],
   host: {
     class: 'flex-1 flex flex-row items-center gap-1 overflow-x-auto overflow-y-hidden',
@@ -70,9 +82,10 @@ import { SlotsPickerComponent } from '../dialogs'
 })
 export class GearsetToolbarComponent {
   private backend = inject(BackendService)
-  private store = inject(GearsetStore)
+  protected store = inject(GearsetStore)
   private injector = inject(Injector)
   private router = inject(Router)
+  private route = inject(ActivatedRoute)
   private vsQueryParam = queryParamModel('vs')
   private calcQueryParam = queryParamModel('calc')
   private gearService = inject(GearsetsService)
@@ -80,6 +93,13 @@ export class GearsetToolbarComponent {
   private itemsDb = inject(ItemsService)
   private modal = inject(ModalService)
   private platform = inject(PlatformService)
+  protected sections = toSignal(
+    this.route.queryParamMap.pipe(
+      map((it): GearsetSection[] => {
+        return getGearsetSections().filter((key) => !it.has(key) || (it.get(key) !== 'false' && it.get(key) !== '0'))
+      }),
+    ),
+  )
 
   protected iconCamera = svgCamera
   protected iconDelete = svgTrashCan
@@ -95,6 +115,7 @@ export class GearsetToolbarComponent {
   protected iconSwords = svgSwords
   protected iconGlobe = svgGlobe
   protected iconImport = svgFileImport
+  protected iconBatch = svgRectangleHistory
   protected presetTags = computed(() => this.gearService.tags().map((it) => it.value))
   protected isTagEditorOpen = false
 
@@ -113,9 +134,7 @@ export class GearsetToolbarComponent {
   public mode: 'player' | 'opponent' = 'player'
 
   public constructor() {
-    patchState(this.store, {
-      showCalculator: this.calcQueryParam.value() === 'true',
-    })
+    this.store.setShowCalculator(this.calcQueryParam.value() === 'true')
   }
 
   protected updateName(value: string) {
@@ -453,8 +472,7 @@ export class GearsetToolbarComponent {
   }
 
   protected onToggleItemInfoClicked() {
-    const showItemInfo = !this.store.showItemInfo()
-    patchState(this.store, { showItemInfo })
+    this.store.setShowItemInfo(!this.store.showItemInfo())
     // this.calcQueryParam.update(showCalculator ? String(showCalculator) : null, {
     //   replaceUrl: true,
     // })
@@ -462,7 +480,7 @@ export class GearsetToolbarComponent {
 
   protected onToggleCalculatorClicked() {
     const showCalculator = !this.store.showCalculator()
-    patchState(this.store, { showCalculator })
+    this.store.setShowCalculator(showCalculator)
     this.calcQueryParam.update(showCalculator ? String(showCalculator) : null, {
       replaceUrl: true,
     })
@@ -530,6 +548,34 @@ export class GearsetToolbarComponent {
             }),
         )
       })
+  }
+
+  protected toggleSection(section: GearsetSection) {
+    let sections = this.sections()
+    if (!sections?.length) {
+      sections = getGearsetSections()
+    }
+
+    if (sections.includes(section)) {
+      sections = sections.filter((it) => it !== section)
+    } else {
+      sections = [...sections, section]
+    }
+    const allSet = !sections.length || sections.length === getGearsetSections().length
+    const entries = getGearsetSections().map((key) => {
+      if (allSet) {
+        return [key, null]
+      }
+      return [key, sections.includes(key) ? null : 'false']
+    })
+
+    const params = Object.fromEntries(entries)
+    this.router.navigate(['.'], {
+      relativeTo: this.route,
+      replaceUrl: true,
+      queryParamsHandling: 'merge',
+      queryParams: params,
+    })
   }
 }
 

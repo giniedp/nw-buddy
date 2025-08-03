@@ -3,17 +3,20 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   effect,
+  ElementRef,
   inject,
   input,
   viewChild,
   viewChildren,
 } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
+import { ActivatedRoute, Router } from '@angular/router'
 import { EQUIP_SLOTS } from '@nw-data/common'
-import { GearsetsService, GearsetStore } from '~/data'
+import { filter, map, switchMap } from 'rxjs'
+import { GearsetSection, GearsetsService, GearsetStore, getGearsetSections } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgGlobe } from '~/ui/icons/svg'
@@ -23,8 +26,6 @@ import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
-import { filter, switchMap } from 'rxjs'
-import { Router } from '@angular/router'
 
 @Component({
   selector: 'nwb-gearset-grid',
@@ -66,6 +67,14 @@ export class GearsetGridComponent {
   private modal = inject(ModalService)
   private service = inject(GearsetsService)
   private router = inject(Router)
+  private route = inject(ActivatedRoute)
+  private sections = toSignal(
+    this.route.queryParamMap.pipe(
+      map((it): GearsetSection[] => {
+        return getGearsetSections().filter((key) => !it.has(key) || (it.get(key) !== 'false' && it.get(key) !== '0'))
+      }),
+    ),
+  )
 
   public disabled = input(false)
 
@@ -83,11 +92,32 @@ export class GearsetGridComponent {
   protected iconGlobe = svgGlobe
   protected isEmbed = computed(() => this.router.url.includes('embed'))
   protected showItemInfo = this.store.showItemInfo
+  protected showPanel1 = computed(() => this.sections().includes('panel1'))
+  protected showPanel2 = computed(() => this.sections().includes('panel2'))
+  protected showSkills = computed(() => this.sections().includes('skills'))
+  protected showArmor = computed(() => this.sections().includes('armor'))
+  protected showJewelry = computed(() => this.sections().includes('jewelry'))
+  protected showWeapons = computed(() => this.sections().includes('weapons'))
+
   protected isOwned = this.store.isOwned
   protected slots = computed(() => {
     return EQUIP_SLOTS.filter(
       (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies',
-    )
+    ).filter((it) => {
+      const isArmor = it.id === 'head' || it.id === 'chest' || it.id === 'hands' || it.id === 'legs' || it.id === 'feet'
+      if (!this.showArmor() && isArmor) {
+        return false
+      }
+      const isJewelry = it.id === 'amulet' || it.id === 'earring' || it.id === 'ring'
+      if (!this.showJewelry() && isJewelry) {
+        return false
+      }
+      const isWeapon = it.id === 'weapon1' || it.id === 'weapon2' || it.id === 'weapon3' || it.id === 'heartgem'
+      if (!this.showWeapons() && isWeapon) {
+        return false
+      }
+      return true
+    })
   })
 
   constructor(screenshot: ScreenshotFrameDirective) {

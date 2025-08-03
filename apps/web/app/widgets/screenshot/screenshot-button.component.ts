@@ -1,13 +1,14 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { Component, computed, HostListener, inject, input, Input, signal } from '@angular/core'
+import { Component, computed, HostListener, inject, input, Input, signal, TemplateRef } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { SvgIconComponent } from '../../ui/icons'
 import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 
 @Component({
   selector: 'nwb-screenshot-button,[nwbScreenshotBtn]',
   templateUrl: './screenshot-button.component.html',
-  imports: [CommonModule, FormsModule, OverlayModule],
+  imports: [CommonModule, FormsModule, OverlayModule, SvgIconComponent],
   host: {
     class: 'flex',
     '[class.disabled]': 'isDisabled()',
@@ -17,8 +18,9 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 export class ScreenshotButtonComponent {
   private service = inject(ScreenshotService)
 
-  @Input()
-  public nwbScreenshotBtn: void
+  public nwbScreenshotBtn = input<void>()
+
+  public screenshotMenu = input<TemplateRef<any>>()
 
   public nwbScreenshotBtnDelay = input<number>()
 

@@ -10,6 +10,9 @@ export class ScreenshotFrameDirective implements ScreenshotFrame, OnInit, OnDest
   public readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef<HTMLElement>)
 
   @Input()
+  public nwbScreenshotIcon: string
+
+  @Input()
   public nwbScreenshotFrame: string
 
   @Input()
@@ -23,6 +26,10 @@ export class ScreenshotFrameDirective implements ScreenshotFrame, OnInit, OnDest
 
   public get name() {
     return this.nwbScreenshotFrame
+  }
+
+  public get icon() {
+    return this.nwbScreenshotIcon
   }
 
   public get label() {

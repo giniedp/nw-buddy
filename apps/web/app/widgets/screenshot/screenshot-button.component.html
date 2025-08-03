@@ -23,10 +23,20 @@
     (backdropClick)="isOverlayOpen.set(false)"
     (detach)="isOverlayOpen.set(false)"
   >
-    <ul class="menu menu-compact bg-base-100 w-56 p-2 rounded-box">
+    <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0 min-w-xs" cdkMenu>
+      @if (screenshotMenu(); as tpl) {
+        <ng-container [ngTemplateOutlet]="tpl" />
+      }
       @for (frame of frames; track $index) {
-        <li>
-          <a (click)="makeScreenshot(frame)">{{ frame.label || frame.name }}</a>
+        <li class="text-shadow-sm shadow-black">
+          <a cdkMenuItem (click)="makeScreenshot(frame)" class="rounded-none">
+            @if (frame.icon) {
+              <nwb-icon [icon]="frame.icon" class="w-5 h-5" />
+            }
+            <span>
+              {{ frame.label || frame.name }}
+            </span>
+          </a>
         </li>
       }
     </ul>

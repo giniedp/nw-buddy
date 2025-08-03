@@ -10,6 +10,7 @@ import { withGearsetMethods } from './with-gearset-methods'
 import { withGearsetProps } from './with-gearset-props'
 import { withGearsetToMannequin } from './with-gearset-to-mannequin'
 
+export type GearsetSection = 'panel1' | 'panel2' | 'skills' | 'armor' | 'jewelry' | 'weapons'
 export interface GearsetStoreState {
   defaultLevel: number
   gearset: GearsetRecord
@@ -71,6 +72,34 @@ export const GearsetStore = signalStore(
           }),
         ),
       ),
+      setShowCalculator: (value: boolean) => {
+        patchState(state, { showCalculator: value })
+      },
+      setShowItemInfo: (value: boolean) => {
+        patchState(state, { showItemInfo: value })
+      },
     }
   }),
 )
+
+const VALID_SECTIONS: GearsetSection[] = ['panel1', 'panel2', 'skills', 'armor', 'jewelry', 'weapons']
+export function getGearsetSections(): GearsetSection[] {
+  return [...VALID_SECTIONS]
+}
+export function toggleGearsetSection(sections: GearsetSection[], value: GearsetSection): GearsetSection[] {
+  if (!value || !VALID_SECTIONS.includes(value)) {
+    return sections
+  }
+  if (!sections?.length) {
+    sections = [...VALID_SECTIONS]
+  }
+  if (sections.includes(value)) {
+    sections = sections.filter((it) => it === value)
+  } else {
+    sections = [...sections, value]
+  }
+  if (sections.length == 6) {
+    sections = null
+  }
+  return sections
+}

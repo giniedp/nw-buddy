@@ -25,27 +25,14 @@
       [disabled]="!isEditable()"
     />
     @if (isSignedIn() && isEditable()) {
-      @if (isSyncPending()) {
-        <nwb-icon
-          [icon]="iconInfo"
-          class="w-4 h-4 text-warning cursor-help tooltip tooltip-left"
-          [attr.data-tip]="'Sync pending'"
-        />
-      }
-      @if (isSyncConflict()) {
-        <nwb-icon
-          [icon]="iconInfo"
-          class="w-4 h-4 text-error cursor-help tooltip tooltip-left"
-          [attr.data-tip]="'Sync conflict'"
-        />
-      }
-      @if (isPublic()) {
-        <nwb-icon
-          [icon]="iconGlobe"
-          class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
-          [attr.data-tip]="'Public gearset'"
-        />
-      }
+      <nwb-sync-badge
+        class="opacity-0"
+        [class.opacity-100]="isPublic() || isSyncPending() || isSyncConflict()"
+        [published]="isPublic()"
+        [pending]="isSyncPending()"
+        [conflict]="isSyncConflict()"
+        [loading]="isSyncPending()"
+      />
     }
   </label>
 }
@@ -73,6 +60,7 @@
 
   <button
     [nwbScreenshotBtn]
+    [screenshotMenu]="menuLayoutEdit"
     class="join-item btn btn-ghost btn-square"
     [tooltip]="'Screenshot'"
     [disabled]="!gearset()"
@@ -100,7 +88,7 @@
     } @else if (isPublic()) {
       <li class="text-shadow-sm shadow-black">
         <button cdkMenuItem (click)="onUnpublishClicked()" class="rounded-none">
-          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <nwb-icon [icon]="iconGlobe" class="w-4 h-4 mr-2 text-success" />
           <div class="flex flex-col leading-none">
             <span>Unpublish</span>
             <span class="text-xs opacity-75">Removes this gearset from public listing</span>
@@ -110,7 +98,7 @@
     } @else {
       <li class="text-shadow-sm shadow-black">
         <button cdkMenuItem (click)="onPublishClicked()" class="rounded-none" [disabled]="!isPublishable()">
-          <nwb-icon [icon]="iconShare" class="w-4 h-4 mr-2" />
+          <nwb-icon [icon]="iconGlobe" class="w-4 h-4 mr-2" />
           <div class="flex flex-col leading-none">
             <span>Publish</span>
             @if (isPublishable()) {
@@ -127,15 +115,58 @@
       <a (click)="onCloneClicked()" cdkMenuItem class="rounded-none">
         <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-2" />
         <div class="flex flex-col leading-none">
-          <span>Copy</span>
+          <span>Clone</span>
           <span class="text-xs opacity-75">Create a copy of this set</span>
         </div>
       </a>
     </li>
 
-    <li class="menu-title">
-      <span>Batch Edit</span>
+    <li class="text-shadow-sm shadow-black">
+      <button cdkMenuItem [cdkMenuTriggerFor]="menuBatchEdit">
+        <nwb-icon [icon]="iconBatch" class="w-4 h-4 mr-2" />
+        <div>Batch Edit</div>
+      </button>
     </li>
+
+    <li class="menu-title">
+      <span>Damage Calculator</span>
+    </li>
+    <li class="text-shadow-sm shadow-black">
+      <a (click)="handleOpponentSelection()" cdkMenuItem class="rounded-none">
+        <nwb-icon [icon]="iconSwords" class="w-4 h-4 mr-2" />
+        <div class="flex flex-col leading-none">
+          <span>Pick Opponent Set</span>
+          <span class="text-xs opacity-75">Pick another gearset for PvP calculation</span>
+        </div>
+      </a>
+    </li>
+
+    <li class="text-shadow-sm shadow-black">
+      <a (click)="onToggleCalculatorClicked()" cdkMenuItem class="rounded-none">
+        <nwb-icon [icon]="iconCalculator" class="w-4 h-4 mr-2" />
+        <div class="flex flex-col leading-none">
+          <span>Toggle calculator</span>
+          <span class="text-xs opacity-75">Toggle damage calculator sidebar</span>
+        </div>
+      </a>
+    </li>
+
+    <li class="divider my-1 h-[2px]"></li>
+
+    <li class="text-shadow-sm shadow-black">
+      <a (click)="onDeleteClicked()" cdkMenuItem class="rounded-none">
+        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error mr-2" />
+        <div class="flex flex-col leading-none">
+          <span>Delete</span>
+          <span class="text-xs opacity-75">Delete this set</span>
+        </div>
+      </a>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template #menuBatchEdit>
+  <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0" cdkMenu>
     <li class="text-shadow-sm shadow-black">
       <a (click)="onBatchGearScoreClicked()" cdkMenuItem class="rounded-none">
         <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4 mr-2" />
@@ -173,48 +204,67 @@
         </div>
       </a>
     </li>
-
-    <li class="menu-title">
-      <span>Damage Calculator</span>
-    </li>
-    <li class="text-shadow-sm shadow-black">
-      <a (click)="handleOpponentSelection()" cdkMenuItem class="rounded-none">
-        <nwb-icon [icon]="iconSwords" class="w-4 h-4 mr-2" />
-        <div class="flex flex-col leading-none">
-          <span>Pick Opponent Set</span>
-          <span class="text-xs opacity-75">Pick another gearset for PvP calculation</span>
-        </div>
-      </a>
-    </li>
-
-    <li class="text-shadow-sm shadow-black">
-      <a (click)="onToggleCalculatorClicked()" cdkMenuItem class="rounded-none">
-        <nwb-icon [icon]="iconCalculator" class="w-4 h-4 mr-2" />
-        <div class="flex flex-col leading-none">
-          <span>Toggle calculator</span>
-          <span class="text-xs opacity-75">Toggle damage calculator sidebar</span>
-        </div>
-      </a>
-    </li>
-
-    <li class="divider my-1 h-[2px]"></li>
-    <li class="text-shadow-sm shadow-black">
-      <a (click)="onToggleItemInfoClicked()" cdkMenuItem class="rounded-none">
-        <nwb-icon [icon]="iconInfo" class="w-4 h-4 mr-2" />
-        <div class="flex flex-col leading-none">
-          <span>Toggle item info</span>
-          <span class="text-xs opacity-75">Toggle item description and infos</span>
-        </div>
-      </a>
-    </li>
-    <li class="text-shadow-sm shadow-black">
-      <a (click)="onDeleteClicked()" cdkMenuItem class="rounded-none">
-        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error mr-2" />
-        <div class="flex flex-col leading-none">
-          <span>Delete</span>
-          <span class="text-xs opacity-75">Delete this set</span>
-        </div>
-      </a>
-    </li>
   </ul>
+</ng-template>
+
+<ng-template #menuLayoutEdit>
+  <li class="menu-title">Sections</li>
+  <li class="text-shadow-sm shadow-black">
+    <button (click)="toggleSection('panel1')" class="rounded-none">
+      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('panel1')" [disabled]="true" />
+      <div class="flex flex-col leading-none">
+        <span>Avatar</span>
+      </div>
+    </button>
+  </li>
+  <li class="text-shadow-sm shadow-black">
+    <button (click)="toggleSection('panel2')" class="rounded-none">
+      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('panel2')" [disabled]="true" />
+      <div class="flex flex-col leading-none">
+        <span>Stats</span>
+      </div>
+    </button>
+  </li>
+  <li class="text-shadow-sm shadow-black">
+    <button (click)="toggleSection('skills')" class="rounded-none">
+      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('skills')" [disabled]="true" />
+      <div class="flex flex-col leading-none">
+        <span>Skills</span>
+      </div>
+    </button>
+  </li>
+  <li class="text-shadow-sm shadow-black">
+    <button (click)="toggleSection('armor')" class="rounded-none">
+      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('armor')" [disabled]="true" />
+      <div class="flex flex-col leading-none">
+        <span>Armor slots</span>
+      </div>
+    </button>
+  </li>
+  <li class="text-shadow-sm shadow-black">
+    <button (click)="toggleSection('jewelry')" class="rounded-none">
+      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('jewelry')" [disabled]="true" />
+      <div class="flex flex-col leading-none">
+        <span>Jewelry slots</span>
+      </div>
+    </button>
+  </li>
+  <li class="text-shadow-sm shadow-black">
+    <button (click)="toggleSection('weapons')" class="rounded-none">
+      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('weapons')" [disabled]="true" />
+      <div class="flex flex-col leading-none">
+        <span>Weapon slots</span>
+      </div>
+    </button>
+  </li>
+  <li class="menu-title">Details</li>
+  <li class="text-shadow-sm shadow-black">
+    <a (click)="onToggleItemInfoClicked()" class="rounded-none">
+      <input class="toggle toggle-sm" type="checkbox" [ngModel]="store.showItemInfo()" [disabled]="true" />
+      <div class="flex flex-col leading-none">
+        <span>Item info</span>
+      </div>
+    </a>
+  </li>
+  <li class="menu-title">Frames</li>
 </ng-template>

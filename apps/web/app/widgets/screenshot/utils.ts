@@ -37,30 +37,37 @@ export async function renderScreenshot({
   isDetached: boolean
 }) {
   const hasHeadElements = el.querySelectorAll('.screenshot-head').length > 0
-  if (isDetached && hasHeadElements) {
+  const hasBodyElements = el.querySelectorAll('.screenshot-body').length > 0
+  if (isDetached && (hasHeadElements || hasBodyElements)) {
     // Workaround for firefox which cant handle large DOM trees
-    const el1 = cloneElement(el)
-    el1.querySelectorAll('.screenshot-body').forEach((it) => it.remove())
-    const el2 = cloneElement(el)
-    el2.querySelectorAll('.screenshot-head').forEach((it) => it.remove())
+    const headerClone = cloneElement(el)
+    headerClone.querySelectorAll('.screenshot-body').forEach((it) => it.remove())
+
+    const bodyClone = cloneElement(el)
+    bodyClone.querySelectorAll('.screenshot-head').forEach((it) => it.remove())
     //
     el.remove()
 
-    overlay.appendChild(el1)
-    const c1 = await toCanvas(el1, {
-      pixelRatio: 1,
-    })
-    el1.remove()
-
-    overlay.appendChild(el2)
-    const c2 = await toCanvas(el2, {
-      pixelRatio: 1,
-    })
-    el2.remove()
-
     el = document.createElement('div')
-    el.appendChild(c1)
-    el.appendChild(c2)
+
+    if (hasHeadElements) {
+      overlay.appendChild(headerClone)
+      const c1 = await toCanvas(headerClone, {
+        pixelRatio: 1,
+      })
+      headerClone.remove()
+      el.appendChild(c1)
+    }
+
+    if (hasBodyElements) {
+      overlay.appendChild(bodyClone)
+      const c2 = await toCanvas(bodyClone, {
+        pixelRatio: 1,
+      })
+      bodyClone.remove()
+      el.appendChild(c2)
+    }
+
     overlay.appendChild(el)
   }
 
