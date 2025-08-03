@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { Directive, ElementRef, Inject, Optional } from '@angular/core'
+import { Directive, ElementRef, forwardRef, Inject, Optional } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ResizeObserverService } from '../services/resize-observer.service'
 
@@ -13,7 +13,7 @@ export class EmbedHeightDirective {
     resize: ResizeObserverService,
     @Inject(DOCUMENT)
     document: Document,
-    @Inject(EmbedHeightDirective)
+    @Inject(forwardRef(() => EmbedHeightDirective))
     @Optional()
     parent: EmbedHeightDirective,
   ) {
