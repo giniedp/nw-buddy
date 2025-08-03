@@ -1,20 +1,18 @@
 import { Routes } from '@angular/router'
-import { RecipesPageComponent } from './recipes-page.component'
-import { RecipesTrackingComponent } from './recipes-tracking.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
-    component: RecipesPageComponent,
+    loadComponent: () => import('./recipes-page.component').then((it) => it.RecipesPageComponent),
     children: [
       {
         path: '',
         pathMatch: 'full',
-        component: RecipesTrackingComponent,
+        loadComponent: () => import('./recipes-tracking.component').then((it) => it.RecipesTrackingComponent),
       },
       {
         path: ':category',
-        component: RecipesTrackingComponent,
+        loadComponent: () => import('./recipes-tracking.component').then((it) => it.RecipesTrackingComponent),
       },
     ],
   },

@@ -1,31 +1,13 @@
-import { inject } from '@angular/core'
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, Routes } from '@angular/router'
-
-import { CraftingDetailPageComponent } from './crafting-detail-page.component'
-import { CraftingPageComponent } from './crafting-page.component'
-
-const redirectFromDepricated = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  return inject(Router).parseUrl(state.url.replace('/table', ''))
-}
+import { Routes } from '@angular/router'
 
 export const ROUTES: Routes = [
   {
-    path: 'table',
-    pathMatch: 'full',
-    redirectTo: '',
-  },
-  {
-    path: 'table/:id',
-    canActivate: [redirectFromDepricated],
-    children: [],
-  },
-  {
     path: '',
-    component: CraftingPageComponent,
+    loadComponent: () => import('./crafting-page.component').then((it) => it.CraftingPageComponent),
     children: [
       {
         path: ':id',
-        component: CraftingDetailPageComponent,
+        loadComponent: () => import('./crafting-detail-page.component').then((it) => it.CraftingDetailPageComponent),
       },
     ],
   },

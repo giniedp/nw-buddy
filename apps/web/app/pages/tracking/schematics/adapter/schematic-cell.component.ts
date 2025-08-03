@@ -32,7 +32,7 @@ import { CraftingCalculatorComponent } from '~/widgets/crafting'
 export class SchematicCellComponent implements VirtualGridCellComponent<SchematicRecord> {
   public static buildGridOptions(): VirtualGridOptions<SchematicRecord> {
     return {
-      height: 335,
+      height: 400,
       width: 400,
       cellDataView: SchematicCellComponent,
       cellEmptyView: EmptyComponent,

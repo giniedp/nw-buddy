@@ -1,11 +1,9 @@
 import { Routes } from '@angular/router'
-import { SchematicsPageComponent } from './schematics-page.component'
-import { SchematicsTrackingComponent } from './schematics-tracking.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
-    component: SchematicsPageComponent,
+    loadComponent: () => import('./schematics-page.component').then((it) => it.SchematicsPageComponent),
     children: [
       {
         path: '',
@@ -14,7 +12,7 @@ export const ROUTES: Routes = [
       },
       {
         path: ':category',
-        component: SchematicsTrackingComponent,
+        loadComponent: () => import('./schematics-tracking.component').then((it) => it.SchematicsTrackingComponent),
       },
     ],
   },

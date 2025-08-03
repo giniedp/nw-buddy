@@ -1,30 +1,13 @@
-import { inject } from '@angular/core'
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, Routes } from '@angular/router'
-import { PvpBucketDetailPageComponent } from './pvp-bucket-detail-page.component'
-import { PvpBucketsPageComponent } from './pvp-buckets-page.component'
-
-const redirectFromDepricated = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  return inject(Router).parseUrl(state.url.replace('/table', ''))
-}
+import { Routes } from '@angular/router'
 
 export const ROUTES: Routes = [
   {
-    path: 'table',
-    pathMatch: 'full',
-    redirectTo: '',
-  },
-  {
-    path: 'table/:id',
-    canActivate: [redirectFromDepricated],
-    children: [],
-  },
-  {
     path: '',
-    component: PvpBucketsPageComponent,
+    loadComponent: () => import('./pvp-buckets-page.component').then((it) => it.PvpBucketsPageComponent),
     children: [
       {
         path: ':id',
-        component: PvpBucketDetailPageComponent,
+        loadComponent: () => import('./pvp-bucket-detail-page.component').then((it) => it.PvpBucketDetailPageComponent),
       },
     ],
   },

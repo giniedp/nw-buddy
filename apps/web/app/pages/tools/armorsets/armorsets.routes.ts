@@ -1,8 +1,6 @@
-import { NgModule } from '@angular/core'
-import { RouterModule, Routes } from '@angular/router'
+import { Routes } from '@angular/router'
 
 import { EmptyComponent } from '~/widgets/empty'
-import { ArmorsetsPageComponent } from './armorsets-page.component'
 
 export const ROUTES: Routes = [
   {
@@ -12,7 +10,7 @@ export const ROUTES: Routes = [
   },
   {
     path: ':category',
-    component: ArmorsetsPageComponent,
+    loadComponent: () => import('./armorsets-page.component').then((it) => it.ArmorsetsPageComponent),
     children: [
       {
         path: ':id',

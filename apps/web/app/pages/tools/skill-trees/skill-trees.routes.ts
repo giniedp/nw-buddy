@@ -1,8 +1,4 @@
 import { Routes } from '@angular/router'
-import { SkillTreeDetailComponent } from './skill-tree-detail.component'
-import { SkillTreeEmbedComponent } from './skill-tree-embed.component'
-import { SkillTreeShareComponent } from './skill-tree-share.component'
-import { SkillTreesPageComponent } from './skill-trees-page.component'
 
 export const ROUTES: Routes = [
   {
@@ -10,22 +6,22 @@ export const ROUTES: Routes = [
     children: [
       {
         path: 'ipns/:name',
-        component: SkillTreeEmbedComponent,
+        loadComponent: () => import('./skill-tree-embed.component').then((it) => it.SkillTreeEmbedComponent),
       },
       {
         path: 'ipfs/:cid',
-        component: SkillTreeEmbedComponent,
+        loadComponent: () => import('./skill-tree-embed.component').then((it) => it.SkillTreeEmbedComponent),
       },
       {
         path: ':cid',
-        component: SkillTreeEmbedComponent,
+        loadComponent: () => import('./skill-tree-embed.component').then((it) => it.SkillTreeEmbedComponent),
       },
       {
         path: ':userid',
         children: [
           {
             path: ':id',
-            component: SkillTreeDetailComponent,
+            loadComponent: () => import('./skill-tree-detail.component').then((it) => it.SkillTreeDetailComponent),
           },
         ],
       },
@@ -36,25 +32,25 @@ export const ROUTES: Routes = [
     children: [
       {
         path: 'ipns/:name',
-        component: SkillTreeShareComponent,
+        loadComponent: () => import('./skill-tree-share.component').then((it) => it.SkillTreeShareComponent),
       },
       {
         path: 'ipfs/:cid',
-        component: SkillTreeShareComponent,
+        loadComponent: () => import('./skill-tree-share.component').then((it) => it.SkillTreeShareComponent),
       },
       {
         path: ':cid',
-        component: SkillTreeShareComponent,
+        loadComponent: () => import('./skill-tree-share.component').then((it) => it.SkillTreeShareComponent),
       },
     ],
   },
   {
     path: ':userid',
-    component: SkillTreesPageComponent,
+    loadComponent: () => import('./skill-trees-page.component').then((it) => it.SkillTreesPageComponent),
     children: [
       {
         path: ':id',
-        component: SkillTreeDetailComponent,
+        loadComponent: () => import('./skill-tree-detail.component').then((it) => it.SkillTreeDetailComponent),
       },
     ],
   },

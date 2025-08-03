@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router'
-import { LevelsComponent } from './levels.component'
 
 export const ROUTES: Routes = [
   {
@@ -9,6 +8,6 @@ export const ROUTES: Routes = [
   },
   {
     path: ':id',
-    component: LevelsComponent,
+    loadComponent: () => import('./levels.component').then((it) => it.LevelsComponent),
   },
 ]

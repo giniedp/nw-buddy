@@ -1,21 +1,14 @@
 import { Routes } from '@angular/router'
 
-import { WeaponDefinitionDetailPageComponent } from './weapon-definition-detail-page.component'
-import { WeaponDefinitionsPageComponent } from './weapon-definitions-page.component'
-
 export const ROUTES: Routes = [
   {
-    path: 'table',
-    pathMatch: 'full',
-    redirectTo: '',
-  },
-  {
     path: '',
-    component: WeaponDefinitionsPageComponent,
+    loadComponent: () => import('./weapon-definitions-page.component').then((it) => it.WeaponDefinitionsPageComponent),
     children: [
       {
         path: ':id',
-        component: WeaponDefinitionDetailPageComponent,
+        loadComponent: () =>
+          import('./weapon-definition-detail-page.component').then((it) => it.WeaponDefinitionDetailPageComponent),
       },
     ],
   },

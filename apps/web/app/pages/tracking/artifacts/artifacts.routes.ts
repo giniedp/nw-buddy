@@ -1,20 +1,18 @@
 import { Routes } from '@angular/router'
-import { ArtifactsPageComponent } from './artifacts-page.component'
-import { ArtifactsTrackingComponent } from './artifacts-tracking.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
-    component: ArtifactsPageComponent,
+    loadComponent: () => import('./artifacts-page.component').then((it) => it.ArtifactsPageComponent),
     children: [
       {
         path: '',
         pathMatch: 'full',
-        component: ArtifactsTrackingComponent,
+        loadComponent: () => import('./artifacts-tracking.component').then((it) => it.ArtifactsTrackingComponent),
       },
       {
         path: ':category',
-        component: ArtifactsTrackingComponent,
+        loadComponent: () => import('./artifacts-tracking.component').then((it) => it.ArtifactsTrackingComponent),
       },
     ],
   },

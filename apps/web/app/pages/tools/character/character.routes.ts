@@ -1,10 +1,9 @@
 import { Routes } from '@angular/router'
-import { CharacterPageController } from './character.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
-    component: CharacterPageController,
+    loadComponent: () => import('./character.component').then((it) => it.CharacterPageController),
     children: [
       {
         path: '',

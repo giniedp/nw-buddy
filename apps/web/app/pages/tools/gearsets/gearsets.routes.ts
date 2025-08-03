@@ -1,24 +1,21 @@
 import { Routes } from '@angular/router'
-import { GearsetsDetailPageComponent } from './gearsets-detail-page.component'
-import { GearsetsListPageComponent } from './gearsets-list-page.component'
-import { GearsetsSharePageComponent } from './gearsets-share-page.component'
 
 const ipfsRoutes: Routes = [
   {
     path: 'ipns/:name',
-    component: GearsetsSharePageComponent,
+    loadComponent: () => import('./gearsets-share-page.component').then((it) => it.GearsetsSharePageComponent),
   },
   {
     path: 'ipfs/:cid',
-    component: GearsetsSharePageComponent,
+    loadComponent: () => import('./gearsets-share-page.component').then((it) => it.GearsetsSharePageComponent),
   },
   {
     path: ':cid',
-    component: GearsetsSharePageComponent,
+    loadComponent: () => import('./gearsets-share-page.component').then((it) => it.GearsetsSharePageComponent),
   },
   {
     path: ':userid/:id',
-    component: GearsetsDetailPageComponent,
+    loadComponent: () => import('./gearsets-detail-page.component').then((it) => it.GearsetsDetailPageComponent),
   },
 ]
 
@@ -36,11 +33,11 @@ export const ROUTES: Routes = [
     children: [
       {
         path: '',
-        component: GearsetsListPageComponent,
+        loadComponent: () => import('./gearsets-list-page.component').then((it) => it.GearsetsListPageComponent),
       },
       {
         path: ':id',
-        component: GearsetsDetailPageComponent,
+        loadComponent: () => import('./gearsets-detail-page.component').then((it) => it.GearsetsDetailPageComponent),
       },
     ],
   },

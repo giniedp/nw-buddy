@@ -1,15 +1,13 @@
 import { Routes } from '@angular/router'
-import { MountDetailPageComponent } from './mount-detail-page.component'
-import { MountsPageComponent } from './mounts-page.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
-    component: MountsPageComponent,
+    loadComponent: () => import('./mounts-page.component').then((it) => it.MountsPageComponent),
     children: [
       {
         path: ':id',
-        component: MountDetailPageComponent,
+        loadComponent: () => import('./mount-detail-page.component').then((it) => it.MountDetailPageComponent),
       },
     ],
   },

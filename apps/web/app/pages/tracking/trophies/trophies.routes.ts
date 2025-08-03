@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router'
-import { RunesPageComponent } from './trophies-page.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
-    component: RunesPageComponent,
+    loadComponent: () => import('./trophies-page.component').then((it) => it.RunesPageComponent),
   },
 ]

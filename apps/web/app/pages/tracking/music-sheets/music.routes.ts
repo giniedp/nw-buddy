@@ -1,20 +1,18 @@
 import { Routes } from '@angular/router'
-import { MusicPageComponent } from './music-page.component'
-import { MusicTrackingComponent } from './music-tracking.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
-    component: MusicPageComponent,
+    loadComponent: () => import('./music-page.component').then((it) => it.MusicPageComponent),
     children: [
       {
         path: '',
         pathMatch: 'full',
-        component: MusicTrackingComponent,
+        loadComponent: () => import('./music-tracking.component').then((it) => it.MusicTrackingComponent),
       },
       {
         path: ':category',
-        component: MusicTrackingComponent,
+        loadComponent: () => import('./music-tracking.component').then((it) => it.MusicTrackingComponent),
       },
     ],
   },

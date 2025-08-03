@@ -1,7 +1,4 @@
-import { NgModule } from '@angular/core'
-import { RouterModule, Routes } from '@angular/router'
-
-import { ArmorWeightsPageComponent } from './armor-weights-page.component'
+import { Routes } from '@angular/router'
 
 export const ROUTES: Routes = [
   {
@@ -11,11 +8,11 @@ export const ROUTES: Routes = [
   },
   {
     path: ':category',
-    component: ArmorWeightsPageComponent,
+    loadComponent: () => import('./armor-weights-page.component').then((it) => it.ArmorWeightsPageComponent),
     children: [
       {
         path: ':id',
-        component: ArmorWeightsPageComponent,
+        loadComponent: () => import('./armor-weights-page.component').then((it) => it.ArmorWeightsPageComponent),
       },
     ],
   },

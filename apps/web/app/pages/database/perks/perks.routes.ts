@@ -1,31 +1,13 @@
-import { inject } from '@angular/core'
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, Routes } from '@angular/router'
-
-import { PerksDetailPageComponent } from './perks-detail-page.component'
-import { PerksPageComponent } from './perks-page.component'
-
-const redirectFromDepricated = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  return inject(Router).parseUrl(state.url.replace('/table', ''))
-}
+import { Routes } from '@angular/router'
 
 export const ROUTES: Routes = [
   {
-    path: 'table',
-    pathMatch: 'full',
-    redirectTo: '',
-  },
-  {
-    path: 'table/:id',
-    canActivate: [redirectFromDepricated],
-    children: [],
-  },
-  {
     path: '',
-    component: PerksPageComponent,
+    loadComponent: () => import('./perks-page.component').then((it) => it.PerksPageComponent),
     children: [
       {
         path: ':id',
-        component: PerksDetailPageComponent,
+        loadComponent: () => import('./perks-detail-page.component').then((it) => it.PerksDetailPageComponent),
       },
     ],
   },

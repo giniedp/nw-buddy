@@ -21,14 +21,6 @@ const PAGE_ROUTES: Routes = [
   { path: 'status-effects', loadChildren: () => import('./pages/database/status-effects').then((m) => m.ROUTES) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.ROUTES) },
 
-  {
-    path: 'zones',
-    redirectTo: (it) => {
-      const path = it.url.map((it) => it.path)
-      path[0] = 'map'
-      return `/${path.join('/')}`
-    },
-  }, // deprecated
   { path: 'map', loadChildren: () => import('./pages/database/zones').then((m) => m.ROUTES) },
   { path: 'gatherables', loadChildren: () => import('./pages/database/gatherables').then((m) => m.ROUTES) },
   { path: 'lore', loadChildren: () => import('./pages/database/lore').then((m) => m.ROUTES) },
@@ -37,17 +29,6 @@ const PAGE_ROUTES: Routes = [
   { path: 'vitals', loadChildren: () => import('./pages/database/vitals').then((m) => m.ROUTES) },
 
   { path: 'loot-limits', loadChildren: () => import('./pages/database/loot-limits').then((m) => m.ROUTES) },
-  {
-    path: 'loot',
-    redirectTo: (it) => {
-      const path = it.url.map((it) => it.path)
-      path[0] = 'loot-tables'
-      if (path[1] === 'table') {
-        path.splice(1, 1)
-      }
-      return `/${path.join('/')}`
-    },
-  }, // deprecated
   { path: 'loot-tables', loadChildren: () => import('./pages/database/loot').then((m) => m.ROUTES) },
   { path: 'loot-buckets', loadChildren: () => import('./pages/database/loot-buckets').then((m) => m.ROUTES) },
   { path: 'pvp-buckets', loadChildren: () => import('./pages/database/pvp-buckets').then((m) => m.ROUTES) },

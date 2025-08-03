@@ -1,9 +1,4 @@
 import { Routes } from '@angular/router'
-import { TransmogDetailPageComponent } from './transmog-detail-page.component'
-import { TransmogPageComponent } from './transmog-page.component'
-import { TransmogSetDetailComponent } from './transmog-set-detail.component'
-import { TransmogSetListComponent } from './transmog-set-list.component'
-import { TransmogSetNewComponent } from './transmog-set-new.component'
 
 export const ROUTES: Routes = [
   {
@@ -16,18 +11,18 @@ export const ROUTES: Routes = [
       },
       {
         path: 'new',
-        component: TransmogSetNewComponent,
+        loadComponent: () => import('./transmog-set-new.component').then((it) => it.TransmogSetNewComponent),
       },
       {
         path: ':userid',
         children: [
           {
             path: '',
-            component: TransmogSetListComponent,
+            loadComponent: () => import('./transmog-set-list.component').then((it) => it.TransmogSetListComponent),
           },
           {
             path: ':id',
-            component: TransmogSetDetailComponent,
+            loadComponent: () => import('./transmog-set-detail.component').then((it) => it.TransmogSetDetailComponent),
           },
         ],
       },
@@ -39,11 +34,11 @@ export const ROUTES: Routes = [
   },
   {
     path: '',
-    component: TransmogPageComponent,
+    loadComponent: () => import('./transmog-page.component').then((it) => it.TransmogPageComponent),
     children: [
       {
         path: ':id',
-        component: TransmogDetailPageComponent,
+        loadComponent: () => import('./transmog-detail-page.component').then((it) => it.TransmogDetailPageComponent),
       },
     ],
   },

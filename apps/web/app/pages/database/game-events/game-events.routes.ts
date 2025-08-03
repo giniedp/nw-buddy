@@ -1,31 +1,13 @@
-import { inject } from '@angular/core'
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, Routes } from '@angular/router'
-
-import { GameEventDetailPageComponent } from './game-event-detail-page.component'
-import { GameEventsPageComponent } from './game-events-page.component'
-
-const redirectFromDepricated = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  return inject(Router).parseUrl(state.url.replace('/table', ''))
-}
+import { Routes } from '@angular/router'
 
 export const ROUTES: Routes = [
   {
-    path: 'table',
-    pathMatch: 'full',
-    redirectTo: '',
-  },
-  {
-    path: 'table/:id',
-    canActivate: [redirectFromDepricated],
-    children: [],
-  },
-  {
     path: '',
-    component: GameEventsPageComponent,
+    loadComponent: () => import('./game-events-page.component').then((it) => it.GameEventsPageComponent),
     children: [
       {
         path: ':id',
-        component: GameEventDetailPageComponent,
+        loadComponent: () => import('./game-event-detail-page.component').then((it) => it.GameEventDetailPageComponent),
       },
     ],
   },

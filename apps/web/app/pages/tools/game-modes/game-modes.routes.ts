@@ -1,8 +1,4 @@
-import { NgModule } from '@angular/core'
-
-import { RouterModule, Routes } from '@angular/router'
-import { GameModeDetailComponent } from './game-mode-detail.component'
-import { GameModesPageComponent } from './game-modes-page.component'
+import { Routes } from '@angular/router'
 
 export const ROUTES: Routes = [
   {
@@ -12,11 +8,11 @@ export const ROUTES: Routes = [
   },
   {
     path: ':category',
-    component: GameModesPageComponent,
+    loadComponent: () => import('./game-modes-page.component').then((it) => it.GameModesPageComponent),
     children: [
       {
         path: ':id',
-        component: GameModeDetailComponent,
+        loadComponent: () => import('./game-mode-detail.component').then((it) => it.GameModeDetailComponent),
       },
     ],
   },
