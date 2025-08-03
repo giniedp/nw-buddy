@@ -95,6 +95,15 @@
           </div>
         </button>
       </li>
+      <li class="text-shadow-sm shadow-black">
+        <button cdkMenuItem (click)="onEmbedClicked()" class="rounded-none">
+          <nwb-icon [icon]="iconFrame" class="w-4 h-4 mr-2" />
+          <div class="flex flex-col leading-none">
+            <span>Embed</span>
+            <span class="text-xs opacity-75">Generate iframe code to embed in your site</span>
+          </div>
+        </button>
+      </li>
     } @else {
       <li class="text-shadow-sm shadow-black">
         <button cdkMenuItem (click)="onPublishClicked()" class="rounded-none" [disabled]="!isPublishable()">
@@ -210,61 +219,89 @@
 <ng-template #menuLayoutEdit>
   <li class="menu-title">Sections</li>
   <li class="text-shadow-sm shadow-black">
-    <button (click)="toggleSection('panel1')" class="rounded-none">
-      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('panel1')" [disabled]="true" />
+    <label (click)="toggleSection('panel1'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('panel1')"
+      />
       <div class="flex flex-col leading-none">
         <span>Avatar</span>
       </div>
-    </button>
+    </label>
   </li>
   <li class="text-shadow-sm shadow-black">
-    <button (click)="toggleSection('panel2')" class="rounded-none">
-      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('panel2')" [disabled]="true" />
+    <label (click)="toggleSection('panel2'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('panel2')"
+      />
       <div class="flex flex-col leading-none">
         <span>Stats</span>
       </div>
-    </button>
+    </label>
   </li>
   <li class="text-shadow-sm shadow-black">
-    <button (click)="toggleSection('skills')" class="rounded-none">
-      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('skills')" [disabled]="true" />
+    <label (click)="toggleSection('skills'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('skills')"
+      />
       <div class="flex flex-col leading-none">
         <span>Skills</span>
       </div>
-    </button>
+    </label>
   </li>
   <li class="text-shadow-sm shadow-black">
-    <button (click)="toggleSection('armor')" class="rounded-none">
-      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('armor')" [disabled]="true" />
+    <label (click)="toggleSection('armor'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('armor')"
+      />
       <div class="flex flex-col leading-none">
         <span>Armor slots</span>
       </div>
-    </button>
+    </label>
   </li>
   <li class="text-shadow-sm shadow-black">
-    <button (click)="toggleSection('jewelry')" class="rounded-none">
-      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('jewelry')" [disabled]="true" />
+    <label (click)="toggleSection('jewelry'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('jewelry')"
+      />
       <div class="flex flex-col leading-none">
         <span>Jewelry slots</span>
       </div>
-    </button>
+    </label>
   </li>
   <li class="text-shadow-sm shadow-black">
-    <button (click)="toggleSection('weapons')" class="rounded-none">
-      <input class="toggle toggle-sm" type="checkbox" [ngModel]="sections().includes('weapons')" [disabled]="true" />
+    <label (click)="toggleSection('weapons'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('weapons')"
+      />
       <div class="flex flex-col leading-none">
         <span>Weapon slots</span>
       </div>
-    </button>
+    </label>
   </li>
   <li class="menu-title">Details</li>
   <li class="text-shadow-sm shadow-black">
-    <a (click)="onToggleItemInfoClicked()" class="rounded-none">
-      <input class="toggle toggle-sm" type="checkbox" [ngModel]="store.showItemInfo()" [disabled]="true" />
+    <label (click)="onToggleItemInfoClicked(); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="store.showItemInfo()"
+      />
       <div class="flex flex-col leading-none">
         <span>Item info</span>
       </div>
-    </a>
+    </label>
   </li>
   <li class="menu-title">Frames</li>
 </ng-template>

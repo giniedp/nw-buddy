@@ -26,6 +26,7 @@ import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
+import { PlatformService } from '../../../../utils/services/platform.service'
 
 @Component({
   selector: 'nwb-gearset-grid',
@@ -66,6 +67,7 @@ export class GearsetGridComponent {
   private store = inject(GearsetStore)
   private modal = inject(ModalService)
   private service = inject(GearsetsService)
+  private platform = inject(PlatformService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
   private sections = toSignal(
@@ -87,10 +89,10 @@ export class GearsetGridComponent {
   protected gearset = this.store.gearset
   protected isLoaded = this.store.isLoaded
   protected isLoading = this.store.isLoading
-  protected readonly = computed(() => this.disabled() || !this.store.isOwned())
+  protected readonly = computed(() => this.disabled() || !this.store.isOwned() || this.isEmbed())
   protected iconInfo = svgCircleExclamation
   protected iconGlobe = svgGlobe
-  protected isEmbed = computed(() => this.router.url.includes('embed'))
+  protected isEmbed = computed(() => this.platform.isEmbed)
   protected showItemInfo = this.store.showItemInfo
   protected showPanel1 = computed(() => this.sections().includes('panel1'))
   protected showPanel2 = computed(() => this.sections().includes('panel2'))

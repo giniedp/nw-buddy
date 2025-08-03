@@ -102,7 +102,8 @@
 
     @for (slot of slots(); track $index) {
       <div
-        class="shadow-lg rounded-md overflow-clip bg-black screenshot-body"
+        class="shadow-lg rounded-md overflow-clip bg-black screenshot-body "
+        [class.hidden]="elGear.isHidden()"
         [class.screenshot-hidden]="elGear.isScreenshotHidden()"
       >
         <nwb-gear-cell-slot

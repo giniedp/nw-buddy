@@ -1,0 +1,89 @@
+<ion-header class="bg-base-300">
+  <ion-toolbar>
+    <span class="px-4"> Embed Gearset </span>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-p-4">
+  <fieldset class="fieldset">
+    <p>Disable sections which should not be shown.</p>
+
+    <label (click)="toggleSection('panel1'); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('panel1')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Avatar</span>
+      </div>
+    </label>
+
+    <label (click)="toggleSection('panel2'); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('panel2')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Stats</span>
+      </div>
+    </label>
+
+    <label (click)="toggleSection('skills'); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('skills')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Skills</span>
+      </div>
+    </label>
+
+    <label (click)="toggleSection('armor'); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('armor')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Armor slots</span>
+      </div>
+    </label>
+
+    <label (click)="toggleSection('jewelry'); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('jewelry')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Jewelry slots</span>
+      </div>
+    </label>
+
+    <label (click)="toggleSection('weapons'); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('weapons')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Weapon slots</span>
+      </div>
+    </label>
+
+    <label class="fieldset-label"> Embed URL </label>
+    <textarea class="textarea w-full min-h-20 font-mono text-xs" [ngModel]="embedUrl()"></textarea>
+    <button class="btn btn-sm btn-block" (click)="handleCopyUrl()">Copy</button>
+
+    <label class="fieldset-label"> Embed Snippet </label>
+    <textarea class="textarea w-full min-h-30 font-mono text-xs" [ngModel]="embedSnippet()"></textarea>
+    <button class="btn btn-sm btn-block" (click)="handleCopySnippet()">Copy</button>
+  </fieldset>
+</ion-content>
+<ion-footer class="bg-base-200">
+  <ion-toolbar>
+    <button slot="end" class="btn btn-ghost" [nwbModalClose]>Close</button>
+  </ion-toolbar>
+</ion-footer>

@@ -40,6 +40,7 @@ import {
   svgChevronLeft,
   svgEraser,
   svgFileImport,
+  svgFrame,
   svgGlobe,
   svgInfoCircle,
   svgPaste,
@@ -58,7 +59,7 @@ import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SyncBadgeComponent } from '../../../../ui/sync-badge'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
-import { SlotsPickerComponent } from '../dialogs'
+import { EmbedGearsetDialogComponent, SlotsPickerComponent } from '../dialogs'
 
 @Component({
   selector: 'nwb-gearset-toolbar',
@@ -116,6 +117,7 @@ export class GearsetToolbarComponent {
   protected iconGlobe = svgGlobe
   protected iconImport = svgFileImport
   protected iconBatch = svgRectangleHistory
+  protected iconFrame = svgFrame
   protected presetTags = computed(() => this.gearService.tags().map((it) => it.value))
   protected isTagEditorOpen = false
 
@@ -147,6 +149,14 @@ export class GearsetToolbarComponent {
 
   protected onUnpublishClicked() {
     this.store.update({ status: 'private' })
+  }
+
+  protected onEmbedClicked() {
+    EmbedGearsetDialogComponent.open(this.modal, {
+      inputs: {
+        gearset: this.store.gearset(),
+      },
+    })
   }
 
   protected onImportClicked() {

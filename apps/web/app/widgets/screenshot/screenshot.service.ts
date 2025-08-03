@@ -7,6 +7,7 @@ import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.componen
 import { cloneElement, getScreenshotOverlay, renderScreenshot } from './utils'
 import { injectDocument } from '~/utils/injection/document'
 import { injectWindow } from '~/utils/injection/window'
+import { sortBy } from 'lodash'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
@@ -42,7 +43,7 @@ export class ScreenshotService {
     if (this.frames.includes(frame)) {
       return
     }
-    this.frames = [...this.frames, frame]
+    this.frames = sortBy([...this.frames, frame], (it) => it.label || it.name)
   }
 
   public unregister(frame: ScreenshotFrame) {

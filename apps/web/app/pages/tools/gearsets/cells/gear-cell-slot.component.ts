@@ -79,11 +79,11 @@ export class GearCellSlotComponent {
     return !this.isGearSlot()
   })
 
-  protected isHidden = computed(() => {
+  public isHidden = computed(() => {
     return !this.store.hasItem() && this.disabled()
   })
   public isScreenshotHidden = computed(() => {
-    return !this.store.hasItem() || this.disabled()
+    return !this.store.hasItem()// || this.disabled()
   })
 
   protected slotIcon = computed(() => {
