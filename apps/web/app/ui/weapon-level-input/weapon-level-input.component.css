@@ -1,35 +1,9 @@
 @reference '../../../style.css';
 
 :host {
-  display: grid;
-  grid-template-areas:
-    "image label"
-    "image input";
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr;
-
   @apply outline-0 outline-transparent focus-within:outline-primary focus-within:outline-2;
-  @media (hover: hover) and (pointer: fine) {
-    @apply hover:outline-primary hover:outline-2;
-  }
 }
 
-.grid-image {
-  grid-area: image;
-  img {
-    filter: grayscale(1) sepia(0.5);
-  }
+img {
+  filter: grayscale(1) sepia(0.5);
 }
-.grid-label {
-  grid-area: label;
-}
-.grid-input {
-  grid-area: input;
-}
-input {
-  cursor: pointer;
-}
-input:focus::placeholder {
-  color: transparent;
-}
-

@@ -1,3 +1,4 @@
+import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -10,20 +11,18 @@ import {
   inject,
 } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { NwModule } from '~/nw'
-import { InputSliderComponent } from '../input-slider'
-import { LayoutModule } from '../layout'
-import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { NW_MAX_TRADESKILL_LEVEL } from '@nw-data/common'
+import { NwModule } from '~/nw'
+import { LayoutModule } from '../layout'
 
 @Component({
   selector: 'nwb-tradeskill-level-input',
   templateUrl: './tradeskill-level-input.component.html',
   styleUrl: './tradeskill-level-input.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NwModule, InputSliderComponent, LayoutModule],
+  imports: [CommonModule, FormsModule, NwModule, LayoutModule],
   host: {
-    class: 'bg-base-100 shadow-xl rounded-md aspect-square flex flex-col',
+    class: 'bg-base-100 shadow-xl rounded-md aspect-square flex flex-col group',
   },
   providers: [
     {

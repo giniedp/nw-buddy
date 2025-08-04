@@ -14,7 +14,7 @@ import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, NwModule, InputSliderComponent, LayoutModule],
   host: {
-    class: 'bg-base-100 rounded-md flex flex-col cursor-pointer',
+    class: 'bg-base-100 rounded-md flex flex-col items-center justify-center cursor-pointer aspect-[10/4] relative p-4 overflow-hidden group',
   },
   providers: [
     {
