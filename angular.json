@@ -45,6 +45,7 @@
             "polyfills": ["apps/web/polyfills.ts"],
             "assets": [
               "apps/web/_routes.json",
+              "apps/web/_headers",
               "apps/web/favicon.ico",
               "apps/web/robots.txt",
               "apps/web/sitemap.txt",
@@ -163,6 +164,7 @@
               "baseHref": "/",
               "assets": [
                 "apps/web/_routes.json",
+                "apps/web/_headers",
                 "apps/web/favicon.ico",
                 "apps/web/robots.txt",
                 "apps/web/sitemap.txt",
@@ -235,6 +237,7 @@
               ],
               "assets": [
                 "apps/web/_routes.json",
+                "apps/web/_headers",
                 "apps/web/favicon.ico",
                 "apps/web/robots.txt",
                 "apps/web/sitemap.txt",
