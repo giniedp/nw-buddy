@@ -204,7 +204,17 @@ export class AppComponent {
     if (!skeleton) {
       return
     }
+    const isMainPage = this.router.url === '/'
+    const isMobile = !matchMedia('(min-width: 1200px)').matches
     skeleton.querySelectorAll<HTMLElement>('.h-0\\!,.w-0\\!').forEach((el) => {
+      if (isMainPage && el.dataset['submenu']) {
+        // main page has no submenu
+        return
+      }
+      if (isMobile && el.dataset['sidemenu']) {
+        // main page has no side menu
+        return
+      }
       el.classList.remove('h-0!')
       el.classList.remove('w-0!')
     })
