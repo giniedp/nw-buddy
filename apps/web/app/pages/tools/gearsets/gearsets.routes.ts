@@ -15,7 +15,7 @@ const ipfsRoutes: Routes = [
   },
   {
     path: ':userid/:id',
-    loadComponent: () => import('./gearsets-detail-page.component').then((it) => it.GearsetsDetailPageComponent),
+    loadComponent: () => import('./gearset-embed.component').then((it) => it.GearsetEmbedComponent),
   },
 ]
 

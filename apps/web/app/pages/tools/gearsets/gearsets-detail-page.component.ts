@@ -67,7 +67,6 @@ import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
     GearsetToolbarComponent,
     DamageCalculatorComponent,
   ],
-  hostDirectives: [EmbedHeightDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ion-page',

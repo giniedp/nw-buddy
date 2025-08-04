@@ -23,7 +23,7 @@
     (backdropClick)="isOverlayOpen.set(false)"
     (detach)="isOverlayOpen.set(false)"
   >
-    <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0 min-w-xs" cdkMenu>
+    <ul class="my-1 menu menu-compact flex-nowrap overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg p-0 min-w-xs" cdkMenu>
       @if (screenshotMenu(); as tpl) {
         <ng-container [ngTemplateOutlet]="tpl" />
       }

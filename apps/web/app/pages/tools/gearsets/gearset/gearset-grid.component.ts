@@ -125,7 +125,7 @@ export class GearsetGridComponent {
   constructor(screenshot: ScreenshotFrameDirective) {
     effect(() => {
       screenshot.nwbScreenshotFrame = this.gearset()?.name
-      screenshot.nwbScreenshotLabel = 'Full Gearset'
+      screenshot.nwbScreenshotLabel = 'Gearset'
       screenshot.nwbScreenshotWidth = 1660
       screenshot.nwbScreenshotMode = 'detached'
     })
