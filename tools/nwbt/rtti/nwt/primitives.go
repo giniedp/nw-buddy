@@ -143,7 +143,7 @@ func (it *AzInt8) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzInt8) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseInt(el.Value, 10, 8)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (it *AzInt16) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzInt16) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseInt(el.Value, 10, 16)
 	if err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func (it *AzInt32) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzInt32) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseInt(el.Value, 10, 32)
 	if err != nil {
 		return err
 	}
@@ -194,7 +194,7 @@ func (it *AzInt64) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzInt64) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseInt(el.Value, 10, 64)
 	if err != nil {
 		return err
 	}
@@ -212,7 +212,7 @@ func (it *AzUInt8) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzUInt8) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseUint(el.Value, 10, 8)
 	if err != nil {
 		return err
 	}
@@ -229,7 +229,7 @@ func (it *AzUInt16) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzUInt16) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseUint(el.Value, 10, 16)
 	if err != nil {
 		return err
 	}
@@ -246,7 +246,7 @@ func (it *AzUInt32) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzUInt32) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseUint(el.Value, 10, 32)
 	if err != nil {
 		return err
 	}
@@ -263,7 +263,7 @@ func (it *AzUInt64) Deserialize(el *azcs.Element) error {
 }
 
 func (it *AzUInt64) DeserializeXml(el *azcs.XmlElement) error {
-	v, err := strconv.ParseFloat(el.Value, 32)
+	v, err := strconv.ParseUint(el.Value, 10, 64)
 	if err != nil {
 		return err
 	}
