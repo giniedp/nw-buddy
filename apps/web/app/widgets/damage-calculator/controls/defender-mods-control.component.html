@@ -8,7 +8,7 @@
       <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
     </button>
   </nwb-stacked-value-control>
-  <div>
+  <div class="fieldset">
     <nwb-stacked-value-control [(ngModel)]="modBaseReduction.value" [percent]="true" [min]="0">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
@@ -42,7 +42,7 @@
     }
   </div>
 
-  <div>
+  <div class="fieldset">
     <nwb-stacked-value-control [(ngModel)]="modABS.value" [percent]="true" [lockPreset]="lockAbsPreset">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
@@ -76,7 +76,7 @@
     }
   </div>
 
-  <div>
+  <div class="fieldset">
     <nwb-stacked-value-control [(ngModel)]="modWKN.value" [percent]="true" [lockPreset]="lockWknPreset">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />

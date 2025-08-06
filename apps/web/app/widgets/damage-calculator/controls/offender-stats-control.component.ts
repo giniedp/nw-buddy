@@ -20,6 +20,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { AttributesEditorComponent } from '~/widgets/attributes-editor'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 import { PrecisionInputComponent } from './precision-input.component'
+import { DamageIndicatorService } from '../damage-indicator.service'
 
 @Component({
   selector: 'nwb-offender-stats-control',
@@ -42,6 +43,7 @@ import { PrecisionInputComponent } from './precision-input.component'
 })
 export class OffenderStatsControlComponent {
   protected store = inject(DamageCalculatorStore)
+  protected indicator = inject(DamageIndicatorService)
 
   protected get isBound() {
     return !!this.store.offender.isBound()

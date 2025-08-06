@@ -4,19 +4,22 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  EventEmitter,
   Injector,
   Input,
   OnInit,
-  Output,
+  TemplateRef,
   booleanAttribute,
+  computed,
   effect,
   inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { getState, patchState } from '@ngrx/signals'
 import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
-import { BehaviorSubject, EMPTY, combineLatest, map, switchMap } from 'rxjs'
+import { EMPTY, combineLatest, map, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
@@ -37,6 +40,7 @@ import { DamageCalculatorState, DamageCalculatorStore, updateDefender, updateOff
 import { mergeDamageStacks } from './damage-mod-stack'
 import { DamageOutputComponent } from './damage-output.component'
 import { DamageResultsComponent } from './damage-results.component'
+import { DamageIndicatorService } from './damage-indicator.service'
 
 @Component({
   selector: 'nwb-damage-calculator',
@@ -62,9 +66,9 @@ import { DamageResultsComponent } from './damage-results.component'
   ],
   host: {
     class: 'flex flex-col',
-    '[class.ion-page]': 'layoutAsPage',
+    '[class.ion-page]': 'layoutAsPage()',
   },
-  providers: [DamageCalculatorStore],
+  providers: [DamageCalculatorStore, DamageIndicatorService],
 })
 export class DamageCalculatorComponent implements OnInit {
   private db = injectNwData()
@@ -72,13 +76,10 @@ export class DamageCalculatorComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
   protected store = inject(DamageCalculatorStore)
 
-  protected get isOffenderBound() {
-    return this.store.offender.isBound()
-  }
+  public readonly tplFormula = viewChild<TemplateRef<any>>('tplFormula')
 
-  protected get isDefenderBound() {
-    return this.store.defender.isBound()
-  }
+  protected isOffenderBound = computed(() => this.store.offender.isBound())
+  protected isDefenderBound = computed(() => this.store.defender.isBound())
 
   @Input()
   public set state(value: DamageCalculatorState) {
@@ -88,25 +89,15 @@ export class DamageCalculatorComponent implements OnInit {
     this.store.setState(value)
   }
 
-  @Output()
-  public stateChange = new EventEmitter<DamageCalculatorState>()
+  public stateChange = output<DamageCalculatorState>()
 
-  private player$ = new BehaviorSubject<Mannequin>(null)
-  @Input()
-  public set player(value: Mannequin) {
-    this.player$.next(value)
-  }
+  public player = input<Mannequin>(null)
+  private player$ = toObservable(this.player)
 
-  private opponent$ = new BehaviorSubject<Mannequin>(null)
-  @Input()
-  public set opponent(value: Mannequin) {
-    this.opponent$.next(value)
-  }
+  public opponent = input<Mannequin>(null)
+  private opponent$ = toObservable(this.opponent)
 
-  @Input()
-  public layoutAsPage = false
-  @Input()
-  public showLog = false
+  public layoutAsPage = input(false)
 
   protected iconReset = svgRestartAlt
 

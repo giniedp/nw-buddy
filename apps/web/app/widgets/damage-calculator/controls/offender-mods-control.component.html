@@ -23,7 +23,7 @@
     </button>
   </nwb-stacked-value-control>
 
-  <div>
+  <div class="fieldset py-0">
     <nwb-stacked-value-control [(ngModel)]="modBase.value" [percent]="true">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
@@ -36,7 +36,7 @@
     </nwb-stacked-value-control>
 
     @if (store.offenderAffixIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modBaseAffix.value" [percent]="true" class="mt-1">
+      <nwb-stacked-value-control [(ngModel)]="modBaseAffix.value" [percent]="true">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           Base Damage
@@ -47,7 +47,7 @@
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modBaseDot.value" [percent]="true" class="mt-1">
+      <nwb-stacked-value-control [(ngModel)]="modBaseDot.value" [percent]="true">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-accent">
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           Base Damage
@@ -59,7 +59,7 @@
     }
   </div>
 
-  <div>
+  <div class="fieldset py-0">
     <nwb-stacked-value-control [(ngModel)]="modDMG.value" [percent]="true">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
@@ -70,7 +70,7 @@
       </button>
     </nwb-stacked-value-control>
     @if (store.offenderAffixIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modDMGAffix.value" [percent]="true" class="mt-1">
+      <nwb-stacked-value-control [(ngModel)]="modDMGAffix.value" [percent]="true">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           DMG
@@ -81,7 +81,7 @@
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modDMGDot.value" [percent]="true" class="mt-1">
+      <nwb-stacked-value-control [(ngModel)]="modDMGDot.value" [percent]="true">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-accent">
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           DMG

@@ -1,19 +1,9 @@
 import { CommonModule } from '@angular/common'
-import {
-  Component,
-  ChangeDetectionStrategy,
-  contentChild,
-  TemplateRef,
-  input,
-  inject,
-  effect,
-  Input,
-  OnDestroy,
-  signal,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, input, Input, OnDestroy, TemplateRef } from '@angular/core'
 import { ModalController } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
 import { injectIsBrowser } from '~/utils/injection/platform'
+import { ModalSize } from '../modal'
 
 @Component({
   selector: 'nwb-detail-content',
@@ -32,6 +22,7 @@ export class DetailContentComponent implements OnDestroy {
   public breakpoints = input<number[]>([0.1, 0.25, 0.5, 1])
   public backdropBreakpoint = input<number>(0.5)
   public backdropDismiss = input<boolean>(true)
+  public size = input<ModalSize | ModalSize[]>()
 
   private ctrl = inject(ModalController)
   private modal: HTMLIonModalElement
@@ -56,11 +47,15 @@ export class DetailContentComponent implements OnDestroy {
   private async openModal() {
     this.closeModal()
 
+    let size = this.size()
+    size = Array.isArray(size) ? size : [size]
+    const cssClass = size.map((it) => `ion-modal-${it}`)
     const modal = (this.modal = await this.ctrl.create({
       backdropBreakpoint: this.backdropBreakpoint(),
       backdropDismiss: this.backdropDismiss(),
       initialBreakpoint: this.initialBreakpoint(),
       breakpoints: this.breakpoints(),
+      cssClass,
 
       component: ContentWrapper,
       componentProps: {
