@@ -1,3 +1,73 @@
-<div class="whitespace-pre-wrap text-nowrap font-mono inline-block mx-auto overflow-x-auto">
-  {{ trace }}
+@let output = store.output2();
+@let weapon = output.weapon;
+@let affix = output.affix;
+@let dot = output.dot;
+<div class="tabs tabs-sm tabs-box m-2">
+  <button class="tab" [class.tab-active]="tab() === 'weapon'" (click)="tab.set('weapon')">
+    Weapon ({{ weapon.factor | percent }})
+  </button>
+  <button class="tab" [class.tab-active]="tab() === 'affix'" (click)="tab.set('affix')">
+    Affix ({{ affix.factor | percent }})
+  </button>
+  <button class="tab" [class.tab-active]="tab() === 'dot'" (click)="tab.set('dot')">DoT</button>
 </div>
+
+<div class="flex flex-row items-center justify-center w-full gap-4">
+  <label class="label">
+    @if (tab() === 'dot') {
+      <span> accumulated </span>
+    } @else {
+      <span> crit </span>
+    }
+    <input class="toggle checked:toggle-primary" type="checkbox" [(ngModel)]="showCrit" />
+  </label>
+  <label class="label">
+    <span> mitigation </span>
+    <input class="toggle checked:toggle-primary" type="checkbox" [(ngModel)]="showMitigation" />
+  </label>
+</div>
+
+@switch (tab()) {
+  @case ('weapon') {
+    @if (showCrit() && showMitigation()) {
+      <nwb-damage-math [node]="weapon.crit" />
+    }
+    @if (showCrit() && !showMitigation()) {
+      <nwb-damage-math [node]="weapon.critNoMitigation" />
+    }
+    @if (!showCrit() && showMitigation()) {
+      <nwb-damage-math [node]="weapon.noCrit" />
+    }
+    @if (!showCrit() && !showMitigation()) {
+      <nwb-damage-math [node]="weapon.noCritNoMitigation" />
+    }
+  }
+  @case ('affix') {
+    @if (showCrit() && showMitigation()) {
+      <nwb-damage-math [node]="affix.crit" />
+    }
+    @if (showCrit() && !showMitigation()) {
+      <nwb-damage-math [node]="affix.critNoMitigation" />
+    }
+    @if (!showCrit() && showMitigation()) {
+      <nwb-damage-math [node]="affix.noCrit" />
+    }
+    @if (!showCrit() && !showMitigation()) {
+      <nwb-damage-math [node]="affix.noCritNoMitigation" />
+    }
+  }
+  @case ('dot') {
+    @if (showAccumulated() && showMitigation()) {
+      <nwb-damage-math [node]="dot.damage" />
+    }
+    @if (showAccumulated() && !showMitigation()) {
+      <nwb-damage-math [node]="dot.damageNoMitigation" />
+    }
+    @if (!showAccumulated() && showMitigation()) {
+      <nwb-damage-math [node]="dot.perTick" />
+    }
+    @if (!showAccumulated() && !showMitigation()) {
+      <nwb-damage-math [node]="dot.perTickNoMitigation" />
+    }
+  }
+}

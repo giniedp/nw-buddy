@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { Component, computed, inject, signal } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router } from '@angular/router'
-import { LayoutModule } from '~/ui/layout'
+import { ToastController } from '@ionic/angular/standalone'
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
-import { IonSegment, IonSegmentButton, IonToast, ToastController } from '@ionic/angular/standalone'
 import { PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
-import { svgClipboard, svgLink } from '~/ui/icons/svg'
-import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
-import { ScreenshotModule } from '~/widgets/screenshot'
+import { svgClipboard, svgFunction, svgLink } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { PlatformService } from '~/utils/services/platform.service'
+import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
+import { ScreenshotModule } from '~/widgets/screenshot'
+import { SplitGutterComponent, SplitPaneDirective } from '../../../ui/split-container'
+import { injectBreakpoint } from '../../../utils'
 
 @Component({
   selector: 'nwb-damage-calculator-page',
@@ -25,6 +28,8 @@ import { PlatformService } from '~/utils/services/platform.service'
     IconsModule,
     ScreenshotModule,
     TooltipModule,
+    SplitPaneDirective,
+    SplitGutterComponent,
   ],
 })
 export class DamageCalculatorPageComponent {
@@ -34,11 +39,17 @@ export class DamageCalculatorPageComponent {
   private preferences = inject(PreferencesService)
   private platform = inject(PlatformService)
 
+  protected mediaBreak = toSignal(injectBreakpoint('(min-width: 1920px)'))
+  protected isLargeContent = computed(() => this.platform.isServer || this.mediaBreak())
+  protected isChildActive = signal(false)
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+  protected showModal$ = toObservable(this.showModal)
+
   protected initialState: any = null
   protected encodedState: string = null
   protected iconLink = svgLink
-  protected iconLog = svgClipboard
-  protected showLog = false
+  protected iconFormula = svgFunction
 
   protected handleStateChange(value: any) {
     this.preferences.session.set('damage-calculator', value)

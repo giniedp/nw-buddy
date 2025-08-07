@@ -1,11 +1,8 @@
-@if (layoutAsPage) {
+@if (layoutAsPage()) {
   <ion-content class="ion-p-4">
     <div class="flex flex-col gap-6">
       <ng-content *ngTemplateOutlet="tplOffender" />
       <ng-content *ngTemplateOutlet="tplDefender" />
-      @if(showLog) {
-        <ng-content *ngTemplateOutlet="tplOutput" />
-      }
     </div>
   </ion-content>
   <ion-footer class="p-2">
@@ -15,9 +12,6 @@
   <div class="flex flex-col gap-4 p-4">
     <ng-content *ngTemplateOutlet="tplOffender" />
     <ng-content *ngTemplateOutlet="tplDefender" />
-    @if(showLog) {
-      <ng-content *ngTemplateOutlet="tplOutput" />
-    }
   </div>
   <div class="p-4 pt-0 sticky -bottom-4">
     <ng-content *ngTemplateOutlet="tplResults" />
@@ -29,8 +23,8 @@
     <h3
       class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
     >
-      Attacker Stats
-      @if (!isOffenderBound) {
+      Attacker
+      @if (!isOffenderBound()) {
         <button
           class="btn btn-ghost btn-square absolute top-0 right-0"
           (click)="resetOffender()"
@@ -58,8 +52,8 @@
     <h3
       class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
     >
-      Defender Stats
-      @if (!isDefenderBound) {
+      Defender
+      @if (!isDefenderBound()) {
         <button
           class="btn btn-ghost btn-square absolute top-0 right-0"
           (click)="resetDefender()"
@@ -80,18 +74,17 @@
   </div>
 </ng-template>
 
-<ng-template #tplOutput>
+<ng-template #tplFormula>
   <div>
     <h3
       class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
     >
-      Output
+      Formula
     </h3>
 
     <nwb-damage-output />
   </div>
 </ng-template>
-
 
 <ng-template #tplResults>
   <div class="relative">

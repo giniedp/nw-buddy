@@ -17,6 +17,7 @@ import {
   getVitalWKN,
   isDamageTypeElemental,
   patchPrecision,
+  damageExpression
 } from '@nw-data/common'
 import { AttackType } from '@nw-data/generated'
 import { EMPTY, combineLatest, map, of, pipe, switchMap } from 'rxjs'
@@ -337,6 +338,66 @@ export const DamageCalculatorStore = signalStore(
     return {
       output: computed(() => {
         return calculateDamage({
+          attacker: {
+            isPlayer: true,
+            level: state.offenderLevel(),
+            gearScore: state.offenderGearScore(),
+            attributeModSums: state.offenderAttributes(),
+            armorPenetration: state.offenderArmorPenetration().value,
+
+            dotCoef: state.offenderDotPercent(),
+            dotPotency: state.offenderDotPotency(),
+            dotDuration: state.offenderDotDuration(),
+            dotRate: state.offenderDotRate(),
+
+            preferHigherScaling: !!state.offenderAffixIsActive(),
+            affixPercent: state.offenderAffixPercent(),
+            affixScaling: state.offenderAffixScaling(),
+
+            weaponScaling: state.offenderWeaponScaling(),
+            weaponGearScore: state.offenderWeaponGearScore(),
+            weaponDamage: state.offenderWeaponDamage(),
+            damageCoef: state.offenderDamageCoef(),
+            damageAdd: state.offenderDamageAdd(),
+
+            modPvp: state.offenderModPvP().value,
+            modAmmo: state.offenderModAmmo().value,
+            modCrit: state.offenderModCrit().value,
+
+            modBase: state.offenderModBase().value,
+            modBaseAffix: state.offenderModBaseAffix().value,
+            modBaseDot: state.offenderModBaseDot().value,
+
+            modDMG: state.offenderModDMG().value,
+            modDMGAffix: state.offenderModDMGAffix().value,
+            modDMGDot: state.offenderModDMGDot().value,
+          },
+          defender: {
+            isPlayer: state.defenderIsPlayer(),
+            level: state.defenderLevel(),
+            gearScore: state.defenderGearScore(),
+
+            armorRating: state.defenderArmorRating(),
+            armorRatingDot: state.defenderArmorRatingDot(),
+            armorRatingAffix: state.defenderArmorRatingAffix(),
+
+            modABS: state.defenderModABS().value,
+            modABSDot: state.defenderModABSDot().value,
+            modABSAffix: state.defendermodABSAffix().value,
+
+            modWKN: state.defenderModWKN().value,
+            modWKNDot: state.defenderModWKNDot().value,
+            modWKNAffix: state.defenderModWKNAffix().value,
+
+            reductionCrit: state.defenderModCritReduction().value,
+            reductionBase: state.defenderModBaseReduction().value,
+            reductionBaseDot: state.defenderModBaseReductionDot().value,
+            reductionBaseAffix: state.defenderModBaseReductionAffix().value,
+          },
+        })
+      }),
+      output2: computed(() => {
+        return damageExpression({
           attacker: {
             isPlayer: true,
             level: state.offenderLevel(),

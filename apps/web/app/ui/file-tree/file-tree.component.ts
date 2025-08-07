@@ -12,13 +12,14 @@ import {
 import { IconsModule } from '~/ui/icons'
 import { svgFileCode, svgFolderOpen } from '~/ui/icons/svg'
 
+import { CdkMenuModule } from '@angular/cdk/menu'
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling'
 import { FileTreeNode, FileTreeStore } from './file-tree.store'
 
 @Component({
   standalone: true,
   selector: 'nwb-file-tree',
-  imports: [IconsModule, ScrollingModule],
+  imports: [IconsModule, ScrollingModule, CdkMenuModule],
   providers: [FileTreeStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -31,7 +32,7 @@ import { FileTreeNode, FileTreeStore } from './file-tree.store'
         [style.paddingLeft.px]="item.depth * 12"
         class="whitespace-nowrap overflow-hidden h-8 cursor-pointer group"
       >
-        <div class="join w-full">
+        <div class="join w-full" [cdkContextMenuTriggerFor]="tplContextMenu">
           @if (item.isDir) {
             <button class="join-item btn btn-sm btn-square btn-ghost" (click)="handleToggle(item)">
               <nwb-icon [icon]="item.isDir ? folderIcon : fileIcon" class="w-5 h-5" />
@@ -39,7 +40,6 @@ import { FileTreeNode, FileTreeStore } from './file-tree.store'
           }
           <button
             class="join-item btn btn-sm bt-ghost w-full justify-start no-animation flex-nowrap pl-1"
-
             [class.text-primary]="item.id === active()"
             (click)="handleClick(item)"
             (dblclick)="handleToggle(item)"
@@ -49,11 +49,23 @@ import { FileTreeNode, FileTreeStore } from './file-tree.store'
             @if (!item.isDir) {
               <nwb-icon [icon]="fileIcon" class="w-5 h-5" />
             }
-            <span class="block opacity-80 group-hover:opacity-100 whitespace-nowrap text-nowrap overflow-hidden text-ellipsis">
+            <span
+              class="block opacity-80 group-hover:opacity-100 whitespace-nowrap text-nowrap overflow-hidden text-ellipsis"
+            >
               {{ item.name }}
             </span>
           </button>
         </div>
+        <ng-template #tplContextMenu>
+          <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+            <li class="text-shadow-sm shadow-black" cdkMenuItem (click)="handleCopyName(item)">
+              <span>Copy Name</span>
+            </li>
+            <li class="text-shadow-sm shadow-black" cdkMenuItem (click)="handleCopyPath(item)">
+              <span>Copy Path</span>
+            </li>
+          </ul>
+        </ng-template>
       </div>
     </cdk-virtual-scroll-viewport>
   `,
@@ -117,5 +129,13 @@ export class FileTreeComponent {
         }
       })
     })
+  }
+
+  protected handleCopyName(item: FileTreeNode) {
+    navigator.clipboard.writeText(item.name)
+  }
+
+  protected handleCopyPath(item: FileTreeNode) {
+    navigator.clipboard.writeText(item.id)
   }
 }

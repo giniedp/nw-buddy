@@ -12,6 +12,8 @@ import {
   NW_MIN_GEAR_SCORE,
   NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE,
 } from './constants'
+import { ExpressionNode } from './damage-expression'
+import * as exp from './damage-expression'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
