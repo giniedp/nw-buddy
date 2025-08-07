@@ -463,42 +463,50 @@ func convertPrimitiveRef(doc *gltf.Document, subset cgf.MeshSubset, streamType c
 		}
 		out.Attributes[gltf.COLOR_0] = modeler.WriteColor(doc, data)
 
-		// case cgf.STREAM_TYPE_TANGENTS:
-		// 	if ref.Stride != 16 {
-		// 		slog.Warn("Unsupported color stride", "stride", ref.Stride, "ref", ref)
-		// 		return
-		// 	}
-		// 	r := buf.NewReaderLE(heap)
-		// 	r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
+	case cgf.STREAM_TYPE_TANGENTS:
+		if ref.Stride != 16 {
+			slog.Warn("Unsupported color stride", "stride", ref.Stride, "ref", ref)
+			return
+		}
+		r := buf.NewReaderLE(heap)
+		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
 
-		// 	normals := make([][3]float32, subset.NumVertices)
-		// 	//tangents := make([][4]float32, subset.NumVertices)
+		normals := make([][3]float32, subset.NumVertices)
+		tangents := make([][4]float32, subset.NumVertices)
 
-		// 	factor := float32(1.0 / 32767.0)
+		factor := float32(1.0 / 32767.0)
 
-		// 	for i := range subset.NumVertices {
+		for i := range subset.NumVertices {
 
-		// 		// Read normal
-		// 		tx := float32(r.MustReadInt16()) * factor
-		// 		ty := float32(r.MustReadInt16()) * factor
-		// 		tz := float32(r.MustReadInt16()) * factor
-		// 		tw := float32(r.MustReadInt16()) * factor
+			// Read normal
+			tx := float32(r.MustReadInt16()) * factor
+			ty := float32(r.MustReadInt16()) * factor
+			tz := float32(r.MustReadInt16()) * factor
+			tw := float32(r.MustReadInt16()) * factor
 
-		// 		// Read tangent
-		// 		bx := float32(r.MustReadInt16()) * factor
-		// 		by := float32(r.MustReadInt16()) * factor
-		// 		bz := float32(r.MustReadInt16()) * factor
-		// 		bw := float32(r.MustReadInt16()) * factor
+			// Read tangent
+			bx := float32(r.MustReadInt16()) * factor
+			by := float32(r.MustReadInt16()) * factor
+			bz := float32(r.MustReadInt16()) * factor
+			r.MustReadInt16()
 
-		// 		tangent := math.CryToGltfVec3([3]float32{tx * tw, ty * tw, tz * tw})
-		// 		bitangent := math.CryToGltfVec3([3]float32{bx * bw, by * bw, bz * bw})
+			tangent := math.CryToGltfVec3([3]float32{tx, ty, tz})
+			bitangent := math.CryToGltfVec3([3]float32{bx, by, bz})
 
-		// 		normals[i] = math.Normalize(math.Cross(tangent, bitangent))
-		// 		// tangents[i] = tangent
-		// 	}
+			normals[i] = math.Normalize(math.Cross(tangent, bitangent))
+			if tw < 0 {
+				normals[i][0] = -normals[i][0]
+				normals[i][1] = -normals[i][1]
+				normals[i][2] = -normals[i][2]
+			}
+			tangents[i][0] = tangent[0]
+			tangents[i][1] = tangent[1]
+			tangents[i][2] = tangent[2]
+			tangents[i][3] = tw
+		}
 
-		// 	out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
-		// 	// out.Attributes[gltf.TANGENT] = modeler.WriteTangent(doc, tangents)
+		out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
+		out.Attributes[gltf.TANGENT] = modeler.WriteTangent(doc, tangents)
 	}
 
 }
