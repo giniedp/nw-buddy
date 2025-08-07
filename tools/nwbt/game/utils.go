@@ -278,9 +278,25 @@ func EntityTree(slice *nwt.SliceComponent) []*EntityTreeNode {
 }
 
 func WalkEntityTree(tree []*EntityTreeNode, visit func(node *EntityTreeNode)) {
-	for _, node := range tree {
-		visit(node)
-		WalkEntityTree(node.Children, visit)
+	stack := make([]*EntityTreeNode, 0, len(tree))
+	seen := make(map[nwt.AzUInt64]bool)
+	for i := len(tree) - 1; i >= 0; i-- {
+		stack = append(stack, tree[i])
+	}
+
+	for len(stack) > 0 {
+		n := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if seen[n.Entity.Id.Id] {
+			slog.Warn("circle detected", "id", n.Entity.Id.Id, "name", n.Entity.Name)
+			continue
+		}
+		seen[n.Entity.Id.Id] = true
+		visit(n)
+
+		for i := len(n.Children) - 1; i >= 0; i-- {
+			stack = append(stack, n.Children[i])
+		}
 	}
 }
 

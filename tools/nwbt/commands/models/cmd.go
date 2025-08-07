@@ -92,6 +92,7 @@ func init() {
 		cmdCollectCharacter,
 		cmdCollectNpcs,
 		cmdCollectFiles,
+		cmdEntities,
 	)
 }
 
