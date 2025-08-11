@@ -66,7 +66,7 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
   private screenshots = inject(ScreenshotService)
 
   protected isLoading = signal(true)
-  protected timeOfDay = signal(1.0)
+  protected timeOfDay = signal(0.25)
 
   private store = inject(TransmogEditorStore)
   protected isBooted = signal(false)
@@ -83,9 +83,10 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
 
+  private modelScene = 'https://cdn.nw-buddy.de/character/stage.glb'
+  // private modelScene = '/assets/models/stage.glb'
   private modelPlayerMale = '/assets/models/player_male.glb'
   private modelPlayerFemale = '/assets/models/player_female.glb'
-
   protected slots = computed(() => {
     const slotIds = ['head', 'chest', 'hands', 'legs', 'feet']
     return slotIds.map((id) => {
@@ -167,6 +168,7 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
     }
     const { createTransmogViewer } = await import('~/widgets/model-viewer/viewer/create-transmog-viewer')
     this.viewer = createTransmogViewer(canvas)
+    this.viewer.useModel('level', this.modelScene)
     this.resize
       .observe(canvas as any as Element)
       .pipe(takeUntilDestroyed(this.dref))

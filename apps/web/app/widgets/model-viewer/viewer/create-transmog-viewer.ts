@@ -1,6 +1,8 @@
 import {
   AbstractMesh,
+  AnimationGroup,
   ArcRotateCamera,
+  AssetContainer,
   Color3,
   Color4,
   CubeTexture,
@@ -9,6 +11,8 @@ import {
   ImportMeshAsync,
   ISceneLoaderAsyncResult,
   IShadowLight,
+  LoadAssetContainerAsync,
+  PBRMaterial,
   PointLight,
   Quaternion,
   Scalar,
@@ -17,10 +21,12 @@ import {
   Skeleton,
   Tags,
   Tools,
+  TransformNode,
   Vector3,
 } from '@babylonjs/core'
 import { DyeColorData } from '@nw-data/generated'
 
+import { IGLTFLoaderData } from '@babylonjs/loaders'
 import { NwMaterialExtension, NwMaterialPlugin, updateNwMaterial } from '@nw-viewer/babylon/extensions'
 import { getModelUrl } from '../utils/get-model-url'
 
@@ -29,6 +35,12 @@ export type TransmogViewer = ReturnType<typeof createTransmogViewer>
 export interface TransmogViewerContext {
   playerSkeleton: Skeleton
   models: Record<TransmogModelSlot, TransmogViewerModel>
+  animationList: Array<{ name: string; file: string }>
+  animationAssets: Record<string, Promise<AssetContainer>>
+  animation: AnimationGroup
+  skyEnabled: boolean
+  envTexture: string
+  envRotation: number
   timeOfDay: number
 }
 export interface TransmogViewerModel extends ISceneLoaderAsyncResult {
@@ -109,60 +121,51 @@ export function createTransmogViewer(canvas: HTMLCanvasElement) {
   }
 }
 
-const LIGHT_CONFIG = {
-  SunLight: {
-    intensity: 50,
-    shadow: true,
-  },
-  AzothLight: {
-    intensity: 1,
-    shadow: true,
-  },
-  FillLight: {
-    intensity: 0.1,
-    shadow: false,
-  },
-  CandleLight: {
-    intensity: 1,
-    shadow: true,
-  },
-  Ibl: {
-    intensity: 0.001,
-    shadow: false,
-  },
-} as const
-
 function createScene(canvas: HTMLCanvasElement) {
   const engine = new Engine(canvas, true)
+  engine.getCaps().parallelShaderCompile = null
+  engine.setHardwareScalingLevel(1 / window.devicePixelRatio)
+
   const scene = new Scene(engine)
   scene.clearColor = new Color4(0, 0, 0, 1)
+  scene.fogEnabled = true
+  scene.fogColor = new Color3(0.192, 0.745, 1)
+  scene.fogMode = 2
+  scene.fogDensity = 0.01
+
+  scene.fogColor = new Color3(0, 0, 0)
+  scene.fogMode = 3
+  scene.fogStart = 4
+  scene.fogEnd = 10
 
   const camera = new ArcRotateCamera(
     'camera',
-    (245 * Math.PI) / 180,
+    (100 * Math.PI) / 180,
     (75 * Math.PI) / 180,
-    2,
-    new Vector3(0, 1, 0),
+    2.5,
+    new Vector3(0, 0.9, 0),
     scene,
   )
   camera.minZ = 0.1
   camera.maxZ = 100
   camera.wheelPrecision = 100
   camera.lowerRadiusLimit = 0.25
-  camera.upperRadiusLimit = 2.5
+  camera.upperRadiusLimit = 3
   camera.panningAxis = new Vector3(0, 1, 0)
   camera.panningDistanceLimit = 0.8
   camera.panningOriginTarget = new Vector3(0, 1, 0)
   camera.attachControl(canvas, true)
 
   const envHdri = CubeTexture.CreateFromPrefilteredData(
-    'https://playground.babylonjs.com/textures/environment.env',
+    // 'https://playground.babylonjs.com/textures/environment.env',
+    'https://playground.babylonjs.com/textures/parking.env',
     scene,
   )
+  envHdri.rotationY = Math.PI
   envHdri.name = 'env'
   envHdri.gammaSpace = false
   scene.environmentTexture = envHdri
-  scene.environmentIntensity = LIGHT_CONFIG.Ibl.intensity
+  scene.environmentIntensity = 0.001
 
   const pipeline = new DefaultRenderingPipeline('fx', true, scene, [camera], true)
   pipeline.fxaaEnabled = true
@@ -197,6 +200,12 @@ function getContext(scene: Scene): TransmogViewerContext {
     return {
       playerSkeleton: null,
       timeOfDay: 0,
+      envRotation: 0,
+      skyEnabled: true,
+      envTexture: 'https://playground.babylonjs.com/textures/parking.env',
+      animationList: [],
+      animationAssets: {},
+      animation: null,
       models: {
         level: null,
         player: null,
@@ -228,13 +237,30 @@ async function loadModel(scene: Scene, url: string, slot: TransmogModelSlot) {
     url = source.modelUrl
   }
 
-  const result = await ImportMeshAsync(url, scene, { rootUrl })
-  context.models[slot] = {
-    slot,
-    ...result,
+  let data: IGLTFLoaderData = null
+  const loaded = await ImportMeshAsync(url, scene, {
+    rootUrl,
+    pluginOptions: {
+      gltf: {
+        onParsed: (loadedData) => {
+          if (isPlayer) {
+            data = loadedData
+          }
+        },
+      },
+    },
+  })
+
+  if (isPlayer) {
+    context.animationList = data.json['extras']?.['animationList'] || []
   }
 
-  for (const mesh of result.meshes) {
+  context.models[slot] = {
+    slot,
+    ...loaded,
+  }
+
+  for (const mesh of loaded.meshes) {
     const isIgnored = IGNORED_MESHES.some((it) => mesh.name === it)
     if (isIgnored) {
       mesh.setEnabled(false)
@@ -244,18 +270,43 @@ async function loadModel(scene: Scene, url: string, slot: TransmogModelSlot) {
     }
     mesh.receiveShadows = isLevel
   }
-  for (const light of result.lights) {
+  for (const light of loaded.lights) {
     light.setEnabled(false)
   }
 
   if (isLevel) {
+    for (const mesh of loaded.meshes) {
+      if (mesh.material instanceof PBRMaterial) {
+        mesh.material.environmentIntensity = 0
+        if (mesh.material.transparencyMode) {
+          mesh.material.needDepthPrePass = true
+        }
+      }
+    }
     for (const light of scene.lights) {
-      createShadowGenerator(light as any)
       light.setEnabled(true)
-      const config = LIGHT_CONFIG[light.name as keyof typeof LIGHT_CONFIG]
-      if (config) {
-        light.intensity = config.intensity
-        light.shadowEnabled = config.shadow
+      switch (light.name) {
+        case 'Main': {
+          light.intensity = 50
+          light.shadowEnabled = true
+          createShadowGenerator(light as any)
+          break
+        }
+        case 'Fill1': {
+          light.intensity = 5
+          light.shadowEnabled = false
+          break
+        }
+        case 'Fill2': {
+          light.intensity = 10
+          light.shadowEnabled = false
+          break
+        }
+        case 'Candle': {
+          light.intensity = 1
+          light.shadowEnabled = false
+          break
+        }
       }
     }
     addShadowCaster(scene, context.models.player?.meshes)
@@ -264,28 +315,34 @@ async function loadModel(scene: Scene, url: string, slot: TransmogModelSlot) {
     addShadowCaster(scene, context.models.hands?.meshes)
     addShadowCaster(scene, context.models.legs?.meshes)
     addShadowCaster(scene, context.models.feet?.meshes)
-    addShadowCaster(scene, result.meshes)
-  } else if (!!context.models.level) {
-    addShadowCaster(scene, result.meshes)
+    addShadowCaster(scene, loaded.meshes)
+  } else {
+    for (const mesh of loaded.meshes) {
+      if (mesh.material) {
+        mesh.material.fogEnabled = false
+      }
+    }
+    addShadowCaster(scene, loaded.meshes)
   }
 
   if (isPlayer) {
-    context.playerSkeleton = result.skeletons[0]
+    context.playerSkeleton = loaded.skeletons[0]
     const camera = scene.activeCamera as ArcRotateCamera
-    camera.focusOn(result.meshes, true)
+    camera.focusOn(loaded.meshes, true)
     camera.panningOriginTarget.set(camera.target.x, camera.panningOriginTarget.y, camera.target.z)
     camera.target.set(camera.target.x, camera.target.y + 0.25, camera.target.z)
   }
-  for (const model of Object.values(context.models)) {
-    if (!model || model.slot === 'player' || model.slot === 'level') {
-      continue
-    }
-    for (const mesh of model.meshes || []) {
-      mesh.skeleton = context.playerSkeleton
+  if (isGear) {
+    for (const model of Object.values(context.models)) {
+      for (const mesh of model?.meshes || []) {
+        mesh.skeleton = context.playerSkeleton
+      }
     }
   }
 
   updatePositions(scene)
+  playAnimation(scene, 'unarmed_idle')
+  // playAnimation(scene, 'archetype_beast_patrol_idle')
 }
 
 function unloadModel(scene: Scene, slot: TransmogModelSlot) {
@@ -314,14 +371,17 @@ function updatePositions(scene: Scene) {
     return
   }
   const position = context.models.player.meshes[0].position
-  Quaternion.RotationAxisToRef(Vector3.Up(), 0, rotation)
+  Quaternion.RotationAxisToRef(Vector3.Up(), Math.PI, rotation)
 
   for (const model of Object.values(context.models)) {
-    if (!model || model.slot === 'level') {
+    if (!model) {
       continue
     }
     const root = model.meshes[0]
-    if (root) {
+    if (!root) {
+      continue
+    }
+    if (model.slot !== 'level') {
       root.rotationQuaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
       root.position.set(position.x, position.y, position.z)
     }
@@ -329,7 +389,8 @@ function updatePositions(scene: Scene) {
 }
 
 function createShadowGenerator(light: IShadowLight) {
-  const result = new ShadowGenerator(1024, light)
+  const result = new ShadowGenerator(2048, light)
+  result.bias = 0.0001
   if (light instanceof PointLight) {
     result.usePoissonSampling = true
     result.transparencyShadow = true
@@ -391,7 +452,7 @@ async function captureScreenshot(scene: Scene, canvas: HTMLCanvasElement) {
 
 function bindCandleLightFlicker(scene: Scene) {
   const intensityMin = 0.5
-  const intensityMax = 0.75
+  const intensityMax = 1
   const updateMin = 100
   const updateMax = 150
   const tweenTime = 60
@@ -400,7 +461,7 @@ function bindCandleLightFlicker(scene: Scene) {
   let intensity = intensityMin
 
   scene.registerBeforeRender(() => {
-    const light = scene.getLightByName('CandleLight') as PointLight
+    const light = scene.getLightByName('Candle') as PointLight
     if (!light) {
       return
     }
@@ -514,4 +575,74 @@ function updateAppearance(
     glossShift: dyeA?.MaskGlossShift,
     debugMask: options.debugMask,
   })
+}
+
+async function playAnimation(scene: Scene, name: string) {
+  return
+  const context = getContext(scene)
+  const spec = context.animationList.find((it) => it.name === name)
+  if (!spec) {
+    return
+  }
+  const url = `https://cdn.nw-buddy.de/models/${spec.file}`
+  if (!(name in context.animationAssets)) {
+    context.animationAssets[name] = LoadAssetContainerAsync(url, scene, {})
+  }
+  context.animation?.stop()
+  context.animation = null
+
+  const asset = await context.animationAssets[name]
+  const target = context.models.player.transformNodes
+  context.animation = buildAnimationGroup(name, asset, target)
+  context.animation.start(true)
+}
+
+function buildAnimationGroup(name: string, animationAsset: AssetContainer, target: Array<Node | TransformNode>) {
+  const oldGroup = animationAsset?.animationGroups[0]
+  if (!oldGroup) {
+    return null
+  }
+  const transformNodes = getTransformNodes(target)
+  const scene = transformNodes[0].getScene()
+  const newGroup = new AnimationGroup(name, scene, 1, oldGroup.playOrder)
+  newGroup['_from'] = oldGroup.from
+  newGroup['_to'] = oldGroup.to
+  newGroup['_speedRatio'] = oldGroup.speedRatio
+  newGroup['_loopAnimation'] = oldGroup.loopAnimation
+  newGroup['_isAdditive'] = oldGroup.isAdditive
+  newGroup['_enableBlending'] = oldGroup.enableBlending
+  newGroup['_blendingSpeed'] = oldGroup.blendingSpeed
+  newGroup.metadata = oldGroup.metadata
+  newGroup.mask = oldGroup.mask
+
+  for (const anim of oldGroup.targetedAnimations) {
+    const oldTarget = anim.target
+    if (!(oldTarget instanceof TransformNode)) {
+      continue
+    }
+    const controlId = getMeta(oldTarget.metadata, 'controllerId')
+    const targetNodes = transformNodes.filter((it) => getMeta(it.metadata, 'controllerId') === controlId)
+    for (const target of targetNodes) {
+      newGroup.addTargetedAnimation(anim.animation, target)
+    }
+  }
+  return newGroup
+}
+
+function getMeta<T>(extra: any, key: string) {
+  return extra?.['gltf']?.['extras']?.[key]
+}
+
+function getTransformNodes(nodes: Array<Node | TransformNode>, result: TransformNode[] = []) {
+  if (!nodes) {
+    return result
+  }
+  for (const node of nodes) {
+    if (node instanceof TransformNode) {
+      result.push(node)
+    }
+    const children = node['_children']
+    getTransformNodes(children, result)
+  }
+  return result
 }
