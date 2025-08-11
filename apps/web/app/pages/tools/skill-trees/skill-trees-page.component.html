@@ -31,8 +31,12 @@
           }
 
           <ng-template #tplMenu>
-            <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
+            <div class="bg-base-200 border border-base-100 w-80 rounded-b-md z-10 p-2" cdkMenu>
               <div class="grid grid-cols-3 gap-1">
+                <label (click)="toggleTagsOperator(); (false)" class="label col-span-3 py-2">
+                  <input class="toggle checked:toggle-primary" type="checkbox" [ngModel]="tagsOperator() === 'AND'" />
+                  Match All
+                </label>
                 @for (item of tags(); track $index) {
                   <button
                     class="btn btn-sm btn-primary"

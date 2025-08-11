@@ -10,6 +10,7 @@ import { TransmogsService } from '~/data/transmogs'
 export interface TransmogCreationsListPageState {
   userId: string
   activeTags: string[]
+  tagsOperator: 'AND' | 'OR'
   search: string
 }
 
@@ -18,6 +19,7 @@ export const TransmogCreationsListPageStore = signalStore(
     userId: 'local',
     activeTags: [],
     search: '',
+    tagsOperator: 'OR',
   }),
   withProps(({ userId }) => {
     const service = inject(TransmogsService)
@@ -51,12 +53,17 @@ export const TransmogCreationsListPageStore = signalStore(
           activeTags: toggleTagInList(state.activeTags(), tag),
         })
       },
+      toggleTagsOperator: () => {
+        patchState(state, {
+          tagsOperator: state.tagsOperator() === 'OR' ? 'AND' : 'OR',
+        })
+      },
     }
   }),
-  withComputed(({ records, search, activeTags }) => {
+  withComputed(({ records, search, activeTags, tagsOperator }) => {
     const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
     const displayRecords = computed(() => {
-      let result = filterRecordsByTags(records(), activeTags())
+      let result = filterRecordsByTags(records(), activeTags(), tagsOperator())
       if (search()) {
         result = result.filter((it) => it.name.toLowerCase().includes(search().toLowerCase()))
       }

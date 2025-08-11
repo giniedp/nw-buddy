@@ -33,6 +33,7 @@ import { SkillTreeTableAdapter } from '~/widgets/data/skill-tree-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillTreesPageStore } from './skill-trees-page.store'
+import { FormsModule } from '@angular/forms'
 
 @Component({
   selector: 'nwb-skill-trees-page',
@@ -54,6 +55,7 @@ import { SkillTreesPageStore } from './skill-trees-page.store'
     IconsModule,
     SplitPaneDirective,
     SplitGutterComponent,
+    FormsModule
   ],
   host: {
     class: 'ion-page',
@@ -113,6 +115,7 @@ export class SkillTreesPageComponent {
 
   protected tags = this.store.tags
   protected tagsAreActive = computed(() => this.tags()?.some((it) => it.active))
+  protected tagsOperator = this.store.tagsOperator
   protected isLoading = this.store.isLoading
   protected isAvailable = this.store.isAvailable
   protected isEmpty = this.store.isEmpty
@@ -181,5 +184,9 @@ export class SkillTreesPageComponent {
 
   protected handleTagToggle(value: string) {
     this.store.toggleTag(value)
+  }
+
+  protected toggleTagsOperator() {
+    this.store.toggleTagsOperator()
   }
 }

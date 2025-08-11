@@ -15,11 +15,15 @@ export function collectTagsFromRecords<T extends TaggedRecord>(records: T[], act
   return tags.sort().map((tag) => ({ tag, active: activeTags.includes(tag) }))
 }
 
-export function filterRecordsByTags<T extends TaggedRecord>(records: T[], tags: string[]) {
+export function filterRecordsByTags<T extends TaggedRecord>(records: T[], tags: string[], operator: 'AND' | 'OR') {
   if (!tags?.length || !records?.length) {
     return records
   }
-  return records.filter((it) => it.tags?.some((tag) => tags.includes(tag)))
+  if (operator === 'AND') {
+    return records.filter((it) => tags.every((tag) => it.tags?.includes(tag)))
+  } else {
+    return records.filter((it) => tags.some((tag) => it.tags?.includes(tag)))
+  }
 }
 
 export function toggleTagInList(tags: string[], tag: string) {

@@ -158,7 +158,6 @@ export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor 
   }
 
   public setDisabledState?(isDisabled: boolean): void {
-    console.log('setDisabled', isDisabled)
     this.isDisabled.set(isDisabled)
   }
 

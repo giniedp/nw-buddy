@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
+import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { debounceTime, filter, switchMap } from 'rxjs'
@@ -48,6 +49,7 @@ import { TransmogCreationsListPageStore } from './transmog-set-list.store'
     LayoutModule,
     IconsModule,
     TransmogLoadoutComponent,
+    FormsModule,
   ],
   host: {
     class: 'ion-page',
@@ -97,6 +99,7 @@ export class TransmogSetListComponent {
 
   protected tags = this.store.tags
   protected tagsAreActive = computed(() => this.tags()?.some((it) => it.active))
+  protected tagsOperator = this.store.tagsOperator
   protected items = this.store.displayRecords
   protected isLoading = this.store.isLoading
   protected isAvailable = this.store.isAvailable
@@ -162,5 +165,9 @@ export class TransmogSetListComponent {
 
   protected toggleTag(value: string) {
     this.store.toggleTag(value)
+  }
+
+  protected toggleTagsOperator() {
+    this.store.toggleTagsOperator()
   }
 }

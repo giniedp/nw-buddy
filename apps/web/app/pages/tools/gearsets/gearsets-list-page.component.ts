@@ -27,6 +27,7 @@ import { GearsetsListPageStore } from './gearsets-list-page.store'
 //import { GearsetLoadoutItemComponent } from './loadout'
 import { GearsetLoadoutComponent } from '~/widgets/data/gearset-detail'
 import { LOCAL_USER_ID } from '~/data/constants'
+import { FormsModule } from '@angular/forms'
 
 @Component({
   selector: 'nwb-gearsets-list-page',
@@ -42,6 +43,7 @@ import { LOCAL_USER_ID } from '~/data/constants'
     LayoutModule,
     VirtualGridModule,
     GearsetLoadoutComponent,
+    FormsModule,
   ],
   providers: [QuicksearchService, GearsetsListPageStore],
   host: {
@@ -70,6 +72,7 @@ export class GearsetsListPageComponent {
 
   protected isSignedIn = this.backend.isSignedIn
   protected tags = this.store.tags
+  protected tagsOperator = this.store.tagsOperator
   protected isTagFilterActive = computed(() => this.store.tags()?.some((it) => it.active))
   protected items = this.store.displayRecords
   protected isLoading = this.store.isLoading
@@ -147,5 +150,9 @@ export class GearsetsListPageComponent {
 
   protected toggleTag(value: string) {
     this.store.toggleTag(value)
+  }
+
+  protected toggleTagsOperator() {
+    this.store.toggleTagsOperator()
   }
 }

@@ -8,12 +8,14 @@ import { collectTagsFromRecords, filterRecordsByTags, toggleTagInList } from '~/
 export interface SkillTreesPageState {
   userId: string
   activeTags: string[]
+  tagsOperator: 'AND' | 'OR'
 }
 
 export const SkillTreesPageStore = signalStore(
   withState<SkillTreesPageState>({
     userId: 'local',
     activeTags: [],
+    tagsOperator: 'OR',
   }),
   withProps(({ userId }) => {
     const db = injectNwData()
@@ -48,11 +50,16 @@ export const SkillTreesPageStore = signalStore(
           activeTags: toggleTagInList(state.activeTags(), tag),
         })
       },
+      toggleTagsOperator: () => {
+        patchState(state, {
+          tagsOperator: state.tagsOperator() === 'OR' ? 'AND' : 'OR',
+        })
+      },
     }
   }),
-  withComputed(({ records, activeTags, abilities }) => {
+  withComputed(({ records, activeTags, abilities, tagsOperator }) => {
     const tags = computed(() => collectTagsFromRecords(records(), activeTags()))
-    const filteredRecords = computed(() => filterRecordsByTags(records(), activeTags()))
+    const filteredRecords = computed(() => filterRecordsByTags(records(), activeTags(), tagsOperator()))
     const displayRows = computed(() => buildSkillTreeRows(filteredRecords(), abilities()))
     return {
       tags,
