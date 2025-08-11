@@ -133,10 +133,10 @@ function createScene(canvas: HTMLCanvasElement) {
   scene.fogMode = 2
   scene.fogDensity = 0.01
 
-  scene.fogColor = new Color3(0, 0, 0)
-  scene.fogMode = 3
-  scene.fogStart = 4
-  scene.fogEnd = 10
+  // scene.fogColor = new Color3(0, 0, 0)
+  // scene.fogMode = 3
+  // scene.fogStart = 4
+  // scene.fogEnd = 10
 
   const camera = new ArcRotateCamera(
     'camera',
