@@ -82,6 +82,7 @@ export class GLTFNwMaterialExtension implements GLTFLoaderPlugin {
         if ('material' in it) {
           // restore parameters from suerData
           it.material['defines']['USE_SPECULAR_INTENSITYMAP_CHANNEL_R'] = ''
+          it.material['defines']['USE_NORMALMAP_RG_UNSIGNED'] = ''
           it.material['vertexColors'] = !!it.material['userData']['vertexColors']
         }
       })

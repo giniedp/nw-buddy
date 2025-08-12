@@ -23,6 +23,7 @@ import { RendererProvider } from './renderer-provider'
 import { SceneProvider } from './scene-provider'
 import { getTexModUpdateFn } from '../graphics/tex-mod'
 import { AnimationFile } from '../adb'
+import { DDSTextureLoader } from '../graphics/dds-loader'
 
 const resolveUrl = LoaderUtils.resolveURL
 LoaderUtils.resolveURL = (url: string, path: string) => {
@@ -134,6 +135,8 @@ export class ContentProvider implements GameService {
       }
       return url
     })
+    manager.addHandler(/(\.dds$)|(\.dds\?)/i, new DDSTextureLoader(manager))
+
     const loader = new GLTFLoader(manager)
     loader.register((parser) => new GLTFNwMaterialExtension(parser))
     loader.register((parser) => new GLTFSpecularGlossinessExtension(parser))

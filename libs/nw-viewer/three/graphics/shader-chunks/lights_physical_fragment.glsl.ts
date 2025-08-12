@@ -1,14 +1,13 @@
 export default /* glsl */`
 PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
-// material.diffuseColor = diffuseColor.rgb; // CUSTOM+
 
 vec3 dxy = max( abs( dFdx( nonPerturbedNormal ) ), abs( dFdy( nonPerturbedNormal ) ) );
 float geometryRoughness = max( max( dxy.x, dxy.y ), dxy.z );
 
 // material.roughness = max( roughnessFactor, 0.0525 );// 0.0525 corresponds to the base mip of a 256 cubemap.
 material.roughness = max( roughnessFactor * roughnessFactor, 0.001 ); // CUSTOM+
-material.roughness += geometryRoughness; // CUSTOM-
+material.roughness += geometryRoughness;
 material.roughness = min( material.roughness, 1.0 );
 
 #ifdef IOR
@@ -34,7 +33,7 @@ material.roughness = min( material.roughness, 1.0 );
       #endif
 		#endif
 
-		material.specularF90 = specularIntensityFactor;// mix( specularIntensityFactor, 1.0, metalnessFactor );
+		material.specularF90 = mix( specularIntensityFactor, 1.0, metalnessFactor );
 
 	#else
 
@@ -45,7 +44,6 @@ material.roughness = min( material.roughness, 1.0 );
 	#endif
 
 	material.specularColor = mix( min( pow2( ( material.ior - 1.0 ) / ( material.ior + 1.0 ) ) * specularColorFactor, vec3( 1.0 ) ) * specularIntensityFactor, diffuseColor.rgb, metalnessFactor );
-  // material.specularColor = mix( min( pow2( ( material.ior - 1.0 ) / ( material.ior + 1.0 ) ) * specularColorFactor, vec3( 1.0 ) ) * specularIntensityFactor, diffuseColor.rgb, 0.0 );
 
 #else
 

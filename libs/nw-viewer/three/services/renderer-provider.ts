@@ -1,8 +1,7 @@
-import { Camera, Color, HalfFloatType, NoToneMapping, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
+import { Camera, HalfFloatType, NoToneMapping, Scene, WebGLRenderer } from 'three'
 import { GameService, GameServiceContainer } from '../../ecs'
 import { EventEmitter, GameLoop, Keyboard, Mouse } from '../core'
 
-import { N8AOPostPass } from 'n8ao'
 import {
   BlendFunction,
   BloomEffect,
@@ -17,7 +16,7 @@ import {
   ToneMappingEffect,
   ToneMappingMode,
 } from 'postprocessing'
-import GUI from 'lil-gui'
+import { DDSTextureLoader } from '../graphics/dds-loader'
 
 export class RendererProvider implements GameService {
   public readonly game: GameServiceContainer
@@ -96,6 +95,7 @@ export class RendererProvider implements GameService {
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.resizeElement = resizeElement || renderer.domElement.parentElement
     this.mouse.listener.setup({ captureTarget: this.renderer.domElement })
+    DDSTextureLoader.injectFormats(renderer)
   }
 
   public initialize(game: GameServiceContainer): void {
@@ -217,7 +217,7 @@ export class RendererProvider implements GameService {
           smaa,
           ssaoEffect,
           tonemapping,
-          bloomEffect,
+          //bloomEffect,
         ],
       ),
     )

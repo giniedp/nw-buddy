@@ -7,6 +7,7 @@ import uv_pars_fragment from '../shader-chunks/uv_pars_fragment.glsl'
 import uv_vertex from '../shader-chunks/uv_vertex.glsl'
 import project_vertex from '../shader-chunks/project_vertex.glsl'
 import defaultnormal_vertex from '../shader-chunks/defaultnormal_vertex.glsl'
+import normal_fragment_maps from '../shader-chunks/normal_fragment_maps.glsl'
 
 import * as meshBasic from './meshphysical.glsl'
 import * as meshPhysical from './meshphysical.glsl'
@@ -21,6 +22,7 @@ export function extendShaderLib() {
   ShaderChunk.uv_vertex = uv_vertex
   ShaderChunk.project_vertex = project_vertex
   ShaderChunk.defaultnormal_vertex = defaultnormal_vertex
+  ShaderChunk.normal_fragment_maps = normal_fragment_maps
 
   ShaderChunk['clipmap_vertex'] = clipmap_vertex
 
