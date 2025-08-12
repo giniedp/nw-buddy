@@ -2,7 +2,9 @@ package dds
 
 import (
 	"fmt"
+
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/utils"
 	"path"
 	"strconv"
 	"strings"
@@ -21,7 +23,12 @@ type SplitFile struct {
 func FindSplits(f nwfs.File) (Splits, error) {
 	res := Splits{}
 	res.Base.Header = f
-	splits, err := f.Archive().Glob(fmt.Sprintf("%s.*", f.Path()))
+	pattern := fmt.Sprintf("%s.*", f.Path())
+	if IsDDSAlpha(f.Path()) {
+		pattern = utils.ReplaceExt(f.Path(), ".*a")
+	}
+
+	splits, err := f.Archive().Glob(pattern)
 	if err != nil {
 		return res, err
 	}

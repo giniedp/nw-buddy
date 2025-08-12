@@ -120,7 +120,8 @@ func convertTif(assets *game.Assets, file nwfs.File, target string, query url.Va
 func convertDDS(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
 	switch target {
 	case "", ".dds":
-		img, err := dds.Load(file)
+		size, _ := strconv.Atoi(query.Get("size"))
+		img, err := dds.Load(file, size)
 		if err != nil {
 			return nil, err
 		}
@@ -360,7 +361,7 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([
 		Catalog: assets.Catalog,
 		//Cache:   image.NewCache(cacheDir, ".png"),
 		Converter: image.BasicConverter{
-			Format:  ".png",
+			Format:  ".dds",
 			TempDir: flg.TempDir,
 			Silent:  true,
 			MaxSize: flg.TextureSize,
