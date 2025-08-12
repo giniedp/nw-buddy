@@ -400,72 +400,123 @@ func convertPrimitiveRef(doc *gltf.Document, subset cgf.MeshSubset, streamType c
 		}
 
 	case cgf.STREAM_TYPE_POSITIONS:
-		if ref.Stride != 16 {
-			slog.Warn("Unsupported position stride", "stride", ref.Stride, "ref", ref)
-			return
-		}
-
 		r := buf.NewReaderLE(heap)
 		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
-
 		vertices := make([][3]float32, subset.NumVertices)
-		for i := range subset.NumVertices {
-			vertices[i] = math.CryToGltfVec3([3]float32{
-				float16.Float16(r.MustReadUint16()).Float32(), // 2 byte X
-				float16.Float16(r.MustReadUint16()).Float32(), // 2 byte Y
-				float16.Float16(r.MustReadUint16()).Float32(), // 2 byte Z
-			})
-			r.SeekRelative(2) // unused
-			r.SeekRelative(4) // color
-			r.SeekRelative(4) // texture
-		}
-		out.Attributes[gltf.POSITION] = modeler.WritePosition(doc, vertices)
 
-	case cgf.STREAM_TYPE_TEXCOORDS:
-		if ref.Stride != 16 {
-			slog.Warn("Unsupported texture stride", "stride", ref.Stride, "ref", ref)
-			return
-		}
-
-		r := buf.NewReaderLE(heap)
-		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
-
-		coords := make([][2]float32, subset.NumVertices)
-		for i := range subset.NumVertices {
-			r.SeekRelative(8) // position
-			r.SeekRelative(4) // color
-			coords[i] = [2]float32{
-				float16.Float16(r.MustReadUint16()).Float32(),
-				float16.Float16(r.MustReadUint16()).Float32(),
+		switch ref.Stride {
+		case 16:
+			{
+				for i := range subset.NumVertices {
+					vertices[i] = math.CryToGltfVec3([3]float32{
+						float16.Float16(r.MustReadUint16()).Float32(), // 2 byte X
+						float16.Float16(r.MustReadUint16()).Float32(), // 2 byte Y
+						float16.Float16(r.MustReadUint16()).Float32(), // 2 byte Z
+					})
+					r.SeekRelative(2) // unused
+					r.SeekRelative(4) // color
+					r.SeekRelative(4) // texture
+				}
+			}
+		case 24:
+			{
+				for i := range subset.NumVertices {
+					vertices[i] = math.CryToGltfVec3([3]float32{
+						r.MustReadFloat32(), // 4 byte X
+						r.MustReadFloat32(), // 4 byte Y
+						r.MustReadFloat32(), // 4 byte Z
+					})
+					r.SeekRelative(4) // color
+					r.SeekRelative(8) // texture
+				}
+			}
+		default:
+			{
+				slog.Warn("Unsupported position stride", "stride", ref.Stride, "ref", ref)
+				return
 			}
 		}
+		out.Attributes[gltf.POSITION] = modeler.WritePosition(doc, vertices)
+	case cgf.STREAM_TYPE_TEXCOORDS:
+		r := buf.NewReaderLE(heap)
+		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
+		coords := make([][2]float32, subset.NumVertices)
+
+		switch ref.Stride {
+		case 16:
+			{
+				for i := range subset.NumVertices {
+					r.SeekRelative(8) // position
+					r.SeekRelative(4) // color
+					coords[i] = [2]float32{
+						float16.Float16(r.MustReadUint16()).Float32(),
+						float16.Float16(r.MustReadUint16()).Float32(),
+					}
+				}
+			}
+		case 24:
+			{
+				for i := range subset.NumVertices {
+					r.SeekRelative(12) // position
+					r.SeekRelative(4)  // color
+					coords[i] = [2]float32{
+						r.MustReadFloat32(),
+						r.MustReadFloat32(),
+					}
+				}
+			}
+		default:
+			{
+				slog.Warn("Unsupported texture stride", "stride", ref.Stride, "ref", ref)
+				return
+			}
+		}
+
 		out.Attributes[gltf.TEXCOORD_0] = modeler.WriteTextureCoord(doc, coords)
 
 	case cgf.STREAM_TYPE_COLORS:
-		if ref.Stride != 16 {
-			slog.Warn("Unsupported color stride", "stride", ref.Stride, "ref", ref)
-			return
-		}
-
 		r := buf.NewReaderLE(heap)
 		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
-
 		data := make([][4]uint8, subset.NumVertices)
-		for i := range subset.NumVertices {
-			r.SeekRelative(8) // position
-			data[i] = [4]uint8{
-				uint8(r.MustReadByte()),
-				uint8(r.MustReadByte()),
-				uint8(r.MustReadByte()),
-				uint8(r.MustReadByte()),
+
+		switch ref.Stride {
+		case 16:
+			{
+				for i := range subset.NumVertices {
+					r.SeekRelative(8) // position
+					data[i] = [4]uint8{
+						uint8(r.MustReadByte()),
+						uint8(r.MustReadByte()),
+						uint8(r.MustReadByte()),
+						uint8(r.MustReadByte()),
+					}
+					r.SeekRelative(4) // texture
+				}
 			}
-			r.SeekRelative(4) // texture
+		case 24:
+			{
+				for i := range subset.NumVertices {
+					r.SeekRelative(12) // position
+					data[i] = [4]uint8{
+						uint8(r.MustReadByte()),
+						uint8(r.MustReadByte()),
+						uint8(r.MustReadByte()),
+						uint8(r.MustReadByte()),
+					}
+					r.SeekRelative(8) // texture
+				}
+			}
+		default:
+			{
+				slog.Warn("Unsupported color stride", "stride", ref.Stride, "ref", ref)
+				return
+			}
 		}
 		out.Attributes[gltf.COLOR_0] = modeler.WriteColor(doc, data)
 
 	case cgf.STREAM_TYPE_TANGENTS:
 		if ref.Stride != 16 {
-			slog.Warn("Unsupported color stride", "stride", ref.Stride, "ref", ref)
+			slog.Warn("Unsupported tangent stride", "stride", ref.Stride, "ref", ref)
 			return
 		}
 		r := buf.NewReaderLE(heap)
