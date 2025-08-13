@@ -64,14 +64,14 @@
             </div>
           </button>
         } @else {
-          <button (click)="handlePublish()" cdkMenuItem [disabled]="!isPublishable()">
+          <button (click)="handlePublish()" cdkMenuItem [disabled]="hasLinkedItems()">
             <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2" />
             <div class="flex flex-col leading-none">
               <span>Publish</span>
-              @if (isPublishable()) {
-                <span class="text-xs opacity-75">Publish this gearsets for other users to see</span>
-              } @else {
+              @if (hasLinkedItems()) {
                 <span class="text-xs text-error">Gearsets with <b>linked</b> items can not be published</span>
+              } @else {
+                <span class="text-xs opacity-75">Publish this gearsets for other users to see</span>
               }
             </div>
           </button>

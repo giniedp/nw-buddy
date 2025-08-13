@@ -30,8 +30,8 @@
             <ng-template #tplMenu>
               <div class="bg-base-200 border border-base-100 w-80 rounded-b-md z-10 p-2" cdkMenu>
                 <div class="grid grid-cols-3 gap-1">
-                  <label (click)="toggleTagsOperator(); false" class="label col-span-3 py-2">
-                    <input class="toggle checked:toggle-primary" type="checkbox" [ngModel]="tagsOperator() === 'AND'"/>
+                  <label (click)="toggleTagsOperator(); (false)" class="label col-span-3 py-2">
+                    <input class="toggle checked:toggle-primary" type="checkbox" [ngModel]="tagsOperator() === 'AND'" />
                     Match All
                   </label>
                   @for (item of tags(); track $index) {
@@ -160,7 +160,7 @@
             @if (item.status === 'public') {
               <li class="text-shadow-sm shadow-black">
                 <button (click)="handleUnpublishClicked(item)" cdkMenuItem>
-                  <nwb-icon [icon]="iconGlobe" class="w-4 h-4 text-error mr-2" />
+                  <nwb-icon [icon]="iconGlobe" class="w-4 h-4 text-success mr-2" />
                   <div class="flex flex-col leading-none">
                     <span>Unpublish</span>
                     <span class="text-xs opacity-75">Removes this set from public listing</span>
@@ -169,11 +169,16 @@
               </li>
             } @else {
               <li class="text-shadow-sm shadow-black">
-                <button (click)="handlePublishClicked(item)" cdkMenuItem>
-                  <nwb-icon [icon]="iconGlobe" class="w-4 h-4 text-success mr-2" />
+                @let hasItems = hasLinkedItems(item);
+                <button (click)="handlePublishClicked(item)" cdkMenuItem [disabled]="hasItems">
+                  <nwb-icon [icon]="iconGlobe" class="w-4 h-4 mr-2" />
                   <div class="flex flex-col leading-none">
                     <span>Publish</span>
-                    <span class="text-xs opacity-75">Publishes this set for other users to see</span>
+                    @if (hasItems) {
+                      <span class="text-xs text-error">Gearsets with <b>linked</b> items can not be published</span>
+                    } @else {
+                      <span class="text-xs opacity-75">Publish this gearsets for other users to see</span>
+                    }
                   </div>
                 </button>
               </li>

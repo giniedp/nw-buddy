@@ -72,7 +72,7 @@ export class GearsetFormComponent {
   public isLinkMode = this.store.isLinkMode
   public isCopyMode = this.store.isCopyMode
   public isPublished = this.store.isPublished
-  public isPublishable = this.store.isPublishable
+  public hasLinkedItems = this.store.hasLinkedItems
   public isSignedIn = this.backend.isSignedIn
 
   protected iconOpen = svgFolderOpen

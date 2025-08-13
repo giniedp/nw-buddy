@@ -123,7 +123,7 @@ export class GearsetToolbarComponent {
 
   protected gearset = this.store.gearset
   protected isEditable = computed(() => !!this.gearset() && this.store.isOwned())
-  protected isPublishable = this.store.isPublishable
+  protected hasLinkedItems = this.store.hasLinkedItems
   protected isPublic = this.store.isPublished
   protected isOwned = this.store.isOwned
   protected isSyncPending = this.store.isSyncPending

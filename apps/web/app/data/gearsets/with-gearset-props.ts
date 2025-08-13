@@ -45,18 +45,8 @@ export function withGearsetProps() {
         isOwned: computed(() => gearset()?.userId === recordUserId()),
         isPublished: computed(() => gearset()?.status === 'public'),
         isPrivate: computed(() => gearset()?.status !== 'public'),
-        isPublishable: computed(() => {
-          const slots = gearset()?.slots
-          if (!slots) {
-            return false
-          }
-          for (const slot in slots) {
-            if (typeof slots[slot] === 'string') {
-              return false
-            }
-          }
-          return true
-        }),
+        hasLinkedItems: computed(() => gearsetHasLinkedItems(gearset())),
+        isPublishable: computed(() => !gearsetHasLinkedItems(gearset())),
       }
     }),
     withComputed(({ gearsetSlots, skills, gearsetUserid, level }) => {
@@ -114,4 +104,17 @@ export function withGearsetProps() {
       }
     }),
   )
+}
+
+export function gearsetHasLinkedItems(gearset: GearsetRecord) {
+  const slots = gearset?.slots
+  if (!slots) {
+    return false
+  }
+  for (const slot in slots) {
+    if (typeof slots[slot] === 'string') {
+      return true
+    }
+  }
+  return false
 }

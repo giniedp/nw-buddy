@@ -3,7 +3,7 @@ import { Component, computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { debounceTime, filter, switchMap } from 'rxjs'
-import { GearsetRecord, GearsetsService } from '~/data'
+import { gearsetHasLinkedItems, GearsetRecord, GearsetsService } from '~/data'
 import { BackendService } from '~/data/backend'
 import { NwModule } from '~/nw'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
@@ -154,5 +154,9 @@ export class GearsetsListPageComponent {
 
   protected toggleTagsOperator() {
     this.store.toggleTagsOperator()
+  }
+
+  protected hasLinkedItems(record: GearsetRecord) {
+    return gearsetHasLinkedItems(record)
   }
 }
