@@ -39,6 +39,7 @@ type Flags struct {
 	UuidFile       string
 	Lights         bool
 	LightIntensity float32
+	IOR            float32
 }
 
 var flg Flags
@@ -70,6 +71,7 @@ func init() {
 	Cmd.Flags().BoolVar(&flg.Ktx2, "ktx", false, "Textures are converted to ktx2")
 	Cmd.MarkFlagsMutuallyExclusive("webp", "ktx")
 
+	Cmd.Flags().Float32Var(&flg.IOR, "ior", 0.0, "Material IOR value. Use 1.5 when exporting for blender otherwise keep it at 0.0")
 	Cmd.Flags().BoolVar(&flg.Lights, "lights", false, "Whether lights should be exported")
 	Cmd.Flags().Float32Var(&flg.LightIntensity, "light-intensity", 500.0, "Light intensity scale")
 	Cmd.Flags().BoolVar(&flg.Animations, "animations", false, "Whether animations should be processed")
@@ -200,7 +202,10 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 				document.ImportCgfLights(group.Lights, flg.LightIntensity)
 			}
 
-			document.ImportCgfMaterials(true)
+			document.ImportCgfMaterials(
+				gltf.WithTextureBaking(true),
+				gltf.WithCustomIOR(flg.IOR),
+			)
 			document.Clean()
 
 			imageFormat := ""

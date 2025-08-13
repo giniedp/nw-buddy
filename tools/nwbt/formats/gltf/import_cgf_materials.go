@@ -18,7 +18,33 @@ import (
 	"github.com/qmuntal/gltf/ext/texturetransform"
 )
 
-func (c *Document) ImportCgfMaterials(textureBaking bool) {
+type ImportCgfMaterialsOptions struct {
+	TextureBaking bool
+	CustomIOR     float32
+}
+
+func WithTextureBaking(value bool) func(*ImportCgfMaterialsOptions) {
+	return func(o *ImportCgfMaterialsOptions) {
+		o.TextureBaking = value
+	}
+}
+
+func WithCustomIOR(value float32) func(*ImportCgfMaterialsOptions) {
+	return func(o *ImportCgfMaterialsOptions) {
+		o.CustomIOR = value
+	}
+}
+
+func (c *Document) ImportCgfMaterials(opts ...func(*ImportCgfMaterialsOptions)) {
+	options := ImportCgfMaterialsOptions{
+		TextureBaking: false,
+		CustomIOR:     0.0,
+	}
+	for _, o := range opts {
+		o(&options)
+	}
+
+	textureBaking := options.TextureBaking
 	for _, material := range c.Materials {
 		if !c.IsMaterialReferenced(material) {
 			continue
@@ -40,7 +66,7 @@ func (c *Document) ImportCgfMaterials(textureBaking bool) {
 			RoughnessFactor: gltf.Float(1),
 		}
 		material.Extensions[extensions.KHR_materials_ior] = extensions.KHRMaterialsIOR{
-			IOR: gltf.Float(0.0), // specular workflow requires this
+			IOR: gltf.Float(float64(options.CustomIOR)), // specular workflow requires this
 		}
 		c.ExtensionsUsed = utils.AppendUniq(c.ExtensionsUsed, extensions.KHR_materials_ior)
 

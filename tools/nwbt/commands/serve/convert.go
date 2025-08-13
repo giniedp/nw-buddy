@@ -376,7 +376,7 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool) ([
 	for _, mesh := range group.Meshes {
 		document.ImportGeometry(mesh, assets.LoadAsset)
 	}
-	document.ImportCgfMaterials(false)
+	document.ImportCgfMaterials()
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	if err := document.Encode(w, binary); err != nil {
