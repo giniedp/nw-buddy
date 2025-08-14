@@ -19,6 +19,7 @@ import {
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 
+import type { Mesh } from '@babylonjs/core'
 import type { ViewerDetails } from '@babylonjs/viewer'
 import { ArmorAppearanceDefinitions } from '@nw-data/generated'
 import { NwMaterialExtension, updateNwMaterial } from '@nw-viewer/babylon/extensions'
@@ -48,7 +49,7 @@ import { ModelItemInfo } from './model-viewer.service'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { getModelUrl } from './utils/get-model-url'
-import { Model, Viewer, createViewer, viewerCaptureImage, renderFrame } from './viewer/create-viewer'
+import { Model, Viewer, createViewer, renderFrame, viewerCaptureImage } from './viewer/create-viewer'
 
 export interface ModelViewerState {
   models: ModelItemInfo[]
@@ -136,13 +137,9 @@ export class ModelViewerComponent implements OnDestroy {
     })
     effect(() => {
       const viewer = this.viewer()
-      const mode = this.mode()
-      untracked(() => updateMode(viewer, mode))
-    })
-    effect(() => {
-      const viewer = this.viewer()
       const environment = this.store.environment()
-      untracked(() => updateEnv(viewer, environment))
+      const mode = this.mode()
+      untracked(() => updateEnv(viewer, environment, mode))
     })
     effect(() => {
       const viewer = this.viewer()
@@ -276,7 +273,7 @@ export class ModelViewerComponent implements OnDestroy {
           this.isAnimating.set(viewer.isAnimationPlaying)
         })
         await viewer.loadEnvironment('auto', {
-          skybox: true,
+          skybox: false,
           lighting: true,
         })
 
@@ -366,32 +363,24 @@ export class ModelViewerComponent implements OnDestroy {
           debugMask: debugMask,
         })
         setTimeout(() => renderFrame(this.viewer()))
-
       })
     })
   }
 }
 
-function updateMode(viewer: Viewer, mode: 'dark' | 'light') {
+async function updateEnv(viewer: Viewer, env: string, mode: 'dark' | 'light') {
   if (!viewer) {
     return
   }
-  viewer.environmentConfig = {
-    rotation: 1.85,
-    blur: 0.5,
-    visible: mode === 'light',
-  }
-}
 
-async function updateEnv(viewer: Viewer, env: string) {
-  if (!viewer) {
-    return
-  }
-  const wasVisible = !!viewer.environmentConfig?.visible
-  await viewer.loadEnvironment(env, { lighting: true, skybox: true })
-  viewer.environmentConfig = {
-    ...viewer.environmentConfig,
-    visible: wasVisible,
+  const showSkybox = mode === 'light'
+  await viewer.loadEnvironment(env, {
+    lighting: true,
+    skybox: mode === 'light',
+  })
+  if (viewer['_skybox']) {
+    const skybox = viewer['_skybox'] as Mesh
+    skybox.isVisible = showSkybox
   }
 }
 

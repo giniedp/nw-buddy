@@ -250,7 +250,7 @@ export class NwMaterialPlugin extends MaterialPluginBase {
       '!float\\smicroSurface=reflectivityOut.microSurface;': /*glsl*/ `
         #ifdef NW_OVERLAY_MASK
           vec4 nwMask = texture2D(nwMaskTexture, vMainUV1) * nwMaskRGBA.a;
-          reflectivityOut.surfaceReflectivityColor = mix(reflectivityOut.surfaceReflectivityColor, nwMaskASpec.rgb, nwMask.a * nwMaskASpec.a) ;
+          reflectivityOut.colorReflectanceF0 = mix(reflectivityOut.colorReflectanceF0, nwMaskASpec.rgb, nwMask.a * nwMaskASpec.a) ;
 
           float nwMaskRoughness = reflectivityOut.roughness;
           nwMaskRoughness = mix(0.0, nwMaskRoughness, saturate(nwMaskGloss.y / 0.5));

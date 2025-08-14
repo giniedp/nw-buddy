@@ -56,7 +56,7 @@ import { of } from 'rxjs'
           [value]="info.time * 1000"
           (input)="onProgressChange($event)"
           (dblclick)="onDblClick($event)"
-          class="range range-xs"
+          class="range range-xs w-full"
         />
       }
     }
