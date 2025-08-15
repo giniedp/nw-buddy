@@ -22,7 +22,6 @@ func processLocale(task *Task, format string) {
 
 	switch format {
 	case "":
-		fmt.Printf("pass through %v\n", output.Path)
 		return
 	case FMT_JSON:
 		record, err := loc.Parse(output.Data)
