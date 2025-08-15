@@ -124,8 +124,8 @@ export class GearsetsDetailPageComponent {
   protected opponentIsLoading = this.opponentResource.isLoading
   protected hasOpponent = computed(() => !!this.opponentId())
 
-  protected playerHost = viewChild('playerGrid', { read: GearsetHostDirective })
-  protected opponentHost = viewChild('oponentGrid', { read: GearsetHostDirective })
+  protected playerHost = viewChild('playerHost', { read: GearsetHostDirective })
+  protected opponentHost = viewChild('opponentHost', { read: GearsetHostDirective })
 
   protected iconBack = svgChevronLeft
   protected iconTabMain = svgUser
@@ -143,11 +143,11 @@ export class GearsetsDetailPageComponent {
       }
     })
     effect(() => {
-      const playerHost = this.playerHost()
-      const opponentHost = this.opponentHost()
+      const player = this.playerHost()?.mannequin
+      const opponent = this.opponentHost()?.mannequin
       untracked(() => {
-        this.player.set(playerHost?.mannequin || null)
-        this.opponent.set(opponentHost?.mannequin || null)
+        this.player.set(player || null)
+        this.opponent.set(opponent || null)
       })
     })
   }
