@@ -96,10 +96,10 @@ export class ZonesPageComponent {
   }
 
   protected onZoneClicked(zoneId: string) {
-    this.router.navigate(['/zones', zoneId])
+    this.router.navigate(['/map', zoneId])
   }
 
   protected onVitalClicked(vitalId: string) {
-    this.router.navigate(['/zones', this.zoneIdParam(), vitalId || ''])
+    this.router.navigate(['/map', this.zoneIdParam(), vitalId || ''])
   }
 }
