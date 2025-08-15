@@ -72,8 +72,8 @@
           class="order-2"
           style="--min-width: min(100vw, 360px)"
         >
-          <ion-content class="bg-black ion-p-4">
-            <nwb-damage-calculator [layoutAsPage]="true" [player]="player()" [opponent]="opponent()" />
+          <ion-content class="bg-black">
+            <nwb-damage-calculator [player]="player()" [opponent]="opponent()" />
           </ion-content>
         </ion-menu>
         <div class="ion-page order-1" id="player">
@@ -139,8 +139,8 @@
           class="order-1"
           style="--min-width: min(100vw, 360px)"
         >
-          <ion-content class="bg-black ion-p-4">
-            <nwb-damage-calculator [layoutAsPage]="true" [opponent]="player()" [player]="opponent()" />
+          <ion-content class="bg-black">
+            <nwb-damage-calculator [opponent]="player()" [player]="opponent()" />
           </ion-content>
         </ion-menu>
         <div class="ion-page order-2" id="opponent">

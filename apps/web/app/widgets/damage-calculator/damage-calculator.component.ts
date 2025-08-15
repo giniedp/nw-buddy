@@ -66,7 +66,6 @@ import { DamageIndicatorService } from './damage-indicator.service'
   ],
   host: {
     class: 'flex flex-col',
-    '[class.ion-page]': 'layoutAsPage()',
   },
   providers: [DamageCalculatorStore, DamageIndicatorService],
 })
@@ -96,8 +95,6 @@ export class DamageCalculatorComponent implements OnInit {
 
   public opponent = input<Mannequin>(null)
   private opponent$ = toObservable(this.opponent)
-
-  public layoutAsPage = input(false)
 
   protected iconReset = svgRestartAlt
 
