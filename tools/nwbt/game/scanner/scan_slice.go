@@ -163,6 +163,7 @@ const (
 	ctxVitalsTags           = "vitalsTags"
 	ctxEncounterName        = "encounterName"
 	ctxSpawnerName          = "spawnerName"
+	ctxHotspotType          = "hotspotType"
 )
 
 func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
@@ -174,6 +175,7 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 		ctx.Assets.WalkSlice(file, func(node *game.SliceNode) {
 			hasVital := false
 			hasGatherable := false
+			hasHotspot := false
 			hasVariant := false
 
 			for _, component := range node.Components {
@@ -188,7 +190,11 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 						hasGatherable = true
 						node.ContextStrSet(ctxGatherableId, string(v.M_gatherableentryid)) // do not inherit
 					}
-
+				case nwt.FishingHotspotComponent:
+					if v.M_fishinghotspottype != "" {
+						hasHotspot = true
+						node.ContextStrSet(ctxHotspotType, string(v.M_fishinghotspottype))
+					}
 				case nwt.VitalsComponent:
 					if v.M_rowreference != "" {
 						hasVital = true
@@ -353,6 +359,18 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 			if (gatherableId != "" || variantId != "") && (hasGatherable || hasVariant) {
 				result := SpawnNode{
 					GatherableID: gatherableId,
+					VariantID:    variantId,
+					Position:     mat4.PositionOf(node.Transform),
+					Encounter:    encounter,
+				}
+				if !yield(result) {
+					return
+				}
+			}
+			hotspotType := node.ContextStrGet(ctxHotspotType)
+			if (hotspotType != "" || variantId != "") && (hasHotspot || hasVariant) {
+				result := SpawnNode{
+					GatherableID: hotspotType,
 					VariantID:    variantId,
 					Position:     mat4.PositionOf(node.Transform),
 					Encounter:    encounter,
