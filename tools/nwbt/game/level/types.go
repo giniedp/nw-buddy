@@ -61,6 +61,14 @@ type CapitalLayerDefinition struct {
 	Chunks   []nwt.ChunkEntry
 }
 
+type RegionMacroMaterial struct {
+	RegionsX  int       `json:"regionsX"`
+	RegionsY  int       `json:"regionsY"`
+	NormalMap nwfs.File `json:"normalMap"`
+	ColorMap  nwfs.File `json:"colorMap"`
+	GlossMap  nwfs.File `json:"specularMap"`
+}
+
 type CollectionLoader interface {
 	Level(name string) Loader
 }
@@ -80,16 +88,17 @@ type RegionLoader interface {
 }
 
 type Info struct {
-	Name           string            `json:"name"`
-	CoatlicueName  string            `json:"coatlicueName"`
-	OceanLevel     float32           `json:"oceanLevel"`
-	MountainHeight float32           `json:"mountainHeight"`
-	GroundMaterial string            `json:"groundMaterial"`
-	RegionSize     int               `json:"regionSize"`
-	Regions        []RegionReference `json:"regions"`
-	Maps           []MapInfo         `json:"maps"`
-	TimeOfDay      *TimeOfDayInfo    `json:"timeOfDay"`
-	Environment    *EnvironmentInfo  `json:"environment"`
+	Name            string                `json:"name"`
+	CoatlicueName   string                `json:"coatlicueName"`
+	OceanLevel      float32               `json:"oceanLevel"`
+	MountainHeight  float32               `json:"mountainHeight"`
+	GroundMaterial  string                `json:"groundMaterial"`
+	RegionSize      int                   `json:"regionSize"`
+	Regions         []RegionReference     `json:"regions"`
+	Maps            []MapInfo             `json:"maps"`
+	TimeOfDay       *TimeOfDayInfo        `json:"timeOfDay"`
+	Environment     *EnvironmentInfo      `json:"environment"`
+	RegionMaterials []RegionMacroMaterial `json:"regionMaterials"`
 }
 
 type MapInfo struct {

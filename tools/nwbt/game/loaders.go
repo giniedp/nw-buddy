@@ -56,6 +56,28 @@ func (it *Assets) LoadEntity(file nwfs.File) (*nwt.AZ__Entity, error) {
 	return nil, nil
 }
 
+func (it *Assets) LoadWorldMaterial(file nwfs.File) (*nwt.WorldMaterialDataAsset, error) {
+	node, err := it.LoadObjectStream(file)
+	if node == nil || err != nil {
+		return nil, err
+	}
+	if v, ok := node.(nwt.WorldMaterialDataAsset); ok {
+		return &v, nil
+	}
+	return nil, nil
+}
+
+func (it *Assets) LoadRegionMaterial(file nwfs.File) (*nwt.RegionMaterialDataAsset, error) {
+	node, err := it.LoadObjectStream(file)
+	if node == nil || err != nil {
+		return nil, err
+	}
+	if v, ok := node.(nwt.RegionMaterialDataAsset); ok {
+		return &v, nil
+	}
+	return nil, nil
+}
+
 func (it *Assets) LoadSliceComponent(file nwfs.File) (*nwt.SliceComponent, error) {
 	entity, err := it.LoadEntity(file)
 	if entity == nil || err != nil {

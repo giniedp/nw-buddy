@@ -126,6 +126,7 @@ export interface TerrainInfo {
   oceanLevel: number
   mountainHeight: number
   groundMaterial: string
+  regionMaterials: RegionMacroMaterial[]
 }
 
 export interface CatalogAssetInfo {
@@ -139,4 +140,12 @@ export interface AssetInfo {
   type: string
   file: string
   size: number
+}
+
+export interface RegionMacroMaterial {
+  regionsX: number
+  regionsY: number
+  normalMap: string
+  colorMap: string
+  specularMap: string
 }

@@ -89,7 +89,7 @@ func (l *levelLoader) MissionEntities() []EntityInfo {
 	}
 	l.missionEntities = make([]EntityInfo, 0)
 
-	definition := LoadDefinition(l.assets.Archive, l.name)
+	definition := LoadDefinition(l.assets, l.name)
 	if definition.MissionEntitiesFile == nil {
 		return l.missionEntities
 	}

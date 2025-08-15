@@ -18,7 +18,7 @@ func ListLevels(assets *game.Assets) []*Info {
 }
 
 func LoadInfo(assets *game.Assets, name string) *Info {
-	data := LoadDefinition(assets.Archive, name)
+	data := LoadDefinition(assets, name)
 
 	level := Info{
 		Name:          name,
@@ -30,6 +30,7 @@ func LoadInfo(assets *game.Assets, name string) *Info {
 		level.OceanLevel = data.TerrainSettings.OceanLevel
 		level.MountainHeight = data.TerrainSettings.MountainHeight
 		level.GroundMaterial = data.TerrainSettings.WorldMaterialAssetPath
+		level.RegionMaterials, _ = LoadMacroMaterials(assets, data.TerrainSettings)
 	}
 	if len(data.Maps) > 0 {
 		level.Maps = make([]MapInfo, len(data.Maps))

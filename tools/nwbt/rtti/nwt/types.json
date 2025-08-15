@@ -1221,14 +1221,14 @@
 			},
 			"1471881264": {
 				"Crc32": 1471881264,
-				"Name": "causticIntensity",
+				"Name": "CausticIntensity",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
 			},
 			"1504183351": {
 				"Crc32": 1504183351,
-				"Name": "fogColorMultiplier",
+				"Name": "FogColorMultiplier",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -1242,7 +1242,7 @@
 			},
 			"1607155523": {
 				"Crc32": 1607155523,
-				"Name": "causticTiling",
+				"Name": "CausticTiling",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -1277,7 +1277,7 @@
 			},
 			"2296422290": {
 				"Crc32": 2296422290,
-				"Name": "causticsEnabled",
+				"Name": "CausticsEnabled",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -1333,7 +1333,7 @@
 			},
 			"3151874639": {
 				"Crc32": 3151874639,
-				"Name": "fogColor",
+				"Name": "FogColor",
 				"TypeID": "8379EB7D-01FA-4538-B64B-A6543B4BE73D",
 				"TypeIDs": [],
 				"Array": false
@@ -1410,7 +1410,7 @@
 			},
 			"994266642": {
 				"Crc32": 994266642,
-				"Name": "fogDensity",
+				"Name": "FogDensity",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -1933,7 +1933,7 @@
 		"Members": {
 			"3208210256": {
 				"Crc32": 3208210256,
-				"Name": "Id",
+				"Name": "id",
 				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
 				"TypeIDs": [],
 				"Array": false
@@ -2794,6 +2794,54 @@
 			}
 		}
 	},
+	"0C5DEBF7-4320-42AB-B77B-B7270D04206A": {
+		"ID": "0C5DEBF7-4320-42AB-B77B-B7270D04206A",
+		"Name": "WorldMaterialDataAsset",
+		"Members": {
+			"1891578649": {
+				"Crc32": 1891578649,
+				"Name": "ForegroundMacroMaterialParams",
+				"TypeID": "A99A56EF-2BC9-406A-855D-BD36F5DF2638",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1976432503": {
+				"Crc32": 1976432503,
+				"Name": "BackgroundMacroMaterialParams",
+				"TypeID": "A99A56EF-2BC9-406A-855D-BD36F5DF2638",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2724690419": {
+				"Crc32": 2724690419,
+				"Name": "Regions",
+				"TypeID": "8F40751F-16A4-50E9-BCFB-96366750DED1",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2856396203": {
+				"Crc32": 2856396203,
+				"Name": "POMHeightBias",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2856754599": {
+				"Crc32": 2856754599,
+				"Name": "POMSelfShadowStrength",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4051236933": {
+				"Crc32": 4051236933,
+				"Name": "POMDisplacement",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"0C60CA7E-5001-4FAC-9B25-80A09EC3D24C": {
 		"ID": "0C60CA7E-5001-4FAC-9B25-80A09EC3D24C",
 		"Name": "TraversalComponentServerFacet",
@@ -3534,7 +3582,14 @@
 					"5A67F793-0D02-4FAC-876D-131A40642505",
 					"F111B20E-7CA1-47CA-88ED-1E3F3BCEBB93",
 					"127579B6-B5BE-4282-8985-BF1FCE3C3F51",
-					"92D655F0-7F5B-4792-A154-D3532DD04E24"
+					"92D655F0-7F5B-4792-A154-D3532DD04E24",
+					"89DC9448-B12D-4CBF-9488-EEC5D54F4740",
+					"9927178E-676E-4240-B678-7D0F85CD4613",
+					"CF89E904-8893-423F-A827-74DBAFE8AA7E",
+					"F3B90A38-4904-4336-888C-28517A4F565B",
+					"C17D53D4-F2C0-421D-95B4-3F492E226F73",
+					"43CB54E3-6A14-4D38-99C1-2CDE85A340AB",
+					"31AADE66-FD91-4398-BC5B-23F64B435A4F"
 				],
 				"Array": true
 			}
@@ -3772,7 +3827,7 @@
 				"Name": "element",
 				"TypeID": "6D1FB9E2-128C-4B33-84FF-4F696C1F7D53",
 				"TypeIDs": [],
-				"Array": false
+				"Array": true
 			}
 		}
 	},
@@ -5151,6 +5206,19 @@
 			}
 		}
 	},
+	"14FFD4A8-AE46-4E23-B45B-6A7C4F787A91": {
+		"ID": "14FFD4A8-AE46-4E23-B45B-6A7C4F787A91",
+		"Name": "InputEventBindings",
+		"Members": {
+			"1125333106": {
+				"Crc32": 1125333106,
+				"Name": "Input Event Groups",
+				"TypeID": "2BADE35A-6F1B-4698-B2BC-3373D010020C",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"153A4BF9-1404-4D54-8B39-AF2224B15088": {
 		"ID": "153A4BF9-1404-4D54-8B39-AF2224B15088",
 		"Name": "UiRequiredResourceDetailsComponent",
@@ -5350,6 +5418,19 @@
 			}
 		}
 	},
+	"15B1E5EA-BB12-445E-B937-34CD559347ED": {
+		"ID": "15B1E5EA-BB12-445E-B937-34CD559347ED",
+		"Name": "CAnimMaterialNode",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "57736B48-5EE7-4530-8051-657ACC9BA1EE",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"15C790A0-1277-5005-9524-2F3836A526DD": {
 		"ID": "15C790A0-1277-5005-9524-2F3836A526DD",
 		"Name": "AZStd::intrusive_ptr",
@@ -5537,7 +5618,7 @@
 	},
 	"16647B0B-B7C4-4318-B578-5770265C2308": {
 		"ID": "16647B0B-B7C4-4318-B578-5770265C2308",
-		"Name": "",
+		"Name": "PointsAccumulatorComponent",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -5548,7 +5629,7 @@
 			},
 			"797567417": {
 				"Crc32": 797567417,
-				"Name": "",
+				"Name": "m_attributespercategory",
 				"TypeID": "BA33A443-E7D1-5FF5-8CDB-B1B83E315C0E",
 				"TypeIDs": [],
 				"Array": false
@@ -6050,6 +6131,40 @@
 			}
 		}
 	},
+	"180454CF-AD7E-440B-91F9-A071574422F4": {
+		"ID": "180454CF-AD7E-440B-91F9-A071574422F4",
+		"Name": "TerrainMaterialLayerData",
+		"Members": {
+			"1241079901": {
+				"Crc32": 1241079901,
+				"Name": "AffectedTiles",
+				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1655102503": {
+				"Crc32": 1655102503,
+				"Name": "Priority",
+				"TypeID": "72B9409A-7D1A-4831-9CFE-FCB3FADD3426",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2092856725": {
+				"Crc32": 2092856725,
+				"Name": "Material",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4164963471": {
+				"Crc32": 4164963471,
+				"Name": "SplatMap",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"18136753-CBD7-5FCE-8126-AC6352DBB319": {
 		"ID": "18136753-CBD7-5FCE-8126-AC6352DBB319",
 		"Name": "AZStd::intrusive_ptr",
@@ -6063,7 +6178,10 @@
 					"722F3D0D-7AEB-46B7-BF13-D5C7A828E9BD",
 					"41FCA8BB-46A8-4F37-87C2-C1D10994854B",
 					"F9F306E0-FF9C-4FF4-B1CC-5A96746364FE",
-					"6BDA5C06-7C15-4622-9550-68368E84D653"
+					"6BDA5C06-7C15-4622-9550-68368E84D653",
+					"8CB3E585-1A24-43E0-8124-9AE51EAE7F4C",
+					"15B1E5EA-BB12-445E-B937-34CD559347ED",
+					"C24D5F2D-B17A-4350-8381-539202A99FDD"
 				],
 				"Array": false
 			}
@@ -6094,6 +6212,11 @@
 				"Array": false
 			}
 		}
+	},
+	"189CC2ED-FDDE-5680-91D4-9F630A79187F": {
+		"ID": "189CC2ED-FDDE-5680-91D4-9F630A79187F",
+		"Name": "AZStd::string",
+		"Members": {}
 	},
 	"18BC9C40-EE89-4DA9-B415-94C3D55B33EC": {
 		"ID": "18BC9C40-EE89-4DA9-B415-94C3D55B33EC",
@@ -9139,6 +9262,19 @@
 			}
 		}
 	},
+	"23D80BE7-76FE-5C35-B4EA-A4492B2B058C": {
+		"ID": "23D80BE7-76FE-5C35-B4EA-A4492B2B058C",
+		"Name": "AZStd::unordered_map",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "657F8527-0117-54A0-91E7-6E67A7464BC5",
+				"TypeIDs": [],
+				"Array": true
+			}
+		}
+	},
 	"23FFDF3E-3404-4F25-A29B-EF2A61D77753": {
 		"ID": "23FFDF3E-3404-4F25-A29B-EF2A61D77753",
 		"Name": "VegetationBendingConfig",
@@ -9329,14 +9465,14 @@
 			},
 			"184893882": {
 				"Crc32": 184893882,
-				"Name": "Flags",
+				"Name": "flags",
 				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
 			},
 			"1872009285": {
 				"Crc32": 1872009285,
-				"Name": "Time",
+				"Name": "time",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
@@ -9350,7 +9486,7 @@
 			},
 			"494360628": {
 				"Crc32": 494360628,
-				"Name": "Value",
+				"Name": "value",
 				"TypeID": "844131BA-9565-42F3-8482-6F65A6D5FC59",
 				"TypeIDs": [],
 				"Array": false
@@ -9398,6 +9534,26 @@
 				"Crc32": 611319100,
 				"Name": "m_nanosecondssinceepoc",
 				"TypeID": "CDADEE50-C32A-5AC5-9422-C61083EF25ED",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"25143B7E-2FEC-4CC5-92FE-270B67E79734": {
+		"ID": "25143B7E-2FEC-4CC5-92FE-270B67E79734",
+		"Name": "InputEventGroup",
+		"Members": {
+			"2130014038": {
+				"Crc32": 2130014038,
+				"Name": "Event Generators",
+				"TypeID": "2BADE35A-6F1B-4698-B2BC-3373D010020C",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"980043187": {
+				"Crc32": 980043187,
+				"Name": "Event Name",
+				"TypeID": "EF8FF807-DDEE-4EB0-B678-4CA3A2C490A4",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -9464,6 +9620,19 @@
 				"Crc32": 3084955804,
 				"Name": "sequences",
 				"TypeID": "9F8D44A9-9731-5314-885E-B958D4216073",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"25971C7A-26E2-4D08-A146-2EFCC1C36B0C": {
+		"ID": "25971C7A-26E2-4D08-A146-2EFCC1C36B0C",
+		"Name": "InputEventBindingsAsset",
+		"Members": {
+			"1348029819": {
+				"Crc32": 1348029819,
+				"Name": "Bindings",
+				"TypeID": "14FFD4A8-AE46-4E23-B45B-6A7C4F787A91",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -10480,6 +10649,20 @@
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
+			},
+			"291309385": {
+				"Crc32": 291309385,
+				"Name": "godraysEnabled",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"51372096": {
+				"Crc32": 51372096,
+				"Name": "waterTessellationAmount",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
 			}
 		}
 	},
@@ -10580,6 +10763,19 @@
 				"TypeID": "65CD8F3E-73AA-43E9-8D9A-B5AE43F624F9",
 				"TypeIDs": [],
 				"Array": false
+			}
+		}
+	},
+	"2BADE35A-6F1B-4698-B2BC-3373D010020C": {
+		"ID": "2BADE35A-6F1B-4698-B2BC-3373D010020C",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "25143B7E-2FEC-4CC5-92FE-270B67E79734",
+				"TypeIDs": ["806F21D9-11EA-47FC-8B89-FDB67AADE4FF"],
+				"Array": true
 			}
 		}
 	},
@@ -10723,7 +10919,7 @@
 	},
 	"2C75C405-2415-46F5-9026-213A3BBAFD2A": {
 		"ID": "2C75C405-2415-46F5-9026-213A3BBAFD2A",
-		"Name": "",
+		"Name": "PointsAccumulatorSerializedValuesEntry",
 		"Members": {
 			"152481721": {
 				"Crc32": 152481721,
@@ -10734,15 +10930,42 @@
 			},
 			"2231106608": {
 				"Crc32": 2231106608,
-				"Name": "",
+				"Name": "m_secondsuntilclearpoints",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
 				"TypeIDs": [],
 				"Array": false
 			},
 			"812891055": {
 				"Crc32": 812891055,
-				"Name": "",
+				"Name": "m_maxvalue",
 				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"2C93824D-D011-459C-B12B-9F4A6148730C": {
+		"ID": "2C93824D-D011-459C-B12B-9F4A6148730C",
+		"Name": "SingleEventToAction",
+		"Members": {
+			"1724690991": {
+				"Crc32": 1724690991,
+				"Name": "Input Name",
+				"TypeID": "EF8FF807-DDEE-4EB0-B678-4CA3A2C490A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1864471996": {
+				"Crc32": 1864471996,
+				"Name": "Event Value Multiplier",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3715225549": {
+				"Crc32": 3715225549,
+				"Name": "Input Device Type",
+				"TypeID": "EF8FF807-DDEE-4EB0-B678-4CA3A2C490A4",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -10784,6 +11007,40 @@
 				"Crc32": 3617449611,
 				"Name": "caustics",
 				"TypeID": "376EE3DF-0225-4AB1-B50A-12852D961C3F",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"818878898": {
+				"Crc32": 818878898,
+				"Name": "reflection",
+				"TypeID": "7E602EC1-B6C9-4112-96C7-CECA8C448E11",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"2CA51C61-1B5F-4480-A257-F28D8944AA35": {
+		"ID": "2CA51C61-1B5F-4480-A257-F28D8944AA35",
+		"Name": "TextureAtlasImpl",
+		"Members": {
+			"1911364170": {
+				"Crc32": 1911364170,
+				"Name": "Coordinate Pairs",
+				"TypeID": "23D80BE7-76FE-5C35-B4EA-A4492B2B058C",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2350531887": {
+				"Crc32": 2350531887,
+				"Name": "Width",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4115522831": {
+				"Crc32": 4115522831,
+				"Name": "Height",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -12257,6 +12514,19 @@
 			}
 		}
 	},
+	"31AADE66-FD91-4398-BC5B-23F64B435A4F": {
+		"ID": "31AADE66-FD91-4398-BC5B-23F64B435A4F",
+		"Name": "RenderGuildFlagOfflineComponent",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"31D0DFEB-C899-568D-AF9F-0246BFFF5FA3": {
 		"ID": "31D0DFEB-C899-568D-AF9F-0246BFFF5FA3",
 		"Name": "AZStd::map",
@@ -12427,6 +12697,19 @@
 			}
 		}
 	},
+	"3279BB19-D32D-482E-BD6E-C2DCD8858328": {
+		"ID": "3279BB19-D32D-482E-BD6E-C2DCD8858328",
+		"Name": "CScreenFaderTrack",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "8B033981-922E-574B-B5C9-B28BF754EE5A",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"32B3430B-DDBB-5B4F-91BD-8A565AF0ECD5": {
 		"ID": "32B3430B-DDBB-5B4F-91BD-8A565AF0ECD5",
 		"Name": "AZStd::list",
@@ -12560,6 +12843,13 @@
 				"Crc32": 1140682086,
 				"Name": "Opacity",
 				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1266187467": {
+				"Crc32": 1266187467,
+				"Name": "NeverFrustumCull",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
 			},
@@ -16625,6 +16915,26 @@
 			}
 		}
 	},
+	"43CB54E3-6A14-4D38-99C1-2CDE85A340AB": {
+		"ID": "43CB54E3-6A14-4D38-99C1-2CDE85A340AB",
+		"Name": "MainMenuComponent",
+		"Members": {
+			"1554069341": {
+				"Crc32": 1554069341,
+				"Name": "RenderGuildFlag",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"43DA906B-7DEF-4CA8-9790-854106D3F983": {
 		"ID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
 		"Name": "unsigned int",
@@ -17226,7 +17536,7 @@
 			},
 			"3020978279": {
 				"Crc32": 3020978279,
-				"Name": "",
+				"Name": "m_forcesmoothlookatcameraontransitionin",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -18730,7 +19040,7 @@
 			},
 			"3818314110": {
 				"Crc32": 3818314110,
-				"Name": "",
+				"Name": "m_safepositionbuffersize",
 				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
 				"TypeIDs": [],
 				"Array": false
@@ -19767,7 +20077,7 @@
 			},
 			"288168467": {
 				"Crc32": 288168467,
-				"Name": "",
+				"Name": "targettagfilters",
 				"TypeID": "99DAD0BC-740E-5E82-826B-8FC7968CC02C",
 				"TypeIDs": [],
 				"Array": false
@@ -21285,7 +21595,7 @@
 			},
 			"3208210256": {
 				"Crc32": 3208210256,
-				"Name": "Id",
+				"Name": "ID",
 				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
 				"TypeIDs": [],
 				"Array": false
@@ -22337,7 +22647,7 @@
 			},
 			"3208210256": {
 				"Crc32": 3208210256,
-				"Name": "Id",
+				"Name": "ID",
 				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
@@ -22501,6 +22811,19 @@
 				"Crc32": 1595130787,
 				"Name": "EntityToDataFlags",
 				"TypeID": "CAB9E1F5-761E-54B8-916E-E7FB597E5EDE",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"5801883A-5289-4FA1-BECE-9EF02C1D62F5": {
+		"ID": "5801883A-5289-4FA1-BECE-9EF02C1D62F5",
+		"Name": "CSequenceTrack",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "CBFDAA0E-B66E-5457-97C6-0A974C0793F8",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -25730,7 +26053,7 @@
 		"Members": {
 			"3208210256": {
 				"Crc32": 3208210256,
-				"Name": "Id",
+				"Name": "id",
 				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
 				"TypeIDs": [],
 				"Array": false
@@ -26001,6 +26324,19 @@
 			}
 		}
 	},
+	"64EC4A5C-8FC7-57FF-8C3F-8FC53807B1DB": {
+		"ID": "64EC4A5C-8FC7-57FF-8C3F-8FC53807B1DB",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "180454CF-AD7E-440B-91F9-A071574422F4",
+				"TypeIDs": [],
+				"Array": true
+			}
+		}
+	},
 	"6518AD3D-117D-4F1E-8D5F-85A003FDC90E": {
 		"ID": "6518AD3D-117D-4F1E-8D5F-85A003FDC90E",
 		"Name": "MinionVitalsProviderComponent",
@@ -26069,6 +26405,26 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "3CAD57DB-9179-456F-904F-1B3D68FAD90E",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"657F8527-0117-54A0-91E7-6E67A7464BC5": {
+		"ID": "657F8527-0117-54A0-91E7-6E67A7464BC5",
+		"Name": "AZStd::pair",
+		"Members": {
+			"2725604442": {
+				"Crc32": 2725604442,
+				"Name": "value1",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"997998048": {
+				"Crc32": 997998048,
+				"Name": "value2",
+				"TypeID": "FC5D6A60-1056-4F6C-96F7-6A47912F8A35",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -26232,6 +26588,13 @@
 		"ID": "65CD8F3E-73AA-43E9-8D9A-B5AE43F624F9",
 		"Name": "FacetedComponent",
 		"Members": {
+			"1302005391": {
+				"Crc32": 1302005391,
+				"Name": "BaseClass2",
+				"TypeID": "CF8EABCF-8DA6-4897-8FB8-81498F3BA509",
+				"TypeIDs": [],
+				"Array": false
+			},
 			"2179307717": {
 				"Crc32": 2179307717,
 				"Name": "m_replicationIndex",
@@ -28726,7 +29089,7 @@
 		"Members": {
 			"2370995420": {
 				"Crc32": 2370995420,
-				"Name": "animation",
+				"Name": "Animation",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
@@ -29157,6 +29520,152 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "0392E589-5B61-47CC-835B-C3C254E76493",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"70277A3E-2AF5-4309-9BBF-6161AFBDE792": {
+		"ID": "70277A3E-2AF5-4309-9BBF-6161AFBDE792",
+		"Name": "ComponentApplication::Descriptor",
+		"Members": {
+			"1483843539": {
+				"Crc32": 1483843539,
+				"Name": "blockAlignment",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1522534303": {
+				"Crc32": 1522534303,
+				"Name": "allocationRecords",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1629848163": {
+				"Crc32": 1629848163,
+				"Name": "reservedDebug",
+				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1863429882": {
+				"Crc32": 1863429882,
+				"Name": "useExistingAllocator",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1981035777": {
+				"Crc32": 1981035777,
+				"Name": "pageSize",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2654747844": {
+				"Crc32": 2654747844,
+				"Name": "x360PhysicalMemory",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2762245775": {
+				"Crc32": 2762245775,
+				"Name": "reservedOS",
+				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2798358685": {
+				"Crc32": 2798358685,
+				"Name": "enableScriptReflection",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2896703784": {
+				"Crc32": 2896703784,
+				"Name": "doNotUsePools",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2920791762": {
+				"Crc32": 2920791762,
+				"Name": "allocationRecordsSaveNames",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3075418741": {
+				"Crc32": 3075418741,
+				"Name": "recordingMode",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"356442688": {
+				"Crc32": 356442688,
+				"Name": "poolPageSize",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3626038442": {
+				"Crc32": 3626038442,
+				"Name": "blockSize",
+				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3729027168": {
+				"Crc32": 3729027168,
+				"Name": "autoIntegrityCheck",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3937725742": {
+				"Crc32": 3937725742,
+				"Name": "allocationRecordsAttemptDecodeImmediately",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4165543270": {
+				"Crc32": 4165543270,
+				"Name": "stackRecordLevels",
+				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"709092162": {
+				"Crc32": 709092162,
+				"Name": "markUnallocatedMemory",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"724077390": {
+				"Crc32": 724077390,
+				"Name": "grabAllMemory",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"783762391": {
+				"Crc32": 783762391,
+				"Name": "modules",
+				"TypeID": "8E779F80-AEAA-565B-ABB1-DE10B18CF995",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"93795117": {
+				"Crc32": 93795117,
+				"Name": "enableMemoryDrilling",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -31827,6 +32336,33 @@
 			}
 		}
 	},
+	"7C65441F-6B36-444F-A722-BE103F85BFAE": {
+		"ID": "7C65441F-6B36-444F-A722-BE103F85BFAE",
+		"Name": "TileMaterialData",
+		"Members": {
+			"1105553300": {
+				"Crc32": 1105553300,
+				"Name": "Tile X",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3867733328": {
+				"Crc32": 3867733328,
+				"Name": "Layers",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"920803074": {
+				"Crc32": 920803074,
+				"Name": "Tile Y",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"7C7256B3-CAD2-4782-A5FD-7EDFE8D9E311": {
 		"ID": "7C7256B3-CAD2-4782-A5FD-7EDFE8D9E311",
 		"Name": "MomentaryOffenseComponent",
@@ -32396,6 +32932,54 @@
 			}
 		}
 	},
+	"7E602EC1-B6C9-4112-96C7-CECA8C448E11": {
+		"ID": "7E602EC1-B6C9-4112-96C7-CECA8C448E11",
+		"Name": "Reflection",
+		"Members": {
+			"1911226824": {
+				"Crc32": 1911226824,
+				"Name": "reflectEntities",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2086005905": {
+				"Crc32": 2086005905,
+				"Name": "reflectStaticObjects",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2309710442": {
+				"Crc32": 2309710442,
+				"Name": "reflectParticles",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2907897122": {
+				"Crc32": 2907897122,
+				"Name": "reflectionResolutionScale",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3765186722": {
+				"Crc32": 3765186722,
+				"Name": "reflectionAnisotropic",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"902368043": {
+				"Crc32": 902368043,
+				"Name": "reflectTerrainDetailMaterials",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"7E71304C-8FD6-5EDD-82E8-FA2809931F1C": {
 		"ID": "7E71304C-8FD6-5EDD-82E8-FA2809931F1C",
 		"Name": "AZStd::vector",
@@ -32832,6 +33416,13 @@
 		"ID": "80206665-D429-4703-B42E-94434F82F381",
 		"Name": "NetBindable",
 		"Members": {
+			"2818755557": {
+				"Crc32": 2818755557,
+				"Name": "m_isSyncEnabled",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
 			"368000637": {
 				"Crc32": 368000637,
 				"Name": "m_isNetSyncEnabled",
@@ -32854,7 +33445,7 @@
 			},
 			"494360628": {
 				"Crc32": 494360628,
-				"Name": "Value",
+				"Name": "value",
 				"TypeID": "D761E0C2-A098-497C-B8EB-EA62F5ED896B",
 				"TypeIDs": [],
 				"Array": false
@@ -33002,6 +33593,33 @@
 				"Crc32": 763120178,
 				"Name": "m_ammoid",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"806F21D9-11EA-47FC-8B89-FDB67AADE4FF": {
+		"ID": "806F21D9-11EA-47FC-8B89-FDB67AADE4FF",
+		"Name": "Analog",
+		"Members": {
+			"2152028627": {
+				"Crc32": 2152028627,
+				"Name": "Send Continuous Updates",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2168934619": {
+				"Crc32": 2168934619,
+				"Name": "Dead Zone",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "2C93824D-D011-459C-B12B-9F4A6148730C",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -33767,6 +34385,26 @@
 			}
 		}
 	},
+	"84399E75-18AB-4000-8DCA-07B9D4E0F8E8": {
+		"ID": "84399E75-18AB-4000-8DCA-07B9D4E0F8E8",
+		"Name": "MaterialSet",
+		"Members": {
+			"2601981621": {
+				"Crc32": 2601981621,
+				"Name": "Materials",
+				"TypeID": "9800688D-64A7-5C0D-9F79-E32E310BB924",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4201891245": {
+				"Crc32": 4201891245,
+				"Name": "DefaultMaterial",
+				"TypeID": "8807CAA1-AD08-4238-8FDB-2154ADD084A1",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"844131BA-9565-42F3-8482-6F65A6D5FC59": {
 		"ID": "844131BA-9565-42F3-8482-6F65A6D5FC59",
 		"Name": "Vec2",
@@ -33884,6 +34522,19 @@
 				"Crc32": 574154080,
 				"Name": "m_spawnmessagetoowner",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"84E289ED-077B-5AC0-90DF-13D12FCCD9BE": {
+		"ID": "84E289ED-077B-5AC0-90DF-13D12FCCD9BE",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "FA15E27D-603F-4829-925A-E36D75C93964",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -34186,6 +34837,47 @@
 			}
 		}
 	},
+	"8807CAA1-AD08-4238-8FDB-2154ADD084A1": {
+		"ID": "8807CAA1-AD08-4238-8FDB-2154ADD084A1",
+		"Name": "MaterialProperties",
+		"Members": {
+			"1336418461": {
+				"Crc32": 1336418461,
+				"Name": "Restitution",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1579384326": {
+				"Crc32": 1579384326,
+				"Name": "Name",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2334114560": {
+				"Crc32": 2334114560,
+				"Name": "SurfaceType",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"302782475": {
+				"Crc32": 302782475,
+				"Name": "Friction",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3953697547": {
+				"Crc32": 3953697547,
+				"Name": "Traversable",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"8817475C-56BE-46F3-9597-FF325929461E": {
 		"ID": "8817475C-56BE-46F3-9597-FF325929461E",
 		"Name": "CharacterComponentClientFacet",
@@ -34466,6 +35158,19 @@
 			}
 		}
 	},
+	"89DC9448-B12D-4CBF-9488-EEC5D54F4740": {
+		"ID": "89DC9448-B12D-4CBF-9488-EEC5D54F4740",
+		"Name": "PopupComponent",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"8A106A65-E6E7-42F7-9BDB-60950BEEBBD6": {
 		"ID": "8A106A65-E6E7-42F7-9BDB-60950BEEBBD6",
 		"Name": "RefreshZoneConfigurationAsset",
@@ -34584,6 +35289,40 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "3CAD57DB-9179-456F-904F-1B3D68FAD90E",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"8B033981-922E-574B-B5C9-B28BF754EE5A": {
+		"ID": "8B033981-922E-574B-B5C9-B28BF754EE5A",
+		"Name": "TAnimTrack<KeyType><IScreenFaderKey >",
+		"Members": {
+			"184893882": {
+				"Crc32": 184893882,
+				"Name": "Flags",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2123125098": {
+				"Crc32": 2123125098,
+				"Name": "ParamType",
+				"TypeID": "E2F34955-3B07-4241-8D34-EA3BEF3B33D2",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2475121225": {
+				"Crc32": 2475121225,
+				"Name": "Range",
+				"TypeID": "515CF4CF-4992-4139-BDE5-42A887432B45",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3029222636": {
+				"Crc32": 3029222636,
+				"Name": "Keys",
+				"TypeID": "84E289ED-077B-5AC0-90DF-13D12FCCD9BE",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -34838,6 +35577,19 @@
 			}
 		}
 	},
+	"8CB3E585-1A24-43E0-8124-9AE51EAE7F4C": {
+		"ID": "8CB3E585-1A24-43E0-8124-9AE51EAE7F4C",
+		"Name": "CAnimEnvironmentNode",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "57736B48-5EE7-4530-8051-657ACC9BA1EE",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"8CBBB54B-7435-4D33-844D-E7F201BD581A": {
 		"ID": "8CBBB54B-7435-4D33-844D-E7F201BD581A",
 		"Name": "AudioTriggerComponent",
@@ -34961,7 +35713,7 @@
 			},
 			"3208210256": {
 				"Crc32": 3208210256,
-				"Name": "Id",
+				"Name": "ID",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
@@ -35110,6 +35862,19 @@
 				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
 				"TypeIDs": [],
 				"Array": false
+			}
+		}
+	},
+	"8E779F80-AEAA-565B-ABB1-DE10B18CF995": {
+		"ID": "8E779F80-AEAA-565B-ABB1-DE10B18CF995",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "D2932FA3-9942-4FD2-A703-2E750F57C003",
+				"TypeIDs": [],
+				"Array": true
 			}
 		}
 	},
@@ -35282,6 +36047,19 @@
 				"TypeID": "3D939617-3F24-41DC-A05F-2F298E8F4CB8",
 				"TypeIDs": [],
 				"Array": false
+			}
+		}
+	},
+	"8F40751F-16A4-50E9-BCFB-96366750DED1": {
+		"ID": "8F40751F-16A4-50E9-BCFB-96366750DED1",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "7C65441F-6B36-444F-A722-BE103F85BFAE",
+				"TypeIDs": [],
+				"Array": true
 			}
 		}
 	},
@@ -36185,7 +36963,15 @@
 	"9469C437-6529-489D-8CF8-63EEAB723A79": {
 		"ID": "9469C437-6529-489D-8CF8-63EEAB723A79",
 		"Name": "Facet",
-		"Members": {}
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "CF8EABCF-8DA6-4897-8FB8-81498F3BA509",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
 	},
 	"94AEF27F-EA0C-4D24-A1BC-F42970442C1A": {
 		"ID": "94AEF27F-EA0C-4D24-A1BC-F42970442C1A",
@@ -36585,7 +37371,7 @@
 		"Members": {
 			"1853367087": {
 				"Crc32": 1853367087,
-				"Name": "",
+				"Name": "m_excludetargetnwtags",
 				"TypeID": "99DAD0BC-740E-5E82-826B-8FC7968CC02C",
 				"TypeIDs": [],
 				"Array": false
@@ -37183,6 +37969,19 @@
 			}
 		}
 	},
+	"9800688D-64A7-5C0D-9F79-E32E310BB924": {
+		"ID": "9800688D-64A7-5C0D-9F79-E32E310BB924",
+		"Name": "AZStd::list",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "C5207CC2-EF1B-4A11-BC8F-F1898282FBE5",
+				"TypeIDs": [],
+				"Array": true
+			}
+		}
+	},
 	"98021A39-D35A-423D-BDCD-86AAC61C6207": {
 		"ID": "98021A39-D35A-423D-BDCD-86AAC61C6207",
 		"Name": "MarkerComponent",
@@ -37371,6 +38170,26 @@
 			}
 		}
 	},
+	"9927178E-676E-4240-B678-7D0F85CD4613": {
+		"ID": "9927178E-676E-4240-B678-7D0F85CD4613",
+		"Name": "CharacterCreatorComponent",
+		"Members": {
+			"3480400977": {
+				"Crc32": 3480400977,
+				"Name": "CharacterID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"9981ACD1-CE75-4E1E-96A9-4701C67B9747": {
 		"ID": "9981ACD1-CE75-4E1E-96A9-4701C67B9747",
 		"Name": "EncounterComponentServerFacet",
@@ -37521,6 +38340,82 @@
 				"Crc32": 45954123,
 				"Name": "m_containeroutput",
 				"TypeID": "EA5FE48A-66F7-42D7-EE11-12391C964778",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"9A623978-DFB6-4CC1-A649-1F172637E52A": {
+		"ID": "9A623978-DFB6-4CC1-A649-1F172637E52A",
+		"Name": "RegionMaterialDataAsset",
+		"Members": {
+			"1440762335": {
+				"Crc32": 1440762335,
+				"Name": "Default Material",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1653839541": {
+				"Crc32": 1653839541,
+				"Name": "MacroMaterialParams",
+				"TypeID": "A99A56EF-2BC9-406A-855D-BD36F5DF2638",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1689371338": {
+				"Crc32": 1689371338,
+				"Name": "Macro NormalMap",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2289214125": {
+				"Crc32": 2289214125,
+				"Name": "Macro ColorMap",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2470080149": {
+				"Crc32": 2470080149,
+				"Name": "EnableCustomBackgroundParams",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2524967131": {
+				"Crc32": 2524967131,
+				"Name": "PertinentLayersMipChain",
+				"TypeID": "E7781CB0-E712-5E6A-948D-92FD4FE87F0D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2800277890": {
+				"Crc32": 2800277890,
+				"Name": "Macro GlossMap",
+				"TypeID": "77A19D40-8731-4D3C-9041-1B43047366A4",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2871258061": {
+				"Crc32": 2871258061,
+				"Name": "EnableCustomForegroundParams",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2969578777": {
+				"Crc32": 2969578777,
+				"Name": "CustomMacroMaterialCompositingParams",
+				"TypeID": "A99A56EF-2BC9-406A-855D-BD36F5DF2638",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3867733328": {
+				"Crc32": 3867733328,
+				"Name": "Layers",
+				"TypeID": "64EC4A5C-8FC7-57FF-8C3F-8FC53807B1DB",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -38007,7 +38902,7 @@
 	},
 	"9D2F173A-AE75-4A1E-8F6F-D476C587F313": {
 		"ID": "9D2F173A-AE75-4A1E-8F6F-D476C587F313",
-		"Name": "MusicalPerformancePlayerComponent",
+		"Name": "PerformMusicAction",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -38124,6 +39019,19 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "0643CDC7-B1C9-4721-92CE-7AC02E6175C9",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"9E366D8C-33BB-4825-9A1F-FA3ADBE11D0F": {
+		"ID": "9E366D8C-33BB-4825-9A1F-FA3ADBE11D0F",
+		"Name": "MaterialSetAsset",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "84399E75-18AB-4000-8DCA-07B9D4E0F8E8",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -38390,7 +39298,7 @@
 			},
 			"494360628": {
 				"Crc32": 494360628,
-				"Name": "Value",
+				"Name": "value",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
@@ -38399,7 +39307,7 @@
 	},
 	"A02985F0-47CA-418B-BA54-4CE3153FB5DF": {
 		"ID": "A02985F0-47CA-418B-BA54-4CE3153FB5DF",
-		"Name": "",
+		"Name": "PointsAccumulatorComponentServerFacet",
 		"Members": {
 			"3566360373": {
 				"Crc32": 3566360373,
@@ -39115,7 +40023,7 @@
 			},
 			"4161753471": {
 				"Crc32": 4161753471,
-				"Name": "",
+				"Name": "m_registerasteamteleportpoint",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -39198,11 +40106,11 @@
 	},
 	"A3A8FEC1-151C-468A-8409-442F48C25BA1": {
 		"ID": "A3A8FEC1-151C-468A-8409-442F48C25BA1",
-		"Name": "",
+		"Name": "PointsAccumulatorComponentClientFacet",
 		"Members": {
 			"1688474904": {
 				"Crc32": 1688474904,
-				"Name": "",
+				"Name": "m_uidatalayernamespercategoryserialized",
 				"TypeID": "FCC72976-B3D0-5BEC-872D-DF2D1FD4D79B",
 				"TypeIDs": [],
 				"Array": false
@@ -40474,6 +41382,47 @@
 			}
 		}
 	},
+	"A99A56EF-2BC9-406A-855D-BD36F5DF2638": {
+		"ID": "A99A56EF-2BC9-406A-855D-BD36F5DF2638",
+		"Name": "SerializableMacroMaterialParams",
+		"Members": {
+			"2562813143": {
+				"Crc32": 2562813143,
+				"Name": "MacroNormalScale",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3834490044": {
+				"Crc32": 3834490044,
+				"Name": "MacroSpecularReflectance",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4016805887": {
+				"Crc32": 4016805887,
+				"Name": "MacroColorScale",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4040038000": {
+				"Crc32": 4040038000,
+				"Name": "MacroColor",
+				"TypeID": "7894072A-9050-4F0F-901B-34B1A0D29417",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"983574972": {
+				"Crc32": 983574972,
+				"Name": "MacroGlossScale",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"A99BDF00-0863-4BBE-9AB3-A7FF191E2607": {
 		"ID": "A99BDF00-0863-4BBE-9AB3-A7FF191E2607",
 		"Name": "CameraStateComponentServerFacet",
@@ -41302,7 +42251,7 @@
 			},
 			"494223394": {
 				"Crc32": 494223394,
-				"Name": "RandomSeed",
+				"Name": "randomSeed",
 				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
@@ -41780,6 +42729,11 @@
 			}
 		}
 	},
+	"ADFD596B-7177-5519-9752-BC418FE42963": {
+		"ID": "ADFD596B-7177-5519-9752-BC418FE42963",
+		"Name": "ByteStream",
+		"Members": {}
+	},
 	"AE22A998-43F4-4466-8CF9-B12AA2F7A8B2": {
 		"ID": "AE22A998-43F4-4466-8CF9-B12AA2F7A8B2",
 		"Name": "TerritoryLoreData",
@@ -41815,6 +42769,82 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "0392E589-5B61-47CC-835B-C3C254E76493",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"AE317984-6126-418E-8E13-B9DA559B7F1D": {
+		"ID": "AE317984-6126-418E-8E13-B9DA559B7F1D",
+		"Name": "SplinePointsInfoComponent",
+		"Members": {
+			"1137787282": {
+				"Crc32": 1137787282,
+				"Name": "m_speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1177347317": {
+				"Crc32": 1177347317,
+				"Name": "Position",
+				"TypeID": "8379EB7D-01FA-4538-B64B-A6543B4BE73D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1446748774": {
+				"Crc32": 1446748774,
+				"Name": "m_endRampValue",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2634976262": {
+				"Crc32": 2634976262,
+				"Name": "m_rampEndPercent",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3893939681": {
+				"Crc32": 3893939681,
+				"Name": "Fov",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4104239720": {
+				"Crc32": 4104239720,
+				"Name": "m_rampStartPercent",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4177201572": {
+				"Crc32": 4177201572,
+				"Name": "m_startRampValue",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"696031473": {
+				"Crc32": 696031473,
+				"Name": "Rotation",
+				"TypeID": "73103120-3DD3-4873-BAB3-9713FA2804FB",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"996117815": {
+				"Crc32": 996117815,
+				"Name": "Interactive",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -41959,6 +42989,11 @@
 				"Array": false
 			}
 		}
+	},
+	"AF3F7D32-1536-422A-89F3-A11E1F5B5A9C": {
+		"ID": "AF3F7D32-1536-422A-89F3-A11E1F5B5A9C",
+		"Name": "AssetData",
+		"Members": {}
 	},
 	"AF57253B-61CB-4F77-AF9D-4E58535EC889": {
 		"ID": "AF57253B-61CB-4F77-AF9D-4E58535EC889",
@@ -42111,6 +43146,13 @@
 				"Crc32": 3805372648,
 				"Name": "IsDynamic",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4204930675": {
+				"Crc32": 4204930675,
+				"Name": "ComponentAssetDependencies",
+				"TypeID": "DB1EB3E5-F953-53A7-B8F9-9121E6A77F85",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -42568,6 +43610,19 @@
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
+			}
+		}
+	},
+	"B16EEC72-0869-5B77-8655-3B3E6D7D922D": {
+		"ID": "B16EEC72-0869-5B77-8655-3B3E6D7D922D",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "B55294AD-F14E-43AC-B6B5-AC27B377FE00",
+				"TypeIDs": [],
+				"Array": true
 			}
 		}
 	},
@@ -43441,6 +44496,54 @@
 			}
 		}
 	},
+	"B55294AD-F14E-43AC-B6B5-AC27B377FE00": {
+		"ID": "B55294AD-F14E-43AC-B6B5-AC27B377FE00",
+		"Name": "ISequenceKey",
+		"Members": {
+			"1417561282": {
+				"Crc32": 1417561282,
+				"Name": "EndTime",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2239752261": {
+				"Crc32": 2239752261,
+				"Name": "Node",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3548101999": {
+				"Crc32": 3548101999,
+				"Name": "OverrideTimes",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "680BD51E-C106-4BBF-9A6F-CD551E00519F",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"602809851": {
+				"Crc32": 602809851,
+				"Name": "SequenceEntityId",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"781491737": {
+				"Crc32": 781491737,
+				"Name": "StartTime",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"B555F388-8F89-5380-AF27-467E63D18147": {
 		"ID": "B555F388-8F89-5380-AF27-467E63D18147",
 		"Name": "AZStd::vector",
@@ -43715,7 +44818,7 @@
 			},
 			"3553347437": {
 				"Crc32": 3553347437,
-				"Name": "m_requiredProgression",
+				"Name": "m_requiredprogression",
 				"TypeID": "D90208E5-C2F8-43DD-AAB6-96AF4B43C762",
 				"TypeIDs": [],
 				"Array": false
@@ -46045,6 +47148,124 @@
 			}
 		}
 	},
+	"C17D53D4-F2C0-421D-95B4-3F492E226F73": {
+		"ID": "C17D53D4-F2C0-421D-95B4-3F492E226F73",
+		"Name": "FtueVistaControllerComponent",
+		"Members": {
+			"1314331259": {
+				"Crc32": 1314331259,
+				"Name": "PreBlendCameraToGameCamera",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1527035009": {
+				"Crc32": 1527035009,
+				"Name": "Cutscene Blend Out Pos Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1564017784": {
+				"Crc32": 1564017784,
+				"Name": "HideUI",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2009505046": {
+				"Crc32": 2009505046,
+				"Name": "Cutscene Blend In FOV Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2247911286": {
+				"Crc32": 2247911286,
+				"Name": "CameraID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2694540902": {
+				"Crc32": 2694540902,
+				"Name": "WalkTo",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2869649335": {
+				"Crc32": 2869649335,
+				"Name": "WalkToThreshhold",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2904901371": {
+				"Crc32": 2904901371,
+				"Name": "CutsceneSequence",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"292921154": {
+				"Crc32": 292921154,
+				"Name": "Cutscene Blend In Rot Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2958402185": {
+				"Crc32": 2958402185,
+				"Name": "Cutscene Blend Out Rot Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3605438685": {
+				"Crc32": 3605438685,
+				"Name": "Cutscene Blend Out FOV Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4196698442": {
+				"Crc32": 4196698442,
+				"Name": "Cutscene Blend In Pos Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"783481276": {
+				"Crc32": 783481276,
+				"Name": "ActionName",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"888789428": {
+				"Crc32": 888789428,
+				"Name": "ExitFtueOnEnd",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"974499429": {
+				"Crc32": 974499429,
+				"Name": "TriggerTag",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"C19FA769-533A-4EB4-B397-5DAB9795E37E": {
 		"ID": "C19FA769-533A-4EB4-B397-5DAB9795E37E",
 		"Name": "GroupFinderGroupDataComponent",
@@ -46106,6 +47327,19 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "65CD8F3E-73AA-43E9-8D9A-B5AE43F624F9",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"C24D5F2D-B17A-4350-8381-539202A99FDD": {
+		"ID": "C24D5F2D-B17A-4350-8381-539202A99FDD",
+		"Name": "CAnimScreenFaderNode",
+		"Members": {
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "57736B48-5EE7-4530-8051-657ACC9BA1EE",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -46417,6 +47651,19 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "EB20D4F6-82A2-4FEC-B020-CD10833E9793",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"C5207CC2-EF1B-4A11-BC8F-F1898282FBE5": {
+		"ID": "C5207CC2-EF1B-4A11-BC8F-F1898282FBE5",
+		"Name": "MaterialEntry",
+		"Members": {
+			"2783094231": {
+				"Crc32": 2783094231,
+				"Name": "Configuration",
+				"TypeID": "8807CAA1-AD08-4238-8FDB-2154ADD084A1",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -47495,6 +48742,40 @@
 			}
 		}
 	},
+	"CBFDAA0E-B66E-5457-97C6-0A974C0793F8": {
+		"ID": "CBFDAA0E-B66E-5457-97C6-0A974C0793F8",
+		"Name": "TAnimTrack<KeyType><ISequenceKey >",
+		"Members": {
+			"184893882": {
+				"Crc32": 184893882,
+				"Name": "Flags",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2123125098": {
+				"Crc32": 2123125098,
+				"Name": "ParamType",
+				"TypeID": "E2F34955-3B07-4241-8D34-EA3BEF3B33D2",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2475121225": {
+				"Crc32": 2475121225,
+				"Name": "Range",
+				"TypeID": "515CF4CF-4992-4139-BDE5-42A887432B45",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3029222636": {
+				"Crc32": 3029222636,
+				"Name": "Keys",
+				"TypeID": "B16EEC72-0869-5B77-8655-3B3E6D7D922D",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"CC0B1060-4410-4787-85D3-301D52F0C955": {
 		"ID": "CC0B1060-4410-4787-85D3-301D52F0C955",
 		"Name": "TimeOfDayPOIComponent",
@@ -48018,6 +49299,94 @@
 		"Name": "QueryShapeBase",
 		"Members": {}
 	},
+	"CF89E904-8893-423F-A827-74DBAFE8AA7E": {
+		"ID": "CF89E904-8893-423F-A827-74DBAFE8AA7E",
+		"Name": "IntroControllerComponent",
+		"Members": {
+			"1401378634": {
+				"Crc32": 1401378634,
+				"Name": "Events",
+				"TypeID": "D83B68B5-4EE4-5356-B065-1E773B1E1F44",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"1614603272": {
+				"Crc32": 1614603272,
+				"Name": "SplinePointsInfoList",
+				"TypeID": "E9D6D3E2-1E9E-5627-99F6-65728ABCE343",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2067334139": {
+				"Crc32": 2067334139,
+				"Name": "MirrorLight",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2247911286": {
+				"Crc32": 2247911286,
+				"Name": "CameraID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3066547195": {
+				"Crc32": 3066547195,
+				"Name": "ExternalCharacterID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3480400977": {
+				"Crc32": 3480400977,
+				"Name": "CharacterID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3620607654": {
+				"Crc32": 3620607654,
+				"Name": "CutsceneSequenceID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3860100336": {
+				"Crc32": 3860100336,
+				"Name": "QuickCutsceneAnim",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"642594257": {
+				"Crc32": 642594257,
+				"Name": "AudioCutsceneName",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"874333291": {
+				"Crc32": 874333291,
+				"Name": "DirectToMenusTime",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"CF8EABCF-8DA6-4897-8FB8-81498F3BA509": {
+		"ID": "CF8EABCF-8DA6-4897-8FB8-81498F3BA509",
+		"Name": "EditorListener",
+		"Members": {}
+	},
 	"CF9B0BC1-3F67-455D-BB58-067CDEB64D90": {
 		"ID": "CF9B0BC1-3F67-455D-BB58-067CDEB64D90",
 		"Name": "DetectionVolumeConstraintComponentClientFacet",
@@ -48057,7 +49426,7 @@
 			},
 			"2469827684": {
 				"Crc32": 2469827684,
-				"Name": "",
+				"Name": "m_listenforrotateonroot",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -48666,14 +50035,14 @@
 		"Members": {
 			"1579384326": {
 				"Crc32": 1579384326,
-				"Name": "Name",
+				"Name": "name",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
 			},
 			"3208210256": {
 				"Crc32": 3208210256,
-				"Name": "Id",
+				"Name": "id",
 				"TypeID": "D6597933-47CD-4FC8-B911-63F3E2B0993A",
 				"TypeIDs": [],
 				"Array": false
@@ -48740,6 +50109,19 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "0643CDC7-B1C9-4721-92CE-7AC02E6175C9",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"D2932FA3-9942-4FD2-A703-2E750F57C003": {
+		"ID": "D2932FA3-9942-4FD2-A703-2E750F57C003",
+		"Name": "DynamicModuleDescriptor",
+		"Members": {
+			"3755263762": {
+				"Crc32": 3755263762,
+				"Name": "dynamicLibraryPath",
+				"TypeID": "189CC2ED-FDDE-5680-91D4-9F630A79187F",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -49998,6 +51380,11 @@
 			}
 		}
 	},
+	"D83B68B5-4EE4-5356-B065-1E773B1E1F44": {
+		"ID": "D83B68B5-4EE4-5356-B065-1E773B1E1F44",
+		"Name": "AZStd::vector",
+		"Members": {}
+	},
 	"D8ADF158-DF5E-4FBE-9A29-1B8C9961C024": {
 		"ID": "D8ADF158-DF5E-4FBE-9A29-1B8C9961C024",
 		"Name": "VegetationSpawnerConfig",
@@ -50114,7 +51501,7 @@
 	},
 	"D90208E5-C2F8-43DD-AAB6-96AF4B43C762": {
 		"ID": "D90208E5-C2F8-43DD-AAB6-96AF4B43C762",
-		"Name": "",
+		"Name": "EditCategoricalProgressionTarget",
 		"Members": {
 			"1831460055": {
 				"Crc32": 1831460055,
@@ -50465,6 +51852,11 @@
 				"Array": false
 			}
 		}
+	},
+	"DB1EB3E5-F953-53A7-B8F9-9121E6A77F85": {
+		"ID": "DB1EB3E5-F953-53A7-B8F9-9121E6A77F85",
+		"Name": "AZStd::unordered_set",
+		"Members": {}
 	},
 	"DB4B66E4-13A0-5CD5-8026-F02CA7DA76F8": {
 		"ID": "DB4B66E4-13A0-5CD5-8026-F02CA7DA76F8",
@@ -51579,6 +52971,47 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "3CAD57DB-9179-456F-904F-1B3D68FAD90E",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"E0F05299-DB68-4158-A207-1FD8E1ADC280": {
+		"ID": "E0F05299-DB68-4158-A207-1FD8E1ADC280",
+		"Name": "VegetationImageAsset",
+		"Members": {
+			"2350531887": {
+				"Crc32": 2350531887,
+				"Name": "Width",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2918445923": {
+				"Crc32": 2918445923,
+				"Name": "Data",
+				"TypeID": "ADFD596B-7177-5519-9752-BC418FE42963",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "AF3F7D32-1536-422A-89F3-A11E1F5B5A9C",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3736761055": {
+				"Crc32": 3736761055,
+				"Name": "Format",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4115522831": {
+				"Crc32": 4115522831,
+				"Name": "Height",
+				"TypeID": "43DA906B-7DEF-4CA8-9790-854106D3F983",
 				"TypeIDs": [],
 				"Array": false
 			}
@@ -53589,6 +55022,19 @@
 			}
 		}
 	},
+	"E9D6D3E2-1E9E-5627-99F6-65728ABCE343": {
+		"ID": "E9D6D3E2-1E9E-5627-99F6-65728ABCE343",
+		"Name": "AZStd::vector",
+		"Members": {
+			"1094737465": {
+				"Crc32": 1094737465,
+				"Name": "element",
+				"TypeID": "AE317984-6126-418E-8E13-B9DA559B7F1D",
+				"TypeIDs": [],
+				"Array": true
+			}
+		}
+	},
 	"E9D965D8-A445-4216-9802-C4A3F4DC0655": {
 		"ID": "E9D965D8-A445-4216-9802-C4A3F4DC0655",
 		"Name": "ManaComponentServerFacet",
@@ -53705,7 +55151,7 @@
 			},
 			"494360628": {
 				"Crc32": 494360628,
-				"Name": "Value",
+				"Name": "value",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -54242,7 +55688,7 @@
 			},
 			"3808181601": {
 				"Crc32": 3808181601,
-				"Name": "",
+				"Name": "m_sticktolastsafeposoncollision",
 				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
@@ -54720,6 +56166,11 @@
 			}
 		}
 	},
+	"EF8FF807-DDEE-4EB0-B678-4CA3A2C490A4": {
+		"ID": "EF8FF807-DDEE-4EB0-B678-4CA3A2C490A4",
+		"Name": "AZStd::string",
+		"Members": {}
+	},
 	"EF94746B-D868-423F-95CC-102BB3E9B751": {
 		"ID": "EF94746B-D868-423F-95CC-102BB3E9B751",
 		"Name": "BlackboardComponent",
@@ -55001,6 +56452,13 @@
 				"Crc32": 4266203701,
 				"Name": "Lod_MinScreenPct",
 				"TypeID": "6106BF95-5ACD-5071-8D0E-4F846C2138AD",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"438567532": {
+				"Crc32": 438567532,
+				"Name": "UseInProxyGeo",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
 				"TypeIDs": [],
 				"Array": false
 			},
@@ -56113,6 +57571,68 @@
 			}
 		}
 	},
+	"F3B90A38-4904-4336-888C-28517A4F565B": {
+		"ID": "F3B90A38-4904-4336-888C-28517A4F565B",
+		"Name": "IslandStartControllerComponent",
+		"Members": {
+			"1207580827": {
+				"Crc32": 1207580827,
+				"Name": "IntroAction",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2247911286": {
+				"Crc32": 2247911286,
+				"Name": "CameraID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2285205490": {
+				"Crc32": 2285205490,
+				"Name": "Snap Player Camera To Cutscene End Orientation",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2869676086": {
+				"Crc32": 2869676086,
+				"Name": "Intro Blend Out FOV Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3451439714": {
+				"Crc32": 3451439714,
+				"Name": "Intro Blend Out Rot Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3620607654": {
+				"Crc32": 3620607654,
+				"Name": "CutsceneSequenceID",
+				"TypeID": "6383F1D3-BB27-4E6B-A49A-6409B2059EAA",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"652860522": {
+				"Crc32": 652860522,
+				"Name": "Intro Blend Out Pos Speed",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"F3B960DE-E862-4797-AC41-7875A93490DC": {
 		"ID": "F3B960DE-E862-4797-AC41-7875A93490DC",
 		"Name": "DungeonExitServerFacet",
@@ -56592,6 +58112,13 @@
 				"TypeIDs": [],
 				"Array": false
 			},
+			"4123471179": {
+				"Crc32": 4123471179,
+				"Name": "VoxelGIMode",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
 			"660306237": {
 				"Crc32": 660306237,
 				"Name": "BoxWidth",
@@ -57029,11 +58556,11 @@
 	},
 	"F71FEE6E-BDD1-4B00-947A-34337B1C0D84": {
 		"ID": "F71FEE6E-BDD1-4B00-947A-34337B1C0D84",
-		"Name": "",
+		"Name": "PointsAccumulatorSerializedDataLayerEntry",
 		"Members": {
 			"1445639416": {
 				"Crc32": 1445639416,
-				"Name": "",
+				"Name": "m_secondsuntilpointszeroeddatalayer",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
@@ -57047,14 +58574,14 @@
 			},
 			"3692360021": {
 				"Crc32": 3692360021,
-				"Name": "",
+				"Name": "m_maxnumpointsdatalayer",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
 			},
 			"4136567901": {
 				"Crc32": 4136567901,
-				"Name": "",
+				"Name": "m_numpointsdatalayer",
 				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
 				"TypeIDs": [],
 				"Array": false
@@ -57521,6 +59048,61 @@
 			}
 		}
 	},
+	"FA15E27D-603F-4829-925A-E36D75C93964": {
+		"ID": "FA15E27D-603F-4829-925A-E36D75C93964",
+		"Name": "IScreenFaderKey",
+		"Members": {
+			"1384449358": {
+				"Crc32": 1384449358,
+				"Name": "FadeColor",
+				"TypeID": "7894072A-9050-4F0F-901B-34B1A0D29417",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2187726194": {
+				"Crc32": 2187726194,
+				"Name": "Texture",
+				"TypeID": "03AAAB3F-5C47-5A66-9EBC-D5FA4DB353C9",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2399967030": {
+				"Crc32": 2399967030,
+				"Name": "FadeChangeType",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3523265324": {
+				"Crc32": 3523265324,
+				"Name": "FadeTime",
+				"TypeID": "EA2C3E90-AFBE-44D4-A90D-FAAF79BAF93D",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3566360373": {
+				"Crc32": 3566360373,
+				"Name": "BaseClass1",
+				"TypeID": "680BD51E-C106-4BBF-9A6F-CD551E00519F",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"3922919111": {
+				"Crc32": 3922919111,
+				"Name": "useCurColor",
+				"TypeID": "A0CA880C-AFE4-43CB-926C-59AC48496112",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"826936384": {
+				"Crc32": 826936384,
+				"Name": "FadeType",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
 	"FA6F70E5-D425-4BFA-8917-932630ACA878": {
 		"ID": "FA6F70E5-D425-4BFA-8917-932630ACA878",
 		"Name": "LevelMeterSettings",
@@ -57841,7 +59423,9 @@
 					"665B2599-32E9-560F-A434-2E69C8A25117",
 					"3F701860-78BC-451A-B1DD-90F75DB9A7A2",
 					"A98E28CB-DE42-47A3-8E4B-6B43A5F3D8B2",
-					"3F659864-D66B-4211-93FB-1401EF4614D4"
+					"3F659864-D66B-4211-93FB-1401EF4614D4",
+					"5801883A-5289-4FA1-BECE-9EF02C1D62F5",
+					"3279BB19-D32D-482E-BD6E-C2DCD8858328"
 				],
 				"Array": false
 			}
@@ -57947,6 +59531,40 @@
 				"Crc32": 3566360373,
 				"Name": "BaseClass1",
 				"TypeID": "0643CDC7-B1C9-4721-92CE-7AC02E6175C9",
+				"TypeIDs": [],
+				"Array": false
+			}
+		}
+	},
+	"FC5D6A60-1056-4F6C-96F7-6A47912F8A35": {
+		"ID": "FC5D6A60-1056-4F6C-96F7-6A47912F8A35",
+		"Name": "AtlasCoordinates",
+		"Members": {
+			"2053629800": {
+				"Crc32": 2053629800,
+				"Name": "Left",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"2350531887": {
+				"Crc32": 2350531887,
+				"Name": "Width",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"4115522831": {
+				"Crc32": 4115522831,
+				"Name": "Height",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				"TypeIDs": [],
+				"Array": false
+			},
+			"517545930": {
+				"Crc32": 517545930,
+				"Name": "Top",
+				"TypeID": "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
 				"TypeIDs": [],
 				"Array": false
 			}

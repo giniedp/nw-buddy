@@ -6,7 +6,6 @@ import (
 	"nw-buddy/tools/formats/terrain"
 	"nw-buddy/tools/formats/tracts"
 	"nw-buddy/tools/game"
-	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils/json"
 	"path"
 	"path/filepath"
@@ -24,7 +23,8 @@ func coatlicuePath(name string, paths ...string) string {
 	return path.Join(parts...)
 }
 
-func LoadDefinition(archive nwfs.Archive, name string) Definition {
+func LoadDefinition(assets *game.Assets, name string) Definition {
+	archive := assets.Archive
 	level := Definition{Name: name}
 
 	levelDir := levelsPath(name)
@@ -131,4 +131,41 @@ func LoadDefinition(archive nwfs.Archive, name string) Definition {
 		}
 	}
 	return level
+}
+
+func LoadMacroMaterials(assets *game.Assets, doc *terrain.Document) ([]RegionMacroMaterial, error) {
+	result := make([]RegionMacroMaterial, 0)
+
+	worldMatFile, ok := assets.Archive.Lookup(doc.WorldMaterialAssetPath)
+	if !ok {
+		return result, nil
+	}
+
+	worldMatAsset, err := assets.LoadWorldMaterial(worldMatFile)
+	if err != nil {
+		return result, err
+	}
+	for _, regionTile := range worldMatAsset.Regions.Element {
+		regionMatFile, err := assets.LookupFileByAsset(regionTile.Layers)
+		if err != nil {
+			continue
+		}
+		regionMatAsset, err := assets.LoadRegionMaterial(regionMatFile)
+		if err != nil {
+			slog.Error("failed to load region material", "err", err)
+			continue
+		}
+		colorMap, _ := assets.LookupFileByAsset(regionMatAsset.Macro_ColorMap)
+		normalMap, _ := assets.LookupFileByAsset(regionMatAsset.Macro_NormalMap)
+		glossMap, _ := assets.LookupFileByAsset(regionMatAsset.Macro_GlossMap)
+
+		result = append(result, RegionMacroMaterial{
+			RegionsX:  int(regionTile.Tile_X),
+			RegionsY:  int(regionTile.Tile_Y),
+			ColorMap:  colorMap,
+			NormalMap: normalMap,
+			GlossMap:  glossMap,
+		})
+	}
+	return result, nil
 }
