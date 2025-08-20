@@ -100,7 +100,7 @@
       </div>
     }
 
-    @for (slot of slots(); track $index) {
+    @for (slot of slots(); track slot) {
       <div
         class="shadow-lg rounded-md overflow-clip bg-black screenshot-body "
         [class.hidden]="elGear.isHidden()"
