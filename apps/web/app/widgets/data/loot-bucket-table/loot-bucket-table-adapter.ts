@@ -11,11 +11,14 @@ import {
   lootBucketColColumn,
   lootBucketColIcon,
   lootBucketColItem,
+  lootBucketColItemClass,
+  lootBucketColItemType,
   lootBucketColMatchOne,
   lootBucketColName,
   lootBucketColOdds,
   lootBucketColQuantity,
   lootBucketColTags,
+  lootBucketColUiHousingCategory,
 } from './loot-bucket-table-cols'
 
 @Injectable()
@@ -82,6 +85,9 @@ function buildOptions(util: TableGridUtils<LootBucketTableRecord>) {
       lootBucketColOdds(util),
       lootBucketColMatchOne(util),
       lootBucketColTags(util),
+      lootBucketColItemType(util),
+      lootBucketColItemClass(util),
+      lootBucketColUiHousingCategory(util),
     ],
   }
 

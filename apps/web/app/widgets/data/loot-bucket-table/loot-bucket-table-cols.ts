@@ -4,6 +4,8 @@ import {
   getItemIconPath,
   getItemId,
   getItemRarity,
+  getItemTypeLabel,
+  getUIHousingCategoryLabel,
   isItemArtifact,
   isItemNamed,
   isMasterItem,
@@ -11,6 +13,7 @@ import {
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { ParsedLootTag } from 'libs/nw-data/common/loot'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { humanize } from '../../../utils'
 
 export type LootBucketTableUtils = TableGridUtils<LootBucketTableRecord>
 export type LootBucketTableRecord = LootBucketRow & {
@@ -21,6 +24,7 @@ export function lootBucketColIcon(util: LootBucketTableUtils) {
   return util.colDef({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
+    headerClass: 'bg-secondary/15',
     resizable: false,
     sortable: false,
     filter: false,
@@ -61,6 +65,7 @@ export function lootBucketColSource(util: LootBucketTableUtils) {
   return util.colDef<string>({
     colId: 'source',
     headerValueGetter: () => 'Source',
+    headerClass: 'bg-secondary/15',
     width: 250,
     field: '$source',
   })
@@ -135,6 +140,51 @@ export function lootBucketColTags(util: LootBucketTableUtils) {
   })
 }
 
+export function lootBucketColItemClass(util: LootBucketTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'itemClass',
+    headerValueGetter: () => 'Item Class',
+    headerClass: 'bg-secondary/15',
+    width: 250,
+    field: '$item.ItemClass',
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+    }),
+  })
+}
+
+export function lootBucketColUiHousingCategory(util: LootBucketTableUtils) {
+  return util.colDef<string>({
+    colId: 'uiHousingCategory',
+    headerValueGetter: () => 'Housing Category',
+    headerClass: 'bg-secondary/15',
+    field: '$item.UIHousingCategory',
+    valueFormatter: ({ value }) => util.i18n.get(getUIHousingCategoryLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getUIHousingCategoryLabel(value)),
+    width: 150,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
+  })
+}
+
+export function lootBucketColItemType(util: LootBucketTableUtils) {
+  return util.colDef<string>({
+    colId: 'itemType',
+    headerValueGetter: () => 'Item Type',
+    headerClass: 'bg-secondary/15',
+    field: '$item.ItemType',
+    valueFormatter: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
+    width: 125,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
+  })
+}
 function formatTag(tag: ParsedLootTag) {
   if (!tag.value) {
     return tag.name
