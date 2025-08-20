@@ -3,7 +3,6 @@ import { injectNwData } from '~/data'
 import { apiResource } from '~/utils'
 import { GameEventDetailRewardsComponent } from '../game-event-detail/game-event-detail-rewards.component'
 import { selectGameEventItemReward, selectGameEventRewards } from '../game-event-detail/selectors'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
@@ -15,7 +14,6 @@ import { ItemDetailStore } from './item-detail.store'
     }
   `,
   imports: [GameEventDetailRewardsComponent],
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
   host: {
     class: 'block',
   },
@@ -40,11 +38,6 @@ export class ItemDetailSalvageRewardsComponent {
     },
   })
   protected rewards = computed(() => this.resource.value()?.rewards)
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected isHidden = computed(() => {
     return !this.rewards()?.length

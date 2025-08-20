@@ -5,14 +5,13 @@ import { IconsModule } from '~/ui/icons'
 import { svgLink } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { ItemDetailStore } from '~/widgets/data/item-detail'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from '~/widgets/data/item-detail/animation'
 import { LootModule } from '~/widgets/loot'
 
 @Component({
   selector: 'nwb-item-detail-salvage-info',
   template: `
     @if (salvageInfo(); as salvage) {
-      <div class="join rounded-md w-full" @inOut>
+      <div class="join rounded-md w-full" animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <button
           class="join-item btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
           [nwbModalOpen]="{ content: tplSalvage, size: 'md' }"
@@ -49,7 +48,6 @@ import { LootModule } from '~/widgets/loot'
     }
   `,
   imports: [NwModule, LootModule, LayoutModule, RouterModule, IconsModule],
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
   host: {
     class: 'block',
   },
@@ -58,11 +56,6 @@ export class ItemDetailSalvageInfoComponent {
   private store = inject(ItemDetailStore)
   protected salvageInfo = this.store.salvageInfo
   protected iconLink = svgLink
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected isHidden = computed(() => {
     return !this.salvageInfo()

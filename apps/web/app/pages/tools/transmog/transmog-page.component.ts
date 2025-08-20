@@ -1,4 +1,3 @@
-import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
@@ -14,14 +13,7 @@ import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
-import {
-  HtmlHeadService,
-  eqCaseInsensitive,
-  injectBreakpoint,
-  injectChildRouteParam,
-  injectRouteParam,
-  selectSignal,
-} from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { TransmogItem } from '~/widgets/data/transmog'
 import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from '~/widgets/data/transmog-table'
@@ -60,21 +52,6 @@ import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from
   host: {
     class: 'ion-page',
   },
-  animations: [
-    trigger('list', [
-      transition('* => *', [
-        query(':enter', stagger(1, animateChild()), {
-          optional: true,
-        }),
-      ]),
-    ]),
-    trigger('fade', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(-1rem)' }),
-        animate('0.15s ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
-      ]),
-    ]),
-  ],
 })
 export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogItem }> {
   protected title = 'Transmog'

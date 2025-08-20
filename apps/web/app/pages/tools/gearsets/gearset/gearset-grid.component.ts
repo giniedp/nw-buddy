@@ -1,4 +1,3 @@
-import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -22,11 +21,11 @@ import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgGlobe } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { ScreenshotFrameDirective, ScreenshotModule } from '~/widgets/screenshot'
+import { PlatformService } from '../../../../utils/services/platform.service'
 import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
 import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component'
-import { PlatformService } from '../../../../utils/services/platform.service'
 
 @Component({
   selector: 'nwb-gearset-grid',
@@ -51,16 +50,6 @@ import { PlatformService } from '../../../../utils/services/platform.service'
     {
       directive: ScreenshotFrameDirective,
     },
-  ],
-  animations: [
-    trigger('list', [
-      transition('* => *', [
-        query(':enter', stagger(25, animateChild()), {
-          optional: true,
-        }),
-      ]),
-    ]),
-    trigger('fade', [transition('* => *', [style({ opacity: 0 }), animate('0.3s ease-out', style({ opacity: 1 }))])]),
   ],
 })
 export class GearsetGridComponent {

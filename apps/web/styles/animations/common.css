@@ -1,0 +1,152 @@
+:root {
+  interpolate-size: allow-keywords;
+}
+
+.fade {
+  @starting-style {
+    opacity: 0;
+  }
+}
+.fade.fade-in {
+  animation: fade-in 250ms;
+}
+.fade.fade-out {
+  animation: fade-out 250ms;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.grow-y-in {
+  animation: grow-y-in;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+.grow-y-out {
+  animation: grow-y-out;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+
+@keyframes grow-y-in {
+  from {
+    height: 0;
+  }
+  to {
+    height: auto;
+  }
+}
+@keyframes grow-y-out {
+  from {
+    height: auto;
+  }
+  to {
+    height: 0;
+  }
+}
+
+.fade-grow-y-in {
+  animation: fade-grow-y-in;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+.fade-grow-y-out {
+  animation: fade-grow-y-out;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+
+@keyframes fade-grow-y-in {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: auto;
+    opacity: 1;
+  }
+}
+@keyframes fade-grow-y-out {
+  from {
+    height: auto;
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+.grow-x-in {
+  animation: grow-x-in;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+.grow-x-out {
+  animation: grow-x-out;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+
+@keyframes grow-x-in {
+  from {
+    width: 0;
+  }
+  to {
+    width: auto;
+  }
+}
+@keyframes grow-x-out {
+  from {
+    width: auto;
+  }
+  to {
+    width: 0;
+  }
+}
+
+.fade-grow-x-in {
+  animation: fade-grow-x-in;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+.fade-grow-x-out {
+  animation: fade-grow-x-out;
+  animation-duration: 250ms;
+  overflow: hidden;
+}
+
+@keyframes fade-grow-x-in {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: auto;
+    opacity: 1;
+  }
+}
+@keyframes fade-grow-x-out {
+  from {
+    width: auto;
+    opacity: 1;
+  }
+  to {
+    width: 0;
+    opacity: 0;
+  }
+}

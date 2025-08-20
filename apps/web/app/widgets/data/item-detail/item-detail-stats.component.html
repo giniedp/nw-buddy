@@ -1,6 +1,7 @@
 @if (gsLabel(); as gs) {
   <div
-    [@inOut]
+    animate.enter="fade-grow-y-in"
+    animate.leave="fade-grow-y-out"
     class="flex flex-row gap-1 rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
     [class.hover:outline-primary]="gsEditable()"
     [class.hover:outline-offset-4]="gsEditable()"
@@ -14,7 +15,7 @@
 }
 @if (stats()?.length) {
   @for (row of stats(); track $index) {
-    <div [@inOut]>
+    <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
       <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
     </div>
   }
@@ -22,4 +23,4 @@
 @if (gsEditable()) {
   <nwb-icon [icon]="editIcon" class="w-3 h-3 absolute top-4 -left-3 opacity-50 screenshot-hidden" />
 }
-<ng-content/>
+<ng-content />

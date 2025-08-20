@@ -4,7 +4,6 @@ import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { apiResource } from '~/utils'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailDirective } from './item-detail.directive'
 import { ItemDetailStore } from './item-detail.store'
 
@@ -12,7 +11,7 @@ import { ItemDetailStore } from './item-detail.store'
   selector: 'nwb-item-detail-transforms',
   template: `
     @if (toItemId(); as itemId) {
-      <div [@inOut]>
+      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <h3 class="font-bold mb-1">Transforms to</h3>
         <div class="flex flex-row flex-wrap gap-2">
           <a
@@ -30,7 +29,7 @@ import { ItemDetailStore } from './item-detail.store'
       </div>
     }
     @if (fromItemIds(); as itemIds) {
-      <div [@inOut]>
+      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <h3 class="font-bold mb-1">Transforms from</h3>
         <div class="flex flex-row flex-wrap gap-2">
           @for (itemId of itemIds; track $index) {
@@ -54,7 +53,6 @@ import { ItemDetailStore } from './item-detail.store'
     class: 'block',
   },
   imports: [NwModule, ItemFrameModule, ItemDetailDirective, RouterModule],
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailTransformsComponent {
   private db = injectNwData()
@@ -70,11 +68,6 @@ export class ItemDetailTransformsComponent {
   })
   protected toItemId = computed(() => this.resource.value()?.to)
   protected fromItemIds = computed(() => this.resource.value()?.from)
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected isHidden = computed(() => {
     return !this.toItemId() && !this.fromItemIds()?.length

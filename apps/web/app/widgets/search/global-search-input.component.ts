@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
@@ -13,6 +12,7 @@ import {
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
+import { environment } from 'apps/web/environments'
 import { debounceTime, merge, switchMap, takeUntil, tap } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { IconsModule } from '~/ui/icons'
@@ -23,7 +23,6 @@ import { useTesseract } from '~/utils/use-tesseract'
 import { SEARCH_QUERY_TASKS } from './search-query-tasks'
 import type { SearchQueryTasks, SearchRecord } from './search-query.worker'
 import { SearchResultsPanelComponent } from './search-results-panel.component'
-import { environment } from 'apps/web/environments'
 
 @Component({
   selector: 'nwb-global-search-input',
@@ -35,12 +34,6 @@ import { environment } from 'apps/web/environments'
   host: {
     class: 'block',
   },
-  animations: [
-    trigger('fade', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
-      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class GlobalSearchInputComponent
   extends ComponentStore<{ query: string; isPanelOpen: boolean; isLoading: boolean; results: SearchRecord[] }>

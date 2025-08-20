@@ -1,5 +1,4 @@
 import { AgGridEvent, GridApi, GridOptions, RowClickedEvent } from '@ag-grid-community/core'
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -15,20 +14,9 @@ import {
   computed,
   inject,
 } from '@angular/core'
+import { outputFromObservable, takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { isEqual } from 'lodash'
-import {
-  ReplaySubject,
-  combineLatest,
-  debounceTime,
-  defer,
-  filter,
-  map,
-  merge,
-  skip,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs'
+import { ReplaySubject, combineLatest, debounceTime, defer, filter, map, merge, skip, switchMap, tap } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { AgGrid, AgGridDirective } from '~/ui/data/ag-grid'
 import { gridDisplayRowCount, gridGetPinnedTopData } from '~/ui/data/ag-grid/utils'
@@ -36,7 +24,6 @@ import { selectStream } from '~/utils'
 import { runInZone } from '~/utils/rx/run-in-zone'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
-import { outputFromObservable, takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 
 export interface SelectionChangeEvent<T> {
   rows: T[]
@@ -53,11 +40,6 @@ export interface SelectionChangeEvent<T> {
   host: {
     class: 'flex-1 h-full w-full relative',
   },
-  animations: [
-    trigger('fade', [
-      transition(':leave', [style({ opacity: 1 }), animate('0.150s 0.3s ease-out', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class TableGridComponent<T> implements OnInit {
   @Input()

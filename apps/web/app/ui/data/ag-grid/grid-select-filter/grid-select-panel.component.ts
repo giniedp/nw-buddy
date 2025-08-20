@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -44,7 +43,7 @@ import { GridSelectFilterOption } from './types'
         </button>
       </div>
       @for (item of conditions; track item.id) {
-        <div class="join flex flex-row" @item>
+        <div class="join flex flex-row">
           <button
             class="join-item btn btn-sm btn-square swap swap-rotate"
             [class.swap-active]="item.negate"
@@ -104,19 +103,6 @@ import { GridSelectFilterOption } from './types'
   host: {
     class: 'flex flex-col gap-2',
   },
-  animations: [
-    trigger('item', [
-      transition(':enter', [
-        style({ opacity: 0, height: 0 }),
-        animate('100ms ease-in-out', style({ height: '*' })),
-        animate('100ms ease-in-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        style({ opacity: '*', height: '*' }),
-        animate('100ms ease-in-out', style({ opacity: 0, height: 0 })),
-      ]),
-    ]),
-  ],
 })
 export class GridSelectPanelComponent {
   private store = inject(GridSelectFilterStore)

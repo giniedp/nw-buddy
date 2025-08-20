@@ -1,4 +1,3 @@
-import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { Component, computed, HostBinding, inject } from '@angular/core'
 import {
@@ -14,13 +13,12 @@ import { damageTypeIcon, NwWeaponTypesService } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { apiResource } from '~/utils'
 import { ItemDetailStore } from './item-detail.store'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 
 @Component({
   selector: 'nwb-item-detail-gs-damage',
   template: `
     @for (row of rows(); track $index) {
-      <div class="flex flex-row gap-1" [@inOut]>
+      <div class="flex flex-row gap-1" animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <img [nwImage]="row.icon" class="w-5 h-5" />
         <span class="font-bold">{{ row.value | number: '0.0-0' }}</span>
         <span class="opacity-50">{{ row.label | nwText }}</span>
@@ -29,19 +27,14 @@ import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
   `,
   host: {
     class: 'block',
+    '[class.hidden]': 'isHidden()',
   },
   imports: [CommonModule, IconsModule, NwModule],
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailGsDamage {
   private db = injectNwData()
   private store = inject(ItemDetailStore)
   private weapons = inject(NwWeaponTypesService)
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected resource = apiResource({
     request: () => {

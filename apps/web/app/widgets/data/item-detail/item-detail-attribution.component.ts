@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } fro
 import { getItemAttribution, getItemExpansion } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
   selector: 'nwb-item-detail-attribution',
   template: `
     @if (!isHidden()) {
-      <div [@inOut]>
+      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <div class="p-2">
           @if (attribution(); as it) {
             <div class="flex flex-row items-center gap-1">
@@ -33,16 +32,10 @@ import { ItemDetailStore } from './item-detail.store'
   host: {
     class: 'block',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailAttributionComponent {
   protected store = inject(ItemDetailStore)
   protected attribution = computed(() => getItemAttribution(this.store.record()))
   protected expansion = computed(() => getItemExpansion(this.store.item()?.RequiredExpansionId))
   public isHidden = computed(() => !this.attribution() && !this.expansion())
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 }

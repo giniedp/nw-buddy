@@ -14,13 +14,12 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { apiResource } from '~/utils'
 import { ItemDetailStore } from './item-detail.store'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 
 @Component({
   selector: 'nwb-item-detail-set-items',
   template: `
     @for (group of groups(); track group.label) {
-      <div [@inOut]>
+      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <h3 class="font-bold mb-1">{{ group.label }}</h3>
         <div class="flex flex-row flex-wrap gap-1">
           @for (item of group.items; track $index) {
@@ -46,17 +45,12 @@ import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
   host: {
     class: 'block relative',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailSetItemsComponent {
   private db = injectNwData()
   private store = inject(ItemDetailStore)
 
   protected isHidden = computed(() => !this.groups()?.length)
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected resource = apiResource({
     request: () => {

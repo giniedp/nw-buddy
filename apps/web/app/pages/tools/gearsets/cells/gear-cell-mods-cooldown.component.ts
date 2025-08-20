@@ -7,7 +7,6 @@ import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
-import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
 import { ModifierTipComponent } from './ui/modifier-tip.component'
 
@@ -28,7 +27,6 @@ export interface CooldownRow {
   templateUrl: './gear-cell-mods-cooldown.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ModifierTipComponent, TooltipModule, FlashDirective],
-  animations: [LIST_COUNT_ANIMATION],
   host: {
     class: 'block',
     '[class.hidden]': '!rowCount()',

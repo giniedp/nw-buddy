@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core'
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
@@ -8,8 +7,8 @@ import { NwModule } from '~/nw'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { SkillTreeCell } from './skill-tree.model'
 import { SkillTreeInputStore } from './skill-tree-input.store'
+import { SkillTreeCell } from './skill-tree.model'
 
 @Component({
   selector: 'nwb-skill-tree-input',
@@ -28,12 +27,6 @@ import { SkillTreeInputStore } from './skill-tree-input.store'
   host: {
     class: 'layout-content',
   },
-  animations: [
-    trigger('fade', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
-      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class SkillTreeInputComponent implements ControlValueAccessor {
   private store = inject(SkillTreeInputStore)

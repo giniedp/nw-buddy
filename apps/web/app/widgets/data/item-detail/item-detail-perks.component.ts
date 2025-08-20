@@ -10,7 +10,6 @@ import { svgCircleExclamation, svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { apiResource } from '~/utils'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 import { PerkSlotExplained } from './selectors'
@@ -22,8 +21,10 @@ import { PerkSlotExplained } from './selectors'
   imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule],
   host: {
     class: 'flex flex-col gap-1',
+    'animate.enter': 'fade-grow-y-in',
+    'animate.leave': 'fade-grow-y-out',
+    '[class.hidden]': 'isHidden()',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailPerksComponent {
   private db = injectNwData()
@@ -34,11 +35,6 @@ export class ItemDetailPerksComponent {
 
   protected iconEdit = svgEllipsisVertical
   protected iconWarn = svgCircleExclamation
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected isHidden = computed(() => {
     return !this.rows()?.length

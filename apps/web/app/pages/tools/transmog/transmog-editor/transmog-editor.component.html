@@ -22,8 +22,9 @@
       </div>
       @if (isLoading()) {
         <div
-          class="bg-gradient-to-b from-base-300 to-black absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
-          @fade
+          class="bg-gradient-to-b from-base-300 to-black absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none fade"
+          animate.enter="fade-in"
+          animate.leave="fade-out"
         >
           <picture class="block aspect-square w-40 h-40 relative">
             <img
@@ -56,7 +57,7 @@
 
 <ng-template #tplDetail>
   <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
-    <ng-content select='[header]' />
+    <ng-content select="[header]" />
     <nwb-transmog-editor-panel class="w-full" [disabled]="isDisabled()" />
     <ng-content />
   </ion-content>

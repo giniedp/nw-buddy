@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { BuffBucket, NW_FALLBACK_ICON } from '@nw-data/common'
 import { AbilityData, StatusEffectData } from '@nw-data/generated'
@@ -12,7 +12,6 @@ import { apiResource, humanize } from '~/utils'
 import { AbilityDetailModule } from '../ability-detail'
 import { StatusEffectDetailModule } from '../status-effect-detail'
 import { VitalDetailStore } from './vital-detail.store'
-import { SMOOTH_SWAP_ANIMATION } from '~/ui/animation'
 
 @Component({
   selector: 'nwb-vital-detail-buffs',
@@ -30,16 +29,10 @@ import { SMOOTH_SWAP_ANIMATION } from '~/ui/animation'
   host: {
     class: 'flex flex-col gap-2 leading-tight relative',
   },
-  animations: [SMOOTH_SWAP_ANIMATION],
 })
 export class VitalDetailBuffsComponent {
   private db = injectNwData()
   private store = inject(VitalDetailStore)
-
-  @HostBinding('@smoothSwap')
-  protected get swapStatus() {
-    return this.resource.status()
-  }
 
   private resource = apiResource({
     request: () => {

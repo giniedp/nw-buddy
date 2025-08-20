@@ -19,19 +19,11 @@ const config: StorybookConfig = {
     },
   },
   addons: [
-    '@storybook/addon-controls',
-    '@storybook/addon-a11y',
-    '@storybook/addon-interactions',
-    '@storybook/addon-themes',
+    'storybook/backgrounds',
     '@storybook/addon-docs',
-    '@storybook/addon-outline',
-    '@storybook/addon-toolbars',
-    '@storybook/addon-viewport',
-    '@storybook/addon-links',
+    '@storybook/viewport',
+
   ],
-  docs: {
-    autodocs: 'tag',
-  },
 }
 
 export default config

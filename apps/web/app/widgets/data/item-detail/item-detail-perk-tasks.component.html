@@ -1,5 +1,5 @@
 @for (task of tasks(); track $index) {
-  <div class="flex flex-row gap-1" [@inOut]>
+  <div class="flex flex-row gap-1" animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
     @if (task.icon) {
       <picture class="flex-none mt-1">
         <img [nwImage]="task.icon" class="w-5 h-5" />

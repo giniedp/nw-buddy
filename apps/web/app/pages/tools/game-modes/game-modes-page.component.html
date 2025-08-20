@@ -1,4 +1,4 @@
-@if(outlet.isActivated) {
+@if (outlet.isActivated) {
   <ng-container [ngTemplateOutlet]="tplModes" />
 } @else {
   <ng-container [ngTemplateOutlet]="tplIndex" />
@@ -35,9 +35,15 @@
           <div class="relative p-4 shadow-black text-shadow text-nw-description">
             <h3 class="flex flex-row gap-2 items-center text-2xl">
               <span class="relative">
-                <img *ngIf="item.icon" [nwImage]="item.icon" class="w-6 h-6 scale-150" />
+                @if (item.icon) {
+                  <img [nwImage]="item.icon" class="w-6 h-6 scale-150" />
+                }
                 @if (item.isMutated) {
-                  <div class="absolute top-0 left-0 w-full scale-150" [@fade]="item.isMutated">
+                  <div
+                    class="absolute top-0 left-0 w-full scale-200 fade"
+                    animate.enter="fade-in"
+                    animate.leave="fade-out"
+                  >
                     <img
                       [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
                       class="aspect-square animate-spin-cw"
@@ -109,4 +115,3 @@
     </nwb-navbar>
   </ion-header>
 </ng-template>
-

@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -54,12 +53,6 @@ import { TransmogEditorStore } from './transmog-editor.store'
       multi: true,
       useExisting: TransmogEditorComponent,
     },
-  ],
-  animations: [
-    trigger('fade', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.3s ease-out', style({ opacity: 1 }))]),
-      transition(':leave', [style({ opacity: 1 }), animate('0.3s ease-out', style({ opacity: 0 }))]),
-    ]),
   ],
 })
 export class TransmogEditorComponent implements OnDestroy, ControlValueAccessor {

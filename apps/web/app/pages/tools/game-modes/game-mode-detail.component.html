@@ -88,7 +88,7 @@
             <h2 class="mb-0 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
               <span>Weekly Mutations </span>
               @if (isMutated$ | async) {
-                <picture class="inline-block w-8 m-0 animate-pulse" [@fade]="true">
+                <picture class="inline-block w-8 m-0 animate-pulse">
                   <img
                     [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
                     class="w-full aspect-square rounded-full animate-spin-cw"
@@ -229,7 +229,7 @@
         [class.max-h-[35vh]]="mapPinned()"
       >
         <nwb-game-mode-detail-map
-          class="w-full h-full max-w-[1200px] group "
+          class="w-full h-full max-w-[1200px] group"
           [gameModeId]="paramGameMode$ | async"
           [creatures]="creatures$ | async"
           [highlight]="(vitalTargetHover() || vitalTargetClick())?.VitalsID"
@@ -237,7 +237,7 @@
         >
           <div class="inline-flex absolute top-0 right-0">
             <button
-              class="btn btn-sm btn-ghost btn-square opacity-0 group-hover:opacity-100 "
+              class="btn btn-sm btn-ghost btn-square opacity-0 group-hover:opacity-100"
               [class.text-primary]="mapPinned()"
               (click)="mapPinned.set(!mapPinned())"
             >
@@ -259,15 +259,11 @@
 </ion-content>
 
 <ng-template #tplDungeonLoot>
-  <div
-    class="grid grid-loot layout-gap"
-    [nwbInfniteScroll]="dungeonLoot$ | async"
-    #scroll="infiniteScroll"
-    [@list]="scroll.count$ | async"
-  >
+  <div class="grid grid-loot layout-gap" [nwbInfniteScroll]="dungeonLoot$ | async" #scroll="infiniteScroll">
     @for (item of scroll.data$ | async; track $index) {
       <nwb-item-detail
-        [@fade]="true"
+        class="fade"
+        animate.enter="fade-in"
         [itemId]="item"
         [cdkContextMenuTriggerFor]="tplExplainMenu"
         (cdkContextMenuOpened)="explainItemDrop(item, 'normal')"
@@ -287,15 +283,11 @@
 </ng-template>
 
 <ng-template #tplDungeonMutatedLoot>
-  <div
-    class="grid grid-loot layout-gap"
-    [nwbInfniteScroll]="dungeonMutatedLoot$ | async"
-    #scroll="infiniteScroll"
-    [@list]="scroll.count$ | async"
-  >
+  <div class="grid grid-loot layout-gap" [nwbInfniteScroll]="dungeonMutatedLoot$ | async" #scroll="infiniteScroll">
     @for (item of scroll.data$ | async; track $index) {
       <nwb-item-detail
-        [@fade]="true"
+        class="fade"
+        animate.enter="fade-in"
         [itemId]="item"
         [cdkContextMenuTriggerFor]="tplExplainMenu"
         (cdkContextMenuOpened)="explainItemDrop(item, 'mutated')"
@@ -315,15 +307,11 @@
 </ng-template>
 
 <ng-template #tplDungeonDifficultyLoot>
-  <div
-    class="grid grid-loot layout-gap"
-    [nwbInfniteScroll]="dungeonDifficultyLoot$ | async"
-    #scroll="infiniteScroll"
-    [@list]="scroll.count$ | async"
-  >
+  <div class="grid grid-loot layout-gap" [nwbInfniteScroll]="dungeonDifficultyLoot$ | async" #scroll="infiniteScroll">
     @for (item of scroll.data$ | async; track $index) {
       <nwb-item-detail
-        [@fade]="true"
+        class="fade"
+        animate.enter="fade-in"
         [itemId]="item"
         [cdkContextMenuTriggerFor]="tplExplainMenu"
         (cdkContextMenuOpened)="explainItemDrop(item, 'difficulty')"

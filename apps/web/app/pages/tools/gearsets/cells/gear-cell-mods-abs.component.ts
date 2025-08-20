@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { groupBy, sumBy } from 'lodash'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
-import { ModifierTipComponent } from './ui/modifier-tip.component'
-import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
+import { ModifierTipComponent } from './ui/modifier-tip.component'
 
 @Component({
   selector: 'nwb-gear-cell-mods-abs',
@@ -20,7 +18,6 @@ import { FlashDirective } from './ui/flash.directive'
     class: 'block',
     '[class.hidden]': '!rowCount()',
   },
-  animations: [LIST_COUNT_ANIMATION],
 })
 export class GearCellModsAbsComponent {
   private mannequin = inject(Mannequin)

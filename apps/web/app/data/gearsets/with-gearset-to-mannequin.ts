@@ -65,7 +65,6 @@ export function withGearsetToMannequin() {
             },
             {
               injector: injector,
-              allowSignalWrites: true,
             },
           )
         },

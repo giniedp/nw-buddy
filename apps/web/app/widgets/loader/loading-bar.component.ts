@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { Component, computed, input } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { delayWhen, distinctUntilChanged, of, switchMap } from 'rxjs'
@@ -9,18 +8,17 @@ import { delayWhen, distinctUntilChanged, of, switchMap } from 'rxjs'
   styleUrl: './loading-bar.component.scss',
   template: `
     @if (show()) {
-      <div @fade class="progress-bar w-full" [style.height.px]="height()"></div>
+      <div
+        class="progress-bar w-full fade"
+        [style.height.px]="height()"
+        animate.enter="fade-in"
+        animate.leave="fade-out"
+      ></div>
     }
   `,
   host: {
     class: 'block h-0',
   },
-  animations: [
-    trigger('fade', [
-      transition(':enter', [style({ opacity: 0 }), animate('500ms', style({ opacity: 1 }))]),
-      transition(':leave', [animate('500ms', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class LoadingBarComponent {
   public isLoading = input<boolean>(false)

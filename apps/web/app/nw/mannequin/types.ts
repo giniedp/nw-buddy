@@ -29,63 +29,63 @@ export interface MannequinState {
   /**
    * Current character level
    */
-  level?: number
+  level: number
   /**
    * All items being equpped on the player
    * including consumed buff food and placed trophies
    */
-  equippedItems?: EquippedItem[]
+  equippedItems: EquippedItem[]
   /**
    * Assigned attribute points
    */
-  assignedAttributes?: Record<AttributeRef, number>
+  assignedAttributes: Record<AttributeRef, number>
   /**
    * Where magnify attributes are assigned to
    */
-  magnifyPlacement?: AttributeRef
+  magnifyPlacement: AttributeRef
   /**
    * Enforced status effects
    */
-  enforcedEffects?: Array<{ id: string; stack: number }>
+  enforcedEffects: Array<{ id: string; stack: number }>
   /**
    * Enforced abilities
    */
-  enforcedAbilities?: Array<{ id: string; stack: number }>
+  enforcedAbilities: Array<{ id: string; stack: number }>
   /**
    * Skill tree for the equpped weapon
    */
-  equippedSkills1?: EquppedSkills
+  equippedSkills1: EquppedSkills
   /**
    * Skill tree for the equpped weapon
    */
-  equippedSkills2?: EquppedSkills
+  equippedSkills2: EquppedSkills
   /**
    * Abilities that have been activated by the user
    */
-  activatedAbilities?: string[]
+  activatedAbilities: string[]
   /**
    * The active weapon slot
    */
-  weaponActive?: 'primary' | 'secondary'
+  weaponActive: 'primary' | 'secondary'
   /**
    * Whether the active weapon is unsheathed
    */
-  weaponUnsheathed?: boolean
+  weaponUnsheathed: boolean
   /**
    * The selected Attack
    */
-  selectedAttack?: string
+  selectedAttack: string
 
-  combatMode?: CombatMode
-  isInCombat?: boolean
-  distFromDefender?: number
-  myHealthPercent?: number
-  myManaPercent?: number
-  myStaminaPercent?: number
-  numAroundMe?: number
-  numHits?: number
-  targetHealthPercent?: number
-  critType?: CritType
+  combatMode: CombatMode
+  isInCombat: boolean
+  distFromDefender: number
+  myHealthPercent: number
+  myManaPercent: number
+  myStaminaPercent: number
+  numAroundMe: number
+  numHits: number
+  targetHealthPercent: number
+  critType: CritType
 }
 
 export interface DbSlice {

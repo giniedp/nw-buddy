@@ -9,7 +9,6 @@ import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { apiResource } from '~/utils'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 
@@ -21,18 +20,13 @@ import { ItemEditorEventsService } from './item-editor-events.service'
   imports: [CommonModule, NwModule, FormsModule, OverlayModule, ItemFrameModule, IconsModule],
   host: {
     class: 'block relative',
+    '[class.hidden]': 'isHidden()',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailStatsComponent {
   private db = injectNwData()
   private store = inject(ItemDetailStore)
   private events = inject(ItemEditorEventsService, { optional: true })
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected isHidden = computed(() => {
     return !this.gsLabel() && !this.stats()?.length

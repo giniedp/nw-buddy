@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -30,12 +29,6 @@ import { QuicksearchService } from './quicksearch.service'
   host: {
     class: 'block',
   },
-  animations: [
-    trigger('fade', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
-      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class QuicksearchInputComponent {
   private search = inject(QuicksearchService)

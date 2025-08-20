@@ -12,7 +12,6 @@ import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { apiResource } from '~/utils'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 export interface PerkTask {
@@ -28,19 +27,14 @@ export interface PerkTask {
   imports: [CommonModule, NwModule, ItemFrameModule, IconsModule],
   host: {
     class: 'flex flex-col gap-1',
+    '[class.hidden]': 'isHidden()',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailPerkTasksComponent {
   private db = injectNwData()
   private tl8 = inject(TranslateService)
   private nwdb = inject(NwLinkService)
   private store = inject(ItemDetailStore)
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected isHidden = computed(() => {
     return !this.tasks()?.length

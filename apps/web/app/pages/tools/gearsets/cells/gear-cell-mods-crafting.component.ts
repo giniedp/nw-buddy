@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { TooltipModule } from '~/ui/tooltip'
-import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
 import { ModifierTipComponent } from './ui/modifier-tip.component'
 
@@ -12,7 +11,6 @@ import { ModifierTipComponent } from './ui/modifier-tip.component'
   templateUrl: './gear-cell-mods-crafting.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent, FlashDirective],
-  animations: [LIST_COUNT_ANIMATION],
   host: {
     class: 'block',
     '[class.hidden]': '!rowCount()',

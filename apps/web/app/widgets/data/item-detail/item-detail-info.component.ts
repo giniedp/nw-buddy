@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { apiResource } from '~/utils'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
-import { CraftingRecipeData } from '@nw-data/generated'
 
 @Component({
   selector: 'nwb-item-detail-info',
@@ -14,18 +12,13 @@ import { CraftingRecipeData } from '@nw-data/generated'
   imports: [CommonModule, NwModule],
   host: {
     class: 'block',
+    "[class.hidden]": 'isHidden()',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailInfoComponent {
   protected db = injectNwData()
   protected store = inject(ItemDetailStore)
   protected isHidden = computed(() => !this.store.record())
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 
   protected item = this.store.item
   protected record = this.store.record

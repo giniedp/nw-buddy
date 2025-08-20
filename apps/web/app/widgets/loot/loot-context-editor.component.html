@@ -1,5 +1,4 @@
 <div class="grid grid-cols-fill-xs gap-x-2 gap-y-1">
-
   <div class="join bg-base-200 rounded-md">
     <button
       class="join-item btn btn-sm btn-ghost flex-1 justify-start flex-nowrap truncate"
@@ -23,13 +22,11 @@
     <ng-template #territoryTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Territory</h4>
-        <p>
-          When selecting a territory, the Content Level is updated and loot tags are added to the context.
-        </p>
-        @if(territoryTags?.length) {
+        <p>When selecting a territory, the Content Level is updated and loot tags are added to the context.</p>
+        @if (territoryTags?.length) {
           <p>
             Added Tags:
-            @for(tag of territoryTags; track $index) {
+            @for (tag of territoryTags; track $index) {
               <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
             }
           </p>
@@ -59,12 +56,10 @@
     <ng-template #contentLevelTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Minimum Content Level</h4>
+        <p>Accounts for <span class="badge badge-secondary badge-sm">MinContLevel</span> tags.</p>
         <p>
-          Accounts for <span class="badge badge-secondary badge-sm">MinContLevel</span> tags.
-        </p>
-        <p>
-          Values in tag conditions are zero-based.
-          E.g. <span class="badge badge-secondary badge-sm">MinContLevel: 19</span> will match level 20 and above.
+          Values in tag conditions are zero-based. E.g.
+          <span class="badge badge-secondary badge-sm">MinContLevel: 19</span> will match level 20 and above.
         </p>
       </div>
     </ng-template>
@@ -108,16 +103,12 @@
     <ng-template #poiTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Point Of Interest</h4>
-        <p>
-          When selecting a POI, its loot tags are added to the context
-        </p>
-        <p>
-          This will NOT updated the POI level.
-        </p>
-        @if(poiTags?.length) {
+        <p>When selecting a POI, its loot tags are added to the context</p>
+        <p>This will NOT updated the POI level.</p>
+        @if (poiTags?.length) {
           <p>
             Added Tags:
-            @for(tag of poiTags; track $index) {
+            @for (tag of poiTags; track $index) {
               <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
             }
           </p>
@@ -144,16 +135,15 @@
     <ng-template #poiLevelTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Point Of Intereset Level</h4>
+        <p>Accounts for <span class="badge badge-secondary badge-sm">MinPOILevel</span> tags.</p>
         <p>
-          Accounts for <span class="badge badge-secondary badge-sm">MinPOILevel</span> tags.
-        </p>
-        <p>
-          Values in tag conditions are zero-based.
-          E.g. <span class="badge badge-secondary badge-sm">MinPOILevel: 19</span> will match level 20 and above.
+          Values in tag conditions are zero-based. E.g.
+          <span class="badge badge-secondary badge-sm">MinPOILevel: 19</span> will match level 20 and above.
         </p>
         <p class="text-nw-description italic">
           It is currently not possible to resolve the POI level from selected POI. For convenience this value is updated
-          whenever the selected Crature is changed. Update this value manually. Read the level from ingame screen when entering an area.
+          whenever the selected Crature is changed. Update this value manually. Read the level from ingame screen when
+          entering an area.
         </p>
       </div>
     </ng-template>
@@ -173,7 +163,6 @@
       </div>
     </ng-template>
   </div>
-
 
   <div class="join bg-base-200 rounded-md">
     <button
@@ -197,13 +186,11 @@
     <ng-template #creatureTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Creature</h4>
-        <p>
-          When selecting a creature, its loot tags are added to the context. Also, the POI level is updated.
-        </p>
-        @if(vitalTags?.length) {
+        <p>When selecting a creature, its loot tags are added to the context. Also, the POI level is updated.</p>
+        @if (vitalTags?.length) {
           <p>
             Added Tags:
-            @for(tag of vitalTags; track $index) {
+            @for (tag of vitalTags; track $index) {
               <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
             }
           </p>
@@ -233,12 +220,10 @@
     <ng-template #enemyLevelTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Enemy level</h4>
+        <p>Accounts for <span class="badge badge-secondary badge-sm">EnemyLevel</span> tags.</p>
         <p>
-          Accounts for <span class="badge badge-secondary badge-sm">EnemyLevel</span> tags.
-        </p>
-        <p>
-          Values in tag conditions are zero-based.
-          E.g. <span class="badge badge-secondary badge-sm">EnemyLevel: 19</span> will match level 20 and above.
+          Values in tag conditions are zero-based. E.g.
+          <span class="badge badge-secondary badge-sm">EnemyLevel: 19</span> will match level 20 and above.
         </p>
       </div>
     </ng-template>
@@ -280,12 +265,10 @@
     <ng-template #playerLevelTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Player level</h4>
+        <p>Accounts for <span class="badge badge-secondary badge-sm">Level</span> tags.</p>
         <p>
-          Accounts for <span class="badge badge-secondary badge-sm">Level</span> tags.
-        </p>
-        <p>
-          Values in tag conditions are zero-based.
-          E.g. <span class="badge badge-secondary badge-sm">Level: 19</span> will match level 20 and above.
+          Values in tag conditions are zero-based. E.g.
+          <span class="badge badge-secondary badge-sm">Level: 19</span> will match level 20 and above.
         </p>
       </div>
     </ng-template>
@@ -305,7 +288,6 @@
       </div>
     </ng-template>
   </div>
-
 
   <div class="join bg-base-200 rounded-md">
     <button
@@ -331,13 +313,13 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Game Mode</h4>
         <p>
-          When selecting a game mode, its loot tags are added to the context.
-          Tags are also added for the selected difficulty and mutation.
+          When selecting a game mode, its loot tags are added to the context. Tags are also added for the selected
+          difficulty and mutation.
         </p>
-        @if(gameModeTags?.length) {
+        @if (gameModeTags?.length) {
           <p>
             Added Tags:
-            @for(tag of gameModeTags; track $index) {
+            @for (tag of gameModeTags; track $index) {
               <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
             }
           </p>
@@ -365,9 +347,7 @@
       <ng-template #mutaDifficultyTip>
         <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Mutation Difficulty</h4>
-          <p>
-            When selecting a difficulty, its loot tags are added to the context.
-          </p>
+          <p>When selecting a difficulty, its loot tags are added to the context.</p>
         </div>
       </ng-template>
     </div>
@@ -391,9 +371,7 @@
       <ng-template #mutaElementTip>
         <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Mutation Element</h4>
-          <p>
-            When selecting a mutation, its loot tags are added to the context.
-          </p>
+          <p>When selecting a mutation, its loot tags are added to the context.</p>
         </div>
       </ng-template>
     </div>
@@ -406,13 +384,9 @@
   </label>
   <div class="flex flex-row flex-wrap gap-1 text-shadow-sm shadow-black">
     @for (item of tags | async; track item.tag) {
-      <nwb-loot-tag
-        @tag
-        [tag]="item.tag"
-        [checked]="true"
-        [actions]="item.editable"
-        (removeClicked)="removeTag(item.tag)"
-      />
+      <span animate.enter="fade-grow-x-in" animate.leave="fade-grow-x-out">
+        <nwb-loot-tag [tag]="item.tag" [checked]="true" [actions]="item.editable" (removeClicked)="removeTag(item.tag)" />
+      </span>
     }
   </div>
 </div>

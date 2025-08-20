@@ -8,7 +8,6 @@ import { ModifierResult } from '~/nw/mannequin/modifier'
 import { statusEffectCategoryIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
-import { LIST_COUNT_ANIMATION } from './ui/animation'
 import { FlashDirective } from './ui/flash.directive'
 import { ModifierTipComponent } from './ui/modifier-tip.component'
 
@@ -21,7 +20,6 @@ import { ModifierTipComponent } from './ui/modifier-tip.component'
     class: 'block',
     '[class.hidden]': '!rowCount()',
   },
-  animations: [LIST_COUNT_ANIMATION],
 })
 export class GearCellModsDurationComponent {
   private mannequin = inject(Mannequin)

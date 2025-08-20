@@ -1,7 +1,8 @@
 @if (!store.hasLoaded()) {
   <div
-    class="flex flex-row justify-center items-center w-full h-full absolute top-0 left-0 z-10 scale-100 bg-base-200"
-    [@fade]
+    class="flex flex-row justify-center items-center w-full h-full absolute top-0 left-0 z-10 scale-100 bg-base-200 fade"
+    animate.enter="fade-in"
+    animate.leave="fade-out"
   >
     <picture class="block aspect-square w-40 h-40 relative">
       <img

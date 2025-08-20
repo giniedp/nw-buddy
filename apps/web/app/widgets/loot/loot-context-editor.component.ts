@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, Output, computed, inject } from '@angular/core'
@@ -50,20 +49,6 @@ import { LootTagComponent } from './loot-tag.component'
   host: {
     class: 'block',
   },
-  animations: [
-    trigger('tag', [
-      transition(':enter', [
-        style({ width: 0, opacity: 0 }),
-        animate('0.15s ease-out', style({ width: '*' })),
-        animate('0.15s ease-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        style({ opacity: '*', width: '*' }),
-        animate('0.15s ease-out', style({ opacity: 0 })),
-        animate('0.15s ease-out', style({ width: 0 })),
-      ]),
-    ]),
-  ],
 })
 export class LootContextEditorComponent {
   protected store = inject(LootContextEditorStore)

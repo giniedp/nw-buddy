@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
+import { environment } from 'apps/web/environments'
 import { NwLinkService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import type { SearchRecord } from './search-query.worker'
-import { animate, style, transition, trigger } from '@angular/animations'
-import { environment } from 'apps/web/environments'
 
 @Component({
   selector: 'nwb-search-results-panel',
@@ -18,12 +17,6 @@ import { environment } from 'apps/web/environments'
   host: {
     class: 'layout-content overflow-clip',
   },
-  animations: [
-    trigger('fade', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
-      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class SearchResultsPanelComponent {
   protected link = inject(NwLinkService)

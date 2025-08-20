@@ -12,9 +12,8 @@ export class TranslateModule {
       ngModule: TranslateModule,
       providers: [
         ...(NgxTranslate.forRoot({
-          defaultLanguage: 'en-us',
+          fallbackLang: 'en-us',
           loader: TranslationLoader.provide(),
-          useDefaultLang: true,
         }).providers || []),
       ],
     }

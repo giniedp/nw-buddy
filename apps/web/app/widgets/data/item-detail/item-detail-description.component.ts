@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { isItemHeartGem } from '@nw-data/common'
 import { NwModule } from '~/nw'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
@@ -9,7 +8,8 @@ import { ItemDetailStore } from './item-detail.store'
   template: `
     @if (!isHidden()) {
       <div
-        [@inOut]
+        animate.enter="fade-grow-y-in"
+        animate.leave="fade-grow-y-out"
         class="text-nw-description italic"
         [nwHtml]="description() | nwText: { itemId: store.recordId() } | nwTextBreak"
       ></div>
@@ -19,16 +19,11 @@ import { ItemDetailStore } from './item-detail.store'
   imports: [NwModule],
   host: {
     class: 'block',
+    '[class.hidden]': 'isHidden()',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailDescriptionComponent {
   protected store = inject(ItemDetailStore)
   protected isHidden = computed(() => !this.description() || isItemHeartGem(this.store.item()))
   protected description = computed(() => this.store.record()?.Description)
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 }

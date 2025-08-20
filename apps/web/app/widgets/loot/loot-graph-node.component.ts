@@ -22,7 +22,6 @@ import {
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
 
-import { animate, style, transition, trigger } from '@angular/animations'
 import { patchState } from '@ngrx/signals'
 import { LootTablesData } from '@nw-data/generated'
 import { isEqual } from 'date-fns/isEqual'
@@ -72,20 +71,6 @@ export interface LootGraphNodeState<T = LootNode> {
   host: {
     class: 'contents',
   },
-  animations: [
-    trigger('childContainer', [
-      transition(':enter', [
-        style({ height: 0, opacity: 0 }),
-        animate('0.15s ease-out', style({ height: '*' })),
-        animate('0.15s ease-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        style({ height: '*', opacity: '*' }),
-        animate('0.15s ease-out', style({ opacity: 0 })),
-        animate('0.15s ease-out', style({ height: 0 })),
-      ]),
-    ]),
-  ],
 })
 export class LootGraphNodeComponent {
   protected service = inject(LootGraphService)

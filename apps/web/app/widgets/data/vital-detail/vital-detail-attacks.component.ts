@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { getVitalDamage, NW_FALLBACK_ICON } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
@@ -7,16 +7,15 @@ import {
   DamageData,
   DATASHEETS,
   MutationDifficultyStaticData,
+  ScannedVital,
   SpellData,
   VitalsBaseData as VitalsData,
   VitalsLevelData,
   VitalsModifierData,
 } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'
-import { SMOOTH_SWAP_ANIMATION } from '~/ui/animation'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgInfoCircle } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -33,13 +32,11 @@ import { VitalDetailStore } from './vital-detail.store'
   host: {
     class: 'block relative',
   },
-  animations: [SMOOTH_SWAP_ANIMATION],
 })
 export class VitalDetailAttacksComponent {
   private db = injectNwData()
   private store = inject(VitalDetailStore)
 
-  @HostBinding('@smoothSwap')
   protected get swapStatus() {
     return this.resource.status()
   }

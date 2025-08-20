@@ -59,6 +59,24 @@ export class Mannequin {
     myStaminaPercent: 1,
     numAroundMe: 1,
     numHits: 1,
+    activatedAbilities: [],
+    assignedAttributes: {
+      con: 0,
+      dex: 0,
+      foc: 0,
+      int: 0,
+      str: 0,
+    },
+    combatMode: 'pve',
+    distFromDefender: null,
+    enforcedAbilities: [],
+    enforcedEffects: [],
+    equippedSkills1: null,
+    equippedSkills2: null,
+    isInCombat: null,
+    magnifyPlacement: null,
+    selectedAttack: null,
+    targetHealthPercent: null,
   })
 
   public readonly data = selectSignal<DbSlice>(

@@ -138,82 +138,84 @@
       </div>
     </div>
     @if (expand) {
-      <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" @childContainer>
-        @if (table) {
-          <div class="flex flex-row flex-wrap gap-1 text-shadow-sm shadow-black">
-            @if (table['AND/OR']; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-info">
-                {{ tagValue }}
-              </span>
-            }
-            @if (table.MaxRoll; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
-                MaxRoll: {{ tagValue | number }}
-              </span>
-            }
-            @if (table.RollBonusSetting; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-accent">
-                {{ tagValue }}
-              </span>
-            }
-            @for (item of conditions; track $index) {
-              <nwb-loot-tag
-                [tag]="item.tag"
-                [checked]="item.checked"
-                [actions]="item.editable"
-                (addClicked)="service.addTagClicked.emit($event)"
-                (removeClicked)="service.removeTagClicked.emit($event)"
-              />
-            }
-            @if (isTrue(table.ConditionOverridesRoll)) {
-              <span
-                class="whitespace-nowrap badge badge-sm badge-secondary cursor-help opacity-50"
-                [tooltip]="'Condition Overrides Roll'"
-              >
-                COR
-              </span>
-            }
-            @if (isTrue(table.LootBiasingEnabled)) {
-              <span
-                class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
-                [tooltip]="'Loot Biasing Enabled'"
-              >
-                Bias
-              </span>
-            }
-            @if (table.LootBiasingChanceOverride; as tagValue) {
-              <span
-                class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
-                [tooltip]="'Loot Biasing Chance Override'"
-              >
-                Bias CO: {{ tagValue }}
-              </span>
-            }
-            @if (table.GSBonus; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> GSBonus: {{ tagValue }} </span>
-            }
-            @if (isTrue(table.UseLevelGS)) {
-              <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> UseLvelGS </span>
-            }
-            @if (isTrue(table.TriggerLimitOnVisit)) {
-              <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> Trigger Limit </span>
-            }
-            @if (table.PerkBucketOverrides2) {
-              <span
-                class="whitespace-nowrap badge badge-sm badge-outline opacity-50 cursor-help"
-                [tooltip]="'Perk Bucket Override'"
-              >
-                PBO
-              </span>
-            }
+      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
+        <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2">
+          @if (table) {
+            <div class="flex flex-row flex-wrap gap-1 text-shadow-sm shadow-black">
+              @if (table['AND/OR']; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-info">
+                  {{ tagValue }}
+                </span>
+              }
+              @if (table.MaxRoll; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
+                  MaxRoll: {{ tagValue | number }}
+                </span>
+              }
+              @if (table.RollBonusSetting; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-accent">
+                  {{ tagValue }}
+                </span>
+              }
+              @for (item of conditions; track $index) {
+                <nwb-loot-tag
+                  [tag]="item.tag"
+                  [checked]="item.checked"
+                  [actions]="item.editable"
+                  (addClicked)="service.addTagClicked.emit($event)"
+                  (removeClicked)="service.removeTagClicked.emit($event)"
+                />
+              }
+              @if (isTrue(table.ConditionOverridesRoll)) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-secondary cursor-help opacity-50"
+                  [tooltip]="'Condition Overrides Roll'"
+                >
+                  COR
+                </span>
+              }
+              @if (isTrue(table.LootBiasingEnabled)) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
+                  [tooltip]="'Loot Biasing Enabled'"
+                >
+                  Bias
+                </span>
+              }
+              @if (table.LootBiasingChanceOverride; as tagValue) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
+                  [tooltip]="'Loot Biasing Chance Override'"
+                >
+                  Bias CO: {{ tagValue }}
+                </span>
+              }
+              @if (table.GSBonus; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> GSBonus: {{ tagValue }} </span>
+              }
+              @if (isTrue(table.UseLevelGS)) {
+                <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> UseLvelGS </span>
+              }
+              @if (isTrue(table.TriggerLimitOnVisit)) {
+                <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> Trigger Limit </span>
+              }
+              @if (table.PerkBucketOverrides2) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-outline opacity-50 cursor-help"
+                  [tooltip]="'Perk Bucket Override'"
+                >
+                  PBO
+                </span>
+              }
 
-            <span class="flex-1"></span>
-            @if (store.tableProps(); as tableProps) {
-              <nwb-diff-button [record]="tableProps" [idKey]="'LootTableID'" class="mr-1 btn-info" />
-            }
-          </div>
-        }
-        <ng-container *ngTemplateOutlet="tplChildren" />
+              <span class="flex-1"></span>
+              @if (store.tableProps(); as tableProps) {
+                <nwb-diff-button [record]="tableProps" [idKey]="'LootTableID'" class="mr-1 btn-info" />
+              }
+            </div>
+          }
+          <ng-container *ngTemplateOutlet="tplChildren" />
+        </div>
       </div>
     }
   </div>

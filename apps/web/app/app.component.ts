@@ -1,4 +1,3 @@
-import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule, Location } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -8,6 +7,7 @@ import {
   RendererStyleFlags2,
   computed,
   inject,
+  signal,
 } from '@angular/core'
 import { Router, RouterModule, UrlSegment } from '@angular/router'
 import { map, of, switchMap } from 'rxjs'
@@ -59,48 +59,6 @@ console.debug('environment', environment)
     AuthComponent,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
-  animations: [
-    trigger('listAnimation', [
-      transition('void => *', [
-        query(':enter', [style({ opacity: 0 }), stagger(100, [animate('0.3s', style({ opacity: 1 }))])]),
-      ]),
-    ]),
-    trigger('headerAnimation', [
-      state('void', style({ opacity: 0 })),
-      state('true', style({ opacity: 1 })),
-      transition('void => *', [animate('0.3s')]),
-    ]),
-    trigger('enteranimation', [
-      transition(':enter', [style({ opacity: 0 }), animate('1s 0.3s ease-out', style({ opacity: 1 }))]),
-    ]),
-    trigger('appear', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.15s ease-out', style({ opacity: 1 }))]),
-    ]),
-    trigger('backButton', [
-      transition(':enter', [
-        style({ width: 0, opacity: 0 }),
-        animate('0.15s ease-out', style({ width: '*' })),
-        animate('0.15s ease-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        style({ width: '*', opacity: '*' }),
-        animate('0.15s ease-out', style({ opacity: 0 })),
-        animate('0.15s ease-out', style({ width: 0 })),
-      ]),
-    ]),
-    trigger('versionAlert', [
-      transition(':enter', [
-        style({ height: 0, opacity: 0 }),
-        animate('0.15s ease-out', style({ height: '*' })),
-        animate('0.15s ease-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        style({ height: '*', opacity: '*' }),
-        animate('0.15s ease-out', style({ opacity: 0 })),
-        animate('0.15s ease-out', style({ height: 0 })),
-      ]),
-    ]),
-  ],
   host: {
     '[class.is-embed]': 'isEmbed',
   },
@@ -125,6 +83,8 @@ export class AppComponent {
   public get isEmbed() {
     return this.platform.isEmbed
   }
+
+  protected testFade = signal(false)
 
   protected langOptions = LANG_OPTIONS
   protected langSelection = selectSignal(injectRouteParam('locale'), (it) => {
@@ -179,6 +139,9 @@ export class AppComponent {
     this.bindLanguage()
     this.bindWatermark()
     this.updateSkeletonLoader()
+    setInterval(() => {
+      this.testFade.set(!this.testFade())
+    }, 2000)
   }
 
   private querySkeletonLoader() {

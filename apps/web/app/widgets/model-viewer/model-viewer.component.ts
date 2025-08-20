@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations'
 import { Overlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
@@ -79,12 +78,6 @@ export interface ModelViewerState {
   host: {
     class: 'layout-col bg-gradient-to-b from-base-300 to-black relative z-0 group',
   },
-  animations: [
-    trigger('fade', [
-      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
-      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
-    ]),
-  ],
 })
 export class ModelViewerComponent implements OnDestroy {
   private modalRef = inject(ModalRef, { optional: true })

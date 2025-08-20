@@ -1,25 +1,31 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { isItemHeartGem } from '@nw-data/common'
 import { NwModule } from '~/nw'
-import { IN_OUT_ANIM, IS_HIDDEN_ANIM } from './animation'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
   selector: 'nwb-item-detail-description-heargem',
   template: `
     @if (image()) {
-      <div [@inOut]>
+      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <div class="-m-4">
           <img [nwImage]="image()" width="360" height="164" class="-mb-8 w-full" />
         </div>
       </div>
     }
     @if (title()) {
-      <h3 class="text-xl font-bold" [@inOut]>{{ title() | nwText }}</h3>
+      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
+        <h3 class="text-xl font-bold">{{ title() | nwText }}</h3>
+      </div>
     }
     @if (description()) {
-      <div class="text-nw-description italic" [@inOut] [nwHtml]="description() | nwText | nwTextBreak"></div>
+      <div
+        class="text-nw-description italic"
+        animate.enter="fade-grow-y-in"
+        animate.leave="fade-grow-y-out"
+        [nwHtml]="description() | nwText | nwTextBreak"
+      ></div>
     }
   `,
   styles: [
@@ -33,8 +39,8 @@ import { ItemDetailStore } from './item-detail.store'
   imports: [CommonModule, NwModule],
   host: {
     class: 'block',
+    '[class.hidden]': 'isHidden()',
   },
-  animations: [IS_HIDDEN_ANIM, IN_OUT_ANIM],
 })
 export class ItemDetailDescriptionHeargemComponent {
   protected store = inject(ItemDetailStore)
@@ -48,9 +54,4 @@ export class ItemDetailDescriptionHeargemComponent {
     }
     return null
   })
-
-  @HostBinding('@isHidden')
-  protected get isHiddenTrigger() {
-    return this.isHidden()
-  }
 }

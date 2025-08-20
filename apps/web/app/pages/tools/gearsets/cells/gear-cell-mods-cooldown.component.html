@@ -4,7 +4,7 @@
 </h3>
 <div class="flex flex-col gap-2">
   @if (rowCount(); as count) {
-    <div class="grid grid-cols-2 gap-x-1 items-center" [@fade]="count">
+    <div class="grid grid-cols-2 gap-x-1 items-center">
       @for (row of abilities(); track row.label) {
         <div class="col-span-2 flex flex-row gap-1">
           <span [tooltip]="row.label | nwText" class="cursor-help">
@@ -34,7 +34,7 @@
               >
                 {{ cell.value | number: '0.1-1' }}s
                 <ng-template #tplTip>
-                  <nwb-modifier-tip [data]="cell.mod" [title]="cell.label" [format]="'0.2-2'"></nwb-modifier-tip>
+                  <nwb-modifier-tip [data]="cell.mod" [title]="cell.label" [format]="'0.2-2'"/>
                 </ng-template>
               </span>
             }
@@ -42,7 +42,7 @@
         </div>
       }
     </div>
-    <div class="grid grid-cols-2 gap-x-1 items-center" [@fade]="count">
+    <div class="grid grid-cols-2 gap-x-1 items-center">
       @for (row of consumables(); track row.label) {
         <div class="flex flex-row gap-1">
           <span [tooltip]="row.label | nwText" class="cursor-help">
@@ -71,7 +71,7 @@
             >
               {{ cell.value > 0 ? '+' : ''}}{{ cell.value | number: '0.1-1' }}s
               <ng-template #tplTip>
-                <nwb-modifier-tip [data]="cell.mod" [title]="cell.label" [format]="'0.2-2'"></nwb-modifier-tip>
+                <nwb-modifier-tip [data]="cell.mod" [title]="cell.label" [format]="'0.2-2'"/>
               </ng-template>
             </span>
           }

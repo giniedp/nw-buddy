@@ -1,4 +1,3 @@
-import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -118,16 +117,6 @@ export interface Tab {
   host: {
     class: 'ion-page',
   },
-  animations: [
-    trigger('list', [
-      transition('* => *', [
-        query(':enter', stagger(5, animateChild()), {
-          optional: true,
-        }),
-      ]),
-    ]),
-    trigger('fade', [transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))])]),
-  ],
 })
 export class GameModeDetailComponent implements OnInit {
   private db = injectNwData()
