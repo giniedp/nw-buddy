@@ -84,8 +84,6 @@ export class AppComponent {
     return this.platform.isEmbed
   }
 
-  protected testFade = signal(false)
-
   protected langOptions = LANG_OPTIONS
   protected langSelection = selectSignal(injectRouteParam('locale'), (it) => {
     return LANG_OPTIONS.find((lang) => lang.value === it) || LANG_OPTIONS.find((lang) => lang.isDefault)
@@ -139,9 +137,6 @@ export class AppComponent {
     this.bindLanguage()
     this.bindWatermark()
     this.updateSkeletonLoader()
-    setInterval(() => {
-      this.testFade.set(!this.testFade())
-    }, 2000)
   }
 
   private querySkeletonLoader() {
