@@ -9,18 +9,27 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { LayoutModule } from '../../../ui/layout'
+import { TooltipModule } from '../../../ui/tooltip'
 import { CharacterAvatarComponent } from '../../../widgets/character'
 import { ArtifactRecord, ArtifactsTableAdapter } from './adapter'
 
 @Component({
   selector: 'nwb-artifacts-page',
   templateUrl: './artifacts-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, CharacterAvatarComponent, LayoutModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    DataViewModule,
+    VirtualGridModule,
+    CharacterAvatarComponent,
+    LayoutModule,
+    QuicksearchModule,
+    TooltipModule,
+  ],
   providers: [
     provideDataView({
       adapter: ArtifactsTableAdapter,
     }),
-    QuicksearchModule,
   ],
   host: {
     class: 'ion-page',

@@ -16,7 +16,7 @@ import { RunesRecord, RunesTableAdapter } from './adapter'
 @Component({
   selector: 'nwb-runes-page',
   templateUrl: './runes-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent],
+  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent, QuicksearchModule],
   providers: [
     provideDataView({
       adapter: RunesTableAdapter,

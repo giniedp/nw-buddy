@@ -16,7 +16,7 @@ import { TrophiesRecord, TrophiesTableAdapter } from './adapter'
 @Component({
   selector: 'nwb-trophies-page',
   templateUrl: './trophies-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent],
+  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent, QuicksearchModule],
   providers: [
     provideDataView({
       adapter: TrophiesTableAdapter,

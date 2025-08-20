@@ -26,7 +26,9 @@ export class ArtifactCellComponent implements VirtualGridCellComponent<ArtifactR
       width: 375,
       cellDataView: ArtifactCellComponent,
       cellEmptyView: EmptyComponent,
-      getQuickFilterText: (item, tl8) => tl8(item.Name),
+      getQuickFilterText: (item, tl8) => {
+        return [tl8(item.Name), tl8(item.ItemTypeDisplayName)].join(' ')
+      },
     }
   }
 

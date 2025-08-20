@@ -6,8 +6,10 @@
   </div>
 </ion-header>
 <ion-content>
-  <div class="flex flex-col items-center justify-center gap-2 absolute top-0 left-0 right-0 z-10 p-4">
-    <div class="flex justify-center">
+  <div
+    class="flex flex-col items-center justify-center gap-2 absolute top-0 left-0 right-0 z-10 p-4 pointer-events-none"
+  >
+    <div class="flex justify-center pointer-events-auto">
       @if (stats$ | async; as stat) {
         <div class="stats self-center backdrop-blur-lg bg-base-200/30 border-1 border-base-200">
           <div class="stat place-items-center">
@@ -21,21 +23,7 @@
               marks the trophy as "collected"
             </div>
 
-            <div class="tabs tabs-border flex-nowrap overflow-x-auto p-2">
-              <a
-                class="tab"
-                [routerLink]="['./']"
-                [routerLinkActive]="'tab-active'"
-                [routerLinkActiveOptions]="{ exact: true }"
-              >
-                All
-              </a>
-              <!-- <ng-container *ngFor="let category of service.categories$ | async">
-                <a class="tab" [routerLink]="[category.id]" [routerLinkActive]="'tab-active'">
-                  {{ category.label }}
-                </a>
-              </ng-container> -->
-            </div>
+            <nwb-quicksearch-input class="mt-4 w-56" />
           </div>
         </div>
       }

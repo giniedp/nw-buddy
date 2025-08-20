@@ -6,8 +6,8 @@
   </div>
 </ion-header>
 <ion-content class="relative">
-  <div class="flex flex-col items-center justify-center gap-2 absolute top-0 left-0 right-0 z-10 p-4">
-    <div class="flex justify-center">
+  <div class="flex flex-col items-center justify-center gap-2 absolute top-0 left-0 right-0 z-10 p-4 pointer-events-none">
+    <div class="flex justify-center pointer-events-auto">
       @if (stats$ | async; as stat) {
         <div class="stats self-center backdrop-blur-lg bg-base-200/30 border-1 border-base-200">
           <div class="stat place-items-center">
