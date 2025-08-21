@@ -1,4 +1,4 @@
-import { Quaternion, Matrix } from '@babylonjs/core'
+import { Quaternion, Matrix } from '@babylonjs/core/Maths'
 
 export function getItemRotation(itemTags: string[]) {
   if (isOnWall(itemTags)) {

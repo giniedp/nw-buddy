@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms'
 import type { Mesh } from '@babylonjs/core'
 import type { ViewerDetails } from '@babylonjs/viewer'
 import { ArmorAppearanceDefinitions } from '@nw-data/generated'
-import { NwMaterialExtension, updateNwMaterial } from '@nw-viewer/babylon/extensions'
+
 import { catchError, from, of, switchMap, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -46,9 +46,8 @@ import { ScreenshotModule, ScreenshotService } from '../screenshot'
 import { DyePanelComponent } from './dye-panel.component'
 import { ModelItemInfo } from './model-viewer.service'
 import { ModelViewerStore } from './model-viewer.store'
-import { getItemRotation } from './utils/get-item-rotation'
 import { getModelUrl } from './utils/get-model-url'
-import { Model, Viewer, createViewer, renderFrame, viewerCaptureImage } from './viewer/create-viewer'
+import type { Model, Viewer } from './viewer/create-viewer'
 
 export interface ModelViewerState {
   models: ModelItemInfo[]
@@ -251,6 +250,7 @@ export class ModelViewerComponent implements OnDestroy {
     if (!this.store.isSupported()) {
       return null
     }
+    const { createViewer } = await import('./viewer/create-viewer')
     await createViewer({
       element: this.canvas().nativeElement,
       zone: this.zone,
@@ -289,6 +289,7 @@ export class ModelViewerComponent implements OnDestroy {
     const viewer = this.viewer()
     const model = this.store.model()
     const name = await this.i18n.getAsync(model.name)
+    const { viewerCaptureImage } = await import('./viewer/create-viewer')
     const data = this.isFullscreen()
       ? await viewerCaptureImage(viewer, window.innerWidth)
       : await viewerCaptureImage(viewer, 2000)
@@ -301,6 +302,7 @@ export class ModelViewerComponent implements OnDestroy {
   }
 
   private async bindAppearance() {
+    const { NwMaterialExtension } = await import('@nw-viewer/babylon/extensions')
     effect(() => {
       const model = this.model()
       const appearance = this.store.model()?.appearance
@@ -319,12 +321,13 @@ export class ModelViewerComponent implements OnDestroy {
   }
 
   private async bindDyeState() {
+    const { updateNwMaterial } = await import('@nw-viewer/babylon/extensions')
+    const { renderFrame } = await import('./viewer/create-viewer')
     effect(() => {
       const model = this.model()
       if (!model) {
         return
       }
-
       const dyeR = this.store.dyeR()
       const dyeG = this.store.dyeG()
       const dyeB = this.store.dyeB()
@@ -382,6 +385,7 @@ async function updateRotation(viewer: Viewer, model: Model, data: ModelItemInfo)
     return
   }
   const { TransformNode, Vector3 } = await import('@babylonjs/core')
+  const { getItemRotation } = await import('./utils/get-item-rotation')
   const rotation = getItemRotation(data?.itemClass)
 
   const root = new TransformNode('root')

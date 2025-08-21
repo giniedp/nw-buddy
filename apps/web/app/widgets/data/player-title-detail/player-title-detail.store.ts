@@ -1,7 +1,7 @@
 import { computed } from '@angular/core'
-import { signalStore, withComputed, withState } from '@ngrx/signals'
+import { patchState, signalMethod, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { PlayerTitleData } from '@nw-data/generated'
-import { injectNwData, withStateLoader } from '~/data'
+import { injectNwData } from '~/data'
 import { rejectKeys } from '~/utils'
 
 export interface PlayerTitleDetailState {
@@ -14,20 +14,19 @@ export const PlayerTitleDetailStore = signalStore(
     recordId: null,
     record: null,
   }),
-  withStateLoader(() => {
+  withMethods((state) => {
     const db = injectNwData()
     return {
-      async load(recordId: string) {
-        return {
+      load: signalMethod(async (recordId: string) => {
+        patchState(state, {
           recordId,
           record: await db.playerTitlesById(recordId),
-        }
-      },
+        })
+      }),
     }
   }),
   withComputed(({ record }) => {
     return {
-      recordId: computed(() => record()?.TitleID),
       type: computed(() => record()?.TitleType),
       title: computed(() => record()?.TitleMale),
       titleFemale: computed(() => record()?.TitleFemale),

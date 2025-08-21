@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } 
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MetaAchievementDetailStore } from './meta-achievement-detail.store'
 
 @Component({
@@ -11,7 +10,7 @@ import { MetaAchievementDetailStore } from './meta-achievement-detail.store'
   templateUrl: './meta-achievement-detail.component.html',
   exportAs: 'mountDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, ModelViewerModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
   providers: [MetaAchievementDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
