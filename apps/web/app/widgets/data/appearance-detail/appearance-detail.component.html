@@ -197,6 +197,15 @@
           <a [routerLink]="['transmog', sibling.id] | nwLink" class="relative">
             <nwb-item-icon [solid]="false" [nwbItemIcon]="sibling.appearance.IconPath" class="w-20"> </nwb-item-icon>
             <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1" />
+            <div class="flex flex-row items-center absolute bottom-[1px] left-[1px] right-[1px]">
+              @for (slot of dyeSlots(sibling); track $index) {
+                <span
+                  class="flex-1 h-1"
+                  [style.background-color]="slot.color"
+                  [style.opacity]="slot.colorStrength"
+                ></span>
+              }
+            </div>
           </a>
           <nwb-item-header-content
             [title]="sibling.appearance.Name | nwText"
@@ -204,15 +213,6 @@
             [text1]="'Common'"
             [text3]="categoryName(sibling.category) | nwText"
           >
-            <div class="flex flex-row items-center gap-1 absolute bottom-0 left-0">
-              @for (slot of dyeSlots(sibling); track $index) {
-                <span
-                  class="inline-block w-4 h-4 rounded-sm"
-                  [style.background-color]="slot.color"
-                  [style.opacity]="slot.colorStrength"
-                ></span>
-              }
-            </div>
           </nwb-item-header-content>
         </nwb-item-header>
       }
