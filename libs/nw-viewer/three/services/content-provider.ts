@@ -113,7 +113,7 @@ export class ContentProvider implements GameService {
    */
   public streamAsset(url: string, rootUrl?: string) {
     rootUrl = rootUrl || this.rootUrl
-    const key = [url, rootUrl].join('/')
+    const key = [rootUrl, url].join('/')
     if (!this.loadedAssets.has(key)) {
       this.loadedAssets.set(key, this.createStream(url, rootUrl))
     }
@@ -131,7 +131,7 @@ export class ContentProvider implements GameService {
     const manager = new LoadingManager()
     manager.setURLModifier((url: string) => {
       if (rootUrl) {
-        return rootUrl + url
+        return [rootUrl.replace(/\/$/, ''), url.replace(/^\//, '')].join('/')
       }
       return url
     })
