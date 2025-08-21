@@ -7,7 +7,7 @@ export const ROUTES: Routes = [
     children: [
       {
         path: ':id',
-        loadComponent: () => import('./lore-page.component').then((it) => it.LorePageComponent),
+        loadComponent: () => import('./lore-detail-page.component').then((it) => it.LoreDetailPageComponent),
       },
     ],
   },
