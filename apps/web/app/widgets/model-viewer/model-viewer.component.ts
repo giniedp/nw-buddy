@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Injector,
   NgZone,
   OnDestroy,
   computed,
@@ -84,6 +85,7 @@ export class ModelViewerComponent implements OnDestroy {
   private zone = inject(NgZone)
   private screenshots = inject(ScreenshotService)
   private i18n = inject(TranslateService)
+  private injector = inject(Injector)
   protected store = inject(ModelViewerStore)
   protected errorIcon = svgCircleExclamation
   public readonly models = input<ModelItemInfo[]>()
@@ -303,64 +305,74 @@ export class ModelViewerComponent implements OnDestroy {
 
   private async bindAppearance() {
     const { NwMaterialExtension } = await import('@nw-viewer/babylon/extensions')
-    effect(() => {
-      const model = this.model()
-      const appearance = this.store.model()?.appearance
-      if (!model) {
-        return
-      }
-      untracked(() => {
-        this.store.setAppearance(
-          appearance ||
-            model.assetContainer.meshes
-              .map((mesh) => NwMaterialExtension.getAppearance(mesh.material))
-              .find((it) => !!it),
-        )
-      })
-    })
+    effect(
+      () => {
+        const model = this.model()
+        const appearance = this.store.model()?.appearance
+        if (!model) {
+          return
+        }
+        untracked(() => {
+          this.store.setAppearance(
+            appearance ||
+              model.assetContainer.meshes
+                .map((mesh) => NwMaterialExtension.getAppearance(mesh.material))
+                .find((it) => !!it),
+          )
+        })
+      },
+      {
+        injector: this.injector,
+      },
+    )
   }
 
   private async bindDyeState() {
     const { updateNwMaterial } = await import('@nw-viewer/babylon/extensions')
     const { renderFrame } = await import('./viewer/create-viewer')
-    effect(() => {
-      const model = this.model()
-      if (!model) {
-        return
-      }
-      const dyeR = this.store.dyeR()
-      const dyeG = this.store.dyeG()
-      const dyeB = this.store.dyeB()
-      const dyeA = this.store.dyeA()
-      const appearance = this.store.appearance()
-      const debugMask = this.store.dyeDebug()
-      untracked(() => {
-        updateNwMaterial({
-          meshes: model.assetContainer.meshes,
-          appearance: appearance
-            ? {
-                ...appearance,
-                MaskAGloss: Number(appearance.MaskAGloss) || 0,
-              }
-            : null,
-          dyeR: dyeR?.ColorAmount,
-          dyeROverride: dyeR?.ColorOverride,
-          dyeRColor: dyeR?.Color,
-          dyeG: dyeG?.ColorAmount,
-          dyeGOverride: dyeG?.ColorOverride,
-          dyeGColor: dyeG?.Color,
-          dyeB: dyeB?.ColorAmount,
-          dyeBOverride: dyeB?.ColorOverride,
-          dyeBColor: dyeB?.Color,
-          dyeA: dyeA?.SpecAmount,
-          //dyeAOverride: dyeA?.SpecOverride,
-          dyeAColor: dyeA?.SpecColor,
-          glossShift: dyeA?.MaskGlossShift,
-          debugMask: debugMask,
+    effect(
+      () => {
+        const model = this.model()
+        if (!model) {
+          return
+        }
+        const dyeR = this.store.dyeR()
+        const dyeG = this.store.dyeG()
+        const dyeB = this.store.dyeB()
+        const dyeA = this.store.dyeA()
+        const appearance = this.store.appearance()
+        const debugMask = this.store.dyeDebug()
+        untracked(() => {
+          updateNwMaterial({
+            meshes: model.assetContainer.meshes,
+            appearance: appearance
+              ? {
+                  ...appearance,
+                  MaskAGloss: Number(appearance.MaskAGloss) || 0,
+                }
+              : null,
+            dyeR: dyeR?.ColorAmount,
+            dyeROverride: dyeR?.ColorOverride,
+            dyeRColor: dyeR?.Color,
+            dyeG: dyeG?.ColorAmount,
+            dyeGOverride: dyeG?.ColorOverride,
+            dyeGColor: dyeG?.Color,
+            dyeB: dyeB?.ColorAmount,
+            dyeBOverride: dyeB?.ColorOverride,
+            dyeBColor: dyeB?.Color,
+            dyeA: dyeA?.SpecAmount,
+            //dyeAOverride: dyeA?.SpecOverride,
+            dyeAColor: dyeA?.SpecColor,
+            glossShift: dyeA?.MaskGlossShift,
+            debugMask: debugMask,
+          })
+          setTimeout(() => renderFrame(this.viewer()))
         })
-        setTimeout(() => renderFrame(this.viewer()))
-      })
-    })
+      },
+      {
+        injector: this.injector,
+      },
+    )
   }
 }
 
