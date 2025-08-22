@@ -35,6 +35,7 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
+import { AppSkeletonService } from './app-skeleton.service'
 console.debug('environment', environment)
 @Component({
   selector: 'nw-buddy-app',
@@ -106,6 +107,7 @@ export class AppComponent {
   protected versionChanged = toSignal(this.version.versionChanged$)
   protected window = injectWindow()
   protected document = injectDocument()
+  protected skeleton = inject(AppSkeletonService)
   protected location = inject(Location)
   protected currentUrl = selectSignal(injectCurrentUrl())
   protected canGoBack = computed(() => {
@@ -136,46 +138,6 @@ export class AppComponent {
   ) {
     this.bindLanguage()
     this.bindWatermark()
-    this.updateSkeletonLoader()
-  }
-
-  private querySkeletonLoader() {
-    return this.document.querySelector('#skeleton-loader')
-  }
-  private removeSkeletonLoader() {
-    const skeleton = this.querySkeletonLoader()
-    if (!skeleton) {
-      return
-    }
-    setTimeout(() => {
-      skeleton.classList.remove('opacity-100')
-      skeleton.classList.add('opacity-0')
-      setTimeout(() => skeleton.remove(), 300)
-    }, 750)
-  }
-
-  private updateSkeletonLoader() {
-    if (this.platform.isEmbed) {
-      return
-    }
-    const skeleton = this.querySkeletonLoader()
-    if (!skeleton) {
-      return
-    }
-    const isMainPage = this.router.url === '/'
-    const isMobile = !matchMedia('(min-width: 1200px)').matches
-    skeleton.querySelectorAll<HTMLElement>('.h-0\\!,.w-0\\!').forEach((el) => {
-      if (isMainPage && el.dataset['submenu']) {
-        // main page has no submenu
-        return
-      }
-      if (isMobile && el.dataset['sidemenu']) {
-        // main page has no side menu
-        return
-      }
-      el.classList.remove('h-0!')
-      el.classList.remove('w-0!')
-    })
   }
 
   protected onBackClicked() {
@@ -188,7 +150,7 @@ export class AppComponent {
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
         if (this.platform.isBrowser) {
-          this.removeSkeletonLoader()
+          this.skeleton.remove()
         }
       })
   }

@@ -5,6 +5,7 @@ import { svgPlus } from '~/ui/icons/svg/plus'
 import { ElectronService } from './electron.service'
 import { TitleBarComponent } from './title-bar.component'
 import { IconsModule } from '~/ui/icons'
+import { AppSkeletonService } from '../app-skeleton.service'
 
 export interface AppTab {
   id: number
@@ -25,6 +26,7 @@ export interface AppTab {
 })
 export class ElectronComponent {
   private service = inject(ElectronService)
+  private skeleton = inject(AppSkeletonService)
   private document = inject(DOCUMENT)
   protected iconPlus = svgPlus
 
@@ -32,6 +34,7 @@ export class ElectronComponent {
     this.document.querySelectorAll('[data-skeleton]').forEach((el) => el.remove())
     this.bindEvents()
     this.createTab()
+    this.skeleton.remove()
   }
 
   protected tabs = signal<AppTab[]>([])
