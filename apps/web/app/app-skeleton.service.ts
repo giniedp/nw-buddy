@@ -28,6 +28,10 @@ export class AppSkeletonService {
     }, 750)
   }
 
+  public removeWithNoDelay() {
+    this.querySkeletonLoader()?.remove()
+  }
+
   private updateSkeletonLoader() {
     if (this.platform.isEmbed) {
       return

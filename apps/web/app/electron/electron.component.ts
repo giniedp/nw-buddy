@@ -34,7 +34,7 @@ export class ElectronComponent {
     this.document.querySelectorAll('[data-skeleton]').forEach((el) => el.remove())
     this.bindEvents()
     this.createTab()
-    this.skeleton.remove()
+    this.skeleton.removeWithNoDelay()
   }
 
   protected tabs = signal<AppTab[]>([])
