@@ -1,11 +1,60 @@
 @if (tabs()?.length) {
   <div class="tabs tabs-xs tabs-box justify-start flex-nowrap gap-1 bg-transparent p-2">
     @for (item of tabs(); track $index) {
-      <a class="tab p-1 h-auto" [class.tab-active]="item.id === tabId()" (click)="tabId.set(item.id)">
+      <a class="tab p-1 h-auto" [class.tab-active]="item.key === tabId()" (click)="tabId.set(item.key)">
         {{ item.label }}
-        <span class="badge badge-xs rounded-md ml-1">{{ item.chance | percent }}</span>
+        <span class="badge badge-xs rounded-md ml-1" [class.badge-success]="item.locked">
+          @if (item.locked) {
+            {{ 1 | percent }}
+          } @else {
+            {{ item.chance | percent }}
+          }
+        </span>
       </a>
     }
   </div>
-  <nwb-perk-bucket-detail [perkBucketId]="tab()?.bucketId" [itemId]="itemId()" class="px-4 pb-4" />
+
+  <div class="italic text-center text-sm p-2">Perk chances within this bucket.</div>
+
+  <div class="flex flex-col gap-2">
+    @for (row of tab()?.rows; track $index) {
+      @let perk = row.perk;
+      <div class="flex flex-row items-center gap-2">
+        <a [nwbItemIcon]="perk.IconPath" [nwLinkTooltip]="['perk', perk.PerkID]" class="w-9 h-9 flex-none"> </a>
+
+        <div class="flex-1 flex flex-col gap-1.5">
+          <div class="text-sm leading-none">
+            <a class="hover:underline" [routerLink]="['perk', perk.PerkID] | nwLink">
+              {{ perk.DisplayName | nwText | nwTextBreak: ' - ' }}
+            </a>
+          </div>
+          <div class="flex flex-row gap-2">
+            @for (label of perk.ExclusiveLabels; track $index) {
+              <span class="badge badge-xs badge-secondary">{{ label }}</span>
+            }
+          </div>
+        </div>
+        @if (!row.isRolled) {
+          <button
+            class="btn btn-ghost"
+            (click)="setRolledPerk(tab().key, row.perkId)"
+            [disabled]="!row.canRoll"
+            [class.text-error]="!row.canRoll"
+          >
+            @if (row.canRoll) {
+              <span>{{ row.chance | percent: '1.0-5' }}</span>
+            } @else {
+              <span>{{ 0 | percent: '1.0-5' }}</span>
+            }
+            <nwb-icon [icon]="unlockIcon" class="w-4 h-4" />
+          </button>
+        } @else {
+          <button class="btn btn-ghost text-success" (click)="setRolledPerk(tab().key, null)">
+            <span>{{ 1 | percent: '1.0-5' }}</span>
+            <nwb-icon [icon]="lockIcon" class="w-4 h-4" />
+          </button>
+        }
+      </div>
+    }
+  </div>
 }

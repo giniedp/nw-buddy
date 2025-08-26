@@ -1,4 +1,4 @@
-import { MasterItemDefinitions, PerkBucketData, PerkData, PerkType } from '@nw-data/generated'
+import { MasterItemDefinitions, PerkBucketData, PerkData, PerkExclusiveLabelData, PerkType } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { isPerkApplicableToItem } from './perks'
 
@@ -6,6 +6,8 @@ export interface PerkBucket<T extends PerkBucketEntry = PerkBucketEntry> {
   PerkBucketID: string
   PerkChance: number
   PerkType: PerkType
+  IgnoreExclusiveLabelWeights: boolean
+  DisablePerkBiasing: boolean
   Entries: Array<T>
 }
 
@@ -46,6 +48,8 @@ function convertBucket({
 
   const result: PerkBucket = {
     Entries: [],
+    DisablePerkBiasing: bucket.DisablePerkBiasing,
+    IgnoreExclusiveLabelWeights: bucket.IgnoreExclusiveLabelWeights,
     PerkBucketID: bucket.PerkBucketID,
     PerkChance: bucket.PerkChance,
     PerkType: bucket.PerkType as PerkType,

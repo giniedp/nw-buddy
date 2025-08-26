@@ -132,6 +132,9 @@ export abstract class NwDataSheets {
   public statusEffectCategoriesByIdMap = primaryIndex(this.statusEffectCategoriesAll, 'StatusEffectCategoryID')
   public statusEffectCategoriesById = indexLookup(this.statusEffectCategoriesByIdMap)
 
+  public perksExclusiveLabelAll = table(() => this.loadDatasheets(DATASHEETS.PerkExclusiveLabelData))
+  public perksExclusiveLabelByIdMap = primaryIndex(this.perksExclusiveLabelAll, 'ExclusiveLabelID')
+
   public perksAll = table(() => this.loadDatasheets(DATASHEETS.PerkData))
   public perksByIdMap = primaryIndex(this.perksAll, 'PerkID')
   public perksById = indexLookup(this.perksByIdMap)

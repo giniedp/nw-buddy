@@ -1,9 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, input, signal } from '@angular/core'
+import { Component, computed, inject, input, signal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { RouterModule } from '@angular/router'
 import { PerkType } from '@nw-data/generated'
-import { injectNwData } from '~/data'
-import { apiResource } from '~/utils'
-import { PerkBucketDetailPerksComponent } from './perk-bucket-detail.component'
+import { NwModule } from '../../../nw'
+import { IconsModule } from '../../../ui/icons'
+import { svgLock, svgLockOpen } from '../../../ui/icons/svg'
+import { ItemFrameModule } from '../../../ui/item-frame'
+import { PerkDetailModule } from '../perk-detail'
+import { PerkBucketItemStore } from './perk-bucket-item.store'
 
 export interface Tab {
   id: string
@@ -15,46 +20,47 @@ export interface Tab {
 @Component({
   selector: 'nwb-perk-bucket-detail-tabs',
   templateUrl: './perk-bucket-detail-tabs.component.html',
-  imports: [CommonModule, PerkBucketDetailPerksComponent],
+  imports: [CommonModule, NwModule, PerkDetailModule, RouterModule, ItemFrameModule, IconsModule],
+  providers: [PerkBucketItemStore],
   host: {
     class: 'block',
   },
 })
 export class PerkBucketDetailTabsComponent {
-  private db = injectNwData()
+  private store = inject(PerkBucketItemStore)
+  protected lockIcon = svgLock
+  protected unlockIcon = svgLockOpen
 
   public perkBucketIds = input<string[]>([])
   public itemId = input<string>(null)
 
-  protected resource = apiResource({
-    request: () => this.perkBucketIds(),
-    loader: async ({ request }) => {
-      if (!request?.length) {
-        return []
-      }
-      const bucketMap = await this.db.perkBucketsByIdMap()
-      const buckets = request.map((id) => bucketMap.get(id))
-      return buckets
-    },
-  })
+  public constructor() {
+    this.store.connectItemId(toObservable(this.itemId))
+  }
 
   public tabId = signal<string>(null)
   public tabs = computed(() => {
-    const buckets = this.resource.value() || []
-    return buckets.map((it, index): Tab => {
+    return this.store.bucketTabs().map((it, index) => {
       return {
-        id: String(index),
-        bucketId: it.PerkBucketID,
-        label: getPerkTypeLabel(it.PerkType),
-        chance: it.PerkChance,
+        key: it.key,
+        locked: !!it.lockedPerkId,
+        bucketId: it.bucket.PerkBucketID,
+        label: getPerkTypeLabel(it.bucket.PerkType),
+        chance: it.bucket.PerkChance,
+        rows: it.rows,
       }
     })
   })
+
   public tab = computed(() => {
     const tabId = this.tabId()
     const tabs = this.tabs()
-    return tabs.find((it) => it.id === tabId) || tabs[0]
+    return tabs.find((it) => it.key === tabId) || tabs[0]
   })
+
+  protected setRolledPerk(key: string, perkId: string) {
+    this.store.setRolledPerk(key, perkId)
+  }
 }
 
 function getPerkTypeLabel(type: PerkType) {
