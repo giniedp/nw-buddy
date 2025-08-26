@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router'
 import { PerkType } from '@nw-data/generated'
 import { NwModule } from '../../../nw'
 import { IconsModule } from '../../../ui/icons'
-import { svgLock, svgLockOpen } from '../../../ui/icons/svg'
+import { svgCheckToSlot, svgLock, svgLockOpen, svgSquare } from '../../../ui/icons/svg'
 import { ItemFrameModule } from '../../../ui/item-frame'
 import { PerkDetailModule } from '../perk-detail'
 import { PerkBucketItemStore } from './perk-bucket-item.store'
@@ -28,8 +28,8 @@ export interface Tab {
 })
 export class PerkBucketDetailTabsComponent {
   private store = inject(PerkBucketItemStore)
-  protected lockIcon = svgLock
-  protected unlockIcon = svgLockOpen
+  protected checkedIcon = svgCheckToSlot
+  protected uncheckedIcon = svgSquare
 
   public perkBucketIds = input<string[]>([])
   public itemId = input<string>(null)

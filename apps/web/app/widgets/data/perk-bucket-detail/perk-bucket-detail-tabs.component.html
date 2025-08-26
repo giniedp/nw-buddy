@@ -19,8 +19,8 @@
   <div class="flex flex-col gap-2">
     @for (row of tab()?.rows; track $index) {
       @let perk = row.perk;
-      <div class="flex flex-row items-center gap-2">
-        <a [nwbItemIcon]="perk.IconPath" [nwLinkTooltip]="['perk', perk.PerkID]" class="w-9 h-9 flex-none"> </a>
+      <div class="flex flex-row items-center gap-2" [class.grayscale-100]="!row.isRolled && !row.canRoll">
+        <a [nwbItemIcon]="perk.IconPath" [nwLinkTooltip]="['perk', perk.PerkID]" class="w-10 h-10 flex-none"> </a>
 
         <div class="flex-1 flex flex-col gap-1.5">
           <div class="text-sm leading-none">
@@ -30,28 +30,19 @@
           </div>
           <div class="flex flex-row gap-2">
             @for (label of perk.ExclusiveLabels; track $index) {
-              <span class="badge badge-xs badge-secondary">{{ label }}</span>
+              <span class="badge badge-sm badge-secondary bg-secondary/50">{{ label }}</span>
             }
           </div>
         </div>
         @if (!row.isRolled) {
-          <button
-            class="btn btn-ghost"
-            (click)="setRolledPerk(tab().key, row.perkId)"
-            [disabled]="!row.canRoll"
-            [class.text-error]="!row.canRoll"
-          >
-            @if (row.canRoll) {
-              <span>{{ row.chance | percent: '1.0-5' }}</span>
-            } @else {
-              <span>{{ 0 | percent: '1.0-5' }}</span>
-            }
-            <nwb-icon [icon]="unlockIcon" class="w-4 h-4" />
+          <button class="btn btn-ghost" (click)="setRolledPerk(tab().key, row.perkId)">
+            <span [class.opacity-0]="!row.canRoll">{{ row.chance | percent: '1.0-5' }}</span>
+            <nwb-icon [icon]="uncheckedIcon" class="w-4 h-4" />
           </button>
         } @else {
           <button class="btn btn-ghost text-success" (click)="setRolledPerk(tab().key, null)">
             <span>{{ 1 | percent: '1.0-5' }}</span>
-            <nwb-icon [icon]="lockIcon" class="w-4 h-4" />
+            <nwb-icon [icon]="checkedIcon" class="w-4 h-4" />
           </button>
         }
       </div>
