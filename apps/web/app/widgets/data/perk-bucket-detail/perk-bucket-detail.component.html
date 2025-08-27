@@ -28,28 +28,47 @@
       The calculation of perk chances is based on its label weights. However, the exact evaluation of those weights is
       not known. Here you can change the label weight evaluation method.
     </div>
-    <div class="w-full join justify-center">
-      <button
-        class="join-item btn btn-sm"
-        [class.text-primary]="store.labelMode() === 'max'"
-        (click)="store.setLabelWeightMode('max')"
-      >
-        MAX
-      </button>
-      <button
-        class="join-item btn btn-sm"
-        [class.text-primary]="store.labelMode() === 'avg'"
-        (click)="store.setLabelWeightMode('avg')"
-      >
-        AVG
-      </button>
-      <button
-        class="join-item btn btn-sm"
-        [class.text-primary]="store.labelMode() === 'sum'"
-        (click)="store.setLabelWeightMode('sum')"
-      >
-        SUM
-      </button>
+    <div class="flex flex-row gap-2 justify-center mb-4">
+      <fieldset class="fieldset w-40">
+        <label class="label"> Weight method </label>
+        <div class="join justify-center">
+          <button
+            class="join-item btn btn-sm flex-1"
+            [class.text-primary]="store.labelMode() === 'max'"
+            (click)="store.setLabelWeightMode('max')"
+          >
+            MAX
+          </button>
+          <button
+            class="join-item btn btn-sm flex-1"
+            [class.text-primary]="store.labelMode() === 'avg'"
+            (click)="store.setLabelWeightMode('avg')"
+          >
+            AVG
+          </button>
+          <button
+            class="join-item btn btn-sm flex-1"
+            [class.text-primary]="store.labelMode() === 'sum'"
+            (click)="store.setLabelWeightMode('sum')"
+          >
+            SUM
+          </button>
+        </div>
+      </fieldset>
+      <fieldset class="fieldset w-40">
+        <label class="label"> Default weight </label>
+        <div class="join justify-center">
+          @for (option of store.defaultWeightOptions(); track $index) {
+            <button
+              class="join-item btn btn-sm flex-1"
+              [class.text-primary]="store.defaultWeight() === option"
+              (click)="store.setDefaultWeight(option)"
+            >
+              {{ option }}
+            </button>
+          }
+        </div>
+      </fieldset>
     </div>
   } @else {
     <div class="italic text-center text-sm p-2">Perk chances within this bucket.</div>

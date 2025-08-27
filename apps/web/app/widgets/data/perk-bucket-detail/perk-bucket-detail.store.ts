@@ -20,6 +20,8 @@ import { injectNwData } from '~/data'
 export type LabelWeightMode = 'max' | 'avg' | 'sum'
 export interface PerkBucketDetailState {
   showWeights: boolean
+  defaultWeight: number
+  defaultWeightOptions: number[]
   labelMode: LabelWeightMode
   item: MasterItemDefinitions
   perkMap: Map<string, PerkData>
@@ -55,6 +57,8 @@ export interface PerkBucketTab {
 export const PerkBucketDetailStore = signalStore(
   withState<PerkBucketDetailState>({
     labelMode: 'max',
+    defaultWeight: 1,
+    defaultWeightOptions: [1, 100],
     showWeights: true,
     item: null,
     perkMap: new Map(),
@@ -92,6 +96,9 @@ export const PerkBucketDetailStore = signalStore(
       setLabelWeightMode(value: LabelWeightMode) {
         patchState(state, { labelMode: value })
       },
+      setDefaultWeight(value: number) {
+        patchState(state, { defaultWeight: value })
+      },
       setRolledPerk(bucketKey: string, perkId: string) {
         patchState(state, ({ lockedPerkIds }) => {
           return {
@@ -120,7 +127,7 @@ export const PerkBucketDetailStore = signalStore(
       }),
     }
   }),
-  withComputed(({ item, perkMap, perkBucketMap, labelMap, labelMode, itemPerks, rolledPerks }) => {
+  withComputed(({ item, perkMap, perkBucketMap, labelMap, labelMode, itemPerks, rolledPerks, defaultWeight }) => {
     const buckets = computed(() => {
       const result: Record<string, PerkBucket> = {}
       for (const slot of getItemPerkSlots(item())) {
@@ -156,10 +163,8 @@ export const PerkBucketDetailStore = signalStore(
           rolledPerk,
           labelMode: labelMode(),
           rolledPerks: existingPerks(),
+          defaultWeight: defaultWeight(),
         })
-
-        // console.log('---', bucket.PerkBucketID, '---')
-        // dumpEntries(bucket.Entries)
 
         let rows = collectChanceRows({
           chance: bucket.PerkChance,
@@ -265,6 +270,7 @@ function preprocessEntries({
   labels,
   ignoreLabels,
   labelMode,
+  defaultWeight,
 }: {
   entries: PerkBucketEntryWithMeta[]
   perks: Map<string, PerkData>
@@ -273,6 +279,7 @@ function preprocessEntries({
   labels: Map<string, PerkExclusiveLabelData>
   ignoreLabels: boolean
   labelMode: LabelWeightMode
+  defaultWeight: number
 }) {
   for (const entry of entries) {
     if (!isPerkEntry(entry)) {
@@ -284,6 +291,7 @@ function preprocessEntries({
         labels,
         ignoreLabels,
         labelMode,
+        defaultWeight,
       })
     }
   }
@@ -295,7 +303,7 @@ function preprocessEntries({
       entry.canRoll = canPerkRoll(perk, rolledPerks) && !rolledPerk
     }
     entry.labels = getEntryLabels(entry, perks, labels)
-    entry.labelWeight = getEntryLabelWeights(entry, labelMode)
+    entry.labelWeight = getEntryLabelWeights(entry, labelMode, defaultWeight)
     entry.totalWight = entry.Weight * (ignoreLabels ? 1 : entry.labelWeight)
   }
 }
@@ -371,10 +379,9 @@ function getEntryLabels(
   return result
 }
 
-const DEFAULT_LABEL_WEIGHT = 100
-function getEntryLabelWeights(entry: PerkBucketEntryWithMeta, mode: LabelWeightMode) {
+function getEntryLabelWeights(entry: PerkBucketEntryWithMeta, mode: LabelWeightMode, defaultWeight: number) {
   if (!isPerkEntry(entry)) {
-    return DEFAULT_LABEL_WEIGHT
+    return defaultWeight
   }
 
   let labelWeight = 0
@@ -404,7 +411,7 @@ function getEntryLabelWeights(entry: PerkBucketEntryWithMeta, mode: LabelWeightM
 
   if (!labelWeight) {
     console.warn(`Perk ${entry.PerkID} has no label weight, using default 100`)
-    labelWeight = DEFAULT_LABEL_WEIGHT
+    labelWeight = defaultWeight
   }
   return labelWeight
 }
@@ -436,22 +443,4 @@ function collapseChanceRows(rows: PerkBucketChanceRow[]): PerkBucketChanceRow[] 
     })
   }
   return result
-}
-
-function dumpEntries(entries: PerkBucketEntryWithMeta[], level = 0) {
-  const prefix = '  '.repeat(level)
-  for (const entry of entries) {
-    if (!isPerkEntry(entry)) {
-      console.log(prefix, '[PBID]', entry.PerkBucketID)
-      console.log(prefix, '- weight', entry.Weight)
-      console.log(prefix, '- labelWeight', entry.labelWeight)
-      console.log(prefix, '- finalWeight', entry.totalWight)
-      dumpEntries(entry.Entries, level + 1)
-    } else {
-      console.log(prefix, '[PERK]', entry.PerkID)
-      console.log(prefix, '- weight', entry.Weight)
-      console.log(prefix, '- labelWeight', entry.labelWeight)
-      console.log(prefix, '- finalWeight', entry.totalWight)
-    }
-  }
 }
