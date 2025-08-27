@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, inject, input, model, signal } from '@angular/core'
+import { Component, computed, inject, input, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { PerkType } from '@nw-data/generated'
 import { NwModule } from '../../../nw'
 import { IconsModule } from '../../../ui/icons'
-import { svgBars, svgCheckToSlot, svgGears, svgLock, svgLockOpen, svgSquare } from '../../../ui/icons/svg'
+import { svgCheckToSlot, svgGears, svgSquare } from '../../../ui/icons/svg'
 import { ItemFrameModule } from '../../../ui/item-frame'
 import { PerkDetailModule } from '../perk-detail'
-import { PerkBucketItemStore } from './perk-bucket-item.store'
+import { PerkBucketDetailStore } from './perk-bucket-detail.store'
 
 export interface Tab {
   id: string
@@ -18,16 +18,16 @@ export interface Tab {
 }
 
 @Component({
-  selector: 'nwb-perk-bucket-detail-tabs',
-  templateUrl: './perk-bucket-detail-tabs.component.html',
+  selector: 'nwb-perk-bucket-detail',
+  templateUrl: './perk-bucket-detail.component.html',
   imports: [CommonModule, NwModule, PerkDetailModule, RouterModule, ItemFrameModule, IconsModule],
-  providers: [PerkBucketItemStore],
+  providers: [PerkBucketDetailStore],
   host: {
     class: 'block',
   },
 })
-export class PerkBucketDetailTabsComponent {
-  protected store = inject(PerkBucketItemStore)
+export class PerkBucketDetailComponent {
+  protected store = inject(PerkBucketDetailStore)
   protected checkedIcon = svgCheckToSlot
   protected uncheckedIcon = svgSquare
   protected settingsIcon = svgGears

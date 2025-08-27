@@ -14,7 +14,7 @@ import { NwData } from '@nw-data/db'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { injectNwData } from '~/data'
-import { NwLinkResource, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { TabsModule } from '~/ui/tabs'
 import { apiResource, eqCaseInsensitive, observeQueryParam } from '~/utils'
@@ -22,7 +22,7 @@ import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 import { EntitlementDetailModule } from '~/widgets/data/entitlement-detail'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
-import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
+import { PerkBucketDetailComponent } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
@@ -55,7 +55,7 @@ export interface ItemTab {
     PerkDetailModule,
     CraftingCalculatorComponent,
     PaginationModule,
-    PerkBucketDetailModule,
+    PerkBucketDetailComponent,
     AppearanceDetailModule,
     LootGraphComponent,
     TabsModule,
