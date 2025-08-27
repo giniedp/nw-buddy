@@ -17,7 +17,10 @@ import { groupBy, sumBy } from 'lodash'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
 
+export type LabelWeightMode = 'max' | 'avg' | 'sum'
 export interface PerkBucketItemState {
+  showWeights: boolean
+  labelMode: LabelWeightMode
   item: MasterItemDefinitions
   perkMap: Map<string, PerkData>
   perkBucketMap: Map<string, PerkBucket>
@@ -25,12 +28,21 @@ export interface PerkBucketItemState {
   lockedPerkIds: Record<string, string>
 }
 
+type PerkBucketEntryWithMeta = PerkBucketEntry & {
+  canRoll?: boolean
+  labels?: WeightedLabel[]
+  labelWeight?: number
+  totalWight?: number
+}
 export interface PerkBucketChanceRow {
   chance: number
   perkId: string
   perk: PerkData
   isRolled: boolean
   canRoll: boolean
+  labels: WeightedLabel[]
+  labelWeight: number
+  totalWeight: number
 }
 
 export interface PerkBucketTab {
@@ -42,6 +54,8 @@ export interface PerkBucketTab {
 
 export const PerkBucketItemStore = signalStore(
   withState<PerkBucketItemState>({
+    labelMode: 'max',
+    showWeights: true,
     item: null,
     perkMap: new Map(),
     labelMap: new Map(),
@@ -75,6 +89,9 @@ export const PerkBucketItemStore = signalStore(
   }),
   withMethods((state) => {
     return {
+      setLabelWeightMode(value: LabelWeightMode) {
+        patchState(state, { labelMode: value })
+      },
       setRolledPerk(bucketKey: string, perkId: string) {
         patchState(state, ({ lockedPerkIds }) => {
           return {
@@ -103,7 +120,7 @@ export const PerkBucketItemStore = signalStore(
       }),
     }
   }),
-  withComputed(({ item, perkMap, perkBucketMap, labelMap, itemPerks, rolledPerks }) => {
+  withComputed(({ item, perkMap, perkBucketMap, labelMap, labelMode, itemPerks, rolledPerks }) => {
     const buckets = computed(() => {
       const result: Record<string, PerkBucket> = {}
       for (const slot of getItemPerkSlots(item())) {
@@ -137,6 +154,7 @@ export const PerkBucketItemStore = signalStore(
           labels: labelMap(),
           perks: perkMap(),
           rolledPerk,
+          labelMode: labelMode(),
           rolledPerks: existingPerks(),
         })
 
@@ -246,13 +264,15 @@ function preprocessEntries({
   rolledPerks,
   labels,
   ignoreLabels,
+  labelMode,
 }: {
-  entries: EntryWithMeta[]
+  entries: PerkBucketEntryWithMeta[]
   perks: Map<string, PerkData>
   rolledPerk: PerkData
   rolledPerks: PerkData[]
   labels: Map<string, PerkExclusiveLabelData>
   ignoreLabels: boolean
+  labelMode: LabelWeightMode
 }) {
   for (const entry of entries) {
     if (!isPerkEntry(entry)) {
@@ -263,32 +283,33 @@ function preprocessEntries({
         rolledPerks,
         labels,
         ignoreLabels,
+        labelMode,
       })
     }
   }
   for (const entry of entries) {
     if (!isPerkEntry(entry)) {
-      entry.canRoll = entry.Entries.some((it: EntryWithMeta) => it.canRoll)
+      entry.canRoll = entry.Entries.some((it: PerkBucketEntryWithMeta) => it.canRoll)
     } else {
       const perk = perks.get(entry.PerkID)
       entry.canRoll = canPerkRoll(perk, rolledPerks) && !rolledPerk
     }
-    entry.labelWeight = getLabelWeight(entry, perks, labels, ignoreLabels)
-    entry.finalWeight = entry.Weight * entry.labelWeight
+    entry.labels = getEntryLabels(entry, perks, labels)
+    entry.labelWeight = getEntryLabelWeights(entry, labelMode)
+    entry.totalWight = entry.Weight * (ignoreLabels ? 1 : entry.labelWeight)
   }
 }
 
-type EntryWithMeta = PerkBucketEntry & {
-  canRoll?: boolean
-  labelWeight?: number
-  finalWeight?: number
+export interface WeightedLabel {
+  name: string
+  weight: number
 }
 
 export interface CollectChanceRowsOptions {
   chance: number
   perks: Map<string, PerkData>
   rolledPerk: PerkData
-  entries: EntryWithMeta[]
+  entries: PerkBucketEntryWithMeta[]
 }
 
 function collectChanceRows(
@@ -298,12 +319,12 @@ function collectChanceRows(
   let weightSum = 0
   for (const entry of entries) {
     if (entry.canRoll) {
-      weightSum += entry.finalWeight
+      weightSum += entry.totalWight
     }
   }
 
   for (const entry of entries) {
-    const entryChance = chance * (entry.canRoll ? entry.finalWeight / weightSum : 0)
+    const entryChance = chance * (entry.canRoll ? entry.totalWight / weightSum : 0)
     if (isPerkEntry(entry)) {
       const perk = perks.get(entry.PerkID)
       result.push({
@@ -312,6 +333,9 @@ function collectChanceRows(
         canRoll: entry.canRoll,
         perk,
         perkId: entry.PerkID,
+        labels: entry.labels,
+        labelWeight: entry.labelWeight,
+        totalWeight: entry.totalWight
       })
     } else {
       collectChanceRows(
@@ -328,21 +352,61 @@ function collectChanceRows(
   return result
 }
 
-function getLabelWeight(
+function getEntryLabels(
   entry: PerkBucketEntry,
   perks: Map<string, PerkData>,
   labels: Map<string, PerkExclusiveLabelData>,
-  ignoreLabels: boolean,
-) {
+): WeightedLabel[] {
+  const result: WeightedLabel[] = []
+  if (!isPerkEntry(entry)) {
+    return result
+  }
+  const perk = perks.get(entry.PerkID)
+  for (const label of perk.ExclusiveLabels) {
+    result.push({
+      name: label,
+      weight: labels.get(label)?.Weight ?? 0,
+    })
+  }
+  return result
+}
+
+const DEFAULT_LABEL_WEIGHT = 100
+function getEntryLabelWeights(entry: PerkBucketEntryWithMeta, mode: LabelWeightMode) {
+  if (!isPerkEntry(entry)) {
+    return DEFAULT_LABEL_WEIGHT
+  }
+
   let labelWeight = 0
-  if (isPerkEntry(entry) && !ignoreLabels) {
-    const perk = perks.get(entry.PerkID)
-    // assume label weights are just summed
-    for (const label of perk.ExclusiveLabels) {
-      labelWeight = Math.max(labelWeight, labels.get(label)?.Weight || 0)
+  if (mode === 'sum') {
+    for (const label of entry.labels) {
+      labelWeight += label.weight
     }
   }
-  return labelWeight || 100
+
+  if (mode === 'max') {
+    for (const label of entry.labels) {
+      labelWeight = Math.max(labelWeight, label.weight)
+    }
+  }
+
+  if (mode === 'avg') {
+    let count = 0
+    for (const label of entry.labels) {
+      const weight = label.weight
+      if (weight) {
+        labelWeight += weight
+        count++
+      }
+    }
+    labelWeight = labelWeight / count
+  }
+
+  if (!labelWeight) {
+    console.warn(`Perk ${entry.PerkID} has no label weight, using default 100`)
+    labelWeight = DEFAULT_LABEL_WEIGHT
+  }
+  return labelWeight
 }
 
 function canPerkRoll(perk: PerkData, rolledPerks: PerkData[]) {
@@ -366,25 +430,28 @@ function collapseChanceRows(rows: PerkBucketChanceRow[]): PerkBucketChanceRow[] 
       perk: group[0].perk,
       canRoll: group[0].canRoll,
       isRolled: group[0].isRolled,
+      labels: group[0].labels,
+      labelWeight: group[0].labelWeight,
+      totalWeight: group[0].totalWeight,
     })
   }
   return result
 }
 
-function dumpEntries(entries: EntryWithMeta[], level = 0) {
+function dumpEntries(entries: PerkBucketEntryWithMeta[], level = 0) {
   const prefix = '  '.repeat(level)
   for (const entry of entries) {
     if (!isPerkEntry(entry)) {
       console.log(prefix, '[PBID]', entry.PerkBucketID)
       console.log(prefix, '- weight', entry.Weight)
       console.log(prefix, '- labelWeight', entry.labelWeight)
-      console.log(prefix, '- finalWeight', entry.finalWeight)
+      console.log(prefix, '- finalWeight', entry.totalWight)
       dumpEntries(entry.Entries, level + 1)
     } else {
       console.log(prefix, '[PERK]', entry.PerkID)
       console.log(prefix, '- weight', entry.Weight)
       console.log(prefix, '- labelWeight', entry.labelWeight)
-      console.log(prefix, '- finalWeight', entry.finalWeight)
+      console.log(prefix, '- finalWeight', entry.totalWight)
     }
   }
 }

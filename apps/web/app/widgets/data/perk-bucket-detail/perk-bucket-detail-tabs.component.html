@@ -1,26 +1,65 @@
 @if (tabs()?.length) {
-  <div class="tabs tabs-xs tabs-box justify-start flex-nowrap gap-1 bg-transparent p-2">
-    @for (item of tabs(); track $index) {
-      <a class="tab p-1 h-auto" [class.tab-active]="item.key === tabId()" (click)="tabId.set(item.key)">
-        {{ item.label }}
-        <span class="badge badge-xs rounded-md ml-1" [class.badge-success]="item.locked">
-          @if (item.locked) {
-            {{ 1 | percent }}
-          } @else {
-            {{ item.chance | percent }}
-          }
-        </span>
-      </a>
-    }
+  <div class="flex flex-row items-center">
+    <div class="flex-1 tabs tabs-xs tabs-box justify-start flex-nowrap gap-1 bg-transparent p-2">
+      @for (item of tabs(); track $index) {
+        <a class="tab p-1 h-auto" [class.tab-active]="item.key === tabId()" (click)="tabId.set(item.key)">
+          {{ item.label }}
+          <span class="badge badge-xs rounded-md ml-1" [class.badge-success]="item.locked">
+            @if (item.locked) {
+              {{ 1 | percent }}
+            } @else {
+              {{ item.chance | percent }}
+            }
+          </span>
+        </a>
+      }
+    </div>
+    <button
+      class="btn btn-sm btn-square"
+      (click)="showSettings.set(!showSettings())"
+      [class.text-primary]="showSettings()"
+    >
+      <nwb-icon [icon]="settingsIcon" class="w-4 h-4" />
+    </button>
   </div>
 
-  <div class="italic text-center text-sm p-2">Perk chances within this bucket.</div>
-
+  @if (showSettings()) {
+    <div class="italic text-sm p-2">
+      The calculation of perk chances is based on its label weights. However, the exact evaluation of those weights is
+      not known. Here you can change the label weight evaluation method.
+    </div>
+    <div class="w-full join justify-center">
+      <button
+        class="join-item btn btn-sm"
+        [class.text-primary]="store.labelMode() === 'max'"
+        (click)="store.setLabelWeightMode('max')"
+      >
+        MAX
+      </button>
+      <button
+        class="join-item btn btn-sm"
+        [class.text-primary]="store.labelMode() === 'avg'"
+        (click)="store.setLabelWeightMode('avg')"
+      >
+        AVG
+      </button>
+      <button
+        class="join-item btn btn-sm"
+        [class.text-primary]="store.labelMode() === 'sum'"
+        (click)="store.setLabelWeightMode('sum')"
+      >
+        SUM
+      </button>
+    </div>
+  } @else {
+    <div class="italic text-center text-sm p-2">Perk chances within this bucket.</div>
+  }
   <div class="flex flex-col gap-2">
     @for (row of tab()?.rows; track $index) {
       @let perk = row.perk;
       <div class="flex flex-row items-center gap-2" [class.grayscale-100]="!row.isRolled && !row.canRoll">
-        <a [nwbItemIcon]="perk.IconPath" [nwLinkTooltip]="['perk', perk.PerkID]" class="w-10 h-10 flex-none"> </a>
+        <a [nwbItemIcon]="perk.IconPath" [nwLinkTooltip]="['perk', perk.PerkID]" class="w-10 h-10 flex-none self-start">
+        </a>
 
         <div class="flex-1 flex flex-col gap-1.5">
           <div class="text-sm leading-none">
@@ -28,9 +67,19 @@
               {{ perk.DisplayName | nwText | nwTextBreak: ' - ' }}
             </a>
           </div>
-          <div class="flex flex-row gap-2">
-            @for (label of perk.ExclusiveLabels; track $index) {
-              <span class="badge badge-sm badge-secondary bg-secondary/50">{{ label }}</span>
+          <div class="flex flex-row flex-wrap gap-x-2 gap-y-1">
+            @for (label of row.labels; track $index) {
+              <span class="badge badge-sm badge-secondary bg-secondary/50">
+                {{ label.name }}
+                @if (showSettings()) {
+                  - <span class="italic text-xs">{{ label.weight }}</span>
+                }
+              </span>
+            }
+            @if (showSettings()) {
+              <span class="badge badge-sm badge-info bg-info/50 tooltip" data-tip="Calculated label weight">
+                {{ store.labelMode() }}: {{ row.labelWeight }} | total: {{ row.totalWeight }}
+              </span>
             }
           </div>
         </div>

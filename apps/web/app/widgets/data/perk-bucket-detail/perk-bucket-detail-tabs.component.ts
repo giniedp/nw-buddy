@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, inject, input, signal } from '@angular/core'
+import { Component, computed, inject, input, model, signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { PerkType } from '@nw-data/generated'
 import { NwModule } from '../../../nw'
 import { IconsModule } from '../../../ui/icons'
-import { svgCheckToSlot, svgLock, svgLockOpen, svgSquare } from '../../../ui/icons/svg'
+import { svgBars, svgCheckToSlot, svgGears, svgLock, svgLockOpen, svgSquare } from '../../../ui/icons/svg'
 import { ItemFrameModule } from '../../../ui/item-frame'
 import { PerkDetailModule } from '../perk-detail'
 import { PerkBucketItemStore } from './perk-bucket-item.store'
@@ -27,10 +27,12 @@ export interface Tab {
   },
 })
 export class PerkBucketDetailTabsComponent {
-  private store = inject(PerkBucketItemStore)
+  protected store = inject(PerkBucketItemStore)
   protected checkedIcon = svgCheckToSlot
   protected uncheckedIcon = svgSquare
+  protected settingsIcon = svgGears
 
+  protected showSettings = signal(false)
   public perkBucketIds = input<string[]>([])
   public itemId = input<string>(null)
 
