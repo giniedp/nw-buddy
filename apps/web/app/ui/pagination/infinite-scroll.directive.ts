@@ -1,4 +1,4 @@
-import { computed, Directive, input, Input } from '@angular/core'
+import { computed, Directive, input, Input, untracked } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { Pagination } from './pagination'
@@ -19,24 +19,26 @@ export class InfiniteScrollDirective<T> {
   })
 
   public pagination = computed(() => {
-    const items = this.items()
+    const items = this.items() || []
     const perPage = this.perPage()
-    return Pagination.fromArray(items, {
-      perPage: perPage,
-      update: (state, page) => {
-        const data = [...state.data, ...page.data]
-        return {
-          data: data,
-          page: page.page,
-          perPage: perPage,
-          total: page.total,
-          canLoad: data.length < items.length,
-        }
-      },
+    return untracked(() => {
+      return Pagination.fromArray(items, {
+        perPage: perPage,
+        update: (state, page) => {
+          const data = [...state.data, ...page.data]
+          return {
+            data: data,
+            page: page.page,
+            perPage: perPage,
+            total: page.total,
+            canLoad: data.length < items.length,
+          }
+        },
+      })
     })
   })
 
-  public state = toSignal(toObservable(this.pagination).pipe(switchMap((it) => it.state)))
+  public state = computed(() => this.pagination().state())
   public data = computed(() => this.state()?.data)
   public canLoad = computed(() => this.state()?.canLoad ?? false)
   public count = computed(() => this.data()?.length || 0)

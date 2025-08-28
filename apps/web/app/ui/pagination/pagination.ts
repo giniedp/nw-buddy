@@ -1,3 +1,4 @@
+import { signal } from '@angular/core'
 import { BehaviorSubject, defer, map, Observable, of, switchMap, take } from 'rxjs'
 
 export interface PageResult<T> {
@@ -33,6 +34,7 @@ function updateCommon<T>(state: PaginationState<T>, page: PageResult<T>): Pagina
 
 export class Pagination<T> {
   public static fromArray<T>(data: T[], options: Omit<PaginationOptions<T>, 'source'>) {
+    data ||= []
     return new Pagination<T>({
       update: options.update,
       perPage: options.perPage,
@@ -48,16 +50,15 @@ export class Pagination<T> {
     })
   }
 
-  public readonly state = defer(() => this.state$)
+  public state = signal<PaginationState<T>>(null)
 
   private source: PageSource<T>
   private update: (state: PaginationState<T>, page: PageResult<T>) => PaginationState<T>
-  private state$ = new BehaviorSubject<PaginationState<T>>(null)
 
   public constructor({ source, perPage, update }: PaginationOptions<T>) {
     this.update = update || updateCommon
     this.source = source
-    this.state$.next({
+    this.state.set({
       page: -1,
       perPage: perPage,
       data: [],
@@ -70,7 +71,7 @@ export class Pagination<T> {
   }
 
   public next() {
-    const state = this.state$.value
+    const state = this.state()
     return this.load(state.page + 1)
   }
 
@@ -80,9 +81,10 @@ export class Pagination<T> {
       .pipe(take(1))
       .pipe(
         map((result) => {
-          this.state$.next(this.update(this.state$.value, result))
+          const state = this.update(this.state(), result)
+          this.state.set(state)
           return {
-            ...this.state$.value,
+            ...state,
           }
         }),
       )
