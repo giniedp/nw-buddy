@@ -70,12 +70,12 @@
           [nwbInfniteScrollPerPage]="10"
           #scroll="infiniteScroll"
         >
-          @for (item of scroll.data$ | async; track $index) {
+          @for (item of scroll.data(); track $index) {
             <nwb-item-detail [itemId]="item.itemId" class="rounded-md overflow-clip">
               <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'xs'" />
             </nwb-item-detail>
           }
-          @if (scroll.canLoad$ | async) {
+          @if (scroll.canLoad()) {
             <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
           }
         </div>
