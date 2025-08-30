@@ -70,13 +70,15 @@ export class QuestTaskTreeComponent {
   }
 
   private resolveTargetName(task: ObjectiveTasks) {
+    const vitalId = task.KillEnemyType || task.ItemDropVC
+    const quantity = task.TargetQty
     return combineLatest({
-      category: this.db.vitalsCategoriesById(task.KillEnemyType),
-      vital: this.db.vitalsById(task.KillEnemyType),
+      category: this.db.vitalsCategoriesById(vitalId),
+      vital: this.db.vitalsById(vitalId),
     }).pipe(
       switchMap(({ category, vital }) => {
         if (!category) {
-          return of(task.KillEnemyType)
+          return of(vitalId)
         }
         return this.tl8.observe(category.DisplayName).pipe(
           map((it) => {
@@ -89,7 +91,7 @@ export class QuestTaskTreeComponent {
         )
       }),
       map((text) => {
-        return Number(task.TargetQty) > 1 ? `${task.TargetQty} ${text} ` : text
+        return Number(quantity) > 1 ? `${quantity} ${text} ` : text
       }),
     )
   }
