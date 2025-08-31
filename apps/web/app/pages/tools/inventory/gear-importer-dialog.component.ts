@@ -97,6 +97,14 @@ export class GearImporterDialogComponent implements OnInit {
     })
   }
 
+  protected handleImagePicked(event: Event) {
+    const el = event.target as HTMLInputElement
+    const file = el.files.item(0)
+    this.store.patchState({
+      file,
+    })
+  }
+
   @HostListener('drop', ['$event'])
   protected onDrop(e: DragEvent) {
     e.preventDefault()

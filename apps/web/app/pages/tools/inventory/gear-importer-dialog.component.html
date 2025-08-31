@@ -20,7 +20,10 @@
           <kbd class="kbd">s</kbd> and capture the tooltip section as shown below. Then paste or drop the screenshot
           into this window.
         </div>
-        <img [nwImage]="'assets/gear-crop.jpg'" class="rounded mx-8 max-w-md pointer-events-none" />
+        <label>
+          <img [nwImage]="'assets/gear-crop.jpg'" class="rounded mx-8 max-w-md pointer-events-none" />
+          <input type="file" (change)="handleImagePicked($event)" accept="image/png, image/jpeg, image/jpg" class="hidden"/>
+        </label>
       }
     </div>
 
