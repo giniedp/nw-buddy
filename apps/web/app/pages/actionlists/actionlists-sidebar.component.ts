@@ -5,11 +5,11 @@ import { debounceTime } from 'rxjs'
 import { FileTreeComponent } from '~/ui/file-tree'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
-import { DatasheetsStore } from './datasheets.store'
+import { ActionlistsStore } from './actionlists.store'
 import { FileTreeNode } from '../../ui/file-tree'
 
 @Component({
-  selector: 'nwb-datasheets-sidebar',
+  selector: 'nwb-actionlists-sidebar',
   host: {
     class: 'ion-page',
   },
@@ -29,8 +29,8 @@ import { FileTreeNode } from '../../ui/file-tree'
     />
   `,
 })
-export class DatasheetsSidebarComponent {
-  protected store = inject(DatasheetsStore)
+export class ActionlistsSidebarComponent {
+  protected store = inject(ActionlistsStore)
   protected search = toSignal(inject(QuicksearchService).query$.pipe(debounceTime(1000)))
   protected files = this.store.files
 
@@ -43,7 +43,7 @@ export class DatasheetsSidebarComponent {
       return
     }
     this.router.navigate(['.'], {
-      queryParams: { file: file.id },
+      queryParams: { file: file.id, selection: null },
       queryParamsHandling: 'merge',
       relativeTo: this.route,
     })

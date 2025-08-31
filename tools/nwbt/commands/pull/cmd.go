@@ -26,15 +26,16 @@ var flgWorkerCount uint32
 var stats = &Stats{}
 
 const (
-	TASK_TABLES    = "tables"
-	TASK_SLICES    = "slices"
-	TASK_LOCALE    = "locale"
-	TASK_IMAGES    = "images"
-	TASK_SEARCH    = "search"
-	TASK_SPELLS    = "spells"
-	TASK_HEIGHTMAP = "heightmap"
-	TASK_TYPES     = "types"
-	TASK_CONSTANTS = "constants"
+	TASK_TABLES      = "tables"
+	TASK_SLICES      = "slices"
+	TASK_LOCALE      = "locale"
+	TASK_IMAGES      = "images"
+	TASK_SEARCH      = "search"
+	TASK_SPELLS      = "spells"
+	TASK_HEIGHTMAP   = "heightmap"
+	TASK_TYPES       = "types"
+	TASK_CONSTANTS   = "constants"
+	TASK_ACTIONLISTS = "actionlists"
 )
 
 var description = fmt.Sprintf("%s%s", constants.NW_BUDDY_BANNER, `
@@ -57,6 +58,7 @@ func init() {
 	Cmd.Flags().Uint32VarP(&flgWorkerCount, "workers", "w", uint32(env.PreferredWorkerCount()), "number of workers to use for processing")
 
 	Cmd.AddCommand(
+		cmdPullActionlists,
 		cmdPullConstants,
 		cmdPullHeightmaps,
 		cmdPullImages,
@@ -84,6 +86,7 @@ func run(ccmd *cobra.Command, args []string) {
 	ctx.PullSearch()
 	ctx.PullTypes()
 	ctx.PullConstants()
+	ctx.PullActionlists()
 	// ctx.PullHeightmaps()
 	slog.SetDefault(logging.DefaultTerminalHandler())
 	ctx.PrintStats()
@@ -92,6 +95,7 @@ func run(ccmd *cobra.Command, args []string) {
 type PullContext struct {
 	*game.Assets
 	tables       []*datasheet.Document
+	actionlists  []nwfs.File
 	locales      *maps.SafeDict[*maps.SafeDict[string]]
 	outDataDir   string
 	outTypeDir   string
@@ -119,6 +123,10 @@ func NewPullContext() *PullContext {
 
 func (ctx *PullContext) PullTables() {
 	ctx.tables = pullTables(ctx.Archive, ctx.outDataDir)
+}
+
+func (ctx *PullContext) PullActionlists() {
+	ctx.actionlists = pullActionlists(ctx.Archive, path.Join(ctx.outDataDir, "actionlists"))
 }
 
 func (ctx *PullContext) PullSpells() {
@@ -157,7 +165,10 @@ func (ctx *PullContext) PullTypes() {
 	if ctx.tables == nil {
 		ctx.PullTables()
 	}
-	pullTypes(ctx.tables, ctx.outTypeDir)
+	if ctx.actionlists == nil {
+		ctx.PullActionlists()
+	}
+	pullTypes(ctx.tables, ctx.actionlists, ctx.outTypeDir)
 }
 
 func (ctx *PullContext) PullConstants() {
@@ -198,5 +209,9 @@ func findLocaleFiles(fs nwfs.Archive) []nwfs.File {
 }
 
 func findDatasheets(fs nwfs.Archive) []nwfs.File {
-	return utils.Must(fs.Glob("**.datasheet"))
+	return utils.Must(fs.Glob("sharedassets/springboardentitites/**.datasheet"))
+}
+
+func findActionlists(fs nwfs.Archive) []nwfs.File {
+	return utils.Must(fs.Glob("sharedassets/springboardentitites/**.actionlist"))
 }

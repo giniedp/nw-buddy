@@ -5,14 +5,23 @@ import {
   ElementRef,
   inject,
   input,
-  model,
   OnDestroy,
   OnInit,
+  output,
   signal,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { monaco } from './monaco-editor'
 import { MonacoService } from './monaco.service'
+
+
+export interface CodeEditorSelectionRange {
+  startLine: number
+  startColumn: number
+  endLine: number
+  endColumn: number
+}
+
 @Component({
   standalone: true,
   selector: 'nwb-code-editor',
@@ -47,6 +56,10 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
 
   public readonly editor = signal<monaco.editor.IStandaloneCodeEditor>(null)
 
+  public readonly selectionChanged = output<CodeEditorSelectionRange>()
+  public readonly editorLoaded = output<monaco.editor.IStandaloneCodeEditor>()
+  private didSendEditorLoaded = false
+
   public constructor() {
     effect(() => {
       this.updateEditor()
@@ -64,6 +77,16 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
     })
     this.editor.set(editor)
     editor.onDidBlurEditorWidget(() => this.commitValue())
+    editor.onDidChangeCursorSelection((e) => {
+      if (e.source === 'mouse') {
+        this.selectionChanged.emit({
+          startLine: e.selection.startLineNumber,
+          startColumn: e.selection.startColumn,
+          endLine: e.selection.endLineNumber,
+          endColumn: e.selection.endColumn,
+        })
+      }
+    })
   }
 
   public ngOnDestroy(): void {
@@ -83,6 +106,19 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
   public setDisabledState(isDisabled: boolean): void {
     this.readonly.set(isDisabled)
   }
+  public restoreSelection(value: CodeEditorSelectionRange) {
+    if (!value) {
+      return
+    }
+    const range: monaco.IRange = {
+      startLineNumber: value.startLine,
+      startColumn: value.startColumn,
+      endLineNumber: value.endLine,
+      endColumn: value.endColumn,
+    }
+    this.editor().setSelection(range)
+    this.editor().revealRangeInCenter(range)
+  }
 
   protected commitValue() {
     const value = this.editor().getValue({ preserveBOM: false, lineEnding: '\n' })
@@ -101,5 +137,11 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
       readOnly: this.readonly(),
       theme: this.theme(),
     })
+    editor.setScrollTop(0)
+
+    if (!this.didSendEditorLoaded) {
+      this.didSendEditorLoaded = true
+      this.editorLoaded.emit(editor)
+    }
   }
 }

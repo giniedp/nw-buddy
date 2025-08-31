@@ -9,13 +9,13 @@ import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { injectNwData } from '../../data'
 import { saveBlobToFile } from '../../utils/file-handling'
-import { DatasheetsSidebarComponent } from './datasheets-sidebar.component'
-import { DatasheetsStore } from './datasheets.store'
+import { ActionlistsSidebarComponent } from './actionlists-sidebar.component'
+import { ActionlistsStore } from './actionlists.store'
 
 @Component({
-  selector: 'nwb-datasheets-page',
+  selector: 'nwb-actionlists-page',
   imports: [
-    DatasheetsSidebarComponent,
+    ActionlistsSidebarComponent,
     LayoutModule,
     CodeEditorModule,
     FormsModule,
@@ -28,13 +28,13 @@ import { DatasheetsStore } from './datasheets.store'
   template: `
     <ion-split-pane contentId="editor">
       <ion-menu contentId="editor" class="order-3" [nwbSplitPane]="gutter" [nwbSplitPaneWidth]="420">
-        <nwb-datasheets-sidebar class="w-full" />
+        <nwb-actionlists-sidebar class="w-full" />
       </ion-menu>
       <nwb-split-gutter class="order-2" #gutter="gutter" />
       <div class="ion-page order-1" id="editor">
         <ion-header class="bg-base-300">
           <ion-toolbar>
-            <ion-title>Datasheets</ion-title>
+            <ion-title>Actionlists</ion-title>
             <button slot="end" class="btn" (click)="download()">Download ZIP</button>
           </ion-toolbar>
         </ion-header>
@@ -43,7 +43,7 @@ import { DatasheetsStore } from './datasheets.store'
             <nwb-code-editor
               class="h-full w-full"
               [ngModel]="sheet.content"
-              [language]="'json'"
+              [language]="'xml'"
               [disabled]="true"
               (selectionChanged)="handleSelectionChanged($event)"
               (editorLoaded)="handleEditorLoaded()"
@@ -54,14 +54,14 @@ import { DatasheetsStore } from './datasheets.store'
     </ion-split-pane>
   `,
 })
-export class DatasheetsPageComponent {
+export class ActionlistsPageComponent {
   private db = injectNwData()
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-  private store = inject(DatasheetsStore)
+  private store = inject(ActionlistsStore)
   private modal = inject(ModalService)
 
-  protected files = this.store.datasheets
+  protected files = this.store.actionlists
   protected fileParam$ = this.route.queryParams.pipe(map((params) => params['file']))
   protected fileParam = toSignal(this.fileParam$)
   protected rangeParam$ = this.route.queryParams.pipe(map((params) => decodeSelection(params['selection'])))
@@ -93,7 +93,7 @@ export class DatasheetsPageComponent {
   }
 
   protected async download() {
-    const files = this.store.datasheets()
+    const files = this.store.actionlists()
     const zip = new JSZip()
     let blob: Blob = null
     await this.modal.withLoadingIndicator(
@@ -131,7 +131,7 @@ export class DatasheetsPageComponent {
     })
       .result$.pipe(
         filter((ok) => !!ok),
-        switchMap(() => saveBlobToFile(blob, 'datasheets.zip')),
+        switchMap(() => saveBlobToFile(blob, 'actionlists.zip')),
       )
       .subscribe({
         next: () => {
