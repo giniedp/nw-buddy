@@ -1,13 +1,12 @@
-import { DOCUMENT } from '@angular/common'
-import { ElementRef, Injectable, inject } from '@angular/core'
-import { saveAs } from 'file-saver'
+import { ElementRef, Injectable } from '@angular/core'
+import { sortBy } from 'lodash'
 import { BehaviorSubject } from 'rxjs'
 import { ModalService } from '~/ui/layout'
-import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.component'
-import { cloneElement, getScreenshotOverlay, renderScreenshot } from './utils'
 import { injectDocument } from '~/utils/injection/document'
 import { injectWindow } from '~/utils/injection/window'
-import { sortBy } from 'lodash'
+import { isClipboardSupported, saveBlobToClipoard, saveBlobToFile } from '../../utils/file-handling'
+import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.component'
+import { cloneElement, getScreenshotOverlay, renderScreenshot } from './utils'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
@@ -28,7 +27,7 @@ export class ScreenshotService {
   }
 
   public get isClipboardSupported() {
-    return !!this.window['ClipboardItem']
+    return isClipboardSupported(this.window)
   }
 
   private document = injectDocument()
@@ -77,28 +76,11 @@ export class ScreenshotService {
   }
 
   public saveBlobToClipoard(blob: Blob) {
-    if (!this.isClipboardSupported) {
-      throw new Error('Clipboard is not supported')
-    }
-    return navigator.clipboard.write([
-      new ClipboardItem({
-        'image/png': blob,
-      }),
-    ])
+    return saveBlobToClipoard(blob, 'image/png')
   }
 
   public async saveBlobToFile(blob: Blob, filename: string = 'Screenshot.png') {
-    const showSaveFilePicker = window['showSaveFilePicker'] as any
-    if (!showSaveFilePicker) {
-      return saveAs(blob, filename)
-    }
-
-    const handle = await showSaveFilePicker({
-      suggestedName: filename,
-    })
-    if (await verifyPermission(handle)) {
-      await writeFile(handle, blob)
-    }
+    return saveBlobToFile(blob, filename)
   }
 
   public saveBlobWithDialog(blob: Blob, filename: string = 'Screenshot') {
@@ -155,28 +137,6 @@ export class ScreenshotService {
     await new Promise((resolve) => setTimeout(resolve))
     return result
   }
-}
-
-async function writeFile(fileHandle, contents: Blob) {
-  const writable = await fileHandle.createWritable()
-  await writable.write(contents)
-  await writable.close()
-}
-
-async function verifyPermission(fileHandle) {
-  const options = {
-    mode: 'readwrite',
-  }
-  // Check if permission was already granted. If so, return true.
-  if ((await fileHandle.queryPermission(options)) === 'granted') {
-    return true
-  }
-  // Request permission. If the user grants permission, return true.
-  if ((await fileHandle.requestPermission(options)) === 'granted') {
-    return true
-  }
-  // The user didn't grant permission, so return false.
-  return false
 }
 
 function detachFrame(original: HTMLElement, parent: HTMLElement) {

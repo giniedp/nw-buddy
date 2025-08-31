@@ -3,6 +3,7 @@ export type * as monaco from 'monaco-editor'
 const BASE_URL = '/assets/monaco-editor/esm/vs'
 function getWorkerUrl(moduleId: string, label: string) {
   const base = BASE_URL
+  console.log('getWorkerUrl', moduleId, label)
   if (label === 'json') {
     return `${base}/language/json/json.worker.js`
   }

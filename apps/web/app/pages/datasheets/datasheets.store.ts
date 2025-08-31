@@ -4,12 +4,11 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { DATASHEETS } from '@nw-data/generated'
 import { switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
-import { Datasheet, Tab, TreeNode } from './types'
+import { LoadedFile } from './types'
 
 export interface DatasheetsState {
   files: string[]
-  datasheets: Datasheet[]
-  tabs: Tab[]
+  datasheets: LoadedFile[]
   selectedId: string
 }
 
@@ -18,7 +17,6 @@ export const DatasheetsStore = signalStore(
   withState<DatasheetsState>({
     files: listFiles(),
     datasheets: listSheets(),
-    tabs: [],
     selectedId: '',
   }),
   withMethods((state) => {
@@ -51,18 +49,14 @@ export const DatasheetsStore = signalStore(
       }),
     }
   }),
-  // withStateLoader(() => {
-  //   const db = injectNwData()
-  //   return {
-  //     load: async () => {
-  //       return {
-  //         datasheets: await loadFiles(db),
-  //         tabs: [],
-  //       }
-  //     },
-  //   }
-  // }),
 )
+
+function getFileId(url: string) {
+  return url
+    .replace(/^datatables[\/\\]/, '')
+    .replaceAll(/[\\/]+/g, '/')
+    .toLowerCase()
+}
 
 function listFiles() {
   const files: string[] = []
@@ -70,32 +64,22 @@ function listFiles() {
     for (const [type, { uri }] of Object.entries(group)) {
       const urls = Array.isArray(uri) ? uri : [uri]
       for (const url of urls) {
-        files.push(
-          url
-            .replace(/^datatables[\/\\]/, '')
-            .replaceAll(/[\\/]+/g, '/')
-            .toLowerCase(),
-        )
+        files.push(getFileId(url))
       }
     }
   }
   return files
 }
+
 function listSheets() {
-  const files: Datasheet[] = []
+  const files: LoadedFile[] = []
   for (const [name, group] of Object.entries(DATASHEETS)) {
     for (const [type, { uri }] of Object.entries(group)) {
       const urls = Array.isArray(uri) ? uri : [uri]
       for (const url of urls) {
         files.push({
-          id: url
-            .replace(/^datatables[\/\\]/, '')
-            .replaceAll(/[\\/]+/g, '/')
-            .toLowerCase(),
+          id: getFileId(url),
           url,
-          type,
-          name,
-          filename: url.split('/').pop(),
           content: '',
         })
       }

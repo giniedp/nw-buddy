@@ -5,6 +5,7 @@ import (
 	"nw-buddy/tools/commands/pull/ts"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/game/scanner"
+	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/logging"
@@ -33,7 +34,7 @@ func runPullTypes(ccmd *cobra.Command, args []string) {
 	ctx.PrintStats()
 }
 
-func pullTypes(tables []*datasheet.Document, outDir string) {
+func pullTypes(tables []*datasheet.Document, actionlists []nwfs.File, outDir string) {
 	bar := progress.Bar(0, "Codegen")
 	types := ts.ResolveTableTypes(tables)
 	ts.FixTableTypes(tables, types)
@@ -48,11 +49,14 @@ func pullTypes(tables []*datasheet.Document, outDir string) {
 	code = codeGenTableTypeInfos(types)
 	os.WriteFile(path.Join(outDir, "cols.ts"), []byte(code), os.ModePerm)
 
-	code = codeGenIndex(types)
+	code = codeGenIndexSheets(types)
 	os.WriteFile(path.Join(outDir, "datatables.ts"), []byte(code), os.ModePerm)
 
 	code = codeGenScanTypes()
 	os.WriteFile(path.Join(outDir, "meta-types.ts"), []byte(code), os.ModePerm)
+
+	code = codeGenIndexActionlists(actionlists)
+	os.WriteFile(path.Join(outDir, "actionlists.ts"), []byte(code), os.ModePerm)
 
 	bar.Close()
 }
@@ -107,7 +111,7 @@ func codeGenEnumTypes(enums ts.EnumMap) string {
 	return w.String()
 }
 
-func codeGenIndex(types ts.TypeMap) string {
+func codeGenIndexSheets(types ts.TypeMap) string {
 	w := str.NewBuilder()
 
 	w.Line("import type {")
@@ -181,5 +185,18 @@ func codeGenScanTypes() string {
 		w.Line("}")
 		w.Line("")
 	}
+	return w.String()
+}
+
+func codeGenIndexActionlists(files []nwfs.File) string {
+	w := str.NewBuilder()
+
+	w.Line("export const ACTIONLISTS = [")
+	w.Indent()
+	for _, file := range files {
+		w.Line("\"%s\",", strings.ReplaceAll(file.Path(), "sharedassets/springboardentitites/", "actionlists/"))
+	}
+	w.Unindent()
+	w.Line("]")
 	return w.String()
 }
