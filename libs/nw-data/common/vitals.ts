@@ -1,18 +1,15 @@
 import {
   DamageData,
   DamageType,
-  GameModeData,
   GameModeMapData,
   MutationDifficultyStaticData,
-  VitalsBaseData,
+  ScannedVital,
   VitalsCategoryData,
   VitalsBaseData as VitalsData,
   VitalsLevelData,
   VitalsModifierData,
-  ScannedVital,
 } from '@nw-data/generated'
 import { getArmorRating } from './damage'
-import { uniq } from 'lodash'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -407,4 +404,29 @@ export function getVitalDamage({
   //   result
   // })
   return result
+}
+
+export function getVitalDropChance({
+  vital,
+  categories,
+  modifier,
+}: {
+  vital: VitalsData
+  categories: VitalsCategoryData[]
+  modifier: VitalsModifierData
+}) {
+  const chance = Number(vital.LootDropChance) || 0
+  let override = chance
+  for (const category of categories) {
+    if (category.LootDropChanceOverride) {
+      override = category.LootDropChanceOverride
+    }
+  }
+  const mod = modifier?.CategoryDropChanceMod || 0
+  return {
+    chance,
+    override,
+    mod,
+    value: override * mod,
+  }
 }

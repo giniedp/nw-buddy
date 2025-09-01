@@ -25,7 +25,6 @@ import { getIconFrameClass } from '../../item-frame'
 import { GridSelectFilter } from '../ag-grid/grid-select-filter'
 import { GridSelectFilterParams } from '../ag-grid/grid-select-filter/types'
 import { colDefPrecision } from './utils'
-import { twMerge } from 'tailwind-merge'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {

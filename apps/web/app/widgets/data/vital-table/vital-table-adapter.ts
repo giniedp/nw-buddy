@@ -83,6 +83,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
         buffMap: this.db.buffBucketsByIdMap(),
         effectMap: this.db.statusEffectsByIdMap(),
         abilitiesMap: this.db.abilitiesByIdMap(),
+        modifierMap: this.db.vitalsModifiersByIdMap()
       }).pipe(
         map(
           ({
@@ -95,6 +96,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
             buffMap,
             effectMap,
             abilitiesMap,
+            modifierMap,
           }) => {
             return vitals.map((vital): VitalTableRecord => {
               const familyInfo = getVitalFamilyInfo(vital)
@@ -107,6 +109,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
               ].filter((it) => !!it)
               return {
                 ...vital,
+                $modifier: modifierMap.get(vital.CreatureType),
                 $dungeons: getVitalDungeons(vital, dungeonMaps, vitalsMeta).map((it) => dungeonsMap.get(it.GameModeId)),
                 $categories: uniqBy($categories, (it) => it.VitalsCategoryID),
                 $familyInfo: familyInfo,

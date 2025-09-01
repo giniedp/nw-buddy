@@ -3,6 +3,7 @@ import {
   VitalFamilyInfo,
   getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
+  getVitalDropChance,
   getVitalTypeMarker,
   getZoneIcon,
   getZoneName,
@@ -10,16 +11,17 @@ import {
   isZoneArea,
   isZonePoi,
   isZoneTerritory,
+  patchPrecision,
 } from '@nw-data/common'
 import {
   GameModeData,
+  ScannedVital,
   TerritoryDefinition,
   VitalsBaseData,
-  VitalsCategory,
   VitalsCategoryData,
   VitalsLevelVariantData,
+  VitalsModifierData,
 } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/generated'
 
 import { uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
@@ -31,6 +33,7 @@ export type VitalTableUtils = TableGridUtils<VitalTableRecord>
 export type VitalTableRecord = VitalsBaseData &
   VitalsLevelVariantData & {
     $dungeons: GameModeData[]
+    $modifier: VitalsModifierData
     $categories: VitalsCategoryData[]
     $familyInfo: VitalFamilyInfo
     $combatInfo: VitalFamilyInfo[] | null
@@ -218,13 +221,31 @@ export function vitalColCategories(util: VitalTableUtils) {
 export function vitalColLootDropChance(util: VitalTableUtils) {
   return util.colDef<number>({
     colId: 'lootDropChance',
+    headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Loot Drop Chance',
     cellClass: 'text-right',
     width: 150,
     hide: true,
     filter: RangeFilter,
-    valueGetter: ({ data }) => Math.round((Number(data.LootDropChance) || 0) * 100),
-    valueFormatter: ({ value }) => `${value}%`,
+    valueGetter: ({ data }) => {
+      const value = getVitalDropChance({
+        vital: data,
+        categories: data.$categories,
+        modifier: data.$modifier,
+      }).value
+      return patchPrecision(value * 100)
+    },
+    cellRenderer: ({ value, data }) => {
+      const resolved = getVitalDropChance({
+        vital: data,
+        categories: data.$categories,
+        modifier: data.$modifier,
+      })
+      if (!resolved.override || resolved.mod === 1) {
+        return `${patchPrecision(value)}%`
+      }
+      return `<span class="text-neutral-600">${patchPrecision(resolved.override * 100)} * ${resolved.mod} = </span> ${patchPrecision(value)}%`
+    },
     getQuickFilterText: () => '',
   })
 }
