@@ -244,7 +244,23 @@ export function vitalColLootDropChance(util: VitalTableUtils) {
       if (!resolved.override || resolved.mod === 1) {
         return `${patchPrecision(value)}%`
       }
-      return `<span class="text-neutral-600">${patchPrecision(resolved.override * 100)} * ${resolved.mod} = </span> ${patchPrecision(value)}%`
+      if (resolved.chance === resolved.override) {
+        return `
+          <span class="text-neutral-600">
+            ${patchPrecision(resolved.override * 100)} * ${resolved.mod}
+            =
+          </span>
+          ${patchPrecision(value)}%
+        `
+      }
+      return `
+        <span class="text-neutral-600">
+          <span class="line-through">${patchPrecision(resolved.chance * 100)}</span>
+          ${patchPrecision(resolved.override * 100)} * ${resolved.mod}
+          =
+        </span>
+        ${patchPrecision(value)}%
+      `
     },
     getQuickFilterText: () => '',
   })
