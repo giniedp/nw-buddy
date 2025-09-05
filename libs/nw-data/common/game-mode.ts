@@ -1,5 +1,5 @@
 import { uniq } from 'lodash'
-import { GameModeData, MutationDifficultyStaticData, MutationPerksStaticData } from '../generated/types'
+import { GameModeData, GameModeMapData, MutationDifficultyStaticData, MutationPerksStaticData } from '../generated/types'
 
 export function getGameModeLootTags(
   gameMode: GameModeData,
@@ -22,4 +22,12 @@ export function getGameModeLootTags(
     element?.InjectedContainerLoot || null,
   ].filter((it) => !!it)
   return uniq(result)
+}
+
+export function getGameModeCoatlicueDirectory(gameMap: GameModeMapData) {
+  if (!gameMap.CoatlicueName) {
+    return null
+  }
+  // "coatlicue\\NewWorld_VitaeEterna" -> "NewWorld_VitaeEterna"
+  return gameMap.CoatlicueName.split(/[\\/]/g).pop()
 }

@@ -1,6 +1,6 @@
 <div class="overflow-clip relative" [nwbScreenshotFrame]="vital()?.DisplayName | nwText">
   <nwb-vital-detail-header class="bg-base-300" [editableLevel]="true" />
-  @if (store.isVitalFromDungeon()) {
+  @if (store.isFromMutatedDungeon()) {
     <div class="absolute top-0 right-0 p-2 flex flex-row">
       <button
         class="btn btn-xs btn-square btn-ghost"

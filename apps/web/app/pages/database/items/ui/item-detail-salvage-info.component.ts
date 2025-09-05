@@ -39,7 +39,7 @@ import { LootModule } from '~/widgets/loot'
               class="h-full overflow-auto"
               [tableId]="salvage.tableId"
               [tags]="salvage.tags"
-              [tagValues]="salvage.tagValues"
+              [tagValues]="salvage.values"
               [showLocked]="false"
             />
           </ion-content>

@@ -1,7 +1,7 @@
 import { LootBucketRow, LootTable, LootTableRow } from '@nw-data/common'
 import { sortBy } from 'lodash'
 import { CaseInsensitiveSet, eqCaseInsensitive } from '~/utils'
-import { LootContext } from './loot-context'
+import { ConstrainedLootContext } from './loot-context'
 
 export type LootNode = LootBucketNode | LootBucketRowNode | LootTableNode | LootTableItemNode // | LootTableRowNode
 
@@ -156,7 +156,7 @@ export function updateLootGraph({
   highlight,
 }: {
   graph: LootNode
-  context: LootContext
+  context: ConstrainedLootContext
   dropChance?: number
   highlight?: string
 }) {
@@ -197,16 +197,16 @@ function cloneGraph(node: LootNode) {
   return node
 }
 
-function updateAccess(node: LootNode, context: LootContext) {
+function updateAccess(node: LootNode, context: ConstrainedLootContext) {
   let unlocked = !node.parent || node.parent.isUnlocked
   if (node.row) {
     const parent = node.parent as LootTableNode
-    unlocked = unlocked && !!context && context.accessTableRow(parent.data, node.row)
+    unlocked = unlocked && !!context && context.canAccessTableRow(parent.data, node.row)
   }
   if (node.type === 'table') {
-    node.isUnlocked = unlocked && !!context && context.accessTable(node.data)
+    node.isUnlocked = unlocked && !!context && context.canAccessTable(node.data)
   } else if (node.type === 'bucket-row') {
-    node.isUnlocked = unlocked && !!context && context.accessBucketRow(node.data)
+    node.isUnlocked = unlocked && !!context && context.canAccessBucketRow(node.data)
   } else {
     node.isUnlocked = unlocked
   }

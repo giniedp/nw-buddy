@@ -72,6 +72,10 @@ export function isItemHeartGem(item: Pick<MasterItemDefinitions, 'ItemClass'> | 
   return item?.ItemClass?.includes('HeartGem')
 }
 
+export function isItemLootContainer(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
+  return item?.ItemClass?.includes('LootContainer')
+}
+
 export function isPerkItemIngredient(item: MasterItemDefinitions | null) {
   return hasItemIngredientCategory(item, 'Perkitem')
 }

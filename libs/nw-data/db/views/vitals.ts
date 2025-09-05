@@ -1,4 +1,4 @@
-import { getVitalDungeons } from '@nw-data/common'
+import { getVitalGameModeMaps } from '@nw-data/common'
 import type { CreatureType, VitalsBaseData } from '@nw-data/generated'
 import { eqCaseInsensitive } from 'libs/nw-data/common/utils/caseinsensitive-compare'
 import type { NwDataSheets } from '../nw-data-sheets'
@@ -23,7 +23,7 @@ export async function vitalsForGameMode(
     ) {
       return true
     }
-    return getVitalDungeons(vital, gameModes, vitalsMeta).some((dg) => dg.GameModeId === gameModeId)
+    return getVitalGameModeMaps(vital, gameModes, vitalsMeta).some((dg) => dg.GameModeId === gameModeId)
   }
   return vitals.filter((it) => {
     if (!isInDungeon(it)) {

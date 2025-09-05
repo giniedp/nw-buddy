@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { ItemRarity } from '@nw-data/common'
 
 @Component({
   selector: 'nwb-item-header-content',

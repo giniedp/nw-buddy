@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalDungeons } from '@nw-data/common'
+import { NW_LOOT_GlobalMod, NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalGameModeMaps } from '@nw-data/common'
 import { CreatureType, MutationDifficultyStaticData, VitalsBaseData as VitalsData } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
-import { LootContext, NwLootService } from '~/nw/loot'
+import { ConstrainedLootContext, NwLootService } from '~/nw/loot'
 import { eqCaseInsensitive, selectStream, shareReplayRefCount } from '~/utils'
 
 export interface GameModeDetailState {
@@ -260,7 +260,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         ) {
           return true
         }
-        return getVitalDungeons(it, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
+        return getVitalGameModeMaps(it, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
       })
       return result
     },
@@ -288,7 +288,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         const list = vitals.get(type) || []
         for (const item of list) {
           if (
-            getVitalDungeons(item, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
+            getVitalGameModeMaps(item, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
           ) {
             result.push(item)
           }
@@ -314,7 +314,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         const list = vitals.get(type) || []
         for (const item of list) {
           if (
-            getVitalDungeons(item, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
+            getVitalGameModeMaps(item, dungeonsMaps, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId))
           ) {
             result.push(item)
           }
@@ -345,7 +345,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         const tagsToExclude = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
         const tags = uniq([
           // required to access global loot table
-          'GlobalMod',
+          NW_LOOT_GlobalMod,
           ...creatureTags,
           ...dungeonTags,
         ]).filter((it) => !!it && !tagsToExclude.includes(it))
@@ -367,7 +367,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
   public readonly lootNormalMode$ = this.lootTagsNormalMode$.pipe(
     switchMap(({ tags, values, tables }) => {
-      const ctx = new LootContext({
+      const ctx = new ConstrainedLootContext({
         tags: tags,
         values: values,
       })
@@ -399,7 +399,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
       const tags = uniq([
         // required to access global loot table
-        'GlobalMod',
+        NW_LOOT_GlobalMod,
         regionTag,
         ...creatureTags,
         ...dungeonOverrideTags,
@@ -422,7 +422,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
   public readonly lootMutatedMode = this.lootTagsMutatedMode$.pipe(
     switchMap(({ tags, values, tables }) => {
-      const ctx = new LootContext({
+      const ctx = new ConstrainedLootContext({
         tags: tags,
         values: values,
       })
@@ -460,7 +460,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
       const tags = uniq([
         // required to access global loot table
-        'GlobalMod',
+        NW_LOOT_GlobalMod,
         regionTag,
         ...creatureTags,
         ...dungeonOverrideTags,
@@ -484,7 +484,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
   public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
     switchMap(({ tags, values, tables }) => {
-      const ctx = new LootContext({
+      const ctx = new ConstrainedLootContext({
         tags: tags,
         values: values,
       })

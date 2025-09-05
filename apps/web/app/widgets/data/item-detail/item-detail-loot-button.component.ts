@@ -39,7 +39,7 @@ import { ItemDetailStore } from './item-detail.store'
             class="flex-1 layout-content"
             [tableId]="info.tableId"
             [tags]="info.tags"
-            [tagValues]="info.tagValues"
+            [tagValues]="info.values"
             [showLocked]="false"
           />
         </ion-content>

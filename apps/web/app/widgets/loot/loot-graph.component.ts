@@ -10,6 +10,7 @@ import { selectSignal, selectStream } from '~/utils'
 import { LootGraphNodeComponent } from './loot-graph-node.component'
 import { LootGraphService } from './loot-graph.service'
 import { LootGraphStore } from './loot-graph.store'
+import { LootContextValues } from '@nw-data/common'
 
 @Component({
   selector: 'nwb-loot-graph',
@@ -83,7 +84,7 @@ export class LootGraphComponent {
   }
 
   @Input()
-  public set tagValues(value: Record<string, string | number>) {
+  public set tagValues(value: LootContextValues) {
     patchState(this.store, { tagValues: value })
   }
 

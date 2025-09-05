@@ -5,7 +5,7 @@ import {
   getVitalArmor,
   getVitalCategoryInfo,
   getVitalDamage,
-  getVitalDungeons,
+  getVitalGameModeMaps,
   getVitalHealth,
   NW_MAX_ENEMY_LEVEL,
 } from '@nw-data/common'
@@ -28,7 +28,7 @@ export interface VitalDetailState {
   metadata: ScannedVital
   modifier: VitalsModifierData
   categories: VitalsCategoryData[]
-  dungeons: GameModeData[]
+  gameModes: GameModeData[]
   levelOverride: number
 }
 export interface VitalMutationState {
@@ -43,7 +43,7 @@ export const VitalDetailStore = signalStore(
     metadata: null,
     modifier: null,
     categories: [],
-    dungeons: [],
+    gameModes: [],
     levelOverride: null,
   }),
   withStateLoader(() => {
@@ -63,8 +63,8 @@ export const VitalDetailStore = signalStore(
           ])
             .then((it) => it.filter((it) => !!it))
             .then((it) => uniqBy(it, (it) => it.VitalsCategoryID)),
-          dungeons: await Promise.all(
-            getVitalDungeons(vital, await db.gameModesMapsAll(), await db.vitalsMetadataByIdMap()).map(async (it) =>
+          gameModes: await Promise.all(
+            getVitalGameModeMaps(vital, await db.gameModesMapsAll(), await db.vitalsMetadataByIdMap()).map(async (it) =>
               db.gameModesById(it.GameModeId),
             ),
           ),
@@ -95,7 +95,7 @@ export const VitalDetailStore = signalStore(
       ),
     }
   }),
-  withComputed(({ vital, levelOverride, categories, dungeons, mutaDifficultyId }) => {
+  withComputed(({ vital, levelOverride, categories, gameModes, mutaDifficultyId }) => {
     return {
       creatureType: computed(() => vital()?.CreatureType),
       displayName: computed(() => vital()?.DisplayName),
@@ -120,7 +120,14 @@ export const VitalDetailStore = signalStore(
           .map((it) => it.DisplayName?.trim())
           .filter((it) => !!it)
       }),
-      isVitalFromDungeon: computed(() => !!dungeons()?.length),
+      isFromMutatedDungeon: computed(() => {
+        for (const mode of gameModes() || []) {
+          if (mode.IsMutable) {
+            return true
+          }
+        }
+        return false
+      }),
     }
   }),
   withComputed(({ vital, level, modifier, mutaElementId, mutaDifficultyId }) => {

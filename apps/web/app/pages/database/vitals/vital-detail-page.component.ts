@@ -64,14 +64,14 @@ export class VitalDetailPageComponent {
   protected lootTableIds: Signal<string[]> = selectSignal(
     {
       vital: this.store.vital,
-      isVitalFromDungeon: this.store.isVitalFromDungeon,
+      isFromMutatedDungeon: this.store.isFromMutatedDungeon,
     },
     (it) => {
       const result: string[] = []
       if (it?.vital?.LootTableId) {
         result.push(it.vital.LootTableId)
       }
-      if (it?.isVitalFromDungeon) {
+      if (it?.isFromMutatedDungeon) {
         result.push('CreatureLootMaster_MutatedContainer')
       }
       return result

@@ -4,6 +4,7 @@ import { NwDataLoader, NwDataOptions } from './nw-data-loader'
 import { NwDataSheets } from './nw-data-sheets'
 import { loadItemsTable } from './tables/items'
 import { backstoriesItemsById } from './views/backstories'
+import { itemLootSources } from './views/items'
 import { resourceItemsForPerkId } from './views/perks'
 import { seasonIds } from './views/seasons'
 import { vitalsForGameMode } from './views/vitals'
@@ -25,6 +26,7 @@ export class NwData extends NwDataSheets {
   public backstoriesItemsById = bind(this, backstoriesItemsById)
   public vitalsForGameMode = bind(this, vitalsForGameMode)
   public resourceItemsForPerkId = bind(this, resourceItemsForPerkId)
+  public itemLootSources = bind(this, itemLootSources)
 
   public loadItemsTable = bind(this, loadItemsTable)
   public listRecordVersions = listRecordVersions

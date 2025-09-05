@@ -10,6 +10,8 @@ import {
   VitalsModifierData,
 } from '@nw-data/generated'
 import { getArmorRating } from './damage'
+import { getGameModeCoatlicueDirectory } from './game-mode'
+import { NW_MAP_NEWWORLD_VITAEETERNA } from './constants'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -159,7 +161,7 @@ export function getVitalsCategories(vital: VitalsData, categories: Map<string, V
 }
 
 export function isVitalNamed(vital: VitalsData) {
-  return NAMED_FAIMILY_TYPES.includes(vital.CreatureType)
+  return NAMED_FAIMILY_TYPES.includes(vital?.CreatureType)
 }
 
 export function getVitalFamilyInfo(vital: VitalsData): VitalFamilyInfo {
@@ -207,75 +209,31 @@ export function getVitalDamageEffectivenessIcon(vital: VitalsData, damageType: V
   return null
 }
 
-// export type DungeonTerritory =
-//   | 'Windsward'
-//   | 'Edengrove'
-//   | 'Everfall'
-//   | 'Restless'
-//   | 'Reekwater'
-//   | 'Ebonscale'
-//   | 'ShatterMtn'
-//   | 'Cutlass'
-//   | 'BrimstoneSands'
-
-// export function getVitalDungeonTerritory(vitalId: string): DungeonTerritory {
-//   return vitalId?.match(/_DG_([a-zA-Z]+)_/)?.[1] as DungeonTerritory
-// }
-// export function getVitalDungeonTag(vitalId: string) {
-//   switch (getVitalDungeonTerritory(vitalId)) {
-//     case 'Windsward':
-//       return 'Amrine'
-//     case 'Edengrove':
-//       return 'Edengrove00'
-//     case 'Everfall':
-//       return 'ShatteredObelisk'
-//     case 'Restless':
-//       return 'RestlessShores01'
-//     case 'Reekwater':
-//       return 'Reekwater00'
-//     case 'Ebonscale':
-//       return 'Ebonscale00'
-//     case 'ShatterMtn':
-//       return 'ShatterMtn00'
-//     case 'Cutlass':
-//       return 'CutlassKeys00'
-//     case 'BrimstoneSands':
-//       return 'BrimstoneSands00'
-//     default:
-//       return null
-//   }
-// }
-// export function getVitalDungeonId(vitalId: string): string {
-//   const tag = getVitalDungeonTag(vitalId)
-//   return tag ? `Dungeon${tag}` : null
-// }
-// const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
-//   DungeonAmrine: ['Nakashima', 'Simon'],
-//   DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
-//   DungeonCutlassKeys00: ['DryadSiren'],
-//   QuestApophis: ['Apophis']
-// }
-
-export function getVitalDungeons(
+export function getVitalGameModeMaps(
   vital: VitalsData,
-  dungeons: GameModeMapData[],
-  vitalsMeta: Map<string, ScannedVital>,
+  maps: GameModeMapData[],
+  metaMap: Map<string, ScannedVital>,
 ): GameModeMapData[] {
-  if (!vital || !dungeons?.length) {
+  if (!vital || !maps?.length) {
     return []
   }
-  const meta = vitalsMeta?.get(vital.VitalsID)
+  const meta = metaMap?.get(vital.VitalsID)
   if (!meta) {
     return []
   }
   // "WorldBounds": "4480.0,4096.0,608.0,544.0"
-  return dungeons.filter((it) => {
-    if (!it.UIMapId || eqCaseInsensitive(it.UIMapId, 'newworld_vitaeeterna')) {
+  return maps.filter((it) => {
+    const catlicueId = getGameModeCoatlicueDirectory(it)
+    if (eqCaseInsensitive(catlicueId, NW_MAP_NEWWORLD_VITAEETERNA)) {
+      const spawns = meta.spawns?.['newworld_vitaeeterna']
+      const bounds = it.WorldBounds
+      if (!spawns?.length || !bounds?.length) {
+        return false
+      }
       // dynasty dungeon and trials are in the open world map
       // all mobs have mapId set to 'newworld_vitaeeterna'
       // we check for bounds
-      const [x, y, w, h] = (it.WorldBounds?.split(',') || []).map(Number)
-      const spawns = meta.spawns?.['newworld_vitaeeterna'] || []
+      const [x, y, w, h] = (bounds.split(',') || []).map(Number)
       return spawns.some(({ p }) => {
         if (!p.length) {
           return false
@@ -283,12 +241,8 @@ export function getVitalDungeons(
         return p[0] >= x && p[0] <= x + w && p[1] >= y && p[1] <= y + h
       })
     }
-    return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, it.UIMapId))
+    return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, catlicueId))
   })
-}
-
-export function getVitalDungeon(vital: VitalsData, dungeons: GameModeMapData[], vitalsMeta: Map<string, ScannedVital>) {
-  return getVitalDungeons(vital, dungeons, vitalsMeta)?.[0]
 }
 
 function eqCaseInsensitive(a: string, b: string) {

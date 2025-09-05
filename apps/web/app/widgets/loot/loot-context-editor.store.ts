@@ -1,6 +1,6 @@
 import { computed } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { getGameModeLootTags } from '@nw-data/common'
+import { getGameModeLootTags, NW_LOOT_GlobalMod } from '@nw-data/common'
 import { uniqBy } from 'lodash'
 import { withNwData } from '~/data/with-nw-data'
 import { eqCaseInsensitive } from '~/utils'
@@ -45,7 +45,7 @@ const DEFAULT_STATE: LootContextEditorState = {
   salvageItemGearScore: null,
   salvageItemRarity: null,
   salvageItemTier: null,
-  constantTags: ['GlobalMod'],
+  constantTags: [NW_LOOT_GlobalMod],
   customTags: [],
 }
 

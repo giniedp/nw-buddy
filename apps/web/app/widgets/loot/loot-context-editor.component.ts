@@ -14,7 +14,7 @@ import {
 } from '@nw-data/common'
 import { filter, map } from 'rxjs'
 import { NwModule } from '~/nw'
-import { LootContext } from '~/nw/loot'
+import { ConstrainedLootContext } from '~/nw/loot'
 import { DataViewModule, DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
@@ -232,8 +232,8 @@ export class LootContextEditorComponent {
 
   @Output()
   public context = toObservable(
-    computed((): LootContext => {
-      return new LootContext({
+    computed((): ConstrainedLootContext => {
+      return new ConstrainedLootContext({
         tags: this.store.contextTags(),
         values: this.store.contextValues(),
       })

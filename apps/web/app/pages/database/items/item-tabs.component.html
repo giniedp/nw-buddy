@@ -14,6 +14,8 @@
       @for (tab of tabItems(); track tab.id) {
         <nwb-tab
           class="whitespace-nowrap"
+          animate.enter="fade-grow-x-in"
+          animate.leave="fade-grow-x-out"
           [value]="tab.id"
           [routerLink]="[]"
           [queryParams]="{ itemTab: tab.id }"
@@ -28,23 +30,23 @@
   <div class="flex flex-col gap-2 pt-2">
     @switch (activeTab()) {
       @case ('effects') {
-        @for (id of data()?.grantsEffects; track $index) {
+        @for (id of grantsEffects(); track $index) {
           <nwb-status-effect-detail [effectId]="id" class="bg-black" />
         }
       }
       @case ('perks') {
-        @for (id of data()?.resourcePerks; track $index) {
+        @for (id of resourcePerks(); track $index) {
           <nwb-perk-detail [perkId]="id" class="bg-black" />
         }
 
         <nwb-perk-bucket-detail
-          [perkBucketIds]="data()?.perkBucketIds"
+          [perkBucketIds]="perkBucketIds()"
           [itemId]="itemId()"
           class="bg-base-300 rounded-b-md"
         />
       }
       @case ('unlocks') {
-        @for (recipe of data()?.unlocksRecipe; track $index) {
+        @for (recipe of unlocksRecipe(); track $index) {
           <nwb-item-card
             [entity]="recipe?.ItemID"
             [enableInfoLink]="true"
@@ -56,17 +58,17 @@
         }
       }
       @case ('recipes') {
-        @for (item of data()?.recipes; track $index) {
+        @for (item of recipes(); track $index) {
           <nwb-crafting-calculator [entity]="item.recipe" class="bg-base-300 rounded-b-md" />
         }
       }
       @case ('transmog') {
-        <nwb-appearance-detail [appearance]="data()?.appearance" [parentItemId]="itemId()" />
+        <nwb-appearance-detail [appearance]="appearance()" [parentItemId]="itemId()" />
       }
       @case ('craftable') {
         <div
           class="flex flex-col gap-2"
-          [nwbInfniteScroll]="data()?.craftableRecipes"
+          [nwbInfniteScroll]="craftableRecipes()"
           [nwbInfniteScrollPerPage]="10"
           #scroll="infiniteScroll"
         >
@@ -81,7 +83,7 @@
         </div>
       }
       @case ('loot') {
-        @for (tableId of data()?.lootTableIds; track $index) {
+        @for (tableId of lootTableIds(); track $index) {
           <nwb-loot-graph [tableId]="tableId" [expand]="false" [showLocked]="true" [highlight]="itemId()" />
         }
       }
@@ -94,7 +96,7 @@
               <th></th>
             </tr>
           </thead>
-          @for (item of data()?.rewardedFrom?.rewards; track $index) {
+          @for (item of rewardedFrom()?.rewards; track $index) {
             <tr>
               <td>{{ item.season }}</td>
               @if (item.chapter) {
@@ -114,14 +116,84 @@
             </tr>
           }
         </table>
-        @for (item of data()?.rewardedFrom?.items; track $index) {
+        @for (item of rewardedFrom()?.items; track $index) {
           <nwb-item-detail [itemId]="item">
-            <nwb-item-detail-header [size]="'xs'" [enableLink]="true" [enableInfoLink]="true"/>
+            <nwb-item-detail-header [size]="'xs'" [enableLink]="true" [enableInfoLink]="true" />
           </nwb-item-detail>
         }
-        @for (item of data()?.rewardedFrom?.entitlements; track $index) {
+        @for (item of rewardedFrom()?.entitlements; track $index) {
           <nwb-entitlement-detail [entitlementId]="item" class="bg-base-300 rounded-b-md" />
         }
+      }
+      @case ('dropped-by') {
+        <div
+          class="flex flex-col gap-2"
+          [nwbInfniteScroll]="droppedBy()"
+          [nwbInfniteScrollPerPage]="10"
+          #scroll="infiniteScroll"
+        >
+          @for (item of scroll.data(); track $index) {
+            <nwb-vital-detail-item [size]="'xs'" [nwbVitalDetail]="item.vitalsID">
+              <div>
+                @for (variation of item.variations; track $index) {
+                  @if (variation.conditions.length || variation.tags.length) {
+                    <div
+                      class="flex-none flex flex-row gap-1 p-1 whitespace-nowrap bg-black/40 w-full overflow-auto scrollbar-hide shadow-none"
+                    >
+                      @for (condition of variation.conditions; track $index) {
+                        <span class="badge badge-sm badge-primary text-shadow-none">
+                          {{ condition.tag }}: {{ condition.value.join('-') }}
+                        </span>
+                      }
+                      @for (tag of variation.tags; track $index) {
+                        <span class="badge badge-sm badge-secondary bg-secondary/50">{{ tag }}</span>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            </nwb-vital-detail-item>
+          }
+          @if (scroll.canLoad()) {
+            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+          }
+        </div>
+      }
+      @case ('salvaged-from') {
+        <div
+          class="flex flex-col gap-2"
+          [nwbInfniteScroll]="salvagedFrom()"
+          [nwbInfniteScrollPerPage]="10"
+          #scroll="infiniteScroll"
+        >
+          @for (item of scroll.data(); track $index) {
+            <nwb-item-detail [itemId]="item.itemId">
+              <nwb-item-detail-header [size]="'xs'" [enableLink]="true" [enableInfoLink]="true">
+                <div>
+                  @for (variation of item.variations; track $index) {
+                    @if (variation.conditions.length || variation.tags.length) {
+                      <div
+                        class="flex-none flex flex-row gap-1 p-1  whitespace-nowrap bg-black/40 w-full overflow-auto scrollbar-hide shadow-none"
+                      >
+                        @for (condition of variation.conditions; track $index) {
+                          <span class="badge badge-sm badge-primary text-shadow-none">
+                            {{ condition.tag }}: {{ condition.value.join('-') }}
+                          </span>
+                        }
+                        @for (tag of variation.tags; track $index) {
+                          <span class="badge badge-sm badge-secondary bg-secondary/50">{{ tag }}</span>
+                        }
+                      </div>
+                    }
+                  }
+                </div>
+              </nwb-item-detail-header>
+            </nwb-item-detail>
+          }
+          @if (scroll.canLoad()) {
+            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+          }
+        </div>
       }
     }
   </div>

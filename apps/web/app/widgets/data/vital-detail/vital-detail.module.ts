@@ -8,6 +8,7 @@ import { VitalDetailStatsComponent } from './vital-detail-stats.component'
 import { VitalDetailComponent } from './vital-detail.component'
 import { VitalDetailDirective } from './vital-detail.directive'
 import { VitalDetailMapComponent } from './vital-detail-map.component'
+import { VitalDetailiItemComponent } from './vital-detail-item.component'
 
 const components = [
   VitalDetailCardComponent,
@@ -19,6 +20,7 @@ const components = [
   VitalDetailModelsComponent,
   VitalDetailStatsComponent,
   VitalDetailMapComponent,
+  VitalDetailiItemComponent
 ]
 @NgModule({
   imports: [...components],

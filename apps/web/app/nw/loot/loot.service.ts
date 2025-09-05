@@ -3,7 +3,7 @@ import { LootTable } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { combineLatest, map, Observable } from 'rxjs'
 import { injectNwData } from '~/data'
-import { LootContext } from './loot-context'
+import { ConstrainedLootContext } from './loot-context'
 import { buildLootGraph, collectLootIds, updateLootGraph } from './loot-graph'
 
 @Injectable({ providedIn: 'root' })
@@ -27,7 +27,7 @@ export class NwLootService {
 
   public resolveLootItems(
     table: LootTable,
-    context: LootContext,
+    context: ConstrainedLootContext,
   ): Observable<Array<MasterItemDefinitions | HouseItems>> {
     return combineLatest({
       graph: this.buildGraph(table),

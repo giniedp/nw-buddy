@@ -460,6 +460,8 @@ export abstract class NwDataSheets {
   public vitalsByFamily = indexLookup(this.vitalsByFamilyMap)
   public vitalsByCreatureTypeMap = secondaryIndex(this.vitalsAll, 'CreatureType')
   public vitalsByCreatureType = indexLookup(this.vitalsByCreatureTypeMap)
+  public vitalsByLootTableIdMap = secondaryIndex(this.vitalsAll, 'LootTableId')
+  public vitalsByLootTableId = indexLookup(this.vitalsByLootTableIdMap)
 
   // public vitalsFamilies = table(() =>
   //   this.vitalsByFamilyMap.pipe(map((it) => Array.from(it.keys()) as Array<VitalsBaseData['Family']>)),

@@ -1,11 +1,12 @@
 import { computed } from '@angular/core'
 import { signalStore, withComputed, withState } from '@ngrx/signals'
-import { LootContext } from '~/nw/loot'
+import { LootContextValues } from '@nw-data/common'
+import { ConstrainedLootContext } from '~/nw/loot'
 
 export interface LootGraphState {
   tableIds: string[]
   tags: string[]
-  tagValues: Record<string, string | number>
+  tagValues: LootContextValues
   dropChance: number
   highlight: string
   highlightPicker: boolean
@@ -34,7 +35,7 @@ export const LootGraphStore = signalStore(
   withComputed(({ tags, tagValues }) => {
     return {
       context: computed(() => {
-        return LootContext.create({
+        return ConstrainedLootContext.create({
           tags: tags(),
           values: tagValues(),
         })

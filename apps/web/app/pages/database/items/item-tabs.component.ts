@@ -1,5 +1,17 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, untracked } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  resource,
+  ResourceRef,
+  Signal,
+  untracked,
+} from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import {
@@ -26,6 +38,7 @@ import { PerkBucketDetailComponent } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
+import { VitalDetailModule } from '../../../widgets/data/vital-detail'
 
 export type ItemTabId =
   | 'effects'
@@ -37,6 +50,8 @@ export type ItemTabId =
   | 'gearset'
   | 'loot'
   | 'rewards'
+  | 'dropped-by'
+  | 'salvaged-from'
 export interface ItemTab {
   id: ItemTabId
   label: string
@@ -60,6 +75,7 @@ export interface ItemTab {
     LootGraphComponent,
     TabsModule,
     EntitlementDetailModule,
+    VitalDetailModule,
   ],
   providers: [ItemDetailStore],
   host: {
@@ -77,95 +93,156 @@ export class ItemTabsComponent {
     untracked(() => this.store.load({ recordId: itemId }))
   })
 
-  protected resource = apiResource({
-    request: () => this.store.record(),
-    loader: async ({ request }) => {
-      return {
-        appearance: await loadAppearance(this.db, request),
-        grantsEffects: await loadGrantedEffectIds(this.db, request),
-        resourcePerks: await loadResourcePerks(this.db, request),
-        unlocksRecipe: await loadUnlockedRecipe(this.db, request),
-        craftableRecipes: await loadCraftableRecipes(this.db, request),
-        perkBucketIds: getItemPerkBucketIds(isMasterItem(request) ? request : null),
-        lootTableIds: await loadLootTableIds(this.db, request),
-        recipes: await loadRecipes(this.db, request),
-        rewardedFrom: await loadRewardedFrom(this.db, request),
-      }
+  protected appearanceResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadAppearance(this.db, params),
+  })
+  protected appearance = resourceSignal(this.appearanceResource)
+
+  protected grantsEffectsResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadGrantedEffectIds(this.db, params),
+  })
+  protected grantsEffects = resourceSignal(this.grantsEffectsResource)
+
+  protected resourcePercsResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadResourcePerks(this.db, params),
+  })
+  protected resourcePerks = resourceSignal(this.resourcePercsResource)
+
+  protected unlocksRecipeResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadUnlockedRecipe(this.db, params),
+  })
+  protected unlocksRecipe = resourceSignal(this.unlocksRecipeResource)
+
+  protected craftableRecipesResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadCraftableRecipes(this.db, params),
+  })
+  protected craftableRecipes = resourceSignal(this.craftableRecipesResource)
+
+  protected lootTableIdsResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadLootTableIds(this.db, params),
+  })
+  protected lootTableIds = resourceSignal(this.lootTableIdsResource)
+
+  protected recipesResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadRecipes(this.db, params),
+  })
+  protected recipes = resourceSignal(this.recipesResource)
+
+  protected rewardedFromResource = resource({
+    params: this.store.record,
+    loader: ({ params }) => loadRewardedFrom(this.db, params),
+  })
+  protected rewardedFrom = resourceSignal(this.rewardedFromResource)
+
+  protected dropSourceResource = resource({
+    params: this.itemId,
+    loader: ({ params }) => {
+      return this.db.itemLootSources(params)
     },
   })
-  protected data = this.resource.value
+  protected dropSource = resourceSignal(this.dropSourceResource)
+  protected droppedBy = computed(() => this.dropSource()?.droppedBy)
+  protected salvagedFrom = computed(() => this.dropSource()?.salvagedFrom)
+
+  protected perkBucketIds = computed(() => {
+    const item = this.store.record()
+    return getItemPerkBucketIds(isMasterItem(item) ? item : null)
+  })
 
   protected activeTab = computed(() => {
     const activeTab = this.tabId()
     const items = this.tabItems()
-    if ((this.resource.isLoading() && !this.resource.isLoaded()) || !items?.length) {
-      return activeTab
-    }
-    return items.find((it) => it.id === activeTab) ? activeTab : items[0].id
-  })
-  protected tabItems = computed(() => {
-    const data = this.resource.value()
-    if (!data) {
+    if (!items?.length) {
       return null
     }
+    for (const item of items) {
+      if (item.id === activeTab) {
+        return activeTab
+      }
+    }
+    return items[0].id
+  })
+
+  protected tabItems = computed(() => {
     const tabs: ItemTab[] = []
-    if (data.grantsEffects?.length) {
+    if (this.grantsEffects()?.length) {
       tabs.push({
         id: 'effects',
         label: 'Grants Effects',
       })
     }
 
-    if (data.resourcePerks?.length) {
+    if (this.resourcePerks()?.length) {
       tabs.push({
         id: 'perks',
         label: 'Perks',
       })
     }
 
-    if (data.unlocksRecipe) {
+    if (this.unlocksRecipe()) {
       tabs.push({
         id: 'unlocks',
         label: 'Unlocks Recipe',
       })
     }
-    if (data.recipes?.length) {
+    if (this.recipes()?.length) {
       tabs.push({
         id: 'recipes',
         label: 'Recipes',
       })
     }
-    if (data.craftableRecipes?.length) {
-      const count = data.craftableRecipes.length
+    if (this.craftableRecipes()?.length) {
+      const count = this.craftableRecipes().length
       tabs.push({
         id: 'craftable',
         label: 'Used to craft' + (count > 10 ? ` (${count})` : ''),
       })
     }
-    if (data.perkBucketIds?.length) {
+    if (this.perkBucketIds()?.length) {
       tabs.push({
         id: 'perks',
         label: `Perk Buckets`,
       })
     }
-    if (data.appearance) {
+    if (this.appearance()) {
       tabs.push({
         id: 'transmog',
         label: `Transmog`,
       })
     }
 
-    if (data.lootTableIds?.length) {
+    if (this.lootTableIds()?.length) {
       tabs.push({
         id: 'loot',
         label: 'Drop Tables',
       })
     }
 
-    if (data.rewardedFrom?.rewards?.length) {
+    if (this.rewardedFrom()?.rewards?.length) {
       tabs.push({
         id: 'rewards',
         label: 'Rewarded From',
+      })
+    }
+
+    if (this.droppedBy()?.length) {
+      tabs.push({
+        id: 'dropped-by',
+        label: `Dropped by (${this.droppedBy()?.length})`,
+      })
+    }
+
+    if (this.salvagedFrom()?.length) {
+      tabs.push({
+        id: 'salvaged-from',
+        label: `Salvaged from (${this.salvagedFrom()?.length})`,
       })
     }
     return tabs
@@ -306,4 +383,23 @@ async function loadRewardedFrom(db: NwData, item: MasterItemDefinitions | HouseI
     ).then((it) => it.flat()),
   }
   return result
+}
+
+function resourceSignal<T>(resource: ResourceRef<T>): Signal<T> {
+  return linkedSignal({
+    source: () => ({
+      value: resourceValue(resource),
+      isLoading: resource.isLoading(),
+    }),
+    computation: (source, previous) => {
+      if (previous && source.isLoading) {
+        return previous.value;
+      }
+      return source.value;
+    }
+  })
+}
+
+function resourceValue<T>(resource: ResourceRef<T>): T | null {
+  return resource.hasValue() ? resource.value() : null
 }

@@ -370,11 +370,13 @@ function getEntryLabels(
     return result
   }
   const perk = perks.get(entry.PerkID)
-  for (const label of perk.ExclusiveLabels) {
-    result.push({
-      name: label,
-      weight: labels.get(label)?.Weight ?? 0,
-    })
+  if (perk.ExclusiveLabels) {
+    for (const label of perk.ExclusiveLabels) {
+      result.push({
+        name: label,
+        weight: labels.get(label)?.Weight ?? 0,
+      })
+    }
   }
   return result
 }

@@ -8,6 +8,7 @@ import {
   getItemIconPath,
   getItemRarity,
   getItemRarityLabel,
+  getItemSalvageInfo,
   getItemSourceShort,
   getItemTierAsRoman,
   getItemTypeName,
@@ -164,7 +165,7 @@ export const ItemDetailStore = signalStore(
       isArtifact: computed(() => isItemArtifact(item())),
       isHeartGem: computed(() => isItemHeartGem(item())),
       gemPerk: computed(() => itemPerkSlots().find((it) => isPerkGem(it.perk))?.perk),
-      salvageInfo: computed(() => selectItemSalvageInfo(record(), playerLevel())),
+      salvageInfo: computed(() => getItemSalvageInfo(record(), '*', '*')),
       rarity,
       rarityLabel: computed(() => getItemRarityLabel(rarity())),
     }

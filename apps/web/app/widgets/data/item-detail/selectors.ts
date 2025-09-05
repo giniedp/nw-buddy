@@ -1,4 +1,5 @@
 import {
+  NW_LOOT_GlobalMod,
   NW_MAX_GEAR_SCORE_BASE,
   PerkBucket,
   PerkExplanation,
@@ -89,7 +90,7 @@ export function selectItemSalvageInfo(item: MasterItemDefinitions | HouseItems, 
   }
   return {
     tableId: recipe.replace('[LTID]', ''),
-    tags: ['GlobalMod', ...((item as MasterItemDefinitions)?.SalvageLootTags || [])],
+    tags: [NW_LOOT_GlobalMod, ...((item as MasterItemDefinitions)?.SalvageLootTags || [])],
     tagValues: {
       Level: playerLevel - 1,
       MinContLevel: (item as MasterItemDefinitions)?.ContainerLevel,
