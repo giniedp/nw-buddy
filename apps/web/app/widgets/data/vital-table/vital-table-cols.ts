@@ -207,6 +207,9 @@ export function vitalColCategories(util: VitalTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
+      valueMatcher: (filter, values) => {
+        return values.some((it) => it['VitalsCategoryID'] === filter.value)
+      },
       getOptions: ({ data }) => {
         return (data.$categories || []).map((it) => {
           return {
