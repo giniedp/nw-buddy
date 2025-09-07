@@ -189,3 +189,9 @@ func PositionOf(m Data) nwt.AzVec3 {
 		nwt.AzFloat32(m[14]),
 	}
 }
+
+func TransformVec2(m Data, v2 nwt.AzVec2) nwt.AzVec2 {
+	x := v2[0]*nwt.AzFloat32(m[0]) + v2[1]*nwt.AzFloat32(m[4]) + nwt.AzFloat32(m[12])
+	y := v2[0]*nwt.AzFloat32(m[1]) + v2[1]*nwt.AzFloat32(m[5]) + nwt.AzFloat32(m[13])
+	return nwt.AzVec2{x, y}
+}

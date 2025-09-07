@@ -145,6 +145,14 @@ func (ctx *Scanner) addSpawn(spawn any, mapId string) {
 				Trace:     v.Trace,
 			})
 		}
+		if v.PoiConfig != "" {
+			ctx.results.ZoneConfigs = append(ctx.results.ZoneConfigs, ZoneConfigEntry{
+				Config:   v.PoiConfig,
+				Shape:    v.PoiConfigShape,
+				Position: v.Position,
+				Trace:    v.Trace,
+			})
+		}
 	default:
 		slog.Warn("unknown spawn", "value", v)
 	}

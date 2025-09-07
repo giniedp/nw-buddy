@@ -9,9 +9,11 @@ import { TranslateService } from '~/i18n'
 import { xyToLngLat } from '~/widgets/game-map/utils'
 import { loadGatherables } from './data/gatherables'
 import { loadStructures } from './data/structures'
-import { loadTerritories } from './data/territories'
+import { loadRegionBoundaries, loadTerritories, loadZoneConfigs } from './data/territories'
 import { FilterDataSet, VitalDataSet } from './data/types'
 import { loadVitals } from './data/vitals'
+import { eqCaseInsensitive } from '../../../../utils'
+import { NW_MAP_NEWWORLD_VITAEETERNA } from '@nw-data/common'
 
 export interface ZoneMapState {
   isLoaded: boolean
@@ -23,10 +25,13 @@ export interface ZoneMapState {
   territories: FeatureCollection
   areas: FeatureCollection
   pois: FeatureCollection
+  zoneConfigs: FeatureCollection
+  regionBounds: FeatureCollection
   mapId: string
   showHeatmap?: boolean
   showLabels?: boolean
   showPOI?: boolean
+  showZoneConfigs: boolean
 }
 
 export const ZoneMapStore = signalStore(
@@ -35,6 +40,8 @@ export const ZoneMapStore = signalStore(
     territories: null,
     areas: null,
     pois: null,
+    zoneConfigs: null,
+    regionBounds: null,
     gatherables: [],
     vitalsTypes: [],
     vitalsCategories: [],
@@ -47,12 +54,13 @@ export const ZoneMapStore = signalStore(
     showHeatmap: true,
     showLabels: true,
     showPOI: true,
+    showZoneConfigs: false,
   }),
   withRedux({
     actions: {
       public: {
         load: noPayload,
-        loaded: payload<Omit<ZoneMapState, 'isLoaded' | 'mapId'>>(),
+        loaded: payload<Omit<ZoneMapState, 'isLoaded' | 'mapId' | 'showZoneConfigs'>>(),
         toggleLootTable: payload<{ id: string }>(),
       },
       private: {},
@@ -74,6 +82,8 @@ export const ZoneMapStore = signalStore(
           switchMap(() => {
             return combineLatest({
               territories: loadTerritories(db, tl8, xyToLngLat),
+              zoneConfigs: loadZoneConfigs(db, tl8, xyToLngLat),
+              regionBounds: loadRegionBoundaries(db, tl8, xyToLngLat),
               gatherables: loadGatherables(db, xyToLngLat),
               vitals: loadVitals({
                 db: db,
@@ -88,16 +98,28 @@ export const ZoneMapStore = signalStore(
               ),
             })
           }),
-          map(({ territories, gatherables, houses, vitals, vitalsTypes, vitalsCategories }) =>
-            actions.loaded({
-              ...territories,
+          map(
+            ({
+              territories,
+              zoneConfigs,
               gatherables,
               houses,
               vitals,
               vitalsTypes,
               vitalsCategories,
-              //mapId: 'newworld_vitaeeterna',
-            }),
+              regionBounds,
+            }) => {
+              return actions.loaded({
+                ...territories,
+                zoneConfigs,
+                regionBounds,
+                gatherables,
+                houses,
+                vitals,
+                vitalsTypes,
+                vitalsCategories,
+              })
+            },
           ),
         ),
       }
@@ -114,7 +136,9 @@ export const ZoneMapStore = signalStore(
       setPOI(showPOI: boolean) {
         patchState(state, { showPOI })
       },
-
+      setZoneConfigs(showZoneConfigs: boolean) {
+        patchState(state, { showZoneConfigs })
+      },
       setMap(mapId: string) {
         patchState(state, { mapId })
       },
@@ -125,8 +149,9 @@ export const ZoneMapStore = signalStore(
       store.load()
     },
   }),
-  withComputed(({ gatherables }) => {
+  withComputed(({ gatherables, mapId }) => {
     return {
+      isOpenWorld: computed(() => eqCaseInsensitive(mapId(), NW_MAP_NEWWORLD_VITAEETERNA)),
       mapIds: computed(() => {
         const ids = new Set<string>()
         for (const item of gatherables()) {

@@ -75,6 +75,10 @@ func pullSpawns(ctx *PullContext, outDir string) {
 
 	stats.Add("Gatherables", "rows", len(gatherables), "positions", count, "size", humanize.Bytes(size))
 
+	zoneConfigs, count := scanner.CollateZoneConfigs(res.ZoneConfigs)
+	size = writeJson(zoneConfigs, path.Join(outDir, "zone_configs_metadata.json"))
+	stats.Add("ZoneConfigs", "rows", len(zoneConfigs), "positions", count, "size", humanize.Bytes(size))
+
 	houses, count := scanner.CollateHouses(res.Houses)
 	size = writeJson(houses, path.Join(outDir, "houses_metadata.json"))
 	stats.Add("Houses", "rows", len(houses), "positions", count, "size", humanize.Bytes(size))

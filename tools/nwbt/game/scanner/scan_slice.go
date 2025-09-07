@@ -2,11 +2,15 @@ package scanner
 
 import (
 	"iter"
+	"log/slog"
+	"nw-buddy/tools/formats/vshapec"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/math/mat4"
+	"path"
+	"slices"
 	"strings"
 )
 
@@ -137,6 +141,9 @@ type SpawnNode struct {
 	StructureType  string
 	Tags           []string
 	Trace          []any
+
+	PoiConfig      string
+	PoiConfigShape []nwt.AzVec2
 }
 
 func findName(node *game.SliceNode) string {
@@ -177,9 +184,19 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 			hasGatherable := false
 			hasHotspot := false
 			hasVariant := false
+			poiConfig := ""
+			var poiConfigShapes [][]nwt.AzVec2
 
 			for _, component := range node.Components {
 				switch v := component.(type) {
+				case nwt.POIManagerComponent:
+					if facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.POIManagerComponentServerFacet); ok {
+						poiConfig = string(facet.Config_name)
+					}
+				case nwt.HubLocalCacheComponent:
+					for _, el := range v.M_detectordescriptors.Element {
+						poiConfigShapes = append(poiConfigShapes, ctx.buildDetectorShape(node, el))
+					}
 				case nwt.VariationDataComponent:
 					if v.M_selectedvariant != "" {
 						hasVariant = true
@@ -380,6 +397,20 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 				}
 			}
 
+			if poiConfig != "" && len(poiConfigShapes) > 0 {
+				for _, shape := range poiConfigShapes {
+					result := SpawnNode{
+						Name:           findName(node),
+						PoiConfig:      poiConfig,
+						PoiConfigShape: transformShape(shape, node.Transform),
+						// Position:       mat4.PositionOf(node.Transform),
+					}
+					if !yield(result) {
+						return
+					}
+				}
+			}
+
 			for _, component := range node.Components {
 				switch v := component.(type) {
 				case nwt.SpawnerComponent:
@@ -523,4 +554,75 @@ func getEncounterFallback(slice *nwt.SliceComponent) string {
 		}
 	}
 	return ""
+}
+
+func (ctx *Scanner) buildDetectorShape(node *game.SliceNode, descriptor nwt.HubLocalCacheDetectorDescriptor) []nwt.AzVec2 {
+	boundsEntity := game.FindEntityById(node.Slice, descriptor.Boundsentityid.Id)
+	if boundsEntity != nil {
+		for _, c := range boundsEntity.Components.Element {
+			if p, ok := c.(nwt.PolygonPrismShapeComponent); ok {
+				return ctx.readPolygonShape(p)
+			}
+		}
+	}
+
+	result := make([]nwt.AzVec2, 4)
+	result[0] = nwt.AzVec2{
+		descriptor.Boundsoffset[0] - descriptor.Bounds[0]/2,
+		descriptor.Boundsoffset[1] + descriptor.Bounds[1]/2,
+	}
+	result[1] = nwt.AzVec2{
+		descriptor.Boundsoffset[0] + descriptor.Bounds[0]/2,
+		descriptor.Boundsoffset[1] + descriptor.Bounds[1]/2,
+	}
+	result[2] = nwt.AzVec2{
+		descriptor.Boundsoffset[0] + descriptor.Bounds[0]/2,
+		descriptor.Boundsoffset[1] - descriptor.Bounds[1]/2,
+	}
+	result[3] = nwt.AzVec2{
+		descriptor.Boundsoffset[0] - descriptor.Bounds[0]/2,
+		descriptor.Boundsoffset[1] - descriptor.Bounds[1]/2,
+	}
+	return result
+}
+
+func (ctx *Scanner) readPolygonShape(vc nwt.PolygonPrismShapeComponent) []nwt.AzVec2 {
+	var vshape []nwt.AzVec2
+	var shape []nwt.AzVec2
+	prism := vc.Configuration.PolygonPrism.Element.VertexContainer.Vertices.Element
+	if len(prism) > 0 {
+		shape = slices.Clone(prism)
+	}
+	if len(shape) > 0 {
+		return shape
+	}
+
+	file, err := ctx.LookupFileByAssetId(vc.Polygon_Shape_Asset_Id)
+	if err != nil {
+		slog.Warn("polygon shape asset not found", "err", err)
+		return nil
+	}
+	if file == nil || path.Ext(file.Path()) != ".vshapec" {
+		return nil
+	}
+	shapeRecord, err := vshapec.Load(file)
+	if err != nil {
+		slog.Warn("failed to load vshapec", "file", file, "err", err)
+		return nil
+	}
+	for _, v := range shapeRecord.Vertices {
+		vshape = append(vshape, nwt.AzVec2{nwt.AzFloat32(v[0]), nwt.AzFloat32(v[1])})
+	}
+	if len(vshape) > 0 {
+		return vshape
+	}
+	return shape
+}
+
+func transformShape(shape []nwt.AzVec2, transform mat4.Data) []nwt.AzVec2 {
+	result := make([]nwt.AzVec2, 0, len(shape))
+	for _, v2 := range shape {
+		result = append(result, mat4.TransformVec2(transform, v2))
+	}
+	return result
 }

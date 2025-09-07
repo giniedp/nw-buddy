@@ -33,6 +33,13 @@ type SliceData struct {
 	Trace          []any
 }
 
+type ZoneConfigEntry struct {
+	Position nwt.AzVec3
+	Config   string
+	Shape    []nwt.AzVec2
+	Trace    []any
+}
+
 type GatherableEntry struct {
 	Position     nwt.AzVec3
 	MapID        string
@@ -120,4 +127,5 @@ type ScanResults struct {
 	Stations    []StationEntry
 	Structures  []StructureEntry
 	Vitals      []VitalsEntry
+	ZoneConfigs []ZoneConfigEntry
 }

@@ -15,6 +15,7 @@ import {
   DATASHEETS,
   DataSheetUri,
   MasterItemDefinitions,
+  ScannedZoneConfig,
   VariationDataGatherable,
   VitalsBaseData,
   VitalsLevelVariantData,
@@ -484,6 +485,12 @@ export abstract class NwDataSheets {
   public damagetypesAll = table(() => this.loadDatasheets(DATASHEETS.DamageTypeData))
   public damagetypesByIdMap = primaryIndex(this.damagetypesAll, 'TypeID')
   public damagetypesById = indexLookup(this.damagetypesByIdMap)
+
+  public zoneConfigsMetadataAll = table(() =>
+    this.loadDatasheet<ScannedZoneConfig>({ uri: 'generated/zone_configs_metadata.json' }),
+  )
+  public zoneConfigsMetadataByNameMap = primaryIndex(this.zoneConfigsMetadataAll, 'configName')
+  public zoneConfigsMetadataByName = indexLookup(this.zoneConfigsMetadataByNameMap)
 
   public territoriesMetadataAll = table(() =>
     this.loadDatasheet<ScannedTerritory>({ uri: 'generated/territories_metadata.json' }),

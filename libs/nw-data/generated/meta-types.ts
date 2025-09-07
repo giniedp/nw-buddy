@@ -129,6 +129,11 @@ export interface ScannedVitalSpawn {
   t: Array<number>
 }
 
+export interface ScannedZoneConfig {
+  configName: string
+  geometry: Array<Polygon>
+}
+
 export interface SearchItem {
   gs: string
   icon: string

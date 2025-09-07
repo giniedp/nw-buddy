@@ -169,6 +169,7 @@ func codeGenScanTypes() string {
 	types.AddReflect(reflect.TypeOf(scanner.ScannedVariation{}))
 	types.AddReflect(reflect.TypeOf(scanner.ScannedVital{}))
 	types.AddReflect(reflect.TypeOf(scanner.ScannedVitalModel{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedZoneConfig{}))
 	types.AddReflect(reflect.TypeOf(SearchItem{}))
 	types.AddReflect(reflect.TypeOf(ScannedSpell{}))
 

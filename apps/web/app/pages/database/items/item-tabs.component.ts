@@ -349,7 +349,12 @@ async function loadRewardedFrom(db: NwData, item: MasterItemDefinitions | HouseI
     return null
   }
 
-  const rewards = await db.seasonsRewardsByDisplayItemId(getItemId(item))
+  const rewards = await Promise.all([
+    db.seasonsRewardsByDisplayItemId(getItemId(item)).then((it) => it || []),
+    db.seasonsRewardsByItemId(getItemId(item)).then((it) => it || [])
+  ]).then((list) => {
+    return list.flat()
+  })
   if (!rewards?.length) {
     return null
   }

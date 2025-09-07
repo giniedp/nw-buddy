@@ -2,20 +2,22 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { IonButtons, IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
-import { sortBy } from 'lodash'
+import { Feature } from 'geojson'
+import { sortBy, uniqBy } from 'lodash'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgDice, svgFilter, svgFire, svgFont, svgHouse, svgSkull, svgTags, svgWheat } from '~/ui/icons/svg'
+import { svgDice, svgFilter, svgFire, svgFont, svgGears, svgHouse, svgSkull, svgTags, svgWheat } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { GameMapComponent, GameMapCoordsComponent, GameMapHost } from '~/widgets/game-map'
+import { GameMapComponent, GameMapCoordsComponent, GameMapHost, GameMapLayerDirective, GameMapMouseTipDirective } from '~/widgets/game-map'
 import { gameMapOptionsForMapIds } from '~/widgets/game-map/utils'
 import { LootModule } from '~/widgets/loot'
 import { VitalDetailModule } from '../../vital-detail'
 import { MapFilterSegmentComponent } from './filter-segment.component'
 import { MapFilterVitalsComponent } from './filter-vitals.component'
 import { ZoneMapStore } from './zone-map.store'
+import { PropertyGridModule } from '../../../../ui/property-grid'
 
 @Component({
   selector: 'nwb-zone-map',
@@ -33,6 +35,9 @@ import { ZoneMapStore } from './zone-map.store'
     LayoutModule,
     MapFilterSegmentComponent,
     MapFilterVitalsComponent,
+    GameMapLayerDirective,
+    GameMapMouseTipDirective,
+    PropertyGridModule,
     NwModule,
     TooltipModule,
     VitalDetailModule,
@@ -45,6 +50,7 @@ import { ZoneMapStore } from './zone-map.store'
 })
 export class ZoneDetailMapComponent {
   private tl8 = inject(TranslateService)
+  private mapHost = inject(GameMapHost)
   protected store = inject(ZoneMapStore)
   protected currentMapId = this.store.mapId
   protected segment = signal('g')
@@ -76,6 +82,8 @@ export class ZoneDetailMapComponent {
   protected diceIcon = svgDice
   protected fireIcon = svgFire
   protected fontIcon = svgFont
+  protected toolsIcon = svgGears
+  protected hoverZoneConfigs = signal<Array<{ name: string; data: any }>>([])
 
   protected selectSegment(value: string) {
     this.segment.set(value)
@@ -86,4 +94,37 @@ export class ZoneDetailMapComponent {
     const result = gameMapOptionsForMapIds(this.store.mapIds() || [])
     return sortBy(result, (it) => this.tl8.get(it.label))
   })
+
+  protected handleMouseEnterZoneConfig(features: Feature[]) {
+    this.mapHost.map.getCanvas().style.cursor = 'pointer'
+
+    const items = uniqBy(
+      features.map((it) => {
+        return {
+          name: it.properties['name'],
+          data: JSON.parse(it.properties['data']),
+        }
+      }),
+      'name',
+    )
+    this.hoverZoneConfigs.set(items)
+  }
+
+  protected handleMouseMoveZoneConfig(features: Feature[]) {
+    const items = uniqBy(
+      features.map((it) => {
+        return {
+          name: it.properties['name'],
+          data: JSON.parse(it.properties['data']),
+        }
+      }),
+      'name',
+    )
+    this.hoverZoneConfigs.set(items)
+  }
+
+  protected handleMouseLeaveZoneConfig(features: Feature[]) {
+    this.mapHost.map.getCanvas().style.cursor = ''
+    this.hoverZoneConfigs.set(null)
+  }
 }

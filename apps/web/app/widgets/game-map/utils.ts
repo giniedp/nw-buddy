@@ -209,6 +209,9 @@ export function attachLayerHover({ map, sourceId, layerId }: { map: Map; sourceI
         hoverIds.splice(index, 1)
       }
     }
+    if (layerId === 'zoneConfigsOutline') {
+      console.log({ toAdd, toRemove, features: e.features })
+    }
   })
   map.on('mouseleave', layerId, (e) => {
     for (const id of hoverIds) {

@@ -21,11 +21,18 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public disabled = model(false)
   public data = model<FeatureCollection<G, P>>()
   public icons = input<boolean>()
-  public polygons = input<boolean>()
   public color = input<string>()
+  public polygons = input<boolean>()
+  public polyOpacity = input<number>(0.5)
+  public outline = input<boolean>()
+  public outlineDashed = input<boolean>()
+  public minZoom = input<number>(0)
+  public maxZoom = input<number>(0)
   public heatmap = input<boolean>()
+  public heatmapColor = input<string>()
   public labels = input<boolean>()
   public labelsMinZoom = input<number>(5)
+  public labelsMaxZoom = input<number>(0)
   public filter = input<FilterSpecification>()
   private injector = inject(Injector)
   private sourceId = computed(() => this.layerId())
@@ -34,6 +41,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   private heatmapLayerId = computed(() => `heatmap-${this.layerId()}`)
   private labelLayerId = computed(() => `label-${this.layerId()}`)
   private polyLayerId = computed(() => `poly-${this.layerId()}`)
+  private outlineLayerId = computed(() => `outline-${this.layerId()}`)
   public variants = signal<string[]>(null)
   public featuresBelowCursor = signal<Array<Feature<G, P>>>(null)
   public featureClick = output<Array<Feature<G, P>>>()
@@ -76,7 +84,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       } else {
         this.getSource().setData(this.data() || { type: 'FeatureCollection', features: [] })
         this.updateFilter(this.variants(), this.filter())
-        this.updateColor(this.color())
+        this.updateColor(this.heatmapColor())
       }
     })
   }
@@ -93,11 +101,16 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     const circleLayerId = this.circleLayerId()
     const labelLayerId = this.labelLayerId()
     const polyLayerId = this.polyLayerId()
+    const lineLayerId = this.outlineLayerId()
+
     const useIcons = this.icons()
-    const usePlolygons = this.polygons()
-    const useCircles = !usePlolygons
+    const usePolygons = this.polygons()
+    const useLines = this.outline()
+    const useCircles = !usePolygons
     const useHeatmap = this.heatmap()
     const useLabels = this.labels()
+    const minZoom = this.minZoom()
+    const maxZoom = this.maxZoom()
 
     if (!this.map.getSource(sourceId)) {
       this.map.addSource(sourceId, {
@@ -116,17 +129,62 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       this.removeLayer(polyLayerId)
     }
 
-    if (!usePlolygons) {
+    if (!usePolygons) {
       this.removeLayer(polyLayerId)
     } else if (!this.map.getLayer(polyLayerId)) {
       this.map.addLayer({
         id: polyLayerId,
         source: sourceId,
+        minzoom: minZoom,
+        maxzoom: maxZoom,
         type: 'fill',
         layout: {},
         paint: {
-          'fill-color': ['get', 'color'],
-          'fill-opacity': 0.5,
+          'fill-color': this.color() ?? ['get', 'color'],
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            0.05,
+            ['boolean', ['feature-state', 'selected'], false],
+            0.15,
+            this.polyOpacity(),
+          ],
+        },
+      })
+      this.map.on('click', polyLayerId, this.handleClick)
+      this.map.on('mouseenter', polyLayerId, this.handleMouseEnter)
+      this.map.on('mouseleave', polyLayerId, this.handleMouseLeave)
+      this.map.on('mousemove', polyLayerId, this.handleMouseMove)
+      attachLayerHover({
+        map: this.map,
+        sourceId: sourceId,
+        layerId: polyLayerId,
+      })
+    }
+
+    if (!useLines) {
+      this.removeLayer(lineLayerId)
+    } else if (!this.map.getLayer(lineLayerId)) {
+      this.map.addLayer({
+        id: lineLayerId,
+        source: sourceId,
+        minzoom: minZoom,
+        maxzoom: maxZoom,
+        type: 'line',
+        layout: {
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': this.color() ?? ['get', 'color'],
+          'line-width': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false],
+            4,
+            ['boolean', ['feature-state', 'hover'], false],
+            4,
+            1,
+          ],
+          'line-dasharray': this.outlineDashed() ? [4, 2] : [4, 0],
         },
       })
     }
@@ -137,6 +195,8 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       this.map.addLayer({
         id: circleLayerId,
         source: sourceId,
+        minzoom: minZoom,
+        maxzoom: maxZoom,
         type: 'circle',
         paint: {
           'circle-radius': [
@@ -148,7 +208,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
             2,
             20,
           ],
-          'circle-color': ['get', 'color'],
+          'circle-color': this.color() ?? ['get', 'color'],
           'circle-stroke-color': '#000000',
           'circle-stroke-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 1],
         },
@@ -182,6 +242,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       this.map.addLayer({
         id: iconLayerId,
         source: sourceId,
+        minzoom: minZoom,
         type: 'symbol',
         layout: {
           'icon-image': ['get', 'icon'],
@@ -283,6 +344,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     }
     this.withLayer(labelLayerId, (layer) => {
       layer.minzoom = this.labelsMinZoom()
+      layer.maxzoom = this.labelsMaxZoom()
     })
 
     return this.map.getSource(sourceId) as GeoJSONSource
@@ -353,6 +415,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     this.removeLayer(this.circleLayerId())
     this.removeLayer(this.heatmapLayerId())
     this.removeLayer(this.polyLayerId())
+    this.removeLayer(this.outlineLayerId())
     this.removeSource(this.sourceId())
   }
 

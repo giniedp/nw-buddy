@@ -13,59 +13,52 @@
           </ion-buttons>
         </div>
         <div slot="end">
-          <div class="join">
-            <button
-              class="join-item btn btn-square btn-ghost"
-              [class.text-primary]="store.showLabels()"
-              (click)="store.setLabels(!store.showLabels())"
-              [tooltip]="'Toggle labels'"
-            >
-              <nwb-icon [icon]="fontIcon" class="w-5 h-5" />
+          <div class="flex flex-row items-center gap-2">
+            @if (showMapOptions()) {
+              <select [ngModel]="store.mapId()" (ngModelChange)="store.setMap($event)" class="select select-sm w-40">
+                @for (option of mapsOptions(); track option.value) {
+                  <option [value]="option.value">{{ option.label | nwText }}</option>
+                }
+              </select>
+            }
+            <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplConfigMenu">
+              <nwb-icon [icon]="toolsIcon" class="w-5 h-5" />
             </button>
-            <button
-              class="join-item btn btn-square btn-ghost"
-              [class.text-primary]="store.showHeatmap()"
-              (click)="store.setHeatmap(!store.showHeatmap())"
-              [tooltip]="'Toggle heatmap'"
-            >
-              <nwb-icon [icon]="fireIcon" class="w-5 h-5" />
-            </button>
-            <!-- <button
-              class="join-item btn btn-square btn-ghost filter"
-              [class.grayscale]="!store.showGoblinEncounter()"
-              (click)="store.setGoblinEncounter(!store.showGoblinEncounter())"
-              [tooltip]="'Toggle rafflebones nodes'"
-            >
-              <img [nwImage]="'assets/icons/gatherables/rafflebones.png'" class="w-5 h-5" />
-            </button>
-            <button
-              class="join-item btn btn-square btn-ghost filter"
-              [class.grayscale]="!store.showDarknessEncounter()"
-              (click)="store.setDarknessEncounter(!store.showDarknessEncounter())"
-              [tooltip]="'Toggle darkness nodes'"
-            >
-              <img [nwImage]="'assets/icons/gatherables/damned_compass.png'" class="w-5 h-5" />
-            </button>
-            <button
-              class="join-item btn btn-square btn-ghost"
-              [class.text-primary]="store.showRandomEncounter()"
-              (click)="store.setRandomEncounter(!store.showRandomEncounter())"
-              [tooltip]="'Toggle random encounter nodes'"
-            >
-              <nwb-icon [icon]="diceIcon" class="w-5 h-5" />
-            </button> -->
           </div>
-          @if (showMapOptions()) {
-            <select
-              [ngModel]="store.mapId()"
-              (ngModelChange)="store.setMap($event)"
-              class="select select-sm select-ghost"
-            >
-              @for (option of mapsOptions(); track option.value) {
-                <option [value]="option.value">{{ option.label | nwText }}</option>
-              }
-            </select>
-          }
+
+          <ng-template #tplConfigMenu>
+            <div class="bg-base-200 border border-base-100 w-80 rounded-b-md z-10 p-2" cdkMenu>
+              <label class="label">
+                <input
+                  class="toggle checked:toggle-primary"
+                  type="checkbox"
+                  [ngModel]="store.showLabels()"
+                  (ngModelChange)="store.setLabels($event)"
+                />
+                Show territory labels
+              </label>
+
+              <label class="label">
+                <input
+                  class="toggle checked:toggle-primary"
+                  type="checkbox"
+                  [ngModel]="store.showHeatmap()"
+                  (ngModelChange)="store.setHeatmap($event)"
+                />
+                Show heatmap
+              </label>
+
+              <label class="label">
+                <input
+                  class="toggle checked:toggle-primary"
+                  type="checkbox"
+                  [ngModel]="store.showZoneConfigs()"
+                  (ngModelChange)="store.setZoneConfigs($event)"
+                />
+                Show region & refresh bounds
+              </label>
+            </div>
+          </ng-template>
         </div>
       </ion-toolbar>
     </ion-header>
@@ -80,8 +73,48 @@
         [labels]="store.showLabels()"
         (zoneClick)="zoneClicked.emit($event)"
       >
-        <game-map-coords class="absolute top-1 left-2 text-shadow-sm shadow-black font-mono text-sm"/>
+        <game-map-coords class="absolute top-1 left-2 text-shadow-sm shadow-black font-mono text-sm" />
       </nwb-map>
+
+      @if (store.isOpenWorld()) {
+        <ng-container
+          [nwbMapLayer]="'zoneConfigs'"
+          [data]="store.zoneConfigs()"
+          [disabled]="!store.showZoneConfigs()"
+          [color]="'#FF00FF'"
+          [outline]="true"
+          [outlineDashed]="true"
+          [polygons]="true"
+          [polyOpacity]="0"
+          [minZoom]="6"
+          (featureMouseEnter)="handleMouseEnterZoneConfig($event)"
+          (featureMouseMove)="handleMouseMoveZoneConfig($event)"
+          (featureMouseLeave)="handleMouseLeaveZoneConfig($event)"
+        />
+        <ng-container
+          [nwbMapLayer]="'regionBounds'"
+          [data]="store.regionBounds()"
+          [disabled]="!store.showZoneConfigs()"
+          [color]="'#008080'"
+          [labels]="true"
+          [outline]="true"
+          [polygons]="true"
+          [polyOpacity]="0"
+          [labelsMinZoom]="0"
+          [labelsMaxZoom]="6"
+          [maxZoom]="6"
+        />
+      }
+
+      @if (hoverZoneConfigs()?.length) {
+        <ul *nwbGameMapMouseTip class="men menu-sm rounded-sm bg-base-200 pb-1 mb-1">
+          @for (item of hoverZoneConfigs(); track item.name) {
+            <li>
+              <nwb-property-grid [item]="item.data" class="gap-x-2" />
+            </li>
+          }
+        </ul>
+      }
     </ion-content>
   </div>
   <ion-menu

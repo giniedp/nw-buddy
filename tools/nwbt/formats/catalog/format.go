@@ -248,6 +248,15 @@ func (doc *Document) LookupLegacy(uuid string) AssetId {
 	return doc.legacyIndex[assetId]
 }
 
+func (doc *Document) FindByFile(file string) *Asset {
+	for _, asset := range doc.index {
+		if strings.EqualFold(file, asset.File) {
+			return asset
+		}
+	}
+	return nil
+}
+
 func (doc *Document) Find(assetGuid, assetType, hint string) *Asset {
 	azGuid, _ := ParseUUID(assetGuid)
 	if azGuid.IsZeroOrEmpty() {
