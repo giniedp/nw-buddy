@@ -17,7 +17,7 @@ import {
   NW_MAX_ENEMY_LEVEL,
 } from './constants'
 import { getGameModeCoatlicueDirectory } from './game-mode'
-import { isItemLootContainer } from './item'
+import { getItemRarityNumeric, isItemLootContainer, isMasterItem } from './item'
 import {
   getItemLootRoots,
   isLootTagKnownCondition,
@@ -25,6 +25,7 @@ import {
   LootConditionValue,
   LootNode,
   parseLootRef,
+  parseLootTag,
 } from './loot'
 import {
   canAccessLootBucketRow,
@@ -408,7 +409,8 @@ function describeConditions(node: LootNode, tagsToKeep: Set<string>): ConditionD
           if (value != null) {
             conditions[tag.name] = value
           }
-        } else {// if (tagsToKeep.has(tag.name)) {
+        } else {
+          // if (tagsToKeep.has(tag.name)) {
           tags[tag.name] = tag.name
         }
       }
@@ -421,7 +423,8 @@ function describeConditions(node: LootNode, tagsToKeep: Set<string>): ConditionD
           if (value != null) {
             conditions[tag] = value
           }
-        } else { // if (tagsToKeep.has(tag)) {
+        } else {
+          // if (tagsToKeep.has(tag)) {
           tags[tag] = tag
         }
       }

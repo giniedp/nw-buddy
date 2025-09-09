@@ -27,7 +27,6 @@ import { ModelsService } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
 import { ItemDetailModelViewerComponent } from './ui/item-detail-model-viewer.component'
-import { ItemDetailSalvageInfoComponent } from './ui/item-detail-salvage-info.component'
 
 @Component({
   selector: 'nwb-item-detail-page',
@@ -45,7 +44,6 @@ import { ItemDetailSalvageInfoComponent } from './ui/item-detail-salvage-info.co
     TooltipModule,
     ItemTabsComponent,
     ConsumableDetailModule,
-    ItemDetailSalvageInfoComponent,
     ItemDetailModelViewerComponent,
   ],
   providers: [],

@@ -1,4 +1,4 @@
-import { Component, computed, HostBinding, inject, signal } from '@angular/core'
+import { Component, computed, inject, signal } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ItemDetailStore } from '~/widgets/data/item-detail'
 import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'

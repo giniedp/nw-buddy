@@ -87,35 +87,80 @@
           <nwb-loot-graph [tableId]="tableId" [expand]="false" [showLocked]="true" [highlight]="itemId()" />
         }
       }
+      @case ('salvages-to') {
+        @if (salvageLoot().table) {
+          <nwb-loot-graph
+            [tableId]="salvageLoot().table"
+            [tags]="salvageLoot().tags"
+            [tagValues]="salvageLoot().values"
+            [expand]="false"
+            [showLink]="true"
+            [showChance]="true"
+            [showLocked]="false"
+            [tagsEditable]="true"
+          />
+        }
+        @if (salvageLoot().items.length) {
+          <div
+            class="flex flex-col gap-2"
+            [nwbInfniteScroll]="salvageLoot().items"
+            [nwbInfniteScrollPerPage]="10"
+            #scroll="infiniteScroll"
+          >
+            @for (itemId of scroll.data(); track $index) {
+              <nwb-item-detail [itemId]="itemId" class="rounded-md overflow-clip">
+                <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'xs'" />
+              </nwb-item-detail>
+            }
+            @if (scroll.canLoad()) {
+              <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+            }
+          </div>
+        }
+      }
       @case ('rewards') {
-        <table class="table table-sm table-zebra bg-base-200 rounded-sm">
-          <thead>
-            <tr>
-              <th>Season</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          @for (item of rewardedFrom()?.rewards; track $index) {
-            <tr>
-              <td>{{ item.season }}</td>
-              @if (item.chapter) {
-                <td colspan="2">Chapter {{ item.chapter }}</td>
-              } @else if (item.level) {
-                <td>Level {{ item.level }}</td>
-                <td class="text-right">
-                  @if (item.premium) {
-                    <span class="badge badge-sm badge-primary">Premium</span>
+        @if (rewardSelection().length) {
+          <table class="table table-sm table-zebra bg-base-200 rounded-sm">
+            <thead>
+              <tr>
+                <th>
+                  <select
+                    [ngModel]="rewardGroup()"
+                    (ngModelChange)="rewardGroup.set($event)"
+                    class="select select-xs w-40"
+                  >
+                    @for (option of rewardGroups(); track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                </th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of rewardSelection(); track $index) {
+                <tr>
+                  <td>{{ item.season }}</td>
+                  @if (item.chapter) {
+                    <td colspan="2">Chapter {{ item.chapter }}</td>
+                  } @else if (item.level) {
+                    <td>Level {{ item.level }}</td>
+                    <td class="text-right">
+                      @if (item.premium) {
+                        <span class="badge badge-sm badge-primary">Premium</span>
+                      } @else {
+                        <span class="badge badge-sm badge-accent">Free</span>
+                      }
+                    </td>
                   } @else {
-                    <span class="badge badge-sm badge-accent">Free</span>
+                    <td colspan="2">???</td>
                   }
-                </td>
-              } @else {
-                <td colspan="2">???</td>
+                </tr>
               }
-            </tr>
-          }
-        </table>
+            </tbody>
+          </table>
+        }
         @for (item of rewardedFrom()?.items; track $index) {
           <nwb-item-detail [itemId]="item">
             <nwb-item-detail-header [size]="'xs'" [enableLink]="true" [enableInfoLink]="true" />
@@ -173,7 +218,7 @@
                   @for (variation of item.variations; track $index) {
                     @if (variation.conditions.length || variation.tags.length) {
                       <div
-                        class="flex-none flex flex-row gap-1 p-1  whitespace-nowrap bg-black/40 w-full overflow-auto scrollbar-hide shadow-none"
+                        class="flex-none flex flex-row gap-1 p-1 whitespace-nowrap bg-black/40 w-full overflow-auto scrollbar-hide shadow-none"
                       >
                         @for (condition of variation.conditions; track $index) {
                           <span class="badge badge-sm badge-primary text-shadow-none">

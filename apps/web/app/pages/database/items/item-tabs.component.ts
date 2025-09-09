@@ -13,6 +13,7 @@ import {
   untracked,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
+import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import {
   getItemId,
@@ -21,6 +22,8 @@ import {
   getPerkBucketPerkIDs,
   isHousingItem,
   isMasterItem,
+  itemSalvageContext,
+  itemSalvageLootTable,
 } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
@@ -29,7 +32,7 @@ import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { TabsModule } from '~/ui/tabs'
-import { apiResource, eqCaseInsensitive, observeQueryParam } from '~/utils'
+import { eqCaseInsensitive, observeQueryParam } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 import { EntitlementDetailModule } from '~/widgets/data/entitlement-detail'
@@ -39,6 +42,7 @@ import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 import { VitalDetailModule } from '../../../widgets/data/vital-detail'
+import { LootContextEditorComponent } from "~/widgets/loot";
 
 export type ItemTabId =
   | 'effects'
@@ -52,6 +56,7 @@ export type ItemTabId =
   | 'rewards'
   | 'dropped-by'
   | 'salvaged-from'
+  | 'salvages-to'
 export interface ItemTab {
   id: ItemTabId
   label: string
@@ -76,7 +81,9 @@ export interface ItemTab {
     TabsModule,
     EntitlementDetailModule,
     VitalDetailModule,
-  ],
+    FormsModule,
+    LootContextEditorComponent
+],
   providers: [ItemDetailStore],
   host: {
     class: 'block',
@@ -97,49 +104,61 @@ export class ItemTabsComponent {
     params: this.store.record,
     loader: ({ params }) => loadAppearance(this.db, params),
   })
-  protected appearance = resourceSignal(this.appearanceResource)
+  protected appearance = resourceValue(this.appearanceResource)
 
   protected grantsEffectsResource = resource({
     params: this.store.record,
     loader: ({ params }) => loadGrantedEffectIds(this.db, params),
   })
-  protected grantsEffects = resourceSignal(this.grantsEffectsResource)
+  protected grantsEffects = resourceValue(this.grantsEffectsResource)
 
   protected resourcePercsResource = resource({
     params: this.store.record,
     loader: ({ params }) => loadResourcePerks(this.db, params),
   })
-  protected resourcePerks = resourceSignal(this.resourcePercsResource)
+  protected resourcePerks = resourceValue(this.resourcePercsResource)
 
   protected unlocksRecipeResource = resource({
     params: this.store.record,
     loader: ({ params }) => loadUnlockedRecipe(this.db, params),
   })
-  protected unlocksRecipe = resourceSignal(this.unlocksRecipeResource)
+  protected unlocksRecipe = resourceValue(this.unlocksRecipeResource)
 
   protected craftableRecipesResource = resource({
     params: this.store.record,
     loader: ({ params }) => loadCraftableRecipes(this.db, params),
   })
-  protected craftableRecipes = resourceSignal(this.craftableRecipesResource)
+  protected craftableRecipes = resourceValue(this.craftableRecipesResource)
 
   protected lootTableIdsResource = resource({
     params: this.store.record,
     loader: ({ params }) => loadLootTableIds(this.db, params),
   })
-  protected lootTableIds = resourceSignal(this.lootTableIdsResource)
+  protected lootTableIds = resourceValue(this.lootTableIdsResource)
 
   protected recipesResource = resource({
     params: this.store.record,
     loader: ({ params }) => loadRecipes(this.db, params),
   })
-  protected recipes = resourceSignal(this.recipesResource)
+  protected recipes = resourceValue(this.recipesResource)
 
   protected rewardedFromResource = resource({
     params: this.store.record,
     loader: ({ params }) => loadRewardedFrom(this.db, params),
   })
-  protected rewardedFrom = resourceSignal(this.rewardedFromResource)
+  protected rewardedFrom = resourceValue(this.rewardedFromResource)
+  protected rewardGroups = computed(() => {
+    return uniq((this.rewardedFrom()?.rewards || []).map((it) => it.season))
+      .sort()
+      .reverse()
+  })
+  protected rewardGroup = linkedSignal(() => {
+    return this.rewardGroups()[0]
+  })
+  protected rewardSelection = computed(() => {
+    const selection = this.rewardGroup()
+    return (this.rewardedFrom()?.rewards || []).filter((it) => eqCaseInsensitive(it.season, selection))
+  })
 
   protected dropSourceResource = resource({
     params: this.itemId,
@@ -147,9 +166,29 @@ export class ItemTabsComponent {
       return this.db.itemLootSources(params)
     },
   })
-  protected dropSource = resourceSignal(this.dropSourceResource)
+  protected dropSource = resourceValue(this.dropSourceResource)
   protected droppedBy = computed(() => this.dropSource()?.droppedBy)
   protected salvagedFrom = computed(() => this.dropSource()?.salvagedFrom)
+
+  protected salvagesToResource = resource({
+    params: this.itemId,
+    loader: ({ params }) => {
+      return this.db.itemSalvagesTo(params)
+    }
+  })
+  protected salvagesTo = resourceValue(this.salvagesToResource)
+  protected salvageLoot = computed(() => {
+    const context = itemSalvageContext(this.store.item())
+    if (!context) {
+      return null
+    }
+    return {
+      table: itemSalvageLootTable(this.store.item()),
+      tags: Array.from(context.tags),
+      values: Object.fromEntries(context.values.entries()),
+      items: this.salvagesTo() || []
+    }
+  })
 
   protected perkBucketIds = computed(() => {
     const item = this.store.record()
@@ -225,7 +264,11 @@ export class ItemTabsComponent {
       })
     }
 
-    if (this.rewardedFrom()?.rewards?.length) {
+    if (
+      this.rewardedFrom()?.rewards?.length ||
+      this.rewardedFrom()?.entitlements?.length ||
+      this.rewardedFrom()?.items?.length
+    ) {
       tabs.push({
         id: 'rewards',
         label: 'Rewarded From',
@@ -245,6 +288,13 @@ export class ItemTabsComponent {
         label: `Salvaged from (${this.salvagedFrom()?.length})`,
       })
     }
+    if (this.salvageLoot()) {
+      tabs.push({
+        id: 'salvages-to',
+        label: `Salvages to (${this.salvageLoot().items.length})`
+      })
+    }
+
     return tabs
   })
 }
@@ -351,7 +401,7 @@ async function loadRewardedFrom(db: NwData, item: MasterItemDefinitions | HouseI
 
   const rewards = await Promise.all([
     db.seasonsRewardsByDisplayItemId(getItemId(item)).then((it) => it || []),
-    db.seasonsRewardsByItemId(getItemId(item)).then((it) => it || [])
+    db.seasonsRewardsByItemId(getItemId(item)).then((it) => it || []),
   ]).then((list) => {
     return list.flat()
   })
@@ -360,7 +410,10 @@ async function loadRewardedFrom(db: NwData, item: MasterItemDefinitions | HouseI
   }
 
   const entitlementIds = uniq((rewards || []).map((it) => it.EntitlementIds || []).flat())
-  const itemIds = uniq((rewards || []).map((it) => it.ItemId || []).flat())
+  const itemIds = uniq((rewards || []).map((it) => it.ItemId || []).flat()).filter(
+    (it) => !eqCaseInsensitive(it, getItemId(item)),
+  )
+
   const result = {
     entitlements: entitlementIds,
     items: itemIds,
@@ -390,21 +443,17 @@ async function loadRewardedFrom(db: NwData, item: MasterItemDefinitions | HouseI
   return result
 }
 
-function resourceSignal<T>(resource: ResourceRef<T>): Signal<T> {
+function resourceValue<T>(resource: ResourceRef<T>): Signal<T> {
   return linkedSignal({
     source: () => ({
-      value: resourceValue(resource),
+      value: resource.hasValue() ? resource.value() : null,
       isLoading: resource.isLoading(),
     }),
     computation: (source, previous) => {
       if (previous && source.isLoading) {
-        return previous.value;
+        return previous.value
       }
-      return source.value;
-    }
+      return source.value
+    },
   })
-}
-
-function resourceValue<T>(resource: ResourceRef<T>): T | null {
-  return resource.hasValue() ? resource.value() : null
 }

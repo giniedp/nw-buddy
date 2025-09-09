@@ -99,7 +99,12 @@ function selectChildren({
   if (showHighlightOnly) {
     children = children?.filter((it) => it.isHighlighted)
   } else if (!showLocked) {
-    children = children?.filter((it) => !!it.isUnlocked && !!it.itemCountUnlocked)
+    children = children?.filter((it) => {
+      if (it.type === 'bucket-row') {
+        return !!it.isUnlocked
+      }
+      return !!it.isUnlocked && !!it.itemCountUnlocked
+    })
   }
   if (!children.length) {
     return null

@@ -3,7 +3,7 @@ import { sortBy } from 'lodash'
 import { CaseInsensitiveSet, eqCaseInsensitive } from '~/utils'
 import { ConstrainedLootContext } from './loot-context'
 
-export type LootNode = LootBucketNode | LootBucketRowNode | LootTableNode | LootTableItemNode // | LootTableRowNode
+export type LootNode = LootBucketNode | LootBucketRowNode | LootTableNode | LootTableItemNode
 
 export interface LootNodeBase<T> {
   trackId: string
@@ -20,7 +20,7 @@ export interface LootNodeBase<T> {
   data: T
   row?: LootTableRow
   prob: number
-  type: string
+  type: 'table' | 'table-item' | 'bucket' | 'bucket-row'
 }
 
 export interface LootTableNode extends LootNodeBase<LootTable> {
@@ -30,10 +30,6 @@ export interface LootTableNode extends LootNodeBase<LootTable> {
 export interface LootTableItemNode extends LootNodeBase<string> {
   type: 'table-item'
 }
-
-// export interface LootTableRowNode extends LootNodeBase<LootTableRow> {
-//   type: 'table-row'
-// }
 
 export interface LootBucketNode extends LootNodeBase<string> {
   type: 'bucket'
