@@ -244,7 +244,13 @@ function updateChance(node: LootNode, dropChance = 1) {
   node.chanceCumulative = dropChance
 
   const table = getTable(node.parent)
-  const siblings = node.parent?.children?.filter((it) => it.isUnlocked && it.itemCountUnlocked) || []
+  const siblings =
+    node.parent?.children?.filter((it) => {
+      if (it.type === 'bucket-row') {
+        return it.isUnlocked
+      }
+      return it.isUnlocked && it.itemCountUnlocked
+    }) || []
   if (node.type === 'bucket-row') {
     if (!siblings.length || !node.isUnlocked) {
       node.chance = 0
@@ -259,7 +265,7 @@ function updateChance(node: LootNode, dropChance = 1) {
       node.chance = 0
     } else if (table['AND/OR'] === 'OR') {
       // OR case
-      node.chance = 1
+      node.chance = 1 / siblings.length
       if (maxroll && node.prob >= 0) {
         const sorted = sortBy(
           siblings.filter((it) => it.prob >= 0),
@@ -270,15 +276,6 @@ function updateChance(node: LootNode, dropChance = 1) {
         const range = right - left
         const count = sorted.filter((it) => it.prob === node.prob).length
         node.chance = Math.max(0, range / maxroll / count)
-        // console.log(node.row.LootTableID, {
-        //   maxroll,
-        //   left,
-        //   right,
-        //   count,
-        //   chance: node.chanceRelative,
-        //   prob: node.prob,
-        //   sorted
-        // })
       }
     } else {
       // AND case
