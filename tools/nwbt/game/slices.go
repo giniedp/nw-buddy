@@ -80,6 +80,14 @@ func (it *SliceNode) ContextFloat(key string) (float32, bool) {
 	return v, ok
 }
 
+func (it *SliceNode) ContextFloatPtrOrNil(key string) *float32 {
+	v, ok := it.Context.Value(key).(float32)
+	if !ok {
+		return nil
+	}
+	return &v
+}
+
 func (it *SliceNode) ContextFloatSet(key string, value float32) {
 	it.Context = context.WithValue(it.Context, key, value)
 }

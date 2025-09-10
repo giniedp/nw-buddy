@@ -141,6 +141,8 @@ type SpawnNode struct {
 	StructureType  string
 	Tags           []string
 	Trace          []any
+	TodConstraint  string
+	LuckConstraint *float32
 
 	PoiConfig      string
 	PoiConfigShape []nwt.AzVec2
@@ -171,6 +173,8 @@ const (
 	ctxEncounterName        = "encounterName"
 	ctxSpawnerName          = "spawnerName"
 	ctxHotspotType          = "hotspotType"
+	ctxLuckConstraint       = "luckConstraint"
+	ctxTodConstraint        = "todConstraint"
 )
 
 func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
@@ -217,6 +221,15 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 						hasVital = true
 						node.ContextProvideIfMissing(ctxVitalsId, string(v.M_rowreference))
 					}
+				case nwt.TimeOfDayConstraintComponent:
+					if facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.TimeOfDayConstraintComponentServerFacet); ok {
+						node.ContextStrSet(ctxTodConstraint, encodeTimeOfDay(facet))
+					}
+				case nwt.LuckConstraintComponent:
+					if facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.LuckConstraintComponentServerFacet); ok {
+						node.ContextFloatSet(ctxLuckConstraint, float32(facet.M_successprobability))
+					}
+				case nwt.TagComponent:
 				case nwt.ActionListComponent:
 					if v.M_damagetable.Asset.BaseClass1.AssetPath != "" {
 						node.ContextProvideIfMissing(ctxDamageTable, string(v.M_damagetable.Asset.BaseClass1.AssetPath))
@@ -365,6 +378,8 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 					AdbFile:        node.ContextStrGet(ctxAdbFile),
 					Tags:           node.ContextStrArrGet(ctxVitalsTags),
 					Encounter:      encounter,
+					TodConstraint:  node.ContextStrGet(ctxTodConstraint),
+					LuckConstraint: node.ContextFloatPtrOrNil(ctxLuckConstraint),
 				}
 				if !yield(result) {
 					return
@@ -524,19 +539,6 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 	}
 }
 
-func getSpawnerName(name string) string {
-	name = strings.ToLower(name)
-	if strings.Contains(name, "lootgoblin") {
-		// e.g.: "WorldEvent_LootGoblin_Spawner_16BS"
-		return "goblin"
-	}
-	if strings.Contains(name, "randomencounter") {
-		// e.g.: "WorldEvent_RandomEncounter_Spawner_16BS06"
-		return "random"
-	}
-	return ""
-}
-
 func getEncounterFallback(slice *nwt.SliceComponent) string {
 	for entity := range game.EntitiesOf(slice) {
 		name := strings.ToLower(string(entity.Name))
@@ -625,4 +627,27 @@ func transformShape(shape []nwt.AzVec2, transform mat4.Data) []nwt.AzVec2 {
 		result = append(result, mat4.TransformVec2(transform, v2))
 	}
 	return result
+}
+
+func encodeTimeOfDay(facet nwt.TimeOfDayConstraintComponentServerFacet) string {
+	result := make([]string, 0)
+	if facet.M_dawn {
+		result = append(result, "dawn")
+	}
+	if facet.M_day {
+		result = append(result, "day")
+	}
+	if facet.M_dusk {
+		result = append(result, "dusk")
+	}
+	if facet.M_night {
+		result = append(result, "night")
+	}
+	if facet.M_despawnontimeend {
+		result = append(result, "despawn")
+	}
+	if len(result) > 0 {
+		return strings.Join(result, ",")
+	}
+	return ""
 }

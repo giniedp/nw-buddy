@@ -113,7 +113,7 @@ export const VitalDetailStore = signalStore(
         return categories()
           .filter(
             (it) =>
-              !it?.GroupVitalsCategoryId &&
+              it?.IsNamed &&
               it.VitalsCategoryID !== 'Named' &&
               it.VitalsCategoryID !== vital()?.DisplayName,
           )

@@ -32,6 +32,8 @@ type ScannedVitalSpawn struct {
 	Gatherables []string `json:"g"`
 	Territories []int    `json:"t"`
 	Models      []string `json:"m"`
+	Luck        *float32 `json:"lc"`
+	Tod         string   `json:"tc"`
 	Tables      []string `json:"-"`
 	Trace       []any    `json:"-"`
 }
@@ -95,11 +97,17 @@ func CollateVitals(
 		recordID := strings.ToLower(row.VitalsID)
 		position := PositionFromV3(row.Position).Truncate()
 		modelHash := modelsMap.add(row)
-
+		key := position.Key()
+		if row.Luck != nil {
+			key = fmt.Sprintf("%s-l:%v", key, *row.Luck)
+		}
+		if row.Tod != "" {
+			key = fmt.Sprintf("%s-t:%s", key, row.Tod)
+		}
 		node := index.
 			LoadOrCreate(recordID, maps.NewDict).
 			LoadOrCreate(mapId, maps.NewDict).
-			LoadOrCreate(position.Key(), func() *ScannedVitalSpawn {
+			LoadOrCreate(key, func() *ScannedVitalSpawn {
 				return &ScannedVitalSpawn{
 					Position:    position,
 					Categories:  make([]string, 0),
@@ -110,6 +118,8 @@ func CollateVitals(
 					Tables:      make([]string, 0),
 					Territories: make([]int, 0),
 					Trace:       make([]any, 0),
+					Luck:        row.Luck,
+					Tod:         row.Tod,
 				}
 			})
 
@@ -120,12 +130,17 @@ func CollateVitals(
 		node.Tables = utils.AppendUniqNoZero(node.Tables, strings.TrimPrefix(strings.ToLower(row.DamageTable), "sharedassets/springboardentitites/datatables/"))
 		node.Trace = append(node.Trace, row.Trace)
 
-		if baseLevel, ok := baseLevels[recordID]; ok && baseLevel > 0 {
-			// TODO: do we want base lelvel in here although it might not spawn?
-			node.Levels = utils.AppendUniqNoZero(node.Levels, int(baseLevel))
-		}
+		baseLevel := baseLevels[recordID]
+
+		// if baseLevel, ok := baseLevels[recordID]; ok && baseLevel > 0 {
+		// 	// TODO: do we want base lelvel in here although it might not spawn?
+		// 	node.Levels = utils.AppendUniqNoZero(node.Levels, int(baseLevel))
+		// }
 
 		vitalLevel := row.Level
+		if vitalLevel == 0 && baseLevel > 0 {
+			vitalLevel = int(baseLevel)
+		}
 		if isOpenWorld(mapId) {
 			for _, zoneId := range getZonesForPosition(position, zones) {
 				node.Territories = utils.AppendUniqNoZero(node.Territories, zoneId)

@@ -115,6 +115,8 @@ type VitalsEntry struct {
 	Tags         []string
 	UseZoneLevel bool
 	Trace        []any
+	Luck         *float32
+	Tod          string
 }
 
 type ScanResults struct {

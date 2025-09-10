@@ -26,15 +26,18 @@ import {
   vitalColExpedition,
   vitalColFamily,
   vitalColIcon,
+  vitalColId,
   vitalColLevel,
   vitalColLootDropChance,
   vitalColLootTableId,
   vitalColLootTags,
   vitalColName,
   vitalColSpawnAreas,
+  vitalColSpawnConstraints,
   vitalColSpawnCount,
   vitalColSpawnLevels,
   vitalColSpawnPois,
+  vitalColSpawnProb,
   vitalColSpawnTerritories,
 } from './vital-table-cols'
 import { uniqBy } from 'lodash'
@@ -135,6 +138,7 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
   const result: GridOptions<VitalTableRecord> = {
     columnDefs: [
       vitalColIcon(util),
+      vitalColId(util),
       vitalColName(util),
       vitalColLevel(util),
       vitalColFamily(util),
@@ -149,6 +153,8 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
       vitalColSpawnTerritories(util),
       vitalColSpawnAreas(util),
       vitalColSpawnPois(util),
+      vitalColSpawnProb(util),
+      vitalColSpawnConstraints(util),
       vitalColBuffs(util),
       vitalColDmgEffectivenessSlash(util),
       vitalColDmgEffectivenessThrust(util),

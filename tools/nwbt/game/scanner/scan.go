@@ -99,6 +99,8 @@ func (ctx *Scanner) addSpawn(spawn any, mapId string) {
 				Position:     v.Position,
 				Trace:        v.Trace,
 				Tags:         v.Tags,
+				Luck:         v.LuckConstraint,
+				Tod:          v.TodConstraint,
 			})
 		}
 		if v.NpcID != "" {

@@ -124,9 +124,11 @@ export interface ScannedVitalSpawn {
   e: Array<string>
   g: Array<string>
   l: Array<number>
+  lc: number
   m: Array<string>
   p: [number,number]
   t: Array<number>
+  tc: string
 }
 
 export interface ScannedZoneConfig {

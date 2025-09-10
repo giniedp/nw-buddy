@@ -23,7 +23,7 @@ import {
   VitalsModifierData,
 } from '@nw-data/generated'
 
-import { uniqBy } from 'lodash'
+import { uniq, uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize, stringToColor } from '~/utils'
@@ -55,6 +55,16 @@ const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) =>
       </div>
       `
 }
+export function vitalColId(util: VitalTableUtils) {
+  return util.colDef({
+    colId: 'vitalsID',
+    field: 'VitalsID',
+    headerClass: 'bg-info/15',
+    headerValueGetter: () => 'ID',
+    hide: true,
+  })
+}
+
 export function vitalColIcon(util: VitalTableUtils, options?: { color: boolean }) {
   return util.colDef({
     colId: 'icon',
@@ -99,7 +109,7 @@ export function vitalColName(util: VitalTableUtils, options?: { link: boolean })
     valueGetter: ({ data }) => {
       const names = [util.i18n.get(data.DisplayName)]
       for (const cat of data.$categories || []) {
-        if (!cat.GroupVitalsCategoryId && cat.VitalsCategoryID !== 'Named') {
+        if (cat.IsNamed && cat.VitalsCategoryID !== 'Named') {
           names.push(util.i18n.get(cat.DisplayName))
         }
       }
@@ -451,6 +461,50 @@ export function vitalColSpawnCount(util: VitalTableUtils) {
         }
       }
       return count
+    },
+  })
+}
+
+export function vitalColSpawnProb(util: VitalTableUtils) {
+  return util.colDef<number[]>({
+    colId: 'spawnProbabilities',
+    headerClass: 'bg-secondary/15',
+    headerValueGetter: () => 'Spawn Probabilities',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => {
+      let result: number[] = []
+      if (data.$metadata?.spawns) {
+        for (const key in data.$metadata.spawns) {
+          for (const spawn of data.$metadata.spawns[key]) {
+            if (spawn.lc != null) {
+              result.push(spawn.lc)
+            }
+          }
+        }
+      }
+      return uniq(result)
+    },
+  })
+}
+
+export function vitalColSpawnConstraints(util: VitalTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'spawnConstraints',
+    headerClass: 'bg-secondary/15',
+    headerValueGetter: () => 'Spawn Constraitns',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => {
+      let result: string[] = []
+      if (data.$metadata?.spawns) {
+        for (const key in data.$metadata.spawns) {
+          for (const spawn of data.$metadata.spawns[key]) {
+            if (spawn.tc) {
+              result.push(spawn.tc)
+            }
+          }
+        }
+      }
+      return uniq(result)
     },
   })
 }

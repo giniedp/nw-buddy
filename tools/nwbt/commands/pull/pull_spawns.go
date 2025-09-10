@@ -119,7 +119,7 @@ func pullSpawns(ctx *PullContext, outDir string) {
 	stats.Add("VitalsModels", "rows", len(models), "size", humanize.Bytes(size))
 
 	stats.Add("Vitals", "rows", len(vitals), "positions", count)
-	split := len(vitals) / 2
+	split := len(vitals) / 3
 
 	vitals1 := vitals[:split]
 	vitals2 := vitals[split:]
@@ -127,7 +127,10 @@ func pullSpawns(ctx *PullContext, outDir string) {
 	stats.Add("Vitals", "split", 1, "rows", len(vitals1), "size", humanize.Bytes(size))
 	size = writeJson(vitals2, path.Join(outDir, "vitals_metadata2.json"))
 	stats.Add("Vitals", "split", 2, "rows", len(vitals2), "size", humanize.Bytes(size))
-
+	writeJson([]string{
+		"vitals_metadata1.json",
+		"vitals_metadata2.json",
+	}, path.Join(outDir, "vitals_metadata.json"))
 }
 
 func writeJson(value any, path string) uint64 {
