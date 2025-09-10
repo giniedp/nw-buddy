@@ -482,8 +482,17 @@ export function vitalColSpawnProb(util: VitalTableUtils) {
           }
         }
       }
+      if (!result.length) {
+        return null
+      }
       return uniq(result)
     },
+    cellRenderer: util.cellRenderer(({ value }) => {
+      if (!value) {
+        return null
+      }
+      return (value as string[]).map((it) => `${it}%`).join(' ')
+    }),
   })
 }
 
@@ -504,8 +513,25 @@ export function vitalColSpawnConstraints(util: VitalTableUtils) {
           }
         }
       }
+      if (!result.length) {
+        return null
+      }
       return uniq(result)
     },
+    cellRenderer: util.cellRenderer(({ value }) => {
+      if (!value) {
+        return null
+      }
+      return (value as string[])
+        .map((it) => {
+          it = it
+            .split(',')
+            .map((tag) => `<span class="badge badge-sm badge-secondary bg-secondary/15">${tag}</span>`)
+            .join(' ')
+          return `<span class="badge p-[1px] rounded-full badge-secondary bg-transparent">${it}</span>`
+        })
+        .join(' ')
+    }),
   })
 }
 
