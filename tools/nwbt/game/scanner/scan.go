@@ -64,7 +64,7 @@ func (ctx *Scanner) addSpawn(spawn any, mapId string) {
 		v.MapID = mapId
 		ctx.results.Vitals = append(ctx.results.Vitals, v)
 	case SpawnNode:
-		if v.GatherableID != "" {
+		if v.GatherableID != "" && v.VariantID == "" {
 			ctx.results.Gatherables = append(ctx.results.Gatherables, GatherableEntry{
 				MapID:        mapId,
 				GatherableID: v.GatherableID,
