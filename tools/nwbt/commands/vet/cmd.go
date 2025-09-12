@@ -32,6 +32,8 @@ func run(ccmd *cobra.Command, args []string) {
 	checkOodle()
 	checkMagick()
 	checkKtx()
+	checkJava()
+	checkUnluac()
 	fs := utils.Must(nwfs.NewPackedArchive(flgGameDir))
 	checkDubplicates(fs)
 }
@@ -113,6 +115,26 @@ func checkMagick() {
 		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
 	} else {
 		slog.Warn("Image Magick not found in PATH")
+		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
+	}
+}
+
+func checkJava() {
+	if p, ok := utils.Java.Check(); ok {
+		slog.Info("Java\tfound at", "path", p)
+		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
+	} else {
+		slog.Warn("Java\tnot found in PATH")
+		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
+	}
+}
+
+func checkUnluac() {
+	if p, ok := utils.Unluac.Check(); ok {
+		slog.Info("Unluac\tfound at", "path", p)
+		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
+	} else {
+		slog.Warn("Unluac\tnot found in PATH")
 		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
 	}
 }

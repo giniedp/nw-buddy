@@ -26,6 +26,7 @@ import (
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/math"
 	"nw-buddy/tools/utils/math/mat4"
+	"os"
 	"path"
 	"strconv"
 	"strings"
@@ -70,6 +71,8 @@ func convertFile(assets *game.Assets, file nwfs.File, targetFormat string, query
 		if strings.HasSuffix(file.Path(), ".loc.xml") {
 			return convertLocale(file, targetFormat)
 		}
+	case ".luac":
+		return convertLua(assets, file, targetFormat, query)
 	}
 	return convertAny(file, targetFormat)
 }
@@ -451,4 +454,55 @@ func imageCacheDir(cacheDir string, maxSize uint) string {
 		cacheDir = path.Join(cacheDir, fmt.Sprintf("%d", maxSize))
 	}
 	return cacheDir
+}
+
+var luacSig = []byte{0x04, 0x00, 0x1b, 0x4c, 0x75, 0x61}
+
+func convertLua(assets *game.Assets, file nwfs.File, target string, query url.Values) ([]byte, error) {
+	data, err := file.Read()
+	if err != nil {
+		return nil, err
+	}
+	switch target {
+	case "":
+		return data, nil
+	case ".lua":
+		if bytes.Equal(luacSig, data[:len(luacSig)]) {
+			data = data[2:]
+		}
+
+		inputFile, err := copyToTemp(data, ".luac", flg.TempDir)
+		defer os.Remove(inputFile)
+		if err != nil {
+			return nil, err
+		}
+
+		outFile := utils.ReplaceExt(inputFile, ".lua")
+		defer os.Remove(outFile)
+
+		err = utils.Unluac.Run(inputFile, utils.LuacOpt{Output: outFile})
+		if err != nil {
+			return nil, err
+		}
+		return os.ReadFile(outFile)
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+}
+
+func copyToTemp(data []byte, ext, dir string) (string, error) {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return "", err
+	}
+	file, err := os.CreateTemp(dir, "*"+ext)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		return "", err
+	}
+	return strings.ReplaceAll(file.Name(), "\\", "/"), nil
 }
