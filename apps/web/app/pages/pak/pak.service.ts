@@ -1,9 +1,9 @@
-import { inject, Injectable } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { environment } from 'apps/web/environments'
-import { MonacoService } from '../../ui/code-editor/monaco.service'
 
 const toImageTypes = ['dds', 'png', 'tif', 'a', '1a', '2a', '3a', '4a', '5a', '6a', '7a', 'heightmap']
 const toModelTypes = ['cgf', 'cdf', 'skin', 'mtl', 'dynamicslice']
+const toLuaTypes = ['luac']
 const toJsonTypes = [
   'dynamicslice',
   'meta',
@@ -17,27 +17,13 @@ const toJsonTypes = [
   'distribution',
   'refreshzoneconfigs',
 ]
-const textTypes = [
-  'json',
-  'xml',
-  'txt',
-  'cfg',
-  'mtl',
-  'ext',
-  'cdf',
-  'chrparams',
-  'animevents',
-  'bspace',
-  'comb',
-  'adb',
-  'grid',
-  'actionlist',
-  'entities_xml',
-  'worldmat',
-  'regionmat',
-  'surfacemap',
-]
 const textTypeMap = {
+  json: 'json',
+  xml: 'xml',
+  txt: 'txt',
+  cfg: 'txt',
+  ext: 'txt',
+
   mtl: 'xml',
   cdf: 'xml',
   chrparams: 'xml',
@@ -66,7 +52,6 @@ export interface FileSource {
 
 @Injectable({ providedIn: 'root' })
 export class PakService {
-  private monaco = inject(MonacoService)
   public fileSource(file: string) {
     if (!file) {
       return null
@@ -82,13 +67,17 @@ export class PakService {
       path: file,
       ext: ext,
     }
-    if (textTypes.includes(ext)) {
+    if (textTypeMap[ext]) {
       stat.textPath = file
-      stat.textType = textTypeMap[ext] || ext
+      stat.textType = textTypeMap[ext]
     }
     if (toJsonTypes.includes(ext)) {
       stat.textPath = `${file}.json`
       stat.textType = 'json'
+    }
+    if (toLuaTypes.includes(ext)) {
+      stat.textPath = `${file}.lua`
+      stat.textType = 'lua'
     }
     if (toModelTypes.includes(ext)) {
       stat.modelPath = `${file}.glb`

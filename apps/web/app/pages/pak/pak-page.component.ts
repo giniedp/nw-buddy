@@ -50,6 +50,7 @@ export class PakPageComponent {
   private route = inject(ActivatedRoute)
   private file = toSignal(this.route.queryParams.pipe(map((params) => params['file'] as string)))
   private tabId = toSignal(this.route.queryParams.pipe(map((params) => params['tab'] as TabId)))
+  protected imageZoom = signal(1)
   protected source = computed(() => this.service.fileSource(this.file()))
   protected editor = viewChild(CodeEditorComponent)
   protected selectedEntity = signal<Entity>(null)
