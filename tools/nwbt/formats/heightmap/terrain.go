@@ -16,7 +16,8 @@ type Terrain struct {
 }
 
 const (
-	TILE_SIZE = 256
+	TILE_SIZE       = 256
+	MAX_REGION_SIZE = 2048
 )
 
 func NewTerrain(regions []*Region) (out *Terrain) {
@@ -115,16 +116,14 @@ func (t *Terrain) SmoothHeightAt(x int, y int) float32 {
 	return float32(sum / count)
 }
 
-const maxRegionSize = 2048
-
 func (t *Terrain) Downsize() (out *Terrain) {
 	out = &Terrain{}
 	out.Width = t.Width / 2
 	out.Height = t.Height / 2
-	if out.Width >= maxRegionSize {
-		out.RegionSize = maxRegionSize
-		out.RegionsX = int(math.Ceil(float64(out.Width) / float64(maxRegionSize)))
-		out.RegionsY = int(math.Ceil(float64(out.Height) / float64(maxRegionSize)))
+	if out.Width >= MAX_REGION_SIZE {
+		out.RegionSize = MAX_REGION_SIZE
+		out.RegionsX = int(math.Ceil(float64(out.Width) / float64(MAX_REGION_SIZE)))
+		out.RegionsY = int(math.Ceil(float64(out.Height) / float64(MAX_REGION_SIZE)))
 	} else {
 		out.RegionSize = out.Width
 		out.RegionsX = 1

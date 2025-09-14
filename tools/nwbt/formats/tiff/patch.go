@@ -20,6 +20,10 @@ func DecodeWithPhotometricPatch(data []byte) (image.Image, error) {
 	return tiff.Decode(bytes.NewReader(data))
 }
 
+func Decode(data []byte) (image.Image, error) {
+	return tiff.Decode(bytes.NewReader(data))
+}
+
 // PatchPhotometricInterpretaion checks if the TIFF data has PhotometricInterpretation=RGB
 // and SamplesPerPixel=1. If so, it modifies the data *in-place* changing
 // PhotometricInterpretation to BlackIsZero and returns true.

@@ -33,6 +33,7 @@ const (
 	TASK_SEARCH      = "search"
 	TASK_SPELLS      = "spells"
 	TASK_HEIGHTMAP   = "heightmap"
+	TASK_TRACTMAP    = "tractmap"
 	TASK_TYPES       = "types"
 	TASK_CONSTANTS   = "constants"
 	TASK_ACTIONLISTS = "actionlists"
@@ -61,6 +62,7 @@ func init() {
 		cmdPullActionlists,
 		cmdPullConstants,
 		cmdPullHeightmaps,
+		cmdPullTractmaps,
 		cmdPullImages,
 		cmdPullLocales,
 		cmdPullSearch,
@@ -177,6 +179,10 @@ func (ctx *PullContext) PullConstants() {
 
 func (ctx *PullContext) PullHeightmaps() {
 	pullHeightmaps(ctx.Archive, path.Join(ctx.outDataDir, "lyshineui", "worldtiles"))
+}
+
+func (ctx *PullContext) PullTractmaps() {
+	pullTractmaps(ctx.Assets, path.Join(ctx.outDataDir, "lyshineui", "tractmaps"))
 }
 
 func (ctx *PullContext) PrintStats() {

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"image"
+	"image/color"
+
 	"image/png"
 	"log/slog"
 	"nw-buddy/tools/formats/tiff"
@@ -14,6 +16,8 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+
+	"golang.org/x/image/draw"
 )
 
 //"github.com/rngoodner/gtiff"
@@ -91,7 +95,7 @@ func LoadImage(file nwfs.File) (image.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ConvertImageOld(data)
+	return ConvertDataToImageWithMagick(data)
 }
 
 func LoadFromTiff(data []byte) ([]float32, error) {
@@ -99,18 +103,18 @@ func LoadFromTiff(data []byte) ([]float32, error) {
 	if err != nil {
 		return nil, err
 	}
-	return LoadFromImage(img)
+	return LoadHeightFieldFromImage(img)
 }
 
 func LoadFieldOld(data []byte) ([]float32, error) {
-	img, err := ConvertImageOld(data)
+	img, err := ConvertDataToImageWithMagick(data)
 	if err != nil {
 		return nil, err
 	}
-	return LoadFromImage(img)
+	return LoadHeightFieldFromImage(img)
 }
 
-func ConvertImageOld(data []byte) (image.Image, error) {
+func ConvertDataToImageWithMagick(data []byte) (image.Image, error) {
 	f, err := os.CreateTemp(env.TempDir(), "*")
 	if err != nil {
 		return nil, err
@@ -141,7 +145,7 @@ func ConvertImageOld(data []byte) (image.Image, error) {
 	return png.Decode(pngFile)
 }
 
-func LoadFromImage(img image.Image) ([]float32, error) {
+func LoadHeightFieldFromImage(img image.Image) ([]float32, error) {
 	sizeX := img.Bounds().Size().X
 	sizeY := img.Bounds().Size().Y
 	out := make([]float32, sizeX*sizeY)
@@ -150,6 +154,38 @@ func LoadFromImage(img image.Image) ([]float32, error) {
 		for x := range sizeX {
 			r, _, _, _ := img.At(x, y).RGBA()
 			out[index] = float32(r)
+			index++
+		}
+	}
+
+	return out, nil
+}
+
+func LoadTractmapFromFile(file nwfs.File, size int) ([]color.Color, error) {
+	data, err := file.Read()
+	if err != nil {
+		return nil, err
+	}
+	img, err := ConvertDataToImageWithMagick(data)
+	if err != nil {
+		return nil, err
+	}
+	return LoadTractmapFromImage(img, size)
+}
+
+func LoadTractmapFromImage(img image.Image, size int) ([]color.Color, error) {
+	sizeX := img.Bounds().Size().X
+	sizeY := img.Bounds().Size().Y
+	if sizeX != size || sizeY != size {
+		dst := image.NewNRGBA(image.Rect(0, 0, size, size))
+		draw.NearestNeighbor.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
+		img = dst
+	}
+	out := make([]color.Color, size*size)
+	index := 0
+	for y := range size {
+		for x := range size {
+			out[index] = img.At(x, y)
 			index++
 		}
 	}

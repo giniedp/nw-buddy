@@ -25,6 +25,7 @@ func LoadInfo(assets *game.Assets, name string) *Info {
 		CoatlicueName: data.CoatlicueName,
 		Regions:       data.Regions,
 		RegionSize:    data.Tracts.RegionSize,
+		Tracts:        data.Tracts.Tracts,
 	}
 	if data.TerrainSettings != nil {
 		level.OceanLevel = data.TerrainSettings.OceanLevel

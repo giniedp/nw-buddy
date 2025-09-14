@@ -99,6 +99,7 @@ type Info struct {
 	TimeOfDay       *TimeOfDayInfo        `json:"timeOfDay"`
 	Environment     *EnvironmentInfo      `json:"environment"`
 	RegionMaterials []RegionMacroMaterial `json:"regionMaterials"`
+	Tracts          []tracts.Tract        `json:"tracts"`
 }
 
 type MapInfo struct {
