@@ -36,8 +36,8 @@
   </picture>
   <ion-content class="ion-p-4">
     <div class="content-grid">
-      <div class="content-grid-info prose-base">
-        <section class="font-nimbus">
+      <div class="content-grid-info flex flex-col gap-4">
+        <section class="font-nimbus prose-base">
           <h1 class="mb-0 font-normal font-serif tracking-wider">
             <span [nwText]="title"></span>
             @if (difficultyLevel) {
@@ -58,7 +58,7 @@
           <div [nwText]="description" class="text-nw-description"></div>
         </section>
 
-        <section class="font-nimbus">
+        <section class="font-nimbus prose-base">
           <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
             <span>Requirements</span>
           </h2>
@@ -84,11 +84,11 @@
         </section>
 
         @if (difficulty) {
-          <section class="font-nimbus">
+          <section class="font-nimbus prose-base">
             <h2 class="mb-0 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
               <span>Weekly Mutations </span>
               @if (isMutated$ | async) {
-                <picture class="inline-block w-8 m-0 animate-pulse">
+                <picture class="inline-block w-8 mt-0 mb-0 animate-pulse">
                   <img
                     [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
                     class="w-full aspect-square rounded-full animate-spin-cw"
@@ -126,51 +126,49 @@
           </section>
         }
 
-        <section>
+        <section class="flex flex-col prose-base">
           <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
             <span>Available Rewards </span>
           </h2>
           <div class="nw-item-divider max-w-lg"></div>
 
-          <div class="flex flex-row flex-wrap layout-gap mt-2">
-            @if (expeditionItems$ | async; as items) {
-              @if (items.length) {
-                <div class="w-full max-w-md">
-                  <div class="flex flex-row flex-wrap gap-2">
-                    @for (item of items; track $index) {
-                      <a [nwLinkTooltip]="['item', itemId(item)]" class="block w-full max-w-[60px] aspect-square">
-                        <picture [nwIcon]="item" class="block w-full h-full my-0"></picture>
-                      </a>
-                    }
+          @if (expeditionItems$ | async; as items) {
+            @if (items.length) {
+              <div class="w-full max-h-[500px] overflow-auto bg-neutral/50 rounded-sm p-2">
+                <div class="flex flex-row flex-wrap gap-2">
+                  @for (item of items; track $index) {
+                    <a [nwLinkTooltip]="['item', itemId(item)]" class="block w-full max-w-[60px] aspect-square">
+                      <picture [nwIcon]="item" class="block w-full h-full my-0 mt-0 mb-0"></picture>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+          }
+          @if (difficulty) {
+            <div class="stats bg-opacity-0 self-end w-full">
+              @for (row of difficyltyRewards$ | async; track $index) {
+                <div class="stat place-items-center p-0">
+                  <div class="stat-title">
+                    <span [nwText]="row.RankName"></span>
+                  </div>
+                  <div
+                    class="stat-value cursor-pointer transition-all rounded-md outline-4 outline-transparent focus:outline-primary hover:outline-primary"
+                    [class.text-primary]="row.Completed"
+                    (click)="row.toggle()"
+                  >
+                    {{ row.Quantity }}
+                  </div>
+                  <div class="stat-desc">
+                    <span [nwText]="row.ItemName"></span>
                   </div>
                 </div>
               }
-            }
-            @if (difficulty) {
-              <div class="stats bg-opacity-0 self-end w-full max-w-md">
-                @for (row of difficyltyRewards$ | async; track $index) {
-                  <div class="stat place-items-center p-0">
-                    <div class="stat-title">
-                      <span [nwText]="row.RankName"></span>
-                    </div>
-                    <div
-                      class="stat-value cursor-pointer transition-all rounded-md outline-4 outline-transparent focus:outline-primary hover:outline-primary"
-                      [class.text-primary]="row.Completed"
-                      (click)="row.toggle()"
-                    >
-                      {{ row.Quantity }}
-                    </div>
-                    <div class="stat-desc">
-                      <span [nwText]="row.ItemName"></span>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+            </div>
+          }
         </section>
 
-        <div class="mt-4">
+        <div>
           <div class="form-control">
             <label class="label cursor-pointer">
               <span class="label-text">Show loot for your level</span>
@@ -229,7 +227,7 @@
         [class.max-h-[35vh]]="mapPinned()"
       >
         <nwb-game-mode-detail-map
-          class="w-full h-full max-w-[1200px] group"
+          class="w-full h-full max-w-[1200px] max-h-[800px] group"
           [gameModeId]="paramGameMode$ | async"
           [creatures]="creatures$ | async"
           [highlight]="(vitalTargetHover() || vitalTargetClick())?.VitalsID"
