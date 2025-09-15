@@ -140,11 +140,32 @@ export function getVitalTypeMarker(vitalOrcreatureType: string | VitalsData): st
   return CREATURE_TYPE_MARKER[vitalOrcreatureType] || CREATURE_TYPE_MARKER['Critter']
 }
 
-export function getVitalAliasName(categories: VitalsCategoryData[]) {
-  if (categories.find((it) => it.IsNamed && it.VitalsCategoryID === 'Named')) {
-    return categories.find((it) => it.IsNamed && it.VitalsCategoryID !== 'Named')?.DisplayName
+export function getVitalAliasName(vitalId: string, categories: VitalsCategoryData[]) {
+  if (!categories) {
+    return null
+  }
+  for (const category of categories) {
+    if (eqCaseInsensitive(vitalId, category.VitalsCategoryID)) {
+      return category.DisplayName
+    }
   }
   return null
+}
+
+export function getVitalAliasNames(vitalId: string, categories: VitalsCategoryData[]) {
+  const names: string[] = []
+  if (!categories) {
+    return names
+  }
+  for (const category of categories) {
+    if (category.VitalsCategoryID === 'Named' || !category.DisplayName) {
+      continue
+    }
+    if (category.IsNamed || eqCaseInsensitive(vitalId, category.VitalsCategoryID)) {
+      names.push(category.DisplayName)
+    }
+  }
+  return names
 }
 
 export function getVitalsCategories(vital: VitalsData, categories: Map<string, VitalsCategoryData>) {

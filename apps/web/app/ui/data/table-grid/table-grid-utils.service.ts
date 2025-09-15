@@ -187,11 +187,12 @@ export class TableGridUtils<T = any> {
 
   public tagsRenderer = (options?: {
     transform?: (it: any) => string
-    getClass?: (value: any) => string[]
+    getClass?: (value: any, data: T) => string[]
   }): ICellRendererFunc<T> => {
     const transform = options?.transform || ((it) => String(it))
     const getClass = options?.getClass
-    return ({ value }) => {
+    return ({ value, data }) => {
+
       if (value && !Array.isArray(value)) {
         value = [value]
       }
@@ -199,11 +200,11 @@ export class TableGridUtils<T = any> {
         'div.flex.flex-row.flex-wrap.gap-1.items-center',
         {},
         value?.map((tag: string) => {
-          const list = [...(getClass?.(tag) || [])]
-          if (list.every((it) => it !== 'bg-primary' && it !== 'bg-error')) {
+          const list = [...(getClass?.(tag, data) || [])]
+          if (list.every((it) => it !== 'bg-primary' && it !== 'bg-error' && it !== 'bg-info')) {
             list.push('bg-secondary/50')
           }
-          if (list.every((it) => it !== 'badge-primary' && it !== 'badge-error')) {
+          if (list.every((it) => it !== 'badge-primary' && it !== 'badge-error' && it !== 'badge-info')) {
             list.push('badge-secondary')
           }
           return this.el('span.badge.badge-sm.px-1', {

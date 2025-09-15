@@ -2,6 +2,8 @@ import { computed } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
+  getVitalAliasName,
+  getVitalAliasNames,
   getVitalArmor,
   getVitalCategoryInfo,
   getVitalDamage,
@@ -98,7 +100,9 @@ export const VitalDetailStore = signalStore(
   withComputed(({ vital, levelOverride, categories, gameModes, mutaDifficultyId }) => {
     return {
       creatureType: computed(() => vital()?.CreatureType),
-      displayName: computed(() => vital()?.DisplayName),
+      displayName: computed(() => {
+        return getVitalAliasName(vital()?.VitalsID, categories()) || vital()?.DisplayName
+      }),
       level: computed(() => {
         if (levelOverride()) {
           return levelOverride()
@@ -110,15 +114,7 @@ export const VitalDetailStore = signalStore(
       }),
       combatCategories: computed(() => getVitalCategoryInfo(vital())),
       aliasNames: computed(() => {
-        return categories()
-          .filter(
-            (it) =>
-              it?.IsNamed &&
-              it.VitalsCategoryID !== 'Named' &&
-              it.VitalsCategoryID !== vital()?.DisplayName,
-          )
-          .map((it) => it.DisplayName?.trim())
-          .filter((it) => !!it)
+        return getVitalAliasNames(vital()?.VitalsID, categories())
       }),
       isFromMutatedDungeon: computed(() => {
         for (const mode of gameModes() || []) {

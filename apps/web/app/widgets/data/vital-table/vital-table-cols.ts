@@ -1,6 +1,7 @@
 import { ICellRendererParams } from '@ag-grid-community/core'
 import {
   VitalFamilyInfo,
+  getVitalAliasNames,
   getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
   getVitalDropChance,
@@ -26,7 +27,7 @@ import {
 import { uniq, uniqBy } from 'lodash'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
-import { assetUrl, humanize, stringToColor } from '~/utils'
+import { assetUrl, eqCaseInsensitive, humanize, stringToColor } from '~/utils'
 import { VitalBuff } from '../vital-detail/vital-detail-buffs.component'
 
 export type VitalTableUtils = TableGridUtils<VitalTableRecord>
@@ -108,10 +109,8 @@ export function vitalColName(util: VitalTableUtils, options?: { link: boolean })
     width: 200,
     valueGetter: ({ data }) => {
       const names = [util.i18n.get(data.DisplayName)]
-      for (const cat of data.$categories || []) {
-        if (cat.IsNamed && cat.VitalsCategoryID !== 'Named') {
-          names.push(util.i18n.get(cat.DisplayName))
-        }
+      for (const categoryName of getVitalAliasNames(data.VitalsID, data.$categories)) {
+        names.push(util.i18n.get(categoryName))
       }
       return uniqBy(names, (it) => it.toLowerCase())
     },
@@ -201,7 +200,7 @@ export function vitalColCategories(util: VitalTableUtils) {
     },
     cellRenderer: util.tagsRenderer({
       transform: (it: VitalsCategoryData) => util.i18n.get(it.DisplayName) || it.VitalsCategoryID,
-      getClass: (value: VitalsCategoryData) => {
+      getClass: (value: VitalsCategoryData, data) => {
         if (!value) {
           return []
         }
@@ -211,6 +210,10 @@ export function vitalColCategories(util: VitalTableUtils) {
         if (value.IsNamed) {
           return ['badge-primary', 'bg-primary']
         }
+        if (eqCaseInsensitive(value.VitalsCategoryID, data.VitalsID)) {
+          return ['badge-info']
+        }
+
         return []
       },
     }),
