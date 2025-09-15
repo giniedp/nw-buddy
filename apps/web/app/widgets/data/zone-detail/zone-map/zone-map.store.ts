@@ -31,6 +31,7 @@ export interface ZoneMapState {
   showHeatmap?: boolean
   showLabels?: boolean
   showPOI?: boolean
+  showTractmap?: boolean
   showZoneConfigs: boolean
 }
 
@@ -55,12 +56,13 @@ export const ZoneMapStore = signalStore(
     showLabels: true,
     showPOI: true,
     showZoneConfigs: false,
+    showTractmap: false
   }),
   withRedux({
     actions: {
       public: {
         load: noPayload,
-        loaded: payload<Omit<ZoneMapState, 'isLoaded' | 'mapId' | 'showZoneConfigs'>>(),
+        loaded: payload<Omit<ZoneMapState, 'isLoaded' | 'mapId' | 'showZoneConfigs' | 'showTractmap'>>(),
         toggleLootTable: payload<{ id: string }>(),
       },
       private: {},
@@ -138,6 +140,9 @@ export const ZoneMapStore = signalStore(
       },
       setZoneConfigs(showZoneConfigs: boolean) {
         patchState(state, { showZoneConfigs })
+      },
+      setTractmap(showTractmap: boolean) {
+        patchState(state, { showTractmap })
       },
       setMap(mapId: string) {
         patchState(state, { mapId })

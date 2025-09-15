@@ -76,6 +76,7 @@ export class GameMapComponent {
   protected styleSpec: StyleSpecification = {
     version: 8,
     sources: {
+      tractmap: rasterTileSource('newworld_vitaeeterna', 'tractmap'),
       ocean: rasterTileSource('newworld_vitaeeterna', 'ocean'),
       newworld_vitaeeterna: rasterTileSource('newworld_vitaeeterna', 'nw'),
       outpostrush: rasterTileSource('outpostrush', 'nw'),
@@ -89,6 +90,14 @@ export class GameMapComponent {
         id: 'ocean',
         type: 'raster',
         source: 'ocean',
+        layout: {
+          visibility: 'none',
+        },
+      },
+      {
+        id: 'tractmap',
+        type: 'raster',
+        source: 'tractmap',
         layout: {
           visibility: 'none',
         },
@@ -147,6 +156,7 @@ export class GameMapComponent {
   public pois = input<FeatureCollection>()
   public zoneId = input<string | number>()
   public labels = input<boolean>(true)
+  public tractmap = input<boolean>(false)
   public zoneClick = output<string>()
 
   private injector = inject(Injector)
@@ -194,8 +204,9 @@ export class GameMapComponent {
       const mapId = this.mapId()
       const maxBounds = mapMaxBounds(mapId)
       const fitBounds = this.fitBounds()
+      const tractmap = this.tractmap()
       untracked(() => {
-        this.updateTiles(mapId)
+        this.updateTiles(mapId, tractmap)
         this.map.setMaxBounds(maxBounds)
         this.moveToBounds(fitBounds || maxBounds)
       })
@@ -379,7 +390,7 @@ export class GameMapComponent {
     source.setData(features || { type: 'FeatureCollection', features: [] })
   }
 
-  private updateTiles(mapId: string) {
+  private updateTiles(mapId: string, showTractmap: boolean) {
     const tiles = [this.map.getLayer('tiles0'), this.map.getLayer('tiles1')]
     for (const tile of tiles) {
       if (tile.type === 'raster') {
@@ -416,6 +427,7 @@ export class GameMapComponent {
         this.map.addControl(this.terrainControl)
       }
       this.map.getLayer('ocean').visibility = 'visible'
+      this.map.getLayer('tractmap').visibility = showTractmap ? 'visible' : 'none'
     } else {
       this.map.setMaxPitch(0)
       this.map.setBearing(0)
@@ -425,6 +437,7 @@ export class GameMapComponent {
         this.map.removeControl(this.terrainControl)
       }
       this.map.getLayer('ocean').visibility = 'none'
+      this.map.getLayer('tractmap').visibility = 'none'
     }
   }
 

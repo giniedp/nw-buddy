@@ -1,17 +1,21 @@
 package pull
 
 import (
+	"fmt"
+	"image"
 	"image/color"
 	"log/slog"
 	"math"
 	"nw-buddy/tools/formats/tracts"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/game/level"
+	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/img"
 	"nw-buddy/tools/utils/logging"
 	"path"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/image/draw"
 )
 
 var cmdPullTractmaps = &cobra.Command{
@@ -30,13 +34,17 @@ func runPullTractmaps(ccmd *cobra.Command, args []string) {
 }
 
 func pullTractmaps(assets *game.Assets, outDir string) {
+	if _, ok := utils.Magick.Check(); !ok {
+		slog.Error("Image Magick not found. Skipped heightmap generation.")
+		return
+	}
 
 	levels := []string{
 		"nw_opr_004_trench",
 		"newworld_vitaeeterna",
 	}
 	for _, levelName := range levels {
-
+		levelOutDir := path.Join(outDir, levelName, "tractmap")
 		info := level.LoadInfo(assets, levelName)
 		if info == nil {
 			continue
@@ -46,8 +54,7 @@ func pullTractmaps(assets *game.Assets, outDir string) {
 		heightmap := level.LoadHeightmap(assets.Archive, info)
 		tractmap := level.LoadTractmap(assets.Archive, info)
 		scale := (float32(heightmap.SizeX) / float32(tractmap.SizeX))
-
-		writeTile(path.Join("tmp", levelName+"_tractmap.png"), tractmap)
+		// writeTile(path.Join(levelOutDir, "tractmap.png"), tractmap)
 
 		recolored := img.Apply(tractmap, func(c color.RGBA, x, y int) color.RGBA {
 			occlusion := heightmapOcclusionAt(heightmap, int(float32(x)*scale), int(float32(y)*scale), info.MountainHeight)
@@ -64,7 +71,48 @@ func pullTractmaps(assets *game.Assets, outDir string) {
 			}
 			return res
 		})
-		writeTile(path.Join("tmp", levelName+"_tractmap_c.png"), recolored)
+		// writeTile(path.Join(levelOutDir, "colored.png"), recolored)
+
+		regionsX := tractmap.TilesX
+		regionsY := tractmap.TilesY
+		tilesX := regionsX * 8
+		tilesY := regionsY * 8
+		mapHeight := tractmap.SizeY
+		targetSize := 1024
+
+		var source image.Image = recolored
+		for level := range 8 {
+			if level > 0 {
+				tilesX = max(tilesX/2, 1)
+				tilesY = max(tilesY/2, 1)
+				bounds := source.Bounds()
+				if bounds.Max.X/tilesX > targetSize {
+					mapHeight = mapHeight / 2
+					dst := image.NewRGBA(image.Rect(0, 0, bounds.Max.X/2, bounds.Max.Y/2))
+					draw.BiLinear.Scale(dst, dst.Bounds(), source, source.Bounds(), draw.Over, nil)
+					source = dst
+				}
+			}
+
+			bounds := source.Bounds()
+			tiles := img.Tiles(bounds, tilesX, tilesY)
+			for _, t := range tiles {
+				tileW := t.Max.X - t.Min.X
+				tileH := t.Max.Y - t.Min.Y
+				// if tileW < minSize || tileH < minSize {
+				// 	continue
+				// }
+				tile := image.NewRGBA(image.Rect(0, 0, tileW, tileH))
+				draw.Copy(tile, image.Pt(0, 0), source, t, draw.Over, nil)
+
+				x := int(math.Pow(2, float64(level)) * float64(t.Min.X/tileW))
+				y := int(math.Pow(2, float64(level)) * float64((mapHeight-t.Min.Y-1)/tileH))
+				z := level + 1
+				file := fmt.Sprintf("tractmap_l%d_y%03d_x%03d.png", z, y, x)
+				filePath := path.Join(levelOutDir, fmt.Sprintf("%d", level+1), file)
+				writeTile(filePath, tile)
+			}
+		}
 	}
 }
 

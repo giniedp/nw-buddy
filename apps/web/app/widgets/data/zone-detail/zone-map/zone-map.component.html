@@ -27,7 +27,7 @@
           </div>
 
           <ng-template #tplConfigMenu>
-            <div class="bg-base-200 border border-base-100 w-80 rounded-b-md z-10 p-2" cdkMenu>
+            <div class="bg-base-200 border border-base-100 w-80 rounded-b-md z-10 p-2 flex flex-col" cdkMenu>
               <label class="label">
                 <input
                   class="toggle checked:toggle-primary"
@@ -35,7 +35,7 @@
                   [ngModel]="store.showLabels()"
                   (ngModelChange)="store.setLabels($event)"
                 />
-                Show territory labels
+                Territory labels
               </label>
 
               <label class="label">
@@ -45,7 +45,7 @@
                   [ngModel]="store.showHeatmap()"
                   (ngModelChange)="store.setHeatmap($event)"
                 />
-                Show heatmap
+                Heatmap
               </label>
 
               <label class="label">
@@ -55,7 +55,16 @@
                   [ngModel]="store.showZoneConfigs()"
                   (ngModelChange)="store.setZoneConfigs($event)"
                 />
-                Show region & refresh bounds
+                Region & refresh bounds
+              </label>
+              <label class="label">
+                <input
+                  class="toggle checked:toggle-primary"
+                  type="checkbox"
+                  [ngModel]="store.showTractmap()"
+                  (ngModelChange)="store.setTractmap($event)"
+                />
+                Tractmap
               </label>
             </div>
           </ng-template>
@@ -70,6 +79,7 @@
         [territories]="store.territories()"
         [areas]="store.areas()"
         [pois]="store.showPOI() ? store.pois() : null"
+        [tractmap]="store.showTractmap()"
         [labels]="store.showLabels()"
         (zoneClick)="zoneClicked.emit($event)"
       >

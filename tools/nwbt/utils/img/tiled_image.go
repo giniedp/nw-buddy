@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"math"
 )
 
 var (
@@ -82,12 +81,4 @@ func (t *TiledImage) TileAt(x, y int) image.Image {
 	tileX := x / t.TileSize
 	tileY := y / t.TileSize
 	return t.Rows[tileY][tileX]
-}
-
-func isPowerOf2(value int) bool {
-	return (value & (value - 1)) == 0
-}
-
-func nextPowerOf2(value int) int {
-	return int(math.Pow(float64(2), math.Ceil(math.Log2(float64(value)))))
 }

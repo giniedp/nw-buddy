@@ -50,7 +50,7 @@ export function rasterTileSource(
   newWorldMapId: string,
   type: string = null,
 ): RasterSourceSpecification | RasterDEMSourceSpecification {
-  if (type === 'nw' || type === 'ocean') {
+  if (type === 'nw' || type === 'ocean' || type === 'tractmap') {
     return {
       type: 'raster',
       tiles: [encodedTileUrl(newWorldMapId, type)],
