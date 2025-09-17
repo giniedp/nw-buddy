@@ -10,14 +10,22 @@ export interface GameEventReward {
   rarity?: ItemRarity
 }
 
+export interface GameEventRewardInfo {
+  lootTableId?: string
+  housingItemId?: string
+  itemId?: string
+  lootTags?: string[]
+}
 export function selectGameEventItemReward(event: GameEventData) {
   const itemReward = event?.ItemReward
+  const lootTags = event?.LootTags?.split(/[,+]/)
   if (!itemReward) {
     return null
   }
   if (itemReward.startsWith('[LTID]')) {
     return {
       lootTableId: itemReward.replace('[LTID]', ''),
+      lootTags
     }
   }
   if (itemReward.includes('HousingItem')) {

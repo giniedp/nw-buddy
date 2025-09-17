@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule, RouterOutlet } from '@angular/router'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import {
@@ -23,7 +24,7 @@ import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
 
-type GameModeCategories = 'expeditions' | 'trials' | 'raids' | 'activities'
+type GameModeCategories = 'expeditions' | 'soul-trials' | 'season-trials' | 'raids' | 'activities'
 
 export interface CurrentMutation {
   expedition: string
@@ -68,7 +69,7 @@ export class GameModesPageComponent {
       pois: this.db.territoriesAll(),
       categories: this.groups$,
       category: this.categoryId$,
-      mutations: injectCurrentMutation(),
+      mutations: toObservable(injectCurrentMutation()),
       cursesMap: this.db.mutatorCursesByIdMap(),
       elements: this.db.mutatorElementsAll(),
       promotionsMap: this.db.mutatorPromotionsByIdMap(),
@@ -146,8 +147,11 @@ function detectCategory(mode?: GameModeData): GameModeCategories {
   if (!mode) {
     return null
   }
-  if (mode.IsSoloTrial || mode.IsSeasonTrial) {
-    return 'trials'
+  if (mode.IsSoloTrial) {
+    return 'soul-trials'
+  }
+  if (mode.IsSeasonTrial) {
+    return 'season-trials'
   }
   if (mode.IsRaidTrial) {
     return 'raids'

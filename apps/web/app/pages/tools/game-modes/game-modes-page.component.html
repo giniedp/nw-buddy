@@ -9,7 +9,7 @@
 
 <ng-template #tplIndex>
   <ion-header>
-    <ion-toolbar>
+    <ion-toolbar class="bg-base-300">
       <ion-segment [value]="categoryId$ | async">
         @for (item of categories$ | async; track $index) {
           <ion-segment-button [value]="item" [routerLink]="['..', item]" [routerLinkActive]="'text-primary'">
@@ -21,11 +21,14 @@
   </ion-header>
   <ion-content class="ion-p-4">
     <div class="w-full max-w-screen-3xl mx-auto grid grid-cols-fill gap-4">
-      @for (item of modes$ | async; track $index) {
+      @for (item of modes$ | async; track $index; let index = $index) {
         <a
           [routerLink]="[item.id]"
           [queryParamsHandling]="'preserve'"
           class="bg-black rounded-md border border-base-100 hover:border-primary relative min-h-[300px]"
+          animate.enter="fade-enter"
+          animate.leave="fade-leave"
+          [style.--enter-delay.ms]="index * 20"
         >
           <picture
             class="absolute top-0 left-0 right-0 bottom-0 block w-full h-full rounded-md overflow-clip opacity-75"
@@ -40,9 +43,9 @@
                 }
                 @if (item.isMutated) {
                   <div
-                    class="absolute top-0 left-0 w-full scale-200 fade"
-                    animate.enter="fade-in"
-                    animate.leave="fade-out"
+                    class="absolute top-0 left-0 w-full scale-200"
+                    animate.enter="fade-enter"
+                    animate.leave="fade-leave"
                   >
                     <img
                       [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
@@ -86,8 +89,8 @@
             </a>
           </li>
         }
-        @for (item of modes$ | async; track $index) {
-          <li>
+        @for (item of modes$ | async; track $index; let index = $index) {
+          <li animate.enter="fade-enter" animate.leave="fade-leave" [style.--enter-delay.ms]="index * 20">
             <a
               [routerLink]="[item.id]"
               [routerLinkActive]="'text-primary'"

@@ -1,7 +1,7 @@
 import type { HouseItems, MasterItemDefinitions } from '../generated'
 import { NW_LOOT_GlobalMod } from './constants'
 import { getItemRarityNumeric, isMasterItem } from './item'
-import type { LootConditionTag } from './loot'
+import type { LootConditionTag, ParsedLootTag } from './loot'
 import type { LootBucketRow } from './loot-buckets'
 import type { LootTable, LootTableRow } from './loot-tables'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
@@ -54,20 +54,20 @@ export function canAccessLootTableRow(context: LootContext, table: LootTable, ro
 }
 
 export function canAccessLootBucketRow(context: LootContext, entry: LootBucketRow): boolean {
-  const tags = Array.from(entry.Tags.keys())
+  const tags = Object.keys(entry.Tags)
   if (entry.MatchOne) {
     if (tags.length === 0) {
       return true
     }
     for (const tag of tags) {
-      if (testBucketRowCondition(context, tag, entry)) {
+      if (testBucketRowCondition(context, tag, entry.Tags[tag])) {
         return true
       }
     }
     return false
   } else {
     for (const tag of tags) {
-      if (!testBucketRowCondition(context, tag, entry)) {
+      if (!testBucketRowCondition(context, tag, entry.Tags[tag])) {
         return false
       }
     }
@@ -93,12 +93,11 @@ function testTableRowCondition(context: LootContext, condition: string, row: Loo
   return context.tags.has(condition)
 }
 
-function testBucketRowCondition(context: LootContext, condition: string, row: LootBucketRow): boolean {
+function testBucketRowCondition(context: LootContext, condition: string, tag: ParsedLootTag): boolean {
   if (!condition) {
     return true
   }
   if (context.values.has(condition)) {
-    const tag = row.Tags?.get(condition)
     const value = context.values.get(condition)
     switch (tag?.value?.length) {
       case 1: {

@@ -42,4 +42,5 @@ export class InfiniteScrollDirective<T> {
   public data = computed(() => this.state()?.data)
   public canLoad = computed(() => this.state()?.canLoad ?? false)
   public count = computed(() => this.data()?.length || 0)
+  public offset = computed(() => (this.state()?.page || 0) * (this.state()?.perPage || 0))
 }

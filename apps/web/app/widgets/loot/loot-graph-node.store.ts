@@ -234,7 +234,7 @@ function selectTags(node: LootNode, service: LootGraphService) {
     return null
   }
 
-  return Array.from(node.data?.Tags?.values() || []).map((it) => {
+  return Array.from(Object.values(node.data?.Tags || {})).map((it) => {
     return {
       tag: it.name,
       value: it.value?.join('-'),

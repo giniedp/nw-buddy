@@ -18,7 +18,7 @@ import {
   CDN_URL,
   NW_WORKSPACE,
   environment,
-  BRANCH_NAME
+  BRANCH_NAME,
 } from '../env'
 import { glob, writeJSONFile } from './utils'
 
@@ -72,11 +72,7 @@ program
   .command('upload')
   .description('Zips nw-data folder (live or ptr) and uploads to CDN. Optionally uploads all files unzipped.')
   .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_WORKSPACE)
-  .option(
-    '-v, --version <version>',
-    'Version name to use for upload (default is the branch name)',
-    BRANCH_NAME,
-  )
+  .option('-v, --version <version>', 'Version name to use for upload (default is the branch name)', BRANCH_NAME)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)
   .action(async (data) => {
     const options = z
@@ -186,20 +182,21 @@ program
   })
 
 program.command('upload-tiles').action(async () => {
-  const remoteDir = 'worldtiles'
-  const tilesDir = path.join(environment.nwDataDir(), 'lyshineui', remoteDir)
+
+  const dataDir = environment.nwDataDir()
+  const tilesDir = path.join(dataDir, 'lyshineui', 'worldtiles')
   const client = createClient()
 
   const patterns = [
-    path.join(tilesDir, '**/*.webp'),
-    path.join(tilesDir, '**/*.png')
+    //path.join(tilesDir, '**/*.webp'),
+    path.join(tilesDir, '**/tractmap/**/*.png'),
   ]
   const imageFiles = await glob(patterns)
   const files = await glob(patterns).then((list) => {
     return list.map((file) => {
       return {
         file: file,
-        key: normalizeKey(path.join(remoteDir, path.relative(tilesDir, file))),
+        key: normalizeKey(path.relative(path.join(dataDir, '..', '..'), file)),
         contentType: 'image/webp',
         md5: true,
       }
@@ -215,7 +212,7 @@ program.command('upload-tiles').action(async () => {
     })
     files.push({
       file: indexFile,
-      key: normalizeKey(path.join(remoteDir, path.relative(tilesDir, indexFile))),
+      key: normalizeKey(path.relative(path.join(dataDir, '..', '..'), indexFile)),
       contentType: 'application/json',
       md5: true,
     })
@@ -234,10 +231,7 @@ program.command('upload-character').action(async () => {
   const sourceDir = 'tmp/character'
   const client = createClient()
 
-  const patterns = [
-    path.join(sourceDir, '**/*.webp'),
-    path.join(sourceDir, '**/*.png')
-  ]
+  const patterns = [path.join(sourceDir, '**/*.webp'), path.join(sourceDir, '**/*.png')]
   const imageFiles = await glob(patterns)
   const files = await glob(patterns).then((list) => {
     return list.map((file) => {
@@ -273,9 +267,7 @@ program.command('upload-character').action(async () => {
   })
 })
 
-async function globAndUpload() {
-
-}
+async function globAndUpload() {}
 
 async function download(url: string, target: string, onProgress?: (downloaded: number, total: number) => void) {
   const file = fs.createWriteStream(target)

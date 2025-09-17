@@ -141,7 +141,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
   @Input()
   public set data(node: LootBucketRowNode) {
     this.node.set(node)
-    this.itemStore.load({ recordId: node.data.Item })
+    this.itemStore.load(node.data.Item)
   }
   public get data() {
     return this.node()
@@ -225,7 +225,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
 
   protected tags = computed(() => {
     const node = this.node()
-    return Array.from(node.data?.Tags?.values() || []).map((it) => {
+    return Array.from(Object.values(node.data?.Tags || {})).map((it) => {
       const isChecked = this.service.isTagInContext(it.name, it.value)
       const canEdit = this.service.tagsEditable && !it.value
       return {

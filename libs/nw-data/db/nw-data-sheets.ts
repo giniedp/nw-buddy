@@ -319,6 +319,10 @@ export abstract class NwDataSheets {
   public gameModesMapsByIdMap = primaryIndex(this.gameModesMapsAll, 'GameModeId')
   public gameModesMapsById = indexLookup(this.gameModesMapsByIdMap)
 
+  public gameModeSchedulerDataAll = table(() => this.loadDatasheets(DATASHEETS.GameModeSchedulerStaticData))
+  public gameModeSchedulerDataByIdMap = primaryIndex(this.gameModeSchedulerDataAll, 'GameModeId')
+  public gameModeSchedulerDataById = indexLookup(this.gameModeSchedulerDataByIdMap)
+
   public loreItemsAll = table(() => this.loadDatasheets(DATASHEETS.LoreData))
   public loreItemsByIdMap = primaryIndex(this.loreItemsAll, 'LoreID')
   public loreItemsById = indexLookup(this.loreItemsByIdMap)

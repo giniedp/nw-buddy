@@ -30,10 +30,7 @@ export class ItemDetailComponent {
 
   #fxLoad = effect(() => {
     const item = this.itemId()
-    const itemId = typeof item === 'string' ? item : getItemId(item)
-    if (itemId || this.store.isLoaded()) {
-      untracked(() => this.store.load({ recordId: itemId }))
-    }
+    untracked(() => this.store.load(item))
   })
 
   #fxOverride = effect(() => {

@@ -20,7 +20,7 @@ import {
   HtmlHeadService,
   injectBreakpoint,
   injectChildRouteParam,
-  injectQueryParam,
+  injectRxQueryParam,
   injectRouteParam,
   selectSignal,
 } from '~/utils'
@@ -78,7 +78,7 @@ export class TransmogSetListComponent {
   protected selectionParam = 'id'
   protected persistKey = 'transmogs-table'
   protected categoryParamName = 'category'
-  protected categoryParam = toSignal(injectQueryParam(this.categoryParamName))
+  protected categoryParam = toSignal(injectRxQueryParam(this.categoryParamName))
   protected category = selectSignal(this.categoryParam, (it) => {
     return it ? it : null
   })

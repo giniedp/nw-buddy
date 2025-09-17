@@ -1,11 +1,11 @@
-@if (isMutable) {
+@if (isMutable()) {
   <ul
     class="menu bg-base-200 flex-none menu-horizontal menu-compact overflow-auto scrollbar-hide w-full flex-nowrap xl:menu-vertical xl:menu-normal xl:w-56"
   >
     <li class="menu-title mt-4 hidden xl:block">
       <span>Normal</span>
     </li>
-    <li [class.bordered]="!difficultyLevel">
+    <li [class.bordered]="!difficultyLevel()">
       <a rel="nofollow" [routerLink]="['.']" [queryParams]="{}">
         <span>Regular</span>
       </a>
@@ -14,15 +14,15 @@
       <span>Mutated</span>
     </li>
 
-    @for (item of difficulties$ | async; track $index) {
-      <li [class.bordered]="item.MutationDifficulty == difficultyLevel">
+    @for (item of difficulties(); track $index) {
+      <li [class.bordered]="item.MutationDifficulty == difficultyLevel()">
         <a
           rel="nofollow"
           [routerLink]="['.']"
           [queryParams]="{ difficulty: item.MutationDifficulty }"
           [queryParamsHandling]="'merge'"
         >
-          <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" />
+          <!-- <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" /> -->
           {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
         </a>
       </li>
@@ -32,195 +32,190 @@
 
 <ion-content class="flex-1 relative">
   <picture class="absolute top-0 left-0 w-full h-full pointer-events-none">
-    <img [nwImage]="backgroundImage" class="block w-full h-full object-cover blur-sm" />
+    <img [nwImage]="backgroundImage()" class="block w-full h-full object-cover blur-sm" />
   </picture>
   <ion-content class="ion-p-4">
     <div class="content-grid">
-      <div class="content-grid-info flex flex-col gap-4">
-        <section class="font-nimbus prose-base">
-          <h1 class="mb-0 font-normal font-serif tracking-wider">
-            <span [nwText]="title"></span>
-            @if (difficultyLevel) {
-              <span>, Difficulty {{ difficultyLevel }}</span>
-            }
-          </h1>
-          <div>
-            @if (recommendedLevel && !requiredGearScore) {
-              <span>Recommended Level: </span>
-              <span class="font-semibold text-accent">{{ recommendedLevel }}</span>
-            }
-            @if (requiredGearScore) {
-              <span>Required Minimum Gear Score: </span>
-              <span class="font-semibold text-accent">{{ requiredGearScore }}</span>
-            }
+      <div class="content-grid-info flex flex-col gap-2 font-nimbus prose-base">
+        <h1 class="mb-0 font-normal font-serif tracking-wider">
+          <span>{{ title() | nwText }}</span>
+          @if (difficultyLevel()) {
+            <span>, Difficulty {{ difficultyLevel() }}</span>
+          }
+        </h1>
+        <div class="nw-item-divider max-w-lg"></div>
+
+        @if (description()) {
+          <div class="text-nw-description">
+            {{ description() | nwText }}
           </div>
           <div class="nw-item-divider max-w-lg"></div>
-          <div [nwText]="description" class="text-nw-description"></div>
-        </section>
-
-        <section class="font-nimbus prose-base">
-          <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
-            <span>Requirements</span>
-          </h2>
-          <div class="nw-item-divider max-w-lg"></div>
-          @if (requirementText) {
-            <div>
-              <span class="text-primary">Your group must have at least </span>
-              <span [nwText]="requirementText"></span>
-            </div>
-          }
-          @if (groupSize) {
-            <div>
-              <span>{{ groupSize }} - {{ teamCapacity || 5 }} </span>
-              <span>Players</span>
-            </div>
-          }
-          @if (requiredLevel) {
-            <div>
-              <span>Level: </span>
-              <span class="font-semibold text-accent">{{ requiredLevel }}</span>
-            </div>
-          }
-        </section>
-
-        @if (difficulty) {
-          <section class="font-nimbus prose-base">
-            <h2 class="mb-0 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
-              <span>Weekly Mutations </span>
-              @if (isMutated$ | async) {
-                <picture class="inline-block w-8 mt-0 mb-0 animate-pulse">
-                  <img
-                    [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
-                    class="w-full aspect-square rounded-full animate-spin-cw"
-                  />
-                </picture>
-                <span>Active </span>
-              }
-            </h2>
-            <div class="nw-item-divider max-w-lg mb-2"></div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl items-start">
-              @if (store.mutaElementAvailable$ | async) {
-                <nwb-muta-element-tile
-                  [mutaElement]="store.mutaElement$ | async"
-                  (mutaElementChanged)="onMutaElementSelected($event)"
-                  [options]="store.mutaElementOptions$ | async"
-                />
-              }
-              @if (store.mutaPromotionAvailable$ | async) {
-                <nwb-muta-promotion-tile
-                  [mutaPromotion]="store.mutaPromotion$ | async"
-                  [mutaElement]="store.mutaElement$ | async"
-                  (mutaPromotionChanged)="onMutaPromotionSelected($event)"
-                  [options]="store.mutaPromotionOptions$ | async"
-                />
-              }
-              @if (store.mutaCurseAvailable$ | async) {
-                <nwb-muta-curse-tile
-                  [mutaCurse]="store.mutaCurse$ | async"
-                  [mutaElement]="store.mutaElement$ | async"
-                  (mutaCurseChanged)="onMutaCurseSelected($event)"
-                  [options]="store.mutaCurseOptions$ | async"
-                />
-              }
-            </div>
-          </section>
         }
 
-        <section class="flex flex-col prose-base">
-          <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
+        <section class="font-nimbus prose-base">
+          @if (requirementText()) {
+            <div>
+              <span>Requires: </span>
+              <span>{{ requirementText() | nwText }}</span>
+            </div>
+          }
+          @if (groupSizeMin()) {
+            <div>
+              <span>Minimum Players:</span>
+              <span class="font-semibold text-accent">
+                {{ groupSizeMin() }}
+                @if (groupSizeMax()) {
+                  - {{ groupSizeMax() }}
+                }
+              </span>
+            </div>
+          }
+          @if (requiredLevel()) {
+            <div>
+              <span>Required Level: </span>
+              <span class="font-semibold text-accent">{{ requiredLevel() }}</span>
+            </div>
+          } @else if (recommendedLevel()) {
+            <div>
+              <span>Recommended Level: </span>
+              <span class="font-semibold text-accent">{{ recommendedLevel() }}</span>
+            </div>
+          }
+          @if (requiredGearScore()) {
+            <div>
+              <span>Required Minimum Gear Score: </span>
+              <span class="font-semibold text-accent">{{ requiredGearScore() }}</span>
+            </div>
+          } @else if (recommendedGsMin()) {
+            <div>
+              <span>Recommended Gear Score: </span>
+              <span class="font-semibold text-accent">
+                {{ recommendedGsMin() }}
+                @if (recommendedGsMax()) {
+                  - {{ recommendedGsMax() }}
+                }
+              </span>
+            </div>
+          }
+          @if (lootGsRange()) {
+            <div>
+              <span>Loot Gear Score: </span>
+              <span class="font-semibold text-accent">
+                {{ lootGsRange() }}
+              </span>
+            </div>
+          }
+        </section>
+
+        @if (difficulty()) {
+          <h2 class="mb-0 mt-4 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
+            <span>Mutation </span>
+            @if (activeMutation()) {
+              <picture class="inline-block w-8 mt-0 mb-0 animate-pulse">
+                <img
+                  [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                  class="w-full aspect-square rounded-full animate-spin-cw"
+                />
+              </picture>
+              <span>Active </span>
+            }
+          </h2>
+          <div class="nw-item-divider max-w-lg mb-2"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl items-start">
+            @if (store.mutaElementAvailable()) {
+              <nwb-muta-element-tile
+                [mutaElement]="store.mutaElement()"
+                (mutaElementChanged)="onMutaElementSelected($event)"
+                [options]="store.mutaElementOptions()"
+                animate.enter="fade-slide-up-enter"
+                animate.leave="fade-slide-up-leave"
+              />
+            }
+            @if (store.mutaPromotionAvailable()) {
+              <nwb-muta-promotion-tile
+                [mutaPromotion]="store.mutaPromotion()"
+                [mutaElement]="store.mutaElement()"
+                (mutaPromotionChanged)="onMutaPromotionSelected($event)"
+                [options]="store.mutaPromotionOptions()"
+                animate.enter="fade-slide-up-enter"
+                animate.leave="fade-slide-up-leave"
+              />
+            }
+            @if (store.mutaCurseAvailable()) {
+              <nwb-muta-curse-tile
+                [mutaCurse]="store.mutaCurse()"
+                [mutaElement]="store.mutaElement()"
+                (mutaCurseChanged)="onMutaCurseSelected($event)"
+                [options]="store.mutaCurseOptions()"
+                animate.enter="fade-slide-up-enter"
+                animate.leave="fade-slide-up-leave"
+              />
+            }
+          </div>
+        }
+
+        @if (store.possibleItemDropIds()?.length) {
+          <h2 class="mb-0 mt-4 font-normal font-serif tracking-wider uppercase">
             <span>Available Rewards </span>
           </h2>
           <div class="nw-item-divider max-w-lg"></div>
 
-          @if (expeditionItems$ | async; as items) {
-            @if (items.length) {
-              <div class="w-full max-h-[500px] overflow-auto bg-neutral/50 rounded-sm p-2">
-                <div class="flex flex-row flex-wrap gap-2">
-                  @for (item of items; track $index) {
-                    <a [nwLinkTooltip]="['item', itemId(item)]" class="block w-full max-w-[60px] aspect-square">
-                      <picture [nwIcon]="item" class="block w-full h-full my-0 mt-0 mb-0"></picture>
-                    </a>
-                  }
+          <div class="w-full max-h-[500px] overflow-auto bg-neutral/50 rounded-sm p-2">
+            <div class="flex flex-row flex-wrap gap-2">
+              @for (itemId of store.possibleItemDropIds(); track $index; let index = $index) {
+                <a
+                  [nwLinkTooltip]="['item', itemId]"
+                  [nwbItemDetail]="itemId"
+                  #detail="itemDetail"
+                  class="block w-full max-w-[60px] aspect-square"
+                >
+                  <picture [nwIcon]="detail.item()" class="block w-full h-full my-0 mt-0 mb-0"></picture>
+                </a>
+              }
+            </div>
+          </div>
+        }
+        <!-- @if (difficulty()) {
+          <div class="stats bg-opacity-0 self-end w-full">
+            @for (row of difficyltyRewards$ | async; track $index) {
+              <div class="stat place-items-center p-0">
+                <div class="stat-title">
+                  <span [nwText]="row.RankName"></span>
+                </div>
+                <div
+                  class="stat-value cursor-pointer transition-all rounded-md outline-4 outline-transparent focus:outline-primary hover:outline-primary"
+                  [class.text-primary]="row.Completed"
+                  (click)="row.toggle()"
+                >
+                  {{ row.Quantity }}
+                </div>
+                <div class="stat-desc">
+                  <span [nwText]="row.ItemName"></span>
                 </div>
               </div>
             }
-          }
-          @if (difficulty) {
-            <div class="stats bg-opacity-0 self-end w-full">
-              @for (row of difficyltyRewards$ | async; track $index) {
-                <div class="stat place-items-center p-0">
-                  <div class="stat-title">
-                    <span [nwText]="row.RankName"></span>
-                  </div>
-                  <div
-                    class="stat-value cursor-pointer transition-all rounded-md outline-4 outline-transparent focus:outline-primary hover:outline-primary"
-                    [class.text-primary]="row.Completed"
-                    (click)="row.toggle()"
-                  >
-                    {{ row.Quantity }}
-                  </div>
-                  <div class="stat-desc">
-                    <span [nwText]="row.ItemName"></span>
-                  </div>
-                </div>
-              }
-            </div>
-          }
-        </section>
-
-        <div>
-          <div class="form-control">
-            <label class="label cursor-pointer">
-              <span class="label-text">Show loot for your level</span>
-              <input
-                type="checkbox"
-                class="toggle"
-                [class.toggle-primary]="adjustLevel$ | async"
-                [ngModel]="adjustLevel$ | async"
-                (ngModelChange)="adjustLevel$.next($event)"
-              />
-            </label>
           </div>
-          @if (adjustLevel$ | async) {
-            <div class="form-control w-full">
-              <input
-                class="input input-bordered"
-                placeholder="60"
-                type="number"
-                [min]="1"
-                [max]="65"
-                [ngModel]="adjustedLevel$ | async"
-                (ngModelChange)="adjustedLevel$.next($event)"
-              />
-            </div>
-          }
-        </div>
+        } -->
       </div>
 
-      <div class="content-grid-tabs tabs tabs-border flex-nowrap mt-4 justify-stretch flex-none">
-        @for (item of tabs; track item.id) {
-          @if (item.externUrl) {
-            <a class="tab" [class.tab-active]="item.id === tab" [href]="item.externUrl" target="_blank">
-              {{ item.label }}
-              <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4" />
-            </a>
-          } @else {
-            <a
-              class="tab"
-              [class.tab-active]="item.id === tab"
-              [routerLink]="['.']"
-              [queryParams]="{ tab: item.id }"
-              [queryParamsHandling]="'merge'"
-              rel="nofollow"
-            >
-              {{ item.label }}
-            </a>
-          }
+      <div class="content-grid-tabs tabs tabs-border flex-nowrap justify-stretch flex-none self-end">
+        @for (item of tabs(); track item.id) {
+          <a
+            class="tab"
+            [class.tab-active]="item.active"
+            [class.opacity-25]="!item.count"
+            [routerLink]="['.']"
+            [queryParams]="{ tab: item.id }"
+            [queryParamsHandling]="'merge'"
+            rel="nofollow"
+          >
+            {{ item.label }}
+          </a>
         }
       </div>
 
       <div
-        class="content-grid-map flex justify-end aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[450px] z-50"
+        class="content-grid-map flex justify-end aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[500px] z-50"
         [class.sticky]="mapPinned()"
         [class.top-0]="mapPinned()"
         [class.right-0]="mapPinned()"
@@ -228,8 +223,8 @@
       >
         <nwb-game-mode-detail-map
           class="w-full h-full max-w-[1200px] max-h-[800px] group"
-          [gameModeId]="paramGameMode$ | async"
-          [creatures]="creatures$ | async"
+          [gameModeId]="paramGameMode()"
+          [creatures]="store.creatures()"
           [highlight]="(vitalTargetHover() || vitalTargetClick())?.VitalsID"
           [class.bg-base-300]="mapPinned()"
         >
@@ -246,9 +241,19 @@
       </div>
 
       <div class="content-grid-content">
-        @for (item of tabs; track item.id) {
-          @if (item.id === tab) {
-            <ng-container *ngTemplateOutlet="item.tpl" />
+        @for (tab of tabs(); track tab.id) {
+          @if (tab.active && tab.loot?.length) {
+            <nwb-game-mode-detail-loot [items]="tab.loot" animate.leave="fade-leave" />
+          }
+          @if (tab.active && tab.vitals?.length) {
+            <nwb-game-mode-detail-vitals
+              [items]="tab.vitals"
+              [selectedVital]="vitalTargetClick()"
+              (vitalTargetEnter)="handleVitalTargetEnter($event)"
+              (vitalTargetLeave)="handleVitalTargetLeave($event)"
+              (vitalTargetClick)="handleVitalTargetClick($event)"
+              animate.leave="fade-slide-up-leave"
+            />
           }
         }
       </div>
@@ -256,157 +261,7 @@
   </ion-content>
 </ion-content>
 
-<ng-template #tplDungeonLoot>
-  <div class="grid grid-loot layout-gap" [nwbInfniteScroll]="dungeonLoot$ | async" #scroll="infiniteScroll">
-    @for (item of scroll.data(); track $index) {
-      <nwb-item-detail
-        class="fade"
-        animate.enter="fade-in"
-        [itemId]="item"
-        [cdkContextMenuTriggerFor]="tplExplainMenu"
-        (cdkContextMenuOpened)="explainItemDrop(item, 'normal')"
-      >
-        <nwb-item-detail-header
-          [enableInfoLink]="true"
-          [enableTracker]="true"
-          [enableLink]="true"
-          class="rounded-md overflow-clip"
-        />
-      </nwb-item-detail>
-    }
-    @if (scroll.canLoad()) {
-      <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
-    }
-  </div>
-</ng-template>
-
-<ng-template #tplDungeonMutatedLoot>
-  <div class="grid grid-loot layout-gap" [nwbInfniteScroll]="dungeonMutatedLoot$ | async" #scroll="infiniteScroll">
-    @for (item of scroll.data(); track $index) {
-      <nwb-item-detail
-        class="fade"
-        animate.enter="fade-in"
-        [itemId]="item"
-        [cdkContextMenuTriggerFor]="tplExplainMenu"
-        (cdkContextMenuOpened)="explainItemDrop(item, 'mutated')"
-      >
-        <nwb-item-detail-header
-          [enableInfoLink]="true"
-          [enableTracker]="true"
-          [enableLink]="true"
-          class="rounded-md overflow-clip"
-        />
-      </nwb-item-detail>
-    }
-    @if (scroll.canLoad()) {
-      <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
-    }
-  </div>
-</ng-template>
-
-<ng-template #tplDungeonDifficultyLoot>
-  <div class="grid grid-loot layout-gap" [nwbInfniteScroll]="dungeonDifficultyLoot$ | async" #scroll="infiniteScroll">
-    @for (item of scroll.data(); track $index) {
-      <nwb-item-detail
-        class="fade"
-        animate.enter="fade-in"
-        [itemId]="item"
-        [cdkContextMenuTriggerFor]="tplExplainMenu"
-        (cdkContextMenuOpened)="explainItemDrop(item, 'difficulty')"
-      >
-        <nwb-item-detail-header
-          [enableInfoLink]="true"
-          [enableTracker]="true"
-          [enableLink]="true"
-          class="rounded-md overflow-clip"
-        />
-      </nwb-item-detail>
-    }
-    @if (scroll.canLoad()) {
-      <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
-    }
-  </div>
-</ng-template>
-
-<ng-template #tplDungeonBosses>
-  <div class="grid grid-vitals layout-gap">
-    @for (item of creaturesBosses$ | async; track $index) {
-      <nwb-vital-detail-card
-        [vitalId]="item?.VitalsID"
-        [level]="creatureLevel$ | async"
-        [mutaElement]="mutaElementId$ | async"
-        [mutaDifficulty]="difficultyLevel"
-        [activeTab]="paramVitalTab$ | async"
-        (activeTabChange)="handleVitalTabChange($event)"
-      >
-        <button
-          class="absolute top-1 right-1 btn btn-sm btn-square btn-ghost"
-          header
-          [class.text-primary]="item === vitalTargetClick()"
-          (mouseenter)="handleVitalTargetEnter(item)"
-          (mouseleave)="handleVitalTargetLeave(item)"
-          (click)="handleVitalTargetClick(item)"
-        >
-          <nwb-icon [icon]="iconTarget" class="w-5 h-5" />
-        </button>
-      </nwb-vital-detail-card>
-    }
-  </div>
-</ng-template>
-
-<ng-template #tplDungeonNamed>
-  <div class="grid grid-vitals layout-gap">
-    @for (item of creaturesNamed$ | async; track $index) {
-      <nwb-vital-detail-card
-        [vitalId]="item?.VitalsID"
-        [level]="creatureLevel$ | async"
-        [mutaElement]="mutaElementId$ | async"
-        [mutaDifficulty]="difficultyLevel"
-        [activeTab]="paramVitalTab$ | async"
-        (activeTabChange)="handleVitalTabChange($event)"
-      >
-        <button
-          class="absolute top-1 right-1 btn btn-sm btn-square btn-ghost"
-          header
-          [class.text-primary]="item === vitalTargetClick()"
-          (mouseenter)="handleVitalTargetEnter(item)"
-          (mouseleave)="handleVitalTargetLeave(item)"
-          (click)="handleVitalTargetClick(item)"
-        >
-          <nwb-icon [icon]="iconTarget" class="w-5 h-5" />
-        </button>
-      </nwb-vital-detail-card>
-    }
-  </div>
-</ng-template>
-
-<ng-template #tplDungeonCreatures>
-  <div class="grid grid-vitals layout-gap">
-    @for (item of creaturesCommon$ | async; track $index) {
-      <nwb-vital-detail-card
-        [vitalId]="item?.VitalsID"
-        [level]="creatureLevel$ | async"
-        [mutaElement]="mutaElementId$ | async"
-        [mutaDifficulty]="difficultyLevel"
-        [activeTab]="paramVitalTab$ | async"
-        (activeTabChange)="handleVitalTabChange($event)"
-      >
-        <button
-          class="absolute top-1 right-1 btn btn-sm btn-square btn-ghost"
-          header
-          [class.text-primary]="item === vitalTargetClick()"
-          (mouseenter)="handleVitalTargetEnter(item)"
-          (mouseleave)="handleVitalTargetLeave(item)"
-          (click)="handleVitalTargetClick(item)"
-        >
-          <nwb-icon [icon]="iconTarget" class="w-5 h-5" />
-        </button>
-      </nwb-vital-detail-card>
-    }
-  </div>
-</ng-template>
-
-<ng-template #tplExplain>
+<!-- <ng-template #tplExplain>
   <ion-header>
     <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
       <ion-title>Loot Graph</ion-title>
@@ -418,12 +273,12 @@
       <nwb-loot-graph [tags]="vm.tags" [tagValues]="vm.values" [tableId]="vm.tableIds" [highlight]="vm.itemId" />
     }
   </ion-content>
-</ng-template>
+</ng-template> -->
 
-<ng-template #tplExplainMenu>
+<!-- <ng-template #tplExplainMenu>
   <ul class="menu menu-compact bg-base-100 rounded-md w-40" cdkMenu>
     <li>
       <button [nwbModalOpen]="{ content: tplExplain, size: 'md' }" cdkMenuItem>Explain Drop</button>
     </li>
   </ul>
-</ng-template>
+</ng-template> -->

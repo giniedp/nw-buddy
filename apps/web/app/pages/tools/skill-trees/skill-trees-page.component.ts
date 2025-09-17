@@ -23,7 +23,7 @@ import {
   injectBreakpoint,
   injectChildRouteParam,
   injectParentRouteParam,
-  injectQueryParam,
+  injectRxQueryParam,
   injectRouteParam,
   selectSignal,
 } from '~/utils'
@@ -93,7 +93,7 @@ export class SkillTreesPageComponent {
   protected selectionParam = 'id'
   protected persistKey = 'skilltrees-table'
   protected categoryParamName = 'category'
-  protected categoryParam = toSignal(injectQueryParam(this.categoryParamName))
+  protected categoryParam = toSignal(injectRxQueryParam(this.categoryParamName))
   protected category = selectSignal(this.categoryParam, (it) => {
     return it ? it : null
   })

@@ -173,16 +173,24 @@ export function getVitalsCategories(vital: VitalsData, categories: Map<string, V
     return []
   }
   return vital.VitalsCategories.map((it) => {
-    const category = categories.get(it)
-    if (!category) {
-      // console.warn(`category not found`, it)
-    }
-    return category
+    return categories.get(it)
   }).filter((it) => !!it)
 }
 
 export function isVitalNamed(vital: VitalsData) {
-  return NAMED_FAIMILY_TYPES.includes(vital?.CreatureType)
+  if (!vital?.VitalsCategories?.length) {
+    return false
+  }
+  for (const categoryId of vital.VitalsCategories) {
+    if (eqCaseInsensitive(categoryId, 'Named') || eqCaseInsensitive(categoryId, 'Named_Expedition_AI')) {
+      return true
+    }
+  }
+  return false
+}
+
+export function isVitalBoss(vital: VitalsData) {
+  return vital.CreatureType ? vital.CreatureType.includes('Boss') : false
 }
 
 export function getVitalFamilyInfo(vital: VitalsData): VitalFamilyInfo {

@@ -126,7 +126,7 @@ export function lootBucketColTags(util: LootBucketTableUtils) {
     colId: 'tags',
     headerValueGetter: () => 'Tags',
     valueGetter: ({ data }) => {
-      return Array.from(data.Tags.values()).map(formatTag)
+      return Array.from(Object.values(data.Tags)).map(formatTag)
     },
     cellRenderer: util.tagsRenderer({
       //transform: formatTag,

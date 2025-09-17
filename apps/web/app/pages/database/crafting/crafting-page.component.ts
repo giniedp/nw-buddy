@@ -16,7 +16,7 @@ import {
   eqCaseInsensitive,
   injectBreakpoint,
   injectChildRouteParam,
-  injectQueryParam,
+  injectRxQueryParam,
   injectRouteParam,
   selectSignal,
 } from '~/utils'

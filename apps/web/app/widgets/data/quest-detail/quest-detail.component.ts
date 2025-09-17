@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { injectQueryParam, selectSignal } from '~/utils'
+import { injectRxQueryParam, selectSignal } from '~/utils'
 import { GameEventDetailRewardsComponent } from '../game-event-detail/game-event-detail-rewards.component'
 import { QuestDetailConversationListComponent } from './quest-detail-conversation-list.component'
 import { QuestDetailDescriptionComponent } from './quest-detail-description.component'
@@ -57,7 +57,7 @@ export class QuestDetailComponent {
   })
   protected defaultIcon = NW_FALLBACK_ICON
 
-  protected tab = selectSignal(injectQueryParam('tab'), (it) => it as QuestDetailTabId)
+  protected tab = selectSignal(injectRxQueryParam('tab'), (it) => it as QuestDetailTabId)
   protected tabs: QuestDetailTab[] = [
     {
       id: null,

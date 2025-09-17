@@ -2,33 +2,37 @@
   interpolate-size: allow-keywords;
 }
 
-.fade {
-  @starting-style {
+@keyframes fadeSlideUp {
+  from {
     opacity: 0;
+    translate: 0 1rem;
   }
 }
-.fade.fade-in {
-  animation: fade-in 250ms;
+.fade-slide-up-enter {
+  animation: fadeSlideUp 250ms ease-out;
+  animation-fill-mode: backwards;
+  animation-delay: calc(var(--enter-delay, 0));
 }
-.fade.fade-out {
-  animation: fade-out 250ms;
+.fade-slide-up-leave {
+  animation: fadeSlideUp 250ms ease-out reverse;
+  animation-fill-mode: both;
+  animation-delay: calc(var(--leave-delay, 0));
 }
 
-@keyframes fade-in {
+@keyframes fadeIn {
   from {
     opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+.fade-enter {
+  animation: fadeIn 250ms ease;
+  animation-fill-mode: backwards;
+  animation-delay: calc(var(--enter-delay, 0));
+}
+.fade-leave {
+  animation: fadeIn 250ms ease reverse;
+  animation-fill-mode: both;
+  animation-delay: calc(var(--leave-delay, 0));
 }
 
 .grow-y-in {

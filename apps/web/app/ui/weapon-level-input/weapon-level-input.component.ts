@@ -1,20 +1,20 @@
+import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, ViewChild, inject } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { NwModule } from '~/nw'
-import { InputSliderComponent } from '../input-slider'
-import { LayoutModule } from '../layout'
-import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
+import { NwModule } from '~/nw'
+import { LayoutModule } from '../layout'
 
 @Component({
   selector: 'nwb-weapon-level-input',
   templateUrl: './weapon-level-input.component.html',
   styleUrl: './weapon-level-input.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NwModule, InputSliderComponent, LayoutModule],
+  imports: [CommonModule, FormsModule, NwModule, LayoutModule],
   host: {
-    class: 'bg-base-100 rounded-md flex flex-col items-center justify-center cursor-pointer aspect-[10/4] relative p-4 overflow-hidden group',
+    class:
+      'bg-base-100 rounded-md flex flex-col items-center justify-center cursor-pointer aspect-[10/4] relative p-4 overflow-hidden group',
   },
   providers: [
     {

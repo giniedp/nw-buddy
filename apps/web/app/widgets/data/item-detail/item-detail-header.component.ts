@@ -43,7 +43,6 @@ export class ItemDetailHeaderComponent {
   protected rarity = this.store.rarity
   protected rarityName = this.store.rarityLabel
   protected typeName = this.store.typeName
-  protected sourceLabel = this.store.sourceLabel
   protected tierLabel = this.store.tierLabel
   protected record = this.store.record
   protected recordId = this.store.recordId

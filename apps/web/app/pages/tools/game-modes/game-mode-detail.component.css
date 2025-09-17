@@ -36,6 +36,13 @@
 }
 .content-grid-content {
   grid-area: content;
+  display: grid;
+}
+nwb-game-mode-detail-loot,
+nwb-game-mode-detail-vitals {
+  grid-row: 1;
+  grid-column: 1;
+  align-self: start;
 }
 
 nwb-item-detail {

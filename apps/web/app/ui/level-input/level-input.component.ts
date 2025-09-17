@@ -1,3 +1,4 @@
+import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -10,9 +11,7 @@ import {
   inject,
 } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { InputSliderComponent } from '../input-slider'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
-import { CdkOverlayOrigin } from '@angular/cdk/overlay'
 import { LayoutModule } from '../layout'
 
 @Component({
@@ -20,7 +19,7 @@ import { LayoutModule } from '../layout'
   templateUrl: './level-input.component.html',
   styleUrl: './level-input.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, InputSliderComponent, LayoutModule],
+  imports: [CommonModule, FormsModule, LayoutModule],
   host: {
     class: 'aspect-square',
   },

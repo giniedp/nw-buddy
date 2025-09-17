@@ -32,9 +32,9 @@
 
 @if (isLoading()) {
   <div
-    class="bg-gradient-to-b from-base-300 to-black absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none fade"
-    animate.enter="fade-in"
-    animate.leave="fade-out"
+    class="bg-gradient-to-b from-base-300 to-black absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
+    animate.enter="fade-enter"
+    animate.leave="fade-leave"
   >
     <picture class="block aspect-square w-40 h-40 relative">
       <img

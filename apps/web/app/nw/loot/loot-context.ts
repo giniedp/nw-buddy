@@ -21,19 +21,33 @@ export class ConstrainedLootContext implements LootContext {
    */
   public readonly values: Map<string, number | string | number[]>
 
-  /**
-   * Table and bucket ids to ignore
-   */
-  public ignoreTablesAndBuckets: string[]
+  private skipTables: Set<string>
+  private skipBuckets: Set<string>
+  private skipBucketTags: Set<string>
+  private onlyBucketTags: Set<string>
 
-  /**
-   * Collect only bucket items that have one of these tags
-   */
-  public bucketTags: string[]
-
-  public constructor(options: { tags: string[]; values: Record<string, number | string | number[]> }) {
+  public constructor(options: {
+    tags: string[]
+    values: Record<string, number | string | number[]>
+    skipTables?: string[]
+    skipBuckets?: string[]
+    skipBucketTags?: string[]
+    onlyBucketTags?: string[]
+  }) {
     this.tags = new CaseInsensitiveSet(options.tags || [])
     this.values = new CaseInsensitiveMap(Object.entries(options.values || {}))
+    if (options.skipTables) {
+      this.skipTables = new CaseInsensitiveSet(options.skipTables)
+    }
+    if (options.skipBuckets) {
+      this.skipBuckets = new CaseInsensitiveSet(options.skipBuckets)
+    }
+    if (options.skipBucketTags) {
+      this.skipBucketTags = new CaseInsensitiveSet(options.skipBucketTags)
+    }
+    if (options.onlyBucketTags) {
+      this.onlyBucketTags = new CaseInsensitiveSet(options.onlyBucketTags)
+    }
   }
 
   public static create(options: { tags: string[]; values: LootContextValues }) {
@@ -44,7 +58,7 @@ export class ConstrainedLootContext implements LootContext {
    * Checks whether this context can access the given loot table
    */
   public canAccessTable(table: LootTable): boolean {
-    if (this.isIgnoredId(table.LootTableID)) {
+    if (this.isTableSkipped(table.LootTableID)) {
       return false
     }
     return canAccessLootTable(this, table)
@@ -54,7 +68,7 @@ export class ConstrainedLootContext implements LootContext {
    * Checks whether this context can access the given loot table row
    */
   public canAccessTableRow(table: LootTable, row: LootTableRow): boolean {
-    if (this.isIgnoredId(table.LootTableID)) {
+    if (this.isTableSkipped(table.LootTableID)) {
       return false
     }
     return canAccessLootTableRow(this, table, row)
@@ -64,20 +78,42 @@ export class ConstrainedLootContext implements LootContext {
    * Checks whether this context can access the given lootbucket
    */
   public canAccessBucketRow(entry: LootBucketRow): boolean {
-    if (this.isIgnoredId(entry.LootBucket) || this.isExcludedEntry(entry)) {
+    if (this.isBucketSkipped(entry.LootBucket) || this.isRowSkipped(entry)) {
       return false
     }
     return canAccessLootBucketRow(this, entry)
   }
 
-  private isIgnoredId(tableOrBucketId: string) {
-    return this.ignoreTablesAndBuckets?.includes(tableOrBucketId)
+  private isTableSkipped(tableId: string) {
+    return this.skipTables?.has(tableId)
   }
 
-  private isExcludedEntry(entry: LootBucketRow) {
-    if (!this.bucketTags) {
+  private isBucketSkipped(bucketId: string) {
+    return this.skipBuckets?.has(bucketId)
+  }
+
+  private isRowSkipped(entry: LootBucketRow) {
+    if (!entry.Tags) {
       return false
     }
-    return !this.bucketTags.some((tag) => entry.Tags.has(tag))
+
+    if (this.skipBucketTags?.size) {
+      for (const tag in entry.Tags) {
+        if (this.skipBucketTags?.has(tag)) {
+          return true
+        }
+      }
+    }
+
+    if (this.onlyBucketTags?.size) {
+      for (const tag in entry.Tags) {
+        if (this.onlyBucketTags.has(tag)) {
+          return false
+        }
+      }
+      return true
+    }
+
+    return false
   }
 }

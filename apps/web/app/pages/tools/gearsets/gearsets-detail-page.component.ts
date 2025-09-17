@@ -26,7 +26,7 @@ import { ChipsInputModule } from '~/ui/chips-input'
 import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { injectBreakpoint, injectQueryParam, injectRouteParam } from '~/utils'
+import { injectBreakpoint, injectRxQueryParam, injectRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 import { rxResource, toSignal } from '@angular/core/rxjs-interop'
@@ -79,12 +79,12 @@ export class GearsetsDetailPageComponent {
   private gearsets = inject(GearsetsService)
   protected injector = inject(Injector)
 
-  protected isTabOpponent = toSignal(injectQueryParam('tab').pipe(map((it) => it === 'vs')))
+  protected isTabOpponent = toSignal(injectRxQueryParam('tab').pipe(map((it) => it === 'vs')))
   protected isLarge = toSignal(injectBreakpoint('(min-width: 992px)'))
 
   protected userId = toSignal(injectRouteParam('userid'))
   protected id = toSignal(injectRouteParam('id'))
-  protected opponentId = toSignal(injectQueryParam('vs'))
+  protected opponentId = toSignal(injectRxQueryParam('vs'))
 
   protected playerResource = rxResource({
     params: () => ({ userId: this.userId(), id: this.id() }),

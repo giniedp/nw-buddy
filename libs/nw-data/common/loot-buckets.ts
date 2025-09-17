@@ -18,7 +18,7 @@ export type LootBucketRow = {
   MatchOne: boolean
   Odds: number
   Quantity: number[]
-  Tags: Map<string, ParsedLootTag>
+  Tags: Record<string, ParsedLootTag>
 }
 
 function convertRow(data: LootBucketData, firstRow: LootBucketData, rowId: number): LootBucketRow[] {
@@ -46,7 +46,7 @@ function convertRow(data: LootBucketData, firstRow: LootBucketData, rowId: numbe
         MatchOne: null,
         Odds: null,
         Quantity: null as number[],
-        Tags: new CaseInsensitiveMap(),
+        Tags: {},
       }
     })
     .map((result) => {
@@ -57,7 +57,7 @@ function convertRow(data: LootBucketData, firstRow: LootBucketData, rowId: numbe
             const tags = ((value as string[]) || []).map(parseLootTag)
             for (const tag of tags) {
               if (tag) {
-                result.Tags.set(tag.name, tag)
+                result.Tags[tag.name.toLocaleLowerCase()] = tag
               }
             }
             break

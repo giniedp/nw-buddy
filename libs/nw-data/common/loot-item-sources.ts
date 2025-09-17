@@ -403,7 +403,7 @@ function describeConditions(node: LootNode, tagsToKeep: Set<string>): ConditionD
 
   while (node) {
     if (node.bucket) {
-      for (const tag of node.bucket.Tags.values() || []) {
+      for (const tag of Object.values(node.bucket.Tags) || []) {
         if (isLootTagKnownCondition(tag.name)) {
           const value = mergeConditionValue(conditions[tag.name], tag.value)
           if (value != null) {

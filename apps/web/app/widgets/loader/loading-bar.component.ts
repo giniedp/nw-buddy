@@ -9,10 +9,10 @@ import { delayWhen, distinctUntilChanged, of, switchMap } from 'rxjs'
   template: `
     @if (show()) {
       <div
-        class="progress-bar w-full fade"
+        class="progress-bar w-full"
         [style.height.px]="height()"
-        animate.enter="fade-in"
-        animate.leave="fade-out"
+        animate.enter="fade-enter"
+        animate.leave="fade-leave"
       ></div>
     }
   `,

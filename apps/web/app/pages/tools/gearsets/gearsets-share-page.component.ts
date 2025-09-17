@@ -6,7 +6,7 @@ import { GearsetRecord, GearsetsService } from '~/data'
 import { ShareLoaderComponent } from '~/pages/share'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
-import { injectQueryParam, injectRouteParam } from '~/utils'
+import { injectRxQueryParam, injectRouteParam } from '~/utils'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
@@ -36,7 +36,7 @@ export class GearsetsSharePageComponent {
 
   protected paramName = toSignal(injectRouteParam('name'))
   protected paramCid = toSignal(injectRouteParam('cid'))
-  protected paramMode = toSignal(injectQueryParam('mode'))
+  protected paramMode = toSignal(injectRxQueryParam('mode'))
   protected get isEmbed() {
     return this.router.url.includes('embed')
   }

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http'
-import { InjectionToken, inject } from '@angular/core'
+import { InjectionToken, Signal, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { NW_BUDDY_LIVE } from 'apps/web/environments'
 import { BehaviorSubject, Observable, Subject, defer, firstValueFrom, switchMap, tap, throttleTime } from 'rxjs'
 import { z } from 'zod'
@@ -38,8 +39,8 @@ export const CURRENT_MUTATION = new InjectionToken<Observable<MutationList>>('CU
   },
 })
 
-export function injectCurrentMutation(): Observable<MutationList> {
-  return inject(CURRENT_MUTATION).pipe(shareReplayRefCount(1))
+export function injectCurrentMutation(): Signal<MutationList> {
+  return toSignal(inject(CURRENT_MUTATION))
 }
 
 async function fetchMutationList(http: HttpClient): Promise<MutationList> {

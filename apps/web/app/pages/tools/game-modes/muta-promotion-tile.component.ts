@@ -12,12 +12,10 @@ import {
   ViewChild,
   inject,
 } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { ElementalMutationStaticData, PromotionMutationStaticData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
-import { GameModeDetailStore } from './game-mode-detail.store'
-import { MutaPromotionDetailModule } from '~/widgets/data/muta-promotion-detail'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
+import { MutaPromotionDetailModule } from '~/widgets/data/muta-promotion-detail'
 
 @Component({
   selector: 'nwb-muta-promotion-tile',

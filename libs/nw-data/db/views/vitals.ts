@@ -7,23 +7,20 @@ export async function vitalsForGameMode(
   db: NwDataSheets,
   params: {
     gameModeId: string
-    difficulty?: number
+    mutated?: boolean
     creatureType?: CreatureType[]
   },
 ) {
-  const { gameModeId, difficulty, creatureType } = params
+  const { gameModeId, mutated, creatureType } = params
+  const isStarstone = eqCaseInsensitive(gameModeId, 'DungeonShatteredObelisk')
   const vitals = await db.vitalsAll()
   const vitalsMeta = await db.vitalsMetadataByIdMap()
   const gameModes = await db.gameModesMapsAll()
   function isInDungeon(vital: VitalsBaseData) {
-    if (
-      difficulty != null &&
-      gameModeId === 'DungeonShatteredObelisk' &&
-      vital.VitalsID === 'Withered_Brute_Named_08'
-    ) {
+    if (mutated && isStarstone && eqCaseInsensitive(vital.VitalsID, 'Withered_Brute_Named_08')) {
       return true
     }
-    return getVitalGameModeMaps(vital, gameModes, vitalsMeta).some((dg) => dg.GameModeId === gameModeId)
+    return getVitalGameModeMaps(vital, gameModes, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeId, gameModeId))
   }
   return vitals.filter((it) => {
     if (!isInDungeon(it)) {

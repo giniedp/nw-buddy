@@ -43,13 +43,7 @@ export class ItemDetailDirective {
 
   #fxLoad = effect(() => {
     const itemId = this.itemId()
-    untracked(() => {
-      this.store.load({
-        recordId: itemId,
-        gsOverride: this.gsOverride(),
-        perkOverride: this.perkOverride(),
-      })
-    })
+    untracked(() => this.store.load(itemId))
   })
 
   #fxOverrideGs = effect(() => {

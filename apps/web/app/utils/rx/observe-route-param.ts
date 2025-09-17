@@ -1,8 +1,44 @@
-import { Injector, inject } from '@angular/core'
+import { Injector, Signal, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router'
+import { ActivatedRoute, NavigationEnd, NavigationExtras, Params, Router } from '@angular/router'
 import { eq } from 'lodash'
 import { Observable, defer, distinctUntilChanged, filter, isObservable, map, of, startWith, switchMap } from 'rxjs'
+
+export function injectParams() {
+  const route = inject(ActivatedRoute)
+  return toSignal<Params>(route.params)
+}
+
+export function injectParam(param: string): Signal<string>
+export function injectParam<T>(param: string, options?: { transform: (value: string) => T }): Signal<T>
+export function injectParam<T>(param: string, options?: { transform: (value: string) => T }) {
+  const params = injectParams()
+  return computed(() => {
+    const value = params()?.[param]
+    if (options?.transform) {
+      return options.transform(value)
+    }
+    return value
+  })
+}
+
+export function injectQueryParams() {
+  const route = inject(ActivatedRoute)
+  return toSignal<Params>(route.queryParams)
+}
+
+export function injectQueryParam(param: string): Signal<string>
+export function injectQueryParam<T>(param: string, options?: { transform: (value: string) => T }): Signal<T>
+export function injectQueryParam<T>(param: string, options?: { transform: (value: string) => T }) {
+  const params = injectQueryParams()
+  return computed(() => {
+    const value = params()?.[param]
+    if (options?.transform) {
+      return options.transform(value)
+    }
+    return value
+  })
+}
 
 export function injectRouteParam(
   param: string | Observable<string>,
@@ -27,7 +63,7 @@ export function injectChildRouteParam(
   return observeChildRouteParam(router, route, param)
 }
 
-export function injectQueryParam(
+export function injectRxQueryParam(
   param: string | Observable<string>,
   route: ActivatedRoute = inject(ActivatedRoute),
 ): Observable<string> {
@@ -172,7 +208,7 @@ export function queryParamModel(
 ) {
   const router = options?.router || inject(Router)
   const route = options?.route || inject(ActivatedRoute)
-  const param$ = injectQueryParam(param, route)
+  const param$ = injectRxQueryParam(param, route)
   const getter = toSignal(param$, {
     injector: options?.injector,
   })

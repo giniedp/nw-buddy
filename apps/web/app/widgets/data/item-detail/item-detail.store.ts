@@ -1,11 +1,12 @@
-import { computed } from '@angular/core'
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { computed, resource } from '@angular/core'
+import { patchState, signalMethod, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
   AttributeRef,
   NW_FALLBACK_ICON,
   NW_MAX_CHARACTER_LEVEL,
   getItemIconPath,
+  getItemId,
   getItemRarity,
   getItemRarityLabel,
   getItemSalvageInfo,
@@ -21,28 +22,21 @@ import {
   isPerkGem,
 } from '@nw-data/common'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
-import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
-import { injectNwData, withStateLoader } from '~/data'
-import { humanize } from '~/utils'
+import { map, pipe } from 'rxjs'
+import { injectNwData } from '~/data'
+import { humanize, resourceValue, resourceValueOf } from '~/utils'
 import {
-  ItemPerkSlot,
   fetchItemPerkSlots,
   selectDescription,
   selectItemGearscore,
   selectItemGearscoreLabel,
   selectItemRarity,
-  selectItemSalvageInfo,
   selectNamePrefix,
   selectNameSuffix,
 } from './selectors'
 
 export interface ItemDetailState {
   recordId: string
-  record: MasterItemDefinitions | HouseItems
-  item: MasterItemDefinitions
-  houseItem: HouseItems
-  itemPerkSlots: ItemPerkSlot[]
-
   gsOverride: number
   perkOverride: Record<string, string>
 }
@@ -50,39 +44,64 @@ export interface ItemDetailState {
 export const ItemDetailStore = signalStore(
   withState<ItemDetailState>({
     recordId: null,
-    record: null,
-    item: null,
-    houseItem: null,
-    itemPerkSlots: [],
     gsOverride: null,
     perkOverride: null,
   }),
-  withStateLoader(() => {
+  withComputed(({ recordId }) => {
     const db = injectNwData()
+    const recordResource = resource({
+      params: () => recordId(),
+      loader: ({ params }) => db.itemOrHousingItem(params),
+    })
+    const record = resourceValueOf<MasterItemDefinitions | HouseItems>(recordResource, {
+      keepPrevious: true,
+    })
+
     return {
-      load: async ({
-        recordId,
-        gsOverride,
-        perkOverride,
-      }: {
-        recordId: string
-        gsOverride?: number
-        perkOverride?: Record<string, string>
-      }) => {
-        const record = await db.itemOrHousingItem(recordId)
-        const item = isMasterItem(record) ? record : null
-        const housingItem = isHousingItem(record) ? record : null
-        const itemPerkSlots = await fetchItemPerkSlots(db, { item, perkOverride })
+      record,
+      isLoading: recordResource.isLoading,
+      isLoaded: computed(() => !!record() || !!recordResource.error() || recordResource.hasValue()),
+    }
+  }),
+  withMethods((state) => {
+    return {
+      load: signalMethod(async (itemOrId: string | MasterItemDefinitions | HouseItems) => {
+        if (typeof itemOrId === 'string') {
+          patchState(state, { recordId: itemOrId })
+        } else {
+          state.record.set(itemOrId)
+          patchState(state, { recordId: getItemId(itemOrId) })
+        }
+      }),
+    }
+  }),
+  withComputed(({ record, perkOverride }) => {
+    const db = injectNwData()
+    const item = computed(() => {
+      const value = record()
+      return isMasterItem(value) ? value : null
+    })
+    const houseItem = computed(() => {
+      const value = record()
+      return isHousingItem(value) ? value : null
+    })
+    const itemPerkSlots = resourceValue({
+      params: () => {
         return {
-          recordId,
-          record,
-          item,
-          houseItem: housingItem,
-          itemPerkSlots,
-          gsOverride,
-          perkOverride,
+          item: item(),
+          perkOverride: perkOverride(),
         }
       },
+      loader: ({ params: { item, perkOverride } }) => {
+        return fetchItemPerkSlots(db, { item, perkOverride })
+      },
+      defaultValue: [],
+      keepPrevious: true,
+    })
+    return {
+      item,
+      houseItem,
+      itemPerkSlots,
     }
   }),
   withState({
@@ -92,28 +111,13 @@ export const ItemDetailStore = signalStore(
     attrValueSums: null as Record<AttributeRef, number>,
   }),
   withMethods((state) => {
-    const db = injectNwData()
     return {
-      updateGsOverride: rxMethod<number>(
-        pipe(
-          map((gsOverride) => {
-            patchState(state, { gsOverride })
-          }),
-        ),
-      ),
-      updatePerkOverride: rxMethod<Record<string, string>>(
-        pipe(
-          switchMap((perkOverride) => {
-            return combineLatest({
-              perkOverride: of(perkOverride),
-              itemPerkSlots: fetchItemPerkSlots(db, { item: state.item(), perkOverride }),
-            })
-          }),
-          map(({ perkOverride, itemPerkSlots }) => {
-            patchState(state, { perkOverride, itemPerkSlots })
-          }),
-        ),
-      ),
+      updateGsOverride: signalMethod((gsOverride: number) => {
+        patchState(state, { gsOverride })
+      }),
+      updatePerkOverride: signalMethod((perkOverride: Record<string, string>) => {
+        patchState(state, { perkOverride })
+      }),
       updateSettings: rxMethod<{
         playerLevel?: number
         gsEditable?: boolean
@@ -153,8 +157,6 @@ export const ItemDetailStore = signalStore(
       namePrefix,
       nameSuffix,
       fullName: computed(() => [namePrefix(), name(), nameSuffix()].filter((it) => !!it)),
-      source: computed(() => getItemSourceShort(record()) as string),
-      sourceLabel: computed(() => humanize(getItemSourceShort(record()))),
       description: computed(() => selectDescription(record())),
       icon: computed(() => getItemIconPath(record()) || NW_FALLBACK_ICON),
       typeName: computed(() => getItemTypeName(record())),

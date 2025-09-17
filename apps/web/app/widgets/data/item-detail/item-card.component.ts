@@ -70,11 +70,7 @@ export class ItemCardComponent {
   #fxLoad = effect(() => {
     const itemId = this.entity()
     untracked(() => {
-      this.store.load({
-        recordId: itemId,
-        gsOverride: this.gsOverride(),
-        perkOverride: this.perkOverride(),
-      })
+      this.store.load(itemId)
     })
   })
   #fxOverrideGs = effect(() => {

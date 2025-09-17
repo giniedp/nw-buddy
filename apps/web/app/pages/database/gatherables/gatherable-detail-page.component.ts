@@ -8,7 +8,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgLink } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectQueryParam, injectRouteParam } from '~/utils'
+import { HtmlHeadService, injectRxQueryParam, injectRouteParam } from '~/utils'
 import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 import { GatherableDetailStore } from '~/widgets/data/gatherable-detail/gatherable-detail.store'
@@ -38,8 +38,8 @@ export class GatherableDetailPageComponent {
   protected store = inject(GatherableDetailStore)
 
   protected itemId = toSignal(injectRouteParam('id'))
-  protected tabId = toSignal(injectQueryParam('tab'))
-  protected tag = toSignal(injectQueryParam('tag'))
+  protected tabId = toSignal(injectRxQueryParam('tab'))
+  protected tag = toSignal(injectRxQueryParam('tag'))
 
   protected iconLink = svgLink
   protected viewerActive = false

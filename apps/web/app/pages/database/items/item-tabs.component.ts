@@ -42,7 +42,6 @@ import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 import { VitalDetailModule } from '../../../widgets/data/vital-detail'
-import { LootContextEditorComponent } from "~/widgets/loot";
 
 export type ItemTabId =
   | 'effects'
@@ -82,8 +81,7 @@ export interface ItemTab {
     EntitlementDetailModule,
     VitalDetailModule,
     FormsModule,
-    LootContextEditorComponent
-],
+  ],
   providers: [ItemDetailStore],
   host: {
     class: 'block',
@@ -97,7 +95,7 @@ export class ItemTabsComponent {
 
   #fxLoad = effect(() => {
     const itemId = this.itemId()
-    untracked(() => this.store.load({ recordId: itemId }))
+    untracked(() => this.store.load(itemId))
   })
 
   protected appearanceResource = resource({
@@ -174,7 +172,7 @@ export class ItemTabsComponent {
     params: this.itemId,
     loader: ({ params }) => {
       return this.db.itemSalvagesTo(params)
-    }
+    },
   })
   protected salvagesTo = resourceValue(this.salvagesToResource)
   protected salvageLoot = computed(() => {
@@ -186,7 +184,7 @@ export class ItemTabsComponent {
       table: itemSalvageLootTable(this.store.item()),
       tags: Array.from(context.tags),
       values: Object.fromEntries(context.values.entries()),
-      items: this.salvagesTo() || []
+      items: this.salvagesTo() || [],
     }
   })
 
@@ -291,7 +289,7 @@ export class ItemTabsComponent {
     if (this.salvageLoot()) {
       tabs.push({
         id: 'salvages-to',
-        label: `Salvages to (${this.salvageLoot().items.length})`
+        label: `Salvages to (${this.salvageLoot().items.length})`,
       })
     }
 
