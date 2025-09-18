@@ -254,6 +254,8 @@
             <nwb-game-mode-detail-vitals
               [items]="tab.vitals"
               [selectedVital]="vitalTargetClick()"
+              [activeTab]="paramTabVitals()"
+              (activeTabChange)="handleVitalTabChange($event)"
               (vitalTargetEnter)="handleVitalTargetEnter($event)"
               (vitalTargetLeave)="handleVitalTargetLeave($event)"
               (vitalTargetClick)="handleVitalTargetClick($event)"
