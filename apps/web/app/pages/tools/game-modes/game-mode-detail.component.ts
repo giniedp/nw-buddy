@@ -111,7 +111,7 @@ export class GameModeDetailComponent {
   protected paramCurse = injectQueryParam('curse')
   protected paramElement = injectQueryParam('element')
   protected paramPromotion = injectQueryParam('promotion')
-  protected paramDifficulty = injectQueryParam('difficulty')
+  protected paramDifficulty = injectQueryParam('difficulty', { transform: (it) => Number(it) || null })
   protected paramTab = injectQueryParam('tab', { transform: (it) => it || '' })
   protected paramTabVitals = injectQueryParam('tabv')
 

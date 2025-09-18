@@ -19,7 +19,7 @@
       </ion-segment>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-p-4">
+  <ion-content class="ion-p-4" [gutterStable]="true">
     <div class="w-full max-w-screen-3xl mx-auto grid grid-cols-fill gap-4">
       @for (item of modes$ | async; track $index; let index = $index) {
         <a

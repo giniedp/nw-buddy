@@ -1,21 +1,27 @@
 @if (tabItems()?.length) {
   <nwb-tabs-host>
-    <nwb-tab-left
-      class="btn btn-sm btn-square btn-ghost w-5"
-      [disabled]="!tabs.canScrollLeft()"
-      [class.hidden]="!tabs.canScroll()"
-    />
-    <nwb-tab-right
-      class="btn btn-sm btn-square btn-ghost w-5"
-      [disabled]="!tabs.canScrollRight()"
-      [class.hidden]="!tabs.canScroll()"
-    />
+    @if (tabs.canScroll()) {
+      <nwb-tab-left
+        class="btn btn-sm btn-square btn-ghost w-5"
+        [disabled]="!tabs.canScrollLeft()"
+        animate.enter="inflate-x-fade-enter"
+        animate.leave="inflate-x-fade-leave"
+      />
+    }
+    @if (tabs.canScroll()) {
+      <nwb-tab-right
+        class="btn btn-sm btn-square btn-ghost w-5"
+        [disabled]="!tabs.canScrollRight()"
+        animate.enter="inflate-x-fade-enter"
+        animate.leave="inflate-x-fade-leave"
+      />
+    }
     <nwb-tabs [active]="activeTab()" class="tabs tabs-border tabs-sm bg-base-300" #tabs>
       @for (tab of tabItems(); track tab.id) {
         <nwb-tab
           class="whitespace-nowrap"
-          animate.enter="fade-grow-x-in"
-          animate.leave="fade-grow-x-out"
+          animate.enter="inflate-x-fade-enter"
+          animate.leave="inflate-x-fade-leave"
           [value]="tab.id"
           [routerLink]="[]"
           [queryParams]="{ itemTab: tab.id }"
@@ -30,13 +36,23 @@
   <div class="flex flex-col gap-2 pt-2">
     @switch (activeTab()) {
       @case ('effects') {
-        @for (id of grantsEffects(); track $index) {
-          <nwb-status-effect-detail [effectId]="id" class="bg-black" />
+        @for (id of grantsEffects(); track $index; let index = $index) {
+          <nwb-status-effect-detail
+            [effectId]="id"
+            class="bg-black"
+            animate.enter="fade-enter"
+            [style.--enter-delay.ms]="index * 25"
+          />
         }
       }
       @case ('perks') {
-        @for (id of resourcePerks(); track $index) {
-          <nwb-perk-detail [perkId]="id" class="bg-black" />
+        @for (id of resourcePerks(); track $index; let index = $index) {
+          <nwb-perk-detail
+            [perkId]="id"
+            class="bg-black"
+            animate.enter="fade-enter"
+            [style.--enter-delay.ms]="index * 25"
+          />
         }
 
         <nwb-perk-bucket-detail
@@ -46,7 +62,7 @@
         />
       }
       @case ('unlocks') {
-        @for (recipe of unlocksRecipe(); track $index) {
+        @for (recipe of unlocksRecipe(); track $index; let index = $index) {
           <nwb-item-card
             [entity]="recipe?.ItemID"
             [enableInfoLink]="true"
@@ -54,16 +70,23 @@
             [disablePerks]="true"
             [disableStats]="true"
             [disableInfo]="true"
+            animate.enter="fade-enter"
+            [style.--enter-delay.ms]="index * 25"
           />
         }
       }
       @case ('recipes') {
-        @for (item of recipes(); track $index) {
-          <nwb-crafting-calculator [entity]="item.recipe" class="bg-base-300 rounded-b-md" />
+        @for (item of recipes(); track $index; let index = $index) {
+          <nwb-crafting-calculator
+            [entity]="item.recipe"
+            class="bg-base-300 rounded-b-md"
+            animate.enter="fade-enter"
+            [style.--enter-delay.ms]="index * 25"
+          />
         }
       }
       @case ('transmog') {
-        <nwb-appearance-detail [appearance]="appearance()" [parentItemId]="itemId()" />
+        <nwb-appearance-detail [appearance]="appearance()" [parentItemId]="itemId()" animate.enter="fade-enter" />
       }
       @case ('craftable') {
         <div
@@ -72,19 +95,31 @@
           [nwbInfniteScrollPerPage]="10"
           #scroll="infiniteScroll"
         >
-          @for (item of scroll.data(); track $index) {
-            <nwb-item-detail [itemId]="item.itemId" class="rounded-md overflow-clip">
+          @for (item of scroll.data(); track $index; let index = $index) {
+            <nwb-item-detail
+              [itemId]="item.itemId"
+              class="rounded-md overflow-clip"
+              animate.enter="fade-enter"
+              [style.--enter-delay.ms]="index * 25"
+            >
               <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'xs'" />
             </nwb-item-detail>
           }
           @if (scroll.canLoad()) {
-            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+            <span nwbInfiniteScrollTrigger></span>
           }
         </div>
       }
       @case ('loot') {
-        @for (tableId of lootTableIds(); track $index) {
-          <nwb-loot-graph [tableId]="tableId" [expand]="false" [showLocked]="true" [highlight]="itemId()" />
+        @for (tableId of lootTableIds(); track $index; let index = $index) {
+          <nwb-loot-graph
+            [tableId]="tableId"
+            [expand]="false"
+            [showLocked]="true"
+            [highlight]="itemId()"
+            animate.enter="fade-enter"
+            [style.--enter-delay.ms]="index * 25"
+          />
         }
       }
       @case ('salvages-to') {
@@ -98,6 +133,7 @@
             [showChance]="true"
             [showLocked]="false"
             [tagsEditable]="true"
+            animate.enter="fade-enter"
           />
         }
         @if (salvageLoot().items.length) {
@@ -107,13 +143,18 @@
             [nwbInfniteScrollPerPage]="10"
             #scroll="infiniteScroll"
           >
-            @for (itemId of scroll.data(); track $index) {
-              <nwb-item-detail [itemId]="itemId" class="rounded-md overflow-clip">
+            @for (itemId of scroll.data(); track $index; let index = $index) {
+              <nwb-item-detail
+                [itemId]="itemId"
+                class="rounded-md overflow-clip"
+                animate.enter="fade-enter"
+                [style.--enter-delay.ms]="index * 25"
+              >
                 <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'xs'" />
               </nwb-item-detail>
             }
             @if (scroll.canLoad()) {
-              <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+              <span nwbInfiniteScrollTrigger></span>
             }
           </div>
         }
@@ -200,7 +241,7 @@
             </nwb-vital-detail-item>
           }
           @if (scroll.canLoad()) {
-            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+            <span nwbInfiniteScrollTrigger></span>
           }
         </div>
       }
@@ -236,7 +277,7 @@
             </nwb-item-detail>
           }
           @if (scroll.canLoad()) {
-            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+            <span nwbInfiniteScrollTrigger></span>
           }
         </div>
       }
@@ -261,7 +302,7 @@
             </nwb-item-header>
           }
           @if (scroll.canLoad()) {
-            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+            <span nwbInfiniteScrollTrigger></span>
           }
         </div>
       }

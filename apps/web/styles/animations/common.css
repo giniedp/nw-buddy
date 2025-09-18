@@ -35,6 +35,59 @@
   animation-delay: calc(var(--leave-delay, 0));
 }
 
+@keyframes inflateX {
+  from {
+    overflow: hidden;
+    width: 0px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.inflate-x-fade-enter {
+  animation-name: inflateX, fadeIn;
+  animation-duration: 250ms, 250ms;
+  animation-delay: 0ms, 250ms;
+  animation-fill-mode: backwards, backwards;
+}
+
+.inflate-x-fade-leave {
+  animation-name: fadeIn, inflateX;
+  animation-duration: 250ms, 250ms;
+  animation-delay: 0ms, 250ms;
+  animation-fill-mode: forwards, forwards;
+  animation-direction: reverse, reverse;
+}
+
+
+@keyframes inflateY {
+  from {
+    overflow: hidden;
+    height: 0px;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.inflate-y-fade-enter {
+  animation-name: inflateY, fadeIn;
+  animation-duration: 250ms, 250ms;
+  animation-delay: 0ms, 250ms;
+  animation-fill-mode: backwards, backwards;
+}
+
+.inflate-y-fade-leave {
+  animation-name: fadeIn, inflateY;
+  animation-duration: 250ms, 250ms;
+  animation-delay: 0ms, 250ms;
+  animation-fill-mode: forwards, forwards;
+  animation-direction: reverse, reverse;
+}
+
 .grow-y-in {
   animation: grow-y-in;
   animation-duration: 250ms;

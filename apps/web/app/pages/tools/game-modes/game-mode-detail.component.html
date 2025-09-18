@@ -1,41 +1,9 @@
-@if (isMutable()) {
-  <ul
-    class="menu bg-base-200 flex-none menu-horizontal menu-compact overflow-auto scrollbar-hide w-full flex-nowrap xl:menu-vertical xl:menu-normal xl:w-56"
-  >
-    <li class="menu-title mt-4 hidden xl:block">
-      <span>Normal</span>
-    </li>
-    <li [class.bordered]="!difficultyLevel()">
-      <a rel="nofollow" [routerLink]="['.']" [queryParams]="{}">
-        <span>Regular</span>
-      </a>
-    </li>
-    <li class="menu-title mt-4 hidden xl:block">
-      <span>Mutated</span>
-    </li>
-
-    @for (item of difficulties(); track $index) {
-      <li [class.bordered]="item.MutationDifficulty == difficultyLevel()">
-        <a
-          rel="nofollow"
-          [routerLink]="['.']"
-          [queryParams]="{ difficulty: item.MutationDifficulty }"
-          [queryParamsHandling]="'merge'"
-        >
-          <!-- <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" /> -->
-          {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
-        </a>
-      </li>
-    }
-  </ul>
-}
-
 <ion-content class="flex-1 relative">
   <picture class="absolute top-0 left-0 w-full h-full pointer-events-none">
-    <img [nwImage]="backgroundImage()" class="block w-full h-full object-cover blur-sm" />
+    <img [nwImage]="backgroundImage()" class="block w-full h-full object-cover blur-lg" />
   </picture>
-  <ion-content class="ion-p-4">
-    <div class="content-grid">
+  <ion-content class="ion-p-4" [gutterStable]="true">
+    <div class="content-grid max-w-screen-3xl mx-auto">
       <div class="content-grid-info flex flex-col gap-2 font-nimbus prose-base">
         <h1 class="mb-0 font-normal font-serif tracking-wider">
           <span>{{ title() | nwText }}</span>
@@ -107,50 +75,87 @@
           }
         </section>
 
+        @if (isMutable()) {
+          <div
+            role="tablist"
+            class="tabs tabs-box bg-base-200/50 backdrop-blur-2xl"
+            animate.enter="fade-enter" animate.leave="fade-leave"
+          >
+            <a
+              role="tab"
+              rel="nofollow"
+              [routerLink]="['.']"
+              [queryParams]="{}"
+              class="tab"
+              [class.tab-active]="!difficulty()"
+              [class.text-primary]="!difficulty()"
+            >
+              Regular
+            </a>
+
+            @for (item of difficulties(); track $index) {
+              <a
+                rel="nofollow"
+                role="tab"
+                class="tab"
+                [routerLink]="['.']"
+                [queryParams]="{ difficulty: item.MutationDifficulty }"
+                [queryParamsHandling]="'merge'"
+                [class.tab-active]="item.MutationDifficulty == paramDifficulty()"
+                [class.text-primary]="item.MutationDifficulty == paramDifficulty()"
+              >
+                <!-- <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" /> -->
+                Mutation {{ item.MutationDifficulty }}
+              </a>
+            }
+          </div>
+        }
         @if (difficulty()) {
-          <h2 class="mb-0 mt-4 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
-            <span>Mutation </span>
-            @if (activeMutation()) {
-              <picture class="inline-block w-8 mt-0 mb-0 animate-pulse">
-                <img
-                  [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
-                  class="w-full aspect-square rounded-full animate-spin-cw"
+          <div animate.enter="fade-enter" animate.leave="fade-leave">
+            <h2 class="mb-0 mt-4 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
+              <span>Mutation </span>
+              @if (activeMutation()) {
+                <picture class="inline-block w-8 mt-0 mb-0 animate-pulse">
+                  <img
+                    [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                    class="w-full aspect-square rounded-full animate-spin-cw"
+                  />
+                </picture>
+                <span>Active </span>
+              }
+            </h2>
+            <div class="nw-item-divider max-w-lg mb-2"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl items-start">
+              @if (store.mutaElementAvailable()) {
+                <nwb-muta-element-tile
+                  [mutaElement]="store.mutaElement()"
+                  (mutaElementChanged)="onMutaElementSelected($event)"
+                  [options]="store.mutaElementOptions()"
+                  animate.enter="fade-slide-up-enter"
+                  animate.leave="fade-slide-up-leave"
                 />
-              </picture>
-              <span>Active </span>
-            }
-          </h2>
-          <div class="nw-item-divider max-w-lg mb-2"></div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl items-start">
-            @if (store.mutaElementAvailable()) {
-              <nwb-muta-element-tile
-                [mutaElement]="store.mutaElement()"
-                (mutaElementChanged)="onMutaElementSelected($event)"
-                [options]="store.mutaElementOptions()"
-                animate.enter="fade-slide-up-enter"
-                animate.leave="fade-slide-up-leave"
-              />
-            }
-            @if (store.mutaPromotionAvailable()) {
-              <nwb-muta-promotion-tile
-                [mutaPromotion]="store.mutaPromotion()"
-                [mutaElement]="store.mutaElement()"
-                (mutaPromotionChanged)="onMutaPromotionSelected($event)"
-                [options]="store.mutaPromotionOptions()"
-                animate.enter="fade-slide-up-enter"
-                animate.leave="fade-slide-up-leave"
-              />
-            }
-            @if (store.mutaCurseAvailable()) {
-              <nwb-muta-curse-tile
-                [mutaCurse]="store.mutaCurse()"
-                [mutaElement]="store.mutaElement()"
-                (mutaCurseChanged)="onMutaCurseSelected($event)"
-                [options]="store.mutaCurseOptions()"
-                animate.enter="fade-slide-up-enter"
-                animate.leave="fade-slide-up-leave"
-              />
-            }
+              }
+              @if (store.mutaPromotionAvailable()) {
+                <nwb-muta-promotion-tile
+                  [mutaPromotion]="store.mutaPromotion()"
+                  [mutaElement]="store.mutaElement()"
+                  (mutaPromotionChanged)="onMutaPromotionSelected($event)"
+                  [options]="store.mutaPromotionOptions()"
+                  animate.enter="fade-slide-up-enter"
+                  animate.leave="fade-slide-up-leave"
+                />
+              }
+              @if (store.mutaCurseAvailable()) {
+                <nwb-muta-curse-tile
+                  [mutaCurse]="store.mutaCurse()"
+                  [mutaElement]="store.mutaElement()"
+                  (mutaCurseChanged)="onMutaCurseSelected($event)"
+                  [options]="store.mutaCurseOptions()"
+                  animate.enter="fade-slide-up-enter"
+                  animate.leave="fade-slide-up-leave"
+                />
+              }
+            </div>
           </div>
         }
 

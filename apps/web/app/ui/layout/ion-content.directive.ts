@@ -1,4 +1,4 @@
-import { Directive, ElementRef, OnInit, inject } from '@angular/core'
+import { Directive, ElementRef, OnInit, inject, input } from '@angular/core'
 import { injectDocument } from '~/utils/injection/document'
 import { PlatformService } from '~/utils/services/platform.service'
 
@@ -7,6 +7,7 @@ import { PlatformService } from '~/utils/services/platform.service'
   selector: 'ion-content',
 })
 export class IonContentDirective implements OnInit {
+  public gutterStable = input(false)
   private elRef = inject(ElementRef)
   private platform = inject(PlatformService)
   private document = injectDocument()
@@ -16,7 +17,8 @@ export class IonContentDirective implements OnInit {
     }
   }
   private installScrollbarPatch() {
-    const scrollbarStyle = `
+    const scrollbarStyle = [
+      `
       ::-webkit-scrollbar {
         width: 12px;
         height: 12px;
@@ -37,9 +39,17 @@ export class IonContentDirective implements OnInit {
       ::-webkit-scrollbar-corner {
         background: transparent;
       }
-    `
+    `,
+    ]
+    if (this.gutterStable()) {
+      scrollbarStyle.push(`
+        .inner-scroll.scroll-y {
+          scrollbar-gutter: stable;
+        }
+      `)
+    }
     const styles = this.document.createElement('style')
-    styles.textContent = scrollbarStyle
+    styles.textContent = scrollbarStyle.join('\n')
     this.elRef.nativeElement.shadowRoot.appendChild(styles)
   }
 }
