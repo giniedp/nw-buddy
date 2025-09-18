@@ -50,12 +50,13 @@ export type ItemTableRecord = MasterItemDefinitions & {
   $transformTo?: MasterItemDefinitions | HouseItems
   $transformFrom?: Array<MasterItemDefinitions | HouseItems>
   $conversions?: Array<ItemCurrencyConversionData>
-  $shops?: Array<
-    Pick<
-      CategoricalProgressionData,
-      'CategoricalProgressionId' | 'DisplayName' | 'DisplayDescription' | 'IconPath' | 'EventId'
-    >
-  >
+  $shops?: Array<ShopInfo>
+}
+
+export interface ShopInfo {
+  ProgressionId: string
+  Label: string
+  Icon: string
 }
 
 export function itemColIcon(util: ItemTableUtils) {
@@ -739,14 +740,14 @@ export function itemColShops(util: ItemTableUtils) {
     headerClass: 'bg-secondary/15',
     headerValueGetter: () => 'Shops',
     width: 150,
-    valueGetter: ({ data }) => data.$shops?.map((it) => it?.CategoricalProgressionId),
+    valueGetter: ({ data }) => data.$shops?.map((it) => it?.ProgressionId),
     cellRenderer: util.cellRenderer(({ data }) => {
       const shops = data.$shops || []
       return util.el('div.flex.flex-row.items-center.h-full', {}, [
         ...shops.map((shop) =>
           util.elImg({
             class: ['w-7', 'h-7', 'nw-icon', 'flex-none'],
-            src: shop?.IconPath || NW_FALLBACK_ICON,
+            src: shop?.Icon || NW_FALLBACK_ICON,
           }),
         ),
       ])
@@ -758,9 +759,9 @@ export function itemColShops(util: ItemTableUtils) {
         const shops = data.$shops || []
         return shops.map((shop) => {
           return {
-            id: shop.CategoricalProgressionId,
-            label: shop.EventId ? humanize(shop.EventId) : util.i18n.get(shop.DisplayName),
-            icon: shop.IconPath || NW_FALLBACK_ICON,
+            id: shop.ProgressionId,
+            label: util.i18n.get(shop.Label),
+            icon: shop.Icon || NW_FALLBACK_ICON,
           }
         })
       },

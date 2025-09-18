@@ -7,9 +7,6 @@ import {
   inject,
   input,
   linkedSignal,
-  resource,
-  ResourceRef,
-  Signal,
   untracked,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
@@ -24,6 +21,7 @@ import {
   isMasterItem,
   itemSalvageContext,
   itemSalvageLootTable,
+  NW_FALLBACK_ICON,
 } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
@@ -32,7 +30,7 @@ import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { TabsModule } from '~/ui/tabs'
-import { eqCaseInsensitive, observeQueryParam } from '~/utils'
+import { eqCaseInsensitive, humanize, observeQueryParam, resourceValue } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 import { EntitlementDetailModule } from '~/widgets/data/entitlement-detail'
@@ -41,7 +39,9 @@ import { PerkBucketDetailComponent } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
+import { IconsModule } from '../../../ui/icons'
 import { VitalDetailModule } from '../../../widgets/data/vital-detail'
+import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 
 export type ItemTabId =
   | 'effects'
@@ -56,6 +56,7 @@ export type ItemTabId =
   | 'dropped-by'
   | 'salvaged-from'
   | 'salvages-to'
+  | 'buy-from'
 export interface ItemTab {
   id: ItemTabId
   label: string
@@ -81,6 +82,8 @@ export interface ItemTab {
     EntitlementDetailModule,
     VitalDetailModule,
     FormsModule,
+    IconsModule,
+    TooltipDirective,
   ],
   providers: [ItemDetailStore],
   host: {
@@ -98,53 +101,53 @@ export class ItemTabsComponent {
     untracked(() => this.store.load(itemId))
   })
 
-  protected appearanceResource = resource({
+  protected appearance = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadAppearance(this.db, params),
+    keepPrevious: true,
   })
-  protected appearance = resourceValue(this.appearanceResource)
 
-  protected grantsEffectsResource = resource({
+  protected grantsEffects = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadGrantedEffectIds(this.db, params),
+    keepPrevious: true,
   })
-  protected grantsEffects = resourceValue(this.grantsEffectsResource)
 
-  protected resourcePercsResource = resource({
+  protected resourcePerks = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadResourcePerks(this.db, params),
+    keepPrevious: true,
   })
-  protected resourcePerks = resourceValue(this.resourcePercsResource)
 
-  protected unlocksRecipeResource = resource({
+  protected unlocksRecipe = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadUnlockedRecipe(this.db, params),
+    keepPrevious: true,
   })
-  protected unlocksRecipe = resourceValue(this.unlocksRecipeResource)
 
-  protected craftableRecipesResource = resource({
+  protected craftableRecipes = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadCraftableRecipes(this.db, params),
+    keepPrevious: true,
   })
-  protected craftableRecipes = resourceValue(this.craftableRecipesResource)
 
-  protected lootTableIdsResource = resource({
+  protected lootTableIds = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadLootTableIds(this.db, params),
+    keepPrevious: true,
   })
-  protected lootTableIds = resourceValue(this.lootTableIdsResource)
 
-  protected recipesResource = resource({
+  protected recipes = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadRecipes(this.db, params),
+    keepPrevious: true,
   })
-  protected recipes = resourceValue(this.recipesResource)
 
-  protected rewardedFromResource = resource({
+  protected rewardedFrom = resourceValue({
     params: this.store.record,
     loader: ({ params }) => loadRewardedFrom(this.db, params),
+    keepPrevious: true,
   })
-  protected rewardedFrom = resourceValue(this.rewardedFromResource)
   protected rewardGroups = computed(() => {
     return uniq((this.rewardedFrom()?.rewards || []).map((it) => it.season))
       .sort()
@@ -158,23 +161,26 @@ export class ItemTabsComponent {
     return (this.rewardedFrom()?.rewards || []).filter((it) => eqCaseInsensitive(it.season, selection))
   })
 
-  protected dropSourceResource = resource({
+  protected dropSource = resourceValue({
     params: this.itemId,
-    loader: ({ params }) => {
-      return this.db.itemLootSources(params)
-    },
+    loader: ({ params }) => this.db.itemLootSources(params),
+    keepPrevious: true,
   })
-  protected dropSource = resourceValue(this.dropSourceResource)
   protected droppedBy = computed(() => this.dropSource()?.droppedBy)
   protected salvagedFrom = computed(() => this.dropSource()?.salvagedFrom)
 
-  protected salvagesToResource = resource({
+  protected salvagesTo = resourceValue({
     params: this.itemId,
-    loader: ({ params }) => {
-      return this.db.itemSalvagesTo(params)
-    },
+    loader: ({ params }) => this.db.itemSalvagesTo(params),
+    keepPrevious: true,
   })
-  protected salvagesTo = resourceValue(this.salvagesToResource)
+
+  protected boughtAt = resourceValue({
+    params: this.store.item,
+    loader: ({ params }) => loadShopSource(this.db, params),
+    keepPrevious: true,
+  })
+
   protected salvageLoot = computed(() => {
     const context = itemSalvageContext(this.store.item())
     if (!context) {
@@ -286,10 +292,16 @@ export class ItemTabsComponent {
         label: `Salvaged from (${this.salvagedFrom()?.length})`,
       })
     }
-    if (this.salvageLoot()) {
+    if (this.salvageLoot()?.items?.length) {
       tabs.push({
         id: 'salvages-to',
         label: `Salvages to (${this.salvageLoot().items.length})`,
+      })
+    }
+    if (this.boughtAt()?.length) {
+      tabs.push({
+        id: 'buy-from',
+        label: `Buy from (${this.boughtAt().length})`,
       })
     }
 
@@ -441,17 +453,79 @@ async function loadRewardedFrom(db: NwData, item: MasterItemDefinitions | HouseI
   return result
 }
 
-function resourceValue<T>(resource: ResourceRef<T>): Signal<T> {
-  return linkedSignal({
-    source: () => ({
-      value: resource.hasValue() ? resource.value() : null,
-      isLoading: resource.isLoading(),
-    }),
-    computation: (source, previous) => {
-      if (previous && source.isLoading) {
-        return previous.value
-      }
-      return source.value
-    },
+export interface ShopInfo {
+  id: string
+  label: string
+  icon: string
+  cooldown: number
+  costs: ConversionInfo[]
+}
+export interface ConversionInfo {
+  icon: string
+  label: string
+  value: number
+  itemId?: string
+}
+
+async function loadShopSource(db: NwData, item: MasterItemDefinitions | HouseItems): Promise<ShopInfo[]> {
+  if (!item) {
+    return null
+  }
+  const conversions = await db.itemCurrencyConversionByItemId(getItemId(item))
+  if (!conversions?.length) {
+    return null
+  }
+
+  const result$ = conversions.map(async (conversion) => {
+    const cooldown = conversion.BuyCooldownSeconds
+    const costs: ConversionInfo[] = []
+    const tokenId = conversion.RankCheckCategoricalProgressionId
+    const tokenCost = conversion.BuyCategoricalProgressionCost
+    const shops = await db.shopDataByCurrency(conversion.BuyCurrencyItemName || conversion.CategoricalProgressionId)
+    const shop = shops?.[0]
+    if (tokenId && tokenCost) {
+      const prog = await db.categoricalProgressionById(conversion.RankCheckCategoricalProgressionId as any)
+      costs.push({
+        icon: prog?.IconPath || NW_FALLBACK_ICON,
+        label: prog?.DisplayName || humanize(tokenId),
+        value: conversion.BuyCategoricalProgressionCost,
+      })
+    }
+    const currencyCost = conversion.BuyCurrencyCost
+    const itemCost = conversion.BuyCurrencyItemCost
+    const itemId = conversion.BuyCurrencyItemName
+
+    if (itemId) {
+      const it = await db.itemOrHousingItem(itemId)
+      const prog = await db.categoricalProgressionById(itemId as any)
+      costs.push({
+        icon: it?.IconPath || prog?.IconPath || NW_FALLBACK_ICON,
+        label: it?.Name || prog?.DisplayName || humanize(itemId),
+        value: itemCost || 0,
+        itemId,
+      })
+    }
+
+    if (currencyCost) {
+      costs.push({
+        icon: 'assets/icons/rewards/coin.png',
+        label: null,
+        value: currencyCost / 100,
+      })
+    }
+
+    return {
+      id: shop?.ShopId,
+      label: shop?.ShopName,
+      icon: shop?.ShopIconSmall || shop?.ShopIconLarge || NW_FALLBACK_ICON,
+      cooldown,
+      costs,
+    } satisfies ShopInfo
   })
+  const result = await Promise.all(result$).catch((err) => {
+    console.error(err)
+    return []
+  })
+
+  return result
 }

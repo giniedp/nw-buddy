@@ -6,6 +6,7 @@ import {
   COLS_MASTERITEMDEFINITIONS,
   CategoricalProgressionData,
   MasterItemDefinitions,
+  ShopData,
 } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -20,6 +21,7 @@ import { humanize, selectStream } from '~/utils'
 import { ItemCellComponent } from './item-cell.component'
 import {
   ItemTableRecord,
+  ShopInfo,
   itemColAttributeMods,
   itemColBookmark,
   itemColEvent,
@@ -98,6 +100,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         transformsMapReverse: this.db.itemTransformsByToItemIdMap(),
         conversionMap: this.db.itemCurrencyConversionByItemIdMap(),
         progressionMap: this.db.categoricalProgressionByIdMap(),
+        shopMap: this.db.shopDataByProgressionIdMap(),
         consumablesMap: this.db.consumableItemsByIdMap(),
       }),
     ),
@@ -111,6 +114,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
       transformsMapReverse,
       conversionMap,
       progressionMap,
+      shopMap,
       consumablesMap,
     }) => {
       function getItem(id: string) {
@@ -123,18 +127,16 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         const perks = getItemPerks(it, perksMap)
         const conversions = conversionMap.get(getItemId(it)) || []
         const shops = uniq(conversions.map((it) => it.CategoricalProgressionId)).map(
-          (id): CategoricalProgressionData => {
-            const result = progressionMap.get(id as any)
-            if (result) {
-              return result
-            }
+          (id): ShopInfo => {
+            const shop = shopMap.get(id)
+            const prog = progressionMap.get(id as any)
             return {
-              CategoricalProgressionId: id as any,
-              DisplayName: humanize(id as any),
-              IconPath: NW_FALLBACK_ICON,
-            } as any
+              ProgressionId: id,
+              Icon: shop?.ShopIconSmall || prog?.IconPath || NW_FALLBACK_ICON,
+              Label: shop?.ShopName || prog?.DisplayName
+            }
           },
-        )
+        ).filter((it) => !!it)
         return {
           ...it,
           $perks: perks,

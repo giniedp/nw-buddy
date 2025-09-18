@@ -240,6 +240,31 @@
           }
         </div>
       }
+      @case ('buy-from') {
+        <div
+          class="flex flex-col gap-2"
+          [nwbInfniteScroll]="boughtAt()"
+          [nwbInfniteScrollPerPage]="10"
+          #scroll="infiniteScroll"
+        >
+          @for (item of scroll.data(); track $index) {
+            <nwb-item-header class="gap-2">
+              <nwb-item-icon [nwbItemIcon]="item.icon" [solid]="false" class="z-10 w-12 h-12" />
+              <nwb-item-header-content [title]="item.label | nwText">
+                <div header-text2 class="flex flex-row gap-1">
+                  @for (conversion of item.costs; track $index) {
+                    <nwb-icon [icon]="conversion.icon" class="w-5 h-5" [tooltip]="conversion.label | nwText" />
+                    <span>{{ conversion.value | number }}</span>
+                  }
+                </div>
+              </nwb-item-header-content>
+            </nwb-item-header>
+          }
+          @if (scroll.canLoad()) {
+            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+          }
+        </div>
+      }
     }
   </div>
 }

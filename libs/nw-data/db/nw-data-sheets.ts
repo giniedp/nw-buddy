@@ -398,6 +398,46 @@ export abstract class NwDataSheets {
   public categoricalProgressionByIdMap = primaryIndex(this.categoricalProgressionAll, 'CategoricalProgressionId')
   public categoricalProgressionById = indexLookup(this.categoricalProgressionByIdMap)
 
+  public shopDataAll = table(() => {
+    return this.loadDatasheets(DATASHEETS.ShopData).map((it) => {
+      return it.then((list) => {
+        return list.map((it) => {
+          if (it.ShopId === 'TestShop') {
+            return null
+          }
+          if (it.ShopId === 'CovenantShop') {
+            it.ProgressionId = 'Covenant'
+            it.ShopName = "ui_shop_covenant_name"
+          }
+          if (it.ShopId === 'SyndicateShop') {
+            it.ProgressionId = 'Syndicate'
+            it.ShopName = "ui_shop_syndicate_name"
+          }
+          if (it.ShopId === 'MaraudersShop') {
+            it.ProgressionId = 'Marauder'
+            it.ShopName = "ui_shop_marauders_name"
+          }
+          return it
+        }).filter((it) => !!it)
+      })
+    })
+  })
+  public shopDataByIdMap = primaryIndex(this.shopDataAll, 'ShopId')
+  public shopDataById = indexLookup(this.shopDataByIdMap)
+  public shopDataByProgressionIdMap = primaryIndex(this.shopDataAll, 'ProgressionId')
+  public shopDataByProgressionId = indexLookup(this.shopDataByProgressionIdMap)
+  public shopDataByCurrencyMap = secondaryIndex(this.shopDataAll, (it) => {
+    return [
+      it.WalletDisplayProgression1,
+      it.WalletDisplayProgression2,
+      it.WalletDisplayProgression3,
+      it.WalletDisplayItem1,
+      it.WalletDisplayItem2,
+      it.WalletDisplayItem3,
+    ].filter((it) => !!it)
+  })
+  public shopDataByCurrency = indexLookup(this.shopDataByCurrencyMap)
+
   public itemCurrencyConversionAll = table(() => this.loadDatasheets(DATASHEETS.ItemCurrencyConversionData))
   public itemCurrencyConversionByIdMap = secondaryIndex(this.itemCurrencyConversionAll, 'ConversionID')
   public itemCurrencyConversionById = indexLookup(this.itemCurrencyConversionByIdMap)
