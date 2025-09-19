@@ -316,7 +316,7 @@ export abstract class NwDataSheets {
 
 
   public gameModesMapsAll = table(() => this.loadDatasheets(DATASHEETS.GameModeMapData))
-  public gameModesMapsByIdMap = primaryIndex(this.gameModesMapsAll, 'GameModeId')
+  public gameModesMapsByIdMap = primaryIndex(this.gameModesMapsAll, 'GameModeMapId')
   public gameModesMapsById = indexLookup(this.gameModesMapsByIdMap)
 
   public gameModeSchedulerDataAll = table(() => this.loadDatasheets(DATASHEETS.GameModeSchedulerStaticData))
@@ -393,6 +393,8 @@ export abstract class NwDataSheets {
   public gameEventsById = indexLookup(this.gameEventsByIdMap)
   public gameEventsByLootLimitIdMap = secondaryIndex(this.gameEventsAll, 'LootLimitId')
   public gameEventsByLootLimitId = indexLookup(this.gameEventsByLootLimitIdMap)
+  public gameEventsByGameEventTypeMap = secondaryIndex(this.gameEventsAll, 'GameEventType')
+  public gameEventsByGameEventType = indexLookup(this.gameEventsByGameEventTypeMap)
 
   public categoricalProgressionAll = table(() => this.loadDatasheets(DATASHEETS.CategoricalProgressionData))
   public categoricalProgressionByIdMap = primaryIndex(this.categoricalProgressionAll, 'CategoricalProgressionId')
@@ -550,6 +552,10 @@ export abstract class NwDataSheets {
   public territoriesByDiscoveredAchievement = indexLookup(this.territoriesByDiscoveredAchievementMap)
   public territoriesByPoiTagMap = secondaryIndex(this.territoriesAll, (it) => it.POITag)
 
+  public territoriesWithGameMode = table(() => this.territoriesAll().then((list) => list.filter((it) => it.GameMode)))
+  public territoriesByGameModeMap = secondaryIndex(this.territoriesAll, 'GameMode')
+  public territoriesByGameMode = indexLookup(this.territoriesByGameModeMap)
+
   public territoriesByFactionControlBuffMap = secondaryIndex(this.territoriesAll, 'FactionControlBuff')
   public territoriesByFactionControlBuff = indexLookup(this.territoriesByFactionControlBuffMap)
 
@@ -580,6 +586,8 @@ export abstract class NwDataSheets {
   public mutatorElementsAll = table(() => this.loadDatasheets(DATASHEETS.ElementalMutationStaticData))
   public mutatorElementsByIdMap = primaryIndex(this.mutatorElementsAll, 'ElementalMutationId')
   public mutatorElementsById = indexLookup(this.mutatorElementsByIdMap)
+  public mutatorElementsByCategoryMap = secondaryIndex(this.mutatorElementsAll, 'CategoryWildcard')
+  public mutatorElementsByCategory = indexLookup(this.mutatorElementsByCategoryMap)
 
   public mutatorElementsPerksAll = table(() => this.loadDatasheets(DATASHEETS.MutationPerksStaticData))
   public mutatorElementsPerksByIdMap = primaryIndex(this.mutatorElementsPerksAll, 'ElementalMutationTypeId')

@@ -1,44 +1,45 @@
 <picture class="w-12 h-12 aspect-square m-0 not-prose">
-  <img [nwImage]="mutaPromotion?.IconPath" />
+  <img [nwImage]="mutaPromotion()?.IconPath" />
 </picture>
 <div class="flex flex-col leading-none gap-1">
   <span class="text-white uppercase font-nimbus">Promotion</span>
   <span class="font-caslon text-2xl leading-none">
-    {{ mutaPromotion?.Name | nwText }}
+    {{ mutaPromotion()?.Name | nwText }}
   </span>
 </div>
 
 <ng-template #tplTip>
   <nwb-muta-promotion-detail
-    [promotionId]="mutaPromotion?.PromotionMutationId"
-    [elementId]="mutaElement?.ElementalMutationId"
+    [promotionId]="mutaPromotion()?.PromotionMutationId"
+    [elementId]="mutaElement()?.ElementalMutationId"
     class="w-80"
-  ></nwb-muta-promotion-detail>
+  />
 </ng-template>
 
 <ng-template
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="cdkOrigin"
-  [cdkConnectedOverlayOpen]="isMenuOpen"
+  [cdkConnectedOverlayOpen]="isMenuOpen()"
   [cdkConnectedOverlayHasBackdrop]="true"
   [cdkConnectedOverlayOffsetY]="5"
-  (overlayOutsideClick)="isMenuOpen = false"
-  (backdropClick)="isMenuOpen = false"
-  (detach)="isMenuOpen = false"
+  (overlayOutsideClick)="isMenuOpen.set(false)"
+  (backdropClick)="isMenuOpen.set(false)"
+  (detach)="isMenuOpen.set(false)"
 >
   <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ul class="menu menu-compact menu-vertical">
-      <li *ngFor="let item of options">
-        <a (click)="select(item.object)">
-          <picture>
-            <img [nwImage]="item.icon" class="w-4 h-4" />
-          </picture>
-          <div class="flex flex-col leading-none">
-            <span>{{ item.label | nwText }}</span>
-            <!-- <span class="text-xs opacity-75">Resize based on the visible cell content</span> -->
-          </div>
-        </a>
-      </li>
+      @for (item of options(); track $index) {
+        <li>
+          <a (click)="select(item.object)">
+            <picture>
+              <img [nwImage]="item.icon" class="w-4 h-4" />
+            </picture>
+            <div class="flex flex-col leading-none">
+              <span>{{ item.label | nwText }}</span>
+            </div>
+          </a>
+        </li>
+      }
     </ul>
   </div>
 </ng-template>

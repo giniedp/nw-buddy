@@ -7,7 +7,7 @@ import { backstoriesItemsById } from './views/backstories'
 import { itemLootSources, itemSalvagesTo } from './views/items'
 import { resourceItemsForPerkId } from './views/perks'
 import { seasonIds } from './views/seasons'
-import { vitalsForGameMode } from './views/vitals'
+import { vitalsForGameMap, vitalsForGameMode } from './views/vitals'
 export { NwDataOptions } from './nw-data-loader'
 
 type ViewFunction<P, R> = (db: NwDataSheets, params: P) => Promise<R>
@@ -25,6 +25,7 @@ export class NwData extends NwDataSheets {
 
   public backstoriesItemsById = bind(this, backstoriesItemsById)
   public vitalsForGameMode = bind(this, vitalsForGameMode)
+  public vitalsForGameMap = bind(this, vitalsForGameMap)
   public resourceItemsForPerkId = bind(this, resourceItemsForPerkId)
   public itemLootSources = bind(this, itemLootSources)
   public itemSalvagesTo = bind(this, itemSalvagesTo)

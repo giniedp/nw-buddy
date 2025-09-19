@@ -63,6 +63,7 @@ export const LootGraphNodeStore = signalStore(
       table: computed(() => selectTable(node())),
       tableProps: computed(() => selectTableProps(node())),
       itemId: computed(() => selectItemId(node())),
+      gsRange: computed(() => selectTableGsRange(node())),
       itemQuantity: computed(() => selectBucketItemQuantity(node())),
       rollThreshold: computed(() => selectRollThreshold(node())),
       condition: computed(() => selectCondition(node(), service)),
@@ -149,6 +150,10 @@ function selectItemId(node: LootNode) {
   return null
 }
 
+function selectTableGsRange(node: LootNode) {
+  return node?.row?.GearScoreRange
+}
+
 function selectBucketItemQuantity(node: LootNode) {
   if (node?.type === 'bucket-row') {
     return node.data.Quantity.join('-')
@@ -223,6 +228,7 @@ function selectConditions(node: LootNode, service: LootGraphService) {
     }
     return {
       tag,
+      limitId: tag.startsWith('[LIM]') ? tag.replace('[LIM]', '') : '',
       checked: service.isTagInContext(tag, null),
       editable: service.tagsEditable,
     }

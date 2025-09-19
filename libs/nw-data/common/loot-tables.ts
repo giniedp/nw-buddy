@@ -50,7 +50,7 @@ export function convertLoottables(data: LootTablesData[]): LootTable[] {
             LootBucketID: bucketID,
             LootTableID: tableID,
             LootLimitID: limitID || limitIds?.[0],
-            GearScoreRange: probs[key.replace('Item', 'GearScoreRange')],
+            GearScoreRange: it[key.replace('Item', 'GearScoreRange')],
             Qty: qty?.[key],
             Prob: probs?.[key],
           }

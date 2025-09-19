@@ -4,19 +4,20 @@
   </picture>
   <ion-content class="ion-p-4" [gutterStable]="true">
     <div class="content-grid max-w-screen-3xl mx-auto">
-      <div class="content-grid-info flex flex-col gap-2 font-nimbus prose-base">
+      <div class="content-grid-info flex flex-col gap-2 font-nimbus prose-base shadow-black text-shadow-sm">
         <h1 class="mb-0 font-normal font-serif tracking-wider">
-          <span>{{ title() | nwText }}</span>
+          @if (mapName()) {
+            <span> {{ mapName() | nwText }} &bullet; </span>
+          }
+          <span>{{ modeName() | nwText }}</span>
           @if (difficultyLevel()) {
-            <span>, Difficulty {{ difficultyLevel() }}</span>
+            <span> &bullet; M{{ difficultyLevel() }}</span>
           }
         </h1>
         <div class="nw-item-divider max-w-lg"></div>
 
         @if (description()) {
-          <div class="text-nw-description">
-            {{ description() | nwText }}
-          </div>
+          <div class="text-nw-description" [nwHtml]="description() | nwText | nwTextBreak"></div>
           <div class="nw-item-divider max-w-lg"></div>
         }
 
@@ -73,13 +74,89 @@
               </span>
             </div>
           }
+
+          @if (matchmakingLvlMin() || matchmakingLvlMax()) {
+            <div>
+              <span>Matchmaking level: </span>
+              <span class="font-semibold text-accent">
+                {{ matchmakingLvlMin() || 0 }}
+                @if (matchmakingLvlMax()) {
+                  - {{ matchmakingLvlMax() }}
+                }
+              </span>
+            </div>
+          }
+          @if (matchmakingGsMin()) {
+            <div>
+              <span>Matchmaking Minimum Gear Score: </span>
+              <span class="font-semibold text-accent">
+                {{ matchmakingGsMin() }}
+              </span>
+            </div>
+          }
+          @if (
+            matchmakingTanksMin() ||
+            matchmakingTanksMax() ||
+            matchmakingDpsMin() ||
+            matchmakingDpsMax() ||
+            matchmakingHealMin() ||
+            matchmakingHealMax()
+          ) {
+            <div>
+              <span>Matchmaking Roles: </span>
+              @if (matchmakingTanksMin() || matchmakingTanksMax()) {
+                <span>Tanks</span>
+                <span class="font-semibold text-accent">
+                  {{ matchmakingTanksMin() || 0 }}
+                  @if (matchmakingTanksMax() && matchmakingTanksMin() != matchmakingTanksMax()) {
+                    - {{ matchmakingTanksMax() }}
+                  }
+                </span>
+              }
+              @if (matchmakingDpsMin() || matchmakingDpsMax()) {
+                <span>DDs</span>
+                <span class="font-semibold text-accent">
+                  {{ matchmakingDpsMin() || 0 }}
+                  @if (matchmakingDpsMax() && matchmakingDpsMin() != matchmakingDpsMax()) {
+                    - {{ matchmakingDpsMax() }}
+                  }
+                </span>
+              }
+              @if (matchmakingHealMin() || matchmakingHealMax()) {
+                <span>Healers</span>
+                <span class="font-semibold text-accent">
+                  {{ matchmakingHealMin() || 0 }}
+                  @if (matchmakingHealMax() && matchmakingHealMin() != matchmakingHealMax()) {
+                    - {{ matchmakingHealMax() }}
+                  }
+                </span>
+              }
+            </div>
+          }
+          @if (mapRotation()) {
+            <div>
+              <span>Map rotation: </span>
+              <span class="font-semibold text-accent">
+                {{ mapRotation() }}
+              </span>
+            </div>
+          }
+          @if (projectedDuration()) {
+            <div>
+              <span>Projected duration: </span>
+              <span class="font-semibold text-accent">
+                {{ projectedDuration() }}
+              </span>
+            </div>
+          }
         </section>
 
         @if (isMutable()) {
           <div
             role="tablist"
             class="tabs tabs-box bg-base-200/50 backdrop-blur-2xl"
-            animate.enter="fade-enter" animate.leave="fade-leave"
+            animate.enter="fade-enter"
+            animate.leave="fade-leave"
           >
             <a
               role="tab"
@@ -180,27 +257,6 @@
             </div>
           </div>
         }
-        <!-- @if (difficulty()) {
-          <div class="stats bg-opacity-0 self-end w-full">
-            @for (row of difficyltyRewards$ | async; track $index) {
-              <div class="stat place-items-center p-0">
-                <div class="stat-title">
-                  <span [nwText]="row.RankName"></span>
-                </div>
-                <div
-                  class="stat-value cursor-pointer transition-all rounded-md outline-4 outline-transparent focus:outline-primary hover:outline-primary"
-                  [class.text-primary]="row.Completed"
-                  (click)="row.toggle()"
-                >
-                  {{ row.Quantity }}
-                </div>
-                <div class="stat-desc">
-                  <span [nwText]="row.ItemName"></span>
-                </div>
-              </div>
-            }
-          </div>
-        } -->
       </div>
 
       <div class="content-grid-tabs tabs tabs-border flex-nowrap justify-stretch flex-none self-end">
@@ -220,7 +276,7 @@
       </div>
 
       <div
-        class="content-grid-map flex justify-end aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[500px] z-50"
+        class="content-grid-map flex justify-end aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[710px] z-50"
         [class.sticky]="mapPinned()"
         [class.top-0]="mapPinned()"
         [class.right-0]="mapPinned()"
@@ -228,7 +284,7 @@
       >
         <nwb-game-mode-detail-map
           class="w-full h-full max-w-[1200px] max-h-[800px] group"
-          [gameModeId]="paramGameMode()"
+          [mapId]="paramMapId()"
           [creatures]="store.creatures()"
           [highlight]="(vitalTargetHover() || vitalTargetClick())?.VitalsID"
           [class.bg-base-300]="mapPinned()"
@@ -267,25 +323,3 @@
     </div>
   </ion-content>
 </ion-content>
-
-<!-- <ng-template #tplExplain>
-  <ion-header>
-    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
-      <ion-title>Loot Graph</ion-title>
-      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content class="rounded-b-md bg-base-100">
-    @if (explainVm$ | async; as vm) {
-      <nwb-loot-graph [tags]="vm.tags" [tagValues]="vm.values" [tableId]="vm.tableIds" [highlight]="vm.itemId" />
-    }
-  </ion-content>
-</ng-template> -->
-
-<!-- <ng-template #tplExplainMenu>
-  <ul class="menu menu-compact bg-base-100 rounded-md w-40" cdkMenu>
-    <li>
-      <button [nwbModalOpen]="{ content: tplExplain, size: 'md' }" cdkMenuItem>Explain Drop</button>
-    </li>
-  </ul>
-</ng-template> -->

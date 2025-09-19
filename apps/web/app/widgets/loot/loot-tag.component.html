@@ -1,20 +1,32 @@
-@if(tag()) {
-  {{ tag() | nwHumanize }}
+@if (limitId()) {
+  <a [routerLink]="['/loot-limits', limitId()]">
+    <nwb-icon [icon]="iconLink" class="w-4 h-4" />
+    <ng-container [ngTemplateOutlet]="tplLabel" />
+  </a>
+} @else {
+  <ng-container [ngTemplateOutlet]="tplLabel" />
 }
-@if(tag() && tagValue()) {
-  :
-}
-@if(tagValue()) {
-  {{ tagValue() }}
-}
-<ng-content/>
+
+<ng-template #tplLabel>
+  @if (tag()) {
+    {{ tag() | nwHumanize }}
+  }
+  @if (tag() && tagValue()) {
+    :
+  }
+  @if (tagValue()) {
+    {{ tagValue() }}
+  }
+</ng-template>
+
+<ng-content />
 @if (isEditable) {
   <label
     class="swap swap-rotate w-4 h-4 aspect-square translate-x-1 opacity-75"
     tabindex="0"
     (mouseenter)="mouseEnter()"
     (mouseleave)="mouseLeave()"
-    [class.swap-active]="!isEditable || isChecked && !isHover()"
+    [class.swap-active]="!isEditable || (isChecked && !isHover())"
     [class.cursor-pointer]="isEditable"
     [class.hover:opacity-100]="isEditable"
     (click)="onActionClicked()"

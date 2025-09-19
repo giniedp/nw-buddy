@@ -1,4 +1,4 @@
-import { linkedSignal, resource, ResourceRef, Signal, WritableSignal } from '@angular/core'
+import { effect, linkedSignal, resource, ResourceRef, Signal, WritableSignal } from '@angular/core'
 
 export interface ResourceValueOptions {
   /**
@@ -11,6 +11,12 @@ export function resourceValue<T, R>(options: Parameters<typeof resource<T, R>>[0
 }
 
 export function resourceValueOf<T>(resource: ResourceRef<T>, options?: ResourceValueOptions): WritableSignal<T> {
+  effect(() => {
+    const error = resource.error()
+    if (error) {
+      console.error(error)
+    }
+  })
   return linkedSignal({
     source: () => ({
       value: resource.hasValue() ? resource.value() : null,

@@ -12,10 +12,7 @@ export interface LootContext {
   values: Map<string, number | string | number[]>
 }
 
-export function lootContext(
-  tags: string[],
-  value: LootContextValues,
-): LootContext {
+export function lootContext(tags: string[], value: LootContextValues): LootContext {
   return {
     tags: new CaseInsensitiveSet(tags),
     values: new CaseInsensitiveMap(Object.entries(value)),
@@ -60,6 +57,9 @@ export function canAccessLootBucketRow(context: LootContext, entry: LootBucketRo
       return true
     }
     for (const tag of tags) {
+      if (tag.startsWith('[LIM]')) {
+        continue
+      }
       if (testBucketRowCondition(context, tag, entry.Tags[tag])) {
         return true
       }
@@ -67,6 +67,9 @@ export function canAccessLootBucketRow(context: LootContext, entry: LootBucketRo
     return false
   } else {
     for (const tag of tags) {
+      if (tag.startsWith('[LIM]')) {
+        continue
+      }
       if (!testBucketRowCondition(context, tag, entry.Tags[tag])) {
         return false
       }
@@ -76,14 +79,15 @@ export function canAccessLootBucketRow(context: LootContext, entry: LootBucketRo
 }
 
 function testTableCondition(context: LootContext, condition: string): boolean {
-  if (!condition) {
+  if (!condition || condition.startsWith('[LIM]') || condition.startsWith('[lim]')) {
     return true
   }
+
   return context.tags.has(condition) || context.values.has(condition)
 }
 
 function testTableRowCondition(context: LootContext, condition: string, row: LootTableRow): boolean {
-  if (!condition) {
+  if (!condition || condition.startsWith('[LIM]') || condition.startsWith('[lim]')) {
     return true
   }
   if (context.values.has(condition)) {
@@ -94,7 +98,7 @@ function testTableRowCondition(context: LootContext, condition: string, row: Loo
 }
 
 function testBucketRowCondition(context: LootContext, condition: string, tag: ParsedLootTag): boolean {
-  if (!condition) {
+  if (!condition || condition.startsWith('[LIM]') || condition.startsWith('[lim]')) {
     return true
   }
   if (context.values.has(condition)) {
@@ -141,7 +145,11 @@ export interface ItemSalvageInfo {
   values: LootContextValues
 }
 
-export function getItemSalvageInfo(item: MasterItemDefinitions | HouseItems, playerLevel: number | '*', itemGearScore: number | '*'): ItemSalvageInfo {
+export function getItemSalvageInfo(
+  item: MasterItemDefinitions | HouseItems,
+  playerLevel: number | '*',
+  itemGearScore: number | '*',
+): ItemSalvageInfo {
   if (!item || (isMasterItem(item) && !item.IsSalvageable)) {
     return null
   }
@@ -157,7 +165,7 @@ export function getItemSalvageInfo(item: MasterItemDefinitions | HouseItems, pla
       MinContLevel: (item as MasterItemDefinitions)?.ContainerLevel,
       SalvageItemRarity: getItemRarityNumeric(item),
       SalvageItemTier: item.Tier,
-      SalvageItemGearScore: itemGearScore
+      SalvageItemGearScore: itemGearScore,
     }),
   }
 }

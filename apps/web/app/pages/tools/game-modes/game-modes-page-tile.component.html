@@ -1,0 +1,44 @@
+@if (image()) {
+  <div class="relative row-start-1 col-start-1">
+    <picture class="block absolute inset-0 opacity-50 group-hover:opacity-75 transition-opacity">
+      <img [nwImage]="image()" class="w-full h-full object-cover" />
+    </picture>
+  </div>
+}
+<div
+  class="p-4 shadow-black text-shadow-sm text-nw-description grid row-start-1 col-start-1 z-10"
+  [style.grid-template-rows]="'min-content auto min-content'"
+>
+  <h3 class="row-start-1 self-start flex flex-row gap-2 items-center text-2xl">
+    <span class="relative">
+      @if (icon()) {
+        <img [nwImage]="icon()" class="w-6 h-6 scale-150" />
+      }
+      @if (mutation()) {
+        <div class="absolute top-0 left-0 w-full scale-200" animate.enter="fade-enter" animate.leave="fade-leave">
+          <img [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'" class="aspect-square animate-spin-cw" />
+        </div>
+      }
+    </span>
+    <span class="font-serif text-nw-description">
+      @if (mapName()) {
+        {{ mapName() | nwText }} &bullet;
+      }
+      {{ modeName() | nwText }}
+    </span>
+  </h3>
+  @if (description()) {
+    <div class="row-start-2 self-start" animate.enter="inflate-y-fade-enter">
+      <p class="mt-2" [nwHtml]="description() | nwText | nwTextBreak"></p>
+    </div>
+  }
+  @if (mutation(); as muta) {
+    <div class="row-start-3 self-end flex flex-col gap-2 mt-4" animate.enter="inflate-y-fade-enter">
+      <div>{{ 'ui_dungeon_mutator_string' | nwText }}</div>
+      <div class="nw-item-divider"></div>
+      <nwb-muta-element-tile [mutaElement]="muta.element" />
+      <nwb-muta-promotion-tile [mutaPromotion]="muta.promotion" [mutaElement]="muta.element" />
+      <nwb-muta-curse-tile [mutaCurse]="muta.curse" [mutaElement]="muta.element" />
+    </div>
+  }
+</div>

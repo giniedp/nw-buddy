@@ -1,16 +1,17 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, input, signal } from '@angular/core'
+import { NgTemplateOutlet } from '@angular/common'
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, input, signal } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCheck, svgPlus } from '~/ui/icons/svg'
+import { svgCheck, svgLink, svgPlus } from '~/ui/icons/svg'
 
 @Component({
   selector: 'nwb-loot-tag',
   templateUrl: './loot-tag.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule],
+  imports: [NwModule, IconsModule, RouterModule, NgTemplateOutlet],
   host: {
-    class: 'badge badge-sm whitespace-nowrap',
+    class: 'badge badge-sm whitespace-nowrap items-center',
     '[class.bg-secondary/25]': '!isChecked',
     '[class.bg-secondary/90]': 'isChecked',
   },
@@ -20,16 +21,23 @@ export class LootTagComponent {
   public tagValue = input<string>(null)
   public checked = input<boolean>(false)
   public actions = input<boolean>(false)
+  public limitId = computed(() => {
+    if (this.tag()?.startsWith('[LIM]')) {
+      return this.tag().replace('[LIM]', '').toLowerCase()
+    }
+    return null
+  })
 
   protected iconPlus = svgPlus
   protected iconCheck = svgCheck
+  protected iconLink = svgLink
   protected isHover = signal(false)
 
   protected get isChecked() {
-    return this.checked()
+    return !!this.limitId() || this.checked()
   }
   protected get isEditable() {
-    return !!this.actions()
+    return !this.limitId() && !!this.actions()
   }
   protected get canAdd() {
     return this.isEditable && !this.isChecked

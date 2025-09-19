@@ -1,78 +1,49 @@
-@if (outlet.isActivated) {
+@if (outlet()?.isActivated) {
   <ng-container [ngTemplateOutlet]="tplModes" />
 } @else {
   <ng-container [ngTemplateOutlet]="tplIndex" />
 }
-<ion-content [class.hidden]="!outlet.isActivated">
+<ion-content [class.hidden]="!outlet()?.isActivated">
   <router-outlet />
 </ion-content>
 
 <ng-template #tplIndex>
   <ion-header>
     <ion-toolbar class="bg-base-300">
-      <ion-segment [value]="categoryId$ | async">
-        @for (item of categories$ | async; track $index) {
-          <ion-segment-button [value]="item" [routerLink]="['..', item]" [routerLinkActive]="'text-primary'">
-            {{ item }}
+      <ion-segment [value]="tabParam()">
+        @for (tab of tabs(); track tab.id) {
+          <ion-segment-button [value]="tab.id" [routerLink]="['..', tab.id]" [routerLinkActive]="'text-primary'">
+            {{ tab.id }}
           </ion-segment-button>
         }
       </ion-segment>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-p-4" [gutterStable]="true">
-    <div class="w-full max-w-screen-3xl mx-auto grid grid-cols-fill gap-4">
-      @for (item of modes$ | async; track $index; let index = $index) {
-        <a
-          [routerLink]="[item.id]"
-          [queryParamsHandling]="'preserve'"
-          class="bg-black rounded-md border border-base-100 hover:border-primary relative min-h-[300px]"
-          animate.enter="fade-enter"
-          animate.leave="fade-leave"
-          [style.--enter-delay.ms]="index * 20"
-        >
-          <picture
-            class="absolute top-0 left-0 right-0 bottom-0 block w-full h-full rounded-md overflow-clip opacity-75"
-          >
-            <img [nwImage]="item.backgroundImage" class="w-full h-full object-cover" />
-          </picture>
-          <div class="relative p-4 shadow-black text-shadow text-nw-description">
-            <h3 class="flex flex-row gap-2 items-center text-2xl">
-              <span class="relative">
-                @if (item.icon) {
-                  <img [nwImage]="item.icon" class="w-6 h-6 scale-150" />
-                }
-                @if (item.isMutated) {
-                  <div
-                    class="absolute top-0 left-0 w-full scale-200"
-                    animate.enter="fade-enter"
-                    animate.leave="fade-leave"
-                  >
-                    <img
-                      [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
-                      class="aspect-square animate-spin-cw"
-                    />
-                  </div>
-                }
-              </span>
-              <span class="font-serif text-nw-description" [nwHtml]="item.title | nwText"> </span>
-            </h3>
-            @if (item.description) {
-              <p class="mt-2" [nwHtml]="item.description | nwText | nwTextBreak"></p>
-            }
-            @if (item.mutation) {
-              <div class="flex flex-col gap-2 mt-4">
-                <div>{{ 'ui_dungeon_mutator_string' | nwText }}</div>
-                <div class="nw-item-divider"></div>
-                <nwb-muta-element-tile [mutaElement]="item.mutation.element" />
-                <nwb-muta-promotion-tile
-                  [mutaPromotion]="item.mutation.promotion"
-                  [mutaElement]="item.mutation.element"
+    <div class="w-full max-w-screen-3xl mx-auto grid tab-container">
+      @for (tab of tabs(); track tab.id) {
+        @if (tab.id == tabParam()) {
+          <div class="grid grid-cols-fill gap-4" animate.leave="fade-slide-left-leave">
+            @for (item of tab.tiles; track item.id; let index = $index) {
+              <a
+                [routerLink]="[item.id]"
+                [queryParamsHandling]="'preserve'"
+                class="grid bg-black rounded-md overflow-clip transition-colors border border-base-100 hover:border-primary min-h-72 group"
+                animate.enter="fade-slide-right-enter"
+                [style.--enter-delay.ms]="100 + index * 50"
+              >
+                <nwb-game-modes-page-tile
+                  [mapName]="item.mapName"
+                  [modeName]="item.poiName || item.modeName"
+                  [description]="item.description"
+                  [image]="item.backgroundImage"
+                  [icon]="item.icon"
+                  [mutation]="item.mutation"
                 />
-                <nwb-muta-curse-tile [mutaCurse]="item.mutation.curse" [mutaElement]="item.mutation.element" />
-              </div>
+              </a>
             }
           </div>
-        </a>
+        }
       }
     </div>
   </ion-content>
@@ -80,41 +51,43 @@
 
 <ng-template #tplModes>
   <ion-header>
-    <nwb-navbar class="bg-base-300 rounded-t-md">
-      <ng-container *nwbNavbarMenu="let ctx">
-        @if (ctx.isHorizontal) {
-          <li>
-            <a [routerLink]="'.'" class="btn btn-ghost btn-square">
-              <nwb-icon [icon]="iconBack" class="w-6 h-6" />
-            </a>
-          </li>
-        }
-        @for (item of modes$ | async; track $index; let index = $index) {
-          <li animate.enter="fade-enter" animate.leave="fade-leave" [style.--enter-delay.ms]="index * 20">
-            <a
-              [routerLink]="[item.id]"
-              [routerLinkActive]="'text-primary'"
-              [queryParamsHandling]="item.isMutable ? 'preserve' : null"
-              [class.btn]="ctx.isHorizontal"
-              [class.btn-ghost]="ctx.isHorizontal"
-              class="flex-nowrap justify-start items-center gap-2 whitespace-nowrap rounded-none"
-            >
-              <picture class="w-6 h-6 scale-150 relative">
-                <img [nwImage]="item.icon" />
-                @if (item.isMutated) {
-                  <div class="absolute top-0 left-0 w-full h-full animate-spin-cw">
-                    <img
-                      [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
-                      class="w-full aspect-square scale-150"
-                    />
-                  </div>
-                }
-              </picture>
-              <span [nwHtml]="item.title | nwText"></span>
-            </a>
-          </li>
-        }
-      </ng-container>
-    </nwb-navbar>
+    <ion-toolbar class="bg-base-300">
+      <nwb-navbar>
+        <ng-container *nwbNavbarMenu="let ctx">
+          @if (ctx.isHorizontal) {
+            <li>
+              <a [routerLink]="'.'" class="btn btn-ghost btn-square">
+                <nwb-icon [icon]="iconBack" class="w-6 h-6" />
+              </a>
+            </li>
+          }
+          @for (item of tab()?.tiles; track $index; let index = $index) {
+            <li animate.enter="fade-enter" animate.leave="fade-leave" [style.--enter-delay.ms]="index * 20">
+              <a
+                [routerLink]="[item.id]"
+                [routerLinkActive]="'text-primary'"
+                [queryParamsHandling]="item.isMutable ? 'preserve' : null"
+                [class.btn]="ctx.isHorizontal"
+                [class.btn-ghost]="ctx.isHorizontal"
+                class="flex-nowrap justify-start items-center gap-2 whitespace-nowrap rounded-none"
+              >
+                <picture class="w-6 h-6 scale-150 relative">
+                  <img [nwImage]="item.icon" />
+                  @if (item.isMutated) {
+                    <div class="absolute top-0 left-0 w-full h-full animate-spin-cw">
+                      <img
+                        [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                        class="w-full aspect-square scale-150"
+                      />
+                    </div>
+                  }
+                </picture>
+                <span>{{ item.mapName || item.poiName || item.modeName | nwText }}</span>
+              </a>
+            </li>
+          }
+        </ng-container>
+      </nwb-navbar>
+    </ion-toolbar>
   </ion-header>
 </ng-template>

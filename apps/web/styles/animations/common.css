@@ -19,6 +19,39 @@
   animation-delay: calc(var(--leave-delay, 0));
 }
 
+@keyframes fadeSlideRight {
+  from {
+    opacity: 0;
+    translate: -1rem 0;
+  }
+}
+.fade-slide-right-enter {
+  animation: fadeSlideRight 250ms ease-out;
+  animation-fill-mode: backwards;
+  animation-delay: calc(var(--enter-delay, 0));
+}
+.fade-slide-right-leave {
+  animation: fadeSlideRight 250ms ease-out reverse;
+  animation-fill-mode: both;
+  animation-delay: calc(var(--leave-delay, 0));
+}
+
+@keyframes fadeSlideLeft {
+  from {
+    opacity: 0;
+    translate: 1rem 0;
+  }
+}
+.fade-slide-left-enter {
+  animation: fadeSlideLeft 250ms ease-out;
+  animation-fill-mode: backwards;
+  animation-delay: calc(var(--enter-delay, 0));
+}
+.fade-slide-left-leave {
+  animation: fadeSlideLeft 250ms ease-out reverse;
+  animation-fill-mode: both;
+  animation-delay: calc(var(--leave-delay, 0));
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -7,7 +7,13 @@ import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
   selector: 'nwb-vital-detail-models',
-  template: ` <nwb-game-viewer [nwGameViewerVital]="store.vitalId()" class="block aspect-square relative" /> `,
+  template: `
+    @defer {
+      <nwb-game-viewer [nwGameViewerVital]="store.vitalId()" class="block aspect-square relative" />
+    } @placeholder {
+      <div class="aspect-square skeleton"></div>
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ModelViewerModule, GameViewerComponent, GameViewerCharacterDirective],
   host: {

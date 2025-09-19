@@ -25,7 +25,7 @@ export function getGameModeLootTags(
 }
 
 export function getGameModeCoatlicueDirectory(gameMap: GameModeMapData) {
-  if (!gameMap.CoatlicueName) {
+  if (!gameMap?.CoatlicueName) {
     return null
   }
   // "coatlicue\\NewWorld_VitaeEterna" -> "NewWorld_VitaeEterna"

@@ -32,3 +32,33 @@ export async function vitalsForGameMode(
     return creatureType.some((type) => eqCaseInsensitive(type, it.CreatureType))
   })
 }
+
+export async function vitalsForGameMap(
+  db: NwDataSheets,
+  params: {
+    gameMapId: string
+    mutated?: boolean
+    creatureType?: CreatureType[]
+  },
+) {
+  const { gameMapId, mutated, creatureType } = params
+  const isStarstone = eqCaseInsensitive(gameMapId, 'DungeonShatteredObelisk')
+  const vitals = await db.vitalsAll()
+  const vitalsMeta = await db.vitalsMetadataByIdMap()
+  const gameModes = await db.gameModesMapsAll()
+  function isInDungeon(vital: VitalsBaseData) {
+    if (mutated && isStarstone && eqCaseInsensitive(vital.VitalsID, 'Withered_Brute_Named_08')) {
+      return true
+    }
+    return getVitalGameModeMaps(vital, gameModes, vitalsMeta).some((dg) => eqCaseInsensitive(dg.GameModeMapId, gameMapId))
+  }
+  return vitals.filter((it) => {
+    if (!isInDungeon(it)) {
+      return false
+    }
+    if (!creatureType) {
+      return true
+    }
+    return creatureType.some((type) => eqCaseInsensitive(type, it.CreatureType))
+  })
+}

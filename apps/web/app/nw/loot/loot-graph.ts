@@ -80,7 +80,7 @@ export function buildLootGraph({
 
 function buildTableNode(value: LootTable, parent: LootNode, row: LootTableRow, track: any): LootTableNode {
   const node: LootTableNode = {
-    trackId: `${track}-${value.LootTableID}`,
+    trackId: `${track}-${value.LootTableID}-${row?.Qty}-${row?.Prob}`,
     type: 'table',
     data: value,
     row: row,

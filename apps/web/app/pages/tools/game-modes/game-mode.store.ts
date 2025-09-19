@@ -1,4 +1,4 @@
-import { computed, effect, inject } from '@angular/core'
+import { computed, inject } from '@angular/core'
 import { rxResource } from '@angular/core/rxjs-interop'
 import { patchState, signalMethod, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import {
@@ -21,11 +21,11 @@ import { uniq, uniqBy } from 'lodash'
 import { firstValueFrom, map, of } from 'rxjs'
 import { injectNwData } from '../../../data'
 import { ConstrainedLootContext, NwLootService } from '../../../nw/loot'
-import { promiseMap, resourceValue, resourceValueOf } from '../../../utils'
+import { eqCaseInsensitive, promiseMap, resourceValue, resourceValueOf } from '../../../utils'
 import { selectGameEventItemReward } from '../../../widgets/data/game-event-detail/selectors'
 
 export interface GameModeStoreState {
-  gameModeId: string
+  gameMapId: string
   mutationCurseId: string
   mutationElementId: string
   mutationPromotionId: string
@@ -35,14 +35,20 @@ export interface GameModeStoreState {
 export type GameModeStore = InstanceType<typeof GameModeStore>
 export const GameModeStore = signalStore(
   withState<GameModeStoreState>({
-    gameModeId: null,
+    gameMapId: null,
     mutationCurseId: null,
     mutationElementId: null,
     mutationPromotionId: null,
     mutationDifficultyId: null,
   }),
-  withComputed(({ gameModeId }) => {
+  withComputed(({ gameMapId }) => {
     const db = injectNwData()
+    const gameMap = resourceValue({
+      keepPrevious: true,
+      params: gameMapId,
+      loader: ({ params }) => db.gameModesMapsById(params),
+    })
+    const gameModeId = computed(() => gameMap()?.GameModeId)
     const gameMode = resourceValue({
       params: gameModeId,
       loader: ({ params }) => db.gameModesById(params),
@@ -50,6 +56,8 @@ export const GameModeStore = signalStore(
     })
     const isMutable = computed(() => gameMode()?.IsMutable)
     return {
+      gameMap,
+      gameModeId,
       gameMode,
       isMutable,
     }
@@ -85,8 +93,8 @@ export const GameModeStore = signalStore(
   }),
   withMethods((state) => {
     return {
-      connectGameMode: signalMethod((gameModeId: string) => {
-        patchState(state, { gameModeId })
+      connectMap: signalMethod((gameMapId: string) => {
+        patchState(state, { gameMapId })
       }),
       connectMutaCurse: signalMethod((mutationCurseId: string) => {
         patchState(state, { mutationCurseId })
@@ -219,21 +227,56 @@ export const GameModeStore = signalStore(
   }),
   // #endregion
 
-  withComputed(({ gameModeId, gameMode, nwData, mutaDifficulty }) => {
+  withComputed(({ gameMode, mutaDifficulty }) => {
     const db = injectNwData()
     const lootService = inject(NwLootService)
-    const scheduler = computed(() => nwData()?.gameModeSchedulerMap?.get(gameModeId()))
-    const completionEventIds = computed(() => {
-      const result: string[] = []
-      if (scheduler()?.ScheduledGMCompletionGameEvent) {
-        result.push(scheduler().ScheduledGMCompletionGameEvent)
-      }
-      if (mutaDifficulty()) {
-        result.push(mutaDifficulty().CompletionEvent1)
-        result.push(mutaDifficulty().CompletionEvent2)
-        result.push(mutaDifficulty().CompletionEvent3)
-      }
-      return result
+    const completionEventIds = resourceValue({
+      defaultValue: [],
+      // keepPrevious: true,
+      params: () => {
+        return {
+          gameMode: gameMode(),
+          mutaDifficulty: mutaDifficulty(),
+        }
+      },
+      loader: async ({ params: { gameMode, mutaDifficulty } }) => {
+        const scheduler = await db.gameModeSchedulerDataById(gameMode?.GameModeId)
+        const result: string[] = []
+        if (scheduler?.ScheduledGMCompletionGameEvent) {
+          result.push(scheduler.ScheduledGMCompletionGameEvent)
+        }
+        if (mutaDifficulty) {
+          result.push(mutaDifficulty.CompletionEvent1)
+          result.push(mutaDifficulty.CompletionEvent2)
+          result.push(mutaDifficulty.CompletionEvent3)
+        }
+        if (gameMode?.ActivityType === 'CaptureTheFlag') {
+          const events = await db.gameEventsByGameEventType('OutpostRush').then((list) => {
+            return (
+              list?.filter((it) => {
+                return eqCaseInsensitive(it.CreatureType, 'CaptureTheFlag')
+              }) || []
+            )
+          })
+
+          result.push(...events.map((it) => it.EventID))
+        }
+        if (gameMode?.ActivityType === 'OutpostRush' || gameMode?.ActivityType === 'OutpostRush_NoPerks') {
+          const events = await db.gameEventsByGameEventType('OutpostRush').then((list) => {
+            return (
+              list?.filter((it) => {
+                return eqCaseInsensitive(it.CreatureType, 'OutpostRush')
+              }) || []
+            )
+          })
+          result.push(...events.map((it) => it.EventID))
+        }
+        if (gameMode?.ActivityType === 'Arena3v3') {
+          const events = await db.gameEventsByGameEventType('PvPArenas').then((list) => list || [])
+          result.push(...events.map((it) => it.EventID))
+        }
+        return result
+      },
     })
     const completionRewards = resourceValue({
       params: () => completionEventIds(),
@@ -247,7 +290,6 @@ export const GameModeStore = signalStore(
             const event = await db.gameEventsById(id)
             const rewardSpec = selectGameEventItemReward(event)
             const items: Array<MasterItemDefinitions | HouseItems> = []
-            console.log({ rewardSpec })
             if (rewardSpec?.housingItemId) {
               const item = await db.itemOrHousingItem(rewardSpec?.housingItemId)
               items.push(item)
@@ -302,22 +344,22 @@ export const GameModeStore = signalStore(
   }),
 
   // #region CREATURES
-  withComputed(({ gameModeId, isMutated }) => {
+  withComputed(({ gameMapId: mapId, isMutated }) => {
     const db = injectNwData()
     const creatures = resourceValue({
+      defaultValue: [],
       params: () => {
         return {
-          gameModeId: gameModeId(),
+          mapId: mapId(),
           mutated: isMutated(),
         }
       },
       loader: ({ params }) => {
-        return db.vitalsForGameMode({
-          gameModeId: params.gameModeId,
+        return db.vitalsForGameMap({
+          gameMapId: params.mapId,
           mutated: params.mutated,
         })
       },
-      defaultValue: [],
     })
 
     const creaturesNamed = computed(() => {

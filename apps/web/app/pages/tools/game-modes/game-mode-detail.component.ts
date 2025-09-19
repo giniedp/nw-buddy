@@ -23,7 +23,7 @@ import {
   VitalsBaseData,
 } from '@nw-data/generated'
 import { of } from 'rxjs'
-import { CharacterStore, injectNwData } from '~/data'
+import { CharacterStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 
@@ -72,21 +72,21 @@ export interface Tab {
   imports: [
     CommonModule,
     FormsModule,
+    GameModeDetailLootComponent,
+    GameModeDetailMapComponent,
+    GameModeDetailVitalsComponent,
     IconsModule,
     ItemDetailModule,
     LayoutModule,
     LootModule,
+    MutaCurseTileComponent,
+    MutaElementTileComponent,
+    MutaPromotionTileComponent,
     NwModule,
     PaginationModule,
     RouterModule,
-    VitalDetailModule,
-    MutaElementTileComponent,
-    MutaCurseTileComponent,
-    MutaPromotionTileComponent,
     TooltipModule,
-    GameModeDetailMapComponent,
-    GameModeDetailLootComponent,
-    GameModeDetailVitalsComponent,
+    VitalDetailModule,
   ],
   providers: [GameModeStore],
   host: {
@@ -96,18 +96,13 @@ export interface Tab {
 export class GameModeDetailComponent {
   private route = inject(ActivatedRoute)
   private router = inject(Router)
-  // protected store = inject(GameModeDetailStore)
+
   protected store = inject(GameModeStore)
   private character = inject(CharacterStore)
   private i18n = inject(TranslateService)
   private head = inject(HtmlHeadService)
 
-  private db = injectNwData()
-  public trackById: TrackByFunction<MasterItemDefinitions | HouseItems> = (i, item) => getItemId(item)
-  public trackByIndex = (i: number) => i
-  public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
-
-  protected paramGameMode = injectParam('id')
+  protected paramMapId = injectParam('id')
   protected paramCurse = injectQueryParam('curse')
   protected paramElement = injectQueryParam('element')
   protected paramPromotion = injectQueryParam('promotion')
@@ -117,8 +112,9 @@ export class GameModeDetailComponent {
 
   protected currentMutations = injectCurrentMutation()
   protected activeMutation = computed(() => {
+    const modeId = this.store.gameModeId()
     return this.currentMutations()?.find((it) => {
-      return eqCaseInsensitive(it.expedition, this.paramGameMode())
+      return eqCaseInsensitive(it.expedition, modeId)
     })
   })
 
@@ -131,7 +127,8 @@ export class GameModeDetailComponent {
   public iconExtern = svgSquareArrowUpRight
   public iconInfo = svgInfoCircle
 
-  public dungeon = this.store.gameMode
+  public gameMap = this.store.gameMap
+  public gameMode = this.store.gameMode
   public isMutable = this.store.isMutable
 
   public creaturesBosses = this.store.creaturesBosses
@@ -142,21 +139,41 @@ export class GameModeDetailComponent {
   public difficultyLevel = this.store.mutaDifficultyLevel
   public difficulties = this.store.mutaDifficulties
 
-  public title = computed(() => this.dungeon()?.DisplayName)
-  public description = computed(() => this.dungeon()?.Description)
-  public icon = computed(() => this.dungeon()?.IconPath)
-  public backgroundImage = computed(() => this.dungeon()?.BackgroundImagePath)
+  public modeName = computed(() => this.gameMode()?.DisplayName)
+  public mapName = computed(() => this.gameMap()?.UIMapDisplayName)
+  public description = computed(() => this.gameMode()?.Description)
+  public icon = computed(() => this.gameMode()?.IconPath)
+  public backgroundImage = computed(() => this.gameMode()?.BackgroundImagePath)
   public requiredLevel = computed(() => {
-    return this.difficultyLevel() ? NW_MAX_CHARACTER_LEVEL : this.dungeon()?.RequiredLevel
+    return this.difficultyLevel() ? NW_MAX_CHARACTER_LEVEL : this.gameMode()?.RequiredLevel
   })
-  public recommendedLevel = computed(() => this.dungeon()?.RecommendedLevel)
+  public recommendedLevel = computed(() => this.gameMode()?.RecommendedLevel)
   public requiredGearScore = computed(() => this.difficulty()?.RecommendedGearScore)
-  public recommendedGsMin = computed(() => this.dungeon()?.GearScoreRecommendedValueMin)
-  public recommendedGsMax = computed(() => this.dungeon()?.GearScoreRecommendedValueMax)
-  public requirementText = computed(() => this.dungeon()?.RequirementText)
-  public groupSizeMin = computed(() => this.dungeon()?.MinGroupSize)
-  public groupSizeMax = computed(() => this.dungeon()?.TeamCapacity)
-  public lootGsRange = computed(() => this.difficulty()?.LootGSRangeOverride || this.dungeon()?.LootGSRangeOverride)
+  public recommendedGsMin = computed(() => this.gameMode()?.GearScoreRecommendedValueMin)
+  public recommendedGsMax = computed(() => this.gameMode()?.GearScoreRecommendedValueMax)
+
+  public matchmakingGsMin = computed(() => this.gameMode()?.MatchmakingMinGS)
+  public matchmakingLvlMin = computed(() => this.gameMode()?.MatchmakingMinLevel)
+  public matchmakingLvlMax = computed(() => this.gameMode()?.MatchmakingMaxLevel)
+  public matchmakingTanksMin = computed(() => this.gameMode()?.MatchmakingMinTanks)
+  public matchmakingTanksMax = computed(() => this.gameMode()?.MatchmakingMaxTanks)
+  public matchmakingDpsMin = computed(() => this.gameMode()?.MatchmakingMinDPS)
+  public matchmakingDpsMax = computed(() => this.gameMode()?.MatchmakingMaxDPS)
+  public matchmakingHealMin = computed(() => this.gameMode()?.MatchmakingMinHealers)
+  public matchmakingHealMax = computed(() => this.gameMode()?.MatchmakingMaxHealers)
+  public mapRotation = computed(() => {
+    const seconds = this.gameMode()?.MapRotationTimeSpanInSeconds
+    return seconds ? secondsToDuration(seconds) : null
+  })
+  public projectedDuration = computed(() => {
+    const minutes = this.gameMode()?.ProjectedDurationMinutes
+    return minutes ? secondsToDuration(minutes * 60) : null
+  })
+
+  public requirementText = computed(() => this.gameMode()?.RequirementText)
+  public groupSizeMin = computed(() => this.gameMode()?.MinGroupSize)
+  public groupSizeMax = computed(() => this.gameMode()?.TeamCapacity)
+  public lootGsRange = computed(() => this.difficulty()?.LootGSRangeOverride || this.gameMode()?.LootGSRangeOverride)
 
   public tplRewards = viewChild('tplRewards', { read: TemplateRef })
   public tplExplain = viewChild('tplExplain', { read: TemplateRef })
@@ -256,7 +273,7 @@ export class GameModeDetailComponent {
   })
 
   public constructor() {
-    this.store.connectGameMode(this.paramGameMode)
+    this.store.connectMap(this.paramMapId)
     this.store.connectMutaCurse(this.paramCurse)
     this.store.connectMutaElement(this.paramElement)
     this.store.connectMutaPromotion(this.paramPromotion)
@@ -356,9 +373,9 @@ export class GameModeDetailComponent {
   }
 
   public updateRank(value: number) {
-    if (this.dungeon() && this.difficulty()) {
+    if (this.gameMode() && this.difficulty()) {
       this.character.setGameModeProgression(
-        this.dungeon().DifficultyProgressionId,
+        this.gameMode().DifficultyProgressionId,
         this.difficulty().MutationDifficulty,
         value,
       )
@@ -407,4 +424,29 @@ export class GameModeDetailComponent {
       queryParamsHandling: 'merge',
     })
   }
+}
+
+function secondsToDuration(value: number) {
+  const milliseconds = Math.floor(value * 1000) % 1000
+  const seconds = Math.floor(value % 60)
+  const minutes = Math.floor(value / 60) % 60
+  const hours = Math.floor(value / 3600) % 24
+  const days = Math.floor(value / 86400)
+  const result = []
+  if (milliseconds) {
+    result.push(`${milliseconds}ms`)
+  }
+  if (seconds) {
+    result.push(`${seconds}s`)
+  }
+  if (minutes) {
+    result.push(`${minutes}m`)
+  }
+  if (hours) {
+    result.push(`${hours}h`)
+  }
+  if (days) {
+    result.push(`${days}d`)
+  }
+  return result.reverse().join(' ')
 }

@@ -1,10 +1,10 @@
 import { Component, computed, inject, input } from '@angular/core'
-import { GameModeData, GameModeMapData, VitalsBaseData } from '@nw-data/generated'
-import { ScannedVital } from '@nw-data/generated'
+import { getGameModeCoatlicueDirectory } from '@nw-data/common'
+import { GameModeMapData, ScannedVital, VitalsBaseData } from '@nw-data/generated'
 import { Feature, FeatureCollection, MultiPoint } from 'geojson'
 import { uniq } from 'lodash'
 import { injectNwData } from '~/data'
-import { apiResource, eqCaseInsensitive, stringToColor } from '~/utils'
+import { eqCaseInsensitive, resourceValue, stringToColor } from '~/utils'
 import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widgets/game-map'
 
 @Component({
@@ -13,7 +13,7 @@ import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widge
     @if (mapId()) {
       <nwb-map
         class="w-full h-full rounded-md transition-all bg-opacity-0 hover:bg-opacity-10"
-        [mapId]="mapId()"
+        [mapId]="uiMapId()"
         [fitBounds]="bounds()"
         [fitBoundsOptions]="{ animate: false }"
       >
@@ -39,45 +39,38 @@ export class GameModeDetailMapComponent {
   private db = injectNwData()
   private service = inject(GameMapService)
 
-  public gameModeId = input.required<string>()
+  public mapId = input.required<string>()
   public creatures = input<VitalsBaseData[]>([])
   public highlight = input<string>()
 
-  protected vitalsMetaResource = apiResource({
-    loader: () => this.db.vitalsMetadataByIdMap(),
-  })
-  private gameModeResource = apiResource({
-    request: () => this.gameModeId(),
-    loader: async ({ request }) => await this.db.gameModesMapsById(request),
-  })
-  private resource = apiResource({
-    request: () => {
+  private resources = resourceValue({
+    keepPrevious: true,
+    params: () => {
       return {
-        metaMap: this.vitalsMetaResource.value(),
-        gameModeMap: this.gameModeResource.value(),
-        creatures: this.creatures(),
+        mapId: this.mapId(),
+        vitals: this.creatures(),
       }
     },
-    loader: async ({ request: { creatures, gameModeMap, metaMap } }) => {
-      const mapId = gameModeMap?.UIMapId?.toLowerCase()
+    loader: async ({ params: { mapId, vitals } }) => {
+      const gameModeMap = await this.db.gameModesMapsById(mapId)
+      const vitalsMetaMap = await this.db.vitalsMetadataByIdMap()
+      const coatlicueName = getGameModeCoatlicueDirectory(gameModeMap)?.toLowerCase()
       return {
-        mapId,
+        uiMapId: coatlicueName,
         bounds: selectWorldBounds(gameModeMap, this.service),
-        // gameMode,
         vitals: selectVitalsData({
-          mapId,
-          vitals: creatures,
-          vitalsMetaMap: metaMap,
+          mapId: coatlicueName,
+          vitals,
+          vitalsMetaMap,
           mapCoord: this.service.xyToLngLat,
         }),
       }
     },
   })
 
-  protected mapId = computed(() => this.resource.value()?.mapId)
-  protected bounds = computed(() => this.resource.value()?.bounds)
-  // protected gameMode = computed(() => this.resource.value()?.gameMode)
-  protected vitals = computed(() => this.resource.value()?.vitals)
+  protected uiMapId = computed(() => this.resources()?.uiMapId)
+  protected bounds = computed(() => this.resources()?.bounds)
+  protected vitals = computed(() => this.resources()?.vitals)
   protected filter = computed(() => {
     const highlight = this.highlight()?.toLowerCase()
     if (!highlight) {
@@ -87,17 +80,18 @@ export class GameModeDetailMapComponent {
   })
 }
 
-function selectWorldBounds(game: GameModeMapData, service: GameMapService): [number, number, number, number] {
-  if (!game?.WorldBounds) {
+function selectWorldBounds(map: GameModeMapData, service: GameMapService): [number, number, number, number] {
+  if (!map?.WorldBounds) {
     return null
   }
 
-  if (BOUNDS[game.GameModeId]) {
-    const [x1, y1, x2, y2] = BOUNDS[game.GameModeId]
+  const mapId = map.GameModeMapId
+  if (BOUNDS[mapId]) {
+    const [x1, y1, x2, y2] = BOUNDS[mapId]
     return [service.xToLng(x1), service.yToLat(y1), service.xToLng(x2), service.yToLat(y2)]
   }
 
-  const [x, y, w, h] = (game.WorldBounds?.split(',') || []).map(Number)
+  const [x, y, w, h] = (map.WorldBounds?.split(',') || []).map(Number)
   return [service.xToLng(x), service.yToLat(y), service.xToLng(x + w), service.yToLat(y + h)]
 }
 

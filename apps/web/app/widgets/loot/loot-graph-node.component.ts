@@ -129,6 +129,9 @@ export class LootGraphNodeComponent {
   public get table() {
     return this.store.table()
   }
+  public get gsRange() {
+    return this.store.gsRange()
+  }
   public get link() {
     return this.store.link()
   }

@@ -1,28 +1,25 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, computed, inject, viewChild } from '@angular/core'
 import { ActivatedRoute, RouterModule, RouterOutlet } from '@angular/router'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import {
   CurseMutationStaticData,
   ElementalMutationStaticData,
   GameModeData,
+  GameModeMapData,
   PromotionMutationStaticData,
   TerritoryDefinition,
 } from '@nw-data/generated'
-import { from } from 'rxjs'
+import { groupBy } from 'lodash'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
-import { eqCaseInsensitive, injectChildRouteParam, selectStream } from '~/utils'
+import { eqCaseInsensitive, injectParam, resourceValue } from '~/utils'
 import { injectCurrentMutation } from './current-mutation.service'
-import { GameModesStore } from './game-modes.store'
-import { MutaCurseTileComponent } from './muta-curse-tile.component'
-import { MutaElementTileComponent } from './muta-element-tile.component'
-import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
+import { GameModePageTileComponent } from './game-modes-page-tile.component'
 
 type GameModeCategories = 'expeditions' | 'soul-trials' | 'season-trials' | 'raids' | 'activities'
 
@@ -47,11 +44,8 @@ export interface CurrentMutation {
     IonSegment,
     IonSegmentButton,
     IconsModule,
-    MutaElementTileComponent,
-    MutaCurseTileComponent,
-    MutaPromotionTileComponent,
+    GameModePageTileComponent,
   ],
-  providers: [GameModesStore],
   host: {
     class: 'ion-page',
   },
@@ -60,91 +54,110 @@ export class GameModesPageComponent {
   private db = injectNwData()
   private route = inject(ActivatedRoute)
 
-  protected gameModeId$ = injectChildRouteParam(':id')
-  protected groups$ = selectStream(from(this.db.gameModesAll()), groupByCategory)
-  protected categories$ = selectStream(this.groups$, (it) => Object.keys(it).sort())
-  protected categoryId$ = selectStream(this.route.paramMap, (it) => it.get('category'))
-  protected modes$ = selectStream(
-    {
-      pois: this.db.territoriesAll(),
-      categories: this.groups$,
-      category: this.categoryId$,
-      mutations: toObservable(injectCurrentMutation()),
-      cursesMap: this.db.mutatorCursesByIdMap(),
-      elements: this.db.mutatorElementsAll(),
-      promotionsMap: this.db.mutatorPromotionsByIdMap(),
-    },
-    ({ pois, categories, category, mutations, cursesMap, elements, promotionsMap }) => {
-      return selectCategory(
-        pois,
-        categories,
-        category,
-        mutations?.map((it) => {
+  private activeMutations = injectCurrentMutation()
+  private mutations = resourceValue({
+    keepPrevious: true,
+    defaultValue: [],
+    params: () => this.activeMutations() || [],
+    loader: async ({ params }) => {
+      const result = await Promise.all(
+        params.map(async (it): Promise<CurrentMutation> => {
           return {
             expedition: it.expedition,
-            element: elements.find((el) => el.CategoryWildcard === it.element && el.ElementalDifficultyTier === 3),
-            promotion: promotionsMap.get(it.promotion),
-            curse: cursesMap.get(it.curse),
+            element: await this.db.mutatorElementsByCategory(it.element).then((it) => it?.[0]),
+            promotion: await this.db.mutatorPromotionsById(it.promotion),
+            curse: await this.db.mutatorCursesById(it.curse),
           }
-        }) || [],
+        }),
       )
+      return result || []
     },
-  )
+  })
 
-  @ViewChild(RouterOutlet, { static: true })
-  protected outlet: RouterOutlet
+  protected tabParam = injectParam('category', { transform: (it): GameModeCategories => (it as any) || 'expeditions' })
+  protected tabs = resourceValue({
+    keepPrevious: true,
+    defaultValue: [],
+    params: () => {
+      return {
+        mutations: this.mutations(),
+      }
+    },
+    loader: async ({ params: { mutations } }) => {
+      const gameModes = await this.db.gameModesAll()
+      const gameMaps = await this.db.gameModesMapsAll()
+      const territoriesMap = await this.db.territoriesByGameModeMap()
+      const tiles = selectTiles({
+        territoriesMap,
+        gameModes,
+        gameMaps,
+        mutations,
+      })
+      const groups = groupBy(tiles, (it) => it.category)
+      return Object.entries(groups)
+        .map(([key, list]) => {
+          return {
+            id: key,
+            tiles: list,
+          }
+        })
+        .sort((a, b) => a.id.localeCompare(b.id))
+    },
+  })
+  protected tab = computed(() => this.tabs().find((it) => it.id === this.tabParam()))
+
+  protected outlet = viewChild(RouterOutlet)
   protected iconBack = svgChevronLeft
 }
 
-function groupByCategory(modes: GameModeData[]) {
-  const groups: Record<string, GameModeData[]> = {}
-  for (const mode of modes) {
-    const category = detectCategory(mode)
-    if (!category) {
-      continue
-    }
-    groups[category] = groups[category] || []
-    groups[category].push(mode)
-  }
-  return groups
-}
-
-function selectCategory(
-  pois: TerritoryDefinition[],
-  categories: Record<string, GameModeData[]>,
-  category: string,
-  mutations: Array<CurrentMutation>,
-) {
-  pois = pois.filter((it) => !!it.GameMode)
-  let modes: GameModeData[] = []
-  if (category === 'all') {
-    modes = Object.entries(categories)
-      .map(([_, value]) => value)
-      .flat(1)
-  } else {
-    modes = categories[category] || []
-  }
-
-  return modes
-    .sort((a, b) => a.RequiredLevel - b.RequiredLevel)
+function selectTiles({
+  territoriesMap,
+  gameModes,
+  gameMaps,
+  mutations,
+}: {
+  territoriesMap: Map<string, TerritoryDefinition[]>
+  gameModes: GameModeData[]
+  gameMaps: GameModeMapData[]
+  mutations: CurrentMutation[]
+}) {
+  return gameModes
+    .sort((a, b) => (a.RequiredLevel || 0) - (b.RequiredLevel || 0))
     .map((mode) => {
-      const poi = pois.find((it) => eqCaseInsensitive(it.GameMode, mode.GameModeId))
-      const mutation = mutations?.find((it) => eqCaseInsensitive(it.expedition, mode.GameModeId))
-      return {
-        id: mode.GameModeId.toLowerCase(),
-        icon: mode.IconPath,
-        backgroundImage: mode.BackgroundImagePath || mode.SimpleImagePath,
-        title: poi?.NameLocalizationKey || mode.DisplayName,
-        description: poi ? `${poi.NameLocalizationKey}_description` : mode.Description,
-        isMutable: mode.IsMutable,
-        isMutated: !!mutation,
-        mutation: mutation,
-      }
+      const modeMaps = gameMaps.filter((it) => eqCaseInsensitive(mode.GameModeId, it.GameModeId))
+      const mutation = mutations.find((it) => eqCaseInsensitive(it.expedition, mode.GameModeId))
+      const poi = territoriesMap.get(mode.GameModeId)?.[0]
+      return modeMaps.map((map) => {
+        const mapName = map.UIMapDisplayName
+        const modeName = mode.DisplayName
+        const poiName = poi?.NameLocalizationKey
+        const poiDescription = poi ? `${poi.NameLocalizationKey}_description` : null
+        return {
+          id: map.GameModeMapId.toLowerCase(),
+          modeId: mode.GameModeId.toLowerCase(),
+          mapName,
+          modeName,
+          poiName,
+          description: poiDescription || mode.Description,
+          icon: mode.IconPath,
+          category: detectCategory(mode),
+          backgroundImage: mode.BackgroundImagePath || mode.SimpleImagePath,
+          isMutable: mode.IsMutable,
+          isMutated: !!mutation,
+          mutation: mutation,
+        }
+      })
     })
+    .flat()
+    .filter((it) => !!it.category && !!it.modeName)
 }
 
 function detectCategory(mode?: GameModeData): GameModeCategories {
   if (!mode) {
+    return null
+  }
+  if (eqCaseInsensitive(mode.GameModeId, 'mutation') || eqCaseInsensitive(mode.GameModeId, 'dungeon')) {
+    // useless dummies
     return null
   }
   if (mode.IsSoloTrial) {
@@ -159,8 +172,8 @@ function detectCategory(mode?: GameModeData): GameModeCategories {
   if (mode.IsDungeon) {
     return 'expeditions'
   }
-  // if (mode.ActivityType) {
-  //   return 'activities'
-  // }
+  if (mode.ActivityType) {
+    return 'activities'
+  }
   return null
 }
