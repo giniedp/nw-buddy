@@ -9,11 +9,9 @@ import { ItemDetailModule } from '../../../widgets/data/item-detail'
     @for (item of scroll.data(); track $index; let index = $index) {
       <nwb-item-detail
         animate.enter="fade-enter"
-        [style.--enter-delay.ms]="(index - scroll.offset()) * 20"
+        [style.--enter-delay.ms]="(index - scroll.offset()) * 15"
         [itemId]="item"
       >
-        <!-- [cdkContextMenuTriggerFor]="tplExplainMenu"
-        (cdkContextMenuOpened)="explainItemDrop(item, 'normal')" -->
         <nwb-item-detail-header
           [enableInfoLink]="true"
           [enableTracker]="true"

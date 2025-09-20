@@ -59,12 +59,18 @@ var RULES = []tx.Rule{
 		Schema: "GameModeData",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"PossibleItemDropIds",
 					"PossibleItemDropIdsByLevel01",
 					"LootTags",
 					"MutLootTagsOverride",
+					"ExclusiveRewardIds",
+					"UniqueRewardIds",
+					"BasicRewardIds",
+					"MRV2_GBs",
+					"MRV2_RankMultipliers_WinningTeam",
+					"MRV2_RankMultipliers_LosingTeam",
 				},
 			},
 		},
@@ -73,7 +79,7 @@ var RULES = []tx.Rule{
 		Schema: "BackstoryDefinition",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"ObjectiveUnlockOverride",
 					"AchievementUnlockOverride",
@@ -89,7 +95,7 @@ var RULES = []tx.Rule{
 		Schema: "VitalsBaseData",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"VitalsCategories",
 					"LootTags",
@@ -120,7 +126,7 @@ var RULES = []tx.Rule{
 		Schema: "TerritoryDefinition",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"LootTags",
 				},
@@ -131,7 +137,7 @@ var RULES = []tx.Rule{
 		Schema: "MutationDifficultyStaticData",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"InjectedLootTags",
 				},
@@ -218,7 +224,7 @@ var RULES = []tx.Rule{
 		Schema: "ConsumableItemDefinitions",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: "+",
+				Sep: ",+",
 				Keys: []string{
 					"AddStatusEffects",
 					"RemoveStatusEffectCategories",
@@ -231,7 +237,7 @@ var RULES = []tx.Rule{
 		Schema: "ArmorAppearanceDefinitions",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: "+",
+				Sep: ",+",
 				Keys: []string{
 					"ItemClass",
 				},
@@ -244,11 +250,12 @@ var RULES = []tx.Rule{
 			},
 		},
 	},
+
 	{
 		Schema: "WeaponAppearanceDefinitions",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: "+",
+				Sep: ",+",
 				Keys: []string{
 					"ItemClass",
 				},
@@ -265,7 +272,7 @@ var RULES = []tx.Rule{
 		Schema: "SpellData",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"StatusEffects",
 					"StatusEffectsOnTargetBlockingThisSpell",
@@ -297,7 +304,7 @@ var RULES = []tx.Rule{
 				},
 			},
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"AbilityList",
 					"AfterSequence",
@@ -331,7 +338,7 @@ var RULES = []tx.Rule{
 		Schema: "MasterItemDefinitions",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: "+",
+				Sep: ",+",
 				Keys: []string{
 					"ItemClass",
 				},
@@ -343,7 +350,7 @@ var RULES = []tx.Rule{
 				},
 			},
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"IngredientCategories",
 				},
@@ -383,7 +390,7 @@ var RULES = []tx.Rule{
 		Schema: "PerkData",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: "+",
+				Sep: ",+",
 				Keys: []string{
 					"ItemClass",
 				},
@@ -395,14 +402,14 @@ var RULES = []tx.Rule{
 				},
 			},
 			tx.MapPropToArray{
-				Sep: "+",
+				Sep: ",+",
 				Keys: []string{
 					"ExclusiveLabels",
 					"ExcludeItemClass",
 				},
 			},
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"EquipAbility",
 				},
@@ -449,7 +456,7 @@ var RULES = []tx.Rule{
 		Schema: "StatusEffectData",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: "+",
+				Sep: ",+",
 				Keys: []string{
 					"EffectCategories",
 					"RemoveStatusEffectCategories",
@@ -476,7 +483,7 @@ var RULES = []tx.Rule{
 		Schema: "TerritoryDefinition",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"LootTags",
 					"VitalsCategory",
@@ -486,10 +493,32 @@ var RULES = []tx.Rule{
 		},
 	},
 	{
+		Schema: "GameEventData",
+		Transforms: []tx.Transformer{
+			tx.MapPropToArray{
+				Sep: ",+",
+				Keys: []string{
+					"LootTags",
+				},
+			},
+		},
+	},
+	{
+		Schema: "MutationPerksStaticData",
+		Transforms: []tx.Transformer{
+			tx.MapPropToArray{
+				Sep: ",+",
+				Keys: []string{
+					"InjectedLootTags",
+				},
+			},
+		},
+	},
+	{
 		Schema: "AttributeDefinition",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
-				Sep: ",",
+				Sep: ",+",
 				Keys: []string{
 					"EquipAbilities",
 				},

@@ -34,7 +34,7 @@ export class ItemDetailHeaderComponent {
   public enableLink = input(false)
   public enableTracker = input(false)
   public disableContent = input(false)
-  public size = input<'xs' | 'sm' | 'md' | 'lg'>('md')
+  public size = input<'xxs' | 'xs' | 'sm' | 'md' | 'lg'>('md')
 
   protected name = this.store.fullName
   protected icon = this.store.icon

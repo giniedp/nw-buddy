@@ -18,14 +18,14 @@ export interface GameEventRewardInfo {
 }
 export function selectGameEventItemReward(event: GameEventData) {
   const itemReward = event?.ItemReward
-  const lootTags = event?.LootTags?.split(/[,+]/)
+  const lootTags = event?.LootTags || []
   if (!itemReward) {
     return null
   }
   if (itemReward.startsWith('[LTID]')) {
     return {
       lootTableId: itemReward.replace('[LTID]', ''),
-      lootTags
+      lootTags: [...lootTags]
     }
   }
   if (itemReward.includes('HousingItem')) {

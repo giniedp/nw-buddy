@@ -4,7 +4,7 @@
   </picture>
   <ion-content class="ion-p-4" [gutterStable]="true">
     <div class="content-grid max-w-screen-3xl mx-auto">
-      <div class="content-grid-info flex flex-col gap-2 font-nimbus prose-base shadow-black text-shadow-sm">
+      <div class="content-grid-info flex flex-col gap-2 font-nimbus shadow-black text-shadow-sm prose-base">
         <h1 class="mb-0 font-normal font-serif tracking-wider">
           @if (mapName()) {
             <span> {{ mapName() | nwText }} &bullet; </span>
@@ -21,7 +21,7 @@
           <div class="nw-item-divider max-w-lg"></div>
         }
 
-        <section class="font-nimbus prose-base">
+        <section class="font-nimbus">
           @if (requirementText()) {
             <div>
               <span>Requires: </span>
@@ -181,7 +181,6 @@
                 [class.tab-active]="item.MutationDifficulty == paramDifficulty()"
                 [class.text-primary]="item.MutationDifficulty == paramDifficulty()"
               >
-                <!-- <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" /> -->
                 Mutation {{ item.MutationDifficulty }}
               </a>
             }
@@ -236,26 +235,55 @@
           </div>
         }
 
-        @if (store.possibleItemDropIds()?.length) {
-          <h2 class="mb-0 mt-4 font-normal font-serif tracking-wider uppercase">
-            <span>Available Rewards </span>
-          </h2>
-          <div class="nw-item-divider max-w-lg"></div>
+        @if (store.lootRewards()?.length) {
+          <section animate.enter="fade-enter" class="flex flex-col gap-2">
+            <h2 class="mb-0 mt-4 font-normal font-serif tracking-wider uppercase flex items-center justify-between">
+              <span>Available Rewards </span>
+              <nwb-icon
+                [icon]="iconInfo"
+                [tooltip]="'Quest items or completion reward caches'"
+                class="w-4 h-4 cursor-help"
+              />
+            </h2>
+            <div class="nw-item-divider max-w-lg"></div>
 
-          <div class="w-full max-h-[500px] overflow-auto bg-neutral/50 rounded-sm p-2">
-            <div class="flex flex-row flex-wrap gap-2">
-              @for (itemId of store.possibleItemDropIds(); track $index; let index = $index) {
-                <a
-                  [nwLinkTooltip]="['item', itemId]"
-                  [nwbItemDetail]="itemId"
+            <div class="w-full grid grid-auto-fill-48 gap-2 max-h-[354px] overflow-auto bg-neutral/50 rounded-sm p-2">
+              @for (item of store.lootRewards(); track $index; let index = $index) {
+                <nwb-item-header
+                  class="gap-2 rounded-sm overflow-clip"
+                  [rarity]="detail.rarity()"
+                  [isNamed]="detail.isNamed()"
+                  [nwbItemDetail]="item"
                   #detail="itemDetail"
-                  class="block w-full max-w-[60px] aspect-square"
+                  animate.enter="fade-enter"
+                  [style.--enter-delay.ms]="index * 15"
                 >
-                  <picture [nwIcon]="detail.item()" class="block w-full h-full my-0 mt-0 mb-0"></picture>
-                </a>
+                  <a [nwLinkTooltip]="['item', detail.recordId()]">
+                    <nwb-item-icon [nwbItemIcon]="detail.icon()" [solid]="false" class="z-10 w-14 h-14" />
+                  </a>
+                  <nwb-item-header-content
+                    [title]="detail.name() | nwText"
+                    [rarity]="detail.rarity()"
+                    [text1]="detail.typeName() | nwText"
+                    [titleLink]="detail.itemLink()"
+                    class="text-sm"
+                  />
+                </nwb-item-header>
               }
+              <!-- <div class="flex flex-row flex-wrap gap-2">
+                @for (item of store.lootRewards(); track $index; let index = $index) {
+                  <a
+                    [nwLinkTooltip]="['item', detail.recordId()]"
+                    [nwbItemDetail]="item"
+                    #detail="itemDetail"
+                    class="block w-full max-w-[60px] aspect-square"
+                  >
+                    <picture [nwIcon]="detail.item()" class="block w-full h-full my-0 mt-0 mb-0"></picture>
+                  </a>
+                }
+              </div> -->
             </div>
-          </div>
+          </section>
         }
       </div>
 
@@ -276,7 +304,7 @@
       </div>
 
       <div
-        class="content-grid-map flex justify-end aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[710px] z-50"
+        class="content-grid-map flex justify-end aspect-square md:aspect-video 3xl:aspect-auto 3xl:min-h-[800px] z-50"
         [class.sticky]="mapPinned()"
         [class.top-0]="mapPinned()"
         [class.right-0]="mapPinned()"

@@ -181,8 +181,8 @@ export class GameModeDetailComponent {
   public activeTab = computed(() => this.tabs().find((it) => it.active))
   public tabs = computed(() => {
     const difficulty = this.store.mutaDifficulty()
-    const rewards = this.store.completionRewards()
-    const lootNormal = this.store.lootNormal()
+    // const rewards = this.store.completionRewards()
+    const lootNormal = this.store.lootItems()
     const lootMutated = this.store.lootMutated()
     const lootDifficulty = this.store.lootDifficulty()
     const vitalsCommon = this.store.creaturesCommon()
@@ -191,40 +191,22 @@ export class GameModeDetailComponent {
     const tabId = this.paramTab()
     const tabs: Tab[] = []
     if (!difficulty) {
-      const loot: typeof rewards = []
-      const hasRewards = !!rewards?.length
-      const hasLoot = !!lootNormal?.length
-      if (hasRewards) {
-        loot.push(...rewards)
-      }
-      if (hasLoot) {
-        loot.push(...lootNormal)
-      }
       tabs.push({
         id: 'loot',
-        label: [hasRewards ? 'Rewards' : '', 'Loot'].filter((it) => !!it).join('/'),
+        label: 'Loot',
         active: false,
         vitals: [],
-        loot: loot,
-        count: loot?.length || 0,
+        loot: lootNormal,
+        count: lootNormal?.length || 0,
       })
     } else {
-      const loot: typeof rewards = []
-      const hasRewards = !!rewards?.length
-      const hasLoot = !!lootMutated?.length
-      if (hasRewards) {
-        loot.push(...rewards)
-      }
-      if (hasLoot) {
-        loot.push(...lootMutated)
-      }
       tabs.push({
         id: 'loot',
-        label: [hasRewards ? 'Rewards' : '', 'Loot'].filter((it) => !!it).join('/'),
+        label: 'Loot',
         active: false,
-        loot: loot,
         vitals: [],
-        count: loot?.length || 0,
+        loot: lootMutated,
+        count: lootMutated?.length || 0,
       })
       tabs.push({
         id: 'difficulty',

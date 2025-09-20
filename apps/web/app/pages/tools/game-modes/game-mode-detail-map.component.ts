@@ -4,7 +4,7 @@ import { GameModeMapData, ScannedVital, VitalsBaseData } from '@nw-data/generate
 import { Feature, FeatureCollection, MultiPoint } from 'geojson'
 import { uniq } from 'lodash'
 import { injectNwData } from '~/data'
-import { eqCaseInsensitive, resourceValue, stringToColor } from '~/utils'
+import { CaseInsensitiveMap, eqCaseInsensitive, resourceValue, stringToColor } from '~/utils'
 import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widgets/game-map'
 
 @Component({
@@ -57,7 +57,7 @@ export class GameModeDetailMapComponent {
       const coatlicueName = getGameModeCoatlicueDirectory(gameModeMap)?.toLowerCase()
       return {
         uiMapId: coatlicueName,
-        bounds: selectWorldBounds(gameModeMap, this.service),
+        bounds: selectWorldBounds(mapId, gameModeMap, this.service),
         vitals: selectVitalsData({
           mapId: coatlicueName,
           vitals,
@@ -80,14 +80,13 @@ export class GameModeDetailMapComponent {
   })
 }
 
-function selectWorldBounds(map: GameModeMapData, service: GameMapService): [number, number, number, number] {
+function selectWorldBounds(mapId: string, map: GameModeMapData, service: GameMapService): [number, number, number, number] {
   if (!map?.WorldBounds) {
     return null
   }
 
-  const mapId = map.GameModeMapId
-  if (BOUNDS[mapId]) {
-    const [x1, y1, x2, y2] = BOUNDS[mapId]
+  if (BOUNDS.has(mapId)) {
+    const [x1, y1, x2, y2] = BOUNDS.get(mapId)
     return [service.xToLng(x1), service.yToLat(y1), service.xToLng(x2), service.yToLat(y2)]
   }
 
@@ -95,21 +94,24 @@ function selectWorldBounds(map: GameModeMapData, service: GameMapService): [numb
   return [service.xToLng(x), service.yToLat(y), service.xToLng(x + w), service.yToLat(y + h)]
 }
 
-const BOUNDS = {
-  DungeonAmrine: [600, 550, 1000, 1000],
-  DungeonShatteredObelisk: [300, 270, 1000, 730],
-  DungeonRestlessShores01: [690, 800, 1300, 1400],
-  DungeonEbonscale00: [4500, 4100, 5100, 4600],
-  DungeonEdengrove00: [350, 1000, 900, 1600],
-  DungeonReekwater00: [650, 550, 1000, 1000],
-  DungeonCutlassKeys00: [270, 760, 700, 1200],
-  DungeonGreatCleave01: [500, 200, 920, 670],
-  DungeonShatterMtn00: [360, 450, 1600, 1300],
-  DungeonBrimstoneSands00: [700, 820, 1370, 1500],
-  DungeonFirstLight01: [490, 650, 960, 1200],
-  DungeonGreatCleave00: [830, 440, 1260, 960],
-  RaidCutlassKeys00: [540, 600, 1340, 1340],
-}
+const BOUNDS = new CaseInsensitiveMap(
+  Object.entries({
+    DungeonAmrine: [600, 550, 1000, 1000],
+    DungeonShatteredObelisk: [300, 270, 1000, 730],
+    DungeonRestlessShores01: [690, 800, 1300, 1400],
+    DungeonEbonscale00: [4500, 4100, 5100, 4600],
+    DungeonEdengrove00: [350, 1000, 900, 1600],
+    DungeonReekwater00: [650, 550, 1000, 1000],
+    DungeonCutlassKeys00: [270, 760, 700, 1200],
+    DungeonGreatCleave01: [500, 200, 920, 670],
+    DungeonShatterMtn00: [360, 450, 1600, 1300],
+    DungeonBrimstoneSands00: [700, 820, 1370, 1500],
+    DungeonFirstLight01: [490, 650, 960, 1200],
+    DungeonGreatCleave00: [830, 440, 1260, 960],
+    RaidCutlassKeys00: [540, 600, 1340, 1340],
+    arena3v3: [864, 832, 992, 960],
+  }),
+)
 
 export type MapCoord = (coord: number[] | [number, number]) => number[]
 

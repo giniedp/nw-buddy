@@ -49,7 +49,7 @@ export async function lootDroppedBy(db: NwDataSheets, itemId: string) {
   const mutElements = await db.mutatorElementsPerksAll()
   const mutTags = new Set([
     ...mutDifficulties.map((it) => it.InjectedLootTags || []).flat(),
-    ...mutElements.map((it) => it.InjectedLootTags.split(',')).flat(),
+    ...mutElements.map((it) => it.InjectedLootTags || []).flat(),
   ])
 
   const tables = roots.map((it) => (it.table ? it.table.LootTableID : null)).filter((it) => !!it)
@@ -197,7 +197,7 @@ function buildVitalLootContext({
       }
       for (const elm of mutElements) {
         if (elm.InjectedLootTags) {
-          tags.push(...elm.InjectedLootTags.split(','))
+          tags.push(...elm.InjectedLootTags)
         }
       }
     }

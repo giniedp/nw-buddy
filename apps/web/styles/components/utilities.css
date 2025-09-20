@@ -40,7 +40,7 @@
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 @utility grid-cols-fill-2xs {
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
 }
 @utility grid-cols-fill-xs {
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));

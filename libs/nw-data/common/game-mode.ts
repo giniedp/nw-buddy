@@ -1,5 +1,10 @@
 import { uniq } from 'lodash'
-import { GameModeData, GameModeMapData, MutationDifficultyStaticData, MutationPerksStaticData } from '../generated/types'
+import {
+  GameModeData,
+  GameModeMapData,
+  MutationDifficultyStaticData,
+  MutationPerksStaticData,
+} from '../generated/types'
 
 export function getGameModeLootTags(
   gameMode: GameModeData,
@@ -17,7 +22,7 @@ export function getGameModeLootTags(
     ...(mutation.InjectedLootTags || []),
     mutation.InjectedCreatureLoot || null,
     mutation.InjectedContainerLoot || null,
-    element?.InjectedLootTags || null,
+    ...(element?.InjectedLootTags || []),
     element?.InjectedCreatureLoot || null,
     element?.InjectedContainerLoot || null,
   ].filter((it) => !!it)

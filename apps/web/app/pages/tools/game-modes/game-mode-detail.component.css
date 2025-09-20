@@ -2,6 +2,10 @@
 :host {
   @apply flex-col;
   @apply xl:flex-row!;
+
+  ::ng-deep picture {
+    margin: 0;
+  }
 }
 .grid.grid-loot,
 .grid.grid-vitals {
