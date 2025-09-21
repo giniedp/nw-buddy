@@ -12,6 +12,8 @@ import {
 import { getArmorRating } from './damage'
 import { getGameModeCoatlicueDirectory } from './game-mode'
 import { NW_MAP_NEWWORLD_VITAEETERNA } from './constants'
+import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
+
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -238,25 +240,48 @@ export function getVitalDamageEffectivenessIcon(vital: VitalsData, damageType: V
   return null
 }
 
+// tightens the test area for some game modes
+const MAP_ID_TO_TERRITORY_ID = new CaseInsensitiveMap<string, number>(Object.entries({
+  questmedea: 40196,
+  questmedusa: 40070,
+  trialbrimstonesandworm: 20317
+  // questyonas:
+  //  - POI does not cover the spawn point
+  //  - Bounds give false positives
+  //  - TODO: maybe hardcode
+  // questheartforge:
+  //  - POI and bounds give false positives
+  //  - TODO: Maybe hardcode?
+}))
+
 export function getVitalGameModeMaps(
   vital: VitalsData,
   maps: GameModeMapData[],
-  metaMap: Map<string, ScannedVital>,
+  vitalMetaMap: Map<string, ScannedVital>,
 ): GameModeMapData[] {
   if (!vital || !maps?.length) {
     return []
   }
-  const meta = metaMap?.get(vital.VitalsID)
-  if (!meta) {
+  const vitalMeta = vitalMetaMap?.get(vital.VitalsID)
+  if (!vitalMeta) {
     return []
   }
   // "WorldBounds": "4480.0,4096.0,608.0,544.0"
   return maps.filter((it) => {
     const catlicueId = getGameModeCoatlicueDirectory(it)
     if (eqCaseInsensitive(catlicueId, NW_MAP_NEWWORLD_VITAEETERNA)) {
-      const spawns = meta.spawns?.['newworld_vitaeeterna']
+      const spawns = vitalMeta.spawns?.[NW_MAP_NEWWORLD_VITAEETERNA]
+      if (!spawns?.length) {
+        return false
+      }
+
+      const territoryId = MAP_ID_TO_TERRITORY_ID.get(it.GameModeMapId)
+      if (territoryId) {
+        return vitalMeta.territories.includes(territoryId)
+      }
+
       const bounds = it.WorldBounds
-      if (!spawns?.length || !bounds?.length) {
+      if (!bounds?.length) {
         return false
       }
       // dynasty dungeon and trials are in the open world map
@@ -270,7 +295,7 @@ export function getVitalGameModeMaps(
         return p[0] >= x && p[0] <= x + w && p[1] >= y && p[1] <= y + h
       })
     }
-    return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, catlicueId))
+    return vitalMeta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, catlicueId))
   })
 }
 

@@ -21,7 +21,7 @@ import {
 import { NwData } from '@nw-data/db'
 import { HouseItems, MasterItemDefinitions, MutationDifficultyStaticData } from '@nw-data/generated'
 import { uniq, uniqBy } from 'lodash'
-import { firstValueFrom, map, of } from 'rxjs'
+import { firstValueFrom, of } from 'rxjs'
 import { injectNwData } from '../../../data'
 import { ConstrainedLootContext, NwLootService } from '../../../nw/loot'
 import { eqCaseInsensitive, promiseMap, resourceValue, resourceValueOf } from '../../../utils'
@@ -232,19 +232,19 @@ export const GameModeStore = signalStore(
   // #endregion
 
   // #region CREATURES
-  withProps(({ gameMapId: mapId, isMutated }) => {
+  withProps(({ gameMapId, isMutated }) => {
     const db = injectNwData()
     const creaturesResource = resource({
       defaultValue: [],
       params: () => {
         return {
-          mapId: mapId(),
+          gameMapId: gameMapId(),
           mutated: isMutated(),
         }
       },
       loader: ({ params }) => {
-        return db.vitalsForGameMap({
-          gameMapId: params.mapId,
+        return db.vitalsForGameModeMap({
+          gameMapId: params.gameMapId,
           mutated: params.mutated,
         })
       },
