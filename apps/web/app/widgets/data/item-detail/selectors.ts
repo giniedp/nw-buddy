@@ -1,28 +1,20 @@
 import {
   NW_LOOT_GlobalMod,
-  NW_MAX_GEAR_SCORE_BASE,
   PerkBucket,
   PerkExplanation,
-  explainPerk,
   getItemGearScoreLabel,
-  getItemGsBonus,
   getItemMaxGearScore,
   getItemPerkSlots,
+  getItemPerkSwap,
   getItemRarity,
   getItemRarityNumeric,
   getPerkBucketPerkIDs,
-  getPerkBucketPerks,
-  getPerkTypeWeight,
   hasItemGearScore,
   isMasterItem,
-  isPerkApplicableToItem,
   isPerkGem,
-  isPerkItemIngredient,
 } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import {
-  AbilityData,
-  AffixStatData,
   ConsumableItemDefinitions,
   CraftingCategoryData,
   HouseItems,
@@ -33,6 +25,8 @@ import {
 
 export interface ItemPerkSlot {
   key: string
+  perkIdOld?: string
+  perkOld?: PerkData
   perkId?: string
   perk?: PerkData
   bucketId?: string
@@ -42,6 +36,8 @@ export interface ItemPerkSlot {
 
 export interface PerkSlotExplained extends ItemPerkSlot {
   key: string
+  perkIdOld?: string
+  perkOld?: PerkData
   perkId?: string
   perk?: PerkData
   bucketId?: string
@@ -49,6 +45,7 @@ export interface PerkSlotExplained extends ItemPerkSlot {
   editable?: boolean
 
   explain: PerkExplanation[]
+  explainOld: PerkExplanation[]
   activationCooldown: number
   violatesItemClass: boolean
   violatesExclusivity: boolean
@@ -110,117 +107,35 @@ export async function fetchItemPerkSlots(
     perkOverride: Record<string, string>
   },
 ) {
+  const swaps = await db.itemPerkSwapDataAll()
   const slots = getItemPerkSlots(item)
   const result: ItemPerkSlot[] = []
   for (const slot of slots) {
     const key = slot.perkId ? slot.perkKey : slot.bucketKey
-    const perkId = slot.perkId
+    let perkId = slot.perkId
+    let perkIdOld: string = null
+    if (perkId) {
+      const swap = getItemPerkSwap(item, perkId, swaps)
+      if (swap) {
+        perkIdOld = swap.OldPerk
+        perkId = swap.NewPerk
+      }
+    }
+
     const perkIdOverride = perkOverride?.[key]
     const perk = await db.perksById(perkIdOverride || perkId)
+    const perkOld = perkIdOld ? await db.perksById(perkIdOld) : null
     const bucket = await db.perkBucketsById(slot.bucketId)
     result.push({
       key: key,
+      perkIdOld: perkIdOverride ? null : perkIdOld,
+      perkOld: perkOld,
       perkId: perkIdOverride || perkId,
       perk: perk,
       bucketId: slot.bucketId,
       bucket: bucket,
       editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)),
     })
-  }
-  return result
-}
-
-export function selectPerkSlots({
-  item,
-  itemGS,
-  perks,
-  buckets,
-  affixes,
-  abilities,
-  perkOverride,
-}: {
-  item: MasterItemDefinitions
-  itemGS: number
-  perks: Map<string, PerkData>
-  buckets: Map<string, PerkBucket>
-  affixes: Map<string, AffixStatData>
-  abilities: Map<string, AbilityData>
-  perkOverride: Record<string, string>
-}): PerkSlotExplained[] {
-  if (isPerkItemIngredient(item)) {
-    // case for perk carft mods
-    const bucket = buckets.get(item?.ItemID)
-    if (!bucket) {
-      return []
-    }
-    return getPerkBucketPerks(bucket, perks)?.map((perk, i): PerkSlotExplained => {
-      return {
-        key: `${bucket.PerkBucketID}-${i}`,
-        editable: false,
-        perkId: perk?.PerkID,
-        perk: perk,
-        activationCooldown: null,
-        violatesExclusivity: false,
-        violatesItemClass: false,
-        explain: explainPerk({
-          perk: perk,
-          affix: affixes.get(perk?.Affix),
-          gearScore: itemGS || NW_MAX_GEAR_SCORE_BASE,
-          forceDescription: true,
-        }),
-      }
-    })
-  }
-
-  const slots = getItemPerkSlots(item)
-  const result: PerkSlotExplained[] = []
-  for (const slot of slots) {
-    const key = slot.perkId ? slot.perkKey : slot.bucketKey
-    const perkId = slot.perkId
-    const perkIdOverride = perkOverride?.[key]
-    const perk = perks.get(perkIdOverride || perkId)
-    const bucket = buckets.get(slot.bucketId)
-    const equippedAbilities = perk?.EquipAbility?.map((it) => abilities.get(it))
-    const activationCooldown = equippedAbilities?.find((it) => it?.ActivationCooldown)?.ActivationCooldown
-    result.push({
-      key: key,
-      perkId: perkIdOverride || perkId,
-      perk: perk,
-      bucketId: slot.bucketId,
-      bucket: bucket,
-      editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)),
-      violatesExclusivity: false,
-      violatesItemClass: !!perk && !isPerkApplicableToItem(perk, item),
-      activationCooldown: activationCooldown,
-      explain: explainPerk({
-        perk: perk,
-        affix: affixes.get(perk?.Affix),
-        abilities: equippedAbilities,
-        gearScore: itemGS + (getItemGsBonus(perk, item) || 0),
-      }),
-    })
-  }
-  result.sort((a, b) => {
-    return getPerkTypeWeight(a.perk?.PerkType) - getPerkTypeWeight(b.perk?.PerkType)
-  })
-  for (const slot of result) {
-    const labels = slot.perk?.ExclusiveLabels
-    if (!labels?.length) {
-      continue
-    }
-    for (const other of result) {
-      if (other === slot) {
-        continue
-      }
-      const otherLabels = other.perk?.ExclusiveLabels
-      if (!otherLabels?.length) {
-        continue
-      }
-      if (labels.some((it) => otherLabels.includes(it))) {
-        slot.violatesExclusivity = true
-        break
-      }
-    }
   }
   return result
 }

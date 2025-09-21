@@ -36,6 +36,16 @@ export function convertPerkBuckets(buckets: PerkBucketData[]) {
   return result
 }
 
+function toBoolean(value: boolean | string | number) {
+  if (typeof value === 'boolean') {
+    return value
+  }
+  if (value === '0') {
+    return false
+  }
+  return Boolean(value)
+}
+
 function convertBucket({
   bucket,
   bucketsMap,
@@ -48,10 +58,10 @@ function convertBucket({
 
   const result: PerkBucket = {
     Entries: [],
-    DisablePerkBiasing: bucket.DisablePerkBiasing,
-    IgnoreExclusiveLabelWeights: bucket.IgnoreExclusiveLabelWeights,
+    DisablePerkBiasing: toBoolean(bucket.DisablePerkBiasing),
+    IgnoreExclusiveLabelWeights: toBoolean(bucket.IgnoreExclusiveLabelWeights),
     PerkBucketID: bucket.PerkBucketID,
-    PerkChance: bucket.PerkChance,
+    PerkChance: Number(bucket.PerkChance),
     PerkType: bucket.PerkType as PerkType,
   }
 

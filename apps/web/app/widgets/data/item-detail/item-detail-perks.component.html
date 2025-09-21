@@ -1,70 +1,85 @@
-@if (rows()?.length) {
-  @for (item of rows(); track $index) {
-    <div
-      class="flex flex-col relative rounded-md outline-2 outline-offset-0 outline-transparent transition-all"
-      [class.hover:outline-primary]="isSlotEditable(item)"
-      [class.hover:outline-offset-4]="isSlotEditable(item)"
-      [class.hover:cursor-pointer]="isSlotEditable(item)"
-      (click)="editPerkClicked(item)"
-    >
-      @for (row of item.explain; track $index) {
-        <nwb-item-perk [icon]="row.icon" [explanation]="row" [linkPerkId]="editable() ? null : item.perkId" />
-      }
-      @if (!item.perk && item.bucket) {
+@for (item of rows(); track $index) {
+  <div
+    class="flex flex-col relative rounded-md outline-2 outline-offset-0 outline-transparent transition-all"
+    [class.hover:outline-primary]="isSlotEditable(item)"
+    [class.hover:outline-offset-4]="isSlotEditable(item)"
+    [class.hover:cursor-pointer]="isSlotEditable(item)"
+    (click)="editPerkClicked(item)"
+  >
+    @if (!editable() && item.perkIdOld) {
+      @for (row of item.explainOld; track $index) {
         <nwb-item-perk
-          [icon]="'assets/icons/crafting_perkbackground.png'"
-          [iconText]="item.bucket.PerkChance | percent"
-        >
-          Random Perk
-        </nwb-item-perk>
+          [icon]="row.icon"
+          [explanation]="row"
+          [linkPerkId]="item.perkId"
+          class="filter grayscale-100 opacity-50 line-through"
+        />
       }
-      @if (!item.perk && !item.bucket) {
-        <nwb-item-perk
-          [linkPerkId]="editable() ? null : item.perkId"
-          [icon]="'assets/icons/crafting_perkbackground.png'"
-          [iconText]="'?'"
-        >
-          – Missing –
-        </nwb-item-perk>
-      }
-      <span *ngIf="isSlotEditable(item)" class="absolute top-1 -left-3 opacity-50 screenshot-hidden">
+    }
+    @for (row of item.explain; track $index) {
+      <nwb-item-perk [icon]="row.icon" [explanation]="row" [linkPerkId]="editable() ? null : item.perkId" />
+    }
+    @if (!item.perk && item.bucket) {
+      <nwb-item-perk [icon]="'assets/icons/crafting_perkbackground.png'" [iconText]="item.bucket.PerkChance | percent">
+        Random Perk
+      </nwb-item-perk>
+    }
+    @if (!item.perk && !item.bucket) {
+      <nwb-item-perk
+        [linkPerkId]="editable() ? null : item.perkId"
+        [icon]="'assets/icons/crafting_perkbackground.png'"
+        [iconText]="'?'"
+      >
+        – Missing –
+      </nwb-item-perk>
+    }
+    @if (isSlotEditable(item)) {
+      <span class="absolute top-1 -left-3 opacity-50 screenshot-hidden">
         <nwb-icon [icon]="iconEdit" class="w-3 h-3" />
       </span>
+    }
+    <span class="absolute top-0 -right-3 screenshot-hidden flex flex-col gap-1 leading-none">
       @if (editable() && (item.violatesExclusivity || item.violatesItemClass || item.activationCooldown)) {
-        <span class="absolute top-0 -right-3 screenshot-hidden flex flex-col gap-1 leading-none">
-          @if (item.violatesExclusivity || item.violatesItemClass) {
-            <span
-              class="text-error cursor-help opacity-50"
-              [tooltip]="tip"
-              [tooltipClass]="'bg-error-content text-error'"
-            >
-              <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
-              <ng-template #tip>
-                <ul class="px-2 py-1">
-                  @if (item.violatesExclusivity) {
-                    <li>Exclusive Label Violation</li>
-                  }
-                  @if (item.violatesItemClass) {
-                    <li>Item Class Violation</li>
-                  }
-                </ul>
-              </ng-template>
-            </span>
-          }
-          @if (item.activationCooldown) {
-            <span
-              class="text-warning cursor-help opacity-50"
-              [tooltip]="tip"
-              [tooltipClass]="'bg-warning-content text-warning'"
-            >
-              <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
-              <ng-template #tip>
-                <div class="px-2 py-1">Activation cooldown: {{ item.activationCooldown | number }}s</div>
-              </ng-template>
-            </span>
-          }
+        @if (item.violatesExclusivity || item.violatesItemClass) {
+          <span
+            class="text-error cursor-help opacity-50"
+            [tooltip]="tip"
+            [tooltipClass]="'bg-error-content text-error'"
+          >
+            <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
+            <ng-template #tip>
+              <ul class="px-2 py-1">
+                @if (item.violatesExclusivity) {
+                  <li>Exclusive Label Violation</li>
+                }
+                @if (item.violatesItemClass) {
+                  <li>Item Class Violation</li>
+                }
+              </ul>
+            </ng-template>
+          </span>
+        }
+        @if (item.activationCooldown) {
+          <span
+            class="text-warning cursor-help opacity-50"
+            [tooltip]="tip"
+            [tooltipClass]="'bg-warning-content text-warning'"
+          >
+            <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
+            <ng-template #tip>
+              <div class="px-2 py-1">Activation cooldown: {{ item.activationCooldown | number }}s</div>
+            </ng-template>
+          </span>
+        }
+      }
+      @if (!editable() && item.perkIdOld) {
+        <span class="text-info cursor-help opacity-50" [tooltip]="tip" [tooltipClass]="'bg-info-content text-info'">
+          <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
+          <ng-template #tip>
+            <div class="px-2 py-1">Perk has been replaced due to an ingame bug or change of system</div>
+          </ng-template>
         </span>
       }
-    </div>
-  }
+    </span>
+  </div>
 }

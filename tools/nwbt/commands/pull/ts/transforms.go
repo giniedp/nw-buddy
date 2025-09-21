@@ -515,6 +515,17 @@ var RULES = []tx.Rule{
 		},
 	},
 	{
+		Schema: "ItemPerkSwapData",
+		Transforms: []tx.Transformer{
+			tx.MapPropToArray{
+				Sep: ",+",
+				Keys: []string{
+					"Key",
+				},
+			},
+		},
+	},
+	{
 		Schema: "AttributeDefinition",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{

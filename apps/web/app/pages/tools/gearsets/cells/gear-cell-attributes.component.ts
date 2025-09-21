@@ -71,14 +71,15 @@ export class GearCellAttributesComponent {
         items: this.db.itemsByIdMap(),
         perks: this.db.perksByIdMap(),
         affix: this.db.affixStatsByIdMap(),
+        swaps: this.db.itemPerkSwapDataAll()
       }).pipe(
-        map(({ weapons, items, perks, affix }) => {
+        map(({ weapons, items, perks, affix, swaps }) => {
           const weapon1 = weapons.find((it) => it.slot === 'weapon1')
           const weapon2 = weapons.find((it) => it.slot === 'weapon2')
           const item1 = items.get(weapon1?.itemId)
           const item2 = items.get(weapon2?.itemId)
-          const perks1 = item1 ? getItemPerkIdsWithOverride(item1, weapon1.perks) : null
-          const perks2 = item2 ? getItemPerkIdsWithOverride(item2, weapon2.perks) : null
+          const perks1 = item1 ? getItemPerkIdsWithOverride(item1, swaps, weapon1.perks) : null
+          const perks2 = item2 ? getItemPerkIdsWithOverride(item2, swaps, weapon2.perks) : null
           const affix1 = perks1
             ?.map((perkId) => perks.get(perkId)?.Affix)
             .find((affixId) => {

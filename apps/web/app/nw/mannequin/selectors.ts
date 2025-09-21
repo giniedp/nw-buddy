@@ -160,13 +160,13 @@ export function selectPlacedHousings({ housings }: DbSlice, equippedItems: Equip
 }
 
 export function selectEquippedPerks(
-  { items, perks, affixes, weapons, armors, runes }: DbSlice,
+  { items, perks, affixes, weapons, armors, runes, perkSwaps }: DbSlice,
   { equippedItems }: MannequinState,
 ) {
   return equippedItems
     .map((it) => {
       const item = items.get(it.itemId)
-      return getItemPerkIdsWithOverride(item, it.perks)
+      return getItemPerkIdsWithOverride(item, perkSwaps, it.perks)
         .map((id) => perks.get(id))
         .filter((it) => !!it)
         .map((perk): ActivePerk => {

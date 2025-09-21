@@ -2781,7 +2781,7 @@ export interface ItemCurrencyConversionData {
 
 export interface ItemPerkSwapData {
   ID: number
-  Key: string
+  Key: string[]
   KeyType: string
   NewPerk: string
   OldPerk: string

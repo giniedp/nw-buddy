@@ -13,12 +13,13 @@ import { apiResource } from '~/utils'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 import { PerkSlotExplained } from './selectors'
+import { PerkDetailDirective } from "../perk-detail/perk-detail.directive";
 
 @Component({
   selector: 'nwb-item-detail-perks',
   templateUrl: './item-detail-perks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule, PerkDetailDirective],
   host: {
     class: 'flex flex-col gap-1',
     'animate.enter': 'fade-grow-y-in',
@@ -60,11 +61,13 @@ export class ItemDetailPerksComponent {
     const itemGS = this.store.itemGS()
     const slots = this.resource.value() || []
     const result = slots.map(
-      ({ key, perkId, perk, editable, bucketId, bucket, abilities, affix }): PerkSlotExplained => {
+      ({ key, perkId, perk, editable, bucketId, bucket, abilities, affix, perkIdOld, perkOld }): PerkSlotExplained => {
         return {
           key: key,
           perkId: perkId,
+          perkIdOld: perkIdOld,
           perk: perk,
+          perkOld: perkOld,
           bucketId: bucketId,
           bucket: bucket,
           editable: editable,
@@ -73,6 +76,12 @@ export class ItemDetailPerksComponent {
           activationCooldown: abilities.find((a) => a?.ActivationCooldown)?.ActivationCooldown,
           explain: explainPerk({
             perk: perk,
+            affix: affix,
+            abilities: abilities,
+            gearScore: itemGS + (getItemGsBonus(perk, item) || 0),
+          }),
+          explainOld: explainPerk({
+            perk: perkOld,
             affix: affix,
             abilities: abilities,
             gearScore: itemGS + (getItemGsBonus(perk, item) || 0),

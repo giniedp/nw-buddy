@@ -136,6 +136,12 @@ export abstract class NwDataSheets {
   public perksExclusiveLabelAll = table(() => this.loadDatasheets(DATASHEETS.PerkExclusiveLabelData))
   public perksExclusiveLabelByIdMap = primaryIndex(this.perksExclusiveLabelAll, 'ExclusiveLabelID')
 
+  public itemPerkSwapDataAll = table(() => this.loadDatasheets(DATASHEETS.ItemPerkSwapData))
+  public itemPerkSwapDataByOldPerkIdMap = secondaryIndex(this.itemPerkSwapDataAll, 'OldPerk')
+  public itemPerkSwapDataByOldPerkId = indexLookup(this.itemPerkSwapDataByOldPerkIdMap)
+  public itemPerkSwapDataByNewPerkIdMap = secondaryIndex(this.itemPerkSwapDataAll, 'NewPerk')
+  public itemPerkSwapDataByNewPerkId = indexLookup(this.itemPerkSwapDataByNewPerkIdMap)
+
   public perksAll = table(() => this.loadDatasheets(DATASHEETS.PerkData))
   public perksByIdMap = primaryIndex(this.perksAll, 'PerkID')
   public perksById = indexLookup(this.perksByIdMap)
@@ -200,12 +206,9 @@ export abstract class NwDataSheets {
   public gatherablesMetadataByIdMap = primaryIndex(this.gatherablesMetadataAll, 'gatherableID')
   public gatherablesMetadataById = indexLookup(this.gatherablesMetadataByIdMap)
 
-  public gatherableVariationsAll = table(
-    () => {
-      return this.loadDatasheets<VariationDataGatherable>(DATASHEETS.VariationDataGatherable)
-    },
-    convertGatherableVariations,
-  )
+  public gatherableVariationsAll = table(() => {
+    return this.loadDatasheets<VariationDataGatherable>(DATASHEETS.VariationDataGatherable)
+  }, convertGatherableVariations)
 
   public gatherableVariationsByIdMap = primaryIndex(this.gatherableVariationsAll, 'VariantID')
   public gatherableVariationsById = indexLookup(this.gatherableVariationsByIdMap)
@@ -314,7 +317,6 @@ export abstract class NwDataSheets {
   public gameModesByIdMap = primaryIndex(this.gameModesAll, 'GameModeId')
   public gameModesById = indexLookup(this.gameModesByIdMap)
 
-
   public gameModesMapsAll = table(() => this.loadDatasheets(DATASHEETS.GameModeMapData))
   public gameModesMapsByIdMap = primaryIndex(this.gameModesMapsAll, 'GameModeMapId')
   public gameModesMapsById = indexLookup(this.gameModesMapsByIdMap)
@@ -403,24 +405,26 @@ export abstract class NwDataSheets {
   public shopDataAll = table(() => {
     return this.loadDatasheets(DATASHEETS.ShopData).map((it) => {
       return it.then((list) => {
-        return list.map((it) => {
-          if (it.ShopId === 'TestShop') {
-            return null
-          }
-          if (it.ShopId === 'CovenantShop') {
-            it.ProgressionId = 'Covenant'
-            it.ShopName = "ui_shop_covenant_name"
-          }
-          if (it.ShopId === 'SyndicateShop') {
-            it.ProgressionId = 'Syndicate'
-            it.ShopName = "ui_shop_syndicate_name"
-          }
-          if (it.ShopId === 'MaraudersShop') {
-            it.ProgressionId = 'Marauder'
-            it.ShopName = "ui_shop_marauders_name"
-          }
-          return it
-        }).filter((it) => !!it)
+        return list
+          .map((it) => {
+            if (it.ShopId === 'TestShop') {
+              return null
+            }
+            if (it.ShopId === 'CovenantShop') {
+              it.ProgressionId = 'Covenant'
+              it.ShopName = 'ui_shop_covenant_name'
+            }
+            if (it.ShopId === 'SyndicateShop') {
+              it.ProgressionId = 'Syndicate'
+              it.ShopName = 'ui_shop_syndicate_name'
+            }
+            if (it.ShopId === 'MaraudersShop') {
+              it.ProgressionId = 'Marauder'
+              it.ShopName = 'ui_shop_marauders_name'
+            }
+            return it
+          })
+          .filter((it) => !!it)
       })
     })
   })
@@ -445,7 +449,10 @@ export abstract class NwDataSheets {
   public itemCurrencyConversionById = indexLookup(this.itemCurrencyConversionByIdMap)
   public itemCurrencyConversionByItemIdMap = secondaryIndex(this.itemCurrencyConversionAll, 'ItemID')
   public itemCurrencyConversionByItemId = indexLookup(this.itemCurrencyConversionByItemIdMap)
-  public itemCurrencyConversionByProgressionIdMap = secondaryIndex(this.itemCurrencyConversionAll, 'CategoricalProgressionId')
+  public itemCurrencyConversionByProgressionIdMap = secondaryIndex(
+    this.itemCurrencyConversionAll,
+    'CategoricalProgressionId',
+  )
   public itemCurrencyConversionByProgressionId = indexLookup(this.itemCurrencyConversionByProgressionIdMap)
 
   public achievementsAll = table(() => this.loadDatasheets(DATASHEETS.AchievementData))
@@ -712,7 +719,10 @@ export abstract class NwDataSheets {
   public seasonPassRanksAll = table(() => this.loadDatasheets(DATASHEETS.SeasonPassRankData))
   public seasonPassRanksByIdMap = primaryIndex(this.seasonPassRanksAll, getSeasonPassDataId)
   public seasonPassRanksById = indexLookup(this.seasonPassRanksByIdMap)
-  public seasonPassRanksByRewardIdMap = secondaryIndex(this.seasonPassRanksAll, (it) => [it.FreeRewardId, it.PremiumRewardId])
+  public seasonPassRanksByRewardIdMap = secondaryIndex(this.seasonPassRanksAll, (it) => [
+    it.FreeRewardId,
+    it.PremiumRewardId,
+  ])
   public seasonPassRanksByRewardId = indexLookup(this.seasonPassRanksByRewardIdMap)
 
   public seasonsRewardsChaptersAll = table(() => this.loadDatasheets(DATASHEETS.SeasonsRewardsChapterData))

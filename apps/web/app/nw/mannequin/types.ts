@@ -10,6 +10,7 @@ import {
   CooldownData,
   DamageData,
   HouseItems,
+  ItemPerkSwapData,
   MasterItemDefinitions,
   OpenWorldBalanceData,
   OutpostRushBalanceData,
@@ -102,6 +103,7 @@ export interface DbSlice {
   effectCategories: Map<string, StatusEffectCategoryData>
   abilities: Map<string, AbilityData>
   affixes: Map<string, AffixStatData>
+  perkSwaps: ItemPerkSwapData[]
   attrStr: AttributeDefinition[]
   attrDex: AttributeDefinition[]
   attrInt: AttributeDefinition[]

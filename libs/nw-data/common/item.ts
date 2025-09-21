@@ -3,6 +3,7 @@ import {
   CraftingRecipeData,
   HouseItems,
   ItemClass,
+  ItemPerkSwapData,
   MasterItemDefinitions,
   PerkData,
   WeaponItemDefinitions,
@@ -86,6 +87,10 @@ export function isItemResource(item: Pick<MasterItemDefinitions, 'ItemClass'> | 
 
 export function isItemOfAnyClass(item: Pick<MasterItemDefinitions, 'ItemClass'> | null, classes: ItemClass[]) {
   return classes.some((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
+}
+
+export function isItemOfAllClass(item: Pick<MasterItemDefinitions, 'ItemClass'> | null, classes: ItemClass[]) {
+  return classes.every((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
 }
 
 export function getFirstItemClassOf(item: Pick<MasterItemDefinitions, 'ItemClass'> | null, classes: ItemClass[]) {
@@ -180,8 +185,37 @@ export function getItemRarityLabel(item: MasterItemDefinitions | HouseItems | It
   return ITEM_RARITY_LABELS[getItemRarity(item)]
 }
 
-export function getItemPerkIdsWithOverride(item: MasterItemDefinitions, overrides: Record<string, string>) {
-  const perks = (getItemPerkKeys(item) || []).map((key) => overrides[key] || (item[key] as string))
+export function getItemPerkSwap(item: MasterItemDefinitions, perkId: string, swaps: ItemPerkSwapData[]) {
+  if (!item || !perkId || !swaps || !swaps.length) {
+    return null
+  }
+  for (const swap of swaps) {
+    if (!Array.isArray(swap.Key) || !isItemOfAllClass(item, swap.Key satisfies string[] as any)) {
+      continue
+    }
+    if (eqCaseInsensitive(swap.OldPerk, perkId)) {
+      return swap
+    }
+  }
+  return null
+}
+
+export function getItemPerkIdsWithOverride(
+  item: MasterItemDefinitions,
+  swaps: ItemPerkSwapData[],
+  overrides: Record<string, string>,
+) {
+  const perks = (getItemPerkKeys(item) || []).map((key) => {
+    if (overrides[key]) {
+      return overrides[key]
+    }
+    const perkId = item[key] as string
+    const swap = getItemPerkSwap(item, perkId, swaps)
+    if (swap?.NewPerk) {
+      return swap.NewPerk
+    }
+    return item[key]
+  })
   const randoms = (getItemPerkBucketKeys(item) || []).map((key) => overrides[key])
   return [...perks, ...randoms].filter((it) => !!it)
 }
