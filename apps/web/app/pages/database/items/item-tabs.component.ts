@@ -467,6 +467,13 @@ export interface ConversionInfo {
   itemId?: string
 }
 
+const SHOP_ICONS = {
+  WinterConvergenceShop: 'assets/icons/attribution/winter_convergence.png',
+  SumerMedleyfaireShop: 'assets/icons/attribution/summer_medleyfaire.png',
+  SpringtideBloomShop: 'assets/icons/attribution/springtide_bloom.png',
+  NightveilHallowShop: 'assets/icons/attribution/nightveil_hallow.png',
+}
+
 async function loadShopSource(db: NwData, item: MasterItemDefinitions | HouseItems): Promise<ShopInfo[]> {
   if (!item) {
     return null
@@ -479,30 +486,61 @@ async function loadShopSource(db: NwData, item: MasterItemDefinitions | HouseIte
   const result$ = conversions.map(async (conversion) => {
     const cooldown = conversion.BuyCooldownSeconds
     const costs: ConversionInfo[] = []
-    const tokenId = conversion.RankCheckCategoricalProgressionId
+
     const tokenCost = conversion.BuyCategoricalProgressionCost
-    const shops = await db.shopDataByCurrency(conversion.BuyCurrencyItemName || conversion.CategoricalProgressionId)
-    const shop = shops?.[0]
-    if (tokenId && tokenCost) {
-      const prog = await db.categoricalProgressionById(conversion.RankCheckCategoricalProgressionId as any)
+    const token2Cost = conversion.BuyProgression2Cost
+    const token3Cost = conversion.BuyProgression3Cost
+    const currencyCost = conversion.BuyCurrencyCost
+    const currencyItemCost = conversion.BuyCurrencyItemCost
+
+    const tokenId = conversion.CategoricalProgressionId
+    const token2Id = conversion.BuyProgression2Id
+    const token3Id = conversion.BuyProgression3Id
+    const currencyItemId = conversion.BuyCurrencyItemName
+
+    let shop = await db.shopDataByProgressionId(tokenId || token2Id || token3Id)
+    if (!shop && tokenId) {
+      const shops = await db.shopDataByCurrency(tokenId)
+      shop = shops?.[0]
+    }
+    if (!shop && currencyItemId) {
+      const shops = await db.shopDataByCurrency(currencyItemId)
+      shop = shops?.[0]
+    }
+
+    if (tokenCost) {
+      const prog = await db.categoricalProgressionById(tokenId as any)
       costs.push({
         icon: prog?.IconPath || NW_FALLBACK_ICON,
         label: prog?.DisplayName || humanize(tokenId),
-        value: conversion.BuyCategoricalProgressionCost,
+        value: tokenCost,
       })
     }
-    const currencyCost = conversion.BuyCurrencyCost
-    const itemCost = conversion.BuyCurrencyItemCost
-    const itemId = conversion.BuyCurrencyItemName
+    if (token2Cost) {
+      const prog = await db.categoricalProgressionById(token2Id as any)
+      costs.push({
+        icon: prog?.IconPath || NW_FALLBACK_ICON,
+        label: prog?.DisplayName || humanize(token2Id),
+        value: Number(token2Cost),
+      })
+    }
+    if (token3Cost) {
+      const prog = await db.categoricalProgressionById(token3Id as any)
+      costs.push({
+        icon: prog?.IconPath || NW_FALLBACK_ICON,
+        label: prog?.DisplayName || humanize(token3Id),
+        value: Number(token3Cost),
+      })
+    }
 
-    if (itemId) {
-      const it = await db.itemOrHousingItem(itemId)
-      const prog = await db.categoricalProgressionById(itemId as any)
+    if (currencyItemId) {
+      const it = await db.itemOrHousingItem(currencyItemId)
+      const prog = await db.categoricalProgressionById(currencyItemId as any)
       costs.push({
         icon: it?.IconPath || prog?.IconPath || NW_FALLBACK_ICON,
-        label: it?.Name || prog?.DisplayName || humanize(itemId),
-        value: itemCost || 0,
-        itemId,
+        label: it?.Name || prog?.DisplayName || humanize(currencyItemId),
+        value: currencyItemCost || 0,
+        itemId: currencyItemId,
       })
     }
 
@@ -513,11 +551,15 @@ async function loadShopSource(db: NwData, item: MasterItemDefinitions | HouseIte
         value: currencyCost / 100,
       })
     }
-
+    let shopIcon = shop?.ShopIconSmall || shop?.ShopIconLarge || SHOP_ICONS[shop?.ShopId] || NW_FALLBACK_ICON
+    let shopName = shop?.ShopName
+    if (!shopName && conversion.CategoricalProgressionId === 'Battle_Token') {
+      shopName = 'owg_battletoken_header'
+    }
     return {
       id: shop?.ShopId,
-      label: shop?.ShopName,
-      icon: shop?.ShopIconSmall || shop?.ShopIconLarge || NW_FALLBACK_ICON,
+      label: shopName,
+      icon: shopIcon,
       cooldown,
       costs,
     } satisfies ShopInfo
