@@ -10,6 +10,7 @@ const toJsonTypes = [
   'datasheet',
   'distribution',
   'dynamicslice',
+  'dynamicuicanvas',
   'meta',
   'metadata',
   'refreshzoneconfigs',
