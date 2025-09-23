@@ -152,6 +152,10 @@ export class GameModeDetailComponent {
   public recommendedGsMin = computed(() => this.gameMode()?.GearScoreRecommendedValueMin)
   public recommendedGsMax = computed(() => this.gameMode()?.GearScoreRecommendedValueMax)
 
+  public timeout = computed(() => {
+    const seconds = this.gameMode()?.OverrideDungeonTimeout
+    return seconds ? secondsToDuration(seconds) : null
+  })
   public matchmakingGsMin = computed(() => this.gameMode()?.MatchmakingMinGS)
   public matchmakingLvlMin = computed(() => this.gameMode()?.MatchmakingMinLevel)
   public matchmakingLvlMax = computed(() => this.gameMode()?.MatchmakingMaxLevel)

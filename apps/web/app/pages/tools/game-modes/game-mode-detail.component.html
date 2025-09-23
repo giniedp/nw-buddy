@@ -147,6 +147,22 @@
               <span class="font-semibold text-accent">
                 {{ projectedDuration() }}
               </span>
+              @if (timeout()) {
+                <span>
+                  (Timeout
+                  <span class="font-semibold text-error">
+                    {{ timeout() }}
+                  </span>
+                  )
+                </span>
+              }
+            </div>
+          } @else if (timeout()) {
+            <div>
+              <span>Timeout: </span>
+              <span class="font-semibold text-accent">
+                {{ timeout() }}
+              </span>
             </div>
           }
         </section>
