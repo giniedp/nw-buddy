@@ -69,12 +69,14 @@ export class InventoryPickerService {
     selection,
     multiple,
     categories,
+    categoriesOp,
     noSkins,
   }: {
     title?: string
     selection?: string[]
     multiple?: boolean
-    categories?: string[]
+    categories?: ItemClass[]
+    categoriesOp?: 'all' | 'any'
     noSkins?: boolean
   }) {
     return (
@@ -87,6 +89,7 @@ export class InventoryPickerService {
           title,
           multiple,
           categories,
+          categoriesOp,
           noSkins,
         }),
       })

@@ -41,6 +41,19 @@ export type EquipSlotId =
   | 'trophy15'
   | 'arrow'
   | 'cartridge'
+  | 'bag1'
+  | 'bag2'
+  | 'bag3'
+  | 'tool1'
+  | 'tool2'
+  | 'tool3'
+  | 'tool4'
+  | 'tool5'
+  | 'instrument1'
+  | 'instrument2'
+  | 'instrument3'
+  | 'instrument4'
+  | 'instrument5'
 
 export interface EquipSlot {
   id: EquipSlotId
@@ -48,6 +61,7 @@ export interface EquipSlot {
   iconSlot: string
   name: string
   itemType: EquipSlotItemType
+  itemClass: ItemClass[]
 }
 
 export type EquipSlotItemType =
@@ -61,31 +75,15 @@ export type EquipSlotItemType =
       | 'EquippableAmulet'
       | 'EquippableRing'
       | 'EquippableToken'
+      | 'EquippableTool'
       | 'Weapon'
       | 'Shield'
       | 'HeartGem'
       | 'Consumable'
       | 'Ammo'
+      | 'Bag'
     >
   | 'Trophies'
-
-const MAP_TO_ITEM_CLASS: Partial<Record<EquipSlotItemType, ItemClass>> = {
-  EquippableHead: 'EquippableHead',
-  EquippableChest: 'EquippableChest',
-  EquippableHands: 'EquippableHands',
-  EquippableLegs: 'EquippableLegs',
-  EquippableFeet: 'EquippableFeet',
-  EquippableAmulet: 'EquippableAmulet',
-  EquippableRing: 'EquippableRing',
-  EquippableToken: 'EquippableToken',
-  Weapon: 'EquippableMainHand',
-  Shield: 'Shield',
-  HeartGem: 'HeartGem',
-}
-
-export function getItemClassForSlot(slot: EquipSlot): ItemClass {
-  return MAP_TO_ITEM_CLASS[slot.itemType]
-}
 
 export function getEquipSlotForId(id: EquipSlotId): EquipSlot {
   const found = EQUIP_SLOTS.find((it) => it.id === id)
@@ -99,6 +97,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconhead.png',
     name: 'ui_itemtypedescription_head_slot',
     itemType: 'EquippableHead',
+    itemClass: ['EquippableHead'],
   },
   {
     id: 'chest',
@@ -106,6 +105,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconchest.png',
     name: 'ui_itemtypedescription_chest_slot',
     itemType: 'EquippableChest',
+    itemClass: ['EquippableChest'],
   },
   {
     id: 'hands',
@@ -113,6 +113,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconhand.png',
     name: 'ui_itemtypedescription_hands_slot',
     itemType: 'EquippableHands',
+    itemClass: ['EquippableHands'],
   },
   {
     id: 'legs',
@@ -120,6 +121,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconlegs.png',
     name: 'ui_itemtypedescription_legs_slot',
     itemType: 'EquippableLegs',
+    itemClass: ['EquippableLegs'],
   },
   {
     id: 'feet',
@@ -127,6 +129,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconfeet.png',
     name: 'ui_itemtypedescription_feet_slot',
     itemType: 'EquippableFeet',
+    itemClass: ['EquippableFeet'],
   },
   {
     id: 'amulet',
@@ -134,6 +137,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconamulet.png',
     name: 'ui_amulet_slot_tooltip',
     itemType: 'EquippableAmulet',
+    itemClass: ['Jewelry', 'EquippableAmulet'],
   },
   {
     id: 'ring',
@@ -141,6 +145,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconring.png',
     name: 'ui_ring_slot_tooltip',
     itemType: 'EquippableRing',
+    itemClass: ['Jewelry', 'EquippableRing'],
   },
   {
     id: 'earring',
@@ -148,6 +153,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icontoken.png',
     name: 'ui_unlock_token_slot',
     itemType: 'EquippableToken',
+    itemClass: ['Jewelry', 'EquippableToken'],
   },
   {
     id: 'weapon1',
@@ -155,6 +161,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconweapon.png',
     name: 'ui_weapon1',
     itemType: 'Weapon',
+    itemClass: ['EquippableMainHand'],
   },
   {
     id: 'weapon2',
@@ -162,6 +169,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconweapon.png',
     name: 'ui_weapon2',
     itemType: 'Weapon',
+    itemClass: ['EquippableMainHand'],
   },
   {
     id: 'weapon3',
@@ -169,6 +177,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconshield.png',
     name: 'ui_weapon3',
     itemType: 'Shield',
+    itemClass: ['Shield'],
   },
   {
     id: 'heartgem',
@@ -176,6 +185,114 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     name: 'ui_itemtypedescription_heartgem_rune',
     iconSlot: 'assets/icons/slots/iconrune.png',
     itemType: 'HeartGem',
+    itemClass: ['HeartGem'],
+  },
+
+  {
+    id: 'bag1',
+    icon: 'assets/icons/slots/iconbag.png',
+    iconSlot: 'assets/icons/slots/iconbag.png',
+    name: 'ui_itemtypedescription_bag',
+    itemType: 'Bag',
+    itemClass: ['Bag'],
+  },
+  {
+    id: 'bag2',
+    icon: 'assets/icons/slots/iconbag.png',
+    iconSlot: 'assets/icons/slots/iconbag.png',
+    name: 'ui_itemtypedescription_bag',
+    itemType: 'Bag',
+    itemClass: ['Bag'],
+  },
+  {
+    id: 'bag3',
+    icon: 'assets/icons/slots/iconbag.png',
+    iconSlot: 'assets/icons/slots/iconbag.png',
+    name: 'ui_itemtypedescription_bag',
+    itemType: 'Bag',
+    itemClass: ['Bag'],
+  },
+
+  {
+    id: 'tool1',
+    icon: 'assets/icons/slots/iconlogging.png',
+    iconSlot: 'assets/icons/slots/iconlogging.png',
+    name: 'ui_axe',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'LoggingAxe'],
+  },
+  {
+    id: 'tool2',
+    icon: 'assets/icons/slots/iconpickaxe.png',
+    iconSlot: 'assets/icons/slots/iconpickaxe.png',
+    name: 'ui_pickaxe',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'PickAxe'],
+  },
+  {
+    id: 'tool3',
+    icon: 'assets/icons/slots/iconskinning.png',
+    iconSlot: 'assets/icons/slots/iconskinning.png',
+    name: 'ui_skinningknife',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'SkinningKnife'],
+  },
+  {
+    id: 'tool4',
+    icon: 'assets/icons/slots/iconsickle.png',
+    iconSlot: 'assets/icons/slots/iconsickle.png',
+    name: 'ui_sickle',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'Sickle'],
+  },
+  {
+    id: 'tool5',
+    icon: 'assets/icons/slots/iconfishing.png',
+    iconSlot: 'assets/icons/slots/iconfishing.png',
+    name: 'ui_fishingpole',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'FishingPole'],
+  },
+
+  {
+    id: 'instrument1',
+    icon: 'assets/icons/slots/iconguitar.png',
+    iconSlot: 'assets/icons/slots/iconguitar.png',
+    name: 'ui_instrument-guitar-slot_name',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'InstrumentGuitar'],
+  },
+  {
+    id: 'instrument2',
+    icon: 'assets/icons/slots/iconflute.png',
+    iconSlot: 'assets/icons/slots/iconflute.png',
+    name: 'ui_instrument-flute-slot_name',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'InstrumentFlute'],
+  },
+  {
+    id: 'instrument3',
+    icon: 'assets/icons/slots/iconmandolin.png',
+    iconSlot: 'assets/icons/slots/iconmandolin.png',
+    name: 'ui_instrument-mandolin-slot_name',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'InstrumentMandolin'],
+  },
+  {
+    id: 'instrument4',
+    icon: 'assets/icons/slots/iconbass.png',
+    iconSlot: 'assets/icons/slots/iconbass.png',
+    name: 'ui_instrument-uprightbass-slot_name',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'InstrumentUprightBass'],
+  },
+  {
+    id: 'instrument5',
+    icon: 'assets/icons/slots/icondrums.png',
+    iconSlot: 'assets/icons/slots/icondrums.png',
+    name: 'ui_instrument-drums-slot_name',
+    itemType: 'EquippableTool',
+    itemClass: ['EquippableTool', 'InstrumentDrums'],
   },
 
   {
@@ -184,6 +301,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot1',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'buff2',
@@ -191,6 +309,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot2',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'buff3',
@@ -198,6 +317,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot3',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'buff4',
@@ -205,6 +325,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'buff5',
@@ -212,6 +333,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'buff6',
@@ -219,6 +341,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
 
   {
@@ -227,6 +350,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot1',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'quickslot2',
@@ -234,6 +358,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot2',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'quickslot3',
@@ -241,6 +366,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot3',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
   {
     id: 'quickslot4',
@@ -248,6 +374,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
+    itemClass: ['Consumable']
   },
 
   {
@@ -256,6 +383,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconarrow.png',
     name: '',
     itemType: 'Ammo',
+    itemClass: ['Ammo']
   },
   {
     id: 'cartridge',
@@ -263,6 +391,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconcartridges.png',
     name: '',
     itemType: 'Ammo',
+    itemClass: ['Ammo']
   },
 
   {
@@ -271,6 +400,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy2',
@@ -278,6 +408,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy3',
@@ -285,6 +416,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy4',
@@ -292,6 +424,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy5',
@@ -299,6 +432,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
 
   {
@@ -307,6 +441,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy7',
@@ -314,6 +449,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy8',
@@ -321,6 +457,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy9',
@@ -328,6 +465,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy10',
@@ -335,6 +473,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
 
   {
@@ -343,6 +482,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy12',
@@ -350,6 +490,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy13',
@@ -357,6 +498,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy14',
@@ -364,6 +506,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
   {
     id: 'trophy15',
@@ -371,6 +514,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',
     itemType: 'Trophies',
+    itemClass: [],
   },
 ]
 

@@ -89,6 +89,9 @@ export class GearsetGridComponent {
   protected showArmor = computed(() => this.sections().includes('armor'))
   protected showJewelry = computed(() => this.sections().includes('jewelry'))
   protected showWeapons = computed(() => this.sections().includes('weapons'))
+  protected showTools = computed(() => this.sections().includes('tools'))
+  protected showInstruments = computed(() => this.sections().includes('instruments'))
+  protected showBags = computed(() => this.sections().includes('bags'))
 
   protected isOwned = this.store.isOwned
   protected slots = computed(() => {
@@ -105,6 +108,24 @@ export class GearsetGridComponent {
       }
       const isWeapon = it.id === 'weapon1' || it.id === 'weapon2' || it.id === 'weapon3' || it.id === 'heartgem'
       if (!this.showWeapons() && isWeapon) {
+        return false
+      }
+      const isTool =
+        it.id === 'tool1' || it.id === 'tool2' || it.id === 'tool3' || it.id === 'tool4' || it.id === 'tool5'
+      if (!this.showTools() && isTool) {
+        return false
+      }
+      const isInstrument =
+        it.id === 'instrument1' ||
+        it.id === 'instrument2' ||
+        it.id === 'instrument3' ||
+        it.id === 'instrument4' ||
+        it.id === 'instrument5'
+      if (!this.showInstruments() && isInstrument) {
+        return false
+      }
+      const isBag = it.id === 'bag1' || it.id === 'bag2' || it.id === 'bag3'
+      if (!this.showBags() && isBag) {
         return false
       }
       return true

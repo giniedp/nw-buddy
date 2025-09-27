@@ -30,6 +30,7 @@ import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
 import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
+import { ItemClass } from '@nw-data/generated'
 
 @Component({
   selector: 'nwb-inventory-page',
@@ -105,7 +106,8 @@ export class InventoryPageComponent implements OnInit {
     this.picker
       .pickItem({
         multiple: true,
-        categories: categories,
+        categories: categories as ItemClass[],
+        categoriesOp: 'any',
         noSkins: true,
       })
       .pipe(take(1))

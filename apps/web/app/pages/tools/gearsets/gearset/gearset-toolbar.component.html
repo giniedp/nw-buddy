@@ -290,6 +290,42 @@
       </div>
     </label>
   </li>
+  <li class="text-shadow-sm shadow-black">
+    <label (click)="toggleSection('bags'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('bags')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Bag slots</span>
+      </div>
+    </label>
+  </li>
+  <li class="text-shadow-sm shadow-black">
+    <label (click)="toggleSection('tools'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('tools')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Tool slots</span>
+      </div>
+    </label>
+  </li>
+  <li class="text-shadow-sm shadow-black">
+    <label (click)="toggleSection('instruments'); (false)" class="rounded-none">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('instruments')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Instrument slots</span>
+      </div>
+    </label>
+  </li>
   <li class="menu-title">Details</li>
   <li class="text-shadow-sm shadow-black">
     <label (click)="onToggleItemInfoClicked(); (false)" class="rounded-none">

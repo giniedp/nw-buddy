@@ -92,6 +92,8 @@ export function withGearsetSlot() {
         isArmor: computed(() => isArmor(slot())),
         isWeapon: computed(() => isWeapon(slot())),
         isJewelry: computed(() => isJewelry(slot())),
+        isTool: computed(() => isTool(slot())),
+        isBag: computed(() => isBag(slot())),
 
         rarity: computed(() => {
           const it = item()
@@ -146,4 +148,14 @@ function isJewelry(slot: EquipSlot) {
 function isWeapon(slot: EquipSlot) {
   const itemType = slot?.itemType
   return itemType === 'Weapon' || itemType === 'Shield'
+}
+
+function isBag(slot: EquipSlot) {
+  const itemType = slot?.itemType
+  return itemType === 'Bag'
+}
+
+function isTool(slot: EquipSlot) {
+  const itemType = slot?.itemType
+  return itemType === 'EquippableTool'
 }

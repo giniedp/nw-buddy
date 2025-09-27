@@ -100,30 +100,21 @@ export class ItemCardComponent {
     })
   })
 
-  @Input()
-  public enableTracker: boolean
+  public enableTracker = input(false)
 
-  @Input()
-  public enableInfoLink: boolean
+  public enableInfoLink = input(false)
 
-  @Input()
-  public enableLink: boolean
+  public enableLink = input(false)
 
-  @Input()
-  public enableTasks: boolean
+  public enableTasks = input(false)
 
-  @Input()
-  public disableStats: boolean
+  public disableStats = input(false)
 
-  @Input()
-  public disableInfo: boolean
+  public disableInfo = input(false)
 
-  @Input()
-  public disableDescription: boolean
+  public disableDescription = input(false)
 
-  @Input()
-  public disablePerks: boolean
+  public disablePerks = input(false)
 
-  @Input()
-  public square: boolean
+  public square = input(false)
 }

@@ -75,9 +75,10 @@ export class GearCellSlotComponent {
   protected isGearSlot = computed(() => {
     return this.store.isArmor() || this.store.isWeapon() || this.store.isJewelry() || this.store.isRune()
   })
-  protected isEquipmentSlot = computed(() => {
-    return !this.isGearSlot()
+  protected isToolSlot = computed(() => {
+    return this.store.isTool() || this.store.isBag()
   })
+  protected hasGearScore = computed(() => this.isGearSlot() || this.isToolSlot())
 
   public isHidden = computed(() => {
     return !this.store.hasItem() && this.disabled()
@@ -160,7 +161,8 @@ export class GearCellSlotComponent {
         .pickItem({
           title: 'Select an item',
           selection: instance ? [instance.itemId] : [],
-          categories: [slot.itemType],
+          categories: slot.itemClass,
+          categoriesOp: 'all',
           noSkins: true,
         })
         .pipe(take(1))

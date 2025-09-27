@@ -37,6 +37,10 @@ export function isItemArmor(item: Pick<MasterItemDefinitions, 'ItemClass'> | nul
   return item?.ItemClass?.includes('Armor')
 }
 
+export function isItemBag(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
+  return item?.ItemClass?.includes('Bag')
+}
+
 export function isItemJewelery(item: Pick<MasterItemDefinitions, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Jewelry')
 }

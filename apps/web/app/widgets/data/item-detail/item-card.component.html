@@ -1,29 +1,29 @@
 <nwb-item-detail-header
-  [enableTracker]="enableTracker"
-  [enableInfoLink]="enableInfoLink"
-  [enableLink]="enableLink"
-  [disableContent]="square"
+  [enableTracker]="enableTracker()"
+  [enableInfoLink]="enableInfoLink()"
+  [enableLink]="enableLink()"
+  [disableContent]="square()"
 />
-@if (!square) {
+@if (!square()) {
   <nwb-item-detail-attribution />
   <div class="p-4 empty:hidden">
-    @if (!disableDescription) {
+    @if (!disableDescription()) {
       <nwb-item-detail-description-heargem class="nw-item-section" />
     }
-    @if (!disableStats) {
+    @if (!disableStats()) {
       <nwb-item-detail-stats class="nw-item-section" />
       <nwb-item-detail-gs-damage class="nw-item-section" />
     }
-    @if (!disablePerks) {
+    @if (!disablePerks()) {
       <nwb-item-detail-perks class="nw-item-section" />
     }
-    @if (!disableDescription) {
+    @if (!disableDescription()) {
       <nwb-item-detail-description class="nw-item-section" />
     }
-    @if (enableTasks) {
+    @if (enableTasks()) {
       <nwb-item-detail-perk-tasks class="nw-item-section" />
     }
-    @if (!disableInfo) {
+    @if (!disableInfo()) {
       <nwb-item-detail-info class="nw-item-section" />
     }
 
