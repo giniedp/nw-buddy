@@ -1,27 +1,21 @@
 import { Geometry, Position } from 'geojson'
 import { Map, RasterDEMSourceSpecification, RasterSourceSpecification } from 'maplibre-gl'
-import { eqCaseInsensitive, humanize } from '~/utils'
-import { NW_MAPS, NW_MAP_LEVELS, NW_MAP_TILE_SIZE } from './constants'
-import {
-  latFromMercatorY,
-  lngFromMercatorX,
-  mercatorXfromLng,
-  mercatorYfromLat,
-  nwXFromMercator,
-  nwXToMercator,
-  nwYFromMercator,
-  nwYToMercator,
-} from './projection'
+import { MapBounds, MapConfig } from './map-configs'
+import { boundsToLatLng, projectTileAddress } from './map-projection'
 
-export type TileAddress = {
-  mapId: string
-  type: string
+export const STATIC_TILE_OCEAN =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNsnTrlPwAGBAKvyzjVtgAAAABJRU5ErkJggg=='
+export const STATIC_TILE_TRANSPARENT =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+
+export type TileLayer = 'map1' | 'map2' | 'tractmap' | 'heightmap'
+export type TileConfig = {
+  map: MapConfig
+  layer: TileLayer
   x: number
   y: number
   z: number
 }
-
-export const TILE_URL_TEMPLATE = `x:{x}_y:{y}_z:{z}`
 
 export function removeLayer(map: Map, layerId: string) {
   if (map.getLayer(layerId)) {
@@ -42,72 +36,125 @@ export function withLayer(map: Map, layerId: string, callback: (layer: ReturnTyp
   }
 }
 
-export function encodedTileUrl(mapId: string, type: string) {
-  return `id=${mapId}&x={x}&y={y}&z={z}&type=${type || 'nw'}`
+export function encodedTileUrl(config: MapConfig, layer: TileLayer) {
+  const template = 'x={x}&y={y}&z={z}'
+  const params = new URLSearchParams()
+  params.set('layer', layer)
+  params.set('config', JSON.stringify(config))
+  return template + '&' + params.toString()
 }
 
-export function rasterTileSource(
-  newWorldMapId: string,
-  type: string = null,
-): RasterSourceSpecification | RasterDEMSourceSpecification {
-  if (type === 'nw' || type === 'ocean' || type === 'tractmap') {
-    return {
-      type: 'raster',
-      tiles: [encodedTileUrl(newWorldMapId, type)],
-      tileSize: NW_MAP_TILE_SIZE,
-      bounds: [0, 0, 90, 90],
-    }
-  }
-  return {
-    type: 'raster-dem',
-    tiles: [encodedTileUrl(newWorldMapId, type)],
-    tileSize: NW_MAP_TILE_SIZE,
-    bounds: [0, 0, 90, 90],
-    encoding: 'custom',
-    redFactor: 255 * 255,
-    greenFactor: 255,
-    blueFactor: 0,
-    baseShift: 0,
-  }
-}
-
-export function decodeTileUrl(encodedUrl: string): TileAddress {
+export function decodeTileUrl(encodedUrl: string): TileConfig {
   const params = new URLSearchParams(encodedUrl)
-  const mapId = params.get('id')
+  const map = JSON.parse(params.get('config')) as MapConfig
+  const layer = params.get('layer') as any
   const x = Number(params.get('x'))
   const y = Number(params.get('y'))
   const z = Number(params.get('z'))
-  const type = params.get('type')
-  return { mapId, x, y, z, type }
+  if (!map) {
+    return null
+  }
+  return { map, x, y, z, layer }
 }
 
-const oceanTile =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAALklEQVR42u3OMQEAAAQAMMJrQF5ieLYEy5reeJQCAgICAgICAgICAgICAgLfgQND2FXBysQXQQAAAABJRU5ErkJggg=='
+export function tileSourceEmpty(): RasterSourceSpecification {
+  return rasterSource({
+    tiles: [STATIC_TILE_TRANSPARENT],
+  })
+}
+
+export function tileSourceOcean(): RasterSourceSpecification {
+  return rasterSource({
+    tiles: [STATIC_TILE_OCEAN],
+  })
+}
+
+export function tileSource(config: MapConfig, layer: TileLayer): RasterSourceSpecification {
+  let bounds: MapBounds = config.bounds ? boundsToLatLng(config.bounds) : [0, 0, 90, 45]
+  if (config.map2Bounds && layer === 'map2') {
+    bounds = boundsToLatLng(config.map2Bounds)
+  }
+  return rasterSource({
+    tiles: [encodedTileUrl(config, layer)],
+    bounds,
+  })
+}
+
+export function heightSourceEmpty(): RasterDEMSourceSpecification {
+  return rasterDemSource({
+    tiles: [STATIC_TILE_TRANSPARENT],
+  })
+}
+
+export function heightSource(config: MapConfig): RasterDEMSourceSpecification {
+  let bounds: MapBounds = config.bounds ? boundsToLatLng(config.bounds) : [0, 0, 90, 45]
+  return rasterDemSource({
+    tiles: [encodedTileUrl(config, 'heightmap')],
+    bounds,
+  })
+}
+
+function rasterSource(data: Partial<RasterSourceSpecification>): RasterSourceSpecification {
+  return {
+    type: 'raster',
+    tiles: [],
+    tileSize: 1024,
+    bounds: [0, 0, 90, 45],
+    ...data,
+  }
+}
+
+function rasterDemSource(data: Partial<RasterDEMSourceSpecification>): RasterDEMSourceSpecification {
+  return {
+    type: 'raster-dem',
+    tiles: [],
+    tileSize: 1024,
+    bounds: [0, 0, 90, 45],
+    encoding: 'custom',
+    redFactor: 1 << 16,
+    greenFactor: 1 << 8,
+    blueFactor: 0,
+    baseShift: 0,
+    ...data,
+  }
+}
+
 export function convertTileUrl({ encodedUrl, baseUrl }: { encodedUrl: string; baseUrl: string }) {
   const tile = decodeTileUrl(encodedUrl)
-  const address = getTileAddress(tile)
-
-  // return renderDebugTile({
-  //   text: [
-  //     `x:${tile.x} y:${tile.y} z:${tile.z}`,
-  //     `${address.x},${address.y},${address.l}`,
-  //     `${address2.x},${address2.y},${address2.l}`,
-  //   ],
-  //   tileSize: 256,
-  // })
-  if (tile.type === 'ocean') {
-    return oceanTile
+  if (!tile) {
+    return encodedUrl
   }
-  if (Number(address.x) < 0 || Number(address.y) < 0) {
+
+  const address = projectTileAddress(tile)
+  const x = String(address.x).padStart(3, '0')
+  const y = String(address.y).padStart(3, '0')
+  const z = address.z
+
+  if (address.x < 0 || address.y < 0 || address.z <= 0) {
     return null
   }
 
-  if (tile.type === 'nw') {
-    const file = `map_l${address.l}_y${address.y}_x${address.x}.webp`
-    return `${baseUrl}/lyshineui/worldtiles/${tile.mapId}/${file}`
+  const config = tile.map
+  switch (tile.layer) {
+    case 'map1': {
+      return `${baseUrl}/lyshineui/worldtiles/${config.mapId}/map_l${z}_y${y}_x${x}.webp`
+    }
+    case 'map2': {
+      return `${baseUrl}/lyshineui/worldtiles/${config.map2}/map_l${z}_y${y}_x${x}.webp`
+    }
+    case 'tractmap': {
+      return `${baseUrl}/lyshineui/worldtiles/${config.mapId}/tractmap/${z}/tractmap_l${z}_y${y}_x${x}.webp`
+    }
+    case 'heightmap': {
+      return `${baseUrl}/lyshineui/worldtiles/${config.mapId}/heightmap/${z}/heightmap_l${z}_y${y}_x${x}.png`
+    }
+    default: {
+      return renderDebugTile({
+        text: [`x:${tile.x} y:${tile.y} z:${tile.z}`, `${x},${y},${z}`],
+        tileSize: 256,
+      })
+    }
   }
-  const file = `${tile.type}_l${address.l}_y${address.y}_x${address.x}.png`
-  return `${baseUrl}/lyshineui/worldtiles/${tile.mapId}/${tile.type}/${address.l}/${file}`
 }
 
 let canvas: HTMLCanvasElement
@@ -134,44 +181,6 @@ export function renderDebugTile({ text, tileSize }: { text: string[]; tileSize: 
     context.fillText(line, 50, 20 + 20 * index)
   })
   return canvas.toDataURL()
-}
-
-export function getTileAddress({ x, y, z }: TileAddress) {
-  const level = NW_MAP_LEVELS - z + 1
-  const step = Math.max(Math.pow(2, level - 1), 1)
-  const shift = Math.pow(2, z - 1)
-  x -= shift
-  y += shift
-
-  const adrX = (x * step).toString().padStart(3, '0')
-  const adrY = ((Math.pow(2, z) - y - 1) * step).toString().padStart(3, '0')
-  return {
-    l: level,
-    x: adrX,
-    y: adrY,
-  }
-}
-
-export function xToLng(x: number) {
-  return lngFromMercatorX(nwXToMercator(x))
-}
-export function yToLat(y: number) {
-  return latFromMercatorY(nwYToMercator(y))
-}
-
-export function xFromLng(lng: number) {
-  return nwXFromMercator(mercatorXfromLng(lng))
-}
-export function yFromLat(lat: number) {
-  return nwYFromMercator(mercatorYfromLat(lat))
-}
-
-export function xyFromLngLat([lng, lat]: [number, number]) {
-  return [xFromLng(lng), yFromLat(lat)]
-}
-
-export function xyToLngLat([x, y]: [number, number]) {
-  return [xToLng(x), yToLat(y)]
 }
 
 export function attachLayerHover({ map, sourceId, layerId }: { map: Map; sourceId: string; layerId: string }) {
@@ -278,21 +287,4 @@ export function getGeometryBounds(geometry: Geometry): [number, number, number, 
 export function getGeometryCenter(geometry: Geometry): [number, number] {
   const [minX, minY, maxX, maxY] = getGeometryBounds(geometry)
   return [(minX + maxX) / 2, (minY + maxY) / 2]
-}
-
-export function gameMapOptionsForMapIds(values: string[]) {
-  return values.map((mapId) => {
-    for (const map of NW_MAPS) {
-      if (eqCaseInsensitive(map.id, mapId)) {
-        return {
-          value: map.id,
-          label: map.name,
-        }
-      }
-    }
-    return {
-      value: mapId,
-      label: humanize(mapId),
-    }
-  })
 }

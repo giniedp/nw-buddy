@@ -82,3 +82,26 @@ func (t *TiledImage) TileAt(x, y int) image.Image {
 	tileY := y / t.TileSize
 	return t.Rows[tileY][tileX]
 }
+
+func ColorModelName(model color.Model) string {
+	switch model {
+	case color.Alpha16Model:
+		return "Alpha16"
+	case color.AlphaModel:
+		return "Alpha"
+	case color.Gray16Model:
+		return "Gray16"
+	case color.GrayModel:
+		return "Gray"
+	case color.NRGBAModel:
+		return "NRGBA"
+	case color.NRGBA64Model:
+		return "NRGBA64"
+	case color.RGBAModel:
+		return "RGBA"
+	case color.RGBA64Model:
+		return "RGBA64"
+	default:
+		return "Unknown"
+	}
+}

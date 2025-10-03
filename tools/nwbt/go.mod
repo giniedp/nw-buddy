@@ -26,6 +26,7 @@ require (
 )
 
 require (
+	github.com/HugoSmits86/nativewebp v1.2.0
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ebitengine/purego v0.8.2

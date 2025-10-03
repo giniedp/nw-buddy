@@ -32,7 +32,7 @@ func TestParseHeightField(t *testing.T) {
 	index := 0
 	for y := range size {
 		for x := range size {
-			col := heightmap.EncodeHeightToR8G8B8(region[index])
+			col := heightmap.EncodeHeightToNRGBA(region[index])
 			index++
 			img.Set(x, y, col)
 		}

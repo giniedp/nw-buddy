@@ -40,7 +40,6 @@ type convertConfig struct {
 	tmpDir    string
 	silent    bool
 	normalMap bool
-	target    string
 	maxSize   uint
 }
 
@@ -69,12 +68,6 @@ func WithSilent(silent bool) ConvertOption {
 func WithNormalMap(normalMap bool) ConvertOption {
 	return func(c *convertConfig) {
 		c.normalMap = normalMap
-	}
-}
-
-func WithTarget(target string) ConvertOption {
-	return func(c *convertConfig) {
-		c.target = target
 	}
 }
 
@@ -157,7 +150,7 @@ func ConvertDDS(data []byte, target Format, options ...ConvertOption) (res []byt
 		return nil, err
 	}
 	if target == FormatPNG {
-		return moveOrRead(targetPng, config.target)
+		return os.ReadFile(targetPng)
 	}
 
 	targetWebp := utils.ReplaceExt(source, ".webp")
@@ -168,30 +161,32 @@ func ConvertDDS(data []byte, target Format, options ...ConvertOption) (res []byt
 		return nil, err
 	}
 
-	return moveOrRead(targetWebp, config.target)
+	return os.ReadFile(targetWebp)
 }
 
 func ConvertPNGFile(source nwfs.File, target Format, options ...ConvertOption) ([]byte, error) {
+	if path.Ext(source.Path()) != ".png" {
+		return nil, fmt.Errorf("unsupported source image format %s", path.Ext(source.Path()))
+	}
+
 	data, err := source.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	if path.Ext(source.Path()) != ".png" {
-		return nil, fmt.Errorf("unsupported source image format %s", path.Ext(source.Path()))
-	}
+	return ConvertPNG(data, target, options...)
+}
 
+func ConvertPNG(data []byte, target Format, options ...ConvertOption) ([]byte, error) {
 	switch target {
 	case FormatPNG:
 		return data, nil
 	case FormatWEBP:
-		return ConvertPNG(data, target, options...)
+		break
 	default:
 		return nil, fmt.Errorf("unsupported target image format %s", target)
 	}
-}
 
-func ConvertPNG(data []byte, target Format, options ...ConvertOption) ([]byte, error) {
 	config := getConfig(options)
 
 	sourcePng := utils.Must(copyToTemp(data, ".png", config.tmpDir))
@@ -203,7 +198,7 @@ func ConvertPNG(data []byte, target Format, options ...ConvertOption) ([]byte, e
 		return nil, err
 	}
 
-	return moveOrRead(targetWebp, config.target)
+	return os.ReadFile(targetWebp)
 }
 
 func copyToTemp(data []byte, ext, dir string) (string, error) {
@@ -221,18 +216,4 @@ func copyToTemp(data []byte, ext, dir string) (string, error) {
 		return "", err
 	}
 	return strings.ReplaceAll(file.Name(), "\\", "/"), nil
-}
-
-func moveOrRead(file string, target string) ([]byte, error) {
-	if target == "" {
-		goto Read
-	}
-	if err := os.MkdirAll(path.Dir(target), 0755); err != nil {
-		goto Read
-	}
-	if err := os.Rename(file, utils.ReplaceExt(target, path.Ext(file))); err == nil {
-		return nil, nil
-	}
-Read:
-	return os.ReadFile(file)
 }

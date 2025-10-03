@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 
-import { xFromLng, xToLng, xyFromLngLat, xyToLngLat, yFromLat, yToLat } from './utils'
+import { xFromLng, xToLng, xyFromLngLat, xyToLngLat, yFromLat, yToLat } from './map-projection'
 
 @Injectable({ providedIn: 'root' })
 export class GameMapService {

@@ -1,50 +1,41 @@
 <ion-content [scrollY]="false">
-  <ion-split-pane
-    [when]="showSidebar()"
-    contentId="detailContent"
-    style="--side-min-width: 320px; --side-max-width: 420px"
-  >
-    <ion-menu contentId="detailContent" class="order-2">
-      @if (showSidebar()) {
-        <ng-container [ngTemplateOutlet]="tplDetail" />
-      }
-    </ion-menu>
-    <div class="ion-page flex flex-row" id="detailContent">
-      <ion-split-pane
-        contentId="detailMap"
-        [when]="showTable()"
-        style="--side-min-width: 320px; --side-max-width: 1600px; --side-width: 30%"
-      >
-        <ion-menu contentId="detailMap" #tableMenu style="--width: 100%">
-          <ng-container [ngTemplateOutlet]="tplTableHeader" />
-          @if (service.isGridActive()) {
-            <nwb-virtual-grid
-              [enableQuickfilter]="true"
-              [data]="service.categoryItems$ | async"
-              [options]="service.virtualOptions"
-              [identifyBy]="service.entityIdGetter"
-              [selectionRouteParam]="selectionParam"
-            />
-          } @else if (service.isTableActive()) {
-            <nwb-table-grid
-              (ready$)="service.onTableReady($event)"
-              [enableQuickfilter]="true"
-              [data]="service.categoryItems$ | async"
-              [options]="service.tableGridOptions"
-              [identifyBy]="service.entityIdGetter"
-              [persistKey]="persistKey"
-              [filterQueryParam]="filterParam"
-              [selectionRouteParam]="selectionParam"
-            />
-          }
-        </ion-menu>
+  <div class="ion-page flex flex-row" id="detailContent">
+    <ion-split-pane
+      contentId="detailMap"
+      [when]="showTable()"
+      style="--side-min-width: 320px; --side-max-width: 1600px; --side-width: 30%"
+    >
+      <ion-menu contentId="detailMap" #tableMenu style="--width: 100%">
+        <ng-container [ngTemplateOutlet]="tplTableHeader" />
+        @if (service.isGridActive()) {
+          <nwb-virtual-grid
+            [enableQuickfilter]="true"
+            [data]="service.categoryItems$ | async"
+            [options]="service.virtualOptions"
+            [identifyBy]="service.entityIdGetter"
+            [selectionRouteParam]="selectionParam"
+          />
+        } @else if (service.isTableActive()) {
+          <nwb-table-grid
+            (ready$)="service.onTableReady($event)"
+            [enableQuickfilter]="true"
+            [data]="service.categoryItems$ | async"
+            [options]="service.tableGridOptions"
+            [identifyBy]="service.entityIdGetter"
+            [persistKey]="persistKey"
+            [filterQueryParam]="filterParam"
+            [selectionRouteParam]="selectionParam"
+          />
+        }
+      </ion-menu>
+      <div id="detailMap" class="ion-page z-40 relative">
         <nwb-zone-map
-          id="detailMap"
-          class="ion-page z-40"
+          [mapId]="mapIdParam()"
           [pinMenu]="pinMenu()"
           [zoneId]="zoneIdParam()"
           (zoneClicked)="onZoneClicked($event)"
           (vitalClicked)="onVitalClicked($event)"
+          (mapIdChange)="onMapIdChanged($event)"
         >
           <span menu-start>
             @if (!showTable()) {
@@ -54,9 +45,16 @@
             }
           </span>
         </nwb-zone-map>
-      </ion-split-pane>
-    </div>
-  </ion-split-pane>
+
+        @if (showSidebar()) {
+          <div class="w-sm" [nwbGameMapControl]="'top-right'" [style.order]="-2">
+            <router-outlet />
+          </div>
+        }
+      </div>
+    </ion-split-pane>
+  </div>
+
   <nwb-detail-content
     [isOpen]="showModal()"
     [initialBreakpoint]="100 | px2vh"

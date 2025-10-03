@@ -12,6 +12,8 @@ import (
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/img"
 	"nw-buddy/tools/utils/logging"
+	"nw-buddy/tools/utils/maps"
+	"nw-buddy/tools/utils/progress"
 	"path"
 
 	"github.com/spf13/cobra"
@@ -39,79 +41,121 @@ func pullTractmaps(assets *game.Assets, outDir string) {
 		return
 	}
 
-	levels := []string{
-		"nw_opr_004_trench",
-		"newworld_vitaeeterna",
-	}
-	for _, levelName := range levels {
-		levelOutDir := path.Join(outDir, levelName, "tractmap")
-		info := level.LoadInfo(assets, levelName)
-		if info == nil {
+	lvls := level.ListLevels(assets)
+	bar := progress.Bar(len(lvls), "Tractmaps")
+	for _, info := range lvls {
+		bar.Add(1)
+
+		hasTracts := false
+		for _, tract := range info.Tracts {
+			if tract.MapCategory != "" {
+				hasTracts = true
+				break
+			}
+		}
+		if !hasTracts {
 			continue
 		}
+		pullTracmap(assets, outDir, info, bar)
+	}
+	bar.Close()
+}
 
-		colors := level.TractColorToCategoryMap(info)
-		heightmap := level.LoadHeightmap(assets.Archive, info)
-		tractmap := level.LoadTractmap(assets.Archive, info)
-		scale := (float32(heightmap.SizeX) / float32(tractmap.SizeX))
-		// writeTile(path.Join(levelOutDir, "tractmap.png"), tractmap)
+func pullTracmap(assets *game.Assets, outDir string, info *level.Info, bar progress.ProgressBar) {
+	levelName := info.Name
+	levelOutDir := path.Join(outDir, levelName, "tractmap")
 
-		recolored := img.Apply(tractmap, func(c color.RGBA, x, y int) color.RGBA {
-			occlusion := heightmapOcclusionAt(heightmap, int(float32(x)*scale), int(float32(y)*scale), info.MountainHeight)
-			key := tracts.Color{R: c.R, G: c.G, B: c.B}
-			layer := colors[key]
-			res, ok := GroundColors[layer]
-			if !ok {
-				slog.Warn("unknown tractmap color", "key", key)
+	colors := level.TractColorToCategoryMap(info)
+
+	bar.Detail(fmt.Sprintf("%s load heightmap", levelName))
+	heightmap := level.LoadHeightmap(assets.Archive, info)
+
+	bar.Detail(fmt.Sprintf("%s load tractmap", levelName))
+	tractmap := level.LoadTractmap(assets.Archive, info)
+	if err := img.WriteFile(tractmap, path.Join(levelOutDir, "tractmap.webp")); err != nil {
+		slog.Error("error writing file", "err", err)
+	}
+
+	scale := (float32(heightmap.SizeX) / float32(tractmap.SizeX))
+
+	bar.Detail(fmt.Sprintf("%s recolor", levelName))
+
+	loggedUnknownKeys := maps.NewSyncMap[tracts.Color, tracts.Color]()
+	recolored := img.Apply(tractmap, func(c color.RGBA, x, y int) color.RGBA {
+		occlusion := heightmapOcclusionAt(heightmap, int(float32(x)*scale), int(float32(y)*scale), info.MountainHeight)
+		key := tracts.Color{R: c.R, G: c.G, B: c.B}
+		layer := colors[key]
+		res, ok := GroundColors[layer]
+
+		if !ok {
+			if _, ok := loggedUnknownKeys.LoadOrStore(key, key); !ok {
+				slog.Warn("unknown tractmap color", "key", key, "layer", layer)
 			}
-			if layer != "OCEANBED" && layer != "WATERBED" {
-				res.R = uint8(float32(res.R) * occlusion)
-				res.G = uint8(float32(res.G) * occlusion)
-				res.B = uint8(float32(res.B) * occlusion)
+		}
+		if layer != "OCEANBED" && layer != "WATERBED" {
+			res.R = uint8(float32(res.R) * occlusion)
+			res.G = uint8(float32(res.G) * occlusion)
+			res.B = uint8(float32(res.B) * occlusion)
+		}
+		return res
+	})
+	if err := img.WriteFile(recolored, path.Join(levelOutDir, "tractmapc.webp")); err != nil {
+		slog.Error("error writing file", "err", err)
+	}
+
+	// number of tiles per region at max zoom in level
+	tilesPerRegion := 8
+	// number of levels we want to generate
+	maxLevelCount := 8
+	// level that covers a full region in each dimension
+	levelCoveringRegion := int(math.Log2(float64(tilesPerRegion)))
+	// try keep high resolution tiles for 1x1
+	targetTileSize := 1024
+
+	numRegionsX := tractmap.TilesX
+	numRegionsY := tractmap.TilesY
+	numTilesX := numRegionsX * tilesPerRegion
+	numTilesY := numRegionsY * tilesPerRegion
+	mapHeight := tractmap.SizeY
+
+	var source image.Image = recolored
+
+	for level := range maxLevelCount {
+		regionCoverage := math.Pow(2, float64(level-levelCoveringRegion))
+		if tractmap.TilesX < int(regionCoverage) {
+			break
+		}
+
+		bounds := source.Bounds()
+		tiles := img.Tiles(bounds, numTilesX, numTilesY)
+		for i, t := range tiles {
+			bar.Detail(fmt.Sprintf("%s tiles lvl:%d %d/%d", levelName, level, i+1, len(tiles)))
+
+			tileW := t.Size().X
+			tileH := t.Size().Y
+			if tileW == 0 || tileH == 0 {
+				continue
 			}
-			return res
-		})
-		// writeTile(path.Join(levelOutDir, "colored.png"), recolored)
+			tile := image.NewRGBA(image.Rect(0, 0, tileW, tileH))
+			draw.Copy(tile, image.Pt(0, 0), source, t, draw.Over, nil)
 
-		regionsX := tractmap.TilesX
-		regionsY := tractmap.TilesY
-		tilesX := regionsX * 8
-		tilesY := regionsY * 8
-		mapHeight := tractmap.SizeY
-		targetSize := 1024
+			x := int(math.Pow(2, float64(level)) * float64(t.Min.X/tileW))
+			y := int(math.Pow(2, float64(level)) * float64((mapHeight-t.Min.Y-1)/tileH))
+			z := level + 1
+			file := fmt.Sprintf("tractmap_l%d_y%03d_x%03d.webp", z, y, x)
+			filePath := path.Join(levelOutDir, fmt.Sprintf("%d", level+1), file)
+			img.WriteFile(tile, filePath)
+		}
 
-		var source image.Image = recolored
-		for level := range 8 {
-			if level > 0 {
-				tilesX = max(tilesX/2, 1)
-				tilesY = max(tilesY/2, 1)
-				bounds := source.Bounds()
-				if bounds.Max.X/tilesX > targetSize {
-					mapHeight = mapHeight / 2
-					dst := image.NewRGBA(image.Rect(0, 0, bounds.Max.X/2, bounds.Max.Y/2))
-					draw.BiLinear.Scale(dst, dst.Bounds(), source, source.Bounds(), draw.Over, nil)
-					source = dst
-				}
-			}
-
-			bounds := source.Bounds()
-			tiles := img.Tiles(bounds, tilesX, tilesY)
-			for _, t := range tiles {
-				tileW := t.Max.X - t.Min.X
-				tileH := t.Max.Y - t.Min.Y
-				// if tileW < minSize || tileH < minSize {
-				// 	continue
-				// }
-				tile := image.NewRGBA(image.Rect(0, 0, tileW, tileH))
-				draw.Copy(tile, image.Pt(0, 0), source, t, draw.Over, nil)
-
-				x := int(math.Pow(2, float64(level)) * float64(t.Min.X/tileW))
-				y := int(math.Pow(2, float64(level)) * float64((mapHeight-t.Min.Y-1)/tileH))
-				z := level + 1
-				file := fmt.Sprintf("tractmap_l%d_y%03d_x%03d.png", z, y, x)
-				filePath := path.Join(levelOutDir, fmt.Sprintf("%d", level+1), file)
-				writeTile(filePath, tile)
-			}
+		// downsize for next level
+		numTilesX = max(numTilesX/2, 1)
+		numTilesY = max(numTilesY/2, 1)
+		size := source.Bounds().Size()
+		if size.X/numTilesX > targetTileSize {
+			mapHeight = mapHeight / 2
+			dst := image.NewRGBA(image.Rect(0, 0, size.X/2, size.Y/2))
+			draw.BiLinear.Scale(dst, dst.Bounds(), source, source.Bounds(), draw.Over, nil)
+			source = dst
 		}
 	}
 }

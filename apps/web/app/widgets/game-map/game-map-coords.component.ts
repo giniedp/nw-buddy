@@ -14,7 +14,7 @@ import { GameMapService } from './game-map.service'
   `,
   imports: [CommonModule],
   host: {
-    class: 'inline',
+    class: 'inline-block',
   },
 })
 export class GameMapCoordsComponent implements OnInit, OnDestroy {

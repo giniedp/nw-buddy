@@ -4,7 +4,7 @@ import { Feature, FeatureCollection, Geometry } from 'geojson'
 import { FilterSpecification, GeoJSONSource, Map, MapLayerEventType } from 'maplibre-gl'
 import tinycolor from 'tinycolor2'
 import { GameMapHost } from './game-map-host'
-import { attachLayerHover } from './utils'
+import { attachLayerHover } from './map-utils'
 
 @Directive({
   standalone: true,
@@ -26,11 +26,14 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public polyOpacity = input<number>(0.5)
   public outline = input<boolean>()
   public outlineDashed = input<boolean>()
+  public outlineColor = input<string>()
+  public outlinePad = input<number>(0)
   public minZoom = input<number>(0)
   public maxZoom = input<number>(0)
   public heatmap = input<boolean>()
   public heatmapColor = input<string>()
   public labels = input<boolean>()
+  public labelSize = input<number>(16)
   public labelsMinZoom = input<number>(5)
   public labelsMaxZoom = input<number>(0)
   public filter = input<FilterSpecification>()
@@ -165,6 +168,8 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     if (!useLines) {
       this.removeLayer(lineLayerId)
     } else if (!this.map.getLayer(lineLayerId)) {
+      const pad = this.outlinePad()
+      const color = this.outlineColor() ?? this.color()
       this.map.addLayer({
         id: lineLayerId,
         source: sourceId,
@@ -175,14 +180,14 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
           'line-join': 'round',
         },
         paint: {
-          'line-color': this.color() ?? ['get', 'color'],
+          'line-color': color ?? ['get', 'color'],
           'line-width': [
             'case',
             ['boolean', ['feature-state', 'selected'], false],
-            4,
+            4 + pad,
             ['boolean', ['feature-state', 'hover'], false],
-            4,
-            1,
+            4 + pad,
+            1 + pad,
           ],
           'line-dasharray': this.outlineDashed() ? [4, 2] : [4, 0],
         },
@@ -269,15 +274,15 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         type: 'symbol',
         layout: {
           'text-field': ['get', 'label'],
-          'text-size': 16,
+          'text-size': this.labelSize(),
           'text-overlap': 'cooperative',
           'text-offset': [0, useIcons ? 1.5 : 0],
         },
         paint: {
           'text-color': '#FFFFFF',
           'text-halo-color': '#000000',
-          'text-halo-width': 1,
-          'text-halo-blur': 1,
+          'text-halo-width': 2,
+          'text-halo-blur': 2,
         },
       })
     }

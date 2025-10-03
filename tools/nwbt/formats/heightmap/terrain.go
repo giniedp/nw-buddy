@@ -215,7 +215,7 @@ func (mips Mipmaps) TileHeightmap(tile Tile) image.Image {
 		tx := tile.Area.X + x
 		ty := tile.Area.Y + y
 		h, _ := mip.HeightAt(tx, ty) // GetSmoothHeightAt(tx, ty)
-		img.Set(x, tileSize-y-1, EncodeHeightToR8G8B8(h))
+		img.Set(x, tileSize-y-1, EncodeHeightToNRGBA(h))
 	}
 	return img
 }

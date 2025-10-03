@@ -25,7 +25,7 @@ export async function vitalsForGameModeMap(
     }
     return !!getVitalGameModeMaps(vital, gameModeMaps, vitalsMeta).length
   }
-  return vitals.filter((it) => {
+  const result = vitals.filter((it) => {
     if (!isInDungeon(it)) {
       return false
     }
@@ -34,4 +34,52 @@ export async function vitalsForGameModeMap(
     }
     return creatureType.some((type) => eqCaseInsensitive(type, it.CreatureType))
   })
+
+  console.log('vitalsForGameModeMap', {
+    gameMapId,
+    result,
+  })
+  return result
+}
+
+export async function vitalsForMapId(
+  db: NwDataSheets,
+  params: {
+    mapId: string
+  },
+) {
+  const { mapId } = params
+
+  const vitals = await db.vitalsAll()
+  const vitalsMeta = await db.vitalsMetadataByIdMap()
+
+  const result = vitals.filter((it) => {
+    const meta = vitalsMeta.get(it.VitalsID)
+    return !!meta?.mapIDs?.includes(mapId)
+  })
+  console.log('vitalsForMapId', {
+    mapId,
+    result,
+  })
+  return result
+}
+
+export async function vitalsForTerritoryId(
+  db: NwDataSheets,
+  params: {
+    territoryId: string | number
+  },
+) {
+  const territoryId = Number(String(params.territoryId))
+  if (!(territoryId >= 0)) {
+    return []
+  }
+  const vitals = await db.vitalsAll()
+  const vitalsMeta = await db.vitalsMetadataByIdMap()
+
+  const result = vitals.filter((it) => {
+    const meta = vitalsMeta.get(it.VitalsID)
+    return !!meta?.territories?.includes(territoryId)
+  })
+  return result
 }

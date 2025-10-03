@@ -1,36 +1,41 @@
-import { Injectable, Signal, TemplateRef, inject, signal } from '@angular/core'
+import { inject, Injectable, signal, TemplateRef } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { Map } from 'maplibre-gl'
-import { ReplaySubject } from 'rxjs'
+import { distinctUntilChanged, filter } from 'rxjs'
 
 @Injectable()
 export class GameMapHost {
   private parent = inject(GameMapHost, { optional: true, skipSelf: true })
-  private currentMap: Map
-  private readySubject = new ReplaySubject<true>(1)
+
   private activeTips = signal<Array<TemplateRef<any>>>([])
   private get root(): GameMapHost {
     return this.parent ? this.parent.root : this
   }
 
+  public mapInstance = signal<Map>(null)
+  public mapIsReady = signal<boolean>(false)
   public get map() {
-    return this.currentMap
+    return this.mapInstance()
   }
 
   public get tooltips() {
     return this.root.activeTips()
   }
 
-  public ready$ = this.readySubject.asObservable()
+  public ready$ = toObservable(this.mapIsReady).pipe(
+    filter((it) => !!it),
+    distinctUntilChanged(),
+  )
 
   public setMap(map: Map) {
-    this.currentMap = map
+    this.mapInstance.set(map)
     if (this.parent) {
       this.parent.setMap(map)
     }
   }
 
   public setReady() {
-    this.readySubject.next(true)
+    this.mapIsReady.set(true)
     if (this.parent) {
       this.parent.setReady()
     }

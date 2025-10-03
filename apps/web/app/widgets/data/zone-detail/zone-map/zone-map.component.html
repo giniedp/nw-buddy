@@ -15,9 +15,17 @@
         <div slot="end">
           <div class="flex flex-row items-center gap-2">
             @if (showMapOptions()) {
-              <select [ngModel]="store.mapId()" (ngModelChange)="store.setMap($event)" class="select select-sm w-40">
-                @for (option of mapsOptions(); track option.value) {
-                  <option [value]="option.value">{{ option.label | nwText }}</option>
+              <select
+                [ngModel]="store.mapId()"
+                (ngModelChange)="handleMapIdSelected($event)"
+                class="select select-sm w-60"
+              >
+                @for (category of mapsOptions(); track category.name) {
+                  <optgroup [label]="category.name">
+                    @for (option of category.options; track option.id) {
+                      <option [value]="option.id">{{ option.name | nwText }}</option>
+                    }
+                  </optgroup>
                 }
               </select>
             }
@@ -82,9 +90,13 @@
         [tractmap]="store.showTractmap()"
         [labels]="store.showLabels()"
         (zoneClick)="zoneClicked.emit($event)"
-      >
-        <game-map-coords class="absolute top-1 left-2 text-shadow-sm shadow-black font-mono text-sm" />
-      </nwb-map>
+      />
+
+      <game-map-coords
+        [nwbGameMapControl]="'top-left'"
+        [style.order]="-1"
+        class="text-nowrap text-shadow-sm shadow-black font-mono text-sm"
+      />
 
       @if (store.isOpenWorld()) {
         <ng-container

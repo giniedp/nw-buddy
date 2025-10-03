@@ -1,36 +1,49 @@
-import { CommonModule } from '@angular/common'
-import { Component, ElementRef, Injector, effect, inject, input, output, signal, untracked } from '@angular/core'
+import { NgTemplateOutlet } from '@angular/common'
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  output,
+  signal,
+  untracked,
+} from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { NW_MAP_NEWWORLD_VITAEETERNA } from '@nw-data/common'
 import { environment } from 'apps/web/environments'
 import { Feature, FeatureCollection, Geometry } from 'geojson'
 import {
   AJAXError,
-  FillLayerSpecification,
+  ControlPosition,
   FitBoundsOptions,
-  GeoJSONSource,
-  LineLayerSpecification,
-  MapLayerEventType,
   NavigationControl,
+  RasterDEMTileSource,
   RasterTileSource,
   RequestTransformFunction,
   StyleSpecification,
-  SymbolLayerSpecification,
   TerrainControl,
 } from 'maplibre-gl'
-import { NW_MAPS, NW_MAP_TILE_SIZE } from './constants'
 import { GameMapHost } from './game-map-host'
+import { GameMapLayerDirective } from './game-map-layer.component'
 import { GameMapMouseAnchorDirective } from './game-map-mouse-anchor.directive'
-import { MaplibreDirective } from './maplibre.directive'
+import { getMapConfig } from './map-configs'
+import { boundsToLatLng, NW_MAP_REGION_SIZE, xyToLngLat } from './map-projection'
 import {
-  attachLayerHover,
   convertTileUrl,
   getGeometryCenter,
-  rasterTileSource,
-  xToLng,
-  xyToLngLat,
-  yToLat,
-} from './utils'
-const elevationScale = 0.1
+  heightSource,
+  heightSourceEmpty,
+  tileSource,
+  tileSourceEmpty,
+  tileSourceOcean,
+} from './map-utils'
+import { MaplibreDirective } from './maplibre.directive'
+
+const elevationScale = 0.05
+
 @Component({
   selector: 'nwb-map',
   template: `
@@ -49,6 +62,61 @@ const elevationScale = 0.1
       class="w-full h-full"
       id="game-map-element"
     ></div>
+
+    <div
+      [nwbMapLayer]="'territories'"
+      [data]="territories()"
+      [disabled]="!isOpenWorld()"
+      [color]="'#FFFFFF'"
+      [outline]="true"
+      [outlineDashed]="false"
+      [outlinePad]="4"
+      [polygons]="true"
+      [polyOpacity]="0"
+      [labels]="labels()"
+      [labelsMinZoom]="0"
+      [labelsMaxZoom]="5"
+      [labelSize]="20"
+      (featureClick)="handleFeatureClick($event, 4.9)"
+    ></div>
+
+    <div
+      [nwbMapLayer]="'areas'"
+      [data]="areas()"
+      [disabled]="!isOpenWorld()"
+      [color]="'#FFFFFF'"
+      [outline]="true"
+      [outlineColor]="'#FF0000'"
+      [outlineDashed]="false"
+      [polygons]="true"
+      [polyOpacity]="0"
+      [labels]="labels()"
+      [labelsMinZoom]="5"
+      [labelsMaxZoom]="6"
+      [labelSize]="20"
+      [minZoom]="5"
+      (featureClick)="handleFeatureClick($event, 5.9)"
+    ></div>
+
+    <div
+      [nwbMapLayer]="'pois'"
+      [data]="pois()"
+      [disabled]="!isOpenWorld()"
+      [color]="'#ceba75'"
+      [outline]="true"
+      [outlineColor]="'#ceba75'"
+      [outlineDashed]="true"
+      [polygons]="true"
+      [polyOpacity]="0"
+      [icons]="true"
+      [labels]="labels()"
+      [labelsMinZoom]="7"
+      [labelsMaxZoom]="10"
+      [labelSize]="20"
+      [minZoom]="6"
+      (featureClick)="handleFeatureClick($event, 7)"
+    ></div>
+
     <ng-content />
     <div nwbGameMapMouseAnchor>
       @if (host.tooltips.length) {
@@ -62,7 +130,7 @@ const elevationScale = 0.1
     class: 'block overflow-hidden bg-[#859594]',
   },
   providers: [GameMapHost],
-  imports: [CommonModule, MaplibreDirective, GameMapMouseAnchorDirective],
+  imports: [NgTemplateOutlet, MaplibreDirective, GameMapMouseAnchorDirective, GameMapLayerDirective],
 })
 export class GameMapComponent {
   protected elRef = inject<ElementRef<HTMLElement>>(ElementRef)
@@ -76,13 +144,9 @@ export class GameMapComponent {
   protected styleSpec: StyleSpecification = {
     version: 8,
     sources: {
-      tractmap: rasterTileSource('newworld_vitaeeterna', 'tractmap'),
-      ocean: rasterTileSource('newworld_vitaeeterna', 'ocean'),
-      newworld_vitaeeterna: rasterTileSource('newworld_vitaeeterna', 'nw'),
-      outpostrush: rasterTileSource('outpostrush', 'nw'),
-
-      newworld_vitaeeterna_heightmap: rasterTileSource('newworld_vitaeeterna', 'heightmap'),
-      newworld_vitaeeterna_hillshade: rasterTileSource('newworld_vitaeeterna', 'heightmap'),
+      ocean: tileSourceOcean(),
+      empty: tileSourceEmpty(),
+      emptyHeight: heightSourceEmpty(),
     },
 
     layers: [
@@ -97,23 +161,23 @@ export class GameMapComponent {
       {
         id: 'tractmap',
         type: 'raster',
-        source: 'tractmap',
+        source: 'empty',
         layout: {
           visibility: 'none',
         },
       },
       {
-        id: 'tiles0',
+        id: 'map1',
         type: 'raster',
-        source: 'newworld_vitaeeterna',
+        source: 'empty',
         layout: {
           visibility: 'none',
         },
       },
       {
-        id: 'tiles1',
+        id: 'map2',
         type: 'raster',
-        source: 'outpostrush',
+        source: 'empty',
         layout: {
           visibility: 'none',
         },
@@ -121,7 +185,7 @@ export class GameMapComponent {
       {
         id: 'hills',
         type: 'hillshade',
-        source: 'newworld_vitaeeterna_hillshade',
+        source: 'emptyHeight',
         layout: {
           visibility: 'none', // keep it off. Lighting is baked into the tiles
         },
@@ -131,7 +195,7 @@ export class GameMapComponent {
         },
       },
     ],
-    sky: {},
+    // sky: {},
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
   }
 
@@ -147,7 +211,7 @@ export class GameMapComponent {
     }
   }
 
-  public mapId = input<string>('newworld_vitaeeterna')
+  public mapId = input<string>(NW_MAP_NEWWORLD_VITAEETERNA)
   public fitBounds = input<[number, number, number, number]>(null)
   public fitBoundsOptions = input<FitBoundsOptions>(null)
 
@@ -158,10 +222,13 @@ export class GameMapComponent {
   public labels = input<boolean>(true)
   public tractmap = input<boolean>(false)
   public zoneClick = output<string>()
+  public controlPosition = input<ControlPosition>('top-right')
+
+  public isOpenWorld = computed(() => !!getMapConfig(this.mapId()).isOpenWorld)
 
   private injector = inject(Injector)
   private terrainControl = new TerrainControl({
-    source: 'newworld_vitaeeterna_heightmap',
+    source: 'emptyHeight',
     exaggeration: elevationScale,
   })
   private navigationControl = new NavigationControl({
@@ -185,7 +252,7 @@ export class GameMapComponent {
   protected handleMapLoad() {
     this.attachSignals()
     this.map.setMaxPitch(85)
-    this.map.addControl(this.navigationControl)
+    this.map.addControl(this.navigationControl, this.controlPosition())
   }
 
   protected handleMapError(e: ErrorEvent) {
@@ -202,32 +269,17 @@ export class GameMapComponent {
   private attachSignals() {
     this.effect(() => {
       const mapId = this.mapId()
-      const maxBounds = mapMaxBounds(mapId)
-      const fitBounds = this.fitBounds()
       const tractmap = this.tractmap()
       untracked(() => {
         this.updateTiles(mapId, tractmap)
-        this.map.setMaxBounds(maxBounds)
-        this.moveToBounds(fitBounds || maxBounds)
       })
     })
-
     this.effect(() => {
-      const isOpenWorld = isMapOpenWorld(this.mapId())
-      const data = isOpenWorld ? this.territories() : null
-      const showLabels = this.labels()
-      untracked(() => this.updateTerritories(data, showLabels))
-    })
-    this.effect(() => {
-      const isOpenWorld = isMapOpenWorld(this.mapId())
-      const data = isOpenWorld ? this.areas() : null
-      const showLabels = this.labels()
-      untracked(() => this.updateAreas(data, showLabels))
-    })
-    this.effect(() => {
-      const isOpenWorld = isMapOpenWorld(this.mapId())
-      const data = isOpenWorld ? this.pois() : null
-      untracked(() => this.updatePois(data))
+      const config = getMapConfig(this.mapId())
+      const fitBounds = this.fitBounds() || boundsToLatLng(config.boundsPoi || config.bounds)
+      untracked(() => {
+        this.moveToBounds(fitBounds)
+      })
     })
     this.effect(() => {
       const zoneId = this.zoneId() ? Number(this.zoneId()) : null
@@ -252,199 +304,127 @@ export class GameMapComponent {
     effect(fn, { injector: this.injector })
   }
 
-  private updateTerritories(features: FeatureCollection, showLabels: boolean) {
-    const sourceId = 'territories'
-    const layerFillId = 'territoriesFill'
-    const layerOutlineId = 'territoriesOutline'
-    const layerSymbolId = 'territoriesSymbol'
-    if (!this.map.getSource(sourceId)) {
-      this.map.addSource(sourceId, {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      })
-      this.map.addLayer({
-        ...territoryFillLayout,
-        id: layerFillId,
-        source: sourceId,
-      })
-      this.map.addLayer({
-        ...territoryOutlineLayout,
-        id: layerOutlineId,
-        source: sourceId,
-      })
-      this.map.addLayer({
-        ...territorySymbolLayout,
-        id: layerSymbolId,
-        source: sourceId,
-        maxzoom: 5,
-      })
-
-      attachLayerHover({
-        map: this.map,
-        sourceId,
-        layerId: layerFillId,
-      })
-      this.map.on('click', layerFillId, (e) => this.handleClick(e, 4.9))
-    }
-    this.map.getLayer(layerSymbolId).visibility = showLabels ? 'visible' : 'none'
-    const source = this.map.getSource(sourceId) as GeoJSONSource
-    source.setData(features || { type: 'FeatureCollection', features: [] })
-  }
-
-  private updateAreas(features: FeatureCollection, showLabels: boolean) {
-    const sourceId = 'areas'
-    const layerFillId = 'areasFill'
-    const layerOutlineId = 'areasOutline'
-    const layerSymbolId = 'areasSymbol'
-    if (!this.map.getSource(sourceId)) {
-      this.map.addSource(sourceId, {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      })
-      this.map.addLayer({
-        ...areaFillLayout,
-        id: layerFillId,
-        source: sourceId,
-        minzoom: 5,
-      })
-      this.map.addLayer({
-        ...areaOutlineLayout,
-        id: layerOutlineId,
-        source: sourceId,
-        minzoom: 5,
-      })
-      this.map.addLayer({
-        ...areaSymbolLayout,
-        id: layerSymbolId,
-        source: sourceId,
-        minzoom: 5,
-        maxzoom: 6,
-      })
-
-      attachLayerHover({
-        map: this.map,
-        sourceId,
-        layerId: layerFillId,
-      })
-      this.map.on('click', layerFillId, (e) => this.handleClick(e, 5.9))
-    }
-    this.map.getLayer(layerSymbolId).visibility = showLabels ? 'visible' : 'none'
-    const source = this.map.getSource(sourceId) as GeoJSONSource
-    source.setData(features || { type: 'FeatureCollection', features: [] })
-  }
-
-  private updatePois(features: FeatureCollection) {
-    const sourceId = 'pois'
-    const layerFillId = 'poisFill'
-    const layerOutlineId = 'poisOutline'
-    const layerIconsId = 'poisIcons'
-    const layerCompassIconsId = 'poisCompassIcons'
-    if (!this.map.getSource('pois')) {
-      this.map.addSource(sourceId, {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      })
-      this.map.addLayer({
-        ...poisFillLayout,
-        id: layerFillId,
-        source: sourceId,
-        minzoom: 6,
-      })
-      this.map.addLayer({
-        ...poisOutlineLayout,
-        id: layerOutlineId,
-        source: sourceId,
-        minzoom: 6,
-      })
-      this.map.addLayer({
-        ...poisIconLayout,
-        id: layerIconsId,
-        source: sourceId,
-        minzoom: 6,
-      })
-      this.map.addLayer({
-        ...poisCompassIconLayout,
-        id: layerCompassIconsId,
-        source: sourceId,
-        maxzoom: 6,
-      })
-      attachLayerHover({
-        map: this.map,
-        sourceId,
-        layerId: layerFillId,
-      })
-      this.map.on('click', layerFillId, (e) => this.handleClick(e, 7))
-      this.map.on('click', layerIconsId, (e) => this.handleClick(e, 7))
-      this.map.on('click', layerCompassIconsId, (e) => this.handleClick(e, 7))
-    }
-    const source = this.map.getSource(sourceId) as GeoJSONSource
-    source.setData(features || { type: 'FeatureCollection', features: [] })
-  }
-
   private updateTiles(mapId: string, showTractmap: boolean) {
-    const tiles = [this.map.getLayer('tiles0'), this.map.getLayer('tiles1')]
-    for (const tile of tiles) {
-      if (tile.type === 'raster') {
-        tile.visibility = 'none'
-      }
-    }
-    mapSourceIds(mapId).forEach((id, index) => {
-      const source = this.map.getSource(id)
-      if (source instanceof RasterTileSource) {
-        source.tileBounds.bounds.setSouthWest([0, 0])
-        const bounds = NW_MAPS.find((it) => it.id === id)?.bounds
-        if (bounds) {
-          source.tileBounds.bounds.setNorthEast([xToLng(bounds.width + bounds.left), yToLat(bounds.top)])
-        } else {
-          source.tileBounds.bounds.setNorthEast([180, 90])
-        }
-      }
-      if (!source) {
-        this.map.addSource(id, rasterTileSource(id, 'nw'))
-      }
-      const tile = tiles[index]
-      if (tile?.type === 'raster') {
-        tile.source = id
-        tile.visibility = 'visible'
-      }
-    })
+    const config = getMapConfig(mapId)
+    const sourceMap1ID = `${mapId}_map1`
+    const sourceMap2ID = `${mapId}_map2`
+    const sourceTractID = `${mapId}_tractmap`
+    const sourceHeightID = `${mapId}_heightmap`
 
-    if (isMapOpenWorld(mapId)) {
+    let sourceMap1 = this.map.getSource(sourceMap1ID) as RasterTileSource
+    let sourceMap2 = this.map.getSource(sourceMap2ID) as RasterTileSource
+    let sourceTract = this.map.getSource(sourceTractID) as RasterTileSource
+    let sourceHeight = this.map.getSource(sourceHeightID) as RasterDEMTileSource
+    if (!sourceMap1) {
+      this.map.addSource(sourceMap1ID, tileSource(config, 'map1'))
+      sourceMap1 = this.map.getSource(sourceMap1ID) as any
+    }
+    if (!sourceMap2 && config.map2) {
+      this.map.addSource(sourceMap2ID, tileSource(config, 'map2'))
+      sourceMap2 = this.map.getSource(sourceMap2ID) as any
+    }
+    if (!sourceTract && config.tractmap) {
+      this.map.addSource(sourceTractID, tileSource(config, 'tractmap'))
+      sourceTract = this.map.getSource(sourceTractID) as any
+    }
+    if (!sourceHeight && config.heightmap) {
+      this.map.addSource(sourceHeightID, heightSource(config))
+      sourceHeight = this.map.getSource(sourceHeightID) as any
+    }
+
+    const layerMap1 = this.map.getLayer('map1')
+    const layerMap2 = this.map.getLayer('map2')
+    const layerOcean = this.map.getLayer('ocean')
+    const layerTract = this.map.getLayer('tractmap')
+    const layerHills = this.map.getLayer('hills')
+
+    if (sourceMap1) {
+      layerMap1.visibility = 'visible'
+      layerMap1.source = sourceMap1ID
+    } else {
+      layerMap1.visibility = 'none'
+      layerMap1.source = 'empty'
+    }
+
+    if (sourceMap2) {
+      layerMap2.visibility = 'visible'
+      layerMap2.source = sourceMap2ID
+    } else {
+      layerMap2.visibility = 'none'
+      layerMap2.source = 'empty'
+    }
+
+    if (sourceTract && showTractmap) {
+      layerTract.visibility = 'visible'
+      layerTract.source = sourceTractID
+    } else {
+      layerTract.visibility = 'none'
+      layerTract.source = 'empty'
+    }
+
+    if (sourceHeight) {
+      layerHills.source = sourceHeightID
+    } else {
+      layerHills.source = 'emptyHeight'
+    }
+
+    if (config.isOpenWorld || (sourceTract && showTractmap)) {
+      layerOcean.visibility = 'visible'
+    } else {
+      layerOcean.visibility = 'none'
+    }
+
+    if (config.heightmap) {
       this.map.setMaxPitch(60)
       this.map.setBearing(0)
       this.map.dragRotate.enable()
       this.map.keyboard.enable()
-      if (!this.map.hasControl(this.terrainControl)) {
-        this.map.addControl(this.terrainControl)
-      }
-      this.map.getLayer('ocean').visibility = 'visible'
-      this.map.getLayer('tractmap').visibility = showTractmap ? 'visible' : 'none'
+      this.attachTerrainControl(sourceHeightID)
     } else {
       this.map.setMaxPitch(0)
       this.map.setBearing(0)
       this.map.dragRotate.disable()
       this.map.keyboard.disable()
-      if (this.map.hasControl(this.terrainControl)) {
-        this.map.removeControl(this.terrainControl)
-      }
-      this.map.getLayer('ocean').visibility = 'none'
-      this.map.getLayer('tractmap').visibility = 'none'
+      this.removeTerrainControl()
     }
+
+    this.map.setMaxBounds(
+      boundsToLatLng([
+        config.bounds[0] - (config.zoomPad?.[0] ?? 0),
+        config.bounds[1] - (config.zoomPad?.[1] ?? 0),
+        config.bounds[2] + (config.zoomPad?.[2] ?? 0),
+        config.bounds[3] + (config.zoomPad?.[3] ?? 0),
+      ]),
+    )
+  }
+
+  private removeTerrainControl() {
+    if (!this.terrainControl) {
+      return
+    }
+    if (this.map.hasControl(this.terrainControl)) {
+      this.map.removeControl(this.terrainControl)
+    }
+    this.terrainControl = null
+  }
+
+  private attachTerrainControl(sourceId: string) {
+    this.removeTerrainControl()
+    this.terrainControl = new TerrainControl({
+      source: sourceId,
+      exaggeration: elevationScale,
+    })
+    this.map.addControl(this.terrainControl, 'top-right')
   }
 
   private oldSelection: number
   private updateZoneSelection(zoneId: string | number) {
     const id = zoneId ? Number(zoneId) : null
-    for (const source of ['territories', 'areas', 'pois']) {
+    for (const source of [
+      //'territories',
+      'areas',
+      'pois',
+    ]) {
       if (this.oldSelection) {
         this.map.setFeatureState({ source, id: this.oldSelection }, { selected: false })
       }
@@ -464,22 +444,23 @@ export class GameMapComponent {
       padding: 40,
       duration: 500,
     }
-    const center: [number, number] = [bounds[0] + (bounds[2] - bounds[0]) / 2, bounds[1] + (bounds[3] - bounds[1]) / 2]
+    // prettier-ignore
+    const center: [number, number] = [
+      bounds[0] + (bounds[2] - bounds[0]) / 2,
+      bounds[1] + (bounds[3] - bounds[1]) / 2,
+    ]
     this.map.fitBounds(bounds, {
       center,
       ...options,
     })
   }
 
-  private handleClick(e: MapLayerEventType['click'], zoom: number) {
-    const feature = e.features?.[0]
+  protected handleFeatureClick(features: Feature[], zoom: number) {
+    const feature = features?.[0]
     if (!feature) {
       return
     }
     setTimeout(() => {
-      if (e.defaultPrevented) {
-        return
-      }
       this.zoneClick.emit(String(feature.id))
       this.moveToFeature(feature, zoom)
     })
@@ -497,194 +478,4 @@ export class GameMapComponent {
       essential: true,
     })
   }
-}
-
-const territoryFillLayout: FillLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'fill',
-  layout: {},
-  paint: {
-    'fill-color': '#FFFFFF',
-    'fill-opacity': [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      0.05,
-      ['boolean', ['feature-state', 'selected'], false],
-      0.15,
-      0,
-    ],
-  },
-}
-const territoryOutlineLayout: LineLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'line',
-  layout: {},
-  paint: {
-    'line-color': '#FFFFFF',
-    'line-width': [
-      'case',
-      ['boolean', ['feature-state', 'selected'], false],
-      8,
-      ['boolean', ['feature-state', 'hover'], false],
-      8,
-      5,
-    ],
-  },
-}
-const territorySymbolLayout: SymbolLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'symbol',
-  layout: {
-    'text-field': ['get', 'name'],
-    'text-size': 20,
-    'text-overlap': 'always',
-  },
-  paint: {
-    'text-color': '#FFFFFF',
-    'text-halo-color': '#000000',
-    'text-halo-width': 2,
-    'text-halo-blur': 2,
-  },
-}
-const areaFillLayout: FillLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'fill',
-  layout: {},
-  paint: {
-    'fill-color': '#FFFFFF',
-    'fill-opacity': [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      0.05,
-      ['boolean', ['feature-state', 'selected'], false],
-      0.15,
-      0,
-    ],
-  },
-}
-const areaOutlineLayout: LineLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'line',
-  layout: {
-    'line-join': 'round',
-  },
-  paint: {
-    'line-color': '#FF0000',
-    'line-width': [
-      'case',
-      ['boolean', ['feature-state', 'selected'], false],
-      4,
-      ['boolean', ['feature-state', 'hover'], false],
-      4,
-      1,
-    ],
-  },
-}
-const areaSymbolLayout: SymbolLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'symbol',
-  layout: {
-    'text-field': ['get', 'name'],
-    'text-size': 20,
-    'text-overlap': 'always',
-  },
-  paint: {
-    'text-color': '#FFFFFF',
-    'text-halo-color': '#000000',
-    'text-halo-width': 2,
-    'text-halo-blur': 2,
-  },
-}
-const poisFillLayout: FillLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'fill',
-  layout: {},
-  paint: {
-    'fill-color': '#ceba75',
-    'fill-opacity': [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      0.05,
-      ['boolean', ['feature-state', 'selected'], false],
-      0.15,
-      0,
-    ],
-  },
-}
-const poisOutlineLayout: LineLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'line',
-  layout: {
-    'line-join': 'round',
-  },
-  paint: {
-    'line-color': '#ceba75',
-    'line-width': [
-      'case',
-      ['boolean', ['feature-state', 'selected'], false],
-      4,
-      ['boolean', ['feature-state', 'hover'], false],
-      4,
-      1,
-    ],
-    'line-dasharray': [4, 2],
-  },
-}
-
-const poisIconLayout: SymbolLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'symbol',
-  layout: {
-    'icon-image': ['get', 'icon'],
-    'icon-size': 1,
-    'icon-allow-overlap': true,
-  },
-}
-
-const poisCompassIconLayout: SymbolLayerSpecification = {
-  id: null,
-  source: null,
-  type: 'symbol',
-  layout: {
-    'icon-image': ['get', 'compassIcon'],
-    'icon-size': 1,
-    'icon-allow-overlap': true,
-    'icon-overlap': 'always',
-  },
-}
-
-const OPEN_WORLD_MAPS = ['newworld_vitaeeterna', 'outpostrush']
-function mapSourceIds(mapId: string) {
-  if (isMapOpenWorld(mapId)) {
-    return [...OPEN_WORLD_MAPS]
-  }
-  if (!mapId) {
-    return []
-  }
-  return [mapId]
-}
-
-function isMapOpenWorld(mapId: string) {
-  return OPEN_WORLD_MAPS.includes(mapId)
-}
-
-function mapMaxBounds(mapId: string): [number, number, number, number] {
-  const tileSize = NW_MAP_TILE_SIZE
-  if (isMapOpenWorld(mapId)) {
-    const [l, b] = xyToLngLat([-12 * tileSize, -4 * tileSize])
-    const [r, t] = xyToLngLat([30 * tileSize, 16 * tileSize])
-    return [l, b, r, t]
-  }
-  const [l, b] = xyToLngLat([0, 0])
-  const [r, t] = xyToLngLat([2 * tileSize, 2 * tileSize])
-  return [l, b, r, t]
 }

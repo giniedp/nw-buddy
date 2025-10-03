@@ -1,3 +1,4 @@
+export * from './game-map-control.directive'
 export * from './game-map-coords.component'
 export * from './game-map-host'
 export * from './game-map-layer.component'

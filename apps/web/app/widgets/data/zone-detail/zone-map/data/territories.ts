@@ -81,6 +81,7 @@ function territoryToFeature(
       icon: territory.CompassIcon || getZoneIcon(territory, null),
       compassIcon: territory.UnchartedIcon ? territory.CompassIcon : null,
       name: mapName(territory),
+      label: mapName(territory),
     },
     geometry: {
       type: 'Polygon',

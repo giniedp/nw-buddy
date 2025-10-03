@@ -178,7 +178,7 @@ func (ctx *PullContext) PullConstants() {
 }
 
 func (ctx *PullContext) PullHeightmaps() {
-	pullHeightmaps(ctx.Archive, path.Join(ctx.outDataDir, "lyshineui", "worldtiles"))
+	pullHeightmaps(ctx.Assets, path.Join(ctx.outDataDir, "lyshineui", "worldtiles"))
 }
 
 func (ctx *PullContext) PullTractmaps() {

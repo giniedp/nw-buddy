@@ -1,17 +1,15 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { Router, RouterModule } from '@angular/router'
-import { VitalsData } from '@nw-data/generated'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataGridModule, TableGridUtils } from '~/ui/data/table-grid'
-import { VirtualGridComponent } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { injectChildRouteParam, injectRouteParam } from '~/utils'
+import { injectRouteParam } from '~/utils'
 import { VitalGridCellComponent, vitalColIcon, vitalColLevel, vitalColName } from '~/widgets/data/vital-table'
 import { ZoneDetailModule } from '~/widgets/data/zone-detail'
 import { LootModule } from '~/widgets/loot'
@@ -19,7 +17,11 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   selector: 'nwb-zones-detail-page',
-  templateUrl: './zones-detail-page.component.html',
+  template: `
+    @if (zoneIdParam()) {
+      <nwb-zone-detail class="flex-none bg-black/75" [zoneId]="zoneIdParam()" #detail />
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -35,13 +37,19 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   ],
   providers: [],
   host: {
-    class: 'ion-page',
+    class: 'block',
   },
 })
 export class ZoneDetailPageComponent {
-  protected itemId = toSignal(injectRouteParam('id'))
-  protected vitalId = toSignal(injectChildRouteParam('vitalId'))
-  private router = inject(Router)
+  protected idParam = toSignal(injectRouteParam('id'))
+  protected zoneIdParam = computed(() => {
+    const id = this.idParam()
+    return isZoneId(id) ? id : null
+  })
+  protected mapIdParam = computed(() => {
+    const id = this.idParam()
+    return isZoneId(id) ? null : id
+  })
 
   protected iconLink = svgSquareArrowUpRight
   protected gridUtils = inject(TableGridUtils)
@@ -54,16 +62,8 @@ export class ZoneDetailPageComponent {
   }
 
   protected virtualGridOptions = VitalGridCellComponent.buildGridOptions()
+}
 
-  protected vitalIdFn = (it: VitalsData) => it?.VitalsID?.toLowerCase()
-
-  protected onVitalClicked(vital: VitalsData | string | number) {
-    if (typeof vital === 'number') {
-      vital = vital.toString()
-    }
-    if (typeof vital !== 'string') {
-      vital = this.vitalIdFn(vital)
-    }
-    // this.router.navigate(['/zones', this.itemId(), vital || ''])
-  }
+function isZoneId(id: string) {
+  return id && id.match(/^\d+$/)
 }

@@ -3,20 +3,21 @@ package pull
 import (
 	"fmt"
 	"image"
-	"image/png"
-	"iter"
+	"image/color"
 	"log/slog"
 	"math"
 	"nw-buddy/tools/formats/heightmap"
-	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/game"
+	"nw-buddy/tools/game/level"
 	"nw-buddy/tools/utils"
+	"nw-buddy/tools/utils/img"
 	"nw-buddy/tools/utils/logging"
-	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
-	"os"
 	"path"
+	"sync/atomic"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/image/draw"
 )
 
 const TILE_SIZE = 256
@@ -36,133 +37,112 @@ func runPullHeightmaps(ccmd *cobra.Command, args []string) {
 	ctx.PrintStats()
 }
 
-func pullHeightmaps(fs nwfs.Archive, outDir string) {
+func pullHeightmaps(assets *game.Assets, outDir string) {
 	if _, ok := utils.Magick.Check(); !ok {
 		slog.Error("Image Magick not found. Skipped heightmap generation.")
 		return
 	}
 
-	files, _ := fs.Glob(
-		"**/coatlicue/newworld_vitaeeterna/regions/**/region.heightmap",
-		"**/coatlicue/nw_opr_004_trench/regions/**/region.heightmap",
-	)
+	lvls := level.ListLevels(assets)
+	bar := progress.Bar(len(lvls), "Heightmaps")
+	for _, info := range lvls {
+		bar.Add(1)
 
-	levels := maps.NewSyncDict[*maps.SafeSet[*heightmap.Region]]()
-	progress.RunTasks(progress.TasksConfig[nwfs.File, string]{
-		Description:   "Heightmaps (read)",
-		Tasks:         files,
-		ProducerCount: int(flgWorkerCount),
-		Producer: func(file nwfs.File) (string, error) {
-			region, err := heightmap.LoadRegion(file)
-			if err != nil {
-				return file.Path(), err
+		hasTracts := false
+		for _, tract := range info.Tracts {
+			if tract.MapCategory != "" {
+				hasTracts = true
+				break
 			}
-			list, _ := levels.LoadOrStore(region.Level, maps.NewSafeSet[*heightmap.Region]())
-			list.Store(&region)
-			return file.Path(), nil
-		},
-	})
-
-	for level, list := range levels.Iter() {
-		if list.Len() == 0 {
+		}
+		if !hasTracts {
 			continue
 		}
-		terrain := heightmap.NewTerrain(list.Values())
-		mipLevels := compileMipmaps(terrain)
-
-		progress.RunTasks(progress.TasksConfig[Tile, string]{
-			Description:   level,
-			Tasks:         compileTiles(mipLevels),
-			ProducerCount: int(flgWorkerCount),
-			Producer: func(tile Tile) (string, error) {
-				return workTile(tile, level, outDir), nil
-			},
-		})
+		pullHeightmap(assets, outDir, info, bar)
 	}
+	bar.Close()
 }
 
-func compileMipmaps(terrain *heightmap.Terrain) []*heightmap.Terrain {
-	mips := []*heightmap.Terrain{terrain}
-	for terrain.Width > TILE_SIZE {
-		terrain = terrain.Downsize()
-		mips = append(mips, terrain)
-	}
-	return mips
-}
+func pullHeightmap(assets *game.Assets, outDir string, info *level.Info, bar progress.ProgressBar) {
+	levelName := info.Name
+	// heightmapR16OutDir := path.Join(outDir, levelName, "heightmap16")
+	heightmapRGB8OutDir := path.Join(outDir, levelName, "heightmap")
 
-func compileTiles(mipLevels []*heightmap.Terrain) []Tile {
-	tiles := []Tile{}
-	for i, mip := range mipLevels {
-		for tileX, tileY := range iterArea(0, 0, mip.Width/TILE_SIZE, mip.Height/TILE_SIZE) {
-			tiles = append(tiles, Tile{
-				Terrain: mip,
-				Mip:     i + 1,
-				X:       tileX * int(math.Pow(2, float64(i))),
-				Y:       tileY * int(math.Pow(2, float64(i))),
-				Area: Area{
-					X: tileX * TILE_SIZE,
-					Y: tileY * TILE_SIZE,
-					W: TILE_SIZE,
-					H: TILE_SIZE,
-				},
-			})
+	bar.Detail(fmt.Sprintf("%s load heightmap", levelName))
+
+	heightMap := level.LoadHeightmap(assets.Archive, info)
+	// img.WriteFile(heightMap, path.Join(heightmapR16OutDir, "heightmap.png"))
+	// heightMapRGB8 := img.CloneToRGBA(heightMap, func(x, y int) color.Color {
+	// 	r, _, _, _ := heightMap.At(x, y).RGBA()
+	// 	return heightmap.EncodeHeightToRGBA(float32(r))
+	// })
+	// img.WriteFile(heightMapRGB8, path.Join(heightmapRGB8OutDir, "heightmap.png"))
+
+	// number of tiles per region at max zoom in level
+	tilesPerRegion := 8
+	// number of levels we want to generate
+	maxLevelCount := 8
+	// level that covers a full region in each dimension
+	levelCoveringRegion := int(math.Log2(float64(tilesPerRegion)))
+	targetTileSize := 256
+
+	numRegionsX := heightMap.TilesX
+	numRegionsY := heightMap.TilesY
+	numTilesX := numRegionsX * tilesPerRegion
+	numTilesY := numRegionsY * tilesPerRegion
+	mapHeight := heightMap.SizeY
+
+	var source image.Image = heightMap
+
+	for level := range maxLevelCount {
+		regionCoverage := math.Pow(2, float64(level-levelCoveringRegion))
+		if heightMap.TilesX < int(regionCoverage) {
+			break
 		}
-	}
-	return tiles
-}
 
-type Tile struct {
-	Terrain *heightmap.Terrain
-	Area    Area
-	Mip     int
-	X       int
-	Y       int
-}
+		bounds := source.Bounds()
+		tiles := img.Tiles(bounds, numTilesX, numTilesY)
+		done := int32(0)
+		markDone := func() {
+			atomic.AddInt32(&done, 1)
+			bar.Detail(fmt.Sprintf("%s tiles lvl:%d %d/%d", levelName, level, done, len(tiles)))
+		}
 
-type Area struct {
-	X int
-	Y int
-	W int
-	H int
-}
+		progress.Concurrent(4, tiles, func(rect image.Rectangle, index int) error {
+			defer markDone()
 
-func workTile(tile Tile, level string, outDir string) string {
-	img := image.NewRGBA(image.Rect(0, 0, tile.Area.W, tile.Area.H))
-	for x, y := range iterArea(0, 0, tile.Area.W, tile.Area.H) {
-		tx := tile.Area.X + x
-		ty := tile.Area.Y + y
-		h := tile.Terrain.SmoothHeightAt(tx, ty)
-		img.Set(x, TILE_SIZE-y-1, heightmap.EncodeHeightToR8G8B8(h))
-	}
-
-	name := fmt.Sprintf("%d/heightmap_l%d_y%03d_x%03d", tile.Mip, tile.Mip, tile.Y, tile.X)
-	file := path.Join(outDir, level, "heightmap", name+".png")
-	if err := writeTile(file, img); err != nil {
-		slog.Error("tile not written", "file", file, "error", err)
-	}
-	return file
-}
-
-func iterArea(x, y, w, h int) iter.Seq2[int, int] {
-	return func(yield func(int, int) bool) {
-		for i := y; i < y+h; i++ {
-			for j := x; j < x+w; j++ {
-				if !yield(j, i) {
-					return
-				}
+			tileW := rect.Size().X
+			tileH := rect.Size().Y
+			if tileW == 0 || tileH == 0 {
+				return nil
 			}
+
+			x := int(math.Pow(2, float64(level)) * float64(rect.Min.X/tileW))
+			y := int(math.Pow(2, float64(level)) * float64((mapHeight-rect.Min.Y-1)/tileH))
+			z := level + 1
+			file := fmt.Sprintf("heightmap_l%d_y%03d_x%03d.png", z, y, x)
+
+			tile := image.NewRGBA64(image.Rect(0, 0, tileW, tileH))
+			draw.Copy(tile, image.Pt(0, 0), source, rect, draw.Over, nil)
+			// img.WriteFile(tileR16, path.Join(heightmapR16OutDir, fmt.Sprintf("%d", level+1), file))
+			tileRGB8 := img.CloneToRGBA(tile, func(x, y int) color.Color {
+				r, _, _, _ := tile.At(x, y).RGBA()
+				return heightmap.EncodeHeightToRGBA(float32(r))
+			})
+			img.WriteFile(tileRGB8, path.Join(heightmapRGB8OutDir, fmt.Sprintf("%d", level+1), file))
+			return nil
+		})
+
+		// downsize for next level
+		numTilesX = max(numTilesX/2, 1)
+		numTilesY = max(numTilesY/2, 1)
+		size := source.Bounds().Size()
+		if size.X/numTilesX > targetTileSize {
+			mapHeight = mapHeight / 2
+			dst := image.NewRGBA64(image.Rect(0, 0, size.X/2, size.Y/2))
+
+			draw.BiLinear.Scale(dst, dst.Bounds(), source, source.Bounds(), draw.Over, nil)
+			source = dst
 		}
 	}
-}
-
-func writeTile(file string, img image.Image) error {
-	if err := os.MkdirAll(path.Dir(file), os.ModePerm); err != nil {
-		return err
-	}
-	f, err := os.OpenFile(file, os.O_CREATE, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	return png.Encode(f, img)
 }

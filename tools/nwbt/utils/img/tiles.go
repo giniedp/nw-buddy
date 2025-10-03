@@ -2,19 +2,17 @@ package img
 
 import "image"
 
-func Tiles(area image.Rectangle, tilesX, tilesY int) []image.Rectangle {
-	areaW := area.Max.X - area.Min.X
-	areaH := area.Max.Y - area.Min.Y
-	tileW := areaW / tilesX
-	tileH := areaH / tilesY
-
+func Tiles(area image.Rectangle, countX, countY int) []image.Rectangle {
+	tileW := area.Dx() / countX
+	tileH := area.Dy() / countY
 	tiles := make([]image.Rectangle, 0)
-	for y := range tilesY {
-		for x := range tilesX {
-			min := image.Pt(area.Min.X+x*tileW, area.Min.Y+y*tileH)
+	for y := range countY {
+		for x := range countX {
+			minX := area.Min.X + x*tileW
+			minY := area.Min.Y + y*tileH
 			tiles = append(tiles, image.Rectangle{
-				Min: min,
-				Max: image.Pt(min.X+tileW, min.Y+tileH),
+				Min: image.Pt(minX, minY),
+				Max: image.Pt(minX+tileW, minY+tileH),
 			})
 		}
 	}

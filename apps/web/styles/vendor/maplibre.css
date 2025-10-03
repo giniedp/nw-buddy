@@ -1,1 +1,19 @@
 @import 'maplibre-gl/dist/maplibre-gl.css';
+
+.maplibregl-ctrl-top-right,
+.maplibregl-ctrl-top-left,
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-bottom-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.maplibregl-ctrl-top-right,
+.maplibregl-ctrl-bottom-right {
+  align-items: end;
+}
+
+.maplibregl-ctrl-top-left,
+.maplibregl-ctrl-bottom-left {
+  align-items: start;
+}

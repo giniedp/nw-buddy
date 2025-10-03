@@ -1,4 +1,4 @@
-import { Map, MapLibreEvent, MapStyleImageMissingEvent } from 'maplibre-gl'
+import { Map, MapStyleImageMissingEvent } from 'maplibre-gl'
 
 export function missingImageHandler({ iconSize }: { iconSize: number }) {
   const pending: Record<string, Promise<HTMLImageElement | ImageBitmap | ImageData>> = {}

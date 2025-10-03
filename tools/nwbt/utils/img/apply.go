@@ -42,3 +42,35 @@ func Apply(img image.Image, fn func(color.RGBA, int, int) color.RGBA) *image.RGB
 
 	return dst
 }
+
+func CloneToNRGBA(img image.Image, fn func(int, int) color.Color) *image.NRGBA {
+	bounds := img.Bounds()
+	dst := image.NewNRGBA(bounds)
+	w, h := bounds.Dx(), bounds.Dy()
+
+	parallel.Line(h, func(start, end int) {
+		for y := start; y < end; y++ {
+			for x := range w {
+				dst.Set(x, y, fn(x, y))
+			}
+		}
+	})
+
+	return dst
+}
+
+func CloneToRGBA(img image.Image, fn func(int, int) color.Color) *image.RGBA {
+	bounds := img.Bounds()
+	dst := image.NewRGBA(bounds)
+	w, h := bounds.Dx(), bounds.Dy()
+
+	parallel.Line(h, func(start, end int) {
+		for y := start; y < end; y++ {
+			for x := range w {
+				dst.Set(x, y, fn(x, y))
+			}
+		}
+	})
+
+	return dst
+}
