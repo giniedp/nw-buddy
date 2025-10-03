@@ -206,6 +206,9 @@ export class GameMapComponent {
         encodedUrl: url,
       })
     }
+    if (!url) {
+      throw new Error('null tile')
+    }
     return {
       url,
     }
@@ -256,10 +259,15 @@ export class GameMapComponent {
   }
 
   protected handleMapError(e: ErrorEvent) {
-    if (!(e.error instanceof AJAXError)) {
+    if (e.error instanceof AJAXError) {
       // dont print ajax errors, they are visible in the network tab
-      console.error(e)
+      return
     }
+    if (e.error instanceof Error && e.error.message === 'null tile') {
+      // intentional null tile
+      return
+    }
+    console.error(e)
   }
 
   protected handleMapZoom() {
