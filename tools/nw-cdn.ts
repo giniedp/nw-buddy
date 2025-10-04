@@ -188,8 +188,8 @@ program.command('upload-tiles').action(async () => {
   const client = createClient()
 
   const patterns = [
-    //path.join(tilesDir, '**/*.webp'),
-    path.join(tilesDir, '**/tractmap/**/*.png'),
+    path.join(tilesDir, '**/*.webp'),
+    path.join(tilesDir, '**/*.png'),
   ]
   const imageFiles = await glob(patterns)
   const files = await glob(patterns).then((list) => {
