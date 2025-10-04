@@ -21,6 +21,7 @@ export function openItemsPicker(options: {
   selection?: string[]
   multiple?: boolean
   categories?: ItemClass[]
+  categories2?: ItemClass[]
   categoriesOp?: 'all' | 'any'
   noSkins?: boolean
 }) {
@@ -31,7 +32,7 @@ export function openItemsPicker(options: {
     persistKey: `picker:items-grid:${options.categories?.join('-') || 'default'}`,
     dataView: {
       adapter: ItemTableAdapter,
-      filter: itemFilter(options.categories, options.categoriesOp, options.noSkins),
+      filter: itemFilter(options.categories, options.categories2, options.categoriesOp, options.noSkins),
       sort: (a, b) => {
         let result = b.Tier - a.Tier
         if (!result) {
@@ -48,18 +49,35 @@ export function openItemsPicker(options: {
     },
   })
 }
-
-function itemFilter(categories: ItemClass[], categoriesOp: 'all' | 'any', noSkins: boolean) {
-  categoriesOp ||= 'all'
+function doesMatchCategory(it: ItemTableRecord, categories: ItemClass[], categoriesOp: 'all' | 'any') {
   if (!categories?.length) {
+    return true
+  }
+
+  categoriesOp ||= 'all'
+  if (categoriesOp === 'all' && isItemOfAllClass(it, categories)) {
+    return true
+  }
+  if (categoriesOp === 'any' && isItemOfAnyClass(it, categories)) {
+    return true
+  }
+  return false
+}
+
+function itemFilter(categories: ItemClass[], categories2: ItemClass[], categoriesOp: 'all' | 'any', noSkins: boolean) {
+  if (!categories?.length && !categories2?.length) {
     return () => true
   }
 
   return (it: ItemTableRecord) => {
-    if (categoriesOp === 'all' && !isItemOfAllClass(it, categories)) {
-      return false
+    let doesMatch = false
+    if (categories?.length && doesMatchCategory(it, categories, categoriesOp)) {
+      doesMatch = true
     }
-    if (categoriesOp === 'any' && !isItemOfAnyClass(it, categories)) {
+    if (categories2?.length && doesMatchCategory(it, categories2, categoriesOp)) {
+      doesMatch = true
+    }
+    if (!doesMatch) {
       return false
     }
     if (!noSkins) {

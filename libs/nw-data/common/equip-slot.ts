@@ -62,6 +62,7 @@ export interface EquipSlot {
   name: string
   itemType: EquipSlotItemType
   itemClass: ItemClass[]
+  itemClass2?: ItemClass[]
 }
 
 export type EquipSlotItemType =
@@ -97,7 +98,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconhead.png',
     name: 'ui_itemtypedescription_head_slot',
     itemType: 'EquippableHead',
-    itemClass: ['EquippableHead'],
+    itemClass: ['Armor', 'EquippableHead'],
   },
   {
     id: 'chest',
@@ -105,7 +106,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconchest.png',
     name: 'ui_itemtypedescription_chest_slot',
     itemType: 'EquippableChest',
-    itemClass: ['EquippableChest'],
+    itemClass: ['Armor', 'EquippableChest'],
   },
   {
     id: 'hands',
@@ -113,7 +114,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconhand.png',
     name: 'ui_itemtypedescription_hands_slot',
     itemType: 'EquippableHands',
-    itemClass: ['EquippableHands'],
+    itemClass: ['Armor', 'EquippableHands'],
   },
   {
     id: 'legs',
@@ -121,7 +122,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconlegs.png',
     name: 'ui_itemtypedescription_legs_slot',
     itemType: 'EquippableLegs',
-    itemClass: ['EquippableLegs'],
+    itemClass: ['Armor', 'EquippableLegs'],
   },
   {
     id: 'feet',
@@ -129,7 +130,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconfeet.png',
     name: 'ui_itemtypedescription_feet_slot',
     itemType: 'EquippableFeet',
-    itemClass: ['EquippableFeet'],
+    itemClass: ['Armor', 'EquippableFeet'],
   },
   {
     id: 'amulet',
@@ -161,7 +162,8 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconweapon.png',
     name: 'ui_weapon1',
     itemType: 'Weapon',
-    itemClass: ['EquippableMainHand'],
+    itemClass: ['Weapon', 'EquippableMainHand'],
+    itemClass2: ['Weapon', 'EquippableTwoHand'],
   },
   {
     id: 'weapon2',
@@ -169,7 +171,8 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconweapon.png',
     name: 'ui_weapon2',
     itemType: 'Weapon',
-    itemClass: ['EquippableMainHand'],
+    itemClass: ['Weapon', 'EquippableMainHand'],
+    itemClass2: ['Weapon', 'EquippableTwoHand'],
   },
   {
     id: 'weapon3',
@@ -177,7 +180,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconshield.png',
     name: 'ui_weapon3',
     itemType: 'Shield',
-    itemClass: ['Shield'],
+    itemClass: ['Weapon', 'EquippableOffHand', 'Shield'],
   },
   {
     id: 'heartgem',
@@ -301,7 +304,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot1',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'buff2',
@@ -309,7 +312,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot2',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'buff3',
@@ -317,7 +320,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot3',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'buff4',
@@ -325,7 +328,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'buff5',
@@ -333,7 +336,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'buff6',
@@ -341,7 +344,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
 
   {
@@ -350,7 +353,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot1',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'quickslot2',
@@ -358,7 +361,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot2',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'quickslot3',
@@ -366,7 +369,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot3',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
   {
     id: 'quickslot4',
@@ -374,7 +377,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
-    itemClass: ['Consumable']
+    itemClass: ['Consumable'],
   },
 
   {
@@ -383,7 +386,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconarrow.png',
     name: '',
     itemType: 'Ammo',
-    itemClass: ['Ammo']
+    itemClass: ['Ammo'],
   },
   {
     id: 'cartridge',
@@ -391,7 +394,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconcartridges.png',
     name: '',
     itemType: 'Ammo',
-    itemClass: ['Ammo']
+    itemClass: ['Ammo'],
   },
 
   {

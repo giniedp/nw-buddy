@@ -84,7 +84,7 @@ export class GearCellSlotComponent {
     return !this.store.hasItem() && this.disabled()
   })
   public isScreenshotHidden = computed(() => {
-    return !this.store.hasItem()// || this.disabled()
+    return !this.store.hasItem() // || this.disabled()
   })
 
   protected slotIcon = computed(() => {
@@ -157,11 +157,13 @@ export class GearCellSlotComponent {
           })
         })
     } else {
+      console.log({ slot })
       this.picker
         .pickItem({
           title: 'Select an item',
           selection: instance ? [instance.itemId] : [],
           categories: slot.itemClass,
+          categories2: slot.itemClass2,
           categoriesOp: 'all',
           noSkins: true,
         })
