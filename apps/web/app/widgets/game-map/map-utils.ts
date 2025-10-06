@@ -1,7 +1,7 @@
 import { Geometry, Position } from 'geojson'
 import { Map, RasterDEMSourceSpecification, RasterSourceSpecification } from 'maplibre-gl'
 import { MapBounds, MapConfig } from './map-configs'
-import { boundsToLatLng, projectTileAddress } from './map-projection'
+import { boundsToLatLong, projectTileAddress } from './map-projection'
 
 export const STATIC_TILE_OCEAN =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNsnTrlPwAGBAKvyzjVtgAAAABJRU5ErkJggg=='
@@ -70,9 +70,9 @@ export function tileSourceOcean(): RasterSourceSpecification {
 }
 
 export function tileSource(config: MapConfig, layer: TileLayer): RasterSourceSpecification {
-  let bounds: MapBounds = config.bounds ? boundsToLatLng(config.bounds) : [0, 0, 90, 45]
+  let bounds: MapBounds = config.bounds ? boundsToLatLong(config.bounds) : [0, 0, 90, 45]
   if (config.map2Bounds && layer === 'map2') {
-    bounds = boundsToLatLng(config.map2Bounds)
+    bounds = boundsToLatLong(config.map2Bounds)
   }
   return rasterSource({
     tiles: [encodedTileUrl(config, layer)],
@@ -87,7 +87,7 @@ export function heightSourceEmpty(): RasterDEMSourceSpecification {
 }
 
 export function heightSource(config: MapConfig): RasterDEMSourceSpecification {
-  let bounds: MapBounds = config.bounds ? boundsToLatLng(config.bounds) : [0, 0, 90, 45]
+  let bounds: MapBounds = config.bounds ? boundsToLatLong(config.bounds) : [0, 0, 90, 45]
   return rasterDemSource({
     tiles: [encodedTileUrl(config, 'heightmap')],
     bounds,

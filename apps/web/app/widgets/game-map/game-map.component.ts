@@ -26,11 +26,13 @@ import {
   StyleSpecification,
   TerrainControl,
 } from 'maplibre-gl'
+import { GameMap3dControl } from './game-map-3d-control.component'
+import { GameMapControlDirective } from './game-map-control.directive'
 import { GameMapHost } from './game-map-host'
 import { GameMapLayerDirective } from './game-map-layer.component'
 import { GameMapMouseAnchorDirective } from './game-map-mouse-anchor.directive'
 import { getMapConfig } from './map-configs'
-import { boundsToLatLng, NW_MAP_REGION_SIZE, xyToLngLat } from './map-projection'
+import { boundsToLatLong, HEIGHT_SCALE } from './map-projection'
 import {
   convertTileUrl,
   getGeometryCenter,
@@ -42,8 +44,6 @@ import {
 } from './map-utils'
 import { MaplibreDirective } from './maplibre.directive'
 
-const elevationScale = 0.05
-
 @Component({
   selector: 'nwb-map',
   template: `
@@ -52,8 +52,6 @@ const elevationScale = 0.05
       [nwbMaplibre]
       [renderWorldCopies]="false"
       [styleSpec]="styleSpec"
-      [minZoom]="minZoom()"
-      [maxZoom]="maxZoom()"
       [zoom]="4"
       [center]="[180 / 4, 90 / 4]"
       [transformRequest]="transformRequest"
@@ -74,10 +72,10 @@ const elevationScale = 0.05
       [polygons]="true"
       [polyOpacity]="0"
       [labels]="labels()"
-      [labelsMinZoom]="0"
-      [labelsMaxZoom]="5"
+      [labelsMinZoom]="10"
+      [labelsMaxZoom]="14"
       [labelSize]="20"
-      (featureClick)="handleFeatureClick($event, 4.9)"
+      (featureClick)="handleFeatureClick($event, 13.9)"
     ></div>
 
     <div
@@ -91,11 +89,11 @@ const elevationScale = 0.05
       [polygons]="true"
       [polyOpacity]="0"
       [labels]="labels()"
-      [labelsMinZoom]="5"
-      [labelsMaxZoom]="6"
+      [labelsMinZoom]="14"
+      [labelsMaxZoom]="15"
       [labelSize]="20"
-      [minZoom]="5"
-      (featureClick)="handleFeatureClick($event, 5.9)"
+      [minZoom]="14"
+      (featureClick)="handleFeatureClick($event, 14.9)"
     ></div>
 
     <div
@@ -110,11 +108,11 @@ const elevationScale = 0.05
       [polyOpacity]="0"
       [icons]="true"
       [labels]="labels()"
-      [labelsMinZoom]="7"
-      [labelsMaxZoom]="10"
+      [labelsMinZoom]="16"
+      [labelsMaxZoom]="20"
       [labelSize]="20"
-      [minZoom]="6"
-      (featureClick)="handleFeatureClick($event, 7)"
+      [minZoom]="15"
+      (featureClick)="handleFeatureClick($event, 16)"
     ></div>
 
     <ng-content />
@@ -125,12 +123,22 @@ const elevationScale = 0.05
         }
       }
     </div>
+    @if (isOpenWorld()) {
+      <game-map-3d-control [mapId]="mapId()" [nwbGameMapControl]="'top-right'" />
+    }
   `,
   host: {
     class: 'block overflow-hidden bg-[#859594]',
   },
   providers: [GameMapHost],
-  imports: [NgTemplateOutlet, MaplibreDirective, GameMapMouseAnchorDirective, GameMapLayerDirective],
+  imports: [
+    NgTemplateOutlet,
+    MaplibreDirective,
+    GameMapMouseAnchorDirective,
+    GameMapLayerDirective,
+    GameMap3dControl,
+    GameMapControlDirective,
+  ],
 })
 export class GameMapComponent {
   protected elRef = inject<ElementRef<HTMLElement>>(ElementRef)
@@ -140,7 +148,7 @@ export class GameMapComponent {
   }
   protected zoom = signal<number>(null)
   protected minZoom = signal<number>(1)
-  protected maxZoom = signal<number>(10)
+  protected maxZoom = signal<number>(20)
   protected styleSpec: StyleSpecification = {
     version: 8,
     sources: {
@@ -195,7 +203,6 @@ export class GameMapComponent {
         },
       },
     ],
-    // sky: {},
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
   }
 
@@ -230,10 +237,8 @@ export class GameMapComponent {
   public isOpenWorld = computed(() => !!getMapConfig(this.mapId()).isOpenWorld)
 
   private injector = inject(Injector)
-  private terrainControl = new TerrainControl({
-    source: 'emptyHeight',
-    exaggeration: elevationScale,
-  })
+  private terrainControl: TerrainControl
+
   private navigationControl = new NavigationControl({
     visualizePitch: true,
     showZoom: true,
@@ -284,7 +289,7 @@ export class GameMapComponent {
     })
     this.effect(() => {
       const config = getMapConfig(this.mapId())
-      const fitBounds = this.fitBounds() || boundsToLatLng(config.boundsPoi || config.bounds)
+      const fitBounds = this.fitBounds() || boundsToLatLong(config.boundsPoi || config.bounds)
       untracked(() => {
         this.moveToBounds(fitBounds)
       })
@@ -298,11 +303,11 @@ export class GameMapComponent {
         this.updateZoneSelection(zoneId)
 
         if (territory) {
-          this.moveToFeature(territory, 4.9)
+          this.moveToFeature(territory, 13.9)
         } else if (area) {
-          this.moveToFeature(area, 5.9)
+          this.moveToFeature(area, 14.9)
         } else if (poi) {
-          this.moveToFeature(poi, 7)
+          this.moveToFeature(poi, 16)
         }
       })
     })
@@ -397,7 +402,7 @@ export class GameMapComponent {
     }
 
     this.map.setMaxBounds(
-      boundsToLatLng([
+      boundsToLatLong([
         config.bounds[0] - (config.zoomPad?.[0] ?? 0),
         config.bounds[1] - (config.zoomPad?.[1] ?? 0),
         config.bounds[2] + (config.zoomPad?.[2] ?? 0),
@@ -420,7 +425,7 @@ export class GameMapComponent {
     this.removeTerrainControl()
     this.terrainControl = new TerrainControl({
       source: sourceId,
-      exaggeration: elevationScale,
+      exaggeration: HEIGHT_SCALE,
     })
     this.map.addControl(this.terrainControl, 'top-right')
   }

@@ -9,6 +9,7 @@ export interface MapConfig {
   boundsPoi?: MapBounds
   isOpenWorld?: boolean
 
+  impostors?: boolean
   heightmap?: boolean
   tractmap?: boolean
 
@@ -40,6 +41,7 @@ const MAP_CONFIGS: Record<string, MapConfig> = {
     isOpenWorld: true,
     heightmap: true,
     tractmap: true,
+    impostors: true,
     map2: 'outpostrush',
     map2Bounds: bounds(0, 5, 1, 1),
   },

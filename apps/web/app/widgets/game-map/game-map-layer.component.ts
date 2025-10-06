@@ -34,7 +34,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public heatmapColor = input<string>()
   public labels = input<boolean>()
   public labelSize = input<number>(16)
-  public labelsMinZoom = input<number>(5)
+  public labelsMinZoom = input<number>(14)
   public labelsMaxZoom = input<number>(0)
   public filter = input<FilterSpecification>()
   private injector = inject(Injector)
@@ -270,7 +270,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       this.map.addLayer({
         id: labelLayerId,
         source: sourceId,
-        minzoom: 6,
+        minzoom: 15,
         type: 'symbol',
         layout: {
           'text-field': ['get', 'label'],
@@ -294,7 +294,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         id: this.heatmapLayerId(),
         source: sourceId,
         type: 'heatmap',
-        maxzoom: 9,
+        maxzoom: 18,
         paint: {
           // Increase the heatmap weight based on frequency and property magnitude
           'heatmap-weight': [
@@ -329,22 +329,22 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
             1,
             'rgb(178,24,43)',
           ],
-          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 15, 6, 25],
-          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 5, 1, 5.5, 0],
+          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 9, 15, 15, 25],
+          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 14, 1, 14.5, 0],
         },
       })
     }
 
     if (useHeatmap) {
       this.withLayer(iconLayerId, (layer) => {
-        layer.minzoom = 5
-        // layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
-        // layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
+        layer.minzoom = 14
+        // layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 1])
+        // layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 0.5])
       })
       this.withLayer(circleLayerId, (layer) => {
-        layer.minzoom = 5
-        layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1])
-        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 0.5])
+        layer.minzoom = 14
+        layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 1])
+        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 0.5])
       })
     }
     this.withLayer(labelLayerId, (layer) => {

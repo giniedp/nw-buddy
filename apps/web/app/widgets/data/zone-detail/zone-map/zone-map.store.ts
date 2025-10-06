@@ -8,7 +8,7 @@ import { groupBy, sortBy } from 'lodash'
 import { combineLatest, from, map, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
-import { xyToLngLat } from '~/widgets/game-map/map-projection'
+import { xyToLongLat } from '~/widgets/game-map/map-projection'
 import { eqCaseInsensitive, humanize, resourceValue } from '../../../../utils'
 import { loadGatherables } from './data/gatherables'
 import { loadStructures } from './data/structures'
@@ -83,15 +83,15 @@ export const ZoneMapStore = signalStore(
         load$: create(actions.load).pipe(
           switchMap(() => {
             return combineLatest({
-              territories: loadTerritories(db, tl8, xyToLngLat),
-              zoneConfigs: loadZoneConfigs(db, tl8, xyToLngLat),
-              regionBounds: loadRegionBoundaries(db, tl8, xyToLngLat),
-              gatherables: loadGatherables(db, xyToLngLat),
+              territories: loadTerritories(db, tl8, xyToLongLat),
+              zoneConfigs: loadZoneConfigs(db, tl8, xyToLongLat),
+              regionBounds: loadRegionBoundaries(db, tl8, xyToLongLat),
+              gatherables: loadGatherables(db, xyToLongLat),
               vitals: loadVitals({
                 db: db,
-                mapCoord: xyToLngLat,
+                mapCoord: xyToLongLat,
               }),
-              houses: loadStructures(db, tl8, xyToLngLat),
+              houses: loadStructures(db, tl8, xyToLongLat),
               vitalsTypes: from(db.vitalsByCreatureTypeMap()).pipe(
                 map((it) => Array.from<CreatureType>(it.keys() as any)),
               ),

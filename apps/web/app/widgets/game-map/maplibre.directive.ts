@@ -23,6 +23,9 @@ export class MaplibreDirective implements OnDestroy {
   public readonly map: Map = new Map({
     container: this.elRef.nativeElement,
     attributionControl: false,
+    canvasContextAttributes: {
+      antialias: true,
+    }
   })
 
   @Input()
