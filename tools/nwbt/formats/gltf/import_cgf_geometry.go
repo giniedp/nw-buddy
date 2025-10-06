@@ -28,7 +28,7 @@ func (c MaterialLookup) Get(index int) *gltf.Material {
 	return result
 }
 
-func (c *Document) ImportGeometry(asset importer.GeometryAsset, load LoadAssetFunc) {
+func (c *Document) ImportGeometry(asset importer.GeometryAsset, load LoadAssetFunc, simplify bool) {
 	modelRefId := hashString(fmt.Sprintf("%s#%s", asset.GeometryFile, asset.MaterialFile))
 	if asset.OverrideMaterialIndex != nil {
 		modelRefId = fmt.Sprintf("%s#%d", modelRefId, *asset.OverrideMaterialIndex)
@@ -80,7 +80,7 @@ func (c *Document) ImportGeometry(asset importer.GeometryAsset, load LoadAssetFu
 		switch meshChunk := chunk.(type) {
 		case cgf.ChunkMesh:
 			node.Name = name
-			node.Mesh, _ = c.ImportCgfMesh(name, meshChunk, model, heap, materialLookup)
+			node.Mesh, _ = c.ImportCgfMesh(name, meshChunk, model, heap, materialLookup, simplify)
 			node.Skin = skin
 			node.Extras = ExtrasStore(node.Extras, ExtraKeyName, name)
 		}

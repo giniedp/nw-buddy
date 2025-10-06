@@ -34,6 +34,7 @@ func run(ccmd *cobra.Command, args []string) {
 	checkKtx()
 	checkJava()
 	checkUnluac()
+	checkGltfTransform()
 	fs := utils.Must(nwfs.NewPackedArchive(flgGameDir))
 	checkDubplicates(fs)
 }
@@ -135,6 +136,16 @@ func checkUnluac() {
 		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
 	} else {
 		slog.Warn("Unluac\tnot found in PATH")
+		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
+	}
+}
+
+func checkGltfTransform() {
+	if p, ok := utils.GltfTransform.Check(); ok {
+		slog.Info("gltf-transform\tfound at", "path", p)
+		//slog.Info(strings.TrimSpace(utils.Oodlei.Info()))
+	} else {
+		slog.Warn("gltf-transform\tnot found in PATH")
 		//slog.Warn(strings.TrimSpace(utils.Oodlei.Info()))
 	}
 }

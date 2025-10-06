@@ -18,7 +18,7 @@ import (
 	"github.com/qmuntal/gltf/modeler"
 )
 
-func (d *Document) ImportCgfMesh(name string, chunk cgf.ChunkMesh, cgfile *cgf.File, heap []byte, materialLookup MaterialLookup) (*int, *gltf.Mesh) {
+func (d *Document) ImportCgfMesh(name string, chunk cgf.ChunkMesh, cgfile *cgf.File, heap []byte, materialLookup MaterialLookup, simplify bool) (*int, *gltf.Mesh) {
 
 	subsets, hasSubsets := cgf.FindChunk[cgf.ChunkMeshSubsets](cgfile, chunk.SubsetsChunkId)
 	if !hasSubsets {
@@ -40,7 +40,7 @@ func (d *Document) ImportCgfMesh(name string, chunk cgf.ChunkMesh, cgfile *cgf.F
 		var primitive *gltf.Primitive
 		if found := d.FindPrimitiveByRef(subRefId); found != nil {
 			primitive = d.CopyPrimitive(found)
-		} else if prim, err := convertPrimitive(d.Document, subset, chunk, cgfile, heap); err != nil {
+		} else if prim, err := convertPrimitive(d.Document, subset, chunk, cgfile, heap, simplify); err != nil {
 			slog.Warn("Failed to convert primitive", "ref", subRefId, "err", err)
 			continue
 		} else {
@@ -74,7 +74,7 @@ func subsetRefId(cgfile *cgf.File, chunk cgf.ChunkMesh, subset int) string {
 	return hashString(fmt.Sprintf("%s_%d_%d_%d", cgfile.Source, chunk.Id, chunk.SubsetsChunkId, subset))
 }
 
-func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.ChunkMesh, cgFile *cgf.File, heap []byte) (out *gltf.Primitive, err error) {
+func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.ChunkMesh, cgFile *cgf.File, heap []byte, simplify bool) (out *gltf.Primitive, err error) {
 	defer utils.HandleRecover(&err)
 
 	out = &gltf.Primitive{
@@ -90,11 +90,11 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 			}
 			streamType := cgf.DataStreamType(streamTypeId)
 			if stream, ok := cgf.FindChunk[cgf.ChunkDataStream](cgFile, id); ok {
-				convertPrimitiveStream(doc, subset, stream, out)
+				convertPrimitiveStream(doc, subset, stream, out, simplify)
 				continue
 			}
 			if ref, ok := cgf.FindChunk[cgf.ChunkDataRef](cgFile, id); ok {
-				convertPrimitiveRef(doc, subset, streamType, ref, heap, out)
+				convertPrimitiveRef(doc, subset, streamType, ref, heap, out, simplify)
 				continue
 			}
 
@@ -106,7 +106,8 @@ func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.Chunk
 	return
 }
 
-func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cgf.ChunkDataStream, out *gltf.Primitive) {
+func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cgf.ChunkDataStream, out *gltf.Primitive, simplify bool) {
+
 	switch stream.StreamType {
 	case cgf.STREAM_TYPE_INDICES:
 		r := buf.NewReaderLE(stream.Data)
@@ -156,6 +157,9 @@ func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cg
 			slog.Warn("Unsupported position size", "size", stream.ElementSize)
 		}
 	case cgf.STREAM_TYPE_NORMALS:
+		if simplify {
+			return
+		}
 		r := buf.NewReaderLE(stream.Data)
 		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
 		switch stream.ElementSize {
@@ -168,6 +172,7 @@ func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cg
 					r.MustReadFloat32(),
 				})
 			}
+
 			out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, vertices)
 		case 8:
 			r := buf.NewReaderLE(stream.Data)
@@ -181,11 +186,15 @@ func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cg
 				})
 				r.SeekRelative(2)
 			}
+
 			out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, vertices)
 		default:
 			slog.Warn("Unsupported normal size", "size", stream.ElementSize)
 		}
 	case cgf.STREAM_TYPE_TANGENTS:
+		if simplify {
+			return
+		}
 		r := buf.NewReaderLE(stream.Data)
 		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
 		switch stream.ElementSize {
@@ -234,6 +243,9 @@ func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cg
 			slog.Warn("Unsupported texcoord size", "size", stream.ElementSize)
 		}
 	case cgf.STREAM_TYPE_COLORS:
+		if simplify {
+			return
+		}
 		r := buf.NewReaderLE(stream.Data)
 		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
 		switch stream.ElementSize {
@@ -252,6 +264,9 @@ func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cg
 			slog.Warn("Unsupported color size", "size", stream.ElementSize)
 		}
 	case cgf.STREAM_TYPE_COLORS2:
+		if simplify {
+			return
+		}
 		r := buf.NewReaderLE(stream.Data)
 		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
 		switch stream.ElementSize {
@@ -315,6 +330,9 @@ func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cg
 			slog.Warn("Unsupported bone size", "size", stream.ElementSize)
 		}
 	case cgf.STREAM_TYPE_QTANGENTS:
+		if simplify {
+			return
+		}
 		r := buf.NewReaderLE(stream.Data)
 		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
 		normals := make([][3]float32, subset.NumVertices)
@@ -375,10 +393,9 @@ func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cg
 		slog.Debug("unknown", "size", stream.ElementSize, "firstIndex", subset.FirstIndex, "numIndices", subset.NumIndices)
 		slog.Warn("Unsupported stream type", "type", stream.StreamType)
 	}
-	return
 }
 
-func convertPrimitiveRef(doc *gltf.Document, subset cgf.MeshSubset, streamType cgf.DataStreamType, ref cgf.ChunkDataRef, heap []byte, out *gltf.Primitive) {
+func convertPrimitiveRef(doc *gltf.Document, subset cgf.MeshSubset, streamType cgf.DataStreamType, ref cgf.ChunkDataRef, heap []byte, out *gltf.Primitive, simplify bool) {
 	switch streamType {
 	case cgf.STREAM_TYPE_INDICES:
 		r := buf.NewReaderLE(heap)
@@ -475,6 +492,9 @@ func convertPrimitiveRef(doc *gltf.Document, subset cgf.MeshSubset, streamType c
 		out.Attributes[gltf.TEXCOORD_0] = modeler.WriteTextureCoord(doc, coords)
 
 	case cgf.STREAM_TYPE_COLORS:
+		if simplify {
+			return
+		}
 		r := buf.NewReaderLE(heap)
 		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
 		data := make([][4]uint8, subset.NumVertices)
@@ -515,6 +535,9 @@ func convertPrimitiveRef(doc *gltf.Document, subset cgf.MeshSubset, streamType c
 		out.Attributes[gltf.COLOR_0] = modeler.WriteColor(doc, data)
 
 	case cgf.STREAM_TYPE_TANGENTS:
+		if simplify {
+			return
+		}
 		if ref.Stride != 16 {
 			slog.Warn("Unsupported tangent stride", "stride", ref.Stride, "ref", ref)
 			return

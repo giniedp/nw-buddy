@@ -27,6 +27,8 @@ type Flags struct {
 	TempDir        string
 	CacheDir       string
 	TextureSize    uint
+	Simplify       bool
+	Optimize       bool
 	Binary         bool
 	Embed          bool
 	Webp           bool
@@ -64,6 +66,8 @@ func init() {
 	Cmd.Flags().StringVarP(&flg.CacheDir, "cache", "c", env.CacheDir(), "image cache directory")
 	Cmd.Flags().StringVarP(&flg.OutputDir, "output", "o", env.ModelsDir(), "output directory")
 	Cmd.Flags().BoolVar(&flg.Binary, "binary", false, "whether to output binary glb instead of gltf")
+	Cmd.Flags().BoolVar(&flg.Simplify, "simplify", false, "whether minimal geometry and material footprint should be used. Uses only diffuse texture and skips tangents")
+	Cmd.Flags().BoolVar(&flg.Optimize, "optimize", false, "runs gltf-transform optimize for each model")
 
 	Cmd.Flags().UintVar(&flg.TextureSize, "texture-size", 0, "Maximum texture size")
 
@@ -130,6 +134,7 @@ func (c *Collector) Process() {
 	c.ProcessTimelines()
 	c.ProcessModels()
 	c.ProcessTextures()
+	c.ProcessOptimize()
 }
 
 func (c *Collector) ProcessModels() {
@@ -174,6 +179,7 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 	if c.flags.Embed {
 		linker = nil
 	}
+
 	progress.RunTasks(progress.TasksConfig[importer.AssetGroup, string]{
 		Description:   description,
 		Tasks:         models,
@@ -190,7 +196,7 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 			}
 
 			for _, mesh := range group.Meshes {
-				document.ImportGeometry(mesh, c.LoadAsset)
+				document.ImportGeometry(mesh, c.LoadAsset, c.flags.Simplify)
 			}
 			if len(group.Animations) > 0 {
 				document.MergeSkins()
@@ -205,6 +211,7 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 			document.ImportCgfMaterials(
 				gltf.WithTextureBaking(true),
 				gltf.WithCustomIOR(flg.IOR),
+				gltf.WithDiffuseOnly(flg.Simplify),
 			)
 			document.Clean()
 
@@ -342,4 +349,44 @@ func (c *Collector) ProcessTextures() error {
 		},
 	})
 	return nil
+}
+
+func (c *Collector) ProcessOptimize() {
+	if !c.flags.Optimize {
+		return
+	}
+	if _, ok := utils.GltfTransform.Check(); !ok {
+		slog.Warn("gltf-transform not available, skipping optimize step")
+		return
+	}
+
+	assets := c.models.Values()
+	if len(assets) == 0 {
+		return
+	}
+	models := make([]importer.AssetGroup, 0)
+	for _, group := range assets {
+		if len(group.Animations) > 0 && len(group.Meshes) == 0 {
+			//
+		} else {
+			models = append(models, group)
+		}
+	}
+
+	progress.RunTasks(progress.TasksConfig[importer.AssetGroup, string]{
+		Description:   "Optimize models",
+		Tasks:         models,
+		ProducerCount: int(c.flags.WorkerCount),
+		Producer: func(group importer.AssetGroup) (string, error) {
+			if _, err := os.Stat(group.TargetFile); err != nil {
+				return "", err
+			}
+			err := utils.GltfTransform.Run("optimize", group.TargetFile, group.TargetFile, "--texture-compress", "webp")
+			if err != nil {
+				slog.Error("gltf-transform", "error", err)
+			}
+			return "", err
+		},
+		ConsumerCount: int(c.flags.WorkerCount),
+	})
 }

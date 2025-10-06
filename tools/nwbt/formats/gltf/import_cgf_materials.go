@@ -20,12 +20,19 @@ import (
 
 type ImportCgfMaterialsOptions struct {
 	TextureBaking bool
+	DiffuseOnly   bool
 	CustomIOR     float32
 }
 
 func WithTextureBaking(value bool) func(*ImportCgfMaterialsOptions) {
 	return func(o *ImportCgfMaterialsOptions) {
 		o.TextureBaking = value
+	}
+}
+
+func WithDiffuseOnly(value bool) func(*ImportCgfMaterialsOptions) {
+	return func(o *ImportCgfMaterialsOptions) {
+		o.DiffuseOnly = value
 	}
 }
 
@@ -44,6 +51,7 @@ func (c *Document) ImportCgfMaterials(opts ...func(*ImportCgfMaterialsOptions)) 
 		o(&options)
 	}
 
+	diffuseOnly := options.DiffuseOnly
 	textureBaking := options.TextureBaking
 	for _, material := range c.Materials {
 		if !c.IsMaterialReferenced(material) {
@@ -105,6 +113,15 @@ func (c *Document) ImportCgfMaterials(opts ...func(*ImportCgfMaterialsOptions)) 
 		mapEmittance := m.TextureByMapType(mtl.MtlMap_Emittance)
 		// mapOpacity := m.TextureWithMap(mtl.MtlMap_Opacity)
 		mapDecal := m.TextureByMapType(mtl.MtlMap_Decal)
+
+		if diffuseOnly {
+			mapBumpmap = nil
+			mapSmoothness = nil
+			mapSpecular = nil
+			mapCustom = nil
+			mapEmittance = nil
+			mapDecal = nil
+		}
 
 		shader := strings.ToLower(m.Shader)
 		isGlass := shader == "glass"
@@ -343,6 +360,11 @@ func (c *Document) ImportCgfMaterials(opts ...func(*ImportCgfMaterialsOptions)) 
 				// others render OK. use a compromise value of 0.5 for now
 				specExt.SpecularFactor = gltf.Float(0.5)
 				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(0.5)
+			}
+			if diffuseOnly {
+				specExt.SpecularFactor = gltf.Float(0)
+				material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(1)
+				material.PBRMetallicRoughness.MetallicFactor = gltf.Float(1)
 			}
 
 			if texSpecular != nil {
