@@ -363,14 +363,11 @@ export class InventoryPickerService {
     }).pipe(
       map(({ perks, perksMap, bucketsMap }) => {
         const perk = perksMap.get(item[slotKey])
-        const perkIsGem = isPerkGem(perk)
 
         const bucketId = item[slotKey]
         const bucket = bucketsMap.get(bucketId)
 
-        const bucketIsGem = isPerkGem(bucket)
         const bucketPerkIds = getPerkBucketPerkIDs(bucket)
-        // const bucketPerks = bucketPerkIds.map((id) => perksMap.get(id))
         const hasGemSlot = getItemPerkIds(item).some((it) => isPerkGem(perksMap.get(it)))
 
         const isWeapon = isItemWeapon(item)
@@ -403,12 +400,6 @@ export class InventoryPickerService {
             if (bucketPerkIds.includes(it.PerkID)) {
               // always allow whatever is in the bucket
               return true
-            }
-            if (bucketIsGem) {
-              return bucket.PerkType === it.PerkType
-            }
-            if (perkIsGem) {
-              return perk.PerkType === it.PerkType
             }
             if (bucket) {
               return bucket.PerkType === it.PerkType
