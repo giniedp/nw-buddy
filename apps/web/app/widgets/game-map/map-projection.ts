@@ -66,8 +66,6 @@ export function latFromMercatorY(y: number) {
   return (180 / Math.PI) * Math.atan(Math.sinh(Math.PI * (1 - 2 * y)))
 }
 
-const EARTH_RADIUS = 6371008.8 // meters
-
 export function xToLong(x: number) {
   return longFromMercatorX(nwXToMercator(x))
 }

@@ -1,14 +1,6 @@
 import { Component, effect, inject, input, OnDestroy, signal } from '@angular/core'
 import { CustomLayerInterface, CustomRenderMethodInput, Map } from 'maplibre-gl'
-import {
-  Camera,
-  DirectionalLight,
-  EquirectangularReflectionMapping,
-  LoadingManager,
-  Matrix4,
-  Scene,
-  WebGLRenderer,
-} from 'three'
+import { Camera, EquirectangularReflectionMapping, LoadingManager, Matrix4, Scene, WebGLRenderer } from 'three'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
@@ -79,14 +71,6 @@ export class GameMap3dControl implements OnDestroy {
     this.camera = new Camera()
     this.scene = new Scene()
 
-    // const light1 = new DirectionalLight(0xffffff, 2)
-    // light1.position.set(0, -70, 100).normalize()
-    // this.scene.add(light1)
-
-    // const light2 = new DirectionalLight(0xffffff, 2)
-    // light2.position.set(0, 70, 100).normalize()
-    // this.scene.add(light2)
-
     const manager = new LoadingManager()
     this.loader = new GLTFLoader(manager)
     this.loader.setMeshoptDecoder(MeshoptDecoder)
@@ -96,19 +80,6 @@ export class GameMap3dControl implements OnDestroy {
     const metersPerDegreeLng = earthCircumference / 360
     const scale = xToLong(1) * metersPerDegreeLng
 
-    // const geometry = new BoxGeometry(2048 * scale, 1, 2048 * scale)
-    // const material = new MeshBasicMaterial({ color: 0x00ff00 })
-    // const cube = new Mesh(geometry, material)
-    // cube.position.set(1024 * scale, 0, -1024 * scale - 5 * 2048 * scale )
-    // this.scene.add(cube)
-    // ;[
-    //   ...getRegionModels(this.mapId(), 0, 5),
-    //   ...getRegionModels(this.mapId(), 2, 0),
-    //   ...getRegionModels(this.mapId(), 4, 4),
-    //   ...getRegionModels(this.mapId(), 4, 3),
-    //   ...getRegionModels(this.mapId(), 4, 2),
-    //   ...getRegionModels(this.mapId(), 4, 1),
-    // ]
     getMapModels(this.mapId(), 7, 7).forEach((data) => {
       this.loader.load(data.url, (gltf) => {
         gltf.scene.rotateY(Math.PI)
