@@ -1,0 +1,60 @@
+<ul class="list">
+  @for (item of items(); track item.id) {
+    <li class="list-row">
+      <div>
+        <nwb-icon [icon]="item.icon" class="w-12 h-12" />
+      </div>
+      <div>
+        <div class="text-lg font-bold">{{ item.name | nwText | nwNoHtml }}</div>
+        <div>
+          @if (item.isMaxedOut) {
+            <span class="badge badge-sm badge-primary">MAX</span>
+          } @else if (item.nextToUpgrade) {
+            <span class="badge badge-sm badge-success">upgrade next</span>
+          } @else if (item.isUpgradable) {
+            <span class="badge badge-sm badge-secondary">upgradable</span>
+          } @else {
+            <span class="badge badge-sm badge-error">Not upgradable</span>
+          }
+        </div>
+      </div>
+      <div>
+        <label class="input">
+          <span class="label">
+            <nwb-icon [icon]="'/assets/icons/item/icon_gearscore.png'" class="w-5 h-5" />
+          </span>
+          <input
+            type="number"
+            class="w-10"
+            [min]="0"
+            [max]="maxLevel() + 1"
+            [ngModel]="item.gearScore"
+            (ngModelChange)="setGearScore(item.id, $event)"
+          />
+          @if (bank()) {
+            @let gs = slotFinalGs(item.id);
+            @let delta = gs - item.gearScore;
+            <span class="label w-12" [class.text-success]="delta">
+              @if (delta) {
+                {{ gs }}
+              }
+            </span>
+          }
+        </label>
+      </div>
+    </li>
+  }
+  <li class="list-row">
+    <div>
+      <nwb-icon [icon]="" class="w-12 h-12" />
+    </div>
+    <div>
+      <div class="text-lg font-bold">Shards available</div>
+    </div>
+    <div>
+      <label class="input">
+        <input type="number" class="w-20" [min]="0" [ngModel]="bank() || null" (ngModelChange)="setBank($event)" />
+      </label>
+    </div>
+  </li>
+</ul>

@@ -1,0 +1,18 @@
+<div class="stat">
+  <div class="stat-figure">
+    <nwb-icon [icon]="'/assets/icons/item/icon_gearscore.png'" class="w-12 h-12" />
+  </div>
+  <div class="stat-title">Gear score</div>
+  <div class="stat-value">
+    {{ store.gearScore() }}
+    @if (store.gearScore() !== store.finalGS()) {
+      →
+      <span class="text-success">{{ store.finalGS() }}</span>
+    }
+  </div>
+  @if (store.totalCost()) {
+    <div class="stat-desc">
+      Upgrade costs <span class="text-error">{{ store.totalCost() }}</span> shards
+    </div>
+  }
+</div>

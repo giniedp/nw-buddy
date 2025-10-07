@@ -1,0 +1,66 @@
+<div class="tabs tabs-xs tabs-box">
+  <button class="flex-1 tab" [class.tab-active]="!store.grouped()" (click)="store.setGrouped(false)">Steps</button>
+  <button class="flex-1 tab" [class.tab-active]="store.grouped()" (click)="store.setGrouped(true)">Grouped</button>
+</div>
+<ul class="list" [nwbInfniteScroll]="upgrades()" #scroll="infiniteScroll">
+  @for (upgrade of scroll.data(); track $index) {
+    <li class="list-row px-0">
+      <div class="flex flex-col justify-center">
+        <nwb-icon [icon]="upgrade.slotIcon" class="w-12 h-12" />
+      </div>
+      <div>
+        <div class="stat-title py-[3px]">{{ upgrade.slotName | nwText | nwNoHtml }}</div>
+        <div class="stat-value text-2xl">
+          <span>{{ upgrade.slotScore - upgrade.slotBump }}</span>
+          <span class="text-primary"> + {{ upgrade.slotBump }}</span>
+        </div>
+        <div class="stat-desc">
+          <span> upgrade cost </span>
+          <span> {{ upgrade.costs | number }} </span>
+        </div>
+      </div>
+      <div class="flex flex-col justify-end">
+        <div class="stat-title">
+          <span> average GS </span>
+          <span class="text-primary"> +{{ upgrade.averageBump | number }} </span>
+        </div>
+        <div class="stat-value text-2xl flex flex-row items-center gap-1">
+          <div>
+            <span class="text-success">{{ upgrade.averageScore | number: '0.3-3' }}</span>
+          </div>
+          <nwb-icon [icon]="'/assets/icons/item/icon_gearscore.png'" class="w-5 h-5" />
+        </div>
+        <div class="stat-desc flex flex-row items-center gap-1">
+          <span>{{ upgrade.costsPerGS | number }}</span>
+          <span> shards per GS </span>
+        </div>
+      </div>
+      <div class="list-col-wrap col-start-1 col-span-3">
+        <button
+          class="btn btn-sm btn-block"
+          [tooltip]="tplTip"
+          (click)="applyUpgrade(upgrade.averageScore)"
+        >
+          <ng-template #tplTip>
+            <div class="px-4 py-2">
+              Applies upgrades up to
+              <span class="text-success">{{ upgrade.averageScore | number}}</span>GS
+            </div>
+          </ng-template>
+
+          Upgrade - <span class="text-error">{{ upgrade.costsTotal | number }}</span> shards
+        </button>
+      </div>
+    </li>
+  }
+  @if (scroll.canLoad()) {
+    <li class="list-row" nwbInfiniteScrollTrigger>
+      <div class="skeleton h-12 w-12 shrink-0 rounded-md"></div>
+      <div>
+        <div class="skeleton h-4 w-20"></div>
+        <div></div>
+      </div>
+      <div></div>
+    </li>
+  }
+</ul>

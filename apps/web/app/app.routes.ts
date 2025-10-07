@@ -66,6 +66,7 @@ const PAGE_ROUTES: Routes = [
   { path: 'gearsets', loadChildren: () => import('./pages/tools/gearsets').then((m) => m.ROUTES) },
   { path: 'skill-trees', loadChildren: () => import('./pages/tools/skill-trees').then((m) => m.ROUTES) },
   { path: 'damage-calculator', loadChildren: () => import('./pages/tools/damage-calculator').then((m) => m.ROUTES) },
+  { path: 'umbral-calculator', loadChildren: () => import('./pages/tools/umbral-calculator').then((m) => m.ROUTES) },
 
   { path: 'pvp-ranks', loadChildren: () => import('./pages/database/pvp-ranks').then((m) => m.ROUTES) },
   { path: 'spells', loadChildren: () => import('./pages/database/spells').then((m) => m.ROUTES) },
