@@ -1,8 +1,5 @@
-import { computed, Directive, input, Input, untracked } from '@angular/core'
-import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
-import { shareReplayRefCount } from '~/utils'
+import { computed, Directive, input, untracked } from '@angular/core'
 import { Pagination } from './pagination'
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 
 @Directive({
   standalone: true,

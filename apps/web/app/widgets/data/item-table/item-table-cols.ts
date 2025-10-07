@@ -26,7 +26,6 @@ import {
 } from '@nw-data/common'
 import {
   AffixStatData,
-  CategoricalProgressionData,
   ConsumableItemDefinitions,
   HouseItems,
   ItemCurrencyConversionData,

@@ -22,6 +22,7 @@ import { svgCircleExclamation, svgGlobe } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { ScreenshotFrameDirective, ScreenshotModule } from '~/widgets/screenshot'
 import { PlatformService } from '../../../../utils/services/platform.service'
+import { GearCellSlotSetPerksComponent } from '../cells/gear-cell-slot-set-perks.component'
 import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
@@ -39,6 +40,7 @@ import { GearsetPaneStatsComponent } from '../cells/gearset-pane-stats.component
     GearsetPaneMainComponent,
     GearsetPaneSkillComponent,
     GearsetPaneStatsComponent,
+    GearCellSlotSetPerksComponent,
     IconsModule,
     LayoutModule,
     ScreenshotModule,

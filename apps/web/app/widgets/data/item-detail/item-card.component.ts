@@ -15,6 +15,7 @@ import { ItemDetailPerksComponent } from './item-detail-perks.component'
 import { ItemDetailStatsComponent } from './item-detail-stats.component'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
+import { ItemDetailSetPerksComponent } from './item-detail-set-perks.component'
 
 @Component({
   selector: 'nwb-item-card',
@@ -28,6 +29,7 @@ import { ItemEditorEventsService } from './item-editor-events.service'
     ItemDetailHeaderComponent,
     ItemDetailInfoComponent,
     ItemDetailPerksComponent,
+    ItemDetailSetPerksComponent,
     ItemDetailPerkTasksComponent,
     ItemDetailStatsComponent,
     ItemFrameModule,
@@ -115,6 +117,8 @@ export class ItemCardComponent {
   public disableDescription = input(false)
 
   public disablePerks = input(false)
+
+  public disableSetPerks = input(false)
 
   public square = input(false)
 }

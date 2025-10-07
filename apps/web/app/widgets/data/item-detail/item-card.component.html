@@ -14,6 +14,9 @@
       <nwb-item-detail-stats class="nw-item-section" />
       <nwb-item-detail-gs-damage class="nw-item-section" />
     }
+    @if (!disableSetPerks()) {
+      <nwb-item-detail-set-perks class="nw-item-section" />
+    }
     @if (!disablePerks()) {
       <nwb-item-detail-perks class="nw-item-section" />
     }

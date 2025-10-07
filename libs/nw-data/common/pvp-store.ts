@@ -2,7 +2,7 @@ import { PvPStoreData } from '@nw-data/generated'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { flatten } from 'lodash'
 
-export function convertPvoStore(data: PvPStoreData[]): PvpStoreRow[] {
+export function convertPvpStore(data: PvPStoreData[]): PvpStoreRow[] {
   const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
   const result = data.map((row, i) => convertRow(row, firstRow, i))
   return flatten(result)

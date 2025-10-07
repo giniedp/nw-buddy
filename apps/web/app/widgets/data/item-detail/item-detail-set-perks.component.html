@@ -1,0 +1,30 @@
+@if (name() && !disableTitle()) {
+  <span class="font-bold text-nw-description mb-1">
+    {{ name() | nwText }}
+    @if (count()) {
+      {{ count() }} / {{ max() }}
+    }
+  </span>
+}
+@for (item of rows(); track $index) {
+  <div
+    class="flex flex-col relative rounded-md outline-2 outline-offset-0 outline-transparent transition-all filter"
+    [class.screenshot-hidden]="!!count() && count() < item.threshold"
+  >
+    @for (row of item.explain; track $index) {
+      <nwb-item-perk
+        [icon]="row.icon"
+        [explanation]="row"
+        [linkPerkId]="disableLink() ? null : item.perkId"
+        [class.grayscale-100]="!!count() && count() < item.threshold"
+      />
+    }
+    @if (count() < item.threshold) {
+      <span class="ml-8 text-neutral-600 italic">
+        Requires
+        <span class="text-primary">{{ item.threshold }} </span>
+        items to activate
+      </span>
+    }
+  </div>
+}

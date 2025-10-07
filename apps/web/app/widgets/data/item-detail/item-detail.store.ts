@@ -3,6 +3,7 @@ import { patchState, signalMethod, signalStore, withComputed, withMethods, withS
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
   AttributeRef,
+  EquipmentSet,
   NW_FALLBACK_ICON,
   NW_MAX_CHARACTER_LEVEL,
   getItemIconPath,
@@ -77,6 +78,7 @@ export const ItemDetailStore = signalStore(
   }),
   withComputed(({ record, perkOverride }) => {
     const db = injectNwData()
+
     const item = computed(() => {
       const value = record()
       return isMasterItem(value) ? value : null
@@ -98,10 +100,24 @@ export const ItemDetailStore = signalStore(
       defaultValue: [],
       keepPrevious: true,
     })
+    const equipmentSet = resourceValue({
+      params: () => {
+        return {
+          item: item(),
+        }
+      },
+      loader: ({ params: { item }}): Promise<EquipmentSet> => {
+        // TODO: load equipmentests
+        const id = null // "TestEquipmentSet_1" // getEquipmentSetId(item)
+        return db.equipmentSetsById(id)
+      },
+      keepPrevious: true
+    })
     return {
       item,
       houseItem,
       itemPerkSlots,
+      equipmentSet,
     }
   }),
   withState({

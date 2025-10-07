@@ -4,7 +4,8 @@ import {
   convertLootbuckets,
   convertLoottables,
   convertPerkBuckets,
-  convertPvoStore,
+  convertPvpStore,
+  convertSetBonuses,
   getCraftingIngredients,
   getItemIdFromRecipe,
   getItemSetFamilyName,
@@ -108,6 +109,12 @@ export abstract class NwDataSheets {
   public itemTransformsById = indexLookup(this.itemTransformsByIdMap)
   public itemTransformsByToItemIdMap = secondaryIndex(this.itemTransformsAll, 'ToItemId')
   public itemTransformsByToItemId = indexLookup(this.itemTransformsByToItemIdMap)
+
+  public equipmentSetsAll = table(() => {
+    return this.loadDatasheets(DATASHEETS.EquipmentSetData).map((it) => it.then(convertSetBonuses))
+  })
+  public equipmentSetsByIdMap = primaryIndex(this.equipmentSetsAll, 'EquipmentSetId')
+  public equipmentSetsById = indexLookup(this.equipmentSetsByIdMap)
 
   public abilitiesAll = table(() => this.loadDatasheets(DATASHEETS.AbilityData))
   public abilitiesByIdMap = primaryIndex(this.abilitiesAll, 'AbilityID')
@@ -571,7 +578,7 @@ export abstract class NwDataSheets {
   public pvpRanksByLevel = indexLookup(this.pvpRanksByLevelMap)
 
   public pvpStoreBucketsAll = table(() => {
-    return this.loadDatasheets(DATASHEETS.PvPStoreData).map((it) => it.then(convertPvoStore))
+    return this.loadDatasheets(DATASHEETS.PvPStoreData).map((it) => it.then(convertPvpStore))
   })
   public pvpStoreBucketsByIdMap = secondaryIndex(this.pvpStoreBucketsAll, 'Bucket')
   public pvpStoreBucketsById = indexLookup(this.pvpStoreBucketsByIdMap)
