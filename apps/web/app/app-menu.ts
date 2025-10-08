@@ -75,6 +75,8 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Status Effects', path: '/status-effects', svgIcon: svgSparkles },
       { label: 'Damage Rows', path: '/damage', svgIcon: svgBurst },
       { label: 'Spells', path: '/spells', svgIcon: svgWandSparkles },
+      // { label: 'Armor Types', path: '/armor-definitions', svgIcon: svgHelmetBattle },
+      { label: 'Weapon Types', path: '/weapon-definitions', svgIcon: svgSword },
 
       { label: 'Map', path: '/map', svgIcon: svgMap, divider: true },
       { label: 'Gatherables', path: '/gatherables', svgIcon: svgWheat },

@@ -560,8 +560,12 @@ const GS_GROUPS: GearScoreGroup[] = [
     ],
   },
 ]
+export type EquipSlotIdForGS = Extract<
+  EquipSlotId,
+  'head' | 'chest' | 'hands' | 'legs' | 'feet' | 'weapon1' | 'weapon2' | 'amulet' | 'ring' | 'earring'
+>
 
-const NW_GS_WEIGHTS: Partial<Record<EquipSlotId, number>> = {
+const NW_GS_WEIGHTS: Record<EquipSlotIdForGS, number> = {
   head: 0.45 * 0.2,
   chest: 0.45 * 0.35,
   hands: 0.45 * 0.15,

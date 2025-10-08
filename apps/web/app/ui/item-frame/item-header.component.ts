@@ -6,7 +6,7 @@ import { ItemRarity } from '@nw-data/common'
   selector: 'nwb-item-header',
   template: `
     <div class="nw-item-header-bg"></div>
-    @if (isNamed) {
+    @if (isNamed()) {
       <div class="nw-item-header-fg"></div>
     }
     <ng-content />

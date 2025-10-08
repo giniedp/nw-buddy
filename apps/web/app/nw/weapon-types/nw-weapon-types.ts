@@ -385,3 +385,7 @@ export function getWeaponTypeInfo(weaponTag: string) {
 export function getWeaponTypes() {
   return NW_WEAPON_TYPES
 }
+
+export function getWeaponTypeByProgressionId(progressionId: string) {
+  return NW_WEAPON_TYPES.find((it) => eqCaseInsensitive(it.ProgressionId, progressionId))
+}

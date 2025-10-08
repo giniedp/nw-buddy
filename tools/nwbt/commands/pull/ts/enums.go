@@ -46,6 +46,9 @@ var ENUMS = map[string]map[string]string{
 	"CategoricalProgressionData": {
 		"CategoricalProgressionId": "ProgressionCategory",
 	},
+	"WeaponItemDefinitions": {
+		"MannequinTag": "MannequinTag",
+	},
 	"MasterItemDefinitions": {
 		"ItemClass":       "ItemClass",
 		"ItemType":        "ItemType",

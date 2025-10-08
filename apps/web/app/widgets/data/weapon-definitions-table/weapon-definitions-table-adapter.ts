@@ -22,6 +22,9 @@ import {
   weaponDefColIcon,
   weaponDefColPrimaryUse,
   weaponDefColTierNumber,
+  weaponDefColEquipType,
+  weaponDefColWeaponMasteryCategoryId,
+  weaponDefColMannequinTag,
 } from './weapon-definitions-table-cols'
 
 @Injectable()
@@ -36,13 +39,14 @@ export class WeaponDefinitionTableAdapter implements DataViewAdapter<WeaponDefin
   }
 
   public entityCategories(item: WeaponDefinitionTableRecord): DataTableCategory[] {
-    if (!item.WeaponEffectId) {
+    if (!item.WeaponMasteryCategoryId) {
       return null
     }
+    const id = item.WeaponMasteryCategoryId.replace('AbilityTable', '')
     return [
       {
-        id: item.WeaponEffectId,
-        label: humanize(item.WeaponEffectId),
+        id: id,
+        label: humanize(id),
         icon: '',
       },
     ]
@@ -79,7 +83,9 @@ export function buildCommonWeaponTypeGridOptions(util: TableGridUtils<WeaponDefi
       weaponDefColIcon(util),
       weaponDefColID(util),
       weaponDefColEffectID(util),
-      weaponDefColTierNumber(util),
+      weaponDefColEquipType(util),
+      weaponDefColWeaponMasteryCategoryId(util),
+      weaponDefColMannequinTag(util),
       weaponDefColBaseDamage(util),
       weaponDefColBaseStaggerDamage(util),
       weaponDefColBlockStaminaDamage(util),

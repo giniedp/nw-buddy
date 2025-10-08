@@ -9135,7 +9135,7 @@ export const COLS_WEAPONITEMDEFINITIONS = {
   IconPath: 'string',
   IsShieldCompatible: 'boolean',
   ManaCostId: 'string',
-  MannequinTag: 'string',
+  MannequinTag: 'MannequinTag[]',
   MaterialOverride1: 'string',
   MaterialOverride2: 'string',
   MaterialOverride3: 'string',

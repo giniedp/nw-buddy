@@ -1,6 +1,7 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { WeaponItemDefinitions } from '@nw-data/generated'
+import { MannequinTag, WeaponItemDefinitions } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { getWeaponTypeByProgressionId } from '../../../nw/weapon-types'
 
 export type WeaponDefinitionTableUtils = TableGridUtils<WeaponDefinitionTableRecord>
 export type WeaponDefinitionTableRecord = WeaponItemDefinitions
@@ -18,7 +19,7 @@ export function weaponDefColIcon(util: WeaponDefinitionTableUtils) {
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elItemIcon({
         class: ['transition-all translate-x-0 hover:translate-x-1'],
-        icon: data?.IconPath || NW_FALLBACK_ICON,
+        icon: getWeaponTypeByProgressionId(data.WeaponMasteryCategoryId)?.IconPathSmall || NW_FALLBACK_ICON,
       })
     }),
   })
@@ -38,18 +39,62 @@ export function weaponDefColEffectID(util: WeaponDefinitionTableUtils) {
     headerValueGetter: () => 'Effect ID',
     field: 'WeaponEffectId',
     getQuickFilterText: ({ value }) => value,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
   })
 }
 
+export function weaponDefColEquipType(util: WeaponDefinitionTableUtils) {
+  return util.colDef<string>({
+    colId: 'equipType',
+    headerValueGetter: () => 'Equip Type',
+    field: 'EquipType',
+    getQuickFilterText: ({ value }) => value,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
+  })
+}
+
+export function weaponDefColWeaponMasteryCategoryId(util: WeaponDefinitionTableUtils) {
+  return util.colDef<string>({
+    colId: 'weaponMasteryCategoryId',
+    headerValueGetter: () => 'Weapon Mastery',
+    field: 'WeaponMasteryCategoryId',
+    getQuickFilterText: ({ value }) => value,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
+  })
+}
 export function weaponDefColPrimaryUse(util: WeaponDefinitionTableUtils) {
   return util.colDef<string>({
     colId: 'primaryUse',
     headerValueGetter: () => 'Primary Use',
     field: 'PrimaryUse',
     getQuickFilterText: ({ value }) => value,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
   })
 }
-
+export function weaponDefColMannequinTag(util: WeaponDefinitionTableUtils) {
+  return util.colDef<MannequinTag[]>({
+    colId: 'mannequinTag',
+    headerValueGetter: () => 'Mannequin Tag',
+    cellRenderer: util.tagsRenderer(),
+    field: 'MannequinTag',
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
+  })
+}
 export function weaponDefColTierNumber(util: WeaponDefinitionTableUtils) {
   return util.colDef<number>({
     colId: 'tierNumber',

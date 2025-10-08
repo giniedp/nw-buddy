@@ -19,6 +19,8 @@ export type NwLinkResource =
   | 'status-effect'
   | 'transmog'
   | 'vitals'
+  | 'weapon-definitions'
+  | 'armor-definitions'
 
 export interface NwLinkOptions {
   ptr: boolean
@@ -32,6 +34,8 @@ const BUDDY_TYPE_MAP: Record<NwLinkResource, string> = {
   'loot-limit': 'loot-limits',
   'player-title': 'player-titles',
   'status-effect': 'status-effects',
+  'weapon-definitions': 'weapon-definitions',
+  'armor-definitions': 'armor-definitions',
   ability: 'abilities',
   damage: 'damage',
   emote: 'emotes',

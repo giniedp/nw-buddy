@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { injectRouteParam } from '../../../utils'
-import { WeaponDefinitionDetailComponent } from '../../../widgets/data/weapon-definition-detail'
+import { ArmorDefinitionDetailComponent } from '../../../widgets/data/armor-definition-detail'
 
 @Component({
-  selector: 'nwb-weapon-definition-detail-page',
-  templateUrl: './weapon-definition-detail-page.component.html',
+  selector: 'nwb-armor-definition-detail-page',
+  templateUrl: './armor-definition-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterModule, WeaponDefinitionDetailComponent],
+  imports: [RouterModule, ArmorDefinitionDetailComponent],
   host: {
     class: 'block',
   },

@@ -14,13 +14,13 @@ import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectBreakpoint, injectChildRouteParam, injectRouteParam, selectSignal } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemTableRecord } from '~/widgets/data/item-table'
-import { WeaponDefinitionTableAdapter } from '~/widgets/data/weapon-definitions-table'
+import { ArmorDefinitionTableAdapter } from '~/widgets/data/armor-definitions-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SplitGutterComponent, SplitPaneDirective } from '../../../ui/split-container'
 
 @Component({
-  selector: 'nwb-weapon-definitions-page',
-  templateUrl: './weapon-definitions-page.component.html',
+  selector: 'nwb-armor-definitions-page',
+  templateUrl: './armor-definitions-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -43,7 +43,7 @@ import { SplitGutterComponent, SplitPaneDirective } from '../../../ui/split-cont
   },
   providers: [
     provideDataView({
-      adapter: WeaponDefinitionTableAdapter,
+      adapter: ArmorDefinitionTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
@@ -51,10 +51,10 @@ import { SplitGutterComponent, SplitPaneDirective } from '../../../ui/split-cont
   ],
 })
 export class WeaponDefinitionsPageComponent {
-  protected title = 'Weapon Definitions'
+  protected title = 'Armor Definitions'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
-  protected persistKey = 'weapon-definitions-table'
+  protected persistKey = 'armor-definitions-table'
   protected categoryParam = 'c'
   protected category = selectSignal(injectRouteParam(this.categoryParam), (it) => it || null)
 
@@ -75,7 +75,7 @@ export class WeaponDefinitionsPageComponent {
     service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({
       url: head.currentUrl,
-      title: 'New World - Weapon Definitions DB',
+      title: 'New World - Armor Definitions DB',
     })
   }
 }

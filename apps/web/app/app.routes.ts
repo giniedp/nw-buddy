@@ -79,6 +79,10 @@ const PAGE_ROUTES: Routes = [
     path: 'weapon-definitions',
     loadChildren: () => import('./pages/database/weapon-definitions').then((m) => m.ROUTES),
   },
+  {
+    path: 'armor-definitions',
+    loadChildren: () => import('./pages/database/armor-definitions').then((m) => m.ROUTES),
+  },
 
   {
     path: 'tracking',

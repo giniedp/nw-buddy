@@ -335,6 +335,17 @@ var RULES = []tx.Rule{
 		},
 	},
 	{
+		Schema: "WeaponItemDefinitions",
+		Transforms: []tx.Transformer{
+			tx.MapPropToArray{
+				Sep: ",+",
+				Keys: []string{
+					"MannequinTag",
+				},
+			},
+		},
+	},
+	{
 		Schema: "MasterItemDefinitions",
 		Transforms: []tx.Transformer{
 			tx.MapPropToArray{
