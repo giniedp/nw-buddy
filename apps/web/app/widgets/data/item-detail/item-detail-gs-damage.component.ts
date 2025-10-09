@@ -57,7 +57,7 @@ export class ItemDetailGsDamage {
     },
     loader: async ({ params: { weaponId, affixIds } }) => {
       const weapon = await this.db.weaponItemsById(weaponId)
-      const weaponTag = weapon?.MannequinTag.find((it) => !!getWeaponTypeInfo(it))
+      const weaponTag = weapon?.MannequinTag?.find((it) => !!getWeaponTypeInfo(it))
       const weaponType = getWeaponTypeInfo(weaponTag)
       const damageType = weaponType?.DamageType
       const affixes = await Promise.all(affixIds.map((it) => this.db.affixStatsById(it)))
@@ -81,10 +81,11 @@ export class ItemDetailGsDamage {
   })
 
   protected rows = computed(() => {
-    const { weapon, weaponTag, damageType, affix } = this.data()
-    if (!weapon) {
+    const value = this.data()
+    if (!value?.weapon || !value?.weaponTag) {
       return []
     }
+    const { weapon, weaponTag, damageType, affix } = this.data()
     const dmgGS = getDamageFactorForGearScore(this.store.itemGS())
     const dmgCoef = getDamageCoefForWeaponTag(weaponTag)
     const dmgBase = weapon?.BaseDamage || 0
