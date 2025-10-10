@@ -5,8 +5,8 @@ import { NwModule } from '~/nw'
 import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { ItemDetailModule } from '../data/item-detail'
 import { AttributesEditorComponent } from './attributes-editor.component'
-import { AttributesScaleComponent } from './attributes-scale.component'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
+import { WeaponScalingChartComponent } from '../data/weapon-definition-detail'
 
 export interface AttributeEditorValue {
   assigned: Record<AttributeRef, number>
@@ -21,11 +21,11 @@ export interface AttributeEditorValue {
     CommonModule,
     NwModule,
     AttributesEditorComponent,
-    AttributesScaleComponent,
     ItemDetailModule,
     LayoutModule,
     IonSegment,
     IonSegmentButton,
+    WeaponScalingChartComponent
   ],
   host: {
     class: 'ion-page bg-base-100 border border-base-100 rounded-md',

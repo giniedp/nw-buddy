@@ -1,4 +1,5 @@
 import { EquipSlotId } from '@nw-data/common'
+import { sum } from 'lodash'
 
 export interface CollectionState {
   items: SlotState[]
@@ -11,10 +12,16 @@ export interface SlotState {
   weight: number
   icon: string
   gearScore: number
+  locked: boolean
 
-  upgradeCost?: number
-  contribution?: number
+  nextGS?: number
   nextToUpgrade?: boolean
+  nextUpgradeCost?: number
+  nextContribution?: number
+  maxGS?: number
+  maxUpgradeCost?: number
+  maxContribution?: number
+
   isUpgradable?: boolean
   isMaxedOut?: boolean
 }
@@ -52,18 +59,25 @@ export function updateItemCosts(
   },
 ): void {
   for (const item of items) {
-    item.upgradeCost = upgrades.find((it) => it.level === item.gearScore)?.cost || 0
-    item.contribution = item.upgradeCost > 0 ? item.weight / item.upgradeCost : 0
+    item.nextGS = item.gearScore + 1
+    item.nextUpgradeCost = upgrades.find((it) => it.level === item.gearScore)?.cost || 0
+    item.nextContribution = item.nextUpgradeCost > 0 ? item.weight / item.nextUpgradeCost : 0
+
+    item.maxUpgradeCost = sum(upgrades.map((it) => (it.level >= item.gearScore ? it.cost : 0)))
+    item.maxContribution = item.maxUpgradeCost > 0 ? item.weight / item.maxUpgradeCost : 0
+    item.maxGS = upgrades[upgrades.length - 1]?.level + 1 || 0
   }
 
   for (const item of items) {
-    if (item.gearScore < minLevel || item.gearScore > maxLevel) {
-      item.isUpgradable = false
+    item.isUpgradable = !(item.gearScore < minLevel || item.gearScore > maxLevel)
+    if (item.locked) {
       item.nextToUpgrade = false
       item.isMaxedOut = item.gearScore > maxLevel
+    } else if (item.isUpgradable) {
+      item.nextToUpgrade = items.every((it) => it.locked || item.nextContribution >= it.nextContribution)
+      item.isMaxedOut = item.gearScore > maxLevel
     } else {
-      item.isUpgradable = true
-      item.nextToUpgrade = items.every((it) => item.contribution >= it.contribution)
+      item.nextToUpgrade = false
       item.isMaxedOut = item.gearScore > maxLevel
     }
   }
@@ -113,7 +127,7 @@ export function calculateSteps(
     .map((step): UpgradeStep => {
       const index = step.items.findIndex((it) => it.nextToUpgrade)
       const upgraded = copyState(step)
-      const costsToUpgrade = step.items[index]?.upgradeCost || 0
+      const costsToUpgrade = step.items[index]?.nextUpgradeCost || 0
       costsTotal += costsToUpgrade
 
       const bump = 1
@@ -135,10 +149,10 @@ export function calculateSteps(
         averageBump: upgraded.score - step.score,
         costs: costsToUpgrade,
         costsTotal: costsTotal,
-        costsPerGS: slot?.contribution ?? 0,
+        costsPerGS: slot?.nextContribution ?? 0,
       }
     })
-    .filter((it) => !!it.slotId)
+    .filter((it) => !!it?.slotId)
 }
 
 export function groupSteps(upgrades: UpgradeStep[]): UpgradeStep[] {

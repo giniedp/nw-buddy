@@ -22,6 +22,12 @@ import { ItemDetailStore } from './item-detail.store'
               <span>{{ it.label | nwText }}</span>
             </div>
           }
+          @if (equipmentSet(); as text) {
+            <div class="flex flex-row items-center gap-1">
+              <!-- <img [nwImage]="it.icon" class="w-6 h-6" /> -->
+              <span>{{ text | nwText }}</span>
+            </div>
+          }
         </div>
         <div class="nw-item-divider"></div>
       </div>
@@ -37,5 +43,6 @@ export class ItemDetailAttributionComponent {
   protected store = inject(ItemDetailStore)
   protected attribution = computed(() => getItemAttribution(this.store.record()))
   protected expansion = computed(() => getItemExpansion(this.store.item()?.RequiredExpansionId))
-  public isHidden = computed(() => !this.attribution() && !this.expansion())
+  protected equipmentSet = computed(() => this.store.equipmentSet()?.DisplayName)
+  public isHidden = computed(() => !this.attribution() && !this.expansion() && !this.equipmentSet())
 }

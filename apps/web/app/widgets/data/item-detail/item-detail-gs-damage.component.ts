@@ -30,7 +30,7 @@ import { ItemDetailStore } from './item-detail.store'
         />
       </a>
       <ng-template #tipChart>
-        <nwb-weapon-scaling-chart [weaponId]="data().weaponId" [affixId]="data().affix?.StatusID" />
+        <nwb-weapon-scaling-chart [itemId]="data().itemId" [affixId]="data().affix?.StatusID" />
       </ng-template>
     }
   `,
@@ -48,20 +48,22 @@ export class ItemDetailGsDamage {
   protected data = resourceValue({
     keepPrevious: true,
     params: () => {
+      const itemId = this.store.recordId()
       const weaponId = this.store.item()?.ItemStatsRef
       const affixIds = this.store
         .itemPerkSlots()
         ?.map((it) => it?.perk?.Affix)
         ?.filter((it) => !!it)
-      return { weaponId, affixIds }
+      return { itemId, weaponId, affixIds }
     },
-    loader: async ({ params: { weaponId, affixIds } }) => {
+    loader: async ({ params: { itemId, weaponId, affixIds } }) => {
       const weapon = await this.db.weaponItemsById(weaponId)
       const weaponTag = weapon?.MannequinTag?.find((it) => !!getWeaponTypeInfo(it))
       const weaponType = getWeaponTypeInfo(weaponTag)
       const damageType = weaponType?.DamageType
       const affixes = await Promise.all(affixIds.map((it) => this.db.affixStatsById(it)))
       return {
+        itemId,
         weapon,
         weaponId,
         weaponTag,
@@ -71,6 +73,7 @@ export class ItemDetailGsDamage {
       }
     },
     defaultValue: {
+      itemId: null,
       weapon: null,
       weaponId: null,
       weaponTag: null,

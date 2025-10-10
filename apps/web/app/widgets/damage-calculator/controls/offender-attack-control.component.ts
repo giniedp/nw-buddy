@@ -9,7 +9,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize, selectSignal } from '~/utils'
+import { humanize, resourceValue } from '~/utils'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 import { PrecisionInputComponent } from './precision-input.component'
 
@@ -38,31 +38,33 @@ export class OffenderAttackControlComponent {
   protected get isBound() {
     return !!this.store.offender.isBound()
   }
-  protected attackOptions = selectSignal(
-    {
-      weaponTag: this.store.offender.weaponTag,
-      tables: this.db.damageTables0(),
-    },
-    ({ weaponTag, tables }) => {
-      if (!weaponTag || !tables) {
-        return []
-      }
-      const prefix = NW_WEAPON_TYPES.find((it) => it.WeaponTag === this.store.offender.weaponTag())?.DamageTablePrefix
-      if (!prefix) {
-        return []
-      }
-      return tables
-        .filter((it) => it.DamageID.toLowerCase().startsWith(prefix.toLowerCase()))
-        .map((it) => {
-          return {
-            label: humanize(it.DamageID.replace(prefix, '')),
-            value: it.DamageID,
-            coef: it.DmgCoef,
-            ...attackInfo(it.AttackType, ['1', 'true'].includes(String(it.IsRanged).toLowerCase())),
-          }
-        })
-    },
-  )
+  private damageTables = resourceValue({
+    keepPrevious: true,
+    loader: () => this.db.damageTables0(),
+    defaultValue: [],
+  })
+
+  protected attackOptions = computed(() => {
+    const tables = this.damageTables()
+    const weaponTag = this.store.offender()?.weaponTag
+    if (!weaponTag || !tables) {
+      return []
+    }
+    const prefix = NW_WEAPON_TYPES.find((it) => it.WeaponTag === weaponTag)?.DamageTablePrefix
+    if (!prefix) {
+      return []
+    }
+    return tables
+      .filter((it) => it.DamageID.toLowerCase().startsWith(prefix.toLowerCase()))
+      .map((it) => {
+        return {
+          label: humanize(it.DamageID.replace(prefix, '')),
+          value: it.DamageID,
+          coef: it.DmgCoef,
+          ...attackInfo(it.AttackType, ['1', 'true'].includes(String(it.IsRanged).toLowerCase())),
+        }
+      })
+  })
 
   protected onAttackSelected(value: string, info: ReturnType<typeof attackInfo>) {
     this.damageRow.value = value

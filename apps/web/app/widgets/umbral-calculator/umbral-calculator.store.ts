@@ -30,6 +30,7 @@ export const UmbralCalculatorStore = signalStore(
         name: it.name,
         gearScore: 700,
         weight: it.weight,
+        locked: false
       }
     }),
   }),
@@ -112,6 +113,21 @@ export const UmbralCalculatorStore = signalStore(
           }
         })
       },
+      setGearLocked(slotId: EquipSlotId, locked: boolean) {
+        patchState(state, ({ slots }) => {
+          return {
+            slots: slots.map((it) => {
+              if (it.id !== slotId) {
+                return it
+              }
+              return {
+                ...it,
+                locked,
+              }
+            }),
+          }
+        })
+      },
       applyUpgrades(targetGearScore: number) {
         const upgrades = state.upgrades().filter((it) => it.averageScore <= targetGearScore)
         patchState(state, ({ slots }) => {
@@ -129,6 +145,9 @@ export const UmbralCalculatorStore = signalStore(
       slotFinalGs(slot: EquipSlotId) {
         return Math.floor(getSlotFinalGearScore(slot, state.slots(), state.upgrades()))
       },
+      slotFinalCosts(slot: EquipSlotId) {
+        return getSlotFinalCosts(slot, state.slots(), state.upgrades())
+      },
     }
   }),
 )
@@ -138,6 +157,16 @@ function getSlotFinalGearScore(slot: EquipSlotId, slots: SlotState[], upgrades: 
   for (const upgrade of upgrades) {
     if (upgrade.slotId === slot) {
       result = Math.max(result, upgrade.slotScore)
+    }
+  }
+  return result
+}
+
+function getSlotFinalCosts(slot: EquipSlotId, slots: SlotState[], upgrades: UpgradeStep[]) {
+  let result = 0
+  for (const upgrade of upgrades) {
+    if (upgrade.slotId === slot) {
+      result += upgrade.costs
     }
   }
   return result

@@ -23,10 +23,10 @@
         </span>
         <span>
           (
-          @if (scale1.damageInvalid$ | async; as value) {
+          @if (scale1.damageInvalid(); as value) {
             <span class="line-through opacity-50"> {{ value | number: '0.1-1' }} </span>
           }
-          @if (scale1.damage$ | async; as value) {
+          @if (scale1.damageValue(); as value) {
             <span> {{ value | number: '0.1-1' }} </span>
           } @else {
             <span> 0 </span>
@@ -40,10 +40,10 @@
         </span>
         <span>
           (
-          @if (scale2.damageInvalid$ | async; as value) {
+          @if (scale2.damageInvalid(); as value) {
             <span class="line-through opacity-50"> {{ value | number: '0.1-1' }} </span>
           }
-          @if (scale2.damage$ | async; as value) {
+          @if (scale2.damageValue(); as value) {
             <span> {{ value | number: '0.1-1' }} </span>
           } @else {
             <span> 0 </span>
@@ -53,7 +53,7 @@
       </ion-segment-button>
     </ion-segment>
 
-    <nwb-attributes-scale
+    <nwb-weapon-scaling-chart
       class="p-1"
       [nwbItemDetail]="weapon1ItemId"
       #weapon1="itemDetail"
@@ -64,12 +64,12 @@
       [attrInt]="attrs.totalInt$ | async"
       [attrFoc]="attrs.totalFoc$ | async"
       [level]="level"
-      [weaponItemId]="weapon1ItemId"
+      [itemId]="weapon1ItemId"
       [gearScore]="weapon1GearScore"
       [affixId]="weapon1AffixId"
     />
 
-    <nwb-attributes-scale
+    <nwb-weapon-scaling-chart
       class="p-1"
       [nwbItemDetail]="weapon2ItemId"
       #weapon2="itemDetail"
@@ -79,7 +79,7 @@
       [attrStr]="attrs.totalStr$ | async"
       [attrInt]="attrs.totalInt$ | async"
       [attrFoc]="attrs.totalFoc$ | async"
-      [weaponItemId]="weapon2ItemId"
+      [itemId]="weapon2ItemId"
       [gearScore]="weapon2GearScore"
       [affixId]="weapon2AffixId"
     />
