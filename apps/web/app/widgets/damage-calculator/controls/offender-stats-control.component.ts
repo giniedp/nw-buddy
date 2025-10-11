@@ -111,17 +111,10 @@ function attributeAccessor(store: DamageCalculatorStore, key: AttributeRef) {
       return store.offender.attributePoints()?.[key] || 0
     },
     set value(value: number) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          offender: {
-            ...state.offender,
-            attributePoints: {
-              ...state.offender.attributePoints,
-              [key]: value,
-            },
-          },
-        }
+      store.updateOffender({
+        attributePoints: {
+          [key]: value,
+        },
       })
     },
   }
@@ -133,17 +126,10 @@ function attributeSumsAccessor(store: DamageCalculatorStore, key: AttributeRef) 
       return patchPrecision(store.offender.attributeModSums()?.[key] || 0, 3)
     },
     set value(value: number) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          offender: {
-            ...state.offender,
-            attributeModSums: {
-              ...state.offender.attributeModSums,
-              [key]: value,
-            },
-          },
-        }
+      store.updateOffender({
+        attributeModSums: {
+          [key]: value,
+        },
       })
     },
   }

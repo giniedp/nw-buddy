@@ -107,14 +107,8 @@ function offenderAccessor<K extends keyof OffenderState>(store: DamageCalculator
       return store.offender()?.[key] as OffenderState[K]
     },
     set value(value: OffenderState[K]) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          offender: {
-            ...state.offender,
-            [key]: value,
-          },
-        }
+      store.updateOffender({
+        [key]: value,
       })
     },
   }
@@ -127,17 +121,10 @@ function scalingAccessor(store: DamageCalculatorStore, key: AttributeRef) {
       return patchPrecision(scale * (store.offender.weaponScaling()?.[key] || 0), 2)
     },
     set value(value: number) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          offender: {
-            ...state.offender,
-            weaponScaling: {
-              ...state.offender.weaponScaling,
-              [key]: value / scale,
-            },
-          },
-        }
+      store.updateOffender({
+        weaponScaling: {
+          [key]: value / scale,
+        },
       })
     },
   }

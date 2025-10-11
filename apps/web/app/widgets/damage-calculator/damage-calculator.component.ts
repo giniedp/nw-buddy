@@ -17,7 +17,7 @@ import {
   viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
-import { getState, patchState } from '@ngrx/signals'
+import { getState } from '@ngrx/signals'
 import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
 import { EMPTY, combineLatest, map, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
@@ -36,11 +36,11 @@ import { OffenderDotControlComponent } from './controls/offender-dot-control.com
 import { OffenderModsControlComponent } from './controls/offender-mods-control.component'
 import { OffenderStatsControlComponent } from './controls/offender-stats-control.component'
 import { OffenderWeaponControlComponent } from './controls/offender-weapon-control.component'
-import { DamageCalculatorState, DamageCalculatorStore, updateDefender, updateOffender } from './damage-calculator.store'
+import { DamageCalculatorState, DamageCalculatorStore, OffenderState } from './damage-calculator.store'
+import { DamageIndicatorService } from './damage-indicator.service'
 import { mergeDamageStacks } from './damage-mod-stack'
 import { DamageOutputComponent } from './damage-output.component'
 import { DamageResultsComponent } from './damage-results.component'
-import { DamageIndicatorService } from './damage-indicator.service'
 
 @Component({
   selector: 'nwb-damage-calculator',
@@ -137,7 +137,7 @@ export class DamageCalculatorComponent implements OnInit {
       .pipe(
         switchMap((mannequin) => {
           if (!mannequin) {
-            patchState(this.store, updateOffender({ isBound: false }))
+            this.store.updateOffender({ isBound: false })
             return EMPTY
           }
           const vitalCategories$ = toObservable(this.store.defenderVitalId, { injector: this.injector })
@@ -185,63 +185,60 @@ export class DamageCalculatorComponent implements OnInit {
           if (isPvP) {
             vitalCategories = []
           }
-          patchState(
-            this.store,
-            updateOffender({
-              isBound: true,
-              level: level,
-              gearScore: patchPrecision(gearScore),
-              attributePoints: {
-                str: attributes?.str?.total,
-                dex: attributes?.dex?.total,
-                int: attributes?.int?.total,
-                foc: attributes?.foc?.total,
-                con: attributes?.con?.total,
-              },
-              attributeModSums: {
-                str: attributes?.str?.scale,
-                dex: attributes?.dex?.scale,
-                int: attributes?.int?.scale,
-                foc: attributes?.foc?.scale,
-                con: attributes?.con?.scale,
-              },
-              affixId: modBase?.Affix?.Affix?.StatusID,
-              affixScaling: getDamageScalingForWeapon(modBase?.Affix?.Affix),
-              affixDamageType: modBase?.Affix?.Type,
-              affixPercent: modBase?.Affix?.Percent ?? 0,
-              weaponTag: weapon?.weaponTag,
-              weaponDamage: weapon?.weapon?.BaseDamage ?? 0,
-              weaponGearScore: weapon?.gearScore ?? 0,
-              weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
-              weaponDamageType: modBase?.Weapon?.Type,
-              damageRow: null,
-              damageCoef: dmgCoef?.value ?? 0,
-              damageAdd: damageTable?.AddDmg ?? 0,
+          this.store.updateOffender({
+            isBound: true,
+            level: level,
+            gearScore: patchPrecision(gearScore),
+            attributePoints: {
+              str: attributes?.str?.total || 0,
+              dex: attributes?.dex?.total || 0,
+              int: attributes?.int?.total || 0,
+              foc: attributes?.foc?.total || 0,
+              con: attributes?.con?.total || 0,
+            },
+            attributeModSums: {
+              str: attributes?.str?.scale || 0,
+              dex: attributes?.dex?.scale || 0,
+              int: attributes?.int?.scale || 0,
+              foc: attributes?.foc?.scale || 0,
+              con: attributes?.con?.scale || 0,
+            },
+            affixId: modBase?.Affix?.Affix?.StatusID || null,
+            affixScaling: getDamageScalingForWeapon(modBase?.Affix?.Affix),
+            affixDamageType: modBase?.Affix?.Type || null,
+            affixPercent: modBase?.Affix?.Percent ?? 0,
+            weaponTag: weapon?.weaponTag || null,
+            weaponDamage: weapon?.weapon?.BaseDamage ?? 0,
+            weaponGearScore: weapon?.gearScore ?? 0,
+            weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
+            weaponDamageType: modBase?.Weapon?.Type ?? null,
+            damageRow: null,
+            damageCoef: dmgCoef?.value ?? 0,
+            damageAdd: damageTable?.AddDmg ?? 0,
 
-              armorPenetration: mergeDamageStacks(modArmorPenetration.Base, this.store.offender.armorPenetration()),
-              modAmmo: mergeDamageStacks(modAmmo, this.store.offender.modAmmo()),
-              modPvP: mergeDamageStacks(modPvP, this.store.offender.modPvP()),
-              modCrit: mergeDamageStacks(modCrit.Damage, this.store.offender.modCrit()),
-              modBase: mergeDamageStacks(modBase.Weapon?.Damage, this.store.offender.modBase()),
-              modBaseAffix: mergeDamageStacks(modBase?.Affix?.Damage, this.store.offender.modBaseAffix()),
-              modBaseDot: mergeDamageStacks(modBase?.Base?.[dotType], this.store.offender.modBaseDot()),
-              modDMG: mergeDamageStacks(
-                [
-                  modDMG.byDamageType[modBase.Weapon?.Type],
-                  ...vitalCategories.map((category) => modDMG.byVitalsType[category] || []),
-                ],
-                this.store.offender.modDMG(),
-              ),
-              modDMGAffix: mergeDamageStacks(
-                [
-                  modDMG.byDamageType[modBase?.Affix?.Type],
-                  ...vitalCategories.map((category) => modDMG.byVitalsType[category] || []),
-                ],
-                this.store.offender.modDMGAffix(),
-              ),
-              modDMGDot: mergeDamageStacks(modDMG.byDamageType[dotType], this.store.offender.modDMGDot()),
-            }),
-          )
+            armorPenetration: mergeDamageStacks(modArmorPenetration.Base, this.store.offender.armorPenetration()),
+            modAmmo: mergeDamageStacks(modAmmo, this.store.offender.modAmmo()),
+            modPvP: mergeDamageStacks(modPvP, this.store.offender.modPvP()),
+            modCrit: mergeDamageStacks(modCrit.Damage, this.store.offender.modCrit()),
+            modBase: mergeDamageStacks(modBase.Weapon?.Damage, this.store.offender.modBase()),
+            modBaseAffix: mergeDamageStacks(modBase?.Affix?.Damage, this.store.offender.modBaseAffix()),
+            modBaseDot: mergeDamageStacks(modBase?.Base?.[dotType], this.store.offender.modBaseDot()),
+            modDMG: mergeDamageStacks(
+              [
+                modDMG.byDamageType[modBase.Weapon?.Type],
+                ...vitalCategories.map((category) => modDMG.byVitalsType[category] || []),
+              ],
+              this.store.offender.modDMG(),
+            ),
+            modDMGAffix: mergeDamageStacks(
+              [
+                modDMG.byDamageType[modBase?.Affix?.Type],
+                ...vitalCategories.map((category) => modDMG.byVitalsType[category] || []),
+              ],
+              this.store.offender.modDMGAffix(),
+            ),
+            modDMGDot: mergeDamageStacks(modDMG.byDamageType[dotType], this.store.offender.modDMGDot()),
+          })
         },
       )
   }
@@ -254,7 +251,7 @@ export class DamageCalculatorComponent implements OnInit {
       .pipe(
         switchMap(({ player, opponent }) => {
           if (!player || !opponent) {
-            patchState(this.store, updateDefender({ isBound: false }))
+            this.store.updateDefender({ isBound: false })
             return EMPTY
           }
           const dmgTypeWeapon$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(
@@ -281,55 +278,49 @@ export class DamageCalculatorComponent implements OnInit {
       )
       .subscribe(
         ({ dmgTypeWeapon, dmgTypeAffix, dmgTypeDot, level, gearScore, modAbs, modWKN, modCrit, modBase, modArmor }) => {
-          patchState(
-            this.store,
-            updateDefender({
-              isPlayer: true,
-              isBound: true,
-              level: level,
-              gearScore: patchPrecision(gearScore),
-              modABS: mergeDamageStacks(modAbs?.DamageCategories[dmgTypeWeapon], this.store.defender.modABS()),
-              modABSAffix: mergeDamageStacks(modAbs?.DamageCategories[dmgTypeAffix], this.store.defender.modABSAffix()),
-              modABSDot: mergeDamageStacks(modAbs?.DamageCategories[dmgTypeDot], this.store.defender.modABSDot()),
-              modWKN: mergeDamageStacks(modWKN?.[dmgTypeWeapon], this.store.defender.modWKN()),
-              modWKNAffix: mergeDamageStacks(modWKN?.[dmgTypeAffix], this.store.defender.modWKNAffix()),
-              modWKNDot: mergeDamageStacks(modWKN?.[dmgTypeDot], this.store.defender.modWKNDot()),
-              modBaseReduction: mergeDamageStacks(
-                modBase?.Reduction?.[dmgTypeWeapon],
-                this.store.defender.modBaseReduction(),
-              ),
-              modBaseReductionAffix: mergeDamageStacks(
-                modBase?.Reduction?.[dmgTypeAffix],
-                this.store.defender.modBaseReduction(),
-              ),
-              modBaseReductionDot: mergeDamageStacks(
-                modBase?.Reduction?.[dmgTypeDot],
-                this.store.defender.modBaseReduction(),
-              ),
-              modCritReduction: mergeDamageStacks(modCrit?.DamageReduction, this.store.defender.modCritReduction()),
-              elementalArmor: {
-                value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1),
-                stack: this.store.defender.elementalArmor().stack,
-              },
-              elementalArmorAdd: {
-                value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1),
-                stack: this.store.defender.elementalArmorAdd().stack,
-              },
-              elementalArmorFortify: mergeDamageStacks(
-                modArmor?.Elemental,
-                this.store.defender.elementalArmorFortify(),
-              ),
-              physicalArmor: {
-                value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1),
-                stack: this.store.defender.physicalArmor().stack,
-              },
-              physicalArmorAdd: {
-                value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1),
-                stack: this.store.defender.physicalArmorAdd().stack,
-              },
-              physicalArmorFortify: mergeDamageStacks(modArmor?.Physical, this.store.defender.physicalArmorFortify()),
-            }),
-          )
+          this.store.updateDefender({
+            isPlayer: true,
+            isBound: true,
+            level: level,
+            gearScore: patchPrecision(gearScore),
+            modABS: mergeDamageStacks(modAbs?.DamageCategories[dmgTypeWeapon], this.store.defender.modABS()),
+            modABSAffix: mergeDamageStacks(modAbs?.DamageCategories[dmgTypeAffix], this.store.defender.modABSAffix()),
+            modABSDot: mergeDamageStacks(modAbs?.DamageCategories[dmgTypeDot], this.store.defender.modABSDot()),
+            modWKN: mergeDamageStacks(modWKN?.[dmgTypeWeapon], this.store.defender.modWKN()),
+            modWKNAffix: mergeDamageStacks(modWKN?.[dmgTypeAffix], this.store.defender.modWKNAffix()),
+            modWKNDot: mergeDamageStacks(modWKN?.[dmgTypeDot], this.store.defender.modWKNDot()),
+            modBaseReduction: mergeDamageStacks(
+              modBase?.Reduction?.[dmgTypeWeapon],
+              this.store.defender.modBaseReduction(),
+            ),
+            modBaseReductionAffix: mergeDamageStacks(
+              modBase?.Reduction?.[dmgTypeAffix],
+              this.store.defender.modBaseReduction(),
+            ),
+            modBaseReductionDot: mergeDamageStacks(
+              modBase?.Reduction?.[dmgTypeDot],
+              this.store.defender.modBaseReduction(),
+            ),
+            modCritReduction: mergeDamageStacks(modCrit?.DamageReduction, this.store.defender.modCritReduction()),
+            elementalArmor: {
+              value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1),
+              stack: this.store.defender.elementalArmor().stack,
+            },
+            elementalArmorAdd: {
+              value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1),
+              stack: this.store.defender.elementalArmorAdd().stack,
+            },
+            elementalArmorFortify: mergeDamageStacks(modArmor?.Elemental, this.store.defender.elementalArmorFortify()),
+            physicalArmor: {
+              value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1),
+              stack: this.store.defender.physicalArmor().stack,
+            },
+            physicalArmorAdd: {
+              value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1),
+              stack: this.store.defender.physicalArmorAdd().stack,
+            },
+            physicalArmorFortify: mergeDamageStacks(modArmor?.Physical, this.store.defender.physicalArmorFortify()),
+          })
         },
       )
   }

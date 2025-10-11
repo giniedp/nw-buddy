@@ -95,14 +95,8 @@ export class OffenderConversionControlComponent {
   })
 
   protected submitDamageType(value: string) {
-    patchState(this.store, (state) => {
-      return {
-        ...state,
-        offender: {
-          ...state.offender,
-          affixDamageType: value,
-        },
-      }
+    this.store.updateOffender({
+      affixDamageType: value,
     })
   }
 
@@ -134,16 +128,9 @@ function scalingAccessor(store: DamageCalculatorStore, key: AttributeRef) {
       return patchPrecision(scale * (store.offender.affixScaling()?.[key] || 0), 2)
     },
     set value(value: number) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          offender: {
-            ...state.offender,
-            affixScaling: {
-              ...state.offender.affixScaling,
-              [key]: value / scale,
-            },
-          },
+      store.updateOffender({
+        affixScaling: {
+          [key]: value / scale,
         }
       })
     },

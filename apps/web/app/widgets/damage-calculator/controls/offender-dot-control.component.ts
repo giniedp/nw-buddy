@@ -66,14 +66,8 @@ export class OffenderDotControlComponent {
   })
 
   protected submitDotType(value: string) {
-    patchState(this.store, (state) => {
-      return {
-        ...state,
-        offender: {
-          ...state.offender,
-          dotDamageType: value,
-        },
-      }
+    this.store.updateOffender({
+      dotDamageType: value,
     })
   }
 }

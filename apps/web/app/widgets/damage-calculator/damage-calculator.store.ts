@@ -1,6 +1,6 @@
-import { Injector, computed, inject } from '@angular/core'
+import { Injector, computed, effect, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStore, withComputed, withMethods, withState, getState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
   AttributeRef,
@@ -9,6 +9,7 @@ import {
   NW_MAX_POINTS_PER_ATTRIBUTE,
   NW_MIN_POINTS_PER_ATTRIBUTE,
   calculateDamage,
+  damageExpression,
   getDamageFactorForGearScore,
   getDamageScalingForLevel,
   getDamageScalingSumForWeapon,
@@ -17,13 +18,13 @@ import {
   getVitalWKN,
   isDamageTypeElemental,
   patchPrecision,
-  damageExpression
 } from '@nw-data/common'
 import { AttackType } from '@nw-data/generated'
 import { EMPTY, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
 import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
 import { DamageModStack, damageModStack, damageModSum } from './damage-mod-stack'
+import { merge } from 'lodash'
 
 export interface OffenderState {
   isBound: boolean // to a gearset
@@ -131,7 +132,7 @@ const DEFAULT_STATE: DamageCalculatorState = {
 
     affixId: null,
     affixPercent: 0,
-    affixDamageType: null,
+    affixDamageType: '',
     affixScaling: {
       str: 0,
       dex: 0,
@@ -200,11 +201,57 @@ const DEFAULT_STATE: DamageCalculatorState = {
     modCritReduction: damageModStack(),
   },
 }
-
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
 export type DamageCalculatorStore = InstanceType<typeof DamageCalculatorStore>
 export const DamageCalculatorStore = signalStore(
-  { protectedState: false },
   withState<DamageCalculatorState>(DEFAULT_STATE),
+  withMethods((state) => {
+    // effect(() => {
+    //   console.log('STATE', getState(state))
+    // })
+    return {
+      updateDefender: (input: DeepPartial<DefenderState>) => {
+        patchState(state, updateDefender(input))
+      },
+      updateOffender: (input: DeepPartial<OffenderState>) => {
+        patchState(state, updateOffender(input))
+      },
+    }
+  }),
+  withMethods((state) => {
+    return {
+      getOffenderValue: <K extends keyof OffenderState>(key: K) => {
+        if (!state.offender[key]) {
+          console.warn(`unknown offender property '${key}'`, state.offender())
+          return null
+        }
+        return state.offender[key]() as OffenderState[K]
+      },
+      setOffenderValue: <K extends keyof OffenderState>(key: K, value: OffenderState[K]) => {
+        if (state.offender[key]) {
+          patchState(state, updateOffender({ [key]: value }))
+        } else {
+          console.warn(`unknown offender property '${key}'`, state.offender)
+        }
+      },
+      getDefenderValue: <K extends keyof DefenderState>(key: K) => {
+        if (!state.defender[key]) {
+          console.warn(`unknown defender property '${key}'`, state.offender)
+          return null
+        }
+        return state.defender[key]() as DefenderState[K]
+      },
+      setDefenderValue: <K extends keyof DefenderState>(key: K, value: DefenderState[K]) => {
+        if (state.defender[key]) {
+          patchState(state, updateDefender({ [key]: value }))
+        } else {
+          console.warn(`unknown defender property '${key}'`, state.offender)
+        }
+      },
+    }
+  }),
   withComputed(({ offender, defender }) => {
     const attackContext = computed(() => {
       return {
@@ -484,24 +531,19 @@ export const DamageCalculatorStore = signalStore(
             })
           }),
           map(({ weaponType, weapon, damageRow }) => {
-            patchState(state, ({ offender }) => {
-              return {
-                offender: {
-                  ...offender,
-                  damageCoef: damageRow?.DmgCoef ?? 1,
-                  damageAdd: damageRow?.AddDmg ?? 0,
-                  weaponTag: weaponType?.WeaponTag,
-                  weaponDamage: weapon?.BaseDamage ?? 0,
-                  weaponDamageType: weaponType?.DamageType,
-                  weaponScaling: {
-                    con: 0,
-                    dex: weapon?.ScalingDexterity || 0,
-                    str: weapon?.ScalingStrength || 0,
-                    foc: weapon?.ScalingFocus || 0,
-                    int: weapon?.ScalingIntelligence || 0,
-                  },
-                },
-              }
+            state.updateOffender({
+              damageCoef: damageRow?.DmgCoef ?? 1,
+              damageAdd: damageRow?.AddDmg ?? 0,
+              weaponTag: weaponType?.WeaponTag,
+              weaponDamage: weapon?.BaseDamage ?? 0,
+              weaponDamageType: weaponType?.DamageType || null,
+              weaponScaling: {
+                con: 0,
+                dex: weapon?.ScalingDexterity || 0,
+                str: weapon?.ScalingStrength || 0,
+                foc: weapon?.ScalingFocus || 0,
+                int: weapon?.ScalingIntelligence || 0,
+              },
             })
           }),
         ),
@@ -554,21 +596,16 @@ export const DamageCalculatorStore = signalStore(
           }),
           map(({ affix, affixMap }) => {
             const stats = affixMap.get(affix)
-            patchState(state, ({ offender }) => {
-              return {
-                offender: {
-                  ...offender,
-                  affixPercent: stats?.DamagePercentage ?? 0,
-                  affixDamageType: stats?.DamageType,
-                  affixScaling: {
-                    con: 0,
-                    dex: stats?.ScalingDexterity ?? 0,
-                    foc: stats?.ScalingFocus ?? 0,
-                    int: stats?.ScalingIntelligence ?? 0,
-                    str: stats?.ScalingStrength ?? 0,
-                  },
-                },
-              }
+            state.updateOffender({
+              affixPercent: stats?.DamagePercentage || 0,
+              affixDamageType: stats?.DamageType || null,
+              affixScaling: {
+                con: 0,
+                dex: stats?.ScalingDexterity || 0,
+                foc: stats?.ScalingFocus || 0,
+                int: stats?.ScalingIntelligence || 0,
+                str: stats?.ScalingStrength || 0,
+              },
             })
           }),
         ),
@@ -593,65 +630,62 @@ export const DamageCalculatorStore = signalStore(
           }),
           map(({ dmgTypeWeapon, dmgTypeAffix, dmgTypeDot, vital, vitalLevel }) => {
             const armor = getVitalArmor(vital, vitalLevel)
-            patchState(
-              state,
-              updateDefender({
-                isPlayer: false,
-                gearScore: vitalLevel.GearScore,
+            state.updateDefender({
+              isPlayer: false,
+              gearScore: vitalLevel.GearScore,
 
-                modABS: {
-                  value: getVitalABS(vital, dmgTypeWeapon as any),
-                  stack: state.defender.modABS.stack(),
-                },
-                modABSDot: {
-                  value: getVitalABS(vital, dmgTypeDot as any),
-                  stack: state.defender.modABSDot.stack(),
-                },
-                modABSAffix: {
-                  value: getVitalABS(vital, dmgTypeAffix as any),
-                  stack: state.defender.modABSAffix.stack(),
-                },
+              modABS: {
+                value: getVitalABS(vital, dmgTypeWeapon as any),
+                stack: state.defender.modABS.stack(),
+              },
+              modABSDot: {
+                value: getVitalABS(vital, dmgTypeDot as any),
+                stack: state.defender.modABSDot.stack(),
+              },
+              modABSAffix: {
+                value: getVitalABS(vital, dmgTypeAffix as any),
+                stack: state.defender.modABSAffix.stack(),
+              },
 
-                modWKN: {
-                  value: getVitalWKN(vital, dmgTypeWeapon as any),
-                  stack: state.defender.modWKN.stack(),
-                },
-                modWKNDot: {
-                  value: getVitalWKN(vital, dmgTypeDot as any),
-                  stack: state.defender.modWKNDot.stack(),
-                },
-                modWKNAffix: {
-                  value: getVitalWKN(vital, dmgTypeAffix as any),
-                  stack: state.defender.modWKNAffix.stack(),
-                },
+              modWKN: {
+                value: getVitalWKN(vital, dmgTypeWeapon as any),
+                stack: state.defender.modWKN.stack(),
+              },
+              modWKNDot: {
+                value: getVitalWKN(vital, dmgTypeDot as any),
+                stack: state.defender.modWKNDot.stack(),
+              },
+              modWKNAffix: {
+                value: getVitalWKN(vital, dmgTypeAffix as any),
+                stack: state.defender.modWKNAffix.stack(),
+              },
 
-                elementalArmor: {
-                  value: armor.elementalRating,
-                  stack: state.defender.elementalArmor.stack(),
-                },
-                elementalArmorAdd: {
-                  value: 0,
-                  stack: state.defender.elementalArmorAdd.stack(),
-                },
-                elementalArmorFortify: {
-                  value: 0,
-                  stack: state.defender.elementalArmorFortify.stack(),
-                },
+              elementalArmor: {
+                value: armor.elementalRating,
+                stack: state.defender.elementalArmor.stack(),
+              },
+              elementalArmorAdd: {
+                value: 0,
+                stack: state.defender.elementalArmorAdd.stack(),
+              },
+              elementalArmorFortify: {
+                value: 0,
+                stack: state.defender.elementalArmorFortify.stack(),
+              },
 
-                physicalArmor: {
-                  value: armor.physicalRating,
-                  stack: state.defender.physicalArmor.stack(),
-                },
-                physicalArmorAdd: {
-                  value: 0,
-                  stack: state.defender.physicalArmorAdd.stack(),
-                },
-                physicalArmorFortify: {
-                  value: 0,
-                  stack: state.defender.physicalArmorFortify.stack(),
-                },
-              }),
-            )
+              physicalArmor: {
+                value: armor.physicalRating,
+                stack: state.defender.physicalArmor.stack(),
+              },
+              physicalArmorAdd: {
+                value: 0,
+                stack: state.defender.physicalArmorAdd.stack(),
+              },
+              physicalArmorFortify: {
+                value: 0,
+                stack: state.defender.physicalArmorFortify.stack(),
+              },
+            })
           }),
         ),
       ),
@@ -662,35 +696,29 @@ export const DamageCalculatorStore = signalStore(
         patchState(state, DEFAULT_STATE)
       },
       resetOffender: () => {
-        patchState(state, updateOffender(DEFAULT_STATE.offender))
+        state.updateOffender(DEFAULT_STATE.offender)
       },
       resetDefender: () => {
-        patchState(state, updateDefender(DEFAULT_STATE.defender))
+        state.updateDefender(DEFAULT_STATE.defender)
       },
     }
   }),
 )
 
-export function updateOffender<T extends { offender: OffenderState }>(input: Partial<OffenderState>) {
+export function updateOffender<T extends { offender: OffenderState }>(input: DeepPartial<OffenderState>) {
   return (state: T): T => {
     return {
       ...state,
-      offender: {
-        ...state.offender,
-        ...input,
-      },
+      offender: merge({}, state.offender, input),
     }
   }
 }
 
-export function updateDefender<T extends { defender: DefenderState }>(input: Partial<DefenderState>) {
+export function updateDefender<T extends { defender: DefenderState }>(input: DeepPartial<DefenderState>) {
   return (state: T): T => {
     return {
       ...state,
-      defender: {
-        ...state.defender,
-        ...input,
-      },
+      defender: merge({}, state.defender, input),
     }
   }
 }
@@ -698,19 +726,29 @@ export function updateDefender<T extends { defender: DefenderState }>(input: Par
 export function offenderAccessor<K extends keyof OffenderState>(
   store: DamageCalculatorStore,
   key: K,
-  options?: { precision?: number },
+  options?: {
+    scale?: number
+    precision?: number
+  },
 ) {
+  const scale = options?.scale ?? 1
   const precision = options?.precision
   return {
     get value(): OffenderState[K] {
-      let value = store.offender?.[key]() as OffenderState[K]
-      if (typeof value === 'number' && precision) {
-        value = patchPrecision(value, precision) as OffenderState[K]
+      let result = store.getOffenderValue(key)
+      if (typeof result === 'number') {
+        result = (result * scale) as OffenderState[K]
       }
-      return value
+      if (typeof result === 'number' && precision) {
+        result = patchPrecision(result, precision) as OffenderState[K]
+      }
+      return result
     },
     set value(value: OffenderState[K]) {
-      patchState(store, updateOffender({ [key]: value }))
+      if (typeof value === 'number') {
+        value = (value / scale) as OffenderState[K]
+      }
+      store.setOffenderValue(key, value)
     },
   }
 }
@@ -724,20 +762,20 @@ export function defenderAccessor<K extends keyof DefenderState>(
   const precision = options?.precision
   return {
     get value(): DefenderState[K] {
-      let value = store.defender?.[key]() as DefenderState[K]
-      if (typeof value === 'number') {
-        value = (value * scale) as DefenderState[K]
+      let result = store.getDefenderValue(key)
+      if (typeof result === 'number') {
+        result = (result * scale) as DefenderState[K]
       }
-      if (typeof value === 'number' && precision) {
-        value = patchPrecision(value, precision) as DefenderState[K]
+      if (typeof result === 'number' && precision) {
+        result = patchPrecision(result, precision) as DefenderState[K]
       }
-      return value
+      return result
     },
     set value(value: DefenderState[K]) {
       if (typeof value === 'number') {
         value = (value / scale) as DefenderState[K]
       }
-      patchState(store, updateDefender({ [key]: value }))
+      store.setDefenderValue(key, value)
     },
   }
 }

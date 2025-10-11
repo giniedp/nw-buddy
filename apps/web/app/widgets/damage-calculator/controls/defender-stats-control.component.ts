@@ -86,13 +86,10 @@ export class DefenderStatsControlComponent {
         take(1),
       )
       .subscribe((vital) => {
-        patchState(
-          this.store,
-          updateDefender({
-            vitalId: vital?.VitalsID || null,
-            level: vital?.Level || this.levelMin,
-          }),
-        )
+        this.store.updateDefender({
+          vitalId: vital?.VitalsID || null,
+          level: vital?.Level || this.levelMin,
+        })
       })
   }
 
