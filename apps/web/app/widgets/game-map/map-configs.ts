@@ -53,6 +53,7 @@ const MAP_CONFIGS: Record<string, MapConfig> = {
   nw_ctf_002_wide: smallMapConfig('nw_ctf_002_wide', {
     heightmap: true,
     tractmap: true,
+    impostors: true,
     boundsPoi: [700, 1000, 1100, 1400],
   }),
   nw_ctf_003_long: smallMapConfig('nw_ctf_003_long', {
@@ -63,11 +64,13 @@ const MAP_CONFIGS: Record<string, MapConfig> = {
   nw_opr_004_trench: smallMapConfig('nw_opr_004_trench', {
     heightmap: true,
     tractmap: true,
+    impostors: true,
     boundsPoi: [600, 600, 1400, 1400],
   }),
   nw_raid_cutlasskeys_00: smallMapConfig('nw_raid_cutlasskeys_00', {
     heightmap: true,
     tractmap: true,
+    impostors: true,
     boundsPoi: [400, 500, 1400, 1400],
   }),
   nw_arena02: smallMapConfig('nw_arena02', {

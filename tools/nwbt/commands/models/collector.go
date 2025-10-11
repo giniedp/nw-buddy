@@ -25,7 +25,7 @@ func NewCollector(assets *game.Assets, flags Flags) *Collector {
 		flags.CacheDir = path.Join(flags.CacheDir, fmt.Sprintf("%d", flags.TextureSize))
 		slog.Info("Texture size is set, remap cache dir to", "cache", flags.CacheDir)
 	}
-	if flags.Embed && (flags.Webp || flags.Ktx2) {
+	if flags.Embed && (flags.Webp || flags.Ktx2) && !flags.Optimize {
 		slog.Warn("Embedded textures are png only, ignoring texture-format flag")
 		flags.Webp = false
 		flags.Ktx2 = false

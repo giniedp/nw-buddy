@@ -2,8 +2,11 @@ import { Component, effect, inject, input, OnDestroy, signal } from '@angular/co
 import { CustomLayerInterface, CustomRenderMethodInput, Map } from 'maplibre-gl'
 import { Camera, EquirectangularReflectionMapping, LoadingManager, Matrix4, Scene, WebGLRenderer } from 'three'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+import { environment } from '../../../environments'
 import { GameMapHost } from './game-map-host'
 import { NW_MAP_REGION_SIZE, xToLong } from './map-projection'
 import { removeLayer } from './map-utils'
@@ -72,8 +75,14 @@ export class GameMap3dControl implements OnDestroy {
     this.scene = new Scene()
 
     const manager = new LoadingManager()
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/')
+    const ktxLoader = new KTX2Loader()
+    //ktxLoader.setTranscoderPath('./includes/js/libs/basis/');
     this.loader = new GLTFLoader(manager)
     this.loader.setMeshoptDecoder(MeshoptDecoder)
+    this.loader.setDRACOLoader(dracoLoader)
+    this.loader.setKTX2Loader(ktxLoader)
 
     const earthRadius = 6371008.8
     const earthCircumference = 2 * Math.PI * earthRadius
@@ -146,5 +155,5 @@ function getRegionModels(mapId: string, x: number, y: number) {
 }
 
 function modelUrl(mapId: string, x: number, y: number, file: string) {
-  return `https://cdn.nw-buddy.de/world/${mapId}/regions/r_+${String(x).padStart(2, '0')}_+${String(y).padStart(2, '0')}/${file}`
+  return `${environment.modelsUrl}/sharedassets/coatlicue/${mapId}/regions/r_+${String(x).padStart(2, '0')}_+${String(y).padStart(2, '0')}/${file}`
 }

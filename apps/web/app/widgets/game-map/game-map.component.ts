@@ -123,7 +123,7 @@ import { MaplibreDirective } from './maplibre.directive'
         }
       }
     </div>
-    @if (isOpenWorld()) {
+    @if (has3DModel()) {
       <game-map-3d-control [mapId]="mapId()" [nwbGameMapControl]="'top-right'" />
     }
   `,
@@ -235,6 +235,7 @@ export class GameMapComponent {
   public controlPosition = input<ControlPosition>('top-right')
 
   public isOpenWorld = computed(() => !!getMapConfig(this.mapId()).isOpenWorld)
+  public has3DModel = computed(() => !!getMapConfig(this.mapId()).impostors)
 
   private injector = inject(Injector)
   private terrainControl: TerrainControl

@@ -381,7 +381,21 @@ func (c *Collector) ProcessOptimize() {
 			if _, err := os.Stat(group.TargetFile); err != nil {
 				return "", err
 			}
-			err := utils.GltfTransform.Run("optimize", group.TargetFile, group.TargetFile, "--texture-compress", "webp")
+
+			format := "auto"
+			if c.flags.Webp {
+				format = "webp"
+			}
+			if c.flags.Ktx2 {
+				format = "ktx2"
+			}
+
+			size := "4096"
+			if c.flags.TextureSize > 0 {
+				size = fmt.Sprintf("%d", c.flags.TextureSize)
+			}
+
+			err := utils.GltfTransform.Run("optimize", group.TargetFile, group.TargetFile, "--texture-compress", format, "--texture-size", size)
 			if err != nil {
 				slog.Error("gltf-transform", "error", err)
 			}

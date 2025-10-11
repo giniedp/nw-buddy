@@ -18,6 +18,9 @@ type TasksConfig[T any, O any] struct {
 }
 
 func RunTasks[T any, O any](spec TasksConfig[T, O]) {
+	if len(spec.Tasks) == 0 {
+		return
+	}
 	type proxy struct {
 		value O
 		err   error
