@@ -39,6 +39,8 @@ const config = {
   NW_BADGE: env('NW_BADGE', nwWorkspace, ''),
   NW_WATERMARK: env('NW_WATERMARK', nwWorkspace, ''),
   POCKETBASE_URL: env('POCKETBASE_URL', nwWorkspace, ''),
+  POSTHOG_KEY: process.env.POSTHOG_KEY,
+  POSTHOG_HOST: process.env.POSTHOG_HOST
 }
 
 function env(name, workspace, fallback) {

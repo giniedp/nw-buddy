@@ -14,6 +14,8 @@ import {
   PACKAGE_VERSION,
   POCKETBASE_URL,
   environment,
+  POSTHOG_KEY,
+  POSTHOG_HOST,
 } from '../env'
 import { glob, readJSONFile } from './utils'
 
@@ -84,7 +86,9 @@ program
       watermarkImageUrl: NW_WATERMARK || null,
 
       nwbtUrl: 'http://localhost:8000',
-      pocketbaseUrl: POCKETBASE_URL || null
+      pocketbaseUrl: POCKETBASE_URL || null,
+      posthogKey: POSTHOG_KEY || null,
+      posthogHost: POSTHOG_HOST || null,
     } satisfies EnvVars
     console.log(env)
     const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(

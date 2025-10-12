@@ -1,21 +1,19 @@
-import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { NwModule } from '~/nw'
 import { environment } from '../environments/environment'
+import { LayoutModule } from './ui/layout'
 import { TooltipModule } from './ui/tooltip'
 
 @Component({
   selector: 'nwb-privacy',
   templateUrl: './privacy.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule],
+  imports: [NwModule, TooltipModule, LayoutModule],
   host: {
-    class: 'layout-content w-full layout-pad',
+    class: 'ion-page',
   },
 })
 export class PrivacyComponent {
   protected isWeb = environment.environment === 'WEB'
-  public constructor() {
-    //
-  }
+  protected hasPosthog = !!environment.posthogKey
 }

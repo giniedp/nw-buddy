@@ -48,5 +48,6 @@ export const env = {
   nwbtUrl: 'http://localhost:8000',
 
   pocketbaseUrl: '',
-
+  posthogKey: '',
+  posthogHost: ''
 }
