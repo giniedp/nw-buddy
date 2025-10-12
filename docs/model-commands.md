@@ -17,7 +17,7 @@
 pnpm nwbt models impostors --level ** --region ** --binary --simplify --embed --optimize --webp --texture-size 4096
 ```
 
-## Common modles
+## Common models
 
 This uses no command after `models` to fallback to defaul collection of armor, weapons, costumes, mounts etc
 
