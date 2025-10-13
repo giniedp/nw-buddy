@@ -2,7 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { getItemStatsArmor, getItemStatsWeapon, isItemArmor, isItemHeartGem, isItemWeapon } from '@nw-data/common'
+import { getItemStatsArmor, getItemStatsWeapon, isItemArmor, isItemHeartGem, isItemJewelery, isItemWeapon } from '@nw-data/common'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -50,7 +50,7 @@ export class ItemDetailStatsComponent {
       return null
     }
     const item = this.store.item()
-    if (!isItemArmor(item) && !isItemHeartGem(item) && !isItemWeapon(item)) {
+    if (!isItemArmor(item) && !isItemHeartGem(item) && !isItemWeapon(item) && !isItemJewelery(item)) {
       return null
     }
     const armor = this.resource.value()?.armor

@@ -590,6 +590,29 @@ export function getItemStatsArmor(item: MasterItemDefinitions, stats: ArmorItemD
       value: getArmorRatingPhysical(stats, score).toFixed(1),
     })
   }
+
+  if (stats?.ScaleDamagePerGS) {
+    result.push({
+      item,
+      label: 'ui_base_damage',
+      value: `+${((stats.ScaleDamagePerGS * score) / 100).toFixed(2)}%`,
+    })
+  }
+  if (stats?.ScaleHealthPerGS) {
+    result.push({
+      item,
+      label: 'ui_health',
+      value: `+${((stats.ScaleHealthPerGS * score) / 100).toFixed(2)}%`,
+    })
+  }
+  if (stats?.ScaleHealthPerGS) {
+    result.push({
+      item,
+      label: 'ui_cooldown_reduction',
+      value: `+${((stats.ScaleHealthPerGS * score) / 100).toFixed(2)}%`,
+    })
+  }
+
   return result
 }
 
