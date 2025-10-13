@@ -120,6 +120,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Skill Trees', path: '/skill-trees', svgIcon: svgSitemap },
       { label: 'Transmog', path: '/transmog/sets', icon: 'assets/icons/menu/transmogtoken.webp' },
       { label: 'Damage Calculator', path: '/damage-calculator', svgIcon: svgSwords, divider: true },
+      { label: 'Umbral Calculator', path: '/umbral-calculator', svgIcon: svgWeightHanging },
       { label: 'Armor Weights', path: '/armor-weights', svgIcon: svgWeightHanging },
     ],
   },

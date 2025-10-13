@@ -34,7 +34,7 @@ export class GearCellSlotSetPerksComponent {
       return await Promise.all(
         params.map(async (itemId) => {
           const item = await this.db.itemsById(itemId)
-          const setId = null // 'TestEquipmentSet_1' // getEquipmentSetId(item)
+          const setId = item?.EquipmentSetId
           const equipmentSet = await this.db.equipmentSetsById(setId)
           return {
             item,

@@ -100,11 +100,13 @@
       </div>
     }
 
-    <!-- <nwb-gear-cell-slot-set-perks class="screenshot-body"/> -->
+    <nwb-gear-cell-slot-set-perks
+      class="screenshot-body"
+    />
 
     @for (slot of slots(); track slot) {
       <div
-        class="shadow-lg rounded-md overflow-clip bg-black screenshot-body "
+        class="shadow-lg rounded-md overflow-clip bg-black screenshot-body"
         [class.hidden]="elGear.isHidden()"
         [class.screenshot-hidden]="elGear.isScreenshotHidden()"
       >

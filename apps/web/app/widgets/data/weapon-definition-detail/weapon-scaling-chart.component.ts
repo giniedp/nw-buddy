@@ -55,7 +55,7 @@ export class WeaponScalingChartComponent {
       if (weaponId) {
         this.store.loadByWeaponId(weaponId)
       } else if (weaponTag) {
-        this.store.loadByWeaponId(weaponTag)
+        this.store.loadByWeaponTag(weaponTag)
       } else if (itemId) {
         this.store.loadByItemId(itemId)
       }

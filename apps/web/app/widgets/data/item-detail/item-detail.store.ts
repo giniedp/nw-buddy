@@ -108,7 +108,7 @@ export const ItemDetailStore = signalStore(
       },
       loader: ({ params: { item }}): Promise<EquipmentSet> => {
         // TODO: load equipmentests
-        const id = null // "TestEquipmentSet_1" // getEquipmentSetId(item)
+        const id = item?.EquipmentSetId
         return db.equipmentSetsById(id)
       },
       keepPrevious: true

@@ -10,16 +10,16 @@ import { UmbralCalculatorStore } from './umbral-calculator.store'
 export class UmbralCalculatorDirective {
   private db = injectNwData()
   private upgradeResource = resource({
-    loader: async (): Promise<Umbralgsupgrades[]> => {
-      return []
+    loader: async () => {
+      return this.db.gearScoreUpgrades()
     }
   })
   private upgradeCosts = computed((): Umbralgsupgrades[] => {
     if (this.upgradeResource.hasValue()) {
       return this.upgradeResource.value().map((it) => {
         return {
-          level: it.level,
-          cost: it.cost,
+          level: it.Level,
+          cost: it.RequiredCurrencyQuantity,
         }
       })
     }

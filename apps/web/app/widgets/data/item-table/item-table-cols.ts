@@ -1,4 +1,5 @@
 import {
+  EquipmentSet,
   ItemRarity,
   NW_FALLBACK_ICON,
   getAffixMODs,
@@ -50,6 +51,7 @@ export type ItemTableRecord = MasterItemDefinitions & {
   $transformFrom?: Array<MasterItemDefinitions | HouseItems>
   $conversions?: Array<ItemCurrencyConversionData>
   $shops?: Array<ShopInfo>
+  $equipmentSet?: EquipmentSet
 }
 
 export interface ShopInfo {
@@ -360,6 +362,7 @@ export function itemColAttributeMods(util: ItemTableUtils) {
     colId: 'attributeMods',
     headerValueGetter: () => 'Attr. Mods',
     width: 100,
+    hide: true,
     headerClass: 'bg-secondary/15',
     valueGetter: ({ data }) => {
       return data.$affixes
@@ -763,6 +766,38 @@ export function itemColShops(util: ItemTableUtils) {
             icon: shop.Icon || NW_FALLBACK_ICON,
           }
         })
+      },
+    }),
+  })
+}
+
+export function itemColEquipmentSetId(util: ItemTableUtils) {
+  return util.colDef({
+    colId: 'equipmentSetId',
+    headerClass: 'bg-secondary/15',
+    headerValueGetter: () => 'Equipment Set',
+    field: 'EquipmentSetId',
+    width: 200,
+    cellRenderer: util.cellRenderer(({ data }) => {
+      if (!data.$equipmentSet) {
+        return null
+      }
+      return util.i18n.get(data.$equipmentSet.DisplayName)
+    }),
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const item = data.$equipmentSet
+        if (!item) {
+          return []
+        }
+        return [
+          {
+            id: data.EquipmentSetId,
+            label: util.i18n.get(item.DisplayName),
+          },
+        ]
       },
     }),
   })

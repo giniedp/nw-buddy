@@ -72,6 +72,8 @@ export abstract class NwDataSheets {
   public itemsByItemType = indexLookup(this.itemsByItemTypeMap)
   public itemsBySetFamilyNameMap = secondaryIndex<MasterItemDefinitions, string>(this.itemsAll, getItemSetFamilyName)
   public itemsBySetFamilyName = indexLookup(this.itemsBySetFamilyNameMap)
+  public itemsByIdEquipmentSetIdMap = secondaryIndex(this.itemsAll, 'EquipmentSetId')
+  public itemsByIdEquipmentSetId = indexLookup(this.itemsByIdEquipmentSetIdMap)
 
   public housingItemsAll = table(() => this.loadDatasheets(DATASHEETS.HouseItems))
   public housingItemsByIdMap = primaryIndex(this.housingItemsAll, 'HouseItemID')
@@ -781,4 +783,6 @@ export abstract class NwDataSheets {
   public factionControlBuffsAll = table(() => this.loadDatasheets(DATASHEETS.FactionControlBuffDefinitions))
   public factionControlBuffsByIdMap = primaryIndex(this.factionControlBuffsAll, 'FactionControlBuffID')
   public factionControlBuffsById = indexLookup(this.factionControlBuffsByIdMap)
+
+  public gearScoreUpgrades = table(() => this.loadDatasheets(DATASHEETS.GearScoreUpgradeDefinition))
 }

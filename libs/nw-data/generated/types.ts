@@ -14,6 +14,7 @@ export interface AbilityData {
   AbilityIdToCheckForTrackedHits: string
   AbilityList: string[]
   AbilityOnCooldownOptions: AbilityOnCooldownOptions
+  AbilityTableTagsToTriggerOn: string
   AbilityTrigger: string
   ActivationCooldown: number
   AdjustPointsAccumulatorSelf: string
@@ -50,6 +51,7 @@ export interface AbilityData {
   DamageTableRow: string[]
   DamageTableRowOverride: string[]
   DamageTableStatusEffectOverride: string
+  DamageTableTagsToTriggerOn: string
   DamageTypes: DamageType[]
   Description: string
   DisableApplyPerStatusEffectStack: boolean
@@ -65,7 +67,7 @@ export interface AbilityData {
   DontHaveStatusEffect: string[]
   Duration: number
   ElementalArmor: number
-  EnableCrit: string
+  EnableCrit: number
   EnableHoldConditionIfTrackedSpellExistsOfType: string
   EnableTaunt: boolean
   EquipLoadCategory: EquipLoadCategory[]
@@ -75,7 +77,7 @@ export interface AbilityData {
   FastTravelInnCooldownMod: number
   ForceShowNameTag: string
   ForceStatusEffectDamageTableRow: boolean
-  ForceTakeStaminaDamage: string
+  ForceTakeStaminaDamage: number
   GatheringTradeskill: GatheringTradeskill
   GiveAzothPercentChance: number
   HasGritActive: boolean
@@ -84,12 +86,12 @@ export interface AbilityData {
   HealScalingValueMultiplier: number
   Health: string
   HealthDamageMitigation: string
-  HealthDamageMitigation_Endvalue: string
+  HealthDamageMitigation_Endvalue: number
   HealthPenaltyPerStackRemoved: string
   HitFromBehindArmorPenetration: number
   HitFromBehindDamage: number
   HitRateDmg: string
-  HitRateDmgReduction: string
+  HitRateDmgReduction: number
   HoldConditionButtonIcon: string
   Icon: string
   IgnoreDisabledAttackTypes: string
@@ -177,6 +179,7 @@ export interface AbilityData {
   OnKill: boolean
   OnLegShot: boolean
   OnManaChanged: boolean
+  OnNotLegShot: boolean
   OnProjPassedThrough: boolean
   OnSelfDamage: boolean
   OnStatusEffectApplied: boolean
@@ -193,10 +196,11 @@ export interface AbilityData {
   PerStatusEffectOnSelfMax: number
   PerStatusEffectOnTarget: boolean
   PerStatusEffectOnTargetMax: number
-  PerStatusEffectStackOnSelf: string
-  PerStatusEffectStackOnSelfMax: string
+  PerStatusEffectStackOnSelf: boolean
+  PerStatusEffectStackOnSelfMax: number
   PhysicalArmor: number
   PhysicalArmorMaxHealthMod: number
+  PostHitSlayerScriptCondition: string
   PowerLevelOverride: number
   RangedAttackName: string
   RangedAttackNameOverride: string
@@ -243,7 +247,7 @@ export interface AbilityData {
   StatusEffectCategoryToTransfer: string
   StatusEffectComparison: string
   StatusEffectDamageTableIdForRowOverride: string
-  StatusEffectDamageTableRowOverride: string
+  StatusEffectDamageTableRowOverride: string | number
   StatusEffectDurationCats: StatusEffectCategory[]
   StatusEffectDurationMod: number
   StatusEffectDurationMult: number
@@ -252,6 +256,7 @@ export interface AbilityData {
   StatusEffectStackSize: number
   StatusEffectsList: string[]
   SupportsSmartcast: boolean
+  Tags: string
   TargetCollisionFilters: string
   TargetComparisonType: ComparisonType
   TargetCooldownsExtensionModifier: string
@@ -349,8 +354,8 @@ export interface AffixStatData {
   AfflictionDamage: string
   AfflictionMultiplier: string
   AppendToTooltip: string
-  AttributeModifiers: string
-  AttributePlacingMods: string
+  AttributeModifiers: number
+  AttributePlacingMods: number
   BLAArcane: number
   BLACorruption: number
   BLAFire: number
@@ -379,6 +384,7 @@ export interface AffixStatData {
   DMGVitalsCategory: string
   DamagePercentage: number
   DamageType: DamageType
+  DiminishReturns: boolean
   DisableDurabilityLoss: boolean
   DurabilityMod: number
   EffectDurationMultiplier: string
@@ -433,9 +439,9 @@ export interface AffixStatData {
   StatusID: string
   SummerFishRarityRollModifier: string
   TerritoryStandingMod: number
-  UseAffixScalingOnBaseDamage: boolean
+  UseAffixScalingOnBaseDamage: string
   UseCountMultiplier: number
-  UseWeaponAttributeScaling: string
+  UseWeaponAttributeScaling: number
   WKNAcid: string
   WKNArcane: string
   WKNCorruption: string
@@ -470,6 +476,7 @@ export interface AfflictionData {
   LocalizedText: string
   LocalizedTextAfflicted: string
   Max: number
+  RemoveOnGameModeExit: boolean
   StatusEffects: string
 }
 
@@ -712,7 +719,11 @@ export interface ArmorItemDefinitions {
   ROLOutfitting: string
   ROLProvisioning: string
   ROLSkinning: string
+  ScaleCDRPerGS: number
+  ScaleDamagePerGS: number
+  ScaleHealthPerGS: number
   StaminaRate: string
+  TrinketBonus: number
   WeaponID: string
   WeightClass: string
   WeightOverride: number
@@ -1042,6 +1053,7 @@ export interface CategoricalProgressionData {
   IconPath: string
   InfiniteLevels: boolean
   ItemClass: string
+  LootLimitId: string
   MaxLevel: number
   MinTrackedLevel: string
   PostSkillCapSkill: string
@@ -1077,6 +1089,13 @@ export interface CategoricalProgressionRankData {
   RequiredLevel: number
   SanityCheck: boolean
   XpReward: number
+}
+
+export interface CharmFilterData {
+  DisplayName: string
+  FilterId: string
+  ItemClass: string
+  SortOrder: number
 }
 
 export interface CinematicVideoStaticData {
@@ -1520,6 +1539,7 @@ export interface CutsceneCameraStaticData {
   DummyLookAtInfo: string
   DummyPresetPos: string
   DummyPresetRot: string
+  EnableClientFPSOptimizer: string
   EnterBlendTime: number
   ExitBlendTime: number
   ForceInstantExitTransition: boolean
@@ -1536,6 +1556,8 @@ export interface CutsceneCameraStaticData {
   OriginExitBlendTime: number
   PlayFadeEffect: string
   PlayerFadeRate: number
+  SpectatorCameraOriginPitch: number
+  SpectatorMode: string
 }
 
 export interface DamageData {
@@ -1618,7 +1640,7 @@ export interface DamageData {
   ImpactRating: number | string
   IsAbility: boolean
   IsEmote: boolean
-  IsRanged: string | boolean | number
+  IsRanged: number | string | boolean
   IsSiege: boolean
   IsTaunt: boolean
   LOSCheckVerticalAngleOffset: number
@@ -1628,7 +1650,7 @@ export interface DamageData {
   NoHeadshot: boolean
   NoLegShots: boolean
   NoReaction: boolean
-  PowerLevel: number | string
+  PowerLevel: number
   PowerLevel_AI: number
   StaggerDmgModifier: number | string
   StaggerResistModifier: number
@@ -1637,6 +1659,7 @@ export interface DamageData {
   StunBreakoutIncrement: number
   StunBreakoutIncrement_AI: number
   SurfaceImpactEffect: string
+  Tags: string
   TargetCameraShakeID: string
   TauntDuration: number
   TauntMinimumThreatValue: number
@@ -1644,7 +1667,7 @@ export interface DamageData {
   ThirstDmg: number
   ThreatMultiplier: number
   Unblockable: boolean
-  UseAttackerPosForReaction: boolean | number | string
+  UseAttackerPosForReaction: number | string | boolean
   WeaponCategory: string
   stunBreakoutIncrementer: number
 }
@@ -1743,6 +1766,15 @@ export interface DifficultyScalingData {
   WorldEncounterID: string
 }
 
+export interface DiminishingReturnsData {
+  DamageTypeId: string
+  DiminishmentRate: number
+  LowerLimit: number
+  NegativeStartValue: number
+  PositiveStartValue: number
+  UpperLimit: number
+}
+
 export interface DivertedLootData {
   CountToNextLevel: number
   GreenNotificationLocTag: string
@@ -1772,53 +1804,57 @@ export interface DuelBalanceData {
 }
 
 export interface DungeonClusterStaticData {
-  ClusterId: unknown
-  Comment: unknown
-  FeatureId: unknown
-  ReplacementCount: unknown
-  SeedGraph: unknown
-  Theme: unknown
-  Weight: unknown
+  ClusterId: string
+  Comment: string
+  FeatureId: string
+  ReplacementCount: number
+  SeedGraph: string
+  Theme: string
+  Weight: string
 }
 
 export interface DungeonGrammarStaticData {
-  Comments: unknown
-  FeatureId: unknown
-  GrammaReplacementId: unknown
-  GrammarReplacements: unknown
-  MaxDepth: unknown
-  MinDepth: unknown
-  SeedGraph: unknown
-  Weight: unknown
+  Comments: string
+  FeatureId: string
+  GrammaReplacementId: string
+  GrammarReplacements: string
+  MaxDepth: string
+  MinDepth: string
+  SeedGraph: string
+  ThemeTags: string
+  Weight: number
 }
 
 export interface DungeonRoomStaticData {
-  AliasCategory1: unknown
-  AliasCategory2: unknown
-  AliasCategory3: unknown
-  AliasCategory4: unknown
-  AliasTag1: unknown
-  AliasTag2: unknown
-  AliasTag3: unknown
-  AliasTag4: unknown
-  Curse: unknown
-  FeatureId: unknown
-  IGC_ID: unknown
-  RoomId: unknown
-  RoomType: unknown
-  StartingState: unknown
-  Theme: unknown
+  AliasCategory1: string
+  AliasCategory2: string
+  AliasCategory3: string
+  AliasCategory4: string
+  AliasTag1: string
+  AliasTag2: string
+  AliasTag3: string
+  AliasTag4: string
+  Curse: string
+  FeatureId: string
+  IGC_ID: string
+  ImguiColor: string
+  IsRoomPassable: boolean
+  RoomId: string
+  RoomPassthroughCost: number
+  RoomType: string
+  StartingState: string
+  Theme: string
 }
 
 export interface DungeonTileStaticData {
-  Connections: unknown
-  DungeonTileId: unknown
-  FeatureId: unknown
-  Rotations: unknown
-  SupportedRoomTypes: unknown
-  TileSize: unknown
-  VariationAssetPaths: unknown
-  Weight: unknown
+  Connections: string
+  DungeonTileId: string
+  FeatureId: string
+  Rotations: number
+  SupportedRoomTypes: string
+  TileSize: number
+  VariationAssetPaths: string
+  Weight: string
 }
 
 export interface DyeColorData {
@@ -1839,6 +1875,24 @@ export interface DyeItemDefinitions {
   ColorIndex: number
   DyeItemId: string
   NameNote: string
+}
+
+export interface DynamicDifficultyStaticData {
+  DifficultyTier: number
+  DynamicDifficultyId: string
+  GameModeIds: string
+  StatusEffect_1: string
+  StatusEffect_1_Potency_Catacombs: number
+  'StatusEffect_1_Potency_Catacombs+': number
+  'StatusEffect_1_Potency_Catacombs-': number
+  StatusEffect_1_Potency_CatacombsBoss: number
+  StatusEffect_1_Potency_CatacombsMiniBoss: number
+  StatusEffect_2: string
+  StatusEffect_2_Potency_Catacombs: number
+  'StatusEffect_2_Potency_Catacombs+': number
+  'StatusEffect_2_Potency_Catacombs-': number
+  StatusEffect_2_Potency_CatacombsBoss: number
+  StatusEffect_2_Potency_CatacombsMiniBoss: number
 }
 
 export interface EconomyTrackerData {
@@ -1973,6 +2027,8 @@ export interface EquipmentSetData {
   Perk1Threshold: number
   Perk2: string
   Perk2Threshold: number
+  Perk3: string
+  Perk3Threshold: number
 }
 
 export interface ExpansionData {
@@ -2157,10 +2213,26 @@ export interface FishingWaterData {
   TimeToNibbleSecondsRange: string
 }
 
+export interface FlexibleMissionBoardData {
+  DailyBonusesCount: unknown
+  DailyRewardModifierId: unknown
+  DisplayNpcShopButton: unknown
+  FlexibleMissionBoardId: unknown
+  MaxDisplayableMissionsCount: unknown
+  MissionBoardName: unknown
+  MissionObjectiveType: unknown
+  MissionRefreshIntervalMinutes: unknown
+  MissionWeightsBucket: unknown
+  RankNameColor: unknown
+  ReputationBarRankIcon: unknown
+  ReputationId: unknown
+  WalletDisplayProgression: unknown
+}
+
 export interface GameEventData {
   AchievementId: string
   AffinityRewards: string
-  AzothReward: number | string
+  AzothReward: string | number
   AzothRewardChance: number
   AzothSalt: number
   AzothSaltChance: number
@@ -2169,8 +2241,8 @@ export interface GameEventData {
   CoinRewardChance: number
   CreatureType: string
   CurrencyReward: number | string
-  CursedCrowns: string
-  CursedSilvers: string
+  CursedCrowns: number
+  CursedSilvers: number
   EmitTelemetry: boolean
   EntitlementId: string
   EventID: string
@@ -2202,6 +2274,7 @@ export interface GameEventData {
   SeasonsXp: number
   StatusEffectId: string
   TerritoryStanding: number | string
+  UmbralCurrency: number
   UniversalExpAmount: number | string
   UseRestedExp: string
   WhisperID: string
@@ -2213,6 +2286,7 @@ export interface GameModeData {
   AIDespawnRadius: string
   AILeashingOptOut: boolean
   AILevelAdjustedPerceptionEnabled: boolean
+  AIPathDistanceLeashOverride: number
   AIPreventEnemyTraining: boolean
   AISpawnRadius: string
   AchievementIdForCompletingMaxRank: string
@@ -2227,9 +2301,12 @@ export interface GameModeData {
   BackfillReadyThreshold: number
   BackgroundImagePath: string
   BasicRewardIds: string[]
+  BypassInventory: boolean
   CampingErrorMsg: string
   CannotFastTravelTextId: string
   ClearBattleTokensOnExit: string
+  ClearLevelUpAttributes: boolean
+  ClearMasteries: boolean
   CombineTeamGroups: boolean
   ContainerLevel: number
   DailyLootLimitId: string
@@ -2242,6 +2319,8 @@ export interface GameModeData {
   DisablePSActivityCards: boolean
   DisabledItemClasses: string
   DisplayName: string
+  DropOnDeathSliceOverride: string
+  DungeonRespawnsPermitted: boolean
   EnableEquipInCombat: boolean
   EntryAchievementConditional: string
   ExclusiveRewardIds: string[]
@@ -2262,6 +2341,7 @@ export interface GameModeData {
   ImmediateLaunch: boolean
   IsDungeon: boolean
   IsMutable: boolean
+  IsPUGRaidTrial: boolean
   IsPVP: boolean
   IsRaidTrial: boolean
   IsRemoteEntryAllowed: boolean
@@ -2309,6 +2389,8 @@ export interface GameModeData {
   MatchmakingRequiredHealingMastery: number
   MatchmakingRequiresTauntGem: boolean
   MaxAI: string
+  MaxBackfillDuration: number
+  MaxDynamicDifficultyLevel: number
   MaxPlayerLevelToUseGearScoreOverride: number
   MinAcceptedInvites: number
   MinGroupSize: number
@@ -2356,6 +2438,7 @@ export interface GameModeData {
   SignupTitleTextId: string
   SimpleImagePath: string
   SpecialQueueGroupSizes: number
+  StartingDynamicDifficultyLevel: number
   TeamCapacity: number
   TimerThresholdDefault: number
   TimerThresholdMutated: number
@@ -2387,14 +2470,21 @@ export interface GameModeMapData {
   ActivityScreenBgPath: string
   CoatlicueName: string
   DynamicStackConfigName: string
+  EncounterTickRateHz: number
   ExcludeFromMapRotation: string
   FreezeTime: number
   GameModeId: string
   GameModeMapId: string
   NavGenerationEnabled: boolean
+  NavObstacleCullingEnabled: boolean
+  NavTileCacheEnabled: boolean
+  NavUseHeightfield: boolean
+  NavWorldBounds: string
   PauseTimeOfDay: boolean
+  PointSpawnerTickRateHz: number
   ProjectedAZothComputeUnits: number
   ProjectedMemoryUseMb: number
+  SliceExclusionList: string
   SlicePath: string
   TeamTeleportData: string
   TeamTeleportFormationData: string
@@ -2415,6 +2505,7 @@ export interface GameModeSchedulerStaticData {
 
 export interface GatherableData {
   AddedStatusEffect: string
+  AdditionalInfo: string
   AlignGatherer: boolean
   BaseGatherTime: number
   ConsumedStatusEffect: string
@@ -2430,7 +2521,7 @@ export interface GatherableData {
   GatheringFragment: string
   GatheringType: string
   IconTypeUnlock: string
-  IconTypeUnlockImagePath: string
+  IconTypeUnlockImagePath: string | boolean
   IdleFragment: string
   IgnoreAllObstructions: boolean
   IsDynamicPoiTarget: boolean
@@ -2447,6 +2538,7 @@ export interface GatherableData {
   MountGatherers: string
   NumRequiredToGather: number
   ObstructBuildables: boolean
+  OpenAfterGathering: boolean
   ProgressionCurrencyCosts: string
   RequireControllingFaction: boolean
   RequireLootItems: string
@@ -2462,6 +2554,12 @@ export interface GatherableData {
   Tradeskill: string
   UsableEmoteTags: string
   WaitForImpact: boolean
+}
+
+export interface GearScoreUpgradeDefinition {
+  Level: number
+  RequiredCurrencyId: string
+  RequiredCurrencyQuantity: number
 }
 
 export interface GeneratorRecipes {
@@ -2756,7 +2854,7 @@ export interface ItemCurrencyConversionData {
   BuyCurrencyCost: number
   BuyCurrencyItemCost: number
   BuyCurrencyItemName: string
-  BuyProgression2Cost: string
+  BuyProgression2Cost: number
   BuyProgression2Id: string
   BuyProgression3Cost: string
   BuyProgression3Id: string
@@ -2846,6 +2944,7 @@ export interface ItemTooltipLayout {
 }
 
 export interface ItemTransform {
+  FeatureId: string
   FromItemId: string
   KeepPerks: boolean
   ToItemId: string
@@ -3007,8 +3106,6 @@ export interface LootBucketData {
   Item132: string
   Item133: string
   Item134: string
-  Item135: string
-  Item136: string
   Item137: string
   Item138: string
   Item139: string
@@ -3027,7 +3124,6 @@ export interface LootBucketData {
   Item150: string
   Item151: string
   Item152: string
-  Item153: string
   Item154: string
   Item155: string
   Item156: string
@@ -3044,7 +3140,6 @@ export interface LootBucketData {
   Item166: string
   Item167: string
   Item168: string
-  Item169: string
   Item17: string
   Item170: string
   Item171: string
@@ -3208,10 +3303,7 @@ export interface LootBucketData {
   Item33: string
   Item330: string
   Item331: string
-  Item332: string
-  Item333: string
   Item334: string
-  Item335: string
   Item336: string
   Item337: string
   Item338: string
@@ -3303,11 +3395,13 @@ export interface LootBucketData {
   Item416: string
   Item417: string
   Item418: string
+  Item419: string
   Item42: string
   Item421: string
   Item422: string
   Item423: string
   Item424: string
+  Item425: string
   Item426: string
   Item427: string
   Item428: string
@@ -3352,7 +3446,6 @@ export interface LootBucketData {
   Item463: string
   Item464: string
   Item465: string
-  Item466: string
   Item467: string
   Item468: string
   Item469: string
@@ -3409,10 +3502,46 @@ export interface LootBucketData {
   Item514: string
   Item515: string
   Item516: string
+  Item517: string
+  Item518: string
+  Item519: string
   Item52: string
+  Item520: string
+  Item521: string
+  Item522: string
+  Item523: string
+  Item524: string
+  Item525: string
+  Item526: string
+  Item527: string
+  Item528: string
+  Item529: string
   Item53: string
+  Item530: string
+  Item531: string
+  Item532: string
+  Item533: string
+  Item534: string
+  Item535: string
+  Item536: string
+  Item537: string
+  Item538: string
+  Item539: string
   Item54: string
+  Item540: string
+  Item541: string
+  Item542: string
+  Item543: string
+  Item544: string
+  Item545: string
+  Item546: string
+  Item547: string
+  Item548: string
+  Item549: string
   Item55: string
+  Item550: string
+  Item551: string
+  Item552: string
   Item56: string
   Item57: string
   Item58: string
@@ -3507,8 +3636,6 @@ export interface LootBucketData {
   LootBucket132: string
   LootBucket133: string
   LootBucket134: string
-  LootBucket135: string
-  LootBucket136: string
   LootBucket137: string
   LootBucket138: string
   LootBucket139: string
@@ -3527,7 +3654,6 @@ export interface LootBucketData {
   LootBucket150: string
   LootBucket151: string
   LootBucket152: string
-  LootBucket153: string
   LootBucket154: string
   LootBucket155: string
   LootBucket156: string
@@ -3544,7 +3670,6 @@ export interface LootBucketData {
   LootBucket166: string
   LootBucket167: string
   LootBucket168: string
-  LootBucket169: string
   LootBucket17: string
   LootBucket170: string
   LootBucket171: string
@@ -3708,10 +3833,7 @@ export interface LootBucketData {
   LootBucket33: string
   LootBucket330: string
   LootBucket331: string
-  LootBucket332: string
-  LootBucket333: string
   LootBucket334: string
-  LootBucket335: string
   LootBucket336: string
   LootBucket337: string
   LootBucket338: string
@@ -3803,11 +3925,13 @@ export interface LootBucketData {
   LootBucket416: string
   LootBucket417: string
   LootBucket418: string
+  LootBucket419: string
   LootBucket42: string
   LootBucket421: string
   LootBucket422: string
   LootBucket423: string
   LootBucket424: string
+  LootBucket425: string
   LootBucket426: string
   LootBucket427: string
   LootBucket428: string
@@ -3852,7 +3976,6 @@ export interface LootBucketData {
   LootBucket463: string
   LootBucket464: string
   LootBucket465: string
-  LootBucket466: string
   LootBucket467: string
   LootBucket468: string
   LootBucket469: string
@@ -3909,10 +4032,46 @@ export interface LootBucketData {
   LootBucket514: string
   LootBucket515: string
   LootBucket516: string
+  LootBucket517: string
+  LootBucket518: string
+  LootBucket519: string
   LootBucket52: string
+  LootBucket520: string
+  LootBucket521: string
+  LootBucket522: string
+  LootBucket523: string
+  LootBucket524: string
+  LootBucket525: string
+  LootBucket526: string
+  LootBucket527: string
+  LootBucket528: string
+  LootBucket529: string
   LootBucket53: string
+  LootBucket530: string
+  LootBucket531: string
+  LootBucket532: string
+  LootBucket533: string
+  LootBucket534: string
+  LootBucket535: string
+  LootBucket536: string
+  LootBucket537: string
+  LootBucket538: string
+  LootBucket539: string
   LootBucket54: string
+  LootBucket540: string
+  LootBucket541: string
+  LootBucket542: string
+  LootBucket543: string
+  LootBucket544: string
+  LootBucket545: string
+  LootBucket546: string
+  LootBucket547: string
+  LootBucket548: string
+  LootBucket549: string
   LootBucket55: string
+  LootBucket550: string
+  LootBucket551: string
+  LootBucket552: string
   LootBucket56: string
   LootBucket57: string
   LootBucket58: string
@@ -4001,8 +4160,6 @@ export interface LootBucketData {
   MatchOne132: unknown
   MatchOne133: unknown
   MatchOne134: unknown
-  MatchOne135: unknown
-  MatchOne136: unknown
   MatchOne137: unknown
   MatchOne138: unknown
   MatchOne139: unknown
@@ -4021,7 +4178,6 @@ export interface LootBucketData {
   MatchOne150: unknown
   MatchOne151: string
   MatchOne152: unknown
-  MatchOne153: boolean
   MatchOne154: boolean
   MatchOne155: boolean
   MatchOne156: boolean
@@ -4038,7 +4194,6 @@ export interface LootBucketData {
   MatchOne166: unknown
   MatchOne167: unknown
   MatchOne168: boolean
-  MatchOne169: boolean
   MatchOne17: boolean
   MatchOne170: unknown
   MatchOne171: unknown
@@ -4202,10 +4357,7 @@ export interface LootBucketData {
   MatchOne33: unknown
   MatchOne330: unknown
   MatchOne331: unknown
-  MatchOne332: boolean
-  MatchOne333: boolean
   MatchOne334: boolean
-  MatchOne335: boolean
   MatchOne336: boolean
   MatchOne337: unknown
   MatchOne338: unknown
@@ -4297,11 +4449,13 @@ export interface LootBucketData {
   MatchOne416: unknown
   MatchOne417: unknown
   MatchOne418: unknown
+  MatchOne419: unknown
   MatchOne42: boolean
   MatchOne421: unknown
   MatchOne422: unknown
   MatchOne423: unknown
   MatchOne424: unknown
+  MatchOne425: unknown
   MatchOne426: unknown
   MatchOne427: unknown
   MatchOne428: unknown
@@ -4346,7 +4500,6 @@ export interface LootBucketData {
   MatchOne463: unknown
   MatchOne464: unknown
   MatchOne465: boolean
-  MatchOne466: boolean
   MatchOne467: unknown
   MatchOne468: unknown
   MatchOne469: unknown
@@ -4403,10 +4556,46 @@ export interface LootBucketData {
   MatchOne514: unknown
   MatchOne515: unknown
   MatchOne516: unknown
+  MatchOne517: unknown
+  MatchOne518: unknown
+  MatchOne519: unknown
   MatchOne52: unknown
+  MatchOne520: unknown
+  MatchOne521: unknown
+  MatchOne522: unknown
+  MatchOne523: unknown
+  MatchOne524: boolean
+  MatchOne525: boolean
+  MatchOne526: boolean
+  MatchOne527: boolean
+  MatchOne528: boolean
+  MatchOne529: boolean
   MatchOne53: unknown
+  MatchOne530: boolean
+  MatchOne531: boolean
+  MatchOne532: boolean
+  MatchOne533: unknown
+  MatchOne534: unknown
+  MatchOne535: unknown
+  MatchOne536: unknown
+  MatchOne537: unknown
+  MatchOne538: unknown
+  MatchOne539: unknown
   MatchOne54: unknown
+  MatchOne540: unknown
+  MatchOne541: unknown
+  MatchOne542: unknown
+  MatchOne543: unknown
+  MatchOne544: unknown
+  MatchOne545: unknown
+  MatchOne546: unknown
+  MatchOne547: unknown
+  MatchOne548: unknown
+  MatchOne549: unknown
   MatchOne55: unknown
+  MatchOne550: unknown
+  MatchOne551: unknown
+  MatchOne552: unknown
   MatchOne56: unknown
   MatchOne57: unknown
   MatchOne58: unknown
@@ -4503,8 +4692,6 @@ export interface LootBucketData {
   Quantity132: number
   Quantity133: number
   Quantity134: number
-  Quantity135: number
-  Quantity136: number
   Quantity137: number
   Quantity138: string
   Quantity139: number
@@ -4519,18 +4706,17 @@ export interface LootBucketData {
   Quantity147: string
   Quantity148: number
   Quantity149: number
-  Quantity15: string | number
+  Quantity15: number | string
   Quantity150: number
   Quantity151: number
   Quantity152: number
-  Quantity153: string
   Quantity154: string
   Quantity155: string
   Quantity156: string
   Quantity157: number
   Quantity158: number
   Quantity159: number
-  Quantity16: string | number
+  Quantity16: number | string
   Quantity160: number
   Quantity161: number
   Quantity162: number
@@ -4538,11 +4724,10 @@ export interface LootBucketData {
   Quantity164: number
   Quantity165: number
   Quantity166: number
-  Quantity167: number
+  Quantity167: unknown
   Quantity168: number
-  Quantity169: number
   Quantity17: number
-  Quantity170: number
+  Quantity170: unknown
   Quantity171: number
   Quantity172: number
   Quantity173: number
@@ -4550,15 +4735,15 @@ export interface LootBucketData {
   Quantity175: number
   Quantity176: number
   Quantity177: number
-  Quantity18: string | number
-  Quantity19: string | number
+  Quantity18: number | string
+  Quantity19: number | string
   Quantity194: number
   Quantity196: number
   Quantity197: number
   Quantity198: number
   Quantity199: number
   Quantity2: number
-  Quantity20: string | number
+  Quantity20: number | string
   Quantity200: number
   Quantity201: number
   Quantity202: number
@@ -4569,7 +4754,7 @@ export interface LootBucketData {
   Quantity207: number
   Quantity208: number
   Quantity209: number
-  Quantity21: string | number
+  Quantity21: number | string
   Quantity210: number
   Quantity211: number
   Quantity212: number
@@ -4607,7 +4792,7 @@ export interface LootBucketData {
   Quantity242: number
   Quantity243: number
   Quantity244: number
-  Quantity245: number
+  Quantity245: unknown
   Quantity246: number
   Quantity247: number
   Quantity248: number
@@ -4634,7 +4819,7 @@ export interface LootBucketData {
   Quantity267: number
   Quantity268: number
   Quantity269: number
-  Quantity27: string | number
+  Quantity27: number | string
   Quantity270: number
   Quantity271: number
   Quantity272: string
@@ -4645,7 +4830,7 @@ export interface LootBucketData {
   Quantity277: number
   Quantity278: number
   Quantity279: number
-  Quantity28: string | number
+  Quantity28: number | string
   Quantity280: number
   Quantity281: number
   Quantity282: number
@@ -4656,7 +4841,7 @@ export interface LootBucketData {
   Quantity287: number
   Quantity288: number
   Quantity289: number
-  Quantity29: string | number
+  Quantity29: number | string
   Quantity290: number
   Quantity291: number
   Quantity292: number
@@ -4704,10 +4889,7 @@ export interface LootBucketData {
   Quantity33: number
   Quantity330: number
   Quantity331: number
-  Quantity332: number
-  Quantity333: number
   Quantity334: number
-  Quantity335: number
   Quantity336: number
   Quantity337: number
   Quantity338: number
@@ -4799,11 +4981,13 @@ export interface LootBucketData {
   Quantity416: number
   Quantity417: number
   Quantity418: number
+  Quantity419: number
   Quantity42: number
   Quantity421: number
   Quantity422: number
   Quantity423: number
   Quantity424: number
+  Quantity425: number
   Quantity426: number
   Quantity427: number
   Quantity428: number
@@ -4819,7 +5003,7 @@ export interface LootBucketData {
   Quantity437: number
   Quantity438: number
   Quantity439: number
-  Quantity44: number | string
+  Quantity44: string | number
   Quantity440: number
   Quantity441: number
   Quantity442: number
@@ -4848,7 +5032,6 @@ export interface LootBucketData {
   Quantity463: number
   Quantity464: number
   Quantity465: number
-  Quantity466: number
   Quantity467: number
   Quantity468: number
   Quantity469: number
@@ -4905,10 +5088,46 @@ export interface LootBucketData {
   Quantity514: number
   Quantity515: number
   Quantity516: number
+  Quantity517: number
+  Quantity518: string
+  Quantity519: number
   Quantity52: number
+  Quantity520: number
+  Quantity521: number
+  Quantity522: number
+  Quantity523: number
+  Quantity524: number
+  Quantity525: number
+  Quantity526: number
+  Quantity527: number
+  Quantity528: number
+  Quantity529: number
   Quantity53: number
+  Quantity530: number
+  Quantity531: number
+  Quantity532: number
+  Quantity533: number
+  Quantity534: number
+  Quantity535: number
+  Quantity536: number
+  Quantity537: number
+  Quantity538: number
+  Quantity539: number
   Quantity54: number
+  Quantity540: number
+  Quantity541: number
+  Quantity542: number
+  Quantity543: number
+  Quantity544: number
+  Quantity545: number
+  Quantity546: number
+  Quantity547: number
+  Quantity548: number
+  Quantity549: number
   Quantity55: number
+  Quantity550: number
+  Quantity551: number
+  Quantity552: number
   Quantity56: number
   Quantity57: number
   Quantity58: number
@@ -4998,8 +5217,6 @@ export interface LootBucketData {
   Tags132: string[]
   Tags133: string[]
   Tags134: string[]
-  Tags135: string[]
-  Tags136: string[]
   Tags137: string[]
   Tags138: string[]
   Tags139: string[]
@@ -5018,7 +5235,6 @@ export interface LootBucketData {
   Tags150: string[]
   Tags151: string[]
   Tags152: string[]
-  Tags153: string[]
   Tags154: string[]
   Tags155: string[]
   Tags156: string[]
@@ -5035,7 +5251,6 @@ export interface LootBucketData {
   Tags166: string[]
   Tags167: string[]
   Tags168: string[]
-  Tags169: string[]
   Tags17: string[]
   Tags170: string[]
   Tags171: string[]
@@ -5199,10 +5414,7 @@ export interface LootBucketData {
   Tags33: string[]
   Tags330: string[]
   Tags331: string[]
-  Tags332: string[]
-  Tags333: string[]
   Tags334: string[]
-  Tags335: string[]
   Tags336: string[]
   Tags337: string[]
   Tags338: string[]
@@ -5294,11 +5506,13 @@ export interface LootBucketData {
   Tags416: string[]
   Tags417: string[]
   Tags418: string[]
+  Tags419: string[]
   Tags42: string[]
   Tags421: string[]
   Tags422: string[]
   Tags423: string[]
   Tags424: string[]
+  Tags425: string[]
   Tags426: string[]
   Tags427: string[]
   Tags428: string[]
@@ -5343,7 +5557,6 @@ export interface LootBucketData {
   Tags463: string[]
   Tags464: string[]
   Tags465: string[]
-  Tags466: string[]
   Tags467: string[]
   Tags468: string[]
   Tags469: string[]
@@ -5400,10 +5613,46 @@ export interface LootBucketData {
   Tags514: string[]
   Tags515: string[]
   Tags516: string[]
+  Tags517: string[]
+  Tags518: string[]
+  Tags519: string[]
   Tags52: string[]
+  Tags520: string[]
+  Tags521: string[]
+  Tags522: string[]
+  Tags523: string[]
+  Tags524: string[]
+  Tags525: string[]
+  Tags526: string[]
+  Tags527: string[]
+  Tags528: string[]
+  Tags529: string[]
   Tags53: string[]
+  Tags530: string[]
+  Tags531: string[]
+  Tags532: string[]
+  Tags533: string[]
+  Tags534: string[]
+  Tags535: string[]
+  Tags536: string[]
+  Tags537: string[]
+  Tags538: string[]
+  Tags539: string[]
   Tags54: string[]
+  Tags540: string[]
+  Tags541: string[]
+  Tags542: string[]
+  Tags543: string[]
+  Tags544: string[]
+  Tags545: string[]
+  Tags546: string[]
+  Tags547: string[]
+  Tags548: string[]
+  Tags549: string[]
   Tags55: string[]
+  Tags550: string[]
+  Tags551: string[]
+  Tags552: string[]
   Tags56: string[]
   Tags57: string[]
   Tags58: string[]
@@ -5515,7 +5764,23 @@ export interface LootTablesData {
   GearScoreRange40: string
   GearScoreRange41: string
   GearScoreRange42: string
+  GearScoreRange43: string
+  GearScoreRange44: string
+  GearScoreRange45: string
+  GearScoreRange46: string
+  GearScoreRange47: string
+  GearScoreRange48: string
+  GearScoreRange49: string
   GearScoreRange5: string
+  GearScoreRange50: string
+  GearScoreRange51: string
+  GearScoreRange52: string
+  GearScoreRange53: string
+  GearScoreRange54: string
+  GearScoreRange55: string
+  GearScoreRange56: string
+  GearScoreRange57: string
+  GearScoreRange58: string
   GearScoreRange6: string
   GearScoreRange7: string
   GearScoreRange8: string
@@ -5559,7 +5824,23 @@ export interface LootTablesData {
   Item40: string
   Item41: string
   Item42: string
+  Item43: string
+  Item44: string
+  Item45: string
+  Item46: string
+  Item47: string
+  Item48: string
+  Item49: string
   Item5: string
+  Item50: string
+  Item51: string
+  Item52: string
+  Item53: string
+  Item54: string
+  Item55: string
+  Item56: string
+  Item57: string
+  Item58: string
   Item6: string
   Item7: string
   Item8: string
@@ -5604,7 +5885,24 @@ export interface LootTablesData {
   PerkOverrides4: string
   PerkOverrides40: string
   PerkOverrides41: string
+  PerkOverrides42: string
+  PerkOverrides43: string
+  PerkOverrides44: string
+  PerkOverrides45: string
+  PerkOverrides46: string
+  PerkOverrides47: string
+  PerkOverrides48: string
+  PerkOverrides49: string
   PerkOverrides5: string
+  PerkOverrides50: string
+  PerkOverrides51: string
+  PerkOverrides52: string
+  PerkOverrides53: string
+  PerkOverrides54: string
+  PerkOverrides55: string
+  PerkOverrides56: string
+  PerkOverrides57: string
+  PerkOverrides58: string
   PerkOverrides6: string
   PerkOverrides7: string
   PerkOverrides8: string
@@ -5675,14 +5973,16 @@ export interface MasterItemDefinitions {
   DestroyOnBreak: number
   Durability: number
   DurabilityDmgOnDeath: number
+  EquipmentSetId: string
   EventId: string
   ExceedMaxIndex: string
   ExceedMinIndex: number
-  ExclusivelyForWarCampTier: number
+  ExclusivelyForWarCampTier: string | number
   ExtraBonusItemChance: string
   FFAConvertedItemId: string
   ForceRarity: number
   GearScoreOverride: number
+  GrantMasteries: string
   GrantsHWMBump: number
   HeartgemRuneTooltipTitle: string
   HeartgemTooltipBackgroundImage: string
@@ -5714,6 +6014,7 @@ export interface MasterItemDefinitions {
   ItemTypeDisplayName: string
   MannequinTag: string
   MaxCraftGS: number
+  MaxCraftUpgradeGS: number
   MaxGearScore: number
   MaxStackSize: number | string
   MinGearScore: number
@@ -5726,6 +6027,11 @@ export interface MasterItemDefinitions {
   Notes: string
   ObtainableReleaseVersion: string
   OnEquipObjectiveId: string | number
+  OverrideAttributeScaling: string | boolean
+  OverrideScalingDexterity: number
+  OverrideScalingFocus: string
+  OverrideScalingIntelligence: number
+  OverrideScalingStrength: number
   ParentItemId_DVT: string
   PerPerkScalingMultiplier: string
   Perk1: string
@@ -5841,6 +6147,7 @@ export interface MissionData {
   MissionGoalType: string
   MissionID: string
   MissionTier: number
+  NPCId: unknown
   ORMReleaseEventTagsOverride: string
   ObjectiveID: string
   OverrideLocation: string
@@ -5854,6 +6161,7 @@ export interface MissionData {
   PauseAndClearLootTagOnTaskCompleteOverride: boolean
   ProviderDistanceLimit: number
   RecommendedGroupSize: number
+  ReputationId: unknown
   RequiredAchievementConditional: string
   RequiredFaction: string
   RequiredFortControlStatus: string
@@ -5879,7 +6187,7 @@ export interface MissionData {
 }
 
 export interface MissionWeightsData {
-  IsPvpSlot: boolean
+  Bucket: string
   MissionGoalType: string
   MissionWeightId: string
   SlotNumber: number
@@ -5935,6 +6243,7 @@ export interface MountData {
   Material: string
   Mesh: string
   MountId: string
+  MountSubType: string
   MountType: string
   RDyeSlotDisabled: number
   RequiredAchievementId: string
@@ -6324,6 +6633,7 @@ export interface NPAData {
   NPAId: string
   ObjectiveFlow: string
   ReqAchievementConditional: string
+  ReqStatusEffectId: string
 }
 
 export interface NPCData {
@@ -6365,6 +6675,7 @@ export interface NPCData {
   Location8: string
   Location9: string
   NPCId: string
+  ShopId: string
   Title: string
   TopicId1: string
   TopicId10: string
@@ -6416,7 +6727,7 @@ export interface ObjectiveTasks {
   InteractTag: string
   IsExactMatch: string
   IsHidden: string | number
-  IsPurchaseOrEarn: string
+  IsPurchaseOrEarn: string | number
   ItemDropProbability: number
   ItemDropVC: string
   ItemName: string
@@ -6429,7 +6740,7 @@ export interface ObjectiveTasks {
   MapMarkerTitleLocTag: string
   MapMarkerWorldDistanceThreshold: string
   MapMarkerWorldPositionX: number
-  MapMarkerWorldPositionY: number
+  MapMarkerWorldPositionY: string
   MatAffix: string
   MinGearScore: string
   OnInteractStart: boolean
@@ -6450,10 +6761,6 @@ export interface ObjectiveTasks {
   SubTask13: string
   SubTask14: string
   SubTask15: string
-  SubTask16: string
-  SubTask17: string
-  SubTask18: string
-  SubTask19: string
   SubTask2: string
   SubTask3: string
   SubTask4: string
@@ -6639,8 +6946,8 @@ export interface ParticleData {
 }
 
 export interface PerkBucketData {
-  DisablePerkBiasing: boolean
-  IgnoreExclusiveLabelWeights: boolean
+  DisablePerkBiasing: string
+  IgnoreExclusiveLabelWeights: string
   Perk1: string
   Perk10: string
   Perk100: string
@@ -6922,7 +7229,7 @@ export interface PerkBucketData {
   Perk98: string
   Perk99: string
   PerkBucketID: string
-  PerkChance: number
+  PerkChance: string
   PerkType: string
 }
 
@@ -6956,6 +7263,7 @@ export interface PerkData {
   PerkType: PerkType
   ScalingPerGearScore: string
   ScalingPerGearScoreAttributes: string
+  ScalingPerPlayerLevel: string
   ScheduleID: string
   SecondaryEffectDisplayName: string
   Sorting: string
@@ -7073,9 +7381,9 @@ export interface PvPStoreData {
   Item1: string
   Item2: string
   Item3: string
-  MatchOne1: boolean
-  MatchOne2: boolean
-  MatchOne3: boolean
+  MatchOne1: string
+  MatchOne2: string
+  MatchOne3: string
   RandomWeights1: number
   RandomWeights2: number
   RandomWeights3: number
@@ -7133,6 +7441,27 @@ export interface ResourceItemDefinitions {
   SocketType: string
 }
 
+export interface ReusableScoreboardTabData {
+  ColumnSortEnabled: boolean
+  Columns: string
+  DefaultColumn: string
+  DefaultColumnSortMode: string
+  DefaultTab: boolean
+  GameModeId: string
+  HeaderTextFailure: string
+  HeaderTextSuccess: string
+  RankDeterminingStat: string
+  ReusableScoreboardTabId: string
+  RowType: string
+  Rows: string
+  ScoreTextIconPaths: string
+  StatSource: string
+  StatsToShowAsBlank: string
+  StatsToShowPlusSign: string
+  TabDataFilter: string
+  TabName: string
+}
+
 export interface RewardData {
   'Darkness Minor': number
   DarknessMajor: number
@@ -7177,6 +7506,7 @@ export interface RewardModifierData {
   AzothSaltModifier: number
   Currency: number
   CurrencyRewardChance: number
+  DisplayName: string
   Experience: number
   FactionReputationModifier: number
   FactionTokenModifier: number
@@ -7505,7 +7835,7 @@ export interface SpecializationDefinitions {
 export interface SpellData {
   AOECharRelPosOffsetX: string
   AOECharRelPosOffsetY: string
-  AOECharRelPosOffsetZ: string
+  AOECharRelPosOffsetZ: number
   AOECharRelRotOffsetX: string
   AOECharRelRotOffsetY: string
   AOECharRelRotOffsetZ: number
@@ -7550,13 +7880,13 @@ export interface SpellData {
   IgnoreTargetIfAtDeathsDoor: boolean
   IgnoreTargetIfDead: boolean
   IndicatorVFX: string
-  InnerRadius: string
+  InnerRadius: number
   IsUnaffiliated: boolean
   Length: number
   MaintainDistanceFromGround: boolean
   ManaCost: string
   MaxChainNum: number
-  MaxRadiusScaling: string
+  MaxRadiusScaling: number
   NotSpawnedByAWeapon: boolean
   NumToSpawn: number
   NumToSpawnBeforeFail: number
@@ -7587,13 +7917,13 @@ export interface SpellData {
   SpawnAngle: number
   SpawnBeamCasterJoint: string
   SpawnRate: number
-  SpawnSecondaryOnCollision: string | boolean
+  SpawnSecondaryOnCollision: boolean | string
   SpawnSecondaryOnElapsed: boolean
   SpawnSecondaryOnPassthrough: boolean
   SpellID: string
   SpellPrefabPath: string
   SpellTypes: string
-  StatusEffectDurations: string | number
+  StatusEffectDurations: number | string
   StatusEffects: string[]
   StatusEffectsOnTargetBlockingThisSpell: string[]
   StickWhenAttached: boolean
@@ -7654,12 +7984,13 @@ export interface StatusEffectData {
   ABSStandard: number
   ABSStrike: number
   ABSThrust: number
-  ABSVitalsCategory: number | string
-  AFABleed: number
+  ABSVitalsCategory: string | number
+  AFABleed: string | number | boolean
   AFABlight: number
   AFACurse: number
   AFADisease: number
-  AFAFrostbite: number
+  AFAErosion: number
+  AFAFrostbite: string | number | boolean
   AFAPoison: number
   AFASpores: number
   AFAStunned: number
@@ -7669,8 +8000,10 @@ export interface StatusEffectData {
   AllowAddIfDead: boolean
   AllowSelfOnlyAsSourceForAbilities: boolean
   AlwaysCastSpellToDefaultTargets: boolean
+  AlwaysPerceiveStealth: string
   AlwaysReplicate: boolean
   AntirequisiteEffectCategories: string
+  AoeSpellRadiusScaling: number
   ApplicationCooldown: number
   ApplicationCooldownAppliedOnRemoval: string
   AttributePlacingMods: number
@@ -7686,7 +8019,8 @@ export interface StatusEffectData {
   BLAStrike: number
   BLAThrust: number
   BaseDuration: number
-  BlockMultipleEffectsFromSameSource: boolean
+  BeingRevivedSpeedModifier: number
+  BlockMultipleEffectsFromSameSource: string | boolean
   CastSpell: string
   ConsumableHealMod: number
   CoreTempMod: number
@@ -7710,17 +8044,18 @@ export interface StatusEffectData {
   DamageSkipsDeathsDoor: boolean
   DamageSplitTaken: number
   DamageSplitTakenBySource: number
+  DamageThreatMultiplier: string
   DamageType: DamageType
-  DelayInitialTick: string | boolean
+  DelayInitialTick: string | boolean | number
   Description: string
+  DiminishReturns: boolean
   DisableAllNonAttributePerks: boolean
   DisableAllNonAttributePerksExceptionLabels: string
   DisableCastSpellDurability: boolean
   DisablePauseOnPersist: boolean
   DisableSupportContributionRewards: boolean
   DisableTelemetry: string | boolean
-  DismissMount: string
-  'DismissMount ': boolean
+  DismissMount: boolean
   DisplayName: string
   DmgPctToHealthHealMod: number
   DontApplyOnEndEffectOnRemove: boolean
@@ -7794,10 +8129,10 @@ export interface StatusEffectData {
   INSMining: number
   INSSkinning: string
   IgnoreDiminishingReturns: boolean
-  IgnoreFxScriptWhenPotencyIsZero: boolean
+  IgnoreFxScriptWhenPotencyIsZero: string | number | boolean
   IgnoreInvulnerable: boolean
   InheritDuration: boolean
-  InheritTotalDuration: string | number | boolean
+  InheritTotalDuration: string | boolean | number
   InitialStackSize: number
   IsClientPredicted: boolean
   IsNegative: boolean
@@ -7862,7 +8197,7 @@ export interface StatusEffectData {
   OverrideOtherNameplateText: boolean
   PauseInGameModesList: string[]
   PauseOnDisable: boolean
-  PersistEffectInCrossWorldInstances: boolean
+  PersistEffectInCrossWorldInstances: string | boolean | number
   PhysicalArmor: number
   PlaceholderIcon: string
   PotencyAttbScalingMaxValue: number
@@ -7902,15 +8237,18 @@ export interface StatusEffectData {
   RemoveStatusEffectCategories: string[]
   RemoveStatusEffects: string[]
   RemoveUnappliedStacks: boolean
-  RemoveWhenEnteringGameModeRequiringTeleport: number | string
+  RemoveWhenEnteringGameModeRequiringTeleport: string | number
   RequireReaction: boolean
   RequiredWorldTags: string
   RespecAttributes: number
   RespecTradeskills: number
+  ReviveHealthGainedInPctOfMax: number
+  ReviveHealthGivenInPctOfMax: number
+  ReviveSpeedModifier: number
   ScaleAmountOverTime: number
   ScaleAmountOverTimeMax: number
   ScaleAmountOverTimeMin: string
-  ShouldRefreshFxScript: boolean
+  ShouldRefreshFxScript: string
   ShowInNameplates: boolean
   ShowInStatusWindow: boolean
   ShowInTokenTray: boolean
@@ -8045,7 +8383,7 @@ export interface TerritoryDefinition {
   IsFFA: boolean
   IsPOI: boolean
   IsTerritory: boolean
-  LevelRange: number | string
+  LevelRange: string | number
   LootTags: string[]
   MapIcon: string
   MaxStructureLimit: number
@@ -8118,6 +8456,7 @@ export interface TerritoryUpkeepDefinition {
   EarningsDistributionTID14: number
   EarningsDistributionTID15: number
   EarningsDistributionTID16: number
+  EarningsDistributionTID17: number
   EarningsDistributionTID2: number
   EarningsDistributionTID4: number
   EarningsDistributionTID5: number
@@ -8452,6 +8791,9 @@ export interface VariationDataGatherable {
   AudioPreload_idle: string
   AudioPreload_loop: unknown
   BaseSlice: unknown
+  Card1_Visual: string
+  Card2_Visual: string
+  Card3_Visual: string
   CinematicVideoId: string
   CollisionAssetOverride: string
   CollisionFX: unknown
@@ -8542,6 +8884,7 @@ export interface VariationDataGatherable {
   IsStateControlledBySlayerScript: boolean
   LoS_Override: boolean
   LootLockSlice: string
+  LootLockVariant: string
   LootTableComponent: string
   MapIcon: string
   MapTooltipDescLocTag: string
@@ -8624,6 +8967,7 @@ export interface VitalsBaseData {
   ABADisease: string
   ABAFrostbite: string
   ABAPoison: string
+  ABSAcid: number
   ABSArcane: number
   ABSCorruption: number
   ABSFire: number
@@ -8637,30 +8981,30 @@ export interface VitalsBaseData {
   ABSStrike: number
   ABSThrust: number
   AFABleed: string
-  AFABlight: string
-  AFACurse: string
+  AFABlight: number
+  AFACurse: number
   AFADisease: number
   AFAErosion: string
   AFAFrostbite: string
   AFAPoison: number
   AFASpores: string
   AfflictionAbsorption: string
-  BLAArcane: string
-  BLACorruption: string
-  BLAFire: string
-  BLAIce: string
-  BLALightning: string
-  BLANature: string
-  BLASiege: string
-  BLASlash: string
-  BLAStandard: string
-  BLAStrike: string
-  BLAThrust: string
+  BLAArcane: number
+  BLACorruption: number
+  BLAFire: number
+  BLAIce: number
+  BLALightning: number
+  BLANature: number
+  BLASiege: number
+  BLASlash: number
+  BLAStandard: number
+  BLAStrike: number
+  BLAThrust: number
   BaseDamageOverride: string
-  BaseStaggerDamageOverride: string
+  BaseStaggerDamageOverride: number
   BlockDamageMitigation: number
   BlockStaminaCost: number
-  BlockStaminaDamageOverride: string
+  BlockStaminaDamageOverride: number
   BuffBuckets: string
   CanDropLoot: boolean
   ChainSpellImmune: boolean
@@ -8720,11 +9064,11 @@ export interface VitalsBaseData {
   HealthBaseMax: string
   HealthBaseTickRate: number
   HealthFullyDepletedDelay: number
-  HealthInitial: string | number
+  HealthInitial: number | string
   HealthLowerThreshold: number
   HealthMin: number
   HealthMod: number
-  HealthOverridePercentSpellOwnerMaxHealth: number | string
+  HealthOverridePercentSpellOwnerMaxHealth: string | number
   HealthPercentForLootContributionOverride: number
   HealthRegenCappedBy: number
   HealthRegenThresholds: string
@@ -8751,7 +9095,7 @@ export interface VitalsBaseData {
   MinionVitalsId: string
   MutatorDifficultyMod: number
   MutatorPotencyMod: number
-  NoExpNoCoin: string | boolean
+  NoExpNoCoin: boolean | string
   PhysicalArmorRatingOverride: string
   PhysicalMitigation: number
   RESBleed: number
@@ -8762,7 +9106,7 @@ export interface VitalsBaseData {
   RESFrostbite: number
   RESPoison: number
   RESSpores: number
-  ScheduleVitalsId: string
+  ScheduleVitalsId: string | boolean
   ShouldTriggerPassivesOnDeath: boolean
   StaminaBaseMax: number
   StaminaBaseTickRate: number
@@ -9184,6 +9528,12 @@ export interface WeaponItemDefinitions {
   WeightOverride: number
 }
 
+export interface WeaponTiersData {
+  DisplayName: string
+  ScalingStart: number
+  Tier: string
+}
+
 export interface WhisperData {
   AchievementId: string
   AudioPreload: string
@@ -9335,6 +9685,7 @@ export type CraftingCategory =
   | 'OrichalciteRecipes'
   | 'PVPReplicas'
   | 'Pattern'
+  | 'PerkCharms'
   | 'PrismaticTools'
   | 'RaidEquipment'
   | 'RefinedResources'
@@ -9344,12 +9695,10 @@ export type CraftingCategory =
   | 'Salvage'
   | 'SalvageCreate'
   | 'Scarab'
+  | 'SocketedGear'
   | 'SpringtideBloom'
   | 'SummerMedleyfaire'
-  | 'SummerMemento'
   | 'TerritoryContribution'
-  | 'TimelessShards'
-  | 'Tokens'
   | 'Tools'
   | 'TrialNamedReplicas'
   | 'Trinkets'
@@ -9386,6 +9735,11 @@ export type CreatureType =
   | 'AllyObjective'
   | 'Boss'
   | 'Boss+'
+  | 'Catacombs'
+  | 'Catacombs+'
+  | 'Catacombs-'
+  | 'CatacombsBoss'
+  | 'CatacombsMiniBoss'
   | 'Critter'
   | 'Dungeon'
   | 'Dungeon+'
@@ -9476,6 +9830,8 @@ export type EntitlementSourceType =
   | 'Leaderboards'
   | 'Preorder'
   | 'Prime'
+  | 'PvPRewards'
+  | 'Quest'
   | 'RabbitsRevenge'
   | 'SaltTrack'
   | 'Season4'
@@ -9578,10 +9934,15 @@ export type ItemClass =
   | 'AzothStaff'
   | 'Bag'
   | 'Bait'
+  | 'BattleRoyaleOnly'
   | 'Block'
   | 'Blueprint'
   | 'Blunderbuss'
   | 'Bow'
+  | 'CatacombsOnly'
+  | 'CharmItemDefense'
+  | 'CharmItemOffense'
+  | 'CharmItemSkill'
   | 'Cloth'
   | 'Consumable'
   | 'Currency'
@@ -9670,6 +10031,7 @@ export type ItemClass =
   | 'SeasonalConqueror'
   | 'SeasonalEthereal'
   | 'Seasons'
+  | 'SetPiece'
   | 'Shield'
   | 'Sickle'
   | 'SiegeWarAttackersOnly'
@@ -9678,6 +10040,7 @@ export type ItemClass =
   | 'SiegeWarOnly'
   | 'SkinningKnife'
   | 'Spear'
+  | 'Staff'
   | 'Stone'
   | 'Sword'
   | 'Throwable_Object'
@@ -9692,6 +10055,7 @@ export type ItemClass =
   | 'WeaponOil'
   | 'WeaponSchematic'
   | 'Wood'
+  | 'heavy'
   | 'warhammer'
 
 export type ItemType =
@@ -9729,7 +10093,9 @@ export type LootTag =
   | 'Anuket'
   | 'Apis'
   | 'Apophis'
+  | 'Arcanist'
   | 'Archibald'
+  | 'Archivist'
   | 'Arctica'
   | 'ArmorHeavy'
   | 'ArmorLIght'
@@ -9737,11 +10103,14 @@ export type LootTag =
   | 'ArmorMediuim'
   | 'ArmorMedium'
   | 'Articulon'
+  | 'Asena'
   | 'Asterus'
   | 'Attalus'
   | 'Attendant'
   | 'Atumnem'
+  | 'Avalon'
   | 'Aviva'
+  | 'Azareth'
   | 'Baines'
   | 'Balanos'
   | 'Baldwyne'
@@ -9759,7 +10128,9 @@ export type LootTag =
   | 'Beastlands06'
   | 'Benat'
   | 'Benjamin'
+  | 'Berlaur'
   | 'Bileschlocker'
+  | 'BlackFeather'
   | 'Blade'
   | 'Blight'
   | 'Bloody'
@@ -9773,6 +10144,7 @@ export type LootTag =
   | 'BossTrophyArtifact'
   | 'Bow'
   | 'Bralgorn'
+  | 'Branik'
   | 'Bridge'
   | 'BridgeCyclops'
   | 'Brighteye'
@@ -9789,6 +10161,7 @@ export type LootTag =
   | 'Campbells00'
   | 'CaptainKaiwei'
   | 'Captured'
+  | 'Carcero'
   | 'Castor'
   | 'CastrumCyclops'
   | 'CastrumOracle'
@@ -9824,6 +10197,7 @@ export type LootTag =
   | 'Cotheran'
   | 'Crassus'
   | 'Critter'
+  | 'CryptSentinel'
   | 'CursedOne'
   | 'CutlassKeys00'
   | 'DH01'
@@ -9834,9 +10208,13 @@ export type LootTag =
   | 'DH06'
   | 'DH07'
   | 'Daehi'
+  | 'Dahut'
+  | 'DahutArtifact'
+  | 'DahutWeekly'
   | 'Daisy'
   | 'Dalao'
   | 'Damysys'
+  | 'Darius'
   | 'Dayspring00'
   | 'Dayspring01'
   | 'Dayspring02'
@@ -9915,6 +10293,7 @@ export type LootTag =
   | 'FTUE_Rolfe'
   | 'FTUE_TempestPriest'
   | 'FTUE_Touarc'
+  | 'Fae'
   | 'Fallen'
   | 'Fangsnap'
   | 'Farlet'
@@ -9953,6 +10332,7 @@ export type LootTag =
   | 'Guerra'
   | 'Guldar'
   | 'GypsumBlack'
+  | 'GypsumBlack '
   | 'Hale'
   | 'Halfdan'
   | 'Hamidou'
@@ -9991,6 +10371,7 @@ export type LootTag =
   | 'Inegeld'
   | 'InferosFort'
   | 'Ingvald'
+  | 'Inquisitor'
   | 'Ioane'
   | 'Iron'
   | 'Isabella0'
@@ -10051,6 +10432,7 @@ export type LootTag =
   | 'Lucia'
   | 'Lucius'
   | 'Luxendra'
+  | 'Lynette'
   | 'Maahebgal'
   | 'Maceo'
   | 'MadMckenzie'
@@ -10064,6 +10446,7 @@ export type LootTag =
   | 'MaidenJingfei'
   | 'MaidenLai'
   | 'MaidenLanfen'
+  | 'Mala'
   | 'Malevolence'
   | 'Mammoth00'
   | 'MammothDGBoss'
@@ -10104,7 +10487,10 @@ export type LootTag =
   | 'Musslebeard2'
   | 'Musslebeard3'
   | 'MutatorCombo_Broodmother'
+  | 'MutatorCombo_Dahut'
   | 'MutatorCombo_Echidna'
+  | 'MutatorCombo_OverlordThorpe'
+  | 'MutatorCombo_TwinJesters'
   | 'MutatorCombo_Typhon'
   | 'MyPriest1'
   | 'MyPriest2'
@@ -10137,6 +10523,9 @@ export type LootTag =
   | 'Ophois'
   | 'Oseguera'
   | 'Otseha'
+  | 'OverlordThorpe'
+  | 'OverlordThorpeArtifact'
+  | 'OverlordThorpeWeekly'
   | 'Padrenunez'
   | 'Palas'
   | 'Patricia'
@@ -10167,6 +10556,7 @@ export type LootTag =
   | 'Protector'
   | 'Putris'
   | 'Qebui'
+  | 'Quixor'
   | 'RabbitSeason'
   | 'Rafik'
   | 'RaidBoss_BonusNamed'
@@ -10323,15 +10713,21 @@ export type LootTag =
   | 'Truk'
   | 'Tusk'
   | 'TwinDoors'
+  | 'TwinJesters'
+  | 'TwinJestersArtifact'
+  | 'TwinsJestersWeekly'
   | 'Typhon'
   | 'TyphonArtifact'
   | 'TyphonWeekly'
   | 'Ug'
   | 'Ulfar'
+  | 'Upyr'
   | 'Ursula'
+  | 'Uttu'
   | 'Uzret'
   | 'Varangian'
   | 'Varios'
+  | 'Vayla'
   | 'Velazquez'
   | 'Vinesnap'
   | 'Viridulon'
@@ -10341,6 +10737,7 @@ export type LootTag =
   | 'Vokar'
   | 'Vroeg'
   | 'Walsh'
+  | 'Weila'
   | 'WellGuardian'
   | 'Wepwawet'
   | 'Wesley'
@@ -10380,9 +10777,11 @@ export type MannequinTag =
   | 'Drums'
   | 'DummyWeapon'
   | 'Earth'
+  | 'Fae'
   | 'Fire'
   | 'FishingPole'
   | 'Flail'
+  | 'Gourdspewer'
   | 'GreatAxe'
   | 'GreatSword'
   | 'Greataxe'
@@ -10407,10 +10806,12 @@ export type MannequinTag =
   | 'Pick'
   | 'Pistol'
   | 'Pitchfork'
+  | 'Plaguer'
   | 'Prong'
   | 'Rake'
   | 'Rapier'
   | 'Rifle'
+  | 'Scepter'
   | 'Scythe'
   | 'Shield'
   | 'Shield_OH'
@@ -10436,9 +10837,12 @@ export type PerkConditionEvent =
   | 'OnUnsheathed'
 
 export type PerkType =
+  | 'DefensiveCharm'
   | 'Gem'
   | 'Generated'
   | 'Inherent'
+  | 'OffensiveCharm'
+  | 'SkillCharm'
 
 export type ProgressionCategory =
   | '10'
@@ -10448,6 +10852,7 @@ export type ProgressionCategory =
   | '14'
   | '15'
   | '16'
+  | '17'
   | '2'
   | '4'
   | '5'
@@ -10464,10 +10869,19 @@ export type ProgressionCategory =
   | 'AzothStaff'
   | 'Azoth_Currency'
   | 'Battle_Token'
+  | 'BerlaurCurrency'
+  | 'BerlaurReputation'
   | 'BlunderbussAbilityTable'
   | 'BowAbilityTable'
   | 'Camping'
+  | 'CatacombsCurrency_Crowns'
+  | 'CatacombsCurrency_CursedCrowns'
+  | 'CatacombsCurrency_CursedSilvers'
+  | 'CatacombsCurrency_Silvers'
+  | 'CatacombsShop'
   | 'CollectibleTest'
+  | 'Collectibles_Dunwood_Gem'
+  | 'Collectibles_Dunwood_Memories'
   | 'Collectibles_Reekwater_Chest'
   | 'Collectibles_Reekwater_Gem'
   | 'Cooking'
@@ -10539,12 +10953,16 @@ export type ProgressionCategory =
   | 'Territory14_HouseBonusType0'
   | 'Territory15_HouseBonusType0'
   | 'Territory16_HouseBonusType0'
+  | 'Territory17_HouseBonusType0'
   | 'Territory2_HouseBonusType0'
   | 'Territory4_HouseBonusType0'
   | 'Territory5_HouseBonusType0'
   | 'Territory6_HouseBonusType0'
   | 'Territory8_HouseBonusType0'
   | 'Territory9_HouseBonusType0'
+  | 'UmbralCurrency'
+  | 'UpyrCurrency'
+  | 'UpyrReputation'
   | 'VoidGauntletAbilityTable'
   | 'WarHammerAbilityTable'
   | 'Weaponsmithing'
@@ -10560,6 +10978,7 @@ export type StatusEffectCategory =
   | 'AdmiralBruteResistDispell'
   | 'AdmiralBruteTransitionDispell'
   | 'Affliction'
+  | 'AfflictionResistance'
   | 'AllyDamageSplit'
   | 'Anointed'
   | 'ArmorFortify'
@@ -10568,12 +10987,17 @@ export type StatusEffectCategory =
   | 'AzothStaff'
   | 'BBLastChance'
   | 'BaseDamageIncrease'
+  | 'Beacon'
+  | 'BeaconCat'
   | 'Bleed'
   | 'Blessed'
   | 'Blight'
+  | 'BlindSeraphDarkness'
   | 'Boltcaster'
   | 'Boost'
   | 'BossDebuff'
+  | 'BreathlessSeraphBuff'
+  | 'BreathlessSeraphDebuff'
   | 'BroodmotherDormantMushrooms'
   | 'BroodmotherGunk'
   | 'BroodmotherSleepPrevention'
@@ -10584,15 +11008,22 @@ export type StatusEffectCategory =
   | 'CTFFlags'
   | 'CarryBarrel'
   | 'CarryBoulder'
+  | 'CarryBow'
   | 'CarryCannonBall'
+  | 'CarryExplosiveBarrel'
+  | 'CarryHammer'
   | 'CarryOrb'
+  | 'CarrySpear'
+  | 'CarrySword'
   | 'Cleanse'
   | 'ClearOnReset'
+  | 'CloneOnly'
   | 'CoatingBoost'
   | 'ConquerorKnockBackDmg'
   | 'ConquerorPoisonDoT'
   | 'ConquerorShieldlessAgility'
   | 'ConquerorsCharredBurn'
+  | 'ContagiousPoisonDoT'
   | 'Corrosion'
   | 'CorruptedNagaCoreResist'
   | 'CounquerorFrostAllyBuff'
@@ -10605,6 +11036,7 @@ export type StatusEffectCategory =
   | 'CritDmgReduction'
   | 'Curse'
   | 'DMG'
+  | 'Damage'
   | 'DeathFog'
   | 'DeathTracker'
   | 'Debiliate'
@@ -10617,12 +11049,20 @@ export type StatusEffectCategory =
   | 'DifficultyScaling_MaxHealthMod_Debuff'
   | 'Disease'
   | 'Dmg'
+  | 'DmgTaken'
   | 'DoT'
   | 'DodgeSuppress'
   | 'Dot'
+  | 'DraculaBanish'
+  | 'DraculaEmpower'
   | 'EchidnaPillar'
+  | 'ElementalChargeSet'
+  | 'ElementalSetCharge'
+  | 'ElementalSetDamageBonus'
+  | 'ElementalSetManaRegen'
   | 'Empower'
   | 'Energized'
+  | 'EnragedStacks'
   | 'EssenceRupture'
   | 'EssenceRuptureT1'
   | 'EssenceRuptureT2'
@@ -10648,6 +11088,7 @@ export type StatusEffectCategory =
   | 'GSOffenseOnly'
   | 'GatherBoost'
   | 'GreatswordBuff'
+  | 'Grit'
   | 'Harvest'
   | 'HarvestHP'
   | 'HarvestMana'
@@ -10669,12 +11110,15 @@ export type StatusEffectCategory =
   | 'InherentAttributes'
   | 'JumpPads'
   | 'KnockBackDmg'
+  | 'LIfeStaffBuff'
   | 'LastStand'
   | 'LifeStaffBuff'
   | 'LifestaffBuff'
   | 'Luck'
   | 'MammothEmpowered'
   | 'Mana'
+  | 'ManaRate'
+  | 'ManagerOnly'
   | 'MeshOverrides'
   | 'MountFoodUtility'
   | 'MusicBuff'
@@ -10691,6 +11135,7 @@ export type StatusEffectCategory =
   | 'NonDispellableDisease'
   | 'NonDispellableDoT'
   | 'NonDispellableEmpower'
+  | 'NonDispellableEnergized'
   | 'NonDispellableExhaust'
   | 'NonDispellableRend'
   | 'NonDispellableSlow'
@@ -10707,18 +11152,24 @@ export type StatusEffectCategory =
   | 'PlaguedT2'
   | 'PlaguedT3'
   | 'PlaguedT4'
+  | 'PlayerOnly'
   | 'Poison'
   | 'PotencyMod'
   | 'PowderBurn'
   | 'Powerup'
   | 'RainofArrows'
+  | 'RampantFlame'
+  | 'RampantFlamePerm'
   | 'Recovery'
   | 'Regen'
+  | 'RelicOnly'
   | 'Rend'
   | 'ResistBoost'
   | 'ResistTincture'
   | 'RidingObjectiveBuff'
   | 'Root'
+  | 'SacredGround'
+  | 'SacredGroundCat'
   | 'ScalePlayer'
   | 'ShieldPotTrackingOrbs'
   | 'Shock'
@@ -10730,7 +11181,9 @@ export type StatusEffectCategory =
   | 'Slow'
   | 'Slow&Stun'
   | 'SlowPotency'
+  | 'SoulOnly'
   | 'Spear'
+  | 'Spell'
   | 'SporeDefense'
   | 'SporeOffense'
   | 'SporeSecondary'
@@ -10740,7 +11193,9 @@ export type StatusEffectCategory =
   | 'Stance'
   | 'StanceDefense'
   | 'StanceOffense'
+  | 'StealNoConsumTracker'
   | 'StoneForm'
+  | 'StoppingPower'
   | 'Stun'
   | 'SturgeonFishingBuff'
   | 'Surge'
@@ -10749,7 +11204,9 @@ export type StatusEffectCategory =
   | 'TankSelfBuff'
   | 'TankSelfDebuff'
   | 'Taunt'
+  | 'TauntAI'
   | 'TeamWipeCat'
+  | 'ThorpeOnly'
   | 'Threat'
   | 'ThrowingAxe'
   | 'Timer'
@@ -10779,6 +11236,8 @@ export type StatusEffectCategory =
   | 'UnclampedSlow'
   | 'UnclampedWeaken'
   | 'UncleansableDoT'
+  | 'Unflinching'
+  | 'Uninterrupible'
   | 'Uninterruptible'
   | 'Void'
   | 'VoidGauntlet'
@@ -10799,6 +11258,7 @@ export type TradingFamily =
   | '2Handed'
   | 'AlchemyResources'
   | 'Amulets'
+  | 'ApparelSkin'
   | 'ArcanaResources'
   | 'ArmorHeavy'
   | 'ArmorLight'
@@ -10826,7 +11286,9 @@ export type TradingFamily =
   | 'HousingTrdF_Trophies'
   | 'Instruments'
   | 'Magical'
+  | 'MountSkin'
   | 'MusicSheets'
+  | 'PerkCharmFamily'
   | 'Potion'
   | 'RawResources'
   | 'RefinedResources'
@@ -10853,7 +11315,6 @@ export type TradingGroup =
   | 'ArcanaLife'
   | 'ArcanaSpirit'
   | 'ArcanaWater'
-  | 'AttributeItem'
   | 'AzothVial'
   | 'BagA'
   | 'Bait'
@@ -10962,12 +11423,15 @@ export type TradingGroup =
   | 'Leather'
   | 'Mandolins'
   | 'Meat'
+  | 'Mounts'
   | 'Muskets'
   | 'Nut'
   | 'Offensive'
   | 'Oil'
   | 'Ore'
   | 'OrePrecious'
+  | 'PerkCharmMats'
+  | 'PerkCharms'
   | 'Pigments'
   | 'PotionElemDefense'
   | 'PotionEncumbrance'
@@ -11128,12 +11592,16 @@ export type VitalsCategory =
   | 'Alligator_Young_Siren_Minion'
   | 'Ancient'
   | 'AncientGuardian'
+  | 'AncientGuardian_17DW08_10311'
+  | 'AncientGuardian_17DW08_10312'
+  | 'AncientGuardian_Bowman_Catacombs_IceVariant'
   | 'AncientGuardian_Bowman_IceVariant'
   | 'AncientGuardian_Bowman_IceVariant_GreatCleave_00'
   | 'AncientGuardian_Bowman_IceVariant_Raid10'
   | 'AncientGuardian_Bowman_IceVariant_Raid10-'
   | 'AncientGuardian_Bowman_IceVariant_Raid10_Named'
   | 'AncientGuardian_Bowman_IceVariant_Solo'
+  | 'AncientGuardian_Greatsword_Catacombs_IceVariant'
   | 'AncientGuardian_Greatsword_IceVariant'
   | 'AncientGuardian_Greatsword_IceVariant_DG_Greatcleave_00'
   | 'AncientGuardian_Greatsword_IceVariant_Named'
@@ -11141,7 +11609,10 @@ export type VitalsCategory =
   | 'AncientGuardian_Greatsword_IceVariant_Raid10-'
   | 'AncientGuardian_Greatsword_IceVariant_Raid10_Named'
   | 'AncientGuardian_Heavy_Boss'
+  | 'AncientGuardian_Heavy_Boss_BoneAoE_Catacombs'
+  | 'AncientGuardian_Heavy_Boss_BoneSpawner_Catacombs'
   | 'AncientGuardian_Heavy_Boss_BoneThrow_Spawner'
+  | 'AncientGuardian_Heavy_Boss_Catacombs'
   | 'AncientGuardian_Heavy_Boss_Named_DG_Everfall_00'
   | 'AncientGuardian_Heavy_Boss_Named_DG_GreatCleave_01'
   | 'AncientGuardian_Heavy_DG_GreatCleave_00_00'
@@ -11203,6 +11674,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Javelineer_62_WaveEvent'
   | 'AncientGuardian_Javelineer_63'
   | 'AncientGuardian_Javelineer_64'
+  | 'AncientGuardian_Javelineer_Catacombs'
   | 'AncientGuardian_Javelineer_DG_Everfall_00'
   | 'AncientGuardian_Javelineer_DG_GreatCleave_01'
   | 'AncientGuardian_Javelineer_DG_Reekwater_00'
@@ -11241,6 +11713,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Mage_61'
   | 'AncientGuardian_Mage_62'
   | 'AncientGuardian_Mage_67_ELITE'
+  | 'AncientGuardian_Mage_Catacombs'
   | 'AncientGuardian_Mage_DG_Everfall_00'
   | 'AncientGuardian_Mage_DG_GreatCleave_00_00'
   | 'AncientGuardian_Mage_DG_GreatCleave_00_01'
@@ -11254,6 +11727,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Mage_Minion_22'
   | 'AncientGuardian_Mage_Minion_36'
   | 'AncientGuardian_Mage_Minion_67_ELITE'
+  | 'AncientGuardian_Mage_Minion_Catacombs'
   | 'AncientGuardian_Mage_Minion_DG_Everfall_00'
   | 'AncientGuardian_Mage_Minion_S4'
   | 'AncientGuardian_Mage_Named_00'
@@ -11270,6 +11744,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Mage_Named_DG_Reekwater_00_02'
   | 'AncientGuardian_Mage_Named_S4'
   | 'AncientGuardian_Mage_S4_Named_Jehan'
+  | 'AncientGuardian_Named_17DW08_10311'
   | 'AncientGuardian_Reaver'
   | 'AncientGuardian_Reaver_10WS02'
   | 'AncientGuardian_Reaver_10WS04'
@@ -11322,6 +11797,9 @@ export type VitalsCategory =
   | 'AncientGuardian_Reaver_Named_DG_Reekwater_00'
   | 'AncientGuardian_Reaver_Raid10'
   | 'AncientGuardian_Reaver_Raid10-'
+  | 'AncientGuardian_Skeleton_1H_Sword_Catacombs'
+  | 'AncientGuardian_Skeleton_2H_Sword_Catacombs'
+  | 'AncientGuardian_Skeleton_Club_Catacombs'
   | 'AncientGuardian_Spearman'
   | 'AncientGuardian_Spearman_20'
   | 'AncientGuardian_Spearman_25'
@@ -11365,6 +11843,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Spearman_62_WaveEvent'
   | 'AncientGuardian_Spearman_63'
   | 'AncientGuardian_Spearman_64'
+  | 'AncientGuardian_Spearman_Catacombs_IceVariant'
   | 'AncientGuardian_Spearman_DG_Everfall_00'
   | 'AncientGuardian_Spearman_DG_GreatCleave_00_00'
   | 'AncientGuardian_Spearman_DG_GreatCleave_00_01'
@@ -11383,6 +11862,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Spearman_Named_DG_Everfall_00'
   | 'AncientGuardian_Spearman_Named_DG_Reekwater_00'
   | 'AncientGuardian_Spearman_Named_DG_Reekwater_01'
+  | 'AncientGuardian_Warhammer_Catacombs_IceVariant'
   | 'AncientGuardian_Warhammer_IceVariant'
   | 'AncientGuardian_Warhammer_IceVariant_DG_Greatcleave_00'
   | 'AncientGuardian_Warhammer_IceVariant_DG_Named_Greatcleave_00'
@@ -11391,11 +11871,16 @@ export type VitalsCategory =
   | 'AncientGuardian_Warhammer_IceVariant_Raid10-'
   | 'AncientGuardian_Warhammer_IceVariant_Raid10_Named'
   | 'Ancient_Amalgam'
+  | 'Ancient_Amalgam_17DW08'
   | 'Ancient_Amalgam_Elite'
   | 'Ancient_Amalgam_Named_16BS11a'
   | 'Ancient_Amalgam_Named_16BS11b'
+  | 'Ancient_Amalgam_Named_17DW08_10311'
+  | 'Ancient_Amalgam_Named_17DW08_10312'
   | 'Ancient_Amalgam_Named_DG_GreatCleave_00'
   | 'Ancient_Amalgam_Remnant'
+  | 'Ancient_Gargoyle'
+  | 'Ancient_Gargoyle_Fodder'
   | 'Ancient_Guardian_Javelineer_Named_07SM07'
   | 'Ancient_Guardian_Mage_Named_07SM07'
   | 'Ancient_Guardian_Mage_Named_09A_S7'
@@ -11411,7 +11896,16 @@ export type VitalsCategory =
   | 'Ancient_Javelineer'
   | 'Ancient_Mage'
   | 'AngryEarth'
+  | 'AngryEarth_Bear_Elemental_Catacombs_Named'
+  | 'AngryEarth_Dryad_Archer_Catacombs'
+  | 'AngryEarth_Dryad_Beast_Catacombs_Named'
+  | 'AngryEarth_Dryad_Prowler_Catacombs'
+  | 'AngryEarth_Dryad_Shaman_Catacombs'
+  | 'AngryEarth_Dryad_Soldier_Catacombs'
+  | 'AngryEarth_Dryad_Tendril_Catacombs'
   | 'AngryEarth_OvergrownBeetle'
+  | 'AngryEarth_Swamp_Dryad_Beast_Catacombs_Named'
+  | 'AngryEarth_Swamp_Dryad_Beast_Minion_Catacombs'
   | 'AnubianGuardian_Archer'
   | 'AnubianGuardian_Archer_61'
   | 'AnubianGuardian_Archer_62'
@@ -11420,6 +11914,7 @@ export type VitalsCategory =
   | 'AnubianGuardian_Archer_65'
   | 'AnubianGuardian_Archer_66'
   | 'AnubianGuardian_Archer_67'
+  | 'AnubianGuardian_Archer_Catacombs'
   | 'AnubianGuardian_Archer_DG_BrimstoneSands_00'
   | 'AnubianGuardian_Archer_DG_BrimstoneSands_Named_00'
   | 'AnubianGuardian_Archer_Elite_67'
@@ -11435,6 +11930,7 @@ export type VitalsCategory =
   | 'AnubianGuardian_Brute_66'
   | 'AnubianGuardian_Brute_67'
   | 'AnubianGuardian_Brute_Boss'
+  | 'AnubianGuardian_Brute_Catacombs'
   | 'AnubianGuardian_Brute_DG_BrimstoneSands_00'
   | 'AnubianGuardian_Brute_DG_BrimstoneSands_Named_00'
   | 'AnubianGuardian_Brute_DG_BrimstoneSands_Named_01'
@@ -11455,6 +11951,7 @@ export type VitalsCategory =
   | 'AnubianGuardian_Horus_66'
   | 'AnubianGuardian_Horus_67'
   | 'AnubianGuardian_Horus_Boss'
+  | 'AnubianGuardian_Horus_Catacombs'
   | 'AnubianGuardian_Horus_DG_BrimstoneSands_00'
   | 'AnubianGuardian_Horus_DG_BrimstoneSands_Named_00'
   | 'AnubianGuardian_Horus_DG_BrimstoneSands_Named_01'
@@ -11498,6 +11995,7 @@ export type VitalsCategory =
   | 'AnubianGuardian_Reaver_65'
   | 'AnubianGuardian_Reaver_66'
   | 'AnubianGuardian_Reaver_67'
+  | 'AnubianGuardian_Reaver_Catacombs'
   | 'AnubianGuardian_Reaver_DG_BrimstoneSands_00'
   | 'AnubianGuardian_Reaver_DG_BrimstoneSands_Named_00'
   | 'AnubianGuardian_Reaver_Elite_67'
@@ -11514,6 +12012,7 @@ export type VitalsCategory =
   | 'AnubianGuardian_Spearman_66'
   | 'AnubianGuardian_Spearman_67'
   | 'AnubianGuardian_Spearman_67_Named_00'
+  | 'AnubianGuardian_Spearman_Catacombs'
   | 'AnubianGuardian_Spearman_DG_BrimstoneSands_00'
   | 'AnubianGuardian_Spearman_DG_BrimstoneSands_Named_00'
   | 'AnubianGuardian_Spearman_Elite_67'
@@ -12288,6 +12787,15 @@ export type VitalsCategory =
   | 'CK_Waterfowl_10ws07'
   | 'CK_Withered_Grunt_Named_10WS03'
   | 'Caster_Torso_Boss_Ice_Minion'
+  | 'Catacombs'
+  | 'Catacombs_Boss'
+  | 'Catacombs_Hazard'
+  | 'Catacombs_Hazard_Axe'
+  | 'Catacombs_Hazard_Debris'
+  | 'Catacombs_Hazard_Exploding_Mushroom'
+  | 'Catacombs_Hazard_Fire_Pit'
+  | 'Catacombs_Hazard_Flamethrower'
+  | 'Catacombs_Hazard_Steel_Trap'
   | 'Chameleon'
   | 'Churro'
   | 'Corbenic_Altar'
@@ -12302,6 +12810,7 @@ export type VitalsCategory =
   | 'CorruptedLegion_Cyclops_65'
   | 'CorruptedLegion_Cyclops_66'
   | 'CorruptedLegion_Cyclops_67'
+  | 'CorruptedLegion_Cyclops_Catacombs_Named'
   | 'CorruptedLegion_Cyclops_DG_BrimstoneSands_00'
   | 'CorruptedLegion_Cyclops_DG_BrimstoneSands_Crassus_Minion'
   | 'CorruptedLegion_Cyclops_DG_BrimstoneSands_Named_00'
@@ -12311,6 +12820,11 @@ export type VitalsCategory =
   | 'CorruptedLegion_Cyclops_Named_00'
   | 'CorruptedLegion_Cyclops_Named_01'
   | 'CorruptedLegion_Cyclops_Named_02_ELITE'
+  | 'CorruptedLegion_Legionnaire_Catacombs'
+  | 'CorruptedLegion_Sagittarii_Catacombs'
+  | 'CorruptedLegion_Signifer_Catacombs'
+  | 'Corrupted_Bear_Catacombs_Named'
+  | 'Corrupted_Heavy_Catacombs_Named'
   | 'Corrupted_Leviathan'
   | 'Corrupted_Leviathan_Eyeball'
   | 'Corrupted_Mine_25'
@@ -12341,6 +12855,7 @@ export type VitalsCategory =
   | 'Corrupted_Ogre_61'
   | 'Corrupted_Ogre_62'
   | 'Corrupted_Ogre_62_ELITE'
+  | 'Corrupted_Ogre_Catacombs'
   | 'Corrupted_Ogre_DG_GreatCleave_00'
   | 'Corrupted_Ogre_DG_Restless_00'
   | 'Corrupted_Ogre_DG_ShatterMtn_00'
@@ -12366,6 +12881,7 @@ export type VitalsCategory =
   | 'Corrupted_Sailor_Miner'
   | 'Corrupted_Sailor_Miner_Named_00'
   | 'Corrupted_Sailor_StarterBeach_Named_00'
+  | 'Corrupted_Tendril_Catacombs'
   | 'Corrupted_Tiger'
   | 'Corrupted_Tiger_08QP08_ELITE'
   | 'Corrupted_Tiger_40'
@@ -12539,6 +13055,7 @@ export type VitalsCategory =
   | 'Damned_1H_Swordsman_M-F_60'
   | 'Damned_1H_Swordsman_M-F_61'
   | 'Damned_1H_Swordsman_M-F_62'
+  | 'Damned_1H_Swordsman_M-F_Catacombs'
   | 'Damned_1H_Swordsman_M-F_DG_GreatCleave_00'
   | 'Damned_1H_Swordsman_M-F_DG_Restless_00'
   | 'Damned_1H_Swordsman_M-F_DG_ShatterMtn_00'
@@ -12603,6 +13120,7 @@ export type VitalsCategory =
   | 'Damned_Acolyte_60'
   | 'Damned_Acolyte_61'
   | 'Damned_Acolyte_62'
+  | 'Damned_Acolyte_Catacombs'
   | 'Damned_Acolyte_DG_Restless_00'
   | 'Damned_Acolyte_DG_ShatterMtn_00'
   | 'Damned_Acolyte_DT1'
@@ -12612,6 +13130,7 @@ export type VitalsCategory =
   | 'Damned_Acolyte_DT5'
   | 'Damned_Acolyte_DT6'
   | 'Damned_Acolyte_Isabella_Basilica_Summon'
+  | 'Damned_Acolyte_Mine_Catacombs'
   | 'Damned_Acolyte_Named_00'
   | 'Damned_Acolyte_Named_01_03GC09_ELITE'
   | 'Damned_Acolyte_Named_02_03GC09_ELITE'
@@ -12701,6 +13220,7 @@ export type VitalsCategory =
   | 'Damned_Bowman_61'
   | 'Damned_Bowman_62'
   | 'Damned_Bowman_64'
+  | 'Damned_Bowman_Catacombs'
   | 'Damned_Bowman_DG_Restless_00'
   | 'Damned_Bowman_DG_ShatterMtn_00'
   | 'Damned_Bowman_M-F_03GC07'
@@ -12754,6 +13274,7 @@ export type VitalsCategory =
   | 'Damned_Cultist_60'
   | 'Damned_Cultist_61'
   | 'Damned_Cultist_62'
+  | 'Damned_Cultist_Catacombs'
   | 'Damned_Cultist_DG_GreatCleave_00'
   | 'Damned_Cultist_DG_Restless_00'
   | 'Damned_Cultist_DG_ShatterMtn_00'
@@ -12804,6 +13325,7 @@ export type VitalsCategory =
   | 'Damned_GreatAxeman_M-F_60'
   | 'Damned_GreatAxeman_M-F_61'
   | 'Damned_GreatAxeman_M-F_62'
+  | 'Damned_GreatAxeman_M-F_Catacombs'
   | 'Damned_GreatAxeman_M-F_DG_GreatCleave_00'
   | 'Damned_GreatAxeman_M-F_DG_Restless_00'
   | 'Damned_GreatAxeman_M-F_DG_ShatterMtn_00'
@@ -14015,7 +14537,11 @@ export type VitalsCategory =
   | 'Dryad_Beast_Named_02'
   | 'Dryad_Fulgoris'
   | 'Dryad_Fulgoris_Active_Tissue'
+  | 'Dryad_Fulgoris_Active_Tissue_Catacombs'
+  | 'Dryad_Fulgoris_Boss_Catacombs'
+  | 'Dryad_Fulgoris_Unstable_Fiend_Catacombs'
   | 'Dryad_Fulgoris_Unstable_Tissue'
+  | 'Dryad_Fulgoris_Unstable_Tissue_Catacombs'
   | 'Dryad_Prowler'
   | 'Dryad_Prowler_40'
   | 'Dryad_Prowler_41'
@@ -14203,6 +14729,58 @@ export type VitalsCategory =
   | 'Dunewalker_Waterseeker_LifeStaff_Trial_Named'
   | 'Dunewalker_Waterseeker_LifeStaff_Trial_Quest'
   | 'Dunewalker_Waterseeker_LifeStaff_Trial_SoloPlus'
+  | 'Dunwood_Bear_Grizzly'
+  | 'Dunwood_Boar_Strange'
+  | 'Dunwood_Bobcat'
+  | 'Dunwood_Boss_Tower_Named_00'
+  | 'Dunwood_Boss_Tower_Named_01'
+  | 'Dunwood_Boss_Tower_Named_02'
+  | 'Dunwood_Boss_Tower_Named_03'
+  | 'Dunwood_Boss_Tower_Named_04'
+  | 'Dunwood_Boss_Tower_Named_05'
+  | 'Dunwood_Boss_Tower_Named_06'
+  | 'Dunwood_Boss_Tower_Named_07'
+  | 'Dunwood_Boss_Tower_Named_08'
+  | 'Dunwood_Boss_Tower_Named_09'
+  | 'Dunwood_Boss_Tower_Named_10'
+  | 'Dunwood_Cow'
+  | 'Dunwood_Elk'
+  | 'Dunwood_Ghastly_Villager_Hatchet'
+  | 'Dunwood_Ghastly_Villager_Hatchet_Elite'
+  | 'Dunwood_Ghastly_Villager_Shovel'
+  | 'Dunwood_Ghastly_Villager_Shovel_Elite'
+  | 'Dunwood_Ghost_Charred'
+  | 'Dunwood_Ghost_Frozen'
+  | 'Dunwood_Ghost_Plagued'
+  | 'Dunwood_Ghost_Shackled'
+  | 'Dunwood_Ghost_Shipwrecked'
+  | 'Dunwood_Ghost_Starved'
+  | 'Dunwood_Goat'
+  | 'Dunwood_Lost_Bloodbeast'
+  | 'Dunwood_Lost_Bloodbeast_Elite'
+  | 'Dunwood_Lost_FeralGhoul'
+  | 'Dunwood_Lost_FeralGhoul_Elite'
+  | 'Dunwood_Lost_MutatedNurse'
+  | 'Dunwood_Lost_MutatedNurse_Elite'
+  | 'Dunwood_Lost_SoulHarvester'
+  | 'Dunwood_Lost_SoulHarvester_10221'
+  | 'Dunwood_Lost_SoulHarvester_Elite'
+  | 'Dunwood_Pig'
+  | 'Dunwood_Rabbit'
+  | 'Dunwood_Sheep'
+  | 'Dunwood_Spectral_Lost_1hSword'
+  | 'Dunwood_Spectral_Lost_2hAxe'
+  | 'Dunwood_Spectral_Lost_2hBlunderbuss'
+  | 'Dunwood_Spectral_Lost_2hSpear'
+  | 'Dunwood_Spectral_Lost_Fire'
+  | 'Dunwood_Spectral_Lost_Ice'
+  | 'Dunwood_Turkey'
+  | 'Dunwood_Undead_Cryptkeeper'
+  | 'Dunwood_Undead_Cryptkeeper_Elite'
+  | 'Dunwood_Undead_Naga'
+  | 'Dunwood_Undead_Naga_Elite'
+  | 'Dunwood_Wolf'
+  | 'Dunwood_Wolf_Alpha'
   | 'Dynasty_Empress'
   | 'Dynasty_Empress_Pedestal'
   | 'Dynasty_Empress_Solo'
@@ -14211,6 +14789,7 @@ export type VitalsCategory =
   | 'Dynasty_Heavy_08QP08'
   | 'Dynasty_Heavy_08QP08_ELITE'
   | 'Dynasty_Heavy_57'
+  | 'Dynasty_Heavy_Catacombs_Named'
   | 'Dynasty_Heavy_DG_Ebonscale_00'
   | 'Dynasty_Heavy_DG_GreatCleave_00'
   | 'Dynasty_Heavy_DG_ShatterMtn_00'
@@ -14224,6 +14803,7 @@ export type VitalsCategory =
   | 'Dynasty_Heavy_Named_DG_GreatCleave_00'
   | 'Dynasty_Heavy_Named_DG_ShatterMtn_00'
   | 'Dynasty_Maiden'
+  | 'Dynasty_Maiden_Catacombs'
   | 'Dynasty_Maiden_DG_Ebonscale_00'
   | 'Dynasty_Maiden_DG_GreatCleave_00'
   | 'Dynasty_Maiden_DG_ShatterMtn_00'
@@ -14281,6 +14861,7 @@ export type VitalsCategory =
   | 'Dynasty_Spearman_60_ELITE'
   | 'Dynasty_Spearman_61'
   | 'Dynasty_Spearman_62'
+  | 'Dynasty_Spearman_Catacombs'
   | 'Dynasty_Spearman_DG_Ebonscale_00'
   | 'Dynasty_Spearman_DG_GreatCleave_00'
   | 'Dynasty_Spearman_DG_ShatterMtn_00'
@@ -14308,6 +14889,7 @@ export type VitalsCategory =
   | 'Dynasty_Summoner_60_ELITE'
   | 'Dynasty_Summoner_61'
   | 'Dynasty_Summoner_62'
+  | 'Dynasty_Summoner_Catacombs'
   | 'Dynasty_Summoner_DG_Ebonscale_00'
   | 'Dynasty_Summoner_DG_GreatCleave_00'
   | 'Dynasty_Summoner_DG_ShatterMtn_00'
@@ -14341,6 +14923,7 @@ export type VitalsCategory =
   | 'Dynasty_Warrior_60_ELITE'
   | 'Dynasty_Warrior_61'
   | 'Dynasty_Warrior_62'
+  | 'Dynasty_Warrior_Catacombs'
   | 'Dynasty_Warrior_DG_Ebonscale_00'
   | 'Dynasty_Warrior_DG_Ebonscale_00_Defend'
   | 'Dynasty_Warrior_DG_GreatCleave_00'
@@ -14410,6 +14993,7 @@ export type VitalsCategory =
   | 'Evil_Knight_Bow_30'
   | 'Evil_Knight_Bow_31'
   | 'Evil_Knight_Bow_32'
+  | 'Evil_Knight_Bow_Catacombs'
   | 'Evil_Knight_Bow_DG_GreatCleave01_00'
   | 'Evil_Knight_Bow_DG_GreatCleave01_01'
   | 'Evil_Knight_Bow_DG_GreatCleave_00_00'
@@ -14430,17 +15014,21 @@ export type VitalsCategory =
   | 'Evil_Knight_Caster_30'
   | 'Evil_Knight_Caster_31'
   | 'Evil_Knight_Caster_32'
+  | 'Evil_Knight_Caster_Catacombs'
   | 'Evil_Knight_Caster_DG_GreatCleave01_00'
   | 'Evil_Knight_Caster_DG_GreatCleave01_01'
   | 'Evil_Knight_Caster_DG_GreatCleave_00_00'
   | 'Evil_Knight_Caster_DG_GreatCleave_00_01'
   | 'Evil_Knight_Caster_Elite'
   | 'Evil_Knight_Caster_Elite_08QP02'
+  | 'Evil_Knight_Caster_Elite_Overlord'
   | 'Evil_Knight_Caster_FireVariant'
   | 'Evil_Knight_Caster_Named_04NW04'
   | 'Evil_Knight_Caster_Named_14AC06'
   | 'Evil_Knight_Caster_Named_DG_GreatCleave_01'
   | 'Evil_Knight_Commander'
+  | 'Evil_Knight_Commander_Catacombs'
+  | 'Evil_Knight_Commander_Catacombs_Named'
   | 'Evil_Knight_Commander_FireVariant'
   | 'Evil_Knight_Commander_Named_08QP02'
   | 'Evil_Knight_Commander_Named_DG_GreatCleave_01'
@@ -14472,6 +15060,7 @@ export type VitalsCategory =
   | 'Evil_Knight_Greataxe_30'
   | 'Evil_Knight_Greataxe_31'
   | 'Evil_Knight_Greataxe_32'
+  | 'Evil_Knight_Greataxe_Catacombs'
   | 'Evil_Knight_Greataxe_DG_Greatcleave_00_00'
   | 'Evil_Knight_Greataxe_DG_Greatcleave_00_01'
   | 'Evil_Knight_Greataxe_Elite'
@@ -14483,6 +15072,8 @@ export type VitalsCategory =
   | 'Evil_Knight_Greataxe_Named_DG_Greatcleave_00'
   | 'Evil_Knight_Gruntmaster'
   | 'Evil_Knight_Heavy'
+  | 'Evil_Knight_Heavy_Catacombs'
+  | 'Evil_Knight_Heavy_Catacombs_Named'
   | 'Evil_Knight_Heavy_CommanderLoth_Boss'
   | 'Evil_Knight_Heavy_DG_GreatCleave_00'
   | 'Evil_Knight_Heavy_DG_GreatCleave_01'
@@ -14496,6 +15087,7 @@ export type VitalsCategory =
   | 'Evil_Knight_Heavy_Named_DG_GreatCleave_01'
   | 'Evil_Knight_Hound'
   | 'Evil_Knight_Hound_25'
+  | 'Evil_Knight_Hound_Catacombs'
   | 'Evil_Knight_Hound_DG_GreatCleave01_00'
   | 'Evil_Knight_Hound_DG_GreatCleave_00_00'
   | 'Evil_Knight_Hound_Elite'
@@ -14504,6 +15096,7 @@ export type VitalsCategory =
   | 'Evil_Knight_IceStaff_IceVariant'
   | 'Evil_Knight_IceStaff_IceVariant_Named'
   | 'Evil_Knight_LifeStaff'
+  | 'Evil_Knight_LifeStaff_Catacombs'
   | 'Evil_Knight_LifeStaff_DG_GreatCleave01_00'
   | 'Evil_Knight_LifeStaff_DG_GreatCleave_00_00'
   | 'Evil_Knight_LifeStaff_Elite_08QP02'
@@ -14514,6 +15107,7 @@ export type VitalsCategory =
   | 'Evil_Knight_Longsword'
   | 'Evil_Knight_Longsword_16'
   | 'Evil_Knight_Longsword_25'
+  | 'Evil_Knight_Longsword_Catacombs'
   | 'Evil_Knight_Longsword_DG_GreatCleave01_00'
   | 'Evil_Knight_Longsword_DG_GreatCleave01_01'
   | 'Evil_Knight_Longsword_DG_GreatCleave_00_00'
@@ -14543,6 +15137,7 @@ export type VitalsCategory =
   | 'Evil_Knight_Mace_30'
   | 'Evil_Knight_Mace_31'
   | 'Evil_Knight_Mace_32'
+  | 'Evil_Knight_Mace_Catacombs'
   | 'Evil_Knight_Mace_DG_GreatCleave01_00'
   | 'Evil_Knight_Mace_DG_GreatCleave_00_00'
   | 'Evil_Knight_Mace_DG_GreatCleave_00_01'
@@ -14565,6 +15160,7 @@ export type VitalsCategory =
   | 'Evil_Knight_Spear_30'
   | 'Evil_Knight_Spear_31'
   | 'Evil_Knight_Spear_32'
+  | 'Evil_Knight_Spear_Catacombs'
   | 'Evil_Knight_Spear_DG_GreatCleave_00_00'
   | 'Evil_Knight_Spear_Elite'
   | 'Evil_Knight_Spear_Elite_08QP02'
@@ -14573,7 +15169,9 @@ export type VitalsCategory =
   | 'Evil_Knight_Spear_IceVariant_Named'
   | 'Evil_Knight_Spear_Named_02BW07'
   | 'Evil_Knight_Spear_Named_DG_GreatCleave_00_00'
+  | 'Evil_Knight_Sustain_Elite'
   | 'Evil_Knight_VoidGauntlet'
+  | 'Evil_Knight_VoidGauntlet_Catacombs'
   | 'Evil_Knight_Warhammer'
   | 'Evil_Knight_Warhammer_25'
   | 'Evil_Knight_Warhammer_26'
@@ -14583,6 +15181,7 @@ export type VitalsCategory =
   | 'Evil_Knight_Warhammer_30'
   | 'Evil_Knight_Warhammer_31'
   | 'Evil_Knight_Warhammer_32'
+  | 'Evil_Knight_Warhammer_Catacombs'
   | 'Evil_Knight_Warhammer_DG_GreatCleave_00'
   | 'Evil_Knight_Warhammer_Elite'
   | 'Evil_Knight_Warhammer_Elite_08QP02'
@@ -14991,7 +15590,10 @@ export type VitalsCategory =
   | 'FTUE_Sailor_z1'
   | 'FTUE_Sailor_z2'
   | 'FTUE_Sailor_z3'
+  | 'Fae'
   | 'Forged'
+  | 'Fox'
+  | 'Gargoyle_Brute'
   | 'Ghastly_Sniper'
   | 'Ghastly_Villager_Hatchet'
   | 'Ghastly_Villager_Shovel'
@@ -15309,17 +15911,30 @@ export type VitalsCategory =
   | 'Ghost_Starved_Named_99A_Enc_Torment_SW02'
   | 'Ghost_Starved_Named_99A_Enc_Torment_SW03'
   | 'Ghost_Starved_S4Q2'
+  | 'Gimmick_AncientBattery'
+  | 'Gimmick_AncientPylon'
+  | 'Gimmick_LightningPylon'
+  | 'Gimmick_Normal'
+  | 'Gimmick_Ranged'
+  | 'Gimmick_Slash'
+  | 'Gimmick_Strike'
+  | 'Gimmick_Thrust'
   | 'Goat'
   | 'Goat_Mountain_03GC10'
   | 'Goat_Mountain_40'
   | 'Goat_Mountain_42'
   | 'Goat_Mountain_Named_00'
   | 'Gorilla_Boss_DG_FirstLight_01'
+  | 'Gourdspewer_Halloween_2022'
+  | 'Gourdspewer_VineLeg_Minion_Halloween_2022'
+  | 'HalloweenBoss'
+  | 'Halloween_2022_Plaguer'
   | 'Haunted'
   | 'Hercyne'
   | 'Hercyne_Boar'
   | 'Hercyne_Boar_Alpha'
   | 'Hercyne_Boar_Alpha_Raid_CutlassKeys_00'
+  | 'Hercyne_Boar_Catacombs'
   | 'Hercyne_Boar_Raid_CutlassKeys_00'
   | 'Hercyne_Boar_WaveEvent'
   | 'Hercyne_Broodmother'
@@ -15331,13 +15946,16 @@ export type VitalsCategory =
   | 'Hercyne_Corvid'
   | 'Hercyne_Corvid_Alpha'
   | 'Hercyne_Corvid_Alpha_Raid_CutlassKeys_00'
+  | 'Hercyne_Corvid_Catacombs'
   | 'Hercyne_Corvid_Raid_CutlassKeys_00'
   | 'Hercyne_Echidna'
   | 'Hercyne_Echidna_Missile'
   | 'Hercyne_Elephant_Broodmother'
+  | 'Hercyne_Elephant_Catacombs'
   | 'Hercyne_Elephant_Raid_CutlassKeys_00'
   | 'Hercyne_Gorilla'
   | 'Hercyne_Gorilla_Broodmother'
+  | 'Hercyne_Gorilla_Catacombs'
   | 'Hercyne_Gorilla_Raid_CutlassKeys_00'
   | 'Hercyne_Rat_Raid_CutlassKeys_00'
   | 'Hercyne_Reindeer'
@@ -15351,6 +15969,7 @@ export type VitalsCategory =
   | 'Hercyne_Reindeer_Briar_Turret_Raid_CutlassKeys_00'
   | 'Hercyne_Reindeer_Raid_CutlassKeys_00'
   | 'Hercyne_Spider'
+  | 'Hercyne_Spider_Catacombs'
   | 'Hercyne_Tendril_Eyeball_Raid_CutlassKeys_00'
   | 'Hercyne_Tendril_Raid_CutlassKeys_00'
   | 'Hercyne_Typhon'
@@ -15358,6 +15977,7 @@ export type VitalsCategory =
   | 'Hercyne_Wolf'
   | 'Hercyne_Wolf_Alpha'
   | 'Hercyne_Wolf_Alpha_Raid_CutlassKeys_00'
+  | 'Hercyne_Wolf_Catacombs'
   | 'Hercyne_Wolf_Raid_CutlassKeys_00'
   | 'Hostile'
   | 'Human'
@@ -15378,9 +15998,25 @@ export type VitalsCategory =
   | 'IceDryad_Range_Frostgrip_62'
   | 'IceDryad_Range_Frostgrip_65_ELITE'
   | 'IceGolem'
+  | 'IceGolem_Boss_Catacombs'
+  | 'IceGolem_Stalag_Catacombs'
   | 'IceWolf'
   | 'Imhotep'
   | 'Inert_Remnant'
+  | 'Inquisitor'
+  | 'Inquisitor_Bomber'
+  | 'Inquisitor_Cleric'
+  | 'Inquisitor_Cleric_Catacombs'
+  | 'Inquisitor_Enforcer'
+  | 'Inquisitor_Flamekeeper'
+  | 'Inquisitor_Grunt'
+  | 'Inquisitor_Markswoman'
+  | 'Inquisitor_Markswoman_Catacombs'
+  | 'Inquisitor_Seraphim'
+  | 'Inquisitor_Seraphim_Catacombs'
+  | 'Inquisitor_Seraphim_ConcealedShield'
+  | 'Inquisitor_Warden'
+  | 'Inquisitor_Warden_Catacombs_Named'
   | 'Invasion_Bear'
   | 'Invasion_Bomber'
   | 'Invasion_Brute'
@@ -15396,6 +16032,54 @@ export type VitalsCategory =
   | 'Invasion_Swordsman'
   | 'Invasion_VoidDestroyer'
   | 'Invasion_VoidDestroyer_Eye'
+  | 'IoN_Dummy_PalatineGuard'
+  | 'IoN_HeiressAndPG_Encounter_Manager'
+  | 'IoN_Jester_Lost_Bloodbeast'
+  | 'IoN_Jester_Lost_Brute'
+  | 'IoN_Jester_Lost_Cryptkeeper'
+  | 'IoN_Jester_Lost_FeralGhoul'
+  | 'IoN_Jester_Lost_Ghastly_Villager_Hatchet'
+  | 'IoN_Jester_Lost_Ghastly_Villager_Shovel'
+  | 'IoN_Jester_Lost_MummifiedCorpse'
+  | 'IoN_Jester_Lost_MutatedNurse'
+  | 'IoN_Jester_Lost_SoulHarvester'
+  | 'IoN_Jester_Lost_Undead_Naga'
+  | 'IoN_Lost_Bloodbeast'
+  | 'IoN_Lost_BossSoul'
+  | 'IoN_Lost_BossSoul_Gimmick'
+  | 'IoN_Lost_Brute'
+  | 'IoN_Lost_Brute_Elite'
+  | 'IoN_Lost_Cryptkeeper'
+  | 'IoN_Lost_FeralGhoul'
+  | 'IoN_Lost_Ghastly_Villager_Hatchet'
+  | 'IoN_Lost_Ghastly_Villager_Shovel'
+  | 'IoN_Lost_Heiress'
+  | 'IoN_Lost_Knight_Bow'
+  | 'IoN_Lost_Knight_Pikeman'
+  | 'IoN_Lost_Knight_Tank'
+  | 'IoN_Lost_Knight_Warhammer'
+  | 'IoN_Lost_Monarch'
+  | 'IoN_Lost_Monarch_Elite'
+  | 'IoN_Lost_MummifiedCorpse'
+  | 'IoN_Lost_MutatedNurse'
+  | 'IoN_Lost_Naga_Elite'
+  | 'IoN_Lost_PalatineGuard_Archer'
+  | 'IoN_Lost_PalatineGuard_Halberd'
+  | 'IoN_Lost_PalatineGuard_Shield'
+  | 'IoN_Lost_PalatineGuard_Swordsman'
+  | 'IoN_Lost_Shadow_Heiress'
+  | 'IoN_Lost_Shadow_Jester'
+  | 'IoN_Lost_Shadow_PalatineArcher'
+  | 'IoN_Lost_Shadow_PalatineHalberd'
+  | 'IoN_Lost_Shadow_PalatineShield'
+  | 'IoN_Lost_Shadow_PalatineSwordsman'
+  | 'IoN_Lost_SoulHarvester'
+  | 'IoN_Lost_Thorpe'
+  | 'IoN_Lost_Thorpe_MinionManager'
+  | 'IoN_Lost_Thorpe_Relic'
+  | 'IoN_Lost_Undead_Naga'
+  | 'IoN_Lost_Withered_Grunt'
+  | 'IoN_PurgingBladeMinion'
   | 'Isabella_DG_Ebonscale_00'
   | 'Isabella_DG_ShatterMtn_Phase0_00'
   | 'Isabella_DG_ShatterMtn_Phase1_00'
@@ -15525,15 +16209,26 @@ export type VitalsCategory =
   | 'Lion'
   | 'Loot_Goblin'
   | 'Loot_Goblin_60'
+  | 'Loot_Goblin_Catacombs'
   | 'Loot_Goblin_FOTB'
   | 'Lost'
+  | 'Lost_Autoguided_Surprise'
   | 'Lost_Bloodbeast'
+  | 'Lost_Bloodbeast_Catacombs'
+  | 'Lost_Bloodbeast_Catacombs_Extraction'
+  | 'Lost_Cryptkeeper_Catacombs'
+  | 'Lost_Cryptkeeper_Catacombs_Extraction'
   | 'Lost_Fencer'
   | 'Lost_Fencer_06SW09'
   | 'Lost_Fencer_12MB04'
   | 'Lost_Fencer_12MB05'
   | 'Lost_Fencer_Named_12MB04'
   | 'Lost_FeralGhoul'
+  | 'Lost_FeralGhoul_Catacombs'
+  | 'Lost_FeralGhoul_Catacombs_Extraction'
+  | 'Lost_Ghastly_Sniper_Catacombs'
+  | 'Lost_Ghastly_Villager_Hatchet_Catacombs'
+  | 'Lost_Ghastly_Villager_Shovel_Catacombs'
   | 'Lost_Knight_Bow'
   | 'Lost_Knight_Bow_06SW09'
   | 'Lost_Knight_Bow_12MB03e'
@@ -15557,7 +16252,11 @@ export type VitalsCategory =
   | 'Lost_Merc_Tank'
   | 'Lost_Monarch'
   | 'Lost_Monarch_S4'
+  | 'Lost_MummifiedCorpse_Catacombs'
   | 'Lost_MutatedNurse'
+  | 'Lost_MutatedNurse_Catacombs'
+  | 'Lost_MutatedNurse_Catacombs_Extraction'
+  | 'Lost_Naga_Catacombs_Named'
   | 'Lost_Pikeman'
   | 'Lost_Pikeman_06SW09'
   | 'Lost_Pikeman_12MB04'
@@ -15565,9 +16264,13 @@ export type VitalsCategory =
   | 'Lost_Pikeman_Named_12MB05'
   | 'Lost_Siren_Named_ELITE_05WC11'
   | 'Lost_SoulHarvester'
+  | 'Lost_SoulHarvester_Boss_Catacombs'
   | 'Lost_Totem'
   | 'Lost_Totem_60'
   | 'Lost_Totem_Siren_Minion'
+  | 'Lost_Twin_Jesters'
+  | 'Lost_Twin_Jesters_OneShotSummon'
+  | 'Lost_Twin_Jesters_STDClone'
   | 'Lynx'
   | 'Lynx_03GC10'
   | 'Lynx_14'
@@ -15690,6 +16393,7 @@ export type VitalsCategory =
   | 'Naga_Corrupted_CorruptionCore'
   | 'Naga_Fire'
   | 'Naga_Fire_Clone'
+  | 'Naga_Withered'
   | 'Named'
   | 'Named '
   | 'Named_Expedition_A'
@@ -15730,6 +16434,7 @@ export type VitalsCategory =
   | 'Pig_Domestic_9'
   | 'Pirate'
   | 'Player'
+  | 'Powerup_DefenseTurret'
   | 'Predator'
   | 'Prey'
   | 'Priest_Lesser_DamnedHound'
@@ -15764,6 +16469,7 @@ export type VitalsCategory =
   | 'Primal_Lion_Desert'
   | 'Primal_Lion_Desert_Cub'
   | 'Primal_Lion_Named_10WS01'
+  | 'Pumpklin_Halloween_2022'
   | 'Rabbit'
   | 'Rabbit_Corrupted_40'
   | 'Rabbit_Corrupted_40_Event'
@@ -15801,6 +16507,10 @@ export type VitalsCategory =
   | 'Rabbit_Spotted_Named_02'
   | 'Rat'
   | 'Rat_HercyneRat'
+  | 'Rat_PlagueRat'
+  | 'Rat_PlagueRat_17DW06_10205'
+  | 'Rat_PlagueRat_Baby_17DW06_10205'
+  | 'Rat_PlagueRat_Named_17DW02_10222'
   | 'Reindeer'
   | 'Risen'
   | 'Risen_Beetle'
@@ -16070,6 +16780,7 @@ export type VitalsCategory =
   | 'SirenLieutenant'
   | 'Skeleton_1H_Club'
   | 'Skeleton_1H_Club_MSQ_10'
+  | 'Skeleton_1H_Club_Underworld_Catacombs_65'
   | 'Skeleton_1H_Sword'
   | 'Skeleton_1H_Sword_11'
   | 'Skeleton_1H_Sword_14'
@@ -16130,6 +16841,7 @@ export type VitalsCategory =
   | 'Skeleton_1H_Sword_MSQ_Defense_Encounter'
   | 'Skeleton_1H_Sword_Raid10'
   | 'Skeleton_1H_Sword_Raid10-'
+  | 'Skeleton_1H_Sword_Underworld_Catacombs_65'
   | 'Skeleton_1H_Sword_agheavy_minion'
   | 'Skeleton_2H_Sword_03GC10'
   | 'Skeleton_2H_Sword_10WS02'
@@ -16182,6 +16894,7 @@ export type VitalsCategory =
   | 'Skeleton_2H_Sword_ELITE'
   | 'Skeleton_2H_Sword_MSQ_11_Elite'
   | 'Skeleton_2H_Sword_MSQ_39'
+  | 'Skeleton_2H_Sword_Underworld_Catacombs_65'
   | 'Skeleton_Archer'
   | 'Skeleton_Archer_03GC10'
   | 'Skeleton_Archer_10WS02'
@@ -16230,6 +16943,7 @@ export type VitalsCategory =
   | 'Skeleton_Archer_Elite'
   | 'Skeleton_Archer_MSQ_11'
   | 'Skeleton_Archer_Named_DG_Reekwater_00'
+  | 'Skeleton_Archer_Underworld_65'
   | 'Skeleton_Club_10'
   | 'Skeleton_Club_10WS04'
   | 'Skeleton_Club_11'
@@ -16313,6 +17027,7 @@ export type VitalsCategory =
   | 'Skeleton_Crawler_DG_GreatCleave_01'
   | 'Skeleton_Crawler_DG_Reekwater_00'
   | 'Skeleton_Crawler_Elite'
+  | 'Skeleton_Crawler_Underworld_65'
   | 'Skeleton_Mage'
   | 'Skeleton_Minion'
   | 'Skeleton_Officer_2H_Spear'
@@ -16361,6 +17076,11 @@ export type VitalsCategory =
   | 'Skeleton_Spear_DG_GreatCleave_01'
   | 'SpellBot_00'
   | 'Spider'
+  | 'SpiderGimmick_WebTrap'
+  | 'Spider_Wildlife_Melee'
+  | 'Spider_Wildlife_Ranged'
+  | 'Spider_Wildlife_T1'
+  | 'Spider_Wildlife_T2'
   | 'Spriggan'
   | 'Spriggan_Adolescent'
   | 'Spriggan_Corrupted'
@@ -16504,6 +17224,10 @@ export type VitalsCategory =
   | 'Tendril_Corruption_Yonas'
   | 'Tendril_Corruption_ZaneFight'
   | 'Tendril_Leviathan'
+  | 'The_Archivist'
+  | 'The_Archivist_Darkest_Regret'
+  | 'The_Archivist_Meal'
+  | 'The_Archivist_Painful_Memory_Fragment'
   | 'Tiger'
   | 'Tiger_08QP02'
   | 'Tiger_08QP02b'
@@ -16550,12 +17274,28 @@ export type VitalsCategory =
   | 'Totem_Pirate_Cursed_61'
   | 'Totem_Pirate_Cursed_62'
   | 'Totem_Pirate_Cursed_ELITE_05WC11'
+  | 'Totem_Rat_Nest_ELITE'
   | 'Totem_Scorpion_Nest_ELITE'
   | 'Totem_Scorpion_Nest_LG_ELITE'
   | 'Totem_Scorpion_Nest_Scorpio_ELITE'
+  | 'Totem_Spider_Nest_ELITE'
   | 'Totem_Withered_Nest'
   | 'Totem_Withered_Nest_25_ELITE'
   | 'Totem_Withered_Nest_DG_Windsward_00'
+  | 'Trial_Quest_Dracula_Boss_Alecksi'
+  | 'Trial_Quest_Dracula_Boss_Cecilia_Shadow'
+  | 'Trial_Quest_Dracula_Cecilia'
+  | 'Trial_Quest_Dracula_Cecilia_Shield'
+  | 'Trial_Quest_Dracula_Lillith'
+  | 'Trial_Quest_Seraphim_Boss'
+  | 'Trial_Quest_Seraphim_Boss_Blind_Seraph'
+  | 'Trial_Quest_Seraphim_Boss_Breathless_Seraph'
+  | 'Trial_Quest_Seraphim_Boss_Heartless_Seraph'
+  | 'Trial_Quest_Seraphim_Boss_Mute_Seraph'
+  | 'Trial_Quest_Seraphim_Minion_Cleric'
+  | 'Trial_Quest_Seraphim_Minion_Entity'
+  | 'Trial_Quest_Seraphim_Minion_Flamekeeper'
+  | 'Trial_Quest_Seraphim_Minion_Tendril'
   | 'Turkey'
   | 'Turkey_03GC05'
   | 'Turkey_10WS01'
@@ -17211,6 +17951,32 @@ export type VitalsCategory =
   | 'Undead_pistoleer_64_ELITE'
   | 'Undead_pistoleer_65_ELITE'
   | 'Undead_pistoleer_DG_Cutlass_00'
+  | 'Underworld_Cryptkeeper'
+  | 'Underworld_Cryptkeeper_Elite'
+  | 'Underworld_Dryad_Tendril_Elite'
+  | 'Underworld_Dynasty_Heavy_Named_Elite'
+  | 'Underworld_Feculent'
+  | 'Underworld_Feculent_Elite'
+  | 'Underworld_FeralGhoul'
+  | 'Underworld_FeralGhoul_Elite'
+  | 'Underworld_Hercyne_Elephant_Named_Elite'
+  | 'Underworld_Inquisitor_Enforcer_Named_Elite'
+  | 'Underworld_Inquisitor_Warden_Named_Elite'
+  | 'Underworld_Lost_SoulHarvester_Named_Elite'
+  | 'Underworld_MutatedNurse'
+  | 'Underworld_MutatedNurse_Elite'
+  | 'Underworld_Skeleton_1H_Club_Elite'
+  | 'Underworld_Skeleton_1H_Sword_Elite'
+  | 'Underworld_Skeleton_2H_Sword_Elite'
+  | 'Underworld_Skeleton_2H_Sword_Named'
+  | 'Underworld_Skeleton_Archer_Elite'
+  | 'Underworld_Skeleton_Crawler_Elite'
+  | 'Underworld_Skeleton_Dark_1H_Club'
+  | 'Underworld_Skeleton_Dark_2H_Sword'
+  | 'Underworld_Skeleton_Dark_Crawler'
+  | 'Underworld_Spriggan'
+  | 'Underworld_Spriggan_Elite'
+  | 'Underworld_Undead_Naga_Named_Elite'
   | 'Unstable_Swamp_Fiend'
   | 'Unstable_Swamp_Fiend_58'
   | 'Unstable_Swamp_Fiend_59'
@@ -17224,6 +17990,45 @@ export type VitalsCategory =
   | 'Unstable_Swamp_Fiend_Bog_Minion'
   | 'Unstable_Swamp_Fiend_ELITE_05WC10'
   | 'Unstable_Swamp_Fiend_Minion'
+  | 'Upyr'
+  | 'Upyr_Aggreessor'
+  | 'Upyr_Baroness'
+  | 'Upyr_Baroness_Catacombs'
+  | 'Upyr_Baroness_Catacombs_Named'
+  | 'Upyr_Baroness_Named_17DW07_10303'
+  | 'Upyr_Barrel'
+  | 'Upyr_Consort'
+  | 'Upyr_Consort_Archivist'
+  | 'Upyr_Consort_Catacombs'
+  | 'Upyr_Consort_Catacombs_Named'
+  | 'Upyr_Consort_Chains'
+  | 'Upyr_Consort_Named_17DW02_10219'
+  | 'Upyr_Consort_Named_17DW08_10312'
+  | 'Upyr_Guardian'
+  | 'Upyr_Guardian_Named_17DW02_10222'
+  | 'Upyr_Mindthief'
+  | 'Upyr_Mindthief_Minion_17DW02_10219'
+  | 'Upyr_Mindthief_Named_17DW02_10219'
+  | 'Upyr_Mindthief_Named_17DW07_10303'
+  | 'Upyr_Morgaine'
+  | 'Upyr_Shade'
+  | 'Upyr_Shade_Named_17DW02_10218'
+  | 'Upyr_Shade_Named_17DW08_10312'
+  | 'Upyr_Thrall_Aggressor'
+  | 'Upyr_Thrall_Aggressor_Named_17DW02_10222'
+  | 'Upyr_Thrall_Aggressor_Wave_17DW08_10312'
+  | 'Upyr_Thrall_Grunt'
+  | 'Upyr_Thrall_Meatbag'
+  | 'Upyr_Thrall_Meatbag_17DW07_10303'
+  | 'Upyr_Thrall_Meatbag_Catacombs'
+  | 'Upyr_Thrall_Meatbag_Green'
+  | 'Upyr_Thrall_Meatbag_Green_Catacombs'
+  | 'Upyr_Thrall_Meatbag_Green_Catacombs_Extraction'
+  | 'Upyr_Thrall_Meatbag_Purple'
+  | 'Upyr_Thrall_Meatbag_Purple_Catacombs'
+  | 'Upyr_Thrall_Meatbag_Red'
+  | 'Upyr_Thrall_Meatbag_Red_Catacombs'
+  | 'Upyr_Thrall_Soul_Hunter'
   | 'Varangian'
   | 'WB_Brute_Cutlass_AdmiralBrute'
   | 'WB_Brute_Cutlass_AdmiralBrute_BlackPowderKeg'
@@ -17258,6 +18063,38 @@ export type VitalsCategory =
   | 'WB_Scarab_BS_LotusScarab_Sun'
   | 'Waterfowl'
   | 'Waterfowl_40'
+  | 'Werebear'
+  | 'Werebear_Asena_Minion'
+  | 'Werebear_Crusher_Asena_Minion'
+  | 'Wereraven'
+  | 'Wereraven_Asena_Minion'
+  | 'Wereraven_Caster_Asena_Minion'
+  | 'Werewolf'
+  | 'Werewolf_17DW06_10205'
+  | 'Werewolf_Alpha_Asena_Minion'
+  | 'Werewolf_Asena_MSQ_Pt1'
+  | 'Werewolf_Asena_MSQ_Pt2'
+  | 'Werewolf_Asena_Minion'
+  | 'Werewolf_Lord_17DW06'
+  | 'Werewolf_Named_17DW06_10205'
+  | 'Werewolf_Wave_17DW06_10205'
+  | 'Wildlife_Armored_Dragon_Catacombs'
+  | 'Wildlife_Chameleon_Catacombs'
+  | 'Wildlife_GorillaElemental_Boss_Catacombs'
+  | 'Wildlife_GorillaElemental_Boss_Elemental_Catacombs'
+  | 'Wildlife_Gorilla_Ice_Catacombs'
+  | 'Wildlife_Gorilla_Lava_Catacombs'
+  | 'Wildlife_Gorilla_Lightning_Catacombs'
+  | 'Wildlife_Mammoth_Ice_Catatcombs'
+  | 'Wildlife_Mammoth_Lava_Catacombs'
+  | 'Wildlife_Mammoth_Lightning_Catacombs'
+  | 'Wildlife_Mammoth_Nature_Catacombs'
+  | 'Wildlife_Werebear_Catacombs'
+  | 'Wildlife_Werebear_Catacombs_Named'
+  | 'Wildlife_Wereraven_Catacombs'
+  | 'Wildlife_Wereraven_Catacombs_Named'
+  | 'Wildlife_Werewolf_Catacombs'
+  | 'Wildlife_Werewolf_Catacombs_Named'
   | 'Withered'
   | 'Withered_Beetle'
   | 'Withered_Beetle_ELITE'
@@ -17714,14 +18551,17 @@ export type VitalsCategory =
   | 'Yeti_Named_S4_2'
   | 'Yonas_MSQ'
   | 'Yonas_MSQ2'
+  | 'YsGuardian'
   | 'vc_FL_Mammoth_09A_S6_Encounter'
 
 export type VitalsFamily =
   | 'AncientGuardian'
   | 'AngryEarth'
   | 'Corrupted'
+  | 'Fae'
   | 'Human'
   | 'Lost'
+  | 'Structure'
   | 'Wildlife'
 
 export type WeaponTag =

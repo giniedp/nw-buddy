@@ -1,13 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getItemId, getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
-import {
-  COLS_CONSUMABLEITEMDEFINITIONS,
-  COLS_MASTERITEMDEFINITIONS,
-  CategoricalProgressionData,
-  MasterItemDefinitions,
-  ShopData,
-} from '@nw-data/generated'
+import { COLS_CONSUMABLEITEMDEFINITIONS, COLS_MASTERITEMDEFINITIONS, MasterItemDefinitions } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -17,13 +11,14 @@ import { combineLatest, defer } from 'rxjs'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { humanize, selectStream } from '~/utils'
+import { selectStream } from '~/utils'
 import { ItemCellComponent } from './item-cell.component'
 import {
   ItemTableRecord,
   ShopInfo,
   itemColAttributeMods,
   itemColBookmark,
+  itemColEquipmentSetId,
   itemColEvent,
   itemColExpansion,
   itemColGearScore,
@@ -102,6 +97,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         progressionMap: this.db.categoricalProgressionByIdMap(),
         shopMap: this.db.shopDataByProgressionIdMap(),
         consumablesMap: this.db.consumableItemsByIdMap(),
+        equipmentSetsMap: this.db.equipmentSetsByIdMap(),
       }),
     ),
     ({
@@ -116,6 +112,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
       progressionMap,
       shopMap,
       consumablesMap,
+      equipmentSetsMap,
     }) => {
       function getItem(id: string) {
         if (!id) {
@@ -123,20 +120,21 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         }
         return itemsMap.get(id) || housingMap.get(id) || ({ ItemID: id } as MasterItemDefinitions)
       }
-      items = items.map((it): ItemTableRecord => {
+      items = items.map((it: ItemTableRecord): ItemTableRecord => {
         const perks = getItemPerks(it, perksMap)
+        const equipmentSet = equipmentSetsMap.get(it.EquipmentSetId)
         const conversions = conversionMap.get(getItemId(it)) || []
-        const shops = uniq(conversions.map((it) => it.CategoricalProgressionId)).map(
-          (id): ShopInfo => {
+        const shops = uniq(conversions.map((it) => it.CategoricalProgressionId))
+          .map((id): ShopInfo => {
             const shop = shopMap.get(id)
             const prog = progressionMap.get(id as any)
             return {
               ProgressionId: id,
               Icon: shop?.ShopIconSmall || prog?.IconPath || NW_FALLBACK_ICON,
-              Label: shop?.ShopName || prog?.DisplayName
+              Label: shop?.ShopName || prog?.DisplayName,
             }
-          },
-        ).filter((it) => !!it)
+          })
+          .filter((it) => !!it)
         return {
           ...it,
           $perks: perks,
@@ -147,6 +145,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
           $consumable: consumablesMap.get(it.ItemID),
           $conversions: conversions,
           $shops: shops,
+          $equipmentSet: equipmentSet,
         }
       })
       const filter = this.config?.filter
@@ -171,6 +170,7 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColItemId(util),
       itemColPerks(util),
       itemColPerkValidity(util),
+      itemColEquipmentSetId(util),
       itemColAttributeMods(util),
       itemColRarity(util),
       itemColTier(util),

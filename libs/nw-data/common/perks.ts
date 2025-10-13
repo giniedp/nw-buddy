@@ -3,12 +3,47 @@ import { getAffixMODs } from './affix'
 
 const PERK_SORT_WEIGHT = {
   Inherent: 0,
+  OffensiveCharm: 0.1,
+  DefensiveCharm: 0.2,
+  SkillCharm: 0.3,
   Gem: 1,
   Generated: 2,
 }
 
 export function isPerkInherent(perk: Pick<PerkData, 'PerkType'>) {
   return perk?.PerkType === 'Inherent'
+}
+
+export function isPerkCharm(perk: Pick<PerkData, 'PerkType'>) {
+  return isPerkSkillCharm(perk) || isPerkOffensiveCharm(perk) || isPerkDefensiveCharm(perk)
+}
+
+export function isPerkEmptyCharmSlot(perk: PerkData) {
+  return isPerkEmptyDefenseCharmSlot(perk) || isPerkEmptyOffenseCharmSlot(perk) || isPerkEmptySkillCharmSlot(perk)
+}
+
+export function isPerkOffensiveCharm(perk: Pick<PerkData, 'PerkType'>) {
+  return perk?.PerkType === 'OffensiveCharm'
+}
+
+export function isPerkEmptyOffenseCharmSlot(perk: PerkData) {
+  return eqIgnoreCase(perk?.PerkID, 'perkid_charm_emptyoffense')
+}
+
+export function isPerkDefensiveCharm(perk: Pick<PerkData, 'PerkType'>) {
+  return perk?.PerkType === 'DefensiveCharm'
+}
+
+export function isPerkEmptyDefenseCharmSlot(perk: PerkData) {
+  return eqIgnoreCase(perk?.PerkID, 'perkid_charm_emptydefense')
+}
+
+export function isPerkSkillCharm(perk: Pick<PerkData, 'PerkType'>) {
+  return perk?.PerkType === 'SkillCharm'
+}
+
+export function isPerkEmptySkillCharmSlot(perk: PerkData) {
+  return eqIgnoreCase(perk?.PerkID, 'perkid_charm_emptyskillperk')
 }
 
 export function isPerkGem(perk: Pick<PerkData, 'PerkType'>) {
