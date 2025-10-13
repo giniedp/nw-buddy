@@ -129,6 +129,7 @@ type SpawnNode struct {
 	VitalsID       string
 	NpcID          string
 	CategoryID     string
+	CatacombTile   string
 	Level          int
 	TerritoryLevel bool
 	DamageTable    string

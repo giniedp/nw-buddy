@@ -93,6 +93,7 @@ export class GearsetGridComponent {
   protected showWeapons = computed(() => this.sections().includes('weapons'))
   protected showTools = computed(() => this.sections().includes('tools'))
   protected showInstruments = computed(() => this.sections().includes('instruments'))
+  protected showPerkset = computed(() => this.sections().includes('perkset'))
   protected showBags = computed(() => this.sections().includes('bags'))
 
   protected isOwned = this.store.isOwned

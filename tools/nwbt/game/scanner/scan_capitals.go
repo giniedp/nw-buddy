@@ -48,9 +48,6 @@ func (ctx *Scanner) ScanCapitalFile(rootFile nwfs.File) iter.Seq[SpawnNode] {
 				for entry := range ctx.ScanSlice(file) {
 					// for entry := range ctx.ScanFileForSpawners(file, make([]string, 0)) {
 					entry.Position = transform.TransformPoint(entry.Position)
-					if entry.PoiConfig != "" {
-						slog.Debug("Config", "name", entry.PoiConfig, "file", rootFile.Path(), "slice", capital.SliceName)
-					}
 					if !yield(entry) {
 						return
 					}

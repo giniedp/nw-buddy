@@ -11,6 +11,7 @@ import (
 
 func (ctx *Scanner) Scan(file nwfs.File) {
 	mapId := game.ParseMapIdFromPath(file.Path())
+
 	switch path.Ext(file.Path()) {
 	case ".distribution":
 		for item := range ctx.ScanDistributionFile(file) {
@@ -35,6 +36,18 @@ func (ctx *Scanner) Scan(file nwfs.File) {
 			}
 			break
 		}
+		if tileId := game.ParseCatacombTileFromPath(file.Path()); tileId != "" {
+			count := 0
+			for entry := range ctx.ScanSlice(file) {
+				count += 1
+				entry.Position[0] += 128
+				entry.Position[1] += 128
+				entry.CatacombTile = tileId
+				ctx.addSpawn(entry, "nw_catacomb_00")
+			}
+			slog.Debug("catacomb file", "tile", tileId, "count", count)
+			break
+		}
 	case ".json":
 		if path.Ext(strings.TrimSuffix(file.Path(), ".json")) == ".capitals" {
 			for item := range ctx.ScanCapitalFile(file) {
@@ -44,7 +57,6 @@ func (ctx *Scanner) Scan(file nwfs.File) {
 			slog.Debug("skipping json file", "path", file.Path())
 		}
 	}
-
 }
 
 func (ctx *Scanner) addSpawn(spawn any, mapId string) {
@@ -86,6 +98,7 @@ func (ctx *Scanner) addSpawn(spawn any, mapId string) {
 			ctx.results.Vitals = append(ctx.results.Vitals, VitalsEntry{
 				Encounter:    v.Encounter,
 				MapID:        mapId,
+				CatacombTile: v.CatacombTile,
 				VitalsID:     v.VitalsID,
 				CategoryID:   v.CategoryID,
 				GatherableID: v.GatherableID,

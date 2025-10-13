@@ -9,8 +9,10 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/rtti/nwt"
+	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/math/mat4"
 	"nw-buddy/tools/utils/math/transform"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -209,6 +211,14 @@ func ParseMapIdFromPath(filePath string) string {
 	match := regexp.MustCompile(`coatlicue/(.+)/regions/`).FindStringSubmatch(filePath)
 	if len(match) > 1 {
 		return match[1]
+	}
+	return ""
+}
+
+func ParseCatacombTileFromPath(filePath string) string {
+	baseName := utils.ReplaceExt(path.Base(filePath), "")
+	if strings.HasPrefix(baseName, "tile") && strings.HasSuffix(baseName, "_gameplay") {
+		return baseName
 	}
 	return ""
 }

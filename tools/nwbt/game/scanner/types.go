@@ -106,6 +106,7 @@ type VitalsEntry struct {
 	MapID        string
 	CategoryID   string
 	GatherableID string
+	CatacombTile string
 	Level        int
 	Encounter    string
 	DamageTable  string
