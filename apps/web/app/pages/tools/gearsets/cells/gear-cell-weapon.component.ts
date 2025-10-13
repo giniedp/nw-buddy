@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
-import { calculateDamage, getDamageScalingForWeapon, getDamageTypes } from '@nw-data/common'
+import { calculateDamage, getWeaponScaling } from '@nw-data/common'
 import { DamageData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { CombatMode, Mannequin } from '~/nw/mannequin'
@@ -130,9 +130,9 @@ export class GearCellWeaponComponent {
 
         preferHigherScaling: true,
         affixPercent: affix?.Percent,
-        affixScaling: getDamageScalingForWeapon(affix?.Affix),
+        affixScaling: getWeaponScaling(null, affix?.Affix),
 
-        weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
+        weaponScaling: getWeaponScaling(weapon?.item, weapon?.weapon),
         weaponGearScore: weapon?.gearScore,
         weaponDamage: weapon?.weapon?.BaseDamage,
         damageCoef: attack?.DmgCoef,

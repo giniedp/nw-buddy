@@ -1,4 +1,5 @@
 import {
+  CreatureType,
   DamageData,
   DamageType,
   GameModeMapData,
@@ -13,7 +14,6 @@ import { getArmorRating } from './damage'
 import { getGameModeCoatlicueDirectory } from './game-mode'
 import { NW_MAP_NEWWORLD_VITAEETERNA } from './constants'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
-
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -34,6 +34,13 @@ const CREATURE_TYPE_MARKER = {
   Solo: 'assets/icons/marker/marker_ai_level_bg_solo.png',
   'Solo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png',
   'Solo-': 'assets/icons/marker/marker_ai_level_bg_solominus.png',
+  Raid10: 'assets/icons/marker/marker_ai_level_bg_group.png',
+  'Raid10+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  'Raid10-': 'assets/icons/marker/marker_ai_level_bg_groupminus.png',
+  Raid10Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  'Raid20+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  'Raid20-': 'assets/icons/marker/marker_ai_level_bg_groupminus.png',
+  Raid20Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
 }
 
 export interface VitalFamilyInfo {
@@ -241,18 +248,20 @@ export function getVitalDamageEffectivenessIcon(vital: VitalsData, damageType: V
 }
 
 // tightens the test area for some game modes
-const MAP_ID_TO_TERRITORY_ID = new CaseInsensitiveMap<string, number>(Object.entries({
-  questmedea: 40196,
-  questmedusa: 40070,
-  trialbrimstonesandworm: 20317
-  // questyonas:
-  //  - POI does not cover the spawn point
-  //  - Bounds give false positives
-  //  - TODO: maybe hardcode
-  // questheartforge:
-  //  - POI and bounds give false positives
-  //  - TODO: Maybe hardcode?
-}))
+const MAP_ID_TO_TERRITORY_ID = new CaseInsensitiveMap<string, number>(
+  Object.entries({
+    questmedea: 40196,
+    questmedusa: 40070,
+    trialbrimstonesandworm: 20317,
+    // questyonas:
+    //  - POI does not cover the spawn point
+    //  - Bounds give false positives
+    //  - TODO: maybe hardcode
+    // questheartforge:
+    //  - POI and bounds give false positives
+    //  - TODO: Maybe hardcode?
+  }),
+)
 
 export function getVitalGameModeMaps(
   vital: VitalsData,

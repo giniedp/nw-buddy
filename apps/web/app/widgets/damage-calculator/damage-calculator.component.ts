@@ -18,7 +18,7 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { getState } from '@ngrx/signals'
-import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
+import { getWeaponScaling, patchPrecision } from '@nw-data/common'
 import { EMPTY, combineLatest, map, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
@@ -36,7 +36,7 @@ import { OffenderDotControlComponent } from './controls/offender-dot-control.com
 import { OffenderModsControlComponent } from './controls/offender-mods-control.component'
 import { OffenderStatsControlComponent } from './controls/offender-stats-control.component'
 import { OffenderWeaponControlComponent } from './controls/offender-weapon-control.component'
-import { DamageCalculatorState, DamageCalculatorStore, OffenderState } from './damage-calculator.store'
+import { DamageCalculatorState, DamageCalculatorStore } from './damage-calculator.store'
 import { DamageIndicatorService } from './damage-indicator.service'
 import { mergeDamageStacks } from './damage-mod-stack'
 import { DamageOutputComponent } from './damage-output.component'
@@ -204,13 +204,13 @@ export class DamageCalculatorComponent implements OnInit {
               con: attributes?.con?.scale || 0,
             },
             affixId: modBase?.Affix?.Affix?.StatusID || null,
-            affixScaling: getDamageScalingForWeapon(modBase?.Affix?.Affix),
+            affixScaling: getWeaponScaling(null, modBase?.Affix?.Affix),
             affixDamageType: modBase?.Affix?.Type || null,
             affixPercent: modBase?.Affix?.Percent ?? 0,
             weaponTag: weapon?.weaponTag || null,
             weaponDamage: weapon?.weapon?.BaseDamage ?? 0,
             weaponGearScore: weapon?.gearScore ?? 0,
-            weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
+            weaponScaling: getWeaponScaling(weapon?.item, weapon?.weapon),
             weaponDamageType: modBase?.Weapon?.Type ?? null,
             damageRow: null,
             damageCoef: dmgCoef?.value ?? 0,

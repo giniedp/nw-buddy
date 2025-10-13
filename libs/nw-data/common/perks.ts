@@ -1,7 +1,7 @@
-import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData } from '@nw-data/generated'
+import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData, PerkType } from '@nw-data/generated'
 import { getAffixMODs } from './affix'
 
-const PERK_SORT_WEIGHT = {
+const PERK_SORT_WEIGHT: Record<PerkType, number> = {
   Inherent: 0,
   OffensiveCharm: 0.1,
   DefensiveCharm: 0.2,

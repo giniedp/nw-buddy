@@ -1,4 +1,4 @@
-import { WeaponItemDefinitions, WeaponTag } from '@nw-data/generated'
+import { MasterItemDefinitions, WeaponItemDefinitions, WeaponTag } from '@nw-data/generated'
 import type { AttributeRef } from './attributes'
 import {
   NW_ARMOR_SET_RATING_EXPONENT,
@@ -72,6 +72,35 @@ export function getDamageFactorForGearScore(gearScore: number, trace?: Tracer) {
   return result
 }
 
+export function getWeaponScaling(
+  item: Pick<
+    MasterItemDefinitions,
+    | 'OverrideAttributeScaling'
+    | 'OverrideScalingDexterity'
+    | 'OverrideScalingStrength'
+    | 'OverrideScalingIntelligence'
+    | 'OverrideScalingFocus'
+  >,
+  weapon: Pick<WeaponItemDefinitions, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>,
+): Record<AttributeRef, number> {
+  if (item?.OverrideAttributeScaling) {
+    return {
+      str: item.OverrideScalingStrength,
+      dex: item.OverrideScalingDexterity,
+      int: item.OverrideScalingIntelligence,
+      foc: Number(item.OverrideScalingFocus),
+      con: 0,
+    }
+  }
+  return {
+    str: weapon?.ScalingStrength || 0,
+    dex: weapon?.ScalingDexterity || 0,
+    int: weapon?.ScalingIntelligence || 0,
+    foc: weapon?.ScalingFocus || 0,
+    con: 0,
+  }
+}
+
 export function getDamageScalingForWeapon(
   weapon: Pick<WeaponItemDefinitions, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>,
 ): Record<AttributeRef, number> {
@@ -112,6 +141,7 @@ export function getDamageCoefForWeaponTag(tag: string) {
 export function getDamageForTooltip({
   playerLevel,
   gearScore,
+  item,
   weapon,
   weaponScale,
   attrSums,
@@ -119,6 +149,7 @@ export function getDamageForTooltip({
 }: {
   playerLevel: number
   gearScore: number
+  item: MasterItemDefinitions,
   weapon: WeaponItemDefinitions
   weaponScale?: Record<AttributeRef, number>
   attrSums: Record<AttributeRef, number>
@@ -128,7 +159,7 @@ export function getDamageForTooltip({
     level: playerLevel,
     weaponDamage: weapon.BaseDamage,
     gearScore: gearScore,
-    weaponScale: weaponScale || getDamageScalingForWeapon(weapon),
+    weaponScale: weaponScale || getWeaponScaling(item, weapon),
     modifierSums: attrSums,
     damageCoef: damageCoef ?? getDamageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)),
   })

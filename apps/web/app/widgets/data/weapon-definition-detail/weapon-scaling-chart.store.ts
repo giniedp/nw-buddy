@@ -1,8 +1,8 @@
 import { computed } from '@angular/core'
 import { patchState, signalMethod, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { AttributeRef, getDamageForTooltip, getDamageScalingForWeapon, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
-import { AffixStatData, AttributeDefinition, WeaponItemDefinitions } from '@nw-data/generated'
+import { AttributeRef, getDamageForTooltip, getWeaponScaling, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { AffixStatData, AttributeDefinition, MasterItemDefinitions, WeaponItemDefinitions } from '@nw-data/generated'
 import { ChartConfiguration } from 'chart.js'
 import { map, pipe, switchMap } from 'rxjs'
 import tc from 'tinycolor2'
@@ -15,8 +15,10 @@ export interface WeaponScalingChartState {
   affixId: string
   gearScore: number
   stats: Record<AttributeRef, number>
+  item: MasterItemDefinitions
 }
 const DEFAULT_STATE: WeaponScalingChartState = {
+  item: null,
   playerLevel: NW_MAX_CHARACTER_LEVEL,
   weaponId: null,
   affixId: null,
@@ -48,7 +50,7 @@ export const WeaponScalingChartStore = signalStore(
           switchMap(async (itemId: string) => {
             const item = await db.itemsById(itemId)
             const weaponId = item.ItemStatsRef
-            patchState(state, { weaponId })
+            patchState(state, { item, weaponId })
           }),
         ),
       ),
@@ -66,14 +68,14 @@ export const WeaponScalingChartStore = signalStore(
               return it.MannequinTag.some((it) => eqCaseInsensitive(it, weaponTag))
             })
             const weaponId = item.WeaponID
-            patchState(state, { weaponId })
+            patchState(state, { item: null, weaponId })
           }),
         ),
       ),
       loadByWeaponId: rxMethod(
         pipe(
           map((weaponId: string) => {
-            patchState(state, { weaponId })
+            patchState(state, { item: null, weaponId })
           }),
         ),
       ),
@@ -123,10 +125,11 @@ export const WeaponScalingChartStore = signalStore(
       tables,
     }
   }),
-  withComputed(({ tables, gearScore, playerLevel, weapon, affix, stats }) => {
+  withComputed(({ item, tables, gearScore, playerLevel, weapon, affix, stats }) => {
     return {
       damageStats: computed(() => {
         return selectWeaponDamage({
+          item: item(),
           tables: tables(),
           gearScore: gearScore(),
           playerLevel: playerLevel(),
@@ -160,6 +163,7 @@ export interface WeaponDamageStats {
 export type ModifierTable = Array<Pick<AttributeDefinition, 'ModifierValue' | 'ModifierValueSum' | 'Level'>>
 
 function selectWeaponDamage({
+  item,
   tables,
   stats,
   weapon,
@@ -167,6 +171,7 @@ function selectWeaponDamage({
   gearScore,
   playerLevel,
 }: {
+  item: MasterItemDefinitions,
   tables: Record<AttributeRef, ModifierTable>
   stats: Record<AttributeRef, number>
   weapon: WeaponItemDefinitions
@@ -194,11 +199,12 @@ function selectWeaponDamage({
     foc: selectModifierValue(tables.foc, stats.foc),
     con: selectModifierValue(tables.con, stats.con),
   }
-  const affixScale = getDamageScalingForWeapon(affix)
-  const weaponScale = getDamageScalingForWeapon(weapon)
+  const affixScale = getWeaponScaling(null, affix)
+  const weaponScale = getWeaponScaling(item, weapon)
   const affixPercent = affix?.DamagePercentage || 0
   const weaponPercent = 1 - affixPercent
   const affixDamage = getDamageForTooltip({
+    item: null,
     attrSums,
     playerLevel,
     gearScore,
@@ -207,6 +213,7 @@ function selectWeaponDamage({
     damageCoef: 1, // skips the dmg coef for tooltip adjustments
   })
   const weaponDamage = getDamageForTooltip({
+    item: null,
     attrSums,
     playerLevel,
     gearScore,

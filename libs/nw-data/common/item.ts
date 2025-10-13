@@ -509,6 +509,7 @@ export function getItemStatsWeapon({
       item,
       label: 'ui_tooltip_damage',
       value: getDamageForTooltip({
+        item: item,
         playerLevel,
         attrSums: attrValueSums,
         gearScore: gearScore,
@@ -610,7 +611,7 @@ const ATTRIBUTION_ICONS = new CaseInsensitiveMap(
   }),
 )
 
-export function getItemAttribution(item: MasterItemDefinitions | HouseItems) {
+export function getItemAttribution(item: Pick<MasterItemDefinitions | HouseItems, 'AttributionId'>) {
   if (!item?.AttributionId) {
     return null
   }
@@ -696,7 +697,7 @@ const ITEM_ID_TOKEN_TRASH = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 const ITEM_ID_TOKEN_HEAD = ['cowl', 'hat', 'head', 'helm', 'masque', 'mask', 'crown', 'tiara']
 const ITEM_ID_TOKEN_CHEST = ['breastplate', 'chestguard', 'chest', 'coat', 'shirt', 'robe']
 const ITEM_ID_TOKEN_HANDS = ['gauntlets', 'gloves', 'handcovers', 'hands']
-const ITEM_ID_TOKEN_LEGS = ['greaves', 'legguards', 'pants', 'thighguards', 'leggings']
+const ITEM_ID_TOKEN_LEGS = ['greaves', 'legguards', 'pants', 'thighguards', 'leggings', 'legs']
 const ITEM_ID_TOKEN_FEET = ['boots', 'feets', 'feet', 'gloves', 'legs', 'sabatons', 'shoes']
 const ITEM_ID_TOKEN_JEWLERY = ['amulet', 'earring', 'ring']
 const ITEM_ID_TOKEN_ATTR = ['con', 'dex', 'str', 'foc', 'int']
@@ -726,6 +727,7 @@ const ITEM_ID_TOKEN_WEAPON = [
   'stafffire',
   'stafflife',
   'sword',
+  'throwingaxe',
   'tower',
   'voidgauntlet',
   'warhammer',

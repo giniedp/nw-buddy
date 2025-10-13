@@ -82,9 +82,6 @@ export const AttributesStore = signalStore(
       points: computed(() => {
         let sum = 0
         if (unlocked()) {
-          sum += 5 * 36 // gs 725 armor
-          sum += 3 * 36 // gs 725 jevelry
-          sum += 2 * 42 // gs 725 weapon
           sum += 1 * 48 // buff food
         }
         for (const row of xpLevels()) {

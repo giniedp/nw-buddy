@@ -59,11 +59,13 @@ export class ItemDetailSetItemsComponent {
         name: getItemSetFamilyName(this.store.item()),
       }
     },
-    loader: async ({ request }) => {
-      const items = await this.db.itemsBySetFamilyName(request.name)
-      return selectItemSet(request.item, items)
+    loader: async ({ request: { item, name } }) => {
+      const familyItems = await this.db.itemsBySetFamilyName(name)
+      const setBonusItems = await this.db.itemsByIdEquipmentSetId(item?.EquipmentSetId)
+      return selectItemSet(item, familyItems, setBonusItems)
     },
   })
+
   protected groups = computed(() => {
     const result: Array<{ label: string; items: MasterItemDefinitions[] }> = []
     const collection = this.resource.value()
@@ -95,20 +97,19 @@ export interface ItemCollections {
   variants?: MasterItemDefinitions[]
 }
 
-function selectItemSet(item: MasterItemDefinitions, itemsSet: MasterItemDefinitions[]): ItemCollections {
-  if (!item || !itemsSet) {
+function selectItemSet(
+  item: MasterItemDefinitions,
+  familyItems: MasterItemDefinitions[],
+  setbonusItems: MasterItemDefinitions[],
+): ItemCollections {
+  familyItems ||= []
+  if (!item) {
     return null
   }
 
-  // console.log({
-  //   item,
-  //   itemsSet: Array.from(itemsSet?.values()),
-  // })
-
   const meta = getItemMeta(item)
-  const items = itemsSet.map(getItemMeta).filter((it) => !!it)
+  const items = familyItems.map(getItemMeta).filter((it) => !!it)
 
-  // console.log({ items })
   if (!meta?.mainCategory) {
     return null
   }
@@ -139,15 +140,21 @@ function selectItemSet(item: MasterItemDefinitions, itemsSet: MasterItemDefiniti
     return it.mainCategory === meta.mainCategory && it.subCategory === meta.subCategory && it.tier === meta.tier
   })
 
-  // console.log({ gearset, tierVariants, variants })
-  if (itemSet.length === 1 && tierVariants.length === 1 && variants.length === 1) {
-    return null
-  }
-  return {
+  const result = {
     items: itemSet.map((it) => it.item),
     tiers: tierVariants.map((it) => it.item),
     variants: variants.map((it) => it.item),
   }
+
+  if (setbonusItems?.length) {
+    result.items = setbonusItems
+  }
+
+  if (result.items.length <= 1 && result.tiers.length <= 1 && result.variants.length <= 1) {
+    return null
+  }
+
+  return result
 }
 
 function getItemMeta(item: MasterItemDefinitions) {
