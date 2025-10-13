@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "9.2.1-0",
+  "version": "10.1.1-0",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
