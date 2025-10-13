@@ -11,6 +11,7 @@ import {
   getPerkBucketPerkIDs,
   hasItemGearScore,
   isMasterItem,
+  isPerkCharm,
   isPerkGem,
 } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
@@ -134,7 +135,7 @@ export async function fetchItemPerkSlots(
       perk: perk,
       bucketId: slot.bucketId,
       bucket: bucket,
-      editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)),
+      editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)) || isPerkCharm(perk),
     })
   }
   return result
