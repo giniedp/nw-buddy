@@ -86,6 +86,13 @@ export function selectGameEventRewards(event: GameEventData, item: MasterItemDef
       quantity: event.FactionTokens,
     })
   }
+  if (event.UmbralCurrency > 0) {
+    result.push({
+      label: 'Umbral Shards',
+      icon: 'assets/icons/rewards/umbralcurrency.png',
+      quantity: event.UmbralCurrency,
+    })
+  }
 
   if (event.PvpXp || event.PVPXP) {
     result.push({
