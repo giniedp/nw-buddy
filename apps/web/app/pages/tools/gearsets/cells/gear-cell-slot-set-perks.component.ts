@@ -3,7 +3,7 @@ import { EquipmentSet } from '@nw-data/common'
 import { MasterItemDefinitions } from '@nw-data/generated'
 import { GearsetStore, injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { eqCaseInsensitive } from '~/utils'
+import { eqCaseInsensitive, resourceValue } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 @Component({
@@ -23,7 +23,9 @@ export class GearCellSlotSetPerksComponent {
   protected isHidden = computed(() => !this.rowCount())
   protected isScreenshotHidden = computed(() => !this.isAnyActive())
 
-  protected resource = resource({
+  protected rows = resourceValue({
+    defaultValue: [],
+    keepPrevious: true,
     params: () => {
       return this.store
         .resolvedSlots()
@@ -45,7 +47,6 @@ export class GearCellSlotSetPerksComponent {
     },
   })
 
-  protected rows = computed(() => (this.resource.hasValue() ? this.resource.value() : []))
   protected rowCount = computed(() => this.rows().length)
   protected isAnyActive = computed(() => this.rows().some((it) => it.active))
 }
