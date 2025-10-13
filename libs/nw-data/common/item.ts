@@ -594,7 +594,7 @@ export function getItemStatsArmor(item: MasterItemDefinitions, stats: ArmorItemD
   if (stats?.ScaleDamagePerGS) {
     result.push({
       item,
-      label: 'ui_base_damage',
+      label: 'ui_base_damage_multiplier',
       value: `+${((stats.ScaleDamagePerGS * score) / 100).toFixed(2)}%`,
     })
   }
