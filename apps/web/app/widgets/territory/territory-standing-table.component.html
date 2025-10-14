@@ -14,7 +14,7 @@
         <th>{{ row.Level | number }}</th>
         <td class="text-right">{{ row.XPToLevel | number }}</td>
         <td class="text-right">{{ row.XPTotal | number }}</td>
-        <td class="text-right" [nwText]="row.Title"></td>
+        <td class="text-right">{{ row.Title | nwText }}</td>
         <td class="text-right">{{ row.XPReward | number }}</td>
       </tr>
     }

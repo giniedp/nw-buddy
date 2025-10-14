@@ -271,7 +271,7 @@ export function itemColPerks(
         ...buckets.map(() => {
           return util.elImg({
             class: ['w-7', 'h-7', 'nw-icon'],
-            src: assetUrl('/assets/icons/crafting_perkbackground.png'),
+            src: assetUrl('/assets/icons/item/crafting_perkbackground.png'),
           })
         }),
       ])

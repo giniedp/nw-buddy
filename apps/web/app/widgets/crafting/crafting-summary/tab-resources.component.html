@@ -41,12 +41,13 @@
         }
         <span> × </span>
         <a
-          [nwText]="row.currencyId ? 'Azoth' : detail.name()"
           [routerLink]="detail.itemLink()"
           [class.line-through]="row.ignored"
           [class.link-hover]="!!detail.itemLink()"
           class="overflow-hidden text-ellipsis select-text"
-        ></a>
+        >
+          {{ row.currencyId ? 'Azoth' : (detail.name() | nwText) }}
+        </a>
       </div>
 
       <div

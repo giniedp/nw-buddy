@@ -7,7 +7,7 @@
       <td class="text-right">Upgrade Regress</td>
       <td class="text-right">Earning Cap</td>
       @for (t of territories(); track $index) {
-        <td class="text-right" [nwText]="t.NameLocalizationKey"></td>
+        <td class="text-right">{{ t.NameLocalizationKey | nwText }}</td>
       }
     </tr>
   </thead>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { explainPerk, getItemGsBonus, getPerkTypeWeight, isPerkApplicableToItem } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { PerkData } from '@nw-data/generated'
@@ -10,10 +10,10 @@ import { svgCircleExclamation, svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { apiResource } from '~/utils'
+import { PerkDetailDirective } from '../perk-detail/perk-detail.directive'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 import { PerkSlotExplained } from './selectors'
-import { PerkDetailDirective } from "../perk-detail/perk-detail.directive";
 
 @Component({
   selector: 'nwb-item-detail-perks',
@@ -61,16 +61,31 @@ export class ItemDetailPerksComponent {
     const itemGS = this.store.itemGS()
     const slots = this.resource.value() || []
     const result = slots.map(
-      ({ key, perkId, perk, editable, bucketId, bucket, abilities, affix, perkIdOld, perkOld }): PerkSlotExplained => {
+      ({
+        key,
+        perkId,
+        perk,
+        editable,
+        bucketId,
+        bucket,
+        socket,
+        empty,
+        abilities,
+        affix,
+        perkIdOld,
+        perkOld,
+      }): PerkSlotExplained => {
         return {
-          key: key,
-          perkId: perkId,
-          perkIdOld: perkIdOld,
-          perk: perk,
-          perkOld: perkOld,
-          bucketId: bucketId,
-          bucket: bucket,
-          editable: editable,
+          key,
+          perkId,
+          perkIdOld,
+          perk,
+          perkOld,
+          bucketId,
+          bucket,
+          editable,
+          socket,
+          empty,
           violatesExclusivity: false,
           violatesItemClass: !!perk && !isPerkApplicableToItem(perk, item),
           activationCooldown: abilities.find((a) => a?.ActivationCooldown)?.ActivationCooldown,

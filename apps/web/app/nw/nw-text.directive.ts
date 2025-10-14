@@ -1,8 +1,10 @@
-import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core'
-import { ReplaySubject, Subject, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs'
+import { Directive, ElementRef, effect, inject, input } from '@angular/core'
+import { map, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
+import { rxResource } from '@angular/core/rxjs-interop'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
+import { resourceValueOf } from '../utils'
 import { NwExpressionService } from './expression'
 import { NwHtmlService } from './nw-html.service'
 
@@ -17,72 +19,47 @@ interface TextContext {
   standalone: true,
   selector: '[nwText]',
 })
-export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
-  @Input()
-  public nwText: string
-
-  @Input()
-  public nwTextAttr: string
-
-  @Input()
-  public itemId: string
-
-  @Input()
-  public charLevel: number = NW_MAX_CHARACTER_LEVEL
-
-  @Input()
-  public gearScore: number = NW_MAX_GEAR_SCORE_BASE
-
-  private destroy$ = new Subject()
-  private change$ = new ReplaySubject<TextContext>(1)
+export class NwTextDirective {
+  private elRef = inject(ElementRef<HTMLElement>)
+  private i18n = inject(TranslateService)
+  private expr = inject(NwExpressionService)
   private html = inject(NwHtmlService)
 
-  public constructor(
-    private elRef: ElementRef<HTMLElement>,
-    private i18n: TranslateService,
-    private expr: NwExpressionService,
-  ) {
-    //
-  }
+  public nwText = input<string>()
+  public itemId = input<string>()
+  public charLevel = input<number>(NW_MAX_CHARACTER_LEVEL)
+  public gearScore = input<number>(NW_MAX_GEAR_SCORE_BASE)
 
-  public ngOnInit(): void {
-    this.change$
-      .pipe(distinctUntilChanged())
-      .pipe(
-        switchMap((context) => {
-          return this.i18n.observe(context.text).pipe(
-            map((text) => {
-              return {
-                ...context,
-                text,
-              }
-            }),
-          )
+  private htmlResource = rxResource({
+    params: () => {
+      return {
+        text: this.nwText(),
+        itemId: this.itemId(),
+        charLevel: this.charLevel(),
+        gearScore: this.gearScore(),
+      }
+    },
+    stream: ({ params }) => {
+      return this.i18n.observe(params.text).pipe(
+        map((text) => {
+          return {
+            ...params,
+            text,
+          }
         }),
+        switchMap((context) => this.expr.solve(context)),
+        map((res) => String(res).replace(/\\n/g, ' ')),
+        map((res) => this.html.sanitize(res)),
       )
-      .pipe(switchMap((context) => this.expr.solve(context)))
-      .pipe(map((res) => String(res).replace(/\\n/g, ' ')))
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res) => {
-        if (this.nwTextAttr) {
-          this.elRef.nativeElement.setAttribute(this.nwTextAttr, res)
-        } else {
-          this.elRef.nativeElement.innerHTML = this.html.sanitize(res)
-        }
-      })
-  }
+    },
+  })
+  private htmlContent = resourceValueOf(this.htmlResource, {
+    keepPrevious: true,
+  })
 
-  public ngOnChanges(): void {
-    this.change$.next({
-      text: this.nwText,
-      itemId: this.itemId,
-      charLevel: this.charLevel,
-      gearScore: this.gearScore,
+  public constructor() {
+    effect(() => {
+      this.elRef.nativeElement.innerHTML = this.htmlContent() || ''
     })
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 }

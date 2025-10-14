@@ -73,7 +73,7 @@ export function inventoryColPerks(util: InventoryTableUtils) {
           if (!perk) {
             return util.elImg({
               class: ['w-7', 'h-7', 'nw-icon'],
-              src: 'assets/icons/crafting_perkbackground.png',
+              src: 'assets/icons/item/crafting_perkbackground.png',
             })
           }
           return util.el(

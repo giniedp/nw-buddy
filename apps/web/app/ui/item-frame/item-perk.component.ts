@@ -7,11 +7,21 @@ import { NwModule } from '~/nw'
 @Component({
   selector: 'nwb-item-perk',
   template: `
-    <a class="w-6 h-6 flex items-center justify-center relative flex-none" [nwLinkTooltip]="['perk', linkPerkId()]">
-      <img
-        [nwImage]="icon()"
-        class="w-6 h-6 object-contain absolute top-0 left-0 transition-transform scale-100 hover:scale-125"
-      />
+    <a class="w-6 h-6 flex items-center justify-center relative flex-none group" [nwLinkTooltip]="['perk', linkPerkId()]">
+      <div class="grid">
+        @if (socket()) {
+          <img
+            [nwImage]="'assets/icons/item/frame_gemsocket.png'"
+            class="w-6 h-6 object-contain absolute top-0 left-0 transition-transform scale-125 group-hover:scale-150 col-start-1 row-start-1"
+          />
+        }
+        @if (!empty()) {
+          <img
+            [nwImage]="icon()"
+            class="w-6 h-6 object-contain absolute top-0 left-0 transition-transform scale-100 group-hover:scale-125 col-start-1 row-start-1"
+          />
+        }
+      </div>
       <span class="text-2xs relative text-xs">{{ iconText() }}</span>
     </a>
     <a
@@ -43,4 +53,6 @@ export class ItemPerkComponent {
   public iconText = input<string>()
   public linkPerkId = input<string>()
   public explanation = input<PerkExplanation>()
+  public socket = input<boolean>()
+  public empty = input<boolean>()
 }

@@ -10,6 +10,8 @@
       @for (row of item.explainOld; track $index) {
         <nwb-item-perk
           [icon]="row.icon"
+          [socket]="item.socket"
+          [empty]="item.empty"
           [explanation]="row"
           [linkPerkId]="item.perkId"
           class="filter grayscale-100 opacity-50 line-through"
@@ -17,17 +19,26 @@
       }
     }
     @for (row of item.explain; track $index) {
-      <nwb-item-perk [icon]="row.icon" [explanation]="row" [linkPerkId]="editable() ? null : item.perkId" />
+      <nwb-item-perk
+        [icon]="row.icon"
+        [socket]="item.socket"
+        [empty]="item.empty"
+        [explanation]="row"
+        [linkPerkId]="editable() ? null : item.perkId"
+      />
     }
     @if (!item.perk && item.bucket) {
-      <nwb-item-perk [icon]="'assets/icons/crafting_perkbackground.png'" [iconText]="item.bucket.PerkChance | percent">
+      <nwb-item-perk
+        [icon]="'assets/icons/item/crafting_perkbackground.png'"
+        [iconText]="item.bucket.PerkChance | percent"
+      >
         Random Perk
       </nwb-item-perk>
     }
     @if (!item.perk && !item.bucket) {
       <nwb-item-perk
         [linkPerkId]="editable() ? null : item.perkId"
-        [icon]="'assets/icons/crafting_perkbackground.png'"
+        [icon]="'assets/icons/item/crafting_perkbackground.png'"
         [iconText]="'?'"
       >
         – Missing –

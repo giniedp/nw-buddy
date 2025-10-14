@@ -12,6 +12,8 @@ import {
   hasItemGearScore,
   isMasterItem,
   isPerkCharm,
+  isPerkEmptyCharmSlot,
+  isPerkEmptyGemSlot,
   isPerkGem,
 } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
@@ -33,6 +35,8 @@ export interface ItemPerkSlot {
   bucketId?: string
   bucket?: PerkBucket
   editable?: boolean
+  socket?: boolean
+  empty?: boolean
 }
 
 export interface PerkSlotExplained extends ItemPerkSlot {
@@ -41,6 +45,8 @@ export interface PerkSlotExplained extends ItemPerkSlot {
   perkOld?: PerkData
   perkId?: string
   perk?: PerkData
+  socket?: boolean
+  empty?: boolean
   bucketId?: string
   bucket?: PerkBucket
   editable?: boolean
@@ -127,6 +133,10 @@ export async function fetchItemPerkSlots(
     const perk = await db.perksById(perkIdOverride || perkId)
     const perkOld = perkIdOld ? await db.perksById(perkIdOld) : null
     const bucket = await db.perkBucketsById(slot.bucketId)
+    const isCharm = isPerkCharm(perk || bucket)
+    const isCharmEmpty = isPerkEmptyCharmSlot(perk)
+    const isGem = isPerkGem(perk || bucket)
+    const isGemEmpty = isPerkEmptyGemSlot(perk)
     result.push({
       key: key,
       perkIdOld: perkIdOverride ? null : perkIdOld,
@@ -135,7 +145,9 @@ export async function fetchItemPerkSlots(
       perk: perk,
       bucketId: slot.bucketId,
       bucket: bucket,
-      editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)) || isPerkCharm(perk),
+      socket: isCharm || isGem,
+      empty: isCharmEmpty || isGemEmpty,
+      editable: !!bucket || (item.CanReplaceGem && isGem) || isCharm,
     })
   }
   return result
