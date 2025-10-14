@@ -13,13 +13,12 @@ import { apiResource } from '~/utils'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 import { PerkSlotExplained } from './selectors'
-import { PerkDetailDirective } from "../perk-detail/perk-detail.directive";
 
 @Component({
   selector: 'nwb-item-detail-perks',
   templateUrl: './item-detail-perks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule, PerkDetailDirective],
+  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule],
   host: {
     class: 'flex flex-col gap-1',
     'animate.enter': 'fade-grow-y-in',
