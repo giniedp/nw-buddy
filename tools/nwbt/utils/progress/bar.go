@@ -32,6 +32,9 @@ func (it *progressBar) Detail(detail string) {
 	it.msg(detail)
 }
 func (it *progressBar) Wait() {
+	if it.count == 0 {
+		it.bar.SetTotal(int64(it.count), true)
+	}
 	it.prog.Wait()
 }
 func (it *progressBar) Close() {
