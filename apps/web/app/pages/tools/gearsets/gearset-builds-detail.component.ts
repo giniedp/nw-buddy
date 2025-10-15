@@ -194,7 +194,7 @@ export class GearsetBuildsDetailComponent {
       [
         { slotId: 'head', icon: 'assets/icons/slots/iconhead.png' },
         { slotId: 'chest', icon: 'assets/icons/slots/iconchest.png' },
-        { slotId: 'hands', icon: 'assets/icons/slots/iconhands.png' },
+        { slotId: 'hands', icon: 'assets/icons/slots/iconhand.png' },
         { slotId: 'legs', icon: 'assets/icons/slots/iconlegs.png' },
         { slotId: 'feet', icon: 'assets/icons/slots/iconfeet.png' },
       ],

@@ -84,8 +84,10 @@ export class PocketbasePublicTable<T extends AppDbRecord> implements PublicTable
       const gearsetIds = pageResult.items.map(row => row.id)
       try {
         const likesCollection = this.client.collection('gearset_likes')
+        // Use OR conditions instead of 'in' operator for relation fields
+        const gearsetFilter = gearsetIds.map(id => `gearset = '${id}'`).join(' || ')
         const userLikes = await likesCollection.getFullList({
-          filter: `gearset in ('${gearsetIds.join("','")}') && user = '${currentUserId}'`
+          filter: `(${gearsetFilter}) && user = '${currentUserId}'`
         })
         userLikedGearsetIds = new Set(userLikes.map(like => like['gearset']))
       } catch {
