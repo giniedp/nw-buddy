@@ -424,20 +424,18 @@ export function selectEquppedAttributes(
   }
 
   for (const { perk, gearScore, affix, item } of perks) {
-    if (!affix) {
-      continue
-    }
+    if (affix) {
+      let scale = 1
+      if (hasPerkScalingPerGearScore(perk)) {
+        scale = getPerkMultiplier(perk, Number(gearScore) + getItemGsBonus(perk, item))
+      }
 
-    let scale = 1
-    if (hasPerkScalingPerGearScore(perk)) {
-      scale = getPerkMultiplier(perk, Number(gearScore) + getItemGsBonus(perk, item))
+      result.con += Math.floor((affix.MODConstitution || 0) * scale)
+      result.dex += Math.floor((affix.MODDexterity || 0) * scale)
+      result.foc += Math.floor((affix.MODFocus || 0) * scale)
+      result.int += Math.floor((affix.MODIntelligence || 0) * scale)
+      result.str += Math.floor((affix.MODStrength || 0) * scale)
     }
-
-    result.con += Math.floor((affix.MODConstitution || 0) * scale)
-    result.dex += Math.floor((affix.MODDexterity || 0) * scale)
-    result.foc += Math.floor((affix.MODFocus || 0) * scale)
-    result.int += Math.floor((affix.MODIntelligence || 0) * scale)
-    result.str += Math.floor((affix.MODStrength || 0) * scale)
 
     for (const abilityId of perk.EquipAbility || []) {
       const ability = abilities.get(abilityId)
