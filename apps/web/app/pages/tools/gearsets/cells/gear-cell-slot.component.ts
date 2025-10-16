@@ -157,7 +157,6 @@ export class GearCellSlotComponent {
           })
         })
     } else {
-      console.log({ slot })
       this.picker
         .pickItem({
           title: 'Select an item',
