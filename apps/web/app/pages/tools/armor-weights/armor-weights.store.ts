@@ -14,8 +14,9 @@ import { ItemClass, MasterItemDefinitions } from '@nw-data/generated'
 import { sumBy } from 'lodash'
 import { combineLatest, from, map, of, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
-import { eqCaseInsensitive, selectStream } from '~/utils'
-
+import { eqCaseInsensitive, selectStream, tapDebug } from '~/utils'
+// perkid_artifact_set1_lightchest
+// artifact_set1_lightchest
 const UNYIELDING_ID = 'Artifact_Set1_HeavyHead'
 const VOID_DARKPLATE_ID = 'Artifact_Set1_HeavyChest'
 const WEIGHTLESS_CHEST_ID = 'Artifact_Set1_LightChest'
@@ -87,28 +88,7 @@ export class ArmorWeightsStore extends ComponentStore<ArmorWeightsState> {
   private db = injectNwData()
   private items$ = selectStream(combineLatest(ITEM_IDS.map((id) => selectItem(this.db, id))))
 
-  public readonly allVariations$ = this.select(this.items$, selectItemSets)
-  public readonly filter$ = this.select(({ weightClass, weightlessChest, shieldClass }) => {
-    return {
-      weightClass: weightClass,
-      weightlessChest: weightlessChest,
-      shieldClass: shieldClass,
-    }
-  })
-  public readonly variations$ = this.select(this.allVariations$, this.filter$, (itemSets, filter) => {
-    return itemSets.filter((itemSet) => {
-      if (filter.weightClass && itemSet.weightClass !== filter.weightClass) {
-        return false
-      }
-      if (filter.weightlessChest && !itemSet.items.some((it) => !it.weight)) {
-        return false
-      }
-      if (filter.shieldClass && !itemSet.items.some((it) => it.item.ItemClass?.includes(filter.shieldClass))) {
-        return false
-      }
-      return true
-    })
-  })
+  public readonly allVariations$ = this.select(this.items$.pipe(tapDebug('items')), selectItemSets)
 
   public constructor() {
     super({
@@ -241,12 +221,13 @@ function selectItemSets(items: SlotItem[]) {
     rows
       //
       .filter((row) => {
-        const countArmorMods = sumBy(row, (it) => (!!it?.modArmor ? 1 : 0))
-        const countWeightMods = sumBy(row, (it) => (!!it?.modWeight ? 1 : 0))
-        if (countArmorMods > 1 || countWeightMods > 1) {
-          return false
-        }
-        if (countArmorMods && countWeightMods) {
+        const countArtifacts = sumBy(row, (it) => {
+          if (it?.modArmor || it?.modWeight) {
+            return 1
+          }
+          return 0
+        })
+        if (countArtifacts > 1) {
           return false
         }
         return true
