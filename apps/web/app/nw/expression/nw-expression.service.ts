@@ -102,6 +102,7 @@ export class NwExpressionService {
         )
       }
       case 'perkMultiplier':
+      case 'perkmultiplier' as any:
       case 'attributePerkMultiplier':
         return from(this.db.perksByIdMap()).pipe(
           map((it) => {
