@@ -56,13 +56,13 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
   }
 
   public entityCategories(item: ItemTableRecord): DataTableCategory[] {
-    if (!item.ItemType) {
+    if (!item.ItemTypeDisplayName) {
       return null
     }
     return [
       {
-        id: item.ItemType.toLowerCase(),
-        label: this.i18n.get(getItemTypeLabel(item.ItemType)) || item.ItemType,
+        id: item.ItemTypeDisplayName.toLowerCase(),
+        label: this.i18n.get(item.ItemTypeDisplayName) || item.ItemTypeDisplayName,
         icon: '',
       },
     ]

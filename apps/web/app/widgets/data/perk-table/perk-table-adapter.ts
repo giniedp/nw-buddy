@@ -9,7 +9,7 @@ import { NwTextContextService } from '~/nw/expression'
 import { DataViewAdapter, injectDataViewAdapterOptions } from '~/ui/data/data-view'
 import { DataTableCategory, TableGridUtils, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { selectStream } from '~/utils'
+import { humanize, selectStream } from '~/utils'
 import { PerkGridCellComponent } from './perk-grid-cell.component'
 import {
   PerkTableRecord,
@@ -72,7 +72,7 @@ export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
     return [
       {
         icon: null,
-        label: isPerkInherent(item) ? 'Attributes' : isPerkGenerated(item) ? 'Perks' : item.PerkType,
+        label: isPerkInherent(item) ? 'Attributes' : isPerkGenerated(item) ? 'Perks' : humanize(item.PerkType) ,
         id: item.PerkType.toLowerCase(),
       },
     ]

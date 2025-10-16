@@ -1,6 +1,6 @@
-<ion-header >
+<ion-header>
   <ion-toolbar class="ion-color ion-color-black rounded-t-md">
-    <ion-title>{{ title }}</ion-title>
+    <ion-title>{{ title() }}</ion-title>
     <div slot="primary" class="join">
       @if (service.canToggleMode()) {
         <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
@@ -13,14 +13,24 @@
         ></button>
       }
     </div>
-    <nwb-quicksearch-input slot="end" [autofocus]="true" class="mr-1" />
+    <div slot="end" class="flex flex-row items-center">
+      @if (categories()?.length) {
+        <select class="select select-sm mr-1 w-36" [ngModel]="category()" (ngModelChange)="service.loadCategory($event)">
+          <option [ngValue]="null">All</option>
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.label }}</option>
+          }
+        </select>
+      }
+      <nwb-quicksearch-input [autofocus]="true" class="mr-1  w-36" />
+    </div>
   </ion-toolbar>
 </ion-header>
 <ion-content class="bg-base-200">
   @if (service.isGridActive()) {
     <nwb-virtual-grid
       [enableQuickfilter]="true"
-      [selection]="selection"
+      [selection]="selection()"
       [data]="service.categoryItems$ | async"
       [options]="service.virtualOptions"
       [identifyBy]="service.entityIdGetter"
@@ -31,11 +41,11 @@
     <nwb-table-grid
       (ready$)="service.onTableReady($event)"
       [enableQuickfilter]="true"
-      [selection]="selection"
+      [selection]="selection()"
       [data]="service.categoryItems$ | async"
       [options]="service.tableGridOptions"
       [identifyBy]="service.entityIdGetter"
-      [persistKey]="persistKey"
+      [persistKey]="persistKey()"
       (selectionChanged$)="onSelectionChange($event.ids)"
       (rowDoubleClicked$)="commit()"
     />

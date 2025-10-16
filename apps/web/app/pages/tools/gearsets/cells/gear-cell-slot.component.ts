@@ -1,6 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { filter, take } from 'rxjs'
 
@@ -24,7 +24,6 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
-import { GearImporterDialogComponent } from '../../inventory/gear-importer-dialog.component'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 
 @Component({
@@ -175,17 +174,6 @@ export class GearCellSlotComponent {
           })
         })
     }
-  }
-
-  protected handleScanItem() {
-    const slotId = this.slotId()
-    GearImporterDialogComponent.open(this.modal, {
-      inputs: { slotId },
-    })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe((instance) => {
-        this.store.patchSlot(slotId, instance)
-      })
   }
 
   protected handlePickPerk(key: string) {

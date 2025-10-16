@@ -11,6 +11,7 @@ import {
   isItemArtifact,
   isItemWeapon,
   isPerkApplicableToItem,
+  isPerkEmptyGemSlot,
   isPerkExcludedFromItem,
   isPerkGem,
   isPerkInherent,
@@ -374,11 +375,16 @@ export class InventoryPickerService {
         const isArmor = isItemArmor(item)
         // const isJewelery = isItemJewelery(item)
         const isArtifact = isItemArtifact(item)
+        const emptyGemslotPerk = perks.find(isPerkEmptyGemSlot)
+        const canHaveGemslot = isPerkApplicableToItem(emptyGemslotPerk, item)
 
         return perks
           .filter((it) => {
             if (isPerkExcludedFromItem(it, item, !hasGemSlot)) {
               return false
+            }
+            if (canHaveGemslot && isPerkGem(it)) {
+              return true
             }
 
             let isApplicable = isPerkApplicableToItem(it, item)

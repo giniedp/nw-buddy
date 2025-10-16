@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, Input, NgZone, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, Input, NgZone, inject, input, model } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ModalController } from '@ionic/angular/standalone'
 import { defer, from } from 'rxjs'
@@ -15,6 +15,7 @@ import { DataGridModule } from '../table-grid'
 import { VirtualGridModule } from '../virtual-grid'
 import { DataViewOptionsMenuComponent } from './data-view-options-menu.component'
 import { DataViewToggleComponent } from './data-view-toggle.component'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 export interface DataViewPickerOptions<T = unknown> {
   /**
@@ -101,15 +102,15 @@ export class DataViewPicker<T> {
     const { data, role } = await modal.onWillDismiss()
     return data
   }
+  private zone = inject(NgZone)
+  private ctrl = inject(ModalController)
+  protected service = inject(DataViewService<any>)
 
-  @Input()
-  public title: DataViewPickerOptions<T>['title']
-
-  @Input()
-  public selection: DataViewPickerOptions<T>['selection']
-
-  @Input()
-  public persistKey: DataViewPickerOptions<T>['persistKey']
+  public title = input<DataViewPickerOptions<T>['title']>()
+  public selection = model<DataViewPickerOptions<T>['selection']>()
+  public persistKey = input<DataViewPickerOptions<T>['persistKey']>()
+  protected categories = toSignal(this.service.categories$)
+  protected category = toSignal(this.service.category$)
 
   @Input()
   public set displayMode(value: DataViewPickerOptions<T>['displayMode']) {
@@ -118,12 +119,10 @@ export class DataViewPicker<T> {
 
   protected iconBack = svgChevronLeft
   protected search: string
-  protected service = inject(DataViewService<any>)
-  private zone = inject(NgZone)
-  private ctrl = inject(ModalController)
+
 
   protected onSelectionChange(value: Array<string | number>) {
-    this.selection = value
+    this.selection.set(value)
   }
 
   protected onRowDoubleClick(value: string) {
@@ -133,7 +132,7 @@ export class DataViewPicker<T> {
   }
 
   protected clear() {
-    this.selection = []
+    this.selection.set([])
   }
 
   protected close() {
@@ -144,7 +143,7 @@ export class DataViewPicker<T> {
 
   protected commit() {
     this.zone.run(() => {
-      this.ctrl.dismiss(this.selection)
+      this.ctrl.dismiss(this.selection())
     })
   }
 }

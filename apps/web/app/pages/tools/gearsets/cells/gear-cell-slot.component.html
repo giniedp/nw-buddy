@@ -123,15 +123,6 @@
             </button>
           </li>
         }
-        <li>
-          <button (click)="handleScanItem()">
-            <nwb-icon [icon]="iconImage" class="w-4 h-4" />
-            <div class="flex flex-col leading-none">
-              <span>Scan item</span>
-              <span class="text-xs opacity-75">Create a new item from a screenshot</span>
-            </div>
-          </button>
-        </li>
       }
     </ul>
   </div>
@@ -158,15 +149,6 @@
           <div class="flex flex-col leading-none">
             <span>Link item</span>
             <span class="text-xs opacity-75">Pick an item from inventory and link it to this slot</span>
-          </div>
-        </a>
-      </li>
-      <li>
-        <a (click)="handleScanItem()" cdkMenuItem class="rounded-none">
-          <nwb-icon [icon]="iconImage" class="w-4 h-4 mr-2" />
-          <div class="flex flex-col leading-none">
-            <span>Scan item</span>
-            <span class="text-xs opacity-75">Create a new item from a screenshot</span>
           </div>
         </a>
       </li>
