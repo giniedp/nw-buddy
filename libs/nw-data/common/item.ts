@@ -605,11 +605,11 @@ export function getItemStatsArmor(item: MasterItemDefinitions, stats: ArmorItemD
       value: `+${((stats.ScaleHealthPerGS * score) / 100).toFixed(2)}%`,
     })
   }
-  if (stats?.ScaleHealthPerGS) {
+  if (stats?.ScaleCDRPerGS) {
     result.push({
       item,
       label: 'ui_cooldown_reduction',
-      value: `+${((stats.ScaleHealthPerGS * score) / 100).toFixed(2)}%`,
+      value: `+${((stats.ScaleCDRPerGS * score) / 100).toFixed(2)}%`,
     })
   }
 
