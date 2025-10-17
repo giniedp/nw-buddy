@@ -124,7 +124,7 @@ export function selectEquipLoad(
       let scale = 1
       for (const perk of perks || []) {
         for (const affix of perk.affixes || []) {
-          if (affix.WeightMultiplier) {
+          if (affix?.WeightMultiplier) {
             scale = affix.WeightMultiplier
           }
         }
