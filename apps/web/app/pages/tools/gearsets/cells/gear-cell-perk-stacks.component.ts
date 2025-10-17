@@ -109,7 +109,7 @@ function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, AbilityDat
       }
       description = injectFontColor(description)
 
-      const scale = getPerkOnlyMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+      const scale = getPerkOnlyMultiplier(perk, gearScore, getItemGsBonus(perk, item))
       const stackTotal = group.length
       let stackLimit: number = null
       for (const abilityId of perk.EquipAbility || []) {

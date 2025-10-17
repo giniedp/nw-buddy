@@ -120,6 +120,7 @@ export class CraftingChanceMenuComponent {
                   perkMultiplier: getPerkOnlyMultiplier(
                     { ScalingPerGearScore: it.scalingPerGS },
                     this.store.getSettingGS(it.setting),
+                    0,
                   ),
                 }
               }),
@@ -134,6 +135,7 @@ export class CraftingChanceMenuComponent {
                     perkMultiplier: getPerkOnlyMultiplier(
                       { ScalingPerGearScore: it.scalingPerGS },
                       this.store.getSettingGS(it.setting),
+                      0,
                     ),
                   }
                 }),

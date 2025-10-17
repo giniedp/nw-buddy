@@ -427,7 +427,7 @@ export function selectEquppedAttributes(
     if (affix) {
       let scale = 1
       if (hasPerkScalingPerGearScore(perk)) {
-        scale = getPerkMultiplier(perk, Number(gearScore) + getItemGsBonus(perk, item))
+        scale = getPerkMultiplier(perk, Number(gearScore), getItemGsBonus(perk, item))
       }
 
       result.con += Math.floor((affix.MODConstitution || 0) * scale)
@@ -503,7 +503,7 @@ export function selectPlacingMods(db: DbSlice, { perks, effects, level }: Attrib
     }
     let scale = 1
     if (hasPerkScalingPerGearScore(perk)) {
-      scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+      scale = getPerkMultiplier(perk, gearScore, getItemGsBonus(perk, item))
     }
     const mods = String(affix.AttributePlacingMods).split(',')
     for (let i = 0; i < mods.length; i++) {

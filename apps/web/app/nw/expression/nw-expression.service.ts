@@ -30,7 +30,7 @@ export class NwExpressionService {
   private evaluate(token: string, context: NwExpressionContext & { text: string }): Observable<string | number> {
     if (token in context && context[token] != null) {
       const value = context[token]
-      return isObservable(value) ? value as Observable<string | number> : of(value)
+      return isObservable(value) ? (value as Observable<string | number>) : of(value)
     }
 
     if (token.includes('.')) {
@@ -107,7 +107,7 @@ export class NwExpressionService {
         return from(this.db.perksByIdMap()).pipe(
           map((it) => {
             if (it.has(context.itemId)) {
-              return getPerkMultiplier(it.get(context.itemId), context.gearScore)
+              return getPerkMultiplier(it.get(context.itemId), context.gearScore, context.gearScoreBonus)
             }
             throw new Error(
               `perkMultiplier not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`,

@@ -69,11 +69,8 @@ export const PerkDetailStore = signalStore(
         const result = {
           itemId: perk?.PerkID,
           gearScore: context.gearScore,
+          gearScoreBonus: context.gearScoreBonus,
           charLevel: context.charLevel,
-        }
-        if (context.gearScoreBonus) {
-          const gsBonus = getPerkItemClassGSBonus(perk)
-          result.gearScore += gsBonus?.value || 0
         }
         return result
       },
@@ -88,10 +85,9 @@ export const PerkDetailStore = signalStore(
         const result = {
           itemId: perk?.PerkID,
           gearScore: context.gearScore,
+          gearScoreBonus: getPerkItemClassGSBonus(perk)?.value ?? 0,
           charLevel: context.charLevel,
         }
-        const gsBonus = getPerkItemClassGSBonus(perk)
-        result.gearScore += gsBonus?.value || 0
         return result
       },
     )

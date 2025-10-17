@@ -211,7 +211,7 @@ export function explainPerkMods(options: {
   // perk with mods to highest attribute
   // +25 Magnify (highest attribute: Focus)
   if (affix.AttributePlacingMods) {
-    const scale = getPerkMultiplier(perk, gearScore)
+    const scale = getPerkMultiplier(perk, gearScore, 0)
     const part: PerkExplanation = {
       perkId: perk.PerkID,
       icon: perk.IconPath,
@@ -224,9 +224,11 @@ export function explainPerkMods(options: {
         gearScore: gearScore,
       },
     }
-    String(affix.AttributePlacingMods).split(',').forEach((it, i) => {
-      part.context[`amount${i + 1}`] = Math.floor(Number(it) * scale)
-    })
+    String(affix.AttributePlacingMods)
+      .split(',')
+      .forEach((it, i) => {
+        part.context[`amount${i + 1}`] = Math.floor(Number(it) * scale)
+      })
     result.push(part)
   }
   return result
@@ -237,7 +239,7 @@ export function getPerksInherentMODs(
   affix: AffixStatData,
   gearScore: number,
 ) {
-  return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
+  return getAffixMODs(affix, getPerkMultiplier(perk, gearScore, 0))
 }
 
 export function hasPerkScalingPerGearScore(
@@ -250,30 +252,42 @@ export function getPerkAttributeMultiplier(
   perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
   gearScore: number,
 ) {
-  return getPerkMultiplier(perk, gearScore)
+  return getPerkMultiplier(perk, gearScore, 0)
 }
 
 export function getPerkOnlyMultiplier(
   perk: Pick<PerkData, 'ScalingPerGearScore'>,
   gearScore: number,
+  gearScoreBonus: number,
 ) {
-  return getPerkMultiplier({
-    ScalingPerGearScore: perk?.ScalingPerGearScore,
-    ScalingPerGearScoreAttributes: null,
-  }, gearScore)
+  return getPerkMultiplier(
+    {
+      ScalingPerGearScore: perk?.ScalingPerGearScore,
+      ScalingPerGearScoreAttributes: null,
+    },
+    gearScore,
+    gearScoreBonus,
+  )
 }
 
 export function getPerkMultiplier(
   perk: Pick<PerkData, 'ScalingPerGearScore' | 'ScalingPerGearScoreAttributes'>,
   gearScore: number,
+  gearScoreBonus: number,
 ) {
   const scalingPerGearScore = perk?.ScalingPerGearScore || perk?.ScalingPerGearScoreAttributes
   if (!scalingPerGearScore) {
     return 1
   }
 
+  gearScoreBonus ||= 0
   if (Number.isFinite(Number(scalingPerGearScore))) {
-    return Math.max(0, gearScore - 100) * Number(scalingPerGearScore) + 1
+    const scaling = Number(scalingPerGearScore)
+    let result = Math.max(0, gearScore - 100) * scaling
+    if (gearScoreBonus) {
+      result += gearScoreBonus * scaling
+    }
+    return result + 1
   }
 
   if (typeof scalingPerGearScore === 'string') {
@@ -288,6 +302,9 @@ export function getPerkMultiplier(
       const max = Math.min(gearScore, next ? next.score : gearScore)
       result += Math.max(0, max - min) * scaling
     })
+    if (gearScoreBonus) {
+      result += gearScoreBonus * (ranges[0]?.scaling || 0)
+    }
     return result + 1
   }
   return 1

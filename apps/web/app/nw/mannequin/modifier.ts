@@ -142,7 +142,7 @@ export function* eachModifier<T extends number | string>(
       continue
     }
     if (perk) {
-      scale = getPerkOnlyMultiplier(perk.perk, perk.gearScore)
+      scale = getPerkOnlyMultiplier(perk.perk, perk.gearScore, 0)
     }
     const source: Required<ModifierSource> = {
       icon: null,
@@ -167,7 +167,7 @@ export function* eachModifier<T extends number | string>(
     }
 
     if (perk) {
-      scale = getPerkOnlyMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+      scale = getPerkOnlyMultiplier(perk, gearScore, getItemGsBonus(perk, item))
     }
     const source: Required<ModifierSource> = {
       icon: null,
@@ -190,7 +190,7 @@ export function* eachModifier<T extends number | string>(
       continue
     }
     if (perk) {
-      upscale *= getPerkOnlyMultiplier(perk.perk, perk.gearScore)
+      upscale *= getPerkOnlyMultiplier(perk.perk, perk.gearScore, 0)
     }
     if (scale) {
       upscale *= scale
@@ -217,7 +217,7 @@ export function* eachModifier<T extends number | string>(
         continue
       }
       if (perk) {
-        upscale *= getPerkOnlyMultiplier(perk.perk, perk.gearScore)
+        upscale *= getPerkOnlyMultiplier(perk.perk, perk.gearScore, 0)
       }
       if (scale) {
         upscale *= scale

@@ -8,7 +8,7 @@ import { ExpressionVariable } from './types'
 export type NwExpressionContext = {
   charLevel: number
   gearScore: number
-  gearScoreBonus?: boolean
+  gearScoreBonus?: number
   itemId?: string
 } & Partial<Record<ExpressionVariable, string | number | boolean | Observable<string | number | boolean>>>
 
@@ -39,7 +39,7 @@ export class NwTextContextService extends ComponentStore<NwExpressionContext> {
       return {
         ...state,
         itemId: perk?.PerkID,
-        perkMultiplier: perk ? getPerkMultiplier(perk, state.gearScore) : 1,
+        perkMultiplier: perk ? getPerkMultiplier(perk, state.gearScore, state.gearScoreBonus) : 1,
         attribute1: '…',
         attribute2: '…',
       }

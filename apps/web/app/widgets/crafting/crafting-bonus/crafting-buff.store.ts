@@ -598,6 +598,7 @@ function sumBuffs({
             ScalingPerGearScore: scalingPerGearscore,
           },
           settings.get(`${id}:gs`) ?? NW_MAX_GEAR_SCORE,
+          0,
         )
       }
 
