@@ -233,8 +233,13 @@ export class LootGraphNodeComponent {
   }
 
   protected isTrue(value: boolean | number | string) {
-    if (typeof value === 'string' && (eqCaseInsensitive(value, 'TRUE') || value === '1')) {
-      return true
+    if (typeof value === 'string') {
+      if (eqCaseInsensitive(value, 'TRUE') || value === '1') {
+        return true
+      }
+      if (eqCaseInsensitive(value, 'FALSE') || value === '0') {
+        return false
+      }
     }
     return !!value
   }
