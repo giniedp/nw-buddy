@@ -1,9 +1,8 @@
 import { inject, Pipe, PipeTransform, signal, untracked } from '@angular/core'
-import { rxResource } from '@angular/core/rxjs-interop'
 import { isEqual } from 'lodash'
-import { combineLatest, debounceTime, Observable, switchMap } from 'rxjs'
+import { debounceTime, Observable, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { resourceValueOf } from '../utils'
+import { rxResourceValue } from '../utils'
 import { NwExpressionContext, NwExpressionService, NwTextContextService } from './expression'
 
 export type NwTextPipeOptions = Partial<NwExpressionContext> &
@@ -20,31 +19,33 @@ export class NwTextPipe implements PipeTransform {
   private ctx = inject(NwTextContextService)
   private key = signal<string | string[]>(null, { equal: isEqual })
   private options = signal<NwTextPipeOptions>(null, { equal: isEqual })
-  private valueResource = rxResource({
+  private template = rxResourceValue({
+    keepPrevious: true,
+    defaultValue: '',
+    params: this.key,
+    stream: ({ params }) => this.i18n.observe(params),
+  })
+
+  private value = rxResourceValue({
+    keepPrevious: true,
     defaultValue: '',
     params: () => {
       return {
-        key: this.key(),
+        text: this.template(),
         options: this.options(),
       }
     },
-    stream: ({ params: { key, options } }) => {
-      return combineLatest({
-        text: this.i18n.observe(key),
-        context: this.ctx.derive(options || {}),
-      }).pipe(
+    stream: ({ params: { text, options } }) => {
+      return this.ctx.derive(options || {}).pipe(
         debounceTime(0),
-        switchMap(({ text, context }) => {
+        switchMap((context) => {
           return this.expr.solve({
             ...(context as any),
-            text: text,
+            text,
           })
         }),
       )
     },
-  })
-  private value = resourceValueOf(this.valueResource, {
-    keepPrevious: true,
   })
 
   public transform(key: string | string[], options: NwTextPipeOptions = null) {

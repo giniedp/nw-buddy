@@ -1,4 +1,5 @@
 import { effect, linkedSignal, resource, ResourceRef, Signal, WritableSignal } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
 
 export interface ResourceValueOptions {
   /**
@@ -8,6 +9,10 @@ export interface ResourceValueOptions {
 }
 export function resourceValue<T, R>(options: Parameters<typeof resource<T, R>>[0] & ResourceValueOptions): WritableSignal<T> {
   return resourceValueOf(resource(options), { keepPrevious: options?.keepPrevious })
+}
+
+export function rxResourceValue<T, R>(options: Parameters<typeof rxResource<T, R>>[0] & ResourceValueOptions): WritableSignal<T> {
+  return resourceValueOf(rxResource(options), { keepPrevious: options?.keepPrevious })
 }
 
 export function resourceValueOf<T>(resource: ResourceRef<T>, options?: ResourceValueOptions): WritableSignal<T> {
