@@ -1,7 +1,9 @@
-import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core'
+import { inject, Pipe, PipeTransform, signal, untracked } from '@angular/core'
+import { rxResource } from '@angular/core/rxjs-interop'
 import { isEqual } from 'lodash'
-import { Observable, Subject, combineLatest, distinctUntilChanged, switchMap, takeUntil } from 'rxjs'
+import { combineLatest, debounceTime, Observable, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
+import { resourceValueOf } from '../utils'
 import { NwExpressionContext, NwExpressionService, NwTextContextService } from './expression'
 
 export type NwTextPipeOptions = Partial<NwExpressionContext> &
@@ -12,52 +14,45 @@ export type NwTextPipeOptions = Partial<NwExpressionContext> &
   name: 'nwText',
   pure: false,
 })
-export class NwTextPipe implements PipeTransform, OnDestroy {
-  private dispose$ = new Subject<void>()
-  private key: string | string[]
-  private options: NwTextPipeOptions = null
-  private value: string
-
-  public constructor(
-    private i18n: TranslateService,
-    private expr: NwExpressionService,
-    private ctx: NwTextContextService,
-    private cdRef: ChangeDetectorRef,
-  ) {}
-
-  public transform(key: string | string[], options: NwTextPipeOptions = null) {
-    if (!isEqual(this.key, key) || !isEqual(this.options, options)) {
-      this.update(key, options)
-    }
-    return this.value
-  }
-
-  public ngOnDestroy(): void {
-    this.dispose$.next()
-  }
-
-  private update(key: string | string[], options: NwTextPipeOptions = null) {
-    this.dispose$.next()
-    this.key = key
-    this.options = options
-    combineLatest({
-      text: this.i18n.observe(key),
-      context: this.ctx.derive(options || {}),
-    })
-      .pipe(
-        switchMap(({ text, context }) =>
-          this.expr.solve({
+export class NwTextPipe implements PipeTransform {
+  private i18n = inject(TranslateService)
+  private expr = inject(NwExpressionService)
+  private ctx = inject(NwTextContextService)
+  private key = signal<string | string[]>(null, { equal: isEqual })
+  private options = signal<NwTextPipeOptions>(null, { equal: isEqual })
+  private valueResource = rxResource({
+    defaultValue: '',
+    params: () => {
+      return {
+        key: this.key(),
+        options: this.options(),
+      }
+    },
+    stream: ({ params: { key, options } }) => {
+      return combineLatest({
+        text: this.i18n.observe(key),
+        context: this.ctx.derive(options || {}),
+      }).pipe(
+        debounceTime(0),
+        switchMap(({ text, context }) => {
+          return this.expr.solve({
             ...(context as any),
             text: text,
-          }),
-        ),
-        distinctUntilChanged(),
-        takeUntil(this.dispose$),
+          })
+        }),
       )
-      .subscribe((value) => {
-        this.value = value
-        this.cdRef.markForCheck()
-      })
+    },
+  })
+  private value = resourceValueOf(this.valueResource, {
+    keepPrevious: true,
+  })
+
+  public transform(key: string | string[], options: NwTextPipeOptions = null) {
+    untracked(() => {
+      this.key.set(key)
+      this.options.set(options)
+    })
+    return this.value()
   }
 }
 
