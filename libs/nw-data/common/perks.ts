@@ -297,6 +297,7 @@ export function getPerkMultiplier(
 
   if (typeof scalingPerGearScore === 'string') {
     let result = 0
+    let bonusScaling = 0
     const ranges = parseScalingPerGearScore(scalingPerGearScore)
     ranges.forEach(({ score, scaling }, i) => {
       if (score > gearScore) {
@@ -306,9 +307,12 @@ export function getPerkMultiplier(
       const min = score
       const max = Math.min(gearScore, next ? next.score : gearScore)
       result += Math.max(0, max - min) * scaling
+      if (scaling) {
+        bonusScaling = scaling
+      }
     })
     if (gearScoreBonus) {
-      result += gearScoreBonus * (ranges[0]?.scaling || 0)
+      result += gearScoreBonus * bonusScaling
     }
     return result + 1
   }
