@@ -35,9 +35,9 @@ import { GsSliderComponent } from './gs-slider.component'
       [cdkConnectedOverlayOpen]="isOpen()"
       [cdkConnectedOverlayHasBackdrop]="false"
       [cdkConnectedOverlayPositions]="[
-        { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
-        { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
-        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 },
+        { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
+        { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 4 },
+        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 4 },
       ]"
       [cdkConnectedOverlayPanelClass]="['bg-base-100/75', 'rounded-md', 'shadow-md', 'p-2']"
       (overlayOutsideClick)="onOutsideClick()"
@@ -61,7 +61,7 @@ import { GsSliderComponent } from './gs-slider.component'
   imports: [CommonModule, FormsModule, OverlayModule, GsSliderComponent],
   hostDirectives: [CdkOverlayOrigin],
   host: {
-    class: 'layout-content',
+    class: 'inline-flex',
   },
   providers: [
     {

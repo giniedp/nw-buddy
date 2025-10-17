@@ -23,8 +23,7 @@ import { PerkDetailStore } from './perk-detail.store'
           <span header-text2 class="text-error">Not found</span>
         }
         @if (scalesWithGearScore()) {
-          <div class="absolute right-1 bottom-1 flex flex-colr gap-1 items-center">
-            <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-6 h-6" [tooltip]="'Selected Gear Score'" />
+          <label class="absolute right-1 bottom-1 flex flex-colr gap-1 items-center">
             <nwb-gs-input
               [size]="'xs'"
               [bordered]="true"
@@ -35,7 +34,8 @@ import { PerkDetailStore } from './perk-detail.store'
               (ngModelChange)="context.patchState({ gearScore: $event })"
               class="w-20 text-right"
             />
-          </div>
+            <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-6 h-6" [tooltip]="'Selected Gear Score'" [tooltipPlacement]="'top'" />
+          </label>
         }
       </nwb-item-header-content>
     </nwb-item-header>
