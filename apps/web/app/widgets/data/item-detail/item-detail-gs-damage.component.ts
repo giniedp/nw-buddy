@@ -52,7 +52,8 @@ export class ItemDetailGsDamage {
       const weaponId = this.store.item()?.ItemStatsRef
       const affixIds = this.store
         .itemPerkSlots()
-        ?.map((it) => it?.perk?.Affix)
+        ?.map((it) => it?.perk?.Affix || [])
+        ?.flat()
         ?.filter((it) => !!it)
       return { itemId, weaponId, affixIds }
     },

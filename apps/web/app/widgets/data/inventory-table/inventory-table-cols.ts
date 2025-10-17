@@ -163,7 +163,8 @@ export function inventoryColAttributeMods(util: InventoryTableUtils) {
     width: 100,
     valueGetter: ({ data }) => {
       return data.perks
-        ?.map((it) => it?.affix)
+        ?.map((it) => it?.affix || [])
+        .flat()
         .filter((it) => !!it)
         .map((it) => getAffixMODs(it, 0))
         .flat(1)

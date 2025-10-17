@@ -140,19 +140,19 @@ export interface PerkExplanation {
 
 export function explainPerk(options: {
   perk: PerkData
-  affix: AffixStatData
+  affixes: AffixStatData[]
   abilities?: AbilityData[]
   gearScore: number
   forceDescription?: boolean
 }): PerkExplanation[] {
-  const { perk, affix, gearScore } = options
+  const { perk, affixes, gearScore } = options
   const result: PerkExplanation[] = []
 
   if (!perk) {
     return result
   }
 
-  if (isPerkInherent(perk) && affix) {
+  if (isPerkInherent(perk) && affixes?.length) {
     result.push(...explainPerkMods(options))
   }
 
@@ -181,55 +181,60 @@ export function explainPerk(options: {
 
 export function explainPerkMods(options: {
   perk: PerkData
-  affix: AffixStatData
+  affixes: AffixStatData[]
   gearScore: number
 }): PerkExplanation[] {
-  const { perk, affix, gearScore } = options
+  const { perk, affixes, gearScore } = options
   const result: PerkExplanation[] = []
-  if (!isPerkInherent(perk) || !affix) {
+  if (!isPerkInherent(perk) || !affixes?.length) {
     return result
   }
 
-  if (!affix.AttributePlacingMods) {
-    // perk with attribute mods e.g. MODStrength, MODDexterity etc.
-    // +25 Strength
-    const mods = getPerksInherentMODs(perk, affix, gearScore)
-    mods?.forEach((mod, i) => {
-      result.push({
+  for (const affix of affixes) {
+    if (!affix) {
+      continue
+    }
+    if (!affix.AttributePlacingMods) {
+      // perk with attribute mods e.g. MODStrength, MODDexterity etc.
+      // +25 Strength
+      const mods = getPerksInherentMODs(perk, affix, gearScore)
+      mods?.forEach((mod, i) => {
+        result.push({
+          perkId: perk.PerkID,
+          icon: perk.IconPath,
+          label: `${mod.value > 0 ? '+' : ''}${Math.floor(mod.value)}`,
+          description: mod.label,
+          context: {
+            itemId: perk.PerkID,
+            gearScore: gearScore,
+          },
+        })
+      })
+    }
+
+    // perk with mods to highest attribute
+    // +25 Magnify (highest attribute: Focus)
+    if (affix.AttributePlacingMods) {
+      const scale = getPerkMultiplier(perk, gearScore, 0)
+      const part: PerkExplanation = {
         perkId: perk.PerkID,
         icon: perk.IconPath,
-        label: `${mod.value > 0 ? '+' : ''}${Math.floor(mod.value)}`,
-        description: mod.label,
+        label: '',
+        // whole string is in the StatDisplayText
+        // +{amount1} Magnify</font> (highest attribute: {attribute1})
+        description: perk.StatDisplayText,
         context: {
           itemId: perk.PerkID,
           gearScore: gearScore,
         },
-      })
-    })
-  }
-
-  // perk with mods to highest attribute
-  // +25 Magnify (highest attribute: Focus)
-  if (affix.AttributePlacingMods) {
-    const scale = getPerkMultiplier(perk, gearScore, 0)
-    const part: PerkExplanation = {
-      perkId: perk.PerkID,
-      icon: perk.IconPath,
-      label: '',
-      // whole string is in the StatDisplayText
-      // +{amount1} Magnify</font> (highest attribute: {attribute1})
-      description: perk.StatDisplayText,
-      context: {
-        itemId: perk.PerkID,
-        gearScore: gearScore,
-      },
+      }
+      String(affix.AttributePlacingMods)
+        .split(',')
+        .forEach((it, i) => {
+          part.context[`amount${i + 1}`] = Math.floor(Number(it) * scale)
+        })
+      result.push(part)
     }
-    String(affix.AttributePlacingMods)
-      .split(',')
-      .forEach((it, i) => {
-        part.context[`amount${i + 1}`] = Math.floor(Number(it) * scale)
-      })
-    result.push(part)
   }
   return result
 }

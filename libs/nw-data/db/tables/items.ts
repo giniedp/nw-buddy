@@ -33,7 +33,12 @@ export async function loadItemsTable(db: NwDataSheets) {
       return {
         ...it,
         $perks: perks,
-        $affixes: perks.map((it) => affixMap.get(it?.Affix)).filter((it) => !!it),
+        $affixes: perks
+          .map((it) => {
+            return it?.Affix?.map((id) => affixMap.get(id)) || []
+          })
+          .flat()
+          .filter((it) => !!it),
         $perkBuckets: getItemPerkBucketIds(it),
         $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
         $transformFrom: (transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),

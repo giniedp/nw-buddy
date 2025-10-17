@@ -124,9 +124,11 @@ function selectItem(db: NwData, itemId: string) {
 
           let modWeight = 0
           for (const perk of perks) {
-            const affix = affixMap.get(perk.Affix)
-            if (affix?.WeightMultiplier) {
-              modWeight += affix.WeightMultiplier
+            for (const id of perk.Affix || []) {
+              const affix = affixMap.get(id)
+              if (affix?.WeightMultiplier) {
+                modWeight += affix.WeightMultiplier
+              }
             }
           }
           let modArmor = 0

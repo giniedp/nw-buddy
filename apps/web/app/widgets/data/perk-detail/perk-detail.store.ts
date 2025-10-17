@@ -12,7 +12,7 @@ import { diffResourceFor } from '~/widgets/diff-tool'
 export interface PerkDetailStoreState {
   perkId: string
   perk: PerkData
-  affix: AffixStatData
+  affixes: AffixStatData[]
   abilities: AbilityData[]
   refAbilities: string[]
   refEffects: string[]
@@ -24,7 +24,7 @@ export const PerkDetailStore = signalStore(
   withState<PerkDetailStoreState>({
     perkId: null,
     perk: null,
-    affix: null,
+    affixes: [],
     abilities: [],
     refAbilities: [],
     refEffects: [],
@@ -38,16 +38,16 @@ export const PerkDetailStore = signalStore(
       },
     }
   }),
-  withComputed(({ perk, affix }) => {
+  withComputed(({ perk, affixes }) => {
     return {
       icon: computed(() => perk()?.IconPath || NW_FALLBACK_ICON),
       type: computed(() => perk()?.PerkType),
       name: computed(() => perk()?.DisplayName || perk()?.SecondaryEffectDisplayName),
       description: computed(() => perk()?.Description),
       properties: computed(() => selectProperties(perk())),
-      modsInfo: computed(() => getAffixMODs(affix())),
-      affixProps: computed(() => selectAffixProperties(affix())),
-
+      modsInfo: computed(() => {
+        return affixes().map(getAffixMODs).flat()
+      }),
       scalesWithGearScore: computed(() => !!hasPerkScalingPerGearScore(perk())),
       itemClassGsBonus: computed(() => getPerkItemClassGSBonus(perk())),
     }
@@ -101,22 +101,24 @@ export const PerkDetailStore = signalStore(
 
 function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState> {
   const perk$ = from(db.perksById(perkId))
-  const affix$ = perk$.pipe(
-    map((it) => it?.Affix),
-    switchMap((it) => db.affixStatsById(it)),
+  const affixes$ = perk$.pipe(
+    map((it) => it?.Affix || []),
+    switchMap((ids) => combineLatestOrEmpty(ids.map((id) => db.affixStatsById(id)))),
   )
   const refAbilities$ = perk$.pipe(map((it) => it?.EquipAbility || []))
   const abilities$ = refAbilities$.pipe(switchMap((it) => combineLatestOrEmpty(it?.map((id) => db.abilitiesById(id)))))
 
   const refEffects$ = selectStream(
     {
-      affix: affix$,
+      affixes: affixes$,
       abilities: abilities$,
     },
-    ({ affix, abilities }) => {
+    ({ affixes, abilities }) => {
       const result: string[] = []
-      if (affix?.StatusEffect) {
-        result.push(affix.StatusEffect)
+      for (const affix of affixes || []) {
+        if (affix?.StatusEffect) {
+          result.push(affix.StatusEffect)
+        }
       }
       abilities
         ?.filter((it) => !!it)
@@ -154,7 +156,7 @@ function loadState(db: NwData, perkId: string): Observable<PerkDetailStoreState>
   return combineLatest({
     perkId: of(perkId),
     perk: perk$,
-    affix: affix$,
+    affixes: affixes$,
     abilities: abilities$,
     refAbilities: refAbilities$,
     refEffects: refEffects$,
@@ -167,6 +169,6 @@ function selectProperties(item: PerkData) {
   return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }
 
-function selectAffixProperties(item: AffixStatData) {
+export function selectAffixProperties(item: AffixStatData) {
   return rejectKeys(item, (key) => !item[key] || key.startsWith('$'))
 }

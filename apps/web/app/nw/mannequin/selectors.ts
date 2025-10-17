@@ -121,7 +121,14 @@ export function selectEquipLoad(
       const weapon = weapons.get(it.ItemStatsRef)
       const armor = armors.get(it.ItemStatsRef)
       const weight = (Math.floor(weapon?.WeightOverride || armor?.WeightOverride || it.Weight) || 0) / 10
-      const scale = 1 + (perks.find((perk) => perk.item === it)?.affix?.WeightMultiplier || 0)
+      let scale = 1
+      for (const perk of perks || []) {
+        for (const affix of perk.affixes || []) {
+          if (affix.WeightMultiplier) {
+            scale = affix.WeightMultiplier
+          }
+        }
+      }
       return weight * scale
     })
   return sum(weights)
@@ -175,7 +182,7 @@ export function selectEquippedPerks(
             item,
             gearScore: it.gearScore,
             perk,
-            affix: affixes.get(perk.Affix),
+            affixes: perk.Affix?.map((id) => affixes.get(id)) || [],
             weapon: weapons.get(item.ItemStatsRef),
             armor: armors.get(item.ItemStatsRef),
             rune: runes.get(item.ItemStatsRef),
@@ -362,14 +369,17 @@ export function selectHousingEffects({ housings, effects }: DbSlice, equippedIte
 export function selectPerkEffects({ affixes, effects }: DbSlice, perks: ActivePerk[]) {
   return perks
     .map((active): ActiveEffect[] => {
-      return [
-        {
-          item: null,
-          consumable: null,
-          perk: active,
-          effect: effects.get(affixes.get(active.perk?.Affix)?.StatusEffect),
-        },
-      ]
+      return (
+        active.perk?.Affix?.map((id) => {
+          const affix = affixes.get(id)
+          return {
+            item: null,
+            consumable: null,
+            perk: active,
+            effect: effects.get(affix?.StatusEffect),
+          }
+        }) || []
+      )
     })
     .flat()
     .filter((it) => !!it?.effect)
@@ -423,8 +433,11 @@ export function selectEquppedAttributes(
     str: minBy(attrStr, (it) => it.Level)?.Level ?? 0,
   }
 
-  for (const { perk, gearScore, affix, item } of perks) {
-    if (affix) {
+  for (const { perk, gearScore, affixes, item } of perks) {
+    for (const affix of affixes || []) {
+      if (!affix) {
+        continue
+      }
       let scale = 1
       if (hasPerkScalingPerGearScore(perk)) {
         scale = getPerkMultiplier(perk, Number(gearScore), getItemGsBonus(perk, item))
@@ -497,18 +510,20 @@ export function selectBonusAttributes(db: DbSlice, { effects, level }: Attribute
 
 export function selectPlacingMods(db: DbSlice, { perks, effects, level }: AttributeModsSource) {
   const result: number[] = []
-  for (const { perk, gearScore, affix, item } of perks) {
-    if (!affix || !affix.AttributePlacingMods) {
-      continue
-    }
-    let scale = 1
-    if (hasPerkScalingPerGearScore(perk)) {
-      scale = getPerkMultiplier(perk, gearScore, getItemGsBonus(perk, item))
-    }
-    const mods = String(affix.AttributePlacingMods).split(',')
-    for (let i = 0; i < mods.length; i++) {
-      const value = Math.floor(Number(mods[i] || 0) * scale)
-      result[i] = (result[i] || 0) + value
+  for (const { perk, gearScore, affixes, item } of perks) {
+    for (const affix of affixes || []) {
+      if (!affix || !affix.AttributePlacingMods) {
+        continue
+      }
+      let scale = 1
+      if (hasPerkScalingPerGearScore(perk)) {
+        scale = getPerkMultiplier(perk, gearScore, getItemGsBonus(perk, item))
+      }
+      const mods = String(affix.AttributePlacingMods).split(',')
+      for (let i = 0; i < mods.length; i++) {
+        const value = Math.floor(Number(mods[i] || 0) * scale)
+        result[i] = (result[i] || 0) + value
+      }
     }
   }
   for (const { effect, consumable } of effects) {

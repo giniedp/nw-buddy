@@ -46,7 +46,7 @@ export class ItemDetailSetPerksComponent {
             perk,
             threshold: slot.PerkThreshold,
             abilities: await fetchAbilities(this.db, perk),
-            affix: await fetchAffix(this.db, perk),
+            affixes: await fetchAffixes(this.db, perk),
           }
         }),
       )
@@ -66,7 +66,7 @@ export class ItemDetailSetPerksComponent {
     const itemGS = this.store.itemGS()
     const slots = this.resource.value() || []
     const result = slots.map(
-      ({ perkId, perk, abilities, affix, threshold }): PerkSlotExplained & { threshold: number } => {
+      ({ perkId, perk, abilities, affixes, threshold }): PerkSlotExplained & { threshold: number } => {
         return {
           key: null,
           perkId: perkId,
@@ -77,7 +77,7 @@ export class ItemDetailSetPerksComponent {
           activationCooldown: abilities.find((a) => a?.ActivationCooldown)?.ActivationCooldown,
           explain: explainPerk({
             perk: perk,
-            affix: affix,
+            affixes: affixes,
             abilities: abilities,
             gearScore: itemGS + (getItemGsBonus(perk, item) || 0),
           }),
@@ -97,9 +97,9 @@ async function fetchAbilities(db: NwData, perk: PerkData) {
   return Promise.all(perk.EquipAbility.map((id) => db.abilitiesById(id)))
 }
 
-async function fetchAffix(db: NwData, perk: PerkData) {
-  if (!perk?.Affix) {
-    return null
+async function fetchAffixes(db: NwData, perk: PerkData) {
+  if (!perk?.Affix?.length) {
+    return []
   }
-  return db.affixStatsById(perk.Affix)
+  return Promise.all(perk.Affix.map((id) => db.affixStatsById(id)))
 }

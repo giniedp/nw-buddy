@@ -1,12 +1,12 @@
 import { DecimalPipe } from '@angular/common'
-import { Component, TemplateRef, inject, viewChild } from '@angular/core'
+import { Component, TemplateRef, computed, inject, viewChild } from '@angular/core'
 import { AffixStatData, PerkData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, localizedCell, tagsCell, textCell, valueCell } from '~/ui/property-grid/cells'
 import { diffButtonCell } from '~/widgets/diff-tool'
-import { PerkDetailStore } from './perk-detail.store'
+import { PerkDetailStore, selectAffixProperties } from './perk-detail.store'
 import { perkScalingCell } from './perk-scaling-cell.component'
 
 @Component({
@@ -17,12 +17,12 @@ import { perkScalingCell } from './perk-scaling-cell.component'
       [item]="properties()"
       [descriptor]="perkDescriptor"
     />
-    @if (affixProps(); as affix) {
+    @for (affix of affixes(); track $index) {
       <nwb-item-divider />
       <nwb-property-grid
         class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
-        [item]="affix"
-        [descriptor]="affixDescriptor"
+        [item]="affix.record"
+        [descriptor]="affix.descriptor"
       />
     }
   `,
@@ -34,7 +34,28 @@ import { perkScalingCell } from './perk-scaling-cell.component'
 export class PerkDetailPropertiesComponent {
   protected store = inject(PerkDetailStore)
   protected properties = this.store.properties
-  protected affixProps = this.store.affixProps
+  protected affixes = computed(() => {
+    return this.store.affixes().map((affix) => {
+      return {
+        record: selectAffixProperties(affix),
+        descriptor: gridDescriptor<AffixStatData>(
+          {
+            StatusID: (value) => {
+              return [
+                textCell({ value, textPrimary: true, fontItalic: true }),
+                diffButtonCell({
+                  record: affix,
+                  idKey: 'StatusID',
+                }),
+              ]
+            },
+            StatusEffect: (value) => statusEffectCells(value),
+          },
+          (value) => valueCell({ value }),
+        ),
+      }
+    })
+  })
   protected tplCategoryInfo = viewChild<TemplateRef<any>>('tplCategoryInfo')
   protected decimals = inject(DecimalPipe)
 
@@ -62,22 +83,6 @@ export class PerkDetailPropertiesComponent {
       ItemPerkConflictsLocText: (value) => localizedCell({ value }),
       ScalingPerGearScore: (value) => perkScalingCell({ value, bonus: this.store.itemClassGsBonus()?.value }),
       ScalingPerGearScoreAttributes: (value) => perkScalingCell({ value, bonus: this.store.itemClassGsBonus()?.value }),
-    },
-    (value) => valueCell({ value }),
-  )
-
-  public affixDescriptor = gridDescriptor<AffixStatData>(
-    {
-      StatusID: (value) => {
-        return [
-          textCell({ value, textPrimary: true, fontItalic: true }),
-          diffButtonCell({
-            record: this.store.affix(),
-            idKey: 'StatusID',
-          }),
-        ]
-      },
-      StatusEffect: (value) => statusEffectCells(value),
     },
     (value) => valueCell({ value }),
   )

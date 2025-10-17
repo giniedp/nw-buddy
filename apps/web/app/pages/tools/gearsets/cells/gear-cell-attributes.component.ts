@@ -10,6 +10,7 @@ import { ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 import { FlashDirective } from './ui/flash.directive'
+import { AffixStatData } from '@nw-data/generated'
 
 @Component({
   selector: 'nwb-gear-cell-attributes',
@@ -71,7 +72,7 @@ export class GearCellAttributesComponent {
         items: this.db.itemsByIdMap(),
         perks: this.db.perksByIdMap(),
         affix: this.db.affixStatsByIdMap(),
-        swaps: this.db.itemPerkSwapDataAll()
+        swaps: this.db.itemPerkSwapDataAll(),
       }).pipe(
         map(({ weapons, items, perks, affix, swaps }) => {
           const weapon1 = weapons.find((it) => it.slot === 'weapon1')
@@ -80,17 +81,26 @@ export class GearCellAttributesComponent {
           const item2 = items.get(weapon2?.itemId)
           const perks1 = item1 ? getItemPerkIdsWithOverride(item1, swaps, weapon1.perks) : null
           const perks2 = item2 ? getItemPerkIdsWithOverride(item2, swaps, weapon2.perks) : null
-          const affix1 = perks1
-            ?.map((perkId) => perks.get(perkId)?.Affix)
-            .find((affixId) => {
-              return !!affix.get(affixId)?.DamagePercentage || !!affix.get(affixId)?.PreferHigherScaling
-            })
-          const affix2 = perks2
-            ?.map((perkId) => perks.get(perkId)?.Affix)
-            .find((affixId) => {
-              return !!affix.get(affixId)?.DamagePercentage || !!affix.get(affixId)?.PreferHigherScaling
-            })
-
+          let affix1: string
+          let affix2: string
+          for (const perkId of perks1 || []) {
+            const perk = perks.get(perkId)
+            for (const affixId of perk?.Affix || []) {
+              const stat = affix.get(affixId)
+              if (!!stat?.DamagePercentage || !!stat?.PreferHigherScaling) {
+                affix1 = affixId
+              }
+            }
+          }
+          for (const perkId of perks2 || []) {
+            const perk = perks.get(perkId)
+            for (const affixId of perk?.Affix || []) {
+              const stat = affix.get(affixId)
+              if (!!stat?.DamagePercentage || !!stat?.PreferHigherScaling) {
+                affix2 = affixId
+              }
+            }
+          }
           return {
             weapon1ItemId: weapon1?.itemId,
             weapon1GearScore: weapon1?.gearScore,

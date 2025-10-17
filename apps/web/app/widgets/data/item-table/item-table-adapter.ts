@@ -138,7 +138,12 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         return {
           ...it,
           $perks: perks,
-          $affixes: perks.map((it) => affixMap.get(it?.Affix)).filter((it) => !!it),
+          $affixes: perks
+            .map((perk) => {
+              return perk?.Affix?.map((id) => affixMap.get(id)) || []
+            })
+            .flat()
+            .filter((it) => !!it),
           $perkBuckets: getItemPerkBucketIds(it),
           $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
           $transformFrom: (transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),

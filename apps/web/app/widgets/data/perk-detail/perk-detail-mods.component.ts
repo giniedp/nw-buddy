@@ -22,11 +22,11 @@ export class PerkDetailModsComponent {
   protected mods = selectSignal(
     {
       perk: this.store.perk,
-      affix: this.store.affix,
+      affixes: this.store.affixes,
       context: this.store.textContext,
     },
-    ({ perk, affix, context }) => {
-      return explainPerkMods({ perk, affix, gearScore: context.gearScore })
+    ({ perk, affixes, context }) => {
+      return explainPerkMods({ perk, affixes, gearScore: context.gearScore })
     },
   )
   protected isEmpty = selectSignal(this.mods, (mods) => !mods?.length)

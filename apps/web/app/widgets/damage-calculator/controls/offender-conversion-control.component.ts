@@ -109,14 +109,14 @@ export class OffenderConversionControlComponent {
       dataView: {
         adapter: PerkTableAdapter,
         filter: (it) => {
-          return !!it.$affix?.PreferHigherScaling
+          return !!it.$affixes?.some((it) => it.PreferHigherScaling)
         },
       },
     })
       .pipe(filter((it) => !!it))
       .pipe(switchMap((it) => this.db.perksById(it[0])))
       .subscribe((perk) => {
-        this.affixId.value = perk?.Affix || null
+        this.affixId.value = perk?.Affix?.[0] || null
       })
   }
 }
@@ -131,7 +131,7 @@ function scalingAccessor(store: DamageCalculatorStore, key: AttributeRef) {
       store.updateOffender({
         affixScaling: {
           [key]: value / scale,
-        }
+        },
       })
     },
   }

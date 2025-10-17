@@ -328,9 +328,11 @@ async function loadStandingBuffs(db: NwData): Promise<CraftingBuffGroup> {
     items: await loadBuffs(db, {
       getEffectValue: standingExpValueGetter,
       getPerkValue: async (perk) => {
-        if (perk.Affix) {
-          const affix = await db.affixStatsById(perk.Affix)
-          return affix?.TerritoryStandingMod
+        for (const affixId of perk.Affix || []) {
+          const affix = await db.affixStatsById(affixId)
+          if (affix?.TerritoryStandingMod) {
+            return affix?.TerritoryStandingMod
+          }
         }
         return null
       },

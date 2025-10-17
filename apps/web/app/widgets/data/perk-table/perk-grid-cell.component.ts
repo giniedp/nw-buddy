@@ -73,7 +73,10 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
       cellDataView: PerkGridCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (item, tl8) => {
-        const mods = getAffixMODs(item?.$affix).map((it) => it.labelShort)
+        const mods = item?.$affixes
+          ?.map(getAffixMODs)
+          ?.flat()
+          .map((it) => it.labelShort)
         const name = tl8(item?.DisplayName || item?.SecondaryEffectDisplayName || '')
         return [name, ...mods].join(' ')
       },
@@ -93,7 +96,10 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
     this.description = value?.Description
     this.type = value?.PerkType
     this.perk = value
-    this.mods = getAffixMODs(value?.$affix).map((it) => it.labelShort)
+    this.mods = value?.$affixes
+      ?.map(getAffixMODs)
+      ?.flat()
+      .map((it) => it.labelShort)
     this.exclusiveLabels = resolveExclusiveLabels(value)
     const resource = value?.$items?.[0]
     this.resourceId = getItemId(resource)

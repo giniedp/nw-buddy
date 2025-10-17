@@ -182,7 +182,7 @@ export interface ActivePerk {
   weapon: WeaponItemDefinitions | null
   armor: ArmorItemDefinitions | null
   rune: WeaponItemDefinitions | null
-  affix: AffixStatData | null
+  affixes: AffixStatData[] | null
 }
 export interface ActiveConsumable {
   item: MasterItemDefinitions

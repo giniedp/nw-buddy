@@ -72,7 +72,7 @@ function selectStackablePerks({
   effects: Map<string, StatusEffectData>
   abilities: Map<string, AbilityData>
 }) {
-  return perks.filter(({ perk, affix }) => {
+  return perks.filter(({ perk, affixes }) => {
     // if (!perk.ScalingPerGearScore) {
     //   // HINT: in order to show correct number on tooltip, we need ScalingPerGearScore to be present
     //   return false
@@ -80,13 +80,15 @@ function selectStackablePerks({
     if (perk.EquipAbility?.some((it) => abilities.get(it)?.IsStackableAbility)) {
       return true
     }
-    const effect = effects.get(affix?.StatusEffect)
-    if (effect && effect.StackMax !== 1) {
-      // HINT: StackMax may be set or not. Reject only if it is explicitly set to 1
-      return true
-    }
-    if (isPerkGenerated(perk) && !perk.EquipAbility && !affix?.StatusEffect) {
-      return true
+    for (const affix of affixes || []) {
+      const effect = effects.get(affix?.StatusEffect)
+      if (effect && effect.StackMax !== 1) {
+        // HINT: StackMax may be set or not. Reject only if it is explicitly set to 1
+        return true
+      }
+      if (isPerkGenerated(perk) && !perk.EquipAbility && !affix?.StatusEffect) {
+        return true
+      }
     }
     return false
   })

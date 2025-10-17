@@ -7234,7 +7234,7 @@ export interface PerkBucketData {
 }
 
 export interface PerkData {
-  Affix: string
+  Affix: string[]
   AppliedPrefix: string
   AppliedSuffix: string
   Category: string

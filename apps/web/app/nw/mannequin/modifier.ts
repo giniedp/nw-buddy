@@ -1,10 +1,4 @@
-import {
-  EquipSlotId,
-  getItemGsBonus,
-  getItemIconPath,
-  getPerkMultiplier,
-  getPerkOnlyMultiplier,
-} from '@nw-data/common'
+import { EquipSlotId, getItemGsBonus, getItemIconPath, getPerkMultiplier, getPerkOnlyMultiplier } from '@nw-data/common'
 import {
   AbilityData,
   AffixStatData,
@@ -155,30 +149,34 @@ export function* eachModifier<T extends number | string>(
     }
     yield { value, scale, source }
   }
-  for (const { affix, perk, gearScore, item, slot } of eachPerk(mods)) {
-    if (!affix) {
+  for (const { affixes, perk, gearScore, item, slot } of eachPerk(mods)) {
+    if (!affixes?.length) {
       continue
     }
+    for (const affix of affixes) {
+      if (!affix) {
+        continue
+      }
+      let value = match(affix)
+      let scale = 1
+      if (!value) {
+        continue
+      }
 
-    let value = match(affix)
-    let scale = 1
-    if (!value) {
-      continue
+      if (perk) {
+        scale = getPerkOnlyMultiplier(perk, gearScore, getItemGsBonus(perk, item))
+      }
+      const source: Required<ModifierSource> = {
+        icon: null,
+        label: null,
+        ability: null,
+        perk: perk,
+        item: item,
+        slot: slot,
+        effect: null,
+      }
+      yield { value, scale, source }
     }
-
-    if (perk) {
-      scale = getPerkOnlyMultiplier(perk, gearScore, getItemGsBonus(perk, item))
-    }
-    const source: Required<ModifierSource> = {
-      icon: null,
-      label: null,
-      ability: null,
-      perk: perk,
-      item: item,
-      slot: slot,
-      effect: null,
-    }
-    yield { value, scale, source }
   }
   for (const { ability, perk, scale } of eachAbility(mods)) {
     if (!ability) {

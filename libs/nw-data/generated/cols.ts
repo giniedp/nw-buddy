@@ -7234,7 +7234,7 @@ export const COLS_PERKBUCKETDATA = {
 }
 
 export const COLS_PERKDATA = {
-  Affix: 'string',
+  Affix: 'string[]',
   AppliedPrefix: 'string',
   AppliedSuffix: 'string',
   Category: 'string',

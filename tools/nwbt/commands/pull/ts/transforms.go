@@ -425,6 +425,12 @@ var RULES = []tx.Rule{
 					"EquipAbility",
 				},
 			},
+			tx.MapPropToArray{
+				Sep: ",+",
+				Keys: []string{
+					"Affix",
+				},
+			},
 		},
 	},
 	{

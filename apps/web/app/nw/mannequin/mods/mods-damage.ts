@@ -1,5 +1,5 @@
 import { getDamageTypesOfCategory, hasAffixDamageConversion, isItemOfAnyClass } from '@nw-data/common'
-import { DamageData, ItemClass, ArenaBalanceData } from '@nw-data/generated'
+import { AffixStatData, ArenaBalanceData, DamageData, ItemClass } from '@nw-data/generated'
 
 import { humanize } from '~/utils'
 import { eachModifier, modifierAdd, ModifierKey, modifierResult } from '../modifier'
@@ -20,8 +20,15 @@ export function selectModBaseDamage(mods: ActiveMods, attack: DamageData, weapon
 }
 
 function selectModBaseDamageConversion(mods: ActiveMods, { weapon }: ActiveWeapon) {
-  const perk = mods.perks.find((it) => hasAffixDamageConversion(it.affix) && it.weapon?.WeaponID === weapon?.WeaponID)
-  const affix = perk?.affix
+  let affix: AffixStatData
+  for (const perk of mods.perks) {
+    for (const it of perk.affixes) {
+      if (hasAffixDamageConversion(it)) {
+        affix = it
+        break
+      }
+    }
+  }
   const percent = affix?.DamagePercentage || 0
   return {
     Damage: sumCategory('BaseDamage', mods, affix?.DamageType),

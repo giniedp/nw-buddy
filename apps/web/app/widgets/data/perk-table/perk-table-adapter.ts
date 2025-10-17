@@ -50,7 +50,7 @@ export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
         const items = resources?.map((it) => itemsMap.get(it.ResourceID)).filter((it) => !!it)
         return {
           ...it,
-          $affix: affixstats.get(it.Affix),
+          $affixes: (it.Affix || []).map((id) => affixstats.get(id)),
           $ability: abilities.get(it.EquipAbility?.[0]),
           $items: items,
         }
@@ -72,7 +72,7 @@ export class PerkTableAdapter implements DataViewAdapter<PerkTableRecord> {
     return [
       {
         icon: null,
-        label: isPerkInherent(item) ? 'Attributes' : isPerkGenerated(item) ? 'Perks' : humanize(item.PerkType) ,
+        label: isPerkInherent(item) ? 'Attributes' : isPerkGenerated(item) ? 'Perks' : humanize(item.PerkType),
         id: item.PerkType.toLowerCase(),
       },
     ]

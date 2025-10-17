@@ -16,6 +16,7 @@ import { DiffToolStore } from './diff-tool.store'
           <ion-title>
             @if (store.isLoading()) {
               ...loading data
+              <span class="loading loading-infinity loading-lg"></span>
             } @else if (store.hasHistory()) {
               Object History
             } @else {
@@ -29,9 +30,7 @@ import { DiffToolStore } from './diff-tool.store'
       </ion-header>
       <ion-content [scrollY]="false" class="bg-base-200">
         @if (store.isLoading()) {
-          <div class="ion-page flex items-center justify-center">
-            <span class="loading loading-infinity loading-lg"></span>
-          </div>
+          <nwb-code-editor class="ion-page" [ngModel]="store.currentDocument()" [language]="'json'" [disabled]="true" />
         } @else if (store.hasHistory()) {
           <nwb-diff-history-editor class="ion-page" [history]="store.history()" />
         } @else {

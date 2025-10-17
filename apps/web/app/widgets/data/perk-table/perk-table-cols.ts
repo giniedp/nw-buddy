@@ -28,7 +28,7 @@ import { humanize } from '~/utils'
 export type PerkTableUtils = TableGridUtils<PerkTableRecord>
 export type PerkTableRecord = PerkData & {
   $ability?: AbilityData
-  $affix?: AffixStatData
+  $affixes?: AffixStatData[]
   $items?: MasterItemDefinitions[]
 }
 
@@ -205,9 +205,9 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
       source: ({ data }) => {
         return combineLatest({
           ctx: ctx.state$,
-          affix: util.db.affixStatsById(data.Affix),
+          affixes: Promise.all((data.Affix || []).map((id) => util.db.affixStatsById(id))),
         }).pipe(
-          switchMap(({ ctx, affix }) => {
+          switchMap(({ ctx, affixes }) => {
             const context = {
               itemId: data.PerkID,
               gearScore: ctx.gearScore,
@@ -221,7 +221,7 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
             const result: Array<Observable<string>> = []
             const mods = explainPerkMods({
               perk: data,
-              affix: affix,
+              affixes: affixes,
               gearScore: context.gearScore,
             })
             for (const mod of mods) {

@@ -30,7 +30,7 @@ function getPerkData(perk: PerkData, affixMap: Map<string, AffixStatData>, tl8: 
       ? null
       : explainPerkMods({
           perk: perk,
-          affix: affixMap.get(perk.Affix),
+          affixes: null,
           gearScore: NW_MAX_GEAR_SCORE,
         })
           .map((it) => ({

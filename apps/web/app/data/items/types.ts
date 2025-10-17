@@ -36,7 +36,7 @@ export interface ItemInstanceRow {
   /**
    * The game perks referenced by the record
    */
-  perks?: Array<{ key: string; perk?: PerkData; affix?: AffixStatData; bucket?: PerkBucket }>
+  perks?: Array<{ key: string; perk?: PerkData; affix?: AffixStatData[]; bucket?: PerkBucket }>
   /**
    * The items current rarity
    */
