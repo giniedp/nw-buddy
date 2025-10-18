@@ -33,13 +33,7 @@ export function openItemsPicker(options: {
     dataView: {
       adapter: ItemTableAdapter,
       filter: itemFilter(options.categories, options.categories2, options.categoriesOp, options.noSkins),
-      sort: (a, b) => {
-        let result = b.Tier - a.Tier
-        if (!result) {
-          result = getItemRarityWeight(b) - getItemRarityWeight(a)
-        }
-        return result
-      },
+      sort: itemComparator,
       gridOptions: (utils) => {
         return {
           ...buildPickerItemGridOptions(utils),
@@ -49,6 +43,33 @@ export function openItemsPicker(options: {
     },
   })
 }
+
+function itemComparator(a: ItemTableRecord, b: ItemTableRecord) {
+  const aIsSlots = a.ItemID.includes('_Slots')
+  const bIsSlots = b.ItemID.includes('_Slots')
+  if (aIsSlots && bIsSlots) {
+    return a.ItemID.localeCompare(b.ItemID)
+  }
+  if (aIsSlots) {
+    return -1
+  }
+  if (bIsSlots) {
+    return 1
+  }
+
+  const aRarity = getItemRarityWeight(a)
+  const bRarity = getItemRarityWeight(b)
+  if (aRarity !== bRarity) {
+    return bRarity - aRarity
+  }
+  const aTier = a.Tier
+  const bTier = b.Tier
+  if (aTier !== bTier) {
+    return bTier - aTier
+  }
+  return a.Name.localeCompare(b.Name)
+}
+
 function doesMatchCategory(it: ItemTableRecord, categories: ItemClass[], categoriesOp: 'all' | 'any') {
   if (!categories?.length) {
     return true

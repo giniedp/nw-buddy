@@ -10,7 +10,7 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { pickPerkForItem } from '../data/perk-table'
+import { PerkTableRecord, pickPerkForItem } from '../data/perk-table'
 import { PriceImporterModule } from '../price-importer/price-importer.module'
 import { CraftingCalculatorHeaderComponent } from './crafting-calculator-header.component'
 import { CraftingCalculatorStore } from './crafting-calculator.store'
@@ -79,11 +79,10 @@ export class CraftingCalculatorComponent {
 
   protected pickCraftMod(slot: CraftingPerkSlot) {
     pickPerkForItem({
-      db: this.db,
       injector: this.injector,
       slotKey: slot.bucketKey,
-      craftOnly: true,
       record: this.store.itemInstance(),
+      filter: (perk: PerkTableRecord) => !perk.$notAplicable && !!perk.$items?.length,
     })
       .pipe(
         switchMap(async (perk) => {

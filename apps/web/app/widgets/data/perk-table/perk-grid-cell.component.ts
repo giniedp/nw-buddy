@@ -9,6 +9,8 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 import { EmptyComponent } from '~/widgets/empty'
+import { IconsModule } from '../../../ui/icons'
+import { svgCircleExclamation } from '../../../ui/icons/svg'
 import { PerkDetailDescriptionComponent } from '../perk-detail/perk-detail-description.component'
 import { PerkDetailStore } from '../perk-detail/perk-detail.store'
 import { PerkTableRecord } from './perk-table-cols'
@@ -23,8 +25,29 @@ import { PerkTableRecord } from './perk-table-cols'
           <div header-title class="text-sm italic opacity-75">{{ text | nwText }}</div>
         }
         <div class="flex flex-row items-center gap-1">
-          @for (item of exclusiveLabels; track $index) {
-            <span class="badge badge-sm" [class.badge-error]="item.isError"> {{ item.label }}</span>
+          @for (item of labels; track $index) {
+            @if (item.text) {
+              <span
+                class="badge badge-sm"
+                [class.badge-error]="item.isError"
+                [class.badge-warning]="item.isWarning"
+                [tooltip]="item.tooltip"
+                [tooltipClass]="['bg-error', 'text-error-content']"
+              >
+                @if (item.text) {
+                  {{ item.text }}
+                }
+              </span>
+            } @else {
+              <nwb-icon
+                [icon]="item.icon"
+                class="w-4 h-4"
+                [tooltip]="item.tooltip"
+                [class.text-error]="item.isError"
+                [class.text-warning]="item.isWarning"
+                [tooltipClass]="['bg-warning', 'text-warning-content']"
+              />
+            }
           }
           <span class="flex-1"></span>
           @for (mod of mods; track $index) {
@@ -55,7 +78,7 @@ import { PerkTableRecord } from './perk-table-cols'
       <nwb-perk-detail-description [preferBonus]="true" />
     </div>
   `,
-  imports: [CommonModule, ItemFrameModule, PerkDetailDescriptionComponent, NwModule, TooltipModule],
+  imports: [CommonModule, ItemFrameModule, PerkDetailDescriptionComponent, NwModule, TooltipModule, IconsModule],
   hostDirectives: [TooltipDirective],
   providers: [PerkDetailStore],
   host: {
@@ -100,7 +123,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
       ?.map(getAffixMODs)
       ?.flat()
       .map((it) => it.labelShort)
-    this.exclusiveLabels = resolveExclusiveLabels(value)
+    this.labels = selectLabels(value)
     const resource = value?.$items?.[0]
     this.resourceId = getItemId(resource)
     this.resourceIcon = getItemIconPath(resource)
@@ -115,7 +138,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
   protected description: string
   protected type: string
   protected mods: string[]
-  protected exclusiveLabels: Array<{ label: string; isError: boolean }>
+  protected labels: Array<PerkLabel>
   protected resourceId: string
   protected resourceIcon: string
   protected resourceName: string
@@ -150,17 +173,34 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
   }
 }
 
-function resolveExclusiveLabels(perks: PerkData) {
-  const labels = perks?.ExclusiveLabels || []
-  const errorLabels = extractExclusionError(perks) || []
-  return labels.map((it) => {
-    const isError = errorLabels.includes(it)
-    return { label: it, isError }
-  })
+export interface PerkLabel {
+  text: string
+  icon: string
+  tooltip: string
+  isError: boolean
+  isWarning: boolean
 }
-function extractExclusionError(perks: PerkData): string[] {
-  if ('$excludeError' in perks && Array.isArray(perks.$excludeError) && perks.$excludeError.length > 0) {
-    return perks.$excludeError
+function selectLabels(perks: PerkTableRecord) {
+  const labels = perks?.ExclusiveLabels || []
+  const errorLabels = perks?.$excludeError || []
+  const result = labels.map((it): PerkLabel => {
+    const hasConflict = errorLabels.includes(it)
+    return {
+      text: it,
+      isError: hasConflict,
+      isWarning: false,
+      tooltip: hasConflict ? 'This perk label conflicts with another perk on the item.' : null,
+      icon: hasConflict ? svgCircleExclamation : null,
+    }
+  })
+  if (perks?.$notAplicable) {
+    result.unshift({
+      text: null,
+      isError: false,
+      isWarning: true,
+      tooltip: "Unrollable perk in this bucket or item configuration. You can still select it, if you don't care.",
+      icon: svgCircleExclamation,
+    })
   }
-  return null
+  return result
 }

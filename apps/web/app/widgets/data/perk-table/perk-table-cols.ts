@@ -30,6 +30,8 @@ export type PerkTableRecord = PerkData & {
   $ability?: AbilityData
   $affixes?: AffixStatData[]
   $items?: MasterItemDefinitions[]
+  $excludeError?: string[]
+  $notAplicable?: boolean
 }
 
 export function perkColIcon(util: PerkTableUtils) {

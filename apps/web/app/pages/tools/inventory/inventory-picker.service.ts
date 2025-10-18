@@ -4,29 +4,23 @@ import {
   EquipSlotId,
   EquipSlotItemType,
   getEquipSlotForId,
-  getItemPerkIds,
-  getItemPerkSlots,
-  getPerkBucketPerkIDs,
   isItemArmor,
-  isItemArtifact,
   isItemWeapon,
   isPerkApplicableToItem,
-  isPerkEmptyGemSlot,
-  isPerkExcludedFromItem,
   isPerkGem,
   isPerkInherent,
 } from '@nw-data/common'
 import { ItemClass, MasterItemDefinitions, PerkData, StatusEffectData } from '@nw-data/generated'
 import { isEqual } from 'lodash'
-import { combineLatest, filter, from, map, Observable, switchMap, take } from 'rxjs'
+import { combineLatest, filter, from, map, Observable, take } from 'rxjs'
 import { injectNwData, ItemInstance } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { ModalService } from '~/ui/layout'
-import { eqCaseInsensitive, matchMapTo } from '~/utils'
+import { matchMapTo } from '~/utils'
 import { openHousingItemsPicker } from '~/widgets/data/housing-table'
 import { InventoryTableAdapter } from '~/widgets/data/inventory-table'
 import { openItemsPicker } from '~/widgets/data/item-table'
-import { PerkTableAdapter } from '~/widgets/data/perk-table'
+import { PerkTableAdapter, pickPerkForItem } from '~/widgets/data/perk-table'
 import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 
 @Injectable({ providedIn: 'root' })
@@ -153,39 +147,11 @@ export class InventoryPickerService {
   }
 
   public pickPerkForItem(record: ItemInstance, slotKey: string): Observable<PerkData> {
-    return combineLatest({
-      items: this.db.itemsByIdMap(),
-      perks: this.db.perksByIdMap(),
-    }).pipe(
-      switchMap(({ items, perks }) => {
-        const item = items.get(record.itemId)
-        const selection = record.perks?.[slotKey]
-        const exclusiveLabels: string[] = []
-        for (const slot of getItemPerkSlots(item)) {
-          const key = slot.bucketKey || slot.perkKey
-          if (key === slotKey || key === slotKey) {
-            continue
-          }
-          const perkId = record.perks?.[key] || item[key]
-          const perk = perks.get(perkId)
-          exclusiveLabels.push(...(perk?.ExclusiveLabels || []))
-        }
-
-        return (
-          this.openPerksPicker(item, {
-            exclusiveLabels,
-            selectedPerkid: selection,
-            slotKey,
-          })
-            // cancelled selection
-            .pipe(filter((it) => it !== undefined))
-            // unchanged selection
-            .pipe(filter((it) => !isEqual(it, [selection])))
-            .pipe(map((it) => it?.[0]))
-            .pipe(map((it: string) => perks.get(it) || null))
-        )
-      }),
-    )
+    return pickPerkForItem({
+      injector: this.injector,
+      record,
+      slotKey,
+    })
   }
 
   public pickEffect({
@@ -250,28 +216,6 @@ export class InventoryPickerService {
         dataView: {
           adapter: InventoryTableAdapter,
           filter: (it) => it.item?.ItemClass?.some((e) => types.has(e)),
-        },
-      }),
-    )
-  }
-
-  private openPerksPicker(
-    item: MasterItemDefinitions,
-    options: {
-      selectedPerkid: string
-      slotKey: string
-      exclusiveLabels: string[]
-    },
-  ) {
-    return from(
-      DataViewPicker.open({
-        injector: this.injector,
-        title: 'Choose Perk',
-        selection: options.selectedPerkid ? [options.selectedPerkid.toLowerCase()] : null,
-        displayMode: ['grid'],
-        dataView: {
-          adapter: PerkTableAdapter,
-          source: this.getAplicablePerksSource(item, options),
         },
       }),
     )
@@ -343,87 +287,6 @@ export class InventoryPickerService {
             })
           },
         },
-      }),
-    )
-  }
-
-  public getAplicablePerksSource(
-    item: MasterItemDefinitions,
-    {
-      slotKey,
-      exclusiveLabels,
-    }: {
-      slotKey: string
-      exclusiveLabels: string[]
-    },
-  ) {
-    return combineLatest({
-      perks: this.db.perksAll(),
-      perksMap: this.db.perksByIdMap(),
-      bucketsMap: this.db.perkBucketsByIdMap(),
-    }).pipe(
-      map(({ perks, perksMap, bucketsMap }) => {
-        const perk = perksMap.get(item[slotKey])
-
-        const bucketId = item[slotKey]
-        const bucket = bucketsMap.get(bucketId)
-
-        const bucketPerkIds = getPerkBucketPerkIDs(bucket)
-        const hasGemSlot = getItemPerkIds(item).some((it) => isPerkGem(perksMap.get(it)))
-
-        const isWeapon = isItemWeapon(item)
-        const isArmor = isItemArmor(item)
-        // const isJewelery = isItemJewelery(item)
-        const isArtifact = isItemArtifact(item)
-        const emptyGemslotPerk = perks.find(isPerkEmptyGemSlot)
-        const canHaveGemslot = isPerkApplicableToItem(emptyGemslotPerk, item)
-
-        return perks
-          .filter((it) => {
-            if (isPerkExcludedFromItem(it, item, !hasGemSlot)) {
-              return false
-            }
-            if (canHaveGemslot && isPerkGem(it)) {
-              return true
-            }
-
-            let isApplicable = isPerkApplicableToItem(it, item)
-            if (isArmor && !isApplicable) {
-              isApplicable = it.ItemClass?.includes('Armor')
-            }
-            if (isWeapon && !isApplicable) {
-              isApplicable = it.ItemClass?.includes('EquippableMainHand') || it.ItemClass?.includes('EquippableTwoHand')
-            }
-            if (!isApplicable) {
-              return false
-            }
-            if (isArtifact && !hasGemSlot) {
-              // artifacts only have one custom perk slot
-              // user may choose either gem or perk (no attribute however)
-              return isApplicable && !isPerkInherent(it)
-            }
-
-            if (bucketPerkIds.includes(it.PerkID)) {
-              // always allow whatever is in the bucket
-              return true
-            }
-            if (bucket) {
-              return bucket.PerkType === it.PerkType
-            }
-            if (perk) {
-              return perk.PerkType === it.PerkType
-            }
-
-            return false
-          })
-          .map((perk) => {
-            return {
-              ...perk,
-              $excludeError: exclusiveLabels.filter((label) => {
-                return perk.ExclusiveLabels?.some((it) => eqCaseInsensitive(it, label))
-              }),
-            }
-          })
       }),
     )
   }
