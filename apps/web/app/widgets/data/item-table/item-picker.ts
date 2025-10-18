@@ -67,7 +67,9 @@ function itemComparator(a: ItemTableRecord, b: ItemTableRecord) {
   if (aTier !== bTier) {
     return bTier - aTier
   }
-  return a.Name.localeCompare(b.Name)
+  const aName = a.Name || ''
+  const bName = b.Name || ''
+  return aName.localeCompare(bName)
 }
 
 function doesMatchCategory(it: ItemTableRecord, categories: ItemClass[], categoriesOp: 'all' | 'any') {
