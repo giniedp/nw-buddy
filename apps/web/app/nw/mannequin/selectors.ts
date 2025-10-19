@@ -123,6 +123,9 @@ export function selectEquipLoad(
       const weight = (Math.floor(weapon?.WeightOverride || armor?.WeightOverride || it.Weight) || 0) / 10
       let scale = 1
       for (const perk of perks || []) {
+        if (perk.item?.ItemID !== it.ItemID) {
+          continue
+        }
         for (const affix of perk.affixes || []) {
           if (affix?.WeightMultiplier) {
             scale = affix.WeightMultiplier
