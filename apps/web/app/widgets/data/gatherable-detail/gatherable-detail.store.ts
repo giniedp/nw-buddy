@@ -14,6 +14,7 @@ import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { injectNwData, withStateLoader } from '~/data'
 import { GatherableRecord, GatherableService, isLootTableEmpty } from '../gatherable/gatherable.service'
 import { getGatherableIcon } from './utils'
+import { rejectKeys } from '../../../utils'
 
 export interface GatherableDetailState {
   gatherableId: string
@@ -33,7 +34,6 @@ export interface GatherableSibling {
 }
 
 export const GatherableDetailStore = signalStore(
-  { protectedState: false },
   withState<GatherableDetailState>({
     gatherableId: null,
     gatherable: null,
@@ -78,6 +78,7 @@ export const GatherableDetailStore = signalStore(
       requiredStatusEffect: computed(() => gatherable()?.RequiredStatusEffect),
       gameEvent: computed(() => gatherable()?.GameEventID),
       variations: computed(() => sortBy(gatherable()?.$variations || [], (it) => it.Name || it.VariantID)),
+      properties: computed(() => selectProperties(gatherable())),
       lootTables: computed(() => {
         const result: string[] = []
         if (!gatherable()) {
@@ -106,11 +107,12 @@ export const GatherableDetailStore = signalStore(
           .filter((it) => !!it)
           .sort()
       }),
+
     }
   }),
 )
 
-function secondsToDuration(value: number) {
+export function secondsToDuration(value: number) {
   const milliseconds = Math.floor(value * 1000) % 1000
   const seconds = Math.floor(value % 60)
   const minutes = Math.floor(value / 60) % 60
@@ -153,4 +155,9 @@ function selectSiblings(gatherable: GatherableRecord, dataSet: Map<string, Gathe
     }
   }
   return result
+}
+
+function selectProperties(item: GatherableRecord) {
+  const reject: Array<keyof GatherableRecord> = []
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key) || key.startsWith('$'))
 }

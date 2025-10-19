@@ -1,6 +1,10 @@
 import { Component, inject } from '@angular/core'
-import { GatherableDetailStore } from './gatherable-detail.store'
+import { GatherableData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
+import { gridDescriptor, PropertyGridCell, PropertyGridModule } from '../../../ui/property-grid'
+import { linkCell, localizedCell, valueCell } from '../../../ui/property-grid/cells'
+import { diffButtonCell } from '../../diff-tool'
+import { GatherableDetailStore } from './gatherable-detail.store'
 
 @Component({
   selector: 'nwb-gatherable-detail-stats',
@@ -29,32 +33,72 @@ import { NwModule } from '~/nw'
       <span>{{ store.maxRespawnRate() }}</span>
     </div>
 
-    <ng-content />
-    <!--
-      @if (props() || map?.spawns()?.points?.length) {
-        <div class="p-3">
-          @for(prop of props(); track $index){
-            <div class="flex flex-row gap-1">
-              <span class="opacity-50">{{ prop.label }}: </span>
-              <span>{{ prop.value }}</span>
-            </div>
-          }
+    <ng-content select="[slot='start']" />
 
-          @if (map?.spawns()?.points?.length) {
-            <div class="flex flex-row gap-1">
-              <span class="opacity-50">Spawns: </span>
-              <span [tooltip]="'Download spawn positions'" class="cursor-pointer" (click)="downloadPositions()">{{ map.spawns().points.length }} <nwb-icon [icon]="iconDownload" class="w-4 h-4"/></span>
-            </div>
-          }
-        </div>
-      }
-      <ng-content></ng-content> -->
+    <nwb-property-grid
+      class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight mt-4"
+      [item]="store.properties()"
+      [descriptor]="descriptor"
+    />
+
+    <ng-content select="[slot='end']" />
+
+    <ng-content />
   `,
   host: {
     class: 'flex flex-col',
   },
-  imports: [NwModule],
+  imports: [NwModule, PropertyGridModule],
 })
 export class GatherableDetailStatsComponent {
   public readonly store = inject(GatherableDetailStore)
+  protected descriptor = gridDescriptor<GatherableData>(
+    {
+      GatherableID: (value) => [
+        ...gatherableLinkCell(value),
+        diffButtonCell({ record: this.store.gatherable(), idKey: 'GatherableID' }),
+      ],
+      DisplayName: (value) => localizedCell({ value }),
+      RequirementDescription: (value) => localizedCell({ value }),
+      AdditionalInfo: (value) => localizedCell({ value }),
+      DisplayDescription: (value) => localizedCell({ value }),
+      FinalLootTable: (value) => lootTableLinkCell(value),
+      GameEventID: (value) => gameEventLinkCell(value),
+      AddedStatusEffect: (value) => statusEffectLinkCell(value),
+      RequiredStatusEffect: (value) => statusEffectLinkCell(value),
+      ConsumedStatusEffect: (value) => statusEffectLinkCell(value),
+      // MinRespawnRate: (value) => ({ value: secondsToDuration(value) }),
+      // MaxRespawnRate: (value) => ({ value: secondsToDuration(value) }),
+      // BaseGatherTime: (value) => ({ value: secondsToDuration(value) }),
+    },
+    (value) => valueCell({ value }),
+  )
+}
+
+function gatherableLinkCell(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    return linkCell({ value: it, routerLink: ['gatherable', it] })
+  })
+}
+
+function gameEventLinkCell(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    return linkCell({ value: it, routerLink: ['game-event', it] })
+  })
+}
+
+function lootTableLinkCell(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    return linkCell({ value: it, routerLink: ['loot', it] })
+  })
+}
+
+function statusEffectLinkCell(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    return linkCell({ value: it, routerLink: ['status-effect', it] })
+  })
 }
