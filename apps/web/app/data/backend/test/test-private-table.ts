@@ -27,9 +27,9 @@ export class TestPrivateTable<T extends AppDbRecord> implements PrivateTable<T> 
 
   public constructor(
     protected readonly adapter: BackendAdapter,
-    protected readonly table: AppDbTable<T>,
+    protected readonly table: string,
   ) {
-    this.name = table.tableName
+    this.name = table
     this.rows = {}
   }
 

@@ -10,126 +10,126 @@ import {
 describe('Mannequin / Conditions', () => {
   const empty: AbilityData = {} as AbilityData
   it('checkHealthCondition', () => {
-    expect(checkHealthCondition({}, null)).toBe(false)
-    expect(checkHealthCondition({}, empty)).toBe(true)
+    expect(checkHealthCondition({} as any, null)).toBe(false)
+    expect(checkHealthCondition({} as any, empty)).toBe(true)
     expect(
-      checkHealthCondition({ myHealthPercent: 0.5 }, { ...empty, MyComparisonType: 'Equal', MyHealthPercent: 50 }),
+      checkHealthCondition({ myHealthPercent: 0.5 } as any, { ...empty, MyComparisonType: 'Equal', MyHealthPercent: 50 }),
     ).toBe(true)
     expect(
-      checkHealthCondition({ myHealthPercent: 0.4 }, { ...empty, MyComparisonType: 'Equal', MyHealthPercent: 50 }),
+      checkHealthCondition({ myHealthPercent: 0.4 } as any, { ...empty, MyComparisonType: 'Equal', MyHealthPercent: 50 }),
     ).toBe(false)
     expect(
-      checkHealthCondition({ myHealthPercent: 0.4 }, { ...empty, MyComparisonType: 'LessThan', MyHealthPercent: 50 }),
+      checkHealthCondition({ myHealthPercent: 0.4 } as any, { ...empty, MyComparisonType: 'LessThan', MyHealthPercent: 50 }),
     ).toBe(true)
     expect(
       checkHealthCondition(
-        { myHealthPercent: 0.4 },
+        { myHealthPercent: 0.4 } as any,
         { ...empty, MyComparisonType: 'LessThanOrEqual', MyHealthPercent: 50 },
       ),
     ).toBe(true)
     expect(
       checkHealthCondition(
-        { myHealthPercent: 0.4 },
+        { myHealthPercent: 0.4 } as any,
         { ...empty, MyComparisonType: 'LessThanOrEqual', MyHealthPercent: 40 },
       ),
     ).toBe(true)
     expect(
       checkHealthCondition(
-        { myHealthPercent: 0.4 },
+        { myHealthPercent: 0.4 } as any,
         { ...empty, MyComparisonType: 'LessThanOrEqual', MyHealthPercent: 30 },
       ),
     ).toBe(false)
     expect(
       checkHealthCondition(
-        { myHealthPercent: 0.4 },
+        { myHealthPercent: 0.4 } as any,
         { ...empty, MyComparisonType: 'GreaterThan', MyHealthPercent: 30 },
       ),
     ).toBe(true)
     expect(
       checkHealthCondition(
-        { myHealthPercent: 0.4 },
+        { myHealthPercent: 0.4 } as any,
         { ...empty, MyComparisonType: 'GreaterThanOrEqual', MyHealthPercent: 30 },
       ),
     ).toBe(true)
     expect(
       checkHealthCondition(
-        { myHealthPercent: 0.3 },
+        { myHealthPercent: 0.3 } as any,
         { ...empty, MyComparisonType: 'GreaterThanOrEqual', MyHealthPercent: 30 },
       ),
     ).toBe(true)
     expect(
       checkHealthCondition(
-        { myHealthPercent: 0.2 },
+        { myHealthPercent: 0.2 } as any,
         { ...empty, MyComparisonType: 'GreaterThanOrEqual', MyHealthPercent: 30 },
       ),
     ).toBe(false)
   })
 
   it('checkManaCondition', () => {
-    expect(checkManaCondition({}, null)).toBe(false)
-    expect(checkManaCondition({}, empty)).toBe(true)
+    expect(checkManaCondition({} as any, null)).toBe(false)
+    expect(checkManaCondition({} as any, empty)).toBe(true)
     expect(
-      checkManaCondition({ myManaPercent: 0.5 }, { ...empty, MyManaComparisonType: 'Equal', MyManaPercent: 50 }),
+      checkManaCondition({ myManaPercent: 0.5 } as any, { ...empty, MyManaComparisonType: 'Equal', MyManaPercent: 50 }),
     ).toBe(true)
     expect(
-      checkManaCondition({ myManaPercent: 0.4 }, { ...empty, MyManaComparisonType: 'Equal', MyManaPercent: 50 }),
+      checkManaCondition({ myManaPercent: 0.4 } as any, { ...empty, MyManaComparisonType: 'Equal', MyManaPercent: 50 }),
     ).toBe(false)
     expect(
-      checkManaCondition({ myManaPercent: 0.4 }, { ...empty, MyManaComparisonType: 'LessThan', MyManaPercent: 50 }),
+      checkManaCondition({ myManaPercent: 0.4 } as any, { ...empty, MyManaComparisonType: 'LessThan', MyManaPercent: 50 }),
     ).toBe(true)
     expect(
       checkManaCondition(
-        { myManaPercent: 0.4 },
+        { myManaPercent: 0.4 } as any,
         { ...empty, MyManaComparisonType: 'LessThanOrEqual', MyManaPercent: 50 },
       ),
     ).toBe(true)
     expect(
       checkManaCondition(
-        { myManaPercent: 0.4 },
+        { myManaPercent: 0.4 } as any,
         { ...empty, MyManaComparisonType: 'LessThanOrEqual', MyManaPercent: 40 },
       ),
     ).toBe(true)
     expect(
       checkManaCondition(
-        { myManaPercent: 0.4 },
+        { myManaPercent: 0.4 } as any,
         { ...empty, MyManaComparisonType: 'LessThanOrEqual', MyManaPercent: 30 },
       ),
     ).toBe(false)
     expect(
-      checkManaCondition({ myManaPercent: 0.4 }, { ...empty, MyManaComparisonType: 'GreaterThan', MyManaPercent: 30 }),
+      checkManaCondition({ myManaPercent: 0.4 } as any, { ...empty, MyManaComparisonType: 'GreaterThan', MyManaPercent: 30 }),
     ).toBe(true)
     expect(
       checkManaCondition(
-        { myManaPercent: 0.4 },
+        { myManaPercent: 0.4 } as any,
         { ...empty, MyManaComparisonType: 'GreaterThanOrEqual', MyManaPercent: 30 },
       ),
     ).toBe(true)
     expect(
       checkManaCondition(
-        { myManaPercent: 0.3 },
+        { myManaPercent: 0.3 } as any,
         { ...empty, MyManaComparisonType: 'GreaterThanOrEqual', MyManaPercent: 30 },
       ),
     ).toBe(true)
     expect(
       checkManaCondition(
-        { myManaPercent: 0.2 },
+        { myManaPercent: 0.2 } as any,
         { ...empty, MyManaComparisonType: 'GreaterThanOrEqual', MyManaPercent: 30 },
       ),
     ).toBe(false)
   })
 
   it('checkAmmoCountCondition', () => {
-    expect(checkAmmoCountCondition({}, null)).toBe(false)
-    expect(checkAmmoCountCondition({}, empty)).toBe(true)
+    expect(checkAmmoCountCondition({} as any, null)).toBe(false)
+    expect(checkAmmoCountCondition({} as any, empty)).toBe(true)
   })
 
   it('checkAbilityCooldownCondition', () => {
-    expect(checkAbilityCooldownCondition({}, null)).toBe(false)
-    expect(checkAbilityCooldownCondition({}, empty)).toBe(true)
+    expect(checkAbilityCooldownCondition({} as any, null)).toBe(false)
+    expect(checkAbilityCooldownCondition({} as any, empty)).toBe(true)
   })
 
   it('checkTargetEffectCondition', () => {
-    expect(checkTargetEffectCondition({}, null)).toBe(false)
-    expect(checkTargetEffectCondition({}, empty)).toBe(true)
+    expect(checkTargetEffectCondition({} as any, null)).toBe(false)
+    expect(checkTargetEffectCondition({} as any, empty)).toBe(true)
   })
 })

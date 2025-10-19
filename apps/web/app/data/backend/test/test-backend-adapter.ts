@@ -1,12 +1,15 @@
 import { Injectable, signal } from '@angular/core'
 import { patchState, signalState } from '@ngrx/signals'
-import { AppDbRecord, AppDbTable } from '~/data/app-db'
-import { BackendAdapter } from '../backend-adapter'
+import { Observable } from 'rxjs'
+import { AppDbRecord } from '~/data/app-db'
+import { BackendAdapter, SessionState } from '../backend-adapter'
 import { TestPrivateTable } from './test-private-table'
 import { TestPublicTable } from './test-public-table'
 
 @Injectable({ providedIn: 'root' })
 export class TestBackendAdapter extends BackendAdapter {
+  override userSignedIn: Observable<SessionState>
+  override userSignedOut: Observable<SessionState>
   public isEnabled = signal(true)
   public isOnline = signal(true)
   public session = signalState({
@@ -48,7 +51,7 @@ export class TestBackendAdapter extends BackendAdapter {
     })
   }
 
-  public initPrivateTable<T extends AppDbRecord>(table: AppDbTable<T>) {
+  public initPrivateTable<T extends AppDbRecord>(table: string) {
     return new TestPrivateTable<T>(this, table)
   }
 

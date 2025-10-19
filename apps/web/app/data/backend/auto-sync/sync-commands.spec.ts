@@ -84,7 +84,7 @@ describe('processSyncCommands', () => {
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', syncState: 'synced' },
+          data: '1',
         },
       ],
       remoteTable: null,

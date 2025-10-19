@@ -254,27 +254,11 @@
                   "ignore": [
                     "*.gz",
                     "*.zip",
-
-                    "**/items_hires/**"
+                    "**/*.png",
+                    "**/*.webp"
                   ],
                   "input": "dist/nw-data/.current",
                   "output": "/nw-data/",
-                  "followSymlinks": true
-                },
-                {
-                  "glob": "**/*",
-                  "ignore": [
-                    "*.gz",
-                    "*.zip"
-                  ],
-                  "input": "dist/nw-data/.current",
-                  "output": "/nw-data/",
-                  "followSymlinks": true
-                },
-                 {
-                  "glob": "**/*.png",
-                  "input": "apps/web/app",
-                  "output": "/test-data/",
                   "followSymlinks": true
                 }
               ]

@@ -33,7 +33,7 @@ describe('createSyncToLocalCommands', () => {
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', syncState: 'synced' },
+          data: '1',
         },
       ])
     })
@@ -51,7 +51,7 @@ describe('createSyncToLocalCommands', () => {
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Test Item', syncState: 'any' as any },
+          data: '1',
         },
       ])
     })

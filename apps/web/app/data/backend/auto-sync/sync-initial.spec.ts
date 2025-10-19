@@ -84,7 +84,7 @@ describe('resolvSyncCommand', () => {
         {
           action: 'delete',
           resource: 'local',
-          data: { id: '1', name: 'Local Item', syncState: 'synced' },
+          data: '1',
         },
       ])
     })
