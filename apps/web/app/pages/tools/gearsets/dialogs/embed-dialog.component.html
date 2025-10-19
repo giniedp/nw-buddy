@@ -40,18 +40,16 @@
       </div>
     </label>
 
-    <li class="text-shadow-sm shadow-black">
-      <label (click)="toggleSection('perkset'); (false)" class="rounded-none">
-        <input
-          class="toggle toggle-sm pointer-events-none checked:toggle-success"
-          type="checkbox"
-          [ngModel]="sections().includes('perkset')"
-        />
-        <div class="flex flex-col leading-none">
-          <span>Perksets</span>
-        </div>
-      </label>
-    </li>
+    <label (click)="toggleSection('perkset'); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="sections().includes('perkset')"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Perksets</span>
+      </div>
+    </label>
 
     <label (click)="toggleSection('armor'); (false)" class="label">
       <input
