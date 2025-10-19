@@ -68,6 +68,7 @@ export class GearsetGridComponent {
       }),
     ),
   )
+  private itemInfoParams = toSignal(this.route.queryParamMap.pipe(map((it): boolean => it.get('infos') !== 'false')))
 
   public disabled = input(false)
 
@@ -141,6 +142,9 @@ export class GearsetGridComponent {
       screenshot.nwbScreenshotLabel = 'Gearset'
       screenshot.nwbScreenshotWidth = 1660
       screenshot.nwbScreenshotMode = 'detached'
+    })
+    effect(() => {
+      this.store.setShowItemInfo(this.itemInfoParams())
     })
   }
 

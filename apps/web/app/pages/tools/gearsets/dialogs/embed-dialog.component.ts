@@ -25,6 +25,7 @@ export class EmbedGearsetDialogComponent {
   public gearset = input<GearsetRecord>()
   protected allSections = signal(getGearsetSections())
   protected sections = signal(getGearsetSections())
+  protected infos = signal(true)
 
   protected toggleSection(section: GearsetSection) {
     let sections = this.sections()
@@ -43,6 +44,10 @@ export class EmbedGearsetDialogComponent {
     this.sections.set(sections)
   }
 
+  protected toggleInfos() {
+    this.infos.set(!this.infos())
+  }
+
   protected embedUrl = computed(() => {
     const userId = this.gearset().userId
     const gearsetId = this.gearset().id
@@ -54,6 +59,9 @@ export class EmbedGearsetDialogComponent {
       if (!allSet && !sections.includes(key)) {
         url.searchParams.set(key, 'false')
       }
+    }
+    if (!this.infos()) {
+      url.searchParams.set('infos', 'false')
     }
 
     return url.toString()

@@ -3,9 +3,9 @@
     <span class="px-4"> Embed Gearset </span>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-p-4">
+<ion-content class="ion-px-4 ion-py-2">
   <fieldset class="fieldset">
-    <p>Disable sections which should not be shown.</p>
+    <legend class="fieldset-legend">Displayed gearset sections</legend>
 
     <label (click)="toggleSection('panel1'); (false)" class="label">
       <input
@@ -116,12 +116,30 @@
         <span>Instrument slots</span>
       </div>
     </label>
+  </fieldset>
 
-    <label class="fieldset-label"> Embed URL </label>
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Item Details</legend>
+    <label (click)="toggleInfos(); (false)" class="label">
+      <input
+        class="toggle toggle-sm pointer-events-none checked:toggle-success"
+        type="checkbox"
+        [ngModel]="infos()"
+      />
+      <div class="flex flex-col leading-none">
+        <span>Show item infos e.g. weight and description</span>
+      </div>
+    </label>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Embed URL</legend>
     <textarea class="textarea w-full min-h-20 font-mono text-xs" [ngModel]="embedUrl()"></textarea>
     <button class="btn btn-sm btn-block" (click)="handleCopyUrl()">Copy</button>
+  </fieldset>
 
-    <label class="fieldset-label"> Embed Snippet </label>
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Embed Snippet</legend>
     <textarea class="textarea w-full min-h-30 font-mono text-xs" [ngModel]="embedSnippet()"></textarea>
     <button class="btn btn-sm btn-block" (click)="handleCopySnippet()">Copy</button>
   </fieldset>
