@@ -2,57 +2,51 @@
   <span>{{ title | nwText }}</span>
 </h3>
 <div class="px-2 py-1">
-  <table class="mx-auto table table-compact">
+  <div class="mx-auto grid grid-cols-[1fr_auto_auto_auto] gap-1 items-center max-w-full">
     @for (row of source; track $index) {
-      <tr>
-        <td class="p-1">
-          <div class="flex flex-row items-center">
-            <nwb-modifier-source-label [data]="row.source"></nwb-modifier-source-label>
-          </div>
-        </td>
-        <td class="p-1 font-mono font-thin">
-          <ng-container> {{ rowSign(row) }} </ng-container>
-        </td>
-        <td class="p-1 font-mono font-thin text-right" [class.text-primary]="row['capped']">
-          @if (percent) {
-            {{ rowValue(row) | percent: format }}
-          } @else {
-            {{ rowValue(row) | number: format }}
-          }
-        </td>
-        <td class="p-1">
-          <div class="flex flex-row items-center" *ngIf="row['category']; let category">
-            <span class="badge badge-secondary badge-sm">
-              {{ category }} (cap &#64; {{ row['limit'] | percent: '0.1-1' }})
-            </span>
-          </div>
-        </td>
-      </tr>
+      <nwb-modifier-source-label [data]="row.source" />
+      <div class="font-mono font-thin">
+        {{ rowSign(row) }}
+      </div>
+      <div class="font-mono font-thin text-right" [class.text-primary]="row['capped']">
+        @if (percent) {
+          {{ rowValue(row) | percent: format }}
+        } @else {
+          {{ rowValue(row) | number: format }}
+        }
+      </div>
+      <div class="overflow-clip flex flex-row flex-nowrap gap-1">
+        @if (row['category']; as category) {
+          <span class="flex-none text-xs italic opacity-50"> cap at {{ row['limit'] | percent: '0.1-1' }} </span>
+          <span class="badge badge-secondary badge-xs whitespace-nowrap overflow-hidden text-ellipsis justify-start bg-secondary/50">
+            {{ category }}
+          </span>
+        }
+      </div>
     }
     @if (showSum) {
-      <tr>
-        <td class="p-1"></td>
-        <td colspan="2" class="p-1 font-mono font-thin text-right border-double border-t-4">
-          <div class="flex flex-col">
-            <span [class.line-through]="isOvershoot" [class.opacity-50]="isOvershoot">
-              @if (percent) {
-                {{ sumValue | percent: format }}
-              } @else {
-                {{ sumValue | number: format }}
-              }
-            </span>
-            <span *ngIf="isOvershoot" class="text-danger">
-              @if (percent) {
-                {{ value | percent: format }}
-              } @else {
-                {{ value | number: format }}
-              }
-            </span>
-          </div>
-        </td>
-      </tr>
+      <div></div>
+      <div class="col-span-2 font-mono font-thin text-right border-double border-t-4 flex flex-col">
+        <span [class.line-through]="isOvershoot" [class.opacity-50]="isOvershoot">
+          @if (percent) {
+            {{ sumValue | percent: format }}
+          } @else {
+            {{ sumValue | number: format }}
+          }
+        </span>
+        @if (isOvershoot) {
+          <span class="text-danger">
+            @if (percent) {
+              {{ value | percent: format }}
+            } @else {
+              {{ value | number: format }}
+            }
+          </span>
+        }
+      </div>
+      <div></div>
     }
-  </table>
+  </div>
   <div class="text-sm flex flex-col text-center">
     @if (isOvershoot) {
       <div>
