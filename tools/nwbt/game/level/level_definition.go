@@ -30,11 +30,15 @@ func LoadDefinition(assets *game.Assets, name string) Definition {
 	levelDir := levelsPath(name)
 	coatlicueName := name
 
-	if file, ok := archive.Lookup(path.Join(levelDir, "resourcelist.txt")); ok {
-		if content, err := file.Read(); err != nil {
-			slog.Error("resourcelist not loaded", "level", name, "error", err)
-		} else if match := regexp.MustCompile(`/sharedassets/coatlicue/([0-9a-zA-Z_\-]+)/`).FindStringSubmatch(string(content)); len(match) > 1 {
-			coatlicueName = match[1]
+	// check for something like sharedassets/coatlicue/LEVEL/playable.json
+	if _, ok := archive.Lookup(path.Join(coatlicuePath(coatlicueName), "playable.json")); !ok {
+		// try to get coatlicueName from resourcelist
+		if file, ok := archive.Lookup(path.Join(levelDir, "resourcelist.txt")); ok {
+			if content, err := file.Read(); err != nil {
+				slog.Error("resourcelist not loaded", "level", name, "error", err)
+			} else if match := regexp.MustCompile(`/sharedassets/coatlicue/([0-9a-zA-Z_\-]+)/`).FindStringSubmatch(string(content)); len(match) > 1 {
+				coatlicueName = match[1]
+			}
 		}
 	}
 
