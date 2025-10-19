@@ -128,7 +128,7 @@ export function selectEquipLoad(
         }
         for (const affix of perk.affixes || []) {
           if (affix?.WeightMultiplier) {
-            scale = affix.WeightMultiplier
+            scale += affix.WeightMultiplier
           }
         }
       }
