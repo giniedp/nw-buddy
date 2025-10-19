@@ -4,7 +4,8 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
-import { filter, firstValueFrom, map, take } from 'rxjs'
+import { ItemClass } from '@nw-data/generated'
+import { firstValueFrom, map, take } from 'rxjs'
 import { ItemInstanceRow, ItemsService } from '~/data'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
@@ -14,23 +15,20 @@ import { IconsModule } from '~/ui/icons'
 import { svgImage, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
 import { TooltipModule } from '~/ui/tooltip'
 import {
   eqCaseInsensitive,
   injectBreakpoint,
   injectChildRouteParam,
   injectRouteParam,
-  injectUrlParams,
   observeRouteParam,
   selectStream,
 } from '~/utils'
 import { InventoryTableAdapter, InventoryTableRecord } from '~/widgets/data/inventory-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
-import { SplitGutterComponent, SplitPaneDirective } from '~/ui/split-container'
-import { ItemClass } from '@nw-data/generated'
 
 @Component({
   selector: 'nwb-inventory-page',
@@ -132,23 +130,6 @@ export class InventoryPageComponent implements OnInit {
       return true
     }
     return false
-  }
-
-  protected async scanItem(category: string) {
-    const slot = EQUIP_SLOTS.find((it) => it.itemType === category)
-    if (!slot) {
-      return
-    }
-    GearImporterDialogComponent.open(this.modal, {
-      inputs: { slotId: slot.id },
-    })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe((instance) => {
-        this.store.create({
-          id: null,
-          ...instance,
-        })
-      })
   }
 
   protected deleteItem(item: ItemInstanceRow) {

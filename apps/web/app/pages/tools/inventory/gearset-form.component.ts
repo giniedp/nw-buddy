@@ -14,7 +14,6 @@ import { IconsModule } from '~/ui/icons'
 import {
   svgBars,
   svgChevronLeft,
-  svgEllipsisVertical,
   svgFolderOpen,
   svgLink,
   svgPaste,
@@ -87,7 +86,6 @@ export class GearsetFormComponent {
 
   private userId = computed(() => this.backend.sessionUserId() || 'local')
   private currentId = this.preferences.session.storageProperty<string>('recent-gearset-id')
-
 
   public constructor() {
     this.store.connectGearsetId(

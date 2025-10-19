@@ -38,13 +38,6 @@
           <nwb-icon [icon]="svgPlus" class="w-4 h-4" />
         </button>
       </li>
-      @if (service.category$ | async; as category) {
-        <li [tooltip]="'Scan new item'" [tooltipClass]="'bg-accent'" *ngIf="isScanSupported(category)">
-          <button (click)="scanItem(category)" class="btn btn-ghost btn-square">
-            <nwb-icon [icon]="svgImage" class="w-4 h-4" />
-          </button>
-        </li>
-      }
       <li>
         <button [nwbScreenshotBtn] class="btn btn-ghost btn-square"></button>
       </li>
