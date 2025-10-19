@@ -26,6 +26,10 @@ export function addGenericColumns(
       headerValueGetter: () => humanize(field),
       valueGetter: ({ data }) => {
         if (scope) {
+          const value = data[scope]
+          if (Array.isArray(value)) {
+            return value.map((it) => it?.[field])
+          }
           return data[scope]?.[field]
         } else {
           return data[field]

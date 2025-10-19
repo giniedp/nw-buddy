@@ -114,7 +114,7 @@ export function buildPerkTableOptions(util: TableGridUtils<PerkTableRecord>, ctx
   })
   addGenericColumns(result, {
     props: COLS_AFFIXSTATDATA,
-    scope: '$affix',
+    scope: '$affixes',
   })
   return result
 }
@@ -137,7 +137,7 @@ export function buildPerkTablePickerOptions(util: TableGridUtils<PerkTableRecord
   })
   addGenericColumns(result, {
     props: COLS_AFFIXSTATDATA,
-    scope: '$affix',
+    scope: '$affixes',
   })
   return result
 }
