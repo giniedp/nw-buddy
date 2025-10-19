@@ -12,10 +12,13 @@ import {
   Input,
   Output,
   Type,
+  afterNextRender,
+  effect,
   inject,
+  untracked,
   viewChild,
 } from '@angular/core'
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { asyncScheduler, combineLatest, debounceTime, filter, map, skip, subscribeOn } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
@@ -26,6 +29,7 @@ import { VirtualGridRowContext, VirtualGridRowDirective } from './virtual-grid-r
 import { VirtualGridSectionComponent } from './virtual-grid-section.component'
 import { VirtualGridSectionDirective } from './virtual-grid-section.directive'
 import { VirtualGridStore } from './virtual-grid.store'
+import { shareReplayRefCount } from '../../../utils'
 
 @Component({
   selector: 'nwb-virtual-grid',
@@ -39,7 +43,11 @@ import { VirtualGridStore } from './virtual-grid.store'
     class: 'block flex-1 w-full h-full relative',
   },
 })
-export class VirtualGridComponent<T> implements AfterViewInit {
+export class VirtualGridComponent<T> {
+  private elRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>)
+  private resize = inject(ResizeObserverService)
+  protected store = inject<VirtualGridStore<T>>(VirtualGridStore<T>)
+
   @Input()
   public set options(options: VirtualGridOptions<T>) {
     this.gridClass = options.gridClass ?? this.gridClass
@@ -162,42 +170,26 @@ export class VirtualGridComponent<T> implements AfterViewInit {
 
   private destroyRef = inject(DestroyRef)
   private injector = inject(Injector)
+  private size$ = this.resize.observe(this.elRef.nativeElement).pipe(
+    map((entries) => entries.width),
+    shareReplayRefCount(1),
+  )
+  private size = toSignal(this.size$)
 
-  public constructor(
-    elRef: ElementRef<HTMLElement>,
-    resize: ResizeObserverService,
+  public constructor() {
+    this.store.withSize(this.size$)
 
-    protected store: VirtualGridStore<T>,
-  ) {
-    const size$ = resize.observe(elRef.nativeElement).pipe(map((entries) => entries.width))
-    this.store.withSize(size$)
-    combineLatest({
-      size: size$,
-      viewport: this.viewport$,
-    })
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.viewport()?.checkViewportSize()
-      })
-  }
-
-  public ngAfterViewInit(): void {
-    combineLatest({
-      viewport: this.viewport$.pipe(filter((it) => it != null)),
-      rows: toObservable(this.rows, {
-        injector: this.injector,
-      }).pipe(filter((rows) => rows?.length > 0)),
-      selection: this.store.selection$.pipe(filter((it) => it != null)),
-    })
-      .pipe(
-        map(({ selection }) => selection[0]),
-        subscribeOn(asyncScheduler),
-        debounceTime(500), // TODO: fix this
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((selection) => {
+    effect(() => {
+      this.rows()
+      this.size()
+      const viewport = this.viewport()
+      const selection = this.store.selection()?.[0]
+      untracked(() => {
+        viewport.checkViewportSize()
         this.scrollToItem(selection)
+        setTimeout(() => this.scrollToItem(selection))
       })
+    })
   }
 
   public handleItemEvent(item: T, e: Event) {
@@ -285,7 +277,6 @@ export class VirtualGridComponent<T> implements AfterViewInit {
     if (index >= range.start && index < range.end) {
       return
     }
-    const centerIndex = Math.max(0, index - Math.floor((range.end - range.start) / 2))
-    viewport.scrollToIndex(centerIndex, 'instant')
+    viewport.scrollToIndex(index, 'instant')
   }
 }

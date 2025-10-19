@@ -22,7 +22,9 @@ import { PerkTableRecord } from './perk-table-cols'
       <a [nwbItemIcon]="icon" [nwLinkTooltip]="['perk', perkId]" class="w-[76px] h-[76px]"> </a>
       <nwb-item-header-content class="z-10" [title]="name | nwText | nwTextBreak: ' - '">
         @if (this.resourceName; as text) {
-          <div header-title class="text-sm italic opacity-75">{{ text | nwText }}</div>
+          <ng-container>
+            <div header-title class="text-sm italic opacity-75">{{ text | nwText }}</div>
+          </ng-container>
         }
         <div class="flex flex-row items-center gap-1">
           @for (item of labels; track $index) {
@@ -96,12 +98,22 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
       cellDataView: PerkGridCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (item, tl8) => {
-        const mods = item?.$affixes
+        if (!item) {
+          return ''
+        }
+        const result: string[] = [
+          tl8(item.DisplayName || item.SecondaryEffectDisplayName || ''),
+          tl8(item.Description || ''),
+        ]
+        if (item.$items?.length) {
+          result.push(tl8(item.$items[0]?.Name || ''))
+        }
+        const mods = item.$affixes
           ?.map(getAffixMODs)
           ?.flat()
           .map((it) => it.labelShort)
-        const name = tl8(item?.DisplayName || item?.SecondaryEffectDisplayName || '')
-        return [name, ...mods].join(' ')
+        result.push(...mods)
+        return result.join(' ')
       },
     }
   }

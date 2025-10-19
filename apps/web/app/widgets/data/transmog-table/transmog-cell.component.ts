@@ -40,7 +40,7 @@ export function injectTransmogCellOptions(): TransmogCellOptions {
   template: `
     <a
       [nwbTransmogTile]="item"
-      [routerLink]="options.navigate ? item.id : null"
+      [routerLink]="options.navigate ? itemId : null"
       [routerLinkActive]="'border-primary'"
       class="block w-[130px] h-[130px] mx-auto bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all "
       [class.border-primary]="selected"
@@ -89,6 +89,9 @@ export class TransmogCellComponent implements VirtualGridCellComponent<TransmogR
   protected item: TransmogRecord
   protected options = injectTransmogCellOptions()
   protected grid = inject(VirtualGridComponent<TransmogRecord>)
+  protected get itemId() {
+    return this.item.id.toLocaleLowerCase()
+  }
 
   @HostListener('click', ['$event'])
   @HostListener('dblclick', ['$event'])

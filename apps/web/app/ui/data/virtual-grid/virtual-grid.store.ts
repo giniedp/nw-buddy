@@ -1,21 +1,23 @@
-import { Injectable, NgIterable } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
+import { computed, inject, Injectable, NgIterable } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { patchState, signalState } from '@ngrx/signals'
 import { groupBy, isEqual } from 'lodash'
-import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import type { SectionGroup } from './types'
 import type { VirtualGridCellContext } from './virtual-grid-cell.directive'
 import type { QuickFilterGetterFn } from './virtual-grid-options'
 import type { VirtualGridRowContext } from './virtual-grid-row.directive'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { map } from 'rxjs'
 
 export interface VirtualGridState<T> {
   data: T[]
-  selection?: Array<string | number>
-  identifyBy?: (it: T) => string | number
+  selection: Array<string | number>
+  identifyBy: (it: T) => string | number
   /**
    * The quickfilter text
    */
-  quickfilter?: string
+  quickfilter: string
   /**
    * The fixed item height
    */
@@ -39,68 +41,73 @@ export interface VirtualGridState<T> {
   /**
    *
    */
-  quickfilterGetter?: QuickFilterGetterFn<T>
+  quickfilterGetter: QuickFilterGetterFn<T>
   /**
    *
    */
-  getItemSection?: (item: T) => string
-  withSectionRows?: boolean
+  getItemSection: (item: T) => string
+  withSectionRows: boolean
 }
 
 @Injectable()
-export class VirtualGridStore<T> extends ComponentStore<VirtualGridState<T>> {
-  public readonly identifyBy = this.selectSignal(({ identifyBy }) => identifyBy)
-  public readonly quickfilter = this.selectSignal(({ quickfilter }) => quickfilter)
-  public readonly quickfilter$ = this.select(({ quickfilter }) => quickfilter)
-  public readonly itemSize = this.selectSignal(({ itemHeight }) => itemHeight)
-  public readonly ngClass = this.selectSignal(({ ngClass }) => ngClass)
-  public readonly quickfilterGetter = this.selectSignal(({ quickfilterGetter }) => quickfilterGetter)
-  public readonly sectionGetter = this.selectSignal(({ getItemSection }) => getItemSection)
-  public readonly data = this.selectSignal(({ data }) => data || [])
-  public readonly dataSections = this.selectSignal(this.data, this.sectionGetter, selectSections)
+export class VirtualGridStore<T> {
+  private tl8 = inject(TranslateService)
+  private state = signalState<VirtualGridState<T>>({
+    data: [],
+    size: null,
+    itemHeight: 100,
+    itemWidth: 100,
+    colCount: [1, null],
+    ngClass: null,
+    getItemSection: null,
+    identifyBy: null,
+    quickfilter: null,
+    quickfilterGetter: null,
+    selection: null,
+    withSectionRows: null,
+  })
 
-  public readonly selection$ = this.select<Array<string | number>>(
-    ({ selection }) => {
-      return selection || []
-    },
-    {
-      equal: isEqual,
-    },
-  )
-  public readonly selection = this.selectSignal(({ selection }) => selection || [])
-  public readonly dataFiltered = this.selectSignal(
-    this.dataSections,
-    this.quickfilter,
-    this.quickfilterGetter,
-    (list, query, getter) => selectSectionsFiltered(list, query, getter, this.tl8),
-  )
+  public readonly identifyBy = this.state.identifyBy
+  public readonly quickfilter = this.state.quickfilter
+  public readonly quickfilter$ = toObservable(this.quickfilter)
+  public readonly itemSize = this.state.itemHeight
+  public readonly ngClass = this.state.ngClass
+  public readonly quickfilterGetter = this.state.quickfilterGetter
+  public readonly sectionGetter = this.state.getItemSection
+  public readonly data = this.state.data
+  public readonly dataSections = computed(() => {
+    return selectSections(this.data(), this.sectionGetter())
+  })
 
-  public readonly layout = this.selectSignal(this.state, selectLayout)
-  public readonly colCount = this.selectSignal(this.layout, (it) => it.cols)
-  public readonly gridSize = this.selectSignal(this.layout, (it) => it.size)
-  public readonly rows = this.selectSignal(this.dataFiltered, this.colCount, selectRows)
-  public readonly rowCount = this.selectSignal(this.rows, (it) => it.length)
+  public readonly selection = computed<Array<string | number>>(() => this.state.selection() || [], { equal: isEqual })
+  public readonly selection$ = toObservable(this.selection)
+  public readonly dataFiltered = computed(() => {
+    return selectSectionsFiltered(this.dataSections(), this.quickfilter(), this.quickfilterGetter(), this.tl8)
+  })
 
-  public constructor(private tl8: TranslateService) {
-    super({
-      data: [],
-      size: null,
-      itemHeight: 100,
-      itemWidth: 100,
-      colCount: [1, null],
-      ngClass: null,
+  public readonly layout = computed(() => {
+    return selectLayout({
+      size: this.state.size(),
+      itemWidth: this.state.itemWidth(),
+      colCount: this.state.colCount(),
     })
-  }
+  })
+  public readonly colCount = computed(() => this.layout().cols)
+  public readonly gridSize = computed(() => this.layout().size)
+  public readonly rows = computed(() => selectRows(this.dataFiltered(), this.colCount()))
+  public readonly rowCount = computed(() => this.rows().length)
 
-  public ngOnInit(): void {}
-
-  public withSize = this.effect<number>((size) => {
+  public withSize = rxMethod<number>((size) => {
     return size.pipe(
       map((value) => {
         this.patchState({ size: value })
       }),
     )
   })
+
+  public patchState(value: Partial<VirtualGridState<T>>) {
+    patchState(this.state, value)
+  }
 }
 
 export function selectLayout({
@@ -253,6 +260,7 @@ function selectRawRows<T>(sections: Array<SectionGroup<T>>, columns: number) {
 }
 
 function selectSections<T>(data: NgIterable<T>, sectionFn?: (it: T) => string): SectionGroup<T>[] {
+  data ||= []
   const items = Array.isArray(data) ? data : Array.from(data)
   sectionFn = sectionFn || (() => null)
   const groups = groupBy(items, (it) => sectionFn(it))
