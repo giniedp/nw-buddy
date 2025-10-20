@@ -143,9 +143,10 @@ export function explainPerk(options: {
   affixes: AffixStatData[]
   abilities?: AbilityData[]
   gearScore: number
+  gearScoreBonus: number
   forceDescription?: boolean
 }): PerkExplanation[] {
-  const { perk, affixes, gearScore } = options
+  const { perk, affixes, gearScore, gearScoreBonus } = options
   const result: PerkExplanation[] = []
 
   if (!perk) {
@@ -171,7 +172,8 @@ export function explainPerk(options: {
       stackLimit: stackLimit,
       context: {
         itemId: perk.PerkID,
-        gearScore: gearScore,
+        gearScore,
+        gearScoreBonus
       },
     })
   }

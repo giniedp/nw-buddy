@@ -79,7 +79,8 @@ export class ItemDetailSetPerksComponent {
             perk: perk,
             affixes: affixes,
             abilities: abilities,
-            gearScore: itemGS + (getItemGsBonus(perk, item) || 0),
+            gearScore: itemGS,
+            gearScoreBonus: getItemGsBonus(perk, item) || 0
           }),
           explainOld: null
         }
