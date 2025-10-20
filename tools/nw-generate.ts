@@ -105,7 +105,7 @@ program
     const dataLinkDir = environment.nwDataDir('.current')
     console.log('Linking data directory', dataSrcDir, '->', dataLinkDir)
     if (fs.existsSync(dataLinkDir)) {
-      fs.rmSync(dataLinkDir, { force: true })
+      fs.rmSync(dataLinkDir, { force: true, recursive: true })
     }
 
     fs.symlinkSync(dataSrcDir, dataLinkDir, 'dir')
