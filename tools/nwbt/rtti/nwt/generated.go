@@ -553,6 +553,8 @@ var GENERATED = map[string]reflect.Type{
 	"15407CAA-4970-4D06-8B5C-612FBA11BB45": reflect.TypeOf(CharacterComponent{}),
 	"8817475C-56BE-46F3-9597-FF325929461E": reflect.TypeOf(CharacterComponentClientFacet{}),
 	"E9C20ECF-9DE9-4969-B76D-91582ED7294D": reflect.TypeOf(CharacterComponentServerFacet{}),
+	"E9D84B77-422A-4DCB-9EFF-708120B1B1A0": reflect.TypeOf(CharacterControllerComponent{}),
+	"CC8AFEBD-5F7A-4E63-A472-FFC8591DB051": reflect.TypeOf(CharacterControllerConfig{}),
 	"17F4E4AD-AED9-468B-A900-416DE646AB37": reflect.TypeOf(CharacterControllerResizeParams{}),
 	"D1E63EA6-8BD3-4381-B564-DBE47335DA44": reflect.TypeOf(CharacterCreationData{}),
 	"A12F9BAB-1706-4DED-B3C5-70913BE02D1F": reflect.TypeOf(CharacterCreationDatabase{}),
@@ -776,6 +778,8 @@ var GENERATED = map[string]reflect.Type{
 	"D1BC08CE-E244-4F31-84F4-DBD4D4BED1C8": reflect.TypeOf(EncounterComponent{}),
 	"1890D8C9-981D-4036-B17B-47F9FBF36AA3": reflect.TypeOf(EncounterComponentClientFacet{}),
 	"9981ACD1-CE75-4E1E-96A9-4701C67B9747": reflect.TypeOf(EncounterComponentServerFacet{}),
+	"DE10D893-95CF-4E95-818C-6A99359D8794": reflect.TypeOf(EncounterConditionEvent{}),
+	"F0E57423-8ED8-452F-87C9-61394E1E33AD": reflect.TypeOf(EncounterConditionEventsData{}),
 	"FDB45D86-E9C7-4345-AA82-A3DAAF80F58C": reflect.TypeOf(EncounterEntry{}),
 	"EAD831AA-836B-4BA5-8E24-4E5BB8119559": reflect.TypeOf(EncounterEventObjective{}),
 	"48866F1B-791B-4606-A20C-22153D1750FA": reflect.TypeOf(EncounterManagerComponent{}),
@@ -791,6 +795,7 @@ var GENERATED = map[string]reflect.Type{
 	"4110C30F-829E-468F-8D89-8B1BFE5F623D": reflect.TypeOf(EntitlementComponentServerFacet{}),
 	"82897793-BE85-48CD-BAC9-A1AD3B487133": reflect.TypeOf(EntityAchievementEvent{}),
 	"40ACDA82-8B8C-4BCE-83D4-AB03140CA04A": reflect.TypeOf(EntityActiveStateChangedObjective{}),
+	"C90D87FB-FC78-46EF-88EB-AF16F52145B4": reflect.TypeOf(EntityEncounterConditionEvent{}),
 	"1C5389F4-C99E-4362-B225-65AB588A8984": reflect.TypeOf(EntityEventAction{}),
 	"6383F1D3-BB27-4E6B-A49A-6409B2059EAA": reflect.TypeOf(EntityId{}),
 	"13BF588C-59BC-4F60-AC74-FCD201779404": reflect.TypeOf(EntityLootLockEvent{}),
@@ -1064,6 +1069,7 @@ var GENERATED = map[string]reflect.Type{
 	"34D99A39-8620-4BE1-BB47-8832899930E2": reflect.TypeOf(InteractWithItemCostType_AddHealth{}),
 	"A6A15FE5-75F6-4EED-9DAE-5A68753B2163": reflect.TypeOf(InteractWithItemCostType_AddProjectileSpawnerAmmo{}),
 	"A055E767-9233-42A9-BE91-66204D442CF2": reflect.TypeOf(InteractWithItemCostType_AddSummoningStone{}),
+	"44A169FE-D036-46FB-ACD4-4725166C18C4": reflect.TypeOf(InteractableSendTriggerData{}),
 	"59664BB0-A043-4A6F-B534-E3842D1B72DA": reflect.TypeOf(InteractionAnimationComponent{}),
 	"0D2243CC-FBEA-47F4-A784-44A669C64B55": reflect.TypeOf(InteractionConditionComponent{}),
 	"8919811E-8697-49EC-8203-098370E4867E": reflect.TypeOf(InteractionConditionComponentClientFacet{}),
@@ -1577,6 +1583,7 @@ var GENERATED = map[string]reflect.Type{
 	"C4091244-A779-4438-A0B7-406AFEE41D89": reflect.TypeOf(RiverComponent{}),
 	"1D3FAF38-C5AE-4ADA-8423-DC0D6C4A11AF": reflect.TypeOf(Road{}),
 	"3700DA70-407D-47A6-B788-4654EDDA32A1": reflect.TypeOf(RoadComponent{}),
+	"D03BD2CC-5E87-49A7-B490-47A6F6EBDC22": reflect.TypeOf(RockNRoll__CharacterDesc{}),
 	"83232264-3642-440C-9147-C6CE1C77706F": reflect.TypeOf(RotationAchievementEvent{}),
 	"D02AEBFA-956A-41EB-9CAB-1BEC9BDC925D": reflect.TypeOf(RotationComponent{}),
 	"1B887F11-042F-49DA-BCCB-BFEDC15B1E21": reflect.TypeOf(RotationComponentClientFacet{}),
@@ -1684,6 +1691,7 @@ var GENERATED = map[string]reflect.Type{
 	"3CB064C5-3F7D-4478-9C0A-8DB9AC497122": reflect.TypeOf(SpawnDefinition{}),
 	"7FAA3C57-0F21-48CB-B961-4CECB6923FC1": reflect.TypeOf(SpawnScalingSpecification{}),
 	"1FF7A74B-8C58-42F2-8A68-1706D75F57D0": reflect.TypeOf(SpawnerComponent{}),
+	"8022A627-FA7D-4516-A155-657A0927A3CA": reflect.TypeOf(SpawnerComponent_0{}),
 	"B4DEA877-D7EF-4B88-8D4A-F6CC3DEA61A2": reflect.TypeOf(SpawnerComponentClientFacet{}),
 	"AA380AA0-A627-440F-963B-4750D29DA35A": reflect.TypeOf(SpawnerComponentServerFacet{}),
 	"3C80DAC9-4AF1-4086-885D-19F447F56341": reflect.TypeOf(SpawnerConstraintComponentClientFacet{}),
@@ -1906,45 +1914,80 @@ var GENERATED = map[string]reflect.Type{
 	"80B29521-692F-4A17-9872-4FA5C6D00FE6": reflect.TypeOf(UITriggerEventComponent{}),
 	"534DF3D9-0897-4090-A94D-F5A79EE8ED85": reflect.TypeOf(UITriggerEventComponentClientFacet{}),
 	"C7FD75B7-A776-4654-8A90-4EA3A1C74BB7": reflect.TypeOf(UITriggerEventComponentServerFacet{}),
+	"09B96ED1-8114-4863-922D-F4393E1BCD6F": reflect.TypeOf(UUID_09B96ED1_8114_4863_922D_F4393E1BCD6F{}),
+	"0AF63F6E-3E02-5934-9D80-984A42C99C9D": reflect.TypeOf(UUID_0AF63F6E_3E02_5934_9D80_984A42C99C9D_UUID_145AD436_BD9E_4D26_8755_C16DF8A84629{}),
 	"0B66E343-C513-5EB3-B152-770C4628BB73": reflect.TypeOf(UUID_0B66E343_C513_5EB3_B152_770C4628BB73_SlayerScriptEditCrc{}),
+	"0EDDF436-1106-5221-B067-502314A3106A": reflect.TypeOf(UUID_0EDDF436_1106_5221_B067_502314A3106A_UUID_72D040D6_14F1_489E_855F_84945BD0C7EA{}),
 	"12E435DD-B28E-5082-8E17-67F1BBC894B1": reflect.TypeOf(UUID_12E435DD_B28E_5082_8E17_67F1BBC894B1_RotationAchievementEvent{}),
+	"145AD436-BD9E-4D26-8755-C16DF8A84629": reflect.TypeOf(UUID_145AD436_BD9E_4D26_8755_C16DF8A84629{}),
 	"14F31861-6045-5B62-B6D2-1FA6DA976FB8": reflect.TypeOf(UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8{}),
+	"172DEDD4-227A-485E-8028-7484EEA13A48": reflect.TypeOf(UUID_172DEDD4_227A_485E_8028_7484EEA13A48{}),
+	"199F1B7B-2AD4-50DB-8F28-A43F42D5680B": reflect.TypeOf(UUID_199F1B7B_2AD4_50DB_8F28_A43F42D5680B_UUID_911079C7_0BA3_461C_8E38_EA0396B5FCCB{}),
 	"1CED0D23-5BD7-50DD-80BB-21B6081B8F00": reflect.TypeOf(UUID_1CED0D23_5BD7_50DD_80BB_21B6081B8F00_Javelin__CutsceneEntityEvent{}),
+	"22B25EDE-4B36-438D-B6B9-DDDF55065E29": reflect.TypeOf(UUID_22B25EDE_4B36_438D_B6B9_DDDF55065E29{}),
 	"233C4DEF-0EBF-58C4-9A69-7D5EFC602339": reflect.TypeOf(UUID_233C4DEF_0EBF_58C4_9A69_7D5EFC602339_OwnershipAlignmentEventData{}),
+	"23513EC4-3AD1-4F48-A26B-CC04F86C4574": reflect.TypeOf(UUID_23513EC4_3AD1_4F48_A26B_CC04F86C4574{}),
+	"25039856-1F8C-52CA-9E67-C95D50016C2C": reflect.TypeOf(UUID_25039856_1F8C_52CA_9E67_C95D50016C2C{}),
+	"25B722F9-6FA0-4417-B333-06789E093E5B": reflect.TypeOf(UUID_25B722F9_6FA0_4417_B333_06789E093E5B{}),
 	"283F62D6-A310-5D1E-A38E-409DB6C165A4": reflect.TypeOf(UUID_283F62D6_A310_5D1E_A38E_409DB6C165A4_ChunkEntry{}),
 	"2A3D1E1E-A69F-5860-8934-00C3BFE920CC": reflect.TypeOf(UUID_2A3D1E1E_A69F_5860_8934_00C3BFE920CC_EntityAchievementEvent{}),
 	"2C4AB36A-7ABB-5DEB-B4BB-9F033FA9E3B7": reflect.TypeOf(UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7{}),
+	"2E69457D-8C56-481B-9AAE-647A18B18705": reflect.TypeOf(UUID_2E69457D_8C56_481B_9AAE_647A18B18705{}),
 	"2F09439E-051F-5360-859E-55EAB094FEB5": reflect.TypeOf(UUID_2F09439E_051F_5360_859E_55EAB094FEB5{}),
 	"31D79E49-9CD5-51BF-8403-F9A16BEDECF5": reflect.TypeOf(UUID_31D79E49_9CD5_51BF_8403_F9A16BEDECF5_CustomDataEntry{}),
-	"33C158B9-7C9D-54C1-AE8E-ED3C7F5B77C6": reflect.TypeOf(UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_HealthThresholdBossPhaseConfig{}),
+	"3388147D-669E-49E9-A703-5A4FBAC170EA": reflect.TypeOf(UUID_3388147D_669E_49E9_A703_5A4FBAC170EA{}),
+	"33C158B9-7C9D-54C1-AE8E-ED3C7F5B77C6": reflect.TypeOf(UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_WaveEndedBossPhaseConfig{}),
+	"3447C089-8243-5355-97CC-7530D3B8A895": reflect.TypeOf(UUID_3447C089_8243_5355_97CC_7530D3B8A895_UUID_2E69457D_8C56_481B_9AAE_647A18B18705{}),
 	"344F38EA-4D1D-5D55-83C1-5F6060C0A09D": reflect.TypeOf(UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D_UUID_BD7E940E_6D84_5185_87C3_99D6C8DB63E0{}),
 	"363ED6CD-26B0-5FB8-BF5C-A0320F380286": reflect.TypeOf(UUID_363ED6CD_26B0_5FB8_BF5C_A0320F380286_UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677{}),
 	"3B1D6FE2-1CA5-51ED-A0B2-99392B9AE7D1": reflect.TypeOf(UUID_3B1D6FE2_1CA5_51ED_A0B2_99392B9AE7D1_RtpcMeterSettings{}),
 	"3B429139-BF67-557B-B347-D0A61D4F47B1": reflect.TypeOf(UUID_3B429139_BF67_557B_B347_D0A61D4F47B1_SlicePercentReference{}),
 	"3C9D208A-2E62-51E2-8AA1-5B6BB7473A52": reflect.TypeOf(UUID_3C9D208A_2E62_51E2_8AA1_5B6BB7473A52{}),
+	"3E58ABF2-395B-4714-8FC3-564A9DB71533": reflect.TypeOf(UUID_3E58ABF2_395B_4714_8FC3_564A9DB71533{}),
 	"3EDC016A-52CF-5BB9-B450-2550DB28F9E2": reflect.TypeOf(UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2_UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66{}),
+	"4C217217-7EF9-551F-B1C6-B4A528033DBC": reflect.TypeOf(UUID_4C217217_7EF9_551F_B1C6_B4A528033DBC_UUID_7E3A423A_EEBD_4645_96B8_972EC92C7F21{}),
 	"4E495371-25FE-5D42-8E40-AE22C9C5DE42": reflect.TypeOf(UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42_TransformLinkConnectionData{}),
+	"505F1A37-A8DF-4733-BC48-5A4D785980DB": reflect.TypeOf(UUID_505F1A37_A8DF_4733_BC48_5A4D785980DB{}),
+	"572333F7-5507-4907-9571-6925C7DD8C97": reflect.TypeOf(UUID_572333F7_5507_4907_9571_6925C7DD8C97{}),
 	"59EAF609-9D81-561C-A744-77F737CF92C4": reflect.TypeOf(UUID_59EAF609_9D81_561C_A744_77F737CF92C4{}),
 	"59FE499C-650B-50BD-AC05-909D3D56505C": reflect.TypeOf(UUID_59FE499C_650B_50BD_AC05_909D3D56505C{}),
 	"5B5C3E6D-91FC-5863-96CA-57879B448A3C": reflect.TypeOf(UUID_5B5C3E6D_91FC_5863_96CA_57879B448A3C{}),
 	"5C2BE455-C7DE-5AC4-A834-88E740CFF639": reflect.TypeOf(UUID_5C2BE455_C7DE_5AC4_A834_88E740CFF639_LevelMeterSettings{}),
 	"6270FE26-CE9D-5972-B088-E57B8E6D9F66": reflect.TypeOf(UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66{}),
+	"6384FC75-7BA9-4A80-8B50-57D48901C34D": reflect.TypeOf(UUID_6384FC75_7BA9_4A80_8B50_57D48901C34D{}),
 	"6434A20B-A21D-5575-AEC5-5A7319FBC3FB": reflect.TypeOf(UUID_6434A20B_A21D_5575_AEC5_5A7319FBC3FB_MeshMergeGroup{}),
 	"65CDD55C-BE9B-5689-8E2C-A4117FF26F6E": reflect.TypeOf(UUID_65CDD55C_BE9B_5689_8E2C_A4117FF26F6E_UUID_D8B4529D_EDDB_525C_BA46_09A63951E5FD{}),
 	"661C1835-82E9-519E-852C-4586C3435B17": reflect.TypeOf(UUID_661C1835_82E9_519E_852C_4586C3435B17_Unsigned_char{}),
+	"68BBBA08-63E3-4F35-8389-F7BE76A33A50": reflect.TypeOf(UUID_68BBBA08_63E3_4F35_8389_F7BE76A33A50{}),
 	"6C3DEDA3-D591-59B8-80FF-4148F8C2A5EC": reflect.TypeOf(UUID_6C3DEDA3_D591_59B8_80FF_4148F8C2A5EC_InstancedSlayerScriptPart{}),
 	"6D152BFE-EC46-52D0-9F1A-24DD1151F86B": reflect.TypeOf(UUID_6D152BFE_EC46_52D0_9F1A_24DD1151F86B_SlayerScriptDataContainer{}),
+	"6D2846E7-2741-42B5-A6CC-795BC4D10929": reflect.TypeOf(UUID_6D2846E7_2741_42B5_A6CC_795BC4D10929{}),
+	"72D040D6-14F1-489E-855F-84945BD0C7EA": reflect.TypeOf(UUID_72D040D6_14F1_489E_855F_84945BD0C7EA{}),
+	"72EEEC78-7042-4ABF-9C93-45AA893E9421": reflect.TypeOf(UUID_72EEEC78_7042_4ABF_9C93_45AA893E9421{}),
+	"72FA58A7-CCB6-4898-AADF-F951CB7BB75B": reflect.TypeOf(UUID_72FA58A7_CCB6_4898_AADF_F951CB7BB75B{}),
 	"734B2005-8CD7-5561-B79F-58ED4EB9C0C2": reflect.TypeOf(UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__{}),
 	"777E8FDA-6A1B-55FD-BAF9-8AFF3C0B7397": reflect.TypeOf(UUID_777E8FDA_6A1B_55FD_BAF9_8AFF3C0B7397_AchievementEvent{}),
 	"77B3BC35-E577-5281-AEBE-11C0E1B622BF": reflect.TypeOf(UUID_77B3BC35_E577_5281_AEBE_11C0E1B622BF_GameModeEvent{}),
+	"7C3C50F8-F518-5E3D-AB3E-BE1C710DAA03": reflect.TypeOf(UUID_7C3C50F8_F518_5E3D_AB3E_BE1C710DAA03_UUID_72FA58A7_CCB6_4898_AADF_F951CB7BB75B{}),
+	"7E3A423A-EEBD-4645-96B8-972EC92C7F21": reflect.TypeOf(UUID_7E3A423A_EEBD_4645_96B8_972EC92C7F21{}),
 	"7FF36F26-644E-5051-84BB-AE54534C84D4": reflect.TypeOf(UUID_7FF36F26_644E_5051_84BB_AE54534C84D4_Transform{}),
+	"81B71022-5308-4832-A1B4-3612B1FB2721": reflect.TypeOf(UUID_81B71022_5308_4832_A1B4_3612B1FB2721{}),
 	"87148FED-8B47-5174-827C-10619D3D79F2": reflect.TypeOf(UUID_87148FED_8B47_5174_827C_10619D3D79F2{}),
 	"877C4A33-39B5-51D7-948D-F97DB81372A1": reflect.TypeOf(UUID_877C4A33_39B5_51D7_948D_F97DB81372A1_AssetId{}),
+	"8A0F94D4-3B2C-4107-B57D-A44409F6AF1E": reflect.TypeOf(UUID_8A0F94D4_3B2C_4107_B57D_A44409F6AF1E{}),
+	"8B8918AB-894D-4E44-B72C-F947844A3985": reflect.TypeOf(UUID_8B8918AB_894D_4E44_B72C_F947844A3985{}),
+	"8E0DE60F-4102-5847-958C-98A2D8CD60FC": reflect.TypeOf(UUID_8E0DE60F_4102_5847_958C_98A2D8CD60FC_EntityEncounterConditionEvent{}),
+	"911079C7-0BA3-461C-8E38-EA0396B5FCCB": reflect.TypeOf(UUID_911079C7_0BA3_461C_8E38_EA0396B5FCCB{}),
 	"9266A50C-9EAF-5EF7-9288-C88C54C28EFA": reflect.TypeOf(UUID_9266A50C_9EAF_5EF7_9288_C88C54C28EFA{}),
 	"945D6962-DF72-5875-861B-52D14D233D65": reflect.TypeOf(UUID_945D6962_DF72_5875_861B_52D14D233D65_QuickCourseSection{}),
+	"95E1B61B-F826-4C94-9995-4D7587085DE9": reflect.TypeOf(UUID_95E1B61B_F826_4C94_9995_4D7587085DE9{}),
 	"98F0B819-838F-5548-B645-4CF0959F2D43": reflect.TypeOf(UUID_98F0B819_838F_5548_B645_4CF0959F2D43_UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8{}),
+	"98FF2F25-6160-5D4C-B7C7-34B636703F59": reflect.TypeOf(UUID_98FF2F25_6160_5D4C_B7C7_34B636703F59{}),
 	"9C719DD5-F8D3-59D3-B55B-627422922A43": reflect.TypeOf(UUID_9C719DD5_F8D3_59D3_B55B_627422922A43_Int{}),
+	"ABD814BF-3DBA-4447-A1D7-F0E260C49F5B": reflect.TypeOf(UUID_ABD814BF_3DBA_4447_A1D7_F0E260C49F5B{}),
+	"ADFC4EDE-9FFC-45A1-A8CE-E514A4F9069B": reflect.TypeOf(UUID_ADFC4EDE_9FFC_45A1_A8CE_E514A4F9069B{}),
 	"B27B9A2C-895B-5DBE-813D-DD7A16EBE833": reflect.TypeOf(UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833{}),
+	"B5FAA2D9-50DF-4602-89E6-767F8B6895F4": reflect.TypeOf(UUID_B5FAA2D9_50DF_4602_89E6_767F8B6895F4{}),
 	"B6E08B3F-F4E1-50C2-8752-3CF3C4AB414A": reflect.TypeOf(UUID_B6E08B3F_F4E1_50C2_8752_3CF3C4AB414A_LootLockEvent{}),
 	"BA33A443-E7D1-5FF5-8CDB-B1B83E315C0E": reflect.TypeOf(UUID_BA33A443_E7D1_5FF5_8CDB_B1B83E315C0E_PointsAccumulatorSerializedValuesEntry{}),
 	"BC2FD03C-7FA0-5D12-B681-C5266456E0EC": reflect.TypeOf(UUID_BC2FD03C_7FA0_5D12_B681_C5266456E0EC{}),
@@ -1952,19 +1995,27 @@ var GENERATED = map[string]reflect.Type{
 	"BD7E940E-6D84-5185-87C3-99D6C8DB63E0": reflect.TypeOf(UUID_BD7E940E_6D84_5185_87C3_99D6C8DB63E0_Curve{}),
 	"BF40FF0C-C902-53C4-9B81-38881BB92E54": reflect.TypeOf(UUID_BF40FF0C_C902_53C4_9B81_38881BB92E54_EntityLootLockEvent{}),
 	"C2FD8C07-90D3-5D02-BAB7-B1FAC968C43F": reflect.TypeOf(UUID_C2FD8C07_90D3_5D02_BAB7_B1FAC968C43F_MilestoneCorrectionEntryData{}),
+	"CAFE9EDC-4863-414C-9FF0-85B994445302": reflect.TypeOf(UUID_CAFE9EDC_4863_414C_9FF0_85B994445302{}),
 	"CDADEE50-C32A-5AC5-9422-C61083EF25ED": reflect.TypeOf(UUID_CDADEE50_C32A_5AC5_9422_C61083EF25ED{}),
 	"CDD27E9C-1D94-52BC-9A97-A75DCCF349F6": reflect.TypeOf(UUID_CDD27E9C_1D94_52BC_9A97_A75DCCF349F6_IGCData{}),
+	"D38B3D67-CABD-58DE-B5C5-A34249835A01": reflect.TypeOf(UUID_D38B3D67_CABD_58DE_B5C5_A34249835A01_UUID_6D2846E7_2741_42B5_A6CC_795BC4D10929{}),
 	"D65E4F21-2DC2-5FF9-B67E-8A79EB8A0082": reflect.TypeOf(UUID_D65E4F21_2DC2_5FF9_B67E_8A79EB8A0082_AZStd__vector{}),
+	"D6E55774-2F90-4B52-8B48-32051E190051": reflect.TypeOf(UUID_D6E55774_2F90_4B52_8B48_32051E190051{}),
 	"D71FB08F-8229-5A55-A084-15787BDB9764": reflect.TypeOf(UUID_D71FB08F_8229_5A55_A084_15787BDB9764{}),
 	"D8B4529D-EDDB-525C-BA46-09A63951E5FD": reflect.TypeOf(UUID_D8B4529D_EDDB_525C_BA46_09A63951E5FD{}),
+	"DA61E78A-B1A6-41D8-802D-18CE156AC9A4": reflect.TypeOf(UUID_DA61E78A_B1A6_41D8_802D_18CE156AC9A4{}),
 	"DB52AACF-0A06-572D-8DC2-A36C84FE19C6": reflect.TypeOf(UUID_DB52AACF_0A06_572D_8DC2_A36C84FE19C6{}),
+	"DBB36262-0B21-5844-A019-C5430654DC58": reflect.TypeOf(UUID_DBB36262_0B21_5844_A019_C5430654DC58_UUID_72EEEC78_7042_4ABF_9C93_45AA893E9421{}),
 	"DE1CB64D-EBC4-583E-AF31-EB257B8AC677": reflect.TypeOf(UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677{}),
 	"E42047B1-C78D-5B68-8B27-DFBC3E14994A": reflect.TypeOf(UUID_E42047B1_C78D_5B68_8B27_DFBC3E14994A{}),
 	"E876F68C-57D8-54F0-826C-9ADC5D082850": reflect.TypeOf(UUID_E876F68C_57D8_54F0_826C_9ADC5D082850_NavigationLink{}),
+	"EDDF6989-9C69-5031-BE72-6493E2FA3A39": reflect.TypeOf(UUID_EDDF6989_9C69_5031_BE72_6493E2FA3A39_EncounterConditionEvent{}),
 	"EE7708E0-79E7-5085-A0F2-81EEF4527CBC": reflect.TypeOf(UUID_EE7708E0_79E7_5085_A0F2_81EEF4527CBC{}),
+	"F26A9525-7094-4972-849E-C1C00EAAFD36": reflect.TypeOf(UUID_F26A9525_7094_4972_849E_C1C00EAAFD36{}),
 	"F54891FA-D2F9-503D-9E59-3680D40B1262": reflect.TypeOf(UUID_F54891FA_D2F9_503D_9E59_3680D40B1262_Unsigned_short{}),
 	"F6E6495E-59A8-5724-8DE1-D6B68162DB92": reflect.TypeOf(UUID_F6E6495E_59A8_5724_8DE1_D6B68162DB92_CharacterColliderConfig{}),
 	"F7F30D6D-06D0-5533-ACB3-8FBE9D047904": reflect.TypeOf(UUID_F7F30D6D_06D0_5533_ACB3_8FBE9D047904{}),
+	"FC53A8D3-29FA-49D3-A152-21BCE0EF83A7": reflect.TypeOf(UUID_FC53A8D3_29FA_49D3_A152_21BCE0EF83A7{}),
 	"FCC72976-B3D0-5BEC-872D-DF2D1FD4D79B": reflect.TypeOf(UUID_FCC72976_B3D0_5BEC_872D_DF2D1FD4D79B_PointsAccumulatorSerializedDataLayerEntry{}),
 	"FD14840B-21BD-5C50-9FAC-D20CE0B95474": reflect.TypeOf(UUID_FD14840B_21BD_5C50_9FAC_D20CE0B95474{}),
 	"FDBD40B4-8A70-5B23-BCE7-A717BA039A86": reflect.TypeOf(UUID_FDBD40B4_8A70_5B23_BCE7_A717BA039A86_SlicePercentReference{}),
@@ -2125,6 +2176,7 @@ var GENERATED = map[string]reflect.Type{
 	"5F35BA2C-9ED9-4155-86B6-D8CA8A82C551": reflect.TypeOf(VoidDestroyerEyeComponentClientFacet{}),
 	"6472BC51-0ECA-4CAA-B012-41AC60D7453C": reflect.TypeOf(VoidDestroyerEyeComponentServerFacet{}),
 	"BFBD6466-7738-4378-B22D-402C00F27AB0": reflect.TypeOf(WaitForParentObjective{}),
+	"2FD7550F-766B-4516-A1BB-E3EE4882E138": reflect.TypeOf(WaitTutorialStep{}),
 	"24FBF222-8CF9-4539-B313-34726B8FC675": reflect.TypeOf(WallClockTimePoint{}),
 	"B5F38748-276F-4C67-A72A-4361388BE453": reflect.TypeOf(WarCampComponent{}),
 	"8C475E53-F464-4537-8026-A44D787326B9": reflect.TypeOf(WarCampComponentClientFacet{}),
@@ -3251,7 +3303,7 @@ type AZStd__vector_AZStd__pair_1 struct {
 }
 
 type AZStd__vector_UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6 struct {
-	Element []UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_HealthThresholdBossPhaseConfig `crc:"1094737465"`
+	Element []UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_WaveEndedBossPhaseConfig `crc:"1094737465"`
 }
 
 type AZStd__vector_DarknessActivationSpecification struct {
@@ -3705,6 +3757,7 @@ type Any struct {
 
 type AoiComponent struct {
 	BaseClass1                         FacetedComponent `crc:"3566360373"`
+	CRC_4269333841                     AzBool           `crc:"4269333841"`
 	M_additionalSlicePhysicalMinRadius AzFloat32        `crc:"346308372"`
 	M_aoiGridCategory                  AzInt32          `crc:"4084893842"`
 	M_aoiRadius                        AzFloat32        `crc:"1855673897"`
@@ -4994,6 +5047,19 @@ type CharacterComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type CharacterControllerComponent struct {
+	BaseClass1    AZ__Component             `crc:"3566360373"`
+	Configuration CharacterControllerConfig `crc:"2783094231"`
+}
+
+type CharacterControllerConfig struct {
+	BaseClass1   RockNRoll__CharacterDesc `crc:"3566360373"`
+	Filter_Name  AzString                 `crc:"1302031969"`
+	Rnr_asset    AzAsset                  `crc:"1173038081"`
+	Shape_entity EntityId                 `crc:"3838589957"`
+	Shape_type   AzUInt32                 `crc:"3708042375"`
+}
+
 type CharacterControllerResizeParams struct {
 	M_crawlcapsulehalfheight  AzFloat32 `crc:"702393203"`
 	M_crouchcapsulehalfheight AzFloat32 `crc:"1130022206"`
@@ -5593,6 +5659,10 @@ type CutsceneFinishedObjective struct {
 }
 
 type CutsceneInfo struct {
+	CRC_1162612615                                    AzBool                  `crc:"1162612615"`
+	CRC_2067873111                                    AzBool                  `crc:"2067873111"`
+	CRC_2896218708                                    AzFloat32               `crc:"2896218708"`
+	CRC_308938268                                     AzString                `crc:"308938268"`
 	M_achievementtounlock                             AzString                `crc:"3903120646"`
 	M_bannerdescriptiontext                           AzString                `crc:"1386505152"`
 	M_bannertitlelabeltext                            AzString                `crc:"125943168"`
@@ -6041,6 +6111,7 @@ type DetectionVolumeEventComponentClientFacet struct {
 
 type DetectionVolumeEventComponentServerFacet struct {
 	BaseClass1                  ServerFacet    `crc:"3566360373"`
+	CRC_2569946931              AzBool         `crc:"2569946931"`
 	M_detectdeadtargets         AzBool         `crc:"1299573241"`
 	M_detectdeathsdoortargets   AzBool         `crc:"3278804081"`
 	M_detectedtargettype        AzInt32        `crc:"2914110177"`
@@ -6338,6 +6409,22 @@ type EncounterComponentServerFacet struct {
 	M_forceemittelemetryoncomplete AzBool      `crc:"1537793350"`
 }
 
+type EncounterConditionEvent struct {
+	Debugindex                   AzUInt32                                                                `crc:"1380777763"`
+	Debugname                    AzString                                                                `crc:"1816043808"`
+	Entityevents                 UUID_8E0DE60F_4102_5847_958C_98A2D8CD60FC_EntityEncounterConditionEvent `crc:"1967885871"`
+	Eventdelayduration           AzFloat32                                                               `crc:"487703710"`
+	Runeventsonencountercomplete AzBool                                                                  `crc:"2268077082"`
+	Runeventsonencounterfailed   AzBool                                                                  `crc:"3515825143"`
+	Runeventsonencounterspawned  AzBool                                                                  `crc:"3835659744"`
+}
+
+type EncounterConditionEventsData struct {
+	BaseClass1            SlayerScriptData                                                  `crc:"3566360373"`
+	Encounterrespawndelay AzFloat32                                                         `crc:"3763642548"`
+	Events                UUID_EDDF6989_9C69_5031_BE72_6493E2FA3A39_EncounterConditionEvent `crc:"1401378634"`
+}
+
 type EncounterEntry struct {
 	Encounterid                 AzString                                                 `crc:"3432950058"`
 	Encountersuccessgameeventid Crc32                                                    `crc:"4104438562"`
@@ -6429,6 +6516,12 @@ type EntityActiveStateChangedObjective struct {
 	M_completeonactivated   AzBool             `crc:"1526783500"`
 	M_completeondeactivated AzBool             `crc:"1204088947"`
 	M_targetentityid        EntityId           `crc:"194416555"`
+}
+
+type EntityEncounterConditionEvent struct {
+	Applyonchildren AzBool                                                        `crc:"2755818698"`
+	Entitynames     UUID_0B66E343_C513_5EB3_B152_770C4628BB73_SlayerScriptEditCrc `crc:"3889856624"`
+	Eventtype       AzInt32                                                       `crc:"3497691904"`
 }
 
 type EntityEventAction struct {
@@ -6930,6 +7023,7 @@ type FogVolumeConfiguration struct {
 type FootstepComponent struct {
 	Always_play                 AzBool        `crc:"4090484454"`
 	BaseClass1                  AZ__Component `crc:"3566360373"`
+	CRC_3003963223              AzString      `crc:"3003963223"`
 	Override_footstep_character AzString      `crc:"1254454378"`
 	Physics_entity_override     EntityId      `crc:"1028427620"`
 	Play_from_bone              AzBool        `crc:"184805314"`
@@ -8162,7 +8256,8 @@ type InteractTeleportComponent struct {
 }
 
 type InteractTeleportComponentClientFacet struct {
-	BaseClass1 ClientFacet `crc:"3566360373"`
+	BaseClass1     ClientFacet `crc:"3566360373"`
+	CRC_3638893586 AzUInt8     `crc:"3638893586"`
 }
 
 type InteractTeleportComponentServerFacet struct {
@@ -8203,6 +8298,10 @@ type InteractWithItemCostType_AddProjectileSpawnerAmmo struct {
 type InteractWithItemCostType_AddSummoningStone struct {
 	BaseClass1      InteractWithItemCostType `crc:"3566360373"`
 	M_spawnerentity LocalEntityRef           `crc:"1987108324"`
+}
+
+type InteractableSendTriggerData struct {
+	BaseClass1 SlayerScriptData `crc:"3566360373"`
 }
 
 type InteractionAnimationComponent struct {
@@ -9250,6 +9349,7 @@ type MinionVitalsProviderComponentServerFacet struct {
 
 type MomentaryOffenseComponent struct {
 	BaseClass1               FacetedComponent  `crc:"3566360373"`
+	CRC_4156664423           AzBool            `crc:"4156664423"`
 	M_allowselfdamage        AzBool            `crc:"1860058824"`
 	M_damagedata             OffenseDamageData `crc:"465676829"`
 	M_disabletriggeronenable AzBool            `crc:"1024105319"`
@@ -9461,6 +9561,7 @@ type NavMeshConstraintComponentClientFacet struct {
 
 type NavMeshConstraintComponentServerFacet struct {
 	BaseClass1                     SpawnerConstraintComponentServerFacet `crc:"3566360373"`
+	CRC_4080080553                 AzFloat32                             `crc:"4080080553"`
 	M_checklos                     AzBool                                `crc:"2355972631"`
 	M_checkpath                    AzBool                                `crc:"1294253440"`
 	M_optinnonai                   AzBool                                `crc:"3178081660"`
@@ -9648,6 +9749,7 @@ type OceanSettings struct {
 
 type OffenseCollisionComponent struct {
 	BaseClass1            FacetedComponent  `crc:"3566360373"`
+	CRC_4156664423        AzBool            `crc:"4156664423"`
 	M_damagedata          OffenseDamageData `crc:"465676829"`
 	M_damageselfdata      OffenseDamageData `crc:"1551879091"`
 	M_entitytoselfdamage  LocalEntityRef    `crc:"1809765951"`
@@ -10698,10 +10800,10 @@ type PointsAccumulatorComponentServerFacet struct {
 }
 
 type PointsAccumulatorSerializedDataLayerEntry struct {
-	M_category                          AzUInt8  `crc:"152481721"`
-	M_maxnumpointsdatalayer             AzString `crc:"3692360021"`
-	M_numpointsdatalayer                AzString `crc:"4136567901"`
-	M_secondsuntilpointszeroeddatalayer AzString `crc:"1445639416"`
+	CRC_1714619440          AzString `crc:"1714619440"`
+	M_category              AzUInt8  `crc:"152481721"`
+	M_maxnumpointsdatalayer AzString `crc:"3692360021"`
+	M_numpointsdatalayer    AzString `crc:"4136567901"`
 }
 
 type PointsAccumulatorSerializedValuesEntry struct {
@@ -11529,6 +11631,14 @@ type RoadComponent struct {
 	Road       Road          `crc:"2512438449"`
 }
 
+type RockNRoll__CharacterDesc struct {
+	Asynchronous          AzBool    `crc:"2308730378"`
+	Contact_distance      AzFloat32 `crc:"2846689810"`
+	Max_Slope             AzFloat32 `crc:"295828378"`
+	Solver_max_iterations AzUInt32  `crc:"2376176224"`
+	Up_Direction          AzVec3    `crc:"2919277749"`
+}
+
 type RotationAchievementEvent struct {
 	Entitynames                     UUID_0B66E343_C513_5EB3_B152_770C4628BB73_SlayerScriptEditCrc `crc:"3889856624"`
 	Initializerotationtozeropercent AzBool                                                        `crc:"1410756401"`
@@ -11994,8 +12104,9 @@ type SlayerScriptDataContainer struct {
 }
 
 type SlayerScriptEditCrc struct {
-	M_crc    AzUInt32 `crc:"3083666938"`
-	M_string AzString `crc:"3559776343"`
+	CRC_2544375102 AzUInt32 `crc:"2544375102"`
+	M_crc          AzUInt32 `crc:"3083666938"`
+	M_string       AzString `crc:"3559776343"`
 }
 
 type SlayerScriptForwarderClientFacet struct {
@@ -12084,9 +12195,11 @@ type SliceMetaDataSpawnerEntry struct {
 }
 
 type SlicePercentReference struct {
-	Percent  AzUInt32                                                        `crc:"1639350329"`
-	Schedule UUID_3B429139_BF67_557B_B347_D0A61D4F47B1_SlicePercentReference `crc:"1513624059"`
-	Slice    AzAsset                                                         `crc:"1034844325"`
+	CRC_1194365757 AZStd__vector_Crc32                                             `crc:"1194365757"`
+	CRC_494723905  AzString                                                        `crc:"494723905"`
+	Percent        AzUInt32                                                        `crc:"1639350329"`
+	Schedule       UUID_3B429139_BF67_557B_B347_D0A61D4F47B1_SlicePercentReference `crc:"1513624059"`
+	Slice          AzAsset                                                         `crc:"1034844325"`
 }
 
 type SlicePercentReference_0 struct {
@@ -12201,6 +12314,13 @@ type SpawnScalingSpecification struct {
 
 type SpawnerComponent struct {
 	BaseClass1 FacetedComponent `crc:"3566360373"`
+}
+
+type SpawnerComponent_0 struct {
+	BaseClass1          AZ__Component `crc:"3566360373"`
+	DestroyOnDeactivate AzBool        `crc:"1804488323"`
+	Slice               AzAsset       `crc:"1034844325"`
+	Spawnonactivate     AzBool        `crc:"3431008486"`
 }
 
 type SpawnerComponentClientFacet struct {
@@ -12500,7 +12620,9 @@ type StealthInvisibilityComponent struct {
 }
 
 type StealthInvisibilityComponentClientFacet struct {
-	BaseClass1 ClientFacet `crc:"3566360373"`
+	BaseClass1     ClientFacet `crc:"3566360373"`
+	CRC_3794564206 AzFloat32   `crc:"3794564206"`
+	CRC_502152535  AzUInt8     `crc:"502152535"`
 }
 
 type StealthInvisibilityComponentServerFacet struct {
@@ -13336,6 +13458,7 @@ type TriggerAreaDetectable struct {
 
 type TriggerAreaEntityComponent struct {
 	BaseClass1          FacetedComponent        `crc:"3566360373"`
+	CRC_2607446510      AZStd__vector_EventData `crc:"2607446510"`
 	M_entitiestotrigger AZStd__vector_EventData `crc:"68546803"`
 }
 
@@ -13537,12 +13660,32 @@ type UITriggerEventComponentServerFacet struct {
 	BaseClass1 ServerFacet `crc:"3566360373"`
 }
 
+type UUID_09B96ED1_8114_4863_922D_F4393E1BCD6F struct {
+	CRC_1979176712 AzUInt8  `crc:"1979176712"`
+	CRC_3562906710 AzString `crc:"3562906710"`
+}
+
+type UUID_0AF63F6E_3E02_5934_9D80_984A42C99C9D_UUID_145AD436_BD9E_4D26_8755_C16DF8A84629 struct {
+	Element []UUID_145AD436_BD9E_4D26_8755_C16DF8A84629 `crc:"1094737465"`
+}
+
 type UUID_0B66E343_C513_5EB3_B152_770C4628BB73_SlayerScriptEditCrc struct {
 	Element []SlayerScriptEditCrc `crc:"1094737465"`
 }
 
+type UUID_0EDDF436_1106_5221_B067_502314A3106A_UUID_72D040D6_14F1_489E_855F_84945BD0C7EA struct {
+	Element []UUID_72D040D6_14F1_489E_855F_84945BD0C7EA `crc:"1094737465"`
+}
+
 type UUID_12E435DD_B28E_5082_8E17_67F1BBC894B1_RotationAchievementEvent struct {
 	Element RotationAchievementEvent `crc:"1094737465"`
+}
+
+type UUID_145AD436_BD9E_4D26_8755_C16DF8A84629 struct {
+	CRC_1479941275 AzString                                                                            `crc:"1479941275"`
+	CRC_157273991  AzString                                                                            `crc:"157273991"`
+	CRC_2787884754 UUID_4C217217_7EF9_551F_B1C6_B4A528033DBC_UUID_7E3A423A_EEBD_4645_96B8_972EC92C7F21 `crc:"2787884754"`
+	CRC_3385224897 AzString                                                                            `crc:"3385224897"`
 }
 
 type UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8 struct {
@@ -13550,12 +13693,36 @@ type UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8 struct {
 	Value2 AZStd__vector_AZStd__pair `crc:"997998048"`
 }
 
+type UUID_172DEDD4_227A_485E_8028_7484EEA13A48 struct {
+	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type UUID_199F1B7B_2AD4_50DB_8F28_A43F42D5680B_UUID_911079C7_0BA3_461C_8E38_EA0396B5FCCB struct {
+	Element []UUID_911079C7_0BA3_461C_8E38_EA0396B5FCCB `crc:"1094737465"`
+}
+
 type UUID_1CED0D23_5BD7_50DD_80BB_21B6081B8F00_Javelin__CutsceneEntityEvent struct {
 	Element []Javelin__CutsceneEntityEvent `crc:"1094737465"`
 }
 
+type UUID_22B25EDE_4B36_438D_B6B9_DDDF55065E29 struct {
+	Debugname AzString `crc:"1816043808"`
+}
+
 type UUID_233C4DEF_0EBF_58C4_9A69_7D5EFC602339_OwnershipAlignmentEventData struct {
 	Element []OwnershipAlignmentEventData `crc:"1094737465"`
+}
+
+type UUID_23513EC4_3AD1_4F48_A26B_CC04F86C4574 struct {
+	BaseClass1 ClientFacet `crc:"3566360373"`
+}
+
+type UUID_25039856_1F8C_52CA_9E67_C95D50016C2C struct {
+}
+
+type UUID_25B722F9_6FA0_4417_B333_06789E093E5B struct {
+	BaseClass1         UUID_09B96ED1_8114_4863_922D_F4393E1BCD6F `crc:"3566360373"`
+	Eventdelayduration AzFloat32                                 `crc:"487703710"`
 }
 
 type UUID_283F62D6_A310_5D1E_A38E_409DB6C165A4_ChunkEntry struct {
@@ -13569,16 +13736,28 @@ type UUID_2A3D1E1E_A69F_5860_8934_00C3BFE920CC_EntityAchievementEvent struct {
 type UUID_2C4AB36A_7ABB_5DEB_B4BB_9F033FA9E3B7 struct {
 }
 
+type UUID_2E69457D_8C56_481B_9AAE_647A18B18705 struct {
+	BaseClass1 UUID_95E1B61B_F826_4C94_9995_4D7587085DE9 `crc:"3566360373"`
+}
+
 type UUID_2F09439E_051F_5360_859E_55EAB094FEB5 struct {
 	Element any `crc:"1094737465"`
 }
 
 type UUID_31D79E49_9CD5_51BF_8403_F9A16BEDECF5_CustomDataEntry struct {
-	Element CustomDataEntry `crc:"1094737465"`
+	Element []CustomDataEntry `crc:"1094737465"`
 }
 
-type UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_HealthThresholdBossPhaseConfig struct {
+type UUID_3388147D_669E_49E9_A703_5A4FBAC170EA struct {
+	CRC_170814513 AzString `crc:"170814513"`
+}
+
+type UUID_33C158B9_7C9D_54C1_AE8E_ED3C7F5B77C6_WaveEndedBossPhaseConfig struct {
 	Element any `crc:"1094737465"`
+}
+
+type UUID_3447C089_8243_5355_97CC_7530D3B8A895_UUID_2E69457D_8C56_481B_9AAE_647A18B18705 struct {
+	Element []any `crc:"1094737465"`
 }
 
 type UUID_344F38EA_4D1D_5D55_83C1_5F6060C0A09D_UUID_BD7E940E_6D84_5185_87C3_99D6C8DB63E0 struct {
@@ -13601,12 +13780,28 @@ type UUID_3C9D208A_2E62_51E2_8AA1_5B6BB7473A52 struct {
 	Element any `crc:"1094737465"`
 }
 
+type UUID_3E58ABF2_395B_4714_8FC3_564A9DB71533 struct {
+	BaseClass1 FacetedComponent `crc:"3566360373"`
+}
+
 type UUID_3EDC016A_52CF_5BB9_B450_2550DB28F9E2_UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66 struct {
 	Element []UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66 `crc:"1094737465"`
 }
 
+type UUID_4C217217_7EF9_551F_B1C6_B4A528033DBC_UUID_7E3A423A_EEBD_4645_96B8_972EC92C7F21 struct {
+	Element []UUID_7E3A423A_EEBD_4645_96B8_972EC92C7F21 `crc:"1094737465"`
+}
+
 type UUID_4E495371_25FE_5D42_8E40_AE22C9C5DE42_TransformLinkConnectionData struct {
 	Element []TransformLinkConnectionData `crc:"1094737465"`
+}
+
+type UUID_505F1A37_A8DF_4733_BC48_5A4D785980DB struct {
+	BaseClass1 SlayerScriptData `crc:"3566360373"`
+}
+
+type UUID_572333F7_5507_4907_9571_6925C7DD8C97 struct {
+	BaseClass1 SlayerScriptData `crc:"3566360373"`
 }
 
 type UUID_59EAF609_9D81_561C_A744_77F737CF92C4 struct {
@@ -13630,6 +13825,10 @@ type UUID_6270FE26_CE9D_5972_B088_E57B8E6D9F66 struct {
 	Value2 EditCrc `crc:"997998048"`
 }
 
+type UUID_6384FC75_7BA9_4A80_8B50_57D48901C34D struct {
+	BaseClass1 FacetedComponent `crc:"3566360373"`
+}
+
 type UUID_6434A20B_A21D_5575_AEC5_5A7319FBC3FB_MeshMergeGroup struct {
 	Element []MeshMergeGroup `crc:"1094737465"`
 }
@@ -13642,12 +13841,48 @@ type UUID_661C1835_82E9_519E_852C_4586C3435B17_Unsigned_char struct {
 	Element AzUInt8 `crc:"1094737465"`
 }
 
+type UUID_68BBBA08_63E3_4F35_8389_F7BE76A33A50 struct {
+	BaseClass1     SlayerScriptData            `crc:"3566360373"`
+	CRC_1188667254 AzAsset                     `crc:"1188667254"`
+	CRC_1682289769 AZStd__vector_Bool          `crc:"1682289769"`
+	CRC_2747862721 AzAsset                     `crc:"2747862721"`
+	CRC_286210458  AZStd__vector_Asset_1       `crc:"286210458"`
+	CRC_3147407401 AZStd__vector_AZStd__string `crc:"3147407401"`
+	CRC_3383358346 AzAsset                     `crc:"3383358346"`
+	CRC_3973362638 AZStd__vector_AZStd__string `crc:"3973362638"`
+}
+
 type UUID_6C3DEDA3_D591_59B8_80FF_4148F8C2A5EC_InstancedSlayerScriptPart struct {
 	Element []InstancedSlayerScriptPart `crc:"1094737465"`
 }
 
 type UUID_6D152BFE_EC46_52D0_9F1A_24DD1151F86B_SlayerScriptDataContainer struct {
 	Element []SlayerScriptDataContainer `crc:"1094737465"`
+}
+
+type UUID_6D2846E7_2741_42B5_A6CC_795BC4D10929 struct {
+	CRC_1723678088 AzUInt32 `crc:"1723678088"`
+	CRC_872489111  AzString `crc:"872489111"`
+}
+
+type UUID_72D040D6_14F1_489E_855F_84945BD0C7EA struct {
+	CRC_1479941275 AzString                                                                            `crc:"1479941275"`
+	CRC_157273991  AzString                                                                            `crc:"157273991"`
+	CRC_2712367046 UUID_D38B3D67_CABD_58DE_B5C5_A34249835A01_UUID_6D2846E7_2741_42B5_A6CC_795BC4D10929 `crc:"2712367046"`
+	CRC_2787884754 UUID_4C217217_7EF9_551F_B1C6_B4A528033DBC_UUID_7E3A423A_EEBD_4645_96B8_972EC92C7F21 `crc:"2787884754"`
+	CRC_3279060007 AzString                                                                            `crc:"3279060007"`
+}
+
+type UUID_72EEEC78_7042_4ABF_9C93_45AA893E9421 struct {
+	CRC_2544375102 AzUInt32 `crc:"2544375102"`
+	M_crc          AzUInt32 `crc:"3083666938"`
+	M_string       AzString `crc:"3559776343"`
+}
+
+type UUID_72FA58A7_CCB6_4898_AADF_F951CB7BB75B struct {
+	BaseClass1     UUID_25B722F9_6FA0_4417_B333_06789E093E5B `crc:"3566360373"`
+	CRC_1218905319 AzUInt8                                   `crc:"1218905319"`
+	CRC_3278971135 UUID_72EEEC78_7042_4ABF_9C93_45AA893E9421 `crc:"3278971135"`
 }
 
 type UUID_734B2005_8CD7_5561_B79F_58ED4EB9C0C2_EditEnum_EnumType__Javelin__SBItemClass__ItemClasses__ struct {
@@ -13662,8 +13897,31 @@ type UUID_77B3BC35_E577_5281_AEBE_11C0E1B622BF_GameModeEvent struct {
 	Element []GameModeEvent `crc:"1094737465"`
 }
 
+type UUID_7C3C50F8_F518_5E3D_AB3E_BE1C710DAA03_UUID_72FA58A7_CCB6_4898_AADF_F951CB7BB75B struct {
+	Element []any `crc:"1094737465"`
+}
+
+type UUID_7E3A423A_EEBD_4645_96B8_972EC92C7F21 struct {
+	CRC_2707156212 AzString `crc:"2707156212"`
+	CRC_2776319492 AzString `crc:"2776319492"`
+}
+
 type UUID_7FF36F26_644E_5051_84BB_AE54534C84D4_Transform struct {
 	Element []AzTransform `crc:"1094737465"`
+}
+
+type UUID_81B71022_5308_4832_A1B4_3612B1FB2721 struct {
+	BaseClass1     SlayerScriptData                                                                    `crc:"3566360373"`
+	CRC_1064277641 UUID_3447C089_8243_5355_97CC_7530D3B8A895_UUID_2E69457D_8C56_481B_9AAE_647A18B18705 `crc:"1064277641"`
+	CRC_127553369  AzBool                                                                              `crc:"127553369"`
+	CRC_1901150581 AzBool                                                                              `crc:"1901150581"`
+	CRC_2518661883 AzUInt8                                                                             `crc:"2518661883"`
+	CRC_3066167790 AzBool                                                                              `crc:"3066167790"`
+	CRC_3996142334 AzBool                                                                              `crc:"3996142334"`
+	CRC_4051135897 UUID_98FF2F25_6160_5D4C_B7C7_34B636703F59                                           `crc:"4051135897"`
+	CRC_675725327  AzBool                                                                              `crc:"675725327"`
+	CRC_799173220  UUID_25039856_1F8C_52CA_9E67_C95D50016C2C                                           `crc:"799173220"`
+	CRC_930465908  UUID_199F1B7B_2AD4_50DB_8F28_A43F42D5680B_UUID_911079C7_0BA3_461C_8E38_EA0396B5FCCB `crc:"930465908"`
 }
 
 type UUID_87148FED_8B47_5174_827C_10619D3D79F2 struct {
@@ -13671,6 +13929,32 @@ type UUID_87148FED_8B47_5174_827C_10619D3D79F2 struct {
 
 type UUID_877C4A33_39B5_51D7_948D_F97DB81372A1_AssetId struct {
 	Element []AssetId `crc:"1094737465"`
+}
+
+type UUID_8A0F94D4_3B2C_4107_B57D_A44409F6AF1E struct {
+	BaseClass1 SlayerScriptData `crc:"3566360373"`
+}
+
+type UUID_8B8918AB_894D_4E44_B72C_F947844A3985 struct {
+	BaseClass1     AZ__Component                                                                       `crc:"3566360373"`
+	CRC_1457009526 UUID_0EDDF436_1106_5221_B067_502314A3106A_UUID_72D040D6_14F1_489E_855F_84945BD0C7EA `crc:"1457009526"`
+	CRC_1550590352 UUID_0AF63F6E_3E02_5934_9D80_984A42C99C9D_UUID_145AD436_BD9E_4D26_8755_C16DF8A84629 `crc:"1550590352"`
+	CRC_1820844375 AzString                                                                            `crc:"1820844375"`
+	CRC_1847044137 AzString                                                                            `crc:"1847044137"`
+	CRC_3808611106 AzString                                                                            `crc:"3808611106"`
+}
+
+type UUID_8E0DE60F_4102_5847_958C_98A2D8CD60FC_EntityEncounterConditionEvent struct {
+	Element EntityEncounterConditionEvent `crc:"1094737465"`
+}
+
+type UUID_911079C7_0BA3_461C_8E38_EA0396B5FCCB struct {
+	BaseClass1     UUID_09B96ED1_8114_4863_922D_F4393E1BCD6F                                           `crc:"3566360373"`
+	BaseClass2     UUID_22B25EDE_4B36_438D_B6B9_DDDF55065E29                                           `crc:"1302005391"`
+	BaseClass3     UUID_3388147D_669E_49E9_A703_5A4FBAC170EA                                           `crc:"983315993"`
+	CRC_1335267842 AzUInt8                                                                             `crc:"1335267842"`
+	CRC_2004903823 AzBool                                                                              `crc:"2004903823"`
+	CRC_905699183  UUID_7C3C50F8_F518_5E3D_AB3E_BE1C710DAA03_UUID_72FA58A7_CCB6_4898_AADF_F951CB7BB75B `crc:"905699183"`
 }
 
 type UUID_9266A50C_9EAF_5EF7_9288_C88C54C28EFA struct {
@@ -13682,16 +13966,37 @@ type UUID_945D6962_DF72_5875_861B_52D14D233D65_QuickCourseSection struct {
 	Element []QuickCourseSection `crc:"1094737465"`
 }
 
+type UUID_95E1B61B_F826_4C94_9995_4D7587085DE9 struct {
+	BaseClass1     UUID_09B96ED1_8114_4863_922D_F4393E1BCD6F `crc:"3566360373"`
+	CRC_1310732450 AzUInt8                                   `crc:"1310732450"`
+}
+
 type UUID_98F0B819_838F_5548_B645_4CF0959F2D43_UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8 struct {
 	Element []UUID_14F31861_6045_5B62_B6D2_1FA6DA976FB8 `crc:"1094737465"`
+}
+
+type UUID_98FF2F25_6160_5D4C_B7C7_34B636703F59 struct {
 }
 
 type UUID_9C719DD5_F8D3_59D3_B55B_627422922A43_Int struct {
 	Element []AzInt32 `crc:"1094737465"`
 }
 
+type UUID_ABD814BF_3DBA_4447_A1D7_F0E260C49F5B struct {
+	BaseClass1 ServerFacet `crc:"3566360373"`
+}
+
+type UUID_ADFC4EDE_9FFC_45A1_A8CE_E514A4F9069B struct {
+	BaseClass1    UUID_25B722F9_6FA0_4417_B333_06789E093E5B `crc:"3566360373"`
+	CRC_776455063 UUID_F26A9525_7094_4972_849E_C1C00EAAFD36 `crc:"776455063"`
+}
+
 type UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833 struct {
 	Element any `crc:"1094737465"`
+}
+
+type UUID_B5FAA2D9_50DF_4602_89E6_767F8B6895F4 struct {
+	BaseClass1 SlayerScriptData `crc:"3566360373"`
 }
 
 type UUID_B6E08B3F_F4E1_50C2_8752_3CF3C4AB414A_LootLockEvent struct {
@@ -13723,6 +14028,13 @@ type UUID_C2FD8C07_90D3_5D02_BAB7_B1FAC968C43F_MilestoneCorrectionEntryData stru
 	Element []MilestoneCorrectionEntryData `crc:"1094737465"`
 }
 
+type UUID_CAFE9EDC_4863_414C_9FF0_85B994445302 struct {
+	BaseClass1     SlayerScriptData      `crc:"3566360373"`
+	CRC_2261941075 AZStd__vector_Asset_1 `crc:"2261941075"`
+	CRC_4256814751 AZStd__vector_Asset_1 `crc:"4256814751"`
+	Statueassets   AZStd__vector_Asset_1 `crc:"12413206"`
+}
+
 type UUID_CDADEE50_C32A_5AC5_9422_C61083EF25ED struct {
 }
 
@@ -13730,8 +14042,16 @@ type UUID_CDD27E9C_1D94_52BC_9A97_A75DCCF349F6_IGCData struct {
 	Element []IGCData `crc:"1094737465"`
 }
 
+type UUID_D38B3D67_CABD_58DE_B5C5_A34249835A01_UUID_6D2846E7_2741_42B5_A6CC_795BC4D10929 struct {
+	Element UUID_6D2846E7_2741_42B5_A6CC_795BC4D10929 `crc:"1094737465"`
+}
+
 type UUID_D65E4F21_2DC2_5FF9_B67E_8A79EB8A0082_AZStd__vector struct {
 	Element []AZStd__vector_AZStd__string `crc:"1094737465"`
+}
+
+type UUID_D6E55774_2F90_4B52_8B48_32051E190051 struct {
+	BaseClass1 ClientFacet `crc:"3566360373"`
 }
 
 type UUID_D71FB08F_8229_5A55_A084_15787BDB9764 struct {
@@ -13742,9 +14062,17 @@ type UUID_D8B4529D_EDDB_525C_BA46_09A63951E5FD struct {
 	Value2 AzString `crc:"997998048"`
 }
 
+type UUID_DA61E78A_B1A6_41D8_802D_18CE156AC9A4 struct {
+	BaseClass1 SlayerScriptData `crc:"3566360373"`
+}
+
 type UUID_DB52AACF_0A06_572D_8DC2_A36C84FE19C6 struct {
 	Value1 SliceDataEntryKey `crc:"2725604442"`
 	Value2 SliceMetaData     `crc:"997998048"`
+}
+
+type UUID_DBB36262_0B21_5844_A019_C5430654DC58_UUID_72EEEC78_7042_4ABF_9C93_45AA893E9421 struct {
+	Element []UUID_72EEEC78_7042_4ABF_9C93_45AA893E9421 `crc:"1094737465"`
 }
 
 type UUID_DE1CB64D_EBC4_583E_AF31_EB257B8AC677 struct {
@@ -13762,9 +14090,19 @@ type UUID_E876F68C_57D8_54F0_826C_9ADC5D082850_NavigationLink struct {
 	Element NavigationLink `crc:"1094737465"`
 }
 
+type UUID_EDDF6989_9C69_5031_BE72_6493E2FA3A39_EncounterConditionEvent struct {
+	Element []EncounterConditionEvent `crc:"1094737465"`
+}
+
 type UUID_EE7708E0_79E7_5085_A0F2_81EEF4527CBC struct {
 	Value1 Crc32                  `crc:"2725604442"`
 	Value2 WarDeployableLimitData `crc:"997998048"`
+}
+
+type UUID_F26A9525_7094_4972_849E_C1C00EAAFD36 struct {
+	Applyonchildren AzBool                                                                              `crc:"2755818698"`
+	Entitynames     UUID_DBB36262_0B21_5844_A019_C5430654DC58_UUID_72EEEC78_7042_4ABF_9C93_45AA893E9421 `crc:"3889856624"`
+	Eventtype       AzInt32                                                                             `crc:"3497691904"`
 }
 
 type UUID_F54891FA_D2F9_503D_9E59_3680D40B1262_Unsigned_short struct {
@@ -13778,6 +14116,11 @@ type UUID_F6E6495E_59A8_5724_8DE1_D6B68162DB92_CharacterColliderConfig struct {
 type UUID_F7F30D6D_06D0_5533_ACB3_8FBE9D047904 struct {
 	Value1 AzString                `crc:"2725604442"`
 	Value2 AZStd__vector_EventData `crc:"997998048"`
+}
+
+type UUID_FC53A8D3_29FA_49D3_A152_21BCE0EF83A7 struct {
+	BaseClass1    UUID_95E1B61B_F826_4C94_9995_4D7587085DE9 `crc:"3566360373"`
+	CRC_695482090 AzFloat32                                 `crc:"695482090"`
 }
 
 type UUID_FCC72976_B3D0_5BEC_872D_DF2D1FD4D79B_PointsAccumulatorSerializedDataLayerEntry struct {
@@ -14961,6 +15304,11 @@ type VoidDestroyerEyeComponentServerFacet struct {
 
 type WaitForParentObjective struct {
 	BaseClass1 EncounterObjective `crc:"3566360373"`
+}
+
+type WaitTutorialStep struct {
+	BaseClass1        TutorialStep `crc:"3566360373"`
+	M_waitTimeSeconds AzFloat32    `crc:"674655060"`
 }
 
 type WallClockTimePoint struct {
