@@ -10,7 +10,7 @@ import { NwTradeskillInfo, NwTradeskillService } from '~/nw/tradeskill'
 import { ChartModule } from '~/ui/chart'
 import { combineLatestOrEmpty } from '~/utils'
 
-const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()
+const COLORS = ['#E69F00', '#D55E00', '#56B4E9', '#009E73', '#F0E442', '#CD7CDC', '#CC79A7']
 
 @Component({
   selector: 'nwb-tradeskill-chart',
