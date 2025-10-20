@@ -2,7 +2,7 @@
   <div
     animate.enter="fade-grow-y-in"
     animate.leave="fade-grow-y-out"
-    class="flex flex-row gap-1 rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
+    class="flex flex-row gap-1 rounded-md outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
     [class.hover:outline-primary]="gsEditable()"
     [class.hover:outline-offset-4]="gsEditable()"
     [class.cursor-pointer]="gsEditable()"
@@ -19,6 +19,15 @@
       <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
     </div>
   }
+}
+@if (tiers()?.length) {
+  <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out" class="flex flex-row gap-2">
+    @for (row of tiers(); track $index) {
+      <nwb-item-stat [label]="row.scaling * 10000 + '%'">
+        <span class="uppercase">{{ row.key }}</span> <span class="uppercase"> ({{ row.tier }})</span>
+      </nwb-item-stat>
+    }
+  </div>
 }
 @if (gsEditable()) {
   <nwb-icon [icon]="editIcon" class="w-3 h-3 absolute top-4 -left-3 opacity-50 screenshot-hidden" />

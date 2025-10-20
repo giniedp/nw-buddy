@@ -1,10 +1,12 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import {
   getItemStatsArmor,
   getItemStatsWeapon,
+  getWeaponScaling,
+  getWeaponScalingTiers,
   isItemArmor,
   isItemHeartGem,
   isItemJewelery,
@@ -15,7 +17,7 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { apiResource, resourceValue } from '~/utils'
+import { resourceValue } from '~/utils'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemEditorEventsService } from './item-editor-events.service'
 
@@ -47,17 +49,32 @@ export class ItemDetailStatsComponent {
       weapon: null,
       armor: null,
       rune: null,
+      tiers: [],
     },
-    params: () => this.store.item()?.ItemStatsRef,
-    loader: async ({ params }) => {
+    params: () => {
       return {
-        weapon: await this.db.weaponItemsById(params),
-        armor: await this.db.armorItemsById(params),
-        rune: await this.db.runeItemsById(params),
+        item: this.store.item(),
+      }
+    },
+    loader: async ({ params: { item } }) => {
+      const ref = item?.ItemStatsRef
+      const weapon = await this.db.weaponItemsById(ref)
+      const armor = await this.db.armorItemsById(ref)
+      const rune = await this.db.runeItemsById(ref)
+      const tiers = await this.db.weaponTiersAll().then((list) => {
+        const scaling = getWeaponScaling(item, weapon)
+        return getWeaponScalingTiers(scaling, list)
+      })
+      return {
+        weapon,
+        armor,
+        rune,
+        tiers,
       }
     },
   })
 
+  protected tiers = computed(() => this.resource()?.tiers)
   protected stats = computed(() => {
     if (!this.store.isLoaded()) {
       return null
@@ -85,6 +102,7 @@ export class ItemDetailStatsComponent {
       ...getItemStatsArmor(item, armor, gearScore),
     ]
   })
+
 
   protected editIcon = svgEllipsisVertical
 

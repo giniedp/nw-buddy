@@ -1,4 +1,4 @@
-import { MasterItemDefinitions, WeaponItemDefinitions, WeaponTag } from '@nw-data/generated'
+import { MasterItemDefinitions, WeaponItemDefinitions, WeaponTag, WeaponTiersData } from '@nw-data/generated'
 import type { AttributeRef } from './attributes'
 import {
   NW_ARMOR_SET_RATING_EXPONENT,
@@ -69,6 +69,34 @@ export function getDamageFactorForGearScore(gearScore: number, trace?: Tracer) {
   //   factorHigh,
   //   damageFactorForGS: result,
   // })
+  return result
+}
+
+export interface WeaponScalingInfo {
+  key: string
+  scaling: number
+  tier: string
+}
+export function getWeaponScalingTiers(scaling: Record<AttributeRef, number>, tiers: WeaponTiersData[]): WeaponScalingInfo[] {
+  const result: WeaponScalingInfo[] = []
+  if (!scaling) {
+    return result
+  }
+  for (const key in scaling) {
+    const value = scaling[key]
+    if (!value) {
+      continue
+    }
+    const tier = tiers.find((it) => value >= it.ScalingStart)
+    if (!tier) {
+      continue
+    }
+    result.push({
+      key,
+      scaling: value,
+      tier: tier.Tier
+    })
+  }
   return result
 }
 

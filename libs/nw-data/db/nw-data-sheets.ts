@@ -280,6 +280,8 @@ export abstract class NwDataSheets {
   public armorItemsByIdMap = primaryIndex(this.armorItemsAll, 'WeaponID')
   public armorItemsById = indexLookup(this.armorItemsByIdMap)
 
+  public weaponTiersAll = table(() => this.loadDatasheets(DATASHEETS.WeaponTiersData))
+
   public weaponItemsAll = table(() => this.loadDatasheets(DATASHEETS.WeaponItemDefinitions))
   public weaponItemsByIdMap = primaryIndex(this.weaponItemsAll, 'WeaponID')
   public weaponItemsById = indexLookup(this.weaponItemsByIdMap)

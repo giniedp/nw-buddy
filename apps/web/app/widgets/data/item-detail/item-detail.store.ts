@@ -25,7 +25,7 @@ import {
 import { HouseItems, MasterItemDefinitions } from '@nw-data/generated'
 import { map, pipe } from 'rxjs'
 import { injectNwData } from '~/data'
-import { humanize, resourceValue, resourceValueOf } from '~/utils'
+import { resourceValue, resourceValueOf } from '~/utils'
 import {
   fetchItemPerkSlots,
   selectDescription,
@@ -106,12 +106,10 @@ export const ItemDetailStore = signalStore(
           item: item(),
         }
       },
-      loader: ({ params: { item }}): Promise<EquipmentSet> => {
-        // TODO: load equipmentests
-        const id = item?.EquipmentSetId
-        return db.equipmentSetsById(id)
+      loader: ({ params: { item } }): Promise<EquipmentSet> => {
+        return db.equipmentSetsById(item?.EquipmentSetId)
       },
-      keepPrevious: true
+      keepPrevious: true,
     })
     return {
       item,
