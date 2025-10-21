@@ -20,10 +20,14 @@ export class PocketbaseAdapter extends BackendAdapter {
   public userSignedOut = new Subject<SessionState>()
   public session = computed(() => {
     const { token, record } = this.authState()
+    const avatarUrl = record?.['avatar'] 
+      ? this.client.files.getURL(record, record['avatar'], { thumb: '64x64' })
+      : undefined
     return {
       token,
       id: record?.id,
       name: record?.['name'] as string,
+      avatarUrl,
     }
   })
 
@@ -55,12 +59,56 @@ export class PocketbaseAdapter extends BackendAdapter {
       .authWithOAuth2({
         provider: 'discord',
       })
-      .then((data) => {
+      .then(async (data) => {
+        const meta = data.meta
+
+        // Update user profile with Discord avatar and name on every login
+        // This ensures the avatar stays in sync if they update it on Discord
+        if (meta?.['avatarUrl']) {
+          try {
+            const formData = new FormData()
+
+            // Fetch the Discord avatar
+            const response = await fetch(meta['avatarUrl'])
+            if (response.ok) {
+              const file = await response.blob()
+              formData.append('avatar', file)
+            }
+            
+            if (meta['avatarURL']) {
+              formData.append('avatar_url', meta['avatarURL'])
+            }
+
+            // Set the user's display name from Discord
+            if (meta['name']) {
+              formData.append('name', meta['name'])
+            }
+
+            if (meta['id']) {
+              formData.append('discord_id', meta['id'])
+            }
+
+            // Set the user's username from Discord (if available)
+            if (meta['username']) {
+              formData.append('username', meta['username'])
+            }
+
+            // Update the user record with avatar, name, and username
+            await this.client.collection('users').update(data.record.id, formData)
+          } catch (error) {
+            console.error('Failed to update user profile with Discord avatar:', error)
+          }
+        }
+
         this.isOnline.set(true)
+        const avatarUrl = data.record?.['avatar']
+          ? this.client.files.getURL(data.record, data.record['avatar'], { thumb: '64x64' })
+          : undefined
         this.userSignedIn.next({
           id: data.record.id,
           name: data.record?.['name'] as string,
           token: data.token,
+          avatarUrl,
         })
       })
   }

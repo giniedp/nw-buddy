@@ -64,6 +64,19 @@ const PAGE_ROUTES: Routes = [
   { path: 'character', loadChildren: () => import('./pages/tools/character').then((m) => m.ROUTES) },
   { path: 'inventory', loadChildren: () => import('./pages/tools/inventory').then((m) => m.ROUTES) },
   { path: 'gearsets', loadChildren: () => import('./pages/tools/gearsets').then((m) => m.ROUTES) },
+  { 
+    path: 'builds',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/tools/gearsets/gearsets-builds-page.component').then((m) => m.GearsetsBuildsPageComponent),
+      },
+      {
+        path: ':userid/:id',
+        loadComponent: () => import('./pages/tools/gearsets/gearset-builds-detail.component').then((m) => m.GearsetBuildsDetailComponent),
+      },
+    ],
+  },
   { path: 'skill-trees', loadChildren: () => import('./pages/tools/skill-trees').then((m) => m.ROUTES) },
   { path: 'damage-calculator', loadChildren: () => import('./pages/tools/damage-calculator').then((m) => m.ROUTES) },
   { path: 'umbral-calculator', loadChildren: () => import('./pages/tools/umbral-calculator').then((m) => m.ROUTES) },

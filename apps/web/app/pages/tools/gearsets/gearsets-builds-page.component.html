@@ -1,0 +1,199 @@
+<ion-header class="bg-base-300">
+  <div class="flex flex-col-reverse md:flex-row">
+    <div class="flex flex-row items-center flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
+      <div class="leading-tight ms-4">
+        <h3 class="flex items-center gap-2">
+          <nwb-icon [icon]="iconGlobe" class="w-5 h-5" />
+          Public Builds
+        </h3>
+        <div class="text-sm text-base-content/50 italic">
+          @if (totalCount() !== displayCount()) {
+          Showing {{ displayCount() }} of {{ totalCount() }}
+          } @else {
+          Total: {{ totalCount() }}
+          }
+        </div>
+      </div>
+      <span class="flex-1"></span>
+      @if (!isEmpty() || isTagFilterActive()) {
+      <div class="flex flex-row items-center gap-1">
+        @if (tags()?.length) {
+        <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
+          <span class="indicator">
+            <nwb-icon [icon]="iconMore" class="w-5 h-5" />
+            @if (isTagFilterActive()) {
+            <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
+            }
+          </span>
+        </button>
+        <ng-template #tplMenu>
+          <div class="bg-base-200 border border-base-100 w-80 rounded-b-md z-10 p-2" cdkMenu>
+            <div class="grid grid-cols-3 gap-1">
+              <label (click)="toggleTagsOperator(); (false)" class="label col-span-3 py-2">
+                <input class="toggle checked:toggle-primary" type="checkbox" [ngModel]="tagsOperator() === 'AND'" />
+                Match All
+              </label>
+              @for (item of tags(); track $index) {
+              <button class="btn btn-sm btn-primary" [class.btn-outline]="!item.active" (click)="toggleTag(item.tag)">
+                {{ item.tag }}
+              </button>
+              }
+            </div>
+          </div>
+        </ng-template>
+        }
+
+        <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplSort" [tooltip]="'Sort by'">
+          <nwb-icon [icon]="iconSort" class="w-5 h-5" />
+        </button>
+        <ng-template #tplSort>
+          <div class="bg-base-200 border border-base-100 w-52 rounded-b-md z-10 p-2" cdkMenu>
+            <div class="menu menu-sm p-0">
+              <li>
+                <button (click)="handleSortChange('likes')" [class.active]="sortBy() === 'likes'"
+                  class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <nwb-icon [icon]="iconRating" class="w-4 h-4" />
+                    <span>Most Liked</span>
+                  </div>
+                  @if (sortBy() === 'likes') {
+                  <span class="text-xs">{{ sortDirection() === 'desc' ? '↓' : '↑' }}</span>
+                  }
+                </button>
+              </li>
+              <li>
+                <button (click)="handleSortChange('date')" [class.active]="sortBy() === 'date'"
+                  class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <nwb-icon [icon]="iconTime" class="w-4 h-4" />
+                    <span>Recently Updated</span>
+                  </div>
+                  @if (sortBy() === 'date') {
+                  <span class="text-xs">{{ sortDirection() === 'desc' ? '↓' : '↑' }}</span>
+                  }
+                </button>
+              </li>
+              <li>
+                <button (click)="handleSortChange('gearscore')" [class.active]="sortBy() === 'gearscore'"
+                  class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" />
+                    <span>Gear Score</span>
+                  </div>
+                  @if (sortBy() === 'gearscore') {
+                  <span class="text-xs">{{ sortDirection() === 'desc' ? '↓' : '↑' }}</span>
+                  }
+                </button>
+              </li>
+              <li>
+                <button (click)="handleSortChange('name')" [class.active]="sortBy() === 'name'"
+                  class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <nwb-icon [icon]="iconAZ" class="w-4 h-4" />
+                    <span>Name (A-Z)</span>
+                  </div>
+                  @if (sortBy() === 'name') {
+                  <span class="text-xs">{{ sortDirection() === 'asc' ? '↓' : '↑' }}</span>
+                  }
+                </button>
+              </li>
+            </div>
+          </div>
+        </ng-template>
+
+        <button (click)="handleRefresh()" class="join-item btn btn-ghost" [tooltip]="'Refresh'"
+          [disabled]="isLoading()">
+          <nwb-icon [icon]="iconRefresh" class="w-4 h-4" [class.animate-spin]="isLoading()" />
+        </button>
+      </div>
+      }
+    </div>
+    @if (!isEmpty() || isTagFilterActive()) {
+    <div class="flex-none p-2 w-full md:max-w-[256px]">
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
+    </div>
+    }
+  </div>
+</ion-header>
+<ion-content>
+  @if (isLoading() && totalCount() === 0) {
+  <ng-container [ngTemplateOutlet]="tplLoading" />
+  } @else if (!isAvailable()) {
+  <ng-container [ngTemplateOutlet]="tplNoPublic" />
+  } @else if (isEmpty()) {
+  <ng-container [ngTemplateOutlet]="tplEmpty" />
+  } @else if (!items()?.length) {
+  <ng-container [ngTemplateOutlet]="tplFilterEmpty" />
+  } @else {
+  <ng-container [ngTemplateOutlet]="tplGrid" />
+  }
+</ion-content>
+
+<ng-template #tplLoading>
+  <div class="h-full flex items-center justify-center">
+    <span class="loading loading-xl loading-ring"></span>
+  </div>
+</ng-template>
+
+<ng-template #tplNoPublic>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconGlobe" class="w-5 h-5 text-error" />
+      <div>
+        <h3 class="font-bold">Not available</h3>
+        <span>Public builds browser requires an active backend connection. Please sign in to continue.</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplEmpty>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconGearset" class="w-10 h-10" />
+      <div>
+        <h3 class="font-bold">No public builds yet</h3>
+        <span>Be the first to publish your builds!</span>
+      </div>
+      <div class="flex-none">
+        <a class="btn btn-sm btn-primary" [routerLink]="['/gearsets']">
+          View My Gearsets
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplFilterEmpty>
+  <div class="h-full flex items-center justify-center">
+    <div class="alert">
+      <nwb-icon [icon]="iconEmpty" class="w-5 h-5 text-error" />
+      <div>
+        <h3 class="font-bold">No results</h3>
+        <div>Couldn't find any builds matching your filters</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplGrid>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+    @for (item of items(); track trackBy(item)) {
+    <nwb-gearset-builds-card [gearset]="item" (import)="handleImportClicked($event)" />
+    }
+  </div>
+
+  @if (hasMore() && !isLoading()) {
+  <div class="flex justify-center p-4">
+    <button class="btn btn-primary" (click)="handleLoadMore()">
+      Load More
+    </button>
+  </div>
+  }
+
+  @if (isLoading() && totalCount() > 0) {
+  <div class="flex justify-center p-4">
+    <span class="loading loading-lg loading-spinner"></span>
+  </div>
+  }
+</ng-template>
