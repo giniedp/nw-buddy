@@ -23,7 +23,7 @@
     <span class="text-zinc-500">Tier</span> <span class="font-bold text-white"> {{ text }}</span>
   </div>
 }
-@if (weight.value(); as text) {
+@if (weight(); as text) {
   <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
     <span class="font-bold text-white">{{ text | number: '1.1-1' }}</span> <span class="text-zinc-500"> Weight</span>
   </div>
@@ -52,5 +52,16 @@
         {{ it | nwText }}{{ last ? '' : ',' }}
       }
     </span>
+  </div>
+}
+@if (scalesWith()?.length) {
+  <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out" class="flex flex-row gap-2">
+    <span class="text-zinc-500">Scales with: </span>
+    @for (row of scalesWith(); track $index; let last = $last) {
+      <div class="whitespace-nowrap">
+        <span class="font-bold text-white uppercase">{{ row.key }} {{ row.scaling * 10000 }}%</span>
+        <span class="text-zinc-500 uppercase"> ({{ row.tier }}){{ last ? '' : ',' }}</span>
+      </div>
+    }
   </div>
 }

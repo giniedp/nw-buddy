@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, HostBinding, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { getWeaponScaling, getWeaponScalingTiers } from '@nw-data/common'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
-import { apiResource } from '~/utils'
+import { apiResource, resourceValue } from '~/utils'
+import { ItemStatComponent } from '../../../ui/item-frame'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
   selector: 'nwb-item-detail-info',
   templateUrl: './item-detail-info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule],
+  imports: [CommonModule, NwModule, ItemStatComponent],
   host: {
     class: 'block',
-    "[class.hidden]": 'isHidden()',
+    '[class.hidden]': 'isHidden()',
   },
 })
 export class ItemDetailInfoComponent {
@@ -29,21 +31,22 @@ export class ItemDetailInfoComponent {
   protected canReplaceGem = computed(() => this.item()?.CanHavePerks && this.item()?.CanReplaceGem)
   protected cantReplaceGem = computed(() => this.item()?.CanHavePerks && !this.item()?.CanReplaceGem)
 
-  protected weight = apiResource({
-    request: () => {
+  protected weight = resourceValue({
+    defaultValue: null,
+    keepPrevious: true,
+    params: () => {
       return {
         ref: this.item()?.ItemStatsRef,
         record: this.record(),
       }
     },
-    loader: async ({ request }) => {
-      const item = request.record
-      if (!item) {
+    loader: async ({ params: { ref, record } }) => {
+      if (!record || !ref) {
         return null
       }
-      const weapon = await this.db.weaponItemsById(request.ref)
-      const armor = await this.db.armorItemsById(request.ref)
-      return Math.floor(weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10
+      const weapon = await this.db.weaponItemsById(ref)
+      const armor = await this.db.armorItemsById(ref)
+      return Math.floor(weapon?.WeightOverride || armor?.WeightOverride || record?.Weight) / 10
     },
   })
 
@@ -62,6 +65,27 @@ export class ItemDetailInfoComponent {
           return category?.DisplayText
         }),
       )
+    },
+  })
+
+  protected scalesWith = resourceValue({
+    keepPrevious: true,
+    defaultValue: [],
+    params: () => {
+      return {
+        item: this.store.item(),
+      }
+    },
+    loader: async ({ params: { item } }) => {
+      const ref = item?.ItemStatsRef
+      if (!ref) {
+        return []
+      }
+      const weapon = await this.db.weaponItemsById(ref)
+      return this.db.weaponTiersAll().then((list) => {
+        const scaling = getWeaponScaling(item, weapon)
+        return getWeaponScalingTiers(scaling, list)
+      })
     },
   })
 }

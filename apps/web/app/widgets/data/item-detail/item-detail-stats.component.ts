@@ -5,8 +5,6 @@ import { FormsModule } from '@angular/forms'
 import {
   getItemStatsArmor,
   getItemStatsWeapon,
-  getWeaponScaling,
-  getWeaponScalingTiers,
   isItemArmor,
   isItemHeartGem,
   isItemJewelery,
@@ -49,7 +47,6 @@ export class ItemDetailStatsComponent {
       weapon: null,
       armor: null,
       rune: null,
-      tiers: [],
     },
     params: () => {
       return {
@@ -61,20 +58,14 @@ export class ItemDetailStatsComponent {
       const weapon = await this.db.weaponItemsById(ref)
       const armor = await this.db.armorItemsById(ref)
       const rune = await this.db.runeItemsById(ref)
-      const tiers = await this.db.weaponTiersAll().then((list) => {
-        const scaling = getWeaponScaling(item, weapon)
-        return getWeaponScalingTiers(scaling, list)
-      })
       return {
         weapon,
         armor,
         rune,
-        tiers,
       }
     },
   })
 
-  protected tiers = computed(() => this.resource()?.tiers)
   protected stats = computed(() => {
     if (!this.store.isLoaded()) {
       return null
@@ -102,7 +93,6 @@ export class ItemDetailStatsComponent {
       ...getItemStatsArmor(item, armor, gearScore),
     ]
   })
-
 
   protected editIcon = svgEllipsisVertical
 
