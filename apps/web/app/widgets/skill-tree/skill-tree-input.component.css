@@ -116,3 +116,50 @@
     transform: scale(0.66);
   }
 }
+
+/* Readonly / disabled tree styling */
+.is-readonly {
+  .grid-cell {
+    cursor: default;
+    
+    picture {
+      /* Change cyan outline to dark grey */
+      @apply outline-neutral;
+    }
+    
+    /* Mute the connecting lines in readonly mode */
+    &::before,
+    &::after {
+      opacity: 0.2;
+    }
+  }
+  
+  /* Checked cells in readonly mode should have darker styling for better visibility */
+  .is-checked {
+    picture {
+      /* Much darker outline for active skills */
+      @apply outline-gray-600;
+      img {
+        /* Slightly reduce opacity to show it's not interactive */
+        opacity: 0.8;
+      }
+    }
+    
+    /* Active cells should have darker lines (more visible than inactive but not bright) */
+    &::before,
+    &::after {
+      opacity: 0.5;
+    }
+  }
+  
+  /* Unlocked cells shouldn't show pointer cursor */
+  .is-unlocked {
+    cursor: default;
+    
+    /* Override the bright lines with muted version */
+    &::before,
+    &::after {
+      opacity: 0.2;
+    }
+  }
+}
