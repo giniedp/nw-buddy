@@ -1,17 +1,16 @@
-import { CommonModule } from '@angular/common'
+import { DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { getWeaponScaling, getWeaponScalingTiers } from '@nw-data/common'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { apiResource, resourceValue } from '~/utils'
-import { ItemStatComponent } from '../../../ui/item-frame'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
   selector: 'nwb-item-detail-info',
   templateUrl: './item-detail-info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemStatComponent],
+  imports: [NwModule, DecimalPipe],
   host: {
     class: 'block',
     '[class.hidden]': 'isHidden()',
