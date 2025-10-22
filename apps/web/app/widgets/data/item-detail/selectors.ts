@@ -138,11 +138,12 @@ export async function fetchItemPerkSlots(
     const isCharmEmpty = isPerkEmptyCharmSlot(perk)
     const isGem = isPerkGem(perk || bucket)
     const isGemEmpty = isPerkEmptyGemSlot(perk)
+    const isEditable = (item.CanReplaceGem && (isGem || isCharmEmpty)) || isCharm || isCharmEmpty
 
     const perkOriginal = await db.perksById(perkId)
     const perkWasCharm = isPerkCharm(perkOriginal || bucket) || isPerkEmptyCharmSlot(perkOriginal)
     const perkWasGem = isPerkGem(perkOriginal || bucket) || isPerkEmptyGemSlot(perkOriginal)
-
+    const perkWasEditable = (item.CanReplaceGem && perkWasGem) || perkWasCharm
     result.push({
       key: key,
       perkIdOld: perkIdOverride ? null : perkIdOld,
@@ -153,7 +154,7 @@ export async function fetchItemPerkSlots(
       bucket: bucket,
       socket: isCharm || isGem,
       empty: isCharmEmpty || isGemEmpty,
-      editable: !!bucket || (item.CanReplaceGem && (perkWasGem || isGem)) || (perkWasCharm || isCharm),
+      editable: !!bucket || isEditable || perkWasEditable,
     })
   }
   return result
