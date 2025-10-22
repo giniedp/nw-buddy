@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"nw-buddy/tools/formats/dds"
 	"nw-buddy/tools/formats/pak"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/env"
 	"os"
+	"path"
 	"slices"
 	"strings"
 	"text/tabwriter"
@@ -25,6 +27,7 @@ var flgMaxDepth int
 var flgMaxEntries int
 var flgPrintTree bool
 var flgPrintCsv bool
+var flgPrintCount bool
 var flgOutFile string
 var Cmd = &cobra.Command{
 	Use:           "list",
@@ -39,10 +42,11 @@ func init() {
 	Cmd.Flags().BoolVarP(&flgRegex, "regex", "e", false, "if set, arguments are treated as regular expressions")
 	Cmd.Flags().BoolVar(&flgPrintCsv, "csv", false, "print list as csv")
 	Cmd.Flags().BoolVar(&flgPrintTree, "tree", false, "print as file tree")
+	Cmd.Flags().BoolVar(&flgPrintCount, "count", false, "print only file count")
 	Cmd.Flags().IntVarP(&flgMaxDepth, "depth", "d", 0, "max tree depth (only for --tree)")
 	Cmd.Flags().IntVarP(&flgMaxEntries, "entries", "n", 0, "max entries per folder (only for --tree)")
 	Cmd.Flags().StringVarP(&flgOutFile, "out", "o", "", "ouput file")
-	Cmd.MarkFlagsMutuallyExclusive("csv", "tree")
+	Cmd.MarkFlagsMutuallyExclusive("csv", "tree", "count")
 }
 
 func run(ccmd *cobra.Command, args []string) {
@@ -60,6 +64,8 @@ func run(ccmd *cobra.Command, args []string) {
 		printTree(out, files)
 	} else if flgPrintCsv {
 		printCsv(out, files)
+	} else if flgPrintCount {
+		printExtensions(out, files)
 	} else {
 		printList(out, files)
 	}
@@ -139,4 +145,39 @@ func printTree(w *os.File, files []nwfs.File) {
 		Symbols:    [4]string{"│ ", "├─", "└─", "  "},
 	})
 	tw.Flush()
+}
+
+type Counter struct {
+	Size  int
+	Count int
+}
+
+func printExtensions(w io.Writer, files []nwfs.File) {
+	extensions := make(map[string]Counter, 0)
+	slices.SortStableFunc(files, func(a, b nwfs.File) int {
+		return strings.Compare(a.Path(), b.Path())
+	})
+	totalSize := 0
+	for _, file := range files {
+		size := file.Stat().Size()
+		filePath := file.Path()
+		ext := path.Ext(filePath)
+		if dds.IsDDSSplitPart(filePath) {
+			ext = ".dds" + ext
+		}
+		counter := extensions[ext]
+		counter.Count += 1
+		counter.Size += int(size)
+		extensions[ext] = counter
+		totalSize += int(size)
+	}
+
+	tw := tabwriter.NewWriter(w, 0, 0, 1, ' ', 0)
+	fmt.Fprintf(tw, "Extension\tfiles\tsize\n")
+	for ext, counter := range extensions {
+		fmt.Fprintf(tw, "%s\t%d\t%s\n", ext, counter.Count, humanize.Bytes(uint64(counter.Size)))
+	}
+	tw.Flush()
+	fmt.Fprintf(w, "Total size: %s\n", humanize.Bytes(uint64(totalSize)))
+	fmt.Fprintf(w, "File count: %d\n", len(files))
 }

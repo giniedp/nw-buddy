@@ -331,7 +331,27 @@ func WalkEncounterSpawns(slice *nwt.SliceComponent, refs []nwt.LocalEntityRef) i
 		}
 	}
 }
-
+func WalkEncounterObjectives(slice *nwt.SliceComponent, refs []nwt.LocalEntityRef) iter.Seq2[*nwt.AZ__Entity, nwt.UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833] {
+	return func(yield func(*nwt.AZ__Entity, nwt.UUID_B27B9A2C_895B_5DBE_813D_DD7A16EBE833) bool) {
+		for _, ref := range refs {
+			entity := FindEntityById(slice, ref.EntityId.Id)
+			encounter := findEncounterComponent(entity)
+			if encounter == nil {
+				continue
+			}
+			for _, spawn := range encounter.M_objectives.Element {
+				if !yield(entity, spawn) {
+					return
+				}
+			}
+			for e, spawn := range WalkEncounterObjectives(slice, encounter.M_stages.Element) {
+				if !yield(e, spawn) {
+					return
+				}
+			}
+		}
+	}
+}
 func findEncounterComponent(entity *nwt.AZ__Entity) *nwt.EncounterComponent {
 	for _, component := range entity.Components.Element {
 		switch v := component.(type) {
@@ -347,7 +367,7 @@ func ParseEncounterName(name string) string {
 	if strings.Contains(name, "RandomEncounter") {
 		return "random"
 	}
-	if strings.Contains(name, "enc_darkness") {
+	if strings.Contains(name, "enc_darkness") || strings.Contains(name, "darknesshunt") {
 		// e.g.: "Enc_Darkness_Major_Monolith_00"
 		return "darkness"
 	}
@@ -403,6 +423,18 @@ func ParseEncounterName(name string) string {
 	if strings.Contains(name, "_quest") {
 		// e.g.: "enc_quest_apophis"
 		return "quest"
+	}
+	if strings.Contains(name, "_gimmick") || strings.Contains(name, "gimmick_") {
+		// e.g.: "enc_dw_gimmick_castleoutdoor_rotatingbookcase_02"
+		return "gimmick"
+	}
+	if strings.Contains(name, "_catacombs") {
+		// e.g.: "enc_catacombs_extraction"
+		return "catacombs"
+	}
+	if strings.Contains(name, "_arena") {
+		// e.g.: "enc_arena_pirate_00"
+		return "arena"
 	}
 	if name != "" {
 		slog.Debug("unmapped encounter", "name", name)

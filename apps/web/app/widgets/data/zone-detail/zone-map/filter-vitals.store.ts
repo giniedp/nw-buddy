@@ -10,11 +10,15 @@ import { BranchExpression } from '~/ui/expression-branch'
 
 const KNOWN_ENCOUNTER_TYPES = [
   '',
+  'arena',
+  'catacombs',
+  'daily',
   'darkness',
   'dungeon',
+  'gimmick',
   'goblin',
   'hunt_the_hunter',
-  'other',
+  'quest',
   'raid',
   'random',
   'sandworm',
@@ -24,6 +28,7 @@ const KNOWN_ENCOUNTER_TYPES = [
   'trial',
   'worldboss',
   'worldevent',
+  'other',
 ]
 
 export interface FilterVitalsState {

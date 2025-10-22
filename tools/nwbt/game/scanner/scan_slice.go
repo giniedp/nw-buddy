@@ -533,6 +533,23 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[SpawnNode] {
 							}
 						}
 					}
+					for _, spawn := range game.WalkEncounterObjectives(node.Slice, v.M_stages.Element) {
+						assets := make([]nwt.AzAsset, 0)
+						switch objective := spawn.Element.(type) {
+						case nwt.SliceDestroyedObjective:
+							assets = utils.AppendUniqNoZero(assets, objective.M_trackedslice)
+							assets = utils.AppendUniqNoZero(assets, objective.M_trackedalias)
+						case nwt.SliceSpawnedObjective:
+							assets = utils.AppendUniqNoZero(assets, objective.M_trackedslice)
+							assets = utils.AppendUniqNoZero(assets, objective.M_trackedalias)
+						case nwt.BossPhaseObjective:
+							assets = utils.AppendUniqNoZero(assets, objective.M_trackedslice)
+							assets = utils.AppendUniqNoZero(assets, objective.M_trackedalias)
+						}
+						for _, asset := range assets {
+							node.WalkAsset(asset)
+						}
+					}
 					node.Transform = tmpTm
 				}
 			}
