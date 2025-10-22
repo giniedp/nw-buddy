@@ -117,6 +117,7 @@ export async function fetchItemPerkSlots(
   const swaps = await db.itemPerkSwapDataAll()
   const slots = getItemPerkSlots(item)
   const result: ItemPerkSlot[] = []
+
   for (const slot of slots) {
     const key = slot.perkId ? slot.perkKey : slot.bucketKey
     let perkId = slot.perkId
@@ -137,6 +138,11 @@ export async function fetchItemPerkSlots(
     const isCharmEmpty = isPerkEmptyCharmSlot(perk)
     const isGem = isPerkGem(perk || bucket)
     const isGemEmpty = isPerkEmptyGemSlot(perk)
+
+    const perkOriginal = await db.perksById(perkId)
+    const perkWasCharm = isPerkCharm(perkOriginal || bucket) || isPerkEmptyCharmSlot(perkOriginal)
+    const perkWasGem = isPerkGem(perkOriginal || bucket) || isPerkEmptyGemSlot(perkOriginal)
+
     result.push({
       key: key,
       perkIdOld: perkIdOverride ? null : perkIdOld,
@@ -147,7 +153,7 @@ export async function fetchItemPerkSlots(
       bucket: bucket,
       socket: isCharm || isGem,
       empty: isCharmEmpty || isGemEmpty,
-      editable: !!bucket || (item.CanReplaceGem && isGem) || isCharm,
+      editable: !!bucket || (item.CanReplaceGem && (perkWasGem || isGem)) || (perkWasCharm || isCharm),
     })
   }
   return result
