@@ -34,6 +34,7 @@ var flgFmtDatasheet string
 var flgFmtLocales string
 var flgFmtObjects string
 var flgFmtDDS string
+var flgFmtLuac string
 var flgCrcFile string
 var flgUuidFile string
 
@@ -55,6 +56,7 @@ const (
 	FMT_PNG   = "png"   // for dds
 	FMT_WEBP  = "webp"  // for dds
 	FMT_MERGE = "merge" // merges dds parts
+	FMT_LUA   = "lua"   // for luac files
 )
 
 func init() {
@@ -71,6 +73,7 @@ func init() {
 	Cmd.Flags().StringVar(&flgFmtObjects, "x-objects", "", "transforms object streams to to given format. Possible values: json")
 	Cmd.Flags().StringVar(&flgFmtLocales, "x-loc", "", "transforms .loc.xml files to given format. Possible values: json")
 	Cmd.Flags().StringVar(&flgFmtDDS, "x-dds", "merge", "transforms .dds files to given format. Possible values: merge, png, webp")
+	Cmd.Flags().StringVar(&flgFmtLuac, "x-luac", "", "transforms .luac files to given format. Possible values: lua")
 
 	Cmd.Flags().StringVar(&flgCrcFile, "crc-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-crc.json"), "file with crc hashes. Only used for object-stream conversion")
 	Cmd.Flags().StringVar(&flgUuidFile, "uuid-file", path.Join(env.WorkDir(), "tools/nwbt/rtti/nwt/nwt-types.json"), "file with uuid hashes. Only used for object-stream conversion")
@@ -229,6 +232,9 @@ func processTask(task *Task) {
 		return
 	case ".dds":
 		processDDS(task, flgFmtDDS)
+		return
+	case ".luac":
+		processLua(task, flgFmtLuac)
 		return
 	case ".xml":
 		if strings.HasSuffix(task.Input.Path(), ".loc.xml") {
