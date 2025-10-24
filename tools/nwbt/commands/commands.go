@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"nw-buddy/tools/commands/cache"
 	"nw-buddy/tools/commands/cat"
+	"nw-buddy/tools/commands/crc"
 	"nw-buddy/tools/commands/list"
 	"nw-buddy/tools/commands/models"
 	"nw-buddy/tools/commands/pull"
@@ -46,4 +47,5 @@ func init() {
 	rootCmd.AddCommand(serve.Cmd)
 	rootCmd.AddCommand(cache.Cmd)
 	rootCmd.AddCommand(stat.Cmd)
+	rootCmd.AddCommand(crc.Cmd)
 }
