@@ -16,31 +16,63 @@ import { NW_MAP_NEWWORLD_VITAEETERNA } from './constants'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
-const CREATURE_TYPE_MARKER = {
-  Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+const CREATURE_TYPE_MARKER: Record<CreatureType, string> = {
   Critter: 'assets/icons/marker/marker_ai_level_bg_critter.png',
-  Dungeon: 'assets/icons/marker/marker_ai_level_bg_dungeon.png',
-  'Dungeon+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png', // TODO
-  'Dungeon-': 'assets/icons/marker/marker_ai_level_bg_dungeonminus.png',
-  DungeonBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
-  DungeonMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
-  Elite: 'assets/icons/marker/marker_ai_level_bg_group.png',
-  'Elite+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
-  'Elite-': 'assets/icons/marker/marker_ai_level_bg_groupminus.png',
-  EliteBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
-  EliteMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
-  Player: 'assets/icons/marker/marker_ai_level_bg_groupplus_ally.png',
-  'Named_Solo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png', // TODO
-  Solo: 'assets/icons/marker/marker_ai_level_bg_solo.png',
-  'Solo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png',
+  Spell: 'assets/icons/marker/marker_ai_level_bg_critter.png',
+  //
   'Solo-': 'assets/icons/marker/marker_ai_level_bg_solominus.png',
-  Raid10: 'assets/icons/marker/marker_ai_level_bg_group.png',
+  Solo: 'assets/icons/marker/marker_ai_level_bg_solominus.png',
+  Named_Solo: 'assets/icons/marker/marker_ai_level_bg_solominus.png',
+  OutpostRushSolo: 'assets/icons/marker/marker_ai_level_bg_solominus.png',
+  'Catacombs-': 'assets/icons/marker/marker_ai_level_bg_solominus.png',
+  Catacombs: 'assets/icons/marker/marker_ai_level_bg_solominus.png',
+  //
+  'Solo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png',
+  'Named_Solo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png',
+  'OutpostRushSolo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png',
+  'Catacombs+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png',
+  //
+  'Elite-': 'assets/icons/marker/marker_ai_level_bg_groupminus.png',
+  //
+  Elite: 'assets/icons/marker/marker_ai_level_bg_group.png',
+  //
+  'Elite+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  'OutpostRushGroup+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  //
+  Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  'Boss+': 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  //
+  'Dungeon-': 'assets/icons/marker/marker_ai_level_bg_dungeonminus.png',
+  'Raid10-': 'assets/icons/marker/marker_ai_level_bg_dungeonminus.png',
+  'Raid20-': 'assets/icons/marker/marker_ai_level_bg_dungeonminus.png',
+  //
+  Dungeon: 'assets/icons/marker/marker_ai_level_bg_dungeon.png',
+  Raid10: 'assets/icons/marker/marker_ai_level_bg_dungeon.png',
+  //
+  DungeonMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  'Dungeon+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  EliteMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  "Dungeon+_NoCurrency": 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
   'Raid10+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
-  'Raid10-': 'assets/icons/marker/marker_ai_level_bg_groupminus.png',
-  Raid10Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
   'Raid20+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
-  'Raid20-': 'assets/icons/marker/marker_ai_level_bg_groupminus.png',
+  CatacombsMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  //
+  DungeonBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  EliteBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  Raid10Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
   Raid20Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  SoloBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  CatacombsBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  //
+  Ally: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  //
+  AllyObjective: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  // not set in lua files, just guessed
+  Player: 'assets/icons/marker/marker_ai_level_bg_groupplus_ally.png',
+  Solo_Quest: 'assets/icons/marker/marker_ai_level_bg_critter.png',
+  Solo_StarterBeach: 'assets/icons/marker/marker_ai_level_bg_critter.png',
+  "Solo+_StarterBeach": 'assets/icons/marker/marker_ai_level_bg_critter.png',
+  "Solo-_StarterBeach": 'assets/icons/marker/marker_ai_level_bg_critter.png',
 }
 
 export interface VitalFamilyInfo {
