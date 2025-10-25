@@ -160,7 +160,7 @@ const MAP_CONFIGS: Record<string, MapConfig> = {
   nw_catacomb_00: smallMapConfig('nw_catacomb_00', {
     bounds: [0, 0, 5 * 128, 9 * 128],
     //boundsPoi: [0, 0, 5 * 128, 9 * 128],
-    zoomPad: [512, 512, 512, 512],
+    zoomPad: [2048, 512, 2048, 512],
     isCatacombs: true,
     isOpenWorld: false,
     images: getCatacombImages(),
@@ -296,10 +296,10 @@ function catacombTileSource(tile: ReturnTypeOf<typeof parseCatacombTile>, tileSi
     type: 'image',
     url: `${environment.nwTilesUrl}/lyshineui/worldtiles/nw_catacombs/${tile.MapTile}.webp`,
     coordinates: [
-      [tile.OffsetX + 0 * tileSize, tile.OffsetY + 0 * tileSize],
-      [tile.OffsetX + 1 * tileSize, tile.OffsetY + 0 * tileSize],
-      [tile.OffsetX + 1 * tileSize, tile.OffsetY + 1 * tileSize],
       [tile.OffsetX + 0 * tileSize, tile.OffsetY + 1 * tileSize],
+      [tile.OffsetX + 1 * tileSize, tile.OffsetY + 1 * tileSize],
+      [tile.OffsetX + 1 * tileSize, tile.OffsetY + 0 * tileSize],
+      [tile.OffsetX + 0 * tileSize, tile.OffsetY + 0 * tileSize],
     ],
   }
 }
