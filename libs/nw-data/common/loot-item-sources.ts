@@ -212,6 +212,24 @@ function buildVitalLootContext({
   })
 }
 
+function dynamicTagInjector(context: LootContext) {
+  const injectedTags = new Set<string>()
+  return {
+    add: (tag: string) => {
+      if (context.tags.has(tag)) {
+        return
+      }
+      injectedTags.add(tag)
+      context.tags.add(tag)
+    },
+    dispose: () => {
+      for (const tag of injectedTags) {
+        context.tags.delete(tag)
+      }
+    },
+  }
+}
+
 function doesVitalDropLoot(vital: VitalWithContext, loot: LootNode) {
   // const doDebug = eqCaseInsensitive(vital.vital.VitalsID, 'anubianguardian_brute_boss')
   if (!vital.tables.length || !loot.table) {
@@ -220,16 +238,22 @@ function doesVitalDropLoot(vital: VitalWithContext, loot: LootNode) {
   if (!vital.tables.some((it) => eqCaseInsensitive(it, loot.table.LootTableID))) {
     return false
   }
-  let node = loot
-  while (node) {
-    if (node.table && !canAccessLootTableRow(vital.context, node.table, node.row)) {
+  const dynamicTags = dynamicTagInjector(vital.context)
+  while (loot) {
+    if (loot.table) {
+      dynamicTags.add(loot.table.LootTableID)
+    }
+    if (loot.table && !canAccessLootTableRow(vital.context, loot.table, loot.row)) {
+      dynamicTags.dispose()
       return false
     }
-    if (node.bucket && !canAccessLootBucketRow(vital.context, node.bucket)) {
+    if (loot.bucket && !canAccessLootBucketRow(vital.context, loot.bucket)) {
+      dynamicTags.dispose()
       return false
     }
-    node = node.next
+    loot = loot.next
   }
+  dynamicTags.dispose()
   return true
 }
 
@@ -240,6 +264,7 @@ export interface DroppedByRow {
 
 function resolveDroppedByVitals(roots: LootNode[], vitals: VitalWithContext[], tagsToKeep: Set<string>) {
   const collection = new CaseInsensitiveMap<string, Set<LootNode>>()
+
   for (const source of roots) {
     for (const it of vitals) {
       if (collection.get(it.id)?.has(source)) {
@@ -339,15 +364,22 @@ function doesItemDropLoot(item: ItemWithContext, loot: LootNode) {
   if (!eqCaseInsensitive(item.table, loot.table.LootTableID)) {
     return false
   }
+  const dynamicTags = dynamicTagInjector(item.context)
   while (loot) {
+    if (loot.table) {
+      dynamicTags.add(loot.table.LootTableID)
+    }
     if (loot.table && !canAccessLootTable(item.context, loot.table)) {
+      dynamicTags.dispose()
       return false
     }
     if (loot.bucket && !canAccessLootBucketRow(item.context, loot.bucket)) {
+      dynamicTags.dispose()
       return false
     }
     loot = loot.next
   }
+  dynamicTags.dispose()
   return true
 }
 
