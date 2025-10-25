@@ -15,7 +15,6 @@ import { DataGridModule } from '../table-grid'
 import { VirtualGridModule } from '../virtual-grid'
 import { DataViewOptionsMenuComponent } from './data-view-options-menu.component'
 import { DataViewToggleComponent } from './data-view-toggle.component'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 export interface DataViewPickerOptions<T = unknown> {
   /**
@@ -41,7 +40,6 @@ export interface DataViewPickerOptions<T = unknown> {
    * Data view options
    */
   dataView: DataViewProvideOptions<T>
-
 
   /**
    *
@@ -97,6 +95,7 @@ export class DataViewPicker<T> {
         persistKey: options.persistKey,
         displayMode: options.displayMode,
       },
+      focusTrap: false,
       cssClass: options.cssClassModal || 'ion-modal-full xl:ion-modal-lg',
     })
     modal.present()
@@ -120,7 +119,6 @@ export class DataViewPicker<T> {
 
   protected iconBack = svgChevronLeft
   protected search: string
-
 
   protected onSelectionChange(value: Array<string | number>) {
     this.selection.set(value)
