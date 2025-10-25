@@ -125,6 +125,12 @@ export function convertTileUrl({ encodedUrl, baseUrl }: { encodedUrl: string; ba
     return encodedUrl
   }
 
+  console.log('convertTileUrl', {
+    encodedUrl,
+    baseUrl,
+    tile
+  })
+
   const address = projectTileAddress(tile)
   const x = String(address.x).padStart(3, '0')
   const y = String(address.y).padStart(3, '0')
@@ -135,6 +141,9 @@ export function convertTileUrl({ encodedUrl, baseUrl }: { encodedUrl: string; ba
   }
 
   const config = tile.map
+  if (!config.mapId) {
+    return null
+  }
   switch (tile.layer) {
     case 'map1': {
       return `${baseUrl}/lyshineui/worldtiles/${config.mapId}/map_l${z}_y${y}_x${x}.webp`

@@ -110,7 +110,7 @@
         <button
           class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
           [class.btn-ghost]="!isActive"
-          [style.--btn-color]="isActive ? (variant.properties.color | toLCH) : null"
+          [style.--btn-bg]="isActive ? variant.properties.color : null"
           (click)="toggleVariant(variant.id)"
         >
           @if (variant.icon; as icon) {
@@ -126,8 +126,8 @@
   <button
     class="join-item flex-none btn btn-sm btn-square btn-ghost ml-1"
     [class.btn-ghost]="!isAnyEnabled()"
-    [class.btn-disabled]="!hasInfo()"
-    [style.--btn-color]="isAnyEnabled() && items().length === 1 && !variants().length ? (color() | toLCH) : null"
+    [class.pointer-events-none]="!hasInfo()"
+    [style.--btn-bg]="isAnyEnabled() && items().length === 1 && !variants().length ? color() : null"
     [popover]="tplTip"
   >
     @if (icon(); as icon) {
@@ -147,7 +147,7 @@
   <div class="grid grid-cols-2 gap-1 pl-5 mt-1 pb-4">
     @for (item of items(); track $index) {
       @let isActive = isLayerActive(item.id);
-      <div class="join group" [class.text-primary]="isActive">
+      <div class="group flex flex-row" [class.text-primary]="isActive">
         <button
           class="flex-1 btn btn-sm btn-ghost hover:bg-transparent justify-start text-left"
           (click)="toggleLayer(item.id)"
@@ -170,7 +170,7 @@
         <button
           class="flex-none btn btn-sm btn-square"
           [class.btn-ghost]="!isActive"
-          [style.--btn-color]="isActive ? (item.properties.color | toLCH) : null"
+          [style.--btn-bg]="isActive ? item.properties.color : null"
           [popover]="tplTip"
         >
           <nwb-icon [icon]="iconInfo" class="w-4 h-4 lg:opacity-0 group-hover:opacity-100" />

@@ -215,12 +215,53 @@ func ParseMapIdFromPath(filePath string) string {
 	return ""
 }
 
-func ParseCatacombTileFromPath(filePath string) string {
+type CatacombTile struct {
+	BaseName string
+	OffsetX  int
+	OffsetY  int
+	MapTile  string
+}
+
+var catacombMatcher = regexp.MustCompile(`^tile\d?_[a-z]+_gameplay$`)
+
+func ParseCatacombTileFromPath(filePath string) *CatacombTile {
+	tileSize := 128
 	baseName := utils.ReplaceExt(path.Base(filePath), "")
-	if strings.HasPrefix(baseName, "tile") && strings.HasSuffix(baseName, "_gameplay") {
-		return baseName
+	if !catacombMatcher.MatchString(baseName) {
+		return nil
 	}
-	return ""
+	result := CatacombTile{
+		BaseName: baseName,
+		OffsetX:  0,
+		OffsetY:  0,
+		MapTile:  "",
+	}
+	splits := strings.SplitN(baseName, "_", 3)
+
+	// tile => ""
+	// tile1 => "1"
+	index, _ := strconv.Atoi(strings.Replace(splits[0], "tile", "", 1))
+
+	if index == 0 {
+		// tile_XX_gameplay
+		address := splits[1]
+		result.OffsetX = int(rune(address[0]-'a')) * tileSize
+		if len(address) > 1 {
+			result.OffsetY = int(rune(address[1]-'a')) * tileSize
+		}
+		result.MapTile = "map_tile_" + address
+		result.OffsetY += 5 * tileSize
+	} else {
+		// tileX_YZ_gameplay
+		address := splits[1]
+		result.OffsetX = (index - 1) * tileSize
+		result.OffsetY = int(rune(address[0]-'a')) * tileSize
+		result.MapTile = baseName
+	}
+
+	result.OffsetX += tileSize / 2
+	result.OffsetY += tileSize / 2
+	return &result
 }
 
 var regionRegex = regexp.MustCompile(`r_\+(\d{2})_\+(\d{2})`)

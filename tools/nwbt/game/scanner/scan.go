@@ -36,16 +36,16 @@ func (ctx *Scanner) Scan(file nwfs.File) {
 			}
 			break
 		}
-		if tileId := game.ParseCatacombTileFromPath(file.Path()); tileId != "" {
+		if tile := game.ParseCatacombTileFromPath(file.Path()); tile != nil {
 			count := 0
 			for entry := range ctx.ScanSlice(file) {
 				count += 1
-				entry.Position[0] += 128
-				entry.Position[1] += 128
-				entry.CatacombTile = tileId
+				entry.Position[0] += nwt.AzFloat32(tile.OffsetX)
+				entry.Position[1] += nwt.AzFloat32(tile.OffsetY)
+				entry.CatacombTile = tile.BaseName
 				ctx.addSpawn(entry, "nw_catacomb_00")
 			}
-			slog.Debug("catacomb file", "tile", tileId, "count", count)
+			slog.Debug("catacomb file", "tile", tile.BaseName, "count", count)
 			break
 		}
 	case ".json":

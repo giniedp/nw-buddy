@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"nw-buddy/tools/utils/maps"
+	"sort"
 	"strings"
 )
 
@@ -56,6 +57,18 @@ func CollateZoneConfigs(rows []ZoneConfigEntry) (result []ScannedZoneConfig, cou
 	}
 
 	for _, value := range index.SortedIter() {
+		sort.SliceStable(value.Geometry, func(i, j int) bool {
+			a := value.Geometry[i]
+			b := value.Geometry[j]
+			if a.BBox[0] < b.BBox[0] {
+				return true
+			}
+			if a.BBox[1] < b.BBox[1] {
+				return true
+			}
+			return false
+		})
+
 		result = append(result, *value)
 	}
 	count = len(result)

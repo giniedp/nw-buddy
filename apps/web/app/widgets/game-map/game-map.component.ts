@@ -19,6 +19,7 @@ import {
   AJAXError,
   ControlPosition,
   FitBoundsOptions,
+  ImageSource,
   NavigationControl,
   RasterDEMTileSource,
   RasterTileSource,
@@ -32,7 +33,7 @@ import { GameMapHost } from './game-map-host'
 import { GameMapLayerDirective } from './game-map-layer.component'
 import { GameMapMouseAnchorDirective } from './game-map-mouse-anchor.directive'
 import { getMapConfig } from './map-configs'
-import { boundsToLatLong, HEIGHT_SCALE } from './map-projection'
+import { boundsToLatLong, HEIGHT_SCALE, xyToLongLat } from './map-projection'
 import {
   convertTileUrl,
   getGeometryCenter,
@@ -41,6 +42,7 @@ import {
   tileSource,
   tileSourceEmpty,
   tileSourceOcean,
+  withLayer,
 } from './map-utils'
 import { MaplibreDirective } from './maplibre.directive'
 
@@ -386,6 +388,68 @@ export class GameMapComponent {
       layerOcean.visibility = 'visible'
     } else {
       layerOcean.visibility = 'none'
+    }
+
+    if (config.isCatacombs) {
+      layerMap1.visibility = 'none'
+      layerMap1.source = 'empty'
+
+      layerMap2.visibility = 'none'
+      layerMap2.source = 'empty'
+
+      layerTract.visibility = 'none'
+      layerTract.source = 'empty'
+
+      layerHills.visibility = 'none'
+      layerHills.source = 'emptyHeight'
+
+      layerOcean.visibility = 'none'
+    }
+
+    if (config.images?.length) {
+      config.images.forEach((img, i) => {
+        const sourceId = `image_${i}`
+        let source = this.map.getSource(sourceId) as ImageSource
+        if (!source) {
+          this.map.addSource(sourceId, {
+            type: 'image',
+            url: img.url,
+            coordinates: [
+              xyToLongLat(img.coordinates[0]),
+              xyToLongLat(img.coordinates[1]),
+              xyToLongLat(img.coordinates[2]),
+              xyToLongLat(img.coordinates[3]),
+            ],
+          })
+          source = this.map.getSource(sourceMap1ID) as any
+        } else {
+          source.updateImage({
+            url: img.url,
+            coordinates: [
+              xyToLongLat(img.coordinates[0]),
+              xyToLongLat(img.coordinates[1]),
+              xyToLongLat(img.coordinates[2]),
+              xyToLongLat(img.coordinates[3]),
+            ],
+          })
+        }
+        const layer = this.map.getLayer(sourceId)
+        if (!layer) {
+          this.map.addLayer({
+            id: sourceId,
+            type: 'raster',
+            source: sourceId,
+          })
+        }
+        this.map.getLayer(sourceId).visibility = 'visible'
+      })
+    } else {
+      this.map
+        .getLayersOrder()
+        .filter((it) => it.startsWith('image_'))
+        .forEach((layer) => {
+          this.map.getLayer(layer).visibility = 'none'
+        })
     }
 
     if (config.heightmap) {

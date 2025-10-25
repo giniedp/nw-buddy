@@ -31,7 +31,7 @@ export function mapLevelToNwLevel(level: number) {
   return MAX_LEVEL - level
 }
 
-export function nwLeveflToMapLevel(level: number) {
+export function nwLevelToMapLevel(level: number) {
   return MAX_LEVEL - level
 }
 
@@ -84,7 +84,7 @@ export function xyFromLngLat([long, lat]: [number, number]) {
   return [xFromLong(long), yFromLat(lat)]
 }
 
-export function xyToLongLat([x, y]: [number, number]) {
+export function xyToLongLat([x, y]: [number, number]): [number, number] {
   return [xToLong(x), yToLat(y)]
 }
 
