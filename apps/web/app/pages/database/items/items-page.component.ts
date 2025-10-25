@@ -70,7 +70,7 @@ export class ItemsPageComponent {
     head: HtmlHeadService,
     zone: NgZone,
   ) {
-    service.patchState({ mode: 'table', modes: ['table'] })
+    service.setModes(['table'])
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Items DB',

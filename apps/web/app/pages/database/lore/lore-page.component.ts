@@ -72,7 +72,7 @@ export class LorePageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService,
   ) {
-    service.patchState({ mode: 'grid', modes: ['table', 'grid'] })
+    service.setModes(['grid', 'table'])
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Lore DB',

@@ -40,11 +40,11 @@ export class DataViewToggleComponent {
 
   protected activateGrid() {
     this.isPanelOpen = false
-    this.service.patchState({ mode: 'grid' })
+    this.service.setMode('grid')
   }
 
   protected activateTable() {
     this.isPanelOpen = false
-    this.service.patchState({ mode: 'table' })
+    this.service.setMode('table')
   }
 }

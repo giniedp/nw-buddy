@@ -51,43 +51,57 @@
     }
     <span class="absolute top-0 -right-3 screenshot-hidden flex flex-col gap-1 leading-none">
       @if (editable() && (item.violatesExclusivity || item.violatesItemClass || item.activationCooldown)) {
-        @if (item.violatesExclusivity || item.violatesItemClass) {
-          <span
-            class="text-error cursor-help opacity-50"
-            [tooltip]="tip"
-            [tooltipClass]="'bg-error-content text-error'"
-          >
+        @if (item.violatesExclusivity) {
+          <span class="text-error cursor-help opacity-50" [tooltip]="tip">
             <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
             <ng-template #tip>
-              <ul class="px-2 py-1">
-                @if (item.violatesExclusivity) {
-                  <li>Exclusive Label Violation</li>
-                }
-                @if (item.violatesItemClass) {
-                  <li>Item Class Violation</li>
-                }
-              </ul>
+              <div role="alert" class="alert alert-error alert-soft">
+                <nwb-icon [icon]="iconWarn" class="w-4 h-4" />
+                <div>
+                  <h3 class="font-bold">Exclusivity violation</h3>
+                  <div>At least 2 perks have the same <b>Exclusive Label</b></div>
+                </div>
+              </div>
+            </ng-template>
+          </span>
+        }
+        @if (item.violatesItemClass) {
+          <span class="text-warning cursor-help opacity-50" [tooltip]="tip">
+            <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
+            <ng-template #tip>
+              <div role="alert" class="alert alert-warning alert-soft">
+                <nwb-icon [icon]="iconWarn" class="w-4 h-4" />
+                <div>
+                  <h3 class="font-bold">Item class volation</h3>
+                  <div>The perks is not designed to roll on this item.</div>
+                </div>
+              </div>
             </ng-template>
           </span>
         }
         @if (item.activationCooldown) {
-          <span
-            class="text-warning cursor-help opacity-50"
-            [tooltip]="tip"
-            [tooltipClass]="'bg-warning-content text-warning'"
-          >
-            <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
+          <span class="text-info cursor-help opacity-50" [tooltip]="tip">
+            <nwb-icon [icon]="iconTime" class="w-3 h-3" />
             <ng-template #tip>
-              <div class="px-2 py-1">Activation cooldown: {{ item.activationCooldown | number }}s</div>
+              <div role="alert" class="alert alert-info alert-soft">
+                <nwb-icon [icon]="iconTime" class="w-4 h-4" />
+                <div>{{ item.activationCooldown | number }}s actionvation cooldown</div>
+              </div>
             </ng-template>
           </span>
         }
       }
       @if (!editable() && item.perkIdOld) {
-        <span class="text-info cursor-help opacity-50" [tooltip]="tip" [tooltipClass]="'bg-info-content text-info'">
+        <span class="text-info cursor-help opacity-50" [tooltip]="tip">
           <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
           <ng-template #tip>
-            <div class="px-2 py-1">Perk has been replaced due to an ingame bug or change of system</div>
+            <div role="alert" class="alert alert-info alert-soft">
+              <nwb-icon [icon]="iconWarn" class="w-4 h-4" />
+              <div>
+                <h3 class="font-bold">Perk replacement</h3>
+                <div>Has been replaced due to an ingame bug or change of system</div>
+              </div>
+            </div>
           </ng-template>
         </span>
       }

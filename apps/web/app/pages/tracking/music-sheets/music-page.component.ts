@@ -13,6 +13,7 @@ import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { LayoutModule } from '../../../ui/layout'
 import { CharacterAvatarComponent } from '../../../widgets/character'
 import { MusicRecord, RecipesTableAdapter } from './adapter'
+import { toObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'nwb-music-page',
@@ -39,7 +40,7 @@ import { MusicRecord, RecipesTableAdapter } from './adapter'
 export class MusicPageComponent implements OnInit {
   protected outlet = viewChild(RouterOutlet)
   protected character = inject(CharacterStore)
-  protected stats$ = this.service.categoryItems$
+  protected stats$ = toObservable(this.service.categoryItems)
     .pipe(
       switchMap((list) => {
         return combineLatestOrEmpty(

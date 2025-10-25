@@ -11,6 +11,7 @@ import { eqCaseInsensitive, selectStream } from '~/utils'
 import { gridDisplayRowCount } from '../ag-grid/utils'
 import { DataViewCategory } from './data-view-category'
 import { DataViewService } from './data-view.service'
+import { toObservable } from '@angular/core/rxjs-interop'
 
 export interface DataViewCategoryMenuState {
   showCounter?: boolean
@@ -38,7 +39,7 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
 
   @Input()
   public set category(value: string | null) {
-    this.service.patchState({ category: value })
+    this.service.setCategory(value)
   }
 
   @Input()
@@ -98,8 +99,8 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
 
   protected readonly categories$ = selectStream(
     {
-      categories: this.service.categories$,
-      category: this.service.category$,
+      categories: toObservable(this.service.categories),
+      category: toObservable(this.service.category),
       routePrefix: this.select((it) => it.routePrefix),
       queryParam: this.select((it) => it.queryParam),
       routeParam: this.select((it) => it.routeParam),
@@ -107,8 +108,8 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
     collectCategories,
   )
 
-  protected totalRowCount$ = this.service.categoryItems$.pipe(map((list) => list?.length || 0))
-  protected displayedRowCount$ = this.service.agGrid$.pipe(
+  protected totalRowCount$ = toObservable(this.service.categoryItems).pipe(map((list) => list?.length || 0))
+  protected displayedRowCount$ = toObservable(this.service.agGrid).pipe(
     switchMap((grid) => (grid ? gridDisplayRowCount(of(grid)) : of(null))),
   )
   protected readonly hasCategories$ = this.select(this.categories$, (it) => it.length > 0)

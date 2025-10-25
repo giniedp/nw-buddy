@@ -30,11 +30,11 @@
               >
                 All
               </a>
-              <ng-container *ngFor="let category of service.categories$ | async">
+              @for (category of service.categories(); track $index) {
                 <a class="tab" [routerLink]="[category.id]" [routerLinkActive]="'tab-active'">
                   {{ category.label }}
                 </a>
-              </ng-container>
+              }
             </div>
           </div>
         </div>

@@ -26,11 +26,11 @@ import { PerkTableRecord } from './perk-table-cols'
             <div header-title class="text-sm italic opacity-75">{{ text | nwText }}</div>
           </ng-container>
         }
-        <div class="flex flex-row items-center gap-1">
+        <div class="flex flex-row items-center gap-1 overflow-clip">
           @for (item of labels; track $index) {
             @if (item.text) {
               <span
-                class="badge badge-sm"
+                class="badge badge-sm flex-none"
                 [class.badge-error]="item.isError"
                 [class.badge-warning]="item.isWarning"
                 [tooltip]="item.tooltip"
@@ -43,7 +43,7 @@ import { PerkTableRecord } from './perk-table-cols'
             } @else {
               <nwb-icon
                 [icon]="item.icon"
-                class="w-4 h-4"
+                class="w-4 h-4 flex-none"
                 [tooltip]="item.tooltip"
                 [class.text-error]="item.isError"
                 [class.text-warning]="item.isWarning"
@@ -194,7 +194,8 @@ export interface PerkLabel {
 }
 function selectLabels(perks: PerkTableRecord) {
   const labels = perks?.ExclusiveLabels || []
-  const errorLabels = perks?.$excludeError || []
+  const errorLabels = perks?.$exclusiveViolation || []
+
   const result = labels.map((it): PerkLabel => {
     const hasConflict = errorLabels.includes(it)
     return {

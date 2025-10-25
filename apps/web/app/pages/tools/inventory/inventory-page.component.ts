@@ -88,7 +88,7 @@ export class InventoryPageComponent implements OnInit {
     private route: ActivatedRoute,
     protected service: DataViewService<InventoryTableRecord>,
   ) {
-    service.setMode(['table'])
+    service.setModes(['table'])
   }
 
   public async ngOnInit() {
@@ -96,8 +96,8 @@ export class InventoryPageComponent implements OnInit {
   }
 
   protected async createItem() {
-    const category = await firstValueFrom(this.service.category$)
-    let categories = await firstValueFrom(this.service.categories$.pipe(map((list) => list.map((it) => it.id))))
+    const category = this.service.category()
+    let categories = this.service.categories().map((it) => it.id)
     if (category) {
       categories = [category]
     }

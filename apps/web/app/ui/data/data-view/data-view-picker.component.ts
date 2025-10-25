@@ -42,6 +42,7 @@ export interface DataViewPickerOptions<T = unknown> {
    */
   dataView: DataViewProvideOptions<T>
 
+
   /**
    *
    */
@@ -109,12 +110,12 @@ export class DataViewPicker<T> {
   public title = input<DataViewPickerOptions<T>['title']>()
   public selection = model<DataViewPickerOptions<T>['selection']>()
   public persistKey = input<DataViewPickerOptions<T>['persistKey']>()
-  protected categories = toSignal(this.service.categories$)
-  protected category = toSignal(this.service.category$)
+  protected categories = this.service.categories
+  protected category = this.service.category
 
   @Input()
   public set displayMode(value: DataViewPickerOptions<T>['displayMode']) {
-    this.service.setMode(value)
+    this.service.setModes(value)
   }
 
   protected iconBack = svgChevronLeft

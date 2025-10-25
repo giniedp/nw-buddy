@@ -13,7 +13,7 @@
           <span>ALL</span>
         </a>
       </li>
-      @for (item of service.categories$ | async; track $index) {
+      @for (item of service.categories(); track $index) {
         <li routerLinkActive #rla="routerLinkActive">
           <a
             rel="nofollow"
@@ -70,7 +70,7 @@
       @if (service.isGridActive()) {
         <nwb-virtual-grid
           [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
+          [data]="service.categoryItems()"
           [options]="service.virtualOptions"
           [identifyBy]="service.entityIdGetter"
           [selectionRouteParam]="selectionParam"
@@ -78,7 +78,7 @@
       } @else if (service.isTableActive()) {
         <nwb-table-grid
           [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
+          [data]="service.categoryItems()"
           [options]="service.tableGridOptions"
           [identifyBy]="service.entityIdGetter"
           [persistKey]="persistKey"

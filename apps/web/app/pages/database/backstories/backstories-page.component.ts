@@ -69,7 +69,7 @@ export class BackstoriesPageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService,
   ) {
-    service.patchState({ mode: 'grid', modes: ['grid', 'table'] })
+    service.setModes(['grid', 'table'])
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Backstories DB',

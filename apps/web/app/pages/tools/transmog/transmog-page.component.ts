@@ -73,7 +73,7 @@ export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogI
   ) {
     super({ hoverItem: null })
 
-    service.patchState({ mode: 'grid', modes: ['grid'] })
+    service.setModes(['grid'])
     head.updateMetadata({
       title: 'Transmog',
       description: 'New World transmog database',

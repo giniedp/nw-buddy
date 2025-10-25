@@ -5,7 +5,7 @@
       @if (service.canToggleMode()) {
         <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
       }
-      @if (service.isTableSupported()) {
+      @if (service.isTableSupported() || service.isTableActive()) {
         <button
           class="join-item btn btn-square btn-ghost"
           [nwbDataViewOptionsMenu]
@@ -31,7 +31,7 @@
     <nwb-virtual-grid
       [enableQuickfilter]="true"
       [selection]="selection()"
-      [data]="service.categoryItems$ | async"
+      [data]="service.categoryItems()"
       [options]="service.virtualOptions"
       [identifyBy]="service.entityIdGetter"
       (selection$)="onSelectionChange($event)"
@@ -42,7 +42,7 @@
       (ready$)="service.onTableReady($event)"
       [enableQuickfilter]="true"
       [selection]="selection()"
-      [data]="service.categoryItems$ | async"
+      [data]="service.categoryItems()"
       [options]="service.tableGridOptions"
       [identifyBy]="service.entityIdGetter"
       [persistKey]="persistKey()"

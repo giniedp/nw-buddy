@@ -52,6 +52,9 @@ export type ItemTableRecord = MasterItemDefinitions & {
   $conversions?: Array<ItemCurrencyConversionData>
   $shops?: Array<ShopInfo>
   $equipmentSet?: EquipmentSet
+  $gemable?: boolean
+  $infixable?: boolean
+  $slotable?: number
 }
 
 export interface ShopInfo {
@@ -798,6 +801,52 @@ export function itemColEquipmentSetId(util: ItemTableUtils) {
             label: util.i18n.get(item.DisplayName),
           },
         ]
+      },
+    }),
+  })
+}
+
+export function itemColPerkOptions(util: ItemTableUtils) {
+  return util.colDef({
+    colId: 'perkOptions',
+    headerValueGetter: () => 'Perk Type Options',
+    valueGetter: util.valueGetter(({ data }) => {
+      const result = []
+      if (data.$gemable) {
+        result.push('Gem')
+      }
+      if (data.$infixable) {
+        result.push('Infix')
+      }
+      if (data.$slotable) {
+        result.push(`Charms ${data.$slotable}`)
+      } else {
+        result.push(`No charms`)
+      }
+      return result
+    }),
+    ...util.selectFilter({
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const result = []
+        if (data.$gemable) {
+          result.push('Gem')
+        }
+        if (data.$infixable) {
+          result.push('Infix')
+        }
+        if (data.$slotable) {
+          result.push(`Charms ${data.$slotable}`)
+        } else {
+          result.push(`No charms`)
+        }
+
+        return result.map((it) => {
+          return {
+            id: it,
+            label: it,
+          }
+        })
       },
     }),
   })

@@ -45,7 +45,7 @@ export interface DataViewAdapterOptions<T> {
   /**
    * Optional function to retrieve the entity categories
    */
-  entityCategoriesD?: (item: T) => DataViewCategory[]
+  entityCategories?: (item: T) => DataViewCategory[]
 }
 
 export abstract class DataViewAdapter<T> {
@@ -65,7 +65,7 @@ export class DataViewDefaultAdapter<T> implements DataViewAdapter<T> {
     return this.config.entityIdD(item)
   }
   public entityCategories(item: T): DataViewCategory[] {
-    return this.config.entityCategoriesD(item)
+    return this.config.entityCategories(item)
   }
   public getCategories?: () => DataViewCategory[]
   public connect(): Observable<T[]> {

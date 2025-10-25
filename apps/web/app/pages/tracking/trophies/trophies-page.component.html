@@ -32,7 +32,7 @@
 
   <nwb-virtual-grid
     [enableQuickfilter]="true"
-    [data]="service.categoryItems$ | async"
+    [data]="service.categoryItems()"
     [options]="service.virtualOptions"
     [columns]="[3, 3]"
     [gridClass]="['max-w-[1500px]', 'mx-auto']"

@@ -68,7 +68,7 @@ export class HousingPageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService,
   ) {
-    service.patchState({ mode: 'table', modes: ['table'] })
+    service.setModes(['table'])
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Housing Items DB',

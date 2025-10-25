@@ -1,7 +1,22 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { NW_FALLBACK_ICON, getItemId, getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
-import { COLS_CONSUMABLEITEMDEFINITIONS, COLS_MASTERITEMDEFINITIONS, MasterItemDefinitions } from '@nw-data/generated'
+import {
+  NW_FALLBACK_ICON,
+  PerkBucket,
+  getItemId,
+  getItemPerkBucketIds,
+  getItemPerks,
+  getPerkBucketPerkIDs,
+  isPerkCharm,
+  isPerkGem,
+  isPerkInfix,
+} from '@nw-data/common'
+import {
+  COLS_CONSUMABLEITEMDEFINITIONS,
+  COLS_MASTERITEMDEFINITIONS,
+  MasterItemDefinitions,
+  PerkData,
+} from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { TranslateService } from '~/i18n'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -29,6 +44,7 @@ import {
   itemColItemTypeName,
   itemColName,
   itemColOwnedWithGS,
+  itemColPerkOptions,
   itemColPerkValidity,
   itemColPerks,
   itemColPrice,
@@ -90,6 +106,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         itemsMap: this.db.itemsByIdMap(),
         housingMap: this.db.housingItemsByIdMap(),
         perksMap: this.db.perksByIdMap(),
+        bucketsMap: this.db.perkBucketsByIdMap(),
         affixMap: this.db.affixStatsByIdMap(),
         transformsMap: this.db.itemTransformsByIdMap(),
         transformsMapReverse: this.db.itemTransformsByToItemIdMap(),
@@ -105,6 +122,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
       itemsMap,
       housingMap,
       perksMap,
+      bucketsMap,
       affixMap,
       transformsMap,
       transformsMapReverse,
@@ -121,7 +139,7 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
         return itemsMap.get(id) || housingMap.get(id) || ({ ItemID: id } as MasterItemDefinitions)
       }
       items = items.map((it: ItemTableRecord): ItemTableRecord => {
-        const perks = getItemPerks(it, perksMap)
+        const perkStats = getItemPerkStats(it, perksMap, bucketsMap)
         const equipmentSet = equipmentSetsMap.get(it.EquipmentSetId)
         const conversions = conversionMap.get(getItemId(it)) || []
         const shops = uniq(conversions.map((it) => it.CategoricalProgressionId))
@@ -135,16 +153,20 @@ export class ItemTableAdapter implements DataViewAdapter<ItemTableRecord> {
             }
           })
           .filter((it) => !!it)
+
         return {
           ...it,
-          $perks: perks,
-          $affixes: perks
+          $perks: perkStats.perks,
+          $affixes: perkStats.perks
             .map((perk) => {
               return perk?.Affix?.map((id) => affixMap.get(id)) || []
             })
             .flat()
             .filter((it) => !!it),
-          $perkBuckets: getItemPerkBucketIds(it),
+          $gemable: perkStats.canHaveGem,
+          $infixable: perkStats.canHaveInfix,
+          $slotable: perkStats.charmSlots,
+          $perkBuckets: perkStats.bucketIds,
           $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
           $transformFrom: (transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),
           $consumable: consumablesMap.get(it.ItemID),
@@ -176,6 +198,7 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColPerks(util),
       itemColPerkValidity(util),
       itemColEquipmentSetId(util),
+      itemColPerkOptions(util),
       itemColAttributeMods(util),
       itemColRarity(util),
       itemColTier(util),
@@ -216,6 +239,7 @@ export function buildPickerItemGridOptions(util: TableGridUtils<ItemTableRecord>
       // colDefPin(util),
       itemColItemId(util),
       itemColPerks(util),
+      itemColPerkOptions(util),
       itemColAttributeMods(util),
       itemColRarity(util),
       itemColTier(util),
@@ -232,4 +256,60 @@ export function buildPickerItemGridOptions(util: TableGridUtils<ItemTableRecord>
     props: COLS_MASTERITEMDEFINITIONS,
   })
   return result
+}
+
+function getItemPerkStats(
+  item: MasterItemDefinitions,
+  perksMap: Map<string, PerkData>,
+  bucketsMap: Map<string, PerkBucket>,
+) {
+  const perks = getItemPerks(item, perksMap)
+  const bucketIds = getItemPerkBucketIds(item)
+  let canHaveInfix = false
+  let canHaveGem = false
+  let charmSlots = 0
+
+  for (const perk of perks) {
+    if (isPerkGem(perk)) {
+      canHaveGem = true
+      continue
+    }
+    if (isPerkCharm(perk)) {
+      charmSlots += 1
+      continue
+    }
+    if (isPerkInfix(perk)) {
+      canHaveInfix = true
+      continue
+    }
+  }
+  for (const bucketId of bucketIds) {
+    const bucket = bucketsMap.get(bucketId)
+    let bucketIsCharm = false
+    for (const perkId of getPerkBucketPerkIDs(bucket)) {
+      const perk = perksMap.get(perkId)
+      if (isPerkGem(perk)) {
+        canHaveGem = true
+        continue
+      }
+      if (isPerkCharm(perk)) {
+        bucketIsCharm = true
+        continue
+      }
+      if (isPerkInfix(perk)) {
+        canHaveInfix = true
+        continue
+      }
+    }
+    if (bucketIsCharm) {
+      charmSlots += 1
+    }
+  }
+  return {
+    perks,
+    bucketIds,
+    canHaveInfix,
+    canHaveGem,
+    charmSlots,
+  }
 }

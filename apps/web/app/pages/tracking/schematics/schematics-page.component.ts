@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject, OnInit, viewChild } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router'
 import { map, merge, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
@@ -31,7 +32,7 @@ export class SchematicsPageComponent implements OnInit {
   protected outlet = viewChild(RouterOutlet)
   protected character = inject(CharacterStore)
 
-  protected stats$ = this.service.categoryItems$
+  protected stats$ = toObservable(this.service.categoryItems)
     .pipe(
       switchMap((list) => {
         return combineLatestOrEmpty(

@@ -1,5 +1,6 @@
 import { AbilityData, AffixStatData, MasterItemDefinitions, PerkData, PerkType } from '@nw-data/generated'
 import { getAffixMODs } from './affix'
+import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 
 const PERK_SORT_WEIGHT: Record<PerkType, number> = {
   Inherent: 0,
@@ -56,6 +57,18 @@ export function isPerkEmptyGemSlot(perk: PerkData) {
 
 export function isPerkGenerated(perk: Pick<PerkData, 'PerkType'>) {
   return perk?.PerkType === 'Generated'
+}
+
+export function isPerkInfix(perk: Pick<PerkData, 'ExclusiveLabels'>) {
+  if (!perk.ExclusiveLabels) {
+    return false
+  }
+  for (const label of perk.ExclusiveLabels) {
+    if (eqCaseInsensitive(label, 'infix')) {
+      return true
+    }
+  }
+  return false
 }
 
 export function getPerkTypeWeight(type: string) {
@@ -173,7 +186,7 @@ export function explainPerk(options: {
       context: {
         itemId: perk.PerkID,
         gearScore,
-        gearScoreBonus
+        gearScoreBonus,
       },
     })
   }

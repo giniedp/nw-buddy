@@ -123,7 +123,7 @@ export class SkillTreesPageComponent {
 
   public constructor(head: HtmlHeadService) {
     this.store.load(this.userId)
-    this.dataView.patchState({ mode: 'grid', modes: ['grid'] })
+    this.dataView.setModes(['grid'])
     head.updateMetadata({
       title: 'Skill Builder',
       description: 'A Skill Buider tool for New World. Build your skill tree and share with your mates.',

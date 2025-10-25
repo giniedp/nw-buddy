@@ -6,6 +6,7 @@ import { svgEllipsisVertical } from '../../icons/svg'
 import { gridHasAnyFilterPresent } from '../ag-grid/utils'
 import { TableGridActionButton, TableGridPanelComponent } from '../table-grid'
 import { DataViewService } from './data-view.service'
+import { toObservable } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'nwb-data-view-options-menu,[nwbDataViewOptionsMenu]',
@@ -25,7 +26,7 @@ export class DataViewOptionsMenuComponent {
 
   protected isPanelOpen = false
   protected icon = svgEllipsisVertical
-  protected showIndicator$ = gridHasAnyFilterPresent(this.service.agGrid$)
+  protected showIndicator$ = gridHasAnyFilterPresent(toObservable(this.service.agGrid))
   public constructor(
     protected cdkOrigin: CdkOverlayOrigin,
     protected service: DataViewService<unknown>,

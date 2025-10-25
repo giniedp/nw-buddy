@@ -1,7 +1,7 @@
-import { Injectable, afterNextRender } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { ComponentStore } from '@ngrx/component-store'
-import { Observable, map } from 'rxjs'
+import { Injectable, computed, inject } from '@angular/core'
+import { patchState, signalMethod, signalState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { map } from 'rxjs'
 import { eqCaseInsensitive } from '~/utils'
 import { AgGrid } from '../ag-grid'
 import { DataViewAdapter } from './data-view-adapter'
@@ -9,7 +9,7 @@ import { DataViewCategory } from './data-view-category'
 
 export type DataViewMode = 'grid' | 'table'
 export interface DataViewServiceState<T> {
-  agGrid?: AgGrid<T> | null
+  agGrid: AgGrid<T> | null
   items: T[]
   categories: DataViewCategory[]
   category: string | null
@@ -19,31 +19,43 @@ export interface DataViewServiceState<T> {
 }
 
 @Injectable()
-export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> {
-  public readonly agGrid$ = this.select(({ agGrid }) => agGrid)
-  public readonly items$ = this.select(({ items }) => items)
-  public readonly categories$ = this.select(({ categories }) => categories)
-  public readonly category$ = this.select(({ category }) => category)
-  public readonly categoryItems$ = this.select(this.items$, this.category$, (items, category) => {
-    return selectItemsByCategory(this.adapter, items, category)
+export class DataViewService<T> {
+  public readonly adapter: DataViewAdapter<T> = inject(DataViewAdapter<T>)
+
+  private state = signalState<DataViewServiceState<T>>({
+    agGrid: null,
+    items: null,
+    categories: null,
+    category: null,
+    categoryItems: null,
+    mode: 'table',
+    modes: ['table', 'grid'],
   })
 
-  public readonly categoryItems = toSignal(this.categoryItems$)
+  public readonly agGrid = this.state.agGrid
+  public readonly items = this.state.items
+  public readonly categories = this.state.categories
+  public readonly category = this.state.category
+  public readonly categoryItems = computed(() => {
+    return selectItemsByCategory(this.adapter, this.items(), this.category())
+  })
   public readonly tableGridOptions = this.adapter.gridOptions()
   public readonly virtualOptions = this.adapter.virtualOptions()
 
-  public readonly isTableSupported = this.selectSignal(({ modes }) => {
-    return modes?.includes('table') && !!this.tableGridOptions
-  })
-  public readonly isVirtualSupported = this.selectSignal(({ modes }) => {
-    return modes?.includes('grid') && !!this.virtualOptions
+  public readonly isTableSupported = computed(() => {
+    return this.state.modes()?.includes('table') && !!this.tableGridOptions
   })
 
-  public readonly canToggleMode = this.selectSignal(this.isTableSupported, this.isVirtualSupported, (table, grid) => {
-    return table && grid
+  public readonly isVirtualSupported = computed(() => {
+    return this.state.modes()?.includes('grid') && !!this.virtualOptions
   })
 
-  public readonly mode$ = this.selectSignal(({ mode }) => {
+  public readonly canToggleMode = computed(() => {
+    return this.isTableSupported() && this.isVirtualSupported()
+  })
+
+  public readonly mode = computed(() => {
+    const mode = this.state.mode()
     if ((!mode || mode === 'table') && !!this.tableGridOptions) {
       return 'table'
     }
@@ -52,43 +64,33 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
     }
     return null
   })
-  public readonly isTableActive = this.selectSignal(this.mode$, (mode) => mode === 'table')
-  public readonly isGridActive = this.selectSignal(this.mode$, (mode) => mode === 'grid')
+  public readonly isTableActive = computed(() => this.mode() === 'table')
+  public readonly isGridActive = computed(() => this.mode() === 'grid')
 
   public readonly onTableReady = (it: AgGrid<T>) => {
-    return this.patchState({ agGrid: it })
+    patchState(this.state, { agGrid: it })
   }
 
   public readonly entityIdGetter = (it: T) => {
     return this.adapter.entityID(it)
   }
 
-  public constructor(public readonly adapter: DataViewAdapter<T>) {
-    super({
-      items: null,
-      categories: null,
-      category: null,
-      categoryItems: null,
-      mode: 'table',
-      modes: ['table', 'grid'],
-    })
-    setTimeout(() => {
-      this.loadItems(adapter.connect())
-    })
+  public constructor() {
+    this.loadItems(this.adapter.connect())
   }
 
-  public loadCategory = this.effect((category: Observable<string | null>) => {
+  public loadCategory = rxMethod<string | null>((category) => {
     return category.pipe(
       map((value) => {
-        this.patchState({ category: value })
+        patchState(this.state, { category: value })
       }),
     )
   })
 
-  public loadItems = this.effect((items: Observable<T[]>) => {
+  public loadItems = rxMethod<T[]>((items) => {
     return items.pipe(
       map((items) => {
-        this.patchState({
+        patchState(this.state, {
           items: items,
           categories: selectCategories(this.adapter, items),
         })
@@ -98,16 +100,29 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
 
   public toggleMode() {
     if (this.canToggleMode()) {
-      this.patchState({ mode: this.mode$() === 'table' ? 'grid' : 'table' })
+      patchState(this.state, {
+        mode: this.mode() === 'table' ? 'grid' : 'table',
+      })
     }
   }
 
-  public setMode = this.updater<DataViewMode[]>((state, mode) => {
-    return {
-      ...state,
+  public setModes = signalMethod<DataViewMode[]>((mode) => {
+    patchState(this.state, {
       modes: mode,
       mode: mode?.[0],
-    }
+    })
+  })
+
+  public setCategory = signalMethod<string>((category) => {
+    patchState(this.state, {
+      category,
+    })
+  })
+
+  public setMode = signalMethod<DataViewMode>((mode) => {
+    patchState(this.state, {
+      mode,
+    })
   })
 }
 

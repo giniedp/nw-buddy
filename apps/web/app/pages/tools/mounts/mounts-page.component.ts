@@ -68,7 +68,7 @@ export class MountsPageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService,
   ) {
-    service.patchState({ mode: 'grid', modes: ['grid'] })
+    service.setModes(['grid'])
     head.updateMetadata({
       title: 'Mounts',
       description: 'New World mounts overview',

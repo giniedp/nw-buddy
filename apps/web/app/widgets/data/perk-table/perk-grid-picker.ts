@@ -171,7 +171,7 @@ function getAplicablePerksSource({
         return {
           ...perk,
           $notAplicable: !isPerkAplicable(perk),
-          $excludeError: exclusiveLabels.filter((label) => {
+          $exclusiveViolation: exclusiveLabels.filter((label) => {
             return perk.ExclusiveLabels?.some((it) => eqCaseInsensitive(it, label))
           }),
         }

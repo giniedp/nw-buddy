@@ -81,7 +81,7 @@
       } @else if (dataView.isGridActive()) {
         <nwb-virtual-grid
           [enableQuickfilter]="true"
-          [data]="dataView.categoryItems$ | async"
+          [data]="dataView.categoryItems()"
           [options]="dataView.virtualOptions"
           [identifyBy]="dataView.entityIdGetter"
           [selectionRouteParam]="selectionParam"
@@ -90,7 +90,7 @@
         <nwb-table-grid
           (ready$)="dataView.onTableReady($event)"
           [enableQuickfilter]="true"
-          [data]="dataView.categoryItems$ | async"
+          [data]="dataView.categoryItems()"
           [options]="dataView.tableGridOptions"
           [identifyBy]="dataView.entityIdGetter"
           [persistKey]="persistKey"

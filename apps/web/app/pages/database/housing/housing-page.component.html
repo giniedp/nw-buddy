@@ -47,7 +47,7 @@
       @if (service.isGridActive()) {
         <nwb-virtual-grid
           [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
+          [data]="service.categoryItems()"
           [options]="service.virtualOptions"
           [identifyBy]="service.entityIdGetter"
           [selectionRouteParam]="selectionParam"
@@ -56,7 +56,7 @@
         <nwb-table-grid
           (ready$)="service.onTableReady($event)"
           [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
+          [data]="service.categoryItems()"
           [options]="service.tableGridOptions"
           [identifyBy]="service.entityIdGetter"
           [persistKey]="persistKey"

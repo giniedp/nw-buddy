@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostListener, Input } from '@angular/core'
 
-import { toSignal } from '@angular/core/rxjs-interop'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { firstValueFrom } from 'rxjs'
 import { AgGrid, fromGridEvent } from '~/ui/data/ag-grid'
 import { IconsModule } from '~/ui/icons'
@@ -28,7 +28,7 @@ export class DataViewPinComponent {
   @Input()
   public nwbDataViewPin: void
 
-  protected grid$ = selectStream(this.service.agGrid$)
+  protected grid$ = toObservable(this.service.agGrid)
   protected pinnedItems$ = selectStream(fromGridEvent(this.grid$, 'pinnedRowDataChanged'), selectPinnedItems)
   protected selectedItem$ = selectStream(fromGridEvent(this.grid$, 'selectionChanged'), selectSelectedItem)
   protected isPinned$ = toSignal(

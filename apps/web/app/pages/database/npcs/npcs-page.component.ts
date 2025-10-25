@@ -73,7 +73,7 @@ export class NpcsPageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService,
   ) {
-    service.patchState({ mode: 'grid', modes: ['grid'] })
+    service.setModes(['grid'])
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - NPCs DB',

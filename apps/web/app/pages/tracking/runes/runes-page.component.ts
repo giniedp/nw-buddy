@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { map, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
@@ -16,7 +17,15 @@ import { RunesRecord, RunesTableAdapter } from './adapter'
 @Component({
   selector: 'nwb-runes-page',
   templateUrl: './runes-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule, LayoutModule, CharacterAvatarComponent, QuicksearchModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    DataViewModule,
+    VirtualGridModule,
+    LayoutModule,
+    CharacterAvatarComponent,
+    QuicksearchModule,
+  ],
   providers: [
     provideDataView({
       adapter: RunesTableAdapter,
@@ -29,7 +38,7 @@ import { RunesRecord, RunesTableAdapter } from './adapter'
 })
 export class RunesPageComponent implements OnInit {
   protected character = inject(CharacterStore)
-  protected stats$ = this.service.categoryItems$
+  protected stats$ = toObservable(this.service.categoryItems)
     .pipe(
       switchMap((list) => {
         return combineLatestOrEmpty(

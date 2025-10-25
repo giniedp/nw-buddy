@@ -6,7 +6,7 @@ import { PerkData } from '@nw-data/generated'
 import { injectNwData } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCircleExclamation, svgEllipsisVertical } from '~/ui/icons/svg'
+import { svgCircleExclamation, svgEllipsisVertical, svgTags, svgTime } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { apiResource } from '~/utils'
@@ -35,6 +35,7 @@ export class ItemDetailPerksComponent {
 
   protected iconEdit = svgEllipsisVertical
   protected iconWarn = svgCircleExclamation
+  protected iconTime = svgTime
 
   protected isHidden = computed(() => {
     return !this.rows()?.length
@@ -93,14 +94,14 @@ export class ItemDetailPerksComponent {
             affixes: affixes,
             abilities: abilities,
             gearScore: itemGS,
-            gearScoreBonus: getItemGsBonus(perk, item) || 0
+            gearScoreBonus: getItemGsBonus(perk, item) || 0,
           }),
           explainOld: explainPerk({
             perk: perkOld,
             affixes: affixes,
             abilities: abilities,
             gearScore: itemGS,
-            gearScoreBonus: getItemGsBonus(perk, item) || 0
+            gearScoreBonus: getItemGsBonus(perk, item) || 0,
           }),
         }
       },

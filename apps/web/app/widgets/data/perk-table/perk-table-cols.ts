@@ -30,7 +30,7 @@ export type PerkTableRecord = PerkData & {
   $ability?: AbilityData
   $affixes?: AffixStatData[]
   $items?: MasterItemDefinitions[]
-  $excludeError?: string[]
+  $exclusiveViolation?: string[]
   $notAplicable?: boolean
 }
 

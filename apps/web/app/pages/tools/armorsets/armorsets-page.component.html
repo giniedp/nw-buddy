@@ -37,7 +37,7 @@
       <nwb-table-grid
         (ready$)="service.onTableReady($event)"
         [enableQuickfilter]="true"
-        [data]="service.categoryItems$ | async"
+        [data]="service.categoryItems()"
         [options]="service.tableGridOptions"
         [identifyBy]="service.entityIdGetter"
         [persistKey]="persistKey"

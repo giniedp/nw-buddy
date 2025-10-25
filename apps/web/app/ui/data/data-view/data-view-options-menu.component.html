@@ -20,7 +20,7 @@
     @if (service.isTableActive()) {
       <nwb-table-grid-panel
         [persistKey]="persistKey"
-        [grid]="service.agGrid$ | async"
+        [grid]="service.agGrid()"
         (close)="isPanelOpen = false"
         [actions]="nwbDataViewActions"
       />

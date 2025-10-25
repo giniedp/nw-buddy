@@ -78,7 +78,7 @@ export class CraftingPageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService,
   ) {
-    service.patchState({ mode: 'table', modes: ['table'] })
+    service.setModes(['table'])
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Crafting Recipes DB',

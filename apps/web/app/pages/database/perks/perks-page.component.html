@@ -46,7 +46,7 @@
       @if (service.isGridActive()) {
         <nwb-virtual-grid
           [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
+          [data]="service.categoryItems()"
           [options]="service.virtualOptions"
           [identifyBy]="service.entityIdGetter"
           [selectionRouteParam]="selectionParam"
@@ -55,7 +55,7 @@
         <nwb-table-grid
           (ready$)="service.onTableReady($event)"
           [enableQuickfilter]="true"
-          [data]="service.categoryItems$ | async"
+          [data]="service.categoryItems()"
           [options]="service.tableGridOptions"
           [identifyBy]="service.entityIdGetter"
           [persistKey]="persistKey"
@@ -65,7 +65,7 @@
       }
       @if (isFuncOpen) {
         <div class="w-[600px] hidden 2xl:block p-2 overflow-auto">
-          <nwb-table-grid-expression-panel [grid]="service.agGrid$ | async" />
+          <nwb-table-grid-expression-panel [grid]="service.agGrid()" />
         </div>
       }
     </div>
