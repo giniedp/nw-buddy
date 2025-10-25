@@ -159,7 +159,7 @@ const MAP_CONFIGS: Record<string, MapConfig> = {
 
   nw_catacomb_00: smallMapConfig('nw_catacomb_00', {
     bounds: [0, 0, 5 * 128, 9 * 128],
-    boundsPoi: [0, 0, 5 * 128, 9 * 128],
+    //boundsPoi: [0, 0, 5 * 128, 9 * 128],
     zoomPad: [512, 512, 512, 512],
     isCatacombs: true,
     isOpenWorld: false,

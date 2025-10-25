@@ -125,12 +125,6 @@ export function convertTileUrl({ encodedUrl, baseUrl }: { encodedUrl: string; ba
     return encodedUrl
   }
 
-  console.log('convertTileUrl', {
-    encodedUrl,
-    baseUrl,
-    tile
-  })
-
   const address = projectTileAddress(tile)
   const x = String(address.x).padStart(3, '0')
   const y = String(address.y).padStart(3, '0')

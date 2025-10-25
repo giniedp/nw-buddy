@@ -110,6 +110,7 @@ const BOUNDS = new CaseInsensitiveMap(
     DungeonGreatCleave00: [830, 440, 1260, 960],
     RaidCutlassKeys00: [540, 600, 1340, 1340],
     arena3v3: [864, 832, 992, 960],
+    catacombs: [0, 0, 640, 1152]
   }),
 )
 
