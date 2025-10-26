@@ -1,10 +1,10 @@
 import { listRecordVersions } from './diff/list-versions'
-import { DataLoader } from './dsl'
+import { DataLoader, primaryIndex } from './dsl'
 import { NwDataLoader, NwDataOptions } from './nw-data-loader'
 import { NwDataSheets } from './nw-data-sheets'
 import { loadItemsTable } from './tables/items'
 import { backstoriesItemsById } from './views/backstories'
-import { itemLootSources, itemSalvagesTo } from './views/items'
+import { itemLootSources, itemPerkStatsAll, itemSalvagesTo } from './views/items'
 import { resourceItemsForPerkId } from './views/perks'
 import { seasonIds } from './views/seasons'
 import { vitalsForGameModeMap, vitalsForMapId, vitalsForTerritoryId } from './views/vitals'
@@ -31,6 +31,8 @@ export class NwData extends NwDataSheets {
   public resourceItemsForPerkId = bind(this, resourceItemsForPerkId)
   public itemLootSources = bind(this, itemLootSources)
   public itemSalvagesTo = bind(this, itemSalvagesTo)
+  public itemPerkStats = bind(this, itemPerkStatsAll)
+  public itemPerkStatsByIdMap = primaryIndex(() => this.itemPerkStats(null), 'itemId')
 
   public loadItemsTable = bind(this, loadItemsTable)
   public listRecordVersions = listRecordVersions
