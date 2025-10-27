@@ -110,7 +110,7 @@ func (c *Collector) Entities(glob string) {
 					}
 				case nwt.InstancedMeshComponent:
 					meshNode := v.Instanced_mesh_render_node.BaseClass1
-					if !meshNode.Visible {
+					if game.ShouldIgnoreMeshNode(meshNode) {
 						continue
 					}
 					modelAsset := meshNode.Static_Mesh
@@ -147,10 +147,12 @@ func (c *Collector) Entities(glob string) {
 						})
 					}
 				case nwt.MeshComponent:
-					if !v.Static_Mesh_Render_Node.Visible {
+					meshNode := v.Static_Mesh_Render_Node
+					if game.ShouldIgnoreMeshNode(meshNode) {
 						continue
 					}
-					modelAsset := v.Static_Mesh_Render_Node.Static_Mesh
+
+					modelAsset := meshNode.Static_Mesh
 					modelFile, err := c.LookupFileByAsset(modelAsset)
 					if err != nil {
 						slog.Error("model file not found", "asset", modelAsset, "err", err)
@@ -161,7 +163,7 @@ func (c *Collector) Entities(glob string) {
 					}
 					model := modelFile.Path()
 
-					materialAsset := v.Static_Mesh_Render_Node.Material_Override_Asset
+					materialAsset := meshNode.Material_Override_Asset
 					materialFile, err := c.LookupFileByAsset(materialAsset)
 					if err != nil {
 						slog.Error("material not found", "asset", materialAsset, "err", err)

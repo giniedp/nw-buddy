@@ -483,3 +483,28 @@ func ParseEncounterName(name string) string {
 	}
 	return ""
 }
+
+func ShouldIgnoreMeshNode(node nwt.MeshComponentRenderNode) bool {
+	if !node.Visible {
+		return true
+	}
+
+	asset := node.Static_Mesh
+	if asset.Guid == "" {
+		return true
+	}
+
+	if strings.Contains(asset.Hint, "objects/default") {
+		return true
+	}
+
+	if strings.Contains(asset.Hint, "shadow_proxy") {
+		return true
+	}
+
+	if strings.Contains(asset.Hint, "shadowproxy") {
+		return true
+	}
+
+	return false
+}

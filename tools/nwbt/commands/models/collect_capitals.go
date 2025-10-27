@@ -129,7 +129,7 @@ func (c *Collector) CollectCapitals(glob string) {
 						}
 					case nwt.InstancedMeshComponent:
 						meshNode := v.Instanced_mesh_render_node.BaseClass1
-						if !meshNode.Visible {
+						if game.ShouldIgnoreMeshNode(meshNode) {
 							continue
 						}
 						modelAsset := meshNode.Static_Mesh
@@ -166,7 +166,8 @@ func (c *Collector) CollectCapitals(glob string) {
 							})
 						}
 					case nwt.MeshComponent:
-						if !v.Static_Mesh_Render_Node.Visible {
+						meshNode := v.Static_Mesh_Render_Node
+						if game.ShouldIgnoreMeshNode(meshNode) {
 							continue
 						}
 						modelAsset := v.Static_Mesh_Render_Node.Static_Mesh

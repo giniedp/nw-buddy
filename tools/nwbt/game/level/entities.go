@@ -83,7 +83,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 				}
 
 				meshNode := v.Instanced_mesh_render_node.BaseClass1
-				if !meshNode.Visible {
+				if game.ShouldIgnoreMeshNode(meshNode) {
 					continue
 				}
 				modelAsset := meshNode.Static_Mesh
@@ -163,7 +163,7 @@ func LoadEntities(assets *game.Assets, sliceFile string, rootTransform mat4.Data
 			case nwt.MeshComponent:
 
 				meshNode := v.Static_Mesh_Render_Node
-				if !meshNode.Visible {
+				if game.ShouldIgnoreMeshNode(meshNode) {
 					continue
 				}
 				modelAsset := meshNode.Static_Mesh
