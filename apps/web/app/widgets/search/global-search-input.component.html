@@ -4,7 +4,7 @@
     [class.text-primary]="!!value()"
     #input
     type="text"
-    [placeholder]="placeholder"
+    [placeholder]="placeholder()"
     [ngModel]="value()"
     (ngModelChange)="submit($event)"
     (focus)="onFocus()"

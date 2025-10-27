@@ -3,17 +3,18 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   HostListener,
-  Inject,
-  Input,
-  OnInit,
-  ViewChild,
+  inject,
+  input,
+  viewChild,
 } from '@angular/core'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { ComponentStore } from '@ngrx/component-store'
+import { patchState, signalState } from '@ngrx/signals'
 import { environment } from 'apps/web/environments'
-import { debounceTime, merge, switchMap, takeUntil, tap } from 'rxjs'
+import { debounceTime, merge, switchMap, tap } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { IconsModule } from '~/ui/icons'
 import { svgMagnifyingGlass, svgXmark } from '~/ui/icons/svg'
@@ -21,7 +22,7 @@ import { Hotkeys } from '~/utils'
 import { imageFileFromPaste } from '~/utils/image-file-from-paste'
 import { useTesseract } from '~/utils/use-tesseract'
 import { SEARCH_QUERY_TASKS } from './search-query-tasks'
-import type { SearchQueryTasks, SearchRecord } from './search-query.worker'
+import type { SearchRecord } from './search-query.worker'
 import { SearchResultsPanelComponent } from './search-results-panel.component'
 
 @Component({
@@ -35,53 +36,50 @@ import { SearchResultsPanelComponent } from './search-results-panel.component'
     class: 'block',
   },
 })
-export class GlobalSearchInputComponent
-  extends ComponentStore<{ query: string; isPanelOpen: boolean; isLoading: boolean; results: SearchRecord[] }>
-  implements OnInit
-{
-  @ViewChild('input')
-  public input: ElementRef<HTMLInputElement>
+export class GlobalSearchInputComponent {
+  private keys = inject(Hotkeys)
+  private api = inject(SEARCH_QUERY_TASKS)
+  private locale = inject(LocaleService)
+  protected cdkOrigin = inject(CdkOverlayOrigin)
 
-  @Input()
-  public placeholder: string = 'Search'
+  private state = signalState<{ query: string; isPanelOpen: boolean; isLoading: boolean; results: SearchRecord[] }>({
+    query: '',
+    isLoading: false,
+    isPanelOpen: false,
+    results: [],
+  })
 
-  public readonly value = this.selectSignal(({ query }) => query)
-  public readonly isPanelOpen = this.selectSignal(({ isPanelOpen }) => isPanelOpen)
-  public readonly isLoading = this.selectSignal(({ isLoading }) => isLoading)
-  public readonly hasResults = this.selectSignal(({ results }) => results?.length > 0)
-  public readonly results = this.selectSignal(({ results }) => results)
+  public input = viewChild<string, ElementRef<HTMLInputElement>>('input', { read: ElementRef })
+
+  public placeholder = input<string>('Search')
+
+  public readonly value = this.state.query
+  public readonly isPanelOpen = this.state.isPanelOpen
+  public readonly isLoading = this.state.isLoading
+  public readonly results = this.state.results
+  public readonly hasResults = computed(() => !!this.results()?.length)
 
   protected svgSearch = svgMagnifyingGlass
   protected svgXmark = svgXmark
 
-  public constructor(
-    private keys: Hotkeys,
-    @Inject(SEARCH_QUERY_TASKS)
-    private api: SearchQueryTasks,
-    private locale: LocaleService,
-    protected cdkOrigin: CdkOverlayOrigin,
-    private elRef: ElementRef<HTMLElement>,
-  ) {
-    super({ query: '', isPanelOpen: true, isLoading: false, results: [] })
-  }
-
-  public ngOnInit() {
+  public constructor() {
     merge(this.keys.observe({ keys: 'control./' }), this.keys.observe({ keys: ':' }))
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(() => {
-        this.input.nativeElement.focus()
+        this.input().nativeElement.focus()
       })
-    this.select(({ query }) => query)
+
+    toObservable(this.value)
       .pipe(
         tap((value) => {
-          this.patchState({ isLoading: true, isPanelOpen: !!value })
+          patchState(this.state, { isLoading: true, isPanelOpen: !!value })
         }),
       )
       .pipe(debounceTime(500))
       .pipe(switchMap((value) => this.search(value)))
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((result) => {
-        this.patchState({ isLoading: false, results: result })
+        patchState(this.state, { isLoading: false, results: result })
       })
   }
 
@@ -99,7 +97,7 @@ export class GlobalSearchInputComponent
   }
 
   protected submit(value: string) {
-    this.patchState({ query: value })
+    patchState(this.state, { query: value })
   }
 
   protected async search(value: string) {
@@ -110,13 +108,11 @@ export class GlobalSearchInputComponent
   }
 
   protected closePanel() {
-    if (this.isPanelOpen()) {
-      this.patchState({ isPanelOpen: false })
-    }
+    patchState(this.state, { isPanelOpen: false })
   }
 
   protected openPanel() {
-    this.patchState({ isPanelOpen: true })
+    patchState(this.state, { isPanelOpen: true })
   }
 
   protected async onFocus() {
@@ -126,7 +122,7 @@ export class GlobalSearchInputComponent
   }
 
   protected onOutsideClick(e: Event) {
-    if (document.activeElement !== this.input.nativeElement) {
+    if (document.activeElement !== this.input().nativeElement) {
       this.closePanel()
     }
   }
