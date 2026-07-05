@@ -1,0 +1,295 @@
+<div
+  class="bg-base-100 border-2 border-base-300 hover:border-primary rounded-lg motion-safe:transition-all cursor-pointer hover:shadow-xl hover:shadow-primary/30 overflow-hidden flex flex-col group"
+  (click)="handleViewClick()">
+  <!-- Portrait Section -->
+  <div class="relative aspect-video bg-gradient-to-b from-base-300 to-base-100 overflow-hidden">
+    <!-- Background image -->
+    <img [nwImage]="getPortraitImage()"
+      class="absolute inset-0 w-full h-full object-cover opacity-90 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-110"
+      alt="" />
+
+    <!-- Gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-base-100"></div>
+    <!-- Gear Score (bottom-right) -->
+    <div class="absolute top-2 left-2 flex items-center gap-1">
+      <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
+      <span class="font-caslon text-3xl font-bold text-shadow">{{ gearScore() }}</span>
+    </div>
+
+    <!-- Rating (top-right) -->
+    <div
+      class="absolute top-2 right-2 flex items-center gap-1.5 bg-gradient-to-br from-base-100 to-base-200 backdrop-blur-md px-3 py-2 rounded-lg border border-base-content/20">
+      <nwb-icon [icon]="iconRating" class="size-4 text-warning" />
+      <span class="font-bold">{{ likeCount() }}</span>
+    </div>
+
+
+  </div>
+
+  <!-- Content Section -->
+  <div class="flex flex-col gap-3 p-4 @container">
+    <!-- Title with decorative background and weapons -->
+    <div class="nw-bg-title bg-bottom -mx-4 px-4 py-2 relative">
+      <div
+        class="grid grid-rows-[auto_auto] grid-cols-2 @[16rem]:grid-rows-1 @[16rem]:grid-cols-[max-content_1fr_max-content] gap-2 items-center">
+        <!-- Weapon Icons (Left) -->
+        <div class="flex items-end gap-1.5 flex-shrink-0 self-end">
+          <!-- Primary Weapon -->
+          <div class="relative w-12 h-12">
+            @if (getPrimaryWeapon(); as weapon) {
+            <div [nwbItemDetail]="weapon.itemId" #weaponDetail="itemDetail">
+              <!-- Weapon icon with rarity glow -->
+              <div class="nw-item-icon-frame nw-item-icon-bg aspect-square relative w-full h-full cursor-help"
+                [class.nw-item-rarity-common]="weaponDetail.rarity() === 'common'"
+                [class.nw-item-rarity-uncommon]="weaponDetail.rarity() === 'uncommon'"
+                [class.nw-item-rarity-rare]="weaponDetail.rarity() === 'rare'"
+                [class.nw-item-rarity-epic]="weaponDetail.rarity() === 'epic'"
+                [class.nw-item-rarity-legendary]="weaponDetail.rarity() === 'legendary'"
+                [class.nw-item-rarity-artifact]="weaponDetail.rarity() === 'artifact'" [tooltip]="weaponTooltip"
+                [tooltipPlacement]="'bottom-left'" [tooltipKeep]="true" [tooltipOffset]="0" [tooltipDelay]="0">
+                <div class="nw-item-icon-border"></div>
+                <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]">
+                  <img [nwImage]="weaponDetail.icon() || weapon.icon" class="w-full h-full object-contain"
+                    [alt]="weapon.name" />
+                </picture>
+              </div>
+
+              <!-- Weapon Tooltip Template -->
+              <ng-template #weaponTooltip>
+                <nwb-item-card [entity]="weapon.itemId" />
+              </ng-template>
+              <!-- Shield overlay (smaller, on top) -->
+              @if (weapon.hasShield && weapon.shieldIcon) {
+              <div class="absolute bottom-0 right-0 w-7 h-7 rounded-sm bg-black/40 backdrop-blur-[2px] p-[2px]"
+                [nwbItemDetail]="weapon.shieldItemId" #shieldDetail="itemDetail">
+                <div class="nw-item-icon-frame nw-item-icon-bg aspect-square relative w-full h-full cursor-help"
+                  [class.nw-item-rarity-common]="shieldDetail.rarity() === 'common'"
+                  [class.nw-item-rarity-uncommon]="shieldDetail.rarity() === 'uncommon'"
+                  [class.nw-item-rarity-rare]="shieldDetail.rarity() === 'rare'"
+                  [class.nw-item-rarity-epic]="shieldDetail.rarity() === 'epic'"
+                  [class.nw-item-rarity-legendary]="shieldDetail.rarity() === 'legendary'"
+                  [class.nw-item-rarity-artifact]="shieldDetail.rarity() === 'artifact'" [tooltip]="shieldTooltip"
+                  [tooltipPlacement]="'bottom-left'" [tooltipKeep]="true" [tooltipOffset]="0" [tooltipDelay]="0">
+                  <div class="nw-item-icon-border"></div>
+                  <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]">
+                    <img [nwImage]="shieldDetail.icon() || weapon.shieldIcon" class="w-full h-full object-contain" />
+                  </picture>
+                </div>
+
+                <!-- Shield Tooltip Template -->
+                <ng-template #shieldTooltip>
+                  <nwb-item-card [entity]="weapon.shieldItemId" />
+                </ng-template>
+              </div>
+              }
+            </div>
+            } @else {
+            <!-- Empty Primary Weapon Placeholder -->
+            <div
+              class="w-full h-full border border-base-content/10 bg-base-300/30 rounded flex items-center justify-center opacity-20">
+              <svg class="w-6 h-6 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                </path>
+              </svg>
+            </div>
+            }
+          </div>
+
+          <!-- Secondary Weapon -->
+          <div class="relative w-10 h-10">
+            @if (getSecondaryWeapon(); as weapon) {
+            <div [nwbItemDetail]="weapon.itemId" #weaponDetail="itemDetail">
+              <!-- Weapon icon with rarity glow -->
+              <div class="nw-item-icon-frame nw-item-icon-bg aspect-square relative w-full h-full cursor-help"
+                [class.nw-item-rarity-common]="weaponDetail.rarity() === 'common'"
+                [class.nw-item-rarity-uncommon]="weaponDetail.rarity() === 'uncommon'"
+                [class.nw-item-rarity-rare]="weaponDetail.rarity() === 'rare'"
+                [class.nw-item-rarity-epic]="weaponDetail.rarity() === 'epic'"
+                [class.nw-item-rarity-legendary]="weaponDetail.rarity() === 'legendary'"
+                [class.nw-item-rarity-artifact]="weaponDetail.rarity() === 'artifact'" [tooltip]="weaponTooltip"
+                [tooltipPlacement]="'bottom-left'" [tooltipKeep]="true" [tooltipOffset]="0" [tooltipDelay]="0">
+                <div class="nw-item-icon-border"></div>
+                <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]">
+                  <img [nwImage]="weaponDetail.icon() || weapon.icon" class="w-full h-full object-contain"
+                    [alt]="weapon.name" />
+                </picture>
+              </div>
+
+              <!-- Weapon Tooltip Template -->
+              <ng-template #weaponTooltip>
+                <nwb-item-card [entity]="weapon.itemId" />
+              </ng-template>
+            </div>
+            } @else {
+            <!-- Empty Secondary Weapon Placeholder -->
+            <div
+              class="w-full h-full border border-base-content/10 bg-base-300/30 rounded flex items-center justify-center opacity-20">
+              <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                </path>
+              </svg>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Ability Icons (Right) - Two Rows -->
+        <div class="flex flex-col items-end gap-0.5 flex-shrink-0 place-self-end">
+          <!-- Secondary Weapon Abilities (Top Row) -->
+          <div class="flex items-center gap-0.5 justify-end">
+            @for (ability of secondaryAbilities(); track $index) {
+            <div class="w-6 h-6">
+              @if (ability) {
+              <picture class="block aspect-square w-full h-full border border-base-content/20 cursor-help"
+                [class.rounded-full]="!ability.isActive" [class.rounded-sm]="ability.isActive"
+                [ngClass]="'bg-ability-' + ability.type" [tooltip]="abilityTooltip" [tooltipPlacement]="'bottom-left'"
+                [tooltipKeep]="true" [tooltipOffset]="0" [tooltipDelay]="0">
+                <img [nwImage]="ability.icon" class="w-full h-full object-contain nw-icon"
+                  [class.rounded-full]="!ability.isActive" [class.rounded-sm]="ability.isActive" [alt]="ability.name" />
+
+                <!-- Ability Tooltip Template -->
+                <ng-template #abilityTooltip>
+                  <nwb-ability-detail [nwbAbilityDetail]="ability.id" />
+                </ng-template>
+              </picture>
+              } @else {
+              <div
+                class="w-full h-full border border-base-content/10 bg-base-300/30 rounded-sm flex items-center justify-center opacity-20">
+                <svg class="w-3 h-3 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                  </path>
+                </svg>
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Primary Weapon Abilities (Bottom Row) -->
+          <div class="flex items-center gap-0.5 justify-end">
+            @for (ability of primaryAbilities(); track $index) {
+            <div class="w-8 h-8">
+              @if (ability) {
+              <picture class="block aspect-square w-full h-full border border-base-content/20 cursor-help"
+                [class.rounded-full]="!ability.isActive" [class.rounded-sm]="ability.isActive"
+                [ngClass]="'bg-ability-' + ability.type" [tooltip]="abilityTooltip" [tooltipPlacement]="'bottom-left'"
+                [tooltipKeep]="true" [tooltipOffset]="0" [tooltipDelay]="0">
+                <img [nwImage]="ability.icon" class="w-full h-full object-contain nw-icon"
+                  [class.rounded-full]="!ability.isActive" [class.rounded-sm]="ability.isActive" [alt]="ability.name" />
+
+                <!-- Ability Tooltip Template -->
+                <ng-template #abilityTooltip>
+                  <nwb-ability-detail [nwbAbilityDetail]="ability.id" />
+                </ng-template>
+              </picture>
+              } @else {
+              <div
+                class="w-full h-full border border-base-content/10 bg-base-300/30 rounded-sm flex items-center justify-center opacity-20">
+                <svg class="w-4 h-4 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                  </path>
+                </svg>
+              </div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Title (spans full width on small cards, center column on large cards) -->
+        <h3
+          class="text-lg font-serif font-bold text-center self-end text-nw-description truncate col-span-2 row-start-1 @[16rem]:col-span-1 @[16rem]:row-start-1 @[16rem]:col-start-2"
+          [tooltip]="gearset().name">
+          {{ gearset().name }}
+        </h3>
+      </div>
+    </div>
+
+    <!-- Tags (prominent) -->
+    @if (gearset().tags?.length) {
+    <div class="flex flex-wrap gap-1 justify-center -mt-1">
+      @for (tag of gearset().tags; track tag) {
+      <span class="badge badge-sm badge-secondary bg-secondary/80 font-semibold">{{ tag }}</span>
+      }
+    </div>
+    }
+
+    <!-- Description -->
+    @if (gearset().description) {
+    <p class="text-xs text-base-content/70 line-clamp-2 text-center italic" [tooltip]="gearset().description">
+      {{ gearset().description }}
+    </p>
+    }
+
+    <!-- Attributes -->
+    <div class="bg-base-200/50 rounded p-2">
+      <div class="text-[10px] text-base-content/50 uppercase text-center mb-1">Attributes</div>
+      <div class="grid grid-cols-5 gap-1">
+        <div class="text-center" [class.opacity-30]="!getAttributeValue('str')">
+          <div class="text-sm font-bold" [class.text-error]="getAttributeValue('str')">
+            {{ getAttributeValue('str') || 0 }}
+          </div>
+          <div class="text-[9px] text-base-content/50">STR</div>
+        </div>
+        <div class="text-center" [class.opacity-30]="!getAttributeValue('dex')">
+          <div class="text-sm font-bold" [class.text-warning]="getAttributeValue('dex')">
+            {{ getAttributeValue('dex') || 0 }}
+          </div>
+          <div class="text-[9px] text-base-content/50">DEX</div>
+        </div>
+        <div class="text-center" [class.opacity-30]="!getAttributeValue('int')">
+          <div class="text-sm font-bold" [class.text-info]="getAttributeValue('int')">
+            {{ getAttributeValue('int') || 0 }}
+          </div>
+          <div class="text-[9px] text-base-content/50">INT</div>
+        </div>
+        <div class="text-center" [class.opacity-30]="!getAttributeValue('foc')">
+          <div class="text-sm font-bold" [class.text-success]="getAttributeValue('foc')">
+            {{ getAttributeValue('foc') || 0 }}
+          </div>
+          <div class="text-[9px] text-base-content/50">FOC</div>
+        </div>
+        <div class="text-center" [class.opacity-30]="!getAttributeValue('con')">
+          <div class="text-sm font-bold" [class.text-primary]="getAttributeValue('con')">
+            {{ getAttributeValue('con') || 0 }}
+          </div>
+          <div class="text-[9px] text-base-content/50">CON</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer: Author + Import -->
+    <div class="flex items-center gap-2 pt-2 border-t border-base-content/10">
+      <div class="flex items-center gap-2 text-xs text-base-content/70 flex-1 min-w-0">
+        <div class="avatar placeholder flex-shrink-0">
+          <div class="bg-neutral text-neutral-content rounded-full w-6 h-6">
+            @if (getUserAvatar(); as avatarUrl) {
+            <img [src]="avatarUrl" [alt]="getUserUsername()" class="rounded-full" />
+            } @else {
+            <nwb-icon [icon]="iconUser" class="w-4 h-4" />
+            }
+          </div>
+        </div>
+        <span class="truncate font-medium" [tooltip]="'Created by: ' + getUserUsername()">
+          {{ getUserUsername() }}
+        </span>
+      </div>
+      @if (getUpdatedTime(); as updated) {
+      <span class="text-[10px] text-base-content/40 flex-1 text-center truncate" [tooltip]="updated">{{ updated
+        }}</span>
+      }
+      <div class="flex-1 flex justify-end">
+        <button
+          class="btn btn-sm btn-primary flex-shrink-0 overflow-hidden motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-in-out group/import w-8 motion-safe:hover:w-auto"
+          [class.btn-disabled]="isOwnBuild()" [disabled]="isOwnBuild()" (click)="handleImportClick($event)"
+          [tooltip]="importTooltip()">
+          <nwb-icon [icon]="iconImport" class="w-4 h-4 flex-shrink-0" />
+          <span
+            class="max-w-0 overflow-hidden whitespace-nowrap motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-in-out motion-safe:group-hover/import:max-w-[4rem] motion-safe:group-hover/import:ml-2">
+            Import
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

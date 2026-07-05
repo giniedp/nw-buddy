@@ -1,0 +1,515 @@
+<ion-header class="bg-base-300">
+  <ion-toolbar class="bg-base-300">
+    <div class="flex items-center gap-4 px-4 py-2">
+      <button class="btn btn-ghost btn-sm" (click)="goBack()">
+        <nwb-icon [icon]="iconBack" class="w-5 h-5" />
+        Back to Browse
+      </button>
+      <h1 class="text-xl font-bold truncate flex-1">{{ gearset()?.name || 'Loading...' }}</h1>
+      @if (gearset() && !isOwned()) {
+      <button class="btn btn-primary btn-sm" (click)="handleImport()">
+        <nwb-icon [icon]="iconImport" class="w-4 h-4" />
+        Import
+      </button>
+      } @else if (isOwned()) {
+      <div class="badge badge-info">You own this build</div>
+      }
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (gearset()) {
+  <div class="container mx-auto p-4 max-w-6xl">
+    <!-- Hero Section with Background -->
+    <div class="relative bg-base-200 rounded-lg overflow-hidden mb-6">
+      <!-- Background gradient -->
+      <div class="absolute inset-0 bg-gradient-to-br from-base-300 to-base-200"></div>
+
+      <div class="relative p-6">
+        <!-- Title and Meta -->
+        <div class="nw-bg-title bg-bottom -mx-6 px-6 py-3 mb-4">
+          <h2 class="text-3xl font-caslon font-bold text-nw-description mb-2">{{ gearset().name }}</h2>
+          <div class="flex flex-wrap items-center gap-3 text-sm text-base-content/70">
+            <div class="flex items-center gap-2">
+              <div class="avatar placeholder flex-shrink-0">
+                <div class="bg-neutral text-neutral-content rounded-full w-7 h-7">
+                  @if (avatarUrl(); as avatar) {
+                  <img [src]="avatar" [alt]="author()" class="rounded-full" />
+                  } @else {
+                  <nwb-icon [icon]="iconUser" class="w-4 h-4" />
+                  }
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-medium">{{ author() }}</span>
+                @if (getUpdatedTime(); as updated) {
+                <span class="text-xs text-base-content/50">{{ updated }}</span>
+                }
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <!-- Like Button -->
+              @if (canLike()) {
+              <button class="btn btn-ghost btn-xs gap-1 hover:text-warning"
+                [class.text-warning]="isLikedByCurrentUser()" [disabled]="isLiking()" (click)="handleLike()"
+                [tooltip]="isLikedByCurrentUser() ? 'Remove like' : 'Like this build'">
+                <nwb-icon [icon]="iconRating" class="w-4 h-4" />
+                <span class="font-semibold">{{ likeCount() }}</span>
+              </button>
+              } @else {
+              <!-- Just show count for owned builds or not signed in -->
+              <div class="flex items-center gap-1">
+                <nwb-icon [icon]="iconRating" class="w-4 h-4 text-warning" />
+                <span class="font-semibold text-base-content/70">{{ likeCount() }}</span>
+              </div>
+              }
+
+              <!-- Share Button -->
+              <button class="btn btn-ghost btn-xs gap-1" (click)="handleShare()" [tooltip]="'Copy link to clipboard'">
+                <nwb-icon [icon]="iconShare" class="w-4 h-4" />
+              </button>
+
+              <!-- Damage Calculator Button -->
+              <button class="btn btn-ghost btn-xs gap-1" (click)="handleCalculator()"
+                [tooltip]="'Open in Damage Calculator'">
+                <nwb-icon [icon]="iconCalculator" class="w-4 h-4" />
+              </button>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="relative">
+                <img class="w-8 rotate-45" [nwImage]="'assets/icons/glorydiamonddetailed.png'" />
+                <div class="absolute inset-0 flex items-center justify-center text-[8px] font-semibold">lvl</div>
+              </span>
+              <div class="text-3xl font-caslon font-bold text-shadow">{{ level() }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        @if (description()) {
+        <p class="text-base-content/80 italic mb-3">{{ description() }}</p>
+        }
+
+        <!-- Tags -->
+        @if (tags().length) {
+        <div class="flex flex-wrap gap-1.5">
+          @for (tag of tags(); track tag) {
+          <span class="badge badge-sm badge-secondary bg-secondary/80 font-semibold">{{ tag }}</span>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Main Layout: Equipment (Left) + Tabs/Item Detail (Right) -->
+    <div class="flex gap-6">
+      <!-- Left Column: Equipment (Always Visible) -->
+      <div class="flex-shrink-0">
+        <div
+          class="rounded-lg bg-gradient-to-b h-fit from-base-200/50 to-base-300/30 p-3 relative overflow-hidden border border-base-content/5 shadow-lg">
+          <!-- Background Image -->
+          <img [nwImage]="getPortraitImage()" class="absolute inset-0 w-full h-full object-cover opacity-20 rounded-lg"
+            alt="" />
+
+          <!-- Gradient Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-b from-base-300/60 via-base-200/40 to-base-100/80 rounded-lg">
+          </div>
+
+          <!-- Equipment Grid Layout: 4 columns x 5 rows -->
+          <div class="relative z-10 grid grid-cols-[64px_192px_64px_64px] grid-rows-[repeat(5,_64px)] gap-x-1 gap-y-1">
+            <!-- Column 1: Armor Slots (Rows 1-5) -->
+            @for (slot of equipmentGrid()[0]; track slot.slotId; let rowIndex = $index) {
+            <div class="col-start-1" [style.grid-row]="rowIndex + 1">
+              @if (slots()[slot.slotId]) {
+              <div class="relative w-16 h-16 cursor-pointer group" [nwbItemDetail]="getSlotItemId(slot.slotId)"
+                #slotDetail="itemDetail" (click)="handleSlotClick(slot.slotId)">
+                <!-- Backdrop glow -->
+                <div class="absolute inset-0 bg-base-content/5 rounded blur-sm"></div>
+                <!-- Main slot -->
+                <div
+                  class="relative bg-black rounded border-2 border-base-content/30 group-hover:border-primary transition-colors shadow-lg w-full h-full">
+                  <div class="nw-item-icon-frame nw-item-icon-bg w-full h-full relative"
+                    [class.nw-item-rarity-common]="slotDetail.rarity() === 'common'"
+                    [class.nw-item-rarity-uncommon]="slotDetail.rarity() === 'uncommon'"
+                    [class.nw-item-rarity-rare]="slotDetail.rarity() === 'rare'"
+                    [class.nw-item-rarity-epic]="slotDetail.rarity() === 'epic'"
+                    [class.nw-item-rarity-legendary]="slotDetail.rarity() === 'legendary'"
+                    [class.nw-item-rarity-artifact]="slotDetail.rarity() === 'artifact'" [tooltip]="itemTooltip"
+                    [tooltipPlacement]="'right'" [tooltipKeep]="true" [tooltipOffset]="8" [tooltipDelay]="0">
+                    <div class="nw-item-icon-border"></div>
+                    <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]">
+                      <img [nwImage]="slotDetail.icon()" class="w-full h-full object-contain" />
+                    </picture>
+                  </div>
+                </div>
+
+                <!-- Item Tooltip Template -->
+                <ng-template #itemTooltip>
+                  <nwb-item-card [entity]="getSlotItemId(slot.slotId)" [gsOverride]="getSlotGearScore(slot.slotId)"
+                    [perkOverride]="getSlotPerks(slot.slotId)" />
+                </ng-template>
+              </div>
+              } @else {
+              <div class="relative w-16 h-16">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-base-content/5 rounded blur-sm"></div>
+                <!-- Main slot -->
+                <div
+                  class="relative bg-black/90 rounded border-2 border-base-content/20 shadow-inner w-full h-full flex items-center justify-center">
+                  <nwb-item-icon [nwbItemIcon]="slot.icon" [solid]="false" class="w-10 h-10 opacity-20" />
+                </div>
+              </div>
+              }
+            </div>
+            }
+
+            <!-- Column 2: Character Model (Rows 1-4) -->
+            <div class="col-start-2 row-start-1 row-span-4 flex items-center justify-center">
+              <div class="flex flex-col items-center justify-center opacity-30">
+                <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-24 h-24" />
+                <span class="text-xs text-base-content/50 mt-2">Character Model</span>
+              </div>
+            </div>
+
+            <!-- Column 3: Jewelry (Rows 1-3) -->
+            @for (slot of equipmentGrid()[2]; track slot.slotId; let rowIndex = $index) {
+            <div class="col-start-3" [style.grid-row]="rowIndex + 1">
+              @if (slots()[slot.slotId]) {
+              <div class="relative w-16 h-16 cursor-pointer group" [nwbItemDetail]="getSlotItemId(slot.slotId)"
+                #slotDetail="itemDetail" (click)="handleSlotClick(slot.slotId)">
+                <!-- Backdrop glow -->
+                <div class="absolute inset-0 bg-base-content/5 rounded blur-sm"></div>
+                <!-- Main slot -->
+                <div
+                  class="relative bg-black rounded border-2 border-base-content/30 group-hover:border-primary transition-colors shadow-lg w-full h-full">
+                  <div class="nw-item-icon-frame nw-item-icon-bg w-full h-full relative"
+                    [class.nw-item-rarity-common]="slotDetail.rarity() === 'common'"
+                    [class.nw-item-rarity-uncommon]="slotDetail.rarity() === 'uncommon'"
+                    [class.nw-item-rarity-rare]="slotDetail.rarity() === 'rare'"
+                    [class.nw-item-rarity-epic]="slotDetail.rarity() === 'epic'"
+                    [class.nw-item-rarity-legendary]="slotDetail.rarity() === 'legendary'"
+                    [class.nw-item-rarity-artifact]="slotDetail.rarity() === 'artifact'" [tooltip]="itemTooltip"
+                    [tooltipPlacement]="'right'" [tooltipKeep]="true" [tooltipOffset]="8" [tooltipDelay]="0">
+                    <div class="nw-item-icon-border"></div>
+                    <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]">
+                      <img [nwImage]="slotDetail.icon()" class="w-full h-full object-contain" />
+                    </picture>
+                  </div>
+                </div>
+
+                <!-- Item Tooltip Template -->
+                <ng-template #itemTooltip>
+                  <nwb-item-card [entity]="getSlotItemId(slot.slotId)" [gsOverride]="getSlotGearScore(slot.slotId)"
+                    [perkOverride]="getSlotPerks(slot.slotId)" />
+                </ng-template>
+              </div>
+              } @else {
+              <div class="relative w-16 h-16">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-base-content/5 rounded blur-sm"></div>
+                <!-- Main slot -->
+                <div
+                  class="relative bg-black/90 rounded border-2 border-base-content/20 shadow-inner w-full h-full flex items-center justify-center">
+                  <nwb-item-icon [nwbItemIcon]="slot.icon" [solid]="false" class="w-10 h-10 opacity-20" />
+                </div>
+              </div>
+              }
+            </div>
+            }
+
+            <!-- Column 4: Weapons (Rows 1-3) -->
+            @for (slot of equipmentGrid()[3]; track slot.slotId; let rowIndex = $index) {
+            <div class="col-start-4" [style.grid-row]="rowIndex + 1">
+              @if (slots()[slot.slotId]) {
+              <div class="relative w-16 h-16 cursor-pointer group" [nwbItemDetail]="getSlotItemId(slot.slotId)"
+                #slotDetail="itemDetail" (click)="handleSlotClick(slot.slotId)">
+                <!-- Backdrop glow -->
+                <div class="absolute inset-0 bg-base-content/5 rounded blur-sm"></div>
+                <!-- Main slot -->
+                <div
+                  class="relative bg-black rounded border-2 border-base-content/30 group-hover:border-primary transition-colors shadow-lg w-full h-full">
+                  <div class="nw-item-icon-frame nw-item-icon-bg w-full h-full relative"
+                    [class.nw-item-rarity-common]="slotDetail.rarity() === 'common'"
+                    [class.nw-item-rarity-uncommon]="slotDetail.rarity() === 'uncommon'"
+                    [class.nw-item-rarity-rare]="slotDetail.rarity() === 'rare'"
+                    [class.nw-item-rarity-epic]="slotDetail.rarity() === 'epic'"
+                    [class.nw-item-rarity-legendary]="slotDetail.rarity() === 'legendary'"
+                    [class.nw-item-rarity-artifact]="slotDetail.rarity() === 'artifact'" [tooltip]="itemTooltip"
+                    [tooltipPlacement]="'right'" [tooltipKeep]="true" [tooltipOffset]="8" [tooltipDelay]="0">
+                    <div class="nw-item-icon-border"></div>
+                    <picture class="absolute top-[1px] left-[1px] right-[1px] bottom-[1px]">
+                      <img [nwImage]="slotDetail.icon()" class="w-full h-full object-contain" />
+                    </picture>
+                  </div>
+                </div>
+
+                <!-- Item Tooltip Template -->
+                <ng-template #itemTooltip>
+                  <nwb-item-card [entity]="getSlotItemId(slot.slotId)" [gsOverride]="getSlotGearScore(slot.slotId)"
+                    [perkOverride]="getSlotPerks(slot.slotId)" />
+                </ng-template>
+              </div>
+              } @else {
+              <div class="relative w-16 h-16">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-base-content/5 rounded blur-sm"></div>
+                <!-- Main slot -->
+                <div
+                  class="relative bg-black/90 rounded border-2 border-base-content/20 shadow-inner w-full h-full flex items-center justify-center">
+                  <nwb-item-icon [nwbItemIcon]="slot.icon" [solid]="false" class="w-10 h-10 opacity-20" />
+                </div>
+              </div>
+              }
+            </div>
+            }
+
+            <!-- Health Bar (Columns 2-4, Row 5) -->
+            <div
+              class="col-start-2 col-span-3 row-start-5 flex items-center gap-2 px-2 bg-black/40 rounded border border-base-content/10 h-16">
+              <!-- Health Icon -->
+              <svg class="w-4 h-4 text-error flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                  clip-rule="evenodd" />
+              </svg>
+              <!-- Health Bar -->
+              <div class="flex-1 bg-base-300 rounded-full h-6 overflow-hidden">
+                <div class="bg-error h-full rounded-full flex items-center justify-center text-xs font-bold text-white"
+                  style="width: 100%">
+                  {{ totalHealth() }} HP
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Tabs and Content -->
+      <div class="flex-1 flex flex-col gap-4">
+        <!-- Tab Navigation (Always Visible) -->
+        <ion-segment [value]="activeTab()" (ionChange)="handleTabChange($event)">
+          <ion-segment-button value="stats">
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">Stats</span>
+            </div>
+          </ion-segment-button>
+          <ion-segment-button value="abilities">
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">Abilities</span>
+            </div>
+          </ion-segment-button>
+        </ion-segment>
+
+        <!-- Content Area: Item Detail or Tab Content -->
+        @if (selectedSlot()) {
+        <!-- Item Detail View (when slot clicked) -->
+        <div
+          class="bg-base-200/50 backdrop-blur-sm rounded-lg p-4 self-start overflow-y-auto border border-base-content/5 shadow-lg">
+          <nwb-item-card [entity]="getSlotItemId(selectedSlot()!)" [gsOverride]="getSlotGearScore(selectedSlot()!)"
+            [perkOverride]="getSlotPerks(selectedSlot()!)" />
+        </div>
+        } @else {
+        <!-- Tab Content -->
+        @switch (activeTab()) {
+        @case ('stats') {
+        <div class="bg-base-200/50 backdrop-blur-sm rounded-lg p-5 border border-base-content/5 shadow-lg">
+          <h3 class="text-base font-semibold mb-3">Attributes</h3>
+          <div class="flex gap-4 justify-around mb-6">
+            <div class="text-center" [class.opacity-30]="!attrs().str">
+              <div class="text-lg font-bold" [class.text-error]="attrs().str">
+                {{ attrs().str || 0 }}
+              </div>
+              <div class="text-xs text-base-content/50">STR</div>
+            </div>
+            <div class="text-center" [class.opacity-30]="!attrs().dex">
+              <div class="text-lg font-bold" [class.text-warning]="attrs().dex">
+                {{ attrs().dex || 0 }}
+              </div>
+              <div class="text-xs text-base-content/50">DEX</div>
+            </div>
+            <div class="text-center" [class.opacity-30]="!attrs().int">
+              <div class="text-lg font-bold" [class.text-info]="attrs().int">
+                {{ attrs().int || 0 }}
+              </div>
+              <div class="text-xs text-base-content/50">INT</div>
+            </div>
+            <div class="text-center" [class.opacity-30]="!attrs().foc">
+              <div class="text-lg font-bold" [class.text-success]="attrs().foc">
+                {{ attrs().foc || 0 }}
+              </div>
+              <div class="text-xs text-base-content/50">FOC</div>
+            </div>
+            <div class="text-center" [class.opacity-30]="!attrs().con">
+              <div class="text-lg font-bold" [class.text-primary]="attrs().con">
+                {{ attrs().con || 0 }}
+              </div>
+              <div class="text-xs text-base-content/50">CON</div>
+            </div>
+          </div>
+
+          <!-- Core Stats -->
+          <div class="border-t border-base-content/10 pt-6 space-y-6">
+            <div>
+              <h4 class="text-sm font-semibold mb-3 text-base-content/90">Core Stats</h4>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Health:</span>
+                  <span class="font-semibold">{{ totalHealth() }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Stamina:</span>
+                  <span class="font-semibold">{{ maxStamina() }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Mana:</span>
+                  <span class="font-semibold">{{ maxMana() }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Gear Score:</span>
+                  <span class="font-semibold">{{ gearScoreAvg() }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-semibold mb-3 text-base-content/90">Defense</h4>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Physical Armor:</span>
+                  <span class="font-semibold">{{ physicalArmor() }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Elemental Armor:</span>
+                  <span class="font-semibold">{{ elementalArmor() }}</span>
+                </div>
+                <div class="flex justify-between col-span-2">
+                  <span class="text-base-content/70">Equipment Load:</span>
+                  <span class="font-semibold">{{ equippedWeight() | number: '1.1-1' }} ({{ equipLoadCategory()
+                    }})</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-semibold mb-3 text-base-content/90">Offense</h4>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Crit Chance:</span>
+                  <span class="font-semibold">{{ critChance() }}%</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">Crit Damage:</span>
+                  <span class="font-semibold">{{ critDamage() }}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <button
+                class="w-full flex items-center justify-between text-sm font-semibold mb-3 text-base-content/90 hover:text-primary transition-colors"
+                (click)="showDamageTypes.set(!showDamageTypes())">
+                <h4>Damage Bonuses</h4>
+                <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showDamageTypes()" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              @if (showDamageTypes()) {
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                @for (mod of damageByType(); track mod.type) {
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">{{ mod.type }}:</span>
+                  <span class="font-semibold">
+                    {{ mod.value > 1 ? '+' : '' }}{{ ((mod.value - 1) * 100) | number: '1.0-1' }}%
+                  </span>
+                </div>
+                }
+              </div>
+              }
+            </div>
+
+            <div>
+              <button
+                class="w-full flex items-center justify-between text-sm font-semibold mb-3 text-base-content/90 hover:text-primary transition-colors"
+                (click)="showAbsorption.set(!showAbsorption())">
+                <h4>Damage Absorption</h4>
+                <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showAbsorption()" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              @if (showAbsorption()) {
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                @for (mod of absorptionByCategory(); track mod.category) {
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">{{ mod.category }}:</span>
+                  <span class="font-semibold">
+                    {{ ((1 - mod.value) * 100) | number: '1.0-1' }}%
+                  </span>
+                </div>
+                }
+              </div>
+              }
+            </div>
+
+            <div>
+              <button
+                class="w-full flex items-center justify-between text-sm font-semibold mb-3 text-base-content/90 hover:text-primary transition-colors"
+                (click)="showWeakness.set(!showWeakness())">
+                <h4>Damage Weaknesses</h4>
+                <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showWeakness()" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              @if (showWeakness()) {
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                @for (mod of weaknessByType(); track mod.type) {
+                <div class="flex justify-between">
+                  <span class="text-base-content/70">{{ mod.type }}:</span>
+                  <span class="font-semibold">
+                    {{ mod.value > 1 ? '+' : '' }}{{ ((mod.value - 1) * 100) | number: '1.0-1' }}%
+                  </span>
+                </div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+        }
+        @case ('abilities') {
+        @if (skills().primary || skills().secondary) {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          @if (skills().primary) {
+          <div
+            class="bg-base-200/50 backdrop-blur-sm rounded-lg overflow-hidden border border-base-content/5 shadow-lg">
+            <nwb-skill-tree-editor [ngModel]="skills().primary" [disabled]="true" />
+          </div>
+          }
+
+          @if (skills().secondary) {
+          <div
+            class="bg-base-200/50 backdrop-blur-sm rounded-lg overflow-hidden border border-base-content/5 shadow-lg">
+            <nwb-skill-tree-editor [ngModel]="skills().secondary" [disabled]="true" />
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="bg-base-200/50 backdrop-blur-sm rounded-lg p-12 text-center border border-base-content/5 shadow-lg">
+          <p class="text-base-content/50">No abilities configured</p>
+        </div>
+        }
+        }
+        }
+        }
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div class="flex items-center justify-center h-full">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+  }
+</ion-content>

@@ -66,4 +66,20 @@ export interface GearsetRecord extends AppDbRecord {
    * The status of the skill set
    */
   status?: 'public' | 'private'
+  /**
+   * Number of likes this build has received (populated by backend)
+   */
+  likeCount?: number
+  /**
+   * Whether the current user has liked this build (populated by backend)
+   */
+  isLikedByUser?: boolean
+  /**
+   * Creation timestamp (populated by backend)
+   */
+  created?: string
+  /**
+   * Last update timestamp (populated by backend)
+   */
+  updated?: string
 }

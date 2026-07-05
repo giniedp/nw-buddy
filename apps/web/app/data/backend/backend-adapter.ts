@@ -6,12 +6,15 @@ export interface SessionState {
   id: string
   name: string
   token: string
+  avatarUrl?: string
 }
 
 export interface PublicTable<T extends AppDbRecord> {
   name: string
-  page(page: number, perPage: number): Promise<T[]>
+  page(page: number, perPage: number, options?: { search?: string; tags?: string[]; tagsOperator?: 'AND' | 'OR'; sortBy?: string; sortDirection?: 'asc' | 'desc' }): Promise<T[]>
   read(options: { user: string; id: string }): Promise<T>
+  like(options: { user: string; id: string }): Promise<void>
+  unlike(options: { user: string; id: string }): Promise<void>
 }
 
 export interface PrivateTable<T extends AppDbRecord> {
