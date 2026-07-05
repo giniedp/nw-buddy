@@ -6,7 +6,11 @@
   >
     <div class="avatar w-8 placeholder indicator" [class.avatar-online]="isOnline()">
       <div class="bg-neutral text-neutral-content w-8 rounded-full">
-        <span class="text-xl uppercase">{{ initials() }}</span>
+        @if (userAvatar(); as avatarUrl) {
+          <img [src]="avatarUrl" [alt]="userName()" class="rounded-full" />
+        } @else {
+          <span class="text-xl uppercase">{{ initials() }}</span>
+        }
       </div>
       @if (!isOnline()) {
         <span class="indicator-item badge badge-xs badge-error translate-x-0 translate-y-0 scale-75"></span>
