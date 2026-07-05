@@ -79,7 +79,7 @@ program
       .object({
         version: z.string(),
         workspace: z.string(),
-        files: z.bool(),
+        files: z.boolean(),
       })
       .parse(data)
 
@@ -125,10 +125,10 @@ program
   .action(async (opts) => {
     const options = z
       .object({
-        force: z.bool(),
+        force: z.boolean(),
         directory: z.string(),
         target: z.string(),
-        dryRun: z.bool(),
+        dryRun: z.boolean(),
       })
       .parse(opts)
     console.info('Uploading models', options)
