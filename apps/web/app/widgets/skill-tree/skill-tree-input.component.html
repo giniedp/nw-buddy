@@ -1,7 +1,7 @@
 <div class="skill-tree-title text-lg uppercase text-center font-serif text-nw-description nw-bg-title bg-bottom pt-4">
   {{ title() | nwText }} - <span class="font-caslon">{{ value()?.length || 0 }}</span>
 </div>
-<div class="skill-tree-content grid p-3 relative" [class]="colsClass()">
+<div class="skill-tree-content grid p-3 relative" [class]="colsClass()" [class.is-readonly]="disabled()">
   @for (row of rows(); track $index) {
     @for (cell of row; track $index) {
       @if (!cell.ability) {
@@ -17,7 +17,7 @@
         ></div>
       } @else {
         <div
-          [tabindex]="cell.unlocked ? 0 : -1"
+          [tabindex]="cell.unlocked && !disabled() ? 0 : -1"
           class="grid-cell aspect-square flex items-center justify-center transition-opacity relative"
           [class.is-disabled]="!cell.unlocked"
           [class.is-unlocked]="cell.unlocked"
@@ -29,9 +29,9 @@
           [class.edge-r]="cell.edgeRight"
           [class.edge-tl]="cell.edgeTopLeft"
           [class.edge-tr]="cell.edgeTopRight"
-          (click)="toggle(cell)"
-          (keydown.space)="toggle(cell)"
-          (keydown.enter)="toggle(cell)"
+          (click)="!disabled() && toggle(cell)"
+          (keydown.space)="!disabled() && toggle(cell)"
+          (keydown.enter)="!disabled() && toggle(cell)"
           [tooltip]="tip"
           [tooltipDelay]="0"
           [tooltipClass]="'p-0'"
