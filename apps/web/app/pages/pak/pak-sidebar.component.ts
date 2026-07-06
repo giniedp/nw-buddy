@@ -28,7 +28,7 @@ import { PakService } from './pak.service'
   template: `
     <ion-header class="bg-base-300">
       <ion-toolbar>
-        <nwb-quicksearch-input class="m-1" />
+        <nwb-quicksearch-input class="m-1 ml-2" />
         <button class="btn btn-sm btn-square mr-1" slot="end" (click)="handleOpenUuidModal()">
           <nwb-icon [icon]="uuidIcon" class="w-5 h-5" />
         </button>

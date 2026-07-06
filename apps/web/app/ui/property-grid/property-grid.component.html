@@ -1,5 +1,5 @@
 @for (entry of entries(); track $index) {
-  <span class="truncate" [title]="entry.key">
+  <span class="truncate text-base-content/40" [title]="entry.key">
     @for (cell of formatKey(entry); track $index) {
       @if (cell.component) {
         <ng-container
