@@ -40,7 +40,7 @@ export class BackstoryCellComponent implements VirtualGridCellComponent<Backstor
       cellDataView: BackstoryCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (item, tl8) => {
-        return humanize(item?.BackstoryName)
+        return `${humanize(item?.BackstoryName)} ${item?.BackstoryID}`
       },
     }
   }

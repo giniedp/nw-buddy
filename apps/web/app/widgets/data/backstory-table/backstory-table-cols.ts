@@ -16,7 +16,7 @@ export function backstoryColID(util: BackstoryTableUtils) {
     headerValueGetter: () => 'ID',
     width: 200,
     field: 'BackstoryID',
-    hide: true,
+    hide: false,
     getQuickFilterText: ({ value }) => value,
   })
 }
@@ -77,7 +77,9 @@ export function backstoryColInventory(util: BackstoryTableUtils) {
     colId: 'inventoryItem',
     headerValueGetter: () => 'Inventory',
     valueGetter: ({ data }) => data.$inventoryItems,
-    getQuickFilterText: ({ value }) => value.map(({ item }) => util.tl8(item.Name)).join(' '),
+    getQuickFilterText: ({ value }) => {
+      return value?.map(({ item }) => util.tl8(item?.Name || '')).join(' ') || ''
+    },
     width: 800,
     minWidth: 400,
     autoHeight: true,

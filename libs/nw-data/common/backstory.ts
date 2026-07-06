@@ -36,7 +36,7 @@ export function decodeBackstoryItem(encodedItem: string) {
   const [itemStr, quantityStr] = encodedItem.split(':')
   const result: BackstoryItem = {
     itemId: null,
-    quantity: Number(quantityStr) || 1,
+    quantity: Number(quantityStr),
   }
   itemStr.split('-').forEach((it, index) => {
     if (index === 0) {
