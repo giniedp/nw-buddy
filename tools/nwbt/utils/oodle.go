@@ -1,12 +1,8 @@
 package utils
 
 import (
-	"errors"
 	"os/exec"
 	"unsafe"
-
-	"github.com/ebitengine/purego"
-	"golang.org/x/sys/windows"
 )
 
 type Oodle interface {
@@ -40,22 +36,6 @@ func (it oodle) Info() string {
 	return "Oodle data compression library (Kraken/Leviathan), required for unpacking game archives\n" +
 		"info: https://www.radgametools.com/oodle.htm\n" +
 		"note: not available for standalone download, obtain from an existing game installation"
-}
-
-func (it *oodle) Load() error {
-	if it.decompress != nil {
-		return nil
-	}
-	p, ok := it.Check()
-	if !ok {
-		return errors.New("Oodle library not found")
-	}
-	handle, err := windows.LoadLibrary(p)
-	if err != nil {
-		return err
-	}
-	purego.RegisterLibFunc(&it.decompress, uintptr(handle), "OodleLZ_Decompress")
-	return nil
 }
 
 func (it *oodle) Decompress(input []byte, inSize int, output []byte, outSize int) (int, error) {
