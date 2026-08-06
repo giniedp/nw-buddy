@@ -88,6 +88,24 @@ func TestCompileRegexp(t *testing.T) {
 				"_baz":    false,
 			},
 		},
+		{
+			// multiple includes must match ANY pattern, not ALL of them
+			pattern: []string{"\\.baz$", "^foo/"},
+			samples: map[string]bool{
+				"foo/a.baz": true,
+				"bar/a.baz": true,
+				"foo/a.txt": true,
+				"bar/a.txt": false,
+			},
+		},
+		{
+			// excludes only: everything not excluded matches
+			pattern: []string{"!\\.tmp$"},
+			samples: map[string]bool{
+				"a.baz": true,
+				"a.tmp": false,
+			},
+		},
 	}
 	for _, test := range table {
 		match, err := nwfs.CompileRegexp(test.pattern...)
