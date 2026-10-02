@@ -85,5 +85,7 @@ export function entityComponentNames(entity: Entity): string[] {
   if (!entity) {
     return null
   }
-  return toArray(entity.components.element).map((it) => it.__type).filter((it) => !!it)
+  return toArray(entity.components.element)
+    .map((it) => it.__type)
+    .filter((it) => !!it)
 }

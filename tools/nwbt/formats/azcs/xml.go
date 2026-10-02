@@ -15,11 +15,11 @@ type XmlObject struct {
 
 type XmlElement struct {
 	XMLName  xml.Name      `xml:"Class"`
-	Name     string        `xml:"name,attr"`
-	Type     string        `xml:"type,attr"`
-	Type2    string        `xml:"specializationTypeId,attr"` // only version 2
-	Value    string        `xml:"value,attr"`
-	Field    string        `xml:"field,attr"`
+	Name     string        `xml:"name,attr,omitempty"`
+	Type     string        `xml:"type,attr,omitempty"`
+	Type2    string        `xml:"specializationTypeId,attr,omitempty"` // only version 2
+	Value    string        `xml:"value,attr,omitempty"`
+	Field    string        `xml:"field,attr,omitempty"`
 	Version  string        `xml:"version,attr"`
 	Elements []*XmlElement `xml:"Class"`
 }

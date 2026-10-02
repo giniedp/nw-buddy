@@ -23,7 +23,7 @@ func MarshalJSON(v any, fmt ...string) ([]byte, error) {
 	data := writer.Bytes()
 	if usePretty {
 		data = pretty.PrettyOptions(data, &pretty.Options{
-			Width:    120,
+			Width:    220,
 			Prefix:   fmt[0],
 			Indent:   fmt[1],
 			SortKeys: false,

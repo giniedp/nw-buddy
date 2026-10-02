@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core'
-import { FileSource, PakService } from './pak.service'
+import { FileResource, PakService } from './pak.service'
 
 @Component({
   selector: 'nwb-pak-preview-image',
@@ -7,6 +7,6 @@ import { FileSource, PakService } from './pak.service'
 })
 export class PakPreviewImageComponent {
   public service = inject(PakService)
-  public source = input<FileSource>()
-  public imageUrl = computed(() => this.source().base + this.source().file + '.png')
+  public source = input<FileResource>()
+  public imageUrl = computed(() => this.source().resource)
 }

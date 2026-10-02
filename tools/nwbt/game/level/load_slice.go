@@ -291,9 +291,9 @@ func LoadViewerSlice(assets *game.Assets, file nwfs.File, track TrackSliceAsset)
 				case 3:
 					{
 						light.Type = "Probe"
-						light.BoxWidth = float32(config.BoxWidth)
-						light.BoxHeight = float32(config.BoxHeight)
-						light.BoxDepth = float32(config.BoxLength)
+						light.BoxWidth = float32(config.Area_X_Y_Z[0])
+						light.BoxDepth = float32(config.Area_X_Y_Z[1])
+						light.BoxHeight = float32(config.Area_X_Y_Z[2])
 					}
 				}
 				viewerEntity.Components = append(viewerEntity.Components, ViewerLightComponent{

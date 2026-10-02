@@ -389,6 +389,7 @@ func convertSliceToModel(params convertParams) ([]byte, error) {
 	if target != ".gltf" && target != ".glb" {
 		return nil, fmt.Errorf("unsupported target format x: %s", target)
 	}
+	base := math.GetBase(params.query.Has(QUERY_YUP))
 
 	group := importer.AssetGroup{}
 	for _, entity := range level.LoadEntities(assets, file.Path(), mat4.Identity()) {
@@ -415,7 +416,7 @@ func convertSliceToModel(params convertParams) ([]byte, error) {
 			group.Geometries = append(group.Geometries, importer.GeometryAsset{
 				Entity: importer.Entity{
 					Name:      entity.Name,
-					Transform: math.CryToGltfMat4(entity.Transform),
+					Transform: base.Mat4(entity.Transform),
 				},
 				GeometryFile: entity.Model,
 				MaterialFile: entity.Material,
@@ -539,13 +540,16 @@ func convertAny(params convertParams) ([]byte, error) {
 		return nil, err
 	}
 	if azcs.IsBinaryObjectStream(data) {
-		return convertAzcs(data, target)
+		return convertBinaryObjectStream(data, target)
+	}
+	if azcs.IsXmlObjectStream(data) {
+		return convertXmlObjectStream(data, target)
 	}
 
 	return nil, fmt.Errorf("unsupported target format: %s", target)
 }
 
-func convertAzcs(data []byte, target string) ([]byte, error) {
+func convertBinaryObjectStream(data []byte, target string) ([]byte, error) {
 	switch target {
 	case "":
 		return data, nil
@@ -556,6 +560,31 @@ func convertAzcs(data []byte, target string) ([]byte, error) {
 		}
 		out, err := rtti.ObjectStreamToJSON(object, crcTable, uuidTable)
 		return out, err
+	case ".xml":
+		object, err := azcs.Parse(data)
+		if err != nil {
+			return nil, err
+		}
+		out, err := rtti.ObjectStreamToXml(object, crcTable, uuidTable)
+		return out, err
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+}
+
+func convertXmlObjectStream(data []byte, target string) ([]byte, error) {
+	switch target {
+	case "":
+		return data, nil
+	case ".json":
+		doc, err := azcs.ParseXml(data)
+		if err != nil {
+			return nil, err
+		}
+		out, err := rtti.ObjectStreamXmlToJSON(doc, uuidTable)
+		return out, err
+	case ".xml":
+		return data, nil
 	default:
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}

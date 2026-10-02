@@ -6,18 +6,45 @@
   <div class="ion-page order-1" id="editor">
     <ion-header class="bg-base-300">
       <ion-toolbar>
-        <div class="indicator ml-2">
-          <span
-            class="indicator-item indicator-start status animate-ping"
-            [class.status-success]="service.isConnected()"
-            [class.status-error]="!service.isConnected()"
-          ></span>
-          <span
-            class="indicator-item indicator-start status"
-            [class.status-success]="service.isConnected()"
-            [class.status-error]="!service.isConnected()"
-          ></span>
-          <a [routerLink]="'.'" class="ml-2"> NWBT Pak Browser </a>
+        <div class="flex flex-row items-center w-full">
+          <div class="indicator ml-2">
+            <span
+              class="indicator-item indicator-start status animate-ping"
+              [class.status-success]="service.isConnected()"
+              [class.status-error]="!service.isConnected()"
+            ></span>
+            <span
+              class="indicator-item indicator-start status"
+              [class.status-success]="service.isConnected()"
+              [class.status-error]="!service.isConnected()"
+            ></span>
+            <a [routerLink]="'.'" class="ml-2"> NWBT Pak Browser </a>
+          </div>
+
+          <span class="divider divider-horizontal"></span>
+
+          @for (crumb of breadcrumbs(); track $index; let isLast = $last) {
+            <span class="text-base-content/70">{{ crumb.label }} </span>
+            @if (!isLast) {
+              <span class="text-base-content/70 mx-1">/</span>
+            }
+          }
+          <span class="flex-1"></span>
+          <div class="join mr-2">
+            @for (source of sources(); track $index) {
+              <button
+                class="join-item btn btn-sm"
+                [class.btn-square]="!source.label"
+                [class.text-primary]="source.id === sourceId()"
+                (click)="selectSource(source)"
+              >
+                @if (source.icon) {
+                  <nwb-icon [icon]="source.icon" class="w-5 h-5" />
+                }
+                {{ source.label }}
+              </button>
+            }
+          </div>
         </div>
       </ion-toolbar>
       <ion-toolbar class="bg-base-200" [style.--min-height]="'0'">
@@ -26,11 +53,20 @@
     </ion-header>
     <ion-content>
       @switch (viewerType()) {
-        @case ('image') {
+        @case ('img') {
           <nwb-pak-preview-image [source]="source()" />
         }
-        @case ('model') {
+        @case ('3d-model') {
           <nwb-pak-preview-model [source]="source()" />
+        }
+        @case ('3d-mtl') {
+          <nwb-pak-preview-model [source]="source()" [type]="'material'" />
+        }
+        @case ('3d-slice') {
+          <nwb-pak-preview-model [source]="source()" />
+        }
+        @case ('3d-image') {
+          <nwb-pak-preview-model [source]="source()" [type]="'image'" />
         }
         @case ('slice') {
           <nwb-pak-preview-slice [source]="source()" />

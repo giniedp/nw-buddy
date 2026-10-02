@@ -100,7 +100,7 @@ export class MonacoSliceExtensionDirective implements OnDestroy {
                 ? null
                 : {
                     isTrusted: true,
-                    value: `![monaco-img-preview](${location.origin}${environment.nwbtUrl}/file/${asset.file}.png?size=256)`,
+                    value: `![monaco-img-preview](${location.origin}${environment.nwbtUrl}/files/${asset.file}.png?size=256)`,
                   },
               {
                 isTrusted: true,

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http'
-import { EventEmitter, inject, Injectable, output } from '@angular/core'
+import { EventEmitter, inject, Injectable } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router } from '@angular/router'
 import {
@@ -14,13 +14,24 @@ import {
 } from '@nw-serve'
 import { environment } from 'apps/web/environments'
 import { catchError, interval, map, of, startWith, switchMap } from 'rxjs'
+import {
+  svgCode,
+  svgCubes,
+  svgEyeSlash,
+  svgFileJson,
+  svgFileXml,
+  svgImage,
+  svgLayerPlus,
+  svgListTree,
+  svgSkillTree,
+} from '../../ui/icons/svg'
 import { eqCaseInsensitive, rxResourceValue } from '../../utils'
 import { AssetRef, MonacoSliceAssetCommand } from './monaco'
 
-const toImageTypes = ['dds', 'png', 'tif', 'a', '1a', '2a', '3a', '4a', '5a', '6a', '7a', 'heightmap', 'waterqt']
+const toImageTypes = ['dds', 'png', 'tif', 'heightmap', 'waterqt']
 const toModelTypes = ['cgf', 'cdf', 'skin'] //, 'mtl', 'dynamicslice']
 export const toLuaTypes = ['luac']
-export const toJsonTypes = [
+export const objectStreams = [
   'aliasasset',
   'chunks',
   'datasheet',
@@ -57,6 +68,9 @@ export const toJsonTypes = [
   'facemarkdb',
   'hairstyledb',
   'skintonedb',
+  'curveconfiglist',
+  'physicsmaterialset',
+  'stimulusdurations',
 
   'collisionfilters',
 ]
@@ -83,11 +97,39 @@ export const textTypeMap = {
   surfacemap: 'xml',
 }
 
-export interface FileSource {
-  base: string
+function isDDS(file: string) {
+  return file.match(/\.dds((\.\d+)|(\.\d+a)|(\.a))?$/)
+}
+
+function fileExt(file: string) {
+  if (isDDS(file)) {
+    return 'dds'
+  }
+  const basename = file.split('/').pop()
+  const tokens = basename.split('.')
+  return tokens.pop()
+}
+
+function ddsRootFile(file: string) {
+  if (file.match(/\.\d+a$/)) {
+    return file.replace(/\.\d+a$/, '.a')
+  }
+  if (file.match(/\.\d+$/)) {
+    return file.replace(/\.\d+$/, '')
+  }
+  return file
+}
+
+export type ViewerType = 'code' | 'img' | 'slice' | '3d-image' | '3d-model' | '3d-slice' | '3d-mtl' | ''
+export interface FileResource {
+  id: string
   file: string
+  resource: string
+  viewer: ViewerType
+  icon: string
+  lang: string
   ext: string
-  viewer: 'code' | 'image' | 'model' | 'slice'
+  label: string
 }
 
 @Injectable()
@@ -134,50 +176,131 @@ export class PakService {
     },
   })
 
-  public fileSource(file: string) {
+  public fileSource(file: string): FileResource[] {
     if (!file) {
-      return null
+      return []
     }
-    const basename = file.split('/').pop()
-    const tokens = basename.split('.')
-    let ext = tokens.pop()
-    if (ext.match(/^[0-9]+$/)) {
-      ext = tokens.pop()
-    }
-    const stat: FileSource = {
-      base: this.nwbtUrl('files/'),
-      file: file,
-      ext: ext,
-      viewer: null,
-    }
-    if (ext === 'dynamicslice') {
-      stat.viewer = 'slice'
-    } else if (toImageTypes.includes(ext)) {
-      stat.viewer = 'image'
-    } else if (toModelTypes.includes(ext)) {
-      stat.viewer = 'model'
-    } else if (toLuaTypes.includes(ext) || toJsonTypes.includes(ext) || textTypeMap[ext]) {
-      stat.viewer = 'code'
-    } else {
-      //
-    }
-    // if (textTypeMap[ext]) {
-    //   stat.textPath = file
-    //   stat.textType = textTypeMap[ext]
-    // }
-    // if (toJsonTypes.includes(ext)) {
-    //   stat.textPath = `${file}.json`
-    //   stat.textType = 'json'
-    // }
-    // if (toLuaTypes.includes(ext)) {
-    //   stat.textPath = `${file}.lua`
-    //   stat.textType = 'lua'
-    // }
-    // if (toModelTypes.includes(ext)) {
-    //   stat.modelPath = `${file}.glb?cache=0`
-    // }
 
-    return stat
+    const ext = fileExt(file)
+    const result: FileResource[] = []
+    const stat: FileResource = {
+      id: null,
+      resource: this.nwbtUrl(`files/${file}`),
+      file: file,
+      viewer: null,
+      icon: null,
+      lang: null,
+      ext: ext,
+      label: '',
+    }
+
+    if (ext === 'dynamicslice') {
+      result.push({
+        ...stat,
+        resource: stat.resource + '.json',
+        viewer: 'slice',
+        icon: svgListTree,
+        id: 'slice',
+      })
+      result.push({
+        ...stat,
+        resource: file + '.glb?no-cache=1',
+        viewer: '3d-slice',
+        icon: svgCubes,
+        id: '3d-slice',
+      })
+    }
+    if (ext === 'mtl') {
+      result.push({
+        ...stat,
+        resource: file + '.glb',
+        viewer: '3d-mtl',
+        icon: svgCubes,
+        id: '3d-mtl',
+      })
+    }
+
+    if (toImageTypes.includes(ext)) {
+      if (ext === 'dds') {
+        result.push({
+          ...stat,
+          resource: ddsRootFile(file),
+          viewer: '3d-image',
+          icon: svgImage,
+          id: '3d-image',
+          label: 'Viewer',
+        })
+      }
+
+      result.push({
+        ...stat,
+        resource: stat.resource + '.png',
+        viewer: 'img',
+        icon: svgImage,
+        id: 'img',
+      })
+    }
+
+    if (toModelTypes.includes(ext)) {
+      result.push({
+        ...stat,
+        resource: file + '.glb?no-cache=1',
+        viewer: '3d-model',
+        icon: svgCubes,
+        id: '3d-model',
+      })
+    }
+
+    if (textTypeMap[ext]) {
+      const lang = textTypeMap[ext]
+      result.push({
+        ...stat,
+        viewer: 'code',
+        icon: lang === 'json' ? svgFileJson : lang === 'xml' ? svgFileXml : svgCode,
+        lang: lang,
+        id: `code-${lang}`,
+        label: lang === 'json' || lang === 'xml' ? '' : lang,
+      })
+    }
+    if (objectStreams.includes(ext)) {
+      result.push({
+        ...stat,
+        resource: stat.resource + '.json',
+        viewer: 'code',
+        icon: svgFileJson,
+        lang: 'json',
+        id: `code-json`,
+      })
+      result.push({
+        ...stat,
+        resource: stat.resource + '.xml',
+        viewer: 'code',
+        icon: svgFileXml,
+        lang: 'xml',
+        id: `code-xml`,
+      })
+    }
+    if (toLuaTypes.includes(ext)) {
+      result.push({
+        ...stat,
+        resource: stat.resource + '.lua',
+        viewer: 'code',
+        icon: svgCode,
+        lang: 'lua',
+        id: `code-lua`,
+      })
+    }
+
+    if (!result.length) {
+      result.push({
+        ...stat,
+        viewer: '',
+        icon: svgEyeSlash,
+        id: `none`,
+      })
+    }
+
+    return result
   }
 
   public nwbtUrl(resource: string) {

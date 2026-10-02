@@ -4,10 +4,9 @@ import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { CodeEditorComponent, CodeEditorModule } from '../../ui/code-editor'
 import { ObjectTreeComponent } from '../../ui/file-tree'
-import { SplitGutterComponent, SplitPaneDirective } from '../../ui/split-container'
 import { MonacoSliceExtensionDirective } from './monaco'
 import { dynamicSliceOutliner, Entity, entityComponentNames } from './outline'
-import { FileSource, PakService } from './pak.service'
+import { FileResource, PakService } from './pak.service'
 
 @Component({
   selector: 'nwb-pak-preview-slice',
@@ -36,33 +35,24 @@ import { FileSource, PakService } from './pak.service'
       [nwbMonacoSliceExtension]=""
       (nwbMonacoAssetCommand)="service.handleMonacoAssetCommand($event)"
       [ngModel]="textContent.value()"
-      [language]="'xml'"
+      [language]="'json'"
       [disabled]="true"
     />
   `,
-  imports: [
-    CodeEditorModule,
-    MonacoSliceExtensionDirective,
-    FormsModule,
-    ObjectTreeComponent,
-    NwModule,
-    SplitPaneDirective,
-    SplitGutterComponent,
-  ],
+  imports: [CodeEditorModule, MonacoSliceExtensionDirective, FormsModule, ObjectTreeComponent, NwModule],
   host: {
     class: 'flex flex-row h-full',
   },
 })
 export class PakPreviewSliceComponent {
   public service = inject(PakService)
-  public source = input<FileSource>()
+  public source = input<FileResource>()
   protected editor = viewChild(CodeEditorComponent)
   protected selectedEntity = signal<Entity>(null)
   protected entityComponents = computed(() => entityComponentNames(this.selectedEntity()))
 
   protected textContent = httpResource.text(() => {
-    const source = this.source()
-    return source.base + source.file + '.json'
+    return this.source().resource
   })
 
   protected outlineContent = computed(() => {
@@ -73,12 +63,12 @@ export class PakPreviewSliceComponent {
         adapter: null,
       }
     }
-    if (source.ext !== 'dynamicslice') {
-      return {
-        items: [],
-        adapter: null,
-      }
-    }
+    // if (source.ext !== 'dynamicslice') {
+    //   return {
+    //     items: [],
+    //     adapter: null,
+    //   }
+    // }
     const text = this.textContent.value()
     return (
       dynamicSliceOutliner(text) || {
@@ -97,7 +87,7 @@ export class PakPreviewSliceComponent {
     this.scrollToComponent(this.selectedEntity(), name)
   }
 
-  private findEntityStart(item: Entity): { line: number; column: number } {
+  private findEntityStart(item: Entity): { line: number; column: number; range: any } {
     const id = item?.id?.id
     const editor = this.editor()?.editor()
     if (!editor || !id) {
@@ -124,24 +114,28 @@ export class PakPreviewSliceComponent {
       return {
         line: match.range.startLineNumber,
         column: match.range.startColumn,
+        range: match.range,
       }
     }
     return null
   }
 
   private scrollToEntity(item: Entity) {
-    const range = this.findEntityStart(item)
-    if (!range) {
+    const pos = this.findEntityStart(item)
+    if (!pos) {
       return
     }
     const editor = this.editor()?.editor()
-    editor.setPosition({ column: range.column, lineNumber: range.line })
-    editor.revealLineNearTop(range.line)
+    editor.setPosition({ column: pos.column, lineNumber: pos.line })
+    if (pos.range) {
+      editor.setSelection(pos.range)
+    }
+    editor.revealLineNearTop(pos.line)
   }
 
   private scrollToComponent(item: Entity, component: string) {
-    const entityRange = this.findEntityStart(item)
-    if (!entityRange) {
+    const pos = this.findEntityStart(item)
+    if (!pos) {
       return
     }
 
@@ -152,8 +146,9 @@ export class PakPreviewSliceComponent {
       return
     }
     for (const match of matches) {
-      if (match.range.startLineNumber > entityRange.line) {
+      if (match.range.startLineNumber > pos.line) {
         editor.setPosition({ column: match.range.startColumn, lineNumber: match.range.startLineNumber })
+        editor.setSelection(match.range)
         editor.revealLineNearTop(match.range.startLineNumber)
         return
       }
