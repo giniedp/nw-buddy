@@ -6,15 +6,17 @@ import (
 )
 
 type ServeApi struct {
-	List                           ServeListResult          `json:"'/list/{filePattern}'"`
-	Stats                          ServeStatResult          `json:"'/stats/{filePattern}'"`
-	Assets                         ServeAssetIdResult       `json:"'/assets/{assetId}'"`
-	LevelsList                     level.LevelIndex         `json:"'/levels/list.json'"`
-	LevelsCoatlicueInfo            level.CoatlicueInfo      `json:"'/levels/{coatlicue}/info.json'"`
-	LevelsCoatlicueRegionInfo      level.RegionInfo         `json:"'/levels/{coatlicue}/{region}/info.json'"`
-	LevelsCoatlicueRegionCapitals  level.RegionCapitalsData `json:"'/levels/{coatlicue}/{region}/capitals.json'"`
-	LevelsCoatlicueRegionHeightmap []byte                   `json:"'/levels/{coatlicue}/{region}/heightmap.r16'" ts_type:"ArrayBuffer"`
-	LevelsCoatlicueRegionWatermap  []byte                   `json:"'/levels/{coatlicue}/{region}/watermap.r16'" ts_type:"ArrayBuffer"`
+	List                                  ServeListResult              `json:"'/list/{filePattern}'"`
+	Stats                                 ServeStatResult              `json:"'/stats/{filePattern}'"`
+	Assets                                ServeAssetIdResult           `json:"'/assets/{assetId}'"`
+	LevelsList                            level.LevelIndex             `json:"'/levels/list.json'"`
+	LevelsCoatlicueInfo                   level.CoatlicueInfo          `json:"'/levels/{coatlicue}/info.json'"`
+	LevelsCoatlicueRegionInfo             level.RegionInfo             `json:"'/levels/{coatlicue}/{region}/info.json'"`
+	LevelsCoatlicueRegionCapitals         level.RegionCapitalsData     `json:"'/levels/{coatlicue}/{region}/capitals.json'"`
+	LevelsCoatlicueRegionHeightmap        []byte                       `json:"'/levels/{coatlicue}/{region}/heightmap.r16'" ts_type:"ArrayBuffer"`
+	LevelsCoatlicueRegionWatermap         []byte                       `json:"'/levels/{coatlicue}/{region}/watermap.r16'" ts_type:"ArrayBuffer"`
+	LevelsCoatlicueRegionDistribution     level.RegionDistributionData `json:"'/levels/{coatlicue}/{region}/distribution.json'"`
+	LevelsCoatlicueRegionDistributionData []byte                       `json:"'/levels/{coatlicue}/{region}/distribution.bin'" ts_type:"ArrayBuffer"`
 }
 
 type ServeListResult struct {

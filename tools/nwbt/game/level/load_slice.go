@@ -262,6 +262,10 @@ func LoadViewerSlice(assets *game.Assets, file nwfs.File, track TrackSliceAsset)
 					Color:             [4]nwt.AzFloat32(config.Color),
 					SpecMultiplier:    float32(config.SpecMultiplier),
 					DiffuseMultiplier: float32(config.DiffuseMultiplier),
+					// the cap is an absolute distance, the multiplier is the engine view distance ratio
+					ViewDistance:           float32(config.ViewDistanceCap),
+					ViewDistanceEnabled:    bool(config.ViewDistanceCapEnabled),
+					ViewDistanceMultiplier: float32(config.ViewDistanceMultiplier),
 				}
 				switch config.LightType {
 				case 0:

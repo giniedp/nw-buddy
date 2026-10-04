@@ -34,6 +34,7 @@ func runTypegen(cmd *cobra.Command, args []string) {
 	converter.Add(level.RegionCapitalsData{})
 	converter.Add(level.CapitalRuntimeData{})
 	converter.Add(level.ChunkRuntimeData{})
+	converter.Add(level.RegionDistributionData{})
 	converter.Add(Mission{})
 
 	err := converter.ConvertToFile("libs/nw-serve/generated.ts")

@@ -17,7 +17,10 @@ func (doc *Document) augmentMaterialWithOriginal(gltfMtl *gltf.Material, cgfMat 
 	nwMtl.VertexDeform = cgfMat.VertexDeform
 
 	for _, nwTex := range cgfMat.Textures.Texture {
-		gltfTex := doc.LoadOrStoreMtlTexture(&nwTex)
+		// smoothness is stored in the attached alpha of the normal map (_ddna.dds.a),
+		// the engine binds that alpha for the smoothness slots
+		readAlpha := nwTex.Map == mtl.MtlMap_Smoothness || nwTex.Map == mtl.MtlMap_SecondSmoothness || nwTex.Map == mtl.MtlMap_5_Smoothness
+		gltfTex := doc.LoadOrStoreMtlTexture(&nwTex, readAlpha)
 		gltfTexExt := gltf.Extensions{}
 		gltfTexExt[extensions.EXT_nw_tex] = nwTex
 		nwMtl.Textures = append(nwMtl.Textures, &gltf.TextureInfo{

@@ -152,6 +152,29 @@ type LightInfo struct {
 	PointAttenuation  float32          `json:"pointAttenuation"`
 }
 
+// RegionDistributionData is the header of a reduced region.distribution file.
+// Instance data is served separately as binary, see RegionDirectory.LoadDistribution
+type RegionDistributionData struct {
+	Region    [2]uint32          `json:"region"`
+	Count     int                `json:"count"`     // number of instances in the binary buffer
+	Models    []string           `json:"models"`    // interned model paths
+	Materials []string           `json:"materials"` // interned material paths
+	Types     []DistributionType `json:"types"`
+}
+
+type DistributionType struct {
+	Slice   string             `json:"slice"`
+	Variant string             `json:"variant,omitempty"`
+	Meshes  []DistributionMesh `json:"meshes"`
+}
+
+type DistributionMesh struct {
+	Model           int        `json:"model"`               // index into RegionDistributionData.Models
+	Material        int        `json:"material"`            // index into RegionDistributionData.Materials
+	Transform       *mat4.Data `json:"transform,omitempty"` // slice local transform, omitted if identity
+	MaxViewDistance float32    `json:"maxViewDistance,omitempty"`
+}
+
 type RegionCapitalsData struct {
 	Capitals map[string][]CapitalRuntimeData `json:"capitals"` // keyed by layer name
 	Chunks   map[string][]ChunkRuntimeData   `json:"chunks"`   // keyed by layer name

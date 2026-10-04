@@ -17,6 +17,17 @@ type Image struct {
 }
 
 func Load(f nwfs.File, maxSize ...int) (*Image, error) {
+	return load(f, false, maxSize...)
+}
+
+// LoadPartial merges only the mips up to maxSize, but keeps the original header.
+// The result is a DDS file whose header describes the full texture, while the data
+// holds the tail of the mip chain (like the unmerged base file, but with more mips).
+func LoadPartial(f nwfs.File, maxSize int) (*Image, error) {
+	return load(f, true, maxSize)
+}
+
+func load(f nwfs.File, keepHeader bool, maxSize ...int) (*Image, error) {
 	meta, err := LoadMeta(f)
 	if err != nil {
 		return nil, err
@@ -34,7 +45,7 @@ func Load(f nwfs.File, maxSize ...int) (*Image, error) {
 	}
 
 	if len(splits.Base.Files) > 0 {
-		data, err := concat(meta, splits.Base, maxSize...)
+		data, err := concat(meta, splits.Base, keepHeader, maxSize...)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +56,7 @@ func Load(f nwfs.File, maxSize ...int) (*Image, error) {
 		if err != nil {
 			return nil, err
 		}
-		data, err := concat(meta, splits.Alpha, maxSize...)
+		data, err := concat(meta, splits.Alpha, keepHeader, maxSize...)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +66,7 @@ func Load(f nwfs.File, maxSize ...int) (*Image, error) {
 	return res, nil
 }
 
-func concat(meta *Meta, split SplitFile, maxSizes ...int) ([]byte, error) {
+func concat(meta *Meta, split SplitFile, keepHeader bool, maxSizes ...int) ([]byte, error) {
 	if len(split.Files) == 0 {
 		return meta.Data, nil
 	}
@@ -100,7 +111,7 @@ func concat(meta *Meta, split SplitFile, maxSizes ...int) ([]byte, error) {
 	buf.Write(meta.Data[meta.HeaderSize:])
 
 	result := buf.Bytes()
-	if skipped > 0 {
+	if skipped > 0 && !keepHeader {
 		// modify header
 		// override width and height
 		binary.LittleEndian.PutUint32(result[12:16], uint32(usedHeight))

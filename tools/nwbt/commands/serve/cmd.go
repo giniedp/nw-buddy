@@ -124,6 +124,8 @@ func run(cmd *cobra.Command, args []string) {
 		"/levels/{coatlicue}/{region}/capitals.json",
 		"/levels/{coatlicue}/{region}/heightmap.r16",
 		"/levels/{coatlicue}/{region}/watermap.r16",
+		"/levels/{coatlicue}/{region}/distribution.json",
+		"/levels/{coatlicue}/{region}/distribution.bin",
 	}
 	r.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		serveJson(map[string]any{

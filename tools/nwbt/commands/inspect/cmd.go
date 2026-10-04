@@ -18,6 +18,8 @@ import (
 
 var flgGameDir string
 var flgRegex bool
+var flgRanges bool
+var flgRangesJson string
 var Cmd = &cobra.Command{
 	Use:           "inspect",
 	Short:         "inspects a file",
@@ -28,6 +30,8 @@ var Cmd = &cobra.Command{
 
 func init() {
 	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
+	Cmd.Flags().BoolVar(&flgRanges, "ranges", false, "collects view distances (activation ranges) of slices instead of the default slice inspection")
+	Cmd.Flags().StringVar(&flgRangesJson, "ranges-json", "", "writes the collected ranges as json rows to this file (implies --ranges)")
 }
 
 func run(ccmd *cobra.Command, args []string) {
@@ -55,6 +59,9 @@ func run(ccmd *cobra.Command, args []string) {
 			}
 			inspectors[ext].Inspect(assets, file)
 		case ".dynamicslice":
+			if inspectors[ext] == nil && (flgRanges || flgRangesJson != "") {
+				inspectors[ext] = NewRangeInspector()
+			}
 			if inspectors[ext] == nil {
 				inspectors[ext] = NewSliceInspector()
 			}

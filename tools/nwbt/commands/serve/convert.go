@@ -149,8 +149,20 @@ func convertDDS(params convertParams) ([]byte, error) {
 
 	switch target {
 	case "", ".dds":
+		if query.Get("merge") == "false" {
+			// serve the unmerged base file (or attached alpha file): the original header,
+			// but only the smallest mips, the larger ones are stored in the split files
+			return file.Read()
+		}
 		size, _ := strconv.Atoi(query.Get("size"))
-		img, err := dds.Load(file, size)
+		var img *dds.Image
+		var err error
+		if query.Get("merge") == "partial" {
+			// mips up to `size` with the original header, see dds.LoadPartial
+			img, err = dds.LoadPartial(file, size)
+		} else {
+			img, err = dds.Load(file, size)
+		}
 		if err != nil {
 			return nil, err
 		}
