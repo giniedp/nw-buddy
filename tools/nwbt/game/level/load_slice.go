@@ -31,12 +31,19 @@ func LoadViewerSlice(assets *game.Assets, file nwfs.File, track TrackSliceAsset)
 		return result, nil
 	}
 
+	if root := findSliceRoot(slice); root != nil {
+		if tm := game.FindEntityTransformMat4(root); !mat4.IsIdentity(tm) {
+			result.Transform = &tm
+		}
+	}
+
 	for _, entity := range slice.Entities.Element {
 		viewerEntity := ViewerEntity{
 			ID:         fmt.Sprintf("%d", entity.Id.Id),
 			Name:       string(entity.Name),
 			Transfrom:  game.FindEntityTransformMat4(&entity),
 			Components: make([]any, 0),
+			Inactive:   !bool(entity.IsRuntimeActive),
 		}
 		if parent := game.FindEntityParent(slice, &entity); parent != nil {
 			viewerEntity.ParentId = fmt.Sprintf("%d", parent.Id.Id)
@@ -398,5 +405,23 @@ func findAsset(assets *game.Assets, list []nwt.AzAsset) *catalog.Asset {
 		slog.Warn("asset not found in catalog", "tried", list)
 	}
 
+	return nil
+}
+
+// findSliceRoot returns the first entity with a transform component and without a parent
+func findSliceRoot(slice *nwt.SliceComponent) *nwt.AZ__Entity {
+	for i := range slice.Entities.Element {
+		entity := &slice.Entities.Element[i]
+		hasTransform := false
+		for _, component := range entity.Components.Element {
+			switch component.(type) {
+			case nwt.GameTransformComponent, nwt.TransformComponent:
+				hasTransform = true
+			}
+		}
+		if hasTransform && game.FindEntityParent(slice, entity) == nil {
+			return entity
+		}
+	}
 	return nil
 }

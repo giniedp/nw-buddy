@@ -148,8 +148,10 @@ func loadChunkLayer(assets *game.Assets, list []nwt.ChunkEntry) []ChunkRuntimeDa
 			SubID: uint32(chunk.AssetId.SubId),
 		})
 		result := ChunkRuntimeData{
-			ID:   fmt.Sprintf("%d_%d_%d", chunk.CellIndex.X, chunk.CellIndex.Y, chunk.CellIndex.Z),
-			Size: float32(chunk.Size),
+			ID:          fmt.Sprintf("%d_%d_%d", chunk.CellIndex.X, chunk.CellIndex.Y, chunk.CellIndex.Z),
+			Size:        float32(chunk.Size),
+			SpawnRadius: float32(chunk.SpawnRadius),
+			ChunkType:   int32(chunk.ChunkType),
 			Transform: mat4.FromAzTransformData([]nwt.AzFloat32{
 				// rotation
 				0, 0, 0, 1,

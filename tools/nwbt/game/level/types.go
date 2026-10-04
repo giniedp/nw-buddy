@@ -109,9 +109,13 @@ type CapitalRuntimeData struct {
 }
 
 type ChunkRuntimeData struct {
-	ID        string         `json:"id"`
-	Transform mat4.Data      `json:"transform"`
-	Size      float32        `json:"size"`
+	ID        string    `json:"id"`
+	Transform mat4.Data `json:"transform"`
+	Size      float32   `json:"size"`
+	// Stream margin input: the game uses margin = spawnRadius - size, clamped to >= 0 for mesh chunks smaller than 128, otherwise to >= 25
+	SpawnRadius float32 `json:"spawnRadius"`
+	// 0: static, 1: mesh, 2: collision
+	ChunkType int32          `json:"chunkType"`
 	Slice     AssetReference `json:"slice"`
 }
 
@@ -197,6 +201,9 @@ type ViewerEntity struct {
 	ParentId   string    `json:"parentId,omitempty"`
 	Transfrom  mat4.Data `json:"transform"`
 	Components []any     `json:"components"`
+	// The entity is not active when the slice is instantiated (AZ::Entity IsRuntimeActive = false),
+	// e.g. alternative states that are switched on by scripts or cutscenes
+	Inactive bool `json:"inactive,omitempty"`
 }
 
 type ViewerComponent struct {
@@ -205,6 +212,10 @@ type ViewerComponent struct {
 
 type ViewerSlice struct {
 	Entities []ViewerEntity `json:"entities"`
+	// Transform of the slice root entity, only set if it is not identity.
+	// Entity transforms are in slice space where the root sits at this transform. The spawner places the root:
+	// entityWorld = spawnerWorld * inverse(Transform) * entityTransform
+	Transform *mat4.Data `json:"transform,omitempty"`
 
 	SpawnRadius   float32 `json:"spawnRadius"`
 	IsStaticSlice bool    `json:"isStaticSlice"`

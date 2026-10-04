@@ -17,10 +17,12 @@ func (doc *Document) augmentMaterialWithOriginal(gltfMtl *gltf.Material, cgfMat 
 	nwMtl.VertexDeform = cgfMat.VertexDeform
 
 	for _, nwTex := range cgfMat.Textures.Texture {
-		// smoothness is stored in the attached alpha of the normal map (_ddna.dds.a),
-		// the engine binds that alpha for the smoothness slots
+		// TODO: smoothness is stored in the attached alpha of the normal map (_ddna.dds.a) and the engine binds
+		// that alpha for the smoothness slots. Reading it here breaks alpha tested materials in the viewer
+		// (meshes with AlphaTest render invisible), so this is disabled until it is handled elsewhere.
 		readAlpha := nwTex.Map == mtl.MtlMap_Smoothness || nwTex.Map == mtl.MtlMap_SecondSmoothness || nwTex.Map == mtl.MtlMap_5_Smoothness
 		gltfTex := doc.LoadOrStoreMtlTexture(&nwTex, readAlpha)
+		// gltfTex := doc.LoadOrStoreMtlTexture(&nwTex)
 		gltfTexExt := gltf.Extensions{}
 		gltfTexExt[extensions.EXT_nw_tex] = nwTex
 		nwMtl.Textures = append(nwMtl.Textures, &gltf.TextureInfo{
