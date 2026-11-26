@@ -32,9 +32,7 @@ const NWBT_RELEASES_URL = 'https://github.com/giniedp/nw-buddy/releases'
         </span>
         <div class="flex flex-col gap-2 min-w-0">
           <b>Start</b>
-          <span class="opacity-70">
-            Unpack the downloaded zip and follow the instructions in the README.md to start start the tools
-          </span>
+          <span class="opacity-70"> Unpack the downloaded zip and follow the instructions in the README.md </span>
         </div>
       </li>
     </ol>

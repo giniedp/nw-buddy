@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core'
 import { IconsModule } from '~/ui/icons'
 import { svgCubes, svgFolderOpen, svgRotate } from '~/ui/icons/svg'
 import { NwbtSetupComponent } from '~/widgets/nwbt-setup'
@@ -64,7 +74,36 @@ import { NwbtSetupComponent } from '~/widgets/nwbt-setup'
           }
         </div>
 
-        @if (!desktop()) {
+        @if (!desktop() && status() !== 'error') {
+          @switch (permission()) {
+            @case ('prompt') {
+              <div class="flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-4">
+                <b>Allow the connection</b>
+                <span class="opacity-70">
+                  The browser asks whether this page may access apps and services on this device: nwbt runs on your
+                  computer. Choose <b>Allow</b>.
+                </span>
+                <img
+                  class="rounded-box border border-base-300"
+                  src="assets/nwbt-allow-connection.png"
+                  alt="The browser prompt with the Allow button"
+                />
+              </div>
+            }
+            @case ('denied') {
+              <div class="flex flex-col gap-3 rounded-box border border-warning/50 bg-base-100 p-4">
+                <b>The connection is blocked</b>
+                <span class="opacity-70">
+                  Open the site settings with the icon left of the address, turn on <b>Apps on device</b>, then Retry.
+                </span>
+                <img
+                  class="rounded-box border border-base-300"
+                  src="assets/nwbt-enable-connection.png"
+                  alt="The site settings with the Apps on device switch"
+                />
+              </div>
+            }
+          }
           <nwb-nwbt-setup />
         }
       </div>
@@ -123,11 +162,58 @@ export class PakOnboardingComponent {
     return 'offline'
   })
 
+  /**
+   * The browser's permission to reach nwbt on this device (local network access), null when the browser has none
+   */
+  protected readonly permission = signal<PermissionState | null>(null)
+
   public constructor() {
     effect(() => {
       if (!this.checking() && !this.error()) {
         this.offlineSeen.set(true)
       }
     })
+    const watching = new AbortController()
+    inject(DestroyRef).onDestroy(() => watching.abort())
+    watchLocalNetworkPermission((state) => this.permission.set(state), watching.signal)
   }
+}
+
+/**
+ * Names of the permission across Chrome versions, the requests to nwbt on localhost need it
+ */
+const LOCAL_NETWORK_PERMISSIONS = ['loopback-network', 'local-network', 'local-network-access']
+
+/**
+ * Reports the local network permission now and on every change: denied when any name is denied, granted when all are,
+ * else prompt. Never reports in browsers without the permission.
+ */
+async function watchLocalNetworkPermission(report: (state: PermissionState) => void, signal: AbortSignal) {
+  if (typeof navigator === 'undefined' || !navigator.permissions) {
+    return
+  }
+  const statuses: PermissionStatus[] = []
+  for (const name of LOCAL_NETWORK_PERMISSIONS) {
+    try {
+      statuses.push(await navigator.permissions.query({ name: name as PermissionName }))
+    } catch {
+      // not a permission of this browser
+    }
+  }
+  if (!statuses.length || signal.aborted) {
+    return
+  }
+  const update = () => {
+    if (statuses.some((it) => it.state === 'denied')) {
+      report('denied')
+    } else if (statuses.every((it) => it.state === 'granted')) {
+      report('granted')
+    } else {
+      report('prompt')
+    }
+  }
+  for (const status of statuses) {
+    status.addEventListener('change', update, { signal })
+  }
+  update()
 }
