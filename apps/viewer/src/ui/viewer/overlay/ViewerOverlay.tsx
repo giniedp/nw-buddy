@@ -15,6 +15,8 @@ import { ScenesButton } from '../scenes/ScenesButton'
 import { SettingsButton } from '../settings/SettingsButton'
 import { StatsBar } from '../stats/StatsBar'
 import { StatsPanel } from '../stats/StatsPanel'
+import svgMap from '../../icons/map.svg?raw'
+import { Minimap } from '../minimap/Minimap'
 import { TimeOfDayButton } from '../time-of-day/TimeOfDayButton'
 import { createViewerOverlayStore } from './ViewerOverlay.store'
 import './ViewerOverlay.css'
@@ -41,7 +43,13 @@ export function ViewerOverlay(props: { viewer: NwViewer }) {
                 icon={<Icon svg={store.state.audio ? svgVolume : svgVolumeOff} />}
                 onClick={store.toggleAudio}
               />
-
+              <Button
+                square
+                title={store.state.map ? 'Hide the minimap' : 'Show the minimap: a click teleports the camera'}
+                icon={<Icon svg={svgMap} />}
+                active={store.state.map}
+                onClick={store.toggleMap}
+              />
               <Button
                 square
                 accent={store.state.clockFrozen}
@@ -86,7 +94,11 @@ export function ViewerOverlay(props: { viewer: NwViewer }) {
               </PanelScope>
             </aside>
           </Show>
-          <div class="nw-overlay-fluid" />
+          <div class="nw-overlay-fluid">
+            <Show when={store.state.map}>
+              <Minimap viewer={props.viewer} />
+            </Show>
+          </div>
           <Show when={store.state.right}>
             <aside class="nw-overlay-sidebar">
               <PanelScope>

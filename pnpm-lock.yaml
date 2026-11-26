@@ -477,41 +477,41 @@ importers:
   apps/viewer:
     dependencies:
       '@gglib/components':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/ecs@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/game@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/render@0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/content@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3))(@gglib/ecs@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/game@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/render@0.8.3(@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)
       '@gglib/content':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)
       '@gglib/ecs':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
       '@gglib/effects':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
       '@gglib/game':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
       '@gglib/graphics':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
       '@gglib/loaders':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/content@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)
       '@gglib/math':
-        specifier: 0.8.2
-        version: 0.8.2
+        specifier: 0.8.3
+        version: 0.8.3
       '@gglib/model':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
       '@gglib/render':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)
       '@gglib/utils':
-        specifier: 0.8.2
-        version: 0.8.2
+        specifier: 0.8.3
+        version: 0.8.3
       '@gglib/vite-plugin':
-        specifier: 0.8.2
-        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))
+        specifier: 0.8.3
+        version: 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))
       '@solidjs/router':
         specifier: 0.15.3
         version: 0.15.3(solid-js@1.9.19)
@@ -2453,90 +2453,90 @@ packages:
     resolution: {integrity: sha512-7mBgpi7UD82fsff5ThQKet0uBTl4BYerQuc+/qA1ELTwWEiIedRTcD3JgiUu9wwZ2kytW8JOb165rSdAt8PfcQ==}
     engines: {node: '>= 8'}
 
-  '@gglib/components@0.8.2':
-    resolution: {integrity: sha512-qmO/6uJn5VTh0wOecYn6VDVxHSbLdOjIbdu0hGUiGbWLCE12smlLKQ0rOq4DFcbLtWJ9BuZaajKal3Dy9lF9Ng==}
+  '@gglib/components@0.8.3':
+    resolution: {integrity: sha512-jFBKha2M2KIJyNTYpYGuHnMbYk/nh6n+gT4dysY2coeDlQgU9kXTJuWDp+pxGLKHLBbeNHTZ48lWhhBKGN9J2A==}
     peerDependencies:
-      '@gglib/content': 0.8.2
-      '@gglib/ecs': 0.8.2
-      '@gglib/effects': 0.8.2
-      '@gglib/game': 0.8.2
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2
-      '@gglib/render': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/content': 0.8.3
+      '@gglib/ecs': 0.8.3
+      '@gglib/effects': 0.8.3
+      '@gglib/game': 0.8.3
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3
+      '@gglib/render': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/content@0.8.2':
-    resolution: {integrity: sha512-QAMeFF4zF5/XTSSlYQbO0rX8uNyf0Ems0j1I9i9uYFKG6bbgAIM4xzIJm7vlBblYbCsiBJ11bjtZMNS2jOSeSg==}
+  '@gglib/content@0.8.3':
+    resolution: {integrity: sha512-FEW052F977x+efBaBJsZS7Ns2tFPk0LQ1XwbfUysKmpxGRt00RXZDb/XLpmdt9+SPX92ZaY9FIb+s7I5SK/iTQ==}
     peerDependencies:
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/ecs@0.8.2':
-    resolution: {integrity: sha512-m5yj10deaHWv598Xyt5+GME0AV5y8f1CCkyft+rHGN553ww+oYTfVxSmlN77M/p4U6MAGNXN4pIfjm9G7P0NsQ==}
+  '@gglib/ecs@0.8.3':
+    resolution: {integrity: sha512-ZNEfGux4oxDxuB1twti+X9xnWHZ11yUX/o0CozPgb0MG31mEfdezis6SIBQFGwQvIyTXYGA3AF3WCIjZjkCRoQ==}
     peerDependencies:
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/effects@0.8.2':
-    resolution: {integrity: sha512-/bjk0fzzKbXSXSyr+pzjZvD9r1gFm9YFZm4akTzoM3AZ02vLOg+x0wqZL98zAxgB5tilK6D4yuOOD0VUg7FxWw==}
+  '@gglib/effects@0.8.3':
+    resolution: {integrity: sha512-ju8shWGIx7izjooFrNByg07SvhsxNhnpqkqyhBRFXMjPXudn+G/Xrg6ZIhTbgQb1mvMIIkHVgJz+69hegowGrA==}
     peerDependencies:
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/game@0.8.2':
-    resolution: {integrity: sha512-TRtkUHqGYc0ptYF8RJnbKBFvd90AnhR1R4/bma3Y6r7VdrrpUuoFgjY7tGUTKrUYNyTgcjieYP2htBfgd9BUHQ==}
+  '@gglib/game@0.8.3':
+    resolution: {integrity: sha512-q0Xk4gw0O9at+3qUjnJiItniwtMV89zBCofojrpinv4fP6Iv0zRL8l5xK0sMooc1lb2lg3bnrErQix9vR3uDIQ==}
     peerDependencies:
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/graphics@0.8.2':
-    resolution: {integrity: sha512-hi6XYkwO8NSer/9RAKchvjQlf2p94BLMiu6Vzcuzq1oWIM1UykL8SCbCMNWFHdq30RxWCuZQ3RpnRQ6gvg18hg==}
+  '@gglib/graphics@0.8.3':
+    resolution: {integrity: sha512-DC/iviB5grmtM49CwTlQ4aWrpkcUsYVhSDg+ArwBMYvXbb04wD/KLojpBGKNi6FJdz8vh4OTw+1ugsuZxpoTpg==}
     peerDependencies:
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/loaders@0.8.2':
-    resolution: {integrity: sha512-fqe1DHFPbRCmouCJ9qjM4gx8U1cr+qcqN3kJzSgjiVUCoz1BT84VaHX73EQqjUNj3OTMo4wj1tbSoKiC7vAeCg==}
+  '@gglib/loaders@0.8.3':
+    resolution: {integrity: sha512-lEcXKN4GoVtjePx4N7kVZQxrwZXq+TVxw1BULXvyUVceEcBW0DTqw1uS6L7/L5FGqRbpGqHKW4AAfT80Mo1nUA==}
     peerDependencies:
-      '@gglib/content': 0.8.2
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/content': 0.8.3
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/math@0.8.2':
-    resolution: {integrity: sha512-e8/6o4Wj9+bk17+3b7AmyJePM0WQUX79FJFnnLwPuCqIizyUFGLV4+39wpI3ouv9taHBK57GhQI6yyFd9H6n6A==}
+  '@gglib/math@0.8.3':
+    resolution: {integrity: sha512-cCi1a+5lk8ni3J5dLTvIIpvLzPIPXzaigaXCbD7c3yEvCSBBJqywV/JkDGI5Q2W6T6VWiluQzMVB3Ft+4lc/Hw==}
 
-  '@gglib/model@0.8.2':
-    resolution: {integrity: sha512-GrnuVxtmNkt1ZyAepxzgwFazAnyt/AwJ/vIhEZMozb0Gumg0OVGNXxGlPlW62ltOHngPQ+2eKbTZxtv3Zpzz6Q==}
+  '@gglib/model@0.8.3':
+    resolution: {integrity: sha512-6RIMHI3tenYvi52pzRP57QC974waDBQnvdHXZ8wPntCIlbdsfCdCz8gd0v0xRydczxr4+0U7hIAMmUeSdJn7/w==}
     peerDependencies:
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/render@0.8.2':
-    resolution: {integrity: sha512-iqMFbhvKzTkAi+CXaMnyzJlNsYy9YfFEf7BRyxhnua0wossUt8MiWODQh/AxofUn703KneoNH9kUlRyAoFaVqg==}
+  '@gglib/render@0.8.3':
+    resolution: {integrity: sha512-RaTg5R2raU3uI3S7Eeg+skFZ/hOCyxzWcvEgzamIP/4/oJIBp2pbQBHw/B7BYyHnIrbWQ3pG0yitVO1BIWSzLQ==}
     peerDependencies:
-      '@gglib/effects': 0.8.2
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/effects': 0.8.3
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/utils@0.8.2':
-    resolution: {integrity: sha512-NcyIkNgn3BqAGqcGgz7fDt0y5PWlRhcNMlGYoP8f5nSOOonKNKoqdPLJztDU2UHlMQkZsXayYvm02T0ZX94p/Q==}
+  '@gglib/utils@0.8.3':
+    resolution: {integrity: sha512-mjuA1/IpURG0TGOAaKXvzFwNuh2kETuZ2CCtA2OjWVFwzBd6NOkx1rBIWYnu4l6Uw0GGMtawkO/Fe/LmnOV67A==}
 
-  '@gglib/vite-plugin@0.8.2':
-    resolution: {integrity: sha512-/wlWhEljS884/D/0PyU9yMIxzuD1oH7VMginIQyHxpHrd80Yelh1BOrgU4pAzz9SFLUDcJL2AeMQ4fQkHxg6wA==}
+  '@gglib/vite-plugin@0.8.3':
+    resolution: {integrity: sha512-yS9llew+HraEhkafokvDUT1jR6v8+W1PkaGRODaiPRnWirLprWOElRxfR/t88hqVOcyAnVr4kNgqliVpKSN/dA==}
     peerDependencies:
-      '@gglib/graphics': 0.8.2
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
       vite: '>=5'
 
   '@gltf-transform/cli@4.2.1':
@@ -13656,78 +13656,78 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
 
-  ? '@gglib/components@0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/ecs@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/game@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/render@0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)'
+  ? '@gglib/components@0.8.3(@gglib/content@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3))(@gglib/ecs@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/game@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/render@0.8.3(@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)'
   : dependencies:
-      '@gglib/content': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
-      '@gglib/ecs': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/effects': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/game': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/render': 0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
-      '@gglib/utils': 0.8.2
+      '@gglib/content': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)
+      '@gglib/ecs': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/effects': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/game': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/render': 0.8.3(@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)
+      '@gglib/utils': 0.8.3
 
-  '@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)':
+  '@gglib/content@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/utils': 0.8.3
 
-  '@gglib/ecs@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
+  '@gglib/ecs@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
+  '@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/game@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
+  '@gglib/game@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
+  '@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/loaders@0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)':
+  '@gglib/loaders@0.8.3(@gglib/content@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/content': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/utils': 0.8.2
+      '@gglib/content': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/utils': 0.8.3
 
-  '@gglib/math@0.8.2': {}
+  '@gglib/math@0.8.3': {}
 
-  '@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
+  '@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
 
-  '@gglib/render@0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)':
+  '@gglib/render@0.8.3(@gglib/effects@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/model@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/utils@0.8.3)':
     dependencies:
-      '@gglib/effects': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/utils': 0.8.2
+      '@gglib/effects': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/model': 0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/utils': 0.8.3
 
-  '@gglib/utils@0.8.2': {}
+  '@gglib/utils@0.8.3': {}
 
-  '@gglib/vite-plugin@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))':
+  '@gglib/vite-plugin@0.8.3(@gglib/graphics@0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3))(@gglib/math@0.8.3)(@gglib/utils@0.8.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))':
     dependencies:
-      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
-      '@gglib/math': 0.8.2
-      '@gglib/utils': 0.8.2
+      '@gglib/graphics': 0.8.3(@gglib/math@0.8.3)(@gglib/utils@0.8.3)
+      '@gglib/math': 0.8.3
+      '@gglib/utils': 0.8.3
       vite: 8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1)
 
   '@gltf-transform/cli@4.2.1':

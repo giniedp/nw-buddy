@@ -25,6 +25,7 @@
   min-height: 0;
 }
 .nw-overlay-fluid {
+  position: relative;
   flex: 1;
 }
 .nw-overlay-sidebar {

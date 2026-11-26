@@ -1,11 +1,18 @@
-import { Component, computed, inject, input } from '@angular/core'
+import { Component, computed, inject, input, signal } from '@angular/core'
 import { getGameModeCoatlicueDirectory } from '@nw-data/common'
 import { GameModeMapData, ScannedVital, VitalsBaseData } from '@nw-data/generated'
 import { Feature, FeatureCollection, MultiPoint } from 'geojson'
-import { uniq } from 'lodash'
+import { uniq, uniqBy } from 'lodash'
 import { injectNwData } from '~/data'
 import { CaseInsensitiveMap, eqCaseInsensitive, resourceValue, stringToColor } from '~/utils'
-import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widgets/game-map'
+import { VitalDetailModule } from '~/widgets/data/vital-detail'
+import {
+  GameMapComponent,
+  GameMapHost,
+  GameMapLayerDirective,
+  GameMapMouseTipDirective,
+  GameMapService,
+} from '~/widgets/game-map'
 
 @Component({
   selector: 'nwb-game-mode-detail-map',
@@ -24,13 +31,24 @@ import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widge
             [disabled]="false"
             [data]="data"
             [filter]="filter()"
+            (featureMouseEnter)="handleMouseEnter($event)"
+            (featureMouseMove)="handleMouseMove($event)"
+            (featureMouseLeave)="handleMouseLeave()"
           />
+        }
+        @if (hoverItems()?.length) {
+          <ng-template [nwbGameMapMouseTip]>
+            @for (item of hoverItems(); track $index) {
+              <nwb-vital-detail [vitalId]="item.id" [level]="item.level" class="w-80 bg-base-300/75 mb-1" />
+            }
+          </ng-template>
         }
       </nwb-map>
     }
     <ng-content />
   `,
-  imports: [GameMapComponent, GameMapLayerDirective],
+  imports: [GameMapComponent, GameMapLayerDirective, GameMapMouseTipDirective, VitalDetailModule],
+  providers: [GameMapHost],
   host: {
     class: 'block relative rounded-md overflow-clip',
   },
@@ -38,6 +56,8 @@ import { GameMapComponent, GameMapLayerDirective, GameMapService } from '~/widge
 export class GameModeDetailMapComponent {
   private db = injectNwData()
   private service = inject(GameMapService)
+  private mapHost = inject(GameMapHost, { self: true })
+  protected hoverItems = signal<Array<{ id: string; level: number }>>(null)
 
   public mapId = input.required<string>()
   public creatures = input<VitalsBaseData[]>([])
@@ -78,6 +98,32 @@ export class GameModeDetailMapComponent {
     }
     return ['==', ['get', 'id'], highlight] as any
   })
+
+  protected handleMouseEnter(features: VitalsFeature[]) {
+    this.mapHost.map.getCanvas().style.cursor = 'pointer'
+    this.hoverItems.set(uniqueVitals(features))
+  }
+
+  protected handleMouseMove(features: VitalsFeature[]) {
+    this.hoverItems.set(uniqueVitals(features))
+  }
+
+  protected handleMouseLeave() {
+    this.mapHost.map.getCanvas().style.cursor = ''
+    this.hoverItems.set(null)
+  }
+}
+
+function uniqueVitals(features: VitalsFeature[]) {
+  return uniqBy(
+    features.map((it) => {
+      return {
+        id: it.properties.id,
+        level: it.properties.level,
+      }
+    }),
+    (it) => `${it.id}-${it.level}`,
+  )
 }
 
 function selectWorldBounds(

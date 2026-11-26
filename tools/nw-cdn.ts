@@ -1,7 +1,7 @@
 import { S3, _Object } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import AdmZip from 'adm-zip'
-import { MultiBar, Presets } from 'cli-progress'
+import { Presets, SingleBar } from 'cli-progress'
 import { program } from 'commander'
 import { createHash } from 'crypto'
 import fs from 'fs'
@@ -21,6 +21,15 @@ import {
   BRANCH_NAME,
 } from '../env'
 import { glob, writeJSONFile } from './utils'
+
+// the SDK prefixes metadata keys with `x-amz-meta-` once more on write and strips it once on read
+const HASH_META_KEY = 'x-amz-meta-file-hash'
+
+interface UploadFile {
+  file: string
+  key: string
+  contentType?: string
+}
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,
@@ -74,18 +83,20 @@ program
   .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_WORKSPACE)
   .option('-v, --version <version>', 'Version name to use for upload (default is the branch name)', BRANCH_NAME)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)
+  .option('-dry, --dry-run', 'Dry run, does not upload files', false)
   .action(async (data) => {
     const options = z
       .object({
         version: z.string(),
         workspace: z.string(),
         files: z.boolean(),
+        dryRun: z.boolean(),
       })
       .parse(data)
 
     const zipDir = environment.nwDataDir(options.workspace)
     const zipFile = path.join(zipDir, '..', options.version + '.zip')
-    const zipFileKey = path.relative(environment.distDir(), zipFile)
+    const zipFileKey = normalizeKey(path.relative(environment.distDir(), zipFile))
     const client = createClient()
 
     const toUpload = [
@@ -95,7 +106,7 @@ program
       },
     ]
 
-    console.log('[ZIP]', zipDir, '->', zipFile)
+    console.log('zip     ', zipDir, '->', zipFile)
     await createBundle(zipDir, zipFile)
 
     if (options.files) {
@@ -109,10 +120,12 @@ program
       })
     }
 
-    console.log('[UPLOAD]')
-    await uploadFiles({
+    await syncFiles({
       client: client,
       files: toUpload,
+      source: zipDir,
+      target: `nw-data/${options.version}`,
+      dryRun: options.dryRun,
     })
   })
 
@@ -131,96 +144,90 @@ program
         dryRun: z.boolean(),
       })
       .parse(opts)
-    console.info('Uploading models', options)
 
     const source = options.directory
     const target = options.target
-    const client = createClient()
-
-    // application/octet-stream
-    let modelCount = 0
-    let textureCount = 0
     const files = await glob(path.join(source, '**/*')).then((list) => {
       return list.map((file) => {
         const extname = path.extname(file).toLowerCase()
         let contentType = 'application/octet-stream'
         if (extname == '.gltf') {
           contentType = 'model/gltf+json'
-          modelCount++
         } else if (extname == '.glb') {
           contentType = 'model/gltf-binary'
-          modelCount++
-        } else {
-          textureCount++
         }
         return {
           file: file,
           key: normalizeKey(path.join(target, path.relative(source, file))),
           contentType: contentType,
-          md5: true,
         }
       })
     })
-    console.info(`found ${files.length} files (${modelCount} models, ${textureCount} textures) in ${source}`)
 
-    const fileList = await Promise.resolve(options)
-      .then((it) => (it.force ? [] : listObjects(client)))
-      .then((list) => list.map((it) => normalizeKey(it.Key)))
-      .then((list) => new Set(list))
-
-    const toUpload = files.filter((it) => !fileList.has(it.key))
-
-    console.info('files to upload', toUpload.length)
-    if (options.dryRun) {
-      console.debug(toUpload.slice(0, 10))
-      return
-    }
-    await uploadFiles({
+    await syncFiles({
       client: createClient(),
-      files: toUpload,
+      files: files,
+      source: source,
+      target: target,
+      dryRun: options.dryRun,
+      force: options.force,
     })
   })
 
-program.command('upload-tiles').action(async () => {
-  const dataDir = environment.nwDataDir()
-  const tilesDir = path.join(dataDir, 'lyshineui', 'worldtiles')
-  const client = createClient()
+program
+  .command('upload-tiles')
+  .description('Uploads the map tiles of a workspace to nw-data/<version>/lyshineui/worldtiles on the CDN')
+  .option('-ws, --workspace <name>', 'workspace folder to read the tiles from (ptr or live)', NW_WORKSPACE)
+  .option('-v, --version <version>', 'CDN folder below nw-data (default is the branch name)', BRANCH_NAME)
+  .option('-m, --map <pattern>', 'glob of the map folders to upload, e.g. outpostrush or nw_dungeon_*', '*')
+  .option('-dry, --dry-run', 'Dry run, does not upload files', false)
+  .action(async (opts) => {
+    const options = z
+      .object({
+        workspace: z.string(),
+        version: z.string().min(1),
+        map: z.string(),
+        dryRun: z.boolean(),
+      })
+      .parse(opts)
 
-  const patterns = [path.join(tilesDir, '**/*.webp'), path.join(tilesDir, '**/*.png')]
-  const imageFiles = await glob(patterns)
-  const files = await glob(patterns).then((list) => {
-    return list.map((file) => {
+    const tilesPath = path.join('lyshineui', 'worldtiles')
+    const tilesDir = path.join(environment.nwDataDir(options.workspace), tilesPath)
+    const targetDir = path.join('nw-data', options.version, tilesPath)
+    if (!fs.existsSync(tilesDir)) {
+      throw new Error(`tiles folder does not exist: ${tilesDir}`)
+    }
+
+    const patterns = [path.join(tilesDir, options.map, '**/*.webp'), path.join(tilesDir, options.map, '**/*.png')]
+    const imageFiles = await glob(patterns)
+    const files = imageFiles.map((file) => {
       return {
         file: file,
-        key: normalizeKey(path.relative(path.join(dataDir, '..', '..'), file)),
-        contentType: 'image/webp',
-        md5: true,
+        key: normalizeKey(path.join(targetDir, path.relative(tilesDir, file))),
       }
     })
-  })
 
-  const groups = groupBy(imageFiles, (file) => path.dirname(file))
-  for (const [dir, dirFiles] of Object.entries(groups)) {
-    const indexFile = path.join(dir, 'tiles.json')
-    const data = dirFiles.map((file) => path.basename(file))
-    await writeJSONFile(data, {
-      target: indexFile,
-    })
-    files.push({
-      file: indexFile,
-      key: normalizeKey(path.relative(path.join(dataDir, '..', '..'), indexFile)),
-      contentType: 'application/json',
-      md5: true,
-    })
-  }
+    const groups = groupBy(imageFiles, (file) => path.dirname(file))
+    for (const [dir, dirFiles] of Object.entries(groups)) {
+      const indexFile = path.join(dir, 'tiles.json')
+      const data = dirFiles.map((file) => path.basename(file))
+      await writeJSONFile(data, {
+        target: indexFile,
+      })
+      files.push({
+        file: indexFile,
+        key: normalizeKey(path.join(targetDir, path.relative(tilesDir, indexFile))),
+      })
+    }
 
-  const toUpload = files
-  console.log('found', files.length, 'files', 'to upload', toUpload.length)
-  await uploadFiles({
-    client: client,
-    files: toUpload,
+    await syncFiles({
+      client: createClient(),
+      files: files,
+      source: tilesDir,
+      target: targetDir,
+      dryRun: options.dryRun,
+    })
   })
-})
 
 program.command('upload-character').action(async () => {
   const remoteDir = 'character'
@@ -229,15 +236,11 @@ program.command('upload-character').action(async () => {
 
   const patterns = [path.join(sourceDir, '**/*.webp'), path.join(sourceDir, '**/*.png')]
   const imageFiles = await glob(patterns)
-  const files = await glob(patterns).then((list) => {
-    return list.map((file) => {
-      return {
-        file: file,
-        key: normalizeKey(path.join(remoteDir, path.relative(sourceDir, file))),
-        contentType: 'image/webp',
-        md5: true,
-      }
-    })
+  const files: UploadFile[] = imageFiles.map((file) => {
+    return {
+      file: file,
+      key: normalizeKey(path.join(remoteDir, path.relative(sourceDir, file))),
+    }
   })
 
   const groups = groupBy(imageFiles, (file) => path.dirname(file))
@@ -250,16 +253,14 @@ program.command('upload-character').action(async () => {
     files.push({
       file: indexFile,
       key: normalizeKey(path.join(remoteDir, path.relative(sourceDir, indexFile))),
-      contentType: 'application/json',
-      md5: true,
     })
   }
 
-  const toUpload = files
-  console.log('found', files.length, 'files', 'to upload', toUpload.length)
-  await uploadFiles({
+  await syncFiles({
     client: client,
-    files: toUpload,
+    files: files,
+    source: sourceDir,
+    target: remoteDir,
   })
 })
 
@@ -313,109 +314,242 @@ async function createBundle(dir: string, file: string) {
   zip.writeZip(file)
 }
 
-async function uploadFiles({
+/**
+ * Compares the files with the objects below `target`, prints what changed and uploads it (unless `dryRun`).
+ */
+async function syncFiles({
   client,
   files,
-  parallel,
+  source,
+  target,
+  dryRun,
+  force,
 }: {
   client: S3
-  files: Array<{ file: string; key: string; contentType?: string }>
-  parallel?: number
+  files: UploadFile[]
+  source: string
+  target: string
+  dryRun?: boolean
+  force?: boolean
 }) {
-  parallel = Math.max(1, Math.min(parallel || 20, files.length))
+  console.log('source  ', path.resolve(source))
+  console.log('target  ', `${config.bucket}/${normalizeKey(target)}`)
+  console.log('local   ', files.length, 'files')
 
-  const totalFiles = files.length
-  const batches = []
-  while (files.length > 0) {
-    for (let i = 0; i < parallel; i++) {
-      if (files.length > 0) {
-        batches[i] = batches[i] || []
-        batches[i].push(files.pop())
-      }
-    }
+  let added = files
+  let modified: UploadFile[] = []
+  if (!force) {
+    const changes = await compareFiles(client, files, target)
+    added = changes.added
+    modified = changes.modified
+  }
+  const toUpload = [...added, ...modified]
+  console.log(
+    'changes ',
+    `${added.length} new, ${modified.length} modified, ${files.length - toUpload.length} unchanged`,
+  )
+
+  const listLimit = 20
+  const listed = [...added.map((it) => `  new       ${it.key}`), ...modified.map((it) => `  modified  ${it.key}`)]
+  for (const line of listed.slice(0, listLimit)) {
+    console.log(line)
+  }
+  if (listed.length > listLimit) {
+    console.log(`  ... and ${listed.length - listLimit} more`)
   }
 
-  const multibar = new MultiBar(
+  if (dryRun) {
+    console.log('dry run, nothing uploaded')
+    return
+  }
+  if (!toUpload.length) {
+    return
+  }
+  await uploadFiles({ client, files: toUpload })
+}
+
+function createBar(label: string) {
+  return new SingleBar(
     {
       clearOnComplete: false,
       hideCursor: true,
-      format: '{percentage}% {value}/{total} {name}',
+      format: `${label.padEnd(8)} {bar} {percentage}% {value}/{total}{suffix}`,
     },
-    Presets.shades_grey,
+    Presets.shades_classic,
   )
-  const b1 = multibar.create(totalFiles, 0)
-  let filesDone = 0
-  function barUpdate() {
-    filesDone++
-    b1.update(filesDone, { name: 'files' })
+}
+
+async function uploadFiles({ client, files, parallel }: { client: S3; files: UploadFile[]; parallel?: number }) {
+  const queue = [...files]
+  const failures: Array<{ key: string; error: string }> = []
+  let uploaded = 0
+
+  const bar = createBar('upload')
+  bar.start(files.length, 0, { suffix: '' })
+
+  async function worker() {
+    while (queue.length > 0) {
+      const item = queue.shift()
+      try {
+        await uploadWithRetry(client, item)
+        uploaded++
+      } catch (err) {
+        failures.push({ key: item.key, error: formatError(err) })
+      }
+      bar.increment({ suffix: failures.length ? ` | ${failures.length} failed` : '' })
+    }
   }
 
-  await Promise.all(
-    batches.map(async (batch) => {
-      const b2 = multibar.create(batch.length, 0)
-      for (let i = 0; i < batch.length; i++) {
-        const item = batch[i]
-        const file = item.file
-        const key = item.key.replace(/\\/g, '/').toLowerCase()
-        const contentType = item.contentType || mime.lookup(path.basename(file)) || 'application/octet-stream'
-        const fileHash = calculateHash(file)
+  const workerCount = Math.max(1, Math.min(parallel || 20, files.length))
+  await Promise.all(Array.from({ length: workerCount }, worker))
+  bar.stop()
 
-        barUpdate()
-        b2.update(i + 1, { name: key })
+  console.log('uploaded', uploaded, 'of', files.length, 'files')
+  if (failures.length) {
+    console.error(`failed   ${failures.length} files`)
+    for (const failure of failures) {
+      console.error(`  ${failure.key}: ${failure.error}`)
+    }
+    process.exitCode = 1
+  }
+}
 
-        const oldHash = await client
-          .headObject({ Bucket: config.bucket, Key: key })
-          .then((data) => data?.Metadata['x-amz-meta-file-hash'])
-          .catch((err) => null)
-
-        if (fileHash === oldHash) {
-          continue
-        }
-        const upload = new Upload({
-          params: {
-            Bucket: config.bucket,
-            Key: key,
-            Body: fs.createReadStream(file),
-            ACL: 'public-read',
-            ContentType: contentType,
-            Metadata: {
-              'x-amz-meta-file-hash': fileHash,
-            },
+async function uploadWithRetry(client: S3, item: UploadFile, attempts = 4) {
+  const contentType = item.contentType || mime.lookup(path.basename(item.file)) || 'application/octet-stream'
+  const hash = await fileHash(item.file, 'sha256')
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const upload = new Upload({
+        params: {
+          Bucket: config.bucket,
+          Key: normalizeKey(item.key),
+          Body: fs.createReadStream(item.file),
+          ACL: 'public-read',
+          ContentType: contentType,
+          Metadata: {
+            [HASH_META_KEY]: hash,
           },
-          client: client,
-          queueSize: 3,
-        })
-        upload.on('httpUploadProgress', (progress) => {
-          //
-        })
-        await upload.done().catch((err) => {
-          console.error('upload error', key, err)
-        })
+        },
+        client: client,
+        queueSize: 3,
+      })
+      await upload.done()
+      return
+    } catch (err) {
+      if (attempt >= attempts) {
+        throw err
       }
-      b2.update(batch.length, { name: 'done' })
-    }),
-  )
+      await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)))
+    }
+  }
+}
 
-  multibar.stop()
+function formatError(err: any) {
+  const status = err?.$metadata?.httpStatusCode
+  const body = typeof err?.body === 'string' ? err.body.trim() : ''
+  return [status, err?.name, err?.message, body].filter((it) => !!it).join(' ')
+}
+
+/**
+ * Splits the files into new and modified ones, listing the bucket once below `prefix`.
+ * A different size means modified. Otherwise single part uploads have the MD5 of the content as ETag, multipart
+ * uploads (ETag ends with `-<parts>`) are compared by the SHA-256 that uploadFiles stores in the object metadata.
+ *
+ * Expected to be slow for large folders: every file with the same size as its object is read and hashed
+ * (the models folder is ~60 GB).
+ */
+async function compareFiles(client: S3, files: UploadFile[], prefix: string) {
+  const objects = await listObjects(client, normalizeKey(prefix))
+  console.log('remote  ', objects.size, 'objects')
+
+  const queue = [...files]
+  const added = new Set<UploadFile>()
+  const modified = new Set<UploadFile>()
+
+  async function isModified(item: UploadFile, object: _Object) {
+    if (object.Size !== fs.statSync(item.file).size) {
+      return true
+    }
+    const etag = object.ETag?.replace(/"/g, '') || ''
+    if (!etag.includes('-')) {
+      return etag !== (await fileHash(item.file, 'md5'))
+    }
+    const remoteHash = await client
+      .headObject({ Bucket: config.bucket, Key: object.Key })
+      .then((data) => data.Metadata?.[HASH_META_KEY])
+      .catch(() => null)
+    return remoteHash !== (await fileHash(item.file, 'sha256'))
+  }
+
+  const bar = createBar('compare')
+  bar.start(files.length, 0, { suffix: '' })
+  async function worker() {
+    while (queue.length > 0) {
+      const item = queue.shift()
+      const object = objects.get(normalizeKey(item.key))
+      if (!object) {
+        added.add(item)
+      } else if (await isModified(item, object)) {
+        modified.add(item)
+      }
+      bar.increment()
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(16, files.length) }, worker))
+  bar.stop()
+
+  return {
+    added: files.filter((it) => added.has(it)),
+    modified: files.filter((it) => modified.has(it)),
+  }
+}
+
+/**
+ * Lists all objects below `prefix`. The listing is split into the sub folders down to `depth` levels, which are
+ * listed in parallel: a single listing returns at most 1000 objects per request.
+ */
+async function listObjects(client: S3, prefix: string, depth = 2) {
+  const result = new Map<string, _Object>()
+  const folders: string[] = []
+
+  async function listPages(folderPrefix: string, delimiter?: string) {
+    let token: string | undefined = undefined
+    do {
+      const data = await client.listObjectsV2({
+        Bucket: config.bucket,
+        Prefix: folderPrefix,
+        Delimiter: delimiter,
+        MaxKeys: 1000,
+        ContinuationToken: token,
+      })
+      for (const object of data.Contents || []) {
+        result.set(normalizeKey(object.Key), object)
+      }
+      for (const common of data.CommonPrefixes || []) {
+        folders.push(common.Prefix)
+      }
+      token = data.IsTruncated ? data.NextContinuationToken : undefined
+    } while (token)
+  }
+
+  let level = [prefix.endsWith('/') ? prefix : prefix + '/']
+  for (let i = 0; i < depth; i++) {
+    folders.length = 0
+    await Promise.all(level.map((it) => listPages(it, '/')))
+    level = [...folders]
+  }
+  const queue = [...level]
+  async function worker() {
+    while (queue.length > 0) {
+      await listPages(queue.shift())
+    }
+  }
+  await Promise.all(Array.from({ length: 16 }, worker))
+
+  return result
 }
 
 program.parse(process.argv)
-
-async function listObjects(client: S3 = createClient()) {
-  console.log('listing objects...')
-  const files: Array<_Object> = []
-  let marker: string | undefined = undefined
-  do {
-    const data = await client.listObjects({
-      Bucket: config.bucket,
-      MaxKeys: 1000,
-      Marker: marker,
-    })
-    files.push(...data.Contents)
-    marker = data.NextMarker
-  } while (marker)
-  return files
-}
 
 function createClient() {
   return new S3({
@@ -436,9 +570,8 @@ function normalizeKey(key: string) {
   return key.replace(/\\/g, '/').toLowerCase()
 }
 
-function calculateHash(filePath: string) {
-  const hash = createHash('sha256')
-  const fileData = fs.readFileSync(filePath)
-  hash.update(fileData as any)
+async function fileHash(filePath: string, algorithm: 'sha256' | 'md5') {
+  const hash = createHash(algorithm)
+  hash.update((await fs.promises.readFile(filePath)) as any)
   return hash.digest('hex')
 }

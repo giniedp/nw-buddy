@@ -805,6 +805,32 @@ export class NwViewer extends EcsGame {
   }
 
   /**
+   * The info of the loaded level, null while no level is shown
+   */
+  public get levelInfo(): LevelInfo | null {
+    if (this.mode !== 'level') {
+      return null
+    }
+    return this.world.getSystem(LevelSystem).levelInfo
+  }
+
+  /**
+   * The camera position in world space, its heading in radians, and the world direction it looks along
+   */
+  public cameraLocation() {
+    const t = mat4GetTranslation(this.camera.world, vec3.$0)
+    const space = this.world.getSystem(SpaceBasis)
+    const look = vec3ApplyMat4Rotation(space.forward, this.camera.world, vec3.$1)
+    return {
+      x: t.x,
+      y: t.y,
+      z: t.z,
+      heading: this.camera.entity.component(WASDComponent).getRotationHorizontal(),
+      look: { x: look.x, y: look.y, z: look.z },
+    }
+  }
+
+  /**
    * The parameters of the page url, empty without {@link NwViewerOptions.urlState}
    */
   private urlParams(): URLSearchParams {

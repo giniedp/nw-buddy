@@ -8,6 +8,10 @@ export interface ViewerOverlayState {
    */
   right: boolean
   /**
+   * The minimap of the level, top left above the canvas
+   */
+  map: boolean
+  /**
    * The audio of the viewer config
    */
   readonly audio: boolean

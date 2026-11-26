@@ -17,6 +17,7 @@ export function createViewerOverlayStore(props: { viewer: NwViewer }) {
   const [state, setState] = createStore<ViewerOverlayState>({
     left: false,
     right: false,
+    map: false,
     get audio() {
       return audio()
     },
@@ -37,6 +38,9 @@ export function createViewerOverlayStore(props: { viewer: NwViewer }) {
     },
     toggleRight() {
       setState('right', !state.right)
+    },
+    toggleMap() {
+      setState('map', !state.map)
     },
     /**
      * Call it in the click: the audio context starts in a user gesture only (autoplay policy)

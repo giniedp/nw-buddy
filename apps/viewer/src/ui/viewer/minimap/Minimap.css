@@ -1,0 +1,73 @@
+/* the minimap above the viewer canvas, see Minimap.tsx */
+.nw-minimap {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: 22rem;
+  height: 22rem;
+  overflow: hidden;
+  border: 1px solid var(--nw-line-strong);
+  border-radius: 0.25rem;
+  background: color-mix(in oklab, var(--nw-bg-sunken) 85%, transparent);
+  cursor: crosshair;
+  pointer-events: all;
+  touch-action: none;
+  user-select: none;
+}
+.nw-minimap-empty,
+.nw-minimap-note {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.nw-minimap-note {
+  inset: auto 0 0.5rem 0;
+}
+.nw-minimap-tile {
+  position: absolute;
+  max-width: none;
+  pointer-events: none;
+}
+.nw-minimap-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.nw-minimap-region {
+  stroke: color-mix(in oklab, var(--nw-text) 45%, transparent);
+  stroke-width: 1;
+}
+.nw-minimap-segment {
+  stroke: color-mix(in oklab, var(--nw-text) 12%, transparent);
+  stroke-width: 1;
+}
+.nw-minimap-camera line {
+  stroke: var(--nw-accent);
+  stroke-width: 2;
+}
+.nw-minimap-camera circle {
+  fill: var(--nw-accent);
+  stroke: var(--nw-bg-sunken);
+  stroke-width: 1.5;
+}
+.nw-minimap-gutter,
+.nw-minimap-gutter-corner {
+  fill: color-mix(in oklab, var(--nw-bg) 90%, transparent);
+}
+.nw-minimap-tick {
+  stroke: var(--nw-text-dim);
+  stroke-width: 1;
+}
+.nw-minimap-tick-strong {
+  stroke: var(--nw-text);
+  stroke-width: 1;
+}
+.nw-minimap-label {
+  fill: var(--nw-text);
+  font-size: var(--nw-text-sm);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
