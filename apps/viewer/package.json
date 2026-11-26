@@ -41,23 +41,23 @@
     "vitest": "^5.0.0"
   },
   "dependencies": {
-    "@gglib/components": "file:../../../glib/packages/components",
-    "@gglib/content": "file:../../../glib/packages/content",
-    "@gglib/ecs": "file:../../../glib/packages/ecs",
-    "@gglib/effects": "file:../../../glib/packages/effects",
-    "@gglib/game": "file:../../../glib/packages/game",
-    "@gglib/graphics": "file:../../../glib/packages/graphics",
-    "@gglib/loaders": "file:../../../glib/packages/loaders",
-    "@gglib/math": "file:../../../glib/packages/math",
-    "@gglib/model": "file:../../../glib/packages/model",
-    "@gglib/render": "file:../../../glib/packages/render",
-    "@gglib/utils": "file:../../../glib/packages/utils",
-    "@gglib/vite-plugin": "file:../../../glib/packages/vite-plugin",
+    "@gglib/components": "0.8.2",
+    "@gglib/content": "0.8.2",
+    "@gglib/ecs": "0.8.2",
+    "@gglib/effects": "0.8.2",
+    "@gglib/game": "0.8.2",
+    "@gglib/graphics": "0.8.2",
+    "@gglib/loaders": "0.8.2",
+    "@gglib/math": "0.8.2",
+    "@gglib/model": "0.8.2",
+    "@gglib/render": "0.8.2",
+    "@gglib/utils": "0.8.2",
+    "@gglib/vite-plugin": "0.8.2",
     "@solidjs/router": "0.15.3",
     "ag-grid-community": "35.3.1",
     "fflate": "0.8.3",
     "monaco-editor": "0.52.2",
     "solid-js": "^1.9.17",
-    "tweak-ui": "file:../../../tweak-ui"
+    "tweak-ui": "0.9.1"
   }
 }

@@ -477,41 +477,41 @@ importers:
   apps/viewer:
     dependencies:
       '@gglib/components':
-        specifier: file:../../../glib/packages/components
-        version: file:../glib/packages/components(@gglib/content@file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils))(@gglib/ecs@file:../glib/packages/ecs(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/game@file:../glib/packages/game(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/render@file:../glib/packages/render(@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/ecs@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/game@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/render@0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
       '@gglib/content':
-        specifier: file:../../../glib/packages/content
-        version: file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
       '@gglib/ecs':
-        specifier: file:../../../glib/packages/ecs
-        version: file:../glib/packages/ecs(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
       '@gglib/effects':
-        specifier: file:../../../glib/packages/effects
-        version: file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
       '@gglib/game':
-        specifier: file:../../../glib/packages/game
-        version: file:../glib/packages/game(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
       '@gglib/graphics':
-        specifier: file:../../../glib/packages/graphics
-        version: file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
       '@gglib/loaders':
-        specifier: file:../../../glib/packages/loaders
-        version: file:../glib/packages/loaders(@gglib/content@file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
       '@gglib/math':
-        specifier: file:../../../glib/packages/math
-        version: file:../glib/packages/math
+        specifier: 0.8.2
+        version: 0.8.2
       '@gglib/model':
-        specifier: file:../../../glib/packages/model
-        version: file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
       '@gglib/render':
-        specifier: file:../../../glib/packages/render
-        version: file:../glib/packages/render(@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
       '@gglib/utils':
-        specifier: file:../../../glib/packages/utils
-        version: file:../glib/packages/utils
+        specifier: 0.8.2
+        version: 0.8.2
       '@gglib/vite-plugin':
-        specifier: file:../../../glib/packages/vite-plugin
-        version: file:../glib/packages/vite-plugin(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))
+        specifier: 0.8.2
+        version: 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))
       '@solidjs/router':
         specifier: 0.15.3
         version: 0.15.3(solid-js@1.9.19)
@@ -528,8 +528,8 @@ importers:
         specifier: ^1.9.17
         version: 1.9.19
       tweak-ui:
-        specifier: file:../../../tweak-ui
-        version: file:../tweak-ui(solid-js@1.9.19)
+        specifier: 0.9.1
+        version: 0.9.1(solid-js@1.9.19)
     devDependencies:
       '@types/node':
         specifier: ^24.13.3
@@ -2453,90 +2453,90 @@ packages:
     resolution: {integrity: sha512-7mBgpi7UD82fsff5ThQKet0uBTl4BYerQuc+/qA1ELTwWEiIedRTcD3JgiUu9wwZ2kytW8JOb165rSdAt8PfcQ==}
     engines: {node: '>= 8'}
 
-  '@gglib/components@file:../glib/packages/components':
-    resolution: {directory: ../glib/packages/components, type: directory}
+  '@gglib/components@0.8.2':
+    resolution: {integrity: sha512-qmO/6uJn5VTh0wOecYn6VDVxHSbLdOjIbdu0hGUiGbWLCE12smlLKQ0rOq4DFcbLtWJ9BuZaajKal3Dy9lF9Ng==}
     peerDependencies:
-      '@gglib/content': 0.8.1
-      '@gglib/ecs': 0.8.1
-      '@gglib/effects': 0.8.1
-      '@gglib/game': 0.8.1
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/model': 0.8.1
-      '@gglib/render': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/content': 0.8.2
+      '@gglib/ecs': 0.8.2
+      '@gglib/effects': 0.8.2
+      '@gglib/game': 0.8.2
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2
+      '@gglib/render': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/content@file:../glib/packages/content':
-    resolution: {directory: ../glib/packages/content, type: directory}
+  '@gglib/content@0.8.2':
+    resolution: {integrity: sha512-QAMeFF4zF5/XTSSlYQbO0rX8uNyf0Ems0j1I9i9uYFKG6bbgAIM4xzIJm7vlBblYbCsiBJ11bjtZMNS2jOSeSg==}
     peerDependencies:
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/model': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/ecs@file:../glib/packages/ecs':
-    resolution: {directory: ../glib/packages/ecs, type: directory}
+  '@gglib/ecs@0.8.2':
+    resolution: {integrity: sha512-m5yj10deaHWv598Xyt5+GME0AV5y8f1CCkyft+rHGN553ww+oYTfVxSmlN77M/p4U6MAGNXN4pIfjm9G7P0NsQ==}
     peerDependencies:
-      '@gglib/math': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/effects@file:../glib/packages/effects':
-    resolution: {directory: ../glib/packages/effects, type: directory}
+  '@gglib/effects@0.8.2':
+    resolution: {integrity: sha512-/bjk0fzzKbXSXSyr+pzjZvD9r1gFm9YFZm4akTzoM3AZ02vLOg+x0wqZL98zAxgB5tilK6D4yuOOD0VUg7FxWw==}
     peerDependencies:
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/game@file:../glib/packages/game':
-    resolution: {directory: ../glib/packages/game, type: directory}
+  '@gglib/game@0.8.2':
+    resolution: {integrity: sha512-TRtkUHqGYc0ptYF8RJnbKBFvd90AnhR1R4/bma3Y6r7VdrrpUuoFgjY7tGUTKrUYNyTgcjieYP2htBfgd9BUHQ==}
     peerDependencies:
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/graphics@file:../glib/packages/graphics':
-    resolution: {directory: ../glib/packages/graphics, type: directory}
+  '@gglib/graphics@0.8.2':
+    resolution: {integrity: sha512-hi6XYkwO8NSer/9RAKchvjQlf2p94BLMiu6Vzcuzq1oWIM1UykL8SCbCMNWFHdq30RxWCuZQ3RpnRQ6gvg18hg==}
     peerDependencies:
-      '@gglib/math': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/loaders@file:../glib/packages/loaders':
-    resolution: {directory: ../glib/packages/loaders, type: directory}
+  '@gglib/loaders@0.8.2':
+    resolution: {integrity: sha512-fqe1DHFPbRCmouCJ9qjM4gx8U1cr+qcqN3kJzSgjiVUCoz1BT84VaHX73EQqjUNj3OTMo4wj1tbSoKiC7vAeCg==}
     peerDependencies:
-      '@gglib/content': 0.8.1
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/model': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/content': 0.8.2
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/math@file:../glib/packages/math':
-    resolution: {directory: ../glib/packages/math, type: directory}
+  '@gglib/math@0.8.2':
+    resolution: {integrity: sha512-e8/6o4Wj9+bk17+3b7AmyJePM0WQUX79FJFnnLwPuCqIizyUFGLV4+39wpI3ouv9taHBK57GhQI6yyFd9H6n6A==}
 
-  '@gglib/model@file:../glib/packages/model':
-    resolution: {directory: ../glib/packages/model, type: directory}
+  '@gglib/model@0.8.2':
+    resolution: {integrity: sha512-GrnuVxtmNkt1ZyAepxzgwFazAnyt/AwJ/vIhEZMozb0Gumg0OVGNXxGlPlW62ltOHngPQ+2eKbTZxtv3Zpzz6Q==}
     peerDependencies:
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/render@file:../glib/packages/render':
-    resolution: {directory: ../glib/packages/render, type: directory}
+  '@gglib/render@0.8.2':
+    resolution: {integrity: sha512-iqMFbhvKzTkAi+CXaMnyzJlNsYy9YfFEf7BRyxhnua0wossUt8MiWODQh/AxofUn703KneoNH9kUlRyAoFaVqg==}
     peerDependencies:
-      '@gglib/effects': 0.8.1
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/model': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/effects': 0.8.2
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/utils@file:../glib/packages/utils':
-    resolution: {directory: ../glib/packages/utils, type: directory}
+  '@gglib/utils@0.8.2':
+    resolution: {integrity: sha512-NcyIkNgn3BqAGqcGgz7fDt0y5PWlRhcNMlGYoP8f5nSOOonKNKoqdPLJztDU2UHlMQkZsXayYvm02T0ZX94p/Q==}
 
-  '@gglib/vite-plugin@file:../glib/packages/vite-plugin':
-    resolution: {directory: ../glib/packages/vite-plugin, type: directory}
+  '@gglib/vite-plugin@0.8.2':
+    resolution: {integrity: sha512-/wlWhEljS884/D/0PyU9yMIxzuD1oH7VMginIQyHxpHrd80Yelh1BOrgU4pAzz9SFLUDcJL2AeMQ4fQkHxg6wA==}
     peerDependencies:
-      '@gglib/graphics': 0.8.1
-      '@gglib/math': 0.8.1
-      '@gglib/utils': 0.8.1
+      '@gglib/graphics': 0.8.2
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
       vite: '>=5'
 
   '@gltf-transform/cli@4.2.1':
@@ -10565,8 +10565,8 @@ packages:
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
-  tweak-ui@file:../tweak-ui:
-    resolution: {directory: ../tweak-ui, type: directory}
+  tweak-ui@0.9.1:
+    resolution: {integrity: sha512-/Qz9zPLvUfT5F7W0xP60LDqOrk8IEEBMLACriiSxefectzQBVVDZYuFMJBeGvDl0vgafY1chmxS8MBPk4d7hGQ==}
     peerDependencies:
       solid-js: ^1.9.0
 
@@ -13656,78 +13656,78 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
 
-  ? '@gglib/components@file:../glib/packages/components(@gglib/content@file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils))(@gglib/ecs@file:../glib/packages/ecs(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/game@file:../glib/packages/game(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/render@file:../glib/packages/render(@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)'
+  ? '@gglib/components@0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/ecs@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/game@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/render@0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)'
   : dependencies:
-      '@gglib/content': file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/ecs': file:../glib/packages/ecs(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/effects': file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/game': file:../glib/packages/game(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/model': file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/render': file:../glib/packages/render(@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/content': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
+      '@gglib/ecs': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/effects': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/game': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/render': 0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
+      '@gglib/utils': 0.8.2
 
-  '@gglib/content@file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/model': file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/utils': 0.8.2
 
-  '@gglib/ecs@file:../glib/packages/ecs(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/ecs@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/game@file:../glib/packages/game(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/game@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/loaders@file:../glib/packages/loaders(@gglib/content@file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/loaders@0.8.2(@gglib/content@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/content': file:../glib/packages/content(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/model': file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/content': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/utils': 0.8.2
 
-  '@gglib/math@file:../glib/packages/math': {}
+  '@gglib/math@0.8.2': {}
 
-  '@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
 
-  '@gglib/render@file:../glib/packages/render(@gglib/effects@file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/model@file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/utils@file:../glib/packages/utils)':
+  '@gglib/render@0.8.2(@gglib/effects@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/model@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/utils@0.8.2)':
     dependencies:
-      '@gglib/effects': file:../glib/packages/effects(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/model': file:../glib/packages/model(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/effects': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/model': 0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/utils': 0.8.2
 
-  '@gglib/utils@file:../glib/packages/utils': {}
+  '@gglib/utils@0.8.2': {}
 
-  '@gglib/vite-plugin@file:../glib/packages/vite-plugin(@gglib/graphics@file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils))(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))':
+  '@gglib/vite-plugin@0.8.2(@gglib/graphics@0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2))(@gglib/math@0.8.2)(@gglib/utils@0.8.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1))':
     dependencies:
-      '@gglib/graphics': file:../glib/packages/graphics(@gglib/math@file:../glib/packages/math)(@gglib/utils@file:../glib/packages/utils)
-      '@gglib/math': file:../glib/packages/math
-      '@gglib/utils': file:../glib/packages/utils
+      '@gglib/graphics': 0.8.2(@gglib/math@0.8.2)(@gglib/utils@0.8.2)
+      '@gglib/math': 0.8.2
+      '@gglib/utils': 0.8.2
       vite: 8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(yaml@2.6.1)
 
   '@gltf-transform/cli@4.2.1':
@@ -22853,7 +22853,7 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
-  tweak-ui@file:../tweak-ui(solid-js@1.9.19):
+  tweak-ui@0.9.1(solid-js@1.9.19):
     dependencies:
       solid-js: 1.9.19
 
