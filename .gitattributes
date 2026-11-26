@@ -1,0 +1,6 @@
+# Text files are LF in git and in the working tree, on every OS and with any core.autocrlf
+* text=auto eol=lf
+
+# cmd.exe misreads labels and goto in LF batch files
+*.bat text eol=crlf
+*.cmd text eol=crlf

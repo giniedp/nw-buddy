@@ -1,0 +1,5 @@
+/* the right sidebar of the viewer, see StatsPanel.tsx */
+/* the min / max / average of the stats graphs: secondary text (tweak-ui sizes it relative, off the scale) */
+.nw-overlay .twk-graph-stats {
+  font-size: var(--nw-text-sm);
+}

@@ -1,5 +1,5 @@
 .dungeons-grid {
-  display:grid;
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   column-gap: 1rem;
   row-gap: 1rem;

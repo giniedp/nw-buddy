@@ -6,10 +6,7 @@
     @if (!freeMode()) {
       <label class="select select-sm w-40 my-1">
         <span class="label">Magnify</span>
-        <select
-          [ngModel]="magnifyPlacement()"
-          (ngModelChange)="handleMagnifyUpdate($event)"
-        >
+        <select [ngModel]="magnifyPlacement()" (ngModelChange)="handleMagnifyUpdate($event)">
           <option [ngValue]="null">Auto</option>
           @for (option of magnifyOptions; track $index) {
             <option [ngValue]="option.value">
@@ -39,31 +36,19 @@
             </span>
             @if (stat.assigned) {
               <span> + </span>
-              <span
-                class="text-attr-assign cursor-help"
-                [tooltip]="'Assigned'"
-                [tooltipClass]="'text-attr-assign'"
-              >
+              <span class="text-attr-assign cursor-help" [tooltip]="'Assigned'" [tooltipClass]="'text-attr-assign'">
                 {{ stat.assigned }}
               </span>
             }
             @if (stat.buffs) {
               <span> + </span>
-              <span
-                class="text-attr-buff cursor-help"
-                [tooltip]="'Item Buffs'"
-                [tooltipClass]="'text-attr-buff'"
-              >
+              <span class="text-attr-buff cursor-help" [tooltip]="'Item Buffs'" [tooltipClass]="'text-attr-buff'">
                 {{ stat.buffs }}
               </span>
             }
             @if (stat.magnify) {
               <span> + </span>
-              <span
-                class="text-attr-magnify cursor-help"
-                [tooltip]="'Magnify'"
-                [tooltipClass]="'text-attr-magnify'"
-              >
+              <span class="text-attr-magnify cursor-help" [tooltip]="'Magnify'" [tooltipClass]="'text-attr-magnify'">
                 {{ stat.magnify }}
               </span>
             }

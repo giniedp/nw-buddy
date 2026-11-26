@@ -11,8 +11,15 @@ import (
 )
 
 type SliceWalker struct {
+	SliceWalkOptions
 	Assets *Assets
 	Visit  func(node *SliceNode)
+}
+
+type SliceWalkOptions struct {
+	// Context values a child entity takes from its parent entity. Everything else, and every value without this
+	// option, comes from the spawner of the slice.
+	InheritKeys []string
 }
 
 type SliceNode struct {
@@ -23,7 +30,9 @@ type SliceNode struct {
 	Walker     *SliceWalker
 	Components []any
 	Transform  mat4.Data
-	Context    context.Context
+	// SliceTransform places the slice's own space: Transform = SliceTransform * entity worldTM
+	SliceTransform mat4.Data
+	Context        context.Context
 }
 
 func (it *SliceNode) ContextHasValue(key string) bool {
@@ -40,11 +49,6 @@ func (it *SliceNode) ContextProvideIfMissing(key string, value any) {
 	}
 }
 
-func (it *SliceNode) ContextStr(key string) (string, bool) {
-	v, ok := it.Context.Value(key).(string)
-	return v, ok
-}
-
 func (it *SliceNode) ContextStrGet(key string) string {
 	v, _ := it.Context.Value(key).(string)
 	return v
@@ -59,25 +63,11 @@ func (it *SliceNode) ContextStrArrGet(key string) []string {
 	return v
 }
 
-func (it *SliceNode) ContextInt(key string) (int, bool) {
-	v, ok := it.Context.Value(key).(int)
-	return v, ok
-}
-
 func (it *SliceNode) ContextIntGet(key string) int {
 	if v, ok := it.Context.Value(key).(int); ok {
 		return v
 	}
 	return 0
-}
-
-func (it *SliceNode) ContextIntSet(key string, value int) {
-	it.Context = context.WithValue(it.Context, key, value)
-}
-
-func (it *SliceNode) ContextFloat(key string) (float32, bool) {
-	v, ok := it.Context.Value(key).(float32)
-	return v, ok
 }
 
 func (it *SliceNode) ContextFloatPtrOrNil(key string) *float32 {
@@ -188,25 +178,34 @@ func (it *SliceWalker) Walk(parent *SliceNode, file nwfs.File) {
 	if parent != nil {
 		parentTransform = parent.Transform
 	}
+	// the game places a slice by its root: the root stands at the placement, every entity at
+	// placement * inverse(root) * entity
+	if root, ok := SliceRootTransform(component); ok && !mat4.IsIdentity(root) {
+		parentTransform = mat4.Multiply(parentTransform, mat4.Invert(root))
+	}
 	WalkEntityTree(tree, func(node *EntityTreeNode) {
 		node.Transform2 = mat4.Multiply(parentTransform, node.Transform)
 
-		if node.Parent == nil {
-			node.Context = ctx
-		} else {
-			node.Context = node.Parent.Context
+		visited := &SliceNode{
+			File:           file,
+			Parent:         parent,
+			Entity:         node.Entity,
+			Slice:          component,
+			Transform:      node.Transform2,
+			SliceTransform: parentTransform,
+			Components:     node.Entity.Components.Element,
+			Walker:         it,
+			Context:        ctx,
 		}
-
-		it.Visit(&SliceNode{
-			File:       file,
-			Parent:     parent,
-			Entity:     node.Entity,
-			Slice:      component,
-			Transform:  node.Transform2,
-			Components: node.Entity.Components.Element,
-			Walker:     it,
-			Context:    ctx,
-		})
+		if node.Parent != nil {
+			for _, key := range it.InheritKeys {
+				if value := node.Parent.Context.Value(key); value != nil {
+					visited.Context = context.WithValue(visited.Context, key, value)
+				}
+			}
+		}
+		it.Visit(visited)
+		node.Context = visited.Context
 	})
 }
 
@@ -216,6 +215,41 @@ func (it *Assets) WalkSlice(file nwfs.File, visit func(node *SliceNode)) {
 		Visit:  visit,
 	}
 	walker.Walk(nil, file)
+}
+
+func (it *Assets) WalkSliceWith(file nwfs.File, options SliceWalkOptions, visit func(node *SliceNode)) {
+	walker := &SliceWalker{
+		SliceWalkOptions: options,
+		Assets:           it,
+		Visit:            visit,
+	}
+	walker.Walk(nil, file)
+}
+
+// SliceRootTransform returns the transform of the slice's root entity. A slice with several entities without a
+// parent has no root and keeps its own space.
+func SliceRootTransform(slice *nwt.SliceComponent) (mat4.Data, bool) {
+	var root *nwt.AZ__Entity
+	for entity := range EntitiesOf(slice) {
+		hasTransform := false
+		for _, component := range entity.Components.Element {
+			switch component.(type) {
+			case nwt.GameTransformComponent, nwt.TransformComponent:
+				hasTransform = true
+			}
+		}
+		if !hasTransform || FindEntityParent(slice, entity) != nil {
+			continue
+		}
+		if root != nil {
+			return mat4.Identity(), false
+		}
+		root = entity
+	}
+	if root == nil {
+		return mat4.Identity(), false
+	}
+	return FindEntityTransformMat4(root), true
 }
 
 func ApplyVariationData(assets *Assets, slice *nwt.SliceComponent) {
@@ -244,7 +278,6 @@ func ApplyVariationData(assets *Assets, slice *nwt.SliceComponent) {
 						prefab.M_aliasAsset = nwt.AzAsset{}
 						prefab.M_sliceAsset = nwt.AzAsset{}
 					} else {
-						prefab.M_aliasAsset.Hint = value
 						prefab.M_aliasAsset.Hint = value
 					}
 				})

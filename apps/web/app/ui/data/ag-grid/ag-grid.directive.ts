@@ -1,4 +1,4 @@
-import { AgGridEvent, GridApi, GridOptions, GridParams, GridReadyEvent, createGrid } from '@ag-grid-community/core'
+import { AgGridEvent, GridApi, GridOptions, GridParams, GridReadyEvent, createGrid } from 'ag-grid-community'
 import {
   AfterViewInit,
   Directive,
@@ -28,6 +28,7 @@ import { runOutsideZone } from '~/utils/rx/run-in-zone'
 import { AngularFrameworkComponentWrapper } from './component-wrapper/angular-framework-component-wrapper'
 import { AngularFrameworkOverrides } from './component-wrapper/angular-framework-overrides'
 import { fromGridEvent } from './from-grid-event'
+import { nwbGridTheme } from './theme'
 import { AgGridEvents } from './types'
 import { injectIsBrowser } from '~/utils/injection/platform'
 
@@ -35,8 +36,8 @@ import { injectIsBrowser } from '~/utils/injection/platform'
   standalone: true,
   selector: '[nwbGrid]',
   host: {
-    '[class.ag-grid]': 'true',
-    '[class.ag-theme-alpine-dark]': 'true',
+    // scope of the rules in styles/vendor/ag-grid.css, the theme itself is nwbGridTheme
+    '[class.nwb-grid]': 'true',
   },
   providers: [AngularFrameworkOverrides, AngularFrameworkComponentWrapper],
 })
@@ -87,6 +88,7 @@ export class AgGridDirective<T = any> implements AfterViewInit, OnDestroy {
         map((options) => {
           return {
             animateRows: false,
+            theme: nwbGridTheme,
             ...(options || {}),
             context: this,
           }
@@ -126,10 +128,11 @@ export class AgGridDirective<T = any> implements AfterViewInit, OnDestroy {
 
   private createGrid(options: GridOptions) {
     const params: GridParams = {
-      globalEventListener: this.eventEmitter.bind(this),
+      globalListener: this.eventEmitter.bind(this),
       frameworkOverrides: this.angularFrameworkOverrides,
       providedBeanInstances: {
-        frameworkComponentWrapper: this.frameworkComponentWrapper,
+        // the bean name of v35 (frameworkComponentWrapper before v33)
+        frameworkCompWrapper: this.frameworkComponentWrapper,
       },
     }
     return createGrid(this.elRef.nativeElement, options, params)

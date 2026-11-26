@@ -1,0 +1,12 @@
+/* frame and scene stats in the toolbar, see StatsBar.tsx */
+.nw-stats-bar {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.nw-stat {
+  padding: 0 0.5rem;
+}
+.nw-stat + .nw-stat {
+  border-left: 1px solid var(--nw-line-strong);
+}

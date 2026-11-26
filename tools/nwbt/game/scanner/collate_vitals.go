@@ -1,11 +1,8 @@
 package scanner
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/maps"
 	"slices"
 	"strconv"
@@ -13,90 +10,67 @@ import (
 )
 
 type ScannedVital struct {
-	VitalsID    string                          `json:"vitalsID"`
-	Tables      []string                        `json:"tables"`
-	MapIDs      []string                        `json:"mapIDs"`
-	Models      []string                        `json:"models"`
-	CatIDs      []string                        `json:"catIDs"`
-	GthIDs      []string                        `json:"gthIDs"`
-	Levels      []int                           `json:"levels"`
-	Territories []int                           `json:"territories"`
-	Spawns      map[string][]*ScannedVitalSpawn `json:"spawns"`
+	VitalsID string   `json:"vitalsID"`
+	Tables   []string `json:"tables"`
+	MapIDs   []string `json:"mapIDs"`
+	// ids of ScannedVitalModel the vital spawns with
+	Models []string `json:"models"`
+	// without own models: the models of the vitals with the same BaseVitalsId
+	RelatedModels []string                        `json:"relatedModels"`
+	CatIDs        []string                        `json:"catIDs"`
+	GthIDs        []string                        `json:"gthIDs"`
+	Levels        []int                           `json:"levels"`
+	Territories   []int                           `json:"territories"`
+	Spawns        map[string][]*ScannedVitalSpawn `json:"spawns"`
 }
 
+// ScannedVitalSpawn is the positions of a map that share all attributes
 type ScannedVitalSpawn struct {
-	Position    Position `json:"p"`
-	Encounter   []string `json:"e"`
-	Levels      []int    `json:"l"`
-	Categories  []string `json:"c"`
-	Gatherables []string `json:"g"`
-	Territories []int    `json:"t"`
-	Models      []string `json:"m"`
-	Luck        *float32 `json:"lc"`
-	Tod         string   `json:"tc"`
-	Tables      []string `json:"-"`
-	Trace       []any    `json:"-"`
+	Positions   []Position `json:"p"`
+	Encounter   []string   `json:"e"`
+	Levels      []int      `json:"l"`
+	Categories  []string   `json:"c"`
+	Gatherables []string   `json:"g"`
+	Territories []int      `json:"t"`
+	// indices into ScannedVital.Models
+	Models []int    `json:"m"`
+	Luck   *float32 `json:"lc"`
+	Tod    string   `json:"tc"`
 }
 
-type ScannedVitalModel struct {
-	Id       string   `json:"id"`
-	Cdf      string   `json:"cdf"`
-	Mtl      string   `json:"mtl"`
-	Adb      string   `json:"adb"`
-	Tags     []string `json:"tags"`
-	VitalIds []string `json:"vitalIds"`
+// vitalSpawn is the merged entries of a vital at a position
+type vitalSpawn struct {
+	position    Position
+	encounter   []string
+	levels      []int
+	categories  []string
+	gatherables []string
+	territories []int
+	models      []string
+	tables      []string
+	luck        *float32
+	tod         string
 }
 
-type ModelMap map[string]*ScannedVitalModel
-
-func (it ModelMap) add(entry VitalsEntry) string {
-	if entry.ModelFile == "" {
-		return ""
-	}
-
-	data := maps.NewDict[any]()
-	data.Store("id", "")
-	data.Store("cdf", strings.ToLower(entry.ModelFile))
-	data.Store("mtl", strings.ToLower(entry.MtlFile))
-	data.Store("adb", strings.ToLower(entry.AdbFile))
-	data.Store("tags", entry.Tags)
-	data.Store("vitalIds", []string{})
-	bytes, _ := json.MarshalJSON(data)
-	sum := md5.Sum([]byte(strings.TrimSpace(string(bytes))))
-	hash := hex.EncodeToString(sum[:])
-	if row, ok := it[hash]; !ok {
-		it[hash] = &ScannedVitalModel{
-			Id:       hash,
-			Cdf:      strings.ToLower(entry.ModelFile),
-			Mtl:      strings.ToLower(entry.MtlFile),
-			Adb:      strings.ToLower(entry.AdbFile),
-			Tags:     entry.Tags,
-			VitalIds: []string{entry.VitalsID},
-		}
-	} else {
-		row.VitalIds = utils.AppendUniqNoZero(row.VitalIds, entry.VitalsID)
-	}
-	return hash
-}
-
+// CollateVitals groups the entries by vital and their models.
+//   - zoneLevels: level override by territory
+//   - baseLevels: level by lower case vitals id
+//   - baseIds: BaseVitalsId by vitals id (both lower case)
 func CollateVitals(
 	rows []VitalsEntry,
 	zones []ScannedTerritory,
 	zoneLevels map[string]float32,
 	baseLevels map[string]float32,
+	baseIds map[string]string,
 ) ([]ScannedVitalModel, []*ScannedVital, int) {
-	index := maps.NewDict[*maps.Dict[*maps.Dict[*ScannedVitalSpawn]]]()
-	modelsMap := make(ModelMap)
+	index := maps.NewDict[*maps.Dict[*maps.Dict[*vitalSpawn]]]()
+	rows = selectVitalEntries(rows)
+	models := newVitalModelIndex(rows)
 
 	for _, row := range rows {
-		if row.VitalsID == "" {
-			continue
-		}
-
 		mapId := strings.ToLower(row.MapID)
 		recordID := strings.ToLower(row.VitalsID)
 		position := PositionFromV3(row.Position).Truncate()
-		modelHash := modelsMap.add(row)
 		key := position.Key()
 		if row.Luck != nil {
 			key = fmt.Sprintf("%s-l:%v", key, *row.Luck)
@@ -107,117 +81,185 @@ func CollateVitals(
 		node := index.
 			LoadOrCreate(recordID, maps.NewDict).
 			LoadOrCreate(mapId, maps.NewDict).
-			LoadOrCreate(key, func() *ScannedVitalSpawn {
-				return &ScannedVitalSpawn{
-					Position:    position,
-					Categories:  make([]string, 0),
-					Gatherables: make([]string, 0),
-					Levels:      make([]int, 0),
-					Models:      make([]string, 0),
-					Encounter:   make([]string, 0),
-					Tables:      make([]string, 0),
-					Territories: make([]int, 0),
-					Trace:       make([]any, 0),
-					Luck:        row.Luck,
-					Tod:         row.Tod,
+			LoadOrCreate(key, func() *vitalSpawn {
+				return &vitalSpawn{
+					position: position,
+					luck:     row.Luck,
+					tod:      row.Tod,
 				}
 			})
 
-		node.Categories = utils.AppendUniqNoZero(node.Categories, strings.ToLower(row.CategoryID))
-		node.Gatherables = utils.AppendUniqNoZero(node.Gatherables, strings.ToLower(row.GatherableID))
-		node.Encounter = utils.AppendUniqNoZero(node.Encounter, strings.ToLower(row.Encounter))
-		node.Models = utils.AppendUniqNoZero(node.Models, modelHash)
-		node.Tables = utils.AppendUniqNoZero(node.Tables, strings.TrimPrefix(strings.ToLower(row.DamageTable), "sharedassets/springboardentitites/datatables/"))
+		node.categories = utils.AppendUniqNoZero(node.categories, strings.ToLower(row.CategoryID))
+		node.gatherables = utils.AppendUniqNoZero(node.gatherables, strings.ToLower(row.GatherableID))
+		node.encounter = utils.AppendUniqNoZero(node.encounter, strings.ToLower(row.Encounter))
+		node.models = utils.AppendUniqNoZero(node.models, models.add(row))
+		node.tables = utils.AppendUniqNoZero(node.tables, row.DamageTable)
 
 		baseLevel := baseLevels[recordID]
-
-		// if baseLevel, ok := baseLevels[recordID]; ok && baseLevel > 0 {
-		// 	// TODO: do we want base lelvel in here although it might not spawn?
-		// 	node.Levels = utils.AppendUniqNoZero(node.Levels, int(baseLevel))
-		// }
-
 		vitalLevel := row.Level
 		if vitalLevel == 0 && baseLevel > 0 {
 			vitalLevel = int(baseLevel)
 		}
 		if isOpenWorld(mapId) {
 			for _, zoneId := range getZonesForPosition(position, zones) {
-				node.Territories = utils.AppendUniqNoZero(node.Territories, zoneId)
+				node.territories = utils.AppendUniqNoZero(node.territories, zoneId)
 				if lvl := getZoneLevel(zoneId, zoneLevels); lvl != 0 && row.UseZoneLevel {
 					vitalLevel = lvl
 				}
 			}
 		}
-		node.Levels = utils.AppendUniqNoZero(node.Levels, vitalLevel)
+		node.levels = utils.AppendUniqNoZero(node.levels, vitalLevel)
 	}
-
-	models := make([]ScannedVitalModel, 0)
-	for _, model := range modelsMap {
-		slices.Sort(model.VitalIds)
-		slices.Sort(model.Tags)
-		models = append(models, *model)
-	}
-	slices.SortFunc(models, func(a, b ScannedVitalModel) int {
-		if a.Cdf != b.Cdf {
-			return strings.Compare(a.Cdf, b.Cdf)
-		}
-		if a.Mtl != b.Mtl {
-			return strings.Compare(a.Mtl, b.Mtl)
-		}
-		return strings.Compare(a.Id, b.Id)
-	})
 
 	records := maps.NewDict[*ScannedVital]()
-	for recordID, b1 := range index.SortedIter() {
-		record := records.LoadOrCreate(recordID, func() *ScannedVital {
-			return &ScannedVital{
-				VitalsID:    recordID,
-				CatIDs:      make([]string, 0),
-				GthIDs:      make([]string, 0),
-				Levels:      make([]int, 0),
-				Spawns:      make(map[string][]*ScannedVitalSpawn),
-				MapIDs:      make([]string, 0),
-				Models:      make([]string, 0),
-				Tables:      make([]string, 0),
-				Territories: make([]int, 0),
-			}
-		})
-
-		for mapID, b2 := range b1.SortedIter() {
-			for _, entry := range b2.SortedIter() {
-				record.CatIDs = utils.AppendUniqNoZero(record.CatIDs, entry.Categories...)
-				record.GthIDs = utils.AppendUniqNoZero(record.GthIDs, entry.Gatherables...)
-				record.Levels = utils.AppendUniqNoZero(record.Levels, entry.Levels...)
-				record.Models = utils.AppendUniqNoZero(record.Models, entry.Models...)
-				record.Territories = utils.AppendUniqNoZero(record.Territories, entry.Territories...)
-				record.Tables = utils.AppendUniqNoZero(record.Tables, entry.Tables...)
+	count := 0
+	for recordID, byMap := range index.SortedIter() {
+		record := newScannedVital(recordID)
+		records.Store(recordID, record)
+		for mapID, byKey := range byMap.SortedIter() {
+			for _, entry := range byKey.SortedIter() {
+				record.CatIDs = utils.AppendUniqNoZero(record.CatIDs, entry.categories...)
+				record.GthIDs = utils.AppendUniqNoZero(record.GthIDs, entry.gatherables...)
+				record.Levels = utils.AppendUniqNoZero(record.Levels, entry.levels...)
+				record.Models = utils.AppendUniqNoZero(record.Models, entry.models...)
+				record.Territories = utils.AppendUniqNoZero(record.Territories, entry.territories...)
+				record.Tables = utils.AppendUniqNoZero(record.Tables, entry.tables...)
 				if mapID != "" {
 					record.MapIDs = utils.AppendUniqNoZero(record.MapIDs, mapID)
-					record.Spawns[mapID] = append(record.Spawns[mapID], entry)
+					count++
 				}
 			}
 		}
-	}
-
-	count := 0
-	result := records.SortedValues()
-	for i := range result {
-		slices.Sort(result[i].CatIDs)
-		slices.Sort(result[i].GthIDs)
-		slices.Sort(result[i].Levels)
-		slices.Sort(result[i].MapIDs)
-		slices.Sort(result[i].Models)
-		slices.Sort(result[i].Tables)
-		slices.Sort(result[i].Territories)
-		for _, row := range result[i].Spawns {
-			count += len(row)
-			slices.SortFunc(row, func(a, b *ScannedVitalSpawn) int {
-				return comparePositions(a.Position, b.Position)
-			})
+		slices.Sort(record.CatIDs)
+		slices.Sort(record.GthIDs)
+		slices.Sort(record.Levels)
+		slices.Sort(record.MapIDs)
+		slices.Sort(record.Models)
+		slices.Sort(record.Tables)
+		slices.Sort(record.Territories)
+		for mapID, byKey := range byMap.SortedIter() {
+			if mapID != "" {
+				record.Spawns[mapID] = groupVitalSpawns(byKey.SortedValues(), record.Models)
+			}
 		}
 	}
 
-	return models, result, count
+	addRelatedModels(records, baseIds)
+	return models.list(), records.SortedValues(), count
+}
+
+func newScannedVital(id string) *ScannedVital {
+	return &ScannedVital{
+		VitalsID:      id,
+		CatIDs:        make([]string, 0),
+		GthIDs:        make([]string, 0),
+		Levels:        make([]int, 0),
+		Spawns:        make(map[string][]*ScannedVitalSpawn),
+		MapIDs:        make([]string, 0),
+		Models:        make([]string, 0),
+		RelatedModels: make([]string, 0),
+		Tables:        make([]string, 0),
+		Territories:   make([]int, 0),
+	}
+}
+
+// selectVitalEntries leaves out entries without vital and the templates of vitals the other entries have models for. A
+// template adds only its model to a vital with other entries.
+func selectVitalEntries(rows []VitalsEntry) []VitalsEntry {
+	hasEntry := make(map[string]bool)
+	hasModel := make(map[string]bool)
+	for _, row := range rows {
+		if !row.Template {
+			id := strings.ToLower(row.VitalsID)
+			hasEntry[id] = true
+			hasModel[id] = hasModel[id] || row.Model != nil
+		}
+	}
+	result := make([]VitalsEntry, 0, len(rows))
+	for _, row := range rows {
+		id := strings.ToLower(row.VitalsID)
+		if id == "" || row.Template && hasModel[id] {
+			continue
+		}
+		if row.Template && hasEntry[id] {
+			row = VitalsEntry{VitalsID: row.VitalsID, Model: row.Model, Template: true}
+		}
+		result = append(result, row)
+	}
+	return result
+}
+
+// groupVitalSpawns groups the spawns of a map by equal attributes, models are the sorted models of the vital
+func groupVitalSpawns(spawns []*vitalSpawn, models []string) []*ScannedVitalSpawn {
+	result := make([]*ScannedVitalSpawn, 0)
+	groups := make(map[string]*ScannedVitalSpawn)
+	for _, spawn := range spawns {
+		// the scan order of the parallel workers must not reach the output
+		it := &ScannedVitalSpawn{
+			Encounter:   sortedCopy(spawn.encounter),
+			Levels:      sortedCopy(spawn.levels),
+			Categories:  sortedCopy(spawn.categories),
+			Gatherables: sortedCopy(spawn.gatherables),
+			Territories: sortedCopy(spawn.territories),
+			Models:      make([]int, 0, len(spawn.models)),
+			Luck:        spawn.luck,
+			Tod:         spawn.tod,
+		}
+		for _, id := range spawn.models {
+			if i, ok := slices.BinarySearch(models, id); ok {
+				it.Models = append(it.Models, i)
+			}
+		}
+		slices.Sort(it.Models)
+		luck := ""
+		if it.Luck != nil {
+			luck = fmt.Sprint(*it.Luck)
+		}
+		key := fmt.Sprintf(
+			"%q|%v|%q|%q|%v|%v|%s|%s",
+			it.Encounter, it.Levels, it.Categories, it.Gatherables, it.Territories, it.Models, luck, it.Tod,
+		)
+		group, ok := groups[key]
+		if !ok {
+			group = it
+			groups[key] = group
+			result = append(result, group)
+		}
+		group.Positions = append(group.Positions, spawn.position)
+	}
+	for _, group := range result {
+		slices.SortFunc(group.Positions, comparePositions)
+	}
+	return result
+}
+
+func sortedCopy[T int | string](list []T) []T {
+	result := make([]T, len(list))
+	copy(result, list)
+	slices.Sort(result)
+	return result
+}
+
+// addRelatedModels gives vitals without models those of the vitals with the same base. Vitals without record get one.
+func addRelatedModels(records *maps.Dict[*ScannedVital], baseIds map[string]string) {
+	byBase := make(map[string][]string)
+	for id, base := range baseIds {
+		if record, ok := records.Load(id); ok {
+			byBase[base] = utils.AppendUniqNoZero(byBase[base], record.Models...)
+		}
+	}
+	for id, base := range baseIds {
+		related := byBase[base]
+		if len(related) == 0 {
+			continue
+		}
+		record := records.LoadOrCreate(id, func() *ScannedVital {
+			return newScannedVital(id)
+		})
+		if len(record.Models) == 0 {
+			record.RelatedModels = sortedCopy(related)
+		}
+	}
 }
 
 func isPointInAABB(point Position, aabb BBox) bool {

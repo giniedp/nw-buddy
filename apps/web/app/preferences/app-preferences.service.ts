@@ -14,6 +14,7 @@ export class AppPreferencesService {
   public readonly ipfsGateway: StorageProperty<string>
   public readonly appMenu: StorageProperty<Record<string, boolean>>
   public readonly highQualityModels: StorageProperty<boolean>
+  public readonly characterViewQuality: StorageProperty<'auto' | 'low' | 'high'>
   public readonly gitAccessToken: StorageProperty<string>
   public readonly nwDataRepo: StorageProperty<string>
   public readonly nwDataRepoPreset: StorageProperty<string>
@@ -32,6 +33,7 @@ export class AppPreferencesService {
     this.ipfsGateway = storage.storageProperty('ipfsGateway', null)
     this.appMenu = storage.storageProperty('menu', null)
     this.highQualityModels = storage.storageProperty('highQualityModels', false)
+    this.characterViewQuality = storage.storageProperty('characterViewQuality', 'auto')
     this.gitAccessToken = storage.storageProperty('gitAccessToken', null)
     this.nwDataRepo = storage.storageProperty(
       'nwDataRepo',

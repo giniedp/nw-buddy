@@ -3,14 +3,17 @@ import { Feature, FeatureCollection, MultiPoint, MultiPolygon, Polygon } from 'g
 export interface FilterDataSet extends FilterGroup {
   id: string
   count: number
-  data: Record<
-    string,
-    {
-      count: number
-      geometry: FilterFeatureCollection
-    }
-  >
+  data: Record<string, FilterMapData>
   variants: FilterVariant[]
+}
+
+export interface FilterMapData {
+  count: number
+  /**
+   * Point count per variant id, points without a variant count under ''
+   */
+  variantCounts: Record<string, number>
+  geometry: FilterFeatureCollection
 }
 
 export type FilterFeatureCollection = FeatureCollection<MultiPoint, FilterFeatureProperties>
@@ -78,13 +81,41 @@ export interface FilterDataPropertiesWithVariant extends Omit<FilterFeaturePrope
 
 export interface VitalDataSet {
   count: number
-  data: Record<
-    string,
-    {
-      count: number
-      data: VitalsFeatureCollection
-    }
-  >
+  data: Record<string, VitalMapData>
+}
+
+export interface VitalMapData {
+  count: number
+  /**
+   * Creatures on the map with their point counts
+   */
+  creatures: VitalCreature[]
+  /**
+   * Properties and point count per feature, for counting without building the GeoJSON
+   */
+  summary: Array<{ properties: VitalsFeatureProperties; count: number }>
+  data: VitalsFeatureCollection
+}
+
+export interface VitalCreature {
+  /**
+   * Vitals id, lower case
+   */
+  id: string
+  /**
+   * Display name (translation key)
+   */
+  name: string
+  /**
+   * Creature type, lower case
+   */
+  type: string
+  /**
+   * Points on the map, one per spawn and level
+   */
+  count: number
+  minLevel: number
+  maxLevel: number
 }
 
 export type VitalsFeatureCollection = FeatureCollection<MultiPoint, VitalsFeatureProperties>

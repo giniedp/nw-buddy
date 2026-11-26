@@ -154,6 +154,21 @@ func (e *PublicParams) Len() int {
 	}
 	return e.params.Len()
 }
+
+// WithOverrides is a copy of the params with the overrides set (e.g. the colors of an armor appearance and its
+// dyes). The params stay as they are: loaded materials may be shared.
+func (e *PublicParams) WithOverrides(overrides map[string]string) *PublicParams {
+	result := &PublicParams{params: maps.NewDict[string]()}
+	if e != nil && e.params != nil {
+		for key, value := range e.params.Iter() {
+			result.params.Store(key, value)
+		}
+	}
+	for key, value := range overrides {
+		result.params.Store(key, value)
+	}
+	return result
+}
 func (e *PublicParams) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	e.params = maps.NewDict[string]()
 	for _, attr := range start.Attr {

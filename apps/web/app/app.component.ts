@@ -7,7 +7,6 @@ import {
   RendererStyleFlags2,
   computed,
   inject,
-  signal,
 } from '@angular/core'
 import { Router, RouterModule, UrlSegment } from '@angular/router'
 import { map, of, switchMap } from 'rxjs'
@@ -19,8 +18,10 @@ import { IonApp, IonButtons, IonContent, IonSplitPane } from '@ionic/angular/sta
 import { environment } from '../environments'
 import { LANG_OPTIONS, LanguageOption } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
+import { AppSkeletonService } from './app-skeleton.service'
 import { AuthComponent } from './auth/auth.component'
 import { BackendService } from './data/backend'
+import { DesktopService, DesktopTitleBarComponent } from './desktop'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
 import { IconsModule } from './ui/icons'
@@ -32,10 +33,8 @@ import { injectCurrentUrl } from './utils/injection/current-url'
 import { injectDocument } from './utils/injection/document'
 import { injectWindow } from './utils/injection/window'
 import { PlatformService } from './utils/services/platform.service'
-import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
-import { AppSkeletonService } from './app-skeleton.service'
 console.debug('environment', environment)
 @Component({
   selector: 'nw-buddy-app',
@@ -43,7 +42,6 @@ console.debug('environment', environment)
   styleUrl: './app.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AeternumMapModule,
     AppMenuComponent,
     CommonModule,
     GlobalSearchInputComponent,
@@ -58,6 +56,7 @@ console.debug('environment', environment)
     IonSplitPane,
     IonButtons,
     AuthComponent,
+    DesktopTitleBarComponent,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   host: {
@@ -65,9 +64,10 @@ console.debug('environment', environment)
   },
 })
 export class AppComponent {
-  public get isElectron() {
-    return this.platform.isElectron
-  }
+  /**
+   * The desktop app (apps/desktop): the header is the title bar of its frameless window
+   */
+  protected readonly isDesktopApp = inject(DesktopService).isDesktop
 
   public get isWeb() {
     return this.platform.env.environment === 'WEB' || this.platform.env.environment === 'DEV'
@@ -112,7 +112,7 @@ export class AppComponent {
   protected currentUrl = selectSignal(injectCurrentUrl())
   protected canGoBack = computed(() => {
     this.currentUrl()
-    if (this.isElectron || this.isOverwolf) {
+    if (this.isOverwolf || this.isDesktopApp) {
       return !this.location.isCurrentPathEqualTo('/')
     }
     return false

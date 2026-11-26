@@ -119,7 +119,7 @@ program
 program
   .command('upload-models')
   .option('-f, --force', 'Uploads all files, instead of only new', false)
-  .option('-d, --directory <dirPath>', 'The models directory to upload', '.nwbt/models')
+  .option('-d, --directory <dirPath>', 'The models directory to upload', './dist/nw-cdn/models')
   .option('-t, --target <outPath>', 'The target directory in the CDN', 'models')
   .option('-dry, --dry-run', 'Dry run, does not upload files', false)
   .action(async (opts) => {
@@ -262,8 +262,6 @@ program.command('upload-character').action(async () => {
     files: toUpload,
   })
 })
-
-async function globAndUpload() {}
 
 async function download(url: string, target: string, onProgress?: (downloaded: number, total: number) => void) {
   const file = fs.createWriteStream(target)

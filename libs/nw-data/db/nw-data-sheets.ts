@@ -23,6 +23,8 @@ import {
   VitalsLevelVariantData,
 } from '@nw-data/generated'
 import {
+  ScannedEmote,
+  ScannedEquipType,
   ScannedGatherable,
   ScannedHouseType,
   ScannedLore,
@@ -242,17 +244,23 @@ export abstract class NwDataSheets {
     if (id == null) {
       return []
     }
+    return this.variationsChunkData(id).then((data) => {
+      const points: [number, number][] = []
+      for (let i = 0; i < data.length; i += 2) {
+        points.push([data[i], data[i + 1]])
+      }
+      return points
+    })
+  }
+
+  /**
+   * Positions of a variations chunk as interleaved x, y pairs
+   */
+  public async variationsChunkData(id: number) {
     return this.loader
       .fetch(`generated/variations_metadata.${id}.chunk`)
       .then((res) => res.arrayBuffer())
       .then((res) => new Float32Array(res))
-      .then((data) => {
-        const points: [number, number][] = []
-        for (let i = 0; i < data.length; i += 2) {
-          points.push([data[i], data[i + 1]])
-        }
-        return points
-      })
   }
 
   public npcsAll = table(() => this.loadDatasheets(DATASHEETS.NPCData))
@@ -274,6 +282,14 @@ export abstract class NwDataSheets {
   public npcsVariationsById = indexLookup(this.npcsVariationsByIdMap)
   public npcsVariationsByNpcIdMap = secondaryIndex(this.npcsVariationsAll, 'NPCId')
   public npcsVariationsByNpcId = indexLookup(this.npcsVariationsByNpcIdMap)
+
+  // all NPC variation sheets, their VariantID is not unique
+  public npcsModelVariationsAll = table(() => {
+    const { NPC, NPC_Walkaway, NPC_ClientPathing_Walkaway } = DATASHEETS.VariationData
+    return this.loadDatasheets({ NPC, NPC_Walkaway, NPC_ClientPathing_Walkaway })
+  })
+  public npcsModelVariationsByNpcIdMap = secondaryIndex(this.npcsModelVariationsAll, 'NPCId')
+  public npcsModelVariationsByNpcId = indexLookup(this.npcsModelVariationsByNpcIdMap)
 
   public npcsMetadataAll = table(() => this.loadDatasheet<ScannedNpc>({ uri: 'generated/npcs_metadata.json' }))
   public npcsMetadataByIdMap = primaryIndex(this.npcsMetadataAll, 'npcID')
@@ -493,12 +509,7 @@ export abstract class NwDataSheets {
     return list?.find((it) => it.Level === level)
   }
 
-  public vitalsMetadataAll = table(() => {
-    return [
-      this.loadDatasheet<ScannedVital>({ uri: 'generated/vitals_metadata1.json' }),
-      this.loadDatasheet<ScannedVital>({ uri: 'generated/vitals_metadata2.json' }),
-    ]
-  })
+  public vitalsMetadataAll = table(() => this.loadDatasheet<ScannedVital>({ uri: 'generated/vitals_metadata.json' }))
   public vitalsMetadataByIdMap = primaryIndex(this.vitalsMetadataAll, 'vitalsID')
   public vitalsMetadataById = indexLookup(this.vitalsMetadataByIdMap)
 
@@ -518,7 +529,7 @@ export abstract class NwDataSheets {
   public vitalsAll = table<VitalsBaseData & VitalsLevelVariantData>(async () => {
     return Promise.all([this.vitalsBaseByIdMap(), this.vitalsLevelVariantsAll()]).then(([baseMap, variants]) => {
       return variants.map((it) => {
-        const base = baseMap.get(it.VitalsID)
+        const base = baseMap.get(it.BaseVitalsId)
         return {
           ...base,
           ...it,
@@ -770,6 +781,16 @@ export abstract class NwDataSheets {
   public emotesAll = table(() => this.loadDatasheets(DATASHEETS.EmoteData))
   public emotesByIdMap = primaryIndex(this.emotesAll, 'UniqueTagID')
   public emotesById = indexLookup(this.emotesByIdMap)
+
+  public emotesMetadataAll = table(() => this.loadDatasheet<ScannedEmote>({ uri: 'generated/emotes_metadata.json' }))
+  public emotesMetadataByIdMap = primaryIndex(this.emotesMetadataAll, 'id')
+  public emotesMetadataById = indexLookup(this.emotesMetadataByIdMap)
+
+  public equipTypesMetadataAll = table(() =>
+    this.loadDatasheet<ScannedEquipType>({ uri: 'generated/equip_types_metadata.json' }),
+  )
+  public equipTypesMetadataByIdMap = primaryIndex(this.equipTypesMetadataAll, 'id')
+  public equipTypesMetadataById = indexLookup(this.equipTypesMetadataByIdMap)
 
   public playerTitlesAll = table(() => this.loadDatasheets(DATASHEETS.PlayerTitleData))
   public playerTitlesByIdMap = primaryIndex(this.playerTitlesAll, 'TitleID')

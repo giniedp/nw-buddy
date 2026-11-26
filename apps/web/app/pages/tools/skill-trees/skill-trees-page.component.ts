@@ -55,7 +55,7 @@ import { FormsModule } from '@angular/forms'
     IconsModule,
     SplitPaneDirective,
     SplitGutterComponent,
-    FormsModule
+    FormsModule,
   ],
   host: {
     class: 'ion-page',

@@ -1,0 +1,16 @@
+/* a texture input of the material panel, see TextureWidget.tsx */
+.nw-texture-widget {
+  align-items: start;
+}
+.nw-texture-thumb {
+  flex: none;
+}
+/* the dialog with the texture in full size */
+.nw-texture-dialog-body {
+  padding: 1rem;
+  gap: 1rem;
+  min-height: 10rem;
+}
+.nw-texture-facts {
+  gap: 1rem;
+}

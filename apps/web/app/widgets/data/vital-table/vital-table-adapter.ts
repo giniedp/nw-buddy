@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalGameModeMaps, getVitalFamilyInfo } from '@nw-data/common'
 import { COLS_VITALSBASEDATA, VitalsCategory, VitalsCategoryData } from '@nw-data/generated'
@@ -86,7 +86,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
         buffMap: this.db.buffBucketsByIdMap(),
         effectMap: this.db.statusEffectsByIdMap(),
         abilitiesMap: this.db.abilitiesByIdMap(),
-        modifierMap: this.db.vitalsModifiersByIdMap()
+        modifierMap: this.db.vitalsModifiersByIdMap(),
       }).pipe(
         map(
           ({
@@ -113,7 +113,9 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord> {
               return {
                 ...vital,
                 $modifier: modifierMap.get(vital.CreatureType),
-                $dungeons: getVitalGameModeMaps(vital, dungeonMaps, vitalsMeta).map((it) => dungeonsMap.get(it.GameModeId)),
+                $dungeons: getVitalGameModeMaps(vital, dungeonMaps, vitalsMeta).map((it) =>
+                  dungeonsMap.get(it.GameModeId),
+                ),
                 $categories: uniqBy($categories, (it) => it.VitalsCategoryID),
                 $familyInfo: familyInfo,
                 $combatInfo: combatInfo,

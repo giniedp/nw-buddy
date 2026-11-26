@@ -2,14 +2,14 @@
   <thead>
     <tr>
       <th>Level</th>
-      <th class=" text-right">XP</th>
-      <th class=" text-right">XP (total)</th>
-      <th class=" text-right" colspan="2">Attr Points (total)</th>
-      <th class=" text-right">respec costs</th>
+      <th class="text-right">XP</th>
+      <th class="text-right">XP (total)</th>
+      <th class="text-right" colspan="2">Attr Points (total)</th>
+      <th class="text-right">respec costs</th>
     </tr>
   </thead>
   <tbody>
-    @for(row of data(); track $index) {
+    @for (row of data(); track $index) {
       <tr>
         <td>{{ row.Level | number }}</td>
         <td class="text-right">{{ row.XPToLevel | number }}</td>
@@ -21,4 +21,3 @@
     }
   </tbody>
 </table>
-

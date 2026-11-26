@@ -18,6 +18,12 @@ import (
 
 var flgGameDir string
 var flgRegex bool
+var flgRanges bool
+var flgRangesJson string
+var flgRoadsJson string
+var flgDecalsJson string
+var flgWaterJson string
+var flgSliceDataJson string
 var Cmd = &cobra.Command{
 	Use:           "inspect",
 	Short:         "inspects a file",
@@ -28,6 +34,12 @@ var Cmd = &cobra.Command{
 
 func init() {
 	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
+	Cmd.Flags().BoolVar(&flgRanges, "ranges", false, "collects view distances (activation ranges) of slices instead of the default slice inspection")
+	Cmd.Flags().StringVar(&flgRangesJson, "ranges-json", "", "writes the collected ranges as json rows to this file (implies --ranges)")
+	Cmd.Flags().StringVar(&flgSliceDataJson, "slicedata-json", "", "writes the mesh entries of .slicedata files as json rows to this file")
+	Cmd.Flags().StringVar(&flgRoadsJson, "roads-json", "", "collects road and river entities (RoadsAndRivers gem) with their splines and writes them as json rows to this file")
+	Cmd.Flags().StringVar(&flgDecalsJson, "decals-json", "", "collects entities with decal and snow components and writes them as json to this file")
+	Cmd.Flags().StringVar(&flgWaterJson, "water-json", "", "collects entities with water components (water volumes, ocean) and writes them as json rows to this file")
 }
 
 func run(ccmd *cobra.Command, args []string) {
@@ -55,8 +67,30 @@ func run(ccmd *cobra.Command, args []string) {
 			}
 			inspectors[ext].Inspect(assets, file)
 		case ".dynamicslice":
+			if inspectors[ext] == nil && flgWaterJson != "" {
+				inspectors[ext] = NewWaterInspector()
+			}
+			if inspectors[ext] == nil && flgRoadsJson != "" {
+				inspectors[ext] = NewRoadInspector()
+			}
+			if inspectors[ext] == nil && flgDecalsJson != "" {
+				inspectors[ext] = NewDecalInspector()
+			}
+			if inspectors[ext] == nil && (flgRanges || flgRangesJson != "") {
+				inspectors[ext] = NewRangeInspector()
+			}
 			if inspectors[ext] == nil {
 				inspectors[ext] = NewSliceInspector()
+			}
+			inspectors[ext].Inspect(assets, file)
+		case ".meta":
+			if inspectors[ext] == nil {
+				inspectors[ext] = &SliceMetaInspector{}
+			}
+			inspectors[ext].Inspect(assets, file)
+		case ".slicedata":
+			if inspectors[ext] == nil {
+				inspectors[ext] = NewSliceDataInspector()
 			}
 			inspectors[ext].Inspect(assets, file)
 		default:

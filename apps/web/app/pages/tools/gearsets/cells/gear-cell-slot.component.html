@@ -31,7 +31,10 @@
       <span header-title [nwHtml]="store.slot()?.name | nwText"></span>
     </nwb-item-header-content>
     @if (!disabled()) {
-      <button class="btn btn-square btn-ghost hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
+      <button
+        class="btn btn-square btn-ghost hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden"
+        [cdkMenuTriggerFor]="menu"
+      >
         <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
     }
@@ -59,7 +62,10 @@
       </span>
     }
     @if (!disabled()) {
-      <button class="btn btn-square btn-ghost border-0 hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden" [cdkMenuTriggerFor]="menu">
+      <button
+        class="btn btn-square btn-ghost border-0 hover:bg-white/20 absolute top-0 right-0 z-10 screenshot-hidden"
+        [cdkMenuTriggerFor]="menu"
+      >
         <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
     }

@@ -8,6 +8,8 @@ import (
 	"nw-buddy/tools/utils"
 	"path"
 	"slices"
+	"strconv"
+	"strings"
 )
 
 func Load(file nwfs.File) (*Document, error) {
@@ -33,6 +35,8 @@ type Document struct {
 type Model struct {
 	XMLName xml.Name `xml:"Model" json:"-"`
 	File    string   `xml:"File,attr"`
+	// a .chrparams that replaces the skeleton's own (e.g. the cutscene animations of an IGC character), empty for none
+	ParamsOverride string `xml:"ParamsOverride,attr"`
 }
 
 type AttachmentList struct {
@@ -54,8 +58,54 @@ type Attachment struct {
 	ProxyParams  string   `xml:"ProxyParams,attr"`
 }
 
+// AttachHideAttachment is Lumberyard's FLAGS_ATTACH_HIDE_ATTACHMENT (IAttachment.h): the game does not draw the
+// attachment until code shows it at runtime (e.g. alternative gear and heads of story characters, outline shells)
+const AttachHideAttachment = 0x01
+
+// Hidden tells whether the game hides the attachment by default
+func (it Attachment) Hidden() bool {
+	return it.Flags&AttachHideAttachment != 0
+}
+
+// RelTransform is the position and rotation (x, y, z, w) of a bone attachment relative to its joint
+func (it Attachment) RelTransform() (position [3]float32, rotation [4]float32) {
+	rotation[3] = 1
+	if p := parseFloats(it.RelPosition); len(p) == 3 {
+		copy(position[:], p)
+	}
+	// the file writes w first
+	if q := parseFloats(it.RelRotation); len(q) == 4 {
+		rotation = [4]float32{q[1], q[2], q[3], q[0]}
+	}
+	return position, rotation
+}
+
+func parseFloats(value string) []float32 {
+	result := make([]float32, 0, 4)
+	for _, part := range strings.Split(value, ",") {
+		v, err := strconv.ParseFloat(strings.TrimSpace(part), 32)
+		if err != nil {
+			return nil
+		}
+		result = append(result, float32(v))
+	}
+	return result
+}
+
+// SkinAndClothAttachments are all skin and cloth attachments, also the hidden ones (see Attachment.Hidden)
 func (it *Document) SkinAndClothAttachments() []Attachment {
 	return it.AttachmentsByType("CA_CLOTH", "CA_SKIN")
+}
+
+// VisibleSkinAndClothAttachments are the skin and cloth attachments the game draws by default
+func (it *Document) VisibleSkinAndClothAttachments() []Attachment {
+	result := make([]Attachment, 0)
+	for _, att := range it.SkinAndClothAttachments() {
+		if !att.Hidden() {
+			result = append(result, att)
+		}
+	}
+	return result
 }
 
 func (it *Document) ClothAttachments() []Attachment {
@@ -80,11 +130,23 @@ func (it *Document) IsChr() bool {
 	return path.Ext(it.Model.File) == ".chr"
 }
 
-func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFile, error) {
+// ChrParamsPath is the animation list of the character: the model's ParamsOverride when set,
+// else the .chrparams next to the skeleton. Empty without a skeleton.
+func (it *Document) ChrParamsPath() string {
 	if !it.IsChr() {
+		return ""
+	}
+	if it.Model.ParamsOverride != "" {
+		return nwfs.NormalizePath(it.Model.ParamsOverride)
+	}
+	return utils.ReplaceExt(nwfs.NormalizePath(it.Model.File), ".chrparams")
+}
+
+func (it *Document) LoadAnimationFiles(archive nwfs.Archive) ([]adb.AnimationFile, error) {
+	paramsPath := it.ChrParamsPath()
+	if paramsPath == "" {
 		return nil, nil
 	}
-	paramsPath := utils.ReplaceExt(it.Model.File, ".chrparams")
 	paramsFile, ok := archive.Lookup(paramsPath)
 	if !ok {
 		return nil, nil

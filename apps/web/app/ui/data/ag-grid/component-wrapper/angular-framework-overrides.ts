@@ -1,4 +1,4 @@
-import { FrameworkOverridesIncomingSource, VanillaFrameworkOverrides } from '@ag-grid-community/core'
+import { FrameworkOverridesIncomingSource, VanillaFrameworkOverrides } from 'ag-grid-community'
 import { Injectable, NgZone } from '@angular/core'
 import { injectWindow } from '~/utils/injection/window'
 
@@ -40,12 +40,6 @@ export class AngularFrameworkOverrides extends VanillaFrameworkOverrides {
   // run inside Angular and trigger change detection as the source of the event was within the angular zone.
   override wrapIncoming: <T>(callback: () => T, source?: FrameworkOverridesIncomingSource) => T = (callback, source) =>
     this.runOutside(callback, source)
-
-  // Only setup wrapping when the call is coming from within Angular zone, i.e from a users application code.
-  // Used to distinguish between user code and AG Grid code setting up events against RowNodes and Columns
-  override get shouldWrapOutgoing() {
-    return this._ngZone && NgZone.isInAngularZone()
-  }
 
   /**
    * Make sure that any code that is executed outside of AG Grid is running within the Angular zone.

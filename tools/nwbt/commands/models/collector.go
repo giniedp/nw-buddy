@@ -5,9 +5,13 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/game"
+	"nw-buddy/tools/game/level"
 	"nw-buddy/tools/nwfs"
+	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/maps"
+	"nw-buddy/tools/utils/math"
+	"nw-buddy/tools/utils/math/mat4"
 	"path"
 	"slices"
 	"strings"
@@ -17,7 +21,9 @@ type Collector struct {
 	*game.Assets
 	models    *maps.Dict[importer.AssetGroup]
 	timelines *maps.Dict[nwfs.File]
-	flags     Flags
+	// animation names of a database and its sub databases, by lower case file (adbAnimationNames)
+	adbNames *maps.Dict[[]string]
+	flags    Flags
 }
 
 func NewCollector(assets *game.Assets, flags Flags) *Collector {
@@ -30,22 +36,11 @@ func NewCollector(assets *game.Assets, flags Flags) *Collector {
 		flags.Webp = false
 		flags.Ktx2 = false
 	}
-	if flags.Webp {
-		if _, ok := utils.Cwebp.Check(); !ok {
-			flags.Webp = false
-			slog.Warn("cwebp not available, ignoring webp flag")
-		}
-	}
-	if flags.Ktx2 {
-		if _, ok := utils.Ktx.Check(); !ok {
-			flags.Ktx2 = false
-			slog.Warn("ktx not available, ignoring ktx flag")
-		}
-	}
 	return &Collector{
 		Assets:    assets,
 		models:    maps.NewDict[importer.AssetGroup](),
 		timelines: maps.NewDict[nwfs.File](),
+		adbNames:  maps.NewDict[[]string](),
 		flags:     flags,
 	}
 }
@@ -104,4 +99,39 @@ func matchFilter(substrings []string, token string) bool {
 		return strings.Contains(strings.ToLower(token), strings.ToLower(substr))
 	})
 	return index >= 0
+}
+
+// lightAsset converts a LightComponent to a glTF light at the world transform (game coordinates). Point and area
+// lights become point lights, projectors spot lights. Probes are no lights. The viewer's light config
+// (level.LoadViewerLight) goes to the extras as `nwLight`, it keeps what glTF lights cannot express:
+//   - bulb size
+//   - specular
+//   - ambient
+//   - fog
+//   - area size
+func (c *Collector) lightAsset(name string, config nwt.LightConfiguration, world mat4.Data) (importer.LightAsset, bool) {
+	light := importer.LightAsset{
+		Color:     [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
+		Intensity: float32(config.DiffuseMultiplier),
+		Entity: importer.Entity{
+			Name:      name,
+			Transform: math.CryToGltfMat4(world),
+		},
+		Extras: map[string]any{
+			"nwLight": level.LoadViewerLight(c.Assets, config),
+		},
+	}
+	switch config.LightType {
+	case 0:
+		light.Range = float32(config.PointMaxDistance)
+	case 1:
+		light.Range = float32(config.AreaMaxDistance)
+	case 2:
+		light.Type = 2
+		light.Range = float32(config.ProjectorDistance)
+		light.OuterConeAngle = float32(config.ProjectorFOV/2.0) * DEG_TO_RAD
+	default:
+		return light, false
+	}
+	return light, true
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log/slog"
+	"nw-buddy/tools/formats/dds"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
 	"nw-buddy/tools/nwfs"
@@ -39,19 +40,22 @@ func (doc *Document) LoadOrStoreMtlTexture(texture *mtl.Texture, alpha ...bool) 
 		}
 	}
 	sampler := doc.LoadOrStoreSampler(texture)
-	var source string
-	tex, err := doc.LoadOrStoreTexture(sampler, file.Path(), func() ([]byte, error) {
+	// the source asset of the loader (a split mip part loads its base .dds), known before the (maybe background) load
+	source := file.Path()
+	if dds.IsDDSSplitPart(source) {
+		source = utils.ReplaceExt(source, "")
+	}
+	tex, err := doc.loadOrStoreTexture(sampler, file.Path(), func() ([]byte, error) {
 		img, err := doc.ImageLoader.LoadImage(file.Path())
 		if err != nil {
 			return nil, err
 		}
-		source = img.Source
 		if readAlpha && img.Alpha != nil {
 			return img.Alpha, nil
 		}
 		return img.Data, nil
-	})
-	if tex != nil && source != "" {
+	}, nil, true)
+	if tex != nil {
 		tex.Extras = ExtrasStore(tex.Extras, ExtraKeySource, source)
 		tex.Extras = ExtrasStore(tex.Extras, ExtraKeyAlpha, fileIsAlpha)
 	}
@@ -66,8 +70,22 @@ func (doc *Document) LoadOrStoreMtlTexture(texture *mtl.Texture, alpha ...bool) 
 }
 
 func (doc *Document) LoadOrStoreTexture(sampler *int, imageRef string, loadBytes func() ([]byte, error)) (*gltf.Texture, error) {
+	return doc.loadOrStoreTexture(sampler, imageRef, loadBytes, nil, false)
+}
+
+// loadOrStoreBake stores the texture of a bake. bake returns png bytes and runs now, so the caller can fall back on
+// its error. The encode runs in the background with AsyncImages.
+func (doc *Document) loadOrStoreBake(sampler *int, imageRef string, srgb bool, bake func() ([]byte, error)) (*gltf.Texture, error) {
+	return doc.loadOrStoreTexture(sampler, imageRef, bake, func(data []byte) ([]byte, error) {
+		return doc.encodeBake(data, srgb)
+	}, true)
+}
+
+// loadOrStoreTexture is LoadOrStoreTexture with an optional encode of the loaded bytes. With async (and AsyncImages)
+// the encode runs in the background, without encode the load does.
+func (doc *Document) loadOrStoreTexture(sampler *int, imageRef string, loadBytes func() ([]byte, error), encode func([]byte) ([]byte, error), async bool) (*gltf.Texture, error) {
 	textureRef := imageRef
-	index, err := doc.LoadOrStoreImage(imageRef, loadBytes)
+	index, err := doc.loadOrStoreImage(imageRef, loadBytes, encode, async)
 	if err != nil {
 		return nil, err
 	}
@@ -106,26 +124,20 @@ func (doc *Document) LoadOrStoreTexture(sampler *int, imageRef string, loadBytes
 }
 
 func (doc *Document) LoadOrStoreImage(imageRef string, loadBytes func() ([]byte, error)) (*int, error) {
+	return doc.loadOrStoreImage(imageRef, loadBytes, nil, false)
+}
+
+func (doc *Document) loadOrStoreImage(imageRef string, loadBytes func() ([]byte, error), encode func([]byte) ([]byte, error), async bool) (*int, error) {
 	if imageRef == "" {
 		return nil, nil
 	}
 
-	mimeType := "image/png"
-	if doc.ImageLinker == nil {
-		// image will be embedded in the gltf file
-		// assumed to be converted to png
-		// no file reference needed
-	} else {
-		if conv, ok := doc.ImageLoader.(image.LoaderWithConverter); ok {
-			// specific conversion is active
-			format := conv.Converter.TargetFormat()
-			mimeType = format.MimeType()
-			imageRef = toFormatRef(imageRef, format)
-		} else {
-			// image will be linked to the gltf file
-			// assumed to be converted to png
-			imageRef = toFormatRef(imageRef, ".png")
-		}
+	// the converter's target format, png otherwise (also the format of the bakes, see encodeBake)
+	format := doc.imageFormat()
+	mimeType := format.MimeType()
+	if doc.ImageLinker != nil {
+		// linked: the file name gets the format's extension; embedded images need no file name
+		imageRef = toFormatRef(imageRef, format)
 	}
 
 	for i, image := range doc.Images {
@@ -134,9 +146,34 @@ func (doc *Document) LoadOrStoreImage(imageRef string, loadBytes func() ([]byte,
 		}
 	}
 
+	if doc.ImageLinker != nil && doc.LinkedImages.Written(imageRef) {
+		// another document wrote it: no load, bake or encode
+		return doc.appendLinkedImage(imageRef, mimeType, doc.ImageLinker.LinkedURI(doc.TargetFile, imageRef)), nil
+	}
+
+	if async && doc.AsyncImages && doc.ImageLinker != nil {
+		if encode == nil {
+			return doc.storeImageAsync(imageRef, mimeType, loadBytes), nil
+		}
+		// the load (a bake) runs now, so the caller can fall back on its error
+		data, err := loadBytes()
+		if err != nil {
+			return nil, err
+		}
+		return doc.storeImageAsync(imageRef, mimeType, func() ([]byte, error) {
+			return encodeInSlot(encode, data)
+		}), nil
+	}
+
 	imageData, err := loadBytes()
 	if err != nil {
 		return nil, err
+	}
+	if encode != nil {
+		imageData, err = encodeInSlot(encode, imageData)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if doc.ImageLinker == nil {
@@ -148,20 +185,33 @@ func (doc *Document) LoadOrStoreImage(imageRef string, loadBytes func() ([]byte,
 		}
 	}
 
-	imageUri, err := doc.ImageLinker.WriteLinkedResource(doc.TargetFile, imageRef, imageData)
+	err = doc.LinkedImages.Write(imageRef, func() error {
+		_, err := doc.ImageLinker.WriteLinkedResource(doc.TargetFile, imageRef, imageData)
+		return err
+	})
 	if err != nil {
 		slog.Warn("Linked image not written", "file", imageRef, "err", err)
 	}
+	return doc.appendLinkedImage(imageRef, mimeType, doc.ImageLinker.LinkedURI(doc.TargetFile, imageRef)), nil
+}
+
+func (doc *Document) appendLinkedImage(imageRef string, mimeType string, uri string) *int {
 	doc.Images = append(doc.Images, &gltf.Image{
-		URI:      imageUri,
+		URI:      uri,
 		MimeType: mimeType,
 		Extras: map[string]any{
 			ExtraKeyRefID: imageRef,
 		},
 	})
 	index := len(doc.Images) - 1
+	return &index
+}
 
-	return &index, nil
+// encodeInSlot runs an encode (a bake to the document's format) in one of the image conversion slots
+func encodeInSlot(encode func([]byte) ([]byte, error), data []byte) ([]byte, error) {
+	return image.WithConvertSlot(func() ([]byte, error) {
+		return encode(data)
+	})
 }
 
 func (doc *Document) LoadOrStoreSampler(tex *mtl.Texture) *int {
@@ -237,11 +287,77 @@ func (doc *Document) LoadOrStoreSampler(tex *mtl.Texture) *int {
 	return &samplerIndex
 }
 
+// ResolveAndLoadImage loads a texture for the bakes: png bytes, from BakeImageLoader when set
 func (doc *Document) ResolveAndLoadImage(texture *mtl.Texture) (*image.LoadedImage, error) {
-	if file := resolveFile(doc.ImageLoader, texture.AssetId, texture.File); file != nil {
-		return doc.ImageLoader.LoadImage(file.Path())
+	loader := doc.BakeImageLoader
+	if loader == nil {
+		loader = doc.ImageLoader
+	}
+	if file := resolveFile(loader, texture.AssetId, texture.File); file != nil {
+		return loader.LoadImage(file.Path())
 	}
 	return nil, nil
+}
+
+// imageFormat is the format of the images in the document: the converter's target, png otherwise
+func (doc *Document) imageFormat() image.Format {
+	if conv, ok := doc.ImageLoader.(image.LoaderWithConverter); ok && conv.Converter != nil {
+		return conv.Converter.TargetFormat()
+	}
+	return image.FormatPNG
+}
+
+// storeImageAsync adds a linked image now and loads + writes it in the background, the uri is set once written
+// (WaitImages). A failed load leaves the image without uri and logs a warning. The conversions bound themselves
+// (image.WithConvertSlot): a load that waits for a conversion of another document holds no slot.
+func (doc *Document) storeImageAsync(imageRef string, mimeType string, loadBytes func() ([]byte, error)) *int {
+	img := &gltf.Image{
+		MimeType: mimeType,
+		Extras: map[string]any{
+			ExtraKeyRefID: imageRef,
+		},
+	}
+	doc.Images = append(doc.Images, img)
+	index := len(doc.Images) - 1
+	doc.pendingImages.Add(1)
+	go func() {
+		defer doc.pendingImages.Done()
+		err := doc.LinkedImages.Write(imageRef, func() (err error) {
+			defer utils.HandleRecover(&err)
+			data, err := loadBytes()
+			if err != nil {
+				return fmt.Errorf("image not loaded: %w", err)
+			}
+			_, err = doc.ImageLinker.WriteLinkedResource(doc.TargetFile, imageRef, data)
+			return err
+		})
+		if err != nil {
+			slog.Warn("Linked image not written", "file", imageRef, "err", err)
+			return
+		}
+		img.URI = doc.ImageLinker.LinkedURI(doc.TargetFile, imageRef)
+	}()
+	return &index
+}
+
+// WaitImages waits for the background image loads (AsyncImages)
+func (doc *Document) WaitImages() {
+	doc.pendingImages.Wait()
+}
+
+// encodeBake converts the png bytes of a bake to the image format of the document (DDS: BC7). srgb tells whether the
+// bake holds color (emissive) or data (roughness).
+func (doc *Document) encodeBake(data []byte, srgb bool) ([]byte, error) {
+	target := doc.imageFormat()
+	if target != image.FormatDDS && target != image.FormatKTX2 && target != image.FormatWEBP {
+		return data, nil
+	}
+	format := "BC7_UNORM"
+	if srgb {
+		format = "BC7_UNORM_SRGB"
+	}
+	// KTX2: R8G8B8A8_SRGB or _UNORM by srgb (image.ConvertPNG)
+	return image.ConvertPNG(data, target, image.WithDDSFormat(format), image.WithSRGB(srgb))
 }
 
 func (doc *Document) LoadTextureBytes(t *gltf.Texture) ([]byte, error) {
@@ -263,6 +379,8 @@ func (doc *Document) LoadImageBytes(img *gltf.Image) ([]byte, error) {
 		return nil, nil
 	}
 
+	// a background image gets its uri once written
+	doc.WaitImages()
 	if img.URI != "" && doc.ImageLinker != nil {
 		return doc.ImageLinker.ReadLinkedResource(doc.TargetFile, img.URI)
 	}
@@ -318,8 +436,10 @@ func resolveTextureTransform(tex *mtl.Texture) *texturetransform.TextureTranform
 		texTransform.Scale[1] = float64(*tex.TexMod.TileV)
 		isZero = false
 	}
-	if tex.TexMod.RotateW != nil {
-		texTransform.Rotation = float64(*tex.TexMod.RotateW) * 180.0 / 3.14159265358979323846
+	if tex.TexMod.RotateW != nil && *tex.TexMod.RotateW != 0 {
+		// RotateW is in degrees (the engine and the viewer convert with DEGREE_TO_RAD), glTF wants radians.
+		// Exact only for uniform tiling: the engine rotates before the scale, KHR_texture_transform after it.
+		texTransform.Rotation = float64(*tex.TexMod.RotateW) * 3.14159265358979323846 / 180.0
 		isZero = false
 	}
 

@@ -12,7 +12,7 @@ export class NavbarContext {
   isHorizontal: boolean
 
   public constructor({ isVertical }: { isVertical: boolean }) {
-    this.isVertical
+    this.isVertical = isVertical
     this.isHorizontal = !isVertical
   }
 }

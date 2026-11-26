@@ -1,0 +1,7 @@
+/* All styles of the app, one file per area (see src/ui/README.md) */
+@import 'tweak-ui/style.css';
+@import './tokens.css';
+@import './base.css';
+@import './app.css';
+@import './browser.css';
+@import './views.css';

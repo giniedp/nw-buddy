@@ -2,49 +2,7 @@ package scanner
 
 import (
 	"nw-buddy/tools/rtti/nwt"
-	"nw-buddy/tools/utils/math/transform"
 )
-
-// func NewScanContext() context.Context {
-//   ctx := context.Background()
-//   ctx = context.WithCancel(ctx)
-// }
-
-type SliceData struct {
-	Entity         *nwt.AZ__Entity
-	Name           string
-	Transform      transform.Node
-	VitalsID       string
-	NpcID          string
-	CategoryID     string
-	Level          int
-	TerritoryLevel bool
-	DamageTable    string
-	AdbFile        string
-	ModelFile      string
-	MtlFile        string
-	Tags           []string
-	VariantID      string
-	GatherableID   string
-	LoreIDs        []string
-	HouseType      string
-	StationID      string
-	StructureType  string
-	Trace          []any
-}
-
-type SpawnNode struct {
-	Gatherable GatherableEntry
-	Variant    VariantEntry
-	Vital      VitalsEntry
-	Npc        NpcEntry
-	Lore       LorenoteEntry
-	HouseType  HouseEntry
-	Structure  StructureEntry
-	Station    StationEntry
-	ZoneConfig ZoneConfigEntry
-	Encounter  EncounterEntry
-}
 
 type spawn struct {
 	Position  nwt.AzVec3
@@ -70,14 +28,6 @@ func (it *spawn) GetPosition() nwt.AzVec3 {
 
 func (it *spawn) SetPosition(v nwt.AzVec3) {
 	it.Position = v
-}
-
-func (it *spawn) SetMap(mapId string) {
-	it.MapID = mapId
-}
-
-func (it *spawn) SetCatacombTile(tileId string) {
-	it.TileID = tileId
 }
 
 type ZoneConfigEntry struct {
@@ -139,13 +89,12 @@ type VitalsEntry struct {
 	Level        int
 	Encounter    string
 	DamageTable  string
-	ModelFile    string
-	MtlFile      string
-	AdbFile      string
-	Tags         []string
+	Model        *VitalModel
 	UseZoneLevel bool
 	Luck         *float32
 	Tod          string
+	// found by walking a slice that no map of the scan places
+	Template bool
 }
 
 type EncounterEntry struct {

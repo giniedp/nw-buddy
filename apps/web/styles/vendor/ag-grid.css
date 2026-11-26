@@ -1,33 +1,24 @@
-@import '@ag-grid-community/styles/ag-grid.css';
-@import '@ag-grid-community/styles/ag-theme-alpine.css';
+/*
+ * Rules on top of the grid theme (ui/data/ag-grid/theme.ts), scoped to the grids of nw-buddy (`.nwb-grid`, the host
+ * class of the nwbGrid directive): the viewer on /pak brings its own grids.
+ */
 
-.ag-theme-alpine-dark {
-  --ag-borders: solid 0px;
-  --ag-cell-horizontal-padding: 8px;
-  --ag-background-color: #1a1a1a;
-  --ag-header-background-color: #1a1a1a;
-  --ag-odd-row-background-color: #181818;
-  --ag-control-panel-background-color: #181818;
-  --ag-card-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
-  --ag-row-border-color: #222222;
-}
-
-.ag-floating-top {
+.nwb-grid .ag-floating-top {
   @apply border-b border-solid border-primary;
 }
 
-.overflow-visible .ag-cell-value {
+.nwb-grid .overflow-visible .ag-cell-value {
   overflow: visible !important;
 }
 
-.ag-cell {
+.nwb-grid .ag-cell {
   display: flex;
   flex-direction: column;
   justify-content: center;
   line-height: initial !important;
 }
 
-.multiline-cell {
+.nwb-grid .multiline-cell {
   line-height: 1.2 !important;
   white-space: normal !important;
   word-break: initial !important;
@@ -35,12 +26,12 @@
   padding-bottom: 8px;
 }
 
-.ag-header-cell-resize::after {
+.nwb-grid .ag-header-cell-resize::after {
   top: 2px !important;
   height: calc(100% - 4px) !important;
   width: 1px !important;
 }
 
-.ag-header-cell-filtered {
+.nwb-grid .ag-header-cell-filtered {
   @apply bg-primary;
 }

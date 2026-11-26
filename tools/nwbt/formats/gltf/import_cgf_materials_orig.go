@@ -9,15 +9,23 @@ import (
 	"github.com/qmuntal/gltf"
 )
 
-// simply translates the xml materials into a gltf structure by keeping all parameters.
+// simply translates the xml materials into a gltf structure by keeping all parameters (EXT_nw_material)
 func (doc *Document) augmentMaterialWithOriginal(gltfMtl *gltf.Material, cgfMat *mtl.Material, options ImportCgfMaterialsOptions) {
-	nwMtl := extensions.ExtNwMtl{}
-	nwMtl.Attributes = cgfMat.MaterialAttrs
+	nwMtl := extensions.EnsureNwMaterial(gltfMtl)
+	attrs := cgfMat.MaterialAttrs
+	nwMtl.Attributes = &attrs
 	nwMtl.Params = cgfMat.Params
 	nwMtl.VertexDeform = cgfMat.VertexDeform
+	nwMtl.Textures = nil
 
-	for _, nwTex := range cgfMat.Textures.Texture {
-		gltfTex := doc.LoadOrStoreMtlTexture(&nwTex)
+	// the smoothness slots as the engine binds them: the attached alpha of a _ddna normal map, also when unnamed
+	for _, nwTex := range mtl.WithNormalMapSmoothness(cgfMat.Textures.Texture) {
+		// TODO: smoothness is stored in the attached alpha of the normal map (_ddna.dds.a) and the engine binds
+		// that alpha for the smoothness slots. Reading it here breaks alpha tested materials in the viewer
+		// (meshes with AlphaTest render invisible), so this is disabled until it is handled elsewhere.
+		readAlpha := nwTex.Map == mtl.MtlMap_Smoothness || nwTex.Map == mtl.MtlMap_SecondSmoothness || nwTex.Map == mtl.MtlMap_5_Smoothness
+		gltfTex := doc.LoadOrStoreMtlTexture(&nwTex, readAlpha)
+		// gltfTex := doc.LoadOrStoreMtlTexture(&nwTex)
 		gltfTexExt := gltf.Extensions{}
 		gltfTexExt[extensions.EXT_nw_tex] = nwTex
 		nwMtl.Textures = append(nwMtl.Textures, &gltf.TextureInfo{
@@ -25,9 +33,5 @@ func (doc *Document) augmentMaterialWithOriginal(gltfMtl *gltf.Material, cgfMat 
 			Extensions: gltfTexExt,
 		})
 	}
-	if gltfMtl.Extensions == nil {
-		gltfMtl.Extensions = gltf.Extensions{}
-	}
-	gltfMtl.Extensions[extensions.EXT_nw_mtl] = nwMtl
-	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.EXT_nw_mtl, extensions.EXT_nw_tex)
+	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.EXT_nw_material, extensions.EXT_nw_tex)
 }

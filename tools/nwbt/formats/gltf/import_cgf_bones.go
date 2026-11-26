@@ -153,6 +153,8 @@ func (doc *Document) MergeSkins() {
 	accessor := modeler.WriteAccessor(doc.Document, gltf.TargetNone, data)
 	newSkin.InverseBindMatrices = gltf.Index(accessor)
 
+	// primitives of a mesh share their JOINTS_0 accessor, remap each accessor once
+	remapped := map[int]bool{}
 	for _, node := range doc.Nodes {
 		if node.Skin == nil || node.Mesh == nil {
 			continue
@@ -163,13 +165,14 @@ func (doc *Document) MergeSkins() {
 		mesh := doc.Meshes[*node.Mesh]
 		for _, primitive := range mesh.Primitives {
 			attr, ok := primitive.Attributes["JOINTS_0"]
-			if !ok {
+			if !ok || remapped[attr] {
 				continue
 			}
+			remapped[attr] = true
 			acc := doc.Accessors[attr]
 			view := doc.BufferViews[*acc.BufferView]
 			buf := doc.Buffers[view.Buffer]
-			pos := view.ByteOffset
+			pos := view.ByteOffset + acc.ByteOffset
 
 			switch acc.ComponentType {
 			case gltf.ComponentUbyte:

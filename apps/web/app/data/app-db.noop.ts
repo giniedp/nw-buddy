@@ -43,7 +43,7 @@ export class AppDbNoopTable<T extends AppDbRecord> extends AppDbTable<T> {
     return 0
   }
 
-  public async countWhere(where: Partial<AppDbRecord>): Promise<number>{
+  public async countWhere(where: Partial<AppDbRecord>): Promise<number> {
     return 0
   }
 

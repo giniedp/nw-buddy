@@ -68,9 +68,19 @@ func (it *pakFile) String() string {
 	return it.Path()
 }
 
+// gameDirHint tells where the game directory comes from, for the errors of NewPackedArchive
+const gameDirHint = "set NW_GAME_LIVE or NW_GAME_PTR in .env, or use --game"
+
 // NewPackedArchive creates a new file system using pak files from the given game directory.
 func NewPackedArchive(gameDir string) (Archive, error) {
-	gameDir = path.Clean(gameDir)
+	if strings.TrimSpace(gameDir) == "" {
+		return nil, fmt.Errorf("the New World installation directory is not set: %s", gameDirHint)
+	}
+	if _, err := os.Stat(gameDir); err != nil {
+		return nil, fmt.Errorf("the New World installation directory does not exist: %s (%s)", gameDir, gameDirHint)
+	}
+	// forward slashes: the pak files are found with a glob pattern, which takes a backslash as escape character
+	gameDir = path.Clean(filepath.ToSlash(gameDir))
 	if !strings.HasSuffix(gameDir, "assets") {
 		gameDir = path.Join(gameDir, "assets")
 	}
@@ -84,17 +94,17 @@ func NewPackedArchive(gameDir string) (Archive, error) {
 
 func (fs *pakArchive) init() error {
 	stat, err := os.Stat(fs.rootDir)
-	if err != nil {
-		return err
-	}
-	if !stat.IsDir() {
-		return fmt.Errorf("'%v' is not a directory", fs.rootDir)
+	if err != nil || !stat.IsDir() {
+		return fmt.Errorf("no assets folder at %s: the game directory must be the New World installation directory (%s)", fs.rootDir, gameDirHint)
 	}
 
 	pattern := path.Join(fs.rootDir, "**.pak")
 	files, err := fileglob.Glob(pattern, fileglob.MaybeRootFS)
 	if err != nil {
 		return err
+	}
+	if len(files) == 0 {
+		return fmt.Errorf("no .pak files in %s: the game directory must be the New World installation directory (%s)", fs.rootDir, gameDirHint)
 	}
 
 	bar := progress.Bar(len(files), "Loading archive")

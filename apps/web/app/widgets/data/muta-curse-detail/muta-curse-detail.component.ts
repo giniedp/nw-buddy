@@ -4,7 +4,6 @@ import { StatusEffectData } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MutaCurseDetailStore } from './muta-curse-detail.store'
 
 @Component({
@@ -12,7 +11,7 @@ import { MutaCurseDetailStore } from './muta-curse-detail.store'
   templateUrl: './muta-curse-detail.component.html',
   exportAs: 'curseDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, ModelViewerModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
   providers: [MutaCurseDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',

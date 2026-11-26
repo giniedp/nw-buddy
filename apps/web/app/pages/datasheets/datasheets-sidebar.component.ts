@@ -17,7 +17,7 @@ import { FileTreeNode } from '../../ui/file-tree'
   template: `
     <ion-header class="bg-base-300">
       <ion-toolbar>
-        <nwb-quicksearch-input class="px-2"/>
+        <nwb-quicksearch-input class="px-2" />
       </ion-toolbar>
     </ion-header>
     <nwb-file-tree

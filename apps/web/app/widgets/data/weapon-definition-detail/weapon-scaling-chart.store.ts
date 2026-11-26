@@ -172,7 +172,7 @@ function selectWeaponDamage({
   gearScore,
   playerLevel,
 }: {
-  item: MasterItemDefinitions,
+  item: MasterItemDefinitions
   tables: Record<AttributeRef, ModifierTable>
   stats: Record<AttributeRef, number>
   weapon: WeaponItemDefinitions

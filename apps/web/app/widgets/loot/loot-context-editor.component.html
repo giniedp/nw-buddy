@@ -385,7 +385,12 @@
   <div class="flex flex-row flex-wrap gap-1 text-shadow-sm shadow-black">
     @for (item of tags | async; track item.tag) {
       <span animate.enter="fade-grow-x-in" animate.leave="fade-grow-x-out">
-        <nwb-loot-tag [tag]="item.tag" [checked]="true" [actions]="item.editable" (removeClicked)="removeTag(item.tag)" />
+        <nwb-loot-tag
+          [tag]="item.tag"
+          [checked]="true"
+          [actions]="item.editable"
+          (removeClicked)="removeTag(item.tag)"
+        />
       </span>
     }
   </div>

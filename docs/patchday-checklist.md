@@ -19,9 +19,10 @@
 
 ## Models update
 
-All generated models are about 35GB in size
+All generated models are about 50GB in size
 
-- clear the `.nwbt` dir. Mainly `cache` and `models`
-- `pnpm nwbt models impostors --level ** --region ** --binary --simplify --embed --optimize --webp --texture-size 4096` ~1 minute 
-- `pnpm nwbt models --binary --ktx --animations --texture-size 2048` ~3 hours due to ktx texture encoding. <1 hour for png or webp  
-- `pnpm nw-cdn upload-models` optionally add `--force` flag to upload and override existing models
+- clear the `.nwbt/models` dir. Keep `.nwbt/cache`: its entries are keyed by the content of the game textures, only
+  textures changed by the patch are converted again. `pnpm nwbt cache clear` removes it, e.g. to drop old entries
+- `pnpm nwbt:models:impostors` ~1 minute
+- `pnpm nwbt:models` ~3 hours with an empty cache due to ktx texture encoding. <1 hour for png or webp. Warnings and errors go to `.nwbt/nwbt.log`
+- `pnpm nwbt:models:upload` optionally add `--force` flag to upload and override existing models

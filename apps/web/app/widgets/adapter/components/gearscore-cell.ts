@@ -1,4 +1,4 @@
-import { AgPromise, ICellRendererComp, ICellRendererParams } from '@ag-grid-community/core'
+import { AgPromise, ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
 import { combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { createElement } from '~/utils'

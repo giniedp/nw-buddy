@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"nw-buddy/tools/formats/capitals"
 	"nw-buddy/tools/formats/catalog"
+	"nw-buddy/tools/formats/cdf"
 	"nw-buddy/tools/formats/cgf"
 	"nw-buddy/tools/formats/cloth"
 	"nw-buddy/tools/nwfs"
@@ -151,6 +152,15 @@ func (c *Assets) ResolveCgfAndMtl(model, material string, materialFallback ...st
 		materialOut = DEFAULT_MATERIAL
 	}
 	return modelOut, materialOut
+}
+
+// ResolveAttachment returns the mesh and the material of a character's attachment. An override (a vital's or a mount's
+// material) wins over the attachment's own material, as in the game. One that does not resolve is ignored.
+func (c *Assets) ResolveAttachment(attachment cdf.Attachment, override string) (string, string) {
+	if material := c.ResolveMtl(nwfs.NormalizePath(override)); material != "" {
+		return c.ResolveCgfAndMtl(attachment.Binding, material)
+	}
+	return c.ResolveCgfAndMtl(attachment.Binding, attachment.Material)
 }
 
 func (ctx *Assets) ResolveDynamicSliceByName(sliceName string) nwfs.File {

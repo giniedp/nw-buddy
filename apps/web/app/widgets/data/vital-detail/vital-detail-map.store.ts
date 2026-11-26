@@ -190,7 +190,9 @@ function loadVitalData(gameMap: GameMapService, meta: ScannedVital) {
           },
         }
         lookup[mapData[level].id] = mapData[level]
-        mapData[level].geometry.coordinates.push(gameMap.xyToLngLat([spawn.p[0], spawn.p[1]]))
+        for (const position of spawn.p) {
+          mapData[level].geometry.coordinates.push(gameMap.xyToLngLat(position))
+        }
       }
     }
   }

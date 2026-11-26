@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { inject, Injectable } from '@angular/core'
 import { COLS_TERRITORYDEFINITION } from '@nw-data/generated'
 import { from } from 'rxjs'

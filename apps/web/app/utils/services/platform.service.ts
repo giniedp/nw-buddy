@@ -1,7 +1,6 @@
 import { Platform as AngularPlatform } from '@angular/cdk/platform'
 import { Injectable, inject } from '@angular/core'
 import { Platform as IonicPlatform } from '@ionic/angular/standalone'
-import { ElectronService } from '~/electron'
 import { NW_BUDDY_LIVE, environment } from '../../../environments'
 import { injectWindow } from '../injection/window'
 import { ActivatedRoute } from '@angular/router'
@@ -13,7 +12,6 @@ export class PlatformService {
 
   private ngPlatform = inject(AngularPlatform)
   private ionPlatform = inject(IonicPlatform)
-  private electron = inject(ElectronService)
   private window = injectWindow()
 
   /**
@@ -82,13 +80,6 @@ export class PlatformService {
    */
   public get isOverwolf() {
     return !!this.window['___overwolf___']
-  }
-
-  /**
-   * Whether the current platform is Electron
-   */
-  public get isElectron() {
-    return this.electron.isElectron || this.userAgent.includes('Electron')
   }
 
   /**

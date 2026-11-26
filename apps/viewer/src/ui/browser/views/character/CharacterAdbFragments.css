@@ -1,0 +1,30 @@
+/* the ADB fragments list of the character mode (CharacterAdbFragments.tsx) */
+.nw-character-list .nw-view-bar > .nw-character-database {
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.nw-character-note {
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+}
+.nw-character-error {
+  padding: 0.25rem 0.5rem;
+  border-top: 1px solid var(--nw-line);
+}
+/* in place of the check box of a variant without animations */
+.nw-character-check-spacer {
+  flex: 0 0 auto;
+  width: 1rem;
+}
+.nw-character-clips {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.nw-character-tag {
+  margin-right: 0.25rem;
+}

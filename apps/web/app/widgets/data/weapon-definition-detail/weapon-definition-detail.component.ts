@@ -8,8 +8,6 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
-import { ModelViewerModule } from '~/widgets/model-viewer'
-
 import { WeaponDefinitionDetailStore } from './weapon-definition-detail.store'
 import { WeaponScalingChartComponent } from './weapon-scaling-chart.component'
 
@@ -25,7 +23,6 @@ import { WeaponScalingChartComponent } from './weapon-scaling-chart.component'
     ItemFrameModule,
     PropertyGridModule,
     TooltipModule,
-    ModelViewerModule,
     WeaponScalingChartComponent,
   ],
   providers: [DecimalPipe, WeaponDefinitionDetailStore],

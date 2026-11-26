@@ -13,14 +13,7 @@ import { BackstoryTreeNode } from './types'
   selector: 'nwb-backstory-loot-node',
   templateUrl: './backstory-loot-node.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    NwModule,
-    ItemFrameModule,
-    IconsModule,
-    TreeNodeToggleComponent,
-    FormsModule,
-    RouterModule,
-  ],
+  imports: [NwModule, ItemFrameModule, IconsModule, TreeNodeToggleComponent, FormsModule, RouterModule],
   host: {
     class: 'flex flex-col',
   },

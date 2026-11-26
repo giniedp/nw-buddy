@@ -1,5 +1,5 @@
 import { GatherableData } from '@nw-data/generated'
-import { NW_TRADESKILLS_INFOS } from '~/nw/tradeskill'
+import { NW_TRADESKILLS_INFOS } from '~/nw/tradeskill/nw-tradeskill'
 
 const LOOT_TABLE_ICONS = {
   Death_Plant: 'death_plant_compass.png',

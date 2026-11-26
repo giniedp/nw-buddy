@@ -2,7 +2,7 @@ import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
 
 import { svgScalpel } from '~/ui/icons/svg'
-import { eqCaseInsensitive } from '~/utils'
+import { eqCaseInsensitive } from '~/utils/caseinsensitive-compare'
 import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
 import { FilterGroup } from '../data/types'
 import { ParsedLootTable } from '../utils/parse-loottable'

@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { CommonModule } from '@angular/common'
 import { Component, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'

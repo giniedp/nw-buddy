@@ -15,111 +15,6 @@ import (
 	"strings"
 )
 
-func (ctx *Scanner) ScanSliceComponentForData(slice *nwt.SliceComponent, source string) []SliceData {
-	// TODO: get rid of this function
-
-	result := make([]SliceData, 0)
-	for entity, components := range game.EntitiesOf(slice) {
-		data := SliceData{
-			Entity:    entity,
-			Trace:     []any{source},
-			Transform: game.FindEntityTransform(entity),
-		}
-
-		for _, component := range components {
-			switch v := component.(type) {
-			case nwt.NameComponent:
-				data.Name = string(v.M_name)
-			case nwt.NpcComponent:
-				if data.NpcID == "" {
-					data.NpcID = string(v.M_npcKey)
-				}
-			case nwt.VitalsComponent:
-				if data.VitalsID == "" {
-					data.VitalsID = string(v.M_rowReference)
-				}
-			case nwt.ActionListComponent:
-				if data.DamageTable == "" {
-					data.DamageTable = string(v.M_damageTable.Asset.BaseClass1.AssetPath)
-				}
-				if data.AdbFile == "" {
-					data.AdbFile = string(v.M_animationDatabase.BaseClass1.AssetPath)
-				}
-				for _, tag := range v.M_defaultTags.Element {
-					data.Tags = utils.AppendUniqNoZero(data.Tags, string(tag))
-				}
-			case nwt.AIVariantProviderComponent:
-				facet := v.BaseClass1.M_serverFacetPtr
-				switch f := facet.(type) {
-				case nwt.AIVariantProviderComponentServerFacet:
-					if data.VitalsID == "" {
-						data.VitalsID = string(f.M_vitalsTableRowId)
-					}
-					if data.CategoryID == "" {
-						data.CategoryID = string(f.M_vitalsCategoryTableRowId)
-					}
-					if data.Level == 0 {
-						data.Level = int(f.M_vitalsLevel)
-					}
-					if !data.TerritoryLevel {
-						data.TerritoryLevel = bool(f.M_useTerritoryLevelOverride)
-						// TODO: what is M_useterritorypostfixoverride ?
-					}
-				}
-			case nwt.VariationDataComponent:
-				if data.VariantID == "" {
-					data.VariantID = string(v.M_selectedVariant)
-				}
-			case nwt.GatherableControllerComponent:
-				if data.GatherableID == "" {
-					data.GatherableID = string(v.M_gatherableEntryId)
-				}
-			case nwt.ReadingInteractionComponent:
-				data.LoreIDs = utils.AppendUniqNoZero(data.LoreIDs, string(v.M_loreId))
-			case nwt.SkinnedMeshComponent:
-				if data.ModelFile != "" || !v.Skinned_Mesh_Render_Node.Visible {
-					break
-				}
-				if file, err := ctx.LookupFileByAsset(v.Skinned_Mesh_Render_Node.Skinned_Mesh); err == nil && file != nil {
-					data.ModelFile = file.Path()
-				}
-				if file, err := ctx.LookupFileByAsset(v.Skinned_Mesh_Render_Node.Material_Override_Asset); err == nil && file != nil {
-					data.MtlFile = file.Path()
-				}
-			case nwt.MeshComponent:
-				if data.ModelFile != "" || !v.Static_Mesh_Render_Node.Visible {
-					break
-				}
-				if file, err := ctx.LookupFileByAsset(v.Static_Mesh_Render_Node.Static_Mesh); err == nil && file != nil {
-					data.ModelFile = file.Path()
-				}
-				if file, err := ctx.LookupFileByAsset(v.Static_Mesh_Render_Node.Material_Override_Asset); err == nil && file != nil {
-					data.MtlFile = file.Path()
-				}
-			case nwt.HousingPlotComponent:
-				if data.HouseType == "" {
-					data.HouseType = string(v.M_houseTypeString)
-				}
-			case nwt.AssemblyComponent:
-				if data.StationID == "" {
-					data.StationID = string(v.M_craftingStationReference.M_craftingStationEntry)
-				}
-			case nwt.TradingPostComponent:
-				if data.StructureType == "" {
-					data.StructureType = "TradingPost"
-				}
-			case nwt.StorageComponent:
-				ptr := v.BaseClass1.M_clientFacetPtr
-				if facet, ok := ptr.(nwt.StorageComponentClientFacet); ok && !bool(facet.M_showPreview) && bool(v.M_isPlayerUniqueStorage) {
-					data.StructureType = "Storage"
-				}
-			}
-		}
-		result = append(result, data)
-	}
-	return result
-}
-
 func findName(node *game.SliceNode) string {
 	for _, component := range node.Components {
 		switch v := component.(type) {
@@ -135,13 +30,8 @@ const (
 	ctxVitalsCategoryId     = "vitalsCategoryId"
 	ctxVitalsLevel          = "vitalsLevel"
 	ctxVitalsTerritoryLevel = "vitalsTerritoryLevel"
-	ctxModelFile            = "modelFile"
-	ctxMtlFile              = "mtlFile"
-	ctxAdbFile              = "adbFile"
-	ctxDamageTable          = "damageTable"
 	ctxVariantId            = "variantId"
 	ctxGatherableId         = "gatherableId"
-	ctxVitalsTags           = "vitalsTags"
 	ctxEncounterRef         = "encounterRef"
 	ctxEncounterName        = "encounterName"
 	ctxSpawnerName          = "spawnerName"
@@ -156,8 +46,14 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 			return
 		}
 
-		ctx.Assets.WalkSlice(file, func(node *game.SliceNode) {
+		options := game.SliceWalkOptions{
+			// entities below an encounter manager belong to its encounter
+			InheritKeys: []string{ctxEncounterRef, ctxEncounterName, ctxSpawnerName},
+		}
+		ctx.Assets.WalkSliceWith(file, options, func(node *game.SliceNode) {
 			hasVital := false
+			ownVitalsId := ""
+			damageTable := ""
 			hasGatherable := false
 			hasHotspot := false
 			hasVariant := false
@@ -190,10 +86,8 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 						node.ContextStrSet(ctxHotspotType, string(v.M_fishingHotspotType))
 					}
 				case nwt.VitalsComponent:
-					if v.M_rowReference != "" {
-						hasVital = true
-						node.ContextProvideIfMissing(ctxVitalsId, string(v.M_rowReference))
-					}
+					hasVital = true
+					ownVitalsId = string(v.M_rowReference)
 				case nwt.TimeOfDayConstraintComponent:
 					if facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.TimeOfDayConstraintComponentServerFacet); ok {
 						node.ContextStrSet(ctxTodConstraint, encodeTimeOfDay(facet))
@@ -204,57 +98,7 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 					}
 				case nwt.TagComponent:
 				case nwt.ActionListComponent:
-					if v.M_damageTable.Asset.BaseClass1.AssetPath != "" {
-						node.ContextProvideIfMissing(ctxDamageTable, string(v.M_damageTable.Asset.BaseClass1.AssetPath))
-					}
-					if v.M_animationDatabase.BaseClass1.AssetPath != "" {
-						node.ContextProvideIfMissing(ctxAdbFile, string(v.M_animationDatabase.BaseClass1.AssetPath))
-					}
-					tags := make([]string, 0)
-					for _, tag := range v.M_defaultTags.Element {
-						tags = utils.AppendUniqNoZero(tags, string(tag))
-					}
-					if len(tags) > 0 {
-						node.ContextProvideIfMissing(ctxVitalsTags, tags)
-					}
-				case nwt.AIVariantProviderComponent:
-					facet := v.BaseClass1.M_serverFacetPtr
-					switch f := facet.(type) {
-					case nwt.AIVariantProviderComponentServerFacet:
-						if f.M_vitalsTableRowId != "" {
-							node.ContextProvideIfMissing(ctxVitalsId, string(f.M_vitalsTableRowId))
-						}
-						if f.M_vitalsCategoryTableRowId != "" {
-							node.ContextProvideIfMissing(ctxVitalsCategoryId, string(f.M_vitalsCategoryTableRowId))
-						}
-						if f.M_vitalsLevel != 0 {
-							node.ContextProvideIfMissing(ctxVitalsLevel, int(f.M_vitalsLevel))
-						}
-						if f.M_useTerritoryLevelOverride {
-							node.ContextProvideIfMissing(ctxVitalsTerritoryLevel, bool(f.M_useTerritoryLevelOverride))
-						}
-					}
-
-				case nwt.SkinnedMeshComponent:
-					if !v.Skinned_Mesh_Render_Node.Visible {
-						break
-					}
-					if file, err := ctx.LookupFileByAsset(v.Skinned_Mesh_Render_Node.Skinned_Mesh); err == nil && file != nil {
-						node.ContextProvideIfMissing(ctxModelFile, file.Path())
-					}
-					if file, err := ctx.LookupFileByAsset(v.Skinned_Mesh_Render_Node.Material_Override_Asset); err == nil && file != nil {
-						node.ContextProvideIfMissing(ctxMtlFile, file.Path())
-					}
-				case nwt.MeshComponent:
-					if !v.Static_Mesh_Render_Node.Visible {
-						break
-					}
-					if file, err := ctx.LookupFileByAsset(v.Static_Mesh_Render_Node.Static_Mesh); err == nil && file != nil {
-						node.ContextProvideIfMissing(ctxModelFile, file.Path())
-					}
-					if file, err := ctx.LookupFileByAsset(v.Static_Mesh_Render_Node.Material_Override_Asset); err == nil && file != nil {
-						node.ContextProvideIfMissing(ctxMtlFile, file.Path())
-					}
+					damageTable = vitalTableName(v)
 				case nwt.FtueIslandComponent:
 					result := &VitalsEntry{
 						VitalsID: "Player",
@@ -346,23 +190,29 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 				encounter = encounterFallback
 			}
 
+			// the spawner's variant replaces the entity's own row
 			vitalId := node.ContextStrGet(ctxVitalsId)
+			if vitalId == "" {
+				vitalId = ownVitalsId
+			}
 			if vitalId != "" && hasVital {
+				gatherableId := ""
+				if hasGatherable {
+					gatherableId = node.ContextStrGet(ctxGatherableId)
+				}
 				result := &VitalsEntry{
 					spawn: spawn{
 						Position: mat4.PositionOf(node.Transform),
 					},
 
 					Encounter:    encounter,
+					GatherableID: gatherableId,
 					VitalsID:     vitalId,
 					CategoryID:   node.ContextStrGet(ctxVitalsCategoryId),
 					Level:        node.ContextIntGet(ctxVitalsLevel),
 					UseZoneLevel: node.ContextBoolGet(ctxVitalsTerritoryLevel),
-					DamageTable:  node.ContextStrGet(ctxDamageTable),
-					ModelFile:    node.ContextStrGet(ctxModelFile),
-					MtlFile:      node.ContextStrGet(ctxMtlFile),
-					AdbFile:      node.ContextStrGet(ctxAdbFile),
-					Tags:         node.ContextStrArrGet(ctxVitalsTags),
+					DamageTable:  damageTable,
+					Model:        ctx.vitalModel(node),
 					Tod:          node.ContextStrGet(ctxTodConstraint),
 					Luck:         node.ContextFloatPtrOrNil(ctxLuckConstraint),
 				}
@@ -442,6 +292,9 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 				}
 			}
 
+			if game.HasSpawner(node.Components) {
+				provideSpawnVariant(node)
+			}
 			for _, component := range node.Components {
 				switch v := component.(type) {
 				case nwt.SpawnerComponent:
@@ -501,25 +354,21 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 					if !ok {
 						continue
 					}
-					tmpTm := node.Transform
-
 					if encounterFallback != "" {
 						node.ContextProvideIfMissing(ctxSpawnerName, encounterFallback)
 					}
-					for _, loc := range facet.M_locations.Element {
-						entity := game.FindEntityById(node.Slice, loc.EntityId.Id)
-						if entity == nil {
-							continue
-						}
-						node.Transform = mat4.Multiply(tmpTm, game.FindEntityTransformMat4(entity))
-						assets := make([]nwt.AzAsset, 0)
-						assets = utils.AppendUniqNoZero(assets, facet.M_sliceAsset)
-						assets = utils.AppendUniqNoZero(assets, facet.M_aliasAsset)
-						for _, asset := range assets {
-							node.WalkAsset(asset)
+					assets := make([]nwt.AzAsset, 0)
+					assets = utils.AppendUniqNoZero(assets, facet.M_sliceAsset)
+					assets = utils.AppendUniqNoZero(assets, facet.M_aliasAsset)
+					for _, location := range facet.M_locations.Element {
+						if transform, ok := node.LocationTransform(location); ok {
+							node.WalkAt(transform, func() {
+								for _, asset := range assets {
+									node.WalkAsset(asset)
+								}
+							})
 						}
 					}
-					node.Transform = tmpTm
 				case nwt.EncounterManagerComponent:
 					fileName := utils.ReplaceExt(path.Base(node.File.Path()), "")
 					encounter := scanEncounterManagerObject(node, node.Entity, v)
@@ -537,7 +386,6 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 						return
 					}
 
-					tmpTm := node.Transform
 					node.ContextSetValue(ctxEncounterRef, encounter.EncounterID)
 					node.ContextSetValue(ctxEncounterName, game.ParseEncounterName(string(node.Entity.Name)))
 					if encounterFallback != "" {
@@ -548,20 +396,18 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 						assets := make([]nwt.AzAsset, 0)
 						assets = utils.AppendUniqNoZero(assets, spawn.M_sliceAsset)
 						assets = utils.AppendUniqNoZero(assets, spawn.M_aliasAsset)
-						if len(spawn.M_spawnLocations.Element) == 0 && spawn.M_count > 0 {
+						walk := func() {
 							for _, asset := range assets {
 								node.WalkAsset(asset)
 							}
-						} else {
-							for _, location := range spawn.M_spawnLocations.Element {
-								entity := game.FindEntityById(node.Slice, location.EntityId.Id)
-								if entity == nil {
-									continue
-								}
-								node.Transform = mat4.Multiply(tmpTm, game.FindEntityTransformMat4(entity))
-								for _, asset := range assets {
-									node.WalkAsset(asset)
-								}
+						}
+						locations := game.EncounterSpawnLocations(node, spawn)
+						if len(locations) == 0 && spawn.M_count > 0 {
+							walk()
+						}
+						for _, location := range locations {
+							if transform, ok := node.LocationTransform(location); ok {
+								node.WalkAt(transform, walk)
 							}
 						}
 					}
@@ -582,11 +428,28 @@ func (ctx *Scanner) ScanSlice(file nwfs.File) iter.Seq[Spawn] {
 							node.WalkAsset(asset)
 						}
 					}
-					node.Transform = tmpTm
 				}
 			}
 		})
 	}
+}
+
+// provideSpawnVariant sets the vitals variant the entity's spawns take. Empty values clear the variant of spawners
+// further up: without a provider, the spawned vitals keep their own row.
+func provideSpawnVariant(node *game.SliceNode) {
+	facet, _ := game.SpawnVariantProvider(node)
+	node.ContextSetValue(ctxVitalsId, nilIfZero(string(facet.M_vitalsTableRowId)))
+	node.ContextSetValue(ctxVitalsCategoryId, nilIfZero(string(facet.M_vitalsCategoryTableRowId)))
+	node.ContextSetValue(ctxVitalsLevel, nilIfZero(int(facet.M_vitalsLevel)))
+	node.ContextSetValue(ctxVitalsTerritoryLevel, nilIfZero(bool(facet.M_useTerritoryLevelOverride)))
+}
+
+func nilIfZero[T comparable](value T) any {
+	var zero T
+	if value == zero {
+		return nil
+	}
+	return value
 }
 
 func getEncounterFallback(slice *nwt.SliceComponent) string {

@@ -49,7 +49,6 @@
     width: 100%;
   }
 
-
   picture {
     width: 80%;
     z-index: 2;
@@ -63,7 +62,6 @@
       user-select: none;
     }
   }
-
 }
 
 .is-disabled {

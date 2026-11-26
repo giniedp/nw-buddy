@@ -9,6 +9,8 @@ type Scanner struct {
 	*game.Assets
 	mu      sync.RWMutex
 	results ScanResults
+	// slice and vitals entity -> *VitalModel
+	vitalModels sync.Map
 }
 
 func (it *Scanner) Results() ScanResults {

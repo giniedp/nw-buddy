@@ -28,9 +28,6 @@
         }
         <ion-content [scrollY]="false" class="bg-base-200">
           <router-outlet />
-          @if (!isOverwolf) {
-            <nwb-aeternum-map-integration class="embed-hidden" />
-          }
         </ion-content>
       </div>
     </ion-split-pane>
@@ -39,7 +36,7 @@
 
 <ng-template #tplHeader>
   <ion-header class="embed-hidden">
-    <ion-toolbar class="bg-black">
+    <ion-toolbar class="bg-black" [class.nwb-desktop-drag]="isDesktopApp">
       <ion-buttons slot="start">
         <ion-menu-toggle menu="main-menu">
           <span class="indicator">
@@ -83,7 +80,7 @@
             <span class="hidden sm:inline"> New World Buddy</span>
           </span>
         </a>
-        @if (isOverwolf || isElectron) {
+        @if (isOverwolf || isDesktopApp) {
           <span class="flex-1 text-center px-16">
             <input
               class="input input-sm input-bordered w-full no-drag"
@@ -125,6 +122,9 @@
           <nwb-global-search-input class="no-drag" />
           @if (backend.isEnabled()) {
             <app-auth />
+          }
+          @if (isDesktopApp) {
+            <nwb-desktop-title-bar />
           }
         </div>
       </ion-buttons>

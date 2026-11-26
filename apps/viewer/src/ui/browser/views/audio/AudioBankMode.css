@@ -1,0 +1,5 @@
+/* the bank mode: the play buttons of the media grid (AudioBankMode.tsx) */
+/* the play buttons stay as wide when they switch between play and stop */
+.nw-audio-play {
+  min-width: 1.75rem;
+}

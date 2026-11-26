@@ -80,7 +80,11 @@ export class GameModeDetailMapComponent {
   })
 }
 
-function selectWorldBounds(mapId: string, map: GameModeMapData, service: GameMapService): [number, number, number, number] {
+function selectWorldBounds(
+  mapId: string,
+  map: GameModeMapData,
+  service: GameMapService,
+): [number, number, number, number] {
   if (!map?.WorldBounds) {
     return null
   }
@@ -110,7 +114,7 @@ const BOUNDS = new CaseInsensitiveMap(
     DungeonGreatCleave00: [830, 440, 1260, 960],
     RaidCutlassKeys00: [540, 600, 1340, 1340],
     arena3v3: [864, 832, 992, 960],
-    catacombs: [0, 0, 640, 1152]
+    catacombs: [0, 0, 640, 1152],
   }),
 )
 
@@ -151,7 +155,7 @@ function selectVitalsData(options: {
       const spawns = lvlSpawns[mapId]
       for (const spawn of spawns) {
         const levels = spawn.l
-        const position = spawn.p
+        const positions = spawn.p.map((it) => options.mapCoord(it))
         const categories = uniq(
           [...(item.VitalsCategories || []), ...(spawn.c || [])].map((it) => (it || '').toLowerCase()),
         )
@@ -176,7 +180,9 @@ function selectVitalsData(options: {
             }
           }
 
-          features[key].geometry.coordinates.push(options.mapCoord(position))
+          for (const position of positions) {
+            features[key].geometry.coordinates.push(position)
+          }
         }
       }
     }

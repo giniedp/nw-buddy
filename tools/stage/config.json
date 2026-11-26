@@ -1,0 +1,42 @@
+{
+  "export": {
+    "level": "ftue_v2_cc",
+    "file": "levels/ftue_v2_cc/mission0.glb",
+    "box": "-24,-27,7,19,-11,16",
+    "exclude": ["occultist*", "*.cdf"],
+    "sequence": ["Character_Create_Intro_Trackview_Sequence"],
+    "signature": "61677f5a76252ece7fcd6a490eeefc33af551f40"
+  },
+  "stage": {
+    "spot": [0.7, 10.0, -21.6],
+    "camera": [0.4, 11.2, -18.7],
+    "time": 24,
+    "exposure": 8.14
+  },
+  "blockers": [
+    { "name": "Light Blocker Left", "x": -8.2, "y": [8, 17], "z": [-28, -10] },
+    { "name": "Light Blocker Right", "x": 13, "y": [8, 17], "z": [-28, -10] }
+  ],
+  "details": [
+    {
+      "diffuse": "galleon_exterior_planks_diff.dds",
+      "detail": "jav_struc_wood_dmga_vert_detail.dds",
+      "tile": [4, 4],
+      "bump": 0.3,
+      "color": 0.2,
+      "gloss": 0.1
+    }
+  ],
+  "textures": {
+    "screenHeight": 1440,
+    "maxSize": 1024,
+    "smallShare": 0.03,
+    "minSize": 128,
+    "sizes": { "jav_struc_wood_dmga_vert_detail.dds": 512 },
+    "fine": [
+      "galleon_exterior_planks_diff.dds",
+      "galleon_exterior_planks_ddna.dds",
+      "galleon_exterior_planks_ddna.dds.a"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { inject } from '@angular/core'
 import {
   NW_FALLBACK_ICON,
@@ -42,7 +42,7 @@ export class JsonPriceTableAdapter implements DataViewAdapter<JsonPriceItem> {
 
 function buildGridOptions(util: TableGridUtils<JsonPriceItem>): GridOptions<JsonPriceItem> {
   return {
-    rowSelection: 'single',
+    rowSelection: { mode: 'singleRow', checkboxes: false, enableClickSelection: true },
     rowBuffer: 0,
     columnDefs: [
       {

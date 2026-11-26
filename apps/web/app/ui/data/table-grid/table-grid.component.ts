@@ -1,4 +1,4 @@
-import { AgGridEvent, GridApi, GridOptions, RowClickedEvent } from '@ag-grid-community/core'
+import { AgGridEvent, GridApi, GridOptions, RowClickedEvent } from 'ag-grid-community'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -150,7 +150,7 @@ export class TableGridComponent<T> implements OnInit {
         }),
       ),
       // load pinned data state
-      merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataChanged')).pipe(
+      merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataUpdated')).pipe(
         tap(({ api }) => {
           this.persistence.loadPinnedState(api, this.persistKey, this.store.identifyBy())
         }),
@@ -334,7 +334,7 @@ function selectGridOptions(options: GridOptions) {
     rowBuffer: options.rowBuffer ?? 0,
     rowHeight: options.rowHeight ?? 56,
     headerHeight: options.headerHeight ?? 32,
-    rowSelection: options.rowSelection ?? 'single',
+    rowSelection: options.rowSelection ?? { mode: 'singleRow', checkboxes: false, enableClickSelection: true },
     enableCellTextSelection: options.enableCellTextSelection ?? true,
     suppressMenuHide: options.suppressMenuHide ?? true,
     overlayLoadingTemplate: options.overlayLoadingTemplate ?? OVERLAY_LOADING,

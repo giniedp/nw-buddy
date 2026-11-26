@@ -107,7 +107,6 @@ export const GatherableDetailStore = signalStore(
           .filter((it) => !!it)
           .sort()
       }),
-
     }
   }),
 )

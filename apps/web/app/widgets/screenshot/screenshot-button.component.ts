@@ -50,7 +50,7 @@ export class ScreenshotButtonComponent {
   }
 
   protected async makeScreenshot(frame: ScreenshotFrame) {
-    if (this.nwbScreenshotBtnDelay) {
+    if (this.nwbScreenshotBtnDelay()) {
       await new Promise((resolve) => setTimeout(resolve, this.nwbScreenshotBtnDelay()))
     }
     this.isBusy.set(true)

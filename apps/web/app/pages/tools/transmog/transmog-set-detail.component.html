@@ -29,7 +29,7 @@
     <div slot="end">
       <button
         class="join-item btn btn-square btn-ghost"
-        (click)="editor().capturePhoto()"
+        (click)="capturePhoto()"
         [disabled]="!record()"
         [tooltip]="'Capture Screenshot'"
       >
@@ -66,24 +66,32 @@
       </div>
     </div>
   } @else {
-    <nwb-transmog-editor [ngModel]="editorState()" (ngModelChange)="handleStateChange($event)" #editor>
+    <nwb-character-editor
+      [ngModel]="editorState()"
+      [disabled]="!isEditable()"
+      (ngModelChange)="handleStateChange($event)"
+    >
       @if (!isEditable()) {
-        <div class="alert mb-4" header>
-          <nwb-icon
-            [icon]="iconGlobe"
-            class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
-            [attr.data-tip]="'Published'"
-          />
-          <div>
-            <h3 class="font-bold">Public transmog</h3>
-            <div class="text-xs">You can import this item into your collection.</div>
-          </div>
-          <button class="btn btn-primary btn-sm">Import</button>
-        </div>
+        <div header><ng-container [ngTemplateOutlet]="tplPublic" /></div>
       }
-    </nwb-transmog-editor>
+    </nwb-character-editor>
   }
 </ion-content>
+
+<ng-template #tplPublic>
+  <div class="alert mb-4">
+    <nwb-icon
+      [icon]="iconGlobe"
+      class="w-4 h-4 text-success cursor-help tooltip tooltip-left"
+      [attr.data-tip]="'Published'"
+    />
+    <div>
+      <h3 class="font-bold">Public transmog</h3>
+      <div class="text-xs">You can import this item into your collection.</div>
+    </div>
+    <button class="btn btn-primary btn-sm">Import</button>
+  </div>
+</ng-template>
 
 <ng-template #menu>
   <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0" cdkMenu>

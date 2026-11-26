@@ -115,7 +115,7 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     await downloadJson({
       data,
       fileName,
-      usePicker: !(this.platform.isElectron || this.platform.isIframe),
+      usePicker: !this.platform.isIframe,
     })
   }
 }

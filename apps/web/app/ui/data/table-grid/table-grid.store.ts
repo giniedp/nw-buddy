@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable } from '@angular/core'
 import { patchState, signalState } from '@ngrx/signals'
 import { AgGrid } from '~/ui/data/ag-grid'

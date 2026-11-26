@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
@@ -52,9 +52,9 @@
             [selectionRouteParam]="selectionParam"
           />
         }
-        @if(isFuncOpen) {
+        @if (isFuncOpen) {
           <div class="w-[600px] hidden 2xl:block p-2 overflow-auto">
-            <nwb-table-grid-expression-panel [grid]="service.agGrid()"/>
+            <nwb-table-grid-expression-panel [grid]="service.agGrid()" />
           </div>
         }
       </div>
@@ -75,11 +75,8 @@
   </ion-content>
 
   <ng-template #tplDetail>
-    <ion-content
-      [class.ion-p-4]="showSidebar()"
-      [class.ion-p-2]="showModal()"
-      [class.bg-base-300]="true"
-    >
+    <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
       <router-outlet />
     </ion-content>
   </ng-template>
+</div>

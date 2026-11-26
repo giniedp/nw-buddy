@@ -1,4 +1,4 @@
-import { AgPromise, ICellRendererComp, ICellRendererParams } from '@ag-grid-community/core'
+import { AgPromise, ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
 import { NEVER, Observable, ReplaySubject, Subject, catchError, switchMap, takeUntil, tap } from 'rxjs'
 
 export interface AsyncCellRendererParams<T, R> {

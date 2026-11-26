@@ -1,4 +1,4 @@
-import { AgPromise, ICellRendererComp, ICellRendererParams } from '@ag-grid-community/core'
+import { AgPromise, ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
 import { map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { ItemMeta, ItemPreferencesService } from '~/preferences'
 import { createElement } from '~/utils'

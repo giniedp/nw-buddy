@@ -1,0 +1,27 @@
+/* a dialog with a title bar, see ModalDialog.tsx. The content goes into .nw-dialog-content */
+.nw-dialog {
+  max-width: 48rem;
+  width: auto;
+  padding: 0;
+  pointer-events: all;
+  /* the content scrolls in .nw-dialog-content. The dialog fits its content exactly, a pressed button (translated
+     down 1px) would overflow it and show a scrollbar with the default overflow: auto */
+  overflow: hidden;
+}
+.nw-dialog-title {
+  padding-left: 0.75rem;
+  font-size: var(--nw-text-lg);
+}
+.nw-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 10rem;
+  max-height: 50vh;
+  padding: 0.25rem;
+  overflow: auto;
+}
+.nw-dialog-content-wide {
+  min-width: 28rem;
+  max-height: 60vh;
+}

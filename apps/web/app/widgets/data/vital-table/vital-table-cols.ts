@@ -1,4 +1,4 @@
-import { ICellRendererParams } from '@ag-grid-community/core'
+import { ICellRendererParams } from 'ag-grid-community'
 import {
   VitalFamilyInfo,
   getVitalAliasNames,
@@ -460,7 +460,9 @@ export function vitalColSpawnCount(util: VitalTableUtils) {
       let count = 0
       if (data.$metadata?.spawns) {
         for (const key in data.$metadata.spawns) {
-          count += data.$metadata.spawns[key]?.length || 0
+          for (const spawn of data.$metadata.spawns[key]) {
+            count += spawn.p.length
+          }
         }
       }
       return count

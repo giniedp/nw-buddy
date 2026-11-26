@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
@@ -74,11 +74,7 @@
 </ion-content>
 
 <ng-template #tplDetail>
-  <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
-    [class.bg-base-300]="true"
-  >
+  <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
     <router-outlet />
   </ion-content>
 </ng-template>

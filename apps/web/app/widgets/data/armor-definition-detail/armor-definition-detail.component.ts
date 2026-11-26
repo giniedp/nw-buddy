@@ -8,7 +8,6 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
-import { ModelViewerModule } from '~/widgets/model-viewer'
 import { ArmorDefinitionDetailStore } from './armor-definition-detail.store'
 
 @Component({
@@ -16,15 +15,7 @@ import { ArmorDefinitionDetailStore } from './armor-definition-detail.store'
   templateUrl: './armor-definition-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    IconsModule,
-    ItemFrameModule,
-    PropertyGridModule,
-    TooltipModule,
-    ModelViewerModule,
-  ],
+  imports: [CommonModule, NwModule, IconsModule, ItemFrameModule, PropertyGridModule, TooltipModule],
   providers: [DecimalPipe, ArmorDefinitionDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',

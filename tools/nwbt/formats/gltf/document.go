@@ -3,12 +3,15 @@ package gltf
 import (
 	"fmt"
 	"io"
+	"nw-buddy/tools/formats/gltf/extensions"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/mtl"
 	"nw-buddy/tools/utils/math/mat4"
 	"os"
 	"path"
 	"slices"
+	"strings"
+	"sync"
 
 	"maps"
 
@@ -20,10 +23,16 @@ const (
 	ExtraKeyControllerID = "controllerId"
 	ExtraKeyLimbID       = "limbId"
 	ExtraKeySource       = "source"
+	ExtraKeyMtlRef       = "mtlRef"
 	ExtraKeyName         = "name"
 	ExtraKeyInverse      = "inverse"
 	ExtraKeyAlpha        = "alpha"
 	ExtraKeyLOD          = "lod"
+	ExtraKeyClip         = "clip"
+	// the game does not draw the node by default (a character attachment with FLAGS_ATTACH_HIDE_ATTACHMENT)
+	ExtraKeyHidden = "hidden"
+	// scene extras: the bone attachments of a character file (name, joint, position, rotation x,y,z,w)
+	ExtraKeySockets = "sockets"
 )
 
 type Document struct {
@@ -31,7 +40,20 @@ type Document struct {
 	TargetFile  string
 	ImageLoader image.Loader
 	ImageLinker ImageLinker
-	Options     ImportOptions
+	// BakeImageLoader loads the png inputs of the texture bakes when ImageLoader converts to another format (DDS).
+	// Nil: the bakes use ImageLoader.
+	BakeImageLoader image.Loader
+	Options         ImportOptions
+	// AsyncImages loads (converts) and writes linked images in the background, the glTF waits for them on Encode.
+	// The images of a model convert in parallel, bounded process wide (see imageSlots). Linked mode only.
+	AsyncImages bool
+	// LinkedImages shares the linked images with other documents of the same output directory (optional)
+	LinkedImages *LinkedImages
+
+	// converted cgf mesh chunks, shared by all subsets and nodes that reference them
+	geometries map[meshGeometryKey]*meshGeometry
+	// background image loads of AsyncImages
+	pendingImages sync.WaitGroup
 }
 
 func NewDocument() *Document {
@@ -59,6 +81,8 @@ func (doc *Document) Save() error {
 }
 
 func (doc *Document) Encode(f io.Writer, binary bool) error {
+	// the uris of background images are set when they are written
+	doc.WaitImages()
 	e := gltf.NewEncoder(f)
 	e.SetJSONIndent("", "\t")
 	e.AsBinary = binary
@@ -136,10 +160,42 @@ func (doc *Document) FindNodeByControllerId(controllerId uint32) (*gltf.Node, in
 }
 
 func (doc *Document) AddToSceneWithTransform(scene *gltf.Scene, node *gltf.Node, transform [16]float32) {
+	if mat4.IsIdentity(transform) && doc.NodeParent(node) == nil {
+		// no wrapper for identity: keeps skinned mesh nodes at the root (glTF ignores parent transforms of skinned meshes)
+		doc.AddToScene(scene, node)
+		return
+	}
 	parent, _ := doc.NewNode()
 	parent.Matrix = mat4.ToFloat64(transform)
 	doc.NodeAddChild(parent, node)
 	doc.AddToScene(scene, parent)
+}
+
+// AddToJoint attaches a node to a joint, with a transform relative to it
+func (doc *Document) AddToJoint(joint *gltf.Node, node *gltf.Node, transform [16]float32) {
+	holder, _ := doc.NewNode()
+	holder.Name = node.Name
+	holder.Matrix = mat4.ToFloat64(transform)
+	doc.NodeAddChild(holder, node)
+	doc.NodeAddChild(joint, holder)
+}
+
+// FindJoint returns the joint of a name (else ignoring case) that deforms a mesh. The first one wins: without MergeSkins
+// each skinned part has its own skeleton. Call it after MergeSkins.
+func (doc *Document) FindJoint(name string) *gltf.Node {
+	for _, equal := range []func(a, b string) bool{func(a, b string) bool { return a == b }, strings.EqualFold} {
+		for _, node := range doc.Nodes {
+			if node.Mesh == nil || node.Skin == nil {
+				continue
+			}
+			for joint := range doc.EachSkinNode(doc.Skins[*node.Skin]) {
+				if equal(joint.Name, name) {
+					return joint
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func (doc *Document) AddToScene(scene *gltf.Scene, node *gltf.Node) {
@@ -225,6 +281,22 @@ func (doc *Document) FindOrAddMaterial(material mtl.Material) *gltf.Material {
 	gltfMtl.Extras = map[string]any{"refId": refId, "mtl": material}
 	doc.Materials = append(doc.Materials, gltfMtl)
 	return gltfMtl
+}
+
+// FindOrAddMaterialFromFile adds the material like FindOrAddMaterial and remembers its source
+// (material file and index in the material collection). Equal materials are added once and keep the first source.
+func (doc *Document) FindOrAddMaterialFromFile(material mtl.Material, file string, index int) *gltf.Material {
+	gltfMtl := doc.FindOrAddMaterial(material)
+	if _, ok := ExtrasLoad[extensions.ExtNwMtlRef](gltfMtl.Extras, ExtraKeyMtlRef); !ok && file != "" {
+		gltfMtl.Extras = ExtrasStore(gltfMtl.Extras, ExtraKeyMtlRef, newMtlRef(file, index))
+	}
+	return gltfMtl
+}
+
+func newMtlRef(file string, index int) extensions.ExtNwMtlRef {
+	// normalized, so that clients get one url per material file
+	file = strings.ToLower(strings.TrimPrefix(path.Clean(strings.ReplaceAll(file, "\\", "/")), "/"))
+	return extensions.ExtNwMtlRef{File: file, Index: index}
 }
 
 func ExtrasLoad[T any](data any, key string) (value T, ok bool) {

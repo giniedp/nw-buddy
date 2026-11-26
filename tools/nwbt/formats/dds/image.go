@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"nw-buddy/tools/nwfs"
 	"slices"
-	"strings"
 )
 
 type Image struct {
@@ -17,6 +16,17 @@ type Image struct {
 }
 
 func Load(f nwfs.File, maxSize ...int) (*Image, error) {
+	return load(f, false, maxSize...)
+}
+
+// LoadPartial merges only the mips up to maxSize, but keeps the original header.
+// The result is a DDS file whose header describes the full texture, while the data
+// holds the tail of the mip chain (like the unmerged base file, but with more mips).
+func LoadPartial(f nwfs.File, maxSize int) (*Image, error) {
+	return load(f, true, maxSize)
+}
+
+func load(f nwfs.File, keepHeader bool, maxSize ...int) (*Image, error) {
 	meta, err := LoadMeta(f)
 	if err != nil {
 		return nil, err
@@ -34,7 +44,7 @@ func Load(f nwfs.File, maxSize ...int) (*Image, error) {
 	}
 
 	if len(splits.Base.Files) > 0 {
-		data, err := concat(meta, splits.Base, maxSize...)
+		data, err := concat(meta, splits.Base, keepHeader, maxSize...)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +55,7 @@ func Load(f nwfs.File, maxSize ...int) (*Image, error) {
 		if err != nil {
 			return nil, err
 		}
-		data, err := concat(meta, splits.Alpha, maxSize...)
+		data, err := concat(meta, splits.Alpha, keepHeader, maxSize...)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +65,30 @@ func Load(f nwfs.File, maxSize ...int) (*Image, error) {
 	return res, nil
 }
 
-func concat(meta *Meta, split SplitFile, maxSizes ...int) ([]byte, error) {
+const cubemapFaces = 6
+
+// mergeCubemapFaces merges split cubemap data into the layout of a plain DDS: all mips of face 0, then face 1, ...
+//
+// A split part holds one mip level for every face, one face after the other. The base data holds the remaining
+// small mips and is already laid out per face. Appending parts and base data in order only works for single images.
+func mergeCubemapFaces(parts [][]byte, base []byte) []byte {
+	size := len(base)
+	for _, part := range parts {
+		size += len(part)
+	}
+	result := make([]byte, 0, size)
+	for face := range cubemapFaces {
+		for _, part := range parts {
+			length := len(part) / cubemapFaces
+			result = append(result, part[face*length:(face+1)*length]...)
+		}
+		length := len(base) / cubemapFaces
+		result = append(result, base[face*length:(face+1)*length]...)
+	}
+	return result
+}
+
+func concat(meta *Meta, split SplitFile, keepHeader bool, maxSizes ...int) ([]byte, error) {
 	if len(split.Files) == 0 {
 		return meta.Data, nil
 	}
@@ -64,13 +97,17 @@ func concat(meta *Meta, split SplitFile, maxSizes ...int) ([]byte, error) {
 		maxSize = uint32(maxSizes[0])
 	}
 
-	slices.SortFunc(split.Files, func(a, b nwfs.File) int {
-		return strings.Compare(b.Path(), a.Path())
+	// largest mip (highest part number) first. A copy: the caller's split stays as is
+	files := slices.Clone(split.Files)
+	slices.SortFunc(files, func(a, b nwfs.File) int {
+		return SplitPartNumber(b.Path()) - SplitPartNumber(a.Path())
 	})
+	split.Files = files
 
 	var buf bytes.Buffer
 	// header
 	buf.Write(meta.Data[:meta.HeaderSize])
+	parts := make([][]byte, 0, len(split.Files))
 
 	width := meta.Header.Width
 	height := meta.Header.Height
@@ -94,13 +131,21 @@ func concat(meta *Meta, split SplitFile, maxSizes ...int) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		buf.Write(data)
+		parts = append(parts, data)
 	}
-	// remaining mips from original data
-	buf.Write(meta.Data[meta.HeaderSize:])
+	baseData := meta.Data[meta.HeaderSize:]
+	if meta.IsCubemap() {
+		buf.Write(mergeCubemapFaces(parts, baseData))
+	} else {
+		for _, part := range parts {
+			buf.Write(part)
+		}
+		// remaining mips from original data
+		buf.Write(baseData)
+	}
 
 	result := buf.Bytes()
-	if skipped > 0 {
+	if skipped > 0 && !keepHeader {
 		// modify header
 		// override width and height
 		binary.LittleEndian.PutUint32(result[12:16], uint32(usedHeight))

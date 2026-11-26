@@ -10,7 +10,17 @@ import { withGearsetMethods } from './with-gearset-methods'
 import { withGearsetProps } from './with-gearset-props'
 import { withGearsetToMannequin } from './with-gearset-to-mannequin'
 
-export type GearsetSection = 'panel1' | 'panel2' | 'skills' | 'armor' | 'jewelry' | 'weapons' | 'tools' | 'bags' | 'instruments' | 'perkset'
+export type GearsetSection =
+  | 'panel1'
+  | 'panel2'
+  | 'skills'
+  | 'armor'
+  | 'jewelry'
+  | 'weapons'
+  | 'tools'
+  | 'bags'
+  | 'instruments'
+  | 'perkset'
 export interface GearsetStoreState {
   defaultLevel: number
   gearset: GearsetRecord
@@ -82,7 +92,18 @@ export const GearsetStore = signalStore(
   }),
 )
 
-const VALID_SECTIONS: GearsetSection[] = ['panel1', 'panel2', 'skills', 'armor', 'jewelry', 'weapons', 'bags', 'tools', 'instruments', 'perkset']
+const VALID_SECTIONS: GearsetSection[] = [
+  'panel1',
+  'panel2',
+  'skills',
+  'armor',
+  'jewelry',
+  'weapons',
+  'bags',
+  'tools',
+  'instruments',
+  'perkset',
+]
 export function getGearsetSections(): GearsetSection[] {
   return [...VALID_SECTIONS]
 }

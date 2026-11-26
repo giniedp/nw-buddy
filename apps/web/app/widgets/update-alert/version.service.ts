@@ -4,29 +4,49 @@ import { catchError, combineLatest, defer, exhaustMap, map, of, timer } from 'rx
 import { deployUrl, shareReplayRefCount } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 
+const RELEASES_URL = 'https://api.github.com/repos/giniedp/nw-buddy/releases?per_page=30'
+
+export interface LatestVersion {
+  version: string
+  /**
+   * Page of the release, null for the web deployment
+   */
+  url: string | null
+}
+
 @Injectable({ providedIn: 'root' })
 export class VersionService {
   private http = inject(HttpClient)
   private platform = inject(PlatformService)
 
   public readonly currentVersion$ = of(this.platform.env.version)
-  public readonly latestVersion$ = defer(() => timer(0, 1000 * 60 * 15))
-    .pipe(exhaustMap(() => this.fetchVersion()))
+  public readonly latest$ = defer(() => timer(0, 1000 * 60 * 15))
+    .pipe(exhaustMap(() => this.fetchLatest()))
     .pipe(shareReplayRefCount(1))
+  public readonly latestVersion$ = this.latest$.pipe(map((it) => it?.version ?? null))
 
   public versionChanged$ = combineLatest({
     current: this.currentVersion$,
-    latest: this.latestVersion$,
+    latest: this.latest$,
   })
-    .pipe(map(({ current, latest }) => !!current && !!latest && current !== latest))
+    .pipe(
+      map(({ current, latest }) => {
+        if (!current || !latest?.version) {
+          return false
+        }
+        if (this.platform.env.standalone) {
+          return compareVersions(latest.version, current) > 0
+        }
+        return current !== latest.version
+      }),
+    )
     .pipe(shareReplayRefCount(1))
 
-  private fetchVersion() {
+  private fetchLatest() {
     if (this.platform.env.standalone) {
-      return this.fetchStandaloneVersion()
-    } else {
-      return this.fetchWebVersion()
+      return this.fetchLatestRelease()
     }
+    return this.fetchWebVersion()
   }
 
   private fetchWebVersion() {
@@ -37,7 +57,7 @@ export class VersionService {
           'Cache-Control': 'no-cache',
         },
       })
-      .pipe(map((it) => it.trim()))
+      .pipe(map((it): LatestVersion => ({ version: it.trim(), url: null })))
       .pipe(
         catchError((err) => {
           console.error(err)
@@ -46,11 +66,14 @@ export class VersionService {
       )
   }
 
-  private fetchStandaloneVersion() {
+  /**
+   * The newest release of the desktop app. Its releases are tagged `v<version>` and may be prereleases, which the
+   * `releases/latest` endpoint skips. Other tags (e.g. `nwbt-v0.0.2`) are no app releases.
+   */
+  private fetchLatestRelease() {
     return this.http
-      .get<Release>('https://api.github.com/repos/giniedp/nw-buddy/releases/latest')
-      .pipe(map((it) => it.tag_name.replace(/^v/, '')))
-      .pipe(map((it) => it.trim()))
+      .get<Release[]>(RELEASES_URL)
+      .pipe(map((it) => selectLatestRelease(it)))
       .pipe(
         catchError((err) => {
           console.error(err)
@@ -61,59 +84,85 @@ export class VersionService {
 }
 
 export interface Release {
-  url: string
-  assets_url: string
-  upload_url: string
   html_url: string
-  id: number
-  author: Author
-  node_id: string
   tag_name: string
-  target_commitish: string
-  name: string
   draft: boolean
   prerelease: boolean
-  created_at: Date
-  published_at: Date
-  assets: Asset[]
-  tarball_url: string
-  zipball_url: string
-  body: string
 }
 
-export interface Asset {
-  url: string
-  id: number
-  node_id: string
-  name: string
-  label: null
-  uploader: Author
-  content_type: string
-  state: string
-  size: number
-  download_count: number
-  created_at: Date
-  updated_at: Date
-  browser_download_url: string
+export function selectLatestRelease(releases: Release[]): LatestVersion | null {
+  let result: LatestVersion | null = null
+  for (const release of releases || []) {
+    if (release.draft || !/^v\d/.test(release.tag_name)) {
+      continue
+    }
+    const version = release.tag_name.replace(/^v/, '').trim()
+    if (!result || compareVersions(version, result.version) > 0) {
+      result = { version, url: release.html_url }
+    }
+  }
+  return result
 }
 
-export interface Author {
-  login: string
-  id: number
-  node_id: string
-  avatar_url: string
-  gravatar_id: string
-  url: string
-  html_url: string
-  followers_url: string
-  following_url: string
-  gists_url: string
-  starred_url: string
-  subscriptions_url: string
-  organizations_url: string
-  repos_url: string
-  events_url: string
-  received_events_url: string
-  type: string
-  site_admin: boolean
+/**
+ * Compares versions like `10.0.4-0` (semver order, a build suffix `#<commit>` is ignored).
+ * Returns a positive number when `a` is newer than `b`, negative when older, 0 when equal.
+ */
+export function compareVersions(a: string, b: string): number {
+  const [coreA, preA] = splitVersion(a)
+  const [coreB, preB] = splitVersion(b)
+  const core = compareParts(coreA, coreB)
+  if (core !== 0) {
+    return core
+  }
+  // a version without a prerelease is newer than any of its prereleases
+  if (!preA.length || !preB.length) {
+    return preB.length - preA.length
+  }
+  return compareParts(preA, preB)
+}
+
+function splitVersion(version: string): [string[], string[]] {
+  const value = version.trim().replace(/^v/, '').split('#')[0].split('+')[0]
+  const index = value.indexOf('-')
+  if (index < 0) {
+    return [value.split('.'), []]
+  }
+  return [value.slice(0, index).split('.'), value.slice(index + 1).split('.')]
+}
+
+function compareParts(a: string[], b: string[]): number {
+  const length = Math.max(a.length, b.length)
+  for (let i = 0; i < length; i++) {
+    const result = comparePart(a[i], b[i])
+    if (result !== 0) {
+      return result
+    }
+  }
+  return 0
+}
+
+function comparePart(a: string | undefined, b: string | undefined): number {
+  if (a === b) {
+    return 0
+  }
+  if (a === undefined) {
+    return -1
+  }
+  if (b === undefined) {
+    return 1
+  }
+  const numA = /^\d+$/.test(a) ? Number(a) : null
+  const numB = /^\d+$/.test(b) ? Number(b) : null
+  if (numA !== null && numB !== null) {
+    return numA - numB
+  }
+  // numeric identifiers are older than alphanumeric ones
+  if (numA !== null) {
+    return -1
+  }
+  if (numB !== null) {
+    return 1
+  }
+  return a < b ? -1 : 1
 }

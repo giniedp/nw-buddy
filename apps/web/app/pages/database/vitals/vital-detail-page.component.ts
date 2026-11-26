@@ -19,7 +19,6 @@ import { VitalDetailModule, VitalDetailStore, VitalMapFeatureProperties } from '
 import { LootModule } from '~/widgets/loot'
 import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.component'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { ModelViewerModule } from '../../../widgets/model-viewer'
 
 export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loot'
 
@@ -35,7 +34,6 @@ export type DetailTabId = 'stats' | 'buffs' | 'damage-table' | '3d-model' | 'loo
     LootModule,
     LayoutModule,
     ScreenshotModule,
-    ModelViewerModule,
     TooltipModule,
     IconsModule,
     GatherableDetailModule,

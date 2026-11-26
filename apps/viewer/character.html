@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Character Viewer (dev)</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #111;
+        color: #ddd;
+        font:
+          13px system-ui,
+          sans-serif;
+      }
+      body {
+        display: flex;
+      }
+      aside {
+        width: 300px;
+        overflow: auto;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      aside input[type='text'] {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      label {
+        display: block;
+      }
+      #parts label {
+        display: inline-block;
+        margin-right: 8px;
+      }
+      #stage {
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- dev server only: CharacterViewer, see src/character-dev.ts -->
+    <aside>
+      <label
+        >Stage
+        <select id="stageFile"></select
+      ></label>
+      <label
+        >Character
+        <select id="characterFile"></select
+      ></label>
+      <div id="slots"></div>
+      <button type="button" id="apply">Apply slots</button>
+      <div id="parts"></div>
+      <label>Rotation <input type="range" id="rotation" min="-180" max="180" value="0" /></label>
+      <label>Height <input type="range" id="height" min="-0.4" max="0.5" step="0.05" value="0" /></label>
+      <label>Back <input type="range" id="back" min="0" max="2" step="0.05" value="0.5" /></label>
+      <label>Look <input type="range" id="look" min="0.6" max="1.7" step="0.05" value="1.1" /></label>
+      <label>Side <input type="range" id="side" min="0" max="1" step="0.05" value="0.6" /></label>
+      <label>Exposure <input type="range" id="exposure" min="-4" max="4" step="0.25" value="0" /></label>
+      <label><input type="checkbox" id="sun" /> Sun</label>
+      <div id="status"></div>
+    </aside>
+    <div id="stage"><canvas id="canvas"></canvas></div>
+    <script type="module" src="/src/character-dev.ts"></script>
+  </body>
+</html>

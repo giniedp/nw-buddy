@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable, inject } from '@angular/core'
 import { Observable, of } from 'rxjs'
 import { GearsetRow } from '~/data'

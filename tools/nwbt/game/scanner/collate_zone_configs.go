@@ -1,8 +1,9 @@
 package scanner
 
 import (
+	"cmp"
 	"nw-buddy/tools/utils/maps"
-	"sort"
+	"slices"
 	"strings"
 )
 
@@ -57,20 +58,28 @@ func CollateZoneConfigs(rows []ZoneConfigEntry) (result []ScannedZoneConfig, cou
 	}
 
 	for _, value := range index.SortedIter() {
-		sort.SliceStable(value.Geometry, func(i, j int) bool {
-			a := value.Geometry[i]
-			b := value.Geometry[j]
-			if a.BBox[0] < b.BBox[0] {
-				return true
-			}
-			if a.BBox[1] < b.BBox[1] {
-				return true
-			}
-			return false
-		})
+		slices.SortFunc(value.Geometry, comparePolygons)
 
 		result = append(result, *value)
 	}
 	count = len(result)
 	return
+}
+
+// comparePolygons orders by bounding box, then by vertices
+func comparePolygons(a, b Polygon) int {
+	for i := range a.BBox {
+		if c := cmp.Compare(a.BBox[i], b.BBox[i]); c != 0 {
+			return c
+		}
+	}
+	if c := cmp.Compare(len(a.Coordinates), len(b.Coordinates)); c != 0 {
+		return c
+	}
+	for r := range a.Coordinates {
+		if c := slices.CompareFunc(a.Coordinates[r], b.Coordinates[r], comparePositions); c != 0 {
+			return c
+		}
+	}
+	return 0
 }

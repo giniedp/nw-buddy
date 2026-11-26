@@ -1,0 +1,77 @@
+/*
+ * Design tokens of the nw-viewer UI (see src/ui/README.md).
+ *
+ * Defined on `:root` for the page, and again on `.tweak-ui`, the class of every UI root, so they
+ * resolve against the tweak-ui theme of that root (`--twk-color-*`) and follow a theme class set on it.
+ * Rules outside this file use these tokens only: no color literals, sizes in rem, px only for borders.
+ */
+
+/*
+ * The palette: the colors of nw-buddy's daisyUI theme `nw-buddy` (nw-buddy apps/web/styles/vendor/tailwind.css), set
+ * as tweak-ui's theme colors. The viewer's accent is its highlight color, so it takes nw-buddy's primary (orange).
+ * Replaces tweak-ui's default palette (`:root` in tweak-ui/style.css, imported before this file).
+ */
+:root {
+  --twk-color-base-100: oklch(0.252 0 0);
+  --twk-color-base-200: oklch(0.2134 0 0);
+  --twk-color-base-300: oklch(0.1776 0 0);
+  --twk-color-base-content: oklch(97.807% 0.029 256.847);
+  --twk-color-neutral: oklch(14% 0.005 285.823);
+  --twk-color-neutral-content: oklch(92% 0.004 286.32);
+  --twk-color-accent: oklch(77.48% 0.204 60.62);
+  --twk-color-accent-content: oklch(14% 0.005 285.823);
+  --twk-color-info: oklch(0.5461 0.2152 262.88);
+  --twk-color-info-content: oklch(0.8998 0.0482 266.02);
+  --twk-color-success: oklch(0.6271 0.1699 149.21);
+  --twk-color-success-content: oklch(0.9456 0.0855 156.68);
+  --twk-color-warning: oklch(0.6658 0.1574 58.32);
+  --twk-color-warning-content: oklch(0.2326 0.0511 67.73);
+  --twk-color-error: oklch(0.5771 0.2152 27.33);
+  --twk-color-error-content: oklch(0.8918 0.0568 18.27);
+}
+
+:root,
+.tweak-ui {
+  /* surfaces: sunken < surface < raised */
+  --nw-bg-sunken: var(--twk-color-base-300);
+  --nw-bg: var(--twk-color-base-200);
+  --nw-bg-raised: var(--twk-color-base-100);
+
+  /* text */
+  --nw-text: var(--twk-color-base-content);
+  /* secondary text: hints, units, counts */
+  --nw-text-dim: color-mix(in oklab, var(--nw-text) 50%, transparent);
+
+  /* separators and tints, derived from the text color so they follow the theme */
+  --nw-line: color-mix(in oklab, var(--nw-text) 10%, transparent);
+  --nw-line-strong: color-mix(in oklab, var(--nw-text) 25%, transparent);
+  --nw-hover: color-mix(in oklab, var(--nw-text) 6%, transparent);
+  --nw-scrollbar: color-mix(in oklab, var(--nw-text) 40%, transparent);
+
+  /* status */
+  --nw-accent: var(--twk-color-accent);
+  --nw-warning: var(--twk-color-warning);
+  --nw-error: var(--twk-color-error);
+  --nw-info: var(--twk-color-info);
+  --nw-success: var(--twk-color-success);
+
+  /*
+   * Font sizes: the only sizes for text. md is the default and the tweak-ui control text.
+   * Use weight or --nw-text-dim for emphasis before reaching for another size.
+   */
+  --nw-text-sm: 0.6875rem; /* secondary: counts, type labels, units */
+  --nw-text-md: 0.75rem; /* body: everything by default */
+  --nw-text-lg: 0.875rem; /* titles */
+
+  /* layout */
+  --nw-sidebar-width: 20.3125rem;
+  --nw-icon-size: 1rem;
+
+  /* tweak-ui theme overrides, the same in every tool */
+  --twk-text-ui: var(--nw-text-md);
+  --twk-spacing-field: 1.5rem;
+  --twk-spacing-inset: 0rem;
+  --twk-radius-field: 0.125rem;
+  --twk-font-ui: 'JetBrainsMono', monospace;
+  --twk-font-mono: 'JetBrainsMono', monospace;
+}

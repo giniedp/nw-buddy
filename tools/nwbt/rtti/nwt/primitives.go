@@ -58,6 +58,10 @@ type AzDeserializeXml interface {
 	DeserializeXml(*azcs.XmlElement) error
 }
 
+type AzSerialzieXml interface {
+	SerializeXml() (string, error)
+}
+
 type AzBool bool
 type AzInt8 int8
 type AzInt16 int16
@@ -104,6 +108,10 @@ func (it *AzString) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzString) SerializeXml() (string, error) {
+	return string(it), nil
+}
+
 func (it *AzUuid) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 16 {
 		return fmt.Errorf("data size must be 16, was %d", len(el.Data))
@@ -121,6 +129,10 @@ func (it *AzUuid) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzUuid) SerializeXml() (string, error) {
+	return "{" + string(it) + "}", nil
+}
+
 func (it *AzBool) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 1 {
 		return fmt.Errorf("data size must be 1, was%d", len(el.Data))
@@ -132,6 +144,13 @@ func (it *AzBool) Deserialize(el *azcs.Element) error {
 func (it *AzBool) DeserializeXml(el *azcs.XmlElement) error {
 	*it = el.Value == "true"
 	return nil
+}
+
+func (it AzBool) SerializeXml() (string, error) {
+	if it {
+		return "true", nil
+	}
+	return "false", nil
 }
 
 func (it *AzInt8) Deserialize(el *azcs.Element) error {
@@ -151,6 +170,10 @@ func (it *AzInt8) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzInt8) SerializeXml() (string, error) {
+	return strconv.FormatInt(int64(it), 10), nil
+}
+
 func (it *AzInt16) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 2 {
 		return fmt.Errorf("data size must be 2, was%d", len(el.Data))
@@ -166,6 +189,10 @@ func (it *AzInt16) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	*it = AzInt16(v)
 	return nil
+}
+
+func (it AzInt16) SerializeXml() (string, error) {
+	return strconv.FormatInt(int64(it), 10), nil
 }
 
 func (it *AzInt32) Deserialize(el *azcs.Element) error {
@@ -185,6 +212,10 @@ func (it *AzInt32) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzInt32) SerializeXml() (string, error) {
+	return strconv.FormatInt(int64(it), 10), nil
+}
+
 func (it *AzInt64) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 8 {
 		return fmt.Errorf("data size must be 8, was%d", len(el.Data))
@@ -200,6 +231,10 @@ func (it *AzInt64) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	*it = AzInt64(v)
 	return nil
+}
+
+func (it AzInt64) SerializeXml() (string, error) {
+	return strconv.FormatInt(int64(it), 10), nil
 }
 
 func (it *AzUInt8) Deserialize(el *azcs.Element) error {
@@ -220,6 +255,10 @@ func (it *AzUInt8) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzUInt8) SerializeXml() (string, error) {
+	return strconv.FormatUint(uint64(it), 10), nil
+}
+
 func (it *AzUInt16) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 2 {
 		return fmt.Errorf("data size must be 2, was%d", len(el.Data))
@@ -235,6 +274,10 @@ func (it *AzUInt16) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	*it = AzUInt16(v)
 	return nil
+}
+
+func (it AzUInt16) SerializeXml() (string, error) {
+	return strconv.FormatUint(uint64(it), 10), nil
 }
 
 func (it *AzUInt32) Deserialize(el *azcs.Element) error {
@@ -254,6 +297,10 @@ func (it *AzUInt32) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzUInt32) SerializeXml() (string, error) {
+	return strconv.FormatUint(uint64(it), 10), nil
+}
+
 func (it *AzUInt64) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 8 {
 		return fmt.Errorf("data size must be 8, was%d", len(el.Data))
@@ -269,6 +316,10 @@ func (it *AzUInt64) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	*it = AzUInt64(v)
 	return nil
+}
+
+func (it AzUInt64) SerializeXml() (string, error) {
+	return strconv.FormatUint(uint64(it), 10), nil
 }
 
 func (v AzUInt64) MarshalJSON() ([]byte, error) {
@@ -293,6 +344,10 @@ func (it *AzFloat32) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	*it = AzFloat32(v)
 	return nil
+}
+
+func (it AzFloat32) SerializeXml() (string, error) {
+	return strconv.FormatFloat(float64(it), 'f', -1, 32), nil
 }
 
 func (v AzFloat32) MarshalJSON() ([]byte, error) {
@@ -328,6 +383,10 @@ func (it *AzFloat64) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	*it = AzFloat64(v)
 	return nil
+}
+
+func (it AzFloat64) SerializeXml() (string, error) {
+	return strconv.FormatFloat(float64(it), 'f', -1, 64), nil
 }
 
 func (v AzFloat64) MarshalJSON() ([]byte, error) {
@@ -388,6 +447,14 @@ func (it *AzVec2) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzVec2) SerializeXml() (string, error) {
+	parts := make([]string, len(it))
+	for i, v := range it {
+		parts[i] = strconv.FormatFloat(float64(v), 'f', -1, 32)
+	}
+	return strings.Join(parts, " "), nil
+}
+
 func (it *AzVec3) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 12 {
 		return fmt.Errorf("data size must be 12, was %d", len(el.Data))
@@ -401,7 +468,7 @@ func (it *AzVec3) Deserialize(el *azcs.Element) error {
 func (it *AzVec3) DeserializeXml(el *azcs.XmlElement) error {
 	tokens := strings.Split(el.Value, " ")
 	if len(tokens) != 3 {
-		return fmt.Errorf("element must have 3 numeric values, has%d", len(el.Elements))
+		return fmt.Errorf("element must have 3 numeric values, has%d", len(tokens))
 	}
 	for i, token := range tokens {
 		v, err := strconv.ParseFloat(token, 32)
@@ -411,6 +478,14 @@ func (it *AzVec3) DeserializeXml(el *azcs.XmlElement) error {
 		it[i] = AzFloat32(v)
 	}
 	return nil
+}
+
+func (it AzVec3) SerializeXml() (string, error) {
+	parts := make([]string, len(it))
+	for i, v := range it {
+		parts[i] = strconv.FormatFloat(float64(v), 'f', -1, 32)
+	}
+	return strings.Join(parts, " "), nil
 }
 
 func (it *AzQuat) Deserialize(el *azcs.Element) error {
@@ -439,6 +514,14 @@ func (it *AzQuat) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzQuat) SerializeXml() (string, error) {
+	parts := make([]string, len(it))
+	for i, v := range it {
+		parts[i] = strconv.FormatFloat(float64(v), 'f', -1, 32)
+	}
+	return strings.Join(parts, " "), nil
+}
+
 func (it *AzColor) Deserialize(el *azcs.Element) error {
 	if len(el.Data) != 16 {
 		return fmt.Errorf("data size must be 16, was %d", len(el.Data))
@@ -463,6 +546,14 @@ func (it *AzColor) DeserializeXml(el *azcs.XmlElement) error {
 		it[i] = AzFloat32(v)
 	}
 	return nil
+}
+
+func (it AzColor) SerializeXml() (string, error) {
+	parts := make([]string, len(it))
+	for i, v := range it {
+		parts[i] = strconv.FormatFloat(float64(v), 'f', -1, 32)
+	}
+	return strings.Join(parts, " "), nil
 }
 
 func (it *AzAsset) Deserialize(el *azcs.Element) error {
@@ -538,6 +629,23 @@ func (it *AzAsset) DeserializeXml(el *azcs.XmlElement) error {
 	return nil
 }
 
+func (it AzAsset) SerializeXml() (string, error) {
+	parts := make([]string, 0, 4)
+	if it.Guid != "" {
+		parts = append(parts, "id={"+it.Guid+"}")
+	}
+	if it.Type != "" {
+		parts = append(parts, "type={"+it.Type+"}")
+	}
+	if it.Subid != "" {
+		parts = append(parts, "subid={"+it.Subid+"}")
+	}
+	if it.Hint != "" {
+		parts = append(parts, "hint="+it.Hint)
+	}
+	return strings.Join(parts, ","), nil
+}
+
 func (it *AzTransform) Deserialize(el *azcs.Element) error {
 	if len(el.Data)%4 != 0 {
 		return fmt.Errorf("expected data to be multiple of 4: %d", len(el.Data))
@@ -566,6 +674,14 @@ func (it *AzTransform) DeserializeXml(el *azcs.XmlElement) error {
 	}
 	it.Data = res
 	return nil
+}
+
+func (it AzTransform) SerializeXml() (string, error) {
+	parts := make([]string, len(it.Data))
+	for i, v := range it.Data {
+		parts[i] = strconv.FormatFloat(float64(v), 'f', -1, 32)
+	}
+	return strings.Join(parts, " "), nil
 }
 
 // func (it *EntityId) Deserialize(el *azcs.Element) error {

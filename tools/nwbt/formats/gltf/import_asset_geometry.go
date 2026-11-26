@@ -32,6 +32,7 @@ func (c MaterialLookup) Get(index int) *gltf.Material {
 
 type ImportOptions struct {
 	Simplify        bool              // simple geometry data, position and texture only, no normals, tangents, colors, etc.
+	Quantize        bool              // normals and tangents as snorm16 (KHR_mesh_quantization, not supported by all viewers)
 	Base            math.Base         // base transformation for 3D models, e.g. to convert between y-up and z-up coordinate systems
 	LoadGeometry    LoadGeometryFunc  // for geometry + material loading (2 files)
 	LoadAnimation   LoadAnimationFunc // additional animation loading (1 file)
@@ -39,17 +40,38 @@ type ImportOptions struct {
 	SkipLod         bool              // skip LOD nodes, e.g. nodes with $lod in their name
 	SkipHelper      bool              // skip helper nodes, e.g. nodes with $physics (or leading $) in their name
 	SkipShadowProxy bool              // skip geometries that have shadow proxy materials assigned
+	KeepNoDraw      bool              // keep subsets with NoDraw materials (skipped by default, the game does not draw them)
 	SkipUnlinkedMtl bool              // skip materials that are not linked to any geometry
 }
 
 func (doc *Document) ImportAssetGeometry(asset importer.GeometryAsset) {
 	modelRefId := hashString(fmt.Sprintf("%s#%s", asset.GeometryFile, asset.MaterialFile))
+	if len(asset.MaterialParams) > 0 {
+		modelRefId = hashString(fmt.Sprintf("%s#%v", modelRefId, asset.MaterialParams))
+	}
 	if asset.OverrideMaterialIndex != nil {
 		modelRefId = fmt.Sprintf("%s#%d", modelRefId, *asset.OverrideMaterialIndex)
 	}
+	if asset.OvercoatFile != "" {
+		modelRefId = hashString(fmt.Sprintf("%s#overcoat#%s", modelRefId, asset.OvercoatFile))
+	}
+	var joint *gltf.Node
+	if asset.Joint != "" {
+		if joint = doc.FindJoint(asset.Joint); joint == nil {
+			slog.Warn("joint not found", "joint", asset.Joint, "model", asset.GeometryFile)
+			return
+		}
+	}
+	place := func(node *gltf.Node) {
+		if joint != nil {
+			doc.AddToJoint(joint, node, asset.Transform)
+		} else {
+			doc.AddToSceneWithTransform(doc.DefaultScene(), node, asset.Transform)
+		}
+	}
 	if reference, _ := doc.FindNodeByRefID(modelRefId); reference != nil {
 		node, _ := doc.CopyNode(reference)
-		doc.AddToSceneWithTransform(doc.DefaultScene(), node, asset.Transform)
+		place(node)
 		return
 	}
 
@@ -75,8 +97,12 @@ func (doc *Document) ImportAssetGeometry(asset importer.GeometryAsset) {
 	}
 
 	gltfMaterials := make([]*gltf.Material, 0)
-	for _, mtl := range materials {
-		gltfMtl := doc.FindOrAddMaterial(mtl)
+	for i, mtl := range materials {
+		if len(asset.MaterialParams) > 0 {
+			// a copy: the material hash includes the params, the overridden material is one of its own
+			mtl.Params = mtl.Params.WithOverrides(asset.MaterialParams)
+		}
+		gltfMtl := doc.FindOrAddMaterialFromFile(mtl, asset.MaterialFile, i)
 		gltfMaterials = append(gltfMaterials, gltfMtl)
 	}
 	materialLookup := MaterialLookup{
@@ -90,11 +116,13 @@ func (doc *Document) ImportAssetGeometry(asset importer.GeometryAsset) {
 		materialLookup.List = []*gltf.Material{materialLookup.Fallback}
 	}
 
+	overcoatLookup := doc.overcoatLookup(asset.OvercoatFile)
+
 	rootNodes := doc.ImportCgfHierarchy(cgfFile, func(node *gltf.Node, chunk cgf.Chunker, name string, lod int) {
 		switch meshChunk := chunk.(type) {
 		case cgf.ChunkMesh:
 			node.Name = name
-			_, node.Mesh = doc.ImportCgfMesh(name, meshChunk, cgfFile, heapData, materialLookup)
+			_, node.Mesh = doc.ImportCgfMesh(name, meshChunk, cgfFile, heapData, materialLookup, overcoatLookup)
 			node.Skin = skinIndex
 			node.Extras = ExtrasStore(node.Extras, ExtraKeyName, name)
 			node.Extras = ExtrasStore(node.Extras, ExtraKeyLOD, lod)
@@ -113,7 +141,30 @@ func (doc *Document) ImportAssetGeometry(asset importer.GeometryAsset) {
 	rootNode.Name = asset.Name
 	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyRefID, modelRefId)
 	rootNode.Extras = ExtrasStore(rootNode.Extras, ExtraKeyName, asset.Name)
-	doc.AddToSceneWithTransform(doc.DefaultScene(), rootNode, asset.Transform)
+	for key, value := range asset.Extra {
+		rootNode.Extras = ExtrasStore(rootNode.Extras, key, value)
+	}
+	place(rootNode)
+}
+
+// overcoatLookup adds the materials of an overcoat file, empty without one
+func (doc *Document) overcoatLookup(file string) MaterialLookup {
+	result := MaterialLookup{}
+	if file == "" {
+		return result
+	}
+	materials, err := doc.Options.LoadMaterials(file)
+	if err != nil {
+		slog.Warn("overcoat not loaded", "file", file, "err", err)
+		return result
+	}
+	for i, material := range materials {
+		result.List = append(result.List, doc.FindOrAddMaterialFromFile(material, file, i))
+	}
+	if len(result.List) > 0 {
+		result.Fallback = result.List[0]
+	}
+	return result
 }
 
 func hashString(s string) string {

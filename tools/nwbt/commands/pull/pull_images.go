@@ -10,7 +10,6 @@ import (
 	"nw-buddy/tools/formats/loc"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/env"
 	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
 	"nw-buddy/tools/utils/progress"
@@ -145,8 +144,6 @@ func pullImages(fs nwfs.Archive, outDir string, update bool) {
 			output.Data, err = image.ConvertFile(
 				file,
 				image.FormatWEBP,
-				image.WithTempDir(env.TempDir()),
-				image.WithSilent(true),
 				image.WithNormalMap(dds.IsNormalMap(file.Path())),
 			)
 			if err != nil {

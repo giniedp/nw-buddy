@@ -1,0 +1,45 @@
+/* the animation database dialog of the ADB fragments list (AdbSearch.tsx) */
+.nw-adb-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: min(70vh, 40rem);
+}
+.nw-adb-dialog > .nw-adb-search {
+  flex: 0 0 auto;
+}
+.nw-adb-sorting {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.nw-adb-results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-top: 1px solid var(--nw-line);
+}
+.nw-adb-result {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.125rem 0.5rem;
+  font: inherit;
+  color: var(--nw-text-dim);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.nw-adb-result-compatible {
+  color: var(--nw-text);
+}
+.nw-adb-result-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nw-adb-result:hover {
+  background: var(--nw-hover);
+}

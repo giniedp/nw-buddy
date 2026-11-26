@@ -78,7 +78,7 @@ func (c *Collector) CollectMounts(ids ...string) {
 			group := importer.AssetGroup{}
 			group.Animations = c.getAnimations(cdf, adbFile)
 			for _, mesh := range cdf.SkinAndClothAttachments() {
-				model, mtl := c.ResolveCgfAndMtl(mesh.Binding, mesh.Material, material)
+				model, mtl := c.ResolveAttachment(mesh, material)
 				if model != "" {
 					group.Geometries = append(group.Geometries, importer.GeometryAsset{
 						GeometryFile: model,

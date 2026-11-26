@@ -10,12 +10,15 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
+
+	"github.com/gofrs/uuid"
 )
 
 func Load(el *azcs.Element) (any, error) {
-	tt := getTargetType(el.Type2, el.Type)
+	tt := getTargetTypeById(el.TypeId())
 	if tt == nil {
-		return nil, fmt.Errorf("unknown type %s", el.Type)
+		return nil, fmt.Errorf("unknown type %s", azcs.UUIDString(el.Type))
 	}
 	switch tt.Kind() {
 	case reflect.Pointer:
@@ -50,6 +53,26 @@ func LoadXml(el *azcs.XmlElement) (any, error) {
 		value := ptrVal.Elem().Interface() // the value that the pointer points to
 		return value, err
 	}
+}
+
+// targetTypesById holds nwt.PRIMITIVES and nwt.GENERATED keyed by the binary id, primitives take precedence
+var targetTypesById = sync.OnceValue(func() map[uuid.UUID]reflect.Type {
+	res := make(map[uuid.UUID]reflect.Type, len(nwt.PRIMITIVES)+len(nwt.GENERATED))
+	for _, table := range []map[string]reflect.Type{nwt.GENERATED, nwt.PRIMITIVES} {
+		for key, t := range table {
+			id, err := uuid.FromString(key)
+			if err != nil {
+				slog.Warn("invalid type id", "id", key, "err", err)
+				continue
+			}
+			res[id] = t
+		}
+	}
+	return res
+})
+
+func getTargetTypeById(id uuid.UUID) reflect.Type {
+	return targetTypesById()[id]
 }
 
 func getTargetType(type2, type1 string) reflect.Type {

@@ -51,13 +51,9 @@ func run(ccmd *cobra.Command, args []string) {
 	env.PrintStatus()
 
 	results := []CheckResult{
-		checkTexconv(),
-		checkCwebp(),
-		// checkNvtt(), not required
 		checkOodle(),
-		checkMagick(),
-		checkKtx(),
 		checkLuaDecompiler(),
+		checkKtx(),
 		checkGltfTransform(),
 	}
 
@@ -118,58 +114,6 @@ func checkDubplicates(fs nwfs.Archive) {
 	}
 }
 
-func checkTexconv() CheckResult {
-	result := CheckResult{
-		Name:   utils.Texconv.Name(),
-		Status: StatusWarn,
-		Info:   utils.Texconv.Info(),
-	}
-	if p, ok := utils.Texconv.Check(); ok {
-		result.Status = StatusOK
-		result.Path = p
-	}
-	return result
-}
-
-func checkCwebp() CheckResult {
-	result := CheckResult{
-		Name:   utils.Cwebp.Name(),
-		Status: StatusWarn,
-		Info:   utils.Cwebp.Info(),
-	}
-	if p, ok := utils.Cwebp.Check(); ok {
-		result.Status = StatusOK
-		result.Path = p
-	}
-	return result
-}
-
-func checkNvtt() CheckResult {
-	result := CheckResult{
-		Name:   utils.Nvtt.Name(),
-		Status: StatusWarn,
-		Info:   utils.Nvtt.Info(),
-	}
-	if p, ok := utils.Nvtt.Check(); ok {
-		result.Status = StatusOK
-		result.Path = p
-	}
-	return result
-}
-
-func checkKtx() CheckResult {
-	result := CheckResult{
-		Name:   utils.Ktx.Name(),
-		Status: StatusWarn,
-		Info:   utils.Ktx.Info(),
-	}
-	if p, ok := utils.Ktx.Check(); ok {
-		result.Status = StatusOK
-		result.Path = p
-	}
-	return result
-}
-
 func checkOodle() CheckResult {
 	result := CheckResult{
 		Name:   "OodleLib",
@@ -183,19 +127,6 @@ func checkOodle() CheckResult {
 	return result
 }
 
-func checkMagick() CheckResult {
-	result := CheckResult{
-		Name:   utils.Magick.Name(),
-		Status: StatusWarn,
-		Info:   utils.Magick.Info(),
-	}
-	if p, ok := utils.Magick.Check(); ok {
-		result.Status = StatusOK
-		result.Path = p
-	}
-	return result
-}
-
 func checkLuaDecompiler() CheckResult {
 	result := CheckResult{
 		Name:   utils.Unluac.Name(),
@@ -203,6 +134,19 @@ func checkLuaDecompiler() CheckResult {
 		Info:   utils.Unluac.Info(),
 	}
 	if p, ok := utils.Unluac.Check(); ok {
+		result.Status = StatusOK
+		result.Path = p
+	}
+	return result
+}
+
+func checkKtx() CheckResult {
+	result := CheckResult{
+		Name:   utils.Ktx.Name(),
+		Status: StatusWarn,
+		Info:   utils.Ktx.Info(),
+	}
+	if p, ok := utils.Ktx.Check(); ok {
 		result.Status = StatusOK
 		result.Path = p
 	}

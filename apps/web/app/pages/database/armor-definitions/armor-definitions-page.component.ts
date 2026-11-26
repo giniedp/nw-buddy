@@ -36,7 +36,7 @@ import { SplitGutterComponent, SplitPaneDirective } from '../../../ui/split-cont
     TooltipModule,
     VirtualGridModule,
     SplitPaneDirective,
-    SplitGutterComponent
+    SplitGutterComponent,
   ],
   host: {
     class: 'ion-page',

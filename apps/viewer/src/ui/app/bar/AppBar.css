@@ -1,0 +1,24 @@
+/* the bar at the top of every tool (AppBar.tsx): the tool switch, then the items of the tool */
+.nw-app-bar {
+  flex: none;
+  padding: 0.125rem;
+  /* flush with the window edges */
+  border-radius: 0;
+}
+/* icons are sized by the font, not by the row height */
+.nw-app-bar .twk-icon {
+  width: var(--nw-icon-size);
+  height: var(--nw-icon-size);
+}
+/*
+ * above the engine canvas: it takes the input the overlay lets through to the canvas. It looks the
+ * same as in the other tools (opaque): over the bright canvas a translucent bar took the color of
+ * the buttons and the tool switch disappeared.
+ */
+.nw-app-bar-overlay {
+  pointer-events: all;
+}
+/* the tool switch is the first item and set apart from the items of the tool */
+.nw-tool-switch {
+  margin-right: 0.5rem;
+}

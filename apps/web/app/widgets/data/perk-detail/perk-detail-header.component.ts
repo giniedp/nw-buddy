@@ -34,7 +34,12 @@ import { PerkDetailStore } from './perk-detail.store'
               (ngModelChange)="context.patchState({ gearScore: $event })"
               class="w-20 text-right"
             />
-            <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-6 h-6" [tooltip]="'Selected Gear Score'" [tooltipPlacement]="'top'" />
+            <img
+              [nwImage]="'assets/icons/item/icon_gearscore.png'"
+              class="w-6 h-6"
+              [tooltip]="'Selected Gear Score'"
+              [tooltipPlacement]="'top'"
+            />
           </label>
         }
       </nwb-item-header-content>

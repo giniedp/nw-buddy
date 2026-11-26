@@ -1,4 +1,4 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode } from '@ag-grid-community/core'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode } from 'ag-grid-community'
 
 export class ItemTrackerFilter implements IFilterComp {
   private el: HTMLElement
@@ -32,7 +32,7 @@ export class ItemTrackerFilter implements IFilterComp {
   }
 
   public doesFilterPass(params: IDoesFilterPassParams) {
-    const value = this.getValue(params.node, params.data)
+    const value = this.getValue(params.node)
     return (
       value &&
       this.options.some((opt) => {
@@ -101,16 +101,7 @@ export class ItemTrackerFilter implements IFilterComp {
     })
   }
 
-  protected getValue(node: IRowNode, data: any) {
-    return this.params.valueGetter({
-      api: this.params.api,
-      colDef: this.params.colDef,
-      column: this.params.column,
-      columnApi: this.params.columnApi,
-      context: this.params.context,
-      data: data,
-      getValue: (field) => node.data[field],
-      node: node,
-    })
+  protected getValue(node: IRowNode) {
+    return this.params.getValue(node)
   }
 }

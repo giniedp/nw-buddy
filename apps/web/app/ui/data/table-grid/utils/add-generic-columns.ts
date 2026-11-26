@@ -1,4 +1,4 @@
-import { ColDef, GridOptions } from '@ag-grid-community/core'
+import { ColDef, GridOptions } from 'ag-grid-community'
 import { eqCaseInsensitive, humanize } from '~/utils'
 import { GridSelectFilter } from '../../ag-grid/grid-select-filter'
 import { colDefPrecision } from './col-defs'

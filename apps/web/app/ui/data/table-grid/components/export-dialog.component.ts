@@ -1,4 +1,4 @@
-import { GridApi } from '@ag-grid-community/core'
+import { GridApi } from 'ag-grid-community'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'

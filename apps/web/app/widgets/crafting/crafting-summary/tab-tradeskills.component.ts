@@ -21,15 +21,7 @@ import { SummaryRow } from './types'
   selector: 'tab-tradeskills',
   templateUrl: './tab-tradeskills.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    RouterModule,
-    TradeskillsModule,
-    TooltipModule,
-    LayoutModule,
-    ItemDetailModule,
-  ],
+  imports: [CommonModule, NwModule, RouterModule, TradeskillsModule, TooltipModule, LayoutModule, ItemDetailModule],
   providers: [],
   host: {
     class: 'block',

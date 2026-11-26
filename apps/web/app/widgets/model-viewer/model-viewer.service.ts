@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core'
 import { ArmorAppearanceDefinitions, WeaponAppearanceDefinitions } from '@nw-data/generated'
+import { uniqBy } from 'lodash'
 import { Observable, combineLatest, from, map, of, switchMap } from 'rxjs'
 import { injectNwData } from '~/data'
 import { humanize } from '~/utils'
 import {
+  characterDefinitionModelUri,
   costumeModelUri,
   femaleModelUri,
   housingItemModelUri,
@@ -13,6 +15,18 @@ import {
   vitalModelUri,
   weaponAppearanceModelUri,
 } from './utils/get-model-uri'
+import { armorSource, type ModelSource } from './utils/model-source'
+import {
+  mergeVitalModels,
+  relatedVitalId,
+  vitalModelLabel,
+  vitalModelSockets,
+  vitalModelTags,
+  type ModelSocketInfo,
+} from './utils/vital-models'
+
+export type { ModelSource } from './utils/model-source'
+export type { ModelSocketInfo } from './utils/vital-models'
 
 export interface ModelItemInfo {
   name: string
@@ -20,8 +34,42 @@ export interface ModelItemInfo {
   label: string
   itemClass: string[]
   url: string
-  rootUrl?: string
   appearance: any
+  /**
+   * A character model (`.cdf`: player, mount, costume, vital)
+   */
+  character?: boolean
+  /**
+   * The animation database and the tags of a character with fragments (vitals): the viewer lists and plays them
+   */
+  mannequin?: ModelMannequinInfo | null
+  /**
+   * The game files the model is converted from, as the `nwbt models` collectors read them. Null when unknown.
+   */
+  source?: ModelSource | null
+  /**
+   * The weapons a character holds
+   */
+  sockets?: ModelSocketInfo[]
+  /**
+   * The damage table file of a vital's model
+   */
+  damageTable?: string | null
+  /**
+   * The vital a model belongs to when it is shown for another one that has none of its own
+   */
+  relatedVitalId?: string | null
+}
+
+export interface ModelMannequinInfo {
+  /**
+   * Game path of the `.adb`, below the models root
+   */
+  database: string
+  /**
+   * The default tags and the ones of the held weapons
+   */
+  tags: string[]
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +84,8 @@ export class ModelsService {
       label: 'Player',
       url: maleModelUri(),
       appearance: null,
+      character: true,
+      source: { model: 'objects/characters/player/male/player_male.cdf' },
     }
   }
 
@@ -47,6 +97,8 @@ export class ModelsService {
       label: 'Player',
       url: femaleModelUri(),
       appearance: null,
+      character: true,
+      source: { model: 'objects/characters/player/female/player_female.cdf' },
     }
   }
 
@@ -93,11 +145,12 @@ export class ModelsService {
         }
         return {
           name: item.Name,
-          itemClass: item['HousingTag1 Placed'].filter((it) => !!it),
+          itemClass: [...(item.HousingTags ?? [])],
           itemId: item.HouseItemID,
           label: item.Name,
           url: uri,
           appearance: null,
+          source: { model: `slices/${item.PrefabPath}.dynamicslice` },
         }
       }),
     )
@@ -139,6 +192,10 @@ export class ModelsService {
       )
   }
 
+  /**
+   * The models the game spawns a vital with, else (none is known) the ones of the vitals with the same base row, see
+   * {@link ModelItemInfo.relatedVitalId}
+   */
   public byVitalsId(vitalsId$: Observable<string>) {
     return vitalsId$
       .pipe(
@@ -147,23 +204,35 @@ export class ModelsService {
             vital: this.db.vitalsById(id),
             meta: this.db.vitalsMetadataById(id),
             modelsMap: this.db.vitalsModelsMetadataByIdMap(),
+            equipTypes: this.db.equipTypesMetadataByIdMap(),
+            vitalsMap: this.db.vitalsByIdMap(),
           })
         }),
       )
       .pipe(
-        map(({ meta, modelsMap, vital }) => {
-          const models = meta?.models?.map((it) => vitalModelUri(it, modelsMap))?.filter((it) => !!it)
-          if (!models?.length) {
+        map(({ meta, modelsMap, equipTypes, vitalsMap, vital }) => {
+          const isRelated = !meta?.models?.length
+          const ids = isRelated ? meta?.relatedModels : meta?.models
+          const models = mergeVitalModels((ids ?? []).map((it) => modelsMap.get(it)).filter((it) => !!it))
+          if (!models.length) {
             return null
           }
-          return models.map((model, i): ModelItemInfo => {
+          return models.map((model): ModelItemInfo => {
             return {
               name: vital?.DisplayName,
-              label: `Model ${i + 1}`,
-              url: model,
+              label: vitalModelLabel(model),
+              url: vitalModelUri(model),
               itemClass: [],
               itemId: meta.vitalsID,
               appearance: null,
+              character: true,
+              mannequin: model.adb ? { database: model.adb, tags: vitalModelTags(model) } : null,
+              source: model.cdf
+                ? { model: model.cdf, material: model.mtl || null, overcoat: model.overcoat || null }
+                : null,
+              sockets: vitalModelSockets(model.weapons, equipTypes),
+              damageTable: model.table || null,
+              relatedVitalId: isRelated ? relatedVitalId(model, vital?.BaseVitalsId, vitalsMap) : null,
             }
           })
         }),
@@ -185,6 +254,8 @@ export class ModelsService {
             itemClass: [],
             itemId: mount.MountId,
             appearance: mount,
+            character: true,
+            source: mount.Mesh ? { model: mount.Mesh, material: mount.Material || null } : null,
           },
         ]
       }),
@@ -206,6 +277,8 @@ export class ModelsService {
             itemClass: [],
             itemId: value.CostumeChangeId,
             appearance: null,
+            character: true,
+            source: value.CostumeChangeMesh ? { model: value.CostumeChangeMesh } : null,
           },
         ]
       }),
@@ -213,24 +286,27 @@ export class ModelsService {
   }
 
   public byNpcId(npcId$: Observable<string>) {
-    // TODO: add support for npc variations
-    return of([])
-    // return this.db.npcsVariationsByNpcId(npcId$).pipe(
-    //   map((it) => Array.from(it ?? [])),
-    //   map((list): ItemModelInfo[] => {
-    //     return list
-    //       .filter((it) => !!it.CharacterDefinition)
-    //       .map((it): ItemModelInfo => {
-    //         return {
-    //           name: humanize(it.VariantID),
-    //           itemId: it.VariantID,
-    //           label: 'Model',
-    //           itemClass: [],
-    //           url: `${this.cdnHost || ''}/npcs/${it.VariantID}-CharacterDefinition.glb`.toString().toLowerCase(),
-    //         }
-    //       })
-    //   }),
-    // )
+    return npcId$.pipe(
+      switchMap((id) => this.db.npcsModelVariationsByNpcId(id)),
+      map((variations): ModelItemInfo[] => {
+        const models = (variations ?? [])
+          .filter((it) => !!it.CharacterDefinition)
+          .map((it): ModelItemInfo => {
+            return {
+              name: it.Name || humanize(it.NPCId),
+              label: characterDefinitionLabel(it.CharacterDefinition),
+              url: characterDefinitionModelUri(it.CharacterDefinition),
+              itemClass: [],
+              itemId: it.NPCId,
+              appearance: null,
+              character: true,
+              source: { model: it.CharacterDefinition },
+            }
+          })
+        // variations of an NPC share models
+        return uniqBy(models, (it) => it.url)
+      }),
+    )
   }
 
   private selectItemModels(item: ArmorAppearanceDefinitions): ModelItemInfo[] {
@@ -241,8 +317,10 @@ export class ModelsService {
         itemId: item.ItemID,
         url: itemAppearanceModelUri(item, 'Skin1'),
         label: item.Gender || 'Skin',
-        itemClass: [...(item.ItemClass || [])],
+        // some rows have no group, all groups open alike
+        itemClass: [...(item.ItemClass || []), item.IconCaptureGroup || 'Chest'],
         appearance: item,
+        source: armorSource(item),
       })
     }
     // if (item?.ShortsleeveChestSkin) {
@@ -270,8 +348,9 @@ export class ModelsService {
       itemId: item.WeaponAppearanceID,
       url: weaponAppearanceModelUri(item, 'MeshOverride'),
       label: 'Model',
-      itemClass: [...(item.ItemClass || [])],
+      itemClass: weaponTags(item),
       appearance: item,
+      source: item.MeshOverride ? { model: item.MeshOverride } : null,
     })
     return result
   }
@@ -286,8 +365,9 @@ export class ModelsService {
       itemId: item.WeaponAppearanceID,
       url: weaponAppearanceModelUri(item, 'MeshOverride'),
       label: 'Model',
-      itemClass: [...(item.ItemClass || [])],
+      itemClass: weaponTags(item),
       appearance: item,
+      source: item.MeshOverride ? { model: item.MeshOverride } : null,
     })
     return result
   }
@@ -304,7 +384,28 @@ export class ModelsService {
       label: 'Model',
       itemClass: [...(item.ItemClass || [])],
       appearance: item,
+      source: item.MeshOverride ? { model: item.MeshOverride } : null,
     })
     return result
   }
+}
+
+/**
+ * The item class and the icon capture group of a weapon, tool, instrument or mount attachment
+ */
+function weaponTags(item: WeaponAppearanceDefinitions): string[] {
+  const tags: string[] = [...(item.ItemClass || []), item.IconCaptureGroup]
+  // mount attachments share one group, the shields among them lie like the shields of players
+  if (/shield/i.test(item.MountAttachmentAppearanceId || '')) {
+    tags.push('RoundShield')
+  }
+  return tags.filter((it) => !!it)
+}
+
+/**
+ * The file name of a character definition, to tell the models of an NPC apart
+ */
+function characterDefinitionLabel(file: string) {
+  const name = file.split(/[\\/]/).at(-1)
+  return humanize(name.replace(/\.cdf$/i, ''))
 }

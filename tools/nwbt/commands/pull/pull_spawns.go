@@ -1,6 +1,7 @@
 package pull
 
 import (
+	"bytes"
 	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/datasheet"
@@ -117,24 +118,40 @@ func pullSpawns(ctx *PullContext, outDir string) {
 
 	baseLevels := getVitalLevels(ctx.tables)
 	zoneLevels := getZoneLevelOverrides(ctx.tables)
-	models, vitals, count := scanner.CollateVitals(res.Vitals, territories, zoneLevels, baseLevels)
+	baseIds := getVitalBaseIds(ctx.tables)
+	models, vitals, count := scanner.CollateVitals(res.Vitals, territories, zoneLevels, baseLevels, baseIds)
 
 	size = writeJson(models, path.Join(outDir, "vitals_models_metadata.json"))
 	stats.Add("VitalsModels", "rows", len(models), "size", humanize.Bytes(size))
 
-	stats.Add("Vitals", "rows", len(vitals), "positions", count)
-	split := len(vitals) / 3
+	size = writeJsonLines(vitals, path.Join(outDir, "vitals_metadata.json"))
+	stats.Add("Vitals", "rows", len(vitals), "positions", count, "size", humanize.Bytes(size))
+	for _, file := range []string{"vitals_metadata1.json", "vitals_metadata2.json"} {
+		os.Remove(path.Join(outDir, file))
+	}
+}
 
-	vitals1 := vitals[:split]
-	vitals2 := vitals[split:]
-	size = writeJson(vitals1, path.Join(outDir, "vitals_metadata1.json"))
-	stats.Add("Vitals", "split", 1, "rows", len(vitals1), "size", humanize.Bytes(size))
-	size = writeJson(vitals2, path.Join(outDir, "vitals_metadata2.json"))
-	stats.Add("Vitals", "split", 2, "rows", len(vitals2), "size", humanize.Bytes(size))
-	writeJson([]string{
-		"vitals_metadata1.json",
-		"vitals_metadata2.json",
-	}, path.Join(outDir, "vitals_metadata.json"))
+// writeJsonLines writes an array with a row per line
+func writeJsonLines[T any](rows []T, path string) uint64 {
+	buf := bytes.NewBufferString("[")
+	for i, row := range rows {
+		data, err := json.MarshalJSON(row)
+		if err != nil {
+			slog.Error("failed to marshal json", "err", err)
+			return 0
+		}
+		if i > 0 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("\n")
+		buf.Write(data)
+	}
+	buf.WriteString("\n]\n")
+	if err := os.WriteFile(path, buf.Bytes(), 0644); err != nil {
+		slog.Error("failed to write json", "err", err)
+		return 0
+	}
+	return uint64(buf.Len())
 }
 
 func writeJson(value any, path string) uint64 {
@@ -172,6 +189,24 @@ func getVitalLevels(tables []*datasheet.Document) map[string]float32 {
 			if l, ok := lvl.(float32); ok && l > 0 {
 				key := strings.ToLower(fmt.Sprintf("%v", id))
 				result[key] = l
+			}
+		}
+	}
+	return result
+}
+
+// getVitalBaseIds returns the BaseVitalsId of the level variants (lower case)
+func getVitalBaseIds(tables []*datasheet.Document) map[string]string {
+	result := make(map[string]string)
+	for _, table := range tables {
+		if table.Schema != "VitalsLevelVariantData" {
+			continue
+		}
+		for _, row := range table.RowsAsJSON() {
+			id := strings.ToLower(row.GetString("VitalsID"))
+			base := strings.ToLower(row.GetString("BaseVitalsId"))
+			if id != "" && base != "" {
+				result[id] = base
 			}
 		}
 	}

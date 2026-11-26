@@ -7,11 +7,15 @@ export interface ResourceValueOptions {
    */
   keepPrevious?: boolean
 }
-export function resourceValue<T, R>(options: Parameters<typeof resource<T, R>>[0] & ResourceValueOptions): WritableSignal<T> {
+export function resourceValue<T, R>(
+  options: Parameters<typeof resource<T, R>>[0] & ResourceValueOptions,
+): WritableSignal<T> {
   return resourceValueOf(resource(options), { keepPrevious: options?.keepPrevious })
 }
 
-export function rxResourceValue<T, R>(options: Parameters<typeof rxResource<T, R>>[0] & ResourceValueOptions): WritableSignal<T> {
+export function rxResourceValue<T, R>(
+  options: Parameters<typeof rxResource<T, R>>[0] & ResourceValueOptions,
+): WritableSignal<T> {
   return resourceValueOf(rxResource(options), { keepPrevious: options?.keepPrevious })
 }
 

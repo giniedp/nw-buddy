@@ -2,9 +2,9 @@ import { GatherableVariation } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import { GatherableData } from '@nw-data/generated'
 import { ScannedGatherable, ScannedVariation } from '@nw-data/generated'
-import { combineLatest, from, map, switchMap } from 'rxjs'
 import { svgLocationQuestion, svgStaff } from '~/ui/icons/svg'
-import { combineLatestOrEmpty, eqCaseInsensitive, stringToHSL } from '~/utils'
+import { eqCaseInsensitive } from '~/utils/caseinsensitive-compare'
+import { stringToHSL } from '~/utils/colors'
 import { getGatherableIcon } from '../../../gatherable-detail/utils'
 import { describeAlchemyFilters } from '../utils/describe-alchemy-filters'
 import { describeChestsFilters } from '../utils/describe-chests-filters'
@@ -19,50 +19,63 @@ import { describeVistaFilters } from '../utils/describe-vista-filters'
 import { describeGatheringFilters } from '../utils/descrive-gathering-filters'
 import { parseLootTableID } from '../utils/parse-loottable'
 import { getSizeColor, parseSizeVariant } from '../utils/parse-size-variant'
-import { FilterDataSet, FilterGroup } from './types'
+import { PackedFilterDataSet, packPositions } from './packed'
+import { FilterGroup } from './types'
 
-export type MapCoord = (coord: number[] | [number, number]) => number[]
-export function loadGatherables(db: NwData, mapCoord: MapCoord) {
-  return combineLatest({
-    gatherables: db.gatherablesAll(),
-    gatherablesMeta: db.gatherablesMetadataByIdMap(),
-    variationsByGatherableId: db.gatherableVariationsByGatherableIdMap(),
-    variationsMeta: db.variationsMetadataByIdMap(),
-    chunks: loadAllChunks(db),
-  }).pipe(
-    map((data) =>
-      collectGatherableDatasets({
-        ...data,
-        mapCoord,
-      }),
-    ),
-  )
+export type MapCoord = (coord: [number, number]) => number[]
+
+/**
+ * Gatherable layers of all maps
+ */
+export async function loadGatherables(db: NwData, mapCoord: MapCoord) {
+  const [gatherables, gatherablesMeta, variationsByGatherableId, variationsMeta, chunks] = await Promise.all([
+    db.gatherablesAll(),
+    db.gatherablesMetadataByIdMap(),
+    db.gatherableVariationsByGatherableIdMap(),
+    db.variationsMetadataByIdMap(),
+    loadAllChunks(db),
+  ])
+  return collectGatherableDatasets({
+    gatherables,
+    gatherablesMeta,
+    variationsByGatherableId,
+    variationsMeta,
+    chunks,
+    mapCoord,
+  })
 }
 
-function loadAllChunks(db: NwData) {
-  return from(db.variationsMetadataAll()).pipe(
-    switchMap((list) => {
-      const chunkIds: number[] = []
-      for (const item of list) {
-        for (const spawn of item.spawns) {
-          if (!chunkIds.includes(spawn.positions.chunkID)) {
-            chunkIds.push(spawn.positions.chunkID)
-          }
-        }
-      }
-      return combineLatestOrEmpty(chunkIds.map((id) => db.variationsChunk(id)))
+async function loadAllChunks(db: NwData) {
+  const list = await db.variationsMetadataAll()
+  const chunkIds = new Set<number>()
+  for (const item of list) {
+    for (const spawn of item.spawns) {
+      chunkIds.add(spawn.positions.chunkID)
+    }
+  }
+  const chunks: Float32Array[] = []
+  await Promise.all(
+    Array.from(chunkIds).map(async (id) => {
+      chunks[id] = await db.variationsChunkData(id)
     }),
   )
+  return chunks
 }
+
 function collectGatherableDatasets(data: {
   gatherables: GatherableData[]
   gatherablesMeta: Map<string, ScannedGatherable>
   variationsByGatherableId: Map<string, GatherableVariation[]>
   variationsMeta: Map<string, ScannedVariation>
-  chunks: Array<number[][]>
+  chunks: Float32Array[]
   mapCoord: MapCoord
-}): FilterDataSet[] {
-  const result: Record<string, FilterDataSet> = {}
+}): PackedFilterDataSet[] {
+  const result: Record<string, PackedFilterDataSet> = {}
+  const projected: number[] = []
+  const project = (x: number, y: number) => {
+    const [lng, lat] = data.mapCoord([x, y])
+    projected.push(lng, lat)
+  }
   let featureId = 0
   for (const gatherable of data.gatherables) {
     const meta = data.gatherablesMeta.get(gatherable.GatherableID)
@@ -93,25 +106,22 @@ function collectGatherableDatasets(data: {
         appendVariant(layer, group)
 
         const mapId = spawn.mapID
-        const points = spawn.positions.map(data.mapCoord)
+        projected.length = 0
+        for (const [x, y] of spawn.positions) {
+          project(x, y)
+        }
+        const count = spawn.positions.length
         const mapData = (layer.data[mapId] = layer.data[mapId] || {
           count: 0,
-          geometry: {
-            type: 'FeatureCollection',
-            features: [],
-          },
+          features: [],
         })
-        layer.count += points.length
-        mapData.count += points.length
+        layer.count += count
+        mapData.count += count
         featureId++
-        mapData.geometry.features.push({
+        mapData.features.push({
           id: featureId,
-          type: 'Feature',
           properties: properties,
-          geometry: {
-            type: 'MultiPoint',
-            coordinates: points,
-          },
+          positions: packPositions(projected),
         })
       }
     }
@@ -154,26 +164,24 @@ function collectGatherableDatasets(data: {
             const mapId = spawn.mapID
             const mapData = (layer.data[mapId] = layer.data[mapId] || {
               count: 0,
-              geometry: {
-                type: 'FeatureCollection',
-                features: [],
-              },
+              features: [],
             })
             const chunk = spawn.positions
-            const points = data.chunks[chunk.chunkID]
-              .slice(chunk.elementOffset, chunk.elementOffset + chunk.elementCount)
-              .map(data.mapCoord)
-            layer.count += points.length
-            mapData.count += points.length
+            const source = data.chunks[chunk.chunkID]
+            const start = chunk.elementOffset * 2
+            const end = Math.min(source.length, (chunk.elementOffset + chunk.elementCount) * 2)
+            projected.length = 0
+            for (let i = start; i < end; i += 2) {
+              project(source[i], source[i + 1])
+            }
+            const count = (end - start) / 2
+            layer.count += count
+            mapData.count += count
             featureId++
-            mapData.geometry.features.push({
+            mapData.features.push({
               id: featureId,
-              type: 'Feature',
               properties: properties,
-              geometry: {
-                type: 'MultiPoint',
-                coordinates: points,
-              },
+              positions: packPositions(projected),
             })
           }
         }
@@ -338,7 +346,7 @@ function generateId(group: FilterGroup) {
   return [group.section, group.category, group.subcategory].join()
 }
 
-function appendVariant(data: FilterDataSet, group: FilterGroup) {
+function appendVariant(data: PackedFilterDataSet, group: FilterGroup) {
   if (!group?.variantID) {
     return
   }

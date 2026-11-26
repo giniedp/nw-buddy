@@ -1,10 +1,24 @@
 import { Directive, Injector, OnDestroy, computed, effect, inject, input, model, output, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Feature, FeatureCollection, Geometry } from 'geojson'
-import { FilterSpecification, GeoJSONSource, Map, MapLayerEventType } from 'maplibre-gl'
+import { ExpressionSpecification, FilterSpecification, GeoJSONSource, Map, MapLayerEventType } from 'maplibre-gl'
 import tinycolor from 'tinycolor2'
 import { GameMapHost } from './game-map-host'
+import { STACK_RING_FILTER, StackFan, stackRingRadius, withStacks } from './map-stacks'
 import { attachLayerHover } from './map-utils'
+
+/**
+ * Point radius by the `size` property (0..2, default 1)
+ */
+const POINT_RADIUS: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['coalesce', ['number', ['get', 'size'], 1], ['number', 1]],
+  0,
+  0,
+  2,
+  20,
+]
 
 @Directive({
   standalone: true,
@@ -37,15 +51,26 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   public labelsMinZoom = input<number>(14)
   public labelsMaxZoom = input<number>(0)
   public filter = input<FilterSpecification>()
+  /**
+   * Points at the same position draw rings, one per visible member, and fan out on hover
+   */
+  public stacks = input<boolean>(true)
   private injector = inject(Injector)
   private sourceId = computed(() => this.layerId())
   private iconLayerId = computed(() => `icon-${this.layerId()}`)
   private circleLayerId = computed(() => `circle-${this.layerId()}`)
+  private ringLayerId = computed(() => `ring-${this.layerId()}`)
+  private useStacks = computed(() => this.stacks() && !this.polygons())
+  private sourceData = computed(() => {
+    const data = this.data() || { type: 'FeatureCollection', features: [] }
+    return this.useStacks() ? withStacks(data) : data
+  })
+  private fan: StackFan = null
   private heatmapLayerId = computed(() => `heatmap-${this.layerId()}`)
   private labelLayerId = computed(() => `label-${this.layerId()}`)
   private polyLayerId = computed(() => `poly-${this.layerId()}`)
   private outlineLayerId = computed(() => `outline-${this.layerId()}`)
-  public variants = signal<string[]>(null)
+  public variants = model<string[]>(null)
   public featuresBelowCursor = signal<Array<Feature<G, P>>>(null)
   public featureClick = output<Array<Feature<G, P>>>()
   public featureMouseEnter = output<Array<Feature<G, P>>>()
@@ -80,12 +105,34 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     this.disabled.set(!variants)
   }
 
+  /**
+   * Created on first hover: bind may run before the inputs are set
+   */
+  private getFan() {
+    this.fan ??= new StackFan({
+      map: this.map,
+      id: this.layerId(),
+      color: this.color() ?? null,
+      icons: !!this.icons(),
+      onMouseEnter: (e) => this.emitMouseEnter(e.features),
+      onMouseMove: (e) => this.emitMouseMove(e.features),
+      onMouseLeave: (e) => this.emitMouseLeave(e.features),
+      onClick: this.handleClick,
+    })
+    return this.fan
+  }
+
   private bind() {
     this.effect(() => {
       if (this.disabled()) {
         this.dispose()
       } else {
-        this.getSource().setData(this.data() || { type: 'FeatureCollection', features: [] })
+        this.getSource().setData(this.sourceData())
+      }
+    })
+    this.effect(() => {
+      if (!this.disabled()) {
+        this.getSource()
         this.updateFilter(this.variants(), this.filter())
         this.updateColor(this.heatmapColor())
       }
@@ -194,6 +241,27 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
       })
     }
 
+    const ringLayerId = this.ringLayerId()
+    if (!useCircles || !this.useStacks()) {
+      this.removeLayer(ringLayerId)
+    } else if (!this.map.getLayer(ringLayerId)) {
+      // below the points: one ring per member, filtered like the points
+      this.map.addLayer({
+        id: ringLayerId,
+        source: sourceId,
+        minzoom: minZoom,
+        maxzoom: maxZoom,
+        type: 'circle',
+        filter: STACK_RING_FILTER,
+        paint: {
+          'circle-radius': stackRingRadius(useIcons ? 18 : POINT_RADIUS),
+          'circle-opacity': 0,
+          'circle-stroke-color': this.color() ?? ['get', 'color'],
+          'circle-stroke-width': 1.5,
+        },
+      })
+    }
+
     if (!useCircles) {
       this.removeLayer(circleLayerId)
     } else if (!this.map.getLayer(circleLayerId)) {
@@ -204,15 +272,7 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         maxzoom: maxZoom,
         type: 'circle',
         paint: {
-          'circle-radius': [
-            'interpolate',
-            ['linear'],
-            ['coalesce', ['number', ['get', 'size'], 1], ['number', 1]],
-            0,
-            0,
-            2,
-            20,
-          ],
+          'circle-radius': POINT_RADIUS,
           'circle-color': this.color() ?? ['get', 'color'],
           'circle-stroke-color': '#000000',
           'circle-stroke-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 1],
@@ -341,6 +401,10 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
         // layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 1])
         // layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 0.5])
       })
+      this.withLayer(ringLayerId, (layer) => {
+        layer.minzoom = 14
+        layer.setPaintProperty('circle-stroke-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 0.8])
+      })
       this.withLayer(circleLayerId, (layer) => {
         layer.minzoom = 14
         layer.setPaintProperty('circle-opacity', ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 1])
@@ -371,6 +435,9 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
     }
     if (this.map.getLayer(this.circleLayerId())) {
       this.map.setFilter(this.circleLayerId(), filter)
+    }
+    if (this.map.getLayer(this.ringLayerId())) {
+      this.map.setFilter(this.ringLayerId(), filter ? (['all', filter, STACK_RING_FILTER] as any) : STACK_RING_FILTER)
     }
     if (this.map.getLayer(this.labelLayerId())) {
       this.map.setFilter(this.labelLayerId(), filter)
@@ -415,9 +482,11 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   }
 
   private dispose() {
+    this.fan?.close()
     this.removeLayer(this.labelLayerId())
     this.removeLayer(this.iconLayerId())
     this.removeLayer(this.circleLayerId())
+    this.removeLayer(this.ringLayerId())
     this.removeLayer(this.heatmapLayerId())
     this.removeLayer(this.polyLayerId())
     this.removeLayer(this.outlineLayerId())
@@ -441,19 +510,55 @@ export class GameMapLayerDirective<G extends Geometry, P> implements OnDestroy {
   }
 
   private handleMouseEnter = (e: MapLayerEventType['mouseenter']) => {
-    const features = e.features as any as Array<Feature<G, P>>
+    const features = this.withoutFanned(e.features)
+    if (features.length) {
+      this.emitMouseEnter(features)
+    } else {
+      this.emitMouseLeave(features)
+    }
+  }
+
+  private handleMouseLeave = (e: MapLayerEventType['mouseleave']) => {
+    this.emitMouseLeave(e.features)
+  }
+
+  private handleMouseMove = (e: MapLayerEventType['mousemove']) => {
+    const features = this.withoutFanned(e.features)
+    if (features.length) {
+      this.emitMouseMove(features)
+    } else {
+      this.emitMouseLeave(features)
+    }
+  }
+
+  /**
+   * Opens the fan for a hovered stack. Its members are left out: the fan shows them one by one.
+   */
+  private withoutFanned(features: MapLayerEventType['mousemove']['features']) {
+    if (!this.useStacks() || !features) {
+      return features ?? []
+    }
+    const key = this.getFan().hover(features)
+    if (!key) {
+      return features
+    }
+    return features.filter((it) => it.properties?.['stackKey'] !== key)
+  }
+
+  private emitMouseEnter = (list: MapLayerEventType['mouseenter']['features']) => {
+    const features = list as any as Array<Feature<G, P>>
     this.featuresBelowCursor.set(features)
     this.featureMouseEnter.emit(features)
   }
 
-  private handleMouseLeave = (e: MapLayerEventType['mouseleave']) => {
-    const features = e.features as any as Array<Feature<G, P>>
+  private emitMouseLeave = (list: MapLayerEventType['mouseleave']['features']) => {
+    const features = list as any as Array<Feature<G, P>>
     this.featuresBelowCursor.set(null)
     this.featureMouseLeave.emit(features)
   }
 
-  private handleMouseMove = (e: MapLayerEventType['mousemove']) => {
-    const features = e.features as any as Array<Feature<G, P>>
+  private emitMouseMove = (list: MapLayerEventType['mousemove']['features']) => {
+    const features = list as any as Array<Feature<G, P>>
     this.featuresBelowCursor.set(features)
     this.featureMouseMove.emit(features)
   }

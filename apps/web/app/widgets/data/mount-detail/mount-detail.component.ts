@@ -4,14 +4,21 @@ import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { MountDetailStore } from './mount-detail.store'
-import { ModelViewerModule } from '~/widgets/model-viewer'
+import { ModelDownloadButtonComponent, ModelViewComponent } from '~/widgets/model-view'
 
 @Component({
   selector: 'nwb-mount-detail',
   templateUrl: './mount-detail.component.html',
   exportAs: 'mountDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, ModelViewerModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    ItemFrameModule,
+    PropertyGridModule,
+    ModelDownloadButtonComponent,
+    ModelViewComponent,
+  ],
   providers: [MountDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',

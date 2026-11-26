@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable, inject } from '@angular/core'
 import { getSeasonPassDataId } from '@nw-data/common'
 import { COLS_SEASONPASSRANKDATA } from '@nw-data/generated'

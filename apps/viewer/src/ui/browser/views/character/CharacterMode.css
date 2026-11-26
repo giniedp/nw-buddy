@@ -1,0 +1,182 @@
+/* the character mode: the lists and parts of the character next to the engine in a split (CharacterMode.tsx) */
+.nw-character {
+  flex: 1;
+  min-height: 0;
+}
+.nw-character > .twk-split-gutter {
+  border-left: 1px solid var(--nw-line);
+}
+/* the panes keep their size: long names and bars that come and go do not resize the engine */
+.nw-character > .twk-split-pane {
+  overflow: hidden;
+}
+/* checkboxes of the character panel: a dim outline instead of the text color, the accent when checked */
+.nw-character .twk-checkbox {
+  background: transparent;
+  outline-color: var(--nw-line-strong);
+}
+.nw-character .twk-checkbox:hover {
+  outline-color: var(--nw-text-dim);
+}
+.nw-character .twk-checkbox:checked {
+  background: var(--nw-accent);
+  outline-color: var(--nw-accent);
+}
+/* smaller in the list rows */
+.nw-character-list .twk-checkbox {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+.nw-character-list .twk-checkbox:checked::before {
+  width: 0.5rem;
+  height: 0.25rem;
+}
+.nw-character-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.nw-character-list .nw-view-bar > .nw-view-filter {
+  flex: 1;
+  width: auto;
+}
+
+/* the rows of both lists (CharacterAnimations.tsx, CharacterAdbFragments.tsx): a folder or fragment, then its rows */
+.nw-character-animations {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.nw-character-group {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  width: 100%;
+  padding: 0.125rem 0.5rem;
+  font: inherit;
+  color: var(--nw-text);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.nw-character-group:hover {
+  background: var(--nw-hover);
+}
+.nw-character-group > .twk-icon {
+  flex: 0 0 auto;
+  width: 0.625rem;
+  height: 0.625rem;
+  transition: transform 0.1s;
+}
+.nw-character-group-open > .twk-icon {
+  transform: rotate(90deg);
+}
+.nw-character-group-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nw-character-row {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  padding: 0 0.5rem 0 1.5rem;
+}
+.nw-character-row:hover {
+  background: var(--nw-hover);
+}
+.nw-character-row-active,
+.nw-character-row-active:hover {
+  color: var(--nw-accent);
+  background: var(--nw-line);
+}
+.nw-character-play {
+  flex: 1;
+  min-width: 0;
+  padding: 0.125rem 0;
+  overflow: hidden;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+/* Export and Character Parts below the list: a group title over the content */
+.nw-character-section {
+  flex: 0 0 auto;
+}
+.nw-character-parts {
+  flex: 0 0 auto;
+  max-height: 8rem;
+  overflow-y: auto;
+}
+/* a part: its draw checkbox, then the link to its mesh */
+.nw-character-part-row {
+  display: flex;
+  align-items: center;
+}
+.nw-character-part-row:hover {
+  background: var(--nw-hover);
+}
+.nw-character-part-toggle {
+  display: flex;
+  flex: none;
+  padding-left: 0.5rem;
+}
+.nw-character-part {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.125rem 0.5rem;
+  overflow: hidden;
+  font: inherit;
+  color: var(--nw-text);
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nw-character-part-file {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--nw-accent);
+  text-overflow: ellipsis;
+}
+/* an attachment the game hides by default */
+.nw-character-part-hidden .nw-character-part-file {
+  opacity: 0.6;
+}
+.nw-character-part:hover .nw-character-part-file {
+  text-decoration: underline;
+}
+
+/* the bars above the engine: playback, options, blend space */
+.nw-view-bar > .nw-character-slider {
+  flex: 1 1 14rem;
+  min-width: 10rem;
+}
+.nw-view-bar > .nw-character-track {
+  flex: 1 1 auto;
+}
+.nw-view-bar > .nw-character-number {
+  flex: 0 0 8rem;
+  width: 8rem;
+}
+.nw-character-blend {
+  flex-wrap: wrap;
+}
+.nw-view-bar > .nw-character-weights {
+  flex: 1 1 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'

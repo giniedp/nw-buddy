@@ -52,7 +52,7 @@ const CREATURE_TYPE_MARKER: Record<CreatureType, string> = {
   DungeonMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
   'Dungeon+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
   EliteMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
-  "Dungeon+_NoCurrency": 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  'Dungeon+_NoCurrency': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
   'Raid10+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
   'Raid20+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
   CatacombsMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
@@ -71,8 +71,8 @@ const CREATURE_TYPE_MARKER: Record<CreatureType, string> = {
   Player: 'assets/icons/marker/marker_ai_level_bg_groupplus_ally.png',
   Solo_Quest: 'assets/icons/marker/marker_ai_level_bg_critter.png',
   Solo_StarterBeach: 'assets/icons/marker/marker_ai_level_bg_critter.png',
-  "Solo+_StarterBeach": 'assets/icons/marker/marker_ai_level_bg_critter.png',
-  "Solo-_StarterBeach": 'assets/icons/marker/marker_ai_level_bg_critter.png',
+  'Solo+_StarterBeach': 'assets/icons/marker/marker_ai_level_bg_critter.png',
+  'Solo-_StarterBeach': 'assets/icons/marker/marker_ai_level_bg_critter.png',
 }
 
 export interface VitalFamilyInfo {
@@ -329,11 +329,8 @@ export function getVitalGameModeMaps(
       // all mobs have mapId set to 'newworld_vitaeeterna'
       // we check for bounds
       const [x, y, w, h] = (bounds.split(',') || []).map(Number)
-      return spawns.some(({ p }) => {
-        if (!p.length) {
-          return false
-        }
-        return p[0] >= x && p[0] <= x + w && p[1] >= y && p[1] <= y + h
+      return spawns.some((spawn) => {
+        return spawn.p.some((p) => p[0] >= x && p[0] <= x + w && p[1] >= y && p[1] <= y + h)
       })
     }
     return vitalMeta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, catlicueId))

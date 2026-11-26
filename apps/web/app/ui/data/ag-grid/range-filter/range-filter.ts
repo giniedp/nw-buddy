@@ -1,4 +1,4 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode, RowNode } from '@ag-grid-community/core'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode, RowNode } from 'ag-grid-community'
 import m from 'mithril'
 
 export interface RangeFilterParams {
@@ -66,7 +66,7 @@ export class RangeFilter implements IFilterComp {
   }
 
   public doesFilterPass(params: IDoesFilterPassParams) {
-    const value = this.getValue(params.node, params.data)
+    const value = this.getValue(params.node)
     let min: number
     let max: number
     if (typeof value === 'number') {
@@ -115,16 +115,7 @@ export class RangeFilter implements IFilterComp {
     this.el = null
   }
 
-  protected getValue(node: IRowNode, data: any) {
-    return this.params.valueGetter({
-      api: this.params.api,
-      colDef: this.params.colDef,
-      column: this.params.column,
-      columnApi: this.params.columnApi,
-      context: this.params.context,
-      data: data,
-      getValue: (field) => node.data[field],
-      node: node,
-    })
+  protected getValue(node: IRowNode) {
+    return this.params.getValue(node)
   }
 }

@@ -12,8 +12,8 @@ import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
   styleUrl: './game-modes-page-tile.component.css',
   imports: [MutaElementTileComponent, MutaCurseTileComponent, MutaPromotionTileComponent, NwModule, LayoutModule],
   host: {
-    class: 'grid'
-  }
+    class: 'grid',
+  },
 })
 export class GameModePageTileComponent {
   public mapName = input<string | string[]>()

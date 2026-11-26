@@ -54,7 +54,7 @@ export class ItemCardComponent {
         return Number(value)
       }
       return value
-    }
+    },
   })
   public gsEditable = input<boolean>()
   public perkOverride = input<Record<string, string>>()

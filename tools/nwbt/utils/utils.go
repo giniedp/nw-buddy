@@ -30,6 +30,8 @@ func WriteFile(file string, data []byte) error {
 	}
 	defer tmp.Close()
 	if _, err := tmp.Write(data); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
 		return fmt.Errorf("temp file not written: %w", err)
 	}
 	tmpFile := strings.ReplaceAll(tmp.Name(), "\\", "/")
@@ -37,6 +39,7 @@ func WriteFile(file string, data []byte) error {
 		slog.Warn("temp file not closed", "file", tmpFile, "error", err)
 	}
 	if err = os.Rename(tmpFile, file); err != nil {
+		os.Remove(tmpFile)
 		return fmt.Errorf("temp file not renamed: %w", err)
 	}
 	return nil

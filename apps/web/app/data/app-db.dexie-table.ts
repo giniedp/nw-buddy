@@ -80,7 +80,6 @@ export class AppDbDexieTable<T extends AppDbRecord> extends AppDbTable<T> {
   }
 
   public async delete(id: string | string[], options?: { silent: boolean }): Promise<void> {
-
     const ids = typeof id === 'string' ? [id] : id
     await this.table.bulkDelete(ids)
 

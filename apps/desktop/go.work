@@ -1,0 +1,4 @@
+// A workspace of its own: the repository's go.work leaves this module out (Wails needs Go >= 1.26)
+go 1.26.0
+
+use .

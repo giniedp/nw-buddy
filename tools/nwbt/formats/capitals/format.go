@@ -21,6 +21,18 @@ type Capital struct {
 	SliceName    string      `json:"sliceName"`
 	SliceAssetID string      `json:"sliceAssetId"`
 	VariantName  string      `json:"variantName"`
+	Cookie       *Cookie     `json:"cookie"`
+}
+
+// Cookie flattens the terrain around the capital position towards its z coordinate. Plots and placed slices carry
+// one; it applies with a positive maxHeightBlend.
+type Cookie struct {
+	InnerRadius          *float32 `json:"innerRadius"`
+	OuterRadius          *float32 `json:"outerRadius"`
+	MaxHeightBlend       *float32 `json:"maxHeightBlend"`
+	EdgeNoise            *float32 `json:"edgeNoise"`
+	EdgeNoiseFeatureSize *float32 `json:"edgeNoiseFeatureSize"`
+	GroundNoiseScale     *float32 `json:"groundNoiseScale"`
 }
 
 type Vector struct {
@@ -73,14 +85,7 @@ func (doc *Capital) Transform() transform.Node {
 		// Translation
 		0, 0, 0,
 	}
-	skipRotation := false
-	if doc.ID == "af072283-0cf3-29ea-ed0f-c11e6449484d" {
-		// sharedassets/coatlicue/nw_dungeon_edengrove_00/regions/r_+00_+00/capitals/dungeon_art/dungeon_art.capitals.json
-		// "sliceName": "slices/dungeon/natural/dungeon_hallway_natural_16m_a",
-		// entry hallway to greenkeeper boss
-		skipRotation = true
-	}
-	if !skipRotation && doc.Rotation != nil {
+	if doc.Rotation != nil {
 		data[0] = nwt.AzFloat32(doc.Rotation.X)
 		data[1] = nwt.AzFloat32(doc.Rotation.Y)
 		data[2] = nwt.AzFloat32(doc.Rotation.Z)

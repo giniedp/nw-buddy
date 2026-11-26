@@ -63,13 +63,31 @@ type Object struct {
 }
 
 type Element struct {
-	Flags    Flags
-	NameCrc  uint32
-	Version  uint8
-	Type     string
-	Type2    string
+	Flags   Flags
+	NameCrc uint32
+	Version uint8
+	Type    uuid.UUID
+	// Type2 is only set by object stream version 2, uuid.Nil otherwise
+	Type2    uuid.UUID
 	Data     []byte
 	Elements []*Element
+}
+
+// TypeId is the type of the element: Type2 if set, Type otherwise
+func (el *Element) TypeId() uuid.UUID {
+	if el.Type2 != uuid.Nil {
+		return el.Type2
+	}
+	return el.Type
+}
+
+// UUIDString formats the id upper case without braces, the key format of the type tables (rtti, nwt).
+// uuid.Nil formats as ""
+func UUIDString(id uuid.UUID) string {
+	if id == uuid.Nil {
+		return ""
+	}
+	return strings.ToUpper(id.String())
 }
 
 func IsBinaryObjectStream(data []byte) bool {
@@ -140,12 +158,10 @@ func nextElement(r *buf.Reader, o *Object) (res *Element, err error) {
 	if flags.HasVersion() {
 		res.Version = r.MustReadByte()
 	}
-	res.Type = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
+	copy(res.Type[:], r.MustReadBytes(16))
 	if o.Version == 2 {
-		res.Type2 = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
+		copy(res.Type2[:], r.MustReadBytes(16))
 	}
-	res.Type = strings.ToUpper(res.Type)
-	res.Type2 = strings.ToUpper(res.Type2)
 
 	if flags.HasData() {
 		size := flags.ToSize()

@@ -1,4 +1,3 @@
-import { NumberFilter } from '@ag-grid-community/core'
 import { GameEventData, ScannedEncounter } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
@@ -11,7 +10,7 @@ export function encounterColID(util: EncounterTableUtils) {
     headerValueGetter: () => 'ID',
     field: 'encounterID',
     width: 300,
-    hide: true
+    hide: true,
   })
 }
 
@@ -45,7 +44,7 @@ export function encounterColSpawnCount(util: EncounterTableUtils) {
     getQuickFilterText: () => '',
     width: 150,
     valueGetter: ({ data }) => getEncounterSpawnCount(data),
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 export function getEncounterSpawnCount(encounter: ScannedEncounter) {

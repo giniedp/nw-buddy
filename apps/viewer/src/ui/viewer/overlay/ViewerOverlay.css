@@ -1,0 +1,39 @@
+/* The ui of the viewer tool above the canvas, see ViewerOverlay.tsx */
+.nw-overlay {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  /* the canvas receives the input, except on the toolbar and the sidebars */
+  pointer-events: none;
+  --twk-width: 100%;
+}
+/* flush with the window: no panel radius of `.tweak-ui`, it clips the corners of the app bar */
+.tweak-ui.nw-overlay {
+  border-radius: 0;
+}
+.nw-overlay-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.nw-overlay-panes {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.nw-overlay-fluid {
+  flex: 1;
+}
+.nw-overlay-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 var(--nw-sidebar-width);
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: clip;
+  pointer-events: all;
+  background: var(--nw-bg);
+}

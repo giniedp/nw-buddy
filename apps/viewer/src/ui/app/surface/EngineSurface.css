@@ -1,0 +1,9 @@
+/* shows the engine canvas (EngineSurface.tsx); the canvas is positioned inside it and may be larger */
+.nw-engine-surface {
+  position: relative;
+  overflow: hidden;
+}
+/* the surface's height, not the page's (base.css): a surface may be shorter than the page (Data tool preview) */
+.nw-engine-surface > canvas {
+  height: 100%;
+}

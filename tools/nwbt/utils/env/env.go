@@ -23,7 +23,6 @@ var (
 )
 
 func init() {
-	slog.Info("CALLER", "b", b)
 	workDir := WorkDir()
 	envFile := path.Join(workDir, ".env")
 	if _, err := os.Stat(envFile); os.IsNotExist(err) {
@@ -40,9 +39,14 @@ func init() {
 	AppendToPATH(path.Join(WorkDir(), "tools", "viewer"))
 }
 
+// AppendToPATH appends a directory to the PATH, with the OS's list separator
 func AppendToPATH(p string) {
-	p = os.Getenv("PATH") + p + ";"
-	os.Setenv("PATH", p)
+	current := os.Getenv("PATH")
+	separator := string(os.PathListSeparator)
+	if current != "" && !strings.HasSuffix(current, separator) {
+		current += separator
+	}
+	os.Setenv("PATH", current+p)
 }
 
 func PrintStatus() {
@@ -95,9 +99,15 @@ func Get(lookup string, fallback string) string {
 	return value
 }
 
+// GetPath is Get for a file system path: backslashes become forward slashes, the separator the tools work with
+// (path.Join, glob patterns)
+func GetPath(lookup string, fallback string) string {
+	return filepath.ToSlash(Get(lookup, fallback))
+}
+
 // GameDir returns the game directory by looking up the NW_GAME environment variable
 func GameDir() string {
-	return Get("NW_GAME", "")
+	return GetPath("NW_GAME", "")
 }
 
 func NwbtDir() string {
@@ -107,17 +117,17 @@ func NwbtDir() string {
 // TempDir returns the temp directory by looking up the NW_TEMP environment variable
 // if not set, it defaults to ".nwbt"
 func TempDir() string {
-	return Get("NW_TEMP", path.Join(NwbtDir(), "temp"))
+	return GetPath("NW_TEMP", path.Join(NwbtDir(), "temp"))
 }
 
 // UnpackDir returns the unpack directory by looking up the NW_UNPACK environment variable
 func UnpackDir() string {
-	return Get("NW_UNPACK", path.Join(NwbtDir(), "unpack"))
+	return GetPath("NW_UNPACK", path.Join(NwbtDir(), "unpack"))
 }
 
 // ModelsDir returns the models directory by looking up the NW_MODELS environment variable
 func ModelsDir() string {
-	return Get("NW_MODELS", path.Join(NwbtDir(), "models"))
+	return GetPath("NW_MODELS", path.Join(NwbtDir(), "models"))
 }
 
 // PreferredWorkerCount for general purpose tasks
@@ -125,7 +135,7 @@ func PreferredWorkerCount() int {
 	defaultMin := 4
 	defaultVal := max(defaultMin, runtime.NumCPU()/2)
 	strValue := os.Getenv("NW_WORKER_COUNT")
-	if value, err := strconv.Atoi(strValue); err != nil && value > 0 {
+	if value, err := strconv.Atoi(strValue); err == nil && value > 0 {
 		return value
 	}
 	return defaultVal
@@ -137,7 +147,7 @@ func PullDataDir() string {
 	if projectVersion != "" {
 		fallback = path.Join(WorkDir(), "dist", "nw-data", strings.ToLower(WorkspaceName()))
 	}
-	return Get("NW_PULL_DATA", fallback)
+	return GetPath("NW_PULL_DATA", fallback)
 }
 
 // PullDir returns the pull directory by looking up the NW_PULL_TYPES environment variable
@@ -146,17 +156,17 @@ func PullTypesDir() string {
 	if projectVersion != "" {
 		fallback = path.Join(WorkDir(), "libs", "nw-data", "generated")
 	}
-	return Get("NW_PULL_TYPES", fallback)
+	return GetPath("NW_PULL_TYPES", fallback)
 }
 
 // CacheDir returns the cache directory by looking up the NW_CACHE environment variable
 func CacheDir() string {
-	return Get("NW_CACHE", path.Join(NwbtDir(), "cache"))
+	return GetPath("NW_CACHE", path.Join(NwbtDir(), "cache"))
 }
 
 // LumberyardDir returns the lumberyard directory by looking up the LUMBERYARD_DIR environment variable
 func LumberyardDir() string {
-	return Get("LUMBERYARD_DIR", "")
+	return GetPath("LUMBERYARD_DIR", "")
 }
 
 // ToolsHost returns the tools host by looking up the NW_TOOLS_HOST environment variable

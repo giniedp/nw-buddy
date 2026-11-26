@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable, inject } from '@angular/core'
 import { COLS_GAMEMODEDATA } from '@nw-data/generated'
 import { Observable, defer } from 'rxjs'

@@ -13,11 +13,9 @@ import { CharacterAvatarStore } from './character-avatar.store'
       [class.from-covenant-light]="isCovenant()"
       [class.to-covenant-dark]="isCovenant()"
       [class.ring-covenant-dark]="isCovenant()"
-
       [class.from-marauder-light]="isMarauder()"
       [class.to-marauder-dark]="isMarauder()"
       [class.ring-marauder-dark]="isMarauder()"
-
       [class.from-syndicate-light]="isSyndicate()"
       [class.to-syndicate-dark]="isSyndicate()"
       [class.ring-syndicate-dark]="isSyndicate()"

@@ -35,7 +35,9 @@ export function buildItemInstanceRow(
   const perkInfos = getItemPerkInfos(item, record.perks)
   const itemPerks = perkInfos.map((it) => {
     const perk = perks.get(it.perkId)
-    const affix = perk?.Affix?.map((id) => affixes.get(id))?.flat()?.filter((it) => !!it)
+    const affix = perk?.Affix?.map((id) => affixes.get(id))
+      ?.flat()
+      ?.filter((it) => !!it)
     const bucket = buckets.get(it.bucketId)
     return {
       key: it.key,

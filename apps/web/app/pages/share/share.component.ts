@@ -33,7 +33,7 @@ export class ShareComponent {
     params: this.cid,
     loader: ({ params }) => {
       return this.web3.download({ cid: params })
-    }
+    },
   })
   public isLoading = this.resource.isLoading
   public error = this.resource.error

@@ -14,8 +14,13 @@ type Assets struct {
 	Catalog *catalog.Document
 	Archive nwfs.Archive
 
-	objectCache sync.Map
-	sheetCache  sync.Map
+	objectCache    *objectCache
+	sheetCache     sync.Map
+	tableIndex     map[string][]nwfs.File // lower case table name -> datasheet files
+	schemaIndex    map[string][]nwfs.File // lower case schema name -> datasheet files
+	tableIndexOnce sync.Once
+	weapons        weaponTables
+	equipTypes     equipTypeTable
 }
 
 func InitPackedAssets(gameDir string) (*Assets, error) {
@@ -33,8 +38,9 @@ func InitPackedAssets(gameDir string) (*Assets, error) {
 	}
 	bar.Close()
 	result := &Assets{
-		Catalog: doc,
-		Archive: archive,
+		Catalog:     doc,
+		Archive:     archive,
+		objectCache: newObjectCache(ObjectCacheBudget),
 	}
 	return result, nil
 }
@@ -63,10 +69,7 @@ func (it *Assets) FindPrefabPathForAmmoId(ammoId string) string {
 }
 
 func (it *Assets) FindTableRow(tableName string, idKey string, id string) *datasheet.JSONRow {
-	for sheet := range it.EachDatasheet() {
-		if !strings.EqualFold(sheet.Table, tableName) {
-			continue
-		}
+	for sheet := range it.DatasheetsOfTable(tableName) {
 		for _, row := range sheet.RowsAsJSON() {
 			if strings.EqualFold(row.GetString(idKey), id) {
 				return &row

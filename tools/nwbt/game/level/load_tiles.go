@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"log/slog"
+	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/formats/tiff"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils/img"
@@ -36,11 +37,12 @@ func (dir *CoatlicueDirectory) LoadHeightmapTiles(archive nwfs.Archive) *img.Til
 			slog.Error("failed to read heightmap", "file", file.Path(), "err", err)
 			return nil
 		}
-		img, err := tiff.DecodeWithImageWithMagick(data)
+		hm, err := heightmap.ParseTIFF(data)
 		if err != nil {
 			slog.Error("failed to decode heightmap", "file", file.Path(), "err", err)
 			return nil
 		}
+		img := hm.Image()
 		files.Store(r.ID, img)
 		width := img.Bounds().Max.X
 		// height := img.Bounds().Max.Y

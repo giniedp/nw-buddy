@@ -1,0 +1,48 @@
+/* the particle mode: the effects of the library next to the engine (ParticleMode.tsx) */
+.nw-particles {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.nw-particles-list {
+  display: flex;
+  flex: 0 0 22rem;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--nw-line);
+}
+.nw-particles-list .nw-view-bar > .nw-view-filter {
+  flex: 1;
+  width: auto;
+}
+.nw-particles-effects {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.nw-particles-effect {
+  display: block;
+  width: 100%;
+  padding: 0.125rem 0.5rem;
+  overflow: hidden;
+  color: var(--nw-text);
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+.nw-particles-effect:hover {
+  background: var(--nw-hover);
+}
+.nw-particles-effect-active,
+.nw-particles-effect-active:hover {
+  color: var(--nw-accent);
+  background: var(--nw-line);
+}
+.nw-particles-count {
+  padding: 0.25rem 0.5rem;
+  border-top: 1px solid var(--nw-line);
+}

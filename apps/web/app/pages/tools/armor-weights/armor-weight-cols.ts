@@ -1,4 +1,3 @@
-import { NumberFilter } from '@ag-grid-community/core'
 import { EquipSlotId } from '@nw-data/common'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -171,7 +170,7 @@ export function armorWeightColRating(util: ArmorWeightTableUtils) {
     headerValueGetter: () => 'Rating',
     valueGetter: ({ data }) => data.rating,
     valueFormatter: ({ value }) => value.toFixed(1),
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 
@@ -181,7 +180,7 @@ export function armorWeightColWeight(util: ArmorWeightTableUtils) {
     headerValueGetter: () => 'Weight',
     valueGetter: ({ data }) => data.weight,
     valueFormatter: ({ value }) => value.toFixed(1),
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
     cellClassRules: {
       'text-success': ({ data }) => data.weightClass === 'light',
       'text-primary': ({ data }) => data.weightClass === 'medium',

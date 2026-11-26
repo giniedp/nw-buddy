@@ -7,6 +7,7 @@ import {
   svgClipboard,
   svgCode,
   svgCrosshairsSimple,
+  svgCubes,
   svgDatabase,
   svgDiamond,
   svgDiamondOutline,
@@ -103,6 +104,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Backstories - PTR Testing', path: '/backstories', icon: 'assets/icons/menu/backstories.png' },
       { label: 'Datasheets', path: '/datasheets', svgIcon: svgCode },
       { label: 'Actionlists', path: '/actionlists', svgIcon: svgCode },
+      { label: 'Pak tools', path: '/pak', svgIcon: svgCubes },
     ],
   },
   {

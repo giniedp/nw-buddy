@@ -1,0 +1,48 @@
+<ion-content [scrollY]="false">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <div class="ion-page order-2" id="main">
+      <nwb-character-view
+        class="w-full h-full"
+        [stageUrl]="store.stageUrl()"
+        [characterUrl]="store.characterUrl()"
+        [characterRootUrl]="store.characterRootUrl()"
+        [slots]="store.viewSlots()"
+        [sockets]="store.viewSockets()"
+        [hiddenParts]="store.hiddenParts()"
+        [exposureStops]="store.exposureStops()"
+        (exposureStopsChange)="store.setExposureStops($event)"
+        [characterLightStops]="store.characterLightStops()"
+        (characterLightStopsChange)="store.setCharacterLightStops($event)"
+        [backgroundLightStops]="store.backgroundLightStops()"
+        (backgroundLightStopsChange)="store.setBackgroundLightStops($event)"
+        (defaultHiddenPartsChange)="store.setDefaultHiddenParts($event)"
+        [animation]="store.viewAnimation()"
+        [animationPaused]="store.animationPaused()"
+        [animationSeek]="store.animationSeek()"
+        (animationProgress)="store.setAnimationProgress($event)"
+      />
+    </div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ng-container [ngTemplateOutlet]="tplPanel" />
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <nwb-detail-content
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+    [template]="tplPanel"
+  />
+</ion-content>
+
+<ng-template #tplPanel>
+  <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
+    <ng-content select="[header]" />
+    <nwb-character-editor-panel class="w-full" [disabled]="isDisabled()" />
+    <button class="btn btn-sm btn-block mt-2" (click)="openDownloads()">Download Model</button>
+    <ng-content />
+  </ion-content>
+</ng-template>

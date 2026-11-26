@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { chain } from 'lodash'
 import { from, map, Observable } from 'rxjs'
 import { injectNwData } from '~/data'

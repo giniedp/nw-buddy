@@ -115,7 +115,7 @@ export function mergeDamageStacks(mod: ModifierResult | ModifierResult[], oldSta
       result.stack.push(it)
       continue
     }
-    const found = result.stack.find((it) => it.ref === it.ref)
+    const found = result.stack.find((entry) => entry.ref === it.ref)
     if (found) {
       found.disabled = it.disabled
     }

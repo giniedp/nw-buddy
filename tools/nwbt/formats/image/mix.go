@@ -49,6 +49,20 @@ func MixPngImages(a []byte, b []byte, mix func(a, b color.NRGBA) color.NRGBA) (o
 	return buf.Bytes(), nil
 }
 
+// MapPngImage applies fn to every pixel of a png image
+func MapPngImage(data []byte, fn func(c color.NRGBA) color.NRGBA) (out []byte, err error) {
+	defer utils.HandleRecover(&err, "mapping png image")
+
+	img := toNRGBA(utils.Must(png.Decode(bytes.NewBuffer(data))))
+	for i := 0; i+3 < len(img.Pix); i += 4 {
+		c := fn(color.NRGBA{img.Pix[i], img.Pix[i+1], img.Pix[i+2], img.Pix[i+3]})
+		img.Pix[i], img.Pix[i+1], img.Pix[i+2], img.Pix[i+3] = c.R, c.G, c.B, c.A
+	}
+	buf := &bytes.Buffer{}
+	png.Encode(buf, img)
+	return buf.Bytes(), nil
+}
+
 func toNRGBA(img image.Image) *image.NRGBA {
 	if t, pl := img.(*image.NRGBA); pl {
 		return t

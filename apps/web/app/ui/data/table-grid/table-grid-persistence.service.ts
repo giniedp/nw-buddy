@@ -1,4 +1,4 @@
-import { ColumnState, GridApi } from '@ag-grid-community/core'
+import { ColumnState, GridApi } from 'ag-grid-community'
 import { EventEmitter, Injectable, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TableStateRecord, TableStatesService } from '~/data'

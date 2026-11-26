@@ -106,22 +106,6 @@ func FindEntityParent(slice *nwt.SliceComponent, entity *nwt.AZ__Entity) *nwt.AZ
 	return nil
 }
 
-func HasEntityChildren(slice *nwt.SliceComponent, entity *nwt.AZ__Entity) bool {
-	if entity == nil {
-		return false
-	}
-	for _, it := range slice.Entities.Element {
-		parent := FindEntityParent(slice, &it)
-		if parent == nil {
-			continue
-		}
-		if parent.Id.Id == entity.Id.Id {
-			return true
-		}
-	}
-	return false
-}
-
 func FindEntityTransform(entity *nwt.AZ__Entity) transform.Node {
 	if entity == nil {
 		return nil
@@ -165,46 +149,6 @@ func FindEntityTransformMat4WithParentId(entity *nwt.AZ__Entity) (mat4.Data, nwt
 		}
 	}
 	return mat4.Identity(), 0
-}
-
-func FindTransformFromRootMat4(entity *nwt.AZ__Entity) mat4.Data {
-	tm := FindEntityTransformMat4(entity)
-	parent := FindEntityParent(nil, entity)
-	if parent != nil {
-		tm = mat4.Multiply(FindTransformFromRootMat4(parent), tm)
-	}
-	return tm
-}
-
-func FindAncestorWithPositionInTheWorld(slice *nwt.SliceComponent, entity *nwt.AZ__Entity) *nwt.AZ__Entity {
-	if entity == nil {
-		return nil
-	}
-	for _, component := range entity.Components.Element {
-		if _, ok := component.(nwt.PositionInTheWorldComponent); ok {
-			return entity
-		}
-	}
-	return FindAncestorWithPositionInTheWorld(slice, FindEntityParent(slice, entity))
-}
-
-func FindEncounterType(slice *nwt.SliceComponent) string {
-	for entity := range EntitiesOf(slice) {
-		name := string(entity.Name)
-		if name == "" {
-			continue
-		}
-		if strings.Contains(name, "RandomEncounter") {
-			return "random"
-		}
-		if strings.Contains(name, "Enc_Darkness") {
-			return "darkness"
-		}
-		if strings.Contains(name, "LootGoblin") {
-			return "goblin"
-		}
-	}
-	return ""
 }
 
 func ParseMapIdFromPath(filePath string) string {
@@ -262,19 +206,6 @@ func ParseCatacombTileFromPath(filePath string) *CatacombTile {
 	result.OffsetX += tileSize / 2
 	result.OffsetY += tileSize / 2
 	return &result
-}
-
-var regionRegex = regexp.MustCompile(`r_\+(\d{2})_\+(\d{2})`)
-
-func ParseRegionLocation(regionName string) *[2]int {
-	// r_+00_+00
-	match := regionRegex.FindStringSubmatch(regionName)
-	if len(match) != 3 {
-		return nil
-	}
-	x, _ := strconv.Atoi(match[1])
-	y, _ := strconv.Atoi(match[2])
-	return &[2]int{x, y}
 }
 
 type EntityTreeNode struct {
@@ -405,7 +336,7 @@ func findEncounterComponent(entity *nwt.AZ__Entity) *nwt.EncounterComponent {
 
 func ParseEncounterName(name string) string {
 	name = strings.ToLower(name)
-	if strings.Contains(name, "RandomEncounter") {
+	if strings.Contains(name, "randomencounter") {
 		return "random"
 	}
 	if strings.Contains(name, "enc_darkness") || strings.Contains(name, "darknesshunt") {

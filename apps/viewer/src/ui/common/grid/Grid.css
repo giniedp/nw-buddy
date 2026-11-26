@@ -1,0 +1,50 @@
+/* an ag-grid table, fills the view (Grid.tsx) */
+.nw-ag {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+/* the row numbers read as chrome, not data */
+.nw-ag .nw-ag-index {
+  color: var(--nw-text-dim);
+}
+/* the tweak-ui reset (.tweak-ui :where(*) { padding: 0 }) has the specificity of ag-grid's own header rule and comes
+   later: the header cells get their padding back here */
+.nw-ag .ag-header-cell,
+.nw-ag .ag-header-group-cell {
+  padding: 0 var(--ag-cell-horizontal-padding);
+}
+/* the column filters (columns.ts columnFilter, the fields are styled by the grid theme): a field per column under the
+   headers, its placeholder says what it matches. The filter row has no column lines, the fields separate the
+   columns. */
+.nw-ag .ag-header-row-column-filter .ag-header-cell::after {
+  display: none;
+}
+.nw-ag .ag-floating-filter {
+  padding: 0 0.25rem;
+}
+/* the button of the filter menu (number filters: greater than, in range) shows on hover and on a filtered column, a
+   filtered column's name is in the accent */
+.nw-ag .ag-header-cell-filter-button {
+  opacity: 0;
+}
+.nw-ag .ag-header-cell:hover .ag-header-cell-filter-button,
+.nw-ag .ag-header-cell-filtered .ag-header-cell-filter-button {
+  opacity: 1;
+}
+.nw-ag .ag-header-cell-filtered .ag-header-cell-text {
+  color: var(--nw-accent);
+}
+/* cells with buttons (cellClass 'nw-ag-buttons'): centered in the row, side by side */
+.nw-ag .nw-ag-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+/* measures the width of a mono character at the grid font size (columns.ts gridCharPx) */
+.nw-ag-probe {
+  position: absolute;
+  visibility: hidden;
+  font-family: var(--twk-font-mono);
+  font-size: var(--nw-text-md);
+}

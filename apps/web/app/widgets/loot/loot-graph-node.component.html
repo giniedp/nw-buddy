@@ -86,7 +86,7 @@
         @if (gsRange) {
           <span class="badge badge-sm badge-info"> GS: {{ gsRange }} </span>
         }
-        @if (itemQuantity && itemQuantity != '1') {
+        @if (itemQuantity && itemQuantity !== '1') {
           <span class="whitespace-nowrap"> {{ itemQuantity }} &times; </span>
         }
         <span class="flex-1 overflow-hidden whitespace-nowrap inline-flex items-center font-mono text-sm">

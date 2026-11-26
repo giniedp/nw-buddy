@@ -9,7 +9,6 @@ This is a private project. We are not affiliated by Amazon or Amazon Game Studio
 All data and assets extracted using these tools are the intellectual property of AGS. Please respect the
 [Amazon Games Content Usage Policy](https://www.amazon.com/gp/help/customer/display.html?nodeId=GNX7GA7HXVL9V8XZ&pop-up=1).
 
-
 ## Features
 
 - Browse ingame items (links to nwdb.info or nw-guide)
@@ -37,7 +36,7 @@ The software and development stack is based on the following technologies:
 - pnpm
 - Angular
 - Tailwind css (Daisy UI)
-- Electron
+- Wails (desktop app, Windows)
 
 For build commands, see package.json
 
@@ -60,7 +59,7 @@ pnpm dev:web
 
 ## Prepare dev environment
 
-- make sure golang is installed. See  [go.work](go.work) for current version
+- make sure golang is installed. See [go.work](go.work) for current version
 - if you use `vscode`, make sure the `go` extension is installed
 - make sure `.env` file exists, copy it from [.env.example](.env.example) and update `NW_GAME_LIVE` (and `NW_GAME_PTR`) variables
 - run `pnpm nwbt vet` to check if game packages can be accessed and tools are available
@@ -104,18 +103,21 @@ This updates frontend data and generates types. Fix whatever needs to be fixed.
 
 `pnpm nwbt --help` shows all available commands.
 
+`pnpm nwbt:build` builds `tools/bin/nwbt.exe`, `pnpm viewer:build` builds `tools/bin/viewer.zip` (the viewer app nwbt serves). Both are not in git, build them fresh. For manual use of nwbt, see [docs/level-server.md](docs/level-server.md).
+
 ## Running dev server
 
-Run `pnpm dev`. Starts both, the electron app and a web browser in parallel
-Run `pnpm dev:web` if you only need a web browser for development
+Run `pnpm dev`. Starts the web dev server, the viewer lib watch build, nwbt and the desktop app in parallel
+Run `pnpm dev:web:only` if you only need a web browser for development
+Run `pnpm dev:desktop:only` to develop in the desktop app (the web dev server in a desktop window, with nwbt as a child process). It needs a running web dev server
 
 ## Building the app
 
 There are multiple target that can be built
 
-### Electron App
+### Desktop App
 
-Run `build:electron`. This will build the electron frame, the web app with electron target and then bundle it all together. The resulting `.exe` is written to `releases/nw-buddy [VERSION].exe`
+Run `build:desktop`. This builds nwbt, the viewer, the standalone web app and the Windows desktop app (`apps/desktop`, Wails) and packages them into `dist/desktop`. The desktop app, with nwbt, is published on [GitHub releases](https://github.com/giniedp/nw-buddy/releases).
 
 ### Web App
 

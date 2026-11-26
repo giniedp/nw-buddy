@@ -1,7 +1,7 @@
 import { GatherableVariation } from '@nw-data/common'
 import { GatherableData } from '@nw-data/generated'
 import { svgDungeon } from '~/ui/icons/svg'
-import { humanize } from '~/utils'
+import { humanize } from '~/utils/humanize'
 import { FilterGroup } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
 

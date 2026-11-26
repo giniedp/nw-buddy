@@ -15,14 +15,18 @@
     </div>
     <div slot="end" class="flex flex-row items-center">
       @if (categories()?.length) {
-        <select class="select select-sm mr-1 w-36" [ngModel]="category()" (ngModelChange)="service.loadCategory($event)">
+        <select
+          class="select select-sm mr-1 w-36"
+          [ngModel]="category()"
+          (ngModelChange)="service.loadCategory($event)"
+        >
           <option [ngValue]="null">All</option>
           @for (category of categories(); track category.id) {
             <option [value]="category.id">{{ category.label }}</option>
           }
         </select>
       }
-      <nwb-quicksearch-input [autofocus]="true" class="mr-1  w-36" />
+      <nwb-quicksearch-input [autofocus]="true" class="mr-1 w-36" />
     </div>
   </ion-toolbar>
 </ion-header>

@@ -17,16 +17,15 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strings"
+	"path/filepath"
 
-	"github.com/goreleaser/fileglob"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/singleflight"
 )
 
 type Flags struct {
 	GameDir        string
 	OutputDir      string
-	TempDir        string
 	CacheDir       string
 	TextureSize    uint
 	Simplify       bool
@@ -35,6 +34,7 @@ type Flags struct {
 	Embed          bool
 	Webp           bool
 	Ktx2           bool
+	Dds            bool
 	RelativeUri    bool
 	WorkerCount    uint
 	SkipExisting   bool
@@ -43,7 +43,8 @@ type Flags struct {
 	UuidFile       string
 	Lights         bool
 	LightIntensity float32
-	IOR            float32
+	IOR            float32 // specular workflow ior: 0 = F0 is the specular color, > 1 = scaled specular color (Blender)
+	EmissiveRef    float32
 }
 
 var flg Flags
@@ -64,7 +65,6 @@ var Cmd = &cobra.Command{
 
 func init() {
 	Cmd.Flags().StringVarP(&flg.GameDir, "game", "g", env.GameDir(), "game root directory")
-	Cmd.Flags().StringVarP(&flg.TempDir, "temp", "t", env.TempDir(), "temp directory for image conversion")
 	Cmd.Flags().StringVarP(&flg.CacheDir, "cache", "c", env.CacheDir(), "image cache directory")
 	Cmd.Flags().StringVarP(&flg.OutputDir, "output", "o", env.ModelsDir(), "output directory")
 	Cmd.Flags().BoolVar(&flg.Binary, "binary", false, "whether to output binary glb instead of gltf")
@@ -75,9 +75,11 @@ func init() {
 
 	Cmd.Flags().BoolVar(&flg.Webp, "webp", false, "Textures are converted to webp")
 	Cmd.Flags().BoolVar(&flg.Ktx2, "ktx", false, "Textures are converted to ktx2")
-	Cmd.MarkFlagsMutuallyExclusive("webp", "ktx")
+	Cmd.Flags().BoolVar(&flg.Dds, "dds", false, "Textures are the original DDS (BC5_SNORM normal maps as RGBA8 with z), for Blender")
+	Cmd.MarkFlagsMutuallyExclusive("webp", "ktx", "dds")
 
-	Cmd.Flags().Float32Var(&flg.IOR, "ior", 0.0, "Material IOR value. Use 1.5 when exporting for blender otherwise keep it at 0.0")
+	Cmd.Flags().Float32Var(&flg.IOR, "ior", 0.0, "specular workflow ior: 0 makes F0 the specular color (glTF spec), > 1 (e.g. 1.5) scales the specular color to the same F0, for Blender")
+	Cmd.Flags().Float32Var(&flg.EmissiveRef, "emissive-ref", gltf.DefaultEmissiveRef, "luminance in cd/m² that maps to emissive 1.0, lower is brighter (night ≈ 154)")
 	Cmd.Flags().BoolVar(&flg.Lights, "lights", false, "Whether lights should be exported")
 	Cmd.Flags().Float32Var(&flg.LightIntensity, "light-intensity", 500.0, "Light intensity scale")
 	Cmd.Flags().BoolVar(&flg.Animations, "animations", false, "Whether animations should be processed")
@@ -121,6 +123,11 @@ func run(ccmd *cobra.Command, args []string) {
 }
 
 func initCollector() (*Collector, error) {
+	if flg.Ktx2 {
+		if _, ok := utils.Ktx.Check(); !ok {
+			return nil, fmt.Errorf("--ktx needs the %s tool on the PATH:\n%s", utils.Ktx.Name(), utils.Ktx.Info())
+		}
+	}
 	assets, err := game.InitPackedAssets(flg.GameDir)
 	if err != nil {
 		return nil, err
@@ -135,7 +142,6 @@ func (c *Collector) Process() {
 	c.ProcessAdbFiles()
 	c.ProcessTimelines()
 	c.ProcessModels()
-	c.ProcessTextures()
 	c.ProcessOptimize()
 }
 
@@ -165,22 +171,66 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 	if len(models) == 0 {
 		return
 	}
-	imageLoader := image.LoaderWithConverter{
+	// Group: the models convert their textures in parallel (AsyncImages), a shared texture converts once
+	pngLoader := image.LoaderWithConverter{
 		Archive: c.Archive,
 		Catalog: c.Catalog,
+		Group:   new(singleflight.Group),
 		Cache:   image.NewCache(c.flags.CacheDir, ".png"),
 		Converter: image.BasicConverter{
 			Format:  ".png",
-			TempDir: c.flags.TempDir,
-			Silent:  true,
 			MaxSize: c.flags.TextureSize,
 		},
+	}
+	imageLoader := pngLoader
+	if c.flags.Ktx2 {
+		// each texture converts once from its DDS, the KTX2 format follows the DDS format (image.ktxFormatOfDDS).
+		// The bakes read png and are encoded to KTX2 (gltf encodeBake).
+		imageLoader = image.LoaderWithConverter{
+			Archive: c.Archive,
+			Catalog: c.Catalog,
+			Group:   new(singleflight.Group),
+			Cache:   image.NewCache(c.flags.CacheDir, string(image.FormatKTX2)),
+			Converter: image.BasicConverter{
+				Format:  image.FormatKTX2,
+				MaxSize: c.flags.TextureSize,
+			},
+		}
+	}
+	if c.flags.Webp {
+		// each texture converts once from its DDS, the bakes read png and are encoded to WebP (gltf encodeBake)
+		imageLoader = image.LoaderWithConverter{
+			Archive: c.Archive,
+			Catalog: c.Catalog,
+			Group:   new(singleflight.Group),
+			Cache:   image.NewCache(c.flags.CacheDir, string(image.FormatWEBP)),
+			Converter: image.BasicConverter{
+				Format:  image.FormatWEBP,
+				MaxSize: c.flags.TextureSize,
+			},
+		}
+	}
+	if c.flags.Dds {
+		// the original DDS (as the server's textures=dds export, for Blender), BC5_SNORM normal maps as RGBA8 with z.
+		// The bakes read png and are encoded to DDS (gltf encodeBake).
+		imageLoader = image.LoaderWithConverter{
+			Archive: c.Archive,
+			Catalog: c.Catalog,
+			Group:   new(singleflight.Group),
+			Converter: image.BasicConverter{
+				Format:       image.FormatDDS,
+				MaxSize:      c.flags.TextureSize,
+				NormalFormat: image.NormalFormatRGBA8,
+			},
+		}
 	}
 	linker := gltf.NewResourceLinker(c.flags.OutputDir)
 	linker.SetRelativeMode(c.flags.RelativeUri)
 	if c.flags.Embed {
 		linker = nil
 	}
+	// the models share textures and bakes: each one is converted and written once
+	linkedImages := gltf.NewLinkedImages()
 
 	progress.RunTasks(progress.TasksConfig[importer.AssetGroup, string]{
 		Description:   description,
@@ -191,10 +241,18 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 			document.Extras = group.Extra
 			document.Asset.Generator = "New World Buddy Tools"
 			document.ImageLoader = imageLoader
+			if c.flags.Ktx2 || c.flags.Dds || c.flags.Webp {
+				// the bakes read png, then encode to the target format (gltf encodeBake)
+				document.BakeImageLoader = pngLoader
+			}
 			document.ImageLinker = linker
+			document.LinkedImages = linkedImages
+			// a model's textures convert in parallel
+			document.AsyncImages = true
 			document.TargetFile = group.TargetFile
+			name := c.modelName(group.TargetFile)
 			if c.flags.SkipExisting && utils.FileExists(document.TargetFile) {
-				return "", nil
+				return name, nil
 			}
 
 			// model export targets gltf spec, so y-up by default
@@ -226,40 +284,43 @@ func (c *Collector) processAassets(description string, models []importer.AssetGr
 			if flg.Lights && len(group.Lights) > 0 {
 				document.ImportAssetLights(group.Lights, flg.LightIntensity)
 			}
+			if len(group.Entities) > 0 {
+				document.ImportAssetEntities(group.Entities)
+			}
+			for key, value := range group.Extra {
+				if sockets, ok := value.([]CharacterSocket); ok {
+					// the joints are converted to the export's axes (C·M·C⁻¹), the relative transforms likewise
+					value = convertSockets(sockets, document.Options.Base)
+				}
+				scene := document.DefaultScene()
+				scene.Extras = gltf.ExtrasStore(scene.Extras, key, value)
+			}
 
 			document.ProcessMaterials(
 				gltf.WithTextureBaking(true),
-				gltf.WithCustomIOR(flg.IOR),
 				gltf.WithDiffuseOnly(flg.Simplify),
+				gltf.WithEmissiveRef(flg.EmissiveRef),
+				gltf.WithSpecularIOR(flg.IOR),
 			)
 			document.CleanExtras()
-
-			imageFormat := ""
-			if c.flags.Webp {
-				imageFormat = "webp"
-			}
-			if c.flags.Ktx2 {
-				imageFormat = "ktx2"
-			}
-
-			if imageFormat != "" {
-				for _, img := range document.Images {
-					if img.BufferView != nil {
-						// skip embedded images
-					} else {
-						img.MimeType = fmt.Sprintf("image/%s", imageFormat)
-						img.URI = utils.ReplaceExt(img.URI, "."+imageFormat)
-					}
-				}
-			}
+			document.ApplyTextureBasisu()
+			document.ApplyTextureWebp()
 
 			if err := document.Save(); err != nil {
-				slog.Warn("Model not saved", "err", err)
+				return name, fmt.Errorf("model not saved: %w", err)
 			}
-			return "", nil
+			return name, nil
 		},
 		ConsumerCount: int(c.flags.WorkerCount),
 	})
+}
+
+// modelName is the model's path in the output directory, for the progress detail
+func (c *Collector) modelName(targetFile string) string {
+	if rel, err := filepath.Rel(c.flags.OutputDir, targetFile); err == nil {
+		return filepath.ToSlash(rel)
+	}
+	return targetFile
 }
 
 func (c *Collector) ProcessAdbFiles() {
@@ -318,67 +379,7 @@ func (c *Collector) ProcessTimelines() {
 		outPath := path.Join(c.flags.OutputDir, file.Path()+".json")
 		utils.WriteFile(outPath, data)
 	}
-}
-
-func (c *Collector) ProcessTextures() error {
-	format := ".png"
-	if c.flags.Webp {
-		format = ".webp"
-		if _, ok := utils.Cwebp.Check(); !ok {
-			return fmt.Errorf("cwebp not available")
-		}
-	}
-	if c.flags.Ktx2 {
-		format = ".ktx2"
-		if _, ok := utils.Ktx.Check(); !ok {
-			return fmt.Errorf("toktx not available")
-		}
-	}
-	if format == ".png" {
-		return nil
-	}
-
-	pattern := path.Join(c.flags.OutputDir, "**.png")
-	files, err := fileglob.Glob(pattern, fileglob.MaybeRootFS)
-	if err != nil {
-		return err
-	}
-	progress.RunTasks(progress.TasksConfig[string, string]{
-		Description:   "Converting textures",
-		Tasks:         files,
-		ProducerCount: int(c.flags.WorkerCount),
-		Producer: func(input string) (string, error) {
-			switch format {
-			case ".webp":
-				output := utils.ReplaceExt(input, format)
-				return input, utils.Cwebp.Run(input, "-o", output)
-			case ".ktx2":
-				output := utils.ReplaceExt(input, format)
-				toktx := utils.Ktx
-				args := []string{"create", "--threads", "1"}
-				if strings.Contains(input, "_ddn.") || strings.Contains(input, "_ddna.") {
-					args = append(args, toktx.PresetNormalMap()...)
-				} else if strings.Contains(input, "_spec.") {
-					args = append(args, toktx.PresetSpecularMap()...)
-				} else if strings.Contains(input, "_mask.") {
-					args = append(args, toktx.PresetMaskMap()...)
-				} else {
-					args = append(args, toktx.PresetDiffuseMap()...)
-				}
-				args = append(args, input, output)
-				return input, toktx.Run(args...)
-			}
-			return input, nil
-		},
-		ConsumerCount: 1,
-		Consumer: func(input string, e error) (string, error) {
-			if e == nil {
-				return input, os.Remove(input)
-			}
-			return input, e
-		},
-	})
-	return nil
+	bar.Close()
 }
 
 func (c *Collector) ProcessOptimize() {
@@ -426,10 +427,7 @@ func (c *Collector) ProcessOptimize() {
 			}
 
 			err := utils.GltfTransform.Run("optimize", group.TargetFile, group.TargetFile, "--texture-compress", format, "--texture-size", size)
-			if err != nil {
-				slog.Error("gltf-transform", "error", err)
-			}
-			return "", err
+			return c.modelName(group.TargetFile), err
 		},
 		ConsumerCount: int(c.flags.WorkerCount),
 	})

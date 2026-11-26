@@ -1,0 +1,81 @@
+/* the inspect mode: the chunk table and the selected chunk (InspectMode.tsx, ChunkPane.tsx) */
+.nw-inspect {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.nw-inspect-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.nw-inspect-chunks {
+  flex: 0 0 34rem;
+  min-height: 0;
+}
+.nw-inspect-detail {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--nw-line);
+  user-select: text;
+}
+.nw-chunk {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+.nw-chunk-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.nw-chunk-title {
+  font-size: var(--nw-text-lg);
+}
+.nw-field {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: 0.75rem;
+  padding: 0.125rem 0;
+}
+.nw-field-name {
+  color: var(--nw-text-dim);
+}
+.nw-field-value {
+  overflow-wrap: anywhere;
+  font-family: var(--twk-font-mono);
+}
+.nw-field-group > summary {
+  cursor: pointer;
+  padding: 0.125rem 0;
+}
+.nw-field-children {
+  padding-left: 1rem;
+  border-left: 1px solid var(--nw-line);
+}
+/* a link to a chunk or to a byte range in the Hex mode */
+.nw-link {
+  margin-left: 0.5rem;
+  padding: 0;
+  color: var(--nw-accent);
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+.nw-link:hover {
+  text-decoration: underline;
+}
+.nw-chunk-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+/* a fixed height: the flex basis of .nw-ag (flex: 1) collapses it in the column of the chunk */
+.nw-chunk-grid {
+  flex: 0 0 16rem;
+  height: 16rem;
+}

@@ -1,0 +1,30 @@
+/* The app shell: the root of each tool, see ui/app/App.tsx */
+
+/*
+ * The element the app lib mounts into (src/app.tsx): the containing block of the tools, sized by the host. Takes
+ * the place of the page rules of the standalone app (page.css).
+ */
+.nw-viewer-app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: black;
+  scrollbar-color: var(--nw-scrollbar) transparent;
+}
+
+/* fills the page; the engine canvas is placed in it (positioned, may be larger than the page) */
+.nw-tool {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* the engine surface and the app bar have their styles next to them (ui/app/surface, ui/app/bar) */
+
+/* a tool that is an opaque page instead of an overlay above the canvas, e.g. the browser */
+.tweak-ui.nw-tool-page {
+  --twk-width: 100%;
+  border-radius: 0;
+}

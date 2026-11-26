@@ -14,7 +14,6 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { monaco } from './monaco-editor'
 import { MonacoService } from './monaco.service'
 
-
 export interface CodeEditorSelectionRange {
   startLine: number
   startColumn: number
@@ -59,6 +58,7 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
   public readonly selectionChanged = output<CodeEditorSelectionRange>()
   public readonly editorLoaded = output<monaco.editor.IStandaloneCodeEditor>()
   private didSendEditorLoaded = false
+  private monaco: typeof monaco
 
   public constructor() {
     effect(() => {
@@ -68,12 +68,15 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
 
   public async ngOnInit() {
     const monaco = await this.service.loadMonaco()
+    this.monaco = monaco
     const editor = monaco.editor.create(this.elRef.nativeElement, {
       value: this.value(),
       language: this.language(),
       readOnly: this.readonly(),
       theme: this.theme(),
       automaticLayout: true,
+      tabSize: 2,
+      insertSpaces: true,
     })
     this.editor.set(editor)
     editor.onDidBlurEditorWidget(() => this.commitValue())
@@ -138,6 +141,8 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
       theme: this.theme(),
     })
     editor.setScrollTop(0)
+    const currentModel = editor.getModel()
+    this.monaco.editor.setModelLanguage(currentModel, this.language())
 
     if (!this.didSendEditorLoaded) {
       this.didSendEditorLoaded = true

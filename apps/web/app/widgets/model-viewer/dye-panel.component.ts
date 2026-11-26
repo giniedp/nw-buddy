@@ -25,21 +25,18 @@ export class DyePanelComponent {
   public dyeA = model<DyeColorData>(null)
   public debug = model<boolean>(false)
 
-  public dyeRChange = output<DyeColorData>()
-  public dyeGChange = output<DyeColorData>()
-  public dyeBChange = output<DyeColorData>()
-  public dyeAChange = output<DyeColorData>()
-  public debugChange = output<boolean>()
+  // public dyeRChange = output<DyeColorData>()
+  // public dyeGChange = output<DyeColorData>()
+  // public dyeBChange = output<DyeColorData>()
+  // public dyeAChange = output<DyeColorData>()
+  // public debugChange = output<boolean>()
 
   public dyeRDisabled = input<boolean>(false)
   public dyeGDisabled = input<boolean>(false)
   public dyeBDisabled = input<boolean>(false)
   public dyeADisabled = input<boolean>(false)
 
-  public constructor(
-    private modal: ModalService,
-    private cdRef: ChangeDetectorRef,
-  ) {
+  public constructor(private modal: ModalService) {
     //
   }
 
@@ -53,8 +50,8 @@ export class DyePanelComponent {
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeR.set(value)
-        this.dyeRChange.emit(value)
-        this.cdRef.markForCheck()
+        //this.dyeRChange.emit(value)
+        // this.cdRef.markForCheck()
       })
   }
 
@@ -68,8 +65,8 @@ export class DyePanelComponent {
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeG.set(value)
-        this.dyeGChange.emit(value)
-        this.cdRef.markForCheck()
+        //this.dyeGChange.emit(value)
+        // this.cdRef.markForCheck()
       })
   }
 
@@ -83,8 +80,8 @@ export class DyePanelComponent {
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeB.set(value)
-        this.dyeBChange.emit(value)
-        this.cdRef.markForCheck()
+        //this.dyeBChange.emit(value)
+        // this.cdRef.markForCheck()
       })
   }
 
@@ -98,13 +95,13 @@ export class DyePanelComponent {
       .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeA.set(value)
-        this.dyeAChange.emit(value)
-        this.cdRef.markForCheck()
+        //this.dyeAChange.emit(value)
+        // this.cdRef.markForCheck()
       })
   }
 
   protected toggleDebug() {
     this.debug.set(!this.debug())
-    this.debugChange.emit(this.debug())
+    // this.debugChange.emit(this.debug())
   }
 }

@@ -11,7 +11,7 @@
         </a>
         <div class="text-sky-600 flex-1">
           <b class="text-primary"> {{ info.stackCount }} &times; </b>
-          <b>{{ info.name | nwText}}: </b>
+          <b>{{ info.name | nwText }}: </b>
           <span [nwHtml]="info.description | nwText: { perkMultiplier: info.multiplier }"> </span>
           @if (info.stackLimit) {
             <span [class.text-warning]="info.stackTotal > info.stackLimit">

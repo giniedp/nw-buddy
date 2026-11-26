@@ -6,6 +6,7 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -19,31 +20,45 @@ type SplitFile struct {
 	Files  []nwfs.File
 }
 
+// maxSplitParts is the highest part number that FindSplits looks up (the game splits 7 mips at most)
+const maxSplitParts = 16
+
+// FindSplits finds the split parts of a DDS file by name: the mips `<file>.1` … `<file>.N` (larger number = larger
+// mip), the attached alpha `<file>.a` and its mips `<file>.1a` … `<file>.Na`. For an alpha file (`<file>.a`) the
+// result has the alpha parts only. The parts are in ascending order.
 func FindSplits(f nwfs.File) (Splits, error) {
 	res := Splits{}
 	res.Base.Header = f
-	pattern := fmt.Sprintf("%s.*", f.Path())
-	if IsDDSAlpha(f.Path()) {
-		pattern = utils.ReplaceExt(f.Path(), ".*a")
+	archive := f.Archive()
+	base := f.Path()
+	isAlpha := IsDDSAlpha(base)
+	if isAlpha {
+		base = utils.ReplaceExt(base, "")
 	}
-
-	splits, err := f.Archive().Glob(pattern)
-	if err != nil {
-		return res, err
+	if alpha, ok := archive.Lookup(base + ".a"); ok {
+		res.Alpha.Header = alpha
 	}
-	for _, split := range splits {
-		ext := path.Ext(split.Path())
-		if ext == ".a" {
-			res.Alpha.Header = split
-			continue
+	for i := 1; i <= maxSplitParts; i++ {
+		if !isAlpha {
+			if part, ok := archive.Lookup(fmt.Sprintf("%s.%d", base, i)); ok {
+				res.Base.Files = append(res.Base.Files, part)
+			}
 		}
-		if strings.HasSuffix(ext, "a") {
-			res.Alpha.Files = append(res.Alpha.Files, split)
-			continue
+		if part, ok := archive.Lookup(fmt.Sprintf("%s.%da", base, i)); ok {
+			res.Alpha.Files = append(res.Alpha.Files, part)
 		}
-		res.Base.Files = append(res.Base.Files, split)
 	}
 	return res, nil
+}
+
+// SplitPartNumber is the mip number of a split part (`.3` and `.3a` are 3), 0 for the header files
+func SplitPartNumber(file string) int {
+	ext := strings.TrimSuffix(strings.TrimPrefix(path.Ext(file), "."), "a")
+	number, err := strconv.Atoi(ext)
+	if err != nil {
+		return 0
+	}
+	return number
 }
 
 func IsDDS(file string) bool {

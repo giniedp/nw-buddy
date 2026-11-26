@@ -1,0 +1,115 @@
+/* the scenes dialog, see SceneList.tsx: compact rows with a thumbnail in tabs */
+.nw-dialog-content.nw-scenes {
+  width: 100%;
+  min-height: 50vh;
+  max-height: 50vh;
+  /* the rows scroll, the filter and the tabs stay */
+  overflow: hidden;
+}
+.nw-dialog-content > .nw-scenes-filter {
+  flex: none;
+}
+.nw-scenes-loading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--nw-text-dim);
+}
+.nw-scenes-loading .twk-icon {
+  width: 2rem;
+  height: 2rem;
+  animation: nw-scenes-spin 1s linear infinite;
+}
+@keyframes nw-scenes-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.nw-scenes-tabs,
+.nw-scenes-tabs > .twk-tab-content {
+  flex: 1;
+  min-height: 0;
+}
+.nw-scenes-tabs > .twk-tabs-list {
+  flex: none;
+}
+.nw-scene-rows {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+.nw-scene-row {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.25rem;
+  border: none;
+  border-radius: var(--twk-radius-field);
+  background: transparent;
+  color: var(--nw-text);
+  font: inherit;
+  font-size: var(--nw-text-md);
+  text-align: start;
+  cursor: pointer;
+}
+.nw-scene-row:hover {
+  background: var(--nw-hover);
+}
+.nw-scene-row-current,
+.nw-scene-row-current:hover {
+  box-shadow: inset 0.125rem 0 0 var(--nw-accent);
+  background: var(--nw-hover);
+}
+.nw-scene-row-current .nw-scene-title {
+  color: var(--nw-accent);
+}
+/* 16:9, the pictures of the game modes are cropped to fill it, icons are shown whole */
+.nw-scene-thumb {
+  flex: none;
+  width: 4rem;
+  height: 2.25rem;
+  overflow: hidden;
+  border-radius: var(--twk-radius-field);
+  background: var(--nw-bg-sunken);
+}
+.nw-scene-thumb > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.nw-scene-thumb-icon > img {
+  object-fit: contain;
+  padding: 0.25rem;
+}
+.nw-scene-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.nw-scene-text > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.nw-scene-text > .nw-muted {
+  font-size: var(--nw-text-sm);
+}
+.nw-scene-tag {
+  flex: none;
+  font-size: var(--nw-text-sm);
+  color: var(--nw-accent);
+}
+.nw-scene-warning {
+  display: inline-flex;
+  flex: none;
+  color: var(--nw-warning);
+}

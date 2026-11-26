@@ -1,4 +1,3 @@
-import { NumberFilter } from '@ag-grid-community/core'
 import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { GatherableRecord, getGatherableSpawnCount } from '../gatherable'
@@ -121,7 +120,7 @@ export function gatherableColGatherTime(util: GatherableTableUtils) {
     width: 150,
     field: 'BaseGatherTime',
     valueFormatter: ({ value }) => secondsToDuration(value),
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 export function gatherableColMinRespawnTime(util: GatherableTableUtils) {
@@ -132,7 +131,7 @@ export function gatherableColMinRespawnTime(util: GatherableTableUtils) {
     width: 150,
     field: 'MinRespawnRate',
     valueFormatter: ({ value }) => secondsToDuration(value),
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 
@@ -144,7 +143,7 @@ export function gatherableColMaxRespawnTime(util: GatherableTableUtils) {
     width: 150,
     valueGetter: ({ data }) => data.MaxRespawnRate,
     valueFormatter: ({ value }) => secondsToDuration(value),
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 
@@ -195,7 +194,7 @@ export function gatherableColVariationCount(util: GatherableTableUtils) {
     getQuickFilterText: () => '',
     width: 150,
     valueGetter: ({ data }) => data.$variations?.length ?? 0,
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 
@@ -207,7 +206,7 @@ export function gatherableColLootTableCount(util: GatherableTableUtils) {
     getQuickFilterText: () => '',
     width: 150,
     valueGetter: ({ data }) => data.$lootTables?.length ?? 0,
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 
@@ -254,7 +253,7 @@ export function gatherableColSpawnCount(util: GatherableTableUtils) {
     getQuickFilterText: () => '',
     width: 150,
     valueGetter: ({ data }) => getGatherableSpawnCount(data),
-    filter: NumberFilter,
+    filter: 'agNumberColumnFilter',
   })
 }
 

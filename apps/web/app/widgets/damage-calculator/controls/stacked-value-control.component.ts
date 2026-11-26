@@ -15,14 +15,7 @@ import { PrecisionInputComponent } from './precision-input.component'
   selector: 'nwb-stacked-value-control',
   templateUrl: './stacked-value-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    PrecisionInputComponent,
-    FormsModule,
-    LayoutModule,
-    IconsModule,
-  ],
+  imports: [CommonModule, NwModule, PrecisionInputComponent, FormsModule, LayoutModule, IconsModule],
   host: {
     class: 'flex flex-col self-start bg-base-200 rounded-md max-w-full',
   },

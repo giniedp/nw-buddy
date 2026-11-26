@@ -1,0 +1,166 @@
+<div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col z-50 pointer-events-none">
+  @if (isSupported() === false) {
+    <div class="p-3">
+      <div class="alert shadow-lg my-2 bg-base-100">
+        <nwb-icon [icon]="iconError" class="text-error flex-shrink-0 w-6 h-6 self-start" />
+        <div>
+          <h3 class="font-bold">Not supported</h3>
+          <div class="text-xs">The 3D view needs WebGPU, which this browser does not provide</div>
+        </div>
+      </div>
+    </div>
+  }
+  @if (hasError()) {
+    <div class="p-3">
+      <div class="alert shadow-lg my-2 bg-base-100">
+        <nwb-icon [icon]="iconError" class="text-error flex-shrink-0 w-6 h-6 self-start" />
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">Failed to load the scene</div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showLoading()) {
+  <div
+    class="absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
+    animate.enter="fade-enter"
+    animate.leave="fade-leave"
+  >
+    <picture class="block aspect-square w-40 h-40 relative">
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+        [nwImage]="'assets/loaders/basicscreenrune1.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        [nwImage]="'assets/loaders/basicscreenrune3.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        [nwImage]="'assets/loaders/basicscreenrune2.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
+        [nwImage]="'assets/loaders/nwlogo.png'"
+      />
+    </picture>
+  </div>
+}
+
+@if (isSupported()) {
+  <div class="join absolute top-2 right-2 z-40">
+    <button
+      class="join-item btn btn-square btn-sm btn-ghost drop-shadow"
+      [class.text-primary]="exposureOpen()"
+      (click)="exposureOpen.set(!exposureOpen())"
+    >
+      <span class="swap swap-rotate" [class.swap-active]="exposureStops() >= 0">
+        <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on" />
+        <nwb-icon [icon]="iconMoon" class="w-4 h-4 swap-off" />
+      </span>
+    </button>
+    @if (outputs(); as list) {
+      <button
+        class="join-item btn btn-square btn-sm btn-ghost drop-shadow"
+        [class.text-primary]="showOutputs()"
+        title="Debug output"
+        (click)="showOutputs.set(!showOutputs())"
+      >
+        <nwb-icon [icon]="iconOutput" class="w-4 h-4" />
+      </button>
+    }
+    <button class="join-item btn btn-square btn-sm btn-ghost drop-shadow" (click)="capturePhoto()">
+      <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
+    </button>
+    <button class="join-item btn btn-square btn-sm btn-ghost drop-shadow" (click)="toggleFullscreen()">
+      <nwb-icon [icon]="iconFullscreen" class="w-4 h-4" />
+    </button>
+  </div>
+  @if (showOutputs() && outputs(); as list) {
+    <nwb-viewer-output class="absolute top-12 left-2 bottom-2 w-52 z-40" [outputs]="list" />
+  }
+  @if (exposureOpen()) {
+    <!-- inside the view, not a CDK overlay: those render outside and don't show while the view is fullscreen -->
+    <div
+      class="absolute top-12 right-2 z-40 w-64 p-3 flex flex-col gap-1 bg-base-300 border border-base-200 rounded-md shadow-md"
+    >
+      <div class="flex flex-row justify-between text-sm">
+        <span class="opacity-75">Exposure</span>
+        <span>{{ exposureStops() > 0 ? '+' : '' }}{{ exposureStops() }}</span>
+      </div>
+      <div class="flex flex-row gap-2 items-center">
+        <nwb-icon [icon]="iconMoon" class="w-3 h-3 opacity-50" />
+        <input
+          type="range"
+          class="range range-xs flex-1"
+          min="-3"
+          max="3"
+          step="0.25"
+          [value]="exposureStops()"
+          (input)="exposureStops.set(+$any($event.target).value)"
+          (dblclick)="exposureStops.set(0)"
+        />
+        <nwb-icon [icon]="iconSun" class="w-3 h-3 opacity-50" />
+      </div>
+      @if (hasCharacterLights()) {
+        <div class="flex flex-row justify-between text-sm mt-2">
+          <span class="opacity-75">Character light</span>
+          <span>{{ characterLightStops() > 0 ? '+' : '' }}{{ characterLightStops() }}</span>
+        </div>
+        <div class="flex flex-row gap-2 items-center">
+          <nwb-icon [icon]="iconMoon" class="w-3 h-3 opacity-50" />
+          <input
+            type="range"
+            class="range range-xs flex-1"
+            min="-2"
+            max="4"
+            step="0.25"
+            [value]="characterLightStops()"
+            (input)="characterLightStops.set(+$any($event.target).value)"
+            (dblclick)="characterLightStops.set(0)"
+          />
+          <nwb-icon [icon]="iconSun" class="w-3 h-3 opacity-50" />
+        </div>
+      }
+      <div class="flex flex-row justify-between text-sm mt-2">
+        <span class="opacity-75">Background light</span>
+        <span>{{ backgroundLightStops() > 0 ? '+' : '' }}{{ backgroundLightStops() }}</span>
+      </div>
+      <div class="flex flex-row gap-2 items-center">
+        <nwb-icon [icon]="iconMoon" class="w-3 h-3 opacity-50" />
+        <input
+          type="range"
+          class="range range-xs flex-1"
+          min="-3"
+          max="3"
+          step="0.25"
+          [value]="backgroundLightStops()"
+          (input)="backgroundLightStops.set(+$any($event.target).value)"
+          (dblclick)="backgroundLightStops.set(0)"
+        />
+        <nwb-icon [icon]="iconSun" class="w-3 h-3 opacity-50" />
+      </div>
+      <div class="flex flex-row justify-between items-center text-sm mt-2">
+        <span class="opacity-75">Quality</span>
+        <div class="join">
+          @for (option of qualityOptions; track option.value) {
+            <button
+              class="join-item btn btn-xs"
+              [class.btn-primary]="quality() === option.value"
+              (click)="selectQuality(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+}
+
+<div class="absolute top-0 left-0 right-0 bottom-0 z-0 overflow-hidden" (pointerdown)="exposureOpen.set(false)">
+  <canvas #canvas class="block w-full h-full outline-none" tabindex="0"></canvas>
+</div>

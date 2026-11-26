@@ -50,13 +50,13 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
 
     this.grid$
       .pipe(switchMap((grid) => fromGridEvent(grid, 'filterChanged').pipe(startWith(grid))))
+      .pipe(switchMap((grid) => getColumnWithFilter(grid)))
       .pipe(subscribeOn(asyncScheduler))
       .pipe(takeUntilDestroyed())
-      .subscribe((grid) => {
-        const model = getColumnWithFilter(grid)?.filter?.getModel()
+      .subscribe((found) => {
         this.patchState({
-          knownFields: getKnownFields(grid),
-          expression: model,
+          knownFields: getKnownFields(found),
+          expression: found?.filter?.getModel(),
         })
       })
 
@@ -69,9 +69,9 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
       })
   }
 
-  protected onExpressionChanged(model: ExpressionNode) {
+  protected async onExpressionChanged(model: ExpressionNode) {
     const grid = this.get(({ grid }) => grid)
-    const filter = getColumnWithFilter(grid)?.filter
+    const filter = (await getColumnWithFilter(grid))?.filter
     if (!filter) {
       return
     }
@@ -83,12 +83,12 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
   }
 }
 
-function getColumnWithFilter(grid: AgGrid) {
+async function getColumnWithFilter(grid: AgGrid) {
   if (!grid) {
     return null
   }
   for (const col of grid.api.getColumns()) {
-    const instance = grid.api.getFilterInstance(col.getColId())
+    const instance = await grid.api.getColumnFilterInstance(col.getColId())
     if (instance instanceof ExpressionFilter) {
       return {
         column: col,
@@ -99,8 +99,7 @@ function getColumnWithFilter(grid: AgGrid) {
   return null
 }
 
-function getKnownFields(grid: AgGrid) {
-  const found = getColumnWithFilter(grid)
+function getKnownFields(found: Awaited<ReturnType<typeof getColumnWithFilter>>) {
   const knowFields = found?.filter?.knownFields || []
   const knowPaths = found?.filter?.knownPaths || []
   return [

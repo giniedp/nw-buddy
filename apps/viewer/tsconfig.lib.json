@@ -1,0 +1,14 @@
+{
+  // declarations of the lib entries (and everything they import), outside of dist/lib: the lib build empties its outDir
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "types": ["@webgpu/types"],
+    "rootDir": "src",
+    "outDir": "dist/types"
+  },
+  "include": [],
+  "files": ["src/index.ts", "src/app.tsx", "src/vite-env.d.ts"]
+}

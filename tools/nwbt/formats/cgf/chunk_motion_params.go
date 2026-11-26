@@ -22,8 +22,8 @@ type ChunkMotionParams struct {
 	AssetTurn     float32
 	Distance      float32
 	Slope         float32
-	StartLocation []float32 // QuatT w,vx,vy,vz,tx,ty,tz
-	EndLocation   []float32 // QuatT w,vx,vy,vz,tx,ty,tz
+	StartLocation []float32 // QuatT vx,vy,vz,w,tx,ty,tz (Cry Quat stores v before w)
+	EndLocation   []float32 // QuatT vx,vy,vz,w,tx,ty,tz
 
 	LHeelStart float32
 	LHeelEnd   float32
@@ -36,6 +36,47 @@ type ChunkMotionParams struct {
 
 	RToe0Start float32
 	RToe0End   float32
+}
+
+// Asset flags of the motion parameters (CryCharAnimationParams.h CA_ASSET_*)
+const (
+	AssetFlagAdditive uint32 = 0x001
+	AssetFlagCycle    uint32 = 0x002
+)
+
+// DefaultSampleRate is used when a file has no timing (Lumberyard ANIMATION_30Hz)
+const DefaultSampleRate = 30.0
+
+// IsAdditive tells whether the clip is additive: its first frame is the reference pose and is not played
+func (it ChunkMotionParams) IsAdditive() bool {
+	return it.AssetFlags&AssetFlagAdditive != 0
+}
+
+// IsCycle tells whether the clip was authored as a cycle (loop)
+func (it ChunkMotionParams) IsCycle() bool {
+	return it.AssetFlags&AssetFlagCycle != 0
+}
+
+// SampleRate is the number of key frames per second, 1 / (SecsPerTick * TicksPerFrame) as in
+// Lumberyard GlobalAnimationHeaderCAF::ReadMotionParameters
+func (it ChunkMotionParams) SampleRate() float32 {
+	if it.SecsPerTick <= 0 || it.TicksPerFrame <= 0 {
+		return DefaultSampleRate
+	}
+	return 1 / (it.SecsPerTick * float32(it.TicksPerFrame))
+}
+
+// StartFrame is the first played frame, additive clips skip their reference frame
+func (it ChunkMotionParams) StartFrame() int32 {
+	if it.IsAdditive() {
+		return it.Start + 1
+	}
+	return it.Start
+}
+
+// EndFrame is the last played frame, never before StartFrame
+func (it ChunkMotionParams) EndFrame() int32 {
+	return max(it.End, it.StartFrame())
 }
 
 func ReadChunkChunkMotionParams_0x0925(r *buf.Reader, header ChunkHeader) (res Chunker, err error) {

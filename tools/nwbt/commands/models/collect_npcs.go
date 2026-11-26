@@ -39,7 +39,7 @@ func (c *Collector) CollectNpcs(ids ...string) {
 		if !strings.EqualFold(table.Schema, "VariationData") {
 			continue
 		}
-		if !strings.EqualFold(table.Table, "Npc") {
+		if !isNpcVariationTable(table.Table) {
 			continue
 		}
 
@@ -73,7 +73,7 @@ func (c *Collector) CollectNpcs(ids ...string) {
 					slog.Warn("skip unresolved cdf file", "err", err)
 					continue
 				}
-				c.CollectCdf(cdf, "", targetFile)
+				c.CollectCdf(cdf, "", "", targetFile, nil)
 			} else {
 				group := importer.AssetGroup{}
 				if model, material := c.ResolveCgfAndMtl(model, ""); model != "" {
@@ -92,4 +92,14 @@ func (c *Collector) CollectNpcs(ids ...string) {
 		bar.Close()
 	}
 
+}
+
+// isNpcVariationTable reports whether a VariationData table holds NPCs. The walkaway tables hold the NPCs that leave
+// or arrive with the quest progress.
+func isNpcVariationTable(name string) bool {
+	switch strings.ToLower(name) {
+	case "npc", "npc_walkaway", "npc_clientpathing_walkaway":
+		return true
+	}
+	return false
 }

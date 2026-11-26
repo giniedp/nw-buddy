@@ -7,7 +7,7 @@ import {
   ValueFormatterParams,
   ValueGetterFunc,
   ValueGetterParams,
-} from '@ag-grid-community/core'
+} from 'ag-grid-community'
 import { DOCUMENT } from '@angular/common'
 import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
@@ -192,7 +192,6 @@ export class TableGridUtils<T = any> {
     const transform = options?.transform || ((it) => String(it))
     const getClass = options?.getClass
     return ({ value, data }) => {
-
       if (value && !Array.isArray(value)) {
         value = [value]
       }

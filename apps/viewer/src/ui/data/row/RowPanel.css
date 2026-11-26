@@ -1,0 +1,78 @@
+/* the row panel of the Data tool: the head, the field values (RowPanel.tsx, FieldValue.tsx, AudioButton.tsx) */
+.nw-data-row-head {
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.375rem 0.5rem;
+  border-bottom: 1px solid var(--nw-line);
+}
+.nw-data-icon {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+.nw-data-row-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.nw-data-row-name {
+  overflow: hidden;
+  font-size: var(--nw-text-lg);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* field values: texts, links, files, audio; a list cell wraps its items */
+.nw-data-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  align-items: center;
+  min-width: 0;
+}
+.nw-data-text {
+  overflow-wrap: anywhere;
+}
+/* a localized text with its markup (ui/data/locMarkup.ts): `\n` breaks lines, icons at the text height */
+.nw-loc {
+  white-space: pre-line;
+}
+.nw-loc-icon {
+  height: 1.25em;
+  vertical-align: text-bottom;
+}
+.nw-data-dead {
+  color: var(--nw-text-dim);
+  text-decoration: line-through;
+}
+.nw-data-link {
+  color: var(--nw-accent);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.nw-data-link:hover {
+  text-decoration: underline;
+}
+/* the same key in another family: a small chip after the link */
+.nw-data-ref {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 0.375rem;
+  align-items: baseline;
+}
+.nw-data-link-alt {
+  padding: 0 0.25rem;
+  font-size: var(--nw-text-sm);
+  border: 1px solid var(--nw-line-strong);
+  border-radius: var(--twk-radius-field);
+}
+.nw-data-asset,
+.nw-data-audio {
+  display: flex;
+  gap: 0.125rem;
+  align-items: center;
+  min-width: 0;
+}

@@ -6,6 +6,7 @@ import (
 	"nw-buddy/tools/formats/distribution"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti/nwt"
+	"nw-buddy/tools/utils/math/mat4"
 )
 
 func (ctx *Scanner) ScanDistributionFile(file nwfs.File) iter.Seq[Spawn] {
@@ -21,7 +22,13 @@ func (ctx *Scanner) ScanDistributionFile(file nwfs.File) iter.Seq[Spawn] {
 			sliceName := rec.Slices[index]
 			variantId := rec.Variants[index]
 
-			x, y, _, _ := distribution.ConvertPosition(rec.Region, position)
+			x, y := distribution.ConvertPosition(rec.Region, position)
+			// the slice stands turned and scaled at the placement, the height is not stored
+			placement := mat4.FromRotationScaleTranslation(
+				distribution.UnpackRotation(rec.Rotations[i]),
+				distribution.PlacementScale(rec.Scales[i]),
+				[3]float32{x, y, 0},
+			)
 
 			if variantId != "" {
 				item := &VariantEntry{
@@ -43,7 +50,7 @@ func (ctx *Scanner) ScanDistributionFile(file nwfs.File) iter.Seq[Spawn] {
 				continue
 			}
 			for spawn := range ctx.ScanSlice(sliceFile) {
-				spawn.Move(nwt.AzFloat32(x), nwt.AzFloat32(y))
+				spawn.SetPosition(mat4.TransformPoint(placement, spawn.GetPosition()))
 				switch v := spawn.(type) {
 				case *GatherableEntry:
 					if !yield(v) {

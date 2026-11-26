@@ -28,12 +28,10 @@ func (it *Entry) Package() string {
 	return it.pak.file
 }
 
+// Read returns the uncompressed file content. Sizes come from the zip directory, so every buffer is allocated once
+// with its final size (no io.ReadAll growth, no intermediate copies).
 func (file *Entry) Read() ([]byte, error) {
-	r, err := file.Inflate(utils.OodleInstance())
-	if err != nil {
-		return nil, err
-	}
-	data, err := io.ReadAll(r)
+	data, err := file.inflate(utils.OodleInstance())
 	if err != nil {
 		return nil, err
 	}
@@ -66,67 +64,86 @@ func (file *Entry) Crc32() uint32 {
 	return file.zip.CRC32
 }
 
-func (file *Entry) Inflate(lib utils.Oodle) (io.ReadCloser, error) {
-	var rc io.ReadCloser
-	var err error
+func (file *Entry) inflate(lib utils.Oodle) ([]byte, error) {
+	size := file.zip.UncompressedSize64
 
-	if file.zip.Method == 0x00 {
-		rc, err = file.zip.Open()
+	switch file.zip.Method {
+	case 0x00:
+		rc, err := file.zip.Open()
 		if err != nil {
 			return nil, err
 		}
+		defer rc.Close()
+		return readExact(rc, size)
 
-		return rc, nil
-	}
-
-	if file.zip.Method == 0x08 {
+	case 0x08:
 		r, err := file.zip.OpenRaw()
 		if err != nil {
 			return nil, err
 		}
-
 		reader := bufio.NewReaderSize(r, 10*1024)
-		sig, err := reader.Peek(2)
-
-		if err == nil {
-			if isZlib(sig) {
-				rc, err = zlib.NewReader(reader)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				rc = flate.NewReader(reader)
+		var rc io.ReadCloser
+		if sig, err := reader.Peek(2); err == nil && isZlib(sig) {
+			if rc, err = zlib.NewReader(reader); err != nil {
+				return nil, err
 			}
 		} else {
 			rc = flate.NewReader(reader)
 		}
+		defer rc.Close()
+		return readExact(rc, size)
 
-		return rc, nil
-	}
-
-	if file.zip.Method == 0x0f {
-		reader, err := file.zip.OpenRaw()
+	case 0x0f:
+		r, err := file.zip.OpenRaw()
 		if err != nil {
 			return nil, err
 		}
-
-		data, err := io.ReadAll(reader)
+		input := make([]byte, file.zip.CompressedSize64)
+		if _, err := io.ReadFull(r, input); err != nil {
+			return nil, err
+		}
+		output := make([]byte, size)
+		if len(input) == 0 || len(output) == 0 {
+			return output, nil
+		}
+		n, err := lib.Decompress(input, len(input), output, len(output))
 		if err != nil {
 			return nil, err
 		}
-
-		output := make([]byte, int(file.zip.UncompressedSize64))
-		_, err = lib.Decompress(data, len(data), output, len(output))
-		if err != nil {
-			return nil, err
+		if n != len(output) {
+			return nil, fmt.Errorf("oodle decompressed %d of %d bytes", n, len(output))
 		}
-
-		data = output
-
-		return io.NopCloser(bytes.NewBuffer(data)), nil
+		return output, nil
 	}
 
 	return nil, fmt.Errorf("unsupported compression method %v", file.zip.Method)
+}
+
+// readExact reads a stream of a known size into one buffer. It then reads on to EOF, so readers that verify a
+// checksum at the end (stored zip entries, zlib) still do. A declared size that is too small or too large is tolerated.
+func readExact(r io.Reader, size uint64) ([]byte, error) {
+	out := make([]byte, size)
+	n, err := io.ReadFull(r, out)
+	if err == io.ErrUnexpectedEOF || err == io.EOF {
+		return out[:n], nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	var probe [1]byte
+	m, err := r.Read(probe[:])
+	if m > 0 {
+		rest, err := io.ReadAll(r)
+		if err != nil {
+			return nil, err
+		}
+		out = append(append(out, probe[0]), rest...)
+		return out, nil
+	}
+	if err != nil && err != io.EOF {
+		return nil, err
+	}
+	return out, nil
 }
 
 type zlibHeader struct {
@@ -180,7 +197,7 @@ func unAzcs(data []byte) (res []byte, err error) {
 		return nil, fmt.Errorf("not an AZCS file")
 	}
 	compression := r.MustReadUint32()
-	r.MustReadUint64() // uncompressed size
+	size := r.MustReadUint64() // uncompressed size
 
 	if compression != 0x73887d3a {
 		return nil, fmt.Errorf("unsupported compression: 0x%08x", compression)
@@ -190,7 +207,8 @@ func unAzcs(data []byte) (res []byte, err error) {
 	seekPointsSize := seekPoints * 16
 
 	data = r.MustReadBytes(r.Len() - r.Pos() - int(seekPointsSize))
-	z := utils.Must(zlib.NewReader(bytes.NewBuffer(data)))
+	z := utils.Must(zlib.NewReader(bytes.NewReader(data)))
+	defer z.Close()
 
-	return io.ReadAll(z)
+	return readExact(z, size)
 }

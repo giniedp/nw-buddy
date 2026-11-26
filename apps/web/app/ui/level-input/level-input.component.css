@@ -1,7 +1,6 @@
 @reference '../../../style.css';
 
 :host {
-
   display: inline-flex;
   position: relative;
 

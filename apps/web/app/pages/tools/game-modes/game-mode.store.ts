@@ -175,7 +175,7 @@ export const GameModeStore = signalStore(
   withComputed(({ nwData, mutaDifficulty, mutationPromotionId }) => {
     const isAvailable = computed(() => mutaDifficulty()?.MutationDifficulty > 1)
     const options = computed(() => {
-      if (!isAvailable) {
+      if (!isAvailable()) {
         return null
       }
       return Array.from(nwData().mutatorPromotionsMap.values()).map((it) => {

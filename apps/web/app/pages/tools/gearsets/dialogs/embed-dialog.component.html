@@ -121,11 +121,7 @@
   <fieldset class="fieldset">
     <legend class="fieldset-legend">Item Details</legend>
     <label (click)="toggleInfos(); (false)" class="label">
-      <input
-        class="toggle toggle-sm pointer-events-none checked:toggle-success"
-        type="checkbox"
-        [ngModel]="infos()"
-      />
+      <input class="toggle toggle-sm pointer-events-none checked:toggle-success" type="checkbox" [ngModel]="infos()" />
       <div class="flex flex-col leading-none">
         <span>Show item infos e.g. weight and description</span>
       </div>

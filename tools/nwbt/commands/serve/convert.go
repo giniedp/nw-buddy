@@ -18,17 +18,18 @@ import (
 	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/formats/image"
 	"nw-buddy/tools/formats/loc"
+	"nw-buddy/tools/formats/musicsheet"
 	"nw-buddy/tools/formats/waterqt"
 	"nw-buddy/tools/game"
-	"nw-buddy/tools/game/level"
+	"nw-buddy/tools/game/slicemodel"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/rtti"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/json"
 	"nw-buddy/tools/utils/math"
-	"nw-buddy/tools/utils/math/mat4"
 	"os"
 	"path"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -73,11 +74,13 @@ func convertFile(params convertParams) ([]byte, error) {
 	case ".cdf":
 		return convertCDF(params)
 	case ".dynamicslice":
-		if targetFormat == ".gltf" || targetFormat == ".glb" {
+		if isModelTarget(targetFormat) {
 			return convertSliceToModel(params)
 		}
 	case ".distribution":
 		return convertDistribution(params)
+	case ".musicsheetc":
+		return convertMusicSheet(params)
 	case ".mtl":
 		return convertMTL(params)
 	case ".xml":
@@ -149,8 +152,20 @@ func convertDDS(params convertParams) ([]byte, error) {
 
 	switch target {
 	case "", ".dds":
+		if query.Get("merge") == "false" {
+			// serve the unmerged base file (or attached alpha file): the original header,
+			// but only the smallest mips, the larger ones are stored in the split files
+			return file.Read()
+		}
 		size, _ := strconv.Atoi(query.Get("size"))
-		img, err := dds.Load(file, size)
+		var img *dds.Image
+		var err error
+		if query.Get("merge") == "partial" {
+			// mips up to `size` with the original header, see dds.LoadPartial
+			img, err = dds.LoadPartial(file, size)
+		} else {
+			img, err = dds.Load(file, size)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -171,8 +186,6 @@ func convertDDS(params convertParams) ([]byte, error) {
 			//Cache:   image.NewCache(cacheDir, string(format)),
 			Converter: image.BasicConverter{
 				Format:  format,
-				TempDir: flg.TempDir,
-				Silent:  true,
 				MaxSize: uint(size),
 			},
 		}
@@ -248,7 +261,10 @@ func convertCGF(params convertParams) ([]byte, error) {
 	target := params.target
 	query := params.query
 
-	if target != ".gltf" && target != ".glb" {
+	if target == targetRawZip {
+		return convertRawZip(params)
+	}
+	if !isModelTarget(target) {
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}
 
@@ -268,7 +284,7 @@ func convertCAF(params convertParams) ([]byte, error) {
 	file := params.file
 	target := params.target
 
-	if target != ".gltf" && target != ".glb" {
+	if !isModelTarget(target) {
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}
 
@@ -288,7 +304,7 @@ func convertCDF(params convertParams) ([]byte, error) {
 	file := params.file
 	target := params.target
 
-	if target != ".gltf" && target != ".glb" {
+	if !isModelTarget(target) {
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}
 
@@ -304,6 +320,11 @@ func convertCDF(params convertParams) ([]byte, error) {
 			"animationList": animations,
 		},
 	}
+	selected, err := selectedAnimations(params.query)
+	if err != nil {
+		return nil, err
+	}
+	group.Animations = selected
 
 	for _, mesh := range cdfModel.SkinAndClothAttachments() {
 		model, material := assets.ResolveCgfAndMtl(mesh.Binding, mesh.Material)
@@ -315,6 +336,28 @@ func convertCDF(params convertParams) ([]byte, error) {
 		}
 	}
 	return convertGltf(assets, group, target == ".glb", params)
+}
+
+// selectedAnimations are the clips the `animations` query asks to export with a character: a json array of
+// `{"name", "file"}`, the name is the glTF animation name. Only .caf files, others are skipped.
+func selectedAnimations(query url.Values) ([]importer.AnimationAsset, error) {
+	value := query.Get(QUERY_ANIMATIONS)
+	if value == "" {
+		return nil, nil
+	}
+	var list []importer.AnimationAsset
+	if err := json.UnmarshalJSON([]byte(value), &list); err != nil {
+		return nil, fmt.Errorf("invalid %s parameter: %w", QUERY_ANIMATIONS, err)
+	}
+	result := make([]importer.AnimationAsset, 0, len(list))
+	for _, it := range list {
+		if strings.ToLower(path.Ext(it.File)) != ".caf" {
+			slog.Warn("export animation skipped, not a .caf", "file", it.File)
+			continue
+		}
+		result = append(result, importer.AnimationAsset{File: nwfs.NormalizePath(it.File), Name: it.Name})
+	}
+	return result, nil
 }
 
 func CollectAnimations(assets *game.Assets, cdf *cdf.Document) ([]adb.AnimationFile, error) {
@@ -343,11 +386,14 @@ func convertMTL(params convertParams) ([]byte, error) {
 
 	// addMesh := isTrueParam(params.query.Get("mesh"))
 
-	if target != ".gltf" && target != ".glb" {
+	if !isModelTarget(target) {
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}
 	group := importer.AssetGroup{}
 	material := file.Path()
+
+	// all sub materials in collection order, so that the gltf material index is the sub material index (EXT_nw_mtl_ref)
+	group.Materials = append(group.Materials, material)
 
 	collection, err := assets.LoadMaterial(material)
 	if err != nil {
@@ -386,72 +432,27 @@ func convertSliceToModel(params convertParams) ([]byte, error) {
 	file := params.file
 	target := params.target
 
-	if target != ".gltf" && target != ".glb" {
+	if !isModelTarget(target) {
 		return nil, fmt.Errorf("unsupported target format x: %s", target)
 	}
+	base := math.GetBase(params.query.Has(QUERY_YUP))
 
 	group := importer.AssetGroup{}
-	for _, entity := range level.LoadEntities(assets, file.Path(), mat4.Identity()) {
-		if entity.Model == "" {
-			continue
-		}
-		if path.Ext(entity.Model) == ".cdf" {
-			cdfModel, err := assets.LoadCdf(entity.Model)
-			if err != nil {
-				slog.Warn("CDF not loaded", "file", entity.Model, "err", err)
-				continue
-			}
-
-			for _, mesh := range cdfModel.SkinAndClothAttachments() {
-				model, material := assets.ResolveCgfAndMtl(mesh.Binding, mesh.Material, entity.Material)
-				if model != "" {
-					group.Geometries = append(group.Geometries, importer.GeometryAsset{
-						GeometryFile: model,
-						MaterialFile: material,
-					})
-				}
-			}
-		} else {
-			group.Geometries = append(group.Geometries, importer.GeometryAsset{
-				Entity: importer.Entity{
-					Name:      entity.Name,
-					Transform: math.CryToGltfMat4(entity.Transform),
-				},
-				GeometryFile: entity.Model,
-				MaterialFile: entity.Material,
-			})
-		}
-	}
+	slicemodel.Collect(assets, file, slicemodel.Options{Convert: base.Mat4, KeepSkin: true}, &group)
 	return convertGltf(assets, group, target == ".glb", params)
 }
 
 func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool, params convertParams) ([]byte, error) {
-	cacheDir := imageCacheDir(flg.CacheDir, flg.TextureSize)
-
-	linker := gltf.NewResourceLinker(cacheDir)
-	linker.SetRelativeMode(false)
-	linker.SkipWrite(true)
-	// instruction to merge DDS faces
-	queryParam := "merge=true"
-	// instruction to resize DDS images
-	if flg.TextureSize > 0 {
-		queryParam = fmt.Sprintf("%s&size=%d", queryParam, flg.TextureSize)
-	}
-	linker.SetQueryParam(queryParam)
+	opts := parseModelExportOptions(params.query, params.target)
 
 	document := gltf.NewDocument()
 	document.Extras = group.Extra
-	document.ImageLinker = linker
-	document.ImageLoader = image.LoaderWithConverter{
-		Archive: assets.Archive,
-		Catalog: assets.Catalog,
-		//Cache:   image.NewCache(cacheDir, ".png"),
-		Converter: image.BasicConverter{
-			Format:  ".dds",
-			TempDir: flg.TempDir,
-			Silent:  true,
-			MaxSize: flg.TextureSize,
-		},
+	zipDir, err := setupTextures(document, assets, opts, params.target)
+	if err != nil {
+		return nil, err
+	}
+	if zipDir != "" {
+		defer os.RemoveAll(zipDir)
 	}
 
 	document.Options = gltf.ImportOptions{
@@ -460,26 +461,65 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool, pa
 		LoadAnimation:   assets.LoadAnimation,
 		LoadMaterials:   assets.LoadMaterial,
 		Simplify:        false,
+		Quantize:        opts.quantize,
 		SkipLod:         params.query.Has(QUERY_NO_LOD),
 		SkipHelper:      true, // removes $physics $auto nodes
 		SkipShadowProxy: params.query.Has(QUERY_NO_PROXY),
+		KeepNoDraw:      opts.keepNoDraw,
 		SkipUnlinkedMtl: false,
 	}
+	if opts.lodAll {
+		for _, geom := range slices.Clone(group.Geometries) {
+			for _, lod := range lodSiblings(assets, geom.GeometryFile) {
+				group.Geometries = append(group.Geometries, importer.GeometryAsset{
+					Entity:                geom.Entity,
+					GeometryFile:          lod,
+					MaterialFile:          geom.MaterialFile,
+					Joint:                 geom.Joint,
+					SkipSkin:              geom.SkipSkin,
+					OverrideMaterialIndex: geom.OverrideMaterialIndex,
+				})
+			}
+		}
+	}
 
+	// materials first, so they keep their collection index when geometries add the same materials
+	for _, mats := range group.Materials {
+		document.ImportMaterialCollection(mats)
+	}
+	for _, geom := range group.Geometries {
+		if geom.Joint == "" {
+			document.ImportAssetGeometry(geom)
+		}
+	}
+	// after the geometries: the skins of the parts merge into one skeleton, the animations target its joints by
+	// controller id
 	if len(group.Animations) > 0 {
 		document.MergeSkins()
+	}
+	// the joints of the merged skeleton
+	for _, geom := range group.Geometries {
+		if geom.Joint != "" {
+			document.ImportAssetGeometry(geom)
+		}
 	}
 	for _, anim := range group.Animations {
 		document.ImportAssetAnimations(anim)
 	}
-	for _, geom := range group.Geometries {
-		document.ImportAssetGeometry(geom)
-	}
-	for _, mats := range group.Materials {
-		document.ImportMaterials(mats)
-	}
+	document.ApplyPose(group.Pose)
 
-	document.ProcessMaterials()
+	materialOptions := []func(*gltf.ImportCgfMaterialsOptions){
+		gltf.WithEmissiveRef(opts.emissiveRef),
+		gltf.WithSpecularIOR(opts.specularIOR),
+	}
+	if opts.textures == "embed" || opts.textures == "dds" {
+		// png pixels are available (dds: through BakeImageLoader): bake roughness and emissive
+		materialOptions = append(materialOptions, gltf.WithTextureBaking(true))
+	}
+	document.ProcessMaterials(materialOptions...)
+	if zipDir != "" {
+		return encodeGltfZip(document, zipDir)
+	}
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	if err := document.Encode(w, binary); err != nil {
@@ -529,6 +569,20 @@ func convertDistribution(params convertParams) ([]byte, error) {
 	}
 }
 
+// convertMusicSheet: a music sheet of the musical performances as json (difficulty, notes with key, track, time)
+func convertMusicSheet(params convertParams) ([]byte, error) {
+	switch params.target {
+	case ".json":
+		sheet, err := musicsheet.Load(params.file)
+		if err != nil {
+			return nil, err
+		}
+		return json.MarshalJSON(sheet, "", "\t")
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", params.target)
+	}
+}
+
 func convertAny(params convertParams) ([]byte, error) {
 
 	file := params.file
@@ -539,13 +593,16 @@ func convertAny(params convertParams) ([]byte, error) {
 		return nil, err
 	}
 	if azcs.IsBinaryObjectStream(data) {
-		return convertAzcs(data, target)
+		return convertBinaryObjectStream(data, target)
+	}
+	if azcs.IsXmlObjectStream(data) {
+		return convertXmlObjectStream(data, target)
 	}
 
 	return nil, fmt.Errorf("unsupported target format: %s", target)
 }
 
-func convertAzcs(data []byte, target string) ([]byte, error) {
+func convertBinaryObjectStream(data []byte, target string) ([]byte, error) {
 	switch target {
 	case "":
 		return data, nil
@@ -556,6 +613,31 @@ func convertAzcs(data []byte, target string) ([]byte, error) {
 		}
 		out, err := rtti.ObjectStreamToJSON(object, crcTable, uuidTable)
 		return out, err
+	case ".xml":
+		object, err := azcs.Parse(data)
+		if err != nil {
+			return nil, err
+		}
+		out, err := rtti.ObjectStreamToXml(object, crcTable, uuidTable)
+		return out, err
+	default:
+		return nil, fmt.Errorf("unsupported target format: %s", target)
+	}
+}
+
+func convertXmlObjectStream(data []byte, target string) ([]byte, error) {
+	switch target {
+	case "":
+		return data, nil
+	case ".json":
+		doc, err := azcs.ParseXml(data)
+		if err != nil {
+			return nil, err
+		}
+		out, err := rtti.ObjectStreamXmlToJSON(doc, uuidTable)
+		return out, err
+	case ".xml":
+		return data, nil
 	default:
 		return nil, fmt.Errorf("unsupported target format: %s", target)
 	}

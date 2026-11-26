@@ -9,7 +9,6 @@ import (
 	"nw-buddy/tools/formats/heightmap"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/game/level"
-	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/img"
 	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/progress"
@@ -38,11 +37,6 @@ func runPullHeightmaps(ccmd *cobra.Command, args []string) {
 }
 
 func pullHeightmaps(assets *game.Assets, outDir string) {
-	if _, ok := utils.Magick.Check(); !ok {
-		slog.Error("Image Magick not found. Skipped heightmap generation.")
-		return
-	}
-
 	directories := level.ListCoatlicueDirectories(assets)
 	bar := progress.Bar(len(directories), "Heightmaps")
 	for _, dir := range directories {

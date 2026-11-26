@@ -8,7 +8,7 @@ import { TooltipModule } from '~/ui/tooltip'
   standalone: true,
   selector: 'app-auth',
   templateUrl: './auth.component.html',
-  imports: [TooltipModule, CdkMenuModule, RouterLink  ],
+  imports: [TooltipModule, CdkMenuModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.hidden]': '!isEnabled()',

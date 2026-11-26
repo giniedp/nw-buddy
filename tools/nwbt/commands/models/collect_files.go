@@ -65,7 +65,7 @@ func (c *Collector) CollectFiles(patterns []string, mtl string) {
 				slog.Warn("skip unresolved cdf file", "err", err)
 				continue
 			}
-			c.CollectCdf(cdf, material, targetFile)
+			c.CollectCdf(cdf, material, "", targetFile, nil)
 		case ".cgf", ".skin":
 			group := importer.AssetGroup{}
 			if model, material = c.ResolveCgfAndMtl(model, material); model != "" {

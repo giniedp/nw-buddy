@@ -1,0 +1,16 @@
+/* the scene tree with the properties of the selection, the left sidebar of the viewer (SceneBrowser.tsx) */
+.nw-scene-browser {
+  display: flex;
+  flex-direction: column;
+  gap: var(--twk-spacing-gap);
+  height: 100%;
+  min-height: 0;
+}
+.nw-scene-browser > .twk-tree {
+  flex: 1;
+  min-height: 0;
+}
+.nw-scene-props {
+  max-height: 35vh;
+  overflow: auto;
+}

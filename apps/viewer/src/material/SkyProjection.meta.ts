@@ -1,0 +1,21 @@
+import { inputSlot } from '@gglib/graphics'
+export default {
+  WaveLengthInv: inputSlot('params', 'wavelengthinv', 'vec3'),
+  SunIntensity: inputSlot('params', 'sunintensity', 'vec3'),
+  SunLatitude: inputSlot('params', 'sunlatitude', 'scalar'),
+  SunLongitude: inputSlot('params', 'sunlongitude', 'scalar'),
+  MieScattering: inputSlot('params', 'miescattering', 'scalar'),
+  RayleighScattering: inputSlot('params', 'rayleighscattering', 'scalar'),
+  PhaseAsymmetry: inputSlot('params', 'phaseasymmetry', 'scalar'),
+  NightSkyColorBase: inputSlot('params', 'nightskycolorbase', 'vec3'),
+  NightSkyColorDelta: inputSlot('params', 'nightskycolordelta', 'vec3'),
+  NightSkyColorShift: inputSlot('params', 'nightskycolorshift', 'vec2'),
+  NightMoonColor: inputSlot('params', 'nightmooncolor', 'vec3'),
+  NightMoonInnerColor: inputSlot('params', 'nightmooninnercolor', 'vec3'),
+  NightMoonOuterColor: inputSlot('params', 'nightmoonoutercolor', 'vec3'),
+  NightMoonDirSize: inputSlot('params', 'nightmoondirsize', 'vec4'),
+  MieScatteringMap: inputSlot('', 'mieScatteringMap', 'texture'),
+  MieScatteringSampler: inputSlot('', 'mieScatteringSampler', 'sampler'),
+  RayleighScatteringMap: inputSlot('', 'rayleighScatteringMap', 'texture'),
+  RayleighScatteringSampler: inputSlot('', 'rayleighScatteringSampler', 'sampler'),
+}

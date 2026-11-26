@@ -19,7 +19,7 @@ import {
       <div class="absolute bottom-1 right-1 left-1 flex flex-row justify-end gap-1">
         @if (isSkin) {
           <span class="badge badge-primary badge-sm">Skin</span>
-        } @else if (isUnique || itemCount != 1) {
+        } @else if (isUnique || itemCount !== 1) {
           <span
             class="badge badge-sm"
             [class.badge-accent]="isUnique"

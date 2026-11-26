@@ -18,7 +18,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule, gridDescriptor } from '~/ui/property-grid'
 import { linkCell, localizedCell, tagsCell, valueCell } from '~/ui/property-grid/cells'
 import { TooltipModule } from '~/ui/tooltip'
-import { ModelViewerModule } from '~/widgets/model-viewer'
+import { ModelDownloadButtonComponent, ModelViewComponent } from '~/widgets/model-view'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { StatusEffectDetailStore } from './status-effect.store'
 import { diffButtonCell } from '~/widgets/diff-tool'
@@ -36,7 +36,8 @@ import { diffButtonCell } from '~/widgets/diff-tool'
     PropertyGridModule,
     TooltipModule,
     StatusEffectCategoryDetailModule,
-    ModelViewerModule,
+    ModelDownloadButtonComponent,
+    ModelViewComponent,
   ],
   providers: [DecimalPipe, StatusEffectDetailStore],
   host: {

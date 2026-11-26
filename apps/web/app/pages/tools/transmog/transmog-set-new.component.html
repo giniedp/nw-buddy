@@ -3,11 +3,7 @@
     <ion-title>Transmog Editor</ion-title>
     <div slot="end">
       <div class="join pr-1">
-        <button
-          class="join-item btn btn-square btn-ghost"
-          (click)="editor.capturePhoto()"
-          [tooltip]="'Capture Screenshot'"
-        >
+        <button class="join-item btn btn-square btn-ghost" (click)="capturePhoto()" [tooltip]="'Capture Screenshot'">
           <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
         </button>
         <button class="join-item btn btn-square btn-ghost" (click)="copyLink()" [tooltip]="'Copy link'">
@@ -18,7 +14,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <nwb-transmog-editor [ngModel]="value" (ngModelChange)="handleStateChange($event)" #editor >
+  <nwb-character-editor [ngModel]="value" (ngModelChange)="handleStateChange($event)">
     <button class="btn btn-block btn-sm mt-2" (click)="handleSaveAsClicked()">Save as</button>
-  </nwb-transmog-editor>
+  </nwb-character-editor>
 </ion-content>

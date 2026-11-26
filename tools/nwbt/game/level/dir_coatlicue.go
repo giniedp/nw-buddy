@@ -2,6 +2,7 @@ package level
 
 import (
 	"log/slog"
+	"nw-buddy/tools/formats/catalog"
 	"nw-buddy/tools/formats/datasheet"
 	"nw-buddy/tools/formats/offlineoptions"
 	"nw-buddy/tools/formats/terrain"
@@ -176,10 +177,16 @@ func (dir *CoatlicueDirectory) LoadRegionList(archive nwfs.Archive) []RegionLoca
 	result := make([]RegionLocation, 0)
 	for _, w := range world {
 		found := slices.Contains(playable, w)
+		id := formatRegionName(location{X: w[0], Y: w[1]})
+		region := RegionDirectory{Coatlicue: *dir, RegionName: id}
+		_, hasVegetation := archive.Lookup(region.PathVegetationmapFile())
+		_, hasDistribution := archive.Lookup(region.PathDistributionFile())
 		result = append(result, RegionLocation{
-			ID:       formatRegionName(location{X: w[0], Y: w[1]}),
-			Location: w,
-			Playable: found,
+			ID:              id,
+			Location:        w,
+			Playable:        found,
+			HasVegetation:   hasVegetation,
+			HasDistribution: hasDistribution,
 		})
 	}
 
@@ -226,11 +233,20 @@ func (dir *CoatlicueDirectory) LoadGameModeMaps(assets *game.Assets) []GameModeM
 	return result
 }
 
-func (dir *CoatlicueDirectory) LoadInfo(assets *game.Assets) *CoatlicueInfo {
+// LoadInfo loads the coatlicue and the mission of a level folder. levelName names the level folder
+// (e.g. a main menu: level "nw_frontend_nighthaven" on coatlicue "nw_frontend_base"); empty uses the
+// level folder with the coatlicue's name.
+func (dir *CoatlicueDirectory) LoadInfo(assets *game.Assets, levelName string) *CoatlicueInfo {
 	result := &CoatlicueInfo{
 		Name: dir.Name,
 	}
-	level, hasLevel := dir.FindLevelDirectory(assets)
+	var level LevelDirectory
+	var hasLevel bool
+	if levelName != "" {
+		level, hasLevel = FindLevelDirectory(assets, levelName)
+	} else {
+		level, hasLevel = dir.FindLevelDirectory(assets)
+	}
 	result.Level = level.Name
 	result.GameModeMaps = dir.LoadGameModeMaps(assets)
 	result.Regions = dir.LoadRegionList(assets.Archive)
@@ -261,5 +277,58 @@ func (dir *CoatlicueDirectory) LoadInfo(assets *game.Assets) *CoatlicueInfo {
 		result.MissionEntities = level.LoadMissionEntities(assets)
 	}
 
+	result.SkyboxSystem, result.Slices = loadSkyboxSystem(assets)
+
+	if result.Tracts != nil && result.Tracts.TerritoryMasterSlicePath != "" {
+		var slices map[string]ViewerSlice
+		result.TerritorySystem, slices = loadTerritorySystem(assets, result.Tracts.TerritoryMasterSlicePath)
+		if result.Slices == nil {
+			result.Slices = make(map[string]ViewerSlice)
+		}
+		for key, slice := range slices {
+			result.Slices[key] = slice
+		}
+	}
+
 	return result
+}
+
+// the game spawns the territory master slice from tracts.json `territoryMasterSlicePath`, it is not referenced by level data.
+// Its PrefabReferencer lists the territory, zone and POI bounds slices.
+func loadTerritorySystem(assets *game.Assets, masterPath string) (*ViewerSlice, map[string]ViewerSlice) {
+	file, ok := assets.Archive.Lookup(strings.ToLower(masterPath))
+	if !ok || file == nil {
+		slog.Warn("territory master slice not found", "file", masterPath)
+		return nil, nil
+	}
+	refs := make([]SliceRef, 0)
+	slice, err := LoadViewerSlice(assets, file, "", func(it catalog.AssetId, variant string) {
+		refs = append(refs, SliceRef{Id: it, Variant: variant})
+	})
+	if err != nil {
+		slog.Error("territory master slice not loaded", "file", masterPath, "error", err)
+		return nil, nil
+	}
+	return &slice, LoadSliceRefClosure(assets, refs)
+}
+
+// the game spawns the skybox system for every level, it is not referenced by level data.
+// It holds the default TimeOfDay POI and its skybox slice.
+const skyboxSystemFile = "slices/system/skyboxsystem/skyboxsystem.dynamicslice"
+
+func loadSkyboxSystem(assets *game.Assets) (*ViewerSlice, map[string]ViewerSlice) {
+	file, ok := assets.Archive.Lookup(skyboxSystemFile)
+	if !ok || file == nil {
+		slog.Warn("skybox system slice not found", "file", skyboxSystemFile)
+		return nil, nil
+	}
+	refs := make([]SliceRef, 0)
+	slice, err := LoadViewerSlice(assets, file, "", func(it catalog.AssetId, variant string) {
+		refs = append(refs, SliceRef{Id: it, Variant: variant})
+	})
+	if err != nil {
+		slog.Error("skybox system slice not loaded", "file", skyboxSystemFile, "error", err)
+		return nil, nil
+	}
+	return &slice, LoadSliceRefClosure(assets, refs)
 }

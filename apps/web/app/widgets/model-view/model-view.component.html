@@ -1,0 +1,254 @@
+<div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col z-50 pointer-events-none">
+  @if (isEmpty()) {
+    <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center">
+      <nwb-icon [icon]="iconEmpty" class="flex-shrink-0 w-20 h-20 opacity-10" />
+    </div>
+  }
+  @if (isSupported() === false) {
+    <div class="p-3">
+      <div class="alert shadow-lg my-2 bg-base-100">
+        <nwb-icon [icon]="iconError" class="text-error flex-shrink-0 w-6 h-6 self-start" />
+        <div>
+          <h3 class="font-bold">Not supported</h3>
+          <div class="text-xs">The 3D view needs WebGPU, which this browser does not provide</div>
+        </div>
+      </div>
+    </div>
+  }
+  @if (hasError()) {
+    <div class="p-3">
+      <div class="alert shadow-lg my-2 bg-base-100">
+        <nwb-icon [icon]="iconError" class="text-error flex-shrink-0 w-6 h-6 self-start" />
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">Failed to load model</div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showLoading()) {
+  <div
+    class="bg-gradient-to-b from-base-300 to-black absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
+    animate.enter="fade-enter"
+    animate.leave="fade-leave"
+  >
+    <picture class="block aspect-square w-40 h-40 relative">
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+        [nwImage]="'assets/loaders/basicscreenrune1.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        [nwImage]="'assets/loaders/basicscreenrune3.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        [nwImage]="'assets/loaders/basicscreenrune2.png'"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-pulse"
+        [nwImage]="'assets/loaders/nwlogo.png'"
+      />
+    </picture>
+  </div>
+}
+
+<div class="flex flex-row gap-1 absolute top-2 right-2 z-40">
+  @if (isSupported() && !isEmpty() && !isLoading() && !hasError()) {
+    @if (store.animations().length) {
+      <div class="join">
+        <button
+          class="join-item btn btn-square btn-sm drop-shadow"
+          [class.btn-ghost]="!isLight()"
+          (click)="toggleAnimation()"
+        >
+          <span class="swap swap-rotate" [class.swap-active]="isAnimating()">
+            <nwb-icon [icon]="iconPause" class="w-4 h-4 swap-on" />
+            <nwb-icon [icon]="iconPlay" class="w-4 h-4 swap-off" />
+          </span>
+        </button>
+        <button
+          class="join-item btn btn-square btn-sm drop-shadow"
+          [class.btn-ghost]="!isLight()"
+          [cdkMenuTriggerFor]="tplAnimations"
+        >
+          <nwb-icon [icon]="iconFilms" class="w-4 h-4" />
+        </button>
+        <ng-template #tplAnimations>
+          <ul
+            cdkMenu
+            class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 min-w-64 rounded-md max-h-96 shadow-md overflow-y-auto"
+          >
+            @for (name of store.animations(); track $index) {
+              <li cdkMenuItem>
+                <a [class.text-primary]="name === store.animation()" (click)="selectAnimation(name)">
+                  {{ name }}
+                </a>
+              </li>
+            }
+          </ul>
+        </ng-template>
+      </div>
+    }
+    @if (actions() && fragments().length) {
+      <button
+        #actionsToggle
+        class="btn btn-sm drop-shadow"
+        [class.btn-ghost]="!isLight() && !showActions()"
+        [class.btn-active]="showActions()"
+        title="Animations"
+        (click)="showActions.set(!showActions())"
+      >
+        <nwb-icon [icon]="iconActions" class="w-4 h-4" />
+      </button>
+    }
+    @if (store.buttons().length) {
+      <button class="btn btn-square btn-sm drop-shadow" [class.btn-ghost]="!isLight()" [cdkMenuTriggerFor]="tplModels">
+        <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+      </button>
+      <ng-template #tplModels>
+        <ul
+          cdkMenu
+          class="dropdown-content menu menu-compact flex-nowrap bg-base-300 border border-base-200 min-w-64 rounded-md max-h-96 shadow-md overflow-y-auto"
+        >
+          @for (item of store.buttons(); track $index) {
+            <li cdkMenuItem>
+              <a [class.text-primary]="item.active" (click)="show(item.index)">
+                {{ item.label }}
+              </a>
+            </li>
+          }
+        </ul>
+      </ng-template>
+    }
+    <div class="join">
+      @if (outputs(); as list) {
+        <button
+          class="join-item btn btn-square btn-sm drop-shadow"
+          [class.btn-ghost]="!isLight()"
+          [class.text-primary]="showOutputs()"
+          title="Debug output"
+          (click)="showOutputs.set(!showOutputs())"
+        >
+          <nwb-icon [icon]="iconOutput" class="w-4 h-4" />
+        </button>
+      }
+      <button class="join-item btn btn-square btn-sm drop-shadow" [class.btn-ghost]="!isLight()" (click)="toggleMode()">
+        <span class="swap swap-rotate" [class.swap-active]="isLight()">
+          <nwb-icon [icon]="iconSun" class="w-4 h-4 swap-on" />
+          <nwb-icon [icon]="iconMoon" class="w-4 h-4 swap-off" />
+        </span>
+      </button>
+      <button
+        class="join-item btn btn-square btn-sm drop-shadow"
+        [class.btn-ghost]="!isLight()"
+        (click)="capturePhoto()"
+      >
+        <nwb-icon [icon]="iconCamera" class="w-4 h-4" />
+      </button>
+      @if (downloads()) {
+        <button
+          class="join-item btn btn-square btn-sm drop-shadow"
+          [class.btn-ghost]="!isLight()"
+          title="Download"
+          (click)="openDownloads()"
+        >
+          <nwb-icon [icon]="iconDownload" class="w-4 h-4" />
+        </button>
+      }
+      <button
+        class="join-item btn btn-square btn-sm drop-shadow"
+        [class.btn-ghost]="!isLight()"
+        (click)="toggleFullscreen()"
+      >
+        <nwb-icon [icon]="iconFullscreen" class="w-4 h-4" />
+      </button>
+    </div>
+  }
+  @if (canClose) {
+    <button class="btn btn-square btn-sm drop-shadow" [class.btn-ghost]="!isLight()" (click)="closeDialog()">
+      <nwb-icon [icon]="iconClose" class="w-4 h-4" />
+    </button>
+  }
+</div>
+
+@if (store.model()?.relatedVitalId; as vitalId) {
+  <div class="absolute bottom-12 left-2 z-30 badge badge-neutral" title="No own model is known">
+    Model of <a class="link-hover" [routerLink]="['vitals', vitalId] | nwLink">{{ vitalId }}</a>
+  </div>
+}
+
+@if (showOutputs() && outputs(); as list) {
+  <nwb-viewer-output class="absolute top-12 left-2 bottom-12 w-52 z-40" [outputs]="list" />
+}
+
+@if (actions() && showActions() && fragments().length) {
+  <nwb-model-view-actions
+    #actionsPanel
+    class="absolute top-12 right-2 h-[calc(100%-8rem)] w-[calc(100%-1rem)] max-w-md z-40 bg-base-300/80 border border-base-200 rounded-md"
+    [summaries]="summaries()"
+    [tags]="fragmentTags()"
+    [customTags]="customTags()"
+    [current]="fragment()"
+    [durations]="durations()"
+    (variantClicked)="playFragment($event)"
+    (tagAdded)="addTag($event)"
+    (tagRemoved)="removeTag($event)"
+  />
+}
+
+@if (tracks()) {
+  <div
+    class="absolute bottom-2 left-2 right-2 z-30 flex flex-row items-center justify-center gap-1"
+    [class.hidden]="!hasTimeline() || isLoading()"
+  >
+    <button class="btn btn-square btn-xs drop-shadow" [class.btn-ghost]="!isLight()" (click)="toggleFragment()">
+      <span class="swap swap-rotate" [class.swap-active]="fragmentPlaying()">
+        <nwb-icon [icon]="iconPause" class="w-3 h-3 swap-on" />
+        <nwb-icon [icon]="iconPlay" class="w-3 h-3 swap-off" />
+      </span>
+    </button>
+    <div #track class="flex-1 max-w-[800px]" (click)="onTrackClick($event)"></div>
+    @if (hasHitboxes()) {
+      <button
+        class="btn btn-square btn-xs drop-shadow"
+        [class.btn-ghost]="!isLight() && !hitboxes()"
+        [class.btn-active]="hitboxes()"
+        title="Hitboxes"
+        (click)="toggleHitboxes()"
+      >
+        <nwb-icon [icon]="iconHitboxes" class="w-3 h-3" />
+      </button>
+    }
+  </div>
+}
+
+@if (isSupported() && store.canDye()) {
+  <div
+    class="absolute bottom-2 right-2 left-2 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+  >
+    <nwb-dye-panel
+      [dyeColors]="store.dyeColors()"
+      [dyeR]="store.dyeR()"
+      [dyeG]="store.dyeG()"
+      [dyeB]="store.dyeB()"
+      [dyeA]="store.dyeA()"
+      [debug]="store.dyeDebug()"
+      (dyeRChange)="store.setDyeR($event)"
+      (dyeGChange)="store.setDyeG($event)"
+      (dyeBChange)="store.setDyeB($event)"
+      (dyeAChange)="store.setDyeA($event)"
+      (debugChange)="store.setDebug($event)"
+      [dyeRDisabled]="store.dyeRDisabled()"
+      [dyeGDisabled]="store.dyeGDisabled()"
+      [dyeBDisabled]="store.dyeBDisabled()"
+      [dyeADisabled]="store.dyeADisabled()"
+    />
+  </div>
+}
+
+<div class="absolute top-0 left-0 right-0 bottom-0 z-0 overflow-hidden" [class.opacity-0]="isEmpty()">
+  <canvas #canvas class="block w-full h-full outline-none" tabindex="0"></canvas>
+</div>

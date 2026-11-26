@@ -41,6 +41,9 @@ func (ctx *Scanner) Scan(file nwfs.File) {
 			slog.Debug("catacomb file", "tile", tile.BaseName, "count", count)
 			break
 		}
+		if strings.HasPrefix(file.Path(), "slices/") {
+			ctx.scanVitalTemplates(file)
+		}
 	case ".json":
 		if path.Ext(strings.TrimSuffix(file.Path(), ".json")) == ".capitals" {
 			for item := range ctx.ScanCapitalFile(file) {
@@ -49,6 +52,28 @@ func (ctx *Scanner) Scan(file nwfs.File) {
 		} else {
 			slog.Debug("skipping json file", "path", file.Path())
 		}
+	}
+}
+
+// scanVitalTemplates adds the vitals a slice spawns with their models, each model once and without position
+func (ctx *Scanner) scanVitalTemplates(file nwfs.File) {
+	type key struct {
+		vital string
+		model string
+	}
+	seen := make(map[key]bool)
+	for item := range ctx.ScanVitals(file) {
+		if item.Model == nil {
+			continue
+		}
+		it := key{strings.ToLower(item.VitalsID), item.Model.Id}
+		if seen[it] {
+			continue
+		}
+		seen[it] = true
+		item.Position = nwt.AzVec3{}
+		item.Template = true
+		ctx.addSpawn(&item, "", "")
 	}
 }
 

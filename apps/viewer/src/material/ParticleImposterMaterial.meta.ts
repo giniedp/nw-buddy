@@ -1,0 +1,20 @@
+import { inputSlot } from '@gglib/graphics'
+export default {
+  ModelMatrix: inputSlot('object', 'modelmatrix', 'mat4x4'),
+  AnimAmplitude: inputSlot('material', 'animamplitude', 'scalar'),
+  AnimOffset: inputSlot('material', 'animoffset', 'scalar'),
+  AnimSpeed: inputSlot('material', 'animspeed', 'scalar'),
+  BumpAnimSpeed: inputSlot('material', 'bumpanimspeed', 'scalar'),
+  BumpScale: inputSlot('material', 'bumpscale', 'scalar'),
+  BumpTilling: inputSlot('material', 'bumptilling', 'scalar'),
+  DiffuseColor: inputSlot('material', 'diffusecolor', 'vec4'),
+  DiffuseRange: inputSlot('material', 'diffuserange', 'scalar'),
+  SoftIntersectionFactor: inputSlot('material', 'softintersectionfactor', 'scalar'),
+  UvModDiffuse: inputSlot('material', 'uvmoddiffuse', 'mat4x4'),
+  EnabledUvModDiffuse: inputSlot('material', 'enableduvmoddiffuse', 'scalar'),
+  SamplerLinear: inputSlot('', 'samplerLinear', 'sampler'),
+  SamplerPoint: inputSlot('', 'samplerPoint', 'sampler'),
+  SceneDepthMap: inputSlot('view', 'sceneDepthMap', 'texture'),
+  DiffuseMap: inputSlot('', 'diffuseMap', 'texture'),
+  NormalMap: inputSlot('', 'normalMap', 'texture'),
+}

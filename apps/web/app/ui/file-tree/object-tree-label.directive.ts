@@ -17,10 +17,7 @@ export interface ObjectTreeLabelContext {
   exportAs: 'treeLabel',
 })
 export class ObjectTreeLabelDirective {
-  public static ngTemplateContextGuard<T>(
-    dir: ObjectTreeLabelDirective,
-    ctx: unknown,
-  ): ctx is ObjectTreeLabelContext {
+  public static ngTemplateContextGuard<T>(dir: ObjectTreeLabelDirective, ctx: unknown): ctx is ObjectTreeLabelContext {
     return true
   }
 

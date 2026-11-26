@@ -19,8 +19,8 @@ import { NwModule } from '../../nw'
   `,
   imports: [NwModule],
   host: {
-    class: 'block w-80 p-3'
-  }
+    class: 'block w-80 p-3',
+  },
 })
 export class CheckpointTipComponent {
   private db = injectNwData()

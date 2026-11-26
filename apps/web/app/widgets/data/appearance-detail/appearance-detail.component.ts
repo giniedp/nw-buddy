@@ -10,7 +10,7 @@ import { svgBrush } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, humanize, observeQueryParam } from '~/utils'
-import { ModelViewerModule } from '~/widgets/model-viewer'
+import { ModelDownloadButtonComponent, ModelViewComponent } from '~/widgets/model-view'
 import { ItemDetailModule } from '../item-detail'
 import { TRANSMOG_CATEGORIES } from '../transmog'
 import {
@@ -36,7 +36,8 @@ import { TabsModule } from '~/ui/tabs'
     ItemDetailModule,
     IconsModule,
     TooltipModule,
-    ModelViewerModule,
+    ModelDownloadButtonComponent,
+    ModelViewComponent,
     TabsModule,
   ],
   providers: [AppearanceDetailStore],

@@ -21,7 +21,8 @@ func (doc *Document) ImportAssetAnimations(asset importer.AnimationAsset) {
 	params, _ := cgf.SelectChunk[cgf.ChunkMotionParams](file)
 
 	animation := &gltf.Animation{
-		Name: asset.Name,
+		Name:   asset.Name,
+		Extras: ExtrasStore(nil, ExtraKeyClip, clipExtras(params)),
 	}
 
 	defer func() {
@@ -42,12 +43,7 @@ func (doc *Document) ImportAssetAnimations(asset importer.AnimationAsset) {
 		}
 
 		if len(controller.RotationKeys) > 0 {
-			rotTimeKeys := slices.Clone(controller.RotationTimeKeys)
-			if params.TicksPerFrame != 0 && params.SecsPerTick != 0 {
-				for i := range rotTimeKeys {
-					rotTimeKeys[i] = rotTimeKeys[i] * params.SecsPerTick / float32(params.TicksPerFrame)
-				}
-			}
+			rotTimeKeys := framesToSeconds(controller.RotationTimeKeys, params)
 			rotTimeAccessor := modeler.WriteAccessor(doc.Document, gltf.TargetNone, rotTimeKeys)
 
 			rotKeys := slices.Clone(controller.RotationKeys)
@@ -73,12 +69,7 @@ func (doc *Document) ImportAssetAnimations(asset importer.AnimationAsset) {
 		}
 
 		if len(controller.PositionKeys) > 0 {
-			posTimeKeys := slices.Clone(controller.PositionTimeKeys)
-			if params.TicksPerFrame != 0 && params.SecsPerTick != 0 {
-				for i := range posTimeKeys {
-					posTimeKeys[i] = posTimeKeys[i] * params.SecsPerTick / float32(params.TicksPerFrame)
-				}
-			}
+			posTimeKeys := framesToSeconds(controller.PositionTimeKeys, params)
 			posTimeAccessor := modeler.WriteAccessor(doc.Document, gltf.TargetNone, posTimeKeys)
 
 			posKeys := slices.Clone(controller.PositionKeys)
@@ -103,4 +94,42 @@ func (doc *Document) ImportAssetAnimations(asset importer.AnimationAsset) {
 			})
 		}
 	}
+}
+
+// ClipExtras describes the played range of a clip, stored in the extras of a glTF animation under ExtraKeyClip.
+// The key frames are exported as they are: additive clips keep their reference frame (frame 0) before StartTime.
+type ClipExtras struct {
+	// first played time in seconds, additive clips start one frame after their reference frame
+	StartTime float32 `json:"startTime"`
+	// last played time in seconds
+	EndTime float32 `json:"endTime"`
+	// key frames per second
+	SampleRate float32 `json:"sampleRate"`
+	// the clip is additive: rotations compose onto the default pose, translations add to it
+	Additive bool `json:"additive,omitempty"`
+	// the clip was authored as a cycle
+	Cycle bool `json:"cycle,omitempty"`
+}
+
+func clipExtras(params cgf.ChunkMotionParams) ClipExtras {
+	rate := params.SampleRate()
+	return ClipExtras{
+		StartTime:  float32(params.StartFrame()-params.Start) / rate,
+		EndTime:    float32(params.EndFrame()-params.Start) / rate,
+		SampleRate: rate,
+		Additive:   params.IsAdditive(),
+		Cycle:      params.IsCycle(),
+	}
+}
+
+// framesToSeconds converts controller key times (frames) to seconds relative to the clip's start frame,
+// as Lumberyard samples a CAF at rate * (start + t * (end - start))
+func framesToSeconds(frames []float32, params cgf.ChunkMotionParams) []float32 {
+	rate := params.SampleRate()
+	start := float32(params.Start)
+	result := slices.Clone(frames)
+	for i := range result {
+		result[i] = (result[i] - start) / rate
+	}
+	return result
 }

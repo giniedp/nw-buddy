@@ -146,7 +146,6 @@ export function itemColTransformTo(util: ItemTableUtils) {
               isNamed: isMasterItem(item) && isItemNamed(item),
               rarity: getItemRarity(item),
             }),
-            ,
           ],
         ),
         util.el('span.pl-2', { text: util.i18n.get(item.Name) }),
@@ -242,7 +241,6 @@ export function itemColPerks(
       if (!!perks && !buckets) {
         return null
       }
-      getItemPerkBucketIds
       return util.el('div.flex.flex-row.items-center.h-full.gap-[1px]', {}, [
         ...perks.map((perk) => {
           const isApplicableInvalid = !isPerkApplicableToItem(perk, data)

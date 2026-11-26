@@ -6,9 +6,11 @@ export const environment: Environment = {
   production: true,
   standalone: true,
   environment: 'STANDALONE',
+  // the desktop app proxies nwbt on the page's origin (apps/desktop/proxy.go)
+  nwbtUrl: '/nwbt',
   modelsUrl: getModelsUrl(env, 'cdnUrl'),
   nwDataUrl: getNwDataUrl(env, 'deployUrl'),
   nwImagesUrl: getNwDataUrl(env, 'deployUrl'),
-  nwTilesUrl: getNwDataUrl(env, 'deployUrl'),
+  nwTilesUrl: getNwDataUrl(env, 'cdnUrl'),
   nwCharUrl: null,
 }

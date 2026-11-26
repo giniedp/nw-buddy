@@ -28,16 +28,11 @@ export function prefabModelUri(prefabPath: string) {
   return normalizeUri(`/slices/${prefabPath}.glb`)
 }
 
-export function vitalModelUri(vitalId: string, registry: Map<string, ScannedVitalModel>) {
-  const id = registry.get(vitalId)?.id
-  return vitalModelUriById(id)
-}
-
-export function vitalModelUriById(id: string) {
-  if (!id) {
+export function vitalModelUri(model: ScannedVitalModel) {
+  if (!model?.model) {
     return null
   }
-  return normalizeUri(`/vitals/${id}.glb`)
+  return normalizeUri(`/${model.model}.glb`)
 }
 
 export function mountModelUri(item: MountData) {
@@ -54,21 +49,40 @@ export function costumeModelUri(item: CostumeChangeData) {
   return normalizeUri(`/costumechanges/${item.CostumeChangeId}.glb`)
 }
 
-export function itemAppearanceModelUri(item: ArmorAppearanceDefinitions, key: keyof Pick<ArmorAppearanceDefinitions, 'Skin1'>) {
+/**
+ * The model of a character definition (`.cdf`), exported at its game path
+ */
+export function characterDefinitionModelUri(file: string) {
+  if (!file) {
+    return null
+  }
+  return normalizeUri(`/${file.trim().replace(/\\/g, '/')}.glb`)
+}
+
+export function itemAppearanceModelUri(
+  item: ArmorAppearanceDefinitions,
+  key: keyof Pick<ArmorAppearanceDefinitions, 'Skin1'>,
+) {
   if (!item?.[key]) {
     return null
   }
   return normalizeUri(`/armorappearances/${item.ItemID}-${key}.glb`)
 }
 
-export function weaponAppearanceModelUri(item: WeaponAppearanceDefinitions, key: keyof Pick<WeaponAppearanceDefinitions, 'SkinOverride1' | 'SkinOverride2' | 'MeshOverride'>) {
+export function weaponAppearanceModelUri(
+  item: WeaponAppearanceDefinitions,
+  key: keyof Pick<WeaponAppearanceDefinitions, 'SkinOverride1' | 'SkinOverride2' | 'MeshOverride'>,
+) {
   if (!item?.[key]) {
     return null
   }
   return normalizeUri(`/weaponappearances/${item.WeaponAppearanceID}-${key}.glb`)
 }
 
-export function weaponItemModelUri(item: WeaponItemDefinitions, key: keyof Pick<WeaponItemDefinitions, 'SkinOverride1' | 'SkinOverride2' | 'MeshOverride'>) {
+export function weaponItemModelUri(
+  item: WeaponItemDefinitions,
+  key: keyof Pick<WeaponItemDefinitions, 'SkinOverride1' | 'SkinOverride2' | 'MeshOverride'>,
+) {
   if (!item?.[key]) {
     return null
   }

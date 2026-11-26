@@ -1,10 +1,4 @@
-import {
-  ColDef,
-  IAfterGuiAttachedParams,
-  IDoesFilterPassParams,
-  IFilterParams,
-  IRowNode,
-} from '@ag-grid-community/core'
+import { ColDef, IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams, IRowNode } from 'ag-grid-community'
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
@@ -104,7 +98,7 @@ export class GridSelectFilter<T> implements IFilterAngularComp {
   }
 
   protected extractOptionsFromNode(node: IRowNode): GridSelectFilterOption[] {
-    const value = this.getValue(node, node.data)
+    const value = this.getValue(node)
     if (Array.isArray(value)) {
       return value.map((it) => {
         return {
@@ -122,18 +116,8 @@ export class GridSelectFilter<T> implements IFilterAngularComp {
       },
     ]
   }
-  protected getValue(node: IRowNode, data: any) {
-    const result = this.params.valueGetter({
-      api: this.params.api,
-      colDef: this.params.colDef,
-      column: this.params.column,
-      columnApi: this.params.columnApi,
-      context: this.params.context,
-      data: data,
-      getValue: (field) => node.data[field],
-      node: node,
-    })
-    return result ?? null
+  protected getValue(node: IRowNode) {
+    return this.params.getValue(node) ?? null
   }
 
   private getLabel(node: IRowNode, data: any, value: any) {
@@ -143,7 +127,6 @@ export class GridSelectFilter<T> implements IFilterAngularComp {
         api: this.params.api,
         colDef: this.params.colDef,
         column: this.params.column,
-        columnApi: this.params.columnApi,
         context: this.params.context,
         data: data,
         node: node,

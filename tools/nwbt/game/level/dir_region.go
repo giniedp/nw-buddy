@@ -136,7 +136,40 @@ func (dir *RegionDirectory) LoadCapitalsLayers(assets *game.Assets) map[string][
 	return result
 }
 
+// LoadChunksLayers returns the chunks of the region by layer: from region.chunks, else from the layer .chunks files
+// (the game's order)
 func (dir *RegionDirectory) LoadChunksLayers(assets *game.Assets) map[string][]nwt.ChunkEntry {
+	if result, ok := dir.loadRegionChunks(assets); ok {
+		return result
+	}
+	return dir.loadLayerChunks(assets)
+}
+
+// loadRegionChunks reads region.chunks, which holds the chunks of all layers
+func (dir *RegionDirectory) loadRegionChunks(assets *game.Assets) (map[string][]nwt.ChunkEntry, bool) {
+	file, ok := assets.Archive.Lookup(dir.PathChunksFile())
+	if !ok {
+		return nil, false
+	}
+	obj, err := game.LoadObjectStream(file)
+	if err != nil {
+		slog.Error("failed to load chunk file", "level", dir.Coatlicue.Name, "region", dir.RegionName, "file", file.Path(), "error", err)
+		return nil, false
+	}
+	chunks, ok := obj.(nwt.GridGenericAsset_AssetData__)
+	if !ok {
+		return nil, false
+	}
+	result := make(map[string][]nwt.ChunkEntry)
+	for _, chunk := range chunks.Chunks.Element {
+		// lower case, as the layer directory names of the capitals
+		layer := strings.ToLower(string(chunk.Layer))
+		result[layer] = append(result[layer], chunk)
+	}
+	return result, true
+}
+
+func (dir *RegionDirectory) loadLayerChunks(assets *game.Assets) map[string][]nwt.ChunkEntry {
 	result := make(map[string][]nwt.ChunkEntry)
 	files, err := assets.Archive.Glob(dir.Path("capitals", "**.chunks"))
 	if err != nil {
@@ -299,6 +332,22 @@ func (dir *RegionDirectory) LoadRegionMaterials(assets *game.Assets) *RegionMate
 			NormalMap:       normalMap,
 			GlossMap:        glossMap,
 			DefaultMaterial: defaultMaterial,
+
+			MacroMaterialParams:   toMacroParams(regionMatAsset.MacroMaterialParams),
+			WorldBackgroundParams: toMacroParams(worldMatAsset.BackgroundMacroMaterialParams),
+			WorldForegroundParams: toMacroParams(worldMatAsset.ForegroundMacroMaterialParams),
+			POMDisplacement:       float32(worldMatAsset.POMDisplacement),
+			POMHeightBias:         float32(worldMatAsset.POMHeightBias),
+			POMSelfShadowStrength: float32(worldMatAsset.POMSelfShadowStrength),
+		}
+		if regionMatAsset.EnableCustomBackgroundParams || regionMatAsset.EnableCustomForegroundParams {
+			custom := toMacroParams(regionMatAsset.CustomMacroMaterialCompositingParams)
+			if regionMatAsset.EnableCustomBackgroundParams {
+				material.CustomBackgroundParams = &custom
+			}
+			if regionMatAsset.EnableCustomForegroundParams {
+				material.CustomForegroundParams = &custom
+			}
 		}
 		for _, layer := range regionMatAsset.Layers.Element {
 			layerMatFile, _ := assets.LookupFileByAsset(layer.Material)
@@ -328,6 +377,8 @@ func (dir *RegionDirectory) LoadRegionInfo(assets *game.Assets) *RegionInfo {
 	region.Impostors = dir.LoadImpostorsInfo(assets, WORKER_COUNT)
 	region.PoiImpostors = dir.LoadPoiImpostorsInfo(assets, WORKER_COUNT)
 	region.TerrainMaterial = dir.LoadRegionMaterials(assets)
+	region.Tracts = dir.LoadTractNames(assets)
+	_, region.HasSliceData = assets.Archive.Lookup(dir.PathSlicedataFile())
 
 	return &region
 }
@@ -339,4 +390,14 @@ type location struct {
 
 func formatRegionName(loc location) string {
 	return fmt.Sprintf("r_+%02d_+%02d", loc.X, loc.Y)
+}
+
+func toMacroParams(p nwt.SerializableMacroMaterialParams) MacroMaterialParams {
+	return MacroMaterialParams{
+		Color:               [4]float32{float32(p.MacroColor[0]), float32(p.MacroColor[1]), float32(p.MacroColor[2]), float32(p.MacroColor[3])},
+		ColorScale:          float32(p.MacroColorScale),
+		GlossScale:          float32(p.MacroGlossScale),
+		NormalScale:         float32(p.MacroNormalScale),
+		SpecularReflectance: float32(p.MacroSpecularReflectance),
+	}
 }

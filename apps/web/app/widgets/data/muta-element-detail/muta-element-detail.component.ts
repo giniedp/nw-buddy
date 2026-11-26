@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, effect, forwardRef, inject, input, 
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { ModelViewerModule } from '~/widgets/model-viewer'
 import { MutaElementDetailStore } from './muta-element-detail.store'
 import { StatusEffectData } from '@nw-data/generated'
 
@@ -12,7 +11,7 @@ import { StatusEffectData } from '@nw-data/generated'
   templateUrl: './muta-element-detail.component.html',
   exportAs: 'elementDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, ModelViewerModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
   providers: [MutaElementDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',

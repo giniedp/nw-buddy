@@ -30,7 +30,7 @@ export const UmbralCalculatorStore = signalStore(
         name: it.name,
         gearScore: 700,
         weight: it.weight,
-        locked: false
+        locked: false,
       }
     }),
   }),

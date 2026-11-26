@@ -26,12 +26,16 @@ type File interface {
 	Stat() fs.FileInfo
 }
 
+// baseFS is read-only once constructed: `files` is filled by the archive constructors only.
+// The lazily built lookup index and glob cache are initialized once, so all methods are safe for
+// concurrent use without locking (a re-entrant RWMutex here deadlocked under concurrent first use).
 type baseFS struct {
 	files      []File
 	index      map[string]File
-	lock       sync.RWMutex
+	indexOnce  sync.Once
 	sa         *str.SuffixArray
 	globChache *maps.SafeMap[string, []File]
+	globOnce   sync.Once
 }
 
 func (d *baseFS) initSuffix() {
@@ -43,28 +47,20 @@ func (d *baseFS) initSuffix() {
 }
 
 func (d *baseFS) Lookup(path string) (File, bool) {
-	path = NormalizePath(path)
-	if d.index == nil {
-		d.lock.Lock()
-		d.index = make(map[string]File)
+	d.indexOnce.Do(func() {
+		index := make(map[string]File, len(d.files))
 		for _, entry := range d.files {
-			d.index[entry.Path()] = entry
+			index[entry.Path()] = entry
 		}
-		d.lock.Unlock()
-	}
-
-	d.lock.RLock()
-	defer d.lock.RUnlock()
-	if entry, ok := d.index[path]; ok {
+		d.index = index
+	})
+	if entry, ok := d.index[NormalizePath(path)]; ok {
 		return entry, true
 	}
 	return nil, false
 }
 
 func (d *baseFS) LookupBySuffix(suffix string) (File, bool) {
-	d.lock.RLock()
-	defer d.lock.RUnlock()
-
 	res, ok := d.sa.Lookup(suffix)
 	if ok {
 		return d.Lookup(res)
@@ -72,8 +68,6 @@ func (d *baseFS) LookupBySuffix(suffix string) (File, bool) {
 	return nil, false
 }
 func (d *baseFS) ReadFile(path string) ([]byte, error) {
-	d.lock.RLock()
-	defer d.lock.RUnlock()
 	if entry, ok := d.Lookup(path); ok {
 		return entry.Read()
 	}
@@ -81,8 +75,6 @@ func (d *baseFS) ReadFile(path string) ([]byte, error) {
 }
 
 func (d *baseFS) List(match ...func(string) bool) ([]File, error) {
-	d.lock.RLock()
-	defer d.lock.RUnlock()
 	switch len(match) {
 	case 0:
 		return d.files, nil
@@ -94,11 +86,9 @@ func (d *baseFS) List(match ...func(string) bool) ([]File, error) {
 }
 
 func (d *baseFS) Glob(patterns ...string) (result []File, err error) {
-	d.lock.RLock()
-	defer d.lock.RUnlock()
-	if d.globChache == nil {
+	d.globOnce.Do(func() {
 		d.globChache = maps.NewSafeMap[string, []File]()
-	}
+	})
 	key := strings.Join(patterns, ",")
 	if cached, ok := d.globChache.Load(key); ok {
 		return cached, nil
@@ -113,8 +103,6 @@ func (d *baseFS) Glob(patterns ...string) (result []File, err error) {
 }
 
 func (d *baseFS) Match(patterns ...string) (result []File, err error) {
-	d.lock.RLock()
-	defer d.lock.RUnlock()
 	if match, err := CompileRegexp(patterns...); err != nil {
 		return nil, err
 	} else {
@@ -123,8 +111,6 @@ func (d *baseFS) Match(patterns ...string) (result []File, err error) {
 }
 
 func (d *baseFS) list(match func(string) bool) (result []File, err error) {
-	d.lock.RLock()
-	defer d.lock.RUnlock()
 	result = make([]File, 0)
 	for _, entry := range d.files {
 		if match(entry.Path()) {

@@ -90,7 +90,7 @@ export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {
   public closeInput(e: Event) {
     if (this.showInput()) {
       e.stopImmediatePropagation()
-      if (e instanceof KeyboardEvent && this.input) {
+      if (e instanceof KeyboardEvent && this.input()) {
         this.input().nativeElement.blur()
       } else {
         this.showInput.set(false)

@@ -15,6 +15,9 @@ src/**/*.js
 # dependencies
 node_modules
 yarn-error.log
+# local files, e.g. CLAUDE.local.md
+*.local
+*.local.*
 # IDEs and editors
 .idea
 .project
@@ -28,6 +31,9 @@ yarn-error.log
 .wrangler
 .nwbt
 .prof
+# built fresh: pnpm nwbt:build, pnpm viewer:build (both part of pnpm build:desktop)
+/tools/bin/nwbt.exe
+/tools/bin/viewer.zip
 
 # IDE - VSCode
 .vscode/*

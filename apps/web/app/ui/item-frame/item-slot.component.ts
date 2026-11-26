@@ -31,7 +31,6 @@ export class ItemSlotComponent {
   protected rarityC0 = computed(() => this.rarityStyle().c0)
   protected rarityC1 = computed(() => this.rarityStyle().c1)
 
-
   private itemIcon = computed(() => {
     const icon = this.icon()
     if (typeof icon === 'string') {

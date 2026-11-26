@@ -7,7 +7,7 @@ export async function syncInitial<T extends AppDbRecord>({
   localTable,
   remoteTable,
 }: {
-  userId: string,
+  userId: string
   localTable: AppDbTable<T>
   remoteTable: PrivateTable<T>
 }) {

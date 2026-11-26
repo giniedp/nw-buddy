@@ -11,9 +11,7 @@
   } @else if (store.hasError()) {
     <div class="alert text-error">
       <nwb-icon [icon]="iconInfo" class="w-5 h-5" />
-      <div class="text-sm">
-        Oh Snap! Something went wrong.
-      </div>
+      <div class="text-sm">Oh Snap! Something went wrong.</div>
     </div>
   } @else if (!store.row()) {
     <div class="alert text-error">
@@ -39,7 +37,7 @@
     />
   }
 
-  <ng-content/>
+  <ng-content />
 </div>
 
 <ng-template [nwbGridCell] let-value #tplCategoryInfo>

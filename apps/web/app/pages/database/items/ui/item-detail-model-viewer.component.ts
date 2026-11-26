@@ -1,11 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ItemDetailStore } from '~/widgets/data/item-detail'
-import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
+import { ModelDownloadButtonComponent, ModelViewComponent } from '~/widgets/model-view'
+import { ModelsService } from '~/widgets/model-viewer'
 
 @Component({
   selector: 'nwb-item-detail-model-viewer',
-  imports: [ModelViewerModule],
+  imports: [ModelViewComponent, ModelDownloadButtonComponent],
   template: `
     @if (!isHidden()) {
       @if (viewerActive()) {
@@ -14,16 +15,17 @@ import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
           animate.enter="fade-grow-y-in"
           animate.leave="fade-grow-y-out"
         >
-          <nwb-model-viewer [models]="models()" class="w-full h-full" />
+          <nwb-model-view [models]="models()" [downloads]="true" class="w-full h-full" />
         </div>
       }
-      <div animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
+      <div class="flex flex-col gap-2" animate.enter="fade-grow-y-in" animate.leave="fade-grow-y-out">
         <button
-          class="btn btn-xs flex-1 btn-outline btn-ghost opacity-50 w-full"
+          class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
           (click)="viewerActive.set(!viewerActive())"
         >
           {{ viewerActive() ? 'Close' : 'View 3D Model' }}
         </button>
+        <nwb-model-download-button [models]="models()" />
       </div>
     }
   `,

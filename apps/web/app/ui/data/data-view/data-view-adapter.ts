@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { InjectionToken, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { TableGridUtils } from '../table-grid'

@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core'
 import { catchError, map, of } from 'rxjs'
 import { LANG_OPTIONS } from './app-menu'
 import { AppComponent } from './app.component'
-import { ElectronComponent } from './electron'
 import { landingRedirect } from './landing-redirect'
 import { LandingComponent } from './landing.component'
 import { PrivacyComponent } from './privacy.component'
@@ -98,19 +97,11 @@ const PAGE_ROUTES: Routes = [
   },
   { path: 'datasheets', loadChildren: () => import('./pages/datasheets').then((m) => m.ROUTES) },
   { path: 'actionlists', loadChildren: () => import('./pages/actionlists').then((m) => m.ROUTES) },
+  // the asset tools of nwbt: the viewer app (apps/viewer) owns the paths below /pak
   { path: 'pak', loadChildren: () => import('./pages/pak').then((m) => m.ROUTES) },
-  {
-    path: 'levels',
-    loadChildren: () => import('./pages/levels').then((m) => m.ROUTES),
-  },
 ]
 
 export const APP_ROUTES: Routes = [
-  {
-    path: 'electron',
-    pathMatch: 'full',
-    component: ElectronComponent,
-  },
   {
     matcher: localeRouteMatcher(LANG_OPTIONS.map((it) => it.value)),
     canActivate: [loadLocaleFn],

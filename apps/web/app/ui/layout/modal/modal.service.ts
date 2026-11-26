@@ -1,5 +1,12 @@
 import { Injectable, Injector, InputSignal, ModelSignal, TemplateRef, Type, inject } from '@angular/core'
-import { LoadingController, LoadingOptions, ModalController, ModalOptions, ToastController, ToastOptions } from '@ionic/angular/standalone'
+import {
+  LoadingController,
+  LoadingOptions,
+  ModalController,
+  ModalOptions,
+  ToastController,
+  ToastOptions,
+} from '@ionic/angular/standalone'
 import { Subject, from, takeUntil } from 'rxjs'
 import { ModalComponent } from './modal.component'
 import { FullscreenService } from '../fullscreen.service'

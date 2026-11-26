@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- placeholder, to be replaced by the Font Awesome volume-xmark icon -->
+  <g fill="currentColor">
+    <path d="M32 176h96l128-112v384L128 336H32z" />
+    <path d="M320 192l24-24 64 64 64-64 24 24-64 64 64 64-24 24-64-64-64 64-24-24 64-64z" />
+  </g>
+</svg>

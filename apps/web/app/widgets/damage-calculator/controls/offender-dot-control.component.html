@@ -7,7 +7,10 @@
   [cdkMenuTriggerFor]="tplDamageType"
 >
   <span class="label w-20"> Type </span>
-  <span class="flex-1 flex flex-row items-center justify-center gap-2" [class.text-error]="!!dotPercent.value && !dotType.value">
+  <span
+    class="flex-1 flex flex-row items-center justify-center gap-2"
+    [class.text-error]="!!dotPercent.value && !dotType.value"
+  >
     @if (dotType.value) {
       <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
       <span> {{ dotType.value }} </span>
@@ -34,7 +37,9 @@
 
 <div class="join w-full">
   <label class="relative flex-1">
-    <span class="label absolute top-0 left-0 text-white/30 z-10 text-xs scale-80 text-shadow-sm shadow-black">PERCENT</span>
+    <span class="label absolute top-0 left-0 text-white/30 z-10 text-xs scale-80 text-shadow-sm shadow-black"
+      >PERCENT</span
+    >
     <nwb-precision-input
       class="join-item input border-0 input-sm text-right"
       [min]="0"
@@ -51,7 +56,9 @@
     />
   </label>
   <label class="relative flex-1">
-    <span class="label absolute top-0 left-0 text-white/30 z-10 text-xs scale-80 text-shadow-sm shadow-black">TIME</span>
+    <span class="label absolute top-0 left-0 text-white/30 z-10 text-xs scale-80 text-shadow-sm shadow-black"
+      >TIME</span
+    >
     <nwb-precision-input
       class="join-item input border-0 input-sm text-right"
       [min]="0"
@@ -66,7 +73,9 @@
     />
   </label>
   <label class="relative flex-1">
-    <span class="label absolute top-0 left-0 text-white/30 z-10 text-xs scale-80 text-shadow-sm shadow-black">RATE</span>
+    <span class="label absolute top-0 left-0 text-white/30 z-10 text-xs scale-80 text-shadow-sm shadow-black"
+      >RATE</span
+    >
     <nwb-precision-input
       class="join-item input border-0 input-sm text-right"
       [min]="0"

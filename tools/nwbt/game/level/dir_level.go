@@ -111,7 +111,7 @@ func (dir *LevelDirectory) LoadMissionEntities(assets *game.Assets) []ViewerEnti
 		return nil
 	}
 
-	slice, err := LoadViewerSlice(assets, file, nil)
+	slice, err := LoadViewerSlice(assets, file, "", nil)
 	if err != nil {
 		slog.Error("mission entities slice not loaded", "level", dir.Name, "error", err)
 		return nil

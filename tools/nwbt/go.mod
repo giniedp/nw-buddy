@@ -1,6 +1,6 @@
 module nw-buddy/tools
 
-go 1.23.4
+go 1.25.0
 
 require (
 	github.com/gobwas/glob v0.2.3
@@ -45,27 +45,29 @@ require (
 	github.com/vbauerster/mpb/v8 v8.9.2
 	github.com/x448/float16 v0.8.4
 	golang.org/x/image v0.25.0
-	golang.org/x/sys v0.30.0
+	golang.org/x/sys v0.47.0
 )
 
 require (
 	github.com/clipperhouse/displaywidth v0.6.2 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
+	github.com/deepteams/webp v1.2.9 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
+	github.com/ojrac/opensimplex-go v1.0.2 // indirect
 	github.com/olekukonko/cat v0.0.0-20250911104152-50322a0618f6 // indirect
 	github.com/olekukonko/errors v1.1.0 // indirect
 	github.com/olekukonko/ll v0.1.4-0.20260115111900-9e59c2286df0 // indirect
 	github.com/olekukonko/tablewriter v1.1.3 // indirect
-	github.com/tkrajina/go-reflector v0.5.5 // indirect
+	github.com/woozymasta/bcn v0.7.0 // indirect
 )
 
 require (
 	github.com/fatih/structtag v1.2.0 // indirect
+	github.com/kgolding/zipfs v0.0.0-20181116223514-fc27f670f21f
 	github.com/nao1215/markdown v0.13.0
-	github.com/tkrajina/typescriptify-golang-structs v0.2.0
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect

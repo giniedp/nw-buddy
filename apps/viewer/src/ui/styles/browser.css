@@ -1,0 +1,80 @@
+/* The shell of the browser tool (ui/browser/BrowserTool.tsx), also used by the Data tool (ui/data/DataTool.tsx):
+   the split, the sidebar, the tabs. The rules of the browser's own sidebar are next to it (ui/browser/*.css). */
+
+/* the page: app bar, then the split; no gaps or insets of the tweak-ui panel */
+.tweak-ui.nw-browser {
+  gap: 0;
+  padding: 0;
+}
+
+.nw-browser-split {
+  flex: 1;
+  min-height: 0;
+}
+.nw-browser-split > .twk-split-gutter {
+  border-left: 1px solid var(--nw-line);
+}
+
+/* the archive: search, filter, tree and the selection */
+.nw-browser-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--nw-bg);
+}
+
+/* a search input (and buttons) above the list of the sidebar */
+.nw-search {
+  display: flex;
+  flex: none;
+  gap: 0.25rem;
+  padding: 0.25rem;
+}
+.nw-search > :first-child {
+  flex: 1;
+}
+
+/* the list of the sidebar: fills the rest of it, a summary below */
+.nw-browser-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.nw-search-summary {
+  flex: none;
+}
+
+/* the open files: tab strip and the content of the active tab */
+.nw-browser-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--nw-bg);
+}
+
+/* the content of the tabs: every pane is mounted, the inactive ones are hidden */
+.nw-tab-panes {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.nw-tab-pane {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* in place of content, centered */
+.nw-empty {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}

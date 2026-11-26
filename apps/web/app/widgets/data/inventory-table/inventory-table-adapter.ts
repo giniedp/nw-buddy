@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable, inject } from '@angular/core'
 import { EQUIP_SLOTS } from '@nw-data/common'
 import { uniqBy } from 'lodash'

@@ -1,24 +1,40 @@
 import { noPayload, payload, withRedux } from '@angular-architects/ngrx-toolkit'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { NW_MAP_NEWWORLD_VITAEETERNA } from '@nw-data/common'
 import { CreatureType, GameModeData, GameModeMapData } from '@nw-data/generated'
 import { FeatureCollection } from 'geojson'
 import { groupBy, sortBy } from 'lodash'
-import { combineLatest, from, map, switchMap } from 'rxjs'
-import { injectNwData } from '~/data'
+import { combineLatest, from, map, of, pipe, switchMap, tap } from 'rxjs'
+import { injectNwData, injectNwDataOptions } from '~/data'
 import { TranslateService } from '~/i18n'
 import { xyToLongLat } from '~/widgets/game-map/map-projection'
 import { eqCaseInsensitive, humanize, resourceValue } from '../../../../utils'
-import { loadGatherables } from './data/gatherables'
+import { unpackFilterDataSets, unpackVitalDataSet } from './data/packed'
 import { loadStructures } from './data/structures'
 import { loadRegionBoundaries, loadTerritories, loadZoneConfigs } from './data/territories'
 import { FilterDataSet, VitalDataSet } from './data/types'
-import { loadVitals } from './data/vitals'
+import { withPersistedState } from './with-persisted-state'
+import { ZONE_MAP_TASKS } from './zone-map-tasks'
 
 export interface ZoneMapState {
   isLoaded: boolean
+  /**
+   * Gatherables and vitals of the selected map are loading
+   */
+  isMapLoading: boolean
+  /**
+   * Maps that have gatherables
+   */
+  mapIds: string[]
+  /**
+   * Gatherable layers of the selected map
+   */
   gatherables: FilterDataSet[]
+  /**
+   * Vitals of the selected map
+   */
   vitals: VitalDataSet
   vitalsTypes: CreatureType[]
   vitalsCategories: string[]
@@ -34,11 +50,37 @@ export interface ZoneMapState {
   showPOI?: boolean
   showTractmap?: boolean
   showZoneConfigs: boolean
+  /**
+   * The active panel tab
+   */
+  segment: ZoneMapSegment
+  /**
+   * Enabled gatherable and structure layers by layer id. `variants` null means all variants
+   */
+  layers: Record<string, LayerSelection>
 }
+
+export type ZoneMapSegment = 'g' | 'v' | 's'
+
+export interface LayerSelection {
+  variants: string[] | null
+}
+
+const PERSISTED_KEYS: Array<keyof ZoneMapState & string> = [
+  'segment',
+  'layers',
+  'showHeatmap',
+  'showLabels',
+  'showPOI',
+  'showZoneConfigs',
+  'showTractmap',
+]
 
 export const ZoneMapStore = signalStore(
   withState<ZoneMapState>({
     isLoaded: false,
+    isMapLoading: false,
+    mapIds: [],
     territories: null,
     areas: null,
     pois: null,
@@ -58,12 +100,28 @@ export const ZoneMapStore = signalStore(
     showPOI: true,
     showZoneConfigs: false,
     showTractmap: false,
+    segment: 'g',
+    layers: {},
   }),
+  withPersistedState<ZoneMapState>('zone-map', PERSISTED_KEYS),
   withRedux({
     actions: {
       public: {
         load: noPayload,
-        loaded: payload<Omit<ZoneMapState, 'isLoaded' | 'mapId' | 'showZoneConfigs' | 'showTractmap'>>(),
+        loaded:
+          payload<
+            Pick<
+              ZoneMapState,
+              | 'territories'
+              | 'areas'
+              | 'pois'
+              | 'zoneConfigs'
+              | 'regionBounds'
+              | 'houses'
+              | 'vitalsTypes'
+              | 'vitalsCategories'
+            >
+          >(),
       },
       private: {},
     },
@@ -79,6 +137,8 @@ export const ZoneMapStore = signalStore(
       //const db = inject(NwDataService)
       const db = injectNwData()
       const tl8 = inject(TranslateService)
+      const tasks = inject(ZONE_MAP_TASKS)
+      const options = injectNwDataOptions()
       return {
         load$: create(actions.load).pipe(
           switchMap(() => {
@@ -86,49 +146,114 @@ export const ZoneMapStore = signalStore(
               territories: loadTerritories(db, tl8, xyToLongLat),
               zoneConfigs: loadZoneConfigs(db, tl8, xyToLongLat),
               regionBounds: loadRegionBoundaries(db, tl8, xyToLongLat),
-              gatherables: loadGatherables(db, xyToLongLat),
-              vitals: loadVitals({
-                db: db,
-                mapCoord: xyToLongLat,
-              }),
               houses: loadStructures(db, tl8, xyToLongLat),
-              vitalsTypes: from(db.vitalsByCreatureTypeMap()).pipe(
-                map((it) => Array.from<CreatureType>(it.keys() as any)),
-              ),
+              vitalsTypes: tasks ? from(tasks.vitalsTypes(options)) : of<CreatureType[]>([]),
               vitalsCategories: from(db.vitalsCategoriesAll()).pipe(
                 map((list) => list.map((it) => it.VitalsCategoryID).sort()),
               ),
             })
           }),
-          map(
-            ({
-              territories,
+          map(({ territories, zoneConfigs, houses, vitalsTypes, vitalsCategories, regionBounds }) => {
+            return actions.loaded({
+              ...territories,
               zoneConfigs,
-              gatherables,
+              regionBounds,
               houses,
-              vitals,
               vitalsTypes,
               vitalsCategories,
-              regionBounds,
-            }) => {
-              return actions.loaded({
-                ...territories,
-                zoneConfigs,
-                regionBounds,
-                gatherables,
-                houses,
-                vitals,
-                vitalsTypes,
-                vitalsCategories,
-              })
-            },
-          ),
+            })
+          }),
         ),
       }
     },
   }),
   withMethods((state) => {
+    const tasks = inject(ZONE_MAP_TASKS)
+    const options = injectNwDataOptions()
     return {
+      loadMapIds() {
+        if (!tasks) {
+          return
+        }
+        tasks.mapIds(options).then((mapIds) => {
+          patchState(state, { mapIds })
+        })
+      },
+      loadMapData: rxMethod<string>(
+        pipe(
+          tap(() => {
+            patchState(state, { isMapLoading: true })
+          }),
+          switchMap((mapId) => {
+            if (!tasks || !mapId) {
+              return of({ gatherables: [], vitals: { count: 0, data: {} } })
+            }
+            return from(Promise.all([tasks.gatherables(options, mapId), tasks.vitals(options, mapId)])).pipe(
+              map(([gatherables, vitals]) => {
+                return {
+                  gatherables: unpackFilterDataSets(gatherables),
+                  vitals: unpackVitalDataSet(vitals),
+                }
+              }),
+            )
+          }),
+          tap(({ gatherables, vitals }) => {
+            patchState(state, { gatherables, vitals, isMapLoading: false })
+          }),
+        ),
+      ),
+      setSegment(segment: ZoneMapSegment) {
+        patchState(state, { segment })
+      },
+      /**
+       * Enables or disables the given layers with all variants
+       */
+      setLayersEnabled(ids: string[], enabled: boolean) {
+        patchState(state, ({ layers }) => {
+          layers = { ...layers }
+          for (const id of ids) {
+            if (enabled) {
+              layers[id] = { variants: null }
+            } else {
+              delete layers[id]
+            }
+          }
+          return { layers }
+        })
+      },
+      toggleLayer(id: string) {
+        patchState(state, ({ layers }) => {
+          layers = { ...layers }
+          if (layers[id]) {
+            delete layers[id]
+          } else {
+            layers[id] = { variants: null }
+          }
+          return { layers }
+        })
+      },
+      /**
+       * Toggles a variant on the given layers. A layer without variants left is disabled
+       */
+      toggleVariant(ids: string[], variant: string) {
+        patchState(state, ({ layers }) => {
+          layers = { ...layers }
+          for (const id of ids) {
+            let variants = layers[id]?.variants || []
+            if (variants.includes(variant)) {
+              variants = variants.filter((it) => it !== variant)
+            } else {
+              variants = [...variants, variant]
+            }
+            if (variants.length) {
+              layers[id] = { variants }
+            } else {
+              delete layers[id]
+            }
+          }
+          return { layers }
+        })
+      },
       setHeatmap(showHeatmap: boolean) {
         patchState(state, { showHeatmap })
       },
@@ -152,15 +277,17 @@ export const ZoneMapStore = signalStore(
   withHooks({
     onInit(store) {
       store.load()
+      store.loadMapIds()
+      store.loadMapData(store.mapId)
     },
   }),
-  withComputed(({ gatherables, mapId }) => {
+  withComputed(({ mapIds, mapId }) => {
     const db = injectNwData()
     const mapOptions = resourceValue({
-      params: gatherables,
+      params: mapIds,
       loader: async ({ params }) => {
         return selectMapOptions({
-          mapIds: selectMapIds(params),
+          mapIds: params,
           modeMaps: await db.gameModesMapsAll(),
           modes: await db.gameModesByIdMap(),
         })
@@ -173,16 +300,6 @@ export const ZoneMapStore = signalStore(
     }
   }),
 )
-
-function selectMapIds(gatherables: FilterDataSet[]) {
-  const ids = new Set<string>()
-  for (const item of gatherables) {
-    for (const key in item.data) {
-      ids.add(key)
-    }
-  }
-  return Array.from(ids.values())
-}
 
 export interface MapOption {
   id: string

@@ -56,6 +56,35 @@ func Read(r io.Reader) (Document, error) {
 	return Parse(data)
 }
 
+// ParseTableName reads only the table name from the header, without parsing columns and rows
+func ParseTableName(data []byte) (name string, err error) {
+	name, _, err = ParseNames(data)
+	return name, err
+}
+
+// ParseNames reads only the table and schema name from the header, without parsing columns and rows
+func ParseNames(data []byte) (table string, schema string, err error) {
+	defer utils.HandleRecover(&err, "datasheet.ParseNames")
+	r := buf.NewReaderLE(data)
+	r.MustReadBytes(4)      // signatrue
+	r.MustReadInt32()       // name crc
+	no := r.MustReadInt32() // name offset
+	r.MustReadInt32()       // type crc
+	to := r.MustReadInt32() // type offset
+	r.SeekRelative(4)       // unknown
+	r.MustReadInt32()       // strings length
+	r.SeekRelative(7 * 4)
+	strOffset := r.MustReadInt32() // strings offset
+	strings := r.Pos() + int(strOffset)
+	r.SeekAbsolute(strings + int(no))
+	if table, err = r.ReadCString(); err != nil {
+		return "", "", err
+	}
+	r.SeekAbsolute(strings + int(to))
+	schema, err = r.ReadCString()
+	return table, schema, err
+}
+
 func Parse(data []byte) (Document, error) {
 	r := buf.NewReaderLE(data)
 	r.MustReadBytes(4)      // signatrue

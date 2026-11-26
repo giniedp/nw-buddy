@@ -1,454 +1,568 @@
 package gltf
 
 import (
-	"fmt"
-	"image/color"
 	"log/slog"
 	"math"
-
-	"nw-buddy/tools/formats/gltf/extensions"
-	"nw-buddy/tools/formats/image"
-	"nw-buddy/tools/formats/mtl"
-	"nw-buddy/tools/utils"
-	"path"
 	"slices"
 	"strings"
 
+	"nw-buddy/tools/formats/gltf/extensions"
+	"nw-buddy/tools/formats/mtl"
+	"nw-buddy/tools/utils"
+
 	"github.com/qmuntal/gltf"
 	"github.com/qmuntal/gltf/ext/texturetransform"
+	"github.com/qmuntal/gltf/ext/unlit"
 )
 
-// Tries to interpret original material intent as best as possible
-// and map it to a PBR material or whatever is closest to it in glTF.
+// Maps a New World material to glTF PBR for previews in other tools (Babylon sandbox, Blender).
 //
-// This works well for most new world materials, but does not cover all shader features.
-// Good enough for a preview
-func (doc *Document) augmentMaterialWithPbr(material *gltf.Material, cgfMat *mtl.Material, options ImportCgfMaterialsOptions) {
-	diffuseOnly := options.DiffuseOnly
-	textureBaking := options.TextureBaking
-
+// New World uses the specular workflow: metallic 0 + KHR_materials_specular + KHR_materials_ior with ior 0, so
+// F0 = specular color (or an ior > 1 with a scaled specular color, ImportCgfMaterialsOptions.SpecularIOR). The
+// mapping follows the viewer materials and the game shaders.
+// It is a preview, not a match. Not expressed:
+//   - overlay / dye masks
+//   - blend layers
+//   - detail maps
+//   - dissolve
+//   - view dependent effects
+//
+// The raw material stays in EXT_nw_mtl.
+func (doc *Document) augmentMaterialWithPbr(material *gltf.Material, m *mtl.Material, options ImportCgfMaterialsOptions) {
 	if material.Extensions == nil {
 		material.Extensions = gltf.Extensions{}
 	}
+	p := newPbrInputs(m)
 
 	material.AlphaMode = gltf.AlphaOpaque
-	material.AlphaCutoff = gltf.Float(0.5)
-	material.DoubleSided = false
+	material.AlphaCutoff = nil
+	material.DoubleSided = p.mtlFlags&mtl.MTL_FLAG_2SIDED != 0
 	material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{
 		BaseColorFactor: float4(1, 1, 1, 1),
-		MetallicFactor:  gltf.Float(0), // non metallic flow for NW
+		MetallicFactor:  gltf.Float(0),
 		RoughnessFactor: gltf.Float(1),
 	}
-	material.Extensions[extensions.KHR_materials_ior] = extensions.KHRMaterialsIOR{
-		IOR: gltf.Float(float64(options.CustomIOR)), // specular workflow requires this
+
+	switch p.shader {
+	case "nodraw":
+		// hidden, the primitives are skipped by the geometry import (plan 2.6)
+	case "glass", "water", "watervolume":
+		doc.pbrGlass(material, p, options)
+	case "fxmeshadvancedtransp":
+		doc.pbrFxTransp(material, p)
+	case "geometrybeam", "geometrybeamsimple", "geometryfog", "geometryfognovertalpha",
+		"meshparticle", "particleimposter", "particles", "distanceclouds",
+		"silhouette_always", "silhouette_visible", "silhouette_never", "silhouette_xray":
+		doc.pbrUnlit(material, p)
+	default:
+		// illum, illum_oceansplash, vegetation, humanskin, hair, fxmeshadvanced and unknown shaders
+		doc.pbrLit(material, p, options)
 	}
-	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.KHR_materials_ior)
+	material.Extras = ExtrasStore(material.Extras, extraKeyVertexColors, p.vertexColors())
+	doc.augmentMaterialWithNw(material, p)
+}
 
-	// material.Extras = ExtrasStore(material.Extras, "mtl", cgfMat)
+// extraKeyVertexColors marks materials whose shader tints with the vertex colors, read by applyVertexColorUse
+const extraKeyVertexColors = "vertexColors"
 
-	mtlDiffuse := cgfMat.Diffuse
-	mtlSpecular := cgfMat.Specular
-	// mtlEmissive := mtl.ParamColor(m.Emissive) // HINT: Emissive is not used in NW
-	mtlEmittance := cgfMat.Emittance
-	for i := range mtlEmittance {
-		// WTF:
-		// Emittance="-341776551831207702696034304.000000,0.000000,0.000000,0.000000"
-		if mtlEmittance[i] < 0 {
-			mtlEmittance[i] = 0
+// pbrInputs are the material attributes as the viewer materials read them
+type pbrInputs struct {
+	mtl *mtl.Material
+	// the texture slots as the engine binds them, see mtl.WithNormalMapSmoothness
+	textures  []mtl.Texture
+	shader    string
+	flags     map[string]bool
+	diffuse   [4]float32
+	specular  [4]float32
+	emittance [4]float32
+	opacity   float32
+	alphaTest float32
+	gloss     float32 // smoothness factor, multiplied with the smoothness map
+	mtlFlags  int
+}
+
+func newPbrInputs(m *mtl.Material) pbrInputs {
+	p := pbrInputs{
+		mtl:       m,
+		textures:  mtl.WithNormalMapSmoothness(m.Textures.Texture),
+		shader:    strings.ToLower(m.Shader),
+		flags:     map[string]bool{},
+		diffuse:   vec4Or(m.Diffuse, [4]float32{1, 1, 1, 1}),
+		specular:  vec4Or(m.Specular, [4]float32{1, 1, 1, 1}),
+		emittance: vec4Or(m.Emittance, [4]float32{0, 0, 0, 0}),
+		opacity:   1,
+	}
+	for _, flag := range strings.Split(strings.ToUpper(m.StringGenMask), "%") {
+		if flag != "" {
+			p.flags[flag] = true
 		}
 	}
+	for i := range p.emittance {
+		// some files have garbage, e.g. Emittance="-341776551831207702696034304.000000,0,0,0"
+		p.emittance[i] = max(p.emittance[i], 0)
+	}
+	if m.Opacity != nil {
+		p.opacity = *m.Opacity
+	}
+	if m.AlphaTest != nil {
+		p.alphaTest = *m.AlphaTest
+	}
+	if m.MtlFlags != nil {
+		p.mtlFlags = *m.MtlFlags
+	}
+	// the viewer: SpecularColor.w = Shininess / 255 when Shininess is set and not 0, else the Specular alpha
+	p.gloss = p.specular[3]
+	if m.Shininess != nil && *m.Shininess != 0 {
+		p.gloss = *m.Shininess / 255
+	}
+	p.gloss = min(max(p.gloss, 0), 1)
+	return p
+}
 
-	mtlOpacity := float32(1)
-	if cgfMat.Opacity != nil {
-		mtlOpacity = *cgfMat.Opacity
-	}
-	mtlAlphaTest := float32(1)
-	if cgfMat.AlphaTest != nil {
-		mtlAlphaTest = *cgfMat.AlphaTest
-	}
-	mtlShininess := float32(255)
-	if cgfMat.Shininess != nil {
-		mtlShininess = *cgfMat.Shininess
-	}
-
-	mapDiffuse := cgfMat.TextureByMapType(mtl.MtlMap_Diffuse)
-	mapBumpmap := cgfMat.TextureByMapType(mtl.MtlMap_Bumpmap)
-	mapSmoothness := cgfMat.TextureByMapType(mtl.MtlMap_Smoothness)
-	mapSpecular := cgfMat.TextureByMapType(mtl.MtlMap_Specular)
-	mapCustom := cgfMat.TextureByMapType(mtl.MtlMap_Custom)
-	mapEmittance := cgfMat.TextureByMapType(mtl.MtlMap_Emittance)
-	// mapOpacity := m.TextureWithMap(mtl.MtlMap_Opacity)
-	mapDecal := cgfMat.TextureByMapType(mtl.MtlMap_Decal)
-
-	if diffuseOnly {
-		mapBumpmap = nil
-		mapSmoothness = nil
-		mapSpecular = nil
-		mapCustom = nil
-		mapEmittance = nil
-		mapDecal = nil
-	}
-
-	shader := strings.ToLower(cgfMat.Shader)
-	isGlass := shader == "glass"
-	isHair := shader == "hair"
-	isFxTransp := shader == "fxmeshadvancedtransp" // only isabella gaze has this shader
-	isGeometryFog := shader == "geometryfog"
-	isGeometryBeam := shader == "geometrybeam" || shader == "geometrybeamsimple"
-	isParticle := shader == "meshparticle"
-	isNoDraw := shader == "nodraw"
-	isVegetation := shader == "vegetation"
-
-	features := strings.Split(cgfMat.StringGenMask, "%")
-	shaderOverlayMask := slices.Contains(features, "OVERLAY_MASK")
-	shaderEmittanceMap := slices.Contains(features, "EMITTANCE_MAP")
-	shaderEmissiveDecal := slices.Contains(features, "EMISSIVE_DECAL")
-	shaderTintColorMap := slices.Contains(features, "TINT_COLOR_MAP")
-	shaderVertColors := slices.Contains(features, "VERTCOLORS")
-	shaderDecal := slices.Contains(features, "DECAL")
-	if isVegetation {
-		// vegetation shader uses vert colors differently
-		shaderVertColors = false
-	}
-
-	if shaderDecal && cgfMat.Params != nil {
-		// PublicParams EmittanceMapGamma="1" DecalDiffuseOpacity="0" DecalFalloff="1" DecalAlphaMult="0" IndirectColor="0.24620135,0.24620135,0.24620135,0.25"/>
-		// decalOpacity := float32(1) // DecalDiffuseOpacity -> unused in shader
-		// decalFalloff := float32(1) // DecalFalloff
-		// decalAlphaMult := float32(1) // DecalAlphaMult
-		// if v, ok := m.Params.LoadFloat("DecalFalloff"); ok {
-		// 	decalFalloff = v
-		// }
-		// if v, ok := m.Params.LoadFloat("DecalAlphaMult"); ok {
-		// 	decalAlphaMult = v
-		// }
-
-		// does break other stuff, so disable for now
-		// mtlOpacity = float32(math.Pow(float64(mtlOpacity*decalAlphaMult), float64(decalFalloff)))
-	}
-
-	// HINT: Bumpmap and Smoothness are usually the same texture source
-	if mapSmoothness == nil && mapBumpmap != nil && strings.Contains(mapBumpmap.File, "_ddna") {
-		mapSmoothness = mapBumpmap
-	}
-	if isFxTransp && mapDiffuse == nil {
-		mapDiffuse = mapCustom
-		mapCustom = nil
-	}
-	if shaderTintColorMap && (mapDiffuse == nil || strings.Contains(mapDiffuse.File, "/white.dds")) {
-		// replaces EngineAssets/Textures/white.dds texture
-		mapDiffuse = mapCustom
-		mapCustom = nil
-	}
-	if shaderEmissiveDecal && mapEmittance == nil {
-		mapEmittance = mapDecal
-		mapDecal = nil
-	}
-
-	// texMods := make(map[string]any)
-	// addTexMod := func(tex *gltf.Texture, mTex *mtl.Texture) {
-	// 	if tex == nil || mTex == nil || mTex.TexMod == nil {
-	// 		return
-	// 	}
-	// 	refId, _ := ExtrasLoad[string](tex.Extras, ExtraKeyRefID)
-	// 	texMods[refId] = mTex.TexMod
-	// 	material.Extras = ExtrasStore(material.Extras, "mods", texMods)
-	// }
-
-	var texCustom *gltf.Texture
-	// var texCustomTransform *texturetransform.TextureTranform
-	if mapCustom != nil {
-		texCustom = doc.LoadOrStoreMtlTexture(mapCustom)
-		// addTexMod(texCustom, mapCustom)
-		// texCustomTransform = resolveTextureTransform(mapCustom)
-	}
-	var texDiffuse *gltf.Texture
-	var texDiffuseTransform *texturetransform.TextureTranform
-	if mapDiffuse != nil {
-		texDiffuse = doc.LoadOrStoreMtlTexture(mapDiffuse)
-		texDiffuseTransform = resolveTextureTransform(mapDiffuse)
-		// addTexMod(texDiffuse, mapDiffuse)
-	}
-	var texBumpmap *gltf.Texture
-	var texBumpmapTransform *texturetransform.TextureTranform
-	if mapBumpmap != nil {
-		texBumpmap = doc.LoadOrStoreMtlTexture(mapBumpmap)
-		texBumpmapTransform = resolveTextureTransform(mapBumpmap)
-		if texBumpmapTransform == nil {
-			texBumpmapTransform = texDiffuseTransform
-		}
-		// addTexMod(texBumpmap, mapBumpmap)
-	}
-
-	var texSpecular *gltf.Texture
-	var texSpecularTransform *texturetransform.TextureTranform
-	if mapSpecular != nil {
-		texSpecular = doc.LoadOrStoreMtlTexture(mapSpecular)
-		texSpecularTransform = resolveTextureTransform(mapSpecular)
-		if texBumpmapTransform == nil {
-			texSpecularTransform = texDiffuseTransform
-		}
-		// addTexMod(texSpecular, mapSpecular)
-	}
-	texTransformPublic := resolveTextureTransformPublic(cgfMat.Params)
-
-	var texSmoothnessTransform *texturetransform.TextureTranform
-	if mapSmoothness != nil {
-		texSmoothnessTransform = resolveTextureTransform(mapSmoothness)
-		if texSmoothnessTransform == nil {
-			texSmoothnessTransform = texDiffuseTransform
+func (p pbrInputs) tex(slot mtl.TexMap) *mtl.Texture {
+	var tex *mtl.Texture
+	for i := range p.textures {
+		if p.textures[i].Map == slot {
+			tex = &p.textures[i]
+			break
 		}
 	}
-	if textureBaking && texSpecular != nil && mapSmoothness != nil {
-		key := buildTexturePath(texSpecular, mapSmoothness.File, mapSmoothness.AssetId)
-		tex, err := doc.LoadOrStoreTexture(nil, key, func() ([]byte, error) {
-			specBytes, err := doc.LoadTextureBytes(texSpecular)
-			if err != nil {
-				return nil, err
-			}
-			if specBytes == nil {
-				return nil, fmt.Errorf("specBytes is nil")
-			}
-			smoothImg, err := doc.ResolveAndLoadImage(mapSmoothness)
-			if err != nil {
-				return nil, err
-			}
-			if smoothImg == nil {
-				slog.Warn("smoothImg is nil", "file", key)
-				return specBytes, nil
-			}
-			if smoothImg.Alpha == nil {
-				slog.Warn("smoothImg.Alpha is nil", "file", key)
-				return specBytes, nil
-			}
-			return image.MixPngImages(specBytes, smoothImg.Alpha, func(spec, smooth color.NRGBA) color.NRGBA {
-				return color.NRGBA{
-					spec.R,
-					spec.G,
-					spec.B,
-					smooth.R, // HINT: don't read the alpha channel. Its a grayscale image, hence just access .R
-				}
-			})
-		})
-		if err != nil {
-			slog.Warn("Can't combine spec+smooth", "file", key, "err", err)
-		} else {
-			texSpecular = tex
-		}
+	if tex == nil {
+		return nil
 	}
-
-	var texEmissive *gltf.Texture
-	if textureBaking && shaderEmissiveDecal && mapEmittance != nil && mapDecal != nil {
-		key := mapEmittance.File + "_" + hashString(path.Join(mapDecal.File, mapDecal.AssetId))
-		tex, err := doc.LoadOrStoreTexture(nil, key, func() ([]byte, error) {
-			emitImg, err := doc.ResolveAndLoadImage(mapEmittance)
-			if err != nil {
-				return nil, err
-			}
-			decalImg, err := doc.ResolveAndLoadImage(mapDecal)
-			if err != nil {
-				return nil, err
-			}
-			return image.MixPngImages(emitImg.Data, decalImg.Data, func(emit, decal color.NRGBA) color.NRGBA {
-				return color.NRGBA{
-					uint8(float32(emit.R) / 255.0 * float32(decal.R)),
-					uint8(float32(emit.G) / 255.0 * float32(decal.G)),
-					uint8(float32(emit.B) / 255.0 * float32(decal.B)),
-					uint8(float32(emit.A) / 255.0 * float32(decal.A)),
-				}
-			})
-		})
-		if err != nil {
-			slog.Warn("Can't combine emit+decal", "file", key, "err", err)
-		} else {
-			texEmissive = tex
-		}
+	file := strings.TrimSpace(tex.File)
+	// engine bound textures ($...) and probes are not in the archive
+	if strings.HasPrefix(file, "$") || strings.HasPrefix(strings.ToLower(file), "nearest_cubemap") {
+		return nil
 	}
+	return tex
+}
 
-	if (shaderEmissiveDecal || shaderEmittanceMap) && texEmissive == nil && mapEmittance != nil {
-		texEmissive = doc.LoadOrStoreMtlTexture(mapEmittance)
+func (p pbrInputs) param(name string, fallback float32) float32 {
+	if p.mtl.Params == nil {
+		return fallback
 	}
-
-	if len(mtlDiffuse) >= 3 {
-		factor := [4]float64{
-			float64(mtlDiffuse[0]),
-			float64(mtlDiffuse[1]),
-			float64(mtlDiffuse[2]),
-			1,
-		}
-		if len(mtlDiffuse) == 4 {
-			factor[3] = float64(mtlDiffuse[3])
-		}
-		material.PBRMetallicRoughness.BaseColorFactor = &factor
+	if v, ok := p.mtl.Params.Load(name); ok {
+		// some params are written as vectors ("1,0,0,0"), the first component is the value
+		return vec4Or(mtl.ParamColor(v), [4]float32{fallback})[0]
 	}
-	if texDiffuse != nil {
-		texExt := gltf.Extensions{}
-		if texDiffuseTransform != nil {
-			texExt[texturetransform.ExtensionName] = &texDiffuseTransform
-		} else if texTransformPublic != nil {
-			texExt[texturetransform.ExtensionName] = &texTransformPublic
-		}
-		material.PBRMetallicRoughness.BaseColorTexture = &gltf.TextureInfo{
-			Index:      slices.Index(doc.Textures, texDiffuse),
-			Extensions: texExt,
-		}
+	return fallback
+}
+
+func (p pbrInputs) paramVec(name string, fallback [4]float32) [4]float32 {
+	if p.mtl.Params == nil {
+		return fallback
 	}
-	if texBumpmap != nil {
-		texExt := gltf.Extensions{}
-		if texBumpmapTransform != nil {
-			texExt[texturetransform.ExtensionName] = &texBumpmapTransform
-		} else if texTransformPublic != nil {
-			texExt[texturetransform.ExtensionName] = &texTransformPublic
-		}
-		material.NormalTexture = &gltf.NormalTexture{
-			Index:      gltf.Index(slices.Index(doc.Textures, texBumpmap)),
-			Scale:      gltf.Float(1),
-			Extensions: texExt,
-		}
+	if v, ok := p.mtl.Params.Load(name); ok {
+		return vec4Or(mtl.ParamColor(v), fallback)
 	}
-	if !isGlass && !isHair {
+	return fallback
+}
 
-		specExt := extensions.KHRMaterialsSpecular{
-			SpecularFactor:       gltf.Float(1),
-			SpecularTexture:      nil,
-			SpecularColorFactor:  float3(1, 1, 1),
-			SpecularColorTexture: nil,
-		}
-
-		if mtlShininess >= 0 {
-			smoothness := float64(mtlShininess / 255)
-			roughness := (1.0 - smoothness)
-			specExt.SpecularFactor = gltf.Float(smoothness)
-			material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(roughness)
-		}
-		if mtlShininess == 255 && mapSmoothness != nil {
-			// some materials have shininess 255 but should be rough (wood)
-			// others render OK. use a compromise value of 0.5 for now
-			specExt.SpecularFactor = gltf.Float(0.5)
-			material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(0.5)
-		}
-		if diffuseOnly {
-			specExt.SpecularFactor = gltf.Float(0)
-			material.PBRMetallicRoughness.RoughnessFactor = gltf.Float(1)
-			material.PBRMetallicRoughness.MetallicFactor = gltf.Float(1)
-		}
-
-		if texSpecular != nil {
-			texExt := gltf.Extensions{}
-			if texSpecularTransform != nil {
-				texExt[texturetransform.ExtensionName] = &texSpecularTransform
-			} else if texTransformPublic != nil {
-				texExt[texturetransform.ExtensionName] = &texTransformPublic
-			}
-			specExt.SpecularColorTexture = &gltf.TextureInfo{
-				Index:      slices.Index(doc.Textures, texSpecular),
-				Extensions: texExt,
-			}
-			specExt.SpecularTexture = &gltf.TextureInfo{
-				Index:      slices.Index(doc.Textures, texSpecular),
-				Extensions: texExt,
-			}
-		}
-		if len(mtlSpecular) >= 3 {
-			specExt.SpecularColorFactor = float3(float64(mtlSpecular[0]), float64(mtlSpecular[1]), float64(mtlSpecular[2]))
-		}
-
-		material.Extensions[extensions.KHR_materials_specular] = &specExt
-		doc.ExtensionsRequired = utils.AppendUniq(doc.ExtensionsRequired, extensions.KHR_materials_specular)
-		doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.KHR_materials_specular)
+// blended reports whether the viewer draws the material alpha blended
+func (p pbrInputs) blended() bool {
+	switch p.shader {
+	case "illum", "illum_oceansplash":
+		return p.opacity < 1 || p.flags["DECAL"]
+	case "fxmeshadvanced":
+		return p.opacity < 1
 	}
+	return false
+}
 
-	if texEmissive != nil {
-		material.EmissiveFactor = [3]float64{1, 1, 1}
-		material.EmissiveTexture = &gltf.TextureInfo{
-			Index: slices.Index(doc.Textures, texEmissive),
-		}
+// vertexColors reports whether the shader multiplies the vertex colors into the base color
+func (p pbrInputs) vertexColors() bool {
+	switch p.shader {
+	case "illum", "illum_oceansplash", "fxmeshadvanced", "hair":
+		return p.flags["VERTCOLORS"]
+	case "geometrybeam", "geometrybeamsimple", "geometryfog", "geometryfognovertalpha":
+		return true
 	}
+	// vegetation keeps bending data in the colors, the other shaders ignore them
+	return false
+}
 
-	// (isFxTransp || texEmissive != nil) && !shaderEmissiveDecal &&
-	if len(mtlEmittance) >= 4 {
-		scale := math.Log(1+float64(mtlEmittance[3])) / 10
-		material.EmissiveFactor = [3]float64{
-			float64(mtlEmittance[0]) * scale,
-			float64(mtlEmittance[1]) * scale,
-			float64(mtlEmittance[2]) * scale,
-		}
-	} else if len(mtlEmittance) >= 3 {
-		material.EmissiveFactor = [3]float64{
-			float64(mtlEmittance[0]),
-			float64(mtlEmittance[1]),
-			float64(mtlEmittance[2]),
-		}
+func (doc *Document) pbrLit(material *gltf.Material, p pbrInputs, options ImportCgfMaterialsOptions) {
+	pbr := material.PBRMetallicRoughness
+	isIllum := p.shader == "illum" || p.shader == "illum_oceansplash"
+	isHair := p.shader == "hair"
+	isSkin := p.shader == "humanskin"
+	isVegetation := p.shader == "vegetation"
+
+	// the Diffuse TexMod moves the base uv, which every base slot samples
+	diffuse := p.tex(mtl.MtlMap_Diffuse)
+	baseTransform := resolveTextureTransform(diffuse)
+
+	// the colors of an armor appearance and its dyes, baked into the textures (glTF has no masks)
+	overlay, hasOverlay := overlayMaskOf(p)
+	hasOverlay = hasOverlay && options.TextureBaking
+
+	// --- base color and alpha
+	pbr.BaseColorFactor = float4(float64(p.diffuse[0]), float64(p.diffuse[1]), float64(p.diffuse[2]), 1)
+	if baked := doc.overlayAlbedo(diffuse, p, overlay, hasOverlay); baked != nil {
+		// the diffuse color is in the bake
+		pbr.BaseColorFactor = float4(1, 1, 1, 1)
+		pbr.BaseColorTexture = doc.textureInfo(baked, baseTransform)
+	} else if tex := doc.LoadOrStoreMtlTexture(diffuse); tex != nil {
+		pbr.BaseColorTexture = doc.textureInfo(tex, baseTransform)
 	}
-
-	material.AlphaMode = gltf.AlphaOpaque
-	if mtlAlphaTest < 1.0 {
-		cutoff := float64(mtlAlphaTest)
-		material.AlphaCutoff = &cutoff
+	switch {
+	case isHair:
+		// hair always tests the alpha, 0.05 without an AlphaTest (the clip of the game's blended hair passes)
 		material.AlphaMode = gltf.AlphaMask
-		material.DoubleSided = true
-	}
-	if isGeometryFog || isGeometryBeam || isParticle || isNoDraw {
-		mtlOpacity = 0.1
-	}
-	if mtlOpacity < 1 {
-		opacity := float64(mtlOpacity)
-		if material.PBRMetallicRoughness == nil {
-			material.PBRMetallicRoughness = &gltf.PBRMetallicRoughness{}
-		}
-		if material.PBRMetallicRoughness.BaseColorFactor == nil {
-			material.PBRMetallicRoughness.BaseColorFactor = &[4]float64{1, 1, 1, 1}
-		}
-		material.PBRMetallicRoughness.BaseColorFactor[3] = opacity
-		if mtlAlphaTest == 1.0 {
-			material.AlphaCutoff = nil
-			material.AlphaMode = gltf.AlphaBlend
-			material.DoubleSided = true
-		}
-	}
-
-	if isGlass {
-		factor := mtlOpacity
-		if factor == 0 {
-			factor = 1
+		material.AlphaCutoff = gltf.Float(0.05)
+		if p.alphaTest > 0 {
+			material.AlphaCutoff = gltf.Float(float64(p.alphaTest))
 		}
 		material.DoubleSided = true
-		material.Extensions[extensions.KHR_materials_transmission] = extensions.KHRMaterialsTransmission{
-			Factor: float64(factor),
-		}
-		doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.KHR_materials_transmission)
+	case p.blended():
+		// a blended material with an alpha test is drawn blended and tested in the viewer, glTF can only blend
+		material.AlphaMode = gltf.AlphaBlend
+		pbr.BaseColorFactor[3] = float64(p.opacity)
+	case p.alphaTest > 0 && p.alphaTest < 1:
+		// tests the diffuse alpha only, not the vertex alpha
+		material.AlphaMode = gltf.AlphaMask
+		material.AlphaCutoff = gltf.Float(float64(p.alphaTest))
+	}
+	if isVegetation && (p.flags["LEAVES"] || p.flags["GRASS"]) {
+		material.DoubleSided = true
+	}
+	if options.DiffuseOnly {
+		doc.setSpecular(material, [3]float32{0, 0, 0}, nil, nil, options)
+		return
 	}
 
-	if !textureBaking || (shaderOverlayMask && texCustom != nil) {
-		doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.EXT_nw_material)
-
-		ext := extensions.ExtNewWorld{
-			Params:     extensions.AppearanceFromMtl(cgfMat),
-			VertColors: shaderVertColors,
-		}
-		if texCustom != nil {
-			ext.MaskTexture = &gltf.TextureInfo{
-				Index: slices.Index(doc.Textures, texCustom),
-			}
-		}
-		if !textureBaking && mapSmoothness != nil {
-			texSmoothness := doc.LoadOrStoreMtlTexture(mapSmoothness, true)
-			if texSmoothness != nil {
-				texExt := gltf.Extensions{}
-				if texSmoothnessTransform != nil {
-					texExt[texturetransform.ExtensionName] = &texSmoothnessTransform
-				} else if texTransformPublic != nil {
-					texExt[texturetransform.ExtensionName] = &texTransformPublic
-				}
-				ext.SmoothTexture = &gltf.TextureInfo{
-					Index:      slices.Index(doc.Textures, texSmoothness),
-					Extensions: texExt,
-				}
-			} else {
-				slog.Warn("Smoothness texture not loaded", "file", mapSmoothness.File)
-			}
-		}
-		material.Extensions[extensions.EXT_nw_material] = ext
+	// --- normal
+	bump := p.tex(mtl.MtlMap_Bumpmap)
+	if (isSkin || isHair) && !p.flags["NORMAL_MAP"] {
+		bump = nil
 	}
-	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, texturetransform.ExtensionName)
+	if tex := doc.LoadOrStoreMtlTexture(bump); tex != nil {
+		info := doc.textureInfo(tex, baseTransform)
+		material.NormalTexture = &gltf.NormalTexture{Index: gltf.Index(info.Index), Scale: gltf.Float(1), Extensions: info.Extensions}
+	}
+
+	// --- specular reflectance (F0)
+	f0 := [3]float32{p.specular[0], p.specular[1], p.specular[2]}
+	var specMap *mtl.Texture
+	switch {
+	case isHair:
+		// the hair F0 is the specular map, the attribute is not applied
+		specMap = p.tex(mtl.MtlMap_Specular)
+		f0 = [3]float32{1, 1, 1}
+	case isVegetation:
+		if !p.flags["GRASS"] {
+			specMap = p.tex(mtl.MtlMap_Specular)
+		}
+	case isIllum:
+		// %SPECULAR_MAP follows the bound Specular texture, not the authored flag (Illum.ext DependencySet/Reset,
+		// CShaderMan::mfModifyGenFlags; legacy materials name it %SPEC_MAP)
+		specMap = p.tex(mtl.MtlMap_Specular)
+		if specMap == nil && p.blended() && !p.flags["DECAL"] {
+			// forward Illum has no F0 without the specular map, the deferred (opaque, decal) path uses the attribute
+			f0 = [3]float32{0, 0, 0}
+		}
+	case p.flags["SPECULAR_MAP"]:
+		specMap = p.tex(mtl.MtlMap_Specular)
+	}
+	if isIllum && p.flags["DECAL"] {
+		lum := luminance(f0)
+		f0 = [3]float32{lum, lum, lum}
+	}
+	if hasOverlay && isIllum && !p.flags["DECAL"] {
+		if baked := doc.bakeOverlaySpecular(specMap, f0, overlay); baked != nil {
+			// f0 is in the bake
+			doc.setSpecular(material, [3]float32{1, 1, 1}, baked, baseTransform, options)
+		} else {
+			doc.setSpecular(material, f0, doc.LoadOrStoreMtlTexture(specMap), baseTransform, options)
+		}
+	} else {
+		doc.setSpecular(material, f0, doc.LoadOrStoreMtlTexture(specMap), baseTransform, options)
+	}
+
+	// --- roughness = 1 - smoothness
+	if baked := doc.overlayRoughness(p.tex(mtl.MtlMap_Smoothness), p, overlay, hasOverlay); baked != nil {
+		pbr.RoughnessFactor = gltf.Float(1)
+		pbr.MetallicRoughnessTexture = doc.textureInfo(baked, baseTransform)
+	} else {
+		doc.setRoughness(material, p.tex(mtl.MtlMap_Smoothness), p.gloss, baseTransform, options)
+	}
+
+	// --- occlusion
+	if isIllum && p.flags["OCCLUSION_MAP"] {
+		if tex := doc.LoadOrStoreMtlTexture(p.tex(mtl.MtlMap_Occlusion)); tex != nil {
+			info := doc.textureInfo(tex, baseTransform)
+			material.OcclusionTexture = &gltf.OcclusionTexture{Index: gltf.Index(info.Index), Extensions: info.Extensions}
+		}
+	}
+
+	// --- emittance
+	if !isHair {
+		doc.setEmissive(material, p, options)
+	}
+}
+
+// pbrGlass: the glass color is the background tinted by TintColor, clouded towards the lit tint by TintCloudiness.
+// The Diffuse is only read with %DIRT_MAP, not mapped.
+func (doc *Document) pbrGlass(material *gltf.Material, p pbrInputs, options ImportCgfMaterialsOptions) {
+	pbr := material.PBRMetallicRoughness
+	baseTransform := resolveTextureTransform(p.tex(mtl.MtlMap_Diffuse))
+
+	tint := p.paramVec("TintColor", [4]float32{1, 1, 1, 1})
+	pbr.BaseColorFactor = float4(float64(tint[0]), float64(tint[1]), float64(tint[2]), 1)
+	if p.flags["TINT_COLOR_MAP"] {
+		if tex := doc.LoadOrStoreMtlTexture(p.tex(mtl.MtlMap_Custom)); tex != nil {
+			pbr.BaseColorTexture = doc.textureInfo(tex, baseTransform)
+		}
+	}
+	cloudiness := min(max(p.param("TintCloudiness", 0), 0), 1)
+	material.Extensions[extensions.KHR_materials_transmission] = extensions.KHRMaterialsTransmission{
+		Factor: float64(1 - cloudiness),
+	}
+	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.KHR_materials_transmission)
+
+	if tex := doc.LoadOrStoreMtlTexture(p.tex(mtl.MtlMap_Bumpmap)); tex != nil {
+		info := doc.textureInfo(tex, baseTransform)
+		material.NormalTexture = &gltf.NormalTexture{Index: gltf.Index(info.Index), Scale: gltf.Float(1), Extensions: info.Extensions}
+	}
+	var specMap *mtl.Texture
+	if p.flags["SPECULAR_MAP"] {
+		specMap = p.tex(mtl.MtlMap_Specular)
+	}
+	doc.setSpecular(material, [3]float32{p.specular[0], p.specular[1], p.specular[2]}, doc.LoadOrStoreMtlTexture(specMap), baseTransform, options)
+	doc.setRoughness(material, p.tex(mtl.MtlMap_Smoothness), p.gloss, baseTransform, options)
+}
+
+// pbrUnlit: FX shaders (beams, fog, particles, clouds, outlines) are unlit and blended. Additive blending does not exist
+// in glTF, the color is alpha blended instead.
+func (doc *Document) pbrUnlit(material *gltf.Material, p pbrInputs) {
+	material.DoubleSided = true
+	tex := p.tex(mtl.MtlMap_Diffuse)
+	if tex == nil {
+		tex = p.tex(mtl.MtlMap_Custom)
+	}
+	color := [3]float64{float64(p.diffuse[0]), float64(p.diffuse[1]), float64(p.diffuse[2])}
+	doc.setUnlit(material, p, color, float64(p.opacity), tex)
+}
+
+// pbrFxTransp: FxMeshAdvancedTransp tints the source map by the emittance (color times brightness, its hue is kept above
+// 1) and is additive, alpha blended here. The alpha is the shader's with white maps and nothing behind the mesh.
+func (doc *Document) pbrFxTransp(material *gltf.Material, p pbrInputs) {
+	color := [3]float64{}
+	for i := range color {
+		color[i] = float64(p.emittance[i] * p.emittance[3])
+	}
+	if peak := max(color[0], color[1], color[2]); peak > 1 {
+		for i := range color {
+			color[i] /= peak
+		}
+	}
+	tex := p.tex(mtl.MtlMap_Custom)
+	if tex == nil {
+		tex = p.tex(mtl.MtlMap_Diffuse)
+	}
+	doc.setUnlit(material, p, color, p.fxTranspAlpha(), tex)
+}
+
+// fxTranspAlpha is the alpha of FxMeshAdvancedTransp with white maps and nothing behind the mesh, the fresnel averaged
+// over a sphere
+func (p pbrInputs) fxTranspAlpha() float64 {
+	param := func(name string, fallback float32) float64 {
+		return float64(p.param(name, fallback))
+	}
+	alpha := 1.0
+	if p.flags["USE_OUTSIDE_FRESNEL_ALPHA"] || p.flags["USE_INSIDE_FRESNEL_ALPHA"] {
+		const steps = 32
+		sum := 0.0
+		for i := range steps {
+			// equal areas of the sphere as seen by the camera
+			facing := math.Sqrt((float64(i) + 0.5) / steps)
+			fresnel := 1.0
+			if p.flags["USE_OUTSIDE_FRESNEL_ALPHA"] {
+				fresnel *= math.Pow(facing, param("FRESNEL_OUT_FALLOFF", 1)) * param("FRESNEL_OUT_STRENGTH", 1)
+			}
+			if p.flags["USE_INSIDE_FRESNEL_ALPHA"] {
+				fresnel *= math.Pow(1-facing, param("FRESNEL_IN_FALLOFF", 1)) * param("FRESNEL_IN_STRENGTH", 1)
+			}
+			sum += min(max(fresnel*10, 0), 1)
+		}
+		alpha *= sum / steps
+	}
+	if p.flags["USE_INTERSECTION_GLOW"] {
+		alpha += math.Pow(max(1-param("INTERSECT_GLOW_INV", 0), 0), param("INTERSECT_GLOW_FALLOFF", 1))
+	}
+	if p.flags["USE_INTERSECTION_FADE"] {
+		alpha *= math.Pow(max(1-param("INTERSECT_FADE_INV", 0), 0), param("INTERSECT_FADE_FALLOFF", 1))
+	}
+	alpha = math.Pow(alpha, param("GlobalAlphaFalloff", 1)) * param("GlobalAlphaFill", 1)
+	alpha = min(max(alpha, 0), 1) * param("GlobalAlphaStrength", 1)
+	if math.IsNaN(alpha) {
+		return 0
+	}
+	return min(max(alpha, 0), 1)
+}
+
+// setUnlit writes an unlit, alpha blended base color
+func (doc *Document) setUnlit(material *gltf.Material, p pbrInputs, color [3]float64, alpha float64, tex *mtl.Texture) {
+	pbr := material.PBRMetallicRoughness
+	material.Extensions[unlit.ExtensionName] = unlit.Unlit{}
+	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, unlit.ExtensionName)
+	material.AlphaMode = gltf.AlphaBlend
+	pbr.BaseColorFactor = float4(color[0], color[1], color[2], alpha)
+	if gltfTex := doc.LoadOrStoreMtlTexture(tex); gltfTex != nil {
+		transform := resolveTextureTransform(tex)
+		if transform == nil {
+			transform = resolveTextureTransformPublic(p.mtl.Params)
+		}
+		pbr.BaseColorTexture = doc.textureInfo(gltfTex, transform)
+	}
+}
+
+// setSpecular writes the F0 of the specular workflow (E5): F0 = ((ior-1)/(ior+1))² × specularColorFactor ×
+// specularColorTexture. With options.SpecularIOR 0 the ior is 0, the spec's case for F0 = specular color. With an
+// ior > 1 the color factor is divided by ((ior-1)/(ior+1))², the same F0 for renderers without the ior 0 case
+// (Blender). specularFactor (F90) stays 1.
+func (doc *Document) setSpecular(material *gltf.Material, f0 [3]float32, specMap *gltf.Texture, transform *texturetransform.TextureTranform, options ImportCgfMaterialsOptions) {
+	ior := float64(options.SpecularIOR)
+	scale := 1.0
+	if ior > 1 {
+		r := (ior - 1) / (ior + 1)
+		scale = 1 / (r * r)
+	} else {
+		ior = 0
+	}
+	spec := extensions.KHRMaterialsSpecular{
+		SpecularFactor:      gltf.Float(1),
+		SpecularColorFactor: float3(float64(f0[0])*scale, float64(f0[1])*scale, float64(f0[2])*scale),
+	}
+	if specMap != nil {
+		spec.SpecularColorTexture = doc.textureInfo(specMap, transform)
+	}
+	material.Extensions[extensions.KHR_materials_specular] = &spec
+	material.Extensions[extensions.KHR_materials_ior] = extensions.KHRMaterialsIOR{IOR: gltf.Float(ior)}
+	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.KHR_materials_specular, extensions.KHR_materials_ior)
+}
+
+// setRoughness writes roughness = 1 - smoothness: the viewer's (1 - s)² is the GGX alpha, glTF squares its roughness.
+// With baking the smoothness map goes into the metallicRoughness texture. Without, the map is not readable: the
+// roughness assumes a smoothness map average of 0.5.
+func (doc *Document) setRoughness(material *gltf.Material, smoothness *mtl.Texture, gloss float32, transform *texturetransform.TextureTranform, options ImportCgfMaterialsOptions) {
+	pbr := material.PBRMetallicRoughness
+	if smoothness == nil {
+		pbr.RoughnessFactor = gltf.Float(float64(1 - gloss))
+		return
+	}
+	if options.TextureBaking {
+		if tex := doc.bakeRoughness(smoothness, gloss); tex != nil {
+			pbr.RoughnessFactor = gltf.Float(1)
+			pbr.MetallicRoughnessTexture = doc.textureInfo(tex, transform)
+			return
+		}
+	}
+	pbr.RoughnessFactor = gltf.Float(float64(1 - gloss*0.5))
+}
+
+// setEmissive maps the shader emittance: emit.rgb · lum^(gamma−1) · decal.rgb · emit.a · Emittance.rgb · Emittance.a ·
+// 0.1, in renderer units (cd/m² / 10000). Without %EMITTANCE_MAP the maps are white and the decal 0.5.
+func (doc *Document) setEmissive(material *gltf.Material, p pbrInputs, options ImportCgfMaterialsOptions) {
+	e := p.emittance
+	maxc := max(e[0], e[1], e[2])
+	if luminance([3]float32{e[0], e[1], e[2]}) <= 0 || maxc <= 0 || e[3] <= 0 {
+		return
+	}
+	material.EmissiveFactor = [3]float64{float64(e[0] / maxc), float64(e[1] / maxc), float64(e[2] / maxc)}
+
+	decalScale := float32(0.5) // engine default of the emissive intensity map: gray
+	// Illum: %EMITTANCE_MAP follows the bound Emittance texture (Illum.ext DependencySet/Reset), other shaders: the flag
+	hasEmittanceMap := p.flags["EMITTANCE_MAP"]
+	if p.shader == "illum" || p.shader == "illum_oceansplash" {
+		hasEmittanceMap = p.tex(mtl.MtlMap_Emittance) != nil
+	}
+	if hasEmittanceMap {
+		emit := p.tex(mtl.MtlMap_Emittance)
+		decal := p.tex(mtl.MtlMap_Decal)
+		if p.shader == "vegetation" && p.flags["BLENDLAYER"] {
+			decal = nil
+		}
+		var tex *gltf.Texture
+		if options.TextureBaking {
+			if tex = doc.bakeEmissive(emit, decal, p.param("EmittanceMapGamma", 1)); tex != nil && decal != nil {
+				decalScale = 1
+			}
+		}
+		if tex == nil {
+			tex = doc.LoadOrStoreMtlTexture(emit)
+		}
+		if tex != nil {
+			material.EmissiveTexture = doc.textureInfo(tex, resolveTextureTransform(emit))
+			if p.flags["EMITTANCE_MAP_UV_SET_2"] {
+				material.EmissiveTexture.TexCoord = 1
+			}
+		}
+	}
+
+	// cd/m² of the brightest channel, relative to the reference
+	ref := options.EmissiveRef
+	if ref <= 0 {
+		ref = DefaultEmissiveRef
+	}
+	strength := float64(maxc*e[3]*0.1*decalScale) * 10000 / float64(ref)
+	if strength <= 1 {
+		for i := range material.EmissiveFactor {
+			material.EmissiveFactor[i] *= strength
+		}
+		return
+	}
+	material.Extensions[extensions.KHR_materials_emissive_strength] = extensions.KHRMaterialsEmissiveStrength{
+		EmissiveStrength: strength,
+	}
+	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.KHR_materials_emissive_strength)
+}
+
+// augmentMaterialWithNw writes the raw mask and smoothness textures to EXT_nw_material
+func (doc *Document) augmentMaterialWithNw(material *gltf.Material, p pbrInputs) {
+	var mask *mtl.Texture
+	if p.flags["OVERLAY_MASK"] || p.flags["COLOR_SAMPLER_OVERLAY_MASK"] {
+		mask = p.tex(mtl.MtlMap_Custom)
+	}
+	smoothness := p.tex(mtl.MtlMap_Smoothness)
+	if mask == nil && smoothness == nil {
+		return
+	}
+	ext := extensions.EnsureNwMaterial(material)
+	ext.VertColors = p.vertexColors()
+	if tex := doc.LoadOrStoreMtlTexture(mask); tex != nil {
+		ext.MaskTexture = &gltf.TextureInfo{Index: slices.Index(doc.Textures, tex)}
+	}
+	if smoothness != nil {
+		if tex := doc.LoadOrStoreMtlTexture(smoothness, true); tex != nil {
+			ext.SmoothTexture = doc.textureInfo(tex, resolveTextureTransform(p.tex(mtl.MtlMap_Diffuse)))
+		} else {
+			slog.Warn("Smoothness texture not loaded", "file", smoothness.File)
+		}
+	}
+	doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, extensions.EXT_nw_material)
+}
+
+func (doc *Document) textureInfo(tex *gltf.Texture, transform *texturetransform.TextureTranform) *gltf.TextureInfo {
+	info := &gltf.TextureInfo{Index: slices.Index(doc.Textures, tex)}
+	if transform != nil {
+		info.Extensions = gltf.Extensions{texturetransform.ExtensionName: transform}
+		doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, texturetransform.ExtensionName)
+	}
+	return info
+}
+
+func vec4Or(values []float32, fallback [4]float32) [4]float32 {
+	res := fallback
+	for i := 0; i < len(values) && i < 4; i++ {
+		if !math.IsNaN(float64(values[i])) && !math.IsInf(float64(values[i]), 0) {
+			res[i] = values[i]
+		}
+	}
+	return res
+}
+
+func luminance(c [3]float32) float32 {
+	return c[0]*0.2126 + c[1]*0.7152 + c[2]*0.0722
 }

@@ -80,8 +80,16 @@
               </a>
               @if (child.record.Type === 'Default') {
                 @if (child.meta) {
-                  <button class="btn btn-sm btn-square btn-ghost" [tooltip]="'Map location available. Clickt to toggle on map.'" (click)="map.toggleId(child.record.LoreID)">
-                    <nwb-icon [icon]="iconLocation" class="w-4 h-4" [class.text-neutral]="map.isIdDisabled(child.record.LoreID)" />
+                  <button
+                    class="btn btn-sm btn-square btn-ghost"
+                    [tooltip]="'Map location available. Clickt to toggle on map.'"
+                    (click)="map.toggleId(child.record.LoreID)"
+                  >
+                    <nwb-icon
+                      [icon]="iconLocation"
+                      class="w-4 h-4"
+                      [class.text-neutral]="map.isIdDisabled(child.record.LoreID)"
+                    />
                   </button>
                 } @else {
                   <button class="btn btn-sm btn-square">
@@ -105,6 +113,6 @@
     </div>
   </div>
   <div class="p-4 pt-0">
-    <nwb-lore-detail-map [loreId]="loreId()" class="rounded-md overflow-clip" #map/>
+    <nwb-lore-detail-map [loreId]="loreId()" class="rounded-md overflow-clip" #map />
   </div>
 </div>

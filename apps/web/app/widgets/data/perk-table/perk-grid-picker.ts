@@ -165,17 +165,19 @@ function getAplicablePerksSource({
         return false
       }
 
-      return perks
-        //.filter(isPerkAplicable)
-        .map((perk): PerkTableRecord => {
-        return {
-          ...perk,
-          $notAplicable: !isPerkAplicable(perk),
-          $exclusiveViolation: exclusiveLabels.filter((label) => {
-            return perk.ExclusiveLabels?.some((it) => eqCaseInsensitive(it, label))
-          }),
-        }
-      })
+      return (
+        perks
+          //.filter(isPerkAplicable)
+          .map((perk): PerkTableRecord => {
+            return {
+              ...perk,
+              $notAplicable: !isPerkAplicable(perk),
+              $exclusiveViolation: exclusiveLabels.filter((label) => {
+                return perk.ExclusiveLabels?.some((it) => eqCaseInsensitive(it, label))
+              }),
+            }
+          })
+      )
     }),
   )
 }

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- placeholder, to be replaced by the Font Awesome gear icon -->
+  <g fill="currentColor">
+    <rect x="224" y="16" width="64" height="96" />
+    <rect x="224" y="16" width="64" height="96" transform="rotate(45 256 256)" />
+    <rect x="224" y="16" width="64" height="96" transform="rotate(90 256 256)" />
+    <rect x="224" y="16" width="64" height="96" transform="rotate(135 256 256)" />
+    <rect x="224" y="16" width="64" height="96" transform="rotate(180 256 256)" />
+    <rect x="224" y="16" width="64" height="96" transform="rotate(225 256 256)" />
+    <rect x="224" y="16" width="64" height="96" transform="rotate(270 256 256)" />
+    <rect x="224" y="16" width="64" height="96" transform="rotate(315 256 256)" />
+    <path fill-rule="evenodd" d="M256 80a176 176 0 1 1 0 352a176 176 0 1 1 0-352zm0 112a64 64 0 1 0 0 128a64 64 0 1 0 0-128z" />
+  </g>
+</svg>

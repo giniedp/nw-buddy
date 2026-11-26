@@ -1,4 +1,4 @@
-import { Column, ColumnState } from '@ag-grid-community/core'
+import { Column, ColumnState } from 'ag-grid-community'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core'
 

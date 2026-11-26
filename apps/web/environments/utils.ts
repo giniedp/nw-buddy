@@ -25,7 +25,7 @@ export function getModelsUrl(env: EnvVars, baseUrl: BaseUrl) {
 }
 
 export function getCharacterUrl(env: EnvVars, baseUrl: BaseUrl) {
-  return normalizePath(`${env[baseUrl]}/character`)
+  return normalizePath(`${env[baseUrl]}/models/character`)
 }
 
 export function getNwDataUrl(env: EnvVars, baseUrl: BaseUrl) {
@@ -38,7 +38,7 @@ function normalizePath(path: string) {
   // \ -> /
   path = path.replace(/\\/gi, '/')
   // collapse multiple forward slashes, keep protocol e.g. https://, don't use lookbehind (breaks Safari)
-  path = path.replace(/([^:]\/)\/+/g, '$1');
+  path = path.replace(/([^:]\/)\/+/g, '$1')
   // collapse leading forward slashes that aren't handled above
   path = path.replace(/^\/+/, '/')
   // ensure there is no trailing slash

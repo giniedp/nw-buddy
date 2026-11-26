@@ -32,14 +32,12 @@ func TestLoad(t *testing.T) {
 	doc, _ := getCatalog(t)
 
 	total := 0
-	equal := 0
-	for _, it := range doc.Assets {
+	for asset := range doc.All() {
 		total++
-		if it.Guid1 == it.Guid2 {
-			equal++
-		}
+		require.Same(t, asset, doc.LookupById(asset.AssetId))
+		require.Contains(t, doc.AllByGuid(asset.Guid), asset)
 	}
-	require.Equal(t, total, equal)
+	require.Greater(t, total, 0)
 }
 
 func TestParseID(t *testing.T) {

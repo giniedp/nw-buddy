@@ -1,0 +1,19 @@
+/* the texture mode (TextureMode.tsx); the shell shared with the other engine views is in styles/views.css */
+.nw-texture-input {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+}
+.nw-texture-input:active {
+  cursor: grabbing;
+}
+.nw-texture-error {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.nw-view-bar > .nw-texture-slider {
+  flex: 0 0 14rem;
+  width: 14rem;
+}

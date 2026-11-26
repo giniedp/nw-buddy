@@ -4,7 +4,7 @@ import { svgFlaskRoundPotion } from '~/ui/icons/svg'
 import { getGatherableIcon } from '~/widgets/data/gatherable-detail/utils'
 import { FilterGroup } from '../data/types'
 import { ParsedLootTable } from './parse-loottable'
-import { stringToColor, stringToHSL } from '~/utils'
+import { stringToColor, stringToHSL } from '~/utils/colors'
 
 export function describeAlchemyFilters(
   lootTable: ParsedLootTable,

@@ -1,7 +1,7 @@
 import { Observable, asyncScheduler, debounceTime, map, merge, of, subscribeOn } from 'rxjs'
 import { fromGridEvent } from './from-grid-event'
 import { AgGrid } from './types'
-import { GridApi } from '@ag-grid-community/core'
+import { GridApi } from 'ag-grid-community'
 
 export function gridHasAnyFilterPresent(grid$: Observable<AgGrid>) {
   return merge(grid$, fromGridEvent(grid$, 'filterChanged')).pipe(

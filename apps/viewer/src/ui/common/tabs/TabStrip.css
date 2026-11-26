@@ -1,0 +1,117 @@
+/* the tabs of the open documents (TabStrip.tsx), on a sunken strip like tweak-ui tabs */
+.nw-tab-strip {
+  display: flex;
+  flex: none;
+  overflow-x: auto;
+  /* scrolls with the wheel or trackpad, a scrollbar would not fit the row */
+  scrollbar-width: none;
+  background: var(--nw-bg-sunken);
+}
+.nw-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: var(--twk-spacing-field);
+  max-width: 16rem;
+  padding: 0 0.125rem 0 0.5rem;
+  color: var(--nw-text-dim);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.nw-tab:hover {
+  color: var(--nw-text);
+}
+/* the active tab has the background of the content, they read as one surface; it stays accent on hover */
+.nw-tab-active,
+.nw-tab-active:hover {
+  color: var(--nw-accent);
+  background: var(--nw-bg);
+}
+.nw-tab .twk-icon {
+  flex: none;
+  width: var(--nw-icon-size);
+  height: var(--nw-icon-size);
+}
+/* the icon of a tab, and in its place the menu button while the pointer is over the tab (TabStrip menu) */
+.nw-tab-icon {
+  display: grid;
+  flex: none;
+}
+.nw-tab-icon > * {
+  grid-area: 1 / 1;
+}
+.nw-tab-menu-button {
+  display: flex;
+  padding: 0;
+  border: 0;
+  border-radius: var(--twk-radius-field);
+  color: inherit;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+}
+.nw-tab:hover .nw-tab-menu-button,
+.nw-tab-menu-open .nw-tab-menu-button,
+.nw-tab-menu-button:focus-visible {
+  opacity: 1;
+}
+.nw-tab:hover .nw-tab-icon > .twk-icon,
+.nw-tab-menu-open .nw-tab-icon > .twk-icon,
+.nw-tab-icon:has(.nw-tab-menu-button:focus-visible) > .twk-icon {
+  visibility: hidden;
+}
+/* the menu of a tab: top layer, positioned from its button */
+.nw-tab-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  min-width: 12rem;
+  padding: 0.25rem 0;
+  color: var(--nw-text);
+  background: var(--nw-bg);
+  border: 1px solid var(--nw-line-strong);
+  border-radius: var(--twk-radius-field);
+}
+.nw-tab-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0.75rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.nw-tab-menu-item:hover,
+.nw-tab-menu-item:focus-visible {
+  outline: none;
+  background: var(--nw-hover);
+}
+.nw-tab-menu-item:disabled {
+  cursor: default;
+  opacity: 0.5;
+  background: none;
+}
+.nw-tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* a temporary tab, replaced by the next single click on a file */
+.nw-tab-preview .nw-tab-title {
+  font-style: italic;
+}
+.nw-tab-close {
+  display: flex;
+  padding: 0.125rem;
+  border: 0;
+  border-radius: var(--twk-radius-field);
+  color: inherit;
+  background: none;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.nw-tab-close:hover {
+  opacity: 1;
+  background: var(--nw-hover);
+}

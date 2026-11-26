@@ -1,5 +1,3 @@
 import { describe } from 'vitest'
 
-describe('LootContext', () => {
-
-})
+describe('LootContext', () => {})

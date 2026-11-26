@@ -1,0 +1,14 @@
+/* the media mode: the waveform of a media file (AudioMediaMode.tsx) */
+.nw-audio {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.nw-audio-wave {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  color: var(--nw-text-dim);
+  background: var(--nw-bg-sunken);
+}

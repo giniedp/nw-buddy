@@ -1,13 +1,16 @@
 package catalog
 
 import (
+	"cmp"
 	"io"
+	"iter"
 	"log/slog"
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/buf"
 	"path"
 	"slices"
+	"sort"
 	"strings"
 
 	"github.com/gofrs/uuid"
@@ -17,15 +20,12 @@ const (
 	CATALOG_PATH = "assetcatalog.catalog"
 )
 
+// Document is the parsed asset catalog. It is held for the lifetime of the process, so it is kept compact: one
+// sorted asset array searched by guid, no maps, and guid/type/dir strings shared between entries.
 type Document struct {
-	index       map[AssetId]*Asset
-	legacyIndex map[AssetId]AssetId
-	linkIndex   map[string]AssetId
-	indexSet    map[string][]*Asset
-
-	Assets []*AssetEntry  `json:"assets"`
-	Links  []*AssetLink   `json:"links"`
-	Legacy []*LegacyAsset `json:"legacy"`
+	assets []Asset      // stable sorted by guid, catalog order within a guid
+	links  []assetLink  // stable sorted by uuid
+	legacy []legacyLink // stable sorted by legacy asset id
 }
 
 type Asset struct {
@@ -35,44 +35,14 @@ type Asset struct {
 	Size uint32 `json:"size"`
 }
 
-type AssetEntry struct {
-	GuidIndex1 uint32 `json:"-"`
-	SubId1     uint32 `json:"subId1"`
-	UuidIndex2 uint32 `json:"-"`
-	SubId2     uint32 `json:"subId2"`
-	TypeIndex  uint32 `json:"-"`
-	Field6     uint32 `json:"-"`
-	FileSize   uint32 `json:"size"`
-	Field8     uint32 `json:"-"`
-	DirOffset  uint32 `json:"-"`
-	NameOffset uint32 `json:"-"`
-
-	// Resolved values
-	Guid1 string `json:"guid1"`
-	Guid2 string `json:"guid2"`
-	Type  string `json:"type"`
-	Dir   string `json:"dir"`
-	Name  string `json:"name"`
-	File  string `json:"file"`
+type assetLink struct {
+	uuid string
+	id   AssetId
 }
 
-type AssetLink struct {
-	UuidIndex uint32
-	GuidIndex uint32
-	SubId     uint32
-	// Resolved values
-	Uuid string `json:"uuid"`
-	Guid string `json:"guid"`
-}
-
-type LegacyAsset struct {
-	LegacyGuidIndex uint32 `json:"-"`
-	LegacySubid     uint32 `json:"legacySubid"`
-	GuidIndex       uint32 `json:"-"`
-	Guid            string `json:"guid"`
-	// Resolved values
-	LegacyGuid string `json:"legacyGuid"`
-	Subid      uint32 `json:"subId"`
+type legacyLink struct {
+	legacy AssetId
+	id     AssetId
 }
 
 func Load(f nwfs.File) (*Document, error) {
@@ -92,6 +62,33 @@ func Read(r io.Reader) (*Document, error) {
 	return Parse(data)
 }
 
+// uuidTable resolves an index into a uuid block of the catalog to its string, creating each string only once
+type uuidTable struct {
+	r      *buf.Reader
+	offset uint32
+	values []string
+}
+
+func newUUIDTable(r *buf.Reader, offset uint32, end uint32) *uuidTable {
+	count := 0
+	if end > offset {
+		count = int((end - offset) / 16)
+	}
+	return &uuidTable{r: r, offset: offset, values: make([]string, count)}
+}
+
+func (t *uuidTable) at(index uint32) string {
+	if int(index) < len(t.values) && t.values[index] != "" {
+		return t.values[index]
+	}
+	t.r.SeekAbsolute(int(t.offset + 16*index))
+	value := utils.Must(uuid.FromBytes(t.r.MustReadBytes(16))).String()
+	if int(index) < len(t.values) {
+		t.values[index] = value
+	}
+	return value
+}
+
 func Parse(data []byte) (res *Document, err error) {
 	defer utils.HandleRecover(&err)
 
@@ -108,109 +105,159 @@ func Parse(data []byte) (res *Document, err error) {
 	pBlockFiles := r.MustReadUint32() // file name block offset
 	r.MustReadUint32()                // file sizze
 
-	assetCount := r.MustReadUint32()
-	assetEntries := make([]*AssetEntry, assetCount)
-	for i := range assetEntries {
-		ref := &AssetEntry{}
-		ref.GuidIndex1 = r.MustReadUint32()
-		ref.SubId1 = r.MustReadUint32()
-		ref.UuidIndex2 = r.MustReadUint32()
-		ref.SubId2 = r.MustReadUint32()
-		ref.TypeIndex = r.MustReadUint32()
-		ref.Field6 = r.MustReadUint32()
-		ref.FileSize = r.MustReadUint32()
-		ref.Field8 = r.MustReadUint32()
-		ref.DirOffset = r.MustReadUint32()
-		ref.NameOffset = r.MustReadUint32()
-		assetEntries[i] = ref
+	type assetEntry struct {
+		uuidIndex  uint32
+		subId      uint32
+		typeIndex  uint32
+		fileSize   uint32
+		dirOffset  uint32
+		nameOffset uint32
+	}
+	entries := make([]assetEntry, r.MustReadUint32())
+	for i := range entries {
+		r.MustReadUint32() // guid index 1, always equal to guid index 2
+		r.MustReadUint32() // sub id 1
+		entries[i].uuidIndex = r.MustReadUint32()
+		entries[i].subId = r.MustReadUint32()
+		entries[i].typeIndex = r.MustReadUint32()
+		r.MustReadUint32() // field 6
+		entries[i].fileSize = r.MustReadUint32()
+		r.MustReadUint32() // field 8
+		entries[i].dirOffset = r.MustReadUint32()
+		entries[i].nameOffset = r.MustReadUint32()
 	}
 
 	r.MustReadUint32() // unknown
 
-	assetLinkCount := r.MustReadUint32()
-	assetLinks := make([]*AssetLink, assetLinkCount)
-	for i := range assetLinks {
-		ref := &AssetLink{}
-		ref.UuidIndex = utils.Must(r.ReadUint32())
-		ref.GuidIndex = utils.Must(r.ReadUint32())
-		ref.SubId = utils.Must(r.ReadUint32())
-		assetLinks[i] = ref
+	type linkEntry struct {
+		uuidIndex uint32
+		guidIndex uint32
+		subId     uint32
+	}
+	links := make([]linkEntry, r.MustReadUint32())
+	for i := range links {
+		links[i].uuidIndex = r.MustReadUint32()
+		links[i].guidIndex = r.MustReadUint32()
+		links[i].subId = r.MustReadUint32()
 	}
 
-	legacyAssetCount := r.MustReadUint32()
-	legacyAssets := make([]*LegacyAsset, legacyAssetCount)
-	for i := range legacyAssets {
-		ref := &LegacyAsset{}
-		ref.LegacyGuidIndex = r.MustReadUint32()
-		ref.LegacySubid = r.MustReadUint32()
-		ref.GuidIndex = r.MustReadUint32()
-		ref.Subid = r.MustReadUint32()
-		legacyAssets[i] = ref
+	type legacyEntry struct {
+		legacyGuidIndex uint32
+		legacySubId     uint32
+		guidIndex       uint32
+		subId           uint32
+	}
+	legacy := make([]legacyEntry, r.MustReadUint32())
+	for i := range legacy {
+		legacy[i].legacyGuidIndex = r.MustReadUint32()
+		legacy[i].legacySubId = r.MustReadUint32()
+		legacy[i].guidIndex = r.MustReadUint32()
+		legacy[i].subId = r.MustReadUint32()
 	}
 
-	res = &Document{}
-	res.index = make(map[AssetId]*Asset)
-	res.indexSet = make(map[string][]*Asset)
-	res.linkIndex = make(map[string]AssetId)
-	res.legacyIndex = make(map[AssetId]AssetId)
-	res.Assets = assetEntries
-	res.Links = assetLinks
-	res.Legacy = legacyAssets
-	for _, ref := range assetEntries {
-		r.SeekAbsolute(int(pBlockUuids + 16*ref.GuidIndex1))
-		ref.Guid1 = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
+	uuids := newUUIDTable(r, pBlockUuids, pBlockTypes)
+	types := newUUIDTable(r, pBlockTypes, pBlockDirs)
+	dirs := make(map[uint32]string)
 
-		r.SeekAbsolute(int(pBlockUuids + 16*ref.UuidIndex2))
-		ref.Guid2 = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
-
-		r.SeekAbsolute(int(pBlockTypes + 16*ref.TypeIndex))
-		ref.Type = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
-
-		r.SeekAbsolute(int(pBlockDirs + ref.DirOffset))
-		ref.Dir = utils.Must(r.ReadCString())
-
-		r.SeekAbsolute(int(pBlockFiles + ref.NameOffset))
-		ref.Name = utils.Must(r.ReadCString())
-		ref.File = path.Join(ref.Dir, ref.Name)
-
-		asset := &Asset{
-			AssetId: ToAssetId(ref.Guid2, uint(ref.SubId2)),
-			Type:    ref.Type,
-			File:    ref.File,
-			Size:    ref.FileSize,
+	res = &Document{
+		assets: make([]Asset, len(entries)),
+		links:  make([]assetLink, len(links)),
+		legacy: make([]legacyLink, len(legacy)),
+	}
+	for i, entry := range entries {
+		dir, ok := dirs[entry.dirOffset]
+		if !ok {
+			r.SeekAbsolute(int(pBlockDirs + entry.dirOffset))
+			dir = utils.Must(r.ReadCString())
+			dirs[entry.dirOffset] = dir
 		}
+		r.SeekAbsolute(int(pBlockFiles + entry.nameOffset))
+		name := utils.Must(r.ReadCString())
 
-		res.index[asset.AssetId] = asset
-		res.indexSet[asset.AssetId.Guid] = append(res.indexSet[asset.AssetId.Guid], asset)
+		res.assets[i] = Asset{
+			AssetId: AssetId{Guid: uuids.at(entry.uuidIndex), SubID: entry.subId},
+			Type:    types.at(entry.typeIndex),
+			File:    path.Join(dir, name),
+			Size:    entry.fileSize,
+		}
 	}
+	slices.SortStableFunc(res.assets, func(a, b Asset) int {
+		return strings.Compare(a.Guid, b.Guid)
+	})
 
-	for _, ref := range legacyAssets {
-		r.SeekAbsolute(int(pBlockUuids + 16*ref.LegacyGuidIndex))
-		ref.LegacyGuid = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
-
-		r.SeekAbsolute(int(pBlockUuids + 16*ref.GuidIndex))
-		ref.Guid = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
-
-		legacyId := ToAssetId(ref.LegacyGuid, uint(ref.LegacySubid))
-		assetId := ToAssetId(ref.Guid, uint(ref.Subid))
-		res.legacyIndex[legacyId] = assetId
+	for i, link := range links {
+		res.links[i] = assetLink{
+			uuid: uuids.at(link.uuidIndex),
+			id:   AssetId{Guid: uuids.at(link.guidIndex), SubID: link.subId},
+		}
 	}
+	slices.SortStableFunc(res.links, func(a, b assetLink) int {
+		return strings.Compare(a.uuid, b.uuid)
+	})
 
-	for _, ref := range assetLinks {
-		r.SeekAbsolute(int(pBlockUuids + 16*ref.UuidIndex))
-		ref.Uuid = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
-
-		r.SeekAbsolute(int(pBlockUuids + 16*ref.GuidIndex))
-		ref.Guid = utils.Must(uuid.FromBytes(r.MustReadBytes(16))).String()
-
-		res.linkIndex[strings.ToLower(ref.Uuid)] = ToAssetId(ref.Guid, uint(ref.SubId))
+	for i, entry := range legacy {
+		res.legacy[i] = legacyLink{
+			legacy: AssetId{Guid: uuids.at(entry.legacyGuidIndex), SubID: entry.legacySubId},
+			id:     AssetId{Guid: uuids.at(entry.guidIndex), SubID: entry.subId},
+		}
 	}
+	slices.SortStableFunc(res.legacy, func(a, b legacyLink) int {
+		return compareAssetId(a.legacy, b.legacy)
+	})
 	return res, nil
 }
 
+func compareAssetId(a, b AssetId) int {
+	if c := strings.Compare(a.Guid, b.Guid); c != 0 {
+		return c
+	}
+	return cmp.Compare(a.SubID, b.SubID)
+}
+
+// guidRange returns the range of assets with the given guid
+func (doc *Document) guidRange(guid string) (int, int) {
+	lo := sort.Search(len(doc.assets), func(i int) bool { return doc.assets[i].Guid >= guid })
+	hi := lo
+	for hi < len(doc.assets) && doc.assets[hi].Guid == guid {
+		hi++
+	}
+	return lo, hi
+}
+
+// isShadowed reports whether a later catalog entry has the same asset id. Lookups resolve to the last entry.
+func (doc *Document) isShadowed(i int, hi int) bool {
+	for j := i + 1; j < hi; j++ {
+		if doc.assets[j].SubID == doc.assets[i].SubID {
+			return true
+		}
+	}
+	return false
+}
+
+// All iterates all assets of the catalog, ordered by guid
+func (doc *Document) All() iter.Seq[*Asset] {
+	return func(yield func(*Asset) bool) {
+		for lo := 0; lo < len(doc.assets); {
+			hi := lo + 1
+			for hi < len(doc.assets) && doc.assets[hi].Guid == doc.assets[lo].Guid {
+				hi++
+			}
+			for i := lo; i < hi; i++ {
+				if !doc.isShadowed(i, hi) && !yield(&doc.assets[i]) {
+					return
+				}
+			}
+			lo = hi
+		}
+	}
+}
+
 func (doc *Document) LookupById(id AssetId) *Asset {
-	if asset, ok := doc.index[id]; ok {
-		return asset
+	lo, hi := doc.guidRange(id.Guid)
+	for i := hi - 1; i >= lo; i-- {
+		if doc.assets[i].SubID == id.SubID {
+			return &doc.assets[i]
+		}
 	}
 	return nil
 }
@@ -228,28 +275,41 @@ func (doc *Document) Lookup(uuid string, subid uint) *Asset {
 }
 
 func (doc *Document) LookupByUuidLink(uuid string) *Asset {
-	return doc.LookupById(doc.linkIndex[strings.ToLower(uuid)])
+	return doc.LookupById(doc.LookupLink(uuid))
 }
 
 func (doc *Document) AllByGuid(guid string) []*Asset {
-	assets := doc.indexSet[strings.ToLower(guid)]
-	if assets == nil {
+	lo, hi := doc.guidRange(strings.ToLower(guid))
+	if lo == hi {
 		return nil
 	}
-	return slices.Clone(assets)
+	result := make([]*Asset, 0, hi-lo)
+	for i := lo; i < hi; i++ {
+		result = append(result, &doc.assets[i])
+	}
+	return result
 }
 
 func (doc *Document) LookupLink(uuid string) AssetId {
-	return doc.linkIndex[strings.ToLower(uuid)]
+	uuid = strings.ToLower(uuid)
+	i := sort.Search(len(doc.links), func(i int) bool { return doc.links[i].uuid > uuid })
+	if i > 0 && doc.links[i-1].uuid == uuid {
+		return doc.links[i-1].id
+	}
+	return AssetId{}
 }
 
 func (doc *Document) LookupLegacy(uuid string) AssetId {
 	assetId, _ := ParseAssetId(uuid)
-	return doc.legacyIndex[assetId]
+	i := sort.Search(len(doc.legacy), func(i int) bool { return compareAssetId(doc.legacy[i].legacy, assetId) > 0 })
+	if i > 0 && doc.legacy[i-1].legacy == assetId {
+		return doc.legacy[i-1].id
+	}
+	return AssetId{}
 }
 
 func (doc *Document) FindByFile(file string) *Asset {
-	for _, asset := range doc.index {
+	for asset := range doc.All() {
 		if strings.EqualFold(file, asset.File) {
 			return asset
 		}

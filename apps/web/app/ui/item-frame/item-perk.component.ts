@@ -7,7 +7,10 @@ import { NwModule } from '~/nw'
 @Component({
   selector: 'nwb-item-perk',
   template: `
-    <a class="w-6 h-6 flex items-center justify-center relative flex-none group" [nwLinkTooltip]="['perk', linkPerkId()]">
+    <a
+      class="w-6 h-6 flex items-center justify-center relative flex-none group"
+      [nwLinkTooltip]="['perk', linkPerkId()]"
+    >
       <div class="grid">
         @if (socket()) {
           <img

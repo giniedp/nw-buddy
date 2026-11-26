@@ -1,0 +1,13 @@
+/* the details view: label / value rows, scrolls (DetailsView.tsx) */
+.nw-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--twk-spacing-gap);
+  max-width: 48rem;
+  padding: 0.25rem;
+  overflow-y: auto;
+  user-select: text;
+}
+.nw-details .twk-widget:has(> .twk-widget-label) {
+  grid-template-columns: 7rem 1fr;
+}

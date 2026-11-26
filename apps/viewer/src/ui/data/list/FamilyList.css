@@ -1,0 +1,43 @@
+/* the row types of the Data tool: name, sheets and rows, matching sheet names when filtered (FamilyList.tsx) */
+.nw-family-list {
+  overflow-y: auto;
+}
+.nw-family {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 0.5rem;
+  padding: 0.125rem 0.5rem;
+  color: var(--nw-text);
+  text-align: left;
+  text-decoration: none;
+}
+.nw-family:hover {
+  background: var(--nw-hover);
+}
+.nw-family-active,
+.nw-family-active:hover {
+  background: color-mix(in oklab, var(--nw-accent) 25%, transparent);
+}
+.nw-family-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nw-family-count {
+  font-size: var(--nw-text-sm);
+  color: var(--nw-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.nw-family-sheets {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  font-size: var(--nw-text-sm);
+  color: var(--nw-text-dim);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nw-family-summary {
+  padding: 0.25rem 0.5rem;
+  font-size: var(--nw-text-sm);
+  border-top: 1px solid var(--nw-line);
+}

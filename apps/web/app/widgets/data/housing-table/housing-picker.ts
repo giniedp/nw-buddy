@@ -23,7 +23,9 @@ export function openHousingItemsPicker(options: {
       gridOptions: (utils) => {
         return {
           ...buildPickerHousingGridOptions(utils),
-          rowSelection: options.multiple ? 'multiple' : 'single',
+          rowSelection: options.multiple
+            ? { mode: 'multiRow', checkboxes: false, headerCheckbox: false, enableClickSelection: true }
+            : { mode: 'singleRow', checkboxes: false, enableClickSelection: true },
         }
       },
     },

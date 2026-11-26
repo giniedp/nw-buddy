@@ -14,7 +14,7 @@
       <span class="flex-1"></span>
       <div class="join">
         <button class="join-item btn btn-square btn-ghost" [nwbScreenshotBtn]></button>
-        @if(service.canToggleMode()) {
+        @if (service.canToggleMode()) {
           <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
         }
         <button
@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
@@ -45,7 +45,6 @@
         [selectionRouteParam]="selectionParam"
         #grid
       />
-
     </div>
     <ion-menu contentId="main" class="order-2">
       @if (showSidebar()) {
@@ -64,11 +63,7 @@
 </ion-content>
 
 <ng-template #tplDetail>
-  <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
-    [class.bg-base-300]="true"
-  >
+  <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
     @if (grid.selectedRow$ | async; as armorset) {
       <div class="grid grid-cols-fill-sm gap-2" nwbScreenshotFrame="Armor-Set">
         @for (item of armorset.items; track $index) {

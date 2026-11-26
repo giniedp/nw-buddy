@@ -14,11 +14,16 @@ type Meta struct {
 	Data []byte
 }
 
-func LoadMeta(f nwfs.File) (res *Meta, err error) {
+func LoadMeta(f nwfs.File) (*Meta, error) {
 	data, err := f.Read()
 	if err != nil {
-		return
+		return nil, err
 	}
+	return ParseMeta(data)
+}
+
+// ParseMeta reads the headers of DDS data, Data keeps the data
+func ParseMeta(data []byte) (res *Meta, err error) {
 	res = &Meta{}
 	res.Data = data
 
@@ -50,7 +55,7 @@ func (it *Meta) Stats() map[string]any {
 		"compression": it.IsCompressed(),
 		"cubemap":     it.IsCubemap(),
 		"volume":      it.IsVolume(),
-		"hasAlpha":    pf.Flags&0x00000001 != 0, // DDPF_ALPHAPIXELS
+		"hasAlpha":    pf.Flags&PixelFormatAlphaPixels != 0,
 		"headerSize":  it.HeaderSize,
 		"dataSize":    len(it.Data) - it.HeaderSize,
 	}
@@ -75,26 +80,34 @@ func dxgiDimensionName(dim uint32) string {
 	}
 }
 func (it *Meta) IsCompressed() bool {
-	return it.Header.PixelFormat.Flags&0x4 != 0 // DDPF_FOURCC
+	return it.Header.PixelFormat.Flags&PixelFormatFourCC != 0
 }
 
 func (it *Meta) IsCubemap() bool {
-	return it.Header.Caps2&0x200 != 0 // DDSCAPS2_CUBEMAP
+	return it.Header.Caps2&Caps2Cubemap != 0
 }
 
 func (it *Meta) IsVolume() bool {
-	return it.Header.Caps2&0x200000 != 0 // DDSCAPS2_VOLUME
+	return it.Header.Caps2&Caps2Volume != 0
+}
+
+// DXGIFormat is the format of the DX10 header, false without one
+func (it *Meta) DXGIFormat() (uint32, bool) {
+	if it.DX10Header == nil {
+		return 0, false
+	}
+	return it.DX10Header.DxgiFormat, true
 }
 
 func (it *Meta) FormatName() string {
 	pf := it.Header.PixelFormat
 	if pf.IsDX10() {
 		if it.DX10Header != nil {
-			return dxgiFormatName(it.DX10Header.DxgiFormat)
+			return DXGIFormatName(it.DX10Header.DxgiFormat)
 		}
 		return "DX10"
 	}
-	if pf.Flags&0x4 != 0 { // DDPF_FOURCC
+	if pf.Flags&PixelFormatFourCC != 0 {
 		return string(pf.FourCC[:])
 	}
 	// Uncompressed — derive from bit masks
@@ -109,7 +122,9 @@ func (it *Meta) FormatName() string {
 		return fmt.Sprintf("RGB%d", pf.RGBBitCount)
 	}
 }
-func dxgiFormatName(format uint32) string {
+
+// DXGIFormatName is the name of a DXGI format, e.g. BC7_UNORM_SRGB
+func DXGIFormatName(format uint32) string {
 	names := map[uint32]string{
 		0:  "UNKNOWN",
 		2:  "R32G32B32A32_FLOAT",
@@ -123,10 +138,15 @@ func dxgiFormatName(format uint32) string {
 		77: "BC3_UNORM",
 		78: "BC3_UNORM_SRGB",
 		80: "BC4_UNORM",
+		81: "BC4_SNORM",
 		83: "BC5_UNORM",
+		84: "BC5_SNORM",
+		87: "B8G8R8A8_UNORM",
+		91: "B8G8R8A8_UNORM_SRGB",
 		95: "BC6H_UF16",
-		97: "BC7_UNORM",
-		98: "BC7_UNORM_SRGB",
+		96: "BC6H_SF16",
+		98: "BC7_UNORM",
+		99: "BC7_UNORM_SRGB",
 	}
 	if name, ok := names[format]; ok {
 		return name

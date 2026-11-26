@@ -25,7 +25,7 @@ export interface AttributeEditorValue {
     LayoutModule,
     IonSegment,
     IonSegmentButton,
-    WeaponScalingChartComponent
+    WeaponScalingChartComponent,
   ],
   host: {
     class: 'ion-page bg-base-100 border border-base-100 rounded-md',

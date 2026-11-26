@@ -20,21 +20,24 @@ import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { injectParentRouteParam, injectRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { TransmogEditorComponent, TransmogEditorState } from './transmog-editor'
 import { SyncBadgeComponent } from '~/ui/sync-badge'
+import { NgTemplateOutlet } from '@angular/common'
+import { CharacterEditorComponent } from './character-editor/character-editor.component'
+import type { CharacterEditorValue } from './character-editor/character-editor.store'
 
 @Component({
   selector: 'nwb-transmog-set-detail',
   templateUrl: './transmog-set-detail.component.html',
   imports: [
     LayoutModule,
-    TransmogEditorComponent,
+    CharacterEditorComponent,
+    NgTemplateOutlet,
     FormsModule,
     IconsModule,
     RouterModule,
     TooltipModule,
     ScreenshotModule,
-    SyncBadgeComponent
+    SyncBadgeComponent,
   ],
   providers: [TransmogStore],
   host: {
@@ -89,16 +92,17 @@ export class TransmogSetDetailComponent {
   protected isSignedIn = this.backend.isSignedIn
   protected isLoading = this.resource.isLoading
   protected hasError = computed(() => this.resource.error())
-  protected editor = viewChild(TransmogEditorComponent)
+  private characterEditor = viewChild(CharacterEditorComponent)
 
-  protected editorState = computed((): TransmogEditorState => {
+  protected editorState = computed((): CharacterEditorValue => {
     if (!this.record()) {
       return null
     }
     const value = this.record()
     return {
-      debug: false,
       gender: value.gender,
+      emote: value.emote ?? null,
+      weapons: value.weapons ?? null,
       head: value.slots?.head,
       chest: value.slots?.chest,
       hands: value.slots?.hands,
@@ -118,13 +122,17 @@ export class TransmogSetDetailComponent {
     )
   }
 
+  protected capturePhoto() {
+    this.characterEditor()?.capturePhoto()
+  }
+
   protected handleNameChange(value: string) {
     this.service.update(this.record().id, {
       name: value,
     })
   }
 
-  protected handleStateChange(value: TransmogEditorState) {
+  protected handleStateChange(value: CharacterEditorValue) {
     this.service.update(this.record().id, {
       gender: value.gender,
       slots: {
@@ -134,6 +142,8 @@ export class TransmogSetDetailComponent {
         legs: value.legs,
         feet: value.feet,
       },
+      emote: value.emote || null,
+      weapons: value.weapons || null,
     })
   }
 

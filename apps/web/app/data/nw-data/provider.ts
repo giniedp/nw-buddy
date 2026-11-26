@@ -1,5 +1,5 @@
 import { InjectionToken, inject, PendingTasks } from '@angular/core'
-import { NwData, isWorkerSupported, nwData, nwDataWorker } from '@nw-data/db'
+import { NwData, NwDataOptions, isWorkerSupported, nwData, nwDataWorker } from '@nw-data/db'
 import { environment } from 'apps/web/environments'
 import { CaseInsensitiveMap } from '~/utils'
 import { WINDOW } from '~/utils/injection/window'
@@ -12,6 +12,17 @@ export const NW_DATA_TOKEN = new InjectionToken<NwData>('NW_DATA_TOKEN', {
 
 export function injectNwData(): NwData {
   return inject(NW_DATA_TOKEN)
+}
+
+/**
+ * Options to create an own NwData instance, e.g. inside a worker
+ */
+export function injectNwDataOptions(): NwDataOptions {
+  return {
+    dataUrl: environment.nwDataUrl,
+    imagesUrl: environment.nwImagesUrl,
+    baseUrl: inject(WINDOW).location.origin,
+  }
 }
 
 function createNwData(): NwData {
@@ -29,11 +40,7 @@ function createNwData(): NwData {
     }
   }
 
-  const options = {
-    dataUrl: environment.nwDataUrl,
-    imagesUrl: environment.nwImagesUrl,
-    baseUrl: inject(WINDOW).location.origin,
-  }
+  const options = injectNwDataOptions()
   const instance = isWorkerSupported() ? nwDataWorker(options) : Promise.resolve(nwData(options))
   const cached = memcache()
   return new Proxy({} as NwData, {

@@ -1,0 +1,26 @@
+/*
+ * The page of the standalone app (index.html, the nwbt zip): the app fills the window. Not part of the app lib
+ * (src/app.tsx), whose host lays out the element it mounts into (.nw-viewer-app in app.css).
+ */
+
+/* the page behind the canvas */
+html,
+body {
+  background: black;
+}
+html {
+  overflow: hidden;
+}
+body,
+#app,
+canvas {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+/* containing block of the canvas, which is positioned and may be larger than the window (RenderSizeSystem) */
+#app {
+  position: relative;
+}

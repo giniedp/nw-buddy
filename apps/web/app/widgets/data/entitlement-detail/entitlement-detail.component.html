@@ -1,7 +1,7 @@
-@for(item of rewards(); track $index) {
-  <div class="flex flex-row gap-1 items-center font-bold" >
+@for (item of rewards(); track $index) {
+  <div class="flex flex-row gap-1 items-center font-bold">
     <picture [nwIcon]="item.icon" [nwRarity]="item.rarity" class="w-8 h-8"></picture>
-    @if(item.link) {
+    @if (item.link) {
       <a [routerLink]="item.link | nwLink" class="link-hover">
         <span> {{ item.label | nwText }} </span>
       </a>
@@ -10,4 +10,3 @@
     }
   </div>
 }
-

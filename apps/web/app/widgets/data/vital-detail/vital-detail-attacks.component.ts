@@ -5,9 +5,7 @@ import { getVitalDamage, NW_FALLBACK_ICON } from '@nw-data/common'
 import { NwData } from '@nw-data/db'
 import {
   DamageData,
-  DATASHEETS,
   MutationDifficultyStaticData,
-  ScannedVital,
   SpellData,
   VitalsBaseData as VitalsData,
   VitalsLevelData,
@@ -22,6 +20,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { apiResource, eqCaseInsensitive, humanize } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { StatusEffectDetailModule } from '../status-effect-detail'
+import { loadVitalDamageTables, selectVitalDamageTableNames } from './vital-damage-tables'
 import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
@@ -70,48 +69,6 @@ export class VitalDetailAttacksComponent {
   protected hasError = this.resource.hasError
   protected errorIcon = svgCircleExclamation
   protected infoIcon = svgInfoCircle
-}
-
-function selectVitalDamageTableNames(id: string, meta: ScannedVital) {
-  let tables = meta?.tables || []
-  // TODO: fix this in the pipeline
-  if (eqCaseInsensitive(id, 'Isabella_DG_ShatterMtn_Phase2_00')) {
-    tables = tables.filter((it) => it.toLowerCase().includes('phase2'))
-  }
-  if (eqCaseInsensitive(id, 'Dryad_Siren')) {
-    tables = tables.filter((it) => it.toLowerCase().includes('dryad_siren'))
-  }
-  return tables
-}
-
-export interface DamageTableFile {
-  name: string
-  rows: DamageData[]
-}
-
-async function loadVitalDamageTables(db: NwData, files: string[]): Promise<Array<DamageTableFile>> {
-  if (!files?.length) {
-    return []
-  }
-  const tables = Object.entries(DATASHEETS.DamageData)
-  const rows = files
-    .map((file) => {
-      file = 'datatables/' + file.replace(/\\/g, '/').replace(/\.xml$/, '.json')
-      return tables.find(([_, url]) => {
-        if (typeof url.uri === 'string') {
-          return eqCaseInsensitive(url.uri, file)
-        }
-        return url.uri.some((it) => eqCaseInsensitive(it, file))
-      })
-    })
-    .filter((it) => !!it)
-    .map(async ([name, uri]) => {
-      return {
-        name,
-        rows: await db.loadDatasheet(uri),
-      }
-    })
-  return Promise.all(rows)
 }
 
 async function loadVitalDamageTableInfos(

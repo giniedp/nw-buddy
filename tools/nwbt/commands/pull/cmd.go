@@ -32,6 +32,7 @@ const (
 	TASK_IMAGES      = "images"
 	TASK_SEARCH      = "search"
 	TASK_SPELLS      = "spells"
+	TASK_CHARACTER   = "character"
 	TASK_HEIGHTMAP   = "heightmap"
 	TASK_TRACTMAP    = "tractmap"
 	TASK_TYPES       = "types"
@@ -52,14 +53,16 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.Flags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
-	Cmd.Flags().StringVar(&flgOutDataDir, "out-data", env.PullDataDir(), "output directory for data")
-	Cmd.Flags().StringVar(&flgOutTypeDir, "out-types", env.PullTypesDir(), "output directory for types ")
-	Cmd.Flags().BoolVar(&flgUpdateImages, "update-images", false, "if true, existing images are ignored and re-processed")
-	Cmd.Flags().Uint32VarP(&flgWorkerCount, "workers", "w", uint32(env.PreferredWorkerCount()), "number of workers to use for processing")
+	// persistent: the task subcommands read them too
+	Cmd.PersistentFlags().StringVarP(&flgGameDir, "game", "g", env.GameDir(), "game root directory")
+	Cmd.PersistentFlags().StringVar(&flgOutDataDir, "out-data", env.PullDataDir(), "output directory for data")
+	Cmd.PersistentFlags().StringVar(&flgOutTypeDir, "out-types", env.PullTypesDir(), "output directory for types ")
+	Cmd.PersistentFlags().BoolVar(&flgUpdateImages, "update-images", false, "if true, existing images are ignored and re-processed")
+	Cmd.PersistentFlags().Uint32VarP(&flgWorkerCount, "workers", "w", uint32(env.PreferredWorkerCount()), "number of workers to use for processing")
 
 	Cmd.AddCommand(
 		cmdPullActionlists,
+		cmdPullCharacter,
 		cmdPullConstants,
 		cmdPullHeightmaps,
 		cmdPullTractmaps,
@@ -83,6 +86,7 @@ func run(ccmd *cobra.Command, args []string) {
 	ctx.PullTables()
 	ctx.PullLocales()
 	ctx.PullSpells()
+	ctx.PullCharacter()
 	ctx.PullSlices()
 	ctx.PullImages()
 	ctx.PullSearch()
@@ -136,6 +140,10 @@ func (ctx *PullContext) PullSpells() {
 		ctx.PullTables()
 	}
 	pullSpells(ctx.tables, ctx.Archive, path.Join(ctx.outDataDir, "generated"))
+}
+
+func (ctx *PullContext) PullCharacter() {
+	pullCharacter(ctx.Assets, path.Join(ctx.outDataDir, "generated"))
 }
 
 func (ctx *PullContext) PullSlices() {

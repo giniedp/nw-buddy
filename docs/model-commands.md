@@ -21,7 +21,8 @@ pnpm nwbt models impostors --level ** --region ** --binary --simplify --embed --
 
 This uses no command after `models` to fallback to defaul collection of armor, weapons, costumes, mounts etc
 
-For local development `--ktx` can be omitted for faster processing. KTX encoding is very expensive.
+For local development `--ktx` can be omitted for faster processing. KTX encoding is very expensive. `--ktx` needs
+the `ktx` tool of [KTX-Software](https://github.com/KhronosGroup/KTX-Software/releases) on the PATH.
 
 ```sh
 pnpm nwbt models --binary --ktx --animations --texture-size 2048

@@ -5,57 +5,78 @@ import (
 	"log/slog"
 	gomath "math"
 	"nw-buddy/tools/formats/cgf"
+	"nw-buddy/tools/formats/mtl"
 	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/buf"
 	"nw-buddy/tools/utils/math"
-	"nw-buddy/tools/utils/math/mat4"
 	"slices"
+	"strings"
 
-	"github.com/x448/float16"
+	"maps"
 
 	"github.com/qmuntal/gltf"
-	"github.com/qmuntal/gltf/modeler"
 )
 
-func (doc *Document) ImportCgfMesh(name string, chunk cgf.ChunkMesh, cgfile *cgf.File, heap []byte, materialLookup MaterialLookup) (*gltf.Mesh, *int) {
-	simplify := doc.Options.Simplify
-	base := doc.Options.Base
+const KHR_mesh_quantization = "KHR_mesh_quantization"
 
+// meshGeometry holds the converted streams of one cgf mesh chunk. All subsets of the chunk share the vertex
+// accessors and reference ranges of one index buffer view with their raw (absolute) indices.
+type meshGeometry struct {
+	attributes  gltf.PrimitiveAttributes
+	vertexCount int
+	indexView   int
+	indexType   gltf.ComponentType
+	indexSize   int
+	indexCount  int
+	// index accessor per subset, reused when the mesh is referenced by more nodes
+	subsetIndices map[int]int
+}
+
+type meshGeometryKey struct {
+	file   *cgf.File
+	source string
+	id     int32
+}
+
+// ImportCgfMesh adds a mesh with a primitive per subset, and a second one for each subset that has an overcoat material.
+// They share the geometry.
+func (doc *Document) ImportCgfMesh(name string, chunk cgf.ChunkMesh, cgfile *cgf.File, heap []byte, materialLookup MaterialLookup, overcoatLookup MaterialLookup) (*gltf.Mesh, *int) {
 	subsets, hasSubsets := cgf.FindChunk[cgf.ChunkMeshSubsets](cgfile, chunk.SubsetsChunkId)
 	if !hasSubsets {
 		return nil, nil
 	}
 
+	geometry, err := doc.cgfMeshGeometry(chunk, cgfile, heap)
+	if err != nil {
+		slog.Warn("mesh geometry not converted", "file", cgfile.Source, "chunk", chunk.Id, "err", err)
+		return nil, nil
+	}
+
 	mesh := &gltf.Mesh{}
-	for i, subset := range subsets.Subsets {
-		material := materialLookup.Get(int(subset.MaterialId))
-
-		// mtl := lookupMtl(material)
-		// if mtl != nil && mtl.IsShadowProxy() {
-		// 	continue
-		// }
-
-		subRefId := subsetRefId(cgfile, chunk, i)
-		var primitive *gltf.Primitive
-		if found := doc.FindPrimitiveByRef(subRefId); found != nil {
-			primitive = doc.CopyPrimitive(found)
-		} else if prim, err := convertPrimitive(doc.Document, subset, chunk, cgfile, heap, simplify, base); err != nil {
-			slog.Warn("Failed to convert primitive", "ref", subRefId, "err", err)
-			continue
-		} else {
-			primitive = prim
+	addPrimitive := func(i int, subset cgf.MeshSubset, material *gltf.Material) {
+		indices, ok := geometry.subsetIndexAccessor(doc, i, subset)
+		if !ok || doc.isHiddenMaterial(material) {
+			return
 		}
-		if primitive == nil {
-			continue
+		primitive := &gltf.Primitive{
+			Mode:       gltf.PrimitiveTriangles,
+			Attributes: maps.Clone(geometry.attributes),
+			Indices:    gltf.Index(indices),
 		}
-		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeyRefID, subRefId)
+		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeyRefID, subsetRefId(cgfile, chunk, i))
 		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeySource, cgfile.Source)
 		primitive.Extras = ExtrasStore(primitive.Extras, ExtraKeyName, name)
-
 		if index := slices.Index(doc.Materials, material); index != -1 {
 			primitive.Material = gltf.Index(index)
 		}
 		mesh.Primitives = append(mesh.Primitives, primitive)
+	}
+	for i, subset := range subsets.Subsets {
+		addPrimitive(i, subset, materialLookup.Get(int(subset.MaterialId)))
+	}
+	for i, subset := range subsets.Subsets {
+		if overcoat := overcoatLookup.Get(int(subset.MaterialId)); overcoat != nil {
+			addPrimitive(i, subset, overcoat)
+		}
 	}
 
 	if len(mesh.Primitives) == 0 {
@@ -65,6 +86,21 @@ func (doc *Document) ImportCgfMesh(name string, chunk cgf.ChunkMesh, cgfile *cgf
 	return mesh, doc.AppendMesh(mesh)
 }
 
+// isHiddenMaterial reports whether subsets with the material are not exported: NoDraw (shader or MtlFlags NODRAW)
+// unless KeepNoDraw, and shadow proxies with SkipShadowProxy. The game does not draw them either.
+func (doc *Document) isHiddenMaterial(material *gltf.Material) bool {
+	m := lookupMtl(material)
+	if m == nil {
+		return false
+	}
+	if !doc.Options.KeepNoDraw {
+		if strings.EqualFold(m.Shader, "nodraw") || (m.MtlFlags != nil && *m.MtlFlags&mtl.MTL_FLAG_NODRAW != 0) {
+			return true
+		}
+	}
+	return doc.Options.SkipShadowProxy && m.IsShadowProxy()
+}
+
 func subsetRefId(cgfile *cgf.File, chunk cgf.ChunkMesh, subset int) string {
 	if cgfile.Source == "" {
 		return ""
@@ -72,524 +108,486 @@ func subsetRefId(cgfile *cgf.File, chunk cgf.ChunkMesh, subset int) string {
 	return hashString(fmt.Sprintf("%s_%d_%d_%d", cgfile.Source, chunk.Id, chunk.SubsetsChunkId, subset))
 }
 
-func convertPrimitive(doc *gltf.Document, subset cgf.MeshSubset, chunk cgf.ChunkMesh, cgFile *cgf.File, heap []byte, simplify bool, base math.Base) (out *gltf.Primitive, err error) {
+func (g *meshGeometry) subsetIndexAccessor(doc *Document, i int, subset cgf.MeshSubset) (int, bool) {
+	if index, ok := g.subsetIndices[i]; ok {
+		return index, true
+	}
+	first, count := int(subset.FirstIndex), int(subset.NumIndices)
+	if count <= 0 || first < 0 || first+count > g.indexCount {
+		slog.Warn("subset index range out of bounds", "first", first, "count", count, "indices", g.indexCount)
+		return 0, false
+	}
+	index := doc.appendAccessor(g.indexView, first*g.indexSize, count, g.indexType, gltf.AccessorScalar, false)
+	g.subsetIndices[i] = index
+	return index, true
+}
+
+// cgfStream is the element data of one stream, either inline (DataStream chunk) or a slice of the .cgfheap (DataRef chunk)
+type cgfStream struct {
+	id     int32
+	data   []byte
+	stride int
+	count  int
+	inline bool
+}
+
+func findCgfStream(cgfile *cgf.File, heap []byte, chunk cgf.ChunkMesh, streamType cgf.DataStreamType) (cgfStream, bool) {
+	streams := findCgfStreams(cgfile, heap, chunk, streamType)
+	if len(streams) == 0 {
+		return cgfStream{}, false
+	}
+	return streams[0], true
+}
+
+// findCgfStreams returns all streams of a type in set order (e.g. texcoord sets 0 and 1)
+func findCgfStreams(cgfile *cgf.File, heap []byte, chunk cgf.ChunkMesh, streamType cgf.DataStreamType) []cgfStream {
+	var result []cgfStream
+	for _, id := range chunk.StreamChunkID[streamType] {
+		if id == 0 {
+			continue
+		}
+		if s, ok := cgf.FindChunk[cgf.ChunkDataStream](cgfile, id); ok {
+			if s.ElementSize == 0 {
+				continue
+			}
+			result = append(result, cgfStream{id: id, data: s.Data, stride: int(s.ElementSize), count: int(s.ElementCount), inline: true})
+			continue
+		}
+		if ref, ok := cgf.FindChunk[cgf.ChunkDataRef](cgfile, id); ok {
+			end := int(ref.Offset) + int(ref.Size)
+			if ref.Stride == 0 || end > len(heap) {
+				slog.Warn("heap stream out of bounds or missing heap", "file", cgfile.Source, "type", streamType, "end", end, "heap", len(heap))
+				continue
+			}
+			result = append(result, cgfStream{id: id, data: heap[ref.Offset:end], stride: int(ref.Stride), count: int(ref.Size / ref.Stride)})
+		}
+	}
+	return result
+}
+
+// cgfMeshGeometry converts the streams of a mesh chunk once per document.
+//
+// One pass per stream writes straight into the glTF buffer: no intermediate slices, no per subset copies.
+// The basis transform (Z-up → Y-up) stays per vertex, a root node transform breaks animations.
+// Data that needs no conversion (indices, f32 texcoords, bone mapping) is copied as is.
+func (doc *Document) cgfMeshGeometry(chunk cgf.ChunkMesh, cgfile *cgf.File, heap []byte) (g *meshGeometry, err error) {
 	defer utils.HandleRecover(&err)
 
-	out = &gltf.Primitive{
-		Indices:    nil,
-		Mode:       gltf.PrimitiveTriangles,
-		Attributes: gltf.PrimitiveAttributes{},
+	key := meshGeometryKey{source: cgfile.Source, id: chunk.Id}
+	if key.source == "" {
+		key.file = cgfile
+	}
+	if doc.geometries == nil {
+		doc.geometries = make(map[meshGeometryKey]*meshGeometry)
+	}
+	if g, ok := doc.geometries[key]; ok {
+		return g, nil
 	}
 
-	for streamTypeId, ids := range chunk.StreamChunkID {
-		for _, id := range ids {
-			if id == 0 {
-				continue
-			}
-			streamType := cgf.DataStreamType(streamTypeId)
-			if stream, ok := cgf.FindChunk[cgf.ChunkDataStream](cgFile, id); ok {
-				convertPrimitiveStream(doc, subset, stream, out, simplify, base)
-				continue
-			}
-			if ref, ok := cgf.FindChunk[cgf.ChunkDataRef](cgFile, id); ok {
-				convertPrimitiveRef(doc, subset, streamType, ref, heap, out, simplify, base)
-				continue
-			}
-
-		}
+	base := doc.Options.Base
+	if base == nil {
+		base = math.GetBase(false)
 	}
-	if len(out.Attributes) == 0 {
-		err = fmt.Errorf("no attributes found for primitive in %s", cgFile.Source)
+	simplify := doc.Options.Simplify
+	quantize := doc.Options.Quantize && !simplify
+
+	find := func(t cgf.DataStreamType) (cgfStream, bool) {
+		return findCgfStream(cgfile, heap, chunk, t)
 	}
-	return
-}
 
-func convertPrimitiveStream(doc *gltf.Document, subset cgf.MeshSubset, stream cgf.ChunkDataStream, out *gltf.Primitive, simplify bool, base math.Base) {
+	indices, ok := find(cgf.STREAM_TYPE_INDICES)
+	if !ok {
+		return nil, fmt.Errorf("no indices")
+	}
+	positions, ok := find(cgf.STREAM_TYPE_POSITIONS)
+	if !ok {
+		return nil, fmt.Errorf("no positions")
+	}
 
-	switch stream.StreamType {
-	case cgf.STREAM_TYPE_INDICES:
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstIndex))
-		switch stream.ElementSize {
-		case 2:
-			// indices := make([]uint16, subset.NumIndices)
-			// for i := range indices {
-			// 	indices[i] = r.MustReadUint16() - uint16(subset.FirstVertex)
-			// }
+	g = &meshGeometry{
+		attributes:    gltf.PrimitiveAttributes{},
+		vertexCount:   positions.count,
+		subsetIndices: map[int]int{},
+	}
+	n := g.vertexCount
+	// streams with fewer elements than positions are dropped
+	usable := func(s cgfStream, ok bool) bool {
+		if ok && s.count < n {
+			slog.Warn("stream has fewer elements than positions", "file", cgfile.Source, "count", s.count, "vertices", n)
+			return false
+		}
+		return ok
+	}
 
-			// Web GPU needs 4 byte alignment. We fix that by using 32 bit indices
-			indices := make([]uint32, subset.NumIndices)
-			for i := range indices {
-				indices[i] = uint32(r.MustReadUint16() - uint16(subset.FirstVertex))
-			}
-			out.Indices = gltf.Index(modeler.WriteIndices(doc, indices))
-		case 4:
-			indices := make([]uint32, subset.NumIndices)
-			for i := range indices {
-				indices[i] = r.MustReadUint32() - uint32(subset.FirstVertex)
-			}
-			out.Indices = gltf.Index(modeler.WriteIndices(doc, indices))
-		default:
-			slog.Warn("Unsupported index size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_POSITIONS:
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		switch stream.ElementSize {
-		case 12:
-			vertices := make([][3]float32, subset.NumVertices)
-			for i := range vertices {
-				vertices[i] = base.Vec3([3]float32{
-					r.MustReadFloat32(),
-					r.MustReadFloat32(),
-					r.MustReadFloat32(),
-				})
-			}
-			out.Attributes[gltf.POSITION] = modeler.WritePosition(doc, vertices)
-		case 8:
-			vertices := make([][3]float32, subset.NumVertices)
-			for i := range subset.NumVertices {
-				vertices[i] = base.Vec3([3]float32{
-					float16.Float16(r.MustReadUint16()).Float32(),
-					float16.Float16(r.MustReadUint16()).Float32(),
-					float16.Float16(r.MustReadUint16()).Float32(),
-				})
-				r.SeekRelative(2)
-			}
-			out.Attributes[gltf.POSITION] = modeler.WritePosition(doc, vertices)
-		default:
-			slog.Warn("Unsupported position size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_NORMALS:
-		if simplify {
-			return
-		}
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		switch stream.ElementSize {
-		case 12:
-			vertices := make([][3]float32, subset.NumVertices)
-			for i := range subset.NumVertices {
-				vertices[i] = base.Vec3([3]float32{
-					r.MustReadFloat32(),
-					r.MustReadFloat32(),
-					r.MustReadFloat32(),
-				})
-			}
+	texcoordSets := findCgfStreams(cgfile, heap, chunk, cgf.STREAM_TYPE_TEXCOORDS)
+	colors, hasColors := find(cgf.STREAM_TYPE_COLORS)
+	hasColors = usable(colors, hasColors) && !simplify
+	colors2, hasColors2 := find(cgf.STREAM_TYPE_COLORS2)
+	hasColors2 = usable(colors2, hasColors2) && !simplify
+	normals, hasNormals := find(cgf.STREAM_TYPE_NORMALS)
+	hasNormals = usable(normals, hasNormals) && !simplify
+	tangents, hasTangents := find(cgf.STREAM_TYPE_TANGENTS)
+	hasTangents = usable(tangents, hasTangents) && !simplify
+	qtangents, hasQTangents := find(cgf.STREAM_TYPE_QTANGENTS)
+	hasQTangents = usable(qtangents, hasQTangents) && !simplify
+	bones, hasBones := find(cgf.STREAM_TYPE_BONEMAPPING)
+	hasBones = usable(bones, hasBones)
 
-			out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, vertices)
-		case 8:
-			r := buf.NewReaderLE(stream.Data)
-			r.SeekRelative(8 * int(subset.FirstVertex))
-			vertices := make([][3]float32, subset.NumVertices)
-			for i := range subset.NumVertices {
-				vertices[i] = base.Vec3([3]float32{
-					float16.Float16(r.MustReadUint16()).Float32(),
-					float16.Float16(r.MustReadUint16()).Float32(),
-					float16.Float16(r.MustReadUint16()).Float32(),
-				})
-				r.SeekRelative(2)
-			}
+	// one reservation for all views of this mesh
+	doc.reserveBuffer(len(indices.data) + n*(24+28+16+8) + 64)
 
-			out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, vertices)
-		default:
-			slog.Warn("Unsupported normal size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_TANGENTS:
-		if simplify {
-			return
-		}
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		switch stream.ElementSize {
-		case 16:
-			tangents := make([][4]float32, subset.NumVertices)
-			normals := make([][3]float32, subset.NumVertices)
-			for i := range subset.NumVertices {
-				t := base.Quat([4]float32{
-					float32(r.MustReadInt16()) / 32767.0,
-					float32(r.MustReadInt16()) / 32767.0,
-					float32(r.MustReadInt16()) / 32767.0,
-					float32(r.MustReadInt16()) / 32767.0,
-				})
-				b := base.Quat([4]float32{
-					float32(r.MustReadInt16()) / 32767.0,
-					float32(r.MustReadInt16()) / 32767.0,
-					float32(r.MustReadInt16()) / 32767.0,
-					float32(r.MustReadInt16()) / 32767.0,
-				})
-				tangents[i] = t
-				normals[i] = [3]float32{
-					(t[1]*b[2] - t[2]*b[1]) * t[3],
-					(t[2]*b[0] - t[0]*b[2]) * t[3],
-					(t[0]*b[1] - t[1]*b[0]) * t[3],
-				}
-			}
-			out.Attributes[gltf.TANGENT] = modeler.WriteTangent(doc, tangents)
-			out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
-		default:
-			slog.Warn("Unsupported tangent size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_TEXCOORDS:
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		switch stream.ElementSize {
-		case 8:
-			coords := make([][2]float32, subset.NumVertices)
-			for i := range subset.NumVertices {
-				coords[i] = [2]float32{
-					r.MustReadFloat32(),
-					r.MustReadFloat32(),
-				}
-			}
-			out.Attributes[gltf.TEXCOORD_0] = modeler.WriteTextureCoord(doc, coords)
-		default:
-			slog.Warn("Unsupported texcoord size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_COLORS:
-		if simplify {
-			return
-		}
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		switch stream.ElementSize {
-		case 4:
-			data := make([][4]uint8, subset.NumVertices)
-			for i := range subset.NumVertices {
-				data[i] = [4]uint8{
-					uint8(r.MustReadByte()),
-					uint8(r.MustReadByte()),
-					uint8(r.MustReadByte()),
-					uint8(r.MustReadByte()),
-				}
-			}
-			out.Attributes[gltf.COLOR_0] = modeler.WriteColor(doc, data)
-		default:
-			slog.Warn("Unsupported color size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_COLORS2:
-		if simplify {
-			return
-		}
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		switch stream.ElementSize {
-		case 4:
-			data := make([][4]uint8, subset.NumVertices)
-			for i := range subset.NumVertices {
-				data[i] = [4]uint8{
-					uint8(r.MustReadByte()),
-					uint8(r.MustReadByte()),
-					uint8(r.MustReadByte()),
-					uint8(r.MustReadByte()),
-				}
-			}
-			out.Attributes["COLOR_1"] = modeler.WriteColor(doc, data)
-		default:
-			slog.Warn("Unsupported color size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_BONEMAPPING:
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		switch stream.ElementSize {
-		case 8:
-			joints := make([][4]uint8, subset.NumVertices)
-			weights := make([][4]uint8, subset.NumVertices)
-			for i := range subset.NumVertices {
-				joints[i] = [4]uint8{
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-				}
-				weights[i] = [4]uint8{
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-				}
-			}
-			out.Attributes["JOINTS_0"] = modeler.WriteJoints(doc, joints)
-			out.Attributes["WEIGHTS_0"] = modeler.WriteWeights(doc, weights)
-		case 12:
-			joints := make([][4]uint16, subset.NumVertices)
-			weights := make([][4]uint8, subset.NumVertices)
-			for i := range subset.NumVertices {
-				joints[i] = [4]uint16{
-					r.MustReadUint16(),
-					r.MustReadUint16(),
-					r.MustReadUint16(),
-					r.MustReadUint16(),
-				}
-				weights[i] = [4]uint8{
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-					r.MustReadUint8(),
-				}
-			}
-			out.Attributes["JOINTS_0"] = modeler.WriteJoints(doc, joints)
-			out.Attributes["WEIGHTS_0"] = modeler.WriteWeights(doc, weights)
-		default:
-			slog.Warn("Unsupported bone size", "size", stream.ElementSize)
-		}
-	case cgf.STREAM_TYPE_QTANGENTS:
-		if simplify {
-			return
-		}
-		r := buf.NewReaderLE(stream.Data)
-		r.SeekAbsolute(int(stream.ElementSize) * int(subset.FirstVertex))
-		normals := make([][3]float32, subset.NumVertices)
-		tangents := make([][4]float32, subset.NumVertices)
-		switch stream.ElementSize {
-		case 8:
-			//factor := float32(1.0 / 1023.0)
-			factor := float32(1.0 / 32767.0)
-
-			for i := range subset.NumVertices {
-				// decode quaternion
-				x := float32(r.MustReadInt16()) * factor
-				y := float32(r.MustReadInt16()) * factor
-				z := float32(r.MustReadInt16()) * factor
-				w := float32(r.MustReadInt16()) * factor
-
-				// normalize quaternion
-				length := gomath.Sqrt(float64(x*x + y*y + z*z + w*w))
-				x /= float32(length)
-				y /= float32(length)
-				z /= float32(length)
-				w /= float32(length)
-
-				// convert quaternion to matrix
-				m4 := mat4.FromQuatXYZW(x, y, z, w)
-
-				tangent := base.Vec4([4]float32{
-					m4[0],
-					m4[1],
-					m4[2],
-					1.0,
-				})
-				if w < 0 {
-					tangent[3] = -1.0
-				}
-				tangents[i] = tangent
-
-				normal := base.Vec3([3]float32{
-					m4[8],
-					m4[9],
-					m4[10],
-				})
-				if w < 0 {
-					normal[0] = -normal[0]
-					normal[1] = -normal[1]
-					normal[2] = -normal[2]
-				}
-				normals[i] = normal
-			}
-		}
-		if _, ok := out.Attributes[gltf.NORMAL]; !ok {
-			out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
-		}
-		// if _, ok := out.Attributes[gltf.TANGENT]; !ok {
-		// 	out.Attributes[gltf.TANGENT] = modeler.WriteTangent(doc, tangents)
-		// }
+	// indices: raw copy, subsets reference ranges of it
+	switch indices.stride {
+	case 2:
+		g.indexType, g.indexSize = gltf.ComponentUshort, 2
+	case 4:
+		g.indexType, g.indexSize = gltf.ComponentUint, 4
 	default:
-		slog.Debug("unknown", "size", stream.ElementSize, "firstIndex", subset.FirstIndex, "numIndices", subset.NumIndices)
-		slog.Warn("Unsupported stream type", "type", stream.StreamType)
+		return nil, fmt.Errorf("unsupported index size %d", indices.stride)
+	}
+	g.indexCount = indices.count
+	view, dst := doc.appendBufferView(indices.count*indices.stride, 0, gltf.TargetElementArrayBuffer)
+	copy(dst, indices.data)
+	g.indexView = view
+
+	// a skin's vertices are relative to its mesh offset, a glTF skinned mesh ignores its node transform
+	var offset [3]float32
+	if hasBones {
+		offset = skinMeshOffset(cgfile, chunk.Id)
+	}
+	if !positions.inline {
+		// heap: interleaved position, color and texcoord (P3S_C4B_T2S 16 B or P3F_C4B_T2F 24 B)
+		if err := doc.writeHeapVertices(g, positions, base, offset, !simplify); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := doc.writePositions(g, positions, base, offset); err != nil {
+			return nil, err
+		}
+		if hasColors {
+			doc.writeColors(g, colors, gltf.COLOR_0)
+		}
+	}
+	// texcoord sets, set 0 of the heap layout is part of the interleaved vertex stream
+	for set, s := range texcoordSets {
+		if set > 1 || (set == 0 && s.id == positions.id && !positions.inline) || !usable(s, true) {
+			continue
+		}
+		doc.writeTexcoords(g, s, fmt.Sprintf("TEXCOORD_%d", set))
+	}
+	if hasColors2 {
+		doc.writeColors(g, colors2, "COLOR_1")
+	}
+	// normals like the engine shades: from the tangent frame, the normal stream (old inline format) only without one
+	switch {
+	case hasTangents:
+		doc.writeTangentFrame(g, tangents, base, quantize)
+	case hasNormals:
+		doc.writeNormals(g, normals, base, quantize)
+	case hasQTangents:
+		doc.writeQTangentFrame(g, qtangents, base, quantize)
+	}
+	if hasBones {
+		doc.writeBoneMapping(g, bones)
+	}
+	if quantize && (hasNormals || hasTangents || hasQTangents) {
+		doc.ExtensionsUsed = utils.AppendUniq(doc.ExtensionsUsed, KHR_mesh_quantization)
+		doc.ExtensionsRequired = utils.AppendUniq(doc.ExtensionsRequired, KHR_mesh_quantization)
+	}
+
+	doc.geometries[key] = g
+	return g, nil
+}
+
+// writeHeapVertices converts the interleaved heap stream into one interleaved view:
+// position f32x3 @0 (plus offset, in game axes), texcoord f32x2 @12, color rgba8 @20 (optional)
+func (doc *Document) writeHeapVertices(g *meshGeometry, s cgfStream, base math.Base, offset [3]float32, withColor bool) error {
+	if s.stride != 16 && s.stride != 24 {
+		return fmt.Errorf("unsupported position stride %d", s.stride)
+	}
+	stride := 20
+	if withColor {
+		stride = 24
+	}
+	n := g.vertexCount
+	view, dst := doc.appendBufferView(n*stride, stride, gltf.TargetArrayBuffer)
+	bounds := minMax{}
+	for i := range n {
+		src := s.data[i*s.stride:]
+		out := dst[i*stride:]
+		var p [3]float32
+		var color []byte
+		if s.stride == 16 {
+			p = [3]float32{readF16(src[0:]), readF16(src[2:]), readF16(src[4:])}
+			color = src[8:12]
+			putF32(out[12:], finiteOr0(readF16(src[12:])))
+			putF32(out[16:], finiteOr0(readF16(src[14:])))
+		} else {
+			p = [3]float32{readF32(src[0:]), readF32(src[4:]), readF32(src[8:])}
+			color = src[12:16]
+			putF32(out[12:], finiteOr0(readF32(src[16:])))
+			putF32(out[16:], finiteOr0(readF32(src[20:])))
+		}
+		p = base.Vec3([3]float32{p[0] + offset[0], p[1] + offset[1], p[2] + offset[2]})
+		bounds.add(p)
+		putVec3(out, p)
+		if withColor {
+			putBGRA(out[20:], color)
+		}
+	}
+	pos := doc.appendAccessor(view, 0, n, gltf.ComponentFloat, gltf.AccessorVec3, false)
+	bounds.apply(doc.Accessors[pos])
+	g.attributes[gltf.POSITION] = pos
+	g.attributes[gltf.TEXCOORD_0] = doc.appendAccessor(view, 12, n, gltf.ComponentFloat, gltf.AccessorVec2, false)
+	if withColor {
+		g.attributes[gltf.COLOR_0] = doc.appendAccessor(view, 20, n, gltf.ComponentUbyte, gltf.AccessorVec4, true)
+	}
+	return nil
+}
+
+// writePositions converts an inline position stream (f32x3 or f16x4) to f32x3, plus offset (in game axes)
+func (doc *Document) writePositions(g *meshGeometry, s cgfStream, base math.Base, offset [3]float32) error {
+	if s.stride != 12 && s.stride != 8 {
+		return fmt.Errorf("unsupported position size %d", s.stride)
+	}
+	n := g.vertexCount
+	view, dst := doc.appendBufferView(n*12, 0, gltf.TargetArrayBuffer)
+	bounds := minMax{}
+	for i := range n {
+		src := s.data[i*s.stride:]
+		var p [3]float32
+		if s.stride == 12 {
+			p = [3]float32{readF32(src[0:]), readF32(src[4:]), readF32(src[8:])}
+		} else {
+			p = [3]float32{readF16(src[0:]), readF16(src[2:]), readF16(src[4:])}
+		}
+		p = base.Vec3([3]float32{p[0] + offset[0], p[1] + offset[1], p[2] + offset[2]})
+		bounds.add(p)
+		putVec3(dst[i*12:], p)
+	}
+	pos := doc.appendAccessor(view, 0, n, gltf.ComponentFloat, gltf.AccessorVec3, false)
+	bounds.apply(doc.Accessors[pos])
+	g.attributes[gltf.POSITION] = pos
+	return nil
+}
+
+// writeTexcoords copies f32x2 texcoords as they are, f16x2 are converted
+func (doc *Document) writeTexcoords(g *meshGeometry, s cgfStream, attribute string) {
+	n := g.vertexCount
+	switch s.stride {
+	case 8:
+		view, dst := doc.appendBufferView(n*8, 0, gltf.TargetArrayBuffer)
+		copy(dst, s.data[:n*8])
+		// raw copy, then a read only check for non-finite values (rare, fixed in place)
+		for i := 0; i < n*2; i++ {
+			if v := readF32(dst[i*4:]); finiteOr0(v) != v {
+				putF32(dst[i*4:], 0)
+			}
+		}
+		g.attributes[attribute] = doc.appendAccessor(view, 0, n, gltf.ComponentFloat, gltf.AccessorVec2, false)
+	case 4:
+		view, dst := doc.appendBufferView(n*8, 0, gltf.TargetArrayBuffer)
+		for i := range n {
+			putF32(dst[i*8:], finiteOr0(readF16(s.data[i*4:])))
+			putF32(dst[i*8+4:], finiteOr0(readF16(s.data[i*4+2:])))
+		}
+		g.attributes[attribute] = doc.appendAccessor(view, 0, n, gltf.ComponentFloat, gltf.AccessorVec2, false)
+	default:
+		slog.Warn("unsupported texcoord size", "size", s.stride)
 	}
 }
 
-func convertPrimitiveRef(doc *gltf.Document, subset cgf.MeshSubset, streamType cgf.DataStreamType, ref cgf.ChunkDataRef, heap []byte, out *gltf.Primitive, simplify bool, base math.Base) {
-	switch streamType {
-	case cgf.STREAM_TYPE_INDICES:
-		r := buf.NewReaderLE(heap)
-		r.SeekAbsolute(int(ref.Offset))
-		r.SeekRelative(int(ref.Stride) * int(subset.FirstIndex))
-		switch ref.Stride {
-		case 2:
-			// indices := make([]uint16, subset.NumIndices)
-			// for i := range indices {
-			// 	indices[i] = r.MustReadUint16() - uint16(subset.FirstVertex)
-			// }
-
-			indices := make([]uint32, subset.NumIndices)
-			for i := range indices {
-				indices[i] = uint32(r.MustReadUint16() - uint16(subset.FirstVertex))
-			}
-			out.Indices = gltf.Index(modeler.WriteIndices(doc, indices))
-		case 4:
-			indices := make([]uint32, subset.NumIndices)
-			for i := range indices {
-				indices[i] = r.MustReadUint32() - uint32(subset.FirstVertex)
-			}
-			out.Indices = gltf.Index(modeler.WriteIndices(doc, indices))
-		}
-
-	case cgf.STREAM_TYPE_POSITIONS:
-		r := buf.NewReaderLE(heap)
-		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
-		vertices := make([][3]float32, subset.NumVertices)
-
-		switch ref.Stride {
-		case 16:
-			{
-				for i := range subset.NumVertices {
-					vertices[i] = base.Vec3([3]float32{
-						float16.Float16(r.MustReadUint16()).Float32(), // 2 byte X
-						float16.Float16(r.MustReadUint16()).Float32(), // 2 byte Y
-						float16.Float16(r.MustReadUint16()).Float32(), // 2 byte Z
-					})
-					r.SeekRelative(2) // unused
-					r.SeekRelative(4) // color
-					r.SeekRelative(4) // texture
-				}
-			}
-		case 24:
-			{
-				for i := range subset.NumVertices {
-					vertices[i] = base.Vec3([3]float32{
-						r.MustReadFloat32(), // 4 byte X
-						r.MustReadFloat32(), // 4 byte Y
-						r.MustReadFloat32(), // 4 byte Z
-					})
-					r.SeekRelative(4) // color
-					r.SeekRelative(8) // texture
-				}
-			}
-		default:
-			{
-				slog.Warn("Unsupported position stride", "stride", ref.Stride, "ref", ref)
-				return
-			}
-		}
-		out.Attributes[gltf.POSITION] = modeler.WritePosition(doc, vertices)
-	case cgf.STREAM_TYPE_TEXCOORDS:
-		r := buf.NewReaderLE(heap)
-		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
-		coords := make([][2]float32, subset.NumVertices)
-
-		switch ref.Stride {
-		case 16:
-			{
-				for i := range subset.NumVertices {
-					r.SeekRelative(8) // position
-					r.SeekRelative(4) // color
-					coords[i] = [2]float32{
-						float16.Float16(r.MustReadUint16()).Float32(),
-						float16.Float16(r.MustReadUint16()).Float32(),
-					}
-				}
-			}
-		case 24:
-			{
-				for i := range subset.NumVertices {
-					r.SeekRelative(12) // position
-					r.SeekRelative(4)  // color
-					coords[i] = [2]float32{
-						r.MustReadFloat32(),
-						r.MustReadFloat32(),
-					}
-				}
-			}
-		default:
-			{
-				slog.Warn("Unsupported texture stride", "stride", ref.Stride, "ref", ref)
-				return
-			}
-		}
-
-		out.Attributes[gltf.TEXCOORD_0] = modeler.WriteTextureCoord(doc, coords)
-
-	case cgf.STREAM_TYPE_COLORS:
-		if simplify {
-			return
-		}
-		r := buf.NewReaderLE(heap)
-		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
-		data := make([][4]uint8, subset.NumVertices)
-
-		switch ref.Stride {
-		case 16:
-			{
-				for i := range subset.NumVertices {
-					r.SeekRelative(8) // position
-					data[i] = [4]uint8{
-						uint8(r.MustReadByte()),
-						uint8(r.MustReadByte()),
-						uint8(r.MustReadByte()),
-						uint8(r.MustReadByte()),
-					}
-					r.SeekRelative(4) // texture
-				}
-			}
-		case 24:
-			{
-				for i := range subset.NumVertices {
-					r.SeekRelative(12) // position
-					data[i] = [4]uint8{
-						uint8(r.MustReadByte()),
-						uint8(r.MustReadByte()),
-						uint8(r.MustReadByte()),
-						uint8(r.MustReadByte()),
-					}
-					r.SeekRelative(8) // texture
-				}
-			}
-		default:
-			{
-				slog.Warn("Unsupported color stride", "stride", ref.Stride, "ref", ref)
-				return
-			}
-		}
-		out.Attributes[gltf.COLOR_0] = modeler.WriteColor(doc, data)
-
-	case cgf.STREAM_TYPE_TANGENTS:
-		if simplify {
-			return
-		}
-		if ref.Stride != 16 {
-			slog.Warn("Unsupported tangent stride", "stride", ref.Stride, "ref", ref)
-			return
-		}
-		r := buf.NewReaderLE(heap)
-		r.SeekAbsolute(int(ref.Offset) + int(ref.Stride)*int(subset.FirstVertex))
-
-		normals := make([][3]float32, subset.NumVertices)
-		tangents := make([][4]float32, subset.NumVertices)
-
-		factor := float32(1.0 / 32767.0)
-
-		for i := range subset.NumVertices {
-
-			// Read normal
-			tx := float32(r.MustReadInt16()) * factor
-			ty := float32(r.MustReadInt16()) * factor
-			tz := float32(r.MustReadInt16()) * factor
-			tw := float32(r.MustReadInt16()) * factor
-
-			// Read tangent
-			bx := float32(r.MustReadInt16()) * factor
-			by := float32(r.MustReadInt16()) * factor
-			bz := float32(r.MustReadInt16()) * factor
-			r.MustReadInt16()
-
-			tangent := base.Vec3([3]float32{tx, ty, tz})
-			bitangent := base.Vec3([3]float32{bx, by, bz})
-
-			normals[i] = math.Normalize(math.Cross(tangent, bitangent))
-			if tw < 0 {
-				normals[i][0] = -normals[i][0]
-				normals[i][1] = -normals[i][1]
-				normals[i][2] = -normals[i][2]
-			}
-			tangents[i][0] = tangent[0]
-			tangents[i][1] = tangent[1]
-			tangents[i][2] = tangent[2]
-			tangents[i][3] = tw
-		}
-
-		out.Attributes[gltf.NORMAL] = modeler.WriteNormal(doc, normals)
-		out.Attributes[gltf.TANGENT] = modeler.WriteTangent(doc, tangents)
+// writeColors swizzles BGRA vertex colors to RGBA (glTF has no bgra)
+func (doc *Document) writeColors(g *meshGeometry, s cgfStream, attribute string) {
+	if s.stride != 4 {
+		slog.Warn("unsupported color size", "size", s.stride)
+		return
 	}
+	n := g.vertexCount
+	view, dst := doc.appendBufferView(n*4, 0, gltf.TargetArrayBuffer)
+	for i := range n {
+		putBGRA(dst[i*4:], s.data[i*4:])
+	}
+	g.attributes[attribute] = doc.appendAccessor(view, 0, n, gltf.ComponentUbyte, gltf.AccessorVec4, true)
+}
 
+var (
+	cryUp      = [3]float32{0, 0, 1}
+	cryForward = [3]float32{1, 0, 0}
+)
+
+// writeNormals converts an f32x3 normal stream (inline format), normalized
+func (doc *Document) writeNormals(g *meshGeometry, s cgfStream, base math.Base, quantize bool) {
+	if s.stride != 12 {
+		slog.Warn("unsupported normal size", "size", s.stride)
+		return
+	}
+	n := g.vertexCount
+	stride := directionStride(quantize)
+	view, dst := doc.appendBufferView(n*stride, stride, gltf.TargetArrayBuffer)
+	for i := range n {
+		src := s.data[i*12:]
+		v := unitOr([3]float32{readF32(src[0:]), readF32(src[4:]), readF32(src[8:])}, cryUp)
+		writeDirection(dst[i*stride:], base.Vec3(v), quantize)
+	}
+	g.attributes[gltf.NORMAL] = doc.appendDirectionAccessor(view, 0, n, quantize)
+}
+
+// writeTangentFrame converts the tangent stream (tangent + bitangent as snorm16x4, w = sign) into TANGENT and,
+// without a normal stream, NORMAL = normalize(cross(t, b)) * sign. Degenerate frames get a perpendicular fallback.
+//
+// Layout: float [normal f32x3 @0, tangent f32x4 @12] stride 28, quantized [normal snorm16x3 @0, tangent snorm16x4 @8] stride 16.
+func (doc *Document) writeTangentFrame(g *meshGeometry, s cgfStream, base math.Base, quantize bool) {
+	if s.stride != 16 {
+		slog.Warn("unsupported tangent size", "size", s.stride)
+		return
+	}
+	_, hasNormal := g.attributes[gltf.NORMAL]
+	withNormal := !hasNormal
+	n := g.vertexCount
+	normalSize, tangentSize := 12, 16
+	if quantize {
+		normalSize, tangentSize = 8, 8
+	}
+	stride := tangentSize
+	tangentOffset := 0
+	if withNormal {
+		stride += normalSize
+		tangentOffset = normalSize
+	}
+	view, dst := doc.appendBufferView(n*stride, stride, gltf.TargetArrayBuffer)
+	for i := range n {
+		src := s.data[i*16:]
+		t := [3]float32{readSnorm16(src[0:]), readSnorm16(src[2:]), readSnorm16(src[4:])}
+		sign := float32(1)
+		if readSnorm16(src[6:]) < 0 {
+			sign = -1
+		}
+		tu := unitOr(t, cryForward)
+		out := dst[i*stride:]
+		if withNormal {
+			b := [3]float32{readSnorm16(src[8:]), readSnorm16(src[10:]), readSnorm16(src[12:])}
+			normal, ok := unit(vecScale(vecCross(t, b), sign))
+			if !ok {
+				normal = perpendicular(tu)
+			}
+			writeDirection(out, base.Vec3(normal), quantize)
+		}
+		tb := base.Vec3(tu)
+		tangent := [4]float32{tb[0], tb[1], tb[2], sign}
+		if quantize {
+			for c := range 4 {
+				putSnorm16(out[tangentOffset+c*2:], tangent[c])
+			}
+		} else {
+			putVec4(out[tangentOffset:], tangent)
+		}
+	}
+	if withNormal {
+		g.attributes[gltf.NORMAL] = doc.appendDirectionAccessor(view, 0, n, quantize)
+	}
+	if quantize {
+		g.attributes[gltf.TANGENT] = doc.appendAccessor(view, tangentOffset, n, gltf.ComponentShort, gltf.AccessorVec4, true)
+	} else {
+		g.attributes[gltf.TANGENT] = doc.appendAccessor(view, tangentOffset, n, gltf.ComponentFloat, gltf.AccessorVec4, false)
+	}
+}
+
+// writeQTangentFrame converts the qtangent stream (quaternion snorm16x4) into NORMAL and TANGENT, like Lumberyard
+// QTangent::ToTangentBitangentReflection + SPipQTangents::GetN: tangent = column 0, bitangent = column 1,
+// reflection = sign(w), normal = column 2 · reflection. That is the frame of the tangent stream (writeTangentFrame:
+// N = cross(t, b) · sign, TANGENT.w = sign), so glTF's bitangent cross(N, T) · w is the engine's column 1.
+// Without TANGENT the viewer's normal mapping had no tangent frame (NaN normals in the GBuffer).
+//
+// Layout like writeTangentFrame with a normal: float [normal f32x3 @0, tangent f32x4 @12] stride 28,
+// quantized [normal snorm16x3 @0, tangent snorm16x4 @8] stride 16.
+func (doc *Document) writeQTangentFrame(g *meshGeometry, s cgfStream, base math.Base, quantize bool) {
+	if s.stride != 8 {
+		slog.Warn("unsupported qtangent size", "size", s.stride)
+		return
+	}
+	n := g.vertexCount
+	normalSize, tangentSize := 12, 16
+	if quantize {
+		normalSize, tangentSize = 8, 8
+	}
+	stride := normalSize + tangentSize
+	view, dst := doc.appendBufferView(n*stride, stride, gltf.TargetArrayBuffer)
+	for i := range n {
+		src := s.data[i*8:]
+		x, y, z, w := readSnorm16(src[0:]), readSnorm16(src[2:]), readSnorm16(src[4:]), readSnorm16(src[6:])
+		l := float32(gomath.Sqrt(float64(x*x + y*y + z*z + w*w)))
+		normal, tangent, sign := cryUp, cryForward, float32(1)
+		if l > 1e-6 {
+			x, y, z, w = x/l, y/l, z/l, w/l
+			if w < 0 {
+				sign = -1
+			}
+			normal = vecScale(unitOr([3]float32{2 * (x*z + y*w), 2 * (y*z - x*w), 1 - 2*(x*x+y*y)}, cryUp), sign)
+			tangent = unitOr([3]float32{1 - 2*(y*y+z*z), 2 * (x*y + z*w), 2 * (x*z - y*w)}, perpendicular(normal))
+		}
+		out := dst[i*stride:]
+		writeDirection(out, base.Vec3(normal), quantize)
+		tb := base.Vec3(tangent)
+		t4 := [4]float32{tb[0], tb[1], tb[2], sign}
+		if quantize {
+			for c := range 4 {
+				putSnorm16(out[normalSize+c*2:], t4[c])
+			}
+		} else {
+			putVec4(out[normalSize:], t4)
+		}
+	}
+	g.attributes[gltf.NORMAL] = doc.appendDirectionAccessor(view, 0, n, quantize)
+	if quantize {
+		g.attributes[gltf.TANGENT] = doc.appendAccessor(view, normalSize, n, gltf.ComponentShort, gltf.AccessorVec4, true)
+	} else {
+		g.attributes[gltf.TANGENT] = doc.appendAccessor(view, normalSize, n, gltf.ComponentFloat, gltf.AccessorVec4, false)
+	}
+}
+
+// writeBoneMapping copies the bone mapping as it is: joints u8x4 + weights u8x4 (8 B) or joints u16x4 + weights u8x4 (12 B)
+func (doc *Document) writeBoneMapping(g *meshGeometry, s cgfStream) {
+	n := g.vertexCount
+	var jointType gltf.ComponentType
+	var weightOffset int
+	switch s.stride {
+	case 8:
+		jointType, weightOffset = gltf.ComponentUbyte, 4
+	case 12:
+		jointType, weightOffset = gltf.ComponentUshort, 8
+	default:
+		slog.Warn("unsupported bone mapping size", "size", s.stride)
+		return
+	}
+	view, dst := doc.appendBufferView(n*s.stride, s.stride, gltf.TargetArrayBuffer)
+	copy(dst, s.data[:n*s.stride])
+	g.attributes["JOINTS_0"] = doc.appendAccessor(view, 0, n, jointType, gltf.AccessorVec4, false)
+	g.attributes["WEIGHTS_0"] = doc.appendAccessor(view, weightOffset, n, gltf.ComponentUbyte, gltf.AccessorVec4, true)
+}
+
+// directionStride is the byte stride of a NORMAL view: f32x3, or snorm16x3 padded to 4 byte alignment
+func directionStride(quantize bool) int {
+	if quantize {
+		return 8
+	}
+	return 12
+}
+
+func writeDirection(out []byte, v [3]float32, quantize bool) {
+	if quantize {
+		putSnorm16(out[0:], v[0])
+		putSnorm16(out[2:], v[1])
+		putSnorm16(out[4:], v[2])
+		out[6], out[7] = 0, 0
+		return
+	}
+	putVec3(out, v)
+}
+
+func (doc *Document) appendDirectionAccessor(view, offset, count int, quantize bool) int {
+	if quantize {
+		return doc.appendAccessor(view, offset, count, gltf.ComponentShort, gltf.AccessorVec3, true)
+	}
+	return doc.appendAccessor(view, offset, count, gltf.ComponentFloat, gltf.AccessorVec3, false)
 }

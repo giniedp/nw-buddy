@@ -1,0 +1,25 @@
+/* a family of the Data tool: bar, then the grid and the row (FamilyView.tsx) */
+.nw-data-family {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.nw-data-groups {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.nw-cell-ref {
+  color: var(--nw-accent);
+}
+
+/* grid and row panel: the split pane sizes the row panel, the gutter draws the border */
+.nw-data-split > .twk-split-gutter {
+  border-left: 1px solid var(--nw-line);
+}
+.nw-data-split .nw-data-row {
+  flex: 1;
+  border-left: none;
+}

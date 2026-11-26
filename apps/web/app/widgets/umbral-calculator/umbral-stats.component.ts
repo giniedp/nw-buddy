@@ -6,11 +6,10 @@ import { IconsModule } from '~/ui/icons'
   selector: 'nwb-umbral-stats',
   templateUrl: './umbral-stats.component.html',
   host: {
-    class: 'stats'
+    class: 'stats',
   },
-  imports: [IconsModule]
+  imports: [IconsModule],
 })
 export class UmbralStatsComponent {
   protected store = inject(UmbralCalculatorStore)
-
 }

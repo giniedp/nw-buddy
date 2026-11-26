@@ -18,7 +18,7 @@ export const GearsetsListPageStore = signalStore(
     userId: 'local',
     activeTags: [],
     search: '',
-    tagsOperator: 'OR'
+    tagsOperator: 'OR',
   }),
   withProps(({ userId }) => {
     const service = inject(GearsetsService)
@@ -54,7 +54,7 @@ export const GearsetsListPageStore = signalStore(
       },
       toggleTagsOperator: () => {
         patchState(state, {
-          tagsOperator: state.tagsOperator() === 'OR' ? 'AND' : 'OR'
+          tagsOperator: state.tagsOperator() === 'OR' ? 'AND' : 'OR',
         })
       },
     }

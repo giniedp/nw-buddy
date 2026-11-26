@@ -1,0 +1,2360 @@
+{
+ "uniform": [
+  {
+   "name": "objects/crafting/props/storage/crates/oldcrate/crate_spec.dds",
+   "slot": "specularColor",
+   "mean": [
+    46,
+    47,
+    46,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/shopwares/shelves/textures/jav_prp_shelves_t2_ddna_roughness_d2f6d0c8",
+   "slot": "metallicRoughness",
+   "mean": [
+    0,
+    251,
+    0,
+    0
+   ],
+   "size": [
+    512,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/decor/cloth/textures/jav_prp_clothdecor_a_ddna_roughness_70b8d542",
+   "slot": "metallicRoughness",
+   "mean": [
+    0,
+    253,
+    0,
+    0
+   ],
+   "size": [
+    2048,
+    1024
+   ]
+  },
+  {
+   "name": "objects/landmarks/ships/galleon/textures/galleon_rope_ddna_roughness_250c5ac8",
+   "slot": "metallicRoughness",
+   "mean": [
+    0,
+    243,
+    0,
+    0
+   ],
+   "size": [
+    256,
+    128
+   ]
+  },
+  {
+   "name": "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_ddna_roughness_36807df4",
+   "slot": "metallicRoughness",
+   "mean": [
+    0,
+    240,
+    0,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "engineassets/texturemsg/replacemerelease.dds",
+   "slot": "normal+specularColor",
+   "mean": [
+    99,
+    101,
+    99,
+    255
+   ],
+   "size": [
+    32,
+    32
+   ]
+  },
+  {
+   "name": "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_spec.dds",
+   "slot": "specularColor",
+   "mean": [
+    41,
+    40,
+    41,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_ddna_roughness_1d795963",
+   "slot": "metallicRoughness",
+   "mean": [
+    0,
+    253,
+    0,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/decor/fishing/buoys/textures/jav_prp_woodenbuoys_spec.dds",
+   "slot": "specularColor",
+   "mean": [
+    41,
+    40,
+    41,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/furniture/beds/textures/jav_prp_bedding_t2_ddna_roughness_d35ef5b3",
+   "slot": "metallicRoughness",
+   "mean": [
+    0,
+    254,
+    0,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_spec.dds",
+   "slot": "specularColor",
+   "mean": [
+    41,
+    41,
+    41,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/vehicles/wheels/textures/jav_prp_wagonwheels_spec.dds",
+   "slot": "specularColor",
+   "mean": [
+    43,
+    42,
+    43,
+    0
+   ],
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  {
+   "name": "objects/crafting/props/lighting/candles/textures/jav_prp_candles_b_ddna_roughness_6e630338",
+   "slot": "metallicRoughness",
+   "mean": [
+    0,
+    248,
+    0,
+    0
+   ],
+   "size": [
+    512,
+    512
+   ]
+  },
+  {
+   "name": "textures/defaults/white.dds",
+   "slot": "baseColor",
+   "mean": [
+    255,
+    255,
+    255,
+    255
+   ],
+   "size": [
+    4,
+    4
+   ]
+  }
+ ],
+ "pairs": [
+  {
+   "a": "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_ddna_roughness_7764d76c",
+   "b": "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_ddna_roughness_7f3b48d9",
+   "slot": "metallicRoughness",
+   "coarse": 39.25636422207744,
+   "full": 39.06915856156351,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_spec.dds",
+   "b": "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_spec.dds",
+   "slot": "specularColor",
+   "coarse": 37.59758494410051,
+   "full": 35.760591811171224,
+   "size": "2048x2048 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_ddn.dds",
+   "b": "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_ddna.dds",
+   "slot": "normal",
+   "coarse": 46.476873443027024,
+   "full": 35.20984560620754,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_spec.dds",
+   "b": "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_spec.dds",
+   "slot": "specularColor",
+   "coarse": 32.06611478222294,
+   "full": 30.665730591960944,
+   "size": "2048x2048 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_spec.dds",
+   "b": "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_spec.dds",
+   "slot": "specularColor",
+   "coarse": 31.47862034818428,
+   "full": 30.3411350585612,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/housewares/paper/textures/jav_prp_paperset_a_ddna_roughness_bac1e382",
+   "b": "Objects\\Crafting\\Props\\Storage\\PaperParcels\\Textures/jav_prp_paperparcels_ddna_roughness_50fdb201",
+   "slot": "metallicRoughness",
+   "coarse": 31.73259863043388,
+   "full": 30.27626974853714,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_cannon_door_spec.dds",
+   "b": "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_spec.dds",
+   "slot": "specularColor",
+   "coarse": 30.653924723861365,
+   "full": 30.272922957829827,
+   "size": "512x512 2048x2048"
+  },
+  {
+   "a": "Objects\\Crafting\\Props\\Storage\\PaperParcels\\Textures/jav_prp_paperparcels_ddna_roughness_50fdb201",
+   "b": "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_ddna_roughness_c5d2e83d",
+   "slot": "metallicRoughness",
+   "coarse": 31.03224116216287,
+   "full": 30.195131702335768,
+   "size": "1024x1024 512x512"
+  },
+  {
+   "a": "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_spec.dds",
+   "b": "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_spec.dds",
+   "slot": "specularColor",
+   "coarse": 30.738309549441087,
+   "full": 29.938310856197052,
+   "size": "2048x2048 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_spec.dds",
+   "b": "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_spec.dds",
+   "slot": "specularColor",
+   "coarse": 30.435142794122623,
+   "full": 29.828878276228117,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_lattice_ddna_roughness_862de283",
+   "b": "objects/crafting/props/housewares/paper/textures/jav_prp_paperset_a_ddna_roughness_bac1e382",
+   "slot": "metallicRoughness",
+   "coarse": 31.144529650675562,
+   "full": 29.047275198767032,
+   "size": "512x512 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_ddna_roughness_c5d2e83d",
+   "b": "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_ddna_roughness_3c321203",
+   "slot": "metallicRoughness",
+   "coarse": 31.088195334741442,
+   "full": 29.01509312172909,
+   "size": "512x512 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_lattice_ddna_roughness_862de283",
+   "b": "Objects\\Crafting\\Props\\Storage\\PaperParcels\\Textures/jav_prp_paperparcels_ddna_roughness_50fdb201",
+   "slot": "metallicRoughness",
+   "coarse": 30.4638691825637,
+   "full": 28.98617107444313,
+   "size": "512x512 1024x1024"
+  },
+  {
+   "a": "Objects\\Crafting\\Props\\Storage\\PaperParcels\\Textures/jav_prp_paperparcels_ddna_roughness_50fdb201",
+   "b": "objects/crafting/props/props_dynasty/decor/textures/dynasty_prp_tentcloth_01_ddna_roughness_103fbe63",
+   "slot": "metallicRoughness",
+   "coarse": 30.447651627513103,
+   "full": 28.604958423616193,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/decor/cloth/textures/jav_prp_cloth_tattered_damned_d_ddna.dds",
+   "b": "objects/crafting/architecture/superfort/banner/textures/jav_guildlogo_cloth_b_ddna.dds",
+   "slot": "normal",
+   "coarse": 33.66695513838862,
+   "full": 28.454565043306882,
+   "size": "1024x2048 256x512"
+  },
+  {
+   "a": "objects/crafting/architecture/living_structures/cabin/textures/jav_struc_living_t2_wood_ddna_roughness_4dcc0ea7",
+   "b": "Objects\\Crafting\\Props\\Storage\\PaperParcels\\Textures/jav_prp_paperparcels_ddna_roughness_50fdb201",
+   "slot": "metallicRoughness",
+   "coarse": 31.751057099058624,
+   "full": 28.41851963923226,
+   "size": "2048x2048 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_lattice_ddna_roughness_862de283",
+   "b": "objects/crafting/props/furniture/seating/jav_prp_stool_wood_a/textures/jav_prp_stool_wood_a_ddna_roughness_9c367af5",
+   "slot": "metallicRoughness",
+   "coarse": 30.192873339851985,
+   "full": 27.857312547708016,
+   "size": "512x512 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/storage/buckets/textures/jav_prp_metal_bucket_ddna.dds",
+   "slot": "normal",
+   "coarse": 32.46085316035996,
+   "full": 26.924713767690506,
+   "size": "1024x1024 512x512"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna.dds",
+   "slot": "normal",
+   "coarse": 34.428999870762155,
+   "full": 26.842065678490094,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/architecture/living_structures/dynasty/textures/dynasty_env_trim_02_spec.dds",
+   "b": "objects/crafting/props/cages/hangingironcage/textures/jav_prp_hanging_iron_cage_spec.dds",
+   "slot": "specularColor",
+   "coarse": 30.83090180992606,
+   "full": 26.775811255047195,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_lattice_ddna_roughness_862de283",
+   "b": "objects/crafting/props/furniture/tables/stonemasontable/textures/jav_prp_stonemasontable_a_ddna_roughness_d5b12790",
+   "slot": "metallicRoughness",
+   "coarse": 30.262127902110233,
+   "full": 26.570550772715897,
+   "size": "512x512 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_nest_diff.dds",
+   "b": "objects/landmarks/ships/galleon/textures/galleon_exterior_planks_diff.dds",
+   "slot": "baseColor",
+   "coarse": 33.60810133521273,
+   "full": 26.480656395245017,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_ddna.dds",
+   "slot": "normal",
+   "coarse": 32.95953435538116,
+   "full": 26.2930709698508,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna.dds",
+   "b": "objects/crafting/props/storage/buckets/textures/jav_prp_metal_bucket_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.780614991271428,
+   "full": 26.17156694858164,
+   "size": "1024x1024 512x512"
+  },
+  {
+   "a": "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_ddna.dds",
+   "b": "objects/crafting/props/storage/buckets/textures/jav_prp_metal_bucket_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.46773555626848,
+   "full": 25.5011201156831,
+   "size": "1024x1024 512x512"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/themes/pirate/pirate_rumjug/textures/jav_prp_rumjug_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.164631382507018,
+   "full": 25.48998491963689,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna.dds",
+   "b": "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.991126422197457,
+   "full": 25.373090389467855,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.133021083906115,
+   "full": 25.112154056939005,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/architecture/ruins_structures/textures/jav_struc_ruins_rock_d_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.06449347606724,
+   "full": 24.256056139407328,
+   "size": "1024x1024 2048x2048"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.39263393480538,
+   "full": 23.816315502641714,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_mast_ddna.dds",
+   "b": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.825307062245017,
+   "full": 23.546242825195158,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.06444659758695,
+   "full": 23.510285631109454,
+   "size": "1024x1024 512x512"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_mast_ddna.dds",
+   "b": "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.426306367124695,
+   "full": 23.041372020085063,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_exterior_planks_ddna.dds",
+   "b": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.69865712245866,
+   "full": 22.913989469704582,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/storage/boxes/supplybox/texture/jav_prp_supplybbox_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.174561606224827,
+   "full": 22.904818265193214,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.198681503288284,
+   "full": 22.893289571497295,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/decor/fishing/buoys/textures/jav_prp_woodenbuoys_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.21383973648174,
+   "full": 22.662515578729504,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "b": "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_ddna.dds",
+   "slot": "normal",
+   "coarse": 32.915965433493085,
+   "full": 22.488476748862148,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_exterior_planks_ddna.dds",
+   "b": "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.109002186141247,
+   "full": 22.430723369951174,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_nest_ddna.dds",
+   "b": "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.056278351033008,
+   "full": 22.403826059691006,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_ddna.dds",
+   "b": "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.12747903606686,
+   "full": 22.090270020380885,
+   "size": "1024x1024 1024x1024"
+  },
+  {
+   "a": "objects/crafting/props/shopwares/shelves/textures/jav_prp_shelves_t2_ddna.dds",
+   "b": "objects/crafting/props/shopwares/shelves/textures/jav_prp_atlas_wd_mtl_rp_lthr_t2_b_ddna.dds",
+   "slot": "normal",
+   "coarse": 31.54403007531767,
+   "full": 22.06525782437994,
+   "size": "512x1024 512x1024"
+  },
+  {
+   "a": "objects/landmarks/ships/galleon/textures/galleon_exterior_planks_ddna.dds",
+   "b": "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_ddna.dds",
+   "slot": "normal",
+   "coarse": 30.221031236181283,
+   "full": 20.421578826317102,
+   "size": "1024x1024 1024x1024"
+  }
+ ],
+ "sizes": {
+  "objects/landmarks/ships/galleon/textures/galleon_anchor_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1046085,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_anchor_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2005117,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_anchor_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 159719,
+   "slot": "specularColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_anchor_ddna_roughness_d4b9f463": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 716617,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_anchor_amboc.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 485285,
+   "slot": "occlusion"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cannon_door_diff.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 291198,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cannon_door_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 506726,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cannon_door_spec.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 17637,
+   "slot": "specularColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cannon_door_ddna_roughness_61811031": {
+   "w": 512,
+   "h": 512,
+   "bytes": 188248,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_door_diff.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 272626,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_door_ddna.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 646028,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_door_spec.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 56277,
+   "slot": "specularColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_door_ddna_roughness_7a68666e": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 369924,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_lattice_diff.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 201613,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_lattice_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 412557,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_lattice_ddna_roughness_862de283": {
+   "w": 512,
+   "h": 512,
+   "bytes": 147933,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_nest_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 787903,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_nest_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1203534,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_nest_ddna_roughness_853d933c": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 852956,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_mast_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 979005,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_mast_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1271236,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_mast_ddna_roughness_76a076ba": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 944221,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_railings_diff.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 170297,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_railings_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 258556,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_railings_ddna_roughness_d595d068": {
+   "w": 512,
+   "h": 512,
+   "bytes": 213833,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_shroud_diff.dds": {
+   "w": 256,
+   "h": 256,
+   "bytes": 73811,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_shroud_ddna.dds": {
+   "w": 256,
+   "h": 256,
+   "bytes": 112647,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_shroud_spec.dds": {
+   "w": 256,
+   "h": 256,
+   "bytes": 6155,
+   "slot": "specularColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_shroud_ddna_roughness_c00499eb": {
+   "w": 256,
+   "h": 256,
+   "bytes": 54773,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_rope_diff.dds": {
+   "w": 256,
+   "h": 128,
+   "bytes": 47012,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_rope_ddna.dds": {
+   "w": 256,
+   "h": 128,
+   "bytes": 72112,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_rope_ddna_roughness_60c27bc8": {
+   "w": 256,
+   "h": 128,
+   "bytes": 23375,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cathead_diff.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 518116,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cathead_ddna.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 589347,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cathead_spec.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 42971,
+   "slot": "specularColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_cathead_ddna_roughness_68e7f127": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 470522,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_exterior_planks_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 510175,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_exterior_planks_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1079397,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_exterior_planks_ddna_roughness_127a27c1": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 837005,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_mast_basement_diff.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 177743,
+   "slot": "baseColor"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_mast_basement_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 370200,
+   "slot": "normal"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_mast_basement_ddna_roughness_2c6ab58c": {
+   "w": 512,
+   "h": 512,
+   "bytes": 204017,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/shopwares/shoptools/textures/jav_prp_shopbuckets_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 964292,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/shopwares/shoptools/textures/jav_prp_shopbuckets_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1220323,
+   "slot": "normal"
+  },
+  "objects/crafting/props/shopwares/shoptools/textures/jav_prp_shopbuckets_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 537612,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/shopwares/shoptools/textures/jav_prp_shopbuckets_ddna_roughness_8d5a8951": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 754750,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/shopwares/rope/texture/jav_prp_rope_a_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 941601,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/shopwares/rope/texture/jav_prp_rope_a_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1413551,
+   "slot": "normal"
+  },
+  "objects/crafting/props/shopwares/rope/texture/jav_prp_rope_a_ddna_roughness_53b31d1b": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 697074,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/crates/shopcrate/textures/jav_prp_shopcrate_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 939530,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/crates/shopcrate/textures/jav_prp_shopcrate_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1392601,
+   "slot": "normal"
+  },
+  "objects/crafting/props/storage/crates/shopcrate/textures/jav_prp_shopcrate_ddna_roughness_f8f82990": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 801989,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/crates/oldcrate/crate_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 751620,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/crates/oldcrate/crate_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 984248,
+   "slot": "normal"
+  },
+  "objects/crafting/props/storage/crates/oldcrate/crate_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 91615,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/storage/crates/oldcrate/crate_ddna_roughness_4e304ff0": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 498505,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/architecture/living_structures/dynasty/textures/dynasty_env_trim_02_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 813184,
+   "slot": "baseColor"
+  },
+  "objects/crafting/architecture/living_structures/dynasty/textures/dynasty_env_trim_02_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1480509,
+   "slot": "normal"
+  },
+  "objects/crafting/architecture/living_structures/dynasty/textures/dynasty_env_trim_02_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 179347,
+   "slot": "specularColor"
+  },
+  "objects/crafting/architecture/living_structures/dynasty/textures/dynasty_env_trim_02_ddna_roughness_11d20093": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 822773,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/boxes/supplybox/texture/jav_prp_supplybbox_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1019589,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/boxes/supplybox/texture/jav_prp_supplybbox_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1537928,
+   "slot": "normal"
+  },
+  "objects/crafting/props/storage/boxes/supplybox/texture/jav_prp_supplybbox_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 532875,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/storage/boxes/supplybox/texture/jav_prp_supplybbox_ddna_roughness_52e6e8a9": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 509730,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_diff.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 4310827,
+   "slot": "baseColor"
+  },
+  "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_ddna.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 6265997,
+   "slot": "normal"
+  },
+  "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_spec.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 217993,
+   "slot": "specularColor"
+  },
+  "objects/crafting/architecture/defensive_structures/walls/wood_wall/textures/jav_struc_def_woodwall_t0_ddna_roughness_ce2ac004": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 3352492,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/themes/pirate/pirate_rumjug/textures/jav_prp_rumjug_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 799993,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_rumjug/textures/jav_prp_rumjug_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 603958,
+   "slot": "normal"
+  },
+  "objects/crafting/props/themes/pirate/pirate_rumjug/textures/jav_prp_rumjug_ddna_roughness_572543e0": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 468485,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_shelves_t2_diff.dds": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 425814,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_shelves_t2_ddna.dds": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 965168,
+   "slot": "normal"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_shelves_t2_spec.dds": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 200793,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_shelves_t2_ddna_roughness_d2f6d0c8": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 111063,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/cages/hangingironcage/textures/jav_prp_hanging_iron_cage_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 987136,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/cages/hangingironcage/textures/jav_prp_hanging_iron_cage_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2051231,
+   "slot": "normal"
+  },
+  "objects/crafting/props/cages/hangingironcage/textures/jav_prp_hanging_iron_cage_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 995516,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/cages/hangingironcage/textures/jav_prp_hanging_iron_cage_ddna_roughness_44c2aef3": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 996571,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_clothdecor_a_diff.dds": {
+   "w": 2048,
+   "h": 1024,
+   "bytes": 2502908,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_clothdecor_a_ddna.dds": {
+   "w": 2048,
+   "h": 1024,
+   "bytes": 3361768,
+   "slot": "normal"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_clothdecor_a_ddna_roughness_70b8d542": {
+   "w": 2048,
+   "h": 1024,
+   "bytes": 389448,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/architecture/crafting_structures/cookery/textures/jav_prp_foundrocks_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1959223,
+   "slot": "baseColor"
+  },
+  "objects/crafting/architecture/crafting_structures/cookery/textures/jav_prp_foundrocks_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2216332,
+   "slot": "normal"
+  },
+  "objects/crafting/architecture/crafting_structures/cookery/textures/jav_prp_foundrocks_ddna_roughness_cc940fe7": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1139423,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/housewares/paper/textures/jav_prp_paperset_a_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1165443,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/housewares/paper/textures/jav_prp_paperset_a_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1611077,
+   "slot": "normal"
+  },
+  "objects/crafting/props/housewares/paper/textures/jav_prp_paperset_a_ddna_roughness_bac1e382": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 590312,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_shelves_t2_ddna_roughness_20f4ced0": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 410306,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/architecture/living_structures/cabin/textures/jav_struc_living_t2_wood_diff.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 4200218,
+   "slot": "baseColor"
+  },
+  "objects/crafting/architecture/living_structures/cabin/textures/jav_struc_living_t2_wood_ddna.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 6298979,
+   "slot": "normal"
+  },
+  "objects/crafting/architecture/living_structures/cabin/textures/jav_struc_living_t2_wood_ddna_roughness_4dcc0ea7": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 2830603,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_clothdecor_tattereda_diff.dds": {
+   "w": 2048,
+   "h": 1024,
+   "bytes": 2754129,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_clothdecor_a_ddna_roughness_6a14c921": {
+   "w": 2048,
+   "h": 1024,
+   "bytes": 1573893,
+   "slot": "metallicRoughness"
+  },
+  "objects/climax/models/ships/ftue_ship_textures/ship_cannon_updated_ftue_diff.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 1682268,
+   "slot": "baseColor"
+  },
+  "objects/climax/models/ships/ftue_ship_textures/ship_cannon_updated_ftue_ddna.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 4166159,
+   "slot": "normal"
+  },
+  "objects/climax/models/ships/ftue_ship_textures/ship_cannon_updated_ftue_spec.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 1335765,
+   "slot": "specularColor"
+  },
+  "objects/climax/models/ships/ftue_ship_textures/ship_cannon_updated_ftue_ddna_roughness_a854d735": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 2336701,
+   "slot": "metallicRoughness"
+  },
+  "objects/landmarks/ships/galleon/textures/galleon_rope_ddna_roughness_250c5ac8": {
+   "w": 256,
+   "h": 128,
+   "bytes": 9862,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/clothpackage/textures/jav_prp_clothpackage_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2545925,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/clothpackage/textures/jav_prp_clothpackage_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2682605,
+   "slot": "normal"
+  },
+  "Objects/Crafting/Props/Storage/ClothPackage/textures/jav_prp_clothpackage_ddna_roughness_28b8a929": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1085031,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/paperparcels/textures/jav_prp_paperparcels_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1851539,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/paperparcels/textures/jav_prp_paperparcels_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1631634,
+   "slot": "normal"
+  },
+  "Objects\\Crafting\\Props\\Storage\\PaperParcels\\Textures/jav_prp_paperparcels_ddna_roughness_50fdb201": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 569105,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1400024,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1493718,
+   "slot": "normal"
+  },
+  "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 660625,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_ddna_roughness_97ac888a": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 807528,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 679144,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1255849,
+   "slot": "normal"
+  },
+  "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 491025,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_ddna_roughness_5b524089": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 521263,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/props_dynasty/decor/textures/dynasty_prp_tentcloth_01_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1307326,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/props_dynasty/decor/textures/dynasty_prp_tentcloth_01_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1933717,
+   "slot": "normal"
+  },
+  "objects/crafting/props/props_dynasty/decor/textures/dynasty_prp_tentcloth_01_ddna_roughness_103fbe63": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 805174,
+   "slot": "metallicRoughness"
+  },
+  "objects/housing/mtx/spooky_2021/curtains/textures/mtx_spooky_curtains_a_diff.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 960749,
+   "slot": "baseColor"
+  },
+  "objects/housing/mtx/spooky_2021/curtains/textures/mtx_spooky_curtains_a_ddna.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 1092872,
+   "slot": "normal"
+  },
+  "objects/housing/mtx/spooky_2021/curtains/textures/mtx_spooky_curtains_a_spec.dds": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 370893,
+   "slot": "specularColor"
+  },
+  "objects/housing/mtx/spooky_2021/curtains/textures/mtx_spooky_curtains_a_ddna_roughness_2ff6c068": {
+   "w": 1024,
+   "h": 512,
+   "bytes": 323672,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/barrels/textures/jav_prp_barrelwindlass_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 969872,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/barrels/textures/jav_prp_barrelwindlass_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1642522,
+   "slot": "normal"
+  },
+  "objects/crafting/props/storage/barrels/textures/jav_prp_barrelwindlass_ddna_roughness_eb0184bf": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 837350,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/apparatus/birdcage/textures/jav_prp_birdcage_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1736116,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/apparatus/birdcage/textures/jav_prp_birdcage_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1934162,
+   "slot": "normal"
+  },
+  "objects/crafting/props/apparatus/birdcage/textures/jav_prp_birdcage_ddna_roughness_9540afd1": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1010846,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/housewares/books/textures/jav_prp_oldbook_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1035061,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/housewares/books/textures/jav_prp_oldbook_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1682912,
+   "slot": "normal"
+  },
+  "objects/crafting/props/housewares/books/textures/jav_prp_oldbook_ddna_roughness_57298405": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 863977,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 964552,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 976149,
+   "slot": "normal"
+  },
+  "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 515513,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_ddna_roughness_36807df4": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 235137,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_rope_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1011564,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_rope_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1639434,
+   "slot": "normal"
+  },
+  "objects/crafting/props/props_cutlasskeys/textures/ck2_prp_net_rope_ddna_roughness_e74b1e21": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 704013,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/architecture/superfort/demo_fort/textures/jav_sf_ironworks_diff.dds": {
+   "w": 512,
+   "h": 256,
+   "bytes": 78197,
+   "slot": "baseColor"
+  },
+  "engineassets/texturemsg/replacemerelease.dds": {
+   "w": 32,
+   "h": 32,
+   "bytes": 189,
+   "slot": "normal+specularColor"
+  },
+  "objects/crafting/architecture/superfort/demo_fort/textures/jav_sf_ironworks_spec.dds": {
+   "w": 512,
+   "h": 256,
+   "bytes": 137113,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 980890,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1796923,
+   "slot": "normal"
+  },
+  "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 654001,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_ddna_roughness_62fd2c26": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 776146,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/themes/pirate/pirate_chest/textures/jav_prp_pirate_chest_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 652496,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_chest/textures/jav_prp_pirate_chest_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1160921,
+   "slot": "normal"
+  },
+  "objects/crafting/props/themes/pirate/pirate_chest/textures/jav_prp_pirate_chest_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1260976,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_chest/textures/jav_prp_pirate_chest_ddna_roughness_5075e27b": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 830050,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2166632,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2218108,
+   "slot": "normal"
+  },
+  "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 19980,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_ddna_roughness_1d795963": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 319515,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/furniture/tables/stonemasontable/textures/jav_prp_stonemasontable_a_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 925582,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/furniture/tables/stonemasontable/textures/jav_prp_stonemasontable_a_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1394177,
+   "slot": "normal"
+  },
+  "objects/crafting/props/furniture/tables/stonemasontable/textures/jav_prp_stonemasontable_a_ddna_roughness_d5b12790": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 840954,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/decor/fishing/buoys/textures/jav_prp_woodenbuoys_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1345720,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/decor/fishing/buoys/textures/jav_prp_woodenbuoys_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1805513,
+   "slot": "normal"
+  },
+  "objects/crafting/props/decor/fishing/buoys/textures/jav_prp_woodenbuoys_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 26545,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/decor/fishing/buoys/textures/jav_prp_woodenbuoys_ddna_roughness_f564b923": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 890523,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/furniture/beds/textures/jav_prp_bedding_t2_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1606356,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/furniture/beds/textures/jav_prp_bedding_t2_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2550346,
+   "slot": "normal"
+  },
+  "objects/crafting/props/furniture/beds/textures/jav_prp_bedding_t2_ddna_roughness_d35ef5b3": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 26453,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_diff.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 194608,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 418182,
+   "slot": "normal"
+  },
+  "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_ddna_roughness_c5d2e83d": {
+   "w": 512,
+   "h": 512,
+   "bytes": 128419,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 910204,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1627001,
+   "slot": "normal"
+  },
+  "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 243235,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/furniture/tables/sidedesks/textures/jav_prp_sidedesks_ddna_roughness_29dfabf0": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 957399,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_cloth_tattered_b_diff.dds": {
+   "w": 1024,
+   "h": 2048,
+   "bytes": 2984276,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_cloth_tattered_damned_d_ddna.dds": {
+   "w": 1024,
+   "h": 2048,
+   "bytes": 3483745,
+   "slot": "normal"
+  },
+  "objects/crafting/props/decor/cloth/textures/jav_prp_cloth_tattered_damned_d_ddna_roughness_d3d8e2e5": {
+   "w": 1024,
+   "h": 2048,
+   "bytes": 1251477,
+   "slot": "metallicRoughness"
+  },
+  "objects/outpostrush/outpost/or_outpost_banner_01_blank_diff.dds": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 948993,
+   "slot": "baseColor"
+  },
+  "objects/crafting/architecture/superfort/banner/textures/jav_guildlogo_cloth_b_ddna.dds": {
+   "w": 256,
+   "h": 512,
+   "bytes": 234315,
+   "slot": "normal"
+  },
+  "objects/crafting/architecture/superfort/banner/textures/jav_guildlogo_cloth_b_ddna_roughness_5b50a469": {
+   "w": 256,
+   "h": 512,
+   "bytes": 56186,
+   "slot": "metallicRoughness"
+  },
+  "objects/climax/models/intro_map/intro_map_01.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1147119,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/lockboxes/chestiron/textures/jav_prp_chestiron_diff.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 3247588,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/lockboxes/chestiron/textures/jav_prp_chestiron_ddna.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 7203776,
+   "slot": "normal"
+  },
+  "objects/crafting/props/storage/lockboxes/chestiron/textures/jav_prp_chestiron_spec.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 491202,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/storage/lockboxes/chestiron/textures/jav_prp_chestiron_ddna_roughness_342dc918": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 3212217,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 915747,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1476498,
+   "slot": "normal"
+  },
+  "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 511545,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_ddna_roughness_08489084": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 641802,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/architecture/social_structures/headquarters/townproject_map/map.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 7224248,
+   "slot": "baseColor"
+  },
+  "objects/crafting/architecture/ruins_structures/textures/jav_struc_ruins_rock_d_diff.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 7471938,
+   "slot": "baseColor"
+  },
+  "objects/crafting/architecture/ruins_structures/textures/jav_struc_ruins_rock_d_ddna.dds": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 8990051,
+   "slot": "normal"
+  },
+  "objects/crafting/architecture/ruins_structures/textures/jav_struc_ruins_rock_d_ddna_roughness_6074826a": {
+   "w": 2048,
+   "h": 2048,
+   "bytes": 4333952,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1241393,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1027696,
+   "slot": "normal"
+  },
+  "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 735155,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_ddna_roughness_ee3ca072": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 798590,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/foodstuffs/soup/stew/texture/uimealstew_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1102495,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/foodstuffs/soup/stew/texture/uimealstew_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 830057,
+   "slot": "normal"
+  },
+  "objects/crafting/props/foodstuffs/soup/stew/texture/uimealstew_ddna_roughness_87d899be": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 583265,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_pile_small_a_diffa.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2209295,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_pile_small_a_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2027272,
+   "slot": "normal"
+  },
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_pile_small_a_ddna_roughness_69b98f8d": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 897910,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_rubble_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 985868,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_rubble_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1042087,
+   "slot": "normal"
+  },
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_rubble_ddna_roughness_c7d357f2": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 703209,
+   "slot": "metallicRoughness"
+  },
+  "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1324398,
+   "slot": "baseColor"
+  },
+  "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1385244,
+   "slot": "normal"
+  },
+  "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1124530,
+   "slot": "specularColor"
+  },
+  "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_ddna_roughness_043d86e6": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 872047,
+   "slot": "metallicRoughness"
+  },
+  "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1029894,
+   "slot": "baseColor"
+  },
+  "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1918395,
+   "slot": "normal"
+  },
+  "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 95134,
+   "slot": "specularColor"
+  },
+  "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_ddna_roughness_27e94924": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 478893,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1215656,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1819671,
+   "slot": "normal"
+  },
+  "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 285237,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_ddna_roughness_da268383": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 915754,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/housewares/writing/textures/jav_prp_writing_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1122110,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/housewares/writing/textures/jav_prp_writing_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1736117,
+   "slot": "normal"
+  },
+  "objects/crafting/props/housewares/writing/textures/jav_prp_writing_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 241504,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/housewares/writing/textures/jav_prp_writing_ddna_roughness_ae4b8d45": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 879836,
+   "slot": "metallicRoughness"
+  },
+  "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 820604,
+   "slot": "baseColor"
+  },
+  "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2187391,
+   "slot": "normal"
+  },
+  "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 178138,
+   "slot": "specularColor"
+  },
+  "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_ddna_roughness_10c2167d": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 596163,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1232187,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1831432,
+   "slot": "normal"
+  },
+  "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 975832,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_ddna_roughness_e2662556": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 846215,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 749706,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1779998,
+   "slot": "normal"
+  },
+  "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 125853,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_ddna_roughness_05dda5e6": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 776663,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1394862,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1202991,
+   "slot": "normal"
+  },
+  "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 95739,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_ddna_roughness_c47888c4": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 815194,
+   "slot": "metallicRoughness"
+  },
+  "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 416178,
+   "slot": "baseColor"
+  },
+  "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1005406,
+   "slot": "normal"
+  },
+  "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 452883,
+   "slot": "specularColor"
+  },
+  "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_ddna_roughness_ca6d5847": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 469956,
+   "slot": "metallicRoughness"
+  },
+  "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 237427,
+   "slot": "baseColor"
+  },
+  "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 332345,
+   "slot": "normal"
+  },
+  "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 278629,
+   "slot": "specularColor"
+  },
+  "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_ddna_roughness_db4fa803": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 326037,
+   "slot": "metallicRoughness"
+  },
+  "objects/weapons/melee/axes/2h/greataxea/textures/t2/greataxea_t2_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 747921,
+   "slot": "baseColor+specularColor"
+  },
+  "objects/weapons/melee/axes/2h/greataxea/textures/t2/greataxea_t2_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1135020,
+   "slot": "normal"
+  },
+  "objects/weapons/melee/axes/2h/greataxea/textures/t2/greataxea_t2_ddna_roughness_8c405ecd": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 881218,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_atlas_wd_mtl_rp_lthr_t2_b_diff.dds": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 287826,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_atlas_wd_mtl_rp_lthr_t2_b_ddna.dds": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 855528,
+   "slot": "normal"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_atlas_wd_mtl_rp_lthr_t2_b_spec.dds": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 319329,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/shopwares/shelves/textures/jav_prp_atlas_wd_mtl_rp_lthr_t2_b_ddna_roughness_a8ec8f72": {
+   "w": 512,
+   "h": 1024,
+   "bytes": 426606,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/furniture/beds/cot/textures/jav_prp_cot_t1_a_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2132264,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/furniture/beds/cot/textures/jav_prp_cot_t1_a_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 501994,
+   "slot": "normal"
+  },
+  "objects/crafting/props/furniture/beds/cot/textures/jav_prp_cot_t1_a_ddna_roughness_1a00d501": {
+   "w": 512,
+   "h": 512,
+   "bytes": 187207,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/buckets/textures/jav_prp_metal_bucket_diff.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 120183,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/storage/buckets/textures/jav_prp_metal_bucket_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 323618,
+   "slot": "normal"
+  },
+  "objects/crafting/props/storage/buckets/textures/jav_prp_metal_bucket_spec.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 62560,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/storage/buckets/textures/jav_prp_metal_bucket_ddna_roughness_6dee030a": {
+   "w": 512,
+   "h": 512,
+   "bytes": 244645,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 821697,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1383501,
+   "slot": "normal"
+  },
+  "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 126466,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_ddna_roughness_19d97c8b": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 744518,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/furniture/seating/jav_prp_stool_wood_a/textures/jav_prp_stool_wood_a_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1235034,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/furniture/seating/jav_prp_stool_wood_a/textures/jav_prp_stool_wood_a_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1498716,
+   "slot": "normal"
+  },
+  "objects/crafting/props/furniture/seating/jav_prp_stool_wood_a/textures/jav_prp_stool_wood_a_ddna_roughness_9c367af5": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 609628,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1055380,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1484465,
+   "slot": "normal"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 895812,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_ddna_roughness_7764d76c": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 910961,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_emissive_emissive_470c7302": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 80546,
+   "slot": "emissive"
+  },
+  "objects/crafting/props/vehicles/wheels/textures/jav_prp_wagonwheels_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1311802,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/vehicles/wheels/textures/jav_prp_wagonwheels_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1766040,
+   "slot": "normal"
+  },
+  "objects/crafting/props/vehicles/wheels/textures/jav_prp_wagonwheels_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 97049,
+   "slot": "specularColor"
+  },
+  "Objects/Crafting/Props\\Vehicles\\Wheels/textures/jav_prp_wagonwheels_ddna_roughness_afcddb98": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 959453,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_skull_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2143193,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_skull_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2240713,
+   "slot": "normal"
+  },
+  "objects/crafting/props/decor/bones/textures/jav_prp_humanskeleton_skull_ddna_roughness_639822a1": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1067254,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/lighting/candles/textures/jav_prp_candles_b_diff.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 162107,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/lighting/candles/textures/jav_prp_candles_b_ddna.dds": {
+   "w": 512,
+   "h": 512,
+   "bytes": 432179,
+   "slot": "normal"
+  },
+  "objects/crafting/props/lighting/candles/textures/jav_prp_candles_b_ddna_roughness_6e630338": {
+   "w": 512,
+   "h": 512,
+   "bytes": 58168,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/lighting/candles/textures/jav_prp_candles_b_ddna_roughness_4cea8ab5": {
+   "w": 512,
+   "h": 512,
+   "bytes": 146430,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/catchables/fishing_kit05/textures/jav_prp_fishing_kit05_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1030443,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/catchables/fishing_kit05/textures/jav_prp_fishing_kit05_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1935421,
+   "slot": "normal"
+  },
+  "objects/crafting/props/catchables/fishing_kit05/textures/jav_prp_fishing_kit05_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 766105,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/catchables/Fishing_Kit05/textures/Jav_Prp_Fishing_Kit05_ddna_roughness_b124f8d3": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 668762,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_ddna_roughness_3c321203": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1013227,
+   "slot": "metallicRoughness"
+  },
+  "textures/defaults/white.dds": {
+   "w": 4,
+   "h": 4,
+   "bytes": 146,
+   "slot": "baseColor"
+  },
+  "objects/volumetrics/textures/lightbeam_mask_01b_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 158749,
+   "slot": "baseColor"
+  },
+  "objects/volumetrics/textures/clouds_mask_01_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 368061,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_bed02/textures/jav_prp_pirate_bed02_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1037792,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_bed02/textures/jav_prp_pirate_bed02_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 2202438,
+   "slot": "normal"
+  },
+  "objects/crafting/props/themes/pirate/pirate_bed02/textures/jav_prp_pirate_bed02_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 487887,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_bed02/textures/jav_prp_pirate_bed02_ddna_roughness_35ab5411": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 615209,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_tint.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1292468,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_ddn.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1351565,
+   "slot": "normal"
+  },
+  "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1212096,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1546861,
+   "slot": "normal"
+  },
+  "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 534866,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/shopwares/alchemyprops/textures/jav_prp_alchemyprops_ddna_roughness_c4affeee": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 879441,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/pirate_lighthanging_a_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1056631,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/pirate_lighthanging_a_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 912991,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/themes/pirate/pirate_lighthanging/textures/jav_prp_pirate_lighthanging_ddna_roughness_7f3b48d9": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 913843,
+   "slot": "metallicRoughness"
+  },
+  "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_diff.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 299888,
+   "slot": "baseColor"
+  },
+  "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_ddna.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 1102721,
+   "slot": "normal"
+  },
+  "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_spec.dds": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 433475,
+   "slot": "specularColor"
+  },
+  "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_ddna_roughness_268542f5": {
+   "w": 1024,
+   "h": 1024,
+   "bytes": 988990,
+   "slot": "metallicRoughness"
+  }
+ }
+}

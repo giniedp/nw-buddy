@@ -1,4 +1,6 @@
 @if (root$(); as node) {
   <nwb-expression-tree-node [node]="node" [isRoot]="true" />
-  <button class="btn btn-block btn-primary btn-sm mx-auto mt-4" (click)="store.addField(node)">Add a filter condition</button>
+  <button class="btn btn-block btn-primary btn-sm mx-auto mt-4" (click)="store.addField(node)">
+    Add a filter condition
+  </button>
 }

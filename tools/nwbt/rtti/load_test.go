@@ -8,6 +8,7 @@ import (
 	"nw-buddy/tools/rtti/nwt"
 	"testing"
 
+	"github.com/gofrs/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +20,7 @@ func TestLoad_AzString(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = []byte(value)
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -36,7 +37,7 @@ func TestLoad_AzBool(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			if value {
 				el.Data = []byte{1}
 			} else {
@@ -63,7 +64,7 @@ func TestLoad_AzInt8(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = []byte{byte(value)}
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -82,7 +83,7 @@ func TestLoad_AzInt16(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint16([]byte{}, uint16(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -101,7 +102,7 @@ func TestLoad_AzInt32(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint32([]byte{}, uint32(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -121,7 +122,7 @@ func TestLoad_AzInt64(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint64([]byte{}, uint64(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -140,7 +141,7 @@ func TestLoad_AzUInt8(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = []byte{byte(value)}
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -159,7 +160,7 @@ func TestLoad_AzUInt16(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint16([]byte{}, uint16(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -178,7 +179,7 @@ func TestLoad_AzUInt32(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint32([]byte{}, uint32(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -198,7 +199,7 @@ func TestLoad_AzUInt64(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint64([]byte{}, uint64(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -221,7 +222,7 @@ func TestLoad_AzFloat32(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint32([]byte{}, math.Float32bits(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -244,7 +245,7 @@ func TestLoad_AzFloat64(t *testing.T) {
 	for _, tName := range types {
 		for _, value := range values {
 			el := azcs.Element{}
-			el.Type = tName
+			el.Type = uuid.Must(uuid.FromString(tName))
 			el.Data = binary.BigEndian.AppendUint64([]byte{}, math.Float64bits(value))
 			v, err := rtti.Load(&el)
 			assert.NoError(t, err)
@@ -290,59 +291,59 @@ func TestLoad_AzEntity(t *testing.T) {
 	// }
 
 	el := azcs.Element{
-		Type: "AFD304E4-1773-47C8-855A-8B622398934F",
+		Type: uuid.Must(uuid.FromString("AFD304E4-1773-47C8-855A-8B622398934F")),
 		Elements: []*azcs.Element{
 			{
 				NameCrc: 3805372648, // IsDynamic
-				Type:    "a0ca880c-afe4-43cb-926c-59ac48496112",
+				Type:    uuid.Must(uuid.FromString("a0ca880c-afe4-43cb-926c-59ac48496112")),
 				Data:    []byte{0x01}, // true
 			},
 			{
 				NameCrc: 3418249602, // ShouldKeepInMemory
-				Type:    "a0ca880c-afe4-43cb-926c-59ac48496112",
+				Type:    uuid.Must(uuid.FromString("a0ca880c-afe4-43cb-926c-59ac48496112")),
 				Data:    []byte{0x00}, // false
 			},
 			{
 				NameCrc: 2234944382, // DependencyReloadMode
-				Type:    "72039442-EB38-4D42-A1AD-CB68F7E0EEF6",
+				Type:    uuid.Must(uuid.FromString("72039442-EB38-4D42-A1AD-CB68F7E0EEF6")),
 				Data:    binary.BigEndian.AppendUint32([]byte{}, 1234),
 			},
 			{
 				NameCrc: 3566360373, // BaseClass1
-				Type:    "EDFCB2CF-F75D-43BE-B26B-F35821B29247",
+				Type:    uuid.Must(uuid.FromString("EDFCB2CF-F75D-43BE-B26B-F35821B29247")),
 				Elements: []*azcs.Element{
 					{
 						NameCrc: 3208210256, // Id
-						Type:    "5EC2D6F7-6859-400F-9215-C106F5B10E53",
+						Type:    uuid.Must(uuid.FromString("5EC2D6F7-6859-400F-9215-C106F5B10E53")),
 						Data:    binary.BigEndian.AppendUint64([]byte{}, 4321),
 					},
 				},
 			},
 			{
 				NameCrc: 1357669605, // Entities
-				Type:    "56942E81-55BE-53E7-BAC4-0F567BCA3863",
+				Type:    uuid.Must(uuid.FromString("56942E81-55BE-53E7-BAC4-0F567BCA3863")),
 				Elements: []*azcs.Element{
 					{
 						NameCrc: 1094737465, // Element
-						Type:    "75651658-8663-478D-9090-2432DFCAFA44",
+						Type:    uuid.Must(uuid.FromString("75651658-8663-478D-9090-2432DFCAFA44")),
 						Elements: []*azcs.Element{
 							{
 								NameCrc: 1579384326, // Name
-								Type:    "03aaab3f-5c47-5a66-9ebc-d5fa4db353c9",
+								Type:    uuid.Must(uuid.FromString("03aaab3f-5c47-5a66-9ebc-d5fa4db353c9")),
 								Data:    []byte("Component Name"),
 							},
 							{
 								NameCrc: 3997758973, // Components
-								Type:    "0D23B755-6E8F-5C6C-B7C9-A352A55DC1DF",
+								Type:    uuid.Must(uuid.FromString("0D23B755-6E8F-5C6C-B7C9-A352A55DC1DF")),
 								Elements: []*azcs.Element{
 									{
 										NameCrc: 1094737465, // Element
-										Type:    "5EC2D6F7-6859-400F-9215-C106F5B10E53",
+										Type:    uuid.Must(uuid.FromString("5EC2D6F7-6859-400F-9215-C106F5B10E53")),
 										Data:    binary.BigEndian.AppendUint64([]byte{}, 4321),
 									},
 									{
 										NameCrc: 1094737465, // Element
-										Type:    "5EC2D6F7-6859-400F-9215-C106F5B10E53",
+										Type:    uuid.Must(uuid.FromString("5EC2D6F7-6859-400F-9215-C106F5B10E53")),
 										Data:    binary.BigEndian.AppendUint64([]byte{}, 4321),
 									},
 								},
@@ -378,11 +379,11 @@ func TestLoad_QueryShapeBox(t *testing.T) {
 	// type AzVec3 [3]float32
 
 	el := azcs.Element{
-		Type: "C6651A66-23D4-4508-B4AD-180C516655A8",
+		Type: uuid.Must(uuid.FromString("C6651A66-23D4-4508-B4AD-180C516655A8")),
 		Elements: []*azcs.Element{
 			{
 				NameCrc: 3272002109, // M_box
-				Type:    "8379EB7D-01FA-4538-B64B-A6543B4BE73D",
+				Type:    uuid.Must(uuid.FromString("8379EB7D-01FA-4538-B64B-A6543B4BE73D")),
 				Data: []byte{
 					// big endian float32 1.0
 					0x3f, 0x80, 0x00, 0x00,

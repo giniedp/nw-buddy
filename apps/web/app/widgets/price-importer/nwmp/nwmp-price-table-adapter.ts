@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { inject } from '@angular/core'
 import {
   NW_FALLBACK_ICON,
@@ -49,7 +49,7 @@ export class NwmpPriceTableAdapter implements DataViewAdapter<NwmpPriceItem> {
 
 function buildGridOptions(util: TableGridUtils<NwmpPriceItem>): GridOptions<NwmpPriceItem> {
   return {
-    rowSelection: 'single',
+    rowSelection: { mode: 'singleRow', checkboxes: false, enableClickSelection: true },
     rowBuffer: 0,
     columnDefs: [
       {

@@ -1,0 +1,31 @@
+/* the export dialog (ExportButton.tsx) */
+
+/* the content of the dialog: as high as its rows, a file may have a single download */
+.nw-dialog-content.nw-export-content {
+  min-height: 0;
+}
+/* the options of the file's exports */
+.nw-export-options {
+  display: flex;
+  flex-direction: column;
+}
+/* the actions: widget rows (description | button + status), aligned with the options */
+.nw-export-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+/* the export options on top, the actions below */
+.nw-export-options + .nw-export-list {
+  margin-top: 0.75rem;
+}
+.nw-export-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* what an action does not convert, below its button */
+.nw-warning {
+  padding: 0.25rem 0;
+  color: var(--nw-warning);
+}

@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
 import { COLS_CONSUMABLEITEMDEFINITIONS, COLS_MASTERITEMDEFINITIONS, MasterItemDefinitions } from '@nw-data/generated'

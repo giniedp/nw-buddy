@@ -1,0 +1,58 @@
+/* hex: offset, bytes, ascii; only the visible rows exist (HexView.tsx) */
+.nw-hex-view {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+/* tweak-ui inputs fill their row, this one has a fixed width */
+.nw-view-bar > .nw-hex-goto {
+  flex: 0 0 16rem;
+  width: 16rem;
+}
+.nw-hex-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.nw-hex-window {
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+.nw-hex-row {
+  display: flex;
+  gap: 2ch;
+  padding: 0 0.5rem;
+  font-family: var(--twk-font-mono);
+  font-size: var(--nw-text-md);
+  line-height: 1.125rem;
+  white-space: pre;
+  user-select: text;
+}
+.nw-hex-probe {
+  position: absolute;
+  visibility: hidden;
+}
+.nw-hex-offset {
+  color: var(--nw-text-dim);
+}
+.nw-hex-bytes {
+  width: 49ch;
+}
+.nw-hex-bytes > span {
+  display: inline-block;
+  width: 3ch;
+}
+.nw-hex-bytes > .nw-hex-gap {
+  margin-left: 1ch;
+}
+.nw-hex-zero {
+  color: var(--nw-text-dim);
+}
+.nw-hex-bytes > .nw-hex-mark {
+  color: var(--nw-bg);
+  background: var(--nw-accent);
+}

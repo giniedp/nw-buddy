@@ -1,6 +1,7 @@
 package rtti
 
 import (
+	"encoding/xml"
 	"fmt"
 	"log/slog"
 	"nw-buddy/tools/formats/azcs"
@@ -17,10 +18,7 @@ func ObjectStreamToJSON(it *azcs.Object, crc CrcTable, ids UuidTable) (data []by
 	res := make([]any, 0)
 	it.Walk(func(node *azcs.WalkNode) bool {
 
-		typeID := node.Element.Type2
-		if typeID == "" {
-			typeID = node.Element.Type
-		}
+		typeID := azcs.UUIDString(node.Element.TypeId())
 		typeName := ids[typeID]
 		if typeName == "" {
 			typeName = typeID
@@ -76,6 +74,52 @@ func ObjectStreamToJSON(it *azcs.Object, crc CrcTable, ids UuidTable) (data []by
 		data, err = json.MarshalJSON(res, "", "\t")
 	}
 	return
+}
+
+func convertElements(elements []*azcs.Element, crc CrcTable, ids UuidTable) []*azcs.XmlElement {
+	res := make([]*azcs.XmlElement, len(elements))
+	for i, el := range elements {
+		typeID := azcs.UUIDString(el.TypeId())
+		typeName := ids[typeID]
+		if typeName == "" {
+			typeName = typeID
+		}
+		r := &azcs.XmlElement{
+			Name:    typeName,
+			Type:    azcs.UUIDString(el.Type),
+			Type2:   azcs.UUIDString(el.Type2),
+			Field:   crc.Get(el.NameCrc),
+			Version: fmt.Sprintf("%d", el.Version),
+		}
+		if _, ok := nwt.PRIMITIVES[typeID]; ok {
+			v, err := Load(el)
+			if err != nil {
+				slog.Error("Failed to load value", "err", err)
+			} else if vv, ok := v.(nwt.AzSerialzieXml); ok {
+				r.Value, err = vv.SerializeXml()
+				if err != nil {
+					slog.Error("Failed to serialize value", "err", err)
+				}
+			}
+		}
+		if len(el.Elements) > 0 {
+			r.Elements = convertElements(el.Elements, crc, ids)
+		}
+		res[i] = r
+	}
+
+	return res
+}
+
+func ObjectStreamToXml(it *azcs.Object, crc CrcTable, ids UuidTable) (data []byte, err error) {
+	defer utils.HandleRecover(&err)
+
+	res := azcs.XmlObject{
+		Version:  fmt.Sprintf("%d", it.Version),
+		Elements: convertElements(it.Elements, crc, ids),
+	}
+
+	return xml.MarshalIndent(res, "", "\t")
 }
 
 func ObjectStreamXmlToJSON(it *azcs.XmlObject, ids UuidTable) (data []byte, err error) {

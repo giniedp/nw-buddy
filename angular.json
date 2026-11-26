@@ -59,15 +59,8 @@
               },
               {
                 "glob": "**/*",
-                "ignore": [
-                  "*.gz",
-                  "*.zip",
-
-                  "**/items_hires/**"
-                ],
-                "input": "dist/nw-data/.current",
-                "output": "/nw-data/",
-                "followSymlinks": true
+                "input": "apps/viewer/dist/lib",
+                "output": "/viewer-lib"
               },
               {
                 "glob": "**/*",
@@ -98,6 +91,21 @@
               "extractLicenses": false,
               "sourceMap": true,
               "ssr": false,
+              "assets": [
+                "apps/web/_routes.json",
+                "apps/web/_headers",
+                "apps/web/favicon.ico",
+                "apps/web/robots.txt",
+                "apps/web/sitemap.txt",
+                "apps/web/embed.js",
+                "apps/web/assets",
+                "apps/web/version",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/monaco-editor",
+                  "output": "/assets/monaco-editor"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
@@ -114,6 +122,21 @@
               "extractLicenses": false,
               "sourceMap": true,
               "ssr": false,
+              "assets": [
+                "apps/web/_routes.json",
+                "apps/web/_headers",
+                "apps/web/favicon.ico",
+                "apps/web/robots.txt",
+                "apps/web/sitemap.txt",
+                "apps/web/embed.js",
+                "apps/web/assets",
+                "apps/web/version",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/monaco-editor",
+                  "output": "/assets/monaco-editor"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
@@ -130,6 +153,21 @@
               "extractLicenses": false,
               "sourceMap": true,
               "ssr": true,
+              "assets": [
+                "apps/web/_routes.json",
+                "apps/web/_headers",
+                "apps/web/favicon.ico",
+                "apps/web/robots.txt",
+                "apps/web/sitemap.txt",
+                "apps/web/embed.js",
+                "apps/web/assets",
+                "apps/web/version",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/monaco-editor",
+                  "output": "/assets/monaco-editor"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
@@ -175,6 +213,11 @@
                 "glob": "**/*",
                   "input": "node_modules/monaco-editor",
                   "output": "/assets/monaco-editor"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "apps/viewer/dist/lib",
+                  "output": "/viewer-lib"
                 },
                 {
                   "glob": "**/*",
@@ -251,6 +294,11 @@
                 },
                 {
                   "glob": "**/*",
+                  "input": "apps/viewer/dist/lib",
+                  "output": "/viewer-lib"
+                },
+                {
+                  "glob": "**/*",
                   "ignore": [
                     "*.gz",
                     "*.zip",
@@ -269,7 +317,7 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "host": "0.0.0.0",
-            "proxyConfig": "angular.proxy.js"
+            "proxyConfig": "angular.proxy.mjs"
           },
           "configurations": {
             "dev": {

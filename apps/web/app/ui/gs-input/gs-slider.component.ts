@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, OnChanges, input, model, signal, viewChild } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnChanges,
+  input,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from '@nw-data/common'
 

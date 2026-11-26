@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
-	"time"
+	"sync"
+	"sync/atomic"
 
 	"github.com/vbauerster/mpb/v8"
 	"github.com/vbauerster/mpb/v8/decor"
@@ -17,38 +18,45 @@ type ProgressBar interface {
 	Close()
 }
 
+// progressBar is one bar in its own container. A container renders until it is closed: an open one draws over the
+// lines of the next bar, so every bar must be closed (Close or Wait).
 type progressBar struct {
-	prog  *mpb.Progress
-	bar   *mpb.Bar
-	msg   func(v string)
-	count int
+	prog   *mpb.Progress
+	bar    *mpb.Bar
+	detail atomic.Pointer[string]
+	once   sync.Once
 }
 
 func (it *progressBar) Add(count int) {
-	it.count += count
 	it.bar.IncrBy(count)
 }
+
 func (it *progressBar) Detail(detail string) {
-	it.msg(detail)
+	it.detail.Store(&detail)
 }
+
+// Wait waits until the bar reached its total, then closes the container
 func (it *progressBar) Wait() {
-	if it.count == 0 {
-		it.bar.SetTotal(int64(it.count), true)
-	}
-	it.prog.Wait()
+	it.once.Do(func() {
+		it.prog.Wait()
+	})
 }
+
+// Close completes the bar where it is (a bar below its total is aborted) and closes the container. Closing twice is
+// allowed.
 func (it *progressBar) Close() {
-	it.bar.SetTotal(int64(it.count), true)
-	time.Sleep(100 * time.Millisecond)
-	it.prog.Wait()
+	it.once.Do(func() {
+		// SetTotal completes a bar created without total, Abort one created with a total (SetTotal ignores those)
+		it.bar.SetTotal(-1, true)
+		it.bar.Abort(false)
+		it.prog.Wait()
+	})
 }
 
 func Bar(count int, title string) ProgressBar {
-	title = formatDescription(title)
-
-	msg := ""
 	proc := mpb.New(mpb.WithWidth(32))
-	bar := proc.New(
+	progress := &progressBar{prog: proc}
+	progress.bar = proc.New(
 		int64(count),
 		mpb.BarStyle(),
 		mpb.PrependDecorators(
@@ -59,15 +67,13 @@ func Bar(count int, title string) ProgressBar {
 			decor.CountersNoUnit("%d/%d", decor.WCSyncSpaceR),
 			decor.Elapsed(decor.ET_STYLE_MMSS, decor.WCSyncSpaceR),
 			decor.Any(func(s decor.Statistics) string {
-				return msg
+				if detail := progress.detail.Load(); detail != nil {
+					return *detail
+				}
+				return ""
 			}, decor.WCSyncSpaceR),
 		),
 	)
-
-	progress := &progressBar{proc, bar, func(v string) {
-		msg = v
-	}, 0}
-
 	return progress
 }
 

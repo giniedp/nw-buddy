@@ -435,11 +435,14 @@ export class GameMapComponent {
         }
         const layer = this.map.getLayer(sourceId)
         if (!layer) {
-          this.map.addLayer({
-            id: sourceId,
-            type: 'raster',
-            source: sourceId,
-          }, 'hills')
+          this.map.addLayer(
+            {
+              id: sourceId,
+              type: 'raster',
+              source: sourceId,
+            },
+            'hills',
+          )
         }
         this.map.getLayer(sourceId).visibility = 'visible'
       })

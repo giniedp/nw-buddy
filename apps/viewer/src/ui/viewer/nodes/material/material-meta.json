@@ -1,0 +1,2039 @@
+{
+  "depthfixupthreshold": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.05
+  },
+  "benddetailfrequency": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "benddetailleafamplitude": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.2
+  },
+  "benddetailbranchamplitude": {
+    "type": "float",
+    "min": -10,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": null
+  },
+  "animfrequency": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "animamplitudewav0": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "animamplitudewav2": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "animphase": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "alphamultiplier": {
+    "type": "float",
+    "min": 0.1,
+    "max": 6,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "alphasaturation": {
+    "type": "float",
+    "min": 0.1,
+    "max": 10,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 2
+  },
+  "cloudheight": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.3
+  },
+  "densitysun": {
+    "type": "float",
+    "min": 0,
+    "max": 6,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1.5
+  },
+  "densitysky": {
+    "type": "float",
+    "min": 0,
+    "max": 16,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 4.5
+  },
+  "attenuation": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.6
+  },
+  "stepsize": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.004
+  },
+  "suncolormultiplier": {
+    "type": "float",
+    "min": 0,
+    "max": 16,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 4
+  },
+  "skycolormultiplier": {
+    "type": "float",
+    "min": 0,
+    "max": 16,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1.5
+  },
+  "opacity": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "exposure": {
+    "type": "float",
+    "min": 0.1,
+    "max": 40,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "spritesheetduration": {
+    "type": "float",
+    "min": 0.1,
+    "max": 60,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "skyheight": {
+    "type": "float",
+    "min": 100,
+    "max": 4000,
+    "step": 1,
+    "widget": "slider",
+    "default": 1000
+  },
+  "weatherradius": {
+    "type": "float",
+    "min": 0,
+    "max": 10000,
+    "step": 1,
+    "widget": "slider",
+    "default": 2500
+  },
+  "weathersmoothradius": {
+    "type": "float",
+    "min": -10000,
+    "max": 10000,
+    "step": 1,
+    "widget": "slider",
+    "default": null
+  },
+  "horizonbendingheight": {
+    "type": "float",
+    "min": 0.01,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.2
+  },
+  "fadingnoisetilingsize": {
+    "type": "float",
+    "min": 100,
+    "max": 10000,
+    "step": 1,
+    "widget": "slider",
+    "default": 1000
+  },
+  "fadingnoiseoffset": {
+    "type": "float",
+    "min": 0,
+    "max": 10000,
+    "step": 1,
+    "widget": "slider",
+    "default": 0
+  },
+  "shadowskydomesize": {
+    "type": "float",
+    "min": 100,
+    "max": 3000,
+    "step": 1,
+    "widget": "slider",
+    "default": 1000
+  },
+  "minshadowdensity": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0
+  },
+  "maxshadowdensity": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "shadowpower": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "shadowfadingradiusfactor": {
+    "type": "float",
+    "min": 0,
+    "max": 100,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 10
+  },
+  "shadowfadinginclinationfactor": {
+    "type": "float",
+    "min": 0,
+    "max": 100,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 10
+  },
+  "emissivescaleintensity": {
+    "type": "float",
+    "min": null,
+    "max": null,
+    "step": null,
+    "widget": "slider",
+    "default": null
+  },
+  "sssindex": {
+    "type": "float",
+    "min": 0,
+    "max": 3.99,
+    "step": 0.005,
+    "widget": "slider",
+    "default": 0
+  },
+  "sinewaveamp": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sinewavefreq": {
+    "type": "float",
+    "min": 0,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sinewavespeed": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sinewavephase": {
+    "type": "float",
+    "min": null,
+    "max": null,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sinewaveaxis": {
+    "type": "float",
+    "min": 0,
+    "max": 3,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "sinewavenormal": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "subsurfacecolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "0.5, 0.7, 1.0, 1.0"
+  },
+  "subsurfacefalloff": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfaceclarity": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfacedetailblend": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfacedetailpow": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfacedirx": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfacediry": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfacedirz": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfacethreshold": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfaceparallax": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "subsurfacetile": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sdf2dstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sdf2dtilex": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sdf2dtiley": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sdf2dspeedx": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sdf2dspeedy": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sdf2dphasex": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "sdf2dphasey": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "source2dtilex": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "source2dtiley": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "source2dspeedx": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "source2dspeedy": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "source2dphasex": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "source2dphasey": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "palettephase": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "palettespeed": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "palettefalloff": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "palettesdfinf": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "palettesourceblend": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "procgradtype": {
+    "type": "float",
+    "min": 0,
+    "max": 4,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "procgradposx": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "procgradposy": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "procgradposz": {
+    "type": "float",
+    "min": -100,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "procgradfreq": {
+    "type": "float",
+    "min": 0,
+    "max": 20,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "procgradinv": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelexponent": {
+    "type": "float",
+    "min": 0.001,
+    "max": 32,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 32,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelinvert": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fxnormalstrength": {
+    "type": "float",
+    "min": 0.001,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fxnormaltilex": {
+    "type": "float",
+    "min": 0.001,
+    "max": 50,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fxnormaltiley": {
+    "type": "float",
+    "min": 0.001,
+    "max": 50,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "dissolvepercent": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "dissolvefresnelfalloff": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "dissolvefresnelinvert": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "stenciloffsetx": {
+    "type": "float",
+    "min": -10,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "stenciloffsety": {
+    "type": "float",
+    "min": -10,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "stencilinvert": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "stencilnormalinfluence": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "indirectcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "0.25, 0.25, 0.25, 0.25"
+  },
+  "globalcolorfalloff": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "globalalphastrength": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "globalalphafill": {
+    "type": "float",
+    "min": 1,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "globalalphafalloff": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "globalalphafromsource": {
+    "type": "float",
+    "min": null,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "fadeoutstart": {
+    "type": "float",
+    "min": 0.01,
+    "max": 0.45,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.1
+  },
+  "fadeoutend": {
+    "type": "float",
+    "min": 0.55,
+    "max": 0.99,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.75
+  },
+  "complexcoltile": {
+    "type": "float",
+    "min": 0.001,
+    "max": 100,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelsdfinfluence": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelsdfmapmix": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelsdfmapexp": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresneloutfalloff": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresneloutstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresneloutsdfinf": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelinfalloff": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelinstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "fresnelinsdfinf": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": null
+  },
+  "intersectfadedist": {
+    "type": "float",
+    "min": null,
+    "max": 100,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 2
+  },
+  "intersectfadefalloff": {
+    "type": "float",
+    "min": null,
+    "max": 100,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "intersectfadeinv": {
+    "type": "float",
+    "min": null,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "intersectglowdist": {
+    "type": "float",
+    "min": null,
+    "max": 100,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 2
+  },
+  "intersectglowfalloff": {
+    "type": "float",
+    "min": null,
+    "max": 100,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "intersectglowinv": {
+    "type": "float",
+    "min": null,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "finalmultiplier": {
+    "type": "float",
+    "min": 0,
+    "max": 32,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "softintersectionfactor": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "viewdependencyfactor": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 2
+  },
+  "startcolor": {
+    "type": "float4",
+    "min": 0,
+    "max": 4,
+    "step": 0.01,
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "endcolor": {
+    "type": "float4",
+    "min": 0,
+    "max": 4,
+    "step": 0.01,
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 0.0"
+  },
+  "fadingfeaturing": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.55
+  },
+  "dustuvscale": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.6
+  },
+  "dusttimescale": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "turbstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "turbratio": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.02,
+    "widget": "slider",
+    "default": 0.55
+  },
+  "uvrot": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "backgroudalphanoisespeedx": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.1
+  },
+  "backgroudalphanoisespeedy": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.05
+  },
+  "backgroudalphanoisespeedz": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.15
+  },
+  "volumetricscale": {
+    "type": "float",
+    "min": 0,
+    "max": 1.5,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.7
+  },
+  "uvvigfeaturing": {
+    "type": "float",
+    "min": 0.2,
+    "max": 15,
+    "step": 0.2,
+    "widget": "slider",
+    "default": 4
+  },
+  "ambstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "baseuvscale": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "suncolorinfluence": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "fadeoutdistance": {
+    "type": "float",
+    "min": 0.05,
+    "max": 0.3,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.2
+  },
+  "fogcolorinfluence": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0
+  },
+  "nearfadestart": {
+    "type": "float",
+    "min": 0,
+    "max": 200,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "nearfadesize": {
+    "type": "float",
+    "min": 0,
+    "max": 200,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 2
+  },
+  "farfadestart": {
+    "type": "float",
+    "min": 0,
+    "max": 2000,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 100
+  },
+  "farfadesize": {
+    "type": "float",
+    "min": 0,
+    "max": 2000,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 50
+  },
+  "beamlength": {
+    "type": "float",
+    "min": 0,
+    "max": 20,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 10
+  },
+  "origlength": {
+    "type": "float",
+    "min": 0,
+    "max": 20,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 10
+  },
+  "origwidth": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "startradius": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "endradius": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 2
+  },
+  "bumpscale": {
+    "type": "float",
+    "min": 0,
+    "max": 0.1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.005
+  },
+  "backlightscale": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "tintcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "tintcloudiness": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0
+  },
+  "fogdensity": {
+    "type": "float",
+    "min": null,
+    "max": null,
+    "step": null,
+    "widget": "slider",
+    "default": 1
+  },
+  "fogcutoffend": {
+    "type": "float",
+    "min": null,
+    "max": null,
+    "step": null,
+    "widget": "slider",
+    "default": null
+  },
+  "fogcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "cloudinessmasksblur": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "bluramount": {
+    "type": "float",
+    "min": 0,
+    "max": 2,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "cloudinessreducesgloss": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "roughnessboost": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": 2
+  },
+  "roughnessmaxfootprint": {
+    "type": "float",
+    "min": 0.0001,
+    "max": 10,
+    "step": 0.005,
+    "widget": "slider",
+    "default": 0.3
+  },
+  "bumpmaptile": {
+    "type": "float",
+    "min": 0,
+    "max": 20,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "dissolvepercentage": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "dissolveedgethickness": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "dissolvecolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "blendfactor": {
+    "type": "float",
+    "min": 0,
+    "max": 16,
+    "step": 0.2,
+    "widget": "slider",
+    "default": 8
+  },
+  "blendlayer2tiling": {
+    "type": "float",
+    "min": 0,
+    "max": 20,
+    "step": 0.005,
+    "widget": "slider",
+    "default": 1
+  },
+  "blendfalloff": {
+    "type": "float",
+    "min": 0.1,
+    "max": 128,
+    "step": 1,
+    "widget": "slider",
+    "default": 32
+  },
+  "blendlayer2diffuse": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "blendlayer2specular": {
+    "type": "float4",
+    "widget": "color",
+    "default": "0.2314, 0.2314, 0.2314, 0.0"
+  },
+  "blendlayer2smoothness": {
+    "type": "float",
+    "min": 0,
+    "max": 255,
+    "step": 0.5,
+    "widget": "slider",
+    "default": 10
+  },
+  "blendmasktiling": {
+    "type": "float",
+    "min": 0.05,
+    "max": 20,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "maskr": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "maskroverride": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "maskrcolor": {
+    "type": "float3",
+    "widget": "color",
+    "default": "0.0, 0.0, 0.0, 0.0"
+  },
+  "maskg": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "maskgoverride": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "maskgcolor": {
+    "type": "float3",
+    "widget": "color",
+    "default": "0.0, 0.0, 0.0, 0.0"
+  },
+  "maskb": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "maskboverride": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "maskbcolor": {
+    "type": "float3",
+    "widget": "color",
+    "default": "0.0, 0.0, 0.0, 0.0"
+  },
+  "maskagloss": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "maskaglossshift": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "maskaspeccolor": {
+    "type": "float3",
+    "widget": "color",
+    "default": "0.0, 0.0, 0.0, 0.0"
+  },
+  "maskaspeccoloroverride": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "colormaskstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "colormaskoverride": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "colormaskalphainf": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "tattoocolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "scarcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "facialmarkingcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "scarnormalstrength": {
+    "type": "float",
+    "min": null,
+    "max": 10,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "scartissue": {
+    "type": "float",
+    "min": null,
+    "max": null,
+    "step": 0.1,
+    "widget": "slider",
+    "default": null
+  },
+  "melanin": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "translucencymultiplier": {
+    "type": "float",
+    "min": 0,
+    "max": 4,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "detailbumpscale": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "emittancemapgamma": {
+    "type": "float",
+    "min": 1,
+    "max": 2,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "wrinklesblend": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimmajorcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "rimmajorintensity": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimmajorwidth": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimfillcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "rimfillintensity": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.4
+  },
+  "rimfillwidth": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimcolorblend": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.1
+  },
+  "rimsmoothness": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimcentercolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "rimcenterintensity": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "rimblendmajorcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "rimblendmajoralpha": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimblendmajorwidth": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimblendfillcolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "rimblendfillalpha": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.4
+  },
+  "rimblendfillwidth": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimblendcolorblend": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.1
+  },
+  "rimblendsmoothness": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "rimblendcentercolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 1.0, 1.0"
+  },
+  "rimblendcenteralpha": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "tessellationdispbias": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "tessellationheightscale": {
+    "type": "float",
+    "min": 0,
+    "max": 50,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "blendlayerdisplacement": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0
+  },
+  "tessellationfactor": {
+    "type": "float",
+    "min": 0.1,
+    "max": 10,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "tessellationfactormin": {
+    "type": "float",
+    "min": 1,
+    "max": 32,
+    "step": 0.5,
+    "widget": "slider",
+    "default": 1
+  },
+  "tessellationfactormax": {
+    "type": "float",
+    "min": 1,
+    "max": 32,
+    "step": 0.5,
+    "widget": "slider",
+    "default": 32
+  },
+  "tessellationfacecull": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.75
+  },
+  "obmdisplacement": {
+    "type": "float",
+    "min": 0,
+    "max": 0.025,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.004
+  },
+  "pomdisplacement": {
+    "type": "float",
+    "min": 0,
+    "max": 0.05,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.025
+  },
+  "silpomdisplacement": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.025
+  },
+  "silpomnumsteps": {
+    "type": "float",
+    "min": 4,
+    "max": 512,
+    "step": 1,
+    "widget": "slider",
+    "default": 256
+  },
+  "silpomstepsizeviewdep": {
+    "type": "float",
+    "min": 1,
+    "max": 10,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "heightbias": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "selfshadowstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 3
+  },
+  "detaildiffusescale": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "detailglossscale": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "decalfalloff": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "decalalphamult": {
+    "type": "float",
+    "min": 0,
+    "max": 10,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "decaldiffuseopacity": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "transmittancecolor": {
+    "type": "float4",
+    "widget": "color",
+    "default": "1.0, 1.0, 0.6, 1.0"
+  },
+  "normalviewdependency": {
+    "type": "float",
+    "min": 0,
+    "max": 0.95,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "backdiffusemultiplier": {
+    "type": "float",
+    "min": 0,
+    "max": 4,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 1
+  },
+  "decalworlduvscale": {
+    "type": "float",
+    "min": 0.001,
+    "max": 10,
+    "step": 1,
+    "widget": "slider",
+    "default": 1
+  },
+  "sssspecularcutoff": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.005,
+    "widget": "slider",
+    "default": 1
+  },
+  "refrbumpscale": {
+    "type": "float",
+    "min": 0,
+    "max": 2,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.1
+  },
+  "refractionblend": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0
+  },
+  "brightness": {
+    "type": "float",
+    "min": 0,
+    "max": 32,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "animspeed": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.05
+  },
+  "animamplitude": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.3
+  },
+  "animoffset": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0
+  },
+  "bumpanimspeed": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.3
+  },
+  "diffuserange": {
+    "type": "float",
+    "min": 1,
+    "max": 4,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 1
+  },
+  "depthbias": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.01
+  },
+  "capopacityfalloff": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "blendterraincol": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0
+  },
+  "blendterraincoldist": {
+    "type": "float",
+    "min": 0.01,
+    "max": 1,
+    "step": 0.05,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "detailnormalsscale": {
+    "type": "float",
+    "min": 0,
+    "max": 4,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.5
+  },
+  "normalsscale": {
+    "type": "float",
+    "min": 0,
+    "max": 4,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0.25
+  },
+  "waterflowspeed": {
+    "type": "float",
+    "min": -4,
+    "max": 4,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "waterflowmapscale": {
+    "type": "float",
+    "min": -4,
+    "max": 4,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "glossmapscale": {
+    "type": "float",
+    "min": 0,
+    "max": 8,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "glossmapbias": {
+    "type": "float",
+    "min": -1,
+    "max": 1,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 0
+  },
+  "envcubescale": {
+    "type": "float",
+    "min": 0.1,
+    "max": 200,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 20
+  },
+  "realtimereflmul": {
+    "type": "float",
+    "min": 0,
+    "max": 16,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "envcubereflmul": {
+    "type": "float",
+    "min": 0,
+    "max": 16,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "foamsoftintersectionfactor": {
+    "type": "float",
+    "min": 0.01,
+    "max": 10,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.75
+  },
+  "foamamount": {
+    "type": "float",
+    "min": 0,
+    "max": 8,
+    "step": 0.001,
+    "widget": "slider",
+    "default": 1
+  },
+  "decalstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 1
+  },
+  "vertexwavescale": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.1,
+    "widget": "slider",
+    "default": 0.125
+  },
+  "flowoffsettiling": {
+    "type": "float",
+    "min": 0,
+    "max": 4,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.15
+  },
+  "flowoffsetstrength": {
+    "type": "float",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "widget": "slider",
+    "default": 0.15
+  },
+  "vcausticparams": {
+    "type": "float4",
+    "widget": null
+  }
+}

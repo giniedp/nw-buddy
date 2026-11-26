@@ -6,7 +6,9 @@ import { NwData } from '@nw-data/db'
 import { FilterSpecification } from 'maplibre-gl'
 import { combineLatest, map } from 'rxjs'
 import { injectNwData } from '~/data'
-import { BranchExpression } from '~/ui/expression-branch'
+import { BranchExpression, BranchExpressionRow } from '~/ui/expression-branch'
+import { VitalsFeatureProperties } from './data/types'
+import { withPersistedState } from './with-persisted-state'
 
 const KNOWN_ENCOUNTER_TYPES = [
   '',
@@ -79,6 +81,13 @@ export interface Preset {
   minLevel?: number
   maxLevel?: number
 }
+
+export type ExpressionKey =
+  | 'idExpression'
+  | 'typeExpression'
+  | 'categoriesExpression'
+  | 'lootTagsExpression'
+  | 'poiTagsExpression'
 
 export interface JoinOperator {
   value: string
@@ -173,8 +182,44 @@ export const FilterVitalsStore = signalStore(
       },
     ],
   }),
+  withPersistedState<FilterVitalsState>('zone-map-vitals', [
+    'levelMin',
+    'levelMax',
+    'hideEncounter',
+    'idExpression',
+    'typeExpression',
+    'categoriesExpression',
+    'lootTagsExpression',
+    'poiTagsExpression',
+  ]),
   withMethods((state) => {
     return {
+      /**
+       * Adds or removes the creature from the ID filter (rows `id == value`, joined by OR)
+       */
+      toggleCreature(id: string) {
+        patchState(state, ({ idExpression }) => {
+          const rows = idExpression.rows.filter((it) => !(it.operator === '==' && it.right === id))
+          if (rows.length === idExpression.rows.length) {
+            rows.push({ left: 'id', operator: '==', right: id })
+          }
+          return {
+            idExpression: { join: 'any', rows },
+          }
+        })
+      },
+      clearAll() {
+        patchState(state, {
+          levelMin: 1,
+          levelMax: NW_MAX_ENEMY_LEVEL,
+          hideEncounter: [],
+          idExpression: { join: 'any', rows: [] },
+          typeExpression: { join: 'any', rows: [] },
+          categoriesExpression: { join: 'all', rows: [] },
+          lootTagsExpression: { join: 'all', rows: [] },
+          poiTagsExpression: { join: 'all', rows: [] },
+        })
+      },
       toggleEncounter(type: string) {
         patchState(state, ({ hideEncounter }) => {
           if (hideEncounter.includes(type)) {
@@ -268,6 +313,7 @@ export const FilterVitalsStore = signalStore(
           return knownEncounterTypes().map((id) => {
             return {
               id,
+              label: encounterLabel(id),
               enabled: !hideEncounter().includes(id),
             }
           })
@@ -311,6 +357,39 @@ export const FilterVitalsStore = signalStore(
           }
           return result
         }),
+        /**
+         * The layer filter as a JS predicate, for counting the visible points
+         */
+        matcher: computed(() => {
+          const min = levelMin()
+          const max = levelMax()
+          const hidden = hideEncounter() || []
+          const expressions = [
+            idExpression(),
+            typeExpression(),
+            poiTagsExpression(),
+            lootTagsExpression(),
+            categoriesExpression(),
+          ].filter((it) => !!it?.rows.length)
+          return (props: VitalsFeatureProperties) => {
+            if (props.level < min || props.level > max) {
+              return false
+            }
+            for (const type of hidden) {
+              if (type ? props.encounter.includes(type) : !props.encounter.length) {
+                return false
+              }
+            }
+            for (const expression of expressions) {
+              const matches = expression.rows.map((row) => matchRow(props, row))
+              const ok = expression.join === 'all' ? matches.every((it) => it) : matches.some((it) => it)
+              if (!ok) {
+                return false
+              }
+            }
+            return true
+          }
+        }),
       }
     },
   ),
@@ -322,6 +401,32 @@ export const FilterVitalsStore = signalStore(
     }
   }),
 )
+
+export function encounterLabel(id: string) {
+  if (!id) {
+    return 'No encounter'
+  }
+  const text = id.replace(/_/g, ' ')
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+function matchRow(props: VitalsFeatureProperties, row: BranchExpressionRow) {
+  const value = props[row.left as keyof VitalsFeatureProperties]
+  switch (row.operator) {
+    case '==': {
+      return value === row.right
+    }
+    case '!=': {
+      return value !== row.right
+    }
+    case '!in': {
+      return !(Array.isArray(value) && (value as string[]).includes(row.right))
+    }
+    default: {
+      return Array.isArray(value) && (value as string[]).includes(row.right)
+    }
+  }
+}
 
 function loadPresets(db: NwData) {
   return combineLatest({

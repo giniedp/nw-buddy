@@ -1,4 +1,4 @@
-import { CaseInsensitiveMap } from '~/utils'
+import { CaseInsensitiveMap } from '~/utils/caseinsensitive-map'
 
 export interface NwTradeSkillInfo {
   ID: string

@@ -1,0 +1,10 @@
+/*
+ * The header of the desktop app (apps/desktop) is the drag region of its frameless window: WebView2 non-client
+ * regions (`NonClientRegionSupport`). Controls in it stay clickable.
+ */
+.nwb-desktop-drag {
+  app-region: drag;
+}
+.nwb-desktop-drag :is(a, button, input, select, textarea, .no-drag) {
+  app-region: no-drag;
+}

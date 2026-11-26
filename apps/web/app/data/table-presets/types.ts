@@ -1,4 +1,4 @@
-import { ColumnState } from '@ag-grid-community/core'
+import { ColumnState } from 'ag-grid-community'
 import { AppDbRecord } from '../app-db'
 
 export interface TablePreset {

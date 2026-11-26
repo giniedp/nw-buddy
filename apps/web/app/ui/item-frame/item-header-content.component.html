@@ -16,7 +16,7 @@
       [routerLink]="titleLink()"
       [class.hover:underline]="!!titleLink()"
     >
-      @if(title(); as text) {
+      @if (title(); as text) {
         <span [innerHTML]="text"></span>
       }
       <ng-content select="[header-title]" />
@@ -47,4 +47,3 @@
 }
 
 <ng-content />
-

@@ -1,4 +1,4 @@
-import { ICellRendererParams } from '@ag-grid-community/core'
+import { ICellRendererParams } from 'ag-grid-community'
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { ItemInstance, ItemInstanceRow } from '~/data'

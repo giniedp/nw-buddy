@@ -45,7 +45,7 @@ func scanObjects(fs nwfs.Archive, uidTable rtti.UuidTable, crcTable rtti.CrcTabl
 
 			doc.Walk(func(node *azcs.WalkNode) bool {
 				el := node.Element
-				elType := table.GetOrCreate(el.Type)
+				elType := table.GetOrCreate(azcs.UUIDString(el.Type))
 				if elType.Name == "" {
 					elType.Name = uidTable.Get(elType.ID)
 				}
@@ -54,7 +54,7 @@ func scanObjects(fs nwfs.Archive, uidTable rtti.UuidTable, crcTable rtti.CrcTabl
 				}
 
 				parent := node.Parent.Element
-				member := table.GetOrCreate(parent.Type).GetOrCreate(el.NameCrc)
+				member := table.GetOrCreate(azcs.UUIDString(parent.Type)).GetOrCreate(el.NameCrc)
 				member.AddType(elType.ID)
 				member.Name = crcTable.Get(el.NameCrc)
 

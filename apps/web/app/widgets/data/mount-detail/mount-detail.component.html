@@ -8,17 +8,22 @@
   />
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
-  @if(store.description() | nwText: { itemId: store.mountId() }| nwTextBreak; as description) {
+  @if (store.description() | nwText: { itemId: store.mountId() } | nwTextBreak; as description) {
     <div [nwHtml]="description" class="text-nw-description italic"></div>
-    <nwb-item-divider/>
+    <nwb-item-divider />
   }
-  @if(store.unlockMethod(); as text) {
-    <nwb-item-stat [label]="'Unlocked at'" >{{ text | nwText }}</nwb-item-stat>
+  @if (store.unlockMethod(); as text) {
+    <nwb-item-stat [label]="'Unlocked at'">{{ text | nwText }}</nwb-item-stat>
   }
 
   @if (store.models()?.length) {
     @if (modelViewerOpened) {
-      <nwb-model-viewer [models]="store.models()" class="w-full rounded-md aspect-square" (close)="modelViewerOpened = false" />
+      <nwb-model-view
+        [models]="store.models()"
+        [downloads]="true"
+        class="w-full rounded-md aspect-square"
+        (close)="modelViewerOpened = false"
+      />
     }
     <button
       class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
@@ -30,6 +35,7 @@
         Close
       }
     </button>
+    <nwb-model-download-button [models]="store.models()" />
   }
   <ng-content />
 </div>

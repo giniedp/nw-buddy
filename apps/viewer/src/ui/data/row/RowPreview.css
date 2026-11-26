@@ -1,0 +1,58 @@
+/* the 3D preview of a row: the engine surface with camera buttons on it, a bar below (RowPreview.tsx) */
+.nw-data-preview {
+  display: flex;
+  flex-direction: column;
+  margin: 0.25rem 0;
+}
+.nw-data-preview-surface {
+  height: 22rem;
+}
+/* the row panel has a fixed width: the bar wraps instead of squeezing its buttons into each other */
+.nw-data-preview > .nw-view-bar {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  /* flush with the canvas edges */
+  padding-inline: 0;
+}
+.nw-data-preview > .nw-view-bar > * {
+  flex: none;
+}
+/* the option dropdown takes the free space up to its text and truncates a long name instead of wrapping the bar */
+.nw-data-preview > .nw-view-bar > .nw-data-preview-select {
+  flex: 1 1 0;
+  min-width: 6rem;
+  max-width: max-content;
+}
+.nw-data-preview-select .twk-select-input,
+.nw-data-preview-select .twk-select {
+  width: 100%;
+  min-width: 0;
+}
+.nw-data-preview-exports {
+  display: flex;
+}
+/* full screen: the engine fills the space above the bar */
+.nw-data-preview:fullscreen {
+  margin: 0;
+  background: var(--nw-bg);
+}
+.nw-data-preview-wheel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.nw-data-preview-overlay {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+}
+.nw-data-preview:fullscreen .nw-data-preview-wheel {
+  flex: 1;
+  min-height: 0;
+}
+.nw-data-preview:fullscreen .nw-data-preview-surface {
+  flex: 1;
+  height: auto;
+}

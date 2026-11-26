@@ -10,8 +10,6 @@ import (
 	"nw-buddy/tools/formats/tracts"
 	"nw-buddy/tools/game"
 	"nw-buddy/tools/game/level"
-	"nw-buddy/tools/utils"
-	"nw-buddy/tools/utils/env"
 	"nw-buddy/tools/utils/img"
 	"nw-buddy/tools/utils/logging"
 	"nw-buddy/tools/utils/maps"
@@ -40,11 +38,6 @@ func runPullTractmaps(ccmd *cobra.Command, args []string) {
 }
 
 func pullTractmaps(assets *game.Assets, outDir string) {
-	if _, ok := utils.Magick.Check(); !ok {
-		slog.Error("Image Magick not found. Skipped heightmap generation.")
-		return
-	}
-
 	directories := level.ListCoatlicueDirectories(assets)
 	bar := progress.Bar(len(directories), "Tractmaps")
 	for _, dir := range directories {
@@ -229,7 +222,7 @@ func pullWorldmap(assets *game.Assets, outDir string, dir level.CoatlicueDirecto
 				slog.Error("reading dds", "err", err, "file", baseName)
 				continue
 			}
-			pngBytes, err := nwbimage.ConvertDDS(ddsBytes, nwbimage.FormatPNG, nwbimage.WithTempDir(env.TempDir()), nwbimage.WithSilent(true))
+			pngBytes, err := nwbimage.ConvertDDS(ddsBytes, nwbimage.FormatPNG)
 			if err != nil {
 				slog.Error("convert dds", "err", err, "file", baseName)
 				continue

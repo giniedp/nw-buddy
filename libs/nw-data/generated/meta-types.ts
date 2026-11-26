@@ -17,6 +17,16 @@ export interface PositionChunkRef {
   elementSize: number
 }
 
+export interface ScannedEmote {
+  clips: Array<ScannedEmoteClip>
+  id: string
+}
+
+export interface ScannedEmoteClip {
+  file: string
+  loop: boolean
+}
+
 export interface ScannedEncounter {
   encounterID: string
   name: string
@@ -28,6 +38,20 @@ export interface ScannedEncounter {
 export interface ScannedEncounterSpawn {
   mapID: string
   positions: Array<[number,number]>
+}
+
+export interface ScannedEquipSocket {
+  name: string
+  position: [number,number,number]
+  rotation: [number,number,number]
+}
+
+export interface ScannedEquipType {
+  drawn: ScannedEquipSocket
+  id: string
+  offHandDrawn: ScannedEquipSocket
+  offHandSheathed: ScannedEquipSocket
+  sheathed: ScannedEquipSocket
 }
 
 export interface ScannedGatherable {
@@ -123,6 +147,7 @@ export interface ScannedVital {
   levels: Array<number>
   mapIDs: Array<string>
   models: Array<string>
+  relatedModels: Array<string>
   spawns: Record<string, Array<ScannedVitalSpawn>>
   tables: Array<string>
   territories: Array<number>
@@ -133,9 +158,15 @@ export interface ScannedVitalModel {
   adb: string
   cdf: string
   id: string
+  model: string
   mtl: string
+  overcoat: string
+  spawnAction: string
+  table: string
   tags: Array<string>
   vitalIds: Array<string>
+  weaponTags: Array<string>
+  weapons: Array<ScannedVitalWeapon>
 }
 
 export interface ScannedVitalSpawn {
@@ -144,10 +175,17 @@ export interface ScannedVitalSpawn {
   g: Array<string>
   l: Array<number>
   lc: number
-  m: Array<string>
-  p: [number,number]
+  m: Array<number>
+  p: Array<[number,number]>
   t: Array<number>
   tc: string
+}
+
+export interface ScannedVitalWeapon {
+  equipType: string
+  item: string
+  mesh: string
+  offHand: boolean
 }
 
 export interface ScannedZoneConfig {

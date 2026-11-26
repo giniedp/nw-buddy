@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, inject, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
@@ -10,12 +10,13 @@ import { svgCamera, svgLink } from '~/ui/icons/svg'
 import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { PlatformService } from '~/utils/services/platform.service'
-import { TransmogEditorComponent, TransmogEditorState } from './transmog-editor'
+import { CharacterEditorComponent } from './character-editor/character-editor.component'
+import type { CharacterEditorValue } from './character-editor/character-editor.store'
 
 @Component({
   selector: 'nwb-transmog-set-new',
   templateUrl: './transmog-set-new.component.html',
-  imports: [TransmogEditorComponent, LayoutModule, IconsModule, TooltipModule, FormsModule],
+  imports: [CharacterEditorComponent, LayoutModule, IconsModule, TooltipModule, FormsModule],
   host: {
     class: 'ion-page',
   },
@@ -32,7 +33,12 @@ export class TransmogSetNewComponent {
   protected iconLink = svgLink
   protected iconCamera = svgCamera
 
-  protected value: TransmogEditorState
+  protected value: CharacterEditorValue
+  /**
+   * The editor's value after the user's edits, what "Save as" stores
+   */
+  private current: CharacterEditorValue | null = null
+  private characterEditor = viewChild(CharacterEditorComponent)
 
   public constructor() {
     const queryState = convertState(decodeState(this.route.snapshot.queryParamMap.get('state')))
@@ -47,8 +53,13 @@ export class TransmogSetNewComponent {
   }
 
   protected handleStateChange(value: any) {
+    this.current = value
     this.preferences.session.set('transmog-editor', value)
     this.encodedState = encodeState(value)
+  }
+
+  protected capturePhoto() {
+    this.characterEditor()?.capturePhoto()
   }
 
   protected copyLink() {
@@ -75,16 +86,19 @@ export class TransmogSetNewComponent {
       .result$.pipe(
         filter((it) => it != null),
         switchMap((name) => {
+          const value = this.current ?? this.value
           return this.service.create({
             id: null,
             name,
-            gender: this.value.gender,
+            gender: value?.gender,
+            emote: value?.emote ?? null,
+            weapons: value?.weapons ?? null,
             slots: {
-              head: this.value.head,
-              chest: this.value.chest,
-              hands: this.value.hands,
-              legs: this.value.legs,
-              feet: this.value.feet,
+              head: value?.head,
+              chest: value?.chest,
+              hands: value?.hands,
+              legs: value?.legs,
+              feet: value?.feet,
             },
           })
         }),
@@ -111,7 +125,10 @@ export class TransmogSetNewComponent {
   }
 }
 
-function decodeState(state: string): TransmogEditorState {
+/**
+ * The state of a shared link, null for none or a broken one
+ */
+function decodeState(state: string): unknown {
   if (!state) {
     return null
   }
@@ -127,13 +144,18 @@ function encodeState(state: any) {
   return compressToEncodedURIComponent(JSON.stringify(state))
 }
 
-function convertState(value: any): TransmogEditorState {
+/**
+ * The editor value of a stored state: links and session values of the editor, older links with the short keys
+ * (`t` item, `r` `g` `b` `a` dyes, `h` hide flags)
+ */
+function convertState(value: any): CharacterEditorValue {
   if (!value) {
     return null
   }
   return {
-    debug: false,
     gender: value.gender,
+    emote: value.emote ?? null,
+    weapons: value.weapons ?? null,
     head: {
       item: value.head?.item ?? value.head?.t,
       dyeR: value.head?.dyeR ?? value.head?.r,
@@ -141,6 +163,7 @@ function convertState(value: any): TransmogEditorState {
       dyeB: value.head?.dyeB ?? value.head?.b,
       dyeA: value.head?.dyeA ?? value.head?.a,
       flag: value.head?.flag ?? value.head?.h,
+      show: value.head?.show,
     },
     chest: {
       item: value.chest?.item ?? value.chest?.t,
@@ -149,6 +172,7 @@ function convertState(value: any): TransmogEditorState {
       dyeB: value.chest?.dyeB ?? value.chest?.b,
       dyeA: value.chest?.dyeA ?? value.chest?.a,
       flag: value.chest?.flag ?? value.chest?.h,
+      show: value.chest?.show,
     },
     hands: {
       item: value.hands?.item ?? value.hands?.t,
@@ -157,6 +181,7 @@ function convertState(value: any): TransmogEditorState {
       dyeB: value.hands?.dyeB ?? value.hands?.b,
       dyeA: value.hands?.dyeA ?? value.hands?.a,
       flag: value.hands?.flag ?? value.hands?.h,
+      show: value.hands?.show,
     },
     legs: {
       item: value.legs?.item ?? value.legs?.t,
@@ -165,6 +190,7 @@ function convertState(value: any): TransmogEditorState {
       dyeB: value.legs?.dyeB ?? value.legs?.b,
       dyeA: value.legs?.dyeA ?? value.legs?.a,
       flag: value.legs?.flag ?? value.legs?.h,
+      show: value.legs?.show,
     },
     feet: {
       item: value.feet?.item ?? value.feet?.t,
@@ -173,6 +199,7 @@ function convertState(value: any): TransmogEditorState {
       dyeB: value.feet?.dyeB ?? value.feet?.b,
       dyeA: value.feet?.dyeA ?? value.feet?.a,
       flag: value.feet?.flag ?? value.feet?.h,
+      show: value.feet?.show,
     },
   }
 }

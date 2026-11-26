@@ -7,7 +7,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"sync"
 )
 
 type ImageLinker interface {
@@ -38,13 +37,14 @@ type ImageLinker interface {
 	// Converts URI depending on relative mode.
 	// Returns the URI that should be stored in the asset.
 	WriteLinkedResource(assetPath string, uri string, data []byte) (string, error)
+	// The URI that WriteLinkedResource returns, without writing
+	LinkedURI(assetPath string, uri string) string
 }
 
 func NewResourceLinker(dir string) ImageLinker {
 	return &resourceLinker{
 		dir:      dir,
 		relative: true,
-		mu:       &sync.Mutex{},
 	}
 }
 
@@ -52,7 +52,6 @@ type resourceLinker struct {
 	dir       string
 	relative  bool
 	skipWrite bool
-	mu        *sync.Mutex
 	query     string
 }
 
@@ -117,35 +116,38 @@ func (r *resourceLinker) ReadLinkedResource(assetPath string, uri string) ([]byt
 	return r.Read(uri)
 }
 
+// WriteLinkedResource writes the resource at uri (relative to the output directory) and returns the uri the asset
+// links it with: relative to the asset in relative mode
 func (r *resourceLinker) WriteLinkedResource(assetPath string, uri string, data []byte) (string, error) {
-	if r.relative {
-		uri = r.ToAssetURI(assetPath, uri)
-	}
-	uri = strings.ToLower(uri)
 	var err error
 	if !r.skipWrite {
-		err = r.Write(uri, data)
+		err = r.Write(strings.ToLower(uri), data)
+	}
+	return r.LinkedURI(assetPath, uri), err
+}
+
+func (r *resourceLinker) LinkedURI(assetPath string, uri string) string {
+	uri = strings.ToLower(uri)
+	if r.relative {
+		uri = strings.ToLower(r.ToAssetURI(assetPath, uri))
 	}
 	if r.query != "" {
 		uri = uri + "?" + r.query
 	}
-	return uri, err
+	return uri
 }
 
 func (r *resourceLinker) Read(file string) ([]byte, error) {
 	if file == "" {
 		return nil, nil
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	return os.ReadFile(path.Join(r.dir, file))
 }
 
+// Write writes the file through a temporary file and a rename: concurrent writes and reads see a whole file
 func (r *resourceLinker) Write(file string, data []byte) error {
 	if file == "" {
 		return nil
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	return utils.WriteFile(path.Join(r.dir, file), data)
 }

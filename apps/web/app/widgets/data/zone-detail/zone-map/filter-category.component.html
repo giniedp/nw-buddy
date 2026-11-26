@@ -1,11 +1,13 @@
 @for (layer of items(); track layer.id) {
   @let data = layer.data[mapId()];
+  @let selected = selection()[layer.id];
   <ng-container
     #mapLayer="mapLayer"
     [nwbMapLayer]="layer.id"
     [labels]="!!layer.labels"
     [icons]="!!layer.properties.icon"
-    [disabled]="true"
+    [disabled]="!selected"
+    [variants]="selected?.variants"
     [heatmap]="showHeatmap()"
     [heatmapColor]="layer.properties.color"
     [filter]="filter()"
@@ -91,7 +93,7 @@
     </button>
   }
   <button
-    class="join-item flex-1 btn btn-sm btn-ghost hover:bg-transparent justify-start items-center gap-2 text-left pl-0"
+    class="join-item flex-1 btn btn-sm btn-ghost hover:bg-transparent justify-start items-center gap-2 text-left text-xs font-normal pl-0"
     (click)="toggleAll()"
     [class.text-primary]="isAnyEnabled()"
   >
@@ -102,15 +104,19 @@
       }
     </span>
   </button>
+  <span class="flex-none font-mono text-xs opacity-60 px-1" [tooltip]="count() + ' points on this map'">
+    {{ countLabel() }}
+  </span>
 
   @if (variants().length) {
     <div class="join">
       @for (variant of variants(); track $index) {
         @let isActive = isVariantActive(variant.id);
         <button
-          class="join-item flex-none btn btn-sm btn-square font-mono text-shadow-sm shadow-black"
+          class="join-item flex-none btn btn-sm btn-square font-mono text-xs text-shadow-sm shadow-black"
           [class.btn-ghost]="!isActive"
           [style.--btn-bg]="isActive ? variant.properties.color : null"
+          [tooltip]="variantTips()[variant.id]"
           (click)="toggleVariant(variant.id)"
         >
           @if (variant.icon; as icon) {
@@ -149,7 +155,7 @@
       @let isActive = isLayerActive(item.id);
       <div class="group flex flex-row" [class.text-primary]="isActive">
         <button
-          class="flex-1 btn btn-sm btn-ghost hover:bg-transparent justify-start text-left"
+          class="flex-1 btn btn-sm btn-ghost hover:bg-transparent justify-start text-left text-xs font-normal"
           (click)="toggleLayer(item.id)"
         >
           <span class="flex flex-col leading-none">
@@ -163,10 +169,13 @@
               }
             </span>
             @if (item.subcategoryAffix) {
-              <span class="text-xs">{{ item.subcategoryAffix | nwText }}</span>
+              <span class="text-xs opacity-75">{{ item.subcategoryAffix | nwText }}</span>
             }
           </span>
         </button>
+        <span class="flex-none self-center font-mono text-xs opacity-60 px-1">
+          {{ formatCount(item.data[mapId()]?.count) }}
+        </span>
         <button
           class="flex-none btn btn-sm btn-square"
           [class.btn-ghost]="!isActive"

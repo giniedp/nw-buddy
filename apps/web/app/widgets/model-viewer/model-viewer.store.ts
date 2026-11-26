@@ -2,19 +2,14 @@ import { computed } from '@angular/core'
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
 import { ArmorAppearanceDefinitions, DyeColorData, MountData } from '@nw-data/generated'
 import { ModelItemInfo } from './model-viewer.service'
-import { supportsWebGL } from './utils/webgl-support'
 import { injectNwData } from '~/data'
-import { environment } from 'apps/web/environments'
 
 export interface ModelViewerState {
-  environments: string[]
-  environmentIndex: number
   animations: string[]
   animationIndex: number
   models: ModelItemInfo[]
   modelIndex: number
   enableDye: boolean
-  isSupported: boolean
   appearance: ArmorAppearanceDefinitions
   dyeColors: DyeColorData[]
   dyeR: DyeColorData
@@ -27,20 +22,11 @@ export interface ModelViewerState {
 
 export const ModelViewerStore = signalStore(
   withState<ModelViewerState>({
-    environments: [
-      'https://assets.babylonjs.com/textures/parking.env',
-      'auto',
-      'https://assets.babylonjs.com/textures/country.env',
-      'https://assets.babylonjs.com/textures/environment.env',
-      'https://assets.babylonjs.com/textures/night.env',
-    ],
-    environmentIndex: 0,
     animations: [],
     animationIndex: 0,
     models: [],
     modelIndex: 0,
     enableDye: false,
-    isSupported: supportsWebGL(),
     appearance: null,
     dyeColors: [],
     dyeR: null,
@@ -50,7 +36,7 @@ export const ModelViewerStore = signalStore(
     dyeDebug: false,
     mode: 'dark',
   }),
-  withProps(({ models, enableDye, appearance, modelIndex, animations, animationIndex, environments, environmentIndex }) => {
+  withProps(({ models, enableDye, appearance, modelIndex, animations, animationIndex }) => {
     return {
       isEmpty: computed(() => !models()?.length),
       canDye: computed(() => enableDye() && !!appearance()),
@@ -72,7 +58,6 @@ export const ModelViewerStore = signalStore(
         })
       }),
       animation: computed(() => animations()[animationIndex()]),
-      environment: computed(() => environments()[environmentIndex()]),
     }
   }),
   withMethods((state) => {
@@ -102,12 +87,6 @@ export const ModelViewerStore = signalStore(
         patchState(state, ({ animations }) => {
           const index = animations.indexOf(name)
           return { animationIndex: index >= 0 ? index : 0 }
-        })
-      },
-      setEnvironment: (name: string) => {
-        patchState(state, ({ environments }) => {
-          const index = environments.indexOf(name)
-          return { environmentIndex: index >= 0 ? index : 0 }
         })
       },
       setAppearance: async (appearance: ArmorAppearanceDefinitions) => {

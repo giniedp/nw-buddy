@@ -86,8 +86,9 @@
           </button>
         }
         @if (modelViewerOpened) {
-          <nwb-model-viewer
+          <nwb-model-view
             [models]="models"
+            [downloads]="true"
             class="w-full rounded-md aspect-square"
             (close)="modelViewerOpened = false"
           />
@@ -98,6 +99,7 @@
             Close
           </button>
         }
+        <nwb-model-download-button [models]="models" />
       }
 
       @if (other(); as other) {

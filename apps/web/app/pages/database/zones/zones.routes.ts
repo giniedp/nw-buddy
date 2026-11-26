@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router'
 import { NW_MAP_NEWWORLD_VITAEETERNA } from '@nw-data/common'
+import { injectLastMap } from './last-map'
 
 export const ROUTES: Routes = [
   {
@@ -8,7 +9,11 @@ export const ROUTES: Routes = [
     children: [
       {
         path: NW_MAP_NEWWORLD_VITAEETERNA,
-        redirectTo: '',
+        // an explicit open world link must not restore the last map
+        redirectTo: () => {
+          injectLastMap().set(NW_MAP_NEWWORLD_VITAEETERNA)
+          return '/map'
+        },
       },
       {
         path: ':id',

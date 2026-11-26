@@ -25,7 +25,7 @@ export function selectGameEventItemReward(event: GameEventData) {
   if (itemReward.startsWith('[LTID]')) {
     return {
       lootTableId: itemReward.replace('[LTID]', ''),
-      lootTags: [...lootTags]
+      lootTags: [...lootTags],
     }
   }
   if (itemReward.includes('HousingItem')) {

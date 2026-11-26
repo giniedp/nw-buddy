@@ -12,7 +12,7 @@ import { injectRouteParam } from '~/utils'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 import { NpcDetailModule } from '~/widgets/data/npc-detail'
 import { LootModule } from '~/widgets/loot'
-import { ModelsService, ModelViewerModule } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -30,7 +30,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     GatherableDetailModule,
     LayoutModule,
     ItemFrameModule,
-    ModelViewerModule,
     NpcDetailModule,
   ],
   providers: [],

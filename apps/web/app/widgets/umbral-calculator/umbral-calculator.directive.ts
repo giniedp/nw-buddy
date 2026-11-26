@@ -12,7 +12,7 @@ export class UmbralCalculatorDirective {
   private upgradeResource = resource({
     loader: async () => {
       return this.db.gearScoreUpgrades()
-    }
+    },
   })
   private upgradeCosts = computed((): Umbralgsupgrades[] => {
     if (this.upgradeResource.hasValue()) {

@@ -9,6 +9,7 @@ import (
 	"nw-buddy/tools/nwfs"
 	"nw-buddy/tools/utils"
 	"path"
+	"runtime"
 
 	"golang.org/x/sync/singleflight"
 )
@@ -47,6 +48,12 @@ func (r LoaderWithConverter) LoadImage(image string) (*LoadedImage, error) {
 	if err != nil {
 		return nil, err
 	}
+	// a split part (.dds.a, mips) loads its base .dds: one load, cache entry and conversion for both
+	if dds.IsDDSSplitPart(file.Path()) {
+		if base, ok := r.Archive.Lookup(utils.ReplaceExt(file.Path(), "")); ok {
+			file = base
+		}
+	}
 	if r.Group == nil {
 		return r.LoadFile(file)
 	}
@@ -67,20 +74,44 @@ func (r LoaderWithConverter) LoadFile(file nwfs.File) (*LoadedImage, error) {
 			return cached, nil
 		}
 	}
-	loaded, err := r.load(file)
-	if err != nil {
-		return nil, fmt.Errorf("image not loaded: %w", err)
+	if r.Converter == nil {
+		loaded, err := r.load(file)
+		if err != nil {
+			return nil, fmt.Errorf("image not loaded: %w", err)
+		}
+		return loaded, nil
 	}
-	if r.Converter != nil {
+	loaded, err := WithConvertSlot(func() (*LoadedImage, error) {
+		loaded, err := r.load(file)
+		if err != nil {
+			return nil, fmt.Errorf("image not loaded: %w", err)
+		}
 		loaded, err = r.Converter.Convert(*loaded)
 		if err != nil {
 			return nil, fmt.Errorf("file not converted: %w", err)
 		}
+		return loaded, nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	if r.Cache != nil {
 		r.Cache.Save(file, loaded)
 	}
 	return loaded, nil
+}
+
+// convertSlots bounds the image conversions that run at once, process wide: they are CPU bound and hold the decoded
+// image (64 MB for 4K)
+var convertSlots = make(chan struct{}, runtime.GOMAXPROCS(0))
+
+// WithConvertSlot runs fn in one of the conversion slots. fn must not wait for another slot.
+func WithConvertSlot[T any](fn func() (T, error)) (T, error) {
+	convertSlots <- struct{}{}
+	defer func() {
+		<-convertSlots
+	}()
+	return fn()
 }
 
 var (
@@ -117,7 +148,11 @@ func (r LoaderWithConverter) load(file nwfs.File) (*LoadedImage, error) {
 
 	switch res.Format {
 	case FormatDDS:
-		img, err := dds.Load(file)
+		maxSize := 0
+		if conv, ok := r.Converter.(BasicConverter); ok {
+			maxSize = conv.maxSourceSize()
+		}
+		img, err := dds.Load(file, maxSize)
 		if err != nil {
 			return res, err
 		}

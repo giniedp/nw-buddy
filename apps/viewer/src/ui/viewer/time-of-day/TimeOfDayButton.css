@@ -1,0 +1,17 @@
+/* the time of day in the toolbar and its slider below the button, see TimeOfDayButton.tsx */
+.nw-tod {
+  position: relative;
+}
+.nw-tod-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  /* above the sidebars */
+  z-index: 1;
+  width: 20rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem;
+  background: var(--nw-bg);
+  border: 1px solid var(--nw-line-strong);
+  border-radius: var(--twk-radius-field);
+}

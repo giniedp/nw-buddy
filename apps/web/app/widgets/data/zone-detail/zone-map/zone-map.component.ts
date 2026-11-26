@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, computed, inject, input, output, resource, signal } from '@angular/core'
+import { Component, computed, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { IonButtons, IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { Feature } from 'geojson'
@@ -19,12 +19,12 @@ import {
   GameMapMouseTipDirective,
 } from '~/widgets/game-map'
 import { LootModule } from '~/widgets/loot'
-import { injectNwData } from '../../../../data'
 import { PropertyGridModule } from '../../../../ui/property-grid'
 import { VitalDetailModule } from '../../vital-detail'
 import { MapFilterSegmentComponent } from './filter-segment.component'
 import { MapFilterVitalsComponent } from './filter-vitals.component'
-import { ZoneMapStore } from './zone-map.store'
+import { FilterVitalsStore } from './filter-vitals.store'
+import { ZoneMapSegment, ZoneMapStore } from './zone-map.store'
 
 @Component({
   selector: 'nwb-zone-map',
@@ -51,23 +51,22 @@ import { ZoneMapStore } from './zone-map.store'
     VitalDetailModule,
     LootModule,
   ],
-  providers: [ZoneMapStore, GameMapHost],
+  providers: [ZoneMapStore, FilterVitalsStore, GameMapHost],
   host: {
     class: 'block',
   },
 })
 export class ZoneDetailMapComponent {
-  private db = injectNwData()
   private mapHost = inject(GameMapHost)
 
   protected store = inject(ZoneMapStore)
 
-  protected segment = signal('g')
+  protected segment = this.store.segment
   protected segments = computed(() => {
     return [
-      { id: 'g', open: false, label: 'Gatherables', source: this.store.gatherables(), icon: svgWheat },
-      { id: 'v', open: false, label: 'Vitals', vitals: this.store.vitals(), icon: svgSkull },
-      { id: 's', open: true, label: 'Structures', source: this.store.houses(), icon: svgHouse },
+      { id: 'g' as const, label: 'Gatherables', source: this.store.gatherables(), icon: svgWheat },
+      { id: 'v' as const, label: 'Vitals', vitals: this.store.vitals(), icon: svgSkull },
+      { id: 's' as const, label: 'Structures', source: this.store.houses(), icon: svgHouse },
     ]
   })
   protected activeSegment = computed(() => this.segments().find((it) => it.id === this.segment()))
@@ -96,16 +95,9 @@ export class ZoneDetailMapComponent {
   protected toolsIcon = svgGears
   protected hoverZoneConfigs = signal<Array<{ name: string; data: any }>>([])
 
-  protected selectSegment(value: string) {
-    this.segment.set(value)
+  protected selectSegment(value: ZoneMapSegment) {
+    this.store.setSegment(value)
   }
-
-  protected mapsOpts = resource({
-    loader: async () => {
-      const modeMaps = await this.db.gameModesMapsAll()
-      const modes = await this.db.gameModesByIdMap()
-    },
-  })
 
   protected mapsOptions = this.store.mapOptions
 

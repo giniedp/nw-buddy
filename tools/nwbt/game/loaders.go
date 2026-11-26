@@ -25,13 +25,14 @@ func (it *Assets) LoadObjectStream(file nwfs.File) (any, error) {
 		return res, nil
 	}
 
+	weight := file.Stat().Size()
 	node, err := LoadObjectStream(file)
 	if err != nil {
 		slog.Debug(fmt.Sprintf("no root element in file '%s'", key))
-		it.objectCache.Store(key, nil)
+		it.objectCache.Store(key, nil, 0)
 		return nil, err
 	}
-	it.objectCache.Store(key, node)
+	it.objectCache.Store(key, node, weight)
 	return node, nil
 }
 

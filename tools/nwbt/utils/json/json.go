@@ -13,9 +13,7 @@ func MarshalJSON(v any, fmt ...string) ([]byte, error) {
 	writer := bytes.NewBuffer(nil)
 	enc := json.NewEncoder(writer)
 	enc.SetEscapeHTML(false)
-	if usePretty {
-		enc.SetIndent(fmt[0], fmt[1])
-	}
+	// encodes compact, the pretty pass below reformats the whole document anyway
 	err := enc.Encode(v)
 	if err != nil {
 		return nil, err
@@ -23,7 +21,7 @@ func MarshalJSON(v any, fmt ...string) ([]byte, error) {
 	data := writer.Bytes()
 	if usePretty {
 		data = pretty.PrettyOptions(data, &pretty.Options{
-			Width:    120,
+			Width:    220,
 			Prefix:   fmt[0],
 			Indent:   fmt[1],
 			SortKeys: false,

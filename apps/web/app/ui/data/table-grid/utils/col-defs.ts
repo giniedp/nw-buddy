@@ -1,4 +1,4 @@
-import { ColDef, ITooltipParams } from '@ag-grid-community/core'
+import { ColDef, ITooltipParams } from 'ag-grid-community'
 import { patchPrecision } from '@nw-data/common'
 
 export const colDefPrecision: ColDef = {

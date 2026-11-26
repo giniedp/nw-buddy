@@ -5,10 +5,10 @@ import (
 	"nw-buddy/tools/formats/capitals"
 	"nw-buddy/tools/formats/gltf/importer"
 	"nw-buddy/tools/game"
+	"nw-buddy/tools/game/slicemodel"
 	"nw-buddy/tools/rtti/nwt"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/logging"
-	"nw-buddy/tools/utils/math"
 	"nw-buddy/tools/utils/math/mat4"
 	"nw-buddy/tools/utils/progress"
 	"path"
@@ -82,227 +82,18 @@ func (c *Collector) CollectCapitals(glob string) {
 				slog.Error("file not found", "slice", cap.SliceName)
 				continue
 			}
-			c.WalkSlice(file, func(node *game.SliceNode) {
-				for _, component := range node.Components {
-					switch v := component.(type) {
-					case nwt.LightComponent:
-						config := v.LightConfiguration
-						if !config.Visible {
-							break
-						}
-						switch config.LightType {
-						case 0:
-							group.Lights = append(group.Lights, importer.LightAsset{
-								Type:      0,
-								Color:     [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
-								Intensity: float32(config.DiffuseMultiplier),
-								Range:     float32(config.PointMaxDistance),
-								Entity: importer.Entity{
-									Name:      string(node.Entity.Name),
-									Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
-								},
-							})
-						case 1: // area
-							group.Lights = append(group.Lights, importer.LightAsset{
-								Type:      0,
-								Color:     [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
-								Intensity: float32(config.DiffuseMultiplier),
-								Range:     float32(config.PointMaxDistance),
-								Entity: importer.Entity{
-									Name:      string(node.Entity.Name),
-									Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
-								},
-							})
-						case 2: // projector
-							group.Lights = append(group.Lights, importer.LightAsset{
-								Type:           0,
-								Color:          [3]float32{float32(config.Color[0]), float32(config.Color[1]), float32(config.Color[2])},
-								Intensity:      float32(config.DiffuseMultiplier),
-								Range:          float32(config.PointMaxDistance),
-								OuterConeAngle: float32(config.ProjectorFOV/2.0) * DEG_TO_RAD,
-								Entity: importer.Entity{
-									Name:      string(node.Entity.Name),
-									Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
-								},
-							})
-						case 3: // probe
-						}
-					case nwt.InstancedMeshComponent:
-						meshNode := v.Instanced_Mesh_Render_Node.BaseClass1
-						if game.ShouldIgnoreMeshNode(meshNode) {
-							continue
-						}
-						modelAsset := meshNode.Static_Mesh
-						modelFile, err := c.LookupFileByAsset(modelAsset)
-						if err != nil {
-							slog.Warn("skip missing model", "err", err)
-							continue
-						}
-						if modelFile == nil {
-							continue
-						}
-						model := modelFile.Path()
-
-						materialAsset := meshNode.Material_Override_Asset
-						materialFile, err := c.LookupFileByAsset(materialAsset)
-						if err != nil {
-							slog.Warn("ignore model material", "err", err)
-						}
-						material := ""
-						if materialFile != nil {
-							material = materialFile.Path()
-						}
-						model, material = c.ResolveCgfAndMtl(model, material)
-						for _, instance := range v.Instanced_Mesh_Render_Node.Instance_Transforms.Element {
-							transform := mat4.FromAzTransform(instance)
-							transform = mat4.Multiply(node.Transform, transform)
-							group.Geometries = append(group.Geometries, importer.GeometryAsset{
-								GeometryFile: model,
-								MaterialFile: material,
-								Entity: importer.Entity{
-									Name:      string(node.Entity.Name),
-									Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, transform)),
-								},
-							})
-						}
-					case nwt.MeshComponent:
-						meshNode := v.Static_Mesh_Render_Node
-						if game.ShouldIgnoreMeshNode(meshNode) {
-							continue
-						}
-						modelAsset := v.Static_Mesh_Render_Node.Static_Mesh
-						modelFile, err := c.LookupFileByAsset(modelAsset)
-						if err != nil {
-							slog.Warn("skip missing model", "err", err)
-							continue
-						}
-						if modelFile == nil {
-							continue
-						}
-						model := modelFile.Path()
-
-						materialAsset := v.Static_Mesh_Render_Node.Material_Override_Asset
-						materialFile, err := c.LookupFileByAsset(materialAsset)
-						if err != nil {
-							slog.Warn("ignore model material", "err", err)
-						}
-						material := ""
-						if materialFile != nil {
-							material = materialFile.Path()
-						}
-						model, material = c.ResolveCgfAndMtl(model, material)
-
-						group.Geometries = append(group.Geometries, importer.GeometryAsset{
-							GeometryFile: model,
-							MaterialFile: material,
-							Entity: importer.Entity{
-								Name:      string(node.Entity.Name),
-								Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
-							},
-						})
-					case nwt.SkinnedMeshComponent:
-						if !v.Skinned_Mesh_Render_Node.Visible {
-							continue
-						}
-						modelAsset := v.Skinned_Mesh_Render_Node.Skinned_Mesh
-						modelFile, err := c.LookupFileByAsset(modelAsset)
-						if err != nil {
-							slog.Warn("skip missing model", "err", err)
-							continue
-						}
-						if modelFile == nil {
-							continue
-						}
-						model := modelFile.Path()
-
-						materialAsset := v.Skinned_Mesh_Render_Node.Material_Override_Asset
-						materialFile, err := c.LookupFileByAsset(materialAsset)
-						if err != nil {
-							slog.Warn("ignore model material", "err", err)
-						}
-						material := ""
-						if materialFile != nil {
-							material = materialFile.Path()
-						}
-						cdf, err := c.LoadCdf(model)
-						if err != nil {
-							slog.Warn("skip unresolved cdf file", "err", err)
-							continue
-						}
-
-						for _, attachment := range cdf.SkinAndClothAttachments() {
-							if model, mtl := c.ResolveCgfAndMtl(attachment.Binding, attachment.Material, material); model != "" {
-								group.Geometries = append(group.Geometries, importer.GeometryAsset{
-									Entity: importer.Entity{
-										Name:      attachment.AName,
-										Transform: math.CryToGltfMat4(mat4.Multiply(rootTransform, node.Transform)),
-									},
-									GeometryFile: model,
-									MaterialFile: mtl,
-									SkipSkin:     true,
-								})
-							}
-						}
-					case nwt.SpawnerComponent:
-						facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.SpawnerComponentServerFacet)
-						if !ok {
-							break
-						}
-						if !node.WalkAsset(facet.M_aliasAsset) {
-							node.WalkAsset(facet.M_sliceAsset)
-						}
-					case nwt.PrefabSpawnerComponent:
-						if !node.WalkAsset(v.M_aliasAsset) {
-							node.WalkAsset(v.M_sliceAsset)
-						}
-					case nwt.PointSpawnerComponent:
-						if !node.WalkAsset(v.BaseClass1.M_aliasAsset) {
-							node.WalkAsset(v.BaseClass1.M_sliceAsset)
-						}
-					case nwt.EncounterComponent:
-						nodeTranform := node.Transform
-						for _, timeline := range v.M_spawnTimeline.Element {
-							if len(timeline.M_spawnLocations.Element) == 0 && timeline.M_count > 0 {
-								if !node.WalkAsset(timeline.M_aliasAsset) {
-									node.WalkAsset(timeline.M_sliceAsset)
-								}
-							} else {
-								for _, location := range timeline.M_spawnLocations.Element {
-									entity := game.FindEntityById(node.Slice, location.EntityId.Id)
-									if entity == nil {
-										continue
-									}
-									node.Transform = mat4.Multiply(nodeTranform, game.FindEntityTransformMat4(entity))
-									if !node.WalkAsset(timeline.M_aliasAsset) {
-										node.WalkAsset(timeline.M_sliceAsset)
-									}
-								}
-							}
-						}
-						node.Transform = nodeTranform
-					case nwt.AreaSpawnerComponent:
-						facet, ok := v.BaseClass1.M_serverFacetPtr.(nwt.AreaSpawnerComponentServerFacet)
-						if !ok {
-							break
-						}
-						nodeTransform := node.Transform
-						for _, location := range facet.M_locations.Element {
-							entity := game.FindEntityById(node.Slice, location.EntityId.Id)
-							if entity == nil {
-								continue
-							}
-							node.Transform = mat4.Multiply(nodeTransform, game.FindEntityTransformMat4(entity))
-							if !node.WalkAsset(facet.M_aliasAsset) {
-								node.WalkAsset(facet.M_sliceAsset)
-							}
-						}
-						node.Transform = nodeTransform
-					default:
-						break
+			slicemodel.Collect(c.Assets, file, slicemodel.Options{
+				Root: &rootTransform,
+				Visit: func(node *game.SliceNode, component any, world mat4.Data, group *importer.AssetGroup) {
+					light, ok := component.(nwt.LightComponent)
+					if !ok || !bool(light.LightConfiguration.Visible) {
+						return
 					}
-				}
-
-			})
+					if asset, ok := c.lightAsset(string(node.Entity.Name), light.LightConfiguration, world); ok {
+						group.Lights = append(group.Lights, asset)
+					}
+				},
+			}, &group)
 		}
 		if !merge && len(group.Geometries) > 0 {
 			group.TargetFile = c.outputPath(utils.ReplaceExt(file.Path(), ""))

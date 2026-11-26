@@ -1,0 +1,131 @@
+@for (item of slots(); track item.id) {
+  <nwb-item-header [rarity]="'common'" class="w-full gap-2 rounded-md overflow-clip">
+    <nwb-item-icon
+      [nwbItemIcon]="item.appearance?.IconPath || item.slot.iconSlot"
+      [rarity]="'common'"
+      [solid]="false"
+      [cover]="true"
+      class="w-20 h-20"
+      [class.cursor-pointer]="!disabled()"
+      (click)="!disabled() && pickItem(item.slot)"
+    />
+    <nwb-item-header-content
+      [title]="item.appearance?.Name || item.slot.name | nwText"
+      [titleLink]="item.transmogId ? ['/transmog', item.transmogId] : null"
+    >
+      <div class="flex flex-row gap-1">
+        @for (dye of item.dyes; track dye.key) {
+          <button
+            class="btn btn-sm btn-square btn-outline"
+            [style.background-color]="store.debug() ? dye.debug : dye.color?.Color"
+            [disabled]="disabled() || dye.disabled"
+            [tooltip]="dye.label"
+            (click)="pickDye(item.id, dye.channel, dye.color)"
+          ></button>
+        }
+        @if (item.hasDyes && !disabled()) {
+          <button class="btn btn-sm btn-square btn-ghost" [tooltip]="'Clear dyes'" (click)="store.clearDyes(item.id)">
+            &times;
+          </button>
+        }
+        <span class="flex-1"></span>
+        @for (hide of item.hides; track hide.bit) {
+          <!-- muted: the rule decides, primary: the user overrides the rule -->
+          <button
+            class="btn btn-sm btn-square btn-ghost swap swap-rotate"
+            [class.swap-active]="hide.hidden"
+            [class.opacity-50]="!hide.override"
+            [class.text-primary]="hide.override"
+            [tooltip]="hide.tooltip"
+            [disabled]="disabled() || hide.armor"
+            (click)="store.toggleBodyPart(item.id, hide.bit)"
+          >
+            <nwb-icon [icon]="iconEye" class="w-4 h-4 swap-off" />
+            <nwb-icon [icon]="iconEyeSlash" class="w-4 h-4 swap-on" />
+          </button>
+        }
+      </div>
+    </nwb-item-header-content>
+  </nwb-item-header>
+}
+@for (weapon of weapons(); track weapon.slot) {
+  <nwb-item-header [rarity]="'common'" class="w-full gap-2 rounded-md overflow-clip">
+    <nwb-item-icon
+      [nwbItemIcon]="weapon.appearance?.IconPath || fallbackIcon"
+      [rarity]="'common'"
+      [solid]="false"
+      [cover]="true"
+      class="w-20 h-20"
+      [class.cursor-pointer]="!disabled()"
+      (click)="!disabled() && pickWeapon(weapon.slot, weapon.categories)"
+    />
+    <nwb-item-header-content [title]="weapon.appearance?.Name || weapon.label | nwText">
+      <div class="flex flex-row items-center gap-1">
+        <span class="text-xs opacity-75">{{ weapon.label }}</span>
+        <span class="flex-1"></span>
+        @if (weapon.appearance && !disabled()) {
+          <button
+            class="btn btn-sm btn-square btn-ghost"
+            [tooltip]="'Remove'"
+            (click)="store.setWeapon(weapon.slot, null)"
+          >
+            &times;
+          </button>
+        }
+      </div>
+    </nwb-item-header-content>
+  </nwb-item-header>
+}
+<button
+  class="btn btn-sm w-full"
+  [class.text-primary]="store.weaponsDrawn()"
+  [disabled]="!canDrawWeapons()"
+  (click)="store.setWeaponsDrawn(!store.weaponsDrawn())"
+>
+  {{ store.weaponsDrawn() ? 'Sheathe Weapons' : 'Draw Weapons' }}
+</button>
+<nwb-item-header [rarity]="'common'" class="w-full gap-2 rounded-md overflow-clip">
+  <nwb-item-icon
+    [nwbItemIcon]="store.emoteRow()?.UiImage || fallbackIcon"
+    [rarity]="'common'"
+    [solid]="false"
+    [cover]="true"
+    class="w-20 h-20"
+    [class.cursor-pointer]="!disabled()"
+    (click)="!disabled() && pickEmote()"
+  />
+  <nwb-item-header-content [title]="store.emoteRow()?.DisplayName || 'Idle' | nwText">
+    <div class="flex flex-row items-center gap-1">
+      <button
+        class="btn btn-sm btn-square btn-ghost swap swap-rotate"
+        [class.swap-active]="!store.animationPaused()"
+        [tooltip]="store.animationPaused() ? 'Play' : 'Pause'"
+        (click)="store.setAnimationPaused(!store.animationPaused())"
+      >
+        <nwb-icon [icon]="iconPause" class="w-4 h-4 swap-on" />
+        <nwb-icon [icon]="iconPlay" class="w-4 h-4 swap-off" />
+      </button>
+      <input
+        type="range"
+        class="range range-xs flex-1 min-w-0"
+        min="0"
+        step="0.01"
+        [max]="store.animationProgress().duration"
+        [value]="store.animationProgress().time"
+        (input)="store.seekAnimation(+$any($event.target).value)"
+      />
+      <span class="text-xs opacity-75 tabular-nums w-10 text-right">{{ animationTime() }}</span>
+      @if (store.emote() && !disabled()) {
+        <button class="btn btn-sm btn-square btn-ghost" [tooltip]="'Back to idle'" (click)="store.setEmote(null)">
+          &times;
+        </button>
+      }
+    </div>
+  </nwb-item-header-content>
+</nwb-item-header>
+<button class="btn btn-sm w-full" [disabled]="disabled()" (click)="toggleGender()">
+  <span [class.text-primary]="isMale()">Male</span> / <span [class.text-primary]="!isMale()">Female</span>
+</button>
+<button class="btn btn-sm w-full" [class.text-primary]="store.debug()" (click)="store.setDebug(!store.debug())">
+  Inspect Dye Channels
+</button>

@@ -25,7 +25,7 @@ export class MaplibreDirective implements OnDestroy {
     attributionControl: false,
     canvasContextAttributes: {
       antialias: true,
-    }
+    },
   })
 
   @Input()

@@ -159,6 +159,8 @@ func codeGenIndexSheets(types ts.TypeMap) string {
 
 func codeGenScanTypes() string {
 	types := make(ts.TypeMap)
+	types.AddReflect(reflect.TypeOf(scanner.ScannedEmote{}))
+	types.AddReflect(reflect.TypeOf(scanner.ScannedEquipType{}))
 	types.AddReflect(reflect.TypeOf(scanner.ScannedGatherable{}))
 	types.AddReflect(reflect.TypeOf(scanner.ScannedHouseType{}))
 	types.AddReflect(reflect.TypeOf(scanner.ScannedLore{}))

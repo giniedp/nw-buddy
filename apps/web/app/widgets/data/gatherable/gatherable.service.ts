@@ -180,7 +180,7 @@ export function getGatherableSpawnCount(gatherable: GatherableRecord) {
     }
   }
   if (gatherable?.$variations?.length) {
-    for (const variation of gatherable?.$variations) {
+    for (const variation of gatherable.$variations) {
       for (const entry of variation.$meta?.spawns || []) {
         sum += entry.positions.elementCount
       }

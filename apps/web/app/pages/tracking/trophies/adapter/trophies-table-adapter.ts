@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable } from '@angular/core'
 import { getItemId, getRecipeForItem } from '@nw-data/common'
 import { CraftingRecipeData, HouseItems } from '@nw-data/generated'

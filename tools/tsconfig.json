@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "declaration": false,
     "skipLibCheck": true,
-    "allowJs": true
+    "allowJs": true,
+    "strict": false
   },
   "buildOptions": {
     "incremental": true,

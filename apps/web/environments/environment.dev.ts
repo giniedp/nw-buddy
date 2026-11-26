@@ -7,9 +7,9 @@ export const environment: Environment = {
   standalone: false,
   environment: 'DEV',
   nwbtUrl: '/nwbt',
-  modelsUrl: '/nwbt/models',
+  modelsUrl: '/nw-cdn/models',
   nwDataUrl: getNwDataUrl(env, 'deployUrl'),
   nwImagesUrl: getNwDataUrl(env, 'deployUrl'),
   nwTilesUrl: getNwDataUrl(env, 'deployUrl'),
-  nwCharUrl: getCharacterUrl(env, 'cdnUrl'),
+  nwCharUrl: '/nw-cdn/models/character',
 }

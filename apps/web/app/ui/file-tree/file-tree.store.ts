@@ -46,7 +46,7 @@ export const FileTreeStore = signalStore(
         patchState(state, {
           list,
           selectedIndex,
-          selection
+          selection,
         })
       },
       load: (files: string[]) => {

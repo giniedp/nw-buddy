@@ -1,0 +1,6 @@
+/* the render pipeline panel, see RenderPipelinePanel.tsx: the description of a pass, a full row */
+.nw-pass-note {
+  margin: 0;
+  padding: 0 0.25rem;
+  line-height: 1.35;
+}

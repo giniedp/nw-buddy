@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source('../..');
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
   themes: nw-buddy --default, nw-buddy --prefersdark;

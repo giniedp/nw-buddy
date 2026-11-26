@@ -1,0 +1,410 @@
+{
+ "ids": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  15,
+  18,
+  19,
+  24,
+  25,
+  27,
+  28,
+  30,
+  31,
+  33,
+  35,
+  36,
+  40,
+  42,
+  49
+ ],
+ "groups": [
+  {
+   "id": 1,
+   "materials": [
+    "treasure_pile_atlas"
+   ],
+   "objects": 1,
+   "mb": 5.6,
+   "images": [
+    "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_ddna.dds",
+    "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_ddna_roughness_043d86e6",
+    "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_diff.dds",
+    "objects/dungeons/cutlasskeys/treasurepiles/treasure_pile_atlas_spec.dds"
+   ]
+  },
+  {
+   "id": 2,
+   "materials": [
+    "JAV_PRP_Writing_mat"
+   ],
+   "objects": 1,
+   "mb": 4.9,
+   "images": [
+    "objects/crafting/props/housewares/writing/textures/jav_prp_writing_ddna.dds",
+    "objects/crafting/props/housewares/writing/textures/jav_prp_writing_ddna_roughness_ae4b8d45",
+    "objects/crafting/props/housewares/writing/textures/jav_prp_writing_diff.dds",
+    "objects/crafting/props/housewares/writing/textures/jav_prp_writing_spec.dds"
+   ]
+  },
+  {
+   "id": 3,
+   "materials": [
+    "JAV_PRP_Kitchen_mat"
+   ],
+   "objects": 1,
+   "mb": 4.9,
+   "images": [
+    "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_ddna.dds",
+    "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_ddna_roughness_e2662556",
+    "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_diff.dds",
+    "objects/crafting/props/housewares/kitchenware/textures/jav_prp_kitchenware_spec.dds"
+   ]
+  },
+  {
+   "id": 4,
+   "materials": [
+    "Copper"
+   ],
+   "objects": 1,
+   "mb": 4.9,
+   "images": [
+    "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_ddna.dds",
+    "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_ddna_roughness_268542f5",
+    "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_diff.dds",
+    "objects/crafting/props/apparatus/alcohol_still/textures/jav_alcohol_still_t1_spec.dds"
+   ]
+  },
+  {
+   "id": 5,
+   "materials": [
+    "male_clothT4_11_helmetFeather",
+    "male_clothT4_00_helmet"
+   ],
+   "objects": 1,
+   "mb": 4.9,
+   "images": [
+    "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_ddna.dds",
+    "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_ddna_roughness_27e94924",
+    "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_diff.dds",
+    "objects/characters/player/male/clotht4/textures/male_clotht4_helmet_spec.dds"
+   ]
+  },
+  {
+   "id": 6,
+   "materials": [
+    "Fishing_Kit02_mat_"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_ddna.dds",
+    "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_ddna_roughness_5b524089",
+    "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_diff.dds",
+    "objects/crafting/props/foodstuffs/fish/fishing_kit02/textures/jav_prp_fishing_kit02_spec.dds"
+   ]
+  },
+  {
+   "id": 7,
+   "materials": [
+    "JAV_PRP_APPR_WinePress_SHD"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_ddna.dds",
+    "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_ddna_roughness_62fd2c26",
+    "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_diff.dds",
+    "objects/crafting/props/apparatus/wine_press/textures/jav_prp_appr_winepress_spec.dds"
+   ]
+  },
+  {
+   "id": 8,
+   "materials": [
+    "JAV_PRP_APPR_WineCask_SHD"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_ddna.dds",
+    "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_ddna_roughness_08489084",
+    "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_diff.dds",
+    "objects/crafting/props/apparatus/wine_cask/textures/jav_prp_appr_winecask_spec.dds"
+   ]
+  },
+  {
+   "id": 9,
+   "materials": [
+    "dishware"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_ddna.dds",
+    "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_ddna_roughness_ee3ca072",
+    "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_diff.dds",
+    "objects/crafting/props/housewares/dishware_wood/textures/jav_prp_dishware_wood_spec.dds"
+   ]
+  },
+  {
+   "id": 10,
+   "materials": [
+    "JAV_PRP_Containerset"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_ddna.dds",
+    "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_ddna_roughness_da268383",
+    "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_diff.dds",
+    "objects/crafting/props/housewares/containers/textures/jav_prp_containerset_spec.dds"
+   ]
+  },
+  {
+   "id": 11,
+   "materials": [
+    "mtx_Firelight2023_rug_carpet_mat"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_ddna.dds",
+    "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_ddna_roughness_10c2167d",
+    "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_diff.dds",
+    "objects/housing/mtx/firelight_2023/rug/textures/mtx_firelight2023_rug_carpet_spec.dds"
+   ]
+  },
+  {
+   "id": 12,
+   "materials": [
+    "JAV_PRP_Dishware"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_ddna.dds",
+    "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_ddna_roughness_c47888c4",
+    "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_diff.dds",
+    "objects/crafting/props/housewares/dishware/textures/jav_prp_dishware_wood_spec.dds"
+   ]
+  },
+  {
+   "id": 15,
+   "materials": [
+    "mesh.006"
+   ],
+   "objects": 1,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_ddna.dds",
+    "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_ddna_roughness_19d97c8b",
+    "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_diff.dds",
+    "objects/crafting/props/tools/woodworking/textures/jav_prp_woodworkingtools_spec.dds"
+   ]
+  },
+  {
+   "id": 18,
+   "materials": [
+    "Fishing_Kit05"
+   ],
+   "objects": 2,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/catchables/Fishing_Kit05/textures/Jav_Prp_Fishing_Kit05_ddna_roughness_b124f8d3",
+    "objects/crafting/props/catchables/fishing_kit05/textures/jav_prp_fishing_kit05_ddna.dds",
+    "objects/crafting/props/catchables/fishing_kit05/textures/jav_prp_fishing_kit05_diff.dds",
+    "objects/crafting/props/catchables/fishing_kit05/textures/jav_prp_fishing_kit05_spec.dds"
+   ]
+  },
+  {
+   "id": 19,
+   "materials": [
+    "mesh1"
+   ],
+   "objects": 3,
+   "mb": 4.2,
+   "images": [
+    "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_ddna.dds",
+    "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_ddna_roughness_97ac888a",
+    "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_diff.dds",
+    "objects/crafting/props/siege/cannonball/textures/jav_prp_cannonball_spec.dds"
+   ]
+  },
+  {
+   "id": 24,
+   "materials": [
+    "galleon_nest_mat"
+   ],
+   "objects": 1,
+   "mb": 3.5,
+   "images": [
+    "objects/landmarks/ships/galleon/textures/galleon_nest_ddna.dds",
+    "objects/landmarks/ships/galleon/textures/galleon_nest_ddna_roughness_853d933c",
+    "objects/landmarks/ships/galleon/textures/galleon_nest_diff.dds"
+   ]
+  },
+  {
+   "id": 25,
+   "materials": [
+    "Rock"
+   ],
+   "objects": 1,
+   "mb": 3.5,
+   "images": [
+    "objects/crafting/architecture/crafting_structures/cookery/textures/jav_prp_foundrocks_ddna.dds",
+    "objects/crafting/architecture/crafting_structures/cookery/textures/jav_prp_foundrocks_ddna_roughness_cc940fe7",
+    "objects/crafting/architecture/crafting_structures/cookery/textures/jav_prp_foundrocks_diff.dds"
+   ]
+  },
+  {
+   "id": 27,
+   "materials": [
+    "windlass"
+   ],
+   "objects": 1,
+   "mb": 3.5,
+   "images": [
+    "objects/crafting/props/storage/barrels/textures/jav_prp_barrelwindlass_ddna.dds",
+    "objects/crafting/props/storage/barrels/textures/jav_prp_barrelwindlass_ddna_roughness_eb0184bf",
+    "objects/crafting/props/storage/barrels/textures/jav_prp_barrelwindlass_diff.dds"
+   ]
+  },
+  {
+   "id": 28,
+   "materials": [
+    "JAV_PRP_Bookcase"
+   ],
+   "objects": 1,
+   "mb": 3.5,
+   "images": [
+    "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_ddna.dds",
+    "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_ddna_roughness_05dda5e6",
+    "objects/crafting/props/furniture/shelving/bookshelves_t2/textures/jav_prp_bookcase_t2_diff.dds"
+   ]
+  },
+  {
+   "id": 30,
+   "materials": [
+    "JAV_PRP_Stool_wood_A_mat"
+   ],
+   "objects": 1,
+   "mb": 3.5,
+   "images": [
+    "objects/crafting/props/furniture/seating/jav_prp_stool_wood_a/textures/jav_prp_stool_wood_a_ddna.dds",
+    "objects/crafting/props/furniture/seating/jav_prp_stool_wood_a/textures/jav_prp_stool_wood_a_ddna_roughness_9c367af5",
+    "objects/crafting/props/furniture/seating/jav_prp_stool_wood_a/textures/jav_prp_stool_wood_a_diff.dds"
+   ]
+  },
+  {
+   "id": 31,
+   "materials": [
+    "JAV_PRP_WagonWheels"
+   ],
+   "objects": 1,
+   "mb": 3.5,
+   "images": [
+    "Objects/Crafting/Props\\Vehicles\\Wheels/textures/jav_prp_wagonwheels_ddna_roughness_afcddb98",
+    "objects/crafting/props/vehicles/wheels/textures/jav_prp_wagonwheels_ddna.dds",
+    "objects/crafting/props/vehicles/wheels/textures/jav_prp_wagonwheels_diff.dds"
+   ]
+  },
+  {
+   "id": 33,
+   "materials": [
+    "JAV_PRP_Sacks",
+    "Climax_leather_sack"
+   ],
+   "objects": 3,
+   "mb": 3.5,
+   "images": [
+    "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_ddna.dds",
+    "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_ddna_roughness_3c321203",
+    "objects/crafting/props/storage/sacks/textures/jav_prp_sacks_diff.dds"
+   ]
+  },
+  {
+   "id": 35,
+   "materials": [
+    "Ruins_Mat"
+   ],
+   "objects": 2,
+   "mb": 3.5,
+   "images": [
+    "objects/crafting/architecture/ruins_structures/textures/jav_struc_ruins_rock_d_ddna.dds",
+    "objects/crafting/architecture/ruins_structures/textures/jav_struc_ruins_rock_d_ddna_roughness_6074826a",
+    "objects/crafting/architecture/ruins_structures/textures/jav_struc_ruins_rock_d_diff.dds"
+   ]
+  },
+  {
+   "id": 36,
+   "materials": [
+    "JAV_PRP_PaperParcels"
+   ],
+   "objects": 3,
+   "mb": 3.5,
+   "images": [
+    "Objects\\Crafting\\Props\\Storage\\PaperParcels\\Textures/jav_prp_paperparcels_ddna_roughness_50fdb201",
+    "objects/crafting/props/storage/paperparcels/textures/jav_prp_paperparcels_ddna.dds",
+    "objects/crafting/props/storage/paperparcels/textures/jav_prp_paperparcels_diff.dds"
+   ]
+  },
+  {
+   "id": 40,
+   "materials": [
+    "fabric"
+   ],
+   "objects": 1,
+   "mb": 2.1,
+   "images": [
+    "objects/crafting/props/furniture/beds/cot/textures/jav_prp_cot_t1_a_ddna.dds",
+    "objects/crafting/props/furniture/beds/cot/textures/jav_prp_cot_t1_a_ddna_roughness_1a00d501",
+    "objects/crafting/props/furniture/beds/cot/textures/jav_prp_cot_t1_a_diff.dds"
+   ]
+  },
+  {
+   "id": 42,
+   "materials": [
+    "JAV_PRP_Bedding_T2_SHD"
+   ],
+   "objects": 2,
+   "mb": 2.1,
+   "images": [
+    "objects/crafting/props/furniture/beds/textures/jav_prp_bedding_t2_ddna.dds",
+    "objects/crafting/props/furniture/beds/textures/jav_prp_bedding_t2_diff.dds"
+   ]
+  },
+  {
+   "id": 49,
+   "materials": [
+    "JAV_PRP_BedFrame_T2_SHD"
+   ],
+   "objects": 2,
+   "mb": 0.9,
+   "images": [
+    "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_ddna.dds",
+    "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_ddna_roughness_c5d2e83d",
+    "objects/crafting/props/furniture/beds/textures/jav_prp_beds_t2_diff.dds"
+   ]
+  }
+ ],
+ "diffuse": [
+  "objects/climax/models/intro_map/intro_map_01.dds",
+  "objects/crafting/architecture/living_structures/cabin/textures/jav_struc_living_t2_wood_diff.dds",
+  "objects/crafting/architecture/social_structures/headquarters/townproject_map/map.dds",
+  "objects/crafting/props/housewares/paper/textures/jav_prp_paperset_a_diff.dds",
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_pile_small_a_diffa.dds",
+  "objects/crafting/props/props_dunwood/debris/dunwood_debris_rubble_diff.dds",
+  "objects/weapons/melee/spears/2h/speara/textures/t3/wep_me2h_speara_t3_diff.dds",
+  "objects/weapons/ranged/rifles/musketa/jav_wep_rif_musketa_diff.dds"
+ ]
+}

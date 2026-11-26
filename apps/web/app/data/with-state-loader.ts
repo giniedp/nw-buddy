@@ -23,7 +23,7 @@ export type WithResourceConfig<P, R> = {
 }
 
 export type WithResourceMethods<P, R> = {
-  load: ((input?: P | Signal<P> | Observable<P>) => any)
+  load: (input?: P | Signal<P> | Observable<P>) => any
   loadDone: (data: R) => void
   loadError: (err: any) => void
   refresh: () => void

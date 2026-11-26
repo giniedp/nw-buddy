@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core'
+import { GridOptions } from 'ag-grid-community'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { COLS_GAMEEVENTDATA, COLS_OBJECTIVES, Objectives } from '@nw-data/generated'

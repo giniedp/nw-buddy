@@ -1,10 +1,21 @@
-import { AsyncPipe, NgTemplateOutlet } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ViewChild, computed, inject, signal } from '@angular/core'
+import { NgTemplateOutlet } from '@angular/common'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NW_MAP_NEWWORLD_VITAEETERNA } from '@nw-data/common'
 import { NwModule } from '~/nw'
+import { injectLastMap } from './last-map'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
@@ -27,7 +38,6 @@ import { GameMapControlDirective, GameMapHost } from '../../../widgets/game-map'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgTemplateOutlet,
-    AsyncPipe,
     DataGridModule,
     DataViewModule,
     GameMapControlDirective,
@@ -85,6 +95,7 @@ export class ZonesPageComponent {
 
   protected router = inject(Router)
   protected route = inject(ActivatedRoute)
+  private lastMap = injectLastMap()
   protected menuIcon = svgBars
 
   @ViewChild(RouterOutlet, { static: true })
@@ -99,6 +110,28 @@ export class ZonesPageComponent {
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Territories and POIs DB',
+    })
+    this.restoreLastMap()
+    effect(() => {
+      const mapId = this.mapIdParam()
+      untracked(() => {
+        this.lastMap.set(mapId)
+      })
+    })
+  }
+
+  /**
+   * Opening `/map` without a map id goes to the map selected last
+   */
+  private restoreLastMap() {
+    const id = this.route.snapshot.firstChild?.params['id']
+    const last = this.lastMap.get()
+    if (id || !last || last === NW_MAP_NEWWORLD_VITAEETERNA || this.platform.isServer) {
+      return
+    }
+    // not while the navigation that created this page is still running
+    afterNextRender(() => {
+      this.router.navigate(['/map', last], { replaceUrl: true })
     })
   }
 

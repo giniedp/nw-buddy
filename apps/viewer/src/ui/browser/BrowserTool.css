@@ -1,0 +1,18 @@
+/* the sidebar of the browser tool (BrowserTool.tsx); the shell shared with the Data tool (search bar, list, summary)
+   is in styles/browser.css */
+
+/* the tree or the search results (tree/AssetTree.tsx, search/SearchResults.tsx) */
+.nw-asset-tree {
+  flex: 1;
+  min-height: 0;
+}
+
+/* the selected file below the list: path, type, size (SelectionInfo.tsx) */
+.nw-selection {
+  flex: none;
+  border-top: 1px solid var(--nw-line);
+}
+/* short labels, the values get the rest of the narrow sidebar */
+.nw-selection .twk-widget:has(> .twk-widget-label) {
+  grid-template-columns: 3rem 1fr;
+}

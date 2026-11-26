@@ -13,7 +13,7 @@
       <span class="flex-1"></span>
       <div class="join">
         <button class="join-item btn btn-square btn-ghost" [nwbDataViewPin]></button>
-        @if(service.canToggleMode()) {
+        @if (service.canToggleMode()) {
           <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
         }
         <button
@@ -32,7 +32,7 @@
 <ion-content [scrollY]="false">
   <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
     <div class="ion-page order-2" id="main">
-      @if(service.isGridActive()) {
+      @if (service.isGridActive()) {
         <nwb-virtual-grid
           [enableQuickfilter]="true"
           [data]="service.categoryItems()"
@@ -40,7 +40,7 @@
           [identifyBy]="service.entityIdGetter"
           [selectionRouteParam]="selectionParam"
         />
-      } @else if(service.isTableActive()) {
+      } @else if (service.isTableActive()) {
         <nwb-table-grid
           (ready$)="service.onTableReady($event)"
           [enableQuickfilter]="true"
@@ -70,11 +70,7 @@
 </ion-content>
 
 <ng-template #tplDetail>
-  <ion-content
-    [class.ion-p-4]="showSidebar()"
-    [class.ion-p-2]="showModal()"
-    [class.bg-base-300]="true"
-  >
+  <ion-content [class.ion-p-4]="showSidebar()" [class.ion-p-2]="showModal()" [class.bg-base-300]="true">
     <router-outlet />
   </ion-content>
 </ng-template>

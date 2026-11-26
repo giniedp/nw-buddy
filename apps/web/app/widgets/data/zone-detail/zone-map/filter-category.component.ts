@@ -1,35 +1,23 @@
-import { Component, Pipe, PipeTransform, computed, inject, input, output, signal, viewChildren } from '@angular/core'
+import { Component, computed, inject, input, signal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { Feature } from 'geojson'
 import { sortBy, uniq, uniqBy } from 'lodash'
 import { FilterSpecification } from 'maplibre-gl'
-import tinycolor from 'tinycolor2'
+import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgDice, svgInfo } from '~/ui/icons/svg'
+import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize, selectSignal } from '~/utils'
 import { GameMapHost, GameMapMouseTipDirective } from '~/widgets/game-map'
 import { GameMapLayerDirective } from '~/widgets/game-map/game-map-layer.component'
-import { LootGraphComponent } from '../../../loot/loot-graph.component'
-import { FilterFeatureProperties, FilterDataSet } from './data/types'
-import { FilterPopoverComponent } from './filter-popover.component'
-import { ZoneMapStore } from './zone-map.store'
-import { PropertyGridModule } from '~/ui/property-grid'
-import { TranslateService } from '~/i18n'
-import { toObservable } from '@angular/core/rxjs-interop'
 import { isLootTableEmpty } from '../../gatherable'
 import { GatherableDetailDirective } from '../../gatherable-detail'
-
-@Pipe({
-  standalone: true,
-  name: 'toLCH',
-})
-export class ToLCHPipe implements PipeTransform {
-  public transform(value: string): string {
-    const hsl = tinycolor(value).toHsl()
-    return `from hsl(${hsl.h} ${Math.round(hsl.s * 100)}% ${Math.round(hsl.l * 100)}%) l c h`
-  }
-}
+import { FilterDataSet, FilterFeatureProperties } from './data/types'
+import { FilterPopoverComponent } from './filter-popover.component'
+import { formatCount } from './utils/format-count'
+import { ZoneMapStore } from './zone-map.store'
 
 const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
 
@@ -43,7 +31,6 @@ const SIZE_ORDER = ['XXS', 'XS', 'SM', 'MD', 'LG', 'XL', 'XXL', 'XXXL']
     GameMapMouseTipDirective,
     TooltipModule,
     FilterPopoverComponent,
-    ToLCHPipe,
     PropertyGridModule,
     GatherableDetailDirective,
   ],
@@ -63,7 +50,6 @@ export class MapFilterCategoryComponent {
   protected isOpen = signal(false)
   protected iconArrowLeft = svgAngleLeft
   protected iconInfo = svgInfo
-  public layers = viewChildren(GameMapLayerDirective)
   protected hasChevron = computed(() => this.items().length > 1)
   protected hasInfo = computed(() => !isLootTableEmpty(this.lootTable()))
   protected hoverItems = signal<FilterFeatureProperties[]>(null)
@@ -135,57 +121,59 @@ export class MapFilterCategoryComponent {
     return ['all', ...filter] as any
   })
 
+  protected selection = this.mapStore.layers
+  protected layerIds = computed(() => this.items().map((it) => it.id))
+
   public isAnyEnabled = computed(() => {
-    return this.layers().some((it) => !it.disabled())
+    const selection = this.selection()
+    return this.layerIds().some((id) => !!selection[id])
   })
-  public isAllEnabled = computed(() => {
-    return this.layers().some((it) => !it.disabled())
+
+  /**
+   * Points on the current map, of all layers in this row
+   */
+  protected count = computed(() => {
+    const mapId = this.mapId()
+    return this.items().reduce((sum, it) => sum + (it.data[mapId]?.count || 0), 0)
   })
-  protected activeVariants = computed(() => {
-    return uniq(
-      this.layers()
-        .map((it) => it.variants())
-        .flat(),
-    )
+  protected countLabel = computed(() => formatCount(this.count()))
+  protected formatCount = formatCount
+
+  /**
+   * Point count tooltip per variant id
+   */
+  protected variantTips = computed(() => {
+    const mapId = this.mapId()
+    const result: Record<string, string> = {}
+    for (const variant of this.variants()) {
+      const count = this.items().reduce((sum, it) => sum + (it.data[mapId]?.variantCounts[variant.id] || 0), 0)
+      result[variant.id] = `${variant.label}: ${count} points`
+    }
+    return result
   })
 
   protected isVariantActive(variant: string) {
-    const layer = this.layers()[0]
-    if (layer.disabled()) {
+    const selection = this.selection()[this.layerIds()[0]]
+    if (!selection) {
       return false
     }
-    const variants = layer.variants()
-    return !variants || variants.includes(variant)
+    return !selection.variants || selection.variants.includes(variant)
   }
 
   protected isLayerActive(id: string) {
-    for (const layer of this.layers()) {
-      if (layer.layerId() === id) {
-        return !layer.disabled()
-      }
-    }
-    return false
+    return !!this.selection()[id]
   }
 
   protected toggleAll() {
-    const isDisabled = !this.isAllEnabled()
-    this.layers().forEach((layer) => {
-      layer.disabled.set(!isDisabled)
-    })
+    this.mapStore.setLayersEnabled(this.layerIds(), !this.isAnyEnabled())
   }
 
   protected toggleVariant(id: string) {
-    for (const layer of this.layers()) {
-      layer.toggleVariant(id)
-    }
+    this.mapStore.toggleVariant(this.layerIds(), id)
   }
 
   protected toggleLayer(id: string) {
-    for (const layer of this.layers()) {
-      if (layer.layerId() === id) {
-        layer.toggle()
-      }
-    }
+    this.mapStore.toggleLayer(id)
   }
 
   protected handleMouseEnter(features: Array<Feature<any, FilterFeatureProperties>>) {

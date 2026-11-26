@@ -26,18 +26,25 @@
     "allowJs": true,
     "paths": {
       "~/*": ["apps/web/app/*"],
-      "@nw-serve": ["libs/nw-serve"],
-      "@nw-viewer-old": ["libs/nw-viewer-old"],
-      "@nw-viewer-old/*": ["libs/nw-viewer-old/*"],
       "@nw-data/db": ["libs/nw-data/db"],
       "@nw-data/common": ["libs/nw-data/common"],
-      "@nw-data/generated": ["libs/nw-data/generated"]
+      "@nw-data/generated": ["libs/nw-data/generated"],
+      "@nw-buddy/viewer": ["apps/viewer/dist/types/index.d.ts"],
+      "@nw-buddy/viewer/app": ["apps/viewer/dist/types/app.d.ts"]
     }
   },
   "angularCompilerOptions": {
     "strictTemplates": true,
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
+    "strictInputAccessModifiers": true,
+    "extendedDiagnostics": {
+      "checks": {
+        "interpolatedSignalNotInvoked": "error",
+        "uninvokedFunctionInEventBinding": "error",
+        "uninvokedFunctionInTextInterpolation": "error",
+        "uninvokedTrackFunction": "error"
+      }
+    }
   }
 }

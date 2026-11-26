@@ -2,6 +2,7 @@ package cgf
 
 import (
 	"fmt"
+	"log/slog"
 	"math"
 	"nw-buddy/tools/utils"
 	"nw-buddy/tools/utils/buf"
@@ -91,7 +92,8 @@ func ReadChunkController(r *buf.Reader, header ChunkHeader) (res Chunker, err er
 	end := header.Offset + header.Size
 	remaining := end - uint32(r.Pos())
 	if remaining != 0 {
-		println("Warning: ", remaining, " bytes remaining in controller chunk")
+		// slog, not the terminal: a direct write breaks the progress bars
+		slog.Warn("bytes remaining in controller chunk", "bytes", remaining)
 	}
 
 	return out, nil
@@ -187,10 +189,13 @@ func smallTree48BitQuat(data [3]uint16) (comp [4]float32, err error) {
 	return comp, nil
 }
 
+// smallTree64BitQuat decodes eSmallTree64BitExtQuat (Lumberyard QuatQuantization.h SmallTree64BitExtQuat):
+// the two leading stored components have 21 bits, the third 20 bits, the top 2 bits index the dropped component.
+// Components are in Cry order x, y, z, w.
 func smallTree64BitQuat(data [2]uint32) (comp [4]float32, err error) {
 	defer utils.HandleRecover(&err, "smallTree64BitQuat")
 
-	const MAX_20BITf = 741454
+	const MAX_20BITf = 741454.0
 	const RANGE_20BIT = 0.707106781186
 	const MAX_21BITf = 1482909.0
 	const RANGE_21BIT = 0.707106781186
@@ -200,25 +205,25 @@ func smallTree64BitQuat(data [2]uint32) (comp [4]float32, err error) {
 
 	var shift uint
 	var sqrsumm float32
-
-	for i, targetComponentIndex := 0, 0; i < 4; i++ {
+	stored := 0
+	for i := range comp {
 		if uint32(i) == index {
 			continue
 		}
-		if targetComponentIndex < 2 {
-			packed := uint32(value>>shift) & 0xfffff
+		if stored < 2 {
+			packed := uint32(value>>shift) & 0x1fffff
 			comp[i] = float32(packed)/MAX_21BITf - RANGE_21BIT
-			sqrsumm += comp[i] * comp[i]
 			shift += 21
 		} else {
 			packed := uint32(value>>shift) & 0xfffff
 			comp[i] = float32(packed)/MAX_20BITf - RANGE_20BIT
-			sqrsumm += comp[i] * comp[i]
 			shift += 20
 		}
+		sqrsumm += comp[i] * comp[i]
+		stored++
 	}
 
-	comp[index] = float32(math.Sqrt(1.0 - float64(sqrsumm)))
+	comp[index] = float32(math.Sqrt(math.Max(0, 1.0-float64(sqrsumm))))
 
 	return comp, nil
 }
