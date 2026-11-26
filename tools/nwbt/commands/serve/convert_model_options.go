@@ -16,8 +16,8 @@ import (
 	"strings"
 )
 
-// Query options of the model conversions (`.glb`, `.gltf`, `.gltf.zip`). Without options the result is the one the
-// viewers load: textures linked as `.dds`.
+// Query options of the model conversions (`.glb`, `.gltf`, `.gltf.zip`, `.glb.zip`). Without options the result is the
+// one the viewers load: textures linked as `.dds`.
 const (
 	// textures:
 	//   - link (default): `.dds` urls of this server
@@ -25,7 +25,7 @@ const (
 	//   - dds: the original DDS images, normal maps as RGBA8 with z (for Blender)
 	//   - none: no textures
 	//
-	// embed and dds: the images are inside a `.glb` / `.gltf`, separate files in a `.gltf.zip`
+	// embed and dds: the images are inside a `.glb` / `.gltf`, separate files in a `.gltf.zip` / `.glb.zip`
 	QUERY_TEXTURES = "textures"
 	QUERY_SIZE     = "size"     // max texture size of embedded textures
 	QUERY_QUANTIZE = "quantize" // KHR_mesh_quantization for normals and tangents
@@ -35,10 +35,19 @@ const (
 	QUERY_IOR      = "ior"      // > 1: specular workflow with that ior and a scaled specular color (Blender), else ior 0
 )
 
-const targetGltfZip = ".gltf.zip"
+const (
+	// a zip of `<name>.gltf`, `<name>.bin` and the images
+	targetGltfZip = ".gltf.zip"
+	// a zip of `<name>.glb` (the buffer inside) and the images
+	targetGlbZip = ".glb.zip"
+)
 
 func isModelTarget(target string) bool {
-	return target == ".gltf" || target == ".glb" || target == targetGltfZip
+	return target == ".gltf" || target == ".glb" || isZipTarget(target)
+}
+
+func isZipTarget(target string) bool {
+	return target == targetGltfZip || target == targetGlbZip
 }
 
 type modelExportOptions struct {
@@ -64,7 +73,7 @@ func parseModelExportOptions(query url.Values, target string) modelExportOptions
 	}
 	if opts.textures == "" {
 		opts.textures = "link"
-		if target == targetGltfZip {
+		if isZipTarget(target) {
 			// a zip is for editing, linked `.dds` urls would point to this server
 			opts.textures = "embed"
 		}
@@ -99,9 +108,15 @@ func lodSiblings(assets *game.Assets, model string) []string {
 	return result
 }
 
-// setupTextures configures image loading of the document for the texture option. Returns the temp directory of a
-// `.gltf.zip` export (images and buffer are written there), or "".
-func setupTextures(document *gltf.Document, assets *game.Assets, opts modelExportOptions, target string) (string, error) {
+// setupTextures configures image loading of the document for the texture option. Returns the temp directory of a zip
+// export (the images are written there, the document as `<name>.gltf` or `<name>.glb`), or "".
+func setupTextures(
+	document *gltf.Document,
+	assets *game.Assets,
+	opts modelExportOptions,
+	target string,
+	name string,
+) (string, error) {
 	switch opts.textures {
 	case "none":
 		return "", nil
@@ -129,10 +144,10 @@ func setupTextures(document *gltf.Document, assets *game.Assets, opts modelExpor
 			}
 			document.BakeImageLoader = pngLoader
 		}
-		if target != targetGltfZip {
+		if !isZipTarget(target) {
 			return "", nil
 		}
-		// gltf + bin + image files: images are written as files next to the gltf
+		// gltf + bin or glb, and image files: images are written as files next to it
 		dir, err := os.MkdirTemp(flg.TempDir, "gltfzip-*")
 		if err != nil {
 			return "", err
@@ -140,7 +155,12 @@ func setupTextures(document *gltf.Document, assets *game.Assets, opts modelExpor
 		linker := gltf.NewResourceLinker(dir)
 		linker.SetRelativeMode(true)
 		document.ImageLinker = linker
-		document.TargetFile = path.Join(filepath.ToSlash(dir), "model.gltf")
+		// Save writes a binary GLB for the `.glb` extension
+		extension := ".gltf"
+		if target == targetGlbZip {
+			extension = ".glb"
+		}
+		document.TargetFile = path.Join(filepath.ToSlash(dir), name+extension)
 		return dir, nil
 	}
 
@@ -166,12 +186,15 @@ func setupTextures(document *gltf.Document, assets *game.Assets, opts modelExpor
 	return "", nil
 }
 
-// encodeGltfZip writes the document as model.gltf + model.bin and zips them with the image files in dir
-func encodeGltfZip(document *gltf.Document, dir string) ([]byte, error) {
-	if len(document.Buffers) > 0 && document.Buffers[0].URI == "" {
-		document.Buffers[0].URI = "model.bin"
+// encodeGltfZip writes the document as `<name>.gltf` + `<name>.bin`, or as `<name>.glb`, and zips it with the image
+// files in dir
+func encodeGltfZip(document *gltf.Document, dir string, name string) ([]byte, error) {
+	// a glb keeps its buffer inside, a gltf gets it as `<name>.bin`
+	binary := path.Ext(document.TargetFile) == ".glb"
+	if !binary && len(document.Buffers) > 0 && document.Buffers[0].URI == "" {
+		document.Buffers[0].URI = name + ".bin"
 		// the encoder writes external buffers only with a file system, write it here
-		if err := os.WriteFile(filepath.Join(dir, "model.bin"), document.Buffers[0].Data, 0o644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, name+".bin"), document.Buffers[0].Data, 0o644); err != nil {
 			return nil, err
 		}
 	}

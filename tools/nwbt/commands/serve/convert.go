@@ -41,6 +41,21 @@ type convertParams struct {
 	assets *game.Assets // game assets for resolving dependencies and loading data
 	target string       // desired output format, e.g. ".gltf", ".png", etc.
 	query  url.Values   // query parameters from the request, used for additional instructions like resizing
+	name   string       // base name of the model file in a zip, the file's base name when empty
+}
+
+// gltfZipName is the base name of the model file in a zip (`.gltf` + `.bin`, or `.glb`): files unzipped into one
+// folder keep apart
+func gltfZipName(params convertParams) string {
+	name := params.name
+	if name == "" && params.file != nil {
+		base := path.Base(params.file.Path())
+		name = strings.TrimSuffix(base, path.Ext(base))
+	}
+	if name == "" {
+		return "model"
+	}
+	return safeFileName(name)
 }
 
 func convertFile(params convertParams) ([]byte, error) {
@@ -447,7 +462,8 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool, pa
 
 	document := gltf.NewDocument()
 	document.Extras = group.Extra
-	zipDir, err := setupTextures(document, assets, opts, params.target)
+	zipName := gltfZipName(params)
+	zipDir, err := setupTextures(document, assets, opts, params.target, zipName)
 	if err != nil {
 		return nil, err
 	}
@@ -518,7 +534,7 @@ func convertGltf(assets *game.Assets, group importer.AssetGroup, binary bool, pa
 	}
 	document.ProcessMaterials(materialOptions...)
 	if zipDir != "" {
-		return encodeGltfZip(document, zipDir)
+		return encodeGltfZip(document, zipDir, zipName)
 	}
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

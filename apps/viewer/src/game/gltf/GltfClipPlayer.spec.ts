@@ -70,7 +70,32 @@ describe('GltfClipPlayer', () => {
     player.update(5)
     expect(player.time).toBe(1)
     expect(player.playing).toBe(false)
+    expect(player.ended).toBe(true)
     expect(joint.translation.x).toBeCloseTo(2)
+  })
+
+  it('plays an ended sequence again from the start', () => {
+    const joint = new Transform()
+    const player = new GltfClipPlayer([joint])
+    player.setSequence([{ data: clip('once', 0, 2, 2), loop: false }])
+    player.update(5)
+    player.playing = true
+    expect(player.time).toBe(0)
+    expect(player.ended).toBe(false)
+    player.update(0.5)
+    expect(player.playing).toBe(true)
+    expect(joint.translation.x).toBeCloseTo(0.5)
+  })
+
+  it('resumes a paused sequence where it stands', () => {
+    const joint = new Transform()
+    const player = new GltfClipPlayer([joint])
+    player.setSequence([{ data: clip('once', 0, 2, 2), loop: false }])
+    player.update(0.5)
+    player.playing = false
+    player.playing = true
+    player.update(0.5)
+    expect(player.time).toBeCloseTo(1)
   })
 
   it('scrubs while paused and restores the rest pose without a sequence', () => {

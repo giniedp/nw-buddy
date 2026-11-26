@@ -80,6 +80,16 @@ export interface CharacterSocketModels {
 export type CharacterSockets = Record<string, CharacterSocketModels>
 
 /**
+ * The default of the character and background light in stops: the stage lights boosted, a double click on a slider
+ * returns to it
+ */
+export const CHARACTER_LIGHT_STOPS_DEFAULT = 1.25
+/**
+ * How far the light sliders go from the default in stops, both sliders have the same range around it
+ */
+const LIGHT_STOPS_RANGE = 3
+
+/**
  * The character scene of the character editor (`CharacterViewer`): a stage, a character and its slots. All state comes
  * from the inputs, the host holds it and its rules.
  */
@@ -118,11 +128,11 @@ export class CharacterViewComponent {
   /**
    * Light of the stage's character lights in stops from the game's light, the rest of the stage keeps its light
    */
-  public readonly characterLightStops = model<number>(0)
+  public readonly characterLightStops = model<number>(CHARACTER_LIGHT_STOPS_DEFAULT)
   /**
    * Light of the stage's background lights (behind the character) in stops from the editor's default
    */
-  public readonly backgroundLightStops = model<number>(0)
+  public readonly backgroundLightStops = model<number>(CHARACTER_LIGHT_STOPS_DEFAULT)
   /**
    * The clip sequence the character plays (e.g. an emote's start and loop), null or empty: the rest pose
    */
@@ -148,6 +158,11 @@ export class CharacterViewComponent {
    * The time and duration of the animation in seconds, while it plays (about ten times a second) and after changes
    */
   public readonly animationProgress = output<{ time: number; duration: number }>()
+  /**
+   * The animation played to its end and stopped (a sequence without a loop): it counts as paused, playing it again
+   * starts it over
+   */
+  public readonly animationEnd = output<void>()
 
   private host = inject<ElementRef<HTMLElement>>(ElementRef)
   private zone = inject(NgZone)
@@ -174,6 +189,9 @@ export class CharacterViewComponent {
   protected iconFullscreen = svgExpand
   protected iconSun = svgSun
   protected iconMoon = svgMoon
+  protected readonly lightDefault = CHARACTER_LIGHT_STOPS_DEFAULT
+  protected readonly lightMin = CHARACTER_LIGHT_STOPS_DEFAULT - LIGHT_STOPS_RANGE
+  protected readonly lightMax = CHARACTER_LIGHT_STOPS_DEFAULT + LIGHT_STOPS_RANGE
   /**
    * The exposure popover of the toolbar
    */
@@ -321,11 +339,19 @@ export class CharacterViewComponent {
       })
     })
     // the animation time while it plays, outside the change detection until there is something to report
+    let playing = false
     const timer = this.zone.runOutsideAngular(() => {
       return setInterval(() => {
         const viewer = this.viewer()
-        if (viewer?.animationPlaying) {
+        const wasPlaying = playing
+        playing = !!viewer?.animationPlaying
+        if (playing) {
           this.zone.run(() => this.emitProgress(viewer))
+        } else if (wasPlaying && viewer?.animationEnded) {
+          this.zone.run(() => {
+            this.emitProgress(viewer)
+            this.animationEnd.emit()
+          })
         }
       }, 100)
     })

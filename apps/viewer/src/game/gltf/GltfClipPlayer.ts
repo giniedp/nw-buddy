@@ -53,10 +53,28 @@ export interface ClipSequenceEntry {
  */
 export class GltfClipPlayer {
   /**
-   * Advances {@link time} in {@link update}
+   * Advances {@link time} in {@link update}. A sequence that stopped at its end plays again from the start.
    */
-  public playing = false
+  public get playing(): boolean {
+    return this._playing
+  }
+  public set playing(value: boolean) {
+    if (value && !this._playing && this.ended) {
+      this._time = 0
+      this.changed = true
+    }
+    this._playing = value
+  }
 
+  /**
+   * A sequence without a loop is at its end
+   */
+  public get ended(): boolean {
+    const end = this.duration
+    return !this.loops && end > 0 && this._time >= end
+  }
+
+  private _playing = false
   private readonly joints: ReadonlyArray<Transform>
   private readonly rest: Float32Array
   private clips: AnimationClip[] = []
@@ -114,7 +132,7 @@ export class GltfClipPlayer {
     this.clips = entries.map((it) => new AnimationClip(it.data))
     this.loops = entries.length > 0 && entries[entries.length - 1].loop
     this._time = 0
-    this.playing = this.clips.length > 0
+    this._playing = this.clips.length > 0
     this.changed = true
   }
 
@@ -124,12 +142,12 @@ export class GltfClipPlayer {
    * @returns whether the joints changed
    */
   public update(dt: number): boolean {
-    if (this.playing && this.clips.length) {
+    if (this._playing && this.clips.length) {
       const end = this.duration
       const time = this._time + dt
       if (!this.loops && time >= end) {
         this._time = end
-        this.playing = false
+        this._playing = false
       } else {
         this._time = this.wrap(time)
       }

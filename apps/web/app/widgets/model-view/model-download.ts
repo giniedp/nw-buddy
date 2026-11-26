@@ -1,7 +1,7 @@
 import type { GltfSocketOffset, MaterialParams } from '@nw-buddy/viewer'
 import type { ModelSource } from '../model-viewer/utils/model-source'
 import type { ModelSocketInfo } from '../model-viewer/utils/vital-models'
-import { GlbAttachment, GlbDocument, GltfJson, mergeGlbs, parseGlb, writeGlb } from './glb-merge'
+import { embedImages, GlbAttachment, GlbDocument, GltfJson, mergeGlbs, parseGlb, writeGlb } from './glb-merge'
 
 /**
  * The model as the view shows it, for the nwbt export
@@ -114,11 +114,12 @@ function composeModel({ model, material }: ModelSource) {
 }
 
 /**
- * The GLB of a model built by nwbt from the game files, with the options for Blender: DDS textures, specular workflow
- * with ior 1.5, y up
+ * The model built by nwbt from the game files, with the options for Blender: DDS textures, specular workflow with ior
+ * 1.5, y up. `glb`: one file, the textures inside. `zip`: a GLB (the buffer inside) and the textures as files.
  */
-export async function fetchNwbtGlb(nwbtUrl: string, request: ComposeRequest): Promise<Blob> {
-  const res = await fetch(`${nwbtUrl}/characters/compose?yup=true&textures=dds&ior=1.5`, {
+export async function fetchNwbtModel(nwbtUrl: string, request: ComposeRequest, format: 'glb' | 'zip'): Promise<Blob> {
+  const target = format === 'zip' ? '.glb.zip' : '.glb'
+  const res = await fetch(`${nwbtUrl}/characters/compose?yup=true&textures=dds&ior=1.5&target=${target}`, {
     method: 'POST',
     body: JSON.stringify(request),
   })
@@ -160,12 +161,32 @@ export function glbImageUris({ images }: GltfJson): string[] {
 export async function zipModelFiles(files: ModelFiles, name: string, placement: SocketPlacement): Promise<Blob> {
   const { default: JSZip } = await import('jszip')
   const glb = await fetchModel(files, placement)
+  const images = await fetchImages(glb, files.model.rootUrl)
   const zip = new JSZip()
   zip.file(`${name}.glb`, writeGlb(glb))
-  for (const uri of glbImageUris(glb.json)) {
-    zip.file(decodeURI(uri), await fetchBuffer(new URL(uri, files.model.rootUrl).href))
+  for (const [uri, data] of images) {
+    zip.file(decodeURI(uri), data)
   }
   return zip.generateAsync({ type: 'blob' })
+}
+
+/**
+ * The model as the view shows it in one GLB file, its textures embedded. Weapons that do not load are left out, as in
+ * the view.
+ */
+export async function glbModelFile(files: ModelFiles, placement: SocketPlacement): Promise<Blob> {
+  const glb = await fetchModel(files, placement)
+  const images = await fetchImages(glb, files.model.rootUrl)
+  return new Blob([writeGlb(embedImages(glb, images))], { type: 'model/gltf-binary' })
+}
+
+/**
+ * The data of the external images of a GLB by uri, the uris resolve against the models root as the viewer loads them
+ */
+async function fetchImages(glb: GlbDocument, rootUrl: string): Promise<Map<string, Uint8Array>> {
+  const uris = glbImageUris(glb.json)
+  const data = await Promise.all(uris.map((uri) => fetchBuffer(new URL(uri, rootUrl).href)))
+  return new Map(uris.map((uri, i) => [uri, new Uint8Array(data[i])]))
 }
 
 async function fetchModel(files: ModelFiles, placement: SocketPlacement): Promise<GlbDocument> {

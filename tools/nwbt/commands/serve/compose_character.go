@@ -87,8 +87,8 @@ type ComposeSocketModel struct {
 }
 
 // composeCharacterFunc serves POST /characters/compose: the GLB of a ComposeRequest (body). The model export options
-// apply as query (`textures`, `ior`, `size`, `yup`, ..., see convert_model_options.go), `target` is `.glb` (default)
-// or `.gltf.zip`. Not cached: every export is composed on request.
+// apply as query (`textures`, `ior`, `size`, `yup`, ..., see convert_model_options.go), `target` is `.glb` (default),
+// `.glb.zip` or `.gltf.zip`. Not cached: every export is composed on request.
 func composeCharacterFunc(assets *game.Assets) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request ComposeRequest
@@ -110,19 +110,21 @@ func composeCharacterFunc(assets *game.Assets) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		name := request.Name
+		if name == "" {
+			name = strings.TrimSuffix(path.Base(request.Model), path.Ext(request.Model))
+		}
+		// the files in a zip are named like the download
 		data, err := convertGltf(assets, group, target == ".glb", convertParams{
 			assets: assets,
 			target: target,
 			query:  query,
+			name:   name,
 		})
 		if err != nil {
 			slog.Error("compose failed", "err", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
-		}
-		name := request.Name
-		if name == "" {
-			name = strings.TrimSuffix(path.Base(request.Model), path.Ext(request.Model))
 		}
 		contentType := "model/gltf-binary"
 		if target != ".glb" {

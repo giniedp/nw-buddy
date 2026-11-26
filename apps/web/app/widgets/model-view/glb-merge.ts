@@ -47,7 +47,7 @@ export interface GltfJson {
   materials?: object[]
   textures?: Array<{ source?: number; sampler?: number; extensions?: Record<string, { source?: number }> }>
   samplers?: object[]
-  images?: Array<{ uri?: string; bufferView?: number }>
+  images?: Array<{ uri?: string; bufferView?: number; mimeType?: string }>
   accessors?: Array<{ bufferView?: number; [key: string]: unknown }>
   bufferViews?: Array<{ buffer: number; byteOffset?: number; byteLength: number }>
   buffers?: Array<{ byteLength: number }>
@@ -149,6 +149,64 @@ export function mergeGlbs(model: GlbDocument, { parts, hidden, attachments }: Gl
   writer.json.extras = model.json.extras
   writer.json.scenes[0].extras = sceneOf(model.json)?.extras
   return writer.finish()
+}
+
+/**
+ * Moves external images into the binary chunk, so the GLB stands alone. Each image gets a buffer view and the mime type
+ * of its uri's extension; images with the same uri share one copy. Images without data in `files` stay external.
+ *
+ * @param files - the data of the image uris
+ */
+export function embedImages({ json, bin }: GlbDocument, files: ReadonlyMap<string, Uint8Array>): GlbDocument {
+  const result: GltfJson = structuredClone(json)
+  const chunks: Uint8Array[] = [bin]
+  let length = align4(bin.length)
+  const views = new Map<string, number>()
+  for (const image of result.images ?? []) {
+    const data = image.uri ? files.get(image.uri) : undefined
+    if (!image.uri || !data) {
+      continue
+    }
+    let view = views.get(image.uri)
+    if (view == null) {
+      result.bufferViews ??= []
+      view = result.bufferViews.push({ buffer: 0, byteOffset: length, byteLength: data.length }) - 1
+      views.set(image.uri, view)
+      chunks.push(data)
+      length += align4(data.length)
+    }
+    image.mimeType = imageMimeType(image.uri)
+    image.bufferView = view
+    delete image.uri
+  }
+  if (!views.size) {
+    return { json: result, bin }
+  }
+  const merged = new Uint8Array(length)
+  let offset = 0
+  for (const chunk of chunks) {
+    merged.set(chunk, offset)
+    offset += align4(chunk.length)
+  }
+  result.buffers = [{ ...result.buffers?.[0], byteLength: length }]
+  return { json: result, bin: merged }
+}
+
+function imageMimeType(uri: string): string {
+  const extension = uri.split(/[?#]/)[0].split('.').pop()?.toLowerCase()
+  switch (extension) {
+    case 'ktx2':
+      return 'image/ktx2'
+    case 'png':
+      return 'image/png'
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg'
+    case 'webp':
+      return 'image/webp'
+    default:
+      return 'application/octet-stream'
+  }
 }
 
 class GlbWriter {

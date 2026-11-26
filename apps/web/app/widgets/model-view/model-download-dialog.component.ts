@@ -5,13 +5,15 @@ import { saveAs } from 'file-saver'
 import { IconsModule } from '~/ui/icons'
 import { svgCubes, svgDownload, svgFolderOpen, svgRotate } from '~/ui/icons/svg'
 import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
 import { DesktopService } from '~/desktop'
 import { environment } from '../../../environments'
 import { viewerLibUrl } from '../nw-viewer'
 import { NwbtService } from '../nwbt-setup'
 import {
   ComposeRequest,
-  fetchNwbtGlb,
+  fetchNwbtModel,
+  glbModelFile,
   hasModelFile,
   ModelFiles,
   SocketPlacement,
@@ -19,6 +21,11 @@ import {
 } from './model-download'
 
 type ViewerLib = typeof import('@nw-buddy/viewer')
+
+/**
+ * The download that runs: the files of this site or the model built by nwbt, as GLB or zip
+ */
+type DownloadKind = 'glb' | 'zip' | 'quality-glb' | 'quality-zip'
 
 export interface ModelDownloadDialogInputs {
   /**
@@ -50,7 +57,7 @@ export interface ModelDownloadDialogInputs {
 @Component({
   selector: 'nwb-model-download-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonContent, IonFooter, IonHeader, IonTitle, IonToolbar, IconsModule, RouterLink],
+  imports: [IonContent, IonFooter, IonHeader, IonTitle, IonToolbar, IconsModule, RouterLink, TooltipModule],
   host: {
     class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
@@ -66,23 +73,37 @@ export interface ModelDownloadDialogInputs {
           <div class="flex flex-col gap-1 min-w-0 flex-1">
             <b>Model from this site</b>
             <span class="text-sm opacity-70">
-              The files this page shows, as a zip with a GLB: textures are heavily compressed for the web (KTX2).
+              The model as this page shows it. The textures are KTX2 (Basis Universal), heavily compressed for the web.
               {{ filesNote() }}
             </span>
           </div>
-          <button
-            class="btn btn-primary btn-sm self-center"
-            [disabled]="!webAvailable() || busy()"
-            [title]="webAvailable() === false ? 'Not available' : ''"
-            (click)="downloadWeb()"
-          >
-            @if (busy() === 'web') {
-              <span class="loading loading-spinner size-4"></span>
-            } @else {
-              <nwb-icon [icon]="iconDownload" class="size-4" />
-            }
-            Zip
-          </button>
+          <!-- the tooltips sit on wrappers: a disabled button gets no mouse events -->
+          <div class="flex flex-col gap-2 self-center">
+            <span class="flex" [tooltip]="webAvailable() === false ? notAvailable : glbTip" tooltipPlacement="left">
+              <button
+                class="btn btn-primary btn-sm flex-1"
+                [disabled]="!webAvailable() || busy()"
+                (click)="downloadWeb('glb')"
+              >
+                @if (busy() === 'glb') {
+                  <span class="loading loading-spinner size-4"></span>
+                } @else {
+                  <nwb-icon [icon]="iconDownload" class="size-4" />
+                }
+                GLB
+              </button>
+            </span>
+            <span class="flex" [tooltip]="webAvailable() === false ? notAvailable : zipTip" tooltipPlacement="left">
+              <button class="btn btn-sm flex-1" [disabled]="!webAvailable() || busy()" (click)="downloadWeb('zip')">
+                @if (busy() === 'zip') {
+                  <span class="loading loading-spinner size-4"></span>
+                } @else {
+                  <nwb-icon [icon]="iconDownload" class="size-4" />
+                }
+                Zip
+              </button>
+            </span>
+          </div>
         </div>
         @if (compose()) {
           @if (nwbtUp()) {
@@ -90,17 +111,32 @@ export interface ModelDownloadDialogInputs {
               <div class="flex flex-col gap-1 min-w-0 flex-1">
                 <b>Model from game files</b>
                 <span class="text-sm opacity-70">
-                  Built by nwbt from the game files of your New World installation: full textures (DDS).
+                  Built by nwbt from your New World installation, for Blender: full resolution DDS textures, specular
+                  workflow, y up.
                 </span>
               </div>
-              <button class="btn btn-sm self-center" [disabled]="busy()" (click)="downloadQuality()">
-                @if (busy() === 'quality') {
-                  <span class="loading loading-spinner size-4"></span>
-                } @else {
-                  <nwb-icon [icon]="iconDownload" class="size-4" />
-                }
-                GLB
-              </button>
+              <div class="flex flex-col gap-2 self-center">
+                <span class="flex" [tooltip]="glbTip" tooltipPlacement="left">
+                  <button class="btn btn-sm flex-1" [disabled]="busy()" (click)="downloadQuality('glb')">
+                    @if (busy() === 'quality-glb') {
+                      <span class="loading loading-spinner size-4"></span>
+                    } @else {
+                      <nwb-icon [icon]="iconDownload" class="size-4" />
+                    }
+                    GLB
+                  </button>
+                </span>
+                <span class="flex" [tooltip]="zipTip" tooltipPlacement="left">
+                  <button class="btn btn-sm flex-1" [disabled]="busy()" (click)="downloadQuality('zip')">
+                    @if (busy() === 'quality-zip') {
+                      <span class="loading loading-spinner size-4"></span>
+                    } @else {
+                      <nwb-icon [icon]="iconDownload" class="size-4" />
+                    }
+                    Zip
+                  </button>
+                </span>
+              </div>
             </div>
             @if (gameFile(); as file) {
               <div class="flex gap-4 rounded-box border border-base-300 bg-base-100 p-4">
@@ -112,6 +148,8 @@ export interface ModelDownloadDialogInputs {
                   class="btn btn-sm self-center"
                   routerLink="/pak/browser"
                   [queryParams]="{ file: file }"
+                  [tooltip]="browserTip"
+                  tooltipPlacement="left"
                   (click)="close()"
                 >
                   <nwb-icon [icon]="iconBrowse" class="size-4" />
@@ -177,6 +215,10 @@ export class ModelDownloadDialogComponent {
   private dialog = inject<ModalRef<void>>(ModalRef, { optional: true })
   private modal = inject(ModalService)
 
+  protected readonly glbTip = 'One GLB file with embedded textures'
+  protected readonly zipTip = 'A zip with the GLB and textures next to it in subfolders'
+  protected readonly notAvailable = 'Not available for this model'
+  protected readonly browserTip = 'Open the game file in the Pak Browser: its preview and the other export formats.'
   protected iconDownload = svgDownload
   protected iconTools = svgCubes
   protected iconBrowse = svgFolderOpen
@@ -192,7 +234,7 @@ export class ModelDownloadDialogComponent {
    * Whether the models server has the GLB, null while asking
    */
   protected webAvailable = signal<boolean | null>(null)
-  protected busy = signal<'quality' | 'web' | null>(null)
+  protected busy = signal<DownloadKind | null>(null)
 
   public constructor() {
     if (inject(DesktopService).isDesktop) {
@@ -211,27 +253,38 @@ export class ModelDownloadDialogComponent {
     this.nwbt.check()
   }
 
-  protected async downloadQuality() {
+  /**
+   * The model built by nwbt from the game files: one GLB, or a zip of a glTF and its files
+   */
+  protected async downloadQuality(format: 'glb' | 'zip') {
     const compose = this.compose()
     if (!compose) {
       return
     }
-    await this.run('quality', async () => {
-      saveAs(await fetchNwbtGlb(environment.nwbtUrl, await compose()), `${this.name()}.glb`)
+    await this.run(`quality-${format}`, async () => {
+      const blob = await fetchNwbtModel(environment.nwbtUrl, await compose(), format)
+      saveAs(blob, `${this.name()}.${format}`)
     })
   }
 
-  protected async downloadWeb() {
+  /**
+   * The files the view loads: one GLB with the textures inside, or a zip of the GLB and its textures
+   */
+  protected async downloadWeb(kind: 'glb' | 'zip') {
     const files = this.files()
     if (!files) {
       return
     }
-    await this.run('web', async () => {
+    await this.run(kind, async () => {
       const lib: ViewerLib = await import(/* @vite-ignore */ viewerLibUrl('nw-viewer.module.js'))
       const placement: SocketPlacement = (gltf, name, offset) => {
         return lib.socketPlacement(gltf as Parameters<ViewerLib['socketPlacement']>[0], name, offset)
       }
-      saveAs(await zipModelFiles(files, this.name(), placement), `${this.name()}.zip`)
+      if (kind === 'glb') {
+        saveAs(await glbModelFile(files, placement), `${this.name()}.glb`)
+      } else {
+        saveAs(await zipModelFiles(files, this.name(), placement), `${this.name()}.zip`)
+      }
     })
   }
 
@@ -239,7 +292,7 @@ export class ModelDownloadDialogComponent {
     this.dialog?.close()
   }
 
-  private async run(kind: 'quality' | 'web', task: () => Promise<void>) {
+  private async run(kind: DownloadKind, task: () => Promise<void>) {
     if (this.busy()) {
       return
     }

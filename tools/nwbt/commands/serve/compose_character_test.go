@@ -1,6 +1,7 @@
 package serve
 
 import (
+	"archive/zip"
 	"bytes"
 	"net/url"
 	"nw-buddy/tools/formats/cdf"
@@ -176,6 +177,54 @@ func TestComposeModels(t *testing.T) {
 				}
 			}
 			require.Equal(t, 1, parents)
+		}
+	})
+
+	t.Run("zip files named like the download", func(t *testing.T) {
+		model := "objects/characters/player/male/player_male.cdf"
+		group, err := composeCharacter(assets, ComposeRequest{Model: model}, base)
+		require.NoError(t, err)
+		zipFiles := func(target string) (map[string]*zip.File, int) {
+			data, err := convertGltf(assets, group, false, convertParams{
+				assets: assets,
+				target: target,
+				query:  url.Values{QUERY_YUP: {"true"}, QUERY_TEXTURES: {"dds"}, QUERY_SIZE: {"64"}},
+				name:   "Pirate Sconce",
+			})
+			require.NoError(t, err)
+			archive, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+			require.NoError(t, err)
+			files := map[string]*zip.File{}
+			textures := 0
+			for _, file := range archive.File {
+				files[file.Name] = file
+				if strings.HasSuffix(file.Name, ".dds") {
+					textures++
+				}
+			}
+			return files, textures
+		}
+
+		files, textures := zipFiles(targetGltfZip)
+		require.Contains(t, files, "Pirate Sconce.gltf")
+		require.Contains(t, files, "Pirate Sconce.bin")
+		require.NotContains(t, files, "model.gltf")
+		require.Greater(t, textures, 0)
+
+		// a glb with its buffer inside, the images next to it
+		files, textures = zipFiles(targetGlbZip)
+		require.Contains(t, files, "Pirate Sconce.glb")
+		require.NotContains(t, files, "Pirate Sconce.bin")
+		require.Greater(t, textures, 0)
+		reader, err := files["Pirate Sconce.glb"].Open()
+		require.NoError(t, err)
+		defer reader.Close()
+		doc := qgltf.Document{}
+		require.NoError(t, qgltf.NewDecoder(reader).Decode(&doc))
+		require.NotEmpty(t, doc.Buffers)
+		require.Empty(t, doc.Buffers[0].URI)
+		for _, image := range doc.Images {
+			require.Contains(t, files, image.URI, "linked image missing in the zip")
 		}
 	})
 

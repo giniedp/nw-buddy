@@ -20,6 +20,7 @@
         [animationPaused]="store.animationPaused()"
         [animationSeek]="store.animationSeek()"
         (animationProgress)="store.setAnimationProgress($event)"
+        (animationEnd)="store.setAnimationPaused(true)"
       />
     </div>
     <ion-menu contentId="main" class="order-2">

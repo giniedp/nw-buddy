@@ -1,4 +1,4 @@
-import { GlbDocument, GltfJson, mergeGlbs, parseGlb, writeGlb } from './glb-merge'
+import { embedImages, GlbDocument, GltfJson, mergeGlbs, parseGlb, writeGlb } from './glb-merge'
 
 /**
  * A model of one joint `root` and a skinned mesh node, its accessor holds one float
@@ -40,7 +40,7 @@ function valueOf({ json, bin }: GlbDocument, nodeName: string): number {
   const node = json.nodes.find((it) => it.name === nodeName)
   const accessor = json.accessors[json.meshes[node.mesh].primitives[0].attributes['POSITION']]
   const view = json.bufferViews[accessor.bufferView]
-  return new DataView(bin.buffer, bin.byteOffset + view.byteOffset).getFloat32(0, true)
+  return new DataView(bin.buffer, bin.byteOffset + (view.byteOffset ?? 0)).getFloat32(0, true)
 }
 
 describe('glb', () => {
@@ -132,5 +132,37 @@ describe('mergeGlbs', () => {
     const merged = mergeGlbs(model, {})
     expect(merged.json.scenes[0].extras).toEqual({ sockets: [] })
     expect(merged.json.nodes[merged.json.animations[0].channels[0].target.node].name).toBe('root')
+  })
+})
+
+describe('embedImages', () => {
+  it('moves the images into the binary chunk', () => {
+    const image = new Uint8Array([1, 2, 3, 4, 5])
+    const glb = embedImages(document('body', 2), new Map([['body.ktx2', image]]))
+    const entry = glb.json.images[0]
+    expect(entry.uri).toBeUndefined()
+    expect(entry.mimeType).toBe('image/ktx2')
+    const view = glb.json.bufferViews[entry.bufferView]
+    expect(view.byteOffset % 4).toBe(0)
+    expect([...glb.bin.subarray(view.byteOffset, view.byteOffset + view.byteLength)]).toEqual([1, 2, 3, 4, 5])
+    expect(glb.json.buffers[0].byteLength).toBe(glb.bin.length)
+    // the mesh data stays where it was
+    expect(valueOf(glb, 'body')).toBe(2)
+  })
+
+  it('shares one copy between images of the same uri', () => {
+    const model = document('body', 2, { images: [{ uri: 'a.png' }, { uri: 'a.png' }] })
+    const glb = embedImages(model, new Map([['a.png', new Uint8Array([9])]]))
+    expect(glb.json.images[0].bufferView).toBe(glb.json.images[1].bufferView)
+    expect(glb.json.images[0].mimeType).toBe('image/png')
+    expect(glb.json.bufferViews.length).toBe(2)
+  })
+
+  it('keeps images without data external, and survives a write', () => {
+    const glb = embedImages(document('body', 2), new Map())
+    expect(glb.json.images[0].uri).toBe('body.ktx2')
+    const read = parseGlb(writeGlb(embedImages(document('body', 2), new Map([['body.ktx2', new Uint8Array([7])]]))))
+    expect(read.json.images[0].bufferView).toBe(1)
+    expect(valueOf(read, 'body')).toBe(2)
   })
 })

@@ -701,6 +701,13 @@ export class CharacterViewer extends EcsGame {
   }
 
   /**
+   * A sequence without a loop played to its end and stopped. Playing it again starts it over.
+   */
+  public get animationEnded(): boolean {
+    return !!this.rig?.clips.ended
+  }
+
+  /**
    * Time in the sequence in seconds, setting it scrubs (also while paused)
    */
   public get animationTime(): number {

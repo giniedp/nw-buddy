@@ -9,6 +9,7 @@ import type { TransmogSlot, TransmogSlotId, TransmogWeapons } from '~/data/trans
 import {
   absoluteUrl,
   characterAnimationUrl,
+  CHARACTER_LIGHT_STOPS_DEFAULT,
   CHARACTER_MODELS_URL,
   CharacterDyes,
   CharacterGender,
@@ -205,8 +206,8 @@ export const CharacterEditorStore = signalStore(
     },
     debug: false,
     exposureStops: 0,
-    characterLightStops: 0,
-    backgroundLightStops: 0,
+    characterLightStops: CHARACTER_LIGHT_STOPS_DEFAULT,
+    backgroundLightStops: CHARACTER_LIGHT_STOPS_DEFAULT,
     defaultHiddenParts: [],
     weapons: NO_WEAPONS,
     weaponsDrawn: false,
