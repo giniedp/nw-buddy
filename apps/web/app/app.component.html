@@ -84,7 +84,9 @@
           <span class="flex-1 text-center px-16">
             <input
               class="input input-sm input-bordered w-full no-drag"
-              [value]="currentUrl()"
+              [value]="addressText()"
+              (focus)="addressFocused.set(true)"
+              (blur)="addressFocused.set(false)"
               (change)="goToUrl($event)"
             />
           </span>

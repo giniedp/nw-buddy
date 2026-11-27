@@ -47,6 +47,7 @@ import {
 
 export interface AppMenuEntry {
   label: string
+  description?: string
   path: string
   exact?: boolean
   icon?: string
@@ -59,6 +60,16 @@ export interface AppMenuGroup {
   label: string
   icon: string
   items: AppMenuEntry[]
+}
+
+/**
+ * Shown above the groups, independent of the active group
+ */
+export const APP_MENU_FEATURED: AppMenuEntry = {
+  label: 'Pak tools',
+  description: 'Game files, models and levels',
+  path: '/pak',
+  svgIcon: svgCubes,
 }
 
 export const APP_MENU: AppMenuGroup[] = [
@@ -104,7 +115,6 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Backstories - PTR Testing', path: '/backstories', icon: 'assets/icons/menu/backstories.png' },
       { label: 'Datasheets', path: '/datasheets', svgIcon: svgCode },
       { label: 'Actionlists', path: '/actionlists', svgIcon: svgCode },
-      { label: 'Pak tools', path: '/pak', svgIcon: svgCubes },
     ],
   },
   {

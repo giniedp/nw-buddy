@@ -7,7 +7,7 @@ import { IonSegment, IonSegmentButton, IonToolbar, SegmentCustomEvent } from '@i
 import { patchState, signalState } from '@ngrx/signals'
 import { map } from 'rxjs'
 import { NW_BUDDY_LIVE, NW_BUDDY_PTR, environment } from '../environments'
-import { APP_MENU } from './app-menu'
+import { APP_MENU, APP_MENU_FEATURED } from './app-menu'
 import { LocaleService } from './i18n'
 import { NwLinkService, NwModule } from './nw'
 import { IconsModule } from './ui/icons'
@@ -75,6 +75,8 @@ export class AppMenuComponent {
     menu: APP_MENU,
     active: APP_MENU[0].category,
   })
+
+  protected readonly featured = APP_MENU_FEATURED
 
   protected get menu() {
     return this.state.menu()

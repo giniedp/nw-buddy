@@ -105,6 +105,32 @@ func (dir *RegionDirectory) LoadRuntimeCapitals(assets *game.Assets) *RegionCapi
 			result.Slices[key] = slice
 		}
 	}
+	// levels without region.slicedata (arenas, small game mode levels): a capital takes its descriptor from the slice's
+	// own .slice.meta. Without it the slice keeps its AOI spawn radius, measured from its origin, and a large slice
+	// (e.g. an arena perimeter) only spawns when the camera is close to that origin.
+	if len(sliceData) == 0 {
+		for _, layer := range result.Capitals {
+			for _, item := range layer {
+				if item.Slice.Variant != "" {
+					continue
+				}
+				key := AssetReference{Guid: item.Slice.Guid, SubId: item.Slice.SubId}.Key()
+				slice, ok := result.Slices[key]
+				if !ok || slice.Gde != nil {
+					continue
+				}
+				asset := assets.Catalog.Lookup(item.Slice.Guid, uint(item.Slice.SubId))
+				if asset == nil {
+					continue
+				}
+				if meta := loadSliceMeta(assets, sliceMetaPath(asset.File)); meta != nil {
+					applyImpostorFlags(assets, &slice, meta)
+					slice.Gde = sliceGde(meta)
+					result.Slices[key] = slice
+				}
+			}
+		}
+	}
 	for _, ref := range variants {
 		key := ref.Key()
 		if _, ok := result.Slices[key]; ok {

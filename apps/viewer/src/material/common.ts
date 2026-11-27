@@ -626,6 +626,14 @@ export function setInstanceDecalOpacity(instance: Float32Array, value: number) {
 }
 
 /**
+ * Runtime opacity of the mesh (MeshComponent SetOpacity, e.g. a fading skybox), multiplied with the material opacity
+ * by the shaders that read it. Stored as `1 - opacity`, so the zero filled default is the authored opacity.
+ */
+export function setInstanceOpacity(instance: Float32Array, value: number) {
+  instance[4] = 1 - value
+}
+
+/**
  * First joint of a skinned draw in {@link InputSlots.Global.SkinPalette}, null for a static draw. Stored as offset + 1,
  * so the zero filled default is not skinned.
  */

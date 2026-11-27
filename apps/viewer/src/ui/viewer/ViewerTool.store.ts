@@ -16,8 +16,8 @@ export function createViewerToolStore() {
   // url of the tool that was left (e.g. the browser's `?file=`), so the url is read and written once it is done
   const routing = useIsRouting()
   const timer = setInterval(() => {
-    if (!routing()) {
-      writeCameraToUrl(viewer())
+    if (!routing() && writeCameraToUrl(viewer())) {
+      app.urlChanged()
     }
   }, 1000)
   onCleanup(() => clearInterval(timer))
@@ -56,13 +56,17 @@ export function createViewerToolStore() {
 /**
  * Keeps the camera position in the url, so a reload or a shared link opens the same view.
  * Replaces the history entry without the router: the router does not read these parameters.
+ *
+ * @returns whether the url changed
  */
-function writeCameraToUrl(viewer: NwViewer | undefined) {
+function writeCameraToUrl(viewer: NwViewer | undefined): boolean {
   if (!viewer) {
-    return
+    return false
   }
   const params = new URLSearchParams(location.search)
-  if (viewer.writeCameraParams(params)) {
-    history.replaceState(history.state, '', `${location.pathname}?${params}`)
+  if (!viewer.writeCameraParams(params)) {
+    return false
   }
+  history.replaceState(history.state, '', `${location.pathname}?${params}`)
+  return true
 }

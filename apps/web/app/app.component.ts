@@ -7,6 +7,8 @@ import {
   RendererStyleFlags2,
   computed,
   inject,
+  linkedSignal,
+  signal,
 } from '@angular/core'
 import { Router, RouterModule, UrlSegment } from '@angular/router'
 import { map, of, switchMap } from 'rxjs'
@@ -110,6 +112,18 @@ export class AppComponent {
   protected skeleton = inject(AppSkeletonService)
   protected location = inject(Location)
   protected currentUrl = selectSignal(injectCurrentUrl())
+  /**
+   * The address bar has the focus: it keeps its text while the user edits it
+   */
+  protected readonly addressFocused = signal(false)
+  /**
+   * The text of the address bar: the current url, frozen while the bar has the focus (url changes of an embedded app,
+   * e.g. the viewer's camera, would overwrite what the user types). It catches up on blur.
+   */
+  protected readonly addressText = linkedSignal<{ url: string; focused: boolean }, string>({
+    source: () => ({ url: this.currentUrl(), focused: this.addressFocused() }),
+    computation: (source, previous) => (source.focused && previous ? previous.value : source.url),
+  })
   protected canGoBack = computed(() => {
     this.currentUrl()
     if (this.isOverwolf || this.isDesktopApp) {

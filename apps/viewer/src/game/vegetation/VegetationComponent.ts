@@ -5,10 +5,22 @@ import { type IVec3 } from '@gglib/math'
 import type { Model } from '@gglib/model'
 import { lfmt } from '@gglib/utils'
 import { getRegionVegetationDataUrl, getRegionVegetationUrl, type RegionVegetationData } from '../../api'
-import { VEGETATION_SLOT_COUNT } from '../../constants'
+import { VEGETATION_UNLOAD_MARGIN, VEGETATION_VISIBLE_DISTANCE } from '../../constants'
 import { ContentService } from '../../content'
 import { parseVegetation, type VegetationCell, type VegetationFile } from './parseVegetation'
 import { VegetationBatch, type VegetationGroup } from './VegetationBatch'
+
+/**
+ * Number of cells a region can keep loaded at once: the most cells within the unload distance of any camera position.
+ * In cell units these are the cell centers inside the disc around the camera widened by a cell square, a convex shape
+ * of area A and perimeter P holds at most A + P / 2 + 1 lattice points.
+ */
+export function vegetationSlotCount(file: VegetationFile) {
+  const r = (VEGETATION_VISIBLE_DISTANCE + VEGETATION_UNLOAD_MARGIN) / file.tileSize
+  const area = Math.PI * r * r + 4 * r + 1
+  const perimeter = 2 * Math.PI * r + 4
+  return Math.min(Math.floor(area + perimeter / 2 + 1), file.cellsPerAxis * file.cellsPerAxis)
+}
 
 export interface VegetationComponentOptions {
   coatlicueName: string
@@ -134,7 +146,7 @@ export class VegetationComponent implements GameComponent {
       this.file,
       this.data,
       { originX: origin.x, originY: origin.y, mountainHeight },
-      VEGETATION_SLOT_COUNT,
+      vegetationSlotCount(this.file),
       `vegetation ${regionName}`,
     )
     this.batch.onMeshChanged = (mesh) => {

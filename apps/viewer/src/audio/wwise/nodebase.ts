@@ -58,14 +58,22 @@ export interface WwiseGraphPoint {
   interp: number
 }
 
+/**
+ * `AkPropID` values of bank version 150 (Wwise 2023.1, no LFE). The ids change between versions: `AkPropID_150` in
+ * https://github.com/bnnm/wwiser/blob/master/wwiser/parser/wdefs.py, read by
+ * `AkPropBundle_AkPropValue_unsigned_char___SetInitialParams` in
+ * https://github.com/bnnm/wwiser/blob/master/wwiser/parser/wparser.py
+ */
 export const WwisePropId = {
   Volume: 0x00,
-  Pitch: 0x02,
-  LPF: 0x03,
-  HPF: 0x04,
-  BusVolume: 0x05,
-  MakeUpGain: 0x06,
-  Priority: 0x07,
+  Pitch: 0x01,
+  LPF: 0x02,
+  HPF: 0x03,
+  BusVolume: 0x04,
+  MakeUpGain: 0x05,
+  Priority: 0x06,
+  Loop: 0x54,
+  AttenuationID: 0x55,
 } as const
 
 export function readNodeBase(r: WwiseReader): WwiseNodeBase {

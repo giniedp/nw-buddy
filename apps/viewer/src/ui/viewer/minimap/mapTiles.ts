@@ -31,6 +31,25 @@ const MAX_TILE_LEVEL = 8
 /**
  * The world rectangle of the regions of a level
  */
+/**
+ * The play area of a level's game mode: `WorldBounds` of its game mode maps (`x,y,width,height`). Null without bounds,
+ * and when the maps disagree (the open world hosts many game modes, the level alone does not tell which one).
+ */
+export function gameModeBounds(info: { gameModeMaps?: Array<{ worldBounds?: string[] }> }): WorldRect | null {
+  const rects = (info.gameModeMaps ?? [])
+    .map((it) => (it.worldBounds ?? []).map(Number))
+    .filter((it) => it.length === 4 && it.every((value) => Number.isFinite(value)) && it[2] > 0 && it[3] > 0)
+    .map(([x, y, width, height]) => ({ minX: x, minY: y, maxX: x + width, maxY: y + height }))
+  const first = rects[0]
+  if (!first) {
+    return null
+  }
+  const same = rects.every((it) => {
+    return it.minX === first.minX && it.minY === first.minY && it.maxX === first.maxX && it.maxY === first.maxY
+  })
+  return same ? first : null
+}
+
 export function levelRect(info: { regionSize: number; regions: Array<{ location: [number, number] }> }): WorldRect {
   if (!info.regions.length) {
     return null

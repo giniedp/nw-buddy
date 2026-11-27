@@ -8,6 +8,21 @@
       }
     </ion-segment>
   </ion-toolbar>
+  <a
+    [routerLink]="link.withLocale(featured.path)"
+    [routerLinkActive]="['border-primary', 'bg-primary/10']"
+    nwbMenuClose
+    class="flex flex-row items-center gap-3 px-4 py-2 border-l-4 border-transparent hover:bg-base-content/5 transition-colors"
+    data-testid="app-menu-featured"
+  >
+    <span class="flex-none flex items-center justify-center w-8 h-8 rounded-md bg-primary/15 text-primary">
+      <nwb-icon [icon]="featured.svgIcon" class="w-4 h-4" />
+    </span>
+    <span class="flex flex-col leading-tight">
+      <span class="text-sm font-semibold">{{ featured.label }}</span>
+      <span class="text-xs opacity-60">{{ featured.description }}</span>
+    </span>
+  </a>
   <ng-content select="[header]" />
 </ion-header>
 <ion-content>

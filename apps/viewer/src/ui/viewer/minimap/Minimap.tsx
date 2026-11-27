@@ -97,6 +97,30 @@ export function Minimap(props: { viewer: NwViewer }) {
             />
           )}
         </For>
+        {/* a generated dungeon (the catacombs): the game's map image of each tile, turned like the tile */}
+        <For each={state.dungeonTiles}>
+          {(tile) => {
+            const size = () => state.dungeon?.tileSize ?? 0
+            return (
+              <img
+                class="nw-minimap-tile"
+                src={tile.url}
+                alt=""
+                draggable={false}
+                style={{
+                  left: `${sx(tile.x - size() / 2)}px`,
+                  top: `${sy(tile.y + size() / 2)}px`,
+                  width: `${px(size())}px`,
+                  height: `${px(size())}px`,
+                  transform: `rotate(${tile.rotation * 90}deg)`,
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.visibility = 'hidden'
+                }}
+              />
+            )
+          }}
+        </For>
         <svg class="nw-minimap-overlay" width={state.size.width} height={state.size.height}>
           <For each={segmentLinesX()}>
             {(x) => (
@@ -169,7 +193,7 @@ export function Minimap(props: { viewer: NwViewer }) {
           </For>
           <rect class="nw-minimap-gutter-corner" x={0} y={bottom()} width={GUTTER} height={GUTTER} />
         </svg>
-        <Show when={state.tiles.length === 0 || state.failed >= state.tiles.length}>
+        <Show when={!state.dungeon && (state.tiles.length === 0 || state.failed >= state.tiles.length)}>
           <div class="nw-minimap-note nw-muted">No map for this level</div>
         </Show>
       </Show>

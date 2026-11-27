@@ -13,10 +13,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router'
 import type { MountedViewerApp } from '@nw-buddy/viewer/app'
 import { environment } from 'apps/web/environments'
-import { DesktopService } from '~/desktop'
+import { DesktopService, type DesktopNwbtState } from '~/desktop'
+import { EXTERNAL_URL_CHANGES } from '~/utils/injection/current-url'
 import { viewerLibUrl } from '~/widgets/nw-viewer'
 import { NwbtService } from '~/widgets/nwbt-setup'
-import { PakOnboardingComponent } from './pak-onboarding.component'
+import {
+  PakOnboardingComponent,
+  PakOnboardingDesktopComponent,
+  PakOnboardingWebComponent,
+  watchLocalNetworkPermission,
+} from './onboarding'
 
 /**
  * How often nwbt is asked again while it does not answer
@@ -44,7 +50,7 @@ type PakState = 'checking' | 'offline' | 'mounted' | 'failed'
 @Component({
   selector: 'nwb-pak-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PakOnboardingComponent],
+  imports: [PakOnboardingComponent, PakOnboardingDesktopComponent, PakOnboardingWebComponent],
   host: {
     class: 'ion-page',
   },
@@ -54,14 +60,30 @@ type PakState = 'checking' | 'offline' | 'mounted' | 'failed'
     @if (state() !== 'mounted') {
       <nwb-pak-onboarding
         class="absolute inset-0"
-        [nwbtUrl]="nwbtUrl()"
         [checking]="state() === 'checking'"
         [error]="error()"
-        [desktop]="desktop.isDesktop"
-        [desktopError]="desktopError()"
-        (retry)="check()"
-        (pickGameDir)="pickGameDir()"
-      />
+        (retry)="retry()"
+      >
+        @if (desktop.isDesktop) {
+          <nwb-pak-onboarding-desktop
+            [state]="desktopState()"
+            [checking]="state() === 'checking'"
+            [foundGameDir]="foundGameDir()"
+            [searching]="searching()"
+            (retry)="retry()"
+            (pickGameDir)="pickGameDir()"
+            (findGameDir)="findGameDir()"
+            (useGameDir)="useGameDir($event)"
+          />
+        } @else {
+          <nwb-pak-onboarding-web
+            [nwbtUrl]="nwbtUrl()"
+            [checking]="state() === 'checking'"
+            [permission]="permission()"
+            (retry)="retry()"
+          />
+        }
+      </nwb-pak-onboarding>
     }
   `,
 })
@@ -72,14 +94,28 @@ export class PakPageComponent {
   protected readonly state = signal<PakState>('checking')
   protected readonly error = signal<string | null>(null)
   /**
-   * Why the desktop app's nwbt does not run, e.g. no game folder
+   * The desktop app's nwbt and New World folder, null outside of the app and while it is asked
    */
-  protected readonly desktopError = signal<string | null>(null)
+  protected readonly desktopState = signal<DesktopNwbtState | null>(null)
+  /**
+   * Desktop app: the New World folder the Steam search found on request, not stored yet. Null before a search, empty
+   * when it found none.
+   */
+  protected readonly foundGameDir = signal<string | null>(null)
+  /**
+   * Desktop app: the Steam search runs
+   */
+  protected readonly searching = signal(false)
+  /**
+   * Browser: the permission to reach nwbt on this device (local network access), null when the browser has none
+   */
+  protected readonly permission = signal<PermissionState | null>(null)
 
   private readonly mountElement = viewChild.required<ElementRef<HTMLElement>>('mount')
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
   private readonly location = inject(Location)
+  private readonly urlChanges = inject(EXTERNAL_URL_CHANGES)
   private app: MountedViewerApp | null = null
   private timer: ReturnType<typeof setTimeout> | null = null
   private abort: AbortController | null = null
@@ -90,7 +126,12 @@ export class PakPageComponent {
       void this.check()
     })
     this.forwardNavigations()
+    const watching = new AbortController()
+    if (!this.desktop.isDesktop) {
+      watchLocalNetworkPermission((state) => this.permission.set(state), watching.signal)
+    }
     inject(DestroyRef).onDestroy(() => {
+      watching.abort()
       this.destroyed = true
       this.stopPolling()
       this.app?.dispose()
@@ -115,7 +156,7 @@ export class PakPageComponent {
       return
     }
     if (desktop) {
-      this.desktopError.set(desktop.url ? null : desktop.error || 'The New World folder is not set.')
+      this.desktopState.set(desktop)
       if (!desktop.url) {
         this.abort = null
         this.state.set('offline')
@@ -146,12 +187,51 @@ export class PakPageComponent {
   }
 
   /**
-   * Desktop app: asks for the New World folder, the app restarts nwbt with it
+   * Asks nwbt again. In the desktop app, the app first starts nwbt again with the folder of the `.env` (e.g. edited by
+   * hand, or a drive that is connected now).
+   */
+  protected async retry() {
+    if (this.desktop.isDesktop) {
+      await this.desktop.retry().catch((err) => {
+        this.error.set(String(err instanceof Error ? err.message : err))
+      })
+    }
+    void this.check()
+  }
+
+  /**
+   * Desktop app: asks for the New World folder, the app writes it to the `.env` and restarts nwbt with it
    */
   protected async pickGameDir() {
     await this.desktop.pickGameDir().catch((err) => {
       this.error.set(String(err instanceof Error ? err.message : err))
     })
+    void this.check()
+  }
+
+  /**
+   * Desktop app: looks for New World in the Steam libraries on the user's request. The found folder is only shown,
+   * the user confirms it with {@link useGameDir}.
+   */
+  protected async findGameDir() {
+    this.searching.set(true)
+    try {
+      this.foundGameDir.set(await this.desktop.findGameDir())
+    } catch (err) {
+      this.error.set(String(err instanceof Error ? err.message : err))
+    } finally {
+      this.searching.set(false)
+    }
+  }
+
+  /**
+   * Desktop app: the user confirmed the found folder, the app writes it to the `.env` and restarts nwbt with it
+   */
+  protected async useGameDir(dir: string) {
+    await this.desktop.setGameDir(dir).catch((err) => {
+      this.error.set(String(err instanceof Error ? err.message : err))
+    })
+    this.foundGameDir.set(null)
     void this.check()
   }
 
@@ -165,6 +245,9 @@ export class PakPageComponent {
     this.app = lib.mountViewerApp(this.mountElement().nativeElement, {
       base: this.basePath(),
       nwbtUrl: this.nwbtUrl(),
+      // the app writes the history itself, e.g. the viewer's camera and level: the address bar of the desktop app
+      // follows the current url (CURRENT_URL)
+      onUrlChange: (url) => this.urlChanges.next(this.location.normalize(url)),
     })
     this.state.set('mounted')
   }

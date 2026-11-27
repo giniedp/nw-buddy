@@ -53,6 +53,7 @@ struct MaterialBlock {
 @group(0) @binding(3) var<uniform> lights  : LightBlock;
 // @private
 @group(1) @binding(0) var<storage, read> object  : array<ObjectBlock>; // per instance data
+@group(1) @binding(1) var<storage, read> instanceData : array<InstanceDataBlock>; // per instance data
 
 @group(2) @binding(0) var<uniform> material: MaterialBlock;
 @group(2) @binding(1) var samplerLinear  : sampler;
@@ -96,6 +97,8 @@ struct FragmentInput {
   @location(4)       weatherCenter : vec3f,
   @location(5)       localNrm      : vec3f,
   @location(6)       localTan      : vec3f,
+  // runtime opacity of the mesh (a fading skybox), times the material opacity
+  @location(7) @interpolate(flat) opacity : f32,
 };
 
 
@@ -137,6 +140,7 @@ fn vs_main(input: VertexInput) -> FragmentInput {
   output.localTan      = input.tangent.xyz;
   // the original uses the instance position, the skybox is centered at the camera
   output.weatherCenter = view.cameraPosition.xyz;
+  output.opacity       = 1.0 - instanceData[input.id].transparency;
   return output;
 }
 
@@ -176,7 +180,7 @@ fn psSimple(input: FragmentInput) -> FragmentOutput {
     col *= getLocalWeatherAlpha(input);
   }
   var out: FragmentOutput;
-  out.color = vec4f(material.diffuseColor.rgb * col.rgb, col.a * material.simpleOpacity) * input.color;
+  out.color = vec4f(material.diffuseColor.rgb * col.rgb, col.a * material.simpleOpacity * input.opacity) * input.color;
   out.color = vec4f(out.color.rgb * material.exposure, out.color.a);
   return out;
 }
@@ -212,7 +216,8 @@ fn psBasic(input: FragmentInput) -> FragmentOutput {
     c
   );
 
-  let materialOpacity = material.opacity;
+  // the component opacity multiplies the material opacity before the curve (GetInstance_Opacity)
+  let materialOpacity = material.opacity * input.opacity;
   a = pow(a, 1.0 / (materialOpacity + 0.01)) * sqrt(materialOpacity) - (1.0 - materialOpacity) * 0.01;
   a = saturate(a);
 
@@ -276,7 +281,7 @@ fn psAdvanced(input: FragmentInput) -> FragmentOutput {
   color += global.cloudShadingCustomSunColor.xyz * scatteringSun;
 
 	// Opacity
-	var alpha = pow(saturate( height * material.alphaMultiplier ), material.alphaSaturation);
+	var alpha = pow(saturate( height * material.alphaMultiplier ), material.alphaSaturation) * input.opacity;
 
   var out: FragmentOutput;
   out.color = vec4f(color, alpha) * input.color;

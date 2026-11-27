@@ -360,7 +360,6 @@ fn fragment_main(input: VertexOutput) -> FragmentOutput {
 
     color = vec4f(rgbOut, alphaOut);
   }
-  color = baseTex * vec4f(input.color.rgb, 1.0) * fadeBeam * fNoise;
 
   out.color = color;
   // out.color = vec4f(1.0, 0.0, 1.0, 1.0); // debug: output white

@@ -1,5 +1,6 @@
 import { ggPlugin } from '@gglib/vite-plugin'
 import fs from 'node:fs'
+import http from 'node:http'
 import path from 'node:path'
 import { defineConfig, type UserConfig } from 'vite'
 import solidPlugin from 'vite-plugin-solid'
@@ -43,6 +44,12 @@ export default defineConfig(({ command, mode, isPreview }) => {
   }
 
   if (command === 'serve' && !isPreview) {
+    // without an agent the proxy closes the connection after each request, the closed sockets wait in TIME_WAIT
+    // until Windows runs out of ports (ERR_ADDRESS_IN_USE, ERR_NO_BUFFER_SPACE in the browser)
+    const nwbt = {
+      target: 'http://127.0.0.1:8000',
+      agent: new http.Agent({ keepAlive: true, maxSockets: 64, maxFreeSockets: 64 }),
+    }
     return {
       ...common,
       server: {
@@ -55,16 +62,16 @@ export default defineConfig(({ command, mode, isPreview }) => {
             }
           : undefined,
         proxy: {
-          '/levels': 'http://localhost:8000',
-          '/files': 'http://localhost:8000',
+          '/levels': nwbt,
+          '/files': nwbt,
           // asset id -> file path (content/assetIds.ts)
-          '/assets': 'http://localhost:8000',
+          '/assets': nwbt,
           // the asset browser api; a regex, a plain '/browse' prefix would also catch the app route /browser
-          '^/browse/': 'http://localhost:8000',
+          '^/browse/': nwbt,
           // character data: the animation set of a skeleton (commands/serve/get_character.go)
-          '^/characters/': 'http://localhost:8000',
+          '^/characters/': nwbt,
           '/nwbt': {
-            target: 'http://localhost:8000',
+            ...nwbt,
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/nwbt/, ''),
           },

@@ -8,10 +8,10 @@ import (
 	"sync"
 )
 
-// Config is the state of the desktop app that outlives a run, stored in the user's config dir
+// Config is the state of the desktop app that outlives a run, stored in the user's config dir. The game folder is not
+// here but in the `.env` (EnvFile), which nwbt reads too.
 type Config struct {
-	Window  *WindowState `json:"window,omitempty"`
-	GameDir string       `json:"gameDir,omitempty"`
+	Window *WindowState `json:"window,omitempty"`
 }
 
 // WindowState is the restored position and size of the main window

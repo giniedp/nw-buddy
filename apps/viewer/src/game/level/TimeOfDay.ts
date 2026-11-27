@@ -58,7 +58,7 @@ const HOURS_PER_DAY = 24
 /**
  * Layers below this weight do not take part in the blend (TimeOfDayPOIModifier MIN_WEIGHT)
  */
-const MIN_LAYER_WEIGHT = 0.01
+export const MIN_LAYER_WEIGHT = 0.01
 
 export class TimeOfDay {
   public sunColor = vec3(1, 0.71085715, 0.5335781)
@@ -925,7 +925,7 @@ export class TimeOfDay {
 /**
  * The weight a layer adds when the blend already holds `total`: cut so that the total never passes 1
  */
-function cappedWeight(weight: number, total: number): number {
+export function cappedWeight(weight: number, total: number): number {
   return Math.max(0, Math.min(weight, 1 - total))
 }
 

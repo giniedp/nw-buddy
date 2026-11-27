@@ -1,3 +1,4 @@
+import type { DungeonMap, DungeonMapCell } from '../../../game/catacombs/load'
 import type { MapTile, WorldRect } from './mapTiles'
 import type { MapSize, MapView } from './mapView'
 
@@ -32,4 +33,12 @@ export interface MinimapState {
   view: MapView | null
   size: MapSize
   readonly camera: MinimapCamera | null
+  /**
+   * The generated dungeon of the level (the catacombs)
+   */
+  readonly dungeon: DungeonMap | null
+  /**
+   * The map images of the dungeon's cells, with their urls
+   */
+  readonly dungeonTiles: Array<DungeonMapCell & { url: string }>
 }

@@ -455,7 +455,7 @@ func LoadViewerSlice(assets *game.Assets, file nwfs.File, variant string, track 
 					viewerEntity.Components = append(viewerEntity.Components, *volume)
 				}
 			case nwt.DecalComponent:
-				if decal := LoadViewerDecal(v); decal != nil {
+				if decal := LoadViewerDecal(assets, v); decal != nil {
 					viewerEntity.Components = append(viewerEntity.Components, *decal)
 				}
 			case nwt.GameRigidBodyComponent:

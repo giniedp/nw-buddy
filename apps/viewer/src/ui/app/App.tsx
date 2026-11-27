@@ -1,5 +1,5 @@
-import { Navigate, Route, Router, useNavigate, type RouteSectionProps } from '@solidjs/router'
-import { lazy, onCleanup } from 'solid-js'
+import { Navigate, Route, Router, useLocation, useNavigate, type RouteSectionProps } from '@solidjs/router'
+import { createEffect, lazy, on, onCleanup } from 'solid-js'
 import { useToolLocations } from './tools'
 import { useApp, ViewerAppContext, type ViewerApp } from './ViewerApp'
 
@@ -30,8 +30,17 @@ export function App(props: { app: ViewerApp }) {
  * The root of the router, around every route
  */
 function AppRoot(props: RouteSectionProps) {
+  const app = useApp()
   useToolLocations()
-  onCleanup(useApp().connectRouter(useNavigate()))
+  onCleanup(app.connectRouter(useNavigate()))
+  // the router's navigations, for the host (ViewerAppOptions.onUrlChange). Its location: the page's history is written
+  // only after the route rendered and still holds the previous url here.
+  const location = useLocation()
+  createEffect(
+    on([() => location.pathname, () => location.search, () => location.hash], ([pathname, search, hash]) => {
+      app.urlChanged(`${pathname}${search}${hash}`)
+    }),
+  )
   return <>{props.children}</>
 }
 

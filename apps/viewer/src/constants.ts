@@ -91,10 +91,6 @@ export const VEGETATION_LOAD_MARGIN = 16
  * Cells beyond visible distance + margin are released
  */
 export const VEGETATION_UNLOAD_MARGIN = 32
-/**
- * Number of cells a region can keep loaded at once (each cell holds up to 1024 instances)
- */
-export const VEGETATION_SLOT_COUNT = 320
 export const VEGETATION_CELL_UPLOADS_PER_FRAME = 16
 
 /**
@@ -279,6 +275,10 @@ export const COLLISION_LOAD_CONCURRENCY = 32
  * Enables the third person mode (key T), the mode select of the player movement and the player collision setting
  */
 export const THIRD_PERSON_ENABLED = false
+/**
+ * Shows the toggle of the scene tree (the left sidebar of the viewer tool) in the toolbar, and the sidebar
+ */
+export const SCENE_TREE_ENABLED = false
 /**
  * Player capsule radius of the third person character. The game's Player capsule has radius 0.41 and a segment of 0.8, its
  * bottom at the feet

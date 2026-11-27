@@ -1,5 +1,15 @@
 import { inputSlot } from '@gglib/graphics'
 export default {
+  ViewDistance: inputSlot('instancedata', 'viewdistance', 'scalar'),
+  DissolveAmount: inputSlot('instancedata', 'dissolveamount', 'scalar'),
+  DecalOpacity: inputSlot('instancedata', 'decalopacity', 'scalar'),
+  SkinOffset: inputSlot('instancedata', 'skinoffset', 'scalar'),
+  Transparency: inputSlot('instancedata', 'transparency', 'scalar'),
+  Pad0: inputSlot('instancedata', '_pad0', 'scalar'),
+  Pad1: inputSlot('instancedata', '_pad1', 'scalar'),
+  Pad2: inputSlot('instancedata', '_pad2', 'scalar'),
+  Pad30: inputSlot('instancedata', '_pad3[0]', 'vec4'),
+  Pad31: inputSlot('instancedata', '_pad3[1]', 'vec4'),
   AlphaMultiplier: inputSlot('material', 'alphamultiplier', 'scalar'),
   AlphaSaturation: inputSlot('material', 'alphasaturation', 'scalar'),
   Attenuation: inputSlot('material', 'attenuation', 'scalar'),

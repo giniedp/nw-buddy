@@ -193,6 +193,44 @@ export interface WwiseMusicPlaylistItem {
 }
 
 /**
+ * Mixing bus, only the head of the object is read
+ */
+export interface WwiseBus {
+  type: typeof WwiseHircType.Bus
+  id: number
+  /**
+   * 0 for the master bus
+   */
+  parentBusId: number
+  /**
+   * `AkPropBundle` values by prop id
+   */
+  props: Map<number, number>
+}
+
+/**
+ * Curve slots of an attenuation in bank version 150, slot 0 is the dry volume over distance
+ */
+const ATTENUATION_CURVE_SLOTS = 19
+
+export interface WwiseAttenuationCurve {
+  /**
+   * `AkCurveScaling`: 0 none, 2 dB, 3 log, 4 dB to linear
+   */
+  scaling: number
+  points: WwiseGraphPoint[]
+}
+
+/**
+ * Attenuation share set, only the dry volume curve (distance → volume) is read
+ */
+export interface WwiseAttenuation {
+  type: typeof WwiseHircType.Attenuation
+  id: number
+  volume: WwiseAttenuationCurve | null
+}
+
+/**
  * Object types without a typed parser, `rawType` holds the HIRC type
  */
 export interface WwiseUnknownObject {
@@ -212,6 +250,8 @@ export type WwiseHircObject =
   | WwiseMusicSegment
   | WwiseMusicSwitch
   | WwiseMusicRanSeq
+  | WwiseBus
+  | WwiseAttenuation
   | WwiseUnknownObject
 
 /**
@@ -384,6 +424,47 @@ function readObject(r: WwiseReader, { type, id }: WwiseHircEntry): WwiseHircObje
         throw new Error(`music playlist count ${count} does not match the parsed tree`)
       }
       return { type, id, music, playlist }
+    }
+    case WwiseHircType.Bus: {
+      // only the head: the parent bus and the initial props, the rest of the bus is not read
+      const parentBusId = r.u32()
+      if (parentBusId === 0) {
+        r.u32() // idDeviceShareset of the master bus
+      }
+      const props = new Map<number, number>()
+      const count = r.count(r.u8(), 5, 'bus props')
+      const ids: number[] = []
+      for (let i = 0; i < count; i++) {
+        ids.push(r.u8())
+      }
+      for (const propId of ids) {
+        props.set(propId, r.f32())
+      }
+      return { type, id, parentBusId, props }
+    }
+    case WwiseHircType.Attenuation: {
+      // CAkAttenuation::SetInitialValues of bank version 150, the RTPC curves at the end are not read
+      r.u8() // bIsHeightSpreadEnabled
+      if (r.u8() & 1) {
+        r.skip(5 * 4) // cone: inside, outside degrees, outside volume, low pass, high pass
+      }
+      const curveToUse: number[] = []
+      for (let i = 0; i < ATTENUATION_CURVE_SLOTS; i++) {
+        curveToUse.push(r.view.getInt8(r.offset))
+        r.skip(1)
+      }
+      const curves: WwiseAttenuationCurve[] = []
+      const count = r.u8()
+      for (let i = 0; i < count; i++) {
+        const scaling = r.u8()
+        const size = r.u16()
+        const points: WwiseGraphPoint[] = []
+        for (let j = 0; j < size; j++) {
+          points.push({ from: r.f32(), to: r.f32(), interp: r.u32() })
+        }
+        curves.push({ scaling, points })
+      }
+      return { type, id, volume: curves[curveToUse[0]] ?? null }
     }
   }
   return { type: 0, rawType: type, id }

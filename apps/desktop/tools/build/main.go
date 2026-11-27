@@ -114,7 +114,7 @@ func main() {
 }
 
 // templates are copied next to the exe: published name -> file in apps/desktop/templates. `.env` is git-ignored, so its
-// template has another name.
+// template has another name. The app creates a missing `.env` from the same template (embedded).
 var templates = map[string]string{
 	"nw-buddy-tools.bat": "nw-buddy-tools.bat",
 	".env":               ".env.template",

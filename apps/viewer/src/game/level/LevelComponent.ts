@@ -4,12 +4,26 @@ import { vec3, vec3$multiplyScalar } from '@gglib/math'
 import { TransformComponent } from '@gglib/components'
 import type { LevelInfo, RegionLocation } from '../../api'
 import { ResourceScopeComponent } from '../../content'
+import { parseTeleport, type LevelCamera } from '../../levels/catalog'
 import { RegionComponent, regionEntityOptions } from '../region/RegionComponent'
 import { TerrainComponent } from '../terrain/TerrainComponent'
 
 export interface LevelRegionLink {
   entity: GameEntity
   component: RegionComponent
+}
+
+/**
+ * The spawn position of a level, `TeamTeleportData` of its game mode map (the first team's), null without one
+ */
+export function levelSpawnPosition(info: LevelInfo): LevelCamera | null {
+  for (const map of info.gameModeMaps ?? []) {
+    const spawn = parseTeleport(String(map.teamTeleportData ?? ''))
+    if (spawn) {
+      return spawn
+    }
+  }
+  return null
 }
 
 export function levelEntityOptions(parent: GameEntity, options: LevelInfo): CreateEntityOptions {

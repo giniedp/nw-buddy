@@ -7,14 +7,16 @@
 //	nw-data.zip   the Angular standalone build (dist/web-standalone/browser), served from the archive
 //	bin/          nwbt.exe, viewer.zip and the files nwbt looks up in its working directory (cLuaDecompiler,
 //	              oodle, nwt-crc.json, nwt-types.json). The app runs nwbt in bin/
-//	nw-buddy-tools.bat  runs bin/nwbt.exe manually, in the app folder: .env there names the game folder (templates/)
-//	.env, README.md
+//	nw-buddy-tools.bat  runs bin/nwbt.exe manually, in the app folder
+//	.env          names the game folder, for the app and nw-buddy-tools.bat. Created from templates/.env.template when
+//	              missing, the app writes the folder the user chooses
+//	README.md
 //	data/         written by the app: config.json, the WebView2 profile (local storage, IndexedDB), nwbt's caches and
 //	              log. When the app folder is not writable, the user's config and cache folders are used (datadir.go)
 //
 // tools/build builds and packages the app. During development, what is missing next to the exe comes from the
 // repository: dist/web-standalone/browser (a folder), and tools/bin/nwbt.exe (`pnpm nwbt:build`, not in git) with the
-// repository root as working directory (its `.env` names the game folder).
+// repository root as working directory. The repository's `.env` names the game folder then.
 // -dev-server http://localhost:4200 (or FRONTEND_DEVSERVER_URL) serves the page from `ng serve` instead of the build
 // (not in builds with the `production` tag).
 package main
@@ -80,27 +82,25 @@ func main() {
 	dirs := resolveDataDirs(exeDir, packaged)
 	dataDir := dirs.Data
 	config := NewConfigStore(dirs.Config)
-	if config.Get().GameDir == "" {
-		if dir := findGameDir(); dir != "" {
-			slog.Info("game folder found", "dir", dir)
-			config.Update(func(config *Config) {
-				config.GameDir = dir
-			})
-		}
+	// the one place of the game folder: the .env next to the exe (nw-buddy-tools.bat), the repository's in development
+	env := EnvFile{Path: filepath.Join(exeDir, ".env")}
+	if !packaged && repo != "" {
+		env.Path = filepath.Join(repo, ".env")
 	}
 
 	sidecar := NewSidecar()
 	startNwbt := func() {
-		gameDir := config.Get().GameDir
-		// without a game folder only a repository nwbt can start: its .env may name one
-		if gameDir == "" && packaged {
+		folder := readGameFolder(env)
+		if folder.Problem != "" {
+			// the page shows the problem and offers to choose the folder
+			slog.Warn("nwbt not started", "problem", folder.Problem, "dir", folder.Dir, "env", folder.EnvFile, "err", folder.Error)
 			sidecar.Stop()
 			return
 		}
 		sidecar.Start(NwbtOptions{
 			Exe:     *nwbtExe,
 			WorkDir: nwbtDir,
-			GameDir: gameDir,
+			GameDir: folder.Dir,
 			DataDir: filepath.Join(dataDir, "nwbt"),
 			LogFile: filepath.Join(dataDir, "nwbt.log"),
 		})
@@ -121,7 +121,7 @@ func main() {
 	}
 	// nwbt starts with the service (ServiceStartup): only in the instance that stays, a second instance hands its
 	// arguments over and exits before
-	service := &DesktopService{config: config, sidecar: sidecar, restart: startNwbt}
+	service := &DesktopService{config: config, env: env, sidecar: sidecar, restart: startNwbt}
 	var window *application.WebviewWindow
 	app := application.New(application.Options{
 		Name:        "New World Buddy",

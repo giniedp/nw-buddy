@@ -26,6 +26,13 @@ export interface ViewerAppOptions {
    * The path the app is mounted at, e.g. `/pak`. Empty (the default) for the root of the origin.
    */
   base?: string
+  /**
+   * Called after the app changed the page url: its router's navigations and the parameters it writes without the router
+   * (the viewer's camera and content). The host's own router does not see these changes, e.g. nw-buddy's address bar.
+   *
+   * @param url - path, query and hash of the page
+   */
+  onUrlChange?: (url: string) => void
 }
 
 /**
@@ -64,9 +71,11 @@ export class ViewerApp {
    * The router's navigate while the router is mounted, see {@link navigate}
    */
   private routerNavigate: Navigator | null = null
+  private onUrlChange: ((url: string) => void) | null
 
   public constructor(options: ViewerAppOptions) {
     this.base = (options.base ?? '').replace(/\/+$/, '')
+    this.onUrlChange = options.onUrlChange ?? null
     this.nwbt = new NwbtClient(options.nwbtUrl)
     this.engine = new EngineHost(options.nwbtUrl)
     this.files = new FileContents(this.nwbt)
@@ -74,7 +83,7 @@ export class ViewerApp {
     this.tabs = createBrowserTabs(this.nwbt, this.files)
     this.dataTabs = createDataTabs()
     this.levels = new LevelCatalogLoader(this.nwbt)
-    this.viewerContent = new ViewerContent(this.levels, this.base)
+    this.viewerContent = new ViewerContent(this.levels, this.base, () => this.urlChanged())
     this.audioNames = new AudioNames(this.nwbt)
     this.datasheets = new Datasheets(this.nwbt, this.files)
     this.assets = new AssetFinder(this.nwbt)
@@ -91,6 +100,17 @@ export class ViewerApp {
    */
   public dispose() {
     this.engine.dispose()
+  }
+
+  /**
+   * Tells the host that the page url changed, see {@link ViewerAppOptions.onUrlChange}. Called after the router
+   * navigated and after the url was replaced without the router.
+   *
+   * @param url - the new url (path with the base, query, hash), default: the page's. The router writes the history only
+   *   after the route rendered, so it passes its own location.
+   */
+  public urlChanged(url = `${location.pathname}${location.search}${location.hash}`) {
+    this.onUrlChange?.(url)
   }
 
   /**

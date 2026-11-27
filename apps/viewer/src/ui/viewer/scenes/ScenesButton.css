@@ -1,0 +1,7 @@
+/* the Levels button in the toolbar, see ScenesButton.tsx: it stands out, softer than an accent button */
+.twk-btn.nw-scenes-button {
+  --twk-btn-bg: color-mix(in oklab, var(--nw-accent) 18%, transparent);
+  --twk-btn-hover: color-mix(in oklab, var(--nw-accent) 30%, transparent);
+  color: var(--nw-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--nw-accent) 45%, transparent);
+}

@@ -14,23 +14,32 @@ const viewerLibServer = await startStaticServer(path.resolve(import.meta.dirname
 
 const nwCdnServer = await startStaticServer(fs.realpathSync(path.resolve(import.meta.dirname, 'dist/nw-cdn')))
 
+// Without an agent the proxy opens a connection per request and closes it (`Connection: close`). The viewer streams
+// thousands of files, the closed sockets wait in TIME_WAIT until Windows runs out of ports (ERR_ADDRESS_IN_USE,
+// ERR_NO_BUFFER_SPACE in the browser)
+const agent = new http.Agent({ keepAlive: true, maxSockets: 64, maxFreeSockets: 64 })
+
 export default {
   '/nwbt': {
-    target: 'http://localhost:8000',
+    target: 'http://127.0.0.1:8000',
+    agent,
     secure: false,
     changeOrigin: true,
     rewrite: (path) => path.replace(/^\/nwbt/, ''),
   },
   '/nw-data': {
     target: nwDataServer,
+    agent,
     rewrite: (path) => path.replace(/^\/nw-data/, ''),
   },
   '/nw-cdn': {
     target: nwCdnServer,
+    agent,
     rewrite: (path) => path.replace(/^\/nw-cdn/, ''),
   },
   '/viewer-lib': {
     target: viewerLibServer,
+    agent,
     rewrite: (path) => path.replace(/^\/viewer-lib/, ''),
   },
 }

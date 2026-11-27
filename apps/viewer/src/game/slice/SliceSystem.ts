@@ -199,7 +199,8 @@ export class SliceSystem extends GameSystem {
     this.tier = OBJECT_DETAIL_TIERS[tierName]
 
     const moved = vec3DistanceSquared(this.camPosition, this.lastPosition) >= MOVE_THRESHOLD_SQ
-    if (!moved && !this.hasPendingWork && !collisionChanged && !tierChanged && topLevelCount === this.topLevelCount) {
+    const changed = collisionChanged || tierChanged || topLevelCount !== this.topLevelCount
+    if (!moved && !this.hasPendingWork && !changed) {
       return
     }
     if (moved) {
@@ -268,9 +269,19 @@ export class SliceSystem extends GameSystem {
     const dx = world[12] - camera.x
     const dy = world[13] - camera.y
     let distanceSq = dx * dx + dy * dy
+
+    if (component.spawnsWithParent) {
+      // an initializer spawn of the game: it stands while its parent slice stands (the spawner entity exists only
+      // then) and despawns with it, nearest first within the budget
+      if (!component.isSpawned) {
+        component.queueDistance = distanceSq
+        this.spawnQueue.push(component)
+      }
+      return
+    }
     let reach = component.reach
     if (!(reach > 0)) {
-      // AOI spawn radius of the slice, in 3D (nested, preview and dynamic slices, levels without slicedata)
+      // AOI spawn radius of the slice, in 3D (nested creatures, preview and dynamic slices, slices without GDE data)
       const dz = world[14] - camera.z
       distanceSq += dz * dz
       reach = component.spawnRadius
@@ -457,6 +468,7 @@ export function executeSpawner(spawner: SliceSpawnerComponent) {
             slice: comp.slice,
             source: comp,
             parent: spawner.data,
+            spawnsWithParent: true,
             // cellAt: spawner.cellAt,
           }),
         )
@@ -603,6 +615,10 @@ export function executeSpawner(spawner: SliceSpawnerComponent) {
         continue
       }
       if (isViewerDecalComponent(comp)) {
+        // like lights, the decal box is drawn by its own layer, an inactive decal would always draw
+        if (inactive) {
+          continue
+        }
         components.push(new DecalComponent(comp))
         debug.add({
           type: 'box',

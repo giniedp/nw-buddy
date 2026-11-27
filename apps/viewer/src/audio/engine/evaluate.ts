@@ -1,6 +1,7 @@
 import {
   wwiseShortId,
   WwiseHircType,
+  WwisePropId,
   type WwiseDecisionNode,
   type WwiseGraphPoint,
   type WwiseHircObject,
@@ -73,10 +74,12 @@ const SPEAKER_X = wwiseShortId('SpeakerX_FL')
 const SPEAKER_Y = wwiseShortId('SpeakerY_FL')
 const PARAM_PAN_X = 35
 const PARAM_PAN_Y = 36
-const PROP_VOLUME = 0
-const PROP_PITCH = 1
-const PROP_MAKEUP = 5
-const PROP_LOOP = 84
+const PROP_VOLUME = WwisePropId.Volume
+const PROP_PITCH = WwisePropId.Pitch
+const PROP_BUS_VOLUME = WwisePropId.BusVolume
+const PROP_MAKEUP = WwisePropId.MakeUpGain
+const PROP_LOOP = WwisePropId.Loop
+const CURVE_SCALING_DB = 2
 
 /**
  * Evaluates the play actions of an event into voice specs, following switches, states and containers with
@@ -103,7 +106,14 @@ export function evaluateEvent(eventName: string, ctx: EvaluateContext): Evaluate
     if (kind !== 0x04 && kind !== 0x05) {
       continue
     }
-    evalNode(action.targetId, { gainDb: 0, pitch: 0 }, ctx, result, signature, new Set())
+    evalNode(
+      action.targetId,
+      { gainDb: outputGainDb(action.targetId, ctx), pitch: 0 },
+      ctx,
+      result,
+      signature,
+      new Set(),
+    )
   }
   result.signature = signature.join(',')
   if (result.seek) {
@@ -411,9 +421,102 @@ function weightedPick<T extends { weight: number }>(items: T[], useWeight: boole
 
 function accumulate(parent: Accum, node: WwiseNodeBase): Accum {
   return {
-    gainDb: parent.gainDb + (node.props.get(PROP_VOLUME) ?? 0) + (node.props.get(PROP_MAKEUP) ?? 0),
+    gainDb: parent.gainDb + nodeGainDb(node),
     pitch: parent.pitch + (node.props.get(PROP_PITCH) ?? 0),
   }
+}
+
+function nodeGainDb(node: WwiseNodeBase) {
+  return (
+    (node.props.get(PROP_VOLUME) ?? 0) + (node.props.get(PROP_BUS_VOLUME) ?? 0) + (node.props.get(PROP_MAKEUP) ?? 0)
+  )
+}
+
+function nodeOf(object: WwiseHircObject | null): WwiseNodeBase | null {
+  if (!object) {
+    return null
+  }
+  if ('node' in object) {
+    return object.node
+  }
+  if ('music' in object) {
+    return object.music.node
+  }
+  return null
+}
+
+/**
+ * Gain the play target inherits: the volumes of its parent containers (actor-mixers, music switches, ...) and of the
+ * output bus chain. The target's own volume and those below it are added while evaluating the tree.
+ * The output bus is the bus of the nearest node that overrides it, starting at the target.
+ */
+function outputGainDb(targetId: number, ctx: EvaluateContext): number {
+  let gainDb = 0
+  let busId = 0
+  const visited = new Set<number>()
+  let id = targetId
+  while (id && !visited.has(id)) {
+    visited.add(id)
+    const node = nodeOf(ctx.library.getObject(id))
+    if (!node) {
+      break
+    }
+    if (id !== targetId) {
+      gainDb += nodeGainDb(node)
+    }
+    if (!busId && node.overrideBusId) {
+      busId = node.overrideBusId
+    }
+    id = node.parentId
+  }
+  visited.clear()
+  while (busId && !visited.has(busId)) {
+    visited.add(busId)
+    const bus = ctx.library.getObject(busId)
+    if (!bus || bus.type !== WwiseHircType.Bus) {
+      break
+    }
+    gainDb += (bus.props.get(PROP_VOLUME) ?? 0) + (bus.props.get(PROP_BUS_VOLUME) ?? 0)
+    busId = bus.parentBusId
+  }
+  return gainDb
+}
+
+/**
+ * Volume over distance of the attenuation that applies to a node: the `AttenuationID` of the nearest node up the
+ * hierarchy, decoded to `[distance, linear gain, ...]` pairs. Undefined without an attenuation or when it is not loaded.
+ */
+function attenuationOf(node: WwiseNodeBase, ctx: EvaluateContext): number[] | undefined {
+  const visited = new Set<number>()
+  let current: WwiseNodeBase | null = node
+  while (current) {
+    const id = current.propsRaw.get(WwisePropId.AttenuationID)
+    if (id) {
+      const object = ctx.library.getObject(id)
+      if (object?.type !== WwiseHircType.Attenuation || !object.volume?.points.length) {
+        return undefined
+      }
+      const { scaling, points } = object.volume
+      return points.flatMap((it) => [it.from, curveGain(scaling, it.to)])
+    }
+    if (!current.parentId || visited.has(current.parentId)) {
+      return undefined
+    }
+    visited.add(current.parentId)
+    current = nodeOf(ctx.library.getObject(current.parentId))
+  }
+  return undefined
+}
+
+/**
+ * Linear gain of a volume curve value. Curves with dB scaling store the linear gain minus 1 (0 = full, -1 = silent),
+ * unscaled curves store dB.
+ */
+function curveGain(scaling: number, value: number) {
+  if (scaling === CURVE_SCALING_DB) {
+    return Math.min(Math.max(value + 1, 0), 1)
+  }
+  return Math.pow(10, value / 20)
 }
 
 /**
@@ -422,7 +525,8 @@ function accumulate(parent: Accum, node: WwiseNodeBase): Accum {
  */
 function spatialOf(node: WwiseNodeBase, ctx: EvaluateContext): VoiceSpatial {
   if (ctx.target.kind === 'emitter') {
-    return { kind: 'point', position: ctx.target.position, maxDistance: ctx.target.maxDistance }
+    const attenuation = attenuationOf(node, ctx)
+    return { kind: 'point', position: ctx.target.position, maxDistance: ctx.target.maxDistance, attenuation }
   }
   let panX: number | null = null
   let panY: number | null = null

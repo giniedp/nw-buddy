@@ -94,7 +94,16 @@ export type MainToWorker =
 export type VoiceSpatial =
   | { kind: 'none' }
   | { kind: 'quad'; dir: [number, number] }
-  | { kind: 'point'; position: Vec3Like; maxDistance: number }
+  | {
+      kind: 'point'
+      position: Vec3Like
+      maxDistance: number
+      /**
+       * volume over distance of the Wwise attenuation as `[distance, linear gain, ...]` pairs, the output
+       * interpolates linearly. Without it the volume falls off linearly up to maxDistance.
+       */
+      attenuation?: number[]
+    }
 
 export interface SoundVoice {
   kind: 'sound'

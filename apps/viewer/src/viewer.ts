@@ -58,6 +58,8 @@ import { DebugShapeSystem } from './game/debug/DebugShapeSystem'
 import { RaycastSystem, type RaySelection } from './game/debug/RaycastSystem'
 import { DistributionSystem } from './game/distribution/DistributionSystem'
 import { InstancedRenderSystem } from './game/instancing/InstancedRenderSystem'
+import type { DungeonMap } from './game/catacombs/load'
+import { levelSpawnPosition } from './game/level/LevelComponent'
 import { LevelSystem, type PreviewPart } from './game/level/LevelSystem'
 import { SkyLightSystem } from './game/level/SkyLightSystem'
 import { LightSystem } from './game/light/LightSystem'
@@ -744,14 +746,18 @@ export class NwViewer extends EcsGame {
   /**
    * Opens a level: the coatlicue `name`, with the mission of the level folder `options.mission` when it differs from
    * the coatlicue (main menus). With `levelCamera`, the camera starts at the level's own camera placement once the
-   * level info is loaded (see {@link findLevelCamera}), e.g. when the url names no position.
+   * level info is loaded (see {@link findLevelCamera}), e.g. when the url names no position. `seed`: the generated
+   * dungeon of a dungeon level (the catacombs).
    */
-  public async loadLevel(name: string, options?: { mission?: string | null; levelCamera?: boolean }) {
+  public async loadLevel(
+    name: string,
+    options?: { mission?: string | null; levelCamera?: boolean; seed?: number | null },
+  ) {
     this.mode = 'level'
     this.levelSelection = name
     await this.world.getSystem(ContentService).whenLoaded
     const level = this.world.getSystem(LevelSystem)
-    const loading = level.loadLevel(name, options?.mission)
+    const loading = level.loadLevel(name, options?.mission, options?.seed)
     this.onModeChanged.emit(this)
     if (!options?.levelCamera) {
       return
@@ -768,13 +774,20 @@ export class NwViewer extends EcsGame {
   }
 
   /**
-   * Moves the camera to the camera placement of the loaded level (see {@link findLevelCamera}), if it has one
+   * Moves the camera to the camera placement of the loaded level (see {@link findLevelCamera}), else to the spawn
+   * position of its game mode, if it has one
    */
   public placeLevelCamera() {
     const info = this.world.getSystem(LevelSystem).levelInfo
     const camera = info ? findLevelCamera(info) : null
     if (camera) {
       this.placeCamera(camera)
+      return
+    }
+    // levels without a camera placement: the spawn position of the game mode (e.g. the start room of the catacombs)
+    const spawn = info ? levelSpawnPosition(info) : null
+    if (spawn) {
+      this.teleport(spawn.x, spawn.y, spawn.z + SPAWN_EYE_HEIGHT)
     }
   }
 
@@ -812,6 +825,16 @@ export class NwViewer extends EcsGame {
       return null
     }
     return this.world.getSystem(LevelSystem).levelInfo
+  }
+
+  /**
+   * The generated dungeon of the loaded level (the catacombs), null for other levels or while it loads
+   */
+  public get dungeonMap(): DungeonMap | null {
+    if (this.mode !== 'level') {
+      return null
+    }
+    return this.world.getSystem(LevelSystem).dungeonMap
   }
 
   /**
@@ -961,6 +984,11 @@ export class NwViewer extends EcsGame {
  * older menus, the vista of FTUE levels. Else the first camera of the mission.
  */
 const LEVEL_CAMERA_NAMES = ['EstablishingCameraPlacement', 'MainCamera', 'VistaCamera']
+
+/**
+ * Camera height above a spawn position, about the eyes of a player
+ */
+const SPAWN_EYE_HEIGHT = 1.8
 
 /**
  * The camera a level starts with (see {@link LEVEL_CAMERA_NAMES}). Null without one. Returns the world matrix.

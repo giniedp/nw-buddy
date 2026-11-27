@@ -21,7 +21,7 @@ type NwbtOptions struct {
 	// WorkDir is the working directory of nwbt. nwbt finds its tools (oodle, cLuaDecompiler, the rtti tables) there,
 	// and loads a `.env` from it if there is one.
 	WorkDir string
-	// GameDir is the New World installation, empty to let nwbt read it from its `.env`
+	// GameDir is the New World installation, from the `.env` of the app (EnvFile)
 	GameDir string
 	// DataDir holds nwbt's temp, cache and models folders
 	DataDir string
@@ -35,6 +35,8 @@ type NwbtState struct {
 	URL string `json:"url"`
 	// Error why it is not running, empty while it runs or starts
 	Error string `json:"error"`
+	// Folder is the New World folder of the `.env`, filled by DesktopService.Nwbt
+	Folder GameFolder `json:"folder"`
 }
 
 // Sidecar runs nwbt as a child process on a free loopback port. The child is in a job object that kills it when the

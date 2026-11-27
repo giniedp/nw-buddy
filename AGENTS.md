@@ -69,8 +69,13 @@ All commands run from the repository root.
   it is not part of the root `go.work` (Wails needs Go >= 1.26)
 - Packaged layout: `nw-buddy.exe`, `nw-data.zip` (the standalone web build, served from the archive, map tiles excluded by
   default), `bin/` (nwbt.exe, viewer.zip and its helper files) and, from `apps/desktop/templates`, `nw-buddy-tools.bat` (runs
-  `bin\nwbt.exe` in the app folder, `serve` without arguments), `.env` (game folder for nw-buddy-tools.bat, commented out) and `README.md`. Each build
+  `bin\nwbt.exe` in the app folder, `serve` without arguments), `.env` (from `.env.template`, game folder commented out) and `README.md`. Each build
   writes `rsrc_windows_amd64.syso` (icon, version info)
+- Game folder: one place, the `.env` next to the exe (the repository's `.env` in dev runs), read by the app and by
+  `nw-buddy-tools.bat`. The app creates a missing `.env` from the embedded template, passes the folder to its nwbt as
+  `--game` and writes the folder the user chooses (`apps/desktop/envfile.go`). No search without consent: the
+  onboarding of `/pak` offers "Search Steam" and stores the result only after "Use this folder". Not set or not
+  reachable: the app does not start nwbt, the onboarding shows the state
 - Portable: a packaged app keeps config, WebView2 profile and nwbt caches in `data/` next to the exe (user folders
   when that is not writable, and in dev runs). A `dist/desktop/data` from a local run must not go into a release zip
 - Update check (`apps/web/app/widgets/update-alert`): the newest `v*` GitHub release (prereleases included) against

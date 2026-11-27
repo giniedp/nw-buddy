@@ -20,6 +20,10 @@ const MUSIC_LOOKAHEAD = 1.5
 interface ClipNodes {
   source: AudioBufferSourceNode
   panner: PannerNode | null
+  /**
+   * volume over distance of point clips with a Wwise attenuation, updated per tick
+   */
+  distanceGain: GainNode | null
   spatial: VoiceSpatial
   ended: boolean
   mediaId: number
@@ -188,7 +192,8 @@ export class AudioOutput {
     }
     if (spatial?.kind === 'point') {
       for (const clip of state.clips) {
-        clip.spatial = spatial
+        // position updates, the attenuation stays the one of the clip
+        clip.spatial = clip.spatial.kind === 'point' ? { ...clip.spatial, position: spatial.position } : spatial
         if (clip.panner) {
           setPannerPosition(clip.panner, spatial.position, this.context)
         }
@@ -260,6 +265,14 @@ export class AudioOutput {
       for (const clip of state.clips) {
         if (clip.panner && clip.spatial.kind === 'quad') {
           setPannerPosition(clip.panner, quadPosition(position, clip.spatial.dir), ctx)
+        }
+        if (clip.distanceGain && clip.spatial.kind === 'point' && clip.spatial.attenuation) {
+          const p = clip.spatial.position
+          const distance = Math.hypot(p.x - position.x, p.y - position.y, p.z - position.z)
+          const gain = attenuationGain(clip.spatial.attenuation, distance)
+          if (Math.abs(gain - clip.distanceGain.gain.value) > 0.005) {
+            clip.distanceGain.gain.setTargetAtTime(gain, t, 0.05)
+          }
         }
       }
       if (state.spec.kind === 'music') {
@@ -412,24 +425,37 @@ export class AudioOutput {
       })
       setPannerPosition(panner, quadPosition(this.listener, spatial.dir), ctx)
     } else if (spatial.kind === 'point') {
+      // with an attenuation the panner only places the sound, the distance gain follows the curve
       panner = new PannerNode(ctx, {
         panningModel: 'HRTF',
         distanceModel: 'linear',
         refDistance: Math.min(3, spatial.maxDistance * 0.1),
         maxDistance: spatial.maxDistance,
-        rolloffFactor: 1,
+        rolloffFactor: spatial.attenuation ? 0 : 1,
       })
       setPannerPosition(panner, spatial.position, ctx)
     }
+    let distanceGain: GainNode | null = null
+    if (spatial.kind === 'point' && spatial.attenuation) {
+      const p = spatial.position
+      const l = this.listener
+      const distance = Math.hypot(p.x - l.x, p.y - l.y, p.z - l.z)
+      distanceGain = new GainNode(ctx, { gain: attenuationGain(spatial.attenuation, distance) })
+    }
+    const output: AudioNode = distanceGain ?? state.gain
+    if (distanceGain) {
+      distanceGain.connect(state.gain)
+    }
     if (panner) {
       node.connect(panner)
-      panner.connect(state.gain)
+      panner.connect(output)
     } else {
-      node.connect(state.gain)
+      node.connect(output)
     }
     const clip: ClipNodes = {
       source: source ?? (node as AudioBufferSourceNode),
       panner,
+      distanceGain,
       spatial,
       ended: false,
       mediaId,
@@ -494,6 +520,23 @@ export class AudioOutput {
 
 function collectMedia(voice: VoiceSpec): number[] {
   return voice.kind === 'sound' ? [voice.mediaId] : voice.segments.flatMap((s) => s.clips.map((c) => c.mediaId))
+}
+
+/**
+ * Linear gain at a distance of `[distance, gain, ...]` pairs, linear between the points and clamped at both ends
+ */
+function attenuationGain(curve: number[], distance: number): number {
+  if (distance <= curve[0]) {
+    return curve[1]
+  }
+  for (let i = 2; i < curve.length; i += 2) {
+    if (distance <= curve[i]) {
+      const from = curve[i - 2]
+      const t = (distance - from) / (curve[i] - from || 1)
+      return curve[i - 1] + (curve[i + 1] - curve[i - 1]) * t
+    }
+  }
+  return curve[curve.length - 1]
 }
 
 function quadPosition(listener: Vec3Like, dir: [number, number]): Vec3Like {

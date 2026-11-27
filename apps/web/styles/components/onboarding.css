@@ -1,0 +1,87 @@
+/*
+ * Numbered steps of a setup guide: the marker shows the number or the state of a step
+ *
+ * <div class="onboarding">
+ *   <div class="onboarding-step onboarding-step-current">
+ *     <div class="onboarding-step-rail">
+ *       <span class="onboarding-step-marker"><span class="onboarding-step-number"></span></span>
+ *     </div>
+ *     <div class="onboarding-step-body">
+ *       <span class="onboarding-step-title">Title</span>
+ *       ...
+ *     </div>
+ *   </div>
+ * </div>
+ *
+ * States: onboarding-step-current (waits for the user), -busy (waits for a process), -blocked (waits for an earlier
+ * step), -done, -failed. Without a state the step is an instruction.
+ */
+.onboarding {
+  @apply flex flex-col rounded-box border border-base-300 bg-base-100 p-4 md:p-6;
+  counter-reset: onboarding-step;
+
+  & code {
+    @apply rounded-field bg-base-200 px-1 text-sm wrap-anywhere;
+  }
+}
+
+.onboarding-step {
+  @apply flex gap-3;
+  counter-increment: onboarding-step;
+}
+
+.onboarding-step-rail {
+  @apply flex flex-col items-center;
+
+  &::after {
+    @apply my-1 w-px flex-1 bg-base-300;
+    content: '';
+  }
+
+  .onboarding-step:last-child &::after {
+    @apply hidden;
+  }
+}
+
+.onboarding-step-marker {
+  @apply grid size-7 shrink-0 place-items-center rounded-full border border-base-content/30 text-sm font-semibold;
+}
+
+.onboarding-step-number::before {
+  content: counter(onboarding-step);
+}
+
+.onboarding-step-body {
+  @apply flex min-w-0 flex-1 flex-col gap-2 pt-0.5 pb-6;
+
+  .onboarding-step:last-child & {
+    @apply pb-0;
+  }
+}
+
+.onboarding-step-title {
+  @apply font-semibold;
+}
+
+.onboarding-step-current .onboarding-step-marker {
+  @apply border-primary bg-primary text-primary-content;
+}
+
+.onboarding-step-busy .onboarding-step-marker {
+  @apply border-2 border-primary text-primary;
+}
+
+.onboarding-step-blocked {
+  .onboarding-step-marker,
+  .onboarding-step-title {
+    @apply opacity-50;
+  }
+}
+
+.onboarding-step-done .onboarding-step-marker {
+  @apply border-success bg-success text-success-content;
+}
+
+.onboarding-step-failed .onboarding-step-marker {
+  @apply border-error bg-error text-error-content;
+}

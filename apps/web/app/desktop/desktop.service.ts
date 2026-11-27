@@ -14,6 +14,33 @@ export interface DesktopNwbtState {
    * Why nwbt does not run, empty while it runs or starts
    */
   error: string
+  /**
+   * The New World folder of the `.env`, which the app and nwbt read (apps/desktop `GameFolder`)
+   */
+  folder: DesktopGameFolder
+}
+
+/**
+ * The New World folder of the desktop app's `.env`
+ */
+export interface DesktopGameFolder {
+  /**
+   * The `.env` that names the folder
+   */
+  envFile: string
+  /**
+   * The folder, empty when it is not set
+   */
+  dir: string
+  /**
+   * Why nwbt cannot use the folder, empty when it can: the `.env` could not be created or read, no folder is set, or
+   * the folder does not exist or has no game files
+   */
+  problem: '' | 'env' | 'unset' | 'unreachable'
+  /**
+   * The error of `env`
+   */
+  error: string
 }
 
 /**
@@ -101,11 +128,49 @@ export class DesktopService {
   }
 
   /**
-   * Asks for the New World folder, nwbt restarts with a valid one. Returns the stored folder.
+   * Asks for the New World folder, a valid one is written to the `.env` and nwbt restarts with it. Returns the folder
+   * of the `.env`.
    */
   public async pickGameDir(): Promise<string> {
+    if (!this.isDesktop) {
+      return ''
+    }
     const { Call } = await this.load()
     return Call.ByName('main.DesktopService.PickGameDir')
+  }
+
+  /**
+   * Looks for New World in the Steam libraries, empty if it is not found. Stores nothing: confirm with
+   * {@link setGameDir}.
+   */
+  public async findGameDir(): Promise<string> {
+    if (!this.isDesktop) {
+      return ''
+    }
+    const { Call } = await this.load()
+    return Call.ByName('main.DesktopService.FindGameDir')
+  }
+
+  /**
+   * Writes the New World folder to the `.env`, nwbt restarts with it
+   */
+  public async setGameDir(dir: string): Promise<void> {
+    if (!this.isDesktop) {
+      return
+    }
+    const { Call } = await this.load()
+    await Call.ByName('main.DesktopService.SetGameDir', dir)
+  }
+
+  /**
+   * Starts nwbt again with the folder of the `.env`, e.g. after the user edited the file or connected the drive
+   */
+  public async retry(): Promise<void> {
+    if (!this.isDesktop) {
+      return
+    }
+    const { Call } = await this.load()
+    await Call.ByName('main.DesktopService.Retry')
   }
 
   private load() {

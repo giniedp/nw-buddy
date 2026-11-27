@@ -4,12 +4,27 @@ import { IblSampler, NishitaSkyEffect } from '@gglib/effects'
 import { Device, FALSE, getMipmapCount, Texture, TextureUsage, TRUE } from '@gglib/graphics'
 import { mat4GetTranslation, vec2Equals, vec3, vec3$initFrom, vec3Equals, vec4 } from '@gglib/math'
 import { Renderer } from '@gglib/render'
-import type { AssetReference } from '../../api'
+import { assetReferenceKey, type AssetReference } from '../../api'
 import { ViewerConfig } from '../../config'
 import { InputSlots } from '../../material'
-import { TimeOfDay } from './TimeOfDay'
+import { cappedWeight, MIN_LAYER_WEIGHT, TimeOfDay } from './TimeOfDay'
 import { TimeOfDayComponent } from './TimeOfDayComponent'
 import type { TimeOfDayPreset } from './TimeOfDayPreset'
+
+/**
+ * A skybox slice and its weight in the sky blend, see {@link SkyLightSystem.skyWeights}
+ */
+export interface SkyWeight {
+  /**
+   * Key of the slice in the slice library
+   */
+  key: string
+  sky: AssetReference
+  /**
+   * Opacity of the skybox's meshes, 0 when it is blended out
+   */
+  weight: number
+}
 
 export class SkyLightSystem extends GameSystem {
   private game: EcsGame
@@ -36,9 +51,19 @@ export class SkyLightSystem extends GameSystem {
   public fxIbl: IblSampler
   public skyDomeTexture: Texture
   /**
-   * Skybox slice of the highest priority TimeOfDay POI that contains the camera
+   * The skybox slices of the TimeOfDay POIs by key, with their weight this frame (0 when blended out), like the game's
+   * skybox transitions: a POI's skybox fades with its time of day layer, the highest priority first, each weight cut so
+   * that the total never passes 1. Entries stay while their sky is known, the weight says whether to draw it.
    */
-  public activeSky: AssetReference | null = null
+  public readonly skyWeights = new Map<string, SkyWeight>()
+  /**
+   * Share of the default sky dome: `1 - min(sum of the sky weights, 1)`, like the level's share of the time of day
+   */
+  public defaultSkyWeight = 1
+  /**
+   * The skybox slice of each POI preset, kept while its layer blends out (its zone may have unloaded already)
+   */
+  private skyByPreset = new Map<TimeOfDayPreset, AssetReference>()
 
   public get mieScatteringMap() {
     return this.fxSky.mieScatteringMap
@@ -82,27 +107,63 @@ export class SkyLightSystem extends GameSystem {
     const view = this.game.scene.getView(0).camera
     const cam = mat4GetTranslation(view.world)
 
-    let sky: TimeOfDayComponent = null
     const zones = this.zonePresets
     zones.clear()
     for (const entity of this.todQuery) {
       const it = entity.component(TimeOfDayComponent)
       zones.add(it.preset)
+      if (it.config.sky) {
+        this.skyByPreset.set(it.preset, it.config.sky)
+      }
       if (it.isPointInside(cam)) {
         this.timeOfDay.scheduleAdd(it.preset, it.config.priority, it.config.blendTime)
-        // POIs without a skybox keep the sky of a lower priority POI (assumption, not verified against the game)
-        if (it.config.sky && (!sky || (it.config.priority ?? 0) > (sky.config.priority ?? 0))) {
-          sky = it
-        }
       } else {
         this.timeOfDay.scheduleRemove(it.preset)
       }
     }
-    this.activeSky = sky?.config.sky ?? null
     // zones that left the query (unloaded) blend out too
     this.timeOfDay.scheduleRemoveMissing(zones)
 
     this.timeOfDay.update(dt, this.time.game.delta, view)
+    this.updateSkyWeights(zones)
+  }
+
+  /**
+   * The weights of the skyboxes from the eased time of day layers, see {@link skyWeights}
+   */
+  private updateSkyWeights(zones: ReadonlySet<TimeOfDayPreset>) {
+    for (const entry of this.skyWeights.values()) {
+      entry.weight = 0
+    }
+    let total = 0
+    // highest priority first, as the layers are kept
+    for (const layer of this.timeOfDay.poiLayers) {
+      const sky = this.skyByPreset.get(layer.preset)
+      if (!sky || layer.blendWeight < MIN_LAYER_WEIGHT) {
+        continue
+      }
+      if (total >= 1) {
+        break
+      }
+      const weight = cappedWeight(layer.blendWeight, total)
+      total += layer.blendWeight
+      const key = assetReferenceKey(sky)
+      let entry = this.skyWeights.get(key)
+      if (!entry) {
+        entry = { key, sky, weight: 0 }
+        this.skyWeights.set(key, entry)
+      }
+      // two POIs with the same skybox add up
+      entry.weight = Math.min(1, entry.weight + weight)
+    }
+    this.defaultSkyWeight = 1 - Math.min(total, 1)
+
+    // forget the skies of presets that are neither a zone nor blending anymore
+    for (const preset of this.skyByPreset.keys()) {
+      if (!zones.has(preset) && !this.timeOfDay.poiLayers.some((it) => it.preset === preset)) {
+        this.skyByPreset.delete(preset)
+      }
+    }
   }
 
   private renderVersion = 0

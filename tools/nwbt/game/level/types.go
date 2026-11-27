@@ -369,8 +369,8 @@ type ViewerSlice struct {
 	ActorReach float32 `json:"actorReach,omitempty"`
 	// The view distance of the character the slice shows itself (a visible SkinnedMeshComponent), 0 without one
 	characterReach float32
-	// Streaming data of the slice from the region slice table (region.slicedata) or the variant meta (.slice.meta),
-	// nil for slices without an entry (chunks, nested slices, levels without slicedata)
+	// Streaming data of the slice from the region slice table (region.slicedata), the variant meta, or in levels
+	// without slicedata the slice's own .slice.meta. Nil for slices without an entry (chunks, nested slices)
 	Gde *ViewerSliceGde `json:"gde,omitempty"`
 }
 

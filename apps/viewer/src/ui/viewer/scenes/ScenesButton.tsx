@@ -4,6 +4,7 @@ import type { NwViewer } from '../../../viewer'
 import { ModalDialog } from '../../common/ModalDialog'
 import { createScenesButtonStore } from './ScenesButton.store'
 import { SceneList } from './SceneList'
+import './ScenesButton.css'
 
 /**
  * Opens the scene selection: the levels and game mode maps of the level catalog (levels/catalog.ts), grouped like
@@ -13,12 +14,12 @@ export function ScenesButton(props: { viewer: NwViewer }) {
   const store = createScenesButtonStore(props)
   return (
     <>
-      <Button title="Open a level, a mission or a showcase" onClick={store.open}>
+      <Button class="nw-scenes-button" title="Open a level, a mission or a showcase" onClick={store.open}>
         Levels
       </Button>
       <ModalDialog title="Levels" open={store.state.open} onClose={store.close}>
         <Show when={store.state.open}>
-          <SceneList onSelect={store.select} />
+          <SceneList onSelect={store.select} onSelectNewSeed={store.selectNewSeed} />
         </Show>
       </ModalDialog>
     </>

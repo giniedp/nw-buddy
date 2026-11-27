@@ -43,9 +43,20 @@
   min-height: 0;
   overflow-y: auto;
 }
-.nw-scene-row {
+/* a row and the buttons next to it (the new seed of a dungeon level) */
+.nw-scene-entry {
   display: flex;
   flex: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+.nw-scene-seed {
+  flex: none;
+}
+.nw-scene-row {
+  display: flex;
+  flex: 1;
+  min-width: 0;
   align-items: center;
   gap: 0.5rem;
   width: 100%;
@@ -88,6 +99,15 @@
 .nw-scene-thumb-icon > img {
   object-fit: contain;
   padding: 0.25rem;
+}
+/* entries without a picture, or with one that does not load */
+.nw-scene-thumb-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--nw-text-dim);
 }
 .nw-scene-text {
   display: flex;

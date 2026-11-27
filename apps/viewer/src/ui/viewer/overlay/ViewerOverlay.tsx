@@ -1,5 +1,6 @@
 import { Show } from 'solid-js'
 import { Button, Icon } from 'tweak-ui'
+import { SCENE_TREE_ENABLED } from '../../../constants'
 import type { NwViewer } from '../../../viewer'
 import { AppBar } from '../../app/bar/AppBar'
 import svgCamera from '../../icons/camera-viewfinder.svg?raw'
@@ -68,13 +69,15 @@ export function ViewerOverlay(props: { viewer: NwViewer }) {
                 onClick={store.screenshot}
               />
               {/* the two sidebar toggles side by side, in the order of the sidebars */}
-              <Button
-                square
-                title={store.state.left ? 'Hide the scene tree' : 'Show the scene tree (left sidebar)'}
-                icon={<Icon svg={svgSidebar} />}
-                active={store.state.left}
-                onClick={store.toggleLeft}
-              />
+              <Show when={SCENE_TREE_ENABLED}>
+                <Button
+                  square
+                  title={store.state.left ? 'Hide the scene tree' : 'Show the scene tree (left sidebar)'}
+                  icon={<Icon svg={svgSidebar} />}
+                  active={store.state.left}
+                  onClick={store.toggleLeft}
+                />
+              </Show>
               <Button
                 square
                 title={store.state.right ? 'Hide the stats' : 'Show the stats (right sidebar)'}
@@ -87,7 +90,8 @@ export function ViewerOverlay(props: { viewer: NwViewer }) {
           }
         />
         <div class="nw-overlay-panes">
-          <Show when={store.state.left}>
+          {/* also gated: a stored open state would show it without its toggle */}
+          <Show when={SCENE_TREE_ENABLED && store.state.left}>
             <aside class="nw-overlay-sidebar">
               <PanelScope>
                 <SceneBrowser viewer={props.viewer} />

@@ -2,6 +2,7 @@ import {
   BoundsComponent,
   CameraComponent,
   EcsGame,
+  InstanceDataComponent,
   LifeCycleFlags,
   MeshComponent,
   ModelComponent,
@@ -30,6 +31,7 @@ import { lfmt } from '@gglib/utils'
 import {
   assetReferenceKey,
   CharacterComponentName,
+  type AssetReference,
   getLevelInfoUrl,
   isTimeOfDayComponent,
   isViewerLightComponent,
@@ -51,7 +53,10 @@ import {
   skinAttachments,
 } from '../../formats/cdf'
 import { InputSlots } from '../../material'
+import { setInstanceOpacity } from '../../material/common'
 import { GridMaterial } from '../../material/GridMaterial'
+import { DUNGEON_LEVELS } from '../catacombs/dungeon'
+import { DEFAULT_DUNGEON_SEED, DUNGEON_SLICE_REF, loadDungeonSlices, type DungeonMap } from '../catacombs/load'
 import { CharacterComponent } from '../character/CharacterComponent'
 import { DebugShapeComponent } from '../debug/DebugShapeComponent'
 import { CulledModelComponent } from '../culling/CulledModelComponent'
@@ -61,7 +66,7 @@ import { MeshLoaderComponent } from '../slice/MeshLoaderComponent'
 import { SliceSpawnerComponent } from '../slice/SliceSpawnerComponent'
 import { SliceSystem } from '../slice/SliceSystem'
 import { TerrainSystem } from '../terrain/TerrainSystem'
-import { levelEntityOptions } from './LevelComponent'
+import { levelEntityOptions, levelSpawnPosition } from './LevelComponent'
 import { loadShaderBallGeometries, SHADER_BALL_SIZE } from './ShaderBall'
 import { SkyLightSystem } from './SkyLightSystem'
 import { createSkySphere, updateSkySphere } from './SkySphere'
@@ -107,13 +112,28 @@ export class LevelSystem extends GameSystem {
 
   private entity: GameEntity
   private skyEntity: GameEntity
+  /**
+   * The default cloud dome, it takes the share of the sky blend the POI skyboxes leave (see updateCloudsDome)
+   */
   private cloudsEntity: GameEntity
   /**
-   * Key of the skybox slice the clouds dome is spawned from, null for the default dome
+   * The cloud domes of the TimeOfDay POI skyboxes with weight, by slice key
    */
-  private cloudsKey: string | null = null
+  private skyDomes = new Map<string, GameEntity>()
+  /**
+   * Skybox slices without a dome mesh, warned once
+   */
+  private skyDomesMissing = new Set<string>()
   private gizmoEntity: GameEntity
   private oceanLevel = -1000
+  /**
+   * Owner of the slices of a generated dungeon in the slice library
+   */
+  private dungeonOwner = {}
+  /**
+   * The cells of the generated dungeon of the loaded level (the catacombs), null for other levels or while it loads
+   */
+  public dungeonMap: DungeonMap | null = null
 
   private logTag = lfmt.badge('#FF9DA7', 'LevelSystem')
   private get timeOfDay() {
@@ -140,34 +160,113 @@ export class LevelSystem extends GameSystem {
   }
 
   /**
-   * Swaps the cloud dome to the skybox slice of the active TimeOfDay POI
+   * Cross-fades the cloud domes like the game's skybox transitions: a dome per TimeOfDay POI skybox with weight, its
+   * meshes at that opacity, and the default dome with the rest. A dome that is not loaded yet takes no share, the
+   * default dome keeps it (the game counts a weight only when a mesh took it).
    */
   private updateCloudsDome() {
     if (!this.entity) {
       return
     }
-    const sky = this.sky.activeSky
-    const key = sky ? `${sky.guid}_${sky.subId}` : null
-    if (key === this.cloudsKey) {
-      return
+    let loaded = 0
+    for (const entry of this.sky.skyWeights.values()) {
+      let dome = this.skyDomes.get(entry.key)
+      if (entry.weight <= 0) {
+        if (dome) {
+          dome.destroy()
+          dome.setParent(null)
+          this.skyDomes.delete(entry.key)
+        }
+        continue
+      }
+      if (!dome) {
+        const mesh = findSkyMesh(this.content.slices.get(entry.key))
+        if (!mesh) {
+          if (!this.skyDomesMissing.has(entry.key)) {
+            this.skyDomesMissing.add(entry.key)
+            console.warn(...this.logTag, 'Skybox mesh not found in', entry.sky.hint || entry.key)
+          }
+          continue
+        }
+        dome = this.game.createEntity(createCloudsDome(this.entity, mesh))
+        this.skyDomes.set(entry.key, dome)
+      }
+      if (setDomeOpacity(dome, entry.weight)) {
+        loaded += entry.weight
+      }
     }
-    this.cloudsKey = key
     if (this.cloudsEntity) {
-      this.cloudsEntity.destroy()
-      this.cloudsEntity.setParent(null)
+      setDomeOpacity(this.cloudsEntity, 1 - Math.min(loaded, 1))
     }
-    const mesh = key ? findSkyMesh(this.content.slices.get(key)) : null
-    if (key && !mesh) {
-      console.warn(...this.logTag, `Skybox mesh not found in ${sky.hint || key}, using default clouds`)
+  }
+
+  /**
+   * Spawns a slice of the slice library in world space below the level, with a spatial index of its own like each
+   * region (the mission entities, a generated dungeon)
+   */
+  private spawnWorldSlice(name: string, slice: AssetReference) {
+    const spawner = this.game.createEntity({
+      name,
+      parent: this.entity,
+      transform: new TransformComponent({
+        keepWorld: true,
+        world: mat4Identity(),
+        // initialized and activated by the SliceSystem
+        lifeCycle: LifeCycleFlags.PropagateOnly,
+      }),
+      components: [
+        new BoundsComponent(),
+        new SpatialComponent({
+          index: OccTree.create({
+            min: vec3(-1024, -1024, -1024),
+            max: vec3(20480, 20480, 20480),
+            leafLevel: 5,
+            looseFactor: 2,
+          }),
+        }),
+        new SliceSpawnerComponent({ slice }),
+      ],
+    })
+    this.game.world.getSystem(SliceSystem).addPreviewSpawner(spawner.component(SliceSpawnerComponent))
+  }
+
+  /**
+   * Generates the dungeon of a level that the server fills at runtime (the catacombs) and spawns its tiles. The start
+   * room sits at the spawn position of the level ({@link levelSpawnPosition}), where the camera starts without a
+   * position in the url.
+   * The same seed gives the same dungeon.
+   */
+  private spawnDungeon(feature: string, seed: number, levelInfo: LevelInfo, signal: AbortSignal) {
+    const start = levelSpawnPosition(levelInfo) ?? {
+      x: levelInfo.regionSize / 2,
+      y: levelInfo.regionSize / 2,
+      z: DUNGEON_FLOOR_HEIGHT,
     }
-    this.cloudsEntity = this.game.createEntity(createCloudsDome(this.entity, mesh))
+    loadDungeonSlices(this.content, { feature, seed, start, signal })
+      .then(({ slices, map }) => {
+        if (signal.aborted) {
+          return
+        }
+        // removed again on unload
+        this.content.slices.add(this.dungeonOwner, slices)
+        this.spawnWorldSlice(`Dungeon ${feature} (seed ${seed})`, DUNGEON_SLICE_REF)
+        this.dungeonMap = map
+        console.log(...this.logTag, 'Dungeon', feature, 'seed', seed, 'tiles', map.cells.length)
+      })
+      .catch((err) => {
+        if (!signal.aborted) {
+          console.warn(...this.logTag, 'Dungeon not generated', feature, String(err))
+        }
+      })
   }
 
   /**
    * Loads a level: the coatlicue `name` and the mission of the level folder `mission`, or of the folder with the
    * coatlicue's name. Resolves once the level info is loaded and the level entity exists, the regions stream later.
+   *
+   * @param seed - seed of the generated dungeon of a dungeon level (the catacombs)
    */
-  public async loadLevel(name: string, mission?: string | null) {
+  public async loadLevel(name: string, mission?: string | null, seed?: number | null) {
     this.loadCancel()
     // a model (e.g. a preview of the browser) left the camera orbiting
     if (this.camera) {
@@ -208,18 +307,11 @@ export class LevelSystem extends GameSystem {
       this.game.createEntity(options)
     }
     if (missionSlice) {
-      const spawner = this.game.createEntity({
-        name: `Mission ${levelInfo.level || levelInfo.name}`,
-        parent: this.entity,
-        transform: new TransformComponent({
-          keepWorld: true,
-          world: mat4Identity(),
-          // initialized and activated by the SliceSystem
-          lifeCycle: LifeCycleFlags.PropagateOnly,
-        }),
-        components: [new BoundsComponent(), new SliceSpawnerComponent({ slice: MISSION_SLICE_REF })],
-      })
-      this.game.world.getSystem(SliceSystem).addPreviewSpawner(spawner.component(SliceSpawnerComponent))
+      this.spawnWorldSlice(`Mission ${levelInfo.level || levelInfo.name}`, MISSION_SLICE_REF)
+    }
+    const dungeonFeature = DUNGEON_LEVELS[name]
+    if (dungeonFeature) {
+      this.spawnDungeon(dungeonFeature, seed ?? DEFAULT_DUNGEON_SEED, levelInfo, loadSignal)
     }
 
     this.oceanLevel = levelInfo.oceanLevel
@@ -753,10 +845,14 @@ export class LevelSystem extends GameSystem {
     // loaded into the scope of the level, it is finalized with it
     this.timeOfDay.moonTexture = null
     this.content.slices.remove(this)
+    this.content.slices.remove(this.dungeonOwner)
+    this.dungeonMap = null
     this.skyEntity = null
     this.gizmoEntity = null
     this.cloudsEntity = null
-    this.cloudsKey = null
+    // children of the level entity, destroyed with it
+    this.skyDomes.clear()
+    this.skyDomesMissing.clear()
     if (this.entity) {
       this.entity.destroy()
       this.entity.setParent(null)
@@ -950,7 +1046,8 @@ const PARTICLE_PREVIEW_LOOP = 3
  * The game spawns slices/system/skyboxsystem (not referenced by the level data). Its TimeOfDayPOIComponent
  * (radius 12000 around 7000,7000, libs/timeofday/default.xml) references slices/sky/newworld01_skybox_a, a mesh component
  * with this dome and no material override (uses the cgf material objects/sky/testclouds_sky_a_mtl.mtl, DistanceClouds).
- * Other POIs (zones, events, dungeons) reference other skybox slices, the SkyLightSystem picks the active one.
+ * Other POIs (zones, events, dungeons) reference other skybox slices. The SkyLightSystem weights them like the time of
+ * day, updateCloudsDome draws a dome per sky with weight and gives this one the rest.
  *
  * Without a mesh (model / material preview, missing slice data) the default dome is used.
  */
@@ -959,13 +1056,36 @@ function createCloudsDome(parent: GameEntity, mesh?: ViewerMeshComponent | null)
   mesh ||= {
     type: 'Mesh',
     mesh: CLOUDS_DOME_CGF,
-    alwaysRender: true,
   }
   return {
     name: `Clouds`,
     parent: parent,
-    components: [new MeshLoaderComponent(mesh)],
+    // the dome surrounds the camera: drawn always, not culled by a spatial index (the level has none)
+    components: [new MeshLoaderComponent({ ...mesh, alwaysRender: true })],
   }
+}
+
+/**
+ * Sets the opacity of a cloud dome's meshes (the game's MeshComponent SetOpacity). At 0 the dome is not drawn, its model
+ * stays loaded.
+ *
+ * @returns whether the dome's model is loaded and took the opacity
+ */
+function setDomeOpacity(dome: GameEntity, opacity: number): boolean {
+  const loader = dome.component(MeshLoaderComponent, GetComponent.Optional)
+  if (loader) {
+    loader.visible = opacity > 0
+  }
+  let loaded = false
+  // the model entities of the loader are its children
+  for (const child of dome.getTransform().children) {
+    const data = child.entity.component(InstanceDataComponent, GetComponent.Optional)
+    if (data) {
+      setInstanceOpacity(data.data, opacity)
+      loaded = true
+    }
+  }
+  return loaded
 }
 
 /**
@@ -1035,6 +1155,11 @@ function createMissionSlice(entities: ViewerEntity[] | null | undefined): Viewer
  * Covers every level (the open world is about 14 km wide). Finite: the radius is also the spawner's bounding sphere.
  */
 const MISSION_SPAWN_RADIUS = 100_000
+
+/**
+ * Floor height of a generated dungeon. Its level has no terrain of its own where the server places the rooms.
+ */
+const DUNGEON_FLOOR_HEIGHT = 100
 
 function createMissionProbes(parent: GameEntity, entities: ViewerEntity[] | null | undefined): CreateEntityOptions[] {
   const result: CreateEntityOptions[] = []

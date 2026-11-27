@@ -1,7 +1,9 @@
 package level
 
 import (
+	"nw-buddy/tools/game"
 	"nw-buddy/tools/rtti/nwt"
+	"path"
 )
 
 const (
@@ -31,11 +33,19 @@ type ViewerDecalComponent struct {
 	MinSpec                uint32  `json:"minSpec,omitempty,omitzero"`
 }
 
-// LoadViewerDecal converts a DecalComponent, nil for invisible decals or decals without a material
-func LoadViewerDecal(v nwt.DecalComponent) *ViewerDecalComponent {
+// LoadViewerDecal converts a DecalComponent, nil for invisible decals or decals without a material. A material that
+// is not in the archive loads as no material in the game (CMatMan::LoadMaterialInternal), the decal draws nothing.
+func LoadViewerDecal(assets *game.Assets, v nwt.DecalComponent) *ViewerDecalComponent {
 	c := v.DecalConfiguration
 	material := string(c.Material.BaseClass1.AssetPath)
 	if !bool(c.Visible) || material == "" {
+		return nil
+	}
+	file := material
+	if path.Ext(file) == "" {
+		file += ".mtl"
+	}
+	if _, ok := assets.Archive.Lookup(file); !ok {
 		return nil
 	}
 	maxViewDistance := float32(c.Automatic_Max_View_Distance)

@@ -1,6 +1,21 @@
 import { describe, expect, it } from 'vitest'
-import { coarseMapTiles, levelRect } from './mapTiles'
+import { coarseMapTiles, gameModeBounds, levelRect } from './mapTiles'
 import { fitView, gridLines, panBy, screenX, screenY, worldAt, zoomAt } from './mapView'
+
+describe('gameModeBounds', () => {
+  it('reads x, y, width, height', () => {
+    const rect = gameModeBounds({ gameModeMaps: [{ worldBounds: ['768.0', '1280.0', '672.0', '672.0'] }] })
+    expect(rect).toEqual({ minX: 768, minY: 1280, maxX: 1440, maxY: 1952 })
+  })
+  it('is null without bounds or when the maps disagree', () => {
+    expect(gameModeBounds({ gameModeMaps: [] })).toBeNull()
+    expect(
+      gameModeBounds({
+        gameModeMaps: [{ worldBounds: ['0', '0', '64', '64'] }, { worldBounds: ['100', '0', '64', '64'] }],
+      }),
+    ).toBeNull()
+  })
+})
 
 describe('levelRect', () => {
   it('spans the regions', () => {

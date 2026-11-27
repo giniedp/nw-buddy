@@ -296,7 +296,12 @@ struct InstanceDataBlock {
   decalOpacity: f32,
   // first joint of the skinning palette + 1 (skinPalette, see skinVertex), 0 = not skinned
   skinOffset: f32,
-  _pad1: array<vec4f, 3>,
+  // 1 - the runtime opacity of the mesh (MeshComponent SetOpacity, e.g. a fading skybox), 0 = as authored
+  transparency: f32,
+  _pad0: f32,
+  _pad1: f32,
+  _pad2: f32,
+  _pad3: array<vec4f, 2>,
 };
 
 // distance of the instance to the camera relative to its max view distance (GetInstance_RelativeDistance)

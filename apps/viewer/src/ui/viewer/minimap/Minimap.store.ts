@@ -1,9 +1,10 @@
-import { createEffect, untrack } from 'solid-js'
+import { createEffect, createMemo, untrack } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { track } from 'tweak-ui'
 import type { NwViewer } from '../../../viewer'
 import { useApp } from '../../app/ViewerApp'
-import { coarseMapTiles, levelRect } from './mapTiles'
+import type { DungeonMap } from '../../../game/catacombs/load'
+import { coarseMapTiles, gameModeBounds, levelRect, type WorldRect } from './mapTiles'
 import { fitView, panBy, worldAt, zoomAt, type MapSize } from './mapView'
 import type { MinimapCamera, MinimapState } from './types'
 
@@ -16,6 +17,11 @@ const CAMERA_INTERVAL = 100
  * Pixel size of a map tile: the tiles are coarse, a larger image keeps the zoomed map readable
  */
 const TILE_PIXELS = 1024
+
+/**
+ * Pixel size of a dungeon map tile, the size of the game's images
+ */
+const DUNGEON_TILE_PIXELS = 256
 
 /**
  * A pointer that moves farther than this, in pixels, pans: a shorter move is a click
@@ -37,6 +43,9 @@ export function createMinimapStore(props: { viewer: NwViewer }) {
   const app = useApp()
   const level = track(() => props.viewer.levelInfo?.name ?? null, { interval: 500 })
   const camera = track(() => readCamera(props.viewer), { interval: CAMERA_INTERVAL, equals: sameCamera })
+  // by reference: the default compare of `track` treats every object as changed, the view would be fitted again on
+  // each poll
+  const dungeon = track(() => props.viewer.dungeonMap, { interval: 500, equals: (a, b) => a === b })
 
   const [state, setState] = createStore<MinimapState>({
     level: null,
@@ -48,7 +57,42 @@ export function createMinimapStore(props: { viewer: NwViewer }) {
     get camera() {
       return camera()
     },
+    get dungeon() {
+      return dungeon()
+    },
+    get dungeonTiles() {
+      return dungeonTiles()
+    },
   })
+  const dungeonTiles = createMemo(() => {
+    return (dungeon()?.cells ?? []).map((cell) => ({
+      ...cell,
+      url: app.nwbt.thumbnailUrl(cell.image, DUNGEON_TILE_PIXELS),
+    }))
+  })
+
+  // a generated dungeon (the catacombs): the map shows it, fitted into the view
+  createEffect(() => {
+    const map = dungeon()
+    untrack(() => {
+      if (map && state.size.width) {
+        setState('view', fitView(dungeonRect(map), state.size))
+      }
+    })
+  })
+
+  /**
+   * What the view shows first: a generated dungeon, else the play area of the game mode, else the whole level
+   */
+  const initialRect = () => {
+    // the viewer's, the polled one may still be the dungeon of the previous level
+    const dungeonMap = props.viewer.dungeonMap
+    if (dungeonMap) {
+      return dungeonRect(dungeonMap)
+    }
+    const info = props.viewer.levelInfo
+    return (info ? gameModeBounds(info) : null) ?? state.rect
+  }
 
   // a new level: its tiles, fitted into the map. Only the level is tracked, a resize keeps the view.
   createEffect(() => {
@@ -62,8 +106,11 @@ export function createMinimapStore(props: { viewer: NwViewer }) {
         rect,
         tiles: tiles.map((it) => ({ ...it, url: app.nwbt.thumbnailUrl(it.path, TILE_PIXELS) })),
         failed: 0,
-        view: rect && state.size.width ? fitView(rect, state.size) : null,
+        view: null,
       })
+      if (rect && state.size.width) {
+        setState('view', fitView(initialRect(), state.size))
+      }
     })
   })
 
@@ -84,7 +131,7 @@ export function createMinimapStore(props: { viewer: NwViewer }) {
     resize(size: MapSize) {
       setState('size', size)
       if (!state.view && state.rect && size.width) {
-        setState('view', fitView(state.rect, size))
+        setState('view', fitView(initialRect(), size))
       }
     },
     tileFailed() {
@@ -144,6 +191,21 @@ export function createMinimapStore(props: { viewer: NwViewer }) {
     pointerCancel() {
       drag = null
     },
+  }
+}
+
+/**
+ * The world rectangle of the dungeon's cells, with a margin of one cell
+ */
+function dungeonRect(map: DungeonMap): WorldRect {
+  const xs = map.cells.map((it) => it.x)
+  const ys = map.cells.map((it) => it.y)
+  const margin = map.tileSize * 1.5
+  return {
+    minX: Math.min(...xs) - margin,
+    minY: Math.min(...ys) - margin,
+    maxX: Math.max(...xs) + margin,
+    maxY: Math.max(...ys) + margin,
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "10.0.5-0",
+  "version": "10.0.5-1",
   "description": "New World Buddy",
   "keywords": [],
   "private": true,
@@ -26,8 +26,8 @@
     "dev:viewer:only": "concurrently -n VIEW,NWBT -c red,green -k -s first \"pnpm dev:viewer\" \"pnpm dev:nwbt\"",
     "viewer": "pnpm -F @nw-buddy/viewer",
     "viewer:build": "pnpm viewer build && pnpm viewer zip",
-    "dev:web": "pnpm nw-generate env -c dev && pnpm viewer build:types && ng serve --ssl --no-hmr -c dev",
-    "dev:web-cdn": "pnpm nw-generate env -c dev-cdn && pnpm viewer build:types && ng serve --ssl --no-hmr -c dev-cdn",
+    "dev:web": "pnpm nw-generate env -c dev && pnpm viewer build:types && ng serve --no-hmr -c dev",
+    "dev:web-cdn": "pnpm nw-generate env -c dev-cdn && pnpm viewer build:types && ng serve --no-hmr -c dev-cdn",
     "dev:ssr": "pnpm nw-generate env -c dev-ssr && pnpm viewer build:types && ng serve --no-hmr --host 0.0.0.0 --disable-host-check -c dev-ssr -o",
     "dev:server": "ng run nw-buddy:serve-ssr",
     "dev:storybook": "ng run nw-buddy:storybook",

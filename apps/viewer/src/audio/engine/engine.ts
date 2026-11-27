@@ -242,7 +242,12 @@ export class AudioEngine {
       (bank, reason) => this.block(`bank ${bank}: ${reason}`),
     )
     try {
-      const [catalog, decoder] = await Promise.all([loadAudioCatalog(baseUrl), this.options.loadDecoder()])
+      const [catalog, decoder] = await Promise.all([
+        loadAudioCatalog(baseUrl),
+        this.options.loadDecoder(),
+        // the bus hierarchy, its volumes apply to every voice
+        this.banks.acquire('init.bnk', 'init'),
+      ])
       this.catalog = catalog
       this.decoder = decoder
       this.ready = true

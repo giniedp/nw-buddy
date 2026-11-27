@@ -1,33 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { SheetColumn } from '../../../api/browse'
 import { audioTitle } from './AudioButton.store'
-import { iconField, nameField } from './RowPanel.store'
 import { exportFiles, fileStem, preferredOption } from './RowPreview.store'
-import type { RowField } from './types'
-
-const field = (name: string, kind: SheetColumn['kind'] | undefined, text: string): RowField => ({
-  column: { name, kind } as SheetColumn,
-  text,
-})
-
-describe('row head', () => {
-  const fields = [
-    field('ItemID', 'key', 'Sword_T5'),
-    field('Description', 'loc', '@desc'),
-    field('Name', 'loc', '@name'),
-    field('IconPath', 'asset', 'lyshineui/images/icons/sword.png'),
-  ]
-
-  it('takes the localized name field', () => {
-    expect(nameField(fields)?.text).toBe('@name')
-    expect(nameField([fields[0]])).toBeUndefined()
-  })
-
-  it('takes an image of an icon field', () => {
-    expect(iconField(fields)?.text).toBe('lyshineui/images/icons/sword.png')
-    expect(iconField([field('IconPath', 'asset', 'objects/a.cgf')])).toBeUndefined()
-  })
-})
 
 describe('preview', () => {
   it('prefers the Skin1 of the row or of an appearance', () => {

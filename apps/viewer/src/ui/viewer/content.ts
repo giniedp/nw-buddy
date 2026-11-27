@@ -7,7 +7,7 @@ import type { NwViewer } from '../../viewer'
 /**
  * The parameters of the url that select the content, without the camera
  */
-const CONTENT_PARAMS = ['level', 'mission', 'model', 'material']
+const CONTENT_PARAMS = ['level', 'mission', 'seed', 'model', 'material']
 
 /**
  * The opened content after a preview of the browser unloaded it: the next open loads the content again and places the
@@ -31,11 +31,18 @@ export class ViewerContent {
   private readonly base: string
 
   /**
-   * @param base - the path of the app, the viewer tool is at `<base>/viewer`
+   * Called after {@link showScene} replaced the url without the router
    */
-  public constructor(levels: LevelCatalogLoader, base: string) {
+  private readonly urlChanged: () => void
+
+  /**
+   * @param base - the path of the app, the viewer tool is at `<base>/viewer`
+   * @param urlChanged - called after the url was replaced without the router (ViewerApp.urlChanged)
+   */
+  public constructor(levels: LevelCatalogLoader, base: string, urlChanged: () => void = () => {}) {
     this.levels = levels
     this.base = base
+    this.urlChanged = urlChanged
     const [openedContent, setOpenedContent] = createSignal<string | null>(null)
     this.openedContent = openedContent
     this.setOpenedContent = setOpenedContent
@@ -53,10 +60,11 @@ export class ViewerContent {
   }
 
   /**
-   * Shows a scene of the level catalog, see {@link showScene}
+   * Shows a scene of the level catalog, see {@link showScene}. `extra`: more url parameters, e.g. the `seed` of a
+   * dungeon level.
    */
-  public showSceneEntry(viewer: NwViewer, entry: LevelEntry) {
-    this.showScene(viewer, entryParams(entry))
+  public showSceneEntry(viewer: NwViewer, entry: LevelEntry, extra?: Record<string, string>) {
+    this.showScene(viewer, { ...entryParams(entry), ...extra })
     this.setSceneEntry({ id: entry.id, content: this.openedContent() })
   }
 
@@ -102,6 +110,7 @@ export class ViewerContent {
       url.searchParams.set(key, value)
     }
     history.replaceState(history.state, '', `${url.pathname}${url.search}`)
+    this.urlChanged()
     if (!viewer.previewing && contentKey(url.searchParams) === this.openedContent()) {
       // scenes of the same level differ only by their camera
       placeUrlCamera(viewer, url.searchParams)
@@ -151,8 +160,13 @@ function openFromUrl(viewer: NwViewer, params: URLSearchParams) {
   } else if (params.has('model')) {
     viewer.loadModel(params.get('model'))
   } else if (params.has('level')) {
-    // `mission`: the level folder when it differs from the coatlicue (main menus). Without a position in the url,
-    // the camera starts at the level's own camera placement, if it has one.
-    viewer.loadLevel(params.get('level'), { mission: params.get('mission'), levelCamera: !params.has('x') })
+    // `mission`: the level folder when it differs from the coatlicue (main menus). `seed`: the generated dungeon of
+    // the catacombs. Without a position in the url, the camera starts at the level's own camera placement, if it has
+    // one.
+    viewer.loadLevel(params.get('level'), {
+      mission: params.get('mission'),
+      seed: params.has('seed') ? Number(params.get('seed')) || 0 : null,
+      levelCamera: !params.has('x'),
+    })
   }
 }

@@ -322,7 +322,17 @@ func hasVariantMeta(assets *game.Assets, sliceName string, variant string) bool 
 
 // loadVariantMeta loads the baked meta of a slice variant, nil if there is none
 func loadVariantMeta(assets *game.Assets, sliceName string, variant string) *nwt.SliceMetaData {
-	file, ok := assets.Archive.Lookup(variantMetaPath(sliceName, variant))
+	return loadSliceMeta(assets, variantMetaPath(sliceName, variant))
+}
+
+// sliceMetaPath is the path of the baked meta beside a slice, `<slice>.slice.meta`
+func sliceMetaPath(slicePath string) string {
+	return strings.TrimSuffix(strings.ToLower(slicePath), ".dynamicslice") + ".slice.meta"
+}
+
+// loadSliceMeta loads a `.slice.meta` file, nil if there is none
+func loadSliceMeta(assets *game.Assets, path string) *nwt.SliceMetaData {
+	file, ok := assets.Archive.Lookup(path)
 	if !ok {
 		return nil
 	}

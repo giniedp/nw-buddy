@@ -41,6 +41,8 @@ export function distanceCloudsEffectOptions(constants: Record<string, number>): 
       shader: distanceCloudsOptions(constants),
       sharedBlocks: [InputBlocks.Global, InputBlocks.View, InputBlocks.Frame, InputBlocks.Lights],
       perInstanceTransformBlock: 'object',
+      // the runtime opacity of a fading skybox (setInstanceOpacity)
+      perInstanceDataBlock: 'instanceData',
     },
   }
 }

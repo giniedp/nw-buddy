@@ -39,7 +39,8 @@ export interface SliceSpawnerComponentOptions {
   capitalRadius?: number
   /**
    * Top level spawner of a region (capital or chunk): spawned by the GDE reach rules and despawned beyond them.
-   * Nested and preview spawners use the AOI spawn radius of their slice.
+   * Nested prefab spawners spawn with their parent slice, other nested and preview spawners use the AOI spawn radius
+   * of their slice.
    */
   isTopLevel?: boolean
   /**
@@ -54,6 +55,11 @@ export interface SliceSpawnerComponentOptions {
    * The slice that holds the spawner component of a nested slice, for the spawn rules. None for capitals and chunks.
    */
   parent?: ViewerSlice | null
+  /**
+   * A nested prefab spawner: it spawns with its parent slice, as the game's initializer spawns, instead of at its AOI
+   * spawn radius
+   */
+  spawnsWithParent?: boolean
 
   slice: AssetReference
 }
@@ -148,6 +154,10 @@ export class SliceSpawnerComponent implements GameComponent, ActivatableComponen
    */
   public readonly parent: ViewerSlice | null
   /**
+   * See {@link SliceSpawnerComponentOptions.spawnsWithParent}
+   */
+  public readonly spawnsWithParent: boolean
+  /**
    * Reach across the ground (2D) within which the slice stands, by the GDE rules (see gdeReach), for the object detail
    * tier {@link reachTier}. 0 when the slice uses its AOI spawn radius instead ({@link spawnRadius}, 3D).
    */
@@ -188,6 +198,7 @@ export class SliceSpawnerComponent implements GameComponent, ActivatableComponen
     this.impostor = data.cell ?? null
     this.source = data.source ?? null
     this.parent = data.parent ?? null
+    this.spawnsWithParent = !!data.spawnsWithParent
     this.spawnRadius = 0
   }
 
