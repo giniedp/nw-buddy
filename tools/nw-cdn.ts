@@ -82,11 +82,12 @@ program
   .description('Zips nw-data folder (live or ptr) and uploads to CDN. Optionally uploads all files unzipped.')
   .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_WORKSPACE)
   .option('-v, --version <version>', 'Version name to use for upload (default is the branch name)', BRANCH_NAME)
-  .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)
+  .option('-f, --force', 'Uploads all files, instead of only new', false)
   .option('-dry, --dry-run', 'Dry run, does not upload files', false)
   .action(async (data) => {
     const options = z
       .object({
+        force: z.boolean(),
         version: z.string(),
         workspace: z.string(),
         files: z.boolean(),
@@ -109,16 +110,14 @@ program
     console.log('zip     ', zipDir, '->', zipFile)
     await createBundle(zipDir, zipFile)
 
-    if (options.files) {
-      await glob(path.join(zipDir, '**', '*')).then((files) => {
-        for (const file of files) {
-          toUpload.push({
-            file: file,
-            key: normalizeKey(path.join('nw-data', options.version, path.relative(zipDir, file))),
-          })
-        }
-      })
-    }
+    await glob(path.join(zipDir, '**', '*')).then((files) => {
+      for (const file of files) {
+        toUpload.push({
+          file: file,
+          key: normalizeKey(path.join('nw-data', options.version, path.relative(zipDir, file))),
+        })
+      }
+    })
 
     await syncFiles({
       client: client,
@@ -126,6 +125,7 @@ program
       source: zipDir,
       target: `nw-data/${options.version}`,
       dryRun: options.dryRun,
+      force: options.force,
     })
   })
 
@@ -180,10 +180,12 @@ program
   .option('-ws, --workspace <name>', 'workspace folder to read the tiles from (ptr or live)', NW_WORKSPACE)
   .option('-v, --version <version>', 'CDN folder below nw-data (default is the branch name)', BRANCH_NAME)
   .option('-m, --map <pattern>', 'glob of the map folders to upload, e.g. outpostrush or nw_dungeon_*', '*')
+  .option('-f, --force', 'Uploads all files, instead of only new', false)
   .option('-dry, --dry-run', 'Dry run, does not upload files', false)
   .action(async (opts) => {
     const options = z
       .object({
+        force: z.boolean(),
         workspace: z.string(),
         version: z.string().min(1),
         map: z.string(),
@@ -226,6 +228,7 @@ program
       source: tilesDir,
       target: targetDir,
       dryRun: options.dryRun,
+      force: options.force,
     })
   })
 
